@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "cal.com/app-directory-boilerplate-calcom",
+	"description": "This codemod provides boilerplate for the app directory.",
+	"engine": "filemod",
+	"dependencyVersionLowerThan": ["next", "13.0.0"],
+	"owner": "intuita"
+}

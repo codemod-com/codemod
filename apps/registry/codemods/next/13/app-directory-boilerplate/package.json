@@ -1,0 +1,39 @@
+{
+	"name": "@codemod-com/codemod-next-13-app-directory-boilerplate",
+	"dependencies": {
+		"mdast-util-from-markdown": "^2.0.0",
+		"mdast-util-to-markdown": "^2.1.0",
+		"micromark-extension-mdxjs": "^2.0.0",
+		"mdast-util-mdx": "^3.0.0",
+		"unist-util-visit": "^5.0.0"
+	},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"@codemod-com/registry-cjs-builder": "workspace:*",
+		"typescript": "^5.2.2",
+		"esbuild": "0.19.5",
+		"ts-node": "^10.9.1",
+		"@codemod-com/filemod": "2.0.0",
+		"memfs": "^4.6.0",
+		"ts-morph": "^19.0.0",
+		"jscodeshift": "^0.15.1",
+		"@types/jscodeshift": "^0.11.10",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {
+		"build:cjs": "cjs-builder ./src/index.ts",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"coverage": "vitest run --coverage"
+	},
+	"files": [
+		"README.md",
+		"config.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"type": "module"
+}

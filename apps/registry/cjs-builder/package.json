@@ -1,0 +1,15 @@
+{
+	"name": "@codemod-com/registry-cjs-builder",
+	"type": "module",
+	"main": "./dist/index.js",
+	"bin": {
+		"cjs-builder": "./dist/index.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"postinstall": "tsc"
+	},
+	"devDependencies": {
+		"esbuild": "^0.19.7"
+	}
+}

@@ -1,0 +1,8 @@
+{
+	"compilerOptions": {
+		"module": "NodeNext",
+		"outDir": "./dist",
+		"allowJs": true
+	},
+	"extends": "@codemod-com/tsconfig/base.json"
+}

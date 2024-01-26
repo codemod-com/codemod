@@ -1,0 +1,14 @@
+{
+	"schemaVersion": "1.0.0",
+	"engine": "recipe",
+	"names": [
+		"netlify/0.8.5/createEnvironmentVariable",
+		"netlify/0.8.5/createOrUpdateVariable",
+		"netlify/0.8.5/createOrUpdateVariables",
+		"netlify/0.8.5/deleteEnvironmentVariable",
+		"netlify/0.8.5/deleteEnvironmentVariables",
+		"netlify/0.8.5/getEnvironmentVariables",
+		"netlify/0.8.5/patchEnvironmentVariable",
+		"netlify/0.8.5/updateEnvironmentVariable"
+	]
+}

@@ -1,0 +1,17 @@
+{
+	"schemaVersion": "1.0.0",
+	"engine": "jscodeshift",
+	"arguments": [
+		{
+			"name": "functionName",
+			"kind": "string",
+			"default": "isFlagEnabled"
+		},
+		{
+			"name": "featureFlagName",
+			"kind": "string",
+			"default": "featureFlag",
+			"required": true
+		}
+	]
+}

@@ -1,0 +1,14 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/comment-deletable-files",
+	"description": "The codemod marks files that can be deleted with a comment.",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<13"
+		}
+	],
+	"owner": "intuita"
+}

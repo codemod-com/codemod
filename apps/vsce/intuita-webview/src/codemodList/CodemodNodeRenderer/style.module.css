@@ -1,0 +1,108 @@
+.root {
+	display: flex;
+	align-items: center;
+	flex: 1;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	flex-wrap: nowrap;
+	align-items: center;
+	min-height: 28px;
+}
+
+.root:not(.focused):hover {
+	background-color: var(--vscode-list-hoverBackground);
+}
+
+.focused {
+	background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+.root:focus-visible {
+	outline: none;
+}
+
+.root .actionGroup {
+	opacity: 0;
+}
+
+.root:hover .actionGroup,
+.focused .actionGroup {
+	opacity: 1;
+}
+
+.root:hover .description {
+	display: inline;
+}
+
+.labelContainer {
+	line-height: 22px;
+	font-size: 13px;
+	cursor: pointer;
+	color: var(--vscode-foreground);
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.labelContainer.focused {
+	color: var(--vscode-list-activeSelectionForeground);
+}
+
+.directorySelector {
+	display: flex;
+}
+
+.description {
+	color: var(--vscode-descriptionForeground);
+	font-size: 12px;
+	line-height: normal;
+	margin-left: 5px;
+	display: none;
+}
+
+.actionGroup {
+	display: flex;
+	margin-left: auto;
+	height: 100%;
+	align-items: center;
+	min-width: fit-content;
+}
+
+.label {
+	user-select: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	color: inherit;
+}
+
+.codemodRoot {
+	display: flex;
+	gap: 4px;
+	align-items: center;
+	width: 100%;
+	padding: 0 3px;
+	min-height: 28px;
+	box-sizing: border-box;
+}
+
+.expandableContent {
+	background-color: var(--vscode-panel-background);
+}
+
+.progressContainer {
+	width: 100%;
+	padding: 0.5em;
+	padding-top: 0.1em;
+	box-sizing: border-box;
+}
+
+.progressStatusLabel {
+	font-size: var(--type-ramp-base-font-size);
+	line-height: var(--type-ramp-base-line-height);
+	color: var(--foreground);
+	user-select: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}

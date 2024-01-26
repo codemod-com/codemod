@@ -1,0 +1,22 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/remove-get-static-props",
+	"description": "The codemod removes getStaticProps data fetching method.",
+	"engine": "filemod",
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<13"
+		}
+	],
+	"arguments": [
+		{
+			"name": "buildLegacyCtxUtilAbsolutePath",
+			"description": "Absolute path of buildLegacyCtx utility file",
+			"kind": "string",
+			"required": true
+		}
+	],
+	"owner": "intuita"
+}

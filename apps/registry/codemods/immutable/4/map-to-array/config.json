@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "immutable/4/map-to-array",
+	"description": "",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencyVersionLowerThan": ["immutable", "4.0.0"]
+}

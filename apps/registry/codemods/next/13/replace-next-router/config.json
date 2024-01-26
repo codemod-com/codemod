@@ -1,0 +1,9 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/replace-next-router",
+	"description": "Replaces all usages of the useRouter() calls with useSearchParams and usePathname",
+	"engine": "ts-morph",
+	"extensions": ["js*", "ts*"],
+	"dependencyVersionLowerThan": ["next", "13.0.0"],
+	"owner": "intuita"
+}

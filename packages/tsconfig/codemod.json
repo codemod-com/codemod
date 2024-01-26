@@ -1,0 +1,11 @@
+{
+	"$schema": "https://json.schemastore.org/tsconfig",
+	"compilerOptions": {
+		"module": "NodeNext",
+		"moduleResolution": "NodeNext",
+		"outDir": "./dist",
+		"allowJs": true,
+		"jsx": "react-jsx"
+	},
+	"extends": ["./base.json"]
+}

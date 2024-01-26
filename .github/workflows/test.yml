@@ -1,0 +1,43 @@
+name: Codemod Unit Tests
+
+on:
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+
+jobs:
+    test:
+        name: Run codemod unit tests
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                os: [macos-latest, ubuntu-latest, windows-latest]
+
+        steps:
+            - name: Check out Git repository
+              uses: actions/checkout@v2
+
+            - name: Use Node.js 16.x
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 16
+
+            - name: Install modules
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+
+            - name: Install dependencies
+              run: pnpm install
+
+            - name: Run codemod unit tests
+              run: |
+                  if [[ ${{ matrix.os }} == "windows-latest" ]]; then
+                    pnpm test:win
+                  else
+                    pnpm test
+                  fi
+              shell: bash

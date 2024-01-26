@@ -1,0 +1,8 @@
+.welcomeMessage {
+	padding: 0 20px 1em;
+	margin-top: 13px;
+}
+
+body {
+	overflow-y: scroll;
+}

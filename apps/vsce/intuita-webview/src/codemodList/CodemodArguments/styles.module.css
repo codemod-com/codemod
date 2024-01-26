@@ -1,0 +1,13 @@
+.root {
+	z-index: 1;
+	width: 100%;
+	padding: 1em;
+	box-sizing: border-box;
+}
+
+.form {
+	display: flex;
+	flex-direction: column;
+	row-gap: 8px;
+	padding: 4px;
+}

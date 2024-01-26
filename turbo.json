@@ -1,0 +1,31 @@
+{
+	"$schema": "https://turbo.build/schema.json",
+	"pipeline": {
+		"dev": {
+			"cache": false,
+			"persistent": true
+		},
+		"link": {
+			"dependsOn": ["build"]
+		},
+		"clean": {
+			"cache": false
+		},
+		"test": {
+			"cache": false
+		},
+		"build": {
+			"dependsOn": ["^build"],
+			"outputs": ["build/**", "dist/**"]
+		},
+		"build:cjs": {
+			"outputMode": "full",
+			"inputs": ["src/**/*.ts", "src/**/*.js"],
+			"outputs": ["dist/index.cjs"]
+		},
+		"create": {
+			"dependsOn": ["^create"],
+			"cache": false
+		}
+	}
+}

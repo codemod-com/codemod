@@ -1,0 +1,11 @@
+.root {
+	display: flex;
+	flex-direction: column;
+	padding: 4px;
+	align-items: center;
+	row-gap: 4px;
+}
+
+.root p {
+	text-align: center;
+}

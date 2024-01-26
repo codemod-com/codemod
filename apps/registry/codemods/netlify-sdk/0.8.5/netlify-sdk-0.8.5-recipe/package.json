@@ -1,0 +1,8 @@
+{
+	"name": "@codemod-com/codemod-netlify-sdk-0.8.5-netlify-sdk-0.8.5-recipe",
+	"files": [
+		"README.md",
+		"config.json"
+	],
+	"type": "module"
+}

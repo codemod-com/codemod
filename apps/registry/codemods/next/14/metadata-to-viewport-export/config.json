@@ -1,0 +1,14 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/14/metadata-to-viewport-export",
+	"description": "This codemod migrates certain viewport metadata to viewport export.",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<14"
+		}
+	],
+	"owner": "vercel"
+}

@@ -1,0 +1,28 @@
+/* inspired by https://dev.to/themodernweb/quick-css-make-infinity-loading-animation-for-your-next-website-187k */
+
+.progressContainer {
+	position: relative;
+	width: 100%;
+	height: 2.5px;
+	overflow: hidden;
+	border-radius: 10px;
+}
+
+.progress {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	background: var(--vscode-progressBar-background);
+	border-radius: 10px;
+	left: -100%;
+	animation: loading 1s linear infinite;
+}
+
+@keyframes loading {
+	0% {
+		left: -100%;
+	}
+	100% {
+		left: 100%;
+	}
+}

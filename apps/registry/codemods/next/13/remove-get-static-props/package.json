@@ -1,0 +1,33 @@
+{
+	"name": "@codemod-com/codemod-next-13-remove-get-static-props",
+	"dependencies": {},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"@codemod-com/registry-cjs-builder": "workspace:*",
+		"typescript": "^5.2.2",
+		"esbuild": "0.19.5",
+		"ts-node": "^10.9.1",
+		"@codemod-com/filemod": "2.0.0",
+		"memfs": "^4.6.0",
+		"ts-morph": "^19.0.0",
+		"jscodeshift": "0.14.0",
+		"@types/jscodeshift": "^0.11.10",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {
+		"build:cjs": "cjs-builder ./src/index.ts",
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"coverage": "vitest run --coverage"
+	},
+	"files": [
+		"README.md",
+		"config.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"type": "module"
+}

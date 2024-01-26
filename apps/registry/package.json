@@ -1,0 +1,32 @@
+{
+	"name": "@codemod-com/registry",
+	"type": "module",
+	"author": "Intuita",
+	"packageManager": "pnpm@8.9.0",
+	"scripts": {
+		"build": "turbo run build:cjs && pnpm --filter @codemod-com/registry-builder build && pnpm --filter @codemod-com/readme-parser build",
+		"build:homedir": "turbo run build:cjs && pnpm --filter @codemod-com/registry-builder build:homedir",
+		"create": "turbo run create",
+		"lint:eslint": "eslint --fix .",
+		"lint:prettier": "prettier --write .",
+		"test": "vitest run test.ts",
+		"test:win": "vitest run test.win.ts",
+		"coverage": "vitest run --coverage"
+	},
+	"devDependencies": {
+		"@types/node": "20.9.0",
+		"@typescript-eslint/eslint-plugin": "^6.2.0",
+		"@typescript-eslint/parser": "^6.2.0",
+		"@vitest/coverage-v8": "^1.0.1",
+		"eslint-plugin-no-only-tests": "^3.1.0",
+		"eslint-plugin-react": "^7.33.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.1.0",
+		"turbo": "1.10.16",
+		"typescript": "5.2.2",
+		"vitest": "^1.0.1"
+	},
+	"dependencies": {
+		"@codemod-com/utilities": "workspace:^"
+	}
+}

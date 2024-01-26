@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "react-redux/0/add-state-type",
+	"description": "",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependency": "react-redux"
+}

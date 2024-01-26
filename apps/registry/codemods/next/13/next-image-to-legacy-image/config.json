@@ -1,0 +1,14 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/next-image-to-legacy-image",
+	"description": "The codemod safely migrates Next.js 10, 11, and 12 applications that use the next/image import to the renamed next/legacy/image import in Next.js 13.",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<13"
+		}
+	],
+	"owner": "intuita"
+}

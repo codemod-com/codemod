@@ -1,0 +1,12 @@
+.action {
+	margin-left: 3px;
+	display: flex;
+	align-items: center;
+	color: inherit;
+}
+
+.active {
+	background: var(--button-icon-hover-background);
+	outline: 1px dotted var(--contrast-active-border);
+	outline-offset: -1px;
+}

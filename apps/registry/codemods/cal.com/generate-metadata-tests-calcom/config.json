@@ -1,0 +1,11 @@
+{
+	"schemaVersion": "1.0.0",
+	"engine": "filemod",
+	"arguments": [
+		{
+			"name": "testPath",
+			"kind": "string",
+			"required": true
+		}
+	]
+}

@@ -1,0 +1,4 @@
+.diff-view-container:focus {
+	outline: none;
+	border: 2px solid var(--vscode-focusBorder);
+}

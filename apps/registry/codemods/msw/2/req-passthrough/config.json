@@ -1,0 +1,5 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "msw/2/req-passthrough",
+	"engine": "ts-morph"
+}

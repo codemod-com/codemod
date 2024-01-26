@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/remove-next-export",
+	"description": "This codemod removes all usages of the next export command",
+	"engine": "filemod",
+	"dependencyVersionLowerThan": ["next", "13.0.0"],
+	"owner": "intuita"
+}

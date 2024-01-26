@@ -1,0 +1,36 @@
+import type {
+	Event,
+	ProviderResult,
+	TextDocumentContentProvider,
+} from 'vscode';
+import { EventEmitter, Uri } from 'vscode';
+
+export class IntuitaTextDocumentContentProvider
+	implements TextDocumentContentProvider
+{
+	readonly URI = Uri.parse('intuita:jscodeshiftCodemod.ts');
+	readonly #onDidChangeEmitter = new EventEmitter<Uri>();
+	readonly onDidChange: Event<Uri> | undefined = undefined;
+
+	#content = '';
+
+	constructor() {
+		this.onDidChange = this.#onDidChangeEmitter.event;
+	}
+
+	setContent(content: string) {
+		this.#content = content;
+
+		this.#onDidChangeEmitter.fire(this.URI);
+	}
+
+	provideTextDocumentContent(uri: Uri): ProviderResult<string> {
+		if (uri.toString() !== this.URI.toString()) {
+			throw new Error(
+				`You can only read the content of ${this.URI.toString()}`,
+			);
+		}
+
+		return this.#content;
+	}
+}

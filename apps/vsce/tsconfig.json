@@ -1,0 +1,4 @@
+{
+	"include": ["./src/**/*.ts", "./src/types/**/*.d.ts", "./test/**/*.ts"],
+	"extends": "@codemod-com/tsconfig/extension.json"
+}

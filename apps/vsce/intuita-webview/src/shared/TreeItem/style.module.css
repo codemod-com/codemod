@@ -1,0 +1,48 @@
+.root {
+	display: flex;
+	height: 22px;
+	line-height: 22px;
+	flex: 1;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	flex-wrap: nowrap;
+	padding-left: 3px;
+	padding-right: 12px;
+	outline: none;
+	align-items: center;
+}
+
+.root:hover {
+	background-color: var(--vscode-list-hoverBackground);
+}
+
+.focused,
+.focused:hover {
+	background-color: var(--vscode-list-activeSelectionBackground);
+}
+
+.label {
+	line-height: 22px;
+	font-size: 13px;
+	cursor: pointer;
+	flex-grow: 1;
+	color: var(--vscode-foreground);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	user-select: none;
+	margin-left: 2.5px;
+}
+
+.subLabel {
+	line-height: 20px;
+	font-size: 11px;
+	cursor: pointer;
+	flex-grow: 1;
+	color: var(--vscode-foreground);
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+	user-select: none;
+	text-align: right;
+}

@@ -1,0 +1,36 @@
+.collapsable {
+	display: flex;
+	flex-direction: column;
+	background-color: var(--vscode-editor-background);
+	border-radius: 5px;
+}
+
+.collapsable__header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	padding: 0 0 0 0.5rem;
+	cursor: pointer;
+}
+
+.collapsable__header--sticky {
+	position: sticky;
+	top: 0;
+	z-index: 1000;
+	background-color: var(--vscode-editor-background);
+}
+
+.collapsable__arrow {
+	margin-right: 0.5rem;
+	width: 18px;
+	height: 18px;
+	transition: transform 0.2s ease-in-out;
+}
+
+.collapsable__arrow--collapsed {
+	transform: rotate(-90deg);
+}
+
+.collapsable_content {
+	padding: 0 0 0 1.5rem;
+}

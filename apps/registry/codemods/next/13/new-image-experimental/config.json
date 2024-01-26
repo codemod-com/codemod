@@ -1,0 +1,14 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/new-image-experimental",
+	"description": "The codemod performs migration from next/legacy/image to the latest next/image by including inline styles and removing unnecessary properties.",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<13"
+		}
+	],
+	"owner": "intuita"
+}

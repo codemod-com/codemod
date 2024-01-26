@@ -1,0 +1,7 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "ember/5/fpe-on",
+	"description": "",
+	"engine": "jscodeshift",
+	"dependencyVersionLowerThan": ["ember", "5.0.0"]
+}

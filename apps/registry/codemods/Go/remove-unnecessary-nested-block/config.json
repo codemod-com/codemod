@@ -1,0 +1,7 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "Remove Unnecessary Nested Block",
+	"engine": "piranha",
+	"language": "go",
+	"owner": "intuita"
+}

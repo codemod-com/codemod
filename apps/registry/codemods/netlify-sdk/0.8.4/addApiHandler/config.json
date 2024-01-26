@@ -1,0 +1,5 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "netlify/0.8.4/addApiHandler",
+	"engine": "jscodeshift"
+}

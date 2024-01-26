@@ -1,0 +1,7 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "ember/5/es5-getter-ember-codemod",
+	"description": "",
+	"engine": "jscodeshift",
+	"dependencyVersionLowerThan": ["ember", "5.0.0"]
+}

@@ -1,0 +1,26 @@
+{
+	"name": "@codemod-com/config",
+	"version": "0.0.1",
+	"author": "Codemod.com",
+	"license": "Apache License, Version 2.0",
+	"description": "Configurations for codemod.com monorepo",
+	"files": [
+		"eslint.js",
+		"prettier.js"
+	],
+	"dependencies": {
+		"eslint-config-prettier": "^9.1.0"
+	},
+	"devDependencies": {
+		"@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+		"@typescript-eslint/eslint-plugin": "^6.19.1",
+		"@typescript-eslint/parser": "^6.19.1",
+		"@types/eslint": "^8.56.0",
+		"eslint": "^8.56.0",
+		"prettier": "3.1.0",
+		"eslint-plugin-prettier": "^5.1.3",
+		"eslint-plugin-unused-imports": "^3.0.0",
+		"prettier-plugin-tailwindcss": "^0.5.11",
+		"typescript": "^5.2.2"
+	}
+}

@@ -1,0 +1,19 @@
+{
+	"name": "@codemod-com/readme-builder",
+	"type": "module",
+	"dependencies": {
+		"@effect/schema": "^0.48.4",
+		"glob": "^10.3.10",
+		"tar": "^6.2.0"
+	},
+	"devDependencies": {
+		"@types/node": "^20.9.2",
+		"@types/tar": "^6.1.9",
+		"tsx": "^4.7.0",
+		"typescript": "^5.2.2"
+	},
+	"scripts": {
+		"build": "tsx ./index.ts",
+		"build:homedir": "tsx --esm ./index.ts --homedir"
+	}
+}

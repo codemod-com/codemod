@@ -1,0 +1,15 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "next/13/move-css-in-js-styles",
+	"description": "The codemod moves css-in-js styles to the css modules.",
+	"engine": "jscodeshift",
+	"options": ["createFile"],
+	"extensions": ["js*", "ts*"],
+	"dependencies": [
+		{
+			"name": "next",
+			"range": "<13"
+		}
+	],
+	"owner": "intuita"
+}

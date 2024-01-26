@@ -1,0 +1,58 @@
+{
+	"name": "@codemod-com/codemod",
+	"version": "0.0.1",
+	"author": "Codemod.com",
+	"license": "Apache License, Version 2.0",
+	"description": "A monorepo for all the interconnected tools of codemod.com",
+	"private": true,
+	"packageManager": "pnpm@8.7.5",
+	"engines": {
+		"node": ">=20.x",
+		"pnpm": ">=8.7.x"
+	},
+	"keywords": [
+		"codemod",
+		"migration",
+		"jscodeshift",
+		"ts-morph",
+		"next.js",
+		"react",
+		"refactoring",
+		"transform",
+		"cli",
+		"AST"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codemod-com/codemod.git"
+	},
+	"scripts": {
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"clean": "turbo run clean",
+		"link": "turbo run link",
+		"lint:eslint": "eslint --fix .",
+		"lint:prettier": "prettier --write .",
+		"test": "vitest run test.ts",
+		"coverage": "vitest run --coverage"
+	},
+	"devDependencies": {
+		"@codemod-com/config": "workspace:*",
+		"@codemod-com/tsconfig": "workspace:*",
+		"@codemod-com/utilities": "workspace:*",
+		"@total-typescript/ts-reset": "^0.4.2",
+		"@types/node": "^20.5.1",
+		"concurrently": "^8.2.0",
+		"husky": "^8.0.0",
+		"lint-staged": "^15.1.0",
+		"tsx": "^4.2.0",
+		"turbo": "^1.10.14",
+		"typescript": "^5.2.0",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"lint-staged": {
+		"apps/**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "prettier --write",
+		"apps/**/*.{js,ts,jsx,tsx}": "eslint --fix"
+	}
+}

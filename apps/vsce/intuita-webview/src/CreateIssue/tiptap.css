@@ -1,0 +1,116 @@
+.tiptap {
+	background: var(--input-background);
+	outline: none;
+	height: 70vh;
+	overflow: auto;
+	padding: 1px calc(var(--design-unit) * 2px + 1px);
+}
+
+.tiptap ul,
+.tiptap ol {
+	padding: 0 1rem;
+}
+
+.tiptap h1,
+.tiptap h2,
+.tiptap h3,
+.tiptap h4,
+.tiptap h5,
+.tiptap h6 {
+	line-height: 1.1;
+}
+
+.tiptap code {
+	background-color: transparent;
+}
+
+.tiptap pre {
+	background: #0d0d0d;
+	color: #fff;
+	font-family: 'JetBrainsMono', monospace;
+	padding: 0.75rem 1rem;
+	border-radius: 0.5rem;
+}
+
+.tiptap pre code {
+	color: inherit;
+	padding: 0;
+	background: none;
+	font-size: 0.8rem;
+}
+
+.tiptap img {
+	max-width: 100%;
+	height: auto;
+}
+
+.tiptap blockquote {
+	padding-left: 1rem;
+	border-left: 2px solid white;
+	margin-inline-start: 0px;
+	margin-inline-end: 0px;
+	background: transparent;
+}
+
+.tiptap hr {
+	border: none;
+	border-top: 2px solid white;
+	margin: 2rem 0;
+}
+
+/* 
+- styling for syntax highlights; we don't support different syntax highlights for different languages
+- copied from .scss file of demo in https://tiptap.dev/api/nodes/code-block-lowlight#usage
+*/
+
+.tiptap .hljs-comment,
+.tiptap .hljs-quote {
+	color: #616161;
+}
+
+.tiptap .hljs-variable,
+.tiptap .hljs-template-variable,
+.tiptap .hljs-attribute,
+.tiptap .hljs-tag,
+.tiptap .hljs-name,
+.tiptap .hljs-regexp,
+.tiptap .hljs-link,
+.tiptap .hljs-name,
+.tiptap .hljs-selector-id,
+.tiptap .hljs-selector-class {
+	color: #f98181;
+}
+
+.tiptap .hljs-number,
+.tiptap .hljs-meta,
+.tiptap .hljs-built_in,
+.tiptap .hljs-builtin-name,
+.tiptap .hljs-literal,
+.tiptap .hljs-type,
+.tiptap .hljs-params {
+	color: #fbbc88;
+}
+
+.tiptap .hljs-string,
+.tiptap .hljs-symbol,
+.tiptap .hljs-bullet {
+	color: #b9f18d;
+}
+
+.tiptap .hljs-title,
+.tiptap .hljs-section {
+	color: #faf594;
+}
+
+.tiptap .hljs-keyword,
+.tiptap .hljs-selector-tag {
+	color: #70cff8;
+}
+
+.tiptap .hljs-emphasis {
+	font-style: italic;
+}
+
+.tiptap .hljs-strong {
+	font-weight: 700;
+}

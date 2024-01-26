@@ -1,0 +1,7 @@
+{
+	"extends": "@codemod-com/tsconfig/base.json",
+	"include": ["./*.ts", "parse.test.ts"],
+	"compilerOptions": {
+		"noUncheckedIndexedAccess": true
+	}
+}

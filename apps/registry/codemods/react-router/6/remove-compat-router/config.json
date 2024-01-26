@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "react-router/6/remove-compat-router",
+	"description": "",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"dependencyVersionLowerThan": ["react-router", "6.0.0"]
+}
