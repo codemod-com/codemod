@@ -1,10 +1,12 @@
 import { Worker } from 'node:worker_threads';
-import type { FormattedFileCommand } from './fileCommands.js';
-import type { MainThreadMessage } from './mainThreadMessages.js';
-import type { OperationMessage } from './messages.js';
-import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import type { WorkerThreadMessage } from './workerThreadMessages.js';
-import { decodeWorkerThreadMessage } from './workerThreadMessages.js';
+import { MainThreadMessage } from './mainThreadMessages.js';
+import { OperationMessage } from './messages.js';
+import {
+	WorkerThreadMessage,
+	decodeWorkerThreadMessage,
+} from './workerThreadMessages.js';
+import { FormattedFileCommand } from './fileCommands.js';
+import { SafeArgumentRecord } from './safeArgumentRecord.js';
 
 const WORKER_THREAD_TIME_LIMIT = 10000;
 
@@ -41,7 +43,9 @@ export class WorkerThreadManager {
 			this.__idleWorkerIds.push(i);
 			this.__workerTimestamps.push(Date.now());
 
-			const filename = process.env.TEST ? './dist/index.cjs' : __filename;
+			const filename = process.env.TEST
+				? './dist/index.cjs'
+				: __filename;
 
 			const worker = new Worker(filename);
 

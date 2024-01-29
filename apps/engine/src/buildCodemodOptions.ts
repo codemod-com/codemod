@@ -1,9 +1,12 @@
-import path from 'node:path';
+import { IFs } from 'memfs';
 import * as S from '@effect/schema/Schema';
-import type { IFs } from 'memfs';
-import type { Codemod, JavaScriptCodemodEngine } from './codemod.js';
-import { javaScriptCodemodEngineSchema } from './codemod.js';
-import type { CodemodSettings } from './schemata/codemodSettingsSchema.js';
+import path from 'node:path';
+import {
+	Codemod,
+	JavaScriptCodemodEngine,
+	javaScriptCodemodEngineSchema,
+} from './codemod.js';
+import { CodemodSettings } from './schemata/codemodSettingsSchema.js';
 
 const extractMainScriptRelativePath = async (
 	fs: IFs,

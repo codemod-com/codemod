@@ -1,6 +1,6 @@
+import { IFs } from 'memfs';
+import { FileCommand } from './fileCommands.js';
 import { createHash } from 'node:crypto';
-import type { IFs } from 'memfs';
-import type { FileCommand } from './fileCommands.js';
 
 export const buildFileCommands = async (
 	fileMap: ReadonlyMap<string, string>,

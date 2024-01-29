@@ -1,12 +1,12 @@
-import { createHash } from 'crypto';
 import * as fs from 'fs';
-import { mkdir, writeFile } from 'fs/promises';
+import type { PrinterBlueprint } from './printer.js';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import FormData from 'form-data';
-import { object, optional, parse, string } from 'valibot';
+import { object, string, parse, optional } from 'valibot';
 import { publish, validateAccessToken } from './apis.js';
-import type { PrinterBlueprint } from './printer.js';
+import FormData from 'form-data';
+import { mkdir, writeFile } from 'fs/promises';
+import { createHash } from 'crypto';
 
 const packageJsonSchema = object({
 	main: string(),
@@ -15,14 +15,14 @@ const packageJsonSchema = object({
 });
 
 const getToken = (): Promise<string> => {
-	const intuitaDirectoryPath = join(homedir(), '.intuita');
-	const tokenTxtPath = join(intuitaDirectoryPath, 'token.txt');
+	const configurationDirectoryPath = join(homedir(), '.intuita');
+	const tokenTxtPath = join(configurationDirectoryPath, 'token.txt');
 
 	try {
 		return fs.promises.readFile(tokenTxtPath, 'utf-8');
 	} catch (error) {
 		throw new Error(
-			`Log in first using the 'intuita login' command to publish codemods.`,
+			`Log in first using the 'codemod login' command to publish codemods.`,
 		);
 	}
 };
@@ -36,7 +36,7 @@ export const handlePublishCliCommand = async (
 
 	if (username === null) {
 		throw new Error(
-			'The GitHub username of the current user is not known. Contact Intuita.',
+			'The GitHub username of the current user is not known. Contact Codemod.com.',
 		);
 	}
 
@@ -148,7 +148,7 @@ export const handlePublishCliCommand = async (
 
 		printer.printConsoleMessage(
 			'info',
-			`Run the codemod anywhere with "intuita ${pkg.name}".`,
+			`Run the codemod anywhere with "codemod ${pkg.name}".`,
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -160,6 +160,6 @@ export const handlePublishCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		`Use the command "intuita sync ${pkg.name}" to make the codemod available for usage in the CLI or the VSCode Extension.`,
+		`Use the command "codemod sync ${pkg.name}" to make the codemod available for usage in the CLI or the VSCode Extension.`,
 	);
 };

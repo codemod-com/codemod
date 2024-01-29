@@ -1,11 +1,11 @@
 import vm from 'node:vm';
-import * as S from '@effect/schema/Schema';
 import tsmorph from 'ts-morph';
-import { buildVmConsole } from './buildVmConsole.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
+import * as S from '@effect/schema/Schema';
 import type { FileCommand } from './fileCommands.js';
-import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import type { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { SafeArgumentRecord } from './safeArgumentRecord.js';
+import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
+import { buildVmConsole } from './buildVmConsole.js';
 
 const transform = (
 	codemodSource: string,
@@ -43,9 +43,9 @@ const transform = (
 			},
 		});
 	
-		const sourceFile = project.createSourceFile(__INTUITA__oldPath, __INTUITA__oldData);
+		const sourceFile = project.createSourceFile(__CODEMODCOM__oldPath, __CODEMODCOM__oldData);
 
-		handleSourceFile(sourceFile, __INTUITA__argumentRecord);
+		handleSourceFile(sourceFile, __CODEMODCOM__argumentRecord);
 	`;
 
 	const exports = Object.freeze({});
@@ -55,10 +55,10 @@ const transform = (
 			exports,
 		}),
 		exports,
-		__INTUITA__oldPath: oldPath,
-		__INTUITA__oldData: oldData,
-		__INTUITA__argumentRecord: { ...safeArgumentRecord[0] },
-		__INTUITA__console__: buildVmConsole(consoleCallback),
+		__CODEMODCOM__oldPath: oldPath,
+		__CODEMODCOM__oldData: oldData,
+		__CODEMODCOM__argumentRecord: { ...safeArgumentRecord[0] },
+		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
 		__CODEMOD_SOURCE__: codemodSource,
 		require: (name: string) => {
 			if (name === 'ts-morph') {

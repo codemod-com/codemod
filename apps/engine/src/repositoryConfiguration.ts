@@ -1,5 +1,5 @@
-import * as S from '@effect/schema/Schema';
 import { cosmiconfig } from 'cosmiconfig';
+import * as S from '@effect/schema/Schema';
 import { argumentRecordSchema } from './schemata/argumentRecordSchema.js';
 
 const preCommitCodemodSchema = S.union(

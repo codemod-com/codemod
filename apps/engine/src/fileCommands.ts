@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
-import { dirname, extname, join } from 'node:path';
-import type { IFs } from 'memfs';
-import type { Options } from 'prettier';
+import { join, extname, dirname } from 'node:path';
+import { Options } from 'prettier';
+import { IFs } from 'memfs';
 import { filterNeitherNullNorUndefined } from './filterNeitherNullNorUndefined.js';
-import type { OperationMessage } from './messages.js';
-import type { RunSettings } from './schemata/runArgvSettingsSchema.js';
+import { OperationMessage } from './messages.js';
+import { RunSettings } from './schemata/runArgvSettingsSchema.js';
 
 export type CreateFileCommand = Readonly<{
 	kind: 'createFile';

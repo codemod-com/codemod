@@ -1,5 +1,5 @@
 import * as S from '@effect/schema/Schema';
-import type { ArgumentRecord } from './schemata/argumentRecordSchema.js';
+import { ArgumentRecord } from './schemata/argumentRecordSchema.js';
 
 export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
 	argv: T,

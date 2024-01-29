@@ -1,23 +1,25 @@
 import { createHash } from 'crypto';
-import type { IFs } from 'memfs';
 import terminalLink from 'terminal-link';
-import { buildSourcedCodemodOptions } from './buildCodemodOptions.js';
-import type { CodemodDownloaderBlueprint } from './downloadCodemod.js';
+
+import type { ArgumentRecord } from './schemata/argumentRecordSchema.js';
 import {
-	buildPrinterMessageUponCommand,
 	modifyFileSystemUponCommand,
 	type FormattedFileCommand,
+	buildPrinterMessageUponCommand,
 } from './fileCommands.js';
 import type { PrinterBlueprint } from './printer.js';
-import type { RepositoryConfiguration } from './repositoryConfiguration.js';
 import { runCodemod } from './runCodemod.js';
+
 import { buildSafeArgumentRecord } from './safeArgumentRecord.js';
-import type { ArgumentRecord } from './schemata/argumentRecordSchema.js';
+import type { IFs } from 'memfs';
+import type { CodemodDownloaderBlueprint } from './downloadCodemod.js';
+import type { RepositoryConfiguration } from './repositoryConfiguration.js';
 import type { CodemodSettings } from './schemata/codemodSettingsSchema.js';
 import type { FlowSettings } from './schemata/flowSettingsSchema.js';
-import type { RunSettings } from './schemata/runArgvSettingsSchema.js';
-import { SurfaceAgnosticCaseService } from './services/surfaceAgnosticCaseService.js';
 import type { TelemetryBlueprint } from './telemetryService.js';
+import { buildSourcedCodemodOptions } from './buildCodemodOptions.js';
+import { SurfaceAgnosticCaseService } from './services/surfaceAgnosticCaseService.js';
+import { RunSettings } from './schemata/runArgvSettingsSchema.js';
 
 export class Runner {
 	private __modifiedFileCount: number;

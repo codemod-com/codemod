@@ -1,25 +1,24 @@
-import type { Filemod } from '@codemod-com/filemod';
-import { escape, glob, Glob } from 'glob';
-import type { IFs } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { buildFileCommands } from './buildFileCommands.js';
-import { buildFileMap } from './buildFileMap.js';
-import type { Codemod } from './codemod.js';
-import type { FormattedFileCommand } from './fileCommands.js';
 import {
+	FormattedFileCommand,
 	buildFormattedFileCommands,
 	modifyFileSystemUponCommand,
 } from './fileCommands.js';
-import { getTransformer, transpile } from './getTransformer.js';
-import type { OperationMessage } from './messages.js';
-import type { PrinterBlueprint } from './printer.js';
-import type { Dependencies } from './runRepomod.js';
-import { runRepomod } from './runRepomod.js';
-import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import type { FlowSettings } from './schemata/flowSettingsSchema.js';
-import type { RunSettings } from './schemata/runArgvSettingsSchema.js';
+import { Dependencies, runRepomod } from './runRepomod.js';
+import { FileSystemAdapter, glob, globStream } from 'fast-glob';
+export { escape } from 'minimatch';
+import { Filemod } from '@intuita-inc/filemod';
+import { PrinterBlueprint } from './printer.js';
+import { Codemod } from './codemod.js';
+import { IFs, Volume, createFsFromVolume } from 'memfs';
 import { WorkerThreadManager } from './workerThreadManager.js';
-import type { WorkerThreadMessage } from './workerThreadMessages.js';
+import { getTransformer, transpile } from './getTransformer.js';
+import { OperationMessage } from './messages.js';
+import { SafeArgumentRecord } from './safeArgumentRecord.js';
+import { FlowSettings } from './schemata/flowSettingsSchema.js';
+import { WorkerThreadMessage } from './workerThreadMessages.js';
+import { RunSettings } from './schemata/runArgvSettingsSchema.js';
+import { buildFileMap } from './buildFileMap.js';
+import { buildFileCommands } from './buildFileCommands.js';
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
@@ -31,6 +30,8 @@ export const buildPaths = async (
 ): Promise<ReadonlyArray<string>> => {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
 
+	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
+
 	if (
 		(codemod.engine === 'repomod-engine' || codemod.engine === 'filemod') &&
 		filemod !== null
@@ -40,35 +41,34 @@ export const buildPaths = async (
 			{
 				absolute: true,
 				cwd: flowSettings.targetPath,
-				// @ts-expect-error type inconsistency
-				fs: fileSystem,
 				ignore: filemod.excludePatterns?.slice(),
-				nodir: true,
+				onlyFiles: true,
+				fs: fileSystemAdapter,
+				dot: true,
 			},
 		);
 
 		const flowPaths = await glob(patterns.slice(), {
 			absolute: true,
 			cwd: flowSettings.targetPath,
-			// @ts-expect-error type inconsistency
-			fs: fileSystem,
 			ignore: flowSettings.exclude.slice(),
-			nodir: true,
+			onlyFiles: true,
+			fs: fileSystemAdapter,
+			dot: true,
 		});
 
 		return filemodPaths
 			.filter((path) => flowPaths.includes(path))
-			.map((path) => escape(path))
 			.slice(0, flowSettings.fileLimit);
 	}
 
 	const paths = await glob(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.targetPath,
-		// @ts-expect-error type inconsistency
-		fs: fileSystem,
+		fs: fileSystemAdapter,
 		ignore: flowSettings.exclude.slice(),
-		nodir: true,
+		onlyFiles: true,
+		dot: true,
 	});
 
 	return paths.slice(0, flowSettings.fileLimit);
@@ -84,40 +84,30 @@ async function* buildPathGenerator(
 			? flowSettings.exclude.slice()
 			: undefined;
 
-	const controller = new AbortController();
+	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	const glob = new Glob(patterns.slice(), {
+	const stream = globStream(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.targetPath,
-		// @ts-expect-error type inconsistency
-		fs: fileSystem,
+		fs: fileSystemAdapter,
 		ignore,
-		nodir: true,
-		withFileTypes: false,
-		signal: controller.signal,
+		onlyFiles: true,
+		dot: true,
 	});
-
-	const asyncGenerator = glob.iterate();
 
 	let fileCount = 0;
 
-	while (fileCount < flowSettings.fileLimit) {
-		const iteratorResult = await asyncGenerator.next();
-
-		if (iteratorResult.done) {
-			return;
+	for await (const chunk of stream) {
+		if (fileCount >= flowSettings.fileLimit) {
+			break;
 		}
 
-		const { value } = iteratorResult;
-
-		const path = typeof value === 'string' ? value : value.fullpath();
-
-		yield path;
+		yield chunk.toString();
 
 		++fileCount;
 	}
 
-	controller.abort();
+	stream.emit('close');
 }
 
 export const runCodemod = async (

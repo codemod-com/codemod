@@ -1,4 +1,4 @@
-# Intuita's Codemod Engine Node
+# Codemod.com's Codemod Engine Node
 
 ## Installation
 
@@ -16,8 +16,8 @@ Install the Codemod Engine Node as the global executable sourced from the projec
 
 Install the Codemod Engine Node as the global executable sourced from the NPM Registry https://www.npmjs.com/.
 
-    pnpm i -g intuita
+    pnpm i -g codemod
 
 ## Execution
 
-    pnpx intuita [framework/version/codemod-name]
+    pnpx codemod [framework/version/codemod-name]

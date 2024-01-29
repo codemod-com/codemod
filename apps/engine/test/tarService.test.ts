@@ -1,9 +1,9 @@
-import { equal } from 'node:assert';
-import { readFile } from 'node:fs/promises';
-import { dirname, join } from 'node:path';
-import { createFsFromVolume, Volume } from 'memfs';
+import { Volume, createFsFromVolume } from 'memfs';
 import { describe, it } from 'vitest';
 import { TarService } from '../src/services/tarService.js';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { equal } from 'node:assert';
 
 describe('TarService', function () {
 	it('should extract the registry.tar.gz file', async function () {

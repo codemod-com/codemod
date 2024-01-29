@@ -76,5 +76,5 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 }
 
 export class NoTelemetryService implements TelemetryBlueprint {
-	public sendEvent(_event: Event): void {}
+	public sendEvent(event: Event): void {}
 }
