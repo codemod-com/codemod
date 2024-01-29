@@ -1,9 +1,9 @@
+import type { PrinterBlueprint } from './printer.js';
+import { openURL } from './utils.js';
 import { writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { validateAccessToken } from './apis.js';
-import type { PrinterBlueprint } from './printer.js';
-import { openURL } from './utils.js';
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = 'accessTokenRequestedByCLI';
 
@@ -43,6 +43,6 @@ export const handleLoginCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		'You are successfully logged in with the Intuita CLI!',
+		'You are successfully logged in with the Codemod CLI!',
 	);
 };

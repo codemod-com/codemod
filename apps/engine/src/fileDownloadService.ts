@@ -1,6 +1,6 @@
 import type { IFs } from 'memfs';
 import type { TDataOut } from 'memfs/lib/encoding.js';
-import type { PrinterBlueprint } from './printer.js';
+import { PrinterBlueprint } from './printer.js';
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 

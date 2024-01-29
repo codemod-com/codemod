@@ -1,13 +1,15 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
+
+import { PrinterBlueprint } from './printer.js';
+import { Codemod } from './codemod.js';
+
 import * as S from '@effect/schema/Schema';
 import Axios from 'axios';
-import type { Codemod } from './codemod.js';
-import type { FileDownloadServiceBlueprint } from './fileDownloadService.js';
-import type { PrinterBlueprint } from './printer.js';
 import { codemodConfigSchema } from './schemata/codemodConfigSchema.js';
-import type { TarService } from './services/tarService.js';
+import { FileDownloadServiceBlueprint } from './fileDownloadService.js';
+import { TarService } from './services/tarService.js';
 
 const CODEMOD_REGISTRY_URL =
 	'https://intuita-public.s3.us-west-1.amazonaws.com/codemod-registry';
@@ -23,7 +25,7 @@ export type CodemodDownloaderBlueprint = Readonly<{
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public constructor(
 		private readonly __printer: PrinterBlueprint,
-		private readonly __intuitaDirectoryPath: string,
+		private readonly __configurationDirectoryPath: string,
 		protected readonly _cacheUsed: boolean,
 		protected readonly _fileDownloadService: FileDownloadServiceBlueprint,
 		protected readonly _tarService: TarService,
@@ -32,10 +34,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public async syncRegistry() {
 		this.__printer.printConsoleMessage(
 			'info',
-			`Syncing the Codemod Registry into ${this.__intuitaDirectoryPath}`,
+			`Syncing the Codemod Registry into ${this.__configurationDirectoryPath}`,
 		);
 
-		await mkdir(this.__intuitaDirectoryPath, { recursive: true });
+		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
 		const getResponse = await Axios.get(
 			`${CODEMOD_REGISTRY_URL}/registry.tar.gz`,
@@ -46,7 +48,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		const buffer = Buffer.from(getResponse.data);
 
-		await this._tarService.extract(this.__intuitaDirectoryPath, buffer);
+		await this._tarService.extract(
+			this.__configurationDirectoryPath,
+			buffer,
+		);
 	}
 
 	public async download(
@@ -59,14 +64,17 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			}using cache`,
 		);
 
-		await mkdir(this.__intuitaDirectoryPath, { recursive: true });
+		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
 		// make the codemod directory
 		const hashDigest = createHash('ripemd160')
 			.update(name)
 			.digest('base64url');
 
-		const directoryPath = join(this.__intuitaDirectoryPath, hashDigest);
+		const directoryPath = join(
+			this.__configurationDirectoryPath,
+			hashDigest,
+		);
 
 		await mkdir(directoryPath, { recursive: true });
 

@@ -1,12 +1,11 @@
 import vm from 'node:vm';
 import * as S from '@effect/schema/Schema';
-import type { API, FileInfo } from 'jscodeshift';
-import jscodeshift from 'jscodeshift';
-import { buildVmConsole } from './buildVmConsole.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
+import jscodeshift, { API, FileInfo } from 'jscodeshift';
 import type { FileCommand } from './fileCommands.js';
 import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import type { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { buildVmConsole } from './buildVmConsole.js';
+import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 
 export const buildApi = (parser: string): API => ({
 	j: jscodeshift.withParser(parser),
@@ -46,7 +45,7 @@ const transform = (
 			? __module__.exports.default
 			: null;
 
-		transform(__INTUITA__file, __INTUITA__api, __INTUITA__options);
+		transform(__CODEMODCOM__file, __CODEMODCOM__api, __CODEMODCOM__options);
 	`;
 
 	// Create a new context for the code execution
@@ -57,10 +56,10 @@ const transform = (
 			exports,
 		}),
 		exports,
-		__INTUITA__file: fileInfo,
-		__INTUITA__api: api,
-		__INTUITA__options: options,
-		__INTUITA__console__: buildVmConsole(consoleCallback),
+		__CODEMODCOM__file: fileInfo,
+		__CODEMODCOM__api: api,
+		__CODEMODCOM__options: options,
+		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
 		__CODEMOD_SOURCE__: codemodSource,
 	});
 

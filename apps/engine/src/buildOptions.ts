@@ -1,4 +1,4 @@
-import type { Argv } from 'yargs';
+import { Argv } from 'yargs';
 import {
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,

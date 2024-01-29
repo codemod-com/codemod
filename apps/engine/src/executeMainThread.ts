@@ -1,40 +1,40 @@
-import * as fs from 'fs';
-import { readFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
 import * as readline from 'node:readline';
-import Axios from 'axios';
-import type { IFs } from 'memfs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { buildArgumentRecord } from './buildArgumentRecord.js';
+import { handleListNamesCommand } from './handleListCliCommand.js';
+import { CodemodDownloader } from './downloadCodemod.js';
+import { Printer } from './printer.js';
+import { handleLearnCliCommand } from './handleLearnCliCommand.js';
+import { join } from 'node:path';
+import { homedir } from 'node:os';
 import {
 	buildOptions,
 	buildUseCacheOption,
 	buildUseJsonOption,
 } from './buildOptions.js';
-import { APP_INSIGHTS_INSTRUMENTATION_STRING } from './constants.js';
-import { CodemodDownloader } from './downloadCodemod.js';
-import { FileDownloadService } from './fileDownloadService.js';
-import { handleLearnCliCommand } from './handleLearnCliCommand.js';
-import { handleListNamesCommand } from './handleListCliCommand.js';
-import { handleLoginCliCommand } from './handleLoginCliCommand.js';
-import { handleLogoutCliCommand } from './handleLogoutCliCommand.js';
-import { handlePublishCliCommand } from './handlePublishCliCommand.js';
-import { Printer } from './printer.js';
-import { loadRepositoryConfiguration } from './repositoryConfiguration.js';
 import { Runner } from './runner.js';
+import * as fs from 'fs';
+import { IFs } from 'memfs';
+import { loadRepositoryConfiguration } from './repositoryConfiguration.js';
 import { parseCodemodSettings } from './schemata/codemodSettingsSchema.js';
 import { parseFlowSettings } from './schemata/flowSettingsSchema.js';
 import { parseRunSettings } from './schemata/runArgvSettingsSchema.js';
+import { buildArgumentRecord } from './buildArgumentRecord.js';
+import { FileDownloadService } from './fileDownloadService.js';
+import Axios from 'axios';
 import { TarService } from './services/tarService.js';
 import {
 	AppInsightsTelemetryService,
 	NoTelemetryService,
 } from './telemetryService.js';
+import { APP_INSIGHTS_INSTRUMENTATION_STRING } from './constants.js';
+import { readFile } from 'node:fs/promises';
+import { handleLoginCliCommand } from './handleLoginCliCommand.js';
+import { handlePublishCliCommand } from './handlePublishCliCommand.js';
+import { handleLogoutCliCommand } from './handleLogoutCliCommand.js';
 
 // the build script contains the version
-declare const __INTUITA_CLI_VERSION__: string;
+declare const __CODEMODCOM_CLI_VERSION__: string;
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -54,7 +54,7 @@ export const executeMainThread = async () => {
 	process.stdin.unref();
 
 	const argvObject = yargs(slicedArgv)
-		.scriptName('intuita')
+		.scriptName('codemod')
 		.command('*', 'runs a codemod or recipe', (y) => buildOptions(y))
 		.command(
 			'runOnPreCommit [files...]',
@@ -94,15 +94,15 @@ export const executeMainThread = async () => {
 			(y) =>
 				buildUseJsonOption(y).option('token', {
 					type: 'string',
-					description: 'token required to sign in to the Intuita CLI',
+					description: 'token required to sign in to the Codemod CLI',
 				}),
 		)
 		.command('logout', 'logs out', (y) => buildUseJsonOption(y))
-		.command('publish', 'publish the codemod to Intuita Registry', (y) =>
+		.command('publish', 'publish the codemod to Codemod Registry', (y) =>
 			buildUseJsonOption(y),
 		)
 		.help()
-		.version(__INTUITA_CLI_VERSION__);
+		.version(__CODEMODCOM_CLI_VERSION__);
 
 	if (slicedArgv.length === 0) {
 		argvObject.showHelp();
@@ -318,7 +318,7 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const intuitaDirectoryPath = join(
+	const configurationDirectoryPath = join(
 		String(argv._) === 'runOnPreCommit' ? process.cwd() : homedir(),
 		'.intuita',
 	);
@@ -337,7 +337,7 @@ export const executeMainThread = async () => {
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,
-		intuitaDirectoryPath,
+		configurationDirectoryPath,
 		argv.useCache,
 		fileDownloadService,
 		tarService,

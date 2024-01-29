@@ -1,9 +1,9 @@
 import { deepStrictEqual } from 'node:assert';
-import vm from 'node:vm';
 import { describe, it } from 'vitest';
+import vm from 'node:vm';
+import { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 import { buildVmConsole } from '../src/buildVmConsole.js';
 import { CONSOLE_OVERRIDE } from '../src/consoleOverride.js';
-import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
 
 describe('console', () => {
 	it('should pick the console statements from the VM', async () => {
@@ -33,7 +33,7 @@ describe('console', () => {
 				exports,
 			},
 			exports,
-			__INTUITA__console__: buildVmConsole(customCallback),
+			__CODEMODCOM__console__: buildVmConsole(customCallback),
 		});
 
 		await vm.runInContext(codeToExecute, context);

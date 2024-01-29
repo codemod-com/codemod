@@ -1,6 +1,6 @@
 import type { OperationMessage } from './messages.js';
-import type { ConsoleKind } from './schemata/consoleKindSchema.js';
-import type { WorkerThreadMessage } from './workerThreadMessages.js';
+import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { WorkerThreadMessage } from './workerThreadMessages.js';
 
 export type PrinterBlueprint = Readonly<{
 	printMessage(

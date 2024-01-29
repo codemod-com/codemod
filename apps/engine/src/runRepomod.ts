@@ -1,35 +1,32 @@
-import { createHash } from 'node:crypto';
-import { basename, dirname, join } from 'node:path';
-import type {
-	CallbackService,
+import {
 	Filemod,
-	GlobArguments,
-	PathAPI,
+	executeFilemod,
+	CallbackService,
 	PathHashDigest,
 	UnifiedEntry,
-} from '@codemod-com/filemod';
-import {
-	buildApi,
-	executeFilemod,
-	UnifiedFileSystem,
-} from '@codemod-com/filemod';
-import hastToBabelAst from '@svgr/hast-util-to-babel-ast';
-import type { FSOption, GlobOptionsWithFileTypesUnset } from 'glob';
-import { glob } from 'glob';
+	GlobArguments,
+	PathAPI,
+} from '@intuita-inc/filemod';
+import { buildApi } from '@intuita-inc/filemod';
+import { UnifiedFileSystem } from '@intuita-inc/filemod';
 import jscodeshift from 'jscodeshift';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import type { IFs } from 'memfs';
-import { mdxjs } from 'micromark-extension-mdxjs';
 import rehypeParse from 'rehype-parse';
-import tsmorph from 'ts-morph';
 import { unified } from 'unified';
-import { filter } from 'unist-util-filter';
+import hastToBabelAst from '@svgr/hast-util-to-babel-ast';
+import tsmorph from 'ts-morph';
+import { FileCommand } from './fileCommands.js';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { toMarkdown } from 'mdast-util-to-markdown';
+import { mdxjs } from 'micromark-extension-mdxjs';
+import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
 import { visit } from 'unist-util-visit';
-import type { FileCommand } from './fileCommands.js';
-import type { OperationMessage } from './messages.js';
-import type { SafeArgumentRecord } from './safeArgumentRecord.js';
+import { filter } from 'unist-util-filter';
+import { IFs } from 'memfs';
+import { SafeArgumentRecord } from './safeArgumentRecord.js';
+import { createHash } from 'node:crypto';
+import { OperationMessage } from './messages.js';
+import { FileSystemAdapter, glob } from 'fast-glob';
+import { basename, dirname, join } from 'node:path';
 
 const parseMdx = (data: string) =>
 	fromMarkdown(data, {
@@ -94,8 +91,9 @@ export const runRepomod = async (
 			absolute: true,
 			cwd: globArguments.currentWorkingDirectory,
 			ignore: globArguments.excludePatterns.slice(),
-			fs: fileSystem as FSOption,
-		} satisfies GlobOptionsWithFileTypesUnset);
+			fs: fileSystem as Partial<FileSystemAdapter>,
+			dot: true,
+		});
 	};
 
 	const readDirectory = async (

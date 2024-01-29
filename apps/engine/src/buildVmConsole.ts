@@ -1,6 +1,5 @@
 import { format } from 'node:util';
-import type { ConsoleKind } from './schemata/consoleKindSchema.js';
-import { parseConsoleKind } from './schemata/consoleKindSchema.js';
+import { ConsoleKind, parseConsoleKind } from './schemata/consoleKindSchema.js';
 
 export const buildVmConsole =
 	(callback: (kind: ConsoleKind, message: string) => void) =>

@@ -3,20 +3,20 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
-import { glob } from 'glob';
+import { glob } from 'fast-glob';
 import * as v from 'valibot';
 import type { PrinterBlueprint } from './printer.js';
 
 export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
-	const intuitaDirectoryPath = join(homedir(), '.intuita');
+	const configurationDirectoryPath = join(homedir(), '.intuita');
 
-	await mkdir(intuitaDirectoryPath, { recursive: true });
+	await mkdir(configurationDirectoryPath, { recursive: true });
 
 	const configFiles = await glob('**/config.json', {
 		absolute: true,
-		cwd: intuitaDirectoryPath,
+		cwd: configurationDirectoryPath,
 		fs,
-		nodir: true,
+		onlyFiles: true,
 	});
 
 	const codemodNames = await Promise.allSettled(

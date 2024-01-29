@@ -1,6 +1,4 @@
-import { execSync } from 'node:child_process';
-import { dirname, extname } from 'node:path';
-import { Project } from 'ts-morph';
+import { PrinterBlueprint } from './printer.js';
 import {
 	findLastlyModifiedFile,
 	findModifiedFiles,
@@ -8,7 +6,9 @@ import {
 	getLatestCommitHash,
 	isFileInGitDirectory,
 } from './gitCommands.js';
-import type { PrinterBlueprint } from './printer.js';
+import { execSync } from 'node:child_process';
+import { dirname, extname } from 'node:path';
+import { Project } from 'ts-morph';
 import { doubleQuotify, openURL } from './utils.js';
 
 // remove all special characters and whitespaces
