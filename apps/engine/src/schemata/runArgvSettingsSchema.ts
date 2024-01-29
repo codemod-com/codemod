@@ -1,6 +1,6 @@
-import * as S from '@effect/schema/Schema';
 import { randomBytes } from 'node:crypto';
 import { join } from 'node:path';
+import * as S from '@effect/schema/Schema';
 
 const runArgvSettingsSchema = S.union(
 	S.struct({

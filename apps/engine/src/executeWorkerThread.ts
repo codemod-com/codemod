@@ -1,16 +1,19 @@
 import { parentPort } from 'node:worker_threads';
-import { type WorkerThreadMessage } from './workerThreadMessages.js';
+import { buildFormattedFileCommands } from './fileCommands.js';
 import {
-	type MainThreadMessage,
 	decodeMainThreadMessage,
+	type MainThreadMessage,
 } from './mainThreadMessages.js';
 import { runJscodeshiftCodemod } from './runJscodeshiftCodemod.js';
 import { runTsMorphCodemod } from './runTsMorphCodemod.js';
-import { buildFormattedFileCommands } from './fileCommands.js';
 import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { type WorkerThreadMessage } from './workerThreadMessages.js';
 
 class PathAwareError extends Error {
-	constructor(public readonly path: string, message?: string | undefined) {
+	constructor(
+		public readonly path: string,
+		message?: string | undefined,
+	) {
 		super(message);
 	}
 }

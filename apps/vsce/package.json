@@ -247,9 +247,9 @@
 		"lint:eslint": "eslint src --fix --ext ts",
 		"lint:prettier": "prettier --write .",
 		"spellcheck": "pnpm cspell-cli '**/*.{ts,tsx}'",
-		"install:webview": "cd intuita-webview && pnpm install",
-		"build:webview": "cd intuita-webview && pnpm build",
-		"watch:webview": "cd intuita-webview && pnpm start",
+		"install:webview": "cd webview && pnpm install",
+		"build:webview": "cd webview && pnpm build",
+		"watch:webview": "cd webview && pnpm start",
 		"package": "vsce package --no-dependencies --no-yarn"
 	},
 	"devDependencies": {

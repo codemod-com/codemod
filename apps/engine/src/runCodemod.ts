@@ -1,24 +1,25 @@
+import { Filemod } from '@codemod-com/filemod';
+import { FileSystemAdapter, glob, globStream } from 'fast-glob';
+import { createFsFromVolume, IFs, Volume } from 'memfs';
+import { buildFileCommands } from './buildFileCommands.js';
+import { buildFileMap } from './buildFileMap.js';
+import { Codemod } from './codemod.js';
 import {
-	FormattedFileCommand,
 	buildFormattedFileCommands,
+	FormattedFileCommand,
 	modifyFileSystemUponCommand,
 } from './fileCommands.js';
-import { Dependencies, runRepomod } from './runRepomod.js';
-import { FileSystemAdapter, glob, globStream } from 'fast-glob';
-export { escape } from 'minimatch';
-import { Filemod } from '@intuita-inc/filemod';
-import { PrinterBlueprint } from './printer.js';
-import { Codemod } from './codemod.js';
-import { IFs, Volume, createFsFromVolume } from 'memfs';
-import { WorkerThreadManager } from './workerThreadManager.js';
 import { getTransformer, transpile } from './getTransformer.js';
 import { OperationMessage } from './messages.js';
+import { PrinterBlueprint } from './printer.js';
+import { Dependencies, runRepomod } from './runRepomod.js';
 import { SafeArgumentRecord } from './safeArgumentRecord.js';
 import { FlowSettings } from './schemata/flowSettingsSchema.js';
-import { WorkerThreadMessage } from './workerThreadMessages.js';
 import { RunSettings } from './schemata/runArgvSettingsSchema.js';
-import { buildFileMap } from './buildFileMap.js';
-import { buildFileCommands } from './buildFileCommands.js';
+import { WorkerThreadManager } from './workerThreadManager.js';
+import { WorkerThreadMessage } from './workerThreadMessages.js';
+
+export { escape } from 'minimatch';
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
@@ -182,7 +183,7 @@ export const runCodemod = async (
 		const deletedPaths: string[] = [];
 
 		for (let i = 0; i < codemod.codemods.length; ++i) {
-			const subCodemod = codemod.codemods[i];
+			const subCodemod = codemod.codemods[i]!;
 
 			const commands: FormattedFileCommand[] = [];
 

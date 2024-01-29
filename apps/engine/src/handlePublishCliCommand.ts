@@ -1,12 +1,12 @@
+import { createHash } from 'crypto';
 import * as fs from 'fs';
-import type { PrinterBlueprint } from './printer.js';
+import { mkdir, writeFile } from 'fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { object, string, parse, optional } from 'valibot';
-import { publish, validateAccessToken } from './apis.js';
 import FormData from 'form-data';
-import { mkdir, writeFile } from 'fs/promises';
-import { createHash } from 'crypto';
+import { object, optional, parse, string } from 'valibot';
+import { publish, validateAccessToken } from './apis.js';
+import type { PrinterBlueprint } from './printer.js';
 
 const packageJsonSchema = object({
 	main: string(),

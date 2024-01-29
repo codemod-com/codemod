@@ -1,7 +1,7 @@
-import { Volume, createFsFromVolume } from 'memfs';
+import { deepEqual } from 'assert';
+import { createFsFromVolume, Volume } from 'memfs';
 import { describe, it } from 'vitest';
 import { FileDownloadService } from '../src/fileDownloadService.js';
-import { deepEqual } from 'assert';
 import { PrinterBlueprint } from '../src/printer.js';
 
 describe('FileDownloadService', function () {

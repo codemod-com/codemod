@@ -1,37 +1,37 @@
+import * as fs from 'fs';
+import { readFile } from 'node:fs/promises';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import * as readline from 'node:readline';
+import Axios from 'axios';
+import { IFs } from 'memfs';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { handleListNamesCommand } from './handleListCliCommand.js';
-import { CodemodDownloader } from './downloadCodemod.js';
-import { Printer } from './printer.js';
-import { handleLearnCliCommand } from './handleLearnCliCommand.js';
-import { join } from 'node:path';
-import { homedir } from 'node:os';
+import { buildArgumentRecord } from './buildArgumentRecord.js';
 import {
 	buildOptions,
 	buildUseCacheOption,
 	buildUseJsonOption,
 } from './buildOptions.js';
-import { Runner } from './runner.js';
-import * as fs from 'fs';
-import { IFs } from 'memfs';
+import { APP_INSIGHTS_INSTRUMENTATION_STRING } from './constants.js';
+import { CodemodDownloader } from './downloadCodemod.js';
+import { FileDownloadService } from './fileDownloadService.js';
+import { handleLearnCliCommand } from './handleLearnCliCommand.js';
+import { handleListNamesCommand } from './handleListCliCommand.js';
+import { handleLoginCliCommand } from './handleLoginCliCommand.js';
+import { handleLogoutCliCommand } from './handleLogoutCliCommand.js';
+import { handlePublishCliCommand } from './handlePublishCliCommand.js';
+import { Printer } from './printer.js';
 import { loadRepositoryConfiguration } from './repositoryConfiguration.js';
+import { Runner } from './runner.js';
 import { parseCodemodSettings } from './schemata/codemodSettingsSchema.js';
 import { parseFlowSettings } from './schemata/flowSettingsSchema.js';
 import { parseRunSettings } from './schemata/runArgvSettingsSchema.js';
-import { buildArgumentRecord } from './buildArgumentRecord.js';
-import { FileDownloadService } from './fileDownloadService.js';
-import Axios from 'axios';
 import { TarService } from './services/tarService.js';
 import {
 	AppInsightsTelemetryService,
 	NoTelemetryService,
 } from './telemetryService.js';
-import { APP_INSIGHTS_INSTRUMENTATION_STRING } from './constants.js';
-import { readFile } from 'node:fs/promises';
-import { handleLoginCliCommand } from './handleLoginCliCommand.js';
-import { handlePublishCliCommand } from './handlePublishCliCommand.js';
-import { handleLogoutCliCommand } from './handleLogoutCliCommand.js';
 
 // the build script contains the version
 declare const __CODEMODCOM_CLI_VERSION__: string;

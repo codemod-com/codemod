@@ -22,7 +22,7 @@ export class WebviewResolver {
 		return {
 			enableScripts: true,
 			localResourceRoots: [
-				Uri.joinPath(this.__extensionPath, 'intuita-webview/build'),
+				Uri.joinPath(this.__extensionPath, 'webview/build'),
 				Uri.joinPath(this.__extensionPath, 'resources'),
 			],
 			retainContextWhenHidden: true,
@@ -51,14 +51,14 @@ export class WebviewResolver {
 		initialStateKey: string,
 	) {
 		const stylesUri = getUri(webview, this.__extensionPath, [
-			'intuita-webview',
+			'webview',
 			'build',
 			webviewName,
 			'assets',
 			`index.css`,
 		]);
 		const scriptUri = getUri(webview, this.__extensionPath, [
-			'intuita-webview',
+			'webview',
 			'build',
 			webviewName,
 			'assets',
@@ -87,7 +87,7 @@ export class WebviewResolver {
 
 		const getWorkerUri = (name: string) =>
 			getUri(webview, this.__extensionPath, [
-				'intuita-webview',
+				'webview',
 				'build',
 				webviewName,
 				'monacoeditorwork',

@@ -1,0 +1,5 @@
+*.d.ts
+*.js
+**/dist/**
+**/build/**
+pnpm-lock.yaml

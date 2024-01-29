@@ -1,5 +1,5 @@
-import { IFs } from 'memfs';
 import { dirname, join } from 'node:path';
+import { IFs } from 'memfs';
 import * as tar from 'tar';
 
 export class TarService {

@@ -1,6 +1,6 @@
 # Changelog
 
-This page lists highlights, releases, bug fixes, and progress for Intuita Codemod Registry.
+This page lists highlights, releases, bug fixes, and progress for Codemod Registry.
 
 > **Tip:** If there are features you would like to see in the upcoming releases, please let us know though our [feedback page](https://feedback.intuita.io), or directly through our [Slack community](https://intuita.io/community).
 

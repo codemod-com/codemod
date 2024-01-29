@@ -1,4 +1,7 @@
-.eslint*
-**/node_modules/**
+*.d.ts
+*.js
 **/dist/**
 **/build/**
+pnpm-lock.yaml
+**/node_modules/**
+.eslint*

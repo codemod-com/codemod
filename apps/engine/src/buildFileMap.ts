@@ -1,6 +1,6 @@
-import type { IFs } from 'memfs';
-import { dirname } from 'node:path';
 import { createHash } from 'node:crypto';
+import { dirname } from 'node:path';
+import type { IFs } from 'memfs';
 
 export const buildFileMap = async (
 	sourceFileSystem: IFs,

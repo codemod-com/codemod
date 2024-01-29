@@ -1,7 +1,7 @@
+import nodePath from 'node:path';
+import { Filemod } from '@codemod-com/filemod';
 import * as tsmorph from 'ts-morph';
 import ts from 'typescript';
-import nodePath from 'node:path';
-import { Filemod } from '@intuita-inc/filemod';
 import { Dependencies } from './runRepomod.js';
 
 export const transpile = (source: string): string => {
@@ -47,13 +47,13 @@ export const getTransformer = (source: string) => {
 	return typeof module.exports === 'function'
 		? module.exports
 		: module.exports.__esModule &&
-		  typeof module.exports.default === 'function'
-		? module.exports.default
-		: typeof module.exports.handleSourceFile === 'function'
-		? module.exports.handleSourceFile
-		: module.exports.repomod !== undefined
-		? module.exports.repomod
-		: module.exports.filemod !== undefined
-		? module.exports.filemod
-		: null;
+		    typeof module.exports.default === 'function'
+		  ? module.exports.default
+		  : typeof module.exports.handleSourceFile === 'function'
+		    ? module.exports.handleSourceFile
+		    : module.exports.repomod !== undefined
+		      ? module.exports.repomod
+		      : module.exports.filemod !== undefined
+		        ? module.exports.filemod
+		        : null;
 };

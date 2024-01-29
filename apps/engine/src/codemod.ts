@@ -1,6 +1,5 @@
-import { Arguments } from './schemata/argumentsSchema.js';
-
 import * as S from '@effect/schema/Schema';
+import { Arguments } from './schemata/argumentsSchema.js';
 
 export const javaScriptCodemodEngineSchema = S.union(
 	S.literal('jscodeshift'),

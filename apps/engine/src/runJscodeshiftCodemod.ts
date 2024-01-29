@@ -1,11 +1,11 @@
 import vm from 'node:vm';
 import * as S from '@effect/schema/Schema';
 import jscodeshift, { API, FileInfo } from 'jscodeshift';
+import { buildVmConsole } from './buildVmConsole.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 import type { FileCommand } from './fileCommands.js';
 import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { buildVmConsole } from './buildVmConsole.js';
 import { ConsoleKind } from './schemata/consoleKindSchema.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 
 export const buildApi = (parser: string): API => ({
 	j: jscodeshift.withParser(parser),

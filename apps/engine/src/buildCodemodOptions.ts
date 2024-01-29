@@ -1,6 +1,6 @@
-import { IFs } from 'memfs';
-import * as S from '@effect/schema/Schema';
 import path from 'node:path';
+import * as S from '@effect/schema/Schema';
+import { IFs } from 'memfs';
 import {
 	Codemod,
 	JavaScriptCodemodEngine,

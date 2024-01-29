@@ -445,7 +445,7 @@ f_long-description: >-
   ${description.replace(/\n/g, '\n  ')}
   ${examples ? `\n\n  ${examples.replace(/\n/g, '\n  ')}` : ''}${
 		path
-			? `\nf_github-link: https://github.com/codemod-com/monorepo/tree/main/apps/registry/${cleanPath}`
+			? `\nf_github-link: https://github.com/codemod-com/codemod/tree/main/apps/registry/${cleanPath}`
 			: ''
   }${
 		vscodeHashDigest

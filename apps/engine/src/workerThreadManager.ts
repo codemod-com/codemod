@@ -1,12 +1,12 @@
 import { Worker } from 'node:worker_threads';
+import { FormattedFileCommand } from './fileCommands.js';
 import { MainThreadMessage } from './mainThreadMessages.js';
 import { OperationMessage } from './messages.js';
-import {
-	WorkerThreadMessage,
-	decodeWorkerThreadMessage,
-} from './workerThreadMessages.js';
-import { FormattedFileCommand } from './fileCommands.js';
 import { SafeArgumentRecord } from './safeArgumentRecord.js';
+import {
+	decodeWorkerThreadMessage,
+	WorkerThreadMessage,
+} from './workerThreadMessages.js';
 
 const WORKER_THREAD_TIME_LIMIT = 10000;
 
@@ -43,9 +43,7 @@ export class WorkerThreadManager {
 			this.__idleWorkerIds.push(i);
 			this.__workerTimestamps.push(Date.now());
 
-			const filename = process.env.TEST
-				? './dist/index.cjs'
-				: __filename;
+			const filename = process.env.TEST ? './dist/index.cjs' : __filename;
 
 			const worker = new Worker(filename);
 
@@ -77,7 +75,7 @@ export class WorkerThreadManager {
 
 				if (now > timestamp + WORKER_THREAD_TIME_LIMIT) {
 					// hanging promise on purpose
-					this.__workers[i].terminate();
+					this.__workers[i]?.terminate();
 
 					const filename = process.env.TEST
 						? './dist/index.cjs'

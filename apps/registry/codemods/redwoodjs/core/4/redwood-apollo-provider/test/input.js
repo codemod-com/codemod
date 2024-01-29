@@ -24,6 +24,7 @@ THE SOFTWARE.
 
 import FatalErrorPage from 'src/pages/FatalErrorPage';
 import Routes from 'src/Routes';
+
 import './index.css';
 
 const App = () => (

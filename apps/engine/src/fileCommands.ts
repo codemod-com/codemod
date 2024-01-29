@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
-import { join, extname, dirname } from 'node:path';
-import { Options } from 'prettier';
+import { dirname, extname, join } from 'node:path';
 import { IFs } from 'memfs';
+import { Options } from 'prettier';
 import { filterNeitherNullNorUndefined } from './filterNeitherNullNorUndefined.js';
 import { OperationMessage } from './messages.js';
 import { RunSettings } from './schemata/runArgvSettingsSchema.js';

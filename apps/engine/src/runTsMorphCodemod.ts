@@ -1,11 +1,11 @@
 import vm from 'node:vm';
-import tsmorph from 'ts-morph';
 import * as S from '@effect/schema/Schema';
+import tsmorph from 'ts-morph';
+import { buildVmConsole } from './buildVmConsole.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 import type { FileCommand } from './fileCommands.js';
 import { SafeArgumentRecord } from './safeArgumentRecord.js';
 import { ConsoleKind } from './schemata/consoleKindSchema.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
-import { buildVmConsole } from './buildVmConsole.js';
 
 const transform = (
 	codemodSource: string,

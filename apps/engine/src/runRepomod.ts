@@ -1,32 +1,32 @@
+import { createHash } from 'node:crypto';
+import { basename, dirname, join } from 'node:path';
 import {
-	Filemod,
-	executeFilemod,
+	buildApi,
 	CallbackService,
-	PathHashDigest,
-	UnifiedEntry,
+	executeFilemod,
+	Filemod,
 	GlobArguments,
 	PathAPI,
-} from '@intuita-inc/filemod';
-import { buildApi } from '@intuita-inc/filemod';
-import { UnifiedFileSystem } from '@intuita-inc/filemod';
-import jscodeshift from 'jscodeshift';
-import rehypeParse from 'rehype-parse';
-import { unified } from 'unified';
+	PathHashDigest,
+	UnifiedEntry,
+	UnifiedFileSystem,
+} from '@codemod-com/filemod';
 import hastToBabelAst from '@svgr/hast-util-to-babel-ast';
-import tsmorph from 'ts-morph';
-import { FileCommand } from './fileCommands.js';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import { mdxjs } from 'micromark-extension-mdxjs';
-import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
-import { visit } from 'unist-util-visit';
-import { filter } from 'unist-util-filter';
-import { IFs } from 'memfs';
-import { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { createHash } from 'node:crypto';
-import { OperationMessage } from './messages.js';
 import { FileSystemAdapter, glob } from 'fast-glob';
-import { basename, dirname, join } from 'node:path';
+import jscodeshift from 'jscodeshift';
+import { fromMarkdown } from 'mdast-util-from-markdown';
+import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
+import { toMarkdown } from 'mdast-util-to-markdown';
+import { IFs } from 'memfs';
+import { mdxjs } from 'micromark-extension-mdxjs';
+import rehypeParse from 'rehype-parse';
+import tsmorph from 'ts-morph';
+import { unified } from 'unified';
+import { filter } from 'unist-util-filter';
+import { visit } from 'unist-util-visit';
+import { FileCommand } from './fileCommands.js';
+import { OperationMessage } from './messages.js';
+import { SafeArgumentRecord } from './safeArgumentRecord.js';
 
 const parseMdx = (data: string) =>
 	fromMarkdown(data, {
