@@ -36,7 +36,7 @@ const EXTERNAL_LINKS = [
 	{
 		id: 'slack',
 		text: 'Chat with us on Slack',
-		url: 'https://join.slack.com/t/codemod-com/shared_invite/zt-1untfdpwh-XWuFslRz0D8cGbmjymd3Bw',
+		url: 'https://join.slack.com/t/intuita-inc/shared_invite/zt-1untfdpwh-XWuFslRz0D8cGbmjymd3Bw',
 		icon: (
 			<SlackIcon
 				className={styles.icon}

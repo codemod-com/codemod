@@ -1,9 +1,8 @@
 import { createHash } from 'crypto';
 import * as t from 'io-ts';
 import { Project } from 'ts-morph';
-import type { Webview } from 'vscode';
-import { Uri } from 'vscode';
-import type { _ExplorerNode } from './persistedState/explorerNodeCodec';
+import { Uri, Webview } from 'vscode';
+import { _ExplorerNode } from './persistedState/explorerNodeCodec';
 
 export type IntuitaRange = Readonly<[number, number, number, number]>;
 
@@ -59,6 +58,12 @@ export const timeout = (ms: number) =>
 
 export const singleQuotify = (str: string) => `'${str}'`;
 export const doubleQuotify = (str: string) => `"${str}"`;
+
+export const buildCrossplatformArg = (str: string) => {
+	const isWin = process.platform === 'win32';
+	// remove trailing "\"
+	return isWin ? doubleQuotify(str.replace(/\\+$/, '')) : singleQuotify(str);
+};
 
 export function getUri(
 	webview: Webview,

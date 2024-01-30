@@ -1,9 +1,10 @@
-import type {
+import {
 	Event,
+	EventEmitter,
 	ProviderResult,
 	TextDocumentContentProvider,
+	Uri,
 } from 'vscode';
-import { EventEmitter, Uri } from 'vscode';
 
 export class IntuitaTextDocumentContentProvider
 	implements TextDocumentContentProvider

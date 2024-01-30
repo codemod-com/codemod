@@ -32,7 +32,7 @@ export const JobDiffViewContainer = (
 	const theme = useTheme();
 
 	return (
-		<div className="flex h-full w-full flex-col">
+		<div className="w-full h-full flex flex-col">
 			<Header
 				onViewChange={setViewType}
 				viewType={viewType}
@@ -40,7 +40,7 @@ export const JobDiffViewContainer = (
 					focusExplorerNodeSibling(props.caseHash, direction)
 				}
 			/>
-			<div className="pb-2-5 h-full w-full" ref={containerRef}>
+			<div className="w-full pb-2-5 h-full" ref={containerRef}>
 				<JobDiffView theme={theme} viewType={viewType} {...props} />
 			</div>
 		</div>

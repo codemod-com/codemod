@@ -1,4 +1,4 @@
-import type { Memento } from 'vscode';
+import { Memento } from 'vscode';
 
 export class GlobalStateTokenStorage {
 	constructor(private readonly __globalState: Memento) {}

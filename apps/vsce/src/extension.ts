@@ -8,8 +8,7 @@ import { isLeft } from 'fp-ts/lib/Either';
 import prettyReporter from 'io-ts-reporters';
 import * as vscode from 'vscode';
 import { CaseManager } from './cases/caseManager';
-import type { CaseHash } from './cases/types';
-import { caseHashCodec } from './cases/types';
+import { CaseHash, caseHashCodec } from './cases/types';
 import { createClearStateCommand } from './commands/clearStateCommand';
 import { BootstrapExecutablesService } from './components/bootstrapExecutablesService';
 import { DownloadService } from './components/downloadService';
@@ -17,8 +16,7 @@ import { EngineService } from './components/engineService';
 import { FileService } from './components/fileService';
 import { FileSystemUtilities } from './components/fileSystemUtilities';
 import { JobManager } from './components/jobManager';
-import type { Command } from './components/messageBus';
-import { MessageBus, MessageKind } from './components/messageBus';
+import { Command, MessageBus, MessageKind } from './components/messageBus';
 import { IntuitaTextDocumentContentProvider } from './components/textDocumentContentProvider';
 import { GlobalStateTokenStorage, UserService } from './components/userService';
 import { CodemodDescriptionProvider } from './components/webview/CodemodDescriptionProvider';
@@ -32,17 +30,19 @@ import {
 import { getConfiguration } from './configuration';
 import { buildContainer } from './container';
 import { buildStore } from './data';
-import type { CodemodConfig } from './data/codemodConfigSchema';
 import {
+	CodemodConfig,
 	parsePiranhaLanguage,
 	PIRANHA_LANGUAGES,
 } from './data/codemodConfigSchema';
 import { parsePrivateCodemodsEnvelope } from './data/privateCodemodsEnvelopeSchema';
 import { HomeDirectoryService } from './data/readHomeDirectoryCases';
 import { actions } from './data/slice';
-import type { CodemodHash } from './packageJsonAnalyzer/types';
-import type { CodemodNodeHashDigest } from './selectors/selectCodemodTree';
-import { selectCodemodArguments } from './selectors/selectCodemodTree';
+import { CodemodHash } from './packageJsonAnalyzer/types';
+import {
+	CodemodNodeHashDigest,
+	selectCodemodArguments,
+} from './selectors/selectCodemodTree';
 import { selectExplorerTree } from './selectors/selectExplorerTree';
 import { buildCaseHash } from './telemetry/hashes';
 import { VscodeTelemetry } from './telemetry/vscodeTelemetry';

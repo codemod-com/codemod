@@ -57,11 +57,11 @@ HeaderProps) => {
 	};
 
 	return (
-		<div className="align-items-center container-header flex w-full">
-			<div className="flex flex-1 flex-row flex-wrap justify-between">
-				<div className="align-items-center flex flex-1">
+		<div className="flex w-full align-items-center container-header">
+			<div className="flex flex-row flex-1 justify-between flex-wrap">
+				<div className="flex align-items-center flex-1">
 					{hasDiff ? (
-						<div className="align-items-center flex">
+						<div className="flex align-items-center">
 							<span className="diff-changes diff-removed">
 								-
 								{[
@@ -81,7 +81,7 @@ HeaderProps) => {
 						</div>
 					) : null}
 					{jobKindText ? (
-						<h4 className="highlighted-text align-self-center user-select-none my-0 ml-2">
+						<h4 className="my-0 ml-2 highlighted-text align-self-center user-select-none">
 							{jobKindText}
 						</h4>
 					) : null}
@@ -91,7 +91,7 @@ HeaderProps) => {
 						}
 						content={`Copied from ${oldFileTitle}`}
 					>
-						<h4 className="diff-title align-self-center user-select-none my-0 ml-1">
+						<h4 className="my-0 ml-1 diff-title align-self-center user-select-none">
 							{title.startsWith('/') ? title.slice(1) : title}
 						</h4>
 					</IntuitaPopover>
@@ -119,7 +119,7 @@ HeaderProps) => {
 							placement="bottom"
 						>
 							<h4
-								className="highlighted-text align-self-center user-select-none my-0 ml-2"
+								className="my-0 ml-2 highlighted-text align-self-center user-select-none"
 								style={{ fontSize: '0.7rem' }}
 							>
 								Saved
@@ -136,7 +136,7 @@ HeaderProps) => {
 					style={{ height: '28px' }}
 				>
 					<div
-						className="align-items-center checkbox-container flex"
+						className="flex align-items-center checkbox-container"
 						onClick={handleReviewedClick}
 					>
 						<VSCodeCheckbox checked={reviewed} />

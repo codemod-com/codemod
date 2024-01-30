@@ -66,7 +66,7 @@ export const CodemodRuns = (
 	}
 
 	return (
-		<div className="h-full w-full">
+		<div className="w-full h-full">
 			<PanelGroup
 				direction="vertical"
 				storage={storage}

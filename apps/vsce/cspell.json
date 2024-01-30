@@ -77,6 +77,8 @@
 		"POSTAMBLE",
 		"INTC",
 		"INTJ",
-		"INTE"
+		"INTE",
+		"Crossplatform",
+		"nodir"
 	]
 }

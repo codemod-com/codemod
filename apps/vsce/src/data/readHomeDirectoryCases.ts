@@ -1,17 +1,17 @@
 import EventEmitter from 'events';
 import { homedir } from 'os';
 import { join } from 'path';
-import type { SurfaceAgnosticJob } from '@intuita-inc/utilities';
-import { CaseReadingService, JOB_KIND } from '@intuita-inc/utilities';
+import {
+	CaseReadingService,
+	JOB_KIND,
+	SurfaceAgnosticJob,
+} from '@intuita-inc/utilities';
 import { FileType, Uri, window, workspace } from 'vscode';
-import type { Store } from '.';
-import type { Case, CaseHash } from '../cases/types';
-import { caseHashCodec } from '../cases/types';
-import type { CodemodEntry } from '../codemods/types';
-import type { MessageBus } from '../components/messageBus';
-import { MessageKind } from '../components/messageBus';
-import type { Job } from '../jobs/types';
-import { jobHashCodec, JobKind } from '../jobs/types';
+import { Store } from '.';
+import { Case, CaseHash, caseHashCodec } from '../cases/types';
+import { CodemodEntry } from '../codemods/types';
+import { MessageBus, MessageKind } from '../components/messageBus';
+import { Job, jobHashCodec, JobKind } from '../jobs/types';
 import { actions } from './slice';
 
 interface HomeDirectoryEventEmitter extends EventEmitter {

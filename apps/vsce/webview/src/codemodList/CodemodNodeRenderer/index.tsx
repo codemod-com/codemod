@@ -22,7 +22,6 @@ const getIndent = (depth: number) => {
 type Deps = {
 	progress: Progress | null;
 	screenWidth: number | null;
-	rootPath: string | null;
 	autocompleteItems: ReadonlyArray<string>;
 };
 
@@ -50,7 +49,7 @@ const renderProgressBar = (progress: Progress | null) => {
 };
 
 const getCodemodNodeRenderer =
-	({ rootPath, autocompleteItems, progress, screenWidth }: Deps) =>
+	({ autocompleteItems, progress, screenWidth }: Deps) =>
 	({ nodeDatum, onFlip }: Props) => {
 		const { node, focused, expanded, argumentsExpanded } = nodeDatum;
 		const { hashDigest, label } = node;
@@ -102,8 +101,6 @@ const getCodemodNodeRenderer =
 							screenWidth={screenWidth}
 							permalink={node.permalink}
 							executionPath={node.executionPath}
-							autocompleteItems={autocompleteItems}
-							rootPath={rootPath}
 							argumentsExpanded={argumentsExpanded}
 							args={node.args}
 						/>
@@ -119,7 +116,6 @@ const getCodemodNodeRenderer =
 							>
 								<CodemodArguments
 									autocompleteItems={autocompleteItems}
-									rootPath={rootPath}
 									executionPath={node.executionPath}
 									hashDigest={hashDigest}
 									arguments={node.args}

@@ -1,7 +1,6 @@
 import * as t from 'io-ts';
 import { Uri } from 'vscode';
-import type { CaseHash } from '../cases/types';
-import { caseHashCodec } from '../cases/types';
+import { CaseHash, caseHashCodec } from '../cases/types';
 import { buildTypeCodec } from '../utilities';
 
 interface JobHashBrand {

@@ -1,16 +1,11 @@
 import areEqual from 'fast-deep-equal';
-import type {
-	ExtensionContext,
-	WebviewView,
-	WebviewViewProvider,
-} from 'vscode';
-import type { Store } from '../../data';
+import { ExtensionContext, WebviewView, WebviewViewProvider } from 'vscode';
+import { Store } from '../../data';
 import { actions } from '../../data/slice';
 import { selectErrorWebviewViewProps } from '../../selectors/selectErrorWebviewViewProps';
-import type { MessageBus } from '../messageBus';
-import { MessageKind } from '../messageBus';
-import type { MainViewProvider } from './MainProvider';
-import type { WebviewMessage } from './webviewEvents';
+import { MessageBus, MessageKind } from '../messageBus';
+import { MainViewProvider } from './MainProvider';
+import { WebviewMessage } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
 export class ErrorWebviewProvider implements WebviewViewProvider {

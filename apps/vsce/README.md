@@ -6,7 +6,7 @@ Upgrade your projects with the help of codemods created by experts in the commun
 
 ## 1. Discover
 
--   Intuita is **a one-stop shop for discovering & sharing quality-governed codemods.** You don't need to install and run many codemod engines for each dependency. Simply search for your framework codemods and click run. With codemod deep links, you can reach & run your target codemod with just one click.
+-   Codemod is **a one-stop shop for discovering & sharing quality-governed codemods.** You don't need to install and run many codemod engines for each dependency. Simply search for your framework codemods and click run. With codemod deep links, you can reach & run your target codemod with just one click.
 
 ![Discover Codemods](https://github.com/codemod-com/intuita-docs/raw/main/static/img/vsce/vsce-discover.gif)
 
@@ -25,15 +25,15 @@ Upgrade your projects with the help of codemods created by experts in the commun
 
 ## Other Features
 
--   **Out-of-the-box Prettier Integration -** Your favorite code transformation engines such as Meta’s JSCodeshift or TS-morph will mess up the formatting. Intuita will automatically prettify the changes according to your settings, saving you much time and energy for more exciting features.
--   **Multi-threading -** Execute codemods faster than you would with vanilla jscodeshift or ts-morph. Intuita's engine uses multi-threading, which is customizable via extension settings, to take full advantage of your machine's computing power and expedite large-scale changes.
--   For advanced settings & features, visit the [Intuita docs.](https://docs.intuita.io/docs/vs-code-extension/quickstart)
+-   **Out-of-the-box Prettier Integration -** Your favorite code transformation engines such as Meta’s JSCodeshift or TS-morph will mess up the formatting. Codemod will automatically prettify the changes according to your settings, saving you much time and energy for more exciting features.
+-   **Multi-threading -** Execute codemods faster than you would with vanilla jscodeshift or ts-morph. Codemod's engine uses multi-threading, which is customizable via extension settings, to take full advantage of your machine's computing power and expedite large-scale changes.
+-   For advanced settings & features, visit the [Codemod docs.](https://docs.intuita.io/docs/vs-code-extension/quickstart)
 
 # Extension vs. the Platform
 
-![Intuita Platform Architecture](https://github.com/codemod-com/intuita-docs/raw/main/static/img/docs/intuita-platform-architecture.png)
+![Codemod Platform Architecture](https://github.com/codemod-com/intuita-docs/raw/main/static/img/docs/intuita-platform-architecture.png)
 
--   **To learn more about codemod.studio, registry, and the CLI visit the [Intuita docs here](https://docs.intuita.io/docs/intro).**
+-   **To learn more about codemod.studio, registry, and the CLI visit the [Codemod docs here](https://docs.intuita.io/docs/intro).**
 
 ## Telemetry 🔭
 

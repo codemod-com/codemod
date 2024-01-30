@@ -1,11 +1,10 @@
-import type { Message, MessageBus } from '../components/messageBus';
-import { MessageKind } from '../components/messageBus';
-import type { Store } from '../data';
+import { Message, MessageBus, MessageKind } from '../components/messageBus';
+import { Store } from '../data';
 import { actions } from '../data/slice';
-import type { JobHash } from '../jobs/types';
+import { JobHash } from '../jobs/types';
 import { LeftRightHashSetManager } from '../leftRightHashes/leftRightHashSetManager';
 import { isNeitherNullNorUndefined } from '../utilities';
-import type { CaseHash } from './types';
+import { CaseHash } from './types';
 
 export class CaseManager {
 	public constructor(

@@ -1,7 +1,7 @@
 import { promisify } from 'node:util';
 import { deflate, unzip } from 'node:zlib';
 import type { WebStorage } from 'redux-persist';
-import type { Memento } from 'vscode';
+import { Memento } from 'vscode';
 
 const asyncDeflate = promisify(deflate);
 const asyncUnzip = promisify(unzip);

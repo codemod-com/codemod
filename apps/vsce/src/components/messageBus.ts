@@ -1,11 +1,10 @@
-import type { Disposable, Uri } from 'vscode';
-import { EventEmitter } from 'vscode';
+import { Disposable, EventEmitter, Uri } from 'vscode';
 import type { Case, CaseHash } from '../cases/types';
-import type { PiranhaLanguage } from '../data/codemodConfigSchema';
-import type { ExecutionError } from '../errors/types';
+import { PiranhaLanguage } from '../data/codemodConfigSchema';
+import { ExecutionError } from '../errors/types';
 import type { Job, JobHash } from '../jobs/types';
-import type { CodemodHash } from '../packageJsonAnalyzer/types';
-import type { CodemodArgumentWithValue } from '../selectors/selectCodemodTree';
+import { CodemodHash } from '../packageJsonAnalyzer/types';
+import { CodemodArgumentWithValue } from '../selectors/selectCodemodTree';
 
 export const enum MessageKind {
 	/** cases and jobs */
@@ -113,7 +112,7 @@ export type Message =
 	| Readonly<{
 			kind: MessageKind.engineBootstrapped;
 			codemodEngineNodeExecutableUri: Uri;
-			codemodEngineRustExecutableUri: Uri;
+			codemodEngineRustExecutableUri: Uri | null;
 	  }>
 	| Readonly<{
 			kind: MessageKind.executeCodemodSet;

@@ -10,3 +10,11 @@ out
 .turbo
 
 **.env
+
+# Extension
+.vscode-test/
+*.vsix
+.idea
+*.js
+yarn-error.log
+.trunk

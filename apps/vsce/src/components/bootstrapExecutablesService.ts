@@ -1,9 +1,6 @@
-import type { FileSystem } from 'vscode';
-import { Uri } from 'vscode';
-import type { DownloadService } from './downloadService';
-import { ForbiddenRequestError } from './downloadService';
-import type { MessageBus } from './messageBus';
-import { MessageKind } from './messageBus';
+import { FileSystem, Uri } from 'vscode';
+import { DownloadService, ForbiddenRequestError } from './downloadService';
+import { MessageBus, MessageKind } from './messageBus';
 
 // aka bootstrap engines
 export class BootstrapExecutablesService {
@@ -40,18 +37,22 @@ export class BootstrapExecutablesService {
 		const platform =
 			process.platform === 'darwin'
 				? 'macos'
-				: encodeURIComponent(process.platform);
+				: process.platform === 'win32'
+				  ? 'win'
+				  : encodeURIComponent(process.platform);
 
 		const executableBaseName = `intuita-${platform}`;
+		const executableExt = process.platform === 'win32' ? '.exe' : '';
+		const executableName = `${executableBaseName}${executableExt}`;
 
 		const executableUri = Uri.joinPath(
 			this.__globalStorageUri,
-			executableBaseName,
+			executableName,
 		);
 
 		try {
 			await this.__downloadService.downloadFileIfNeeded(
-				`https://intuita-public.s3.us-west-1.amazonaws.com/intuita/${executableBaseName}`,
+				`https://intuita-public.s3.us-west-1.amazonaws.com/intuita/${executableName}`,
 				executableUri,
 				'755',
 			);
@@ -68,11 +69,15 @@ export class BootstrapExecutablesService {
 		return executableUri;
 	}
 
-	private async __bootstrapCodemodEngineRustExecutableUri(): Promise<Uri> {
+	private async __bootstrapCodemodEngineRustExecutableUri(): Promise<Uri | null> {
 		const platform =
 			process.platform === 'darwin'
 				? 'macos'
 				: encodeURIComponent(process.platform);
+
+		if (platform === 'win32') {
+			return null;
+		}
 
 		const executableBaseName = `codemod-engine-rust-${platform}`;
 

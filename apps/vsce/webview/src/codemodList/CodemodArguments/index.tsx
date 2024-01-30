@@ -6,7 +6,6 @@ import {
 	CodemodNodeHashDigest,
 } from '../../../../src/selectors/selectCodemodTree';
 import { CodemodHash } from '../../shared/types';
-import debounce from '../../shared/utilities/debounce';
 import { vscode } from '../../shared/utilities/vscode';
 import { DirectorySelector } from '../components/DirectorySelector';
 import FormField from './FormField';
@@ -16,30 +15,26 @@ type Props = Readonly<{
 	hashDigest: CodemodNodeHashDigest;
 	arguments: ReadonlyArray<CodemodArgumentWithValue>;
 	autocompleteItems: ReadonlyArray<string>;
-	rootPath: string | null;
 	executionPath: T.These<{ message: string }, string>;
 }>;
 
-const buildTargetPath = (path: string, rootPath: string, repoName: string) => {
-	return path.replace(rootPath, '').length === 0
-		? `${repoName}/`
-		: path.replace(rootPath, repoName);
-};
-
-const handleCodemodPathChange = debounce((rawCodemodPath: string) => {
-	const codemodPath = rawCodemodPath.trim();
-
+const updatePath = (value: string, codemodHash: CodemodHash) => {
 	vscode.postMessage({
-		kind: 'webview.codemodList.codemodPathChange',
-		codemodPath,
+		kind: 'webview.codemodList.updatePathToExecute',
+		value: {
+			newPath: value,
+			codemodHash,
+			errorMessage: '',
+			warningMessage: '',
+			revertToPrevExecutionIfInvalid: false,
+		},
 	});
-}, 50);
+};
 
 const CodemodArguments = ({
 	hashDigest,
 	arguments: args,
 	autocompleteItems,
-	rootPath,
 	executionPath,
 }: Props) => {
 	const onChangeFormField = (fieldName: string) => (value: string) => {
@@ -50,18 +45,6 @@ const CodemodArguments = ({
 			value,
 		});
 	};
-
-	const error: string | null = pipe(
-		O.fromNullable(executionPath),
-		O.fold(
-			() => null,
-			T.fold(
-				({ message }) => message,
-				() => null,
-				({ message }) => message,
-			),
-		),
-	);
 
 	const path: string = pipe(
 		O.fromNullable(executionPath),
@@ -75,22 +58,14 @@ const CodemodArguments = ({
 		),
 	);
 
-	const repoName =
-		rootPath !== null ? rootPath.split('/').slice(-1)[0] ?? '' : '';
-
-	const targetPath =
-		rootPath !== null ? buildTargetPath(path, rootPath, repoName) : '/';
-
 	return (
 		<div className={styles.root}>
 			<form className={styles.form}>
 				<DirectorySelector
-					defaultValue={targetPath}
-					displayValue={'path'}
-					rootPath={rootPath ?? ''}
-					error={error === null ? null : { message: error }}
-					codemodHash={hashDigest as unknown as CodemodHash}
-					onChange={handleCodemodPathChange}
+					initialValue={path}
+					onChange={(value: string) =>
+						updatePath(value, hashDigest as unknown as CodemodHash)
+					}
 					autocompleteItems={autocompleteItems}
 				/>
 				{args.map((props) => (

@@ -1,10 +1,9 @@
 {
-	"extends": "../tsconfig.json",
 	"compilerOptions": {
-		"jsx": "react-jsx",
 		"lib": ["dom", "dom.iterable", "ESNext"],
 		"types": ["vite/client", "vite-plugin-svgr/client"]
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules"]
+	"exclude": ["node_modules"],
+	"extends": "@codemod-com/tsconfig/base.json"
 }

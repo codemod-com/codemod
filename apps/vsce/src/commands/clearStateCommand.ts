@@ -1,8 +1,8 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { FileType, Uri, workspace } from 'vscode';
-import type { FileService } from '../components/fileService';
-import type { Store } from '../data';
+import { FileService } from '../components/fileService';
+import { Store } from '../data';
 import { actions } from '../data/slice';
 import { doesJobAddNewFile } from '../selectors/comparePersistedJobs';
 

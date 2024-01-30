@@ -75,7 +75,7 @@ export const JobDiffView = memo(
 			return (
 				<div
 					ref={ref}
-					className="pb-2-5 diff-view-container h-full px-5"
+					className="px-5 pb-2-5 diff-view-container h-full"
 					tabIndex={0}
 					onKeyDown={(event: KeyboardEvent) => {
 						if (event.key === 'ArrowLeft') {
@@ -89,7 +89,7 @@ export const JobDiffView = memo(
 				>
 					<Collapsable
 						defaultExpanded={true}
-						className="h-full overflow-hidden rounded"
+						className="overflow-hidden rounded h-full"
 						headerClassName="p-10"
 						contentClassName="p-10 h-full"
 						headerSticky

@@ -75,7 +75,7 @@ const PanelGroup = (props: PanelGroupProps) => {
 	}, []);
 
 	return (
-		<div ref={containerRef} className="h-full w-full">
+		<div ref={containerRef} className="w-full h-full">
 			<RResizablePanelGroup {...props}>
 				{props.children}
 			</RResizablePanelGroup>
@@ -102,7 +102,7 @@ const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 				minSize={minSize}
 				ref={ref}
 			>
-				<div className="h-full w-full">{children}</div>
+				<div className="w-full h-full">{children}</div>
 			</RResizablePanel>
 		);
 	},

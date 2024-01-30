@@ -1,8 +1,7 @@
 import { createHash } from 'node:crypto';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import type { FileSystem } from 'vscode';
-import { EventEmitter, Uri } from 'vscode';
+import { EventEmitter, FileSystem, Uri } from 'vscode';
 import { buildCodemodMetadataHash } from '../../utilities';
 
 export class CodemodDescriptionProvider {

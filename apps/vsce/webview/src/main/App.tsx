@@ -158,7 +158,7 @@ function App() {
 						handlePanelTabClick(newValue as ActiveTabId);
 					}
 				}}
-				className="vscode-panels h-full w-full"
+				className="h-full w-full vscode-panels"
 			>
 				<VSCodePanelTab className="vscode-tab" id={'codemods'}>
 					Codemod Discovery

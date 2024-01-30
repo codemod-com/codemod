@@ -17,8 +17,6 @@ type Props = Omit<CodemodItemNode, 'name' | 'kind'> &
 		progress: Progress | null;
 		screenWidth: number | null;
 		focused: boolean;
-		rootPath: string | null;
-		autocompleteItems: ReadonlyArray<string>;
 		argumentsExpanded: boolean;
 	}>;
 

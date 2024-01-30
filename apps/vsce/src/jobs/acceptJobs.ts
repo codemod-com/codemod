@@ -1,7 +1,6 @@
-import type { Uri } from 'vscode';
-import type { FileService } from '../components/fileService';
-import type { Job } from './types';
-import { JobKind } from './types';
+import { Uri } from 'vscode';
+import { FileService } from '../components/fileService';
+import { Job, JobKind } from './types';
 
 export const acceptJobs = async (
 	fileService: FileService,

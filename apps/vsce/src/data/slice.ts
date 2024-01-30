@@ -1,16 +1,22 @@
 import platformPath from 'path';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import { createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import {
+	createEntityAdapter,
+	createSlice,
+	PayloadAction,
+} from '@reduxjs/toolkit';
 import * as vscode from 'vscode';
-import type { Case, CaseHash } from '../cases/types';
-import type { CodemodEntry, PrivateCodemodEntry } from '../codemods/types';
-import type { CodemodHash, JobHash } from '../components/webview/webviewEvents';
-import type { ExecutionError } from '../errors/types';
-import type { PersistedJob } from '../jobs/types';
-import type { ActiveTabId, RootState } from '../persistedState/codecs';
-import { panelGroupSettingsCodec } from '../persistedState/codecs';
-import type { _ExplorerNodeHashDigest } from '../persistedState/explorerNodeCodec';
-import type { CodemodNodeHashDigest } from '../selectors/selectCodemodTree';
+import { Case, CaseHash } from '../cases/types';
+import { CodemodEntry, PrivateCodemodEntry } from '../codemods/types';
+import { CodemodHash, JobHash } from '../components/webview/webviewEvents';
+import { ExecutionError } from '../errors/types';
+import { PersistedJob } from '../jobs/types';
+import {
+	ActiveTabId,
+	panelGroupSettingsCodec,
+	RootState,
+} from '../persistedState/codecs';
+import { _ExplorerNodeHashDigest } from '../persistedState/explorerNodeCodec';
+import { CodemodNodeHashDigest } from '../selectors/selectCodemodTree';
 import {
 	selectExplorerNodes,
 	selectNodeData,

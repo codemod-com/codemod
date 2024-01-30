@@ -1,15 +1,19 @@
 import type { Uri } from 'vscode';
 import type { RootState } from '../data';
-import type { CodemodHash } from '../packageJsonAnalyzer/types';
+import { CodemodHash } from '../packageJsonAnalyzer/types';
 import { selectCodemodRunsTree } from './selectCodemodRunsTree';
-import { selectCodemodTree, selectPrivateCodemods } from './selectCodemodTree';
+import {
+	absoluteToRelativePath,
+	selectCodemodTree,
+	selectPrivateCodemods,
+} from './selectCodemodTree';
 import { selectExplorerTree } from './selectExplorerTree';
 import { selectSourceControlTabProps } from './selectSourceControlTabProps';
 
 export const selectMainWebviewViewProps = (
 	state: RootState,
 	rootUri: Uri | null,
-	autocompleteItems: ReadonlyArray<string>,
+	autocompleteItems: ReadonlyArray<string> | null,
 	executionQueue: ReadonlyArray<CodemodHash>,
 ) => {
 	if (rootUri === null) {
@@ -21,7 +25,9 @@ export const selectMainWebviewViewProps = (
 			activeTabId: state.activeTabId,
 			toaster: state.toaster,
 			searchPhrase: state.codemodDiscoveryView.searchPhrase,
-			autocompleteItems,
+			autocompleteItems: (autocompleteItems ?? []).map((item) =>
+				absoluteToRelativePath(item, rootUri.fsPath ?? ''),
+			),
 			codemodTree: selectCodemodTree(
 				state,
 				rootUri?.fsPath ?? null,

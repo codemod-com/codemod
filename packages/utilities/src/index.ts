@@ -1,13 +1,31 @@
-export { FileWatcher } from './fileWatcher.js';
 export { CaseReadingService } from './caseReadingService.js';
 export { CaseWritingService } from './caseWritingService.js';
+export { FileWatcher } from './fileWatcher.js';
 export {
-	type SurfaceAgnosticJob,
 	JOB_KIND,
 	parseSurfaceAgnosticJob,
+	type SurfaceAgnosticJob,
 } from './schemata/surfaceAgnosticJobSchema.js';
 
-export { isNeitherNullNorUndefined } from './functions/validationMethods.js';
+export { debounce } from './functions/debounce.js';
+export {
+	buildCrossplatformArg,
+	capitalize,
+	doubleQuotify,
+	removeLineBreaksAtStartAndEnd,
+	removeSpecialCharacters,
+	singleQuotify,
+} from './functions/formatting.js';
+export {
+	buildCodemodMetadataHash,
+	buildHash,
+	streamToString,
+} from './functions/hash.js';
+export type { DistributiveOmit, IntuitaRange } from './functions/types.js';
+export {
+	assertsNeitherNullOrUndefined,
+	isNeitherNullNorUndefined,
+} from './functions/validationMethods.js';
 
 export {
 	buildApi,

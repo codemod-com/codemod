@@ -35,7 +35,8 @@
 		"lint:prettier": "prettier --write .",
 		"test": "vitest run test.ts",
 		"test:win": "turbo run test:win",
-		"coverage": "vitest run --coverage"
+		"coverage": "vitest run --coverage",
+		"prepare": "husky install"
 	},
 	"devDependencies": {
 		"@codemod-com/config": "workspace:*",
@@ -43,14 +44,14 @@
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/node": "^20.5.1",
+		"@vitest/coverage-v8": "^1.0.1",
 		"concurrently": "^8.2.0",
-		"husky": "^8.0.0",
+		"husky": "^8.0.3",
 		"lint-staged": "^15.1.0",
 		"tsx": "^4.2.0",
 		"turbo": "^1.10.14",
 		"typescript": "^5.2.0",
-		"vitest": "^1.0.1",
-		"@vitest/coverage-v8": "^1.0.1"
+		"vitest": "^1.0.1"
 	},
 	"lint-staged": {
 		"apps/**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "prettier --write",

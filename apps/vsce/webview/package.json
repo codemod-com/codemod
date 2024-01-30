@@ -1,5 +1,5 @@
 {
-	"name": "webview",
+	"name": "@codemod-com/extension-webview",
 	"version": "0.1.0",
 	"private": true,
 	"dependencies": {

@@ -1,7 +1,7 @@
-import type { Mode } from 'node:fs';
+import { Mode } from 'node:fs';
 import axios from 'axios';
-import type { FileSystem, Uri } from 'vscode';
-import type { FileSystemUtilities } from './fileSystemUtilities';
+import { FileSystem, Uri } from 'vscode';
+import { FileSystemUtilities } from './fileSystemUtilities';
 
 export class RequestError extends Error {}
 export class ForbiddenRequestError extends Error {}

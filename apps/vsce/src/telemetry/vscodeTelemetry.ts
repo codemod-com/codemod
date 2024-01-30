@@ -1,9 +1,8 @@
-import type TelemetryReporter from '@vscode/extension-telemetry';
-import type { CaseHash } from '../cases/types';
-import type { Message, MessageBus } from '../components/messageBus';
-import { MessageKind } from '../components/messageBus';
-import type { Job } from '../jobs/types';
-import type { ErrorEvent, Event, Telemetry } from './telemetry';
+import TelemetryReporter from '@vscode/extension-telemetry';
+import { CaseHash } from '../cases/types';
+import { Message, MessageBus, MessageKind } from '../components/messageBus';
+import { Job } from '../jobs/types';
+import { ErrorEvent, Event, Telemetry } from './telemetry';
 
 export class VscodeTelemetry implements Telemetry {
 	constructor(

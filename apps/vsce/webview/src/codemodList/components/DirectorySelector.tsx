@@ -1,233 +1,155 @@
-import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
+import {
+	VSCodeOption,
+	VSCodeTextField,
+} from '@vscode/webview-ui-toolkit/react';
 import cn from 'classnames';
-import React, {
-	KeyboardEvent,
-	ReactNode,
-	useEffect,
-	useRef,
-	useState,
-} from 'react';
-import { CodemodHash } from '../../shared/types';
-import { vscode } from '../../shared/utilities/vscode';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import styles from './style.module.css';
 
-const updatePath = (
-	value: string,
-	errorMessage: string | null,
-	warningMessage: string | null,
-	revertToPrevExecutionIfInvalid: boolean,
-	rootPath: string,
-	codemodHash: CodemodHash,
-) => {
-	const repoName = rootPath.split('/').slice(-1)[0] ?? '';
-	vscode.postMessage({
-		kind: 'webview.codemodList.updatePathToExecute',
-		value: {
-			newPath: value.replace(repoName, rootPath),
-			codemodHash,
-			errorMessage,
-			warningMessage,
-			revertToPrevExecutionIfInvalid,
-		},
-	});
-};
-
 type Props = {
-	defaultValue: string;
-	displayValue: string | ReactNode;
-	rootPath: string;
-	codemodHash: CodemodHash;
-	error: { message: string } | null;
+	initialValue: string;
 	autocompleteItems: ReadonlyArray<string>;
-
-	onChange(value: string): void;
+	onChange: (value: string) => void;
 };
 
+const AUTOCOMPLETE_OPTIONS_LENGTH = 20;
+
+const getFilteredOptions = (
+	allOptions: ReadonlyArray<string>,
+	value: string,
+) => {
+	// ignores slashes at the beginning, ignores whitespace
+	const trimmedLowerCaseValue = value
+		.replace(/^[/\\]+/, '')
+		.trim()
+		.toLocaleLowerCase();
+
+	return allOptions
+		.filter((i) => i.toLocaleLowerCase().startsWith(trimmedLowerCaseValue))
+		.slice(0, AUTOCOMPLETE_OPTIONS_LENGTH);
+};
 export const DirectorySelector = ({
-	defaultValue,
-	rootPath,
-	codemodHash,
+	initialValue,
 	onChange,
-	error,
 	autocompleteItems,
 }: Props) => {
-	const repoName =
-		rootPath
-			.split('/')
-			.filter((part) => part.length !== 0)
-			.slice(-1)[0] ?? '';
-	const [value, setValue] = useState(defaultValue);
-	const [showErrorStyle, setShowErrorStyle] = useState(false);
-	const [ignoreEnterKeyUp, setIgnoreEnterKeyUp] = useState(false);
-	const ignoreBlurEvent = useRef(false);
-	const [autocompleteIndex, setAutocompleteIndex] = useState(0);
-	const hintRef = useRef<HTMLInputElement>(null);
-
-	useEffect(() => {
-		const inputElement = document
-			.querySelector('vscode-text-field#directory-selector')
-			?.shadowRoot?.querySelector('input');
-
-		if (!inputElement) {
-			return;
-		}
-
-		const onInputScroll = (e: Event) => {
-			if (hintRef.current) {
-				// adjust hint position when scrolling the main input
-				// @ts-ignore
-				hintRef.current.scrollLeft = e.target?.scrollLeft;
-			}
-		};
-
-		inputElement.addEventListener('scroll', onInputScroll);
-
-		return () => {
-			inputElement.removeEventListener('scroll', onInputScroll);
-		};
-	}, []);
-
-	useEffect(() => {
-		setAutocompleteIndex(0);
-	}, [autocompleteItems]);
-
-	const autocompleteContent = autocompleteItems[autocompleteIndex]?.replace(
-		rootPath,
-		repoName,
+	const [value, setValue] = useState(initialValue);
+	const [focusedOptionIdx, setFocusedOptionIdx] = useState<number | null>(
+		null,
 	);
+	const [showOptions, setShowOptions] = useState(false);
+
+	useEffect(() => {
+		setValue(initialValue);
+	}, [initialValue]);
+
+	const autocompleteOptions = getFilteredOptions(autocompleteItems, value);
 
 	const handleChange = (e: Event | React.FormEvent<HTMLElement>) => {
-		ignoreBlurEvent.current = false;
-		const newValue = (e.target as HTMLInputElement).value.trim();
-		// path must start with repo name + slash
-		// e.g., "cal.com/"
-		const validString = !newValue.startsWith(`${repoName}/`)
-			? `${repoName}/`
-			: newValue;
-		setValue(validString);
-		onChange(validString.replace(repoName, rootPath));
+		setValue((e.target as HTMLInputElement)?.value);
 	};
 
-	const handleCancel = () => {
-		updatePath(defaultValue, null, null, false, rootPath, codemodHash);
-		setValue(defaultValue);
-
-		if (value !== defaultValue) {
-			vscode.postMessage({
-				kind: 'webview.global.showWarningMessage',
-				value: 'Change Reverted.',
-			});
-		}
+	const handleFocus = () => {
+		setFocusedOptionIdx(-1);
+		setShowOptions(true);
 	};
 
-	const handleBlur = () => {
-		if (ignoreBlurEvent.current) {
-			return;
-		}
-		updatePath(
-			value,
-			null,
-			value === defaultValue ? null : 'Change Reverted.',
-			true,
-			rootPath,
-			codemodHash,
-		);
-		setValue(defaultValue);
-	};
+	const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
+		const maxLength = autocompleteOptions.length;
 
-	const handleKeyUp = (event: React.KeyboardEvent<HTMLElement>) => {
-		if (event.key === 'Escape') {
-			ignoreBlurEvent.current = true;
-			handleCancel();
+		if (e.key === 'Esc') {
+			setFocusedOptionIdx(0);
+			setShowOptions(false);
 		}
 
-		if (event.key === 'Enter' && !ignoreEnterKeyUp) {
-			ignoreBlurEvent.current = true;
-			if (value === defaultValue) {
-				handleCancel();
+		if (e.key === 'Enter') {
+			setShowOptions(false);
+
+			if (focusedOptionIdx === null) {
 				return;
 			}
 
-			updatePath(
-				value,
-				'The specified execution path does not exist.',
-				null,
-				false,
-				rootPath,
-				codemodHash,
-			);
+			const nextValue = autocompleteOptions[focusedOptionIdx] ?? '';
+
+			onChange(nextValue);
+			setValue(nextValue);
 		}
-		setIgnoreEnterKeyUp(false);
+
+		if (e.key === 'ArrowUp') {
+			const nextValue =
+				focusedOptionIdx === null
+					? maxLength
+					: (focusedOptionIdx - 1 + maxLength) % maxLength;
+			setFocusedOptionIdx(nextValue);
+			e.stopPropagation();
+			e.preventDefault();
+		}
+
+		if (e.key === 'ArrowDown') {
+			const nextValue =
+				focusedOptionIdx === null
+					? 0
+					: (focusedOptionIdx + 1) % maxLength;
+
+			setFocusedOptionIdx(nextValue);
+			e.stopPropagation();
+			e.preventDefault();
+		}
+
+		if (e.key === 'Tab') {
+			const nextValue =
+				focusedOptionIdx === null
+					? 0
+					: (focusedOptionIdx + 1) % maxLength;
+			setFocusedOptionIdx(nextValue);
+			e.stopPropagation();
+			e.preventDefault();
+		}
 	};
 
-	useEffect(() => {
-		ignoreBlurEvent.current = false;
-		setShowErrorStyle(error !== null);
-	}, [error]);
-
-	const handleKeyDown = (e: KeyboardEvent<HTMLElement>) => {
-		if (e.key !== 'Tab') {
-			return;
-		}
-
-		let nextAutocompleteIndex = autocompleteIndex;
-		const completed =
-			autocompleteItems[nextAutocompleteIndex]?.replace(
-				rootPath,
-				repoName,
-			) === value;
-
-		if (completed) {
-			nextAutocompleteIndex =
-				(autocompleteIndex + 1) % autocompleteItems.length;
-		}
-
-		setValue(
-			(prevValue) =>
-				autocompleteItems[nextAutocompleteIndex]?.replace(
-					rootPath,
-					repoName,
-				) ?? prevValue,
-		);
-		setAutocompleteIndex(nextAutocompleteIndex);
-		e.preventDefault();
-	};
+	useLayoutEffect(() => {
+		document.getElementById(`option_${focusedOptionIdx}`)?.focus();
+	}, [focusedOptionIdx]);
 
 	return (
 		<div
-			className="align-items-center flex flex-row justify-between"
+			className="flex flex-row justify-between align-items-center"
 			style={{
 				width: '100%',
 			}}
+			onKeyDown={handleKeyDown}
+			tabIndex={0}
 		>
-			<div className="relative flex w-full flex-col overflow-hidden">
-				{autocompleteContent ? (
-					<input
-						ref={hintRef}
-						className={styles.autocomplete}
-						aria-hidden={true}
-						readOnly
-						value={autocompleteContent}
-					/>
-				) : null}
+			<div
+				className="flex flex-col w-full overflow-hidden relative"
+				tabIndex={0}
+			>
 				<VSCodeTextField
 					id="directory-selector"
-					className={cn(
-						styles.textField,
-						showErrorStyle && styles.textFieldError,
-					)}
+					className={cn(styles.textField)}
 					value={value}
 					onInput={handleChange}
-					onKeyUp={handleKeyUp}
-					onKeyDown={handleKeyDown}
-					autoFocus
-					onBlur={handleBlur}
-					onClick={(e) => {
-						e.stopPropagation();
-					}}
+					onFocus={handleFocus}
 				>
 					Target path
 				</VSCodeTextField>
+				<div className={styles.autocompleteItems}>
+					{showOptions &&
+						autocompleteOptions.map((item, i) => (
+							<VSCodeOption
+								tabIndex={0}
+								id={`option_${i}`}
+								className={styles.option}
+								onClick={() => {
+									setShowOptions(false);
+									setValue(item);
+									onChange(item);
+								}}
+							>
+								{item}
+							</VSCodeOption>
+						))}
+				</div>
 			</div>
 		</div>
 	);

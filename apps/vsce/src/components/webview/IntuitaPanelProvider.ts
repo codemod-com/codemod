@@ -2,26 +2,24 @@ import { readFileSync } from 'fs';
 import { diffTrimmedLines } from 'diff';
 import areEqual from 'fast-deep-equal';
 import { encode } from 'universal-base64url';
-import type { Uri, WebviewPanel } from 'vscode';
-import { commands, ViewColumn, window } from 'vscode';
+import { commands, Uri, ViewColumn, WebviewPanel, window } from 'vscode';
 import type { RootState, Store } from '../../data';
 import { actions } from '../../data/slice';
 import { SEARCH_PARAMS_KEYS } from '../../extension';
 import { JobKind, mapPersistedJobToJob } from '../../jobs/types';
-import type { _ExplorerNode } from '../../persistedState/explorerNodeCodec';
+import { _ExplorerNode } from '../../persistedState/explorerNodeCodec';
 import { selectExplorerTree } from '../../selectors/selectExplorerTree';
 import {
 	createInMemorySourceFile,
 	removeLineBreaksAtStartAndEnd,
 	removeSpecialCharacters,
 } from '../../utilities';
-import type { JobManager } from '../jobManager';
-import type { MessageBus } from '../messageBus';
-import { MessageKind } from '../messageBus';
-import type { CodemodDescriptionProvider } from './CodemodDescriptionProvider';
-import type { MainViewProvider } from './MainProvider';
-import type { PanelViewProps } from './panelViewProps';
-import type { WebviewMessage, WebviewResponse } from './webviewEvents';
+import { JobManager } from '../jobManager';
+import { MessageBus, MessageKind } from '../messageBus';
+import { CodemodDescriptionProvider } from './CodemodDescriptionProvider';
+import { MainViewProvider } from './MainProvider';
+import { PanelViewProps } from './panelViewProps';
+import { WebviewMessage, WebviewResponse } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
 const TYPE = 'intuitaPanel';
