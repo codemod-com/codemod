@@ -78,18 +78,8 @@ describe('next 13 remove-next-export', function () {
 			},
 			{
 				kind: 'upsertFile',
-				path: '/opt/project/pages/script_c.sh',
-				data: '\n',
-			},
-			{
-				kind: 'upsertFile',
-				path: '/opt/project/pages/script_b.sh',
-				data: '\nnpm run next build\n',
-			},
-			{
-				kind: 'upsertFile',
-				path: '/opt/project/pages/script_a.sh',
-				data: '\nnode_modules/.bin/next build\n',
+				path: '/opt/project/pages/README.md',
+				data: '\n# Header\n',
 			},
 			{
 				data: '\nmodule.exports = {\n\tdistDir: \'out\',\n    output: "export"\n}',
@@ -98,8 +88,18 @@ describe('next 13 remove-next-export', function () {
 			},
 			{
 				kind: 'upsertFile',
-				path: '/opt/project/pages/README.md',
-				data: '\n# Header\n',
+				path: '/opt/project/pages/script_a.sh',
+				data: '\nnode_modules/.bin/next build\n',
+			},
+			{
+				kind: 'upsertFile',
+				path: '/opt/project/pages/script_b.sh',
+				data: '\nnpm run next build\n',
+			},
+			{
+				kind: 'upsertFile',
+				path: '/opt/project/pages/script_c.sh',
+				data: '\n',
 			},
 		]);
 	});

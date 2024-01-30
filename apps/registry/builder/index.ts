@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { promisify } from 'node:util';
 import { deflate } from 'node:zlib';
 import * as S from '@effect/schema/Schema';
-import { globSync } from 'glob';
+import glob from 'fast-glob';
 import * as tar from 'tar';
 
 const promisifiedDeflate = promisify(deflate);
@@ -128,7 +128,7 @@ const build = async () => {
 
 	const codemodsDirectoryPath = join(cwd, './codemods');
 
-	const configFilePaths = globSync('./**/config.json', {
+	const configFilePaths = await glob('./**/config.json', {
 		cwd: codemodsDirectoryPath,
 		dot: false,
 		ignore: ['**/node_modules/**', '**/build/**'],

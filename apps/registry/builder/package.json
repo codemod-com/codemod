@@ -3,7 +3,7 @@
 	"type": "module",
 	"dependencies": {
 		"@effect/schema": "^0.48.4",
-		"glob": "^10.3.10",
+		"fast-glob": "3.3.2",
 		"tar": "^6.2.0"
 	},
 	"devDependencies": {

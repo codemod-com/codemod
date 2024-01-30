@@ -7,8 +7,7 @@ import type {
 	UnifiedEntry,
 } from '@codemod-com/filemod';
 import { UnifiedFileSystem } from '@codemod-com/filemod';
-import type { FSOption, GlobOptionsWithFileTypesUnset } from 'glob';
-import { glob } from 'glob';
+import { FileSystemAdapter, glob } from 'fast-glob';
 import type { API } from 'jscodeshift';
 import jscodeshift from 'jscodeshift';
 import { type IFs } from 'memfs';
@@ -59,8 +58,9 @@ export const buildGlobWrapper =
 			absolute: true,
 			cwd: globArguments.currentWorkingDirectory,
 			ignore: globArguments.excludePatterns.slice(),
-			fs: fileSystem as unknown as FSOption,
-		} satisfies GlobOptionsWithFileTypesUnset);
+			fs: fileSystem as Partial<FileSystemAdapter>,
+			onlyFiles: true,
+		});
 	};
 
 export const buildReadDirectory =

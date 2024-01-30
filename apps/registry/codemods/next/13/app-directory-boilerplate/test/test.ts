@@ -472,7 +472,7 @@ describe('next 13 app-directory-boilerplate', function () {
 			}
 		`;
 
-		const [upsertLayoutCommand, upsertLayoutClientComponentCommand] =
+		const [, , upsertLayoutCommand, upsertLayoutClientComponentCommand] =
 			await transform({
 				'/opt/project/pages/_app.tsx': _app,
 				'/opt/project/pages/_document.tsx': _document,
@@ -565,7 +565,7 @@ describe('next 13 app-directory-boilerplate', function () {
 	}
 `;
 
-		const [upsertLayoutCommand, upsertLayoutClientComponentCommand] =
+		const [, , upsertLayoutCommand, upsertLayoutClientComponentCommand] =
 			await transform({
 				'/opt/project/pages/_app.tsx': _app,
 				'/opt/project/pages/_document.tsx': _document,
@@ -639,12 +639,19 @@ describe('next 13 app-directory-boilerplate', function () {
 		`;
 
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const [upsertLayoutCommand, , upsertPageCommand, _, deleteFileCommand] =
-			await transform({
-				'/opt/project/pages/index.tsx': index,
-				'/opt/project/pages/_document.tsx': '',
-				'/opt/project/pages/_app.tsx': '',
-			});
+		const [
+			,
+			,
+			upsertLayoutCommand,
+			,
+			upsertPageCommand,
+			,
+			deleteFileCommand,
+		] = await transform({
+			'/opt/project/pages/index.tsx': index,
+			'/opt/project/pages/_document.tsx': '',
+			'/opt/project/pages/_app.tsx': '',
+		});
 
 		deepStrictEqual(upsertLayoutCommand?.kind, 'upsertFile');
 		deepStrictEqual(

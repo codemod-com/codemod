@@ -40,7 +40,7 @@
 	"dependencies": {
 		"@codemod-com/filemod": "workspace:*",
 		"@effect/schema": "^0.52.0",
-		"glob": "^10.3.10",
+		"fast-glob": "3.3.2",
 		"jscodeshift": "^0.15.1"
 	}
 }
