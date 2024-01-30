@@ -1,8 +1,7 @@
 import { createHash } from 'crypto';
 import { deepStrictEqual } from 'node:assert';
 import { join } from 'node:path';
-import type { FSOption, GlobOptionsWithFileTypesUnset } from 'glob';
-import { glob } from 'glob';
+import { FileSystemAdapter, glob } from 'fast-glob';
 import { createFsFromVolume, Volume } from 'memfs';
 import { describe, it } from 'vitest';
 import type {
@@ -52,16 +51,15 @@ describe('unifiedFileSystem', function () {
 		const buildPathHashDigest = (path: string) =>
 			buildHashDigest(path) as PathHashDigest;
 
-		// @ts-expect-error type mismatch
-		const fsOption: FSOption = ifs;
+		const fileSystemAdapter = ifs as Partial<FileSystemAdapter>;
 
 		const globWrapper = (globArguments: GlobArguments) => {
 			return glob(globArguments.includePatterns.slice(), {
 				absolute: true,
 				cwd: globArguments.currentWorkingDirectory,
 				ignore: globArguments.excludePatterns.slice(),
-				fs: fsOption,
-			} satisfies GlobOptionsWithFileTypesUnset);
+				fs: fileSystemAdapter,
+			});
 		};
 
 		const readDirectory = async (
@@ -119,9 +117,9 @@ describe('unifiedFileSystem', function () {
 		);
 
 		deepStrictEqual(filePaths, [
-			'/opt/project/script_a.sh',
-			'/opt/project/package.json',
 			'/opt/project/README.md',
+			'/opt/project/package.json',
+			'/opt/project/script_a.sh',
 		]);
 	});
 });

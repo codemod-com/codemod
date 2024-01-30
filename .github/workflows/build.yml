@@ -21,7 +21,7 @@ jobs:
                   version: 8
             - name: Install dependencies
               run: pnpm install
-            - name: Build the CJS files
+            - name: Build projects
               run: pnpm build
             - name: Add new READMEs to website
               run: |

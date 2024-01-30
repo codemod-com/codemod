@@ -4302,15 +4302,12 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^1.0.1
         version: 1.2.1(vitest@1.0.4)
-      glob:
-        specifier: 10.3.10
-        version: 10.3.10
+      fast-glob:
+        specifier: 3.3.2
+        version: 3.3.2
       memfs:
         specifier: 4.6.0
         version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
-      path-scurry:
-        specifier: 1.10.1
-        version: 1.10.1
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@types/node@20.8.5)(typescript@5.3.3)

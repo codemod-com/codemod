@@ -186,11 +186,17 @@ export class UnifiedFileSystem {
 		includePatterns: readonly string[],
 		excludePatterns: readonly string[],
 	): Promise<readonly string[]> {
-		const paths = await this.__glob({
-			includePatterns,
-			excludePatterns,
-			currentWorkingDirectory: directoryPath,
-		});
+		const paths = (
+			await this.__glob({
+				includePatterns,
+				excludePatterns,
+				currentWorkingDirectory: directoryPath,
+			})
+		)
+			// fast-glob has hardcoded separator pathSegmentSeparator: '/', so for windows platform we need to replace backslashes to forwardslashes
+			.map((path) =>
+				process.platform === 'win32' ? path.replace(/\//g, '\\') : path,
+			);
 
 		paths.forEach((path) => {
 			const unifiedFile: UnifiedFile = {
