@@ -6,7 +6,7 @@
 	"devDependencies": {
 		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
-		"@codemod-com/filemod": "2.0.0",
+		"@codemod-com/filemod": "workspace:*",
 		"@types/jscodeshift": "^0.11.10",
 		"esbuild": "0.19.5",
 		"jscodeshift": "^0.15.1",

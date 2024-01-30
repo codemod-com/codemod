@@ -7,7 +7,7 @@
 		"typescript": "^5.2.2",
 		"esbuild": "0.19.5",
 		"ts-node": "^10.9.1",
-		"@codemod-com/filemod": "2.0.0",
+		"@codemod-com/filemod": "workspace:*",
 		"memfs": "^4.6.0",
 		"ts-morph": "^19.0.0",
 		"jscodeshift": "0.14.0",

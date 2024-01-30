@@ -1,3 +1,4 @@
+import { dirname, join } from 'node:path';
 import { Worker } from 'node:worker_threads';
 import { FormattedFileCommand } from './fileCommands.js';
 import { MainThreadMessage } from './mainThreadMessages.js';
@@ -43,7 +44,9 @@ export class WorkerThreadManager {
 			this.__idleWorkerIds.push(i);
 			this.__workerTimestamps.push(Date.now());
 
-			const filename = process.env.TEST ? './dist/index.cjs' : __filename;
+			const filename = process.env.TEST
+				? join(dirname(__filename), '../dist/index.cjs')
+				: __filename;
 
 			const worker = new Worker(filename);
 
@@ -78,7 +81,7 @@ export class WorkerThreadManager {
 					this.__workers[i]?.terminate();
 
 					const filename = process.env.TEST
-						? './dist/index.cjs'
+						? join(dirname(__filename), '../dist/index.cjs')
 						: __filename;
 
 					const worker = new Worker(filename);

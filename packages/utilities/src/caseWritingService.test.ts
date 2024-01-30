@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createHash, randomBytes } from 'node:crypto';
 import { open, rm } from 'node:fs/promises';
-import { describe, expect, it } from 'vitest';
+import { afterAll, describe, expect, it } from 'vitest';
 import { CaseReadingService } from './caseReadingService.js';
 import {
 	CaseWritingService,
@@ -74,9 +74,11 @@ describe('CaseWritingService', function () {
 		targetPathUri: randomBytes(10).toString('base64url'),
 	};
 
-	it('should write the case', async function () {
-		const pathLike = `./${randomBytes(20).toString('base64url')}.data`;
+	const pathLike = `./${randomBytes(20).toString('base64url')}.data`;
 
+	afterAll(() => rm(pathLike, { force: true }));
+
+	it('should write the case', async function () {
 		const writingFileHandle = await open(pathLike, 'w');
 
 		try {

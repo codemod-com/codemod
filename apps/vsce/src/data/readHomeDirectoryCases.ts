@@ -1,8 +1,8 @@
 import EventEmitter from 'events';
 import { homedir } from 'os';
 import { join } from 'path';
-import type { SurfaceAgnosticJob } from '@codemod-com/utilities';
-import { CaseReadingService, JOB_KIND } from '@codemod-com/utilities';
+import type { SurfaceAgnosticJob } from '@intuita-inc/utilities';
+import { CaseReadingService, JOB_KIND } from '@intuita-inc/utilities';
 import { FileType, Uri, window, workspace } from 'vscode';
 import type { Store } from '.';
 import type { Case, CaseHash } from '../cases/types';

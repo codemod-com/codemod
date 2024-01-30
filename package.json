@@ -34,6 +34,7 @@
 		"lint:eslint": "eslint --fix .",
 		"lint:prettier": "prettier --write .",
 		"test": "vitest run test.ts",
+		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage"
 	},
 	"devDependencies": {

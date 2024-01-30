@@ -3,7 +3,8 @@
 	"version": "2.0.0",
 	"description": "The filemod by Codemod",
 	"type": "module",
-	"exports": "./dist/index.js",
+	"main": "./src/index.ts",
+	"exports": "./src/index.ts",
 	"types": "./dist/index.d.ts",
 	"files": [
 		"./dist",
