@@ -2,7 +2,7 @@
 
 This page lists highlights, releases, bug fixes, and progress for official releases of Codemod VSCode Extension.
 
-> **Tip:** If there are features you would like to see in the upcoming releases, please let us know though our [feedback page](https://feedback.intuita.io), or directly through our [Slack community](https://intuita.io/community).
+> **Tip:** If there are features you would like to see in the upcoming releases, please let us know though our [feedback page](https://feedback.codemod.com/), or directly through our [Slack community](https://codemod.com/community).
 
 ## Version 0.37.0
 

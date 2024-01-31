@@ -34,6 +34,7 @@ export const validateAccessToken = async (
 ): Promise<boolean> => {
 	try {
 		const response = await axios.post(
+			// TODO this should be backend.codemod.com
 			'https://telemetry.intuita.io/validateAccessToken',
 			{},
 			{
@@ -62,8 +63,9 @@ export const createIssue = async (
 	onFail: () => Promise<void>,
 ): Promise<{ status: number; html_url: string | null }> => {
 	// call API to create Github Issue
-	const codemodRegistryRepo =
-		'https://github.com/codemod-com/codemod-registry';
+	const codemodRegistryRepo = 'https://github.com/codemod-com/codemod';
+
+	// TODO point to backend.codemod.com
 	const result = await axios.post(
 		'https://telemetry.intuita.io/sourceControl/github/issues',
 		{
@@ -100,7 +102,7 @@ export const createIssue = async (
 	);
 	const { html_url } = validation.right;
 	if (decision === 'See issue in Github') {
-		commands.executeCommand('intuita.redirect', html_url);
+		commands.executeCommand('codemod.redirect', html_url);
 	}
 	return {
 		status: 200,
@@ -126,7 +128,7 @@ const routeUserToStudioToAuthenticate = async () => {
 	const url = new URL('https://codemod.studio');
 	url.search = searchParams.toString();
 
-	commands.executeCommand('intuita.redirect', url);
+	commands.executeCommand('codemod.redirect', url);
 };
 
 export class MainViewProvider implements WebviewViewProvider {
@@ -302,7 +304,7 @@ export class MainViewProvider implements WebviewViewProvider {
 
 		if (message.kind === 'webview.global.discardSelected') {
 			commands.executeCommand(
-				'intuita.discardJobs',
+				'codemod.discardJobs',
 				message.caseHashDigest,
 			);
 		}
@@ -313,7 +315,7 @@ export class MainViewProvider implements WebviewViewProvider {
 
 		if (message.kind === 'webview.global.applySelected') {
 			commands.executeCommand(
-				'intuita.sourceControl.saveStagedJobsToTheFileSystem',
+				'codemod.sourceControl.saveStagedJobsToTheFileSystem',
 				message.caseHashDigest,
 			);
 		}
@@ -346,12 +348,12 @@ export class MainViewProvider implements WebviewViewProvider {
 		}
 
 		if (message.kind === 'webview.main.signOut') {
-			commands.executeCommand('intuita.signOut');
+			commands.executeCommand('codemod.signOut');
 		}
 
 		if (message.kind === 'webview.main.removePrivateCodemod') {
 			commands.executeCommand(
-				'intuita.removePrivateCodemod',
+				'codemod.removePrivateCodemod',
 				message.hashDigest,
 			);
 		}
@@ -434,7 +436,7 @@ export class MainViewProvider implements WebviewViewProvider {
 				return;
 			}
 
-			commands.executeCommand('intuita.executeCodemod', uri, hashDigest);
+			commands.executeCommand('codemod.executeCodemod', uri, hashDigest);
 		}
 
 		if (message.kind === 'webview.codemodList.dryRunPrivateCodemod') {
@@ -457,7 +459,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			const uri = Uri.file(executionPath);
 
 			commands.executeCommand(
-				'intuita.executePrivateCodemod',
+				'codemod.executePrivateCodemod',
 				uri,
 				hashDigest,
 				message.name,

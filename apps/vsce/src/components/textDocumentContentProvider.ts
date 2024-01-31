@@ -9,7 +9,7 @@ import {
 export class IntuitaTextDocumentContentProvider
 	implements TextDocumentContentProvider
 {
-	readonly URI = Uri.parse('intuita:jscodeshiftCodemod.ts');
+	readonly URI = Uri.parse('codemod:jscodeshiftCodemod.ts');
 	readonly #onDidChangeEmitter = new EventEmitter<Uri>();
 	readonly onDidChange: Event<Uri> | undefined = undefined;
 
