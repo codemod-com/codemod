@@ -158,4 +158,81 @@ describe('use-template-literals', () => {
 			);
 		});
 	});
+
+	describe('variables declared with const', function () {
+		it('one variable', function () {
+			const INPUT = `
+				const name = 'John';
+				const greeting = 'Hello, ' + name + '!';
+			`;
+
+			const OUTPUT = `
+				const name = 'John';
+				const greeting = \`Hello, \${name}!\`;
+			`;
+			const fileInfo: FileInfo = {
+				path: 'index.ts',
+				source: INPUT,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi('tsx'));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ''),
+				OUTPUT.replace(/\W/gm, ''),
+			);
+		});
+
+		it('two variables', function () {
+			const INPUT = `
+				const name = 'John';
+				const age = 12;
+				const greeting = name + 'is ' + age + ' years old!';
+			`;
+
+			const OUTPUT = `
+				const name = 'John';
+				const age = 12;
+				const greeting = \`\${name} is \${age} years old!\`;
+			`;
+			const fileInfo: FileInfo = {
+				path: 'index.ts',
+				source: INPUT,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi('tsx'));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ''),
+				OUTPUT.replace(/\W/gm, ''),
+			);
+		});
+
+		it('three variables', function () {
+			const INPUT = `
+				const name = 'John';
+				const age = 12;
+				const gender = 'male';
+				const greeting = name + age + gender;
+			`;
+
+			const OUTPUT = `
+				const name = 'John';
+				const age = 12;
+				const gender = 'male';
+				const greeting = \`\${name}\${age}\${gender}\`;
+			`;
+			const fileInfo: FileInfo = {
+				path: 'index.ts',
+				source: INPUT,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi('tsx'));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ''),
+				OUTPUT.replace(/\W/gm, ''),
+			);
+		});
+	});
 });
