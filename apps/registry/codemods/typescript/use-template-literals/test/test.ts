@@ -1,8 +1,8 @@
-import transform from '../src/index.js';
-import { describe, it } from 'vitest';
-import { FileInfo } from 'jscodeshift';
 import assert from 'node:assert';
 import { buildApi } from '@codemod-com/utilities';
+import { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
 describe('use-template-literals', () => {
 	describe('variables declared with let', function () {
