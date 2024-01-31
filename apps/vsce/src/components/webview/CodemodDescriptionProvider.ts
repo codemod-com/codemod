@@ -18,7 +18,7 @@ export class CodemodDescriptionProvider {
 			.update(name)
 			.digest('base64url');
 
-		const path = join(homedir(), '.intuita', hashDigest, 'description.md');
+		const path = join(homedir(), '.codemod', hashDigest, 'description.md');
 
 		const data = this.__descriptions.get(hash) ?? null;
 

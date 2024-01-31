@@ -19,11 +19,11 @@ describe('TarService', function () {
 
 		const buffer = await readFile(path);
 
-		await tarService.extract('/home/user/.intuita', buffer);
+		await tarService.extract('/home/user/.codemod', buffer);
 
 		{
 			const stats = await ifs.promises.stat(
-				'/home/user/.intuita/names.json',
+				'/home/user/.codemod/names.json',
 			);
 
 			equal(stats.size.toString(), 1814);
@@ -31,7 +31,7 @@ describe('TarService', function () {
 
 		{
 			const stats = await ifs.promises.stat(
-				'/home/user/.intuita/-wqkAQr7ILgYeTRozWTEgiUvmSY/config.json',
+				'/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/config.json',
 			);
 
 			equal(stats.size.toString(), 45);
@@ -39,18 +39,18 @@ describe('TarService', function () {
 
 		{
 			const stats = await ifs.promises.stat(
-				'/home/user/.intuita/-wqkAQr7ILgYeTRozWTEgiUvmSY/index.cjs',
+				'/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/index.cjs',
 			);
 
 			equal(stats.size.toString(), 18020);
 		}
 
 		// do it again to simulate another command invocation
-		await tarService.extract('/home/user/.intuita', buffer);
+		await tarService.extract('/home/user/.codemod', buffer);
 
 		{
 			const stats = await ifs.promises.stat(
-				'/home/user/.intuita/names.json',
+				'/home/user/.codemod/names.json',
 			);
 
 			equal(stats.size.toString(), 1814);

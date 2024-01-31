@@ -140,7 +140,7 @@ const build = async () => {
 
 	const buildDirectoryPath =
 		buildTarget === 'homedir'
-			? join(homedir(), '.intuita')
+			? join(homedir(), '.codemod')
 			: join(cwd, './builder/dist');
 
 	await mkdir(buildDirectoryPath, { recursive: true });

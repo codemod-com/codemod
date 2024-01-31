@@ -449,7 +449,7 @@ f_long-description: >-
 			: ''
   }${
 		vscodeHashDigest
-			? `\nf_vs-code-link: vscode://intuita.intuita-vscode-extension/showCodemod?chd=${vscodeHashDigest}`
+			? `\nf_vs-code-link: vscode://codemod.codemod-vscode-extension/showCodemod?chd=${vscodeHashDigest}`
 			: ''
   }${cliCommand ? `\nf_cli-command: ${cliCommand}` : ''}${
 		framework ? `\nf_framework: cms/framework/${framework}.md` : ''

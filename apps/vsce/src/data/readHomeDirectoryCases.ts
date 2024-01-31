@@ -209,7 +209,7 @@ export const readSingleHomeDirectoryCase = async (
 ) => {
 	const path = join(
 		homedir(),
-		'.intuita',
+		'.codemod',
 		'cases',
 		caseHashDigest,
 		'case.data',
@@ -246,7 +246,7 @@ export const readHomeDirectoryCases = async (
 	const eventEmitter: HomeDirectoryEventEmitter = new EventEmitter();
 
 	eventEmitter.once('start', async () => {
-		const casesDirectoryPath = join(homedir(), '.intuita', 'cases');
+		const casesDirectoryPath = join(homedir(), '.codemod', 'cases');
 
 		const casesDirectoryUri = Uri.file(casesDirectoryPath);
 

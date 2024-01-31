@@ -5,7 +5,7 @@ import { revokeCLIToken } from './apis.js';
 import type { PrinterBlueprint } from './printer.js';
 
 export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
-	const tokenTxtPath = join(homedir(), '.intuita', 'token.txt');
+	const tokenTxtPath = join(homedir(), '.codemod', 'token.txt');
 
 	let token: string;
 

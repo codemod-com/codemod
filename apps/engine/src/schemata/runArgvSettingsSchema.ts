@@ -50,7 +50,7 @@ export const parseRunSettings = (
 
 	const outputDirectoryPath = join(
 		homeDirectoryPath,
-		'.intuita',
+		'.codemod',
 		'cases',
 		caseHashDigest.toString('base64url'),
 	);
