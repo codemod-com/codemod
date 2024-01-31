@@ -1,5 +1,5 @@
 {
-	"extends": "@codemod-registry/tsconfig",
+	"extends": "@codemod-com/tsconfig/codemod.json",
 	"include": [
 		"./src/**/*.ts",
 		"./src/**/*.js",
