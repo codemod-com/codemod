@@ -1,6 +1,6 @@
 :warning::warning: Please do not include any proprietary code in the pull request. :warning::warning:
 
-For your codemod pull request to be compatible with the Intuita platform, it must follow the following structure:
+For your codemod pull request to be compatible with the Codemod.com platform, it must follow the following structure:
 
 ```bash
 ├── src

@@ -28,4 +28,4 @@ filemod
 
 ### Owner
 
-[Intuita](https://github.com/codemod-com)
+[Codemod.com](https://github.com/codemod-com)

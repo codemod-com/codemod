@@ -10,7 +10,7 @@ The codemod expects the following arguments:
 -   `newNamespace` is the name of the namespace to which the keys are copied,
 -   `keys` is a comma-separated list of keys.
 
-You need to pass these arguments using the [Codemod Arguments' settings](https://docs.intuita.io/docs/vs-code-extension/advanced-usage#set-codemod-arguments) in Intuita VS Code extension or [Intuita CLI](https://docs.intuita.io/docs/cli/quickstart).
+You need to pass these arguments using the [Codemod Arguments' settings](https://docs.codemod.com/docs/vs-code-extension/advanced-usage#set-codemod-arguments) in Codemod VSCode extension or [Codemod CLI](https://docs.codemod.com/docs/cli/quickstart).
 
 ## Example:
 
@@ -77,4 +77,4 @@ Filemod
 
 ### Owner
 
-[Intuita](https://github.com/codemod-com)
+[Codemod.com](https://github.com/codemod-com)

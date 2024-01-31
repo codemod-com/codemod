@@ -56,6 +56,6 @@ repomod
 
 ### Owner
 
-Intuita
+Codemod.com
 
 ### Links for more info

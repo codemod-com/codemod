@@ -34,11 +34,11 @@ Mention the codemod you ran which resulted in incorrect output. [e.g. `next/13/a
 
 ### Estimated severity
 
-A general estimation of the severity of this issue. This can be estimated based on the number of files affected and the difficulty of manually fixing the faulty output while reviewing Intuita's dry run results.
+A general estimation of the severity of this issue. This can be estimated based on the number of files affected and the difficulty of manually fixing the faulty output while reviewing Codemod.com's dry run results.
 
 ### Environment:
 
--   Intuita CLI version: [e.g. v0.0.21]
+-   Codemod CLI version: [e.g. v0.0.21]
 -   OS: [e.g. MacOS 13.0.1]
 -   Node.js version: [e.g. v16.16.0]
 

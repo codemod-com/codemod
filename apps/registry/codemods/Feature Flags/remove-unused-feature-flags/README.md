@@ -7,7 +7,7 @@ This experimental codemod replaces function calls in a for of `await functionNam
 -   `functionName` is the target function name (default: `isFlagEnabled`),
 -   `featureFlagName` is the target feature flag name.
 
-You need to pass these arguments using the Codemod Arguments' settings or using the Intuita CLI.
+You need to pass these arguments using the Codemod Arguments' settings or using the Codemod CLI.
 
 ## Example
 
@@ -56,6 +56,6 @@ jscodeshift
 
 ### Owner
 
-Intuita
+Codemod.com
 
 ### Links for more info

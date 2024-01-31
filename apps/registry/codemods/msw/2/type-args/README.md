@@ -116,4 +116,4 @@ v1.0.0
 
 ### Owner
 
-[Intuita](https://github.com/codemod-com)
+[Codemod.com](https://github.com/codemod-com)
