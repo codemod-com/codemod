@@ -36,7 +36,7 @@ export const App = (
 		return (
 			<p className={styles.welcomeMessage}>
 				No change to review! Run some codemods via Codemod Discovery or
-				VS Code Command & check back later!
+				VSCode Command & check back later!
 			</p>
 		);
 	}
@@ -48,7 +48,7 @@ export const App = (
 		) : (
 			<p className={styles.welcomeMessage}>
 				No change to review! Run some codemods via Codemod Discovery or
-				VS Code Command & check back later!
+				VSCode Command & check back later!
 			</p>
 		);
 	}

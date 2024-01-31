@@ -38,7 +38,7 @@ A general estimation of the severity of this issue. This can be estimated based 
 
 ### Environment:
 
--   Codemod.com CLI version: [e.g. v0.0.21]
+-   Codemod CLI version: [e.g. v0.0.21]
 -   OS: [e.g. MacOS 13.0.1]
 -   Node.js version: [e.g. v16.16.0]
 

@@ -8,7 +8,7 @@ This experimental codemod replaces function calls in a form of `await functionNa
 -   `functionName` is the name of the feature flag builder function,
 -   `featureFlagName` is the target feature flag name.
 
-You need to pass these arguments using the Codemod Arguments' settings or using the Codemod.com CLI.
+You need to pass these arguments using the Codemod Arguments' settings or using the Codemod CLI.
 
 ## Example
 
