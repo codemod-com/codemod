@@ -1186,10 +1186,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						const url = new URL('https://codemod.studio');
 						url.search = searchParams.toString();
 
-						vscode.commands.executeCommand(
-							'intcodemoduita.redirect',
-							url,
-						);
+						vscode.commands.executeCommand('codemod.redirect', url);
 					};
 
 					vscode.commands.executeCommand(

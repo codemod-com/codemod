@@ -26,7 +26,7 @@ export const createClearStateCommand =
 					!job ||
 					!doesJobAddNewFile(job.kind) ||
 					job.newContentUri === null ||
-					job.newContentUri.includes('.codemod/cases')
+					job.newContentUri.includes('.intuita/cases')
 				) {
 					continue;
 				}
