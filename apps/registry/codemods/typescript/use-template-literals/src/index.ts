@@ -1,8 +1,9 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, BinaryExpression, Expression, FileInfo } from 'jscodeshift';
 
-const isStringLiteral = (node) => node && node.type === 'StringLiteral';
+const isStringLiteral = (node: Expression) =>
+	node && node.type === 'StringLiteral';
 
-const transformHelper = (node, api: API) => {
+const transformHelper = (node: BinaryExpression, api: API) => {
 	const j = api.jscodeshift;
 	const leftNode = node.left;
 	const rightNode = node.right;
@@ -23,10 +24,7 @@ const transformHelper = (node, api: API) => {
 		[left, right],
 	);
 };
-/**
- * @param {import('jscodeshift').FileInfo} file
- * @param {import('jscodeshift').API} api
- */
+
 export default function transformer(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
 	const root = j(file.source);
