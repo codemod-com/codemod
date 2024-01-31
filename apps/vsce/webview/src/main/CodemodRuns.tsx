@@ -55,13 +55,13 @@ export const CodemodRuns = (
 		commands.push({
 			icon: 'circle-slash',
 			title: 'Stop clearing',
-			command: 'intuita.stopStateClearing',
+			command: 'codemodCom.stopStateClearing',
 		});
 	} else {
 		commands.push({
 			icon: 'clear-all',
 			title: 'Clear all',
-			command: 'intuita.clearState',
+			command: 'codemodCom.clearState',
 		});
 	}
 

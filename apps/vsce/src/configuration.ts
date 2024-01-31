@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 
 export const getConfiguration = () => {
-	const configuration = vscode.workspace.getConfiguration('intuita');
+	const configuration = vscode.workspace.getConfiguration('codemod');
 
 	const fileLimit = configuration.get<number>('fileLimit') ?? 100;
 
@@ -32,7 +32,7 @@ export const setConfigurationProperty = async (
 	value: unknown,
 	configurationTarget: vscode.ConfigurationTarget,
 ) => {
-	const configuration = vscode.workspace.getConfiguration('intuita');
+	const configuration = vscode.workspace.getConfiguration('codemod');
 
 	return configuration.update(propertyName, value, configurationTarget);
 };

@@ -46,7 +46,7 @@ const renderActionButtons = (
 
 			if (!isPrivate) {
 				navigator.clipboard.writeText(
-					`vscode://intuita.intuita-vscode-extension/showCodemod?chd=${hashDigest}`,
+					`vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				);
 				vscode.postMessage({
 					kind: 'webview.global.showInformationMessage',

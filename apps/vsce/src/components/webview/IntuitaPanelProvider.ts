@@ -387,7 +387,7 @@ export class IntuitaPanelProvider {
 						const url = new URL('https://codemod.studio');
 						url.search = searchParams.toString();
 
-						commands.executeCommand('intuita.redirect', url);
+						commands.executeCommand('codemod.redirect', url);
 					}
 
 					if (

@@ -1,10 +1,10 @@
 {
-	"name": "@codemod-com/vscode-extension",
+	"name": "codemod-vscode-extension",
 	"displayName": "Codemod",
 	"description": " Discover, run & manage codemods faster & easier.",
 	"version": "0.38.11",
-	"publisher": "Intuita",
-	"icon": "img/intuita_square128.png",
+	"publisher": "codemod",
+	"icon": "img/codemod_square128.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/codemod-com/codemod/tree/main/apps/vsce"
@@ -39,74 +39,74 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "intuita.showIntuitaSettings",
+				"command": "codemod.showIntuitaSettings",
 				"title": "Configure Intuita settings",
 				"icon": "$(settings-gear)"
 			},
 			{
-				"command": "intuita.signIn",
+				"command": "codemod.signIn",
 				"title": "Sign in",
 				"icon": "$(sign-in)"
 			},
 			{
-				"command": "intuita.handleSignedInUser",
+				"command": "codemod.handleSignedInUser",
 				"title": "Signed in",
 				"icon": "$(accounts-view-bar-icon)"
 			},
 			{
-				"command": "intuita.clearOutputFiles",
+				"command": "codemod.clearOutputFiles",
 				"title": "Intuita: clear output files"
 			},
 			{
-				"command": "intuita.clearState",
+				"command": "codemod.clearState",
 				"title": "Clear All",
 				"icon": "$(clear-all)"
 			},
 			{
-				"command": "intuita.rejectCase",
+				"command": "codemod.rejectCase",
 				"title": "✗ Dismiss"
 			},
 			{
-				"command": "intuita.executeAsCodemod",
+				"command": "codemod.executeAsCodemod",
 				"title": "Intuita: Run as a codemod"
 			},
 			{
-				"command": "intuita.executeAsPiranhaRule",
+				"command": "codemod.executeAsPiranhaRule",
 				"title": "Intuita: Run as a Piranha Rule"
 			},
 			{
-				"command": "intuita.executeCodemod",
+				"command": "codemod.executeCodemod",
 				"title": "Intuita: Execute Codemod"
 			},
 			{
-				"command": "intuita.executeCodemodWithinPath",
+				"command": "codemod.executeCodemodWithinPath",
 				"title": "Intuita: Execute Codemod On Path"
 			},
 			{
-				"command": "intuita.sendAsBeforeSnippet",
+				"command": "codemod.sendAsBeforeSnippet",
 				"title": "Intuita: Send as Before Snippet to the Codemod Studio"
 			},
 			{
-				"command": "intuita.sendAsAfterSnippet",
+				"command": "codemod.sendAsAfterSnippet",
 				"title": "Intuita: Send as After Snippet to the Codemod Studio"
 			}
 		],
 		"configuration": {
-			"title": "Intuita VSCode Extension Configuration",
+			"title": "Codemod VSCode Extension Configuration",
 			"properties": {
-				"intuita.fileLimit": {
+				"codemod.fileLimit": {
 					"order": 1,
 					"type": "number",
 					"default": 2000,
 					"description": "The maximum number of files to execute any codemod over"
 				},
-				"intuita.workerThreadCount": {
+				"codemod.workerThreadCount": {
 					"order": 2,
 					"type": "number",
 					"default": 4,
 					"description": "The number of worker threads to execute any codemod over"
 				},
-				"intuita.include": {
+				"codemod.include": {
 					"order": 3,
 					"type": "array",
 					"description": "The glob pattern to use when searching for files to execute codemods over",
@@ -114,7 +114,7 @@
 						"**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}"
 					]
 				},
-				"intuita.exclude": {
+				"codemod.exclude": {
 					"order": 4,
 					"type": "array",
 					"description": "The glob pattern to use when searching for files to exclude from codemod execution",
@@ -122,7 +122,7 @@
 						"**/node_modules/**/*.*"
 					]
 				},
-				"intuita.formatWithPrettier": {
+				"codemod.formatWithPrettier": {
 					"order": 5,
 					"type": "boolean",
 					"description": "Use the Prettier formatter with the configuration derived from the location of a file to be formatter."
@@ -133,15 +133,15 @@
 			"activitybar": [
 				{
 					"id": "intuitaViewId",
-					"title": "Intuita",
-					"icon": "img/intuita.svg"
+					"title": "Codemod",
+					"icon": "img/codemod.svg"
 				}
 			],
 			"panel": [
 				{
 					"id": "intuitaPanelViewContainerId",
-					"title": "Intuita",
-					"icon": "img/intuita.svg"
+					"title": "Codemod",
+					"icon": "img/codemod.svg"
 				}
 			]
 		},
@@ -166,72 +166,72 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "intuita.showIntuitaSettings",
+					"command": "codemod.showIntuitaSettings",
 					"when": "view == intuitaMainView",
 					"group": "navigation"
 				},
 				{
-					"command": "intuita.signIn",
-					"when": "view == intuitaMainView && !intuita.signedIn",
+					"command": "codemod.signIn",
+					"when": "view == intuitaMainView && !codemod.signedIn",
 					"group": "navigation"
 				},
 				{
-					"command": "intuita.handleSignedInUser",
-					"when": "view == intuitaMainView && intuita.signedIn",
+					"command": "codemod.handleSignedInUser",
+					"when": "view == intuitaMainView && codemod.signedIn",
 					"group": "navigation"
 				}
 			],
 			"commandPalette": [
 				{
-					"command": "intuita.clearState",
+					"command": "codemod.clearState",
 					"when": "false"
 				},
 				{
-					"command": "intuita.rejectCase",
+					"command": "codemod.rejectCase",
 					"when": "false"
 				},
 				{
-					"command": "intuita.executeAsCodemod",
+					"command": "codemod.executeAsCodemod",
 					"when": "false"
 				},
 				{
-					"command": "intuita.executeAsPiranhaRule",
+					"command": "codemod.executeAsPiranhaRule",
 					"when": "false"
 				},
 				{
-					"command": "intuita.executeCodemod",
+					"command": "codemod.executeCodemod",
 					"when": "false"
 				},
 				{
-					"command": "intuita.executeCodemodWithinPath",
+					"command": "codemod.executeCodemodWithinPath",
 					"when": "editorIsOpen"
 				}
 			],
 			"editor/context": [
 				{
-					"command": "intuita.sendAsBeforeSnippet",
+					"command": "codemod.sendAsBeforeSnippet",
 					"when": "editorHasSelection",
 					"group": "9_cutcopypaste"
 				},
 				{
-					"command": "intuita.sendAsAfterSnippet",
+					"command": "codemod.sendAsAfterSnippet",
 					"when": "editorHasSelection",
 					"group": "9_cutcopypaste"
 				}
 			],
 			"explorer/context": [
 				{
-					"command": "intuita.executeAsCodemod",
+					"command": "codemod.executeAsCodemod",
 					"group": "2_workspace",
 					"when": "resourceExtname == .js || resourceExtname == .ts"
 				},
 				{
-					"command": "intuita.executeAsPiranhaRule",
+					"command": "codemod.executeAsPiranhaRule",
 					"group": "2_workspace",
 					"when": "explorerResourceIsFolder"
 				},
 				{
-					"command": "intuita.executeCodemodWithinPath",
+					"command": "codemod.executeCodemodWithinPath",
 					"group": "2_workspace",
 					"when": "true"
 				}

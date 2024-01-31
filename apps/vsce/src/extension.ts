@@ -77,7 +77,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const accessToken = userService.getLinkedToken();
 	if (accessToken !== null) {
 		const valid = await validateAccessToken(accessToken);
-		vscode.commands.executeCommand('setContext', 'intuita.signedIn', valid);
+		vscode.commands.executeCommand('setContext', 'codemod.signedIn', valid);
 
 		if (!valid) {
 			userService.unlinkUserIntuitaAccount();
@@ -96,7 +96,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				const url = new URL('https://codemod.studio');
 				url.search = searchParams.toString();
 
-				vscode.commands.executeCommand('intuita.redirect', url);
+				vscode.commands.executeCommand('codemod.redirect', url);
 			}
 		}
 	}
@@ -201,9 +201,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			15 * 60 * 1000,
 		);
 	});
-	// this is only used by the intuita panel's webview
+	// this is only used by the codemod panel's webview
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.redirect', (arg0) => {
+		vscode.commands.registerCommand('codemod.redirect', (arg0) => {
 			try {
 				vscode.env.openExternal(vscode.Uri.parse(arg0));
 			} catch (e) {
@@ -213,7 +213,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.showIntuitaSettings', () => {
+		vscode.commands.registerCommand('codemod.showIntuitaSettings', () => {
 			vscode.commands.executeCommand(
 				'workbench.action.openSettings',
 				'Intuita',
@@ -222,7 +222,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.signIn', () => {
+		vscode.commands.registerCommand('codemod.signIn', () => {
 			const searchParams = new URLSearchParams();
 
 			searchParams.set(
@@ -233,16 +233,16 @@ export async function activate(context: vscode.ExtensionContext) {
 			const url = new URL('https://codemod.studio');
 			url.search = searchParams.toString();
 
-			vscode.commands.executeCommand('intuita.redirect', url);
+			vscode.commands.executeCommand('codemod.redirect', url);
 		}),
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.signOut', () => {
+		vscode.commands.registerCommand('codemod.signOut', () => {
 			userService.unlinkUserIntuitaAccount();
 			vscode.commands.executeCommand(
 				'setContext',
-				'intuita.signedIn',
+				'codemod.signedIn',
 				false,
 			);
 			store.dispatch(
@@ -257,7 +257,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.handleSignedInUser', () => {
+		vscode.commands.registerCommand('codemod.handleSignedInUser', () => {
 			store.dispatch(
 				actions.setToaster({
 					toastId: 'handleSignedInUser',
@@ -271,7 +271,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.clearOutputFiles',
+			'codemod.clearOutputFiles',
 			async () => {
 				const { storageUri } = context;
 
@@ -287,7 +287,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.sourceControl.saveStagedJobsToTheFileSystem',
+			'codemod.sourceControl.saveStagedJobsToTheFileSystem',
 			async (arg0: unknown) => {
 				try {
 					store.dispatch(actions.setApplySelectedInProgress(true));
@@ -340,7 +340,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
 						commandName:
-							'intuita.sourceControl.saveStagedJobsToTheFileSystem',
+							'codemod.sourceControl.saveStagedJobsToTheFileSystem',
 					});
 					vscode.window.showErrorMessage(message);
 				} finally {
@@ -351,7 +351,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.discardJobs', async (arg0) => {
+		vscode.commands.registerCommand('codemod.discardJobs', async (arg0) => {
 			try {
 				const validation = caseHashCodec.decode(arg0);
 
@@ -394,14 +394,14 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				vscodeTelemetry.sendError({
 					kind: 'failedToExecuteCommand',
-					commandName: 'intuita.discardJobs',
+					commandName: 'codemod.discardJobs',
 				});
 			}
 		}),
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.rejectCase', async (arg0) => {
+		vscode.commands.registerCommand('codemod.rejectCase', async (arg0) => {
 			try {
 				const caseHash: string | null =
 					typeof arg0 === 'string' ? arg0 : null;
@@ -422,7 +422,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				vscodeTelemetry.sendError({
 					kind: 'failedToExecuteCommand',
-					commandName: 'intuita.rejectCase',
+					commandName: 'codemod.rejectCase',
 				});
 			}
 		}),
@@ -430,7 +430,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.executeAsCodemod',
+			'codemod.executeAsCodemod',
 			async (codemodUri: vscode.Uri) => {
 				try {
 					const targetUri =
@@ -475,7 +475,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
-						commandName: 'intuita.executeAsCodemod',
+						commandName: 'codemod.executeAsCodemod',
 					});
 				}
 			},
@@ -484,7 +484,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.executeAsPiranhaRule',
+			'codemod.executeAsPiranhaRule',
 			async (configurationUri: vscode.Uri) => {
 				const fileStat =
 					await vscode.workspace.fs.stat(configurationUri);
@@ -542,7 +542,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.executeCodemod',
+			'codemod.executeCodemod',
 			async (targetUri: vscode.Uri, codemodHash: CodemodHash) => {
 				try {
 					const { storageUri } = context;
@@ -622,7 +622,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
-						commandName: 'intuita.executeCodemod',
+						commandName: 'codemod.executeCodemod',
 					});
 				}
 			},
@@ -631,7 +631,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.executeCodemodWithinPath',
+			'codemod.executeCodemodWithinPath',
 			async (uriArg: vscode.Uri | null | undefined) => {
 				try {
 					const { storageUri } = context;
@@ -782,7 +782,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
-						commandName: 'intuita.executeCodemodWithinPath',
+						commandName: 'codemod.executeCodemodWithinPath',
 					});
 				}
 			},
@@ -791,7 +791,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.executePrivateCodemod',
+			'codemod.executePrivateCodemod',
 			async (
 				targetUri: vscode.Uri,
 				codemodHash: CodemodHash,
@@ -845,7 +845,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
-						commandName: 'intuita.executeImportedModOnPath',
+						commandName: 'codemod.executeImportedModOnPath',
 					});
 				}
 			},
@@ -854,20 +854,20 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.clearState',
+			'codemod.clearState',
 			createClearStateCommand({ fileService, store }),
 		),
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('intuita.stopStateClearing', () => {
+		vscode.commands.registerCommand('codemod.stopStateClearing', () => {
 			store.dispatch(actions.onStateCleared());
 		}),
 	);
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.removePrivateCodemod',
+			'codemod.removePrivateCodemod',
 			(arg0: unknown) => {
 				try {
 					const hashDigest: string | null =
@@ -903,7 +903,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					vscodeTelemetry.sendError({
 						kind: 'failedToExecuteCommand',
-						commandName: 'intuita.removePrivateCodemod',
+						commandName: 'codemod.removePrivateCodemod',
 					});
 				}
 			},
@@ -912,7 +912,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.sendAsBeforeSnippet',
+			'codemod.sendAsBeforeSnippet',
 			async () => {
 				const { activeTextEditor } = vscode.window;
 
@@ -939,7 +939,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			'intuita.sendAsAfterSnippet',
+			'codemod.sendAsAfterSnippet',
 			async () => {
 				const { activeTextEditor } = vscode.window;
 
@@ -966,7 +966,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.workspace.registerTextDocumentContentProvider(
-			'intuita',
+			'codemod',
 			intuitaTextDocumentContentProvider,
 		),
 	);
@@ -1186,7 +1186,10 @@ export async function activate(context: vscode.ExtensionContext) {
 						const url = new URL('https://codemod.studio');
 						url.search = searchParams.toString();
 
-						vscode.commands.executeCommand('intuita.redirect', url);
+						vscode.commands.executeCommand(
+							'intcodemoduita.redirect',
+							url,
+						);
 					};
 
 					vscode.commands.executeCommand(
@@ -1198,7 +1201,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						userService.linkUserIntuitaAccount(accessToken);
 						vscode.commands.executeCommand(
 							'setContext',
-							'intuita.signedIn',
+							'codemod.signedIn',
 							true,
 						);
 						store.dispatch(

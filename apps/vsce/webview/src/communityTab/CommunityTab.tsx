@@ -1,31 +1,31 @@
 import { VSCodeLink } from '@vscode/webview-ui-toolkit/react';
 import { ReactComponent as SlackIcon } from '../assets/slack.svg';
 import { ReactComponent as YoutubeIcon } from '../assets/youtube.svg';
-import intuitaLogo from './../assets/intuita_square128.png';
+import codemodLogo from './../assets/codemod_square128.png';
 import styles from './style.module.css';
 
-const IntuitaIcon = (
-	<img className={styles.icon} src={intuitaLogo} alt="intuita-logo" />
+const CodemodIcon = (
+	<img className={styles.icon} src={codemodLogo} alt="codemod-logo" />
 );
 
 const EXTERNAL_LINKS = [
 	{
 		id: 'featureRequest',
 		text: 'Feature requests',
-		url: 'https://feedback.intuita.io/feature-requests-and-bugs',
-		icon: IntuitaIcon,
+		url: 'https://feedback.codemod.com/feature-requests-and-bugs',
+		icon: CodemodIcon,
 	},
 	{
 		id: 'codemodRequest',
 		text: 'Codemod requests',
-		url: 'https://feedback.intuita.io/codemod-requests',
-		icon: IntuitaIcon,
+		url: 'https://feedback.codemod.com/codemod-requests',
+		icon: CodemodIcon,
 	},
 	{
 		id: 'docs',
 		text: 'Docs',
-		url: 'https://docs.intuita.io/docs/intro',
-		icon: IntuitaIcon,
+		url: 'https://docs.codemod.com/docs/intro',
+		icon: CodemodIcon,
 	},
 	{
 		id: 'youtube',
@@ -36,7 +36,7 @@ const EXTERNAL_LINKS = [
 	{
 		id: 'slack',
 		text: 'Chat with us on Slack',
-		url: 'https://join.slack.com/t/intuita-inc/shared_invite/zt-1untfdpwh-XWuFslRz0D8cGbmjymd3Bw',
+		url: 'https://join.slack.com/t/codemod-community/shared_invite/zt-2bqtla38k-QbWDh9Kwa2GFVtuGoqRwPw',
 		icon: (
 			<SlackIcon
 				className={styles.icon}

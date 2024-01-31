@@ -175,7 +175,7 @@ export const App = memo(
 									<p>
 										You can also kick off your codemod
 										creation by creating a diff and running
-										this CLI command: `intuita learn`.
+										this CLI command: `codemod learn`.
 									</p>
 								</div>
 							)}
