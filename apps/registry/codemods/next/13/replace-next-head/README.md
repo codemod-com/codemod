@@ -72,7 +72,7 @@ v1.0.0
 
 ### **Codemod Engine**
 
-Intuita File Transformation Engine
+Codemod.com File Transformation Engine
 
 ### Estimated Time Saving
 

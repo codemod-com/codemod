@@ -59,7 +59,7 @@ Depending on the size of the project, this recipe can save up to 6 hours of dedi
 
 ### Owner
 
-[Intuita](https://github.com/codemod-com)
+[Codemod.com](https://github.com/codemod-com)
 
 ### Links for more info
 
