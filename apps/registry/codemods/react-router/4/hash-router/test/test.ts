@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+<<<<<<< HEAD
 import { buildApi, trimLicense } from '@codemod-com/utilities';
+=======
+import { buildApi } from '@codemod-com/utilities';
+>>>>>>> cb9de9e (wip)
 import type { FileInfo } from 'jscodeshift';
 import { describe, it } from 'vitest';
 import transform from '../src/index.js';
