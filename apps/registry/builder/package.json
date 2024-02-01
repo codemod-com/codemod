@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/readme-builder",
+	"name": "@codemod-com/builder",
 	"type": "module",
 	"dependencies": {
 		"@effect/schema": "^0.48.4",
