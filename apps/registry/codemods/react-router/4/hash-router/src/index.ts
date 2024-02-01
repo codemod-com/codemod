@@ -38,8 +38,6 @@ function transform(
 
 	const root = j(file.source);
 
-	let dirtyFlag = false;
-
 	root.find(j.JSXElement, {
 		openingElement: { name: { name: 'Router' } },
 	}).forEach((path) => {
@@ -74,8 +72,6 @@ function transform(
 
 		const body = root.get().value.program.body;
 		body.unshift(computedImport);
-
-		dirtyFlag = true;
 	});
 
 	return root.toSource(options);

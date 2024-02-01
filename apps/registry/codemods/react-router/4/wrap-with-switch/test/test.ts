@@ -9,8 +9,8 @@ import transform from '../src/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-describe('react-router v4 rename-imports', function () {
-	it('should replace "react-router" import with "react-router-dom"', async function () {
+describe('react-router v4 wrap-with-imports', function () {
+	it('should wrap Route components with Switch', async function () {
 		const input = await readFile(join(__dirname, 'input.js'), {
 			encoding: 'utf8',
 		});
