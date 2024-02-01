@@ -18,6 +18,6 @@ jobs:
               with:
                   version: 8
             - name: Install dependencies
-              run: pnpm install
+              run: pnpm install && pnpm --filter @codemod-com/registry-cjs-builder build:registry
             - name: Build projects
               run: pnpm build
