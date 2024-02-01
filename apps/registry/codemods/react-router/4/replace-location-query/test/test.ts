@@ -16,14 +16,11 @@ describe('react-router 4 replace-location-query', function () {
 
 		const OUTPUT = `
 			import { parse } from 'query-string';
-			const PostList = ({ location }) => {
-				const query = parse(location.search);
-				return (
-					<div>
-						<h1>List sorted by {query.sort}</h1>
-					</div>
-				);
-			};		
+			const PostList = ({ location }) => (
+				<div>
+					<h1>List sorted by {parse(location.search).sort}</h1>
+				</div>
+			);
         `;
 
 		const fileInfo: FileInfo = {
