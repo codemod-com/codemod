@@ -4,7 +4,7 @@
 	"author": "Codemod.com",
 	"packageManager": "pnpm@8.9.0",
 	"scripts": {
-		"build": "turbo run build:cjs && pnpm --filter @codemod-com/builder build && pnpm --filter @codemod-com/readme-parser build",
+		"build": "pnpm --filter @codemod-com/registry-cjs-builder build && turbo run build:cjs && pnpm --filter @codemod-com/builder build && pnpm --filter @codemod-com/readme-parser build",
 		"build:homedir": "turbo run build:cjs && pnpm --filter @codemod-com/builder build:homedir",
 		"create": "turbo run create",
 		"lint:eslint": "eslint --fix .",

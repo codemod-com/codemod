@@ -1,0 +1,23 @@
+name: build
+on:
+    pull_request:
+        branches:
+            - main
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+            - name: Checkout Repository
+              uses: actions/checkout@v2
+            - name: Install modules
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+            - name: Install dependencies
+              run: pnpm install
+            - name: Build projects
+              run: pnpm build
