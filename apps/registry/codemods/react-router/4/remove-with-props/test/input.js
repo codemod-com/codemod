@@ -22,12 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-const history = createHashHistory();
-import createHashHistory from 'history/createHashHistory';
-import { Router, hashHistory } from 'react-router';
+import withProps from 'recompose/withProps';
+import Dashboard from './Dashboard';
 
-const MyApp = () => (
-  <Router history={history}>
-    <Route path="/posts" component={PostList} />
-  </Router>
-);
+const MyApp = ({ title }) => {
+	const DashboardWithTitle = withProps(Dashboard, { title });
+	return (
+		<Router history={history}>
+			<Route path="/" component={DashboardWithTitle} />
+		</Router>
+	);
+};

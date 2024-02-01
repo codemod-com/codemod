@@ -118,3 +118,7 @@ export const buildPathAPI = (currentWorkingDirectory: string): PathAPI => ({
 	joinPaths: (...paths) => join(...paths),
 	currentWorkingDirectory,
 });
+
+export const trimLicense = (testFixture: string): string => {
+	return testFixture.replace(/\/\*[\s\S]*?\*\//gm, '');
+};

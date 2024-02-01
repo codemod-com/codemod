@@ -9,8 +9,8 @@ import transform from '../src/index.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
-describe('react-router v4 create-hash-history', function () {
-	it('should add createHashHistory', async function () {
+describe('react-router v4 hash-router', function () {
+	it('should replace Router component with HashRouter, add HashRouter import', async function () {
 		const input = await readFile(join(__dirname, 'input.js'), {
 			encoding: 'utf8',
 		});
@@ -27,8 +27,6 @@ describe('react-router v4 create-hash-history', function () {
 		const actualOutput = transform(fileInfo, buildApi('js'), {
 			quote: 'single',
 		});
-
-		console.log(output, actualOutput, '??');
 
 		assert.deepEqual(
 			actualOutput?.replace(/\W/gm, ''),

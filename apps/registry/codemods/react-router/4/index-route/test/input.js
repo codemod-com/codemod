@@ -22,12 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-const history = createHashHistory();
-import createHashHistory from 'history/createHashHistory';
-import { Router, hashHistory } from 'react-router';
-
-const MyApp = () => (
-  <Router history={history}>
-    <Route path="/posts" component={PostList} />
-  </Router>
+const App = () => (
+	<div>
+		<IndexRoute component={Home} />;
+	</div>
 );
