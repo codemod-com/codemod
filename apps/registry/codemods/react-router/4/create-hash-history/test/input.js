@@ -22,10 +22,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import { hashHistory, Router } from 'react-router';
+import { Router, hashHistory } from 'react-router';
 
 const MyApp = () => (
-	<Router history={hashHistory}>
-		<Route path="/posts" component={PostList} />
-	</Router>
+  <Router history={hashHistory}>
+    <Route path="/posts" component={PostList} />
+  </Router>
 );
