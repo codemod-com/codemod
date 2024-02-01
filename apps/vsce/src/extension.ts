@@ -580,7 +580,7 @@ export async function activate(context: vscode.ExtensionContext) {
 									configurationUri: vscode.Uri.file(
 										join(
 											homedir(),
-											'.intuita',
+											'.codemod',
 											createHash('ripemd160')
 												.update(codemod.name)
 												.digest('base64url'),
@@ -749,7 +749,7 @@ export async function activate(context: vscode.ExtensionContext) {
 									configurationUri: vscode.Uri.file(
 										join(
 											homedir(),
-											'.intuita',
+											'.codemod',
 											createHash('ripemd160')
 												.update(codemodEntry.name)
 												.digest('base64url'),
@@ -818,7 +818,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					);
 
 					const codemodUri = vscode.Uri.file(
-						join(homedir(), '.intuita', codemodHash, 'index.ts'),
+						join(homedir(), '.codemod', codemodHash, 'index.ts'),
 					);
 
 					messageBus.publish({
@@ -878,14 +878,14 @@ export async function activate(context: vscode.ExtensionContext) {
 							'Did not pass the hashDigest into the command.',
 						);
 					}
-					const codemodPath = join(homedir(), '.intuita', hashDigest);
+					const codemodPath = join(homedir(), '.codemod', hashDigest);
 					if (existsSync(codemodPath)) {
 						rmSync(codemodPath, { recursive: true, force: true });
 					}
 
 					const codemodNamesPath = join(
 						homedir(),
-						'.intuita',
+						'.codemod',
 						'privateCodemodNames.json',
 					);
 					if (existsSync(codemodNamesPath)) {
@@ -1020,7 +1020,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						'base64url',
 					);
 
-					const globalStoragePath = join(homedir(), '.intuita');
+					const globalStoragePath = join(homedir(), '.codemod');
 					const codemodHash = randomBytes(27).toString('base64url');
 					const codemodDirectoryPath = join(
 						globalStoragePath,

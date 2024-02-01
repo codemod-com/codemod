@@ -336,7 +336,7 @@ export class EngineService {
 
 				const configPath = join(
 					homedir(),
-					'.intuita',
+					'.codemod',
 					hashDigest,
 					'config.json',
 				);
@@ -383,10 +383,10 @@ export class EngineService {
 	public async fetchPrivateCodemods(): Promise<void> {
 		try {
 			const privateCodemods: PrivateCodemodEntry[] = [];
-			const globalStoragePath = join(homedir(), '.intuita');
+			const globalStoragePath = join(homedir(), '.codemod');
 			const privateCodemodNamesPath = join(
 				homedir(),
-				'.intuita',
+				'.codemod',
 				'privateCodemodNames.json',
 			);
 			if (!existsSync(privateCodemodNamesPath)) {

@@ -178,7 +178,7 @@ export const executeMainThread = async () => {
 	if (String(argv._) === 'syncRegistry') {
 		const codemodDownloader = new CodemodDownloader(
 			printer,
-			join(homedir(), '.intuita'),
+			join(homedir(), '.codemod'),
 			argv.useCache,
 			fileDownloadService,
 			tarService,
@@ -205,7 +205,7 @@ export const executeMainThread = async () => {
 	if (argv._.at(0) === 'sync' && argv.name !== undefined) {
 		const codemodDownloader = new CodemodDownloader(
 			printer,
-			join(homedir(), '.intuita'),
+			join(homedir(), '.codemod'),
 			false,
 			fileDownloadService,
 			tarService,
@@ -320,7 +320,7 @@ export const executeMainThread = async () => {
 
 	const configurationDirectoryPath = join(
 		String(argv._) === 'runOnPreCommit' ? process.cwd() : homedir(),
-		'.intuita',
+		'.codemod',
 	);
 
 	const lastArgument = argv._[argv._.length - 1];

@@ -37,7 +37,7 @@ export const handleLoginCliCommand = async (
 		);
 	}
 
-	const tokenTxtPath = join(homedir(), '.intuita', 'token.txt');
+	const tokenTxtPath = join(homedir(), '.codemod', 'token.txt');
 
 	await writeFile(tokenTxtPath, token, 'utf-8');
 

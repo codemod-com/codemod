@@ -8,7 +8,7 @@ import * as v from 'valibot';
 import type { PrinterBlueprint } from './printer.js';
 
 export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
-	const configurationDirectoryPath = join(homedir(), '.intuita');
+	const configurationDirectoryPath = join(homedir(), '.codemod');
 
 	await mkdir(configurationDirectoryPath, { recursive: true });
 

@@ -26,7 +26,7 @@ export const createClearStateCommand =
 					!job ||
 					!doesJobAddNewFile(job.kind) ||
 					job.newContentUri === null ||
-					job.newContentUri.includes('.intuita/cases')
+					job.newContentUri.includes('.codemod/cases')
 				) {
 					continue;
 				}
@@ -41,7 +41,7 @@ export const createClearStateCommand =
 
 		try {
 			const casesDirectoryUri = Uri.parse(
-				join(homedir(), '.intuita', 'cases'),
+				join(homedir(), '.codemod', 'cases'),
 			);
 
 			const files = await workspace.fs.readDirectory(casesDirectoryUri);

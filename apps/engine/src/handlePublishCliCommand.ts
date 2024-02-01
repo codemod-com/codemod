@@ -15,7 +15,7 @@ const packageJsonSchema = object({
 });
 
 const getToken = (): Promise<string> => {
-	const configurationDirectoryPath = join(homedir(), '.intuita');
+	const configurationDirectoryPath = join(homedir(), '.codemod');
 	const tokenTxtPath = join(configurationDirectoryPath, 'token.txt');
 
 	try {
@@ -129,7 +129,7 @@ export const handlePublishCliCommand = async (
 		.update(pkg.name)
 		.digest('base64url');
 
-	const codemodDirectoryPath = join(homedir(), '.intuita', codemodHashDigest);
+	const codemodDirectoryPath = join(homedir(), '.codemod', codemodHashDigest);
 
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
