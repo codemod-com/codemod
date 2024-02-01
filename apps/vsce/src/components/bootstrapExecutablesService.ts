@@ -51,8 +51,8 @@ export class BootstrapExecutablesService {
 			process.platform === 'darwin'
 				? 'macos'
 				: process.platform === 'win32'
-					? 'win'
-					: encodeURIComponent(process.platform);
+				  ? 'win'
+				  : encodeURIComponent(process.platform);
 
 		// TODO rename to `codemod` on S3
 		// the codemod files should work with the codemod home directory
