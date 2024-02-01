@@ -19,8 +19,6 @@ jobs:
               uses: pnpm/action-setup@v2
               with:
                   version: 8
-            - name: Build cjs-builder
-              run: pnpm install --filter @codemod-com/registry-cjs-builder && pnpm build --filter @codemod-com/registry-cjs-builder
             - name: Install dependencies
               run: pnpm install
             - name: Build projects
