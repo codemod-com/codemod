@@ -44,7 +44,7 @@ export type TreeViewProps<
 	onFocus: (hashDigest: HD) => void;
 }>;
 
-export const IntuitaTreeView = <
+export const CustomTreeView = <
 	HD extends string,
 	TN extends TreeNode<HD> = TreeNode<HD>,
 	ND extends NodeDatum<HD, TN> = NodeDatum<HD, TN>,

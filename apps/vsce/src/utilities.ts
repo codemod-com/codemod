@@ -4,18 +4,12 @@ import { Project } from 'ts-morph';
 import { Uri, Webview } from 'vscode';
 import { _ExplorerNode } from './persistedState/explorerNodeCodec';
 
-export type IntuitaRange = Readonly<[number, number, number, number]>;
-
 export function isNeitherNullNorUndefined<T>(
 	value: T,
 	// eslint-disable-next-line @typescript-eslint/ban-types
 ): value is T & {} {
 	return value !== null && value !== undefined;
 }
-
-export type DistributiveOmit<T, K extends keyof T> = T extends unknown
-	? Omit<T, K>
-	: never;
 
 export function assertsNeitherNullOrUndefined<T>(
 	value: T,

@@ -2,7 +2,7 @@ import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import cn from 'classnames';
 import { ReactComponent as SplitIcon } from '../../../assets/Split.svg';
 import { ReactComponent as UnifiedIcon } from '../../../assets/Unified.svg';
-import IntuitaPopover from '../../../shared/IntuitaPopover';
+import CustomPopover from '../../../shared/CustomPopover';
 import { DiffViewType } from '../../../shared/types';
 import styles from './style.module.css';
 
@@ -16,7 +16,7 @@ export const Header = (props: Props) => {
 	return (
 		<div className={styles.root}>
 			<div className={styles.actionsContainer}>
-				<IntuitaPopover
+				<CustomPopover
 					content={
 						<div
 							style={{
@@ -40,8 +40,8 @@ export const Header = (props: Props) => {
 					>
 						<span className={cn('codicon', 'codicon-arrow-left')} />
 					</VSCodeButton>
-				</IntuitaPopover>
-				<IntuitaPopover
+				</CustomPopover>
+				<CustomPopover
 					content={
 						<div
 							style={{
@@ -67,7 +67,7 @@ export const Header = (props: Props) => {
 							className={cn('codicon', 'codicon-arrow-right')}
 						/>
 					</VSCodeButton>
-				</IntuitaPopover>
+				</CustomPopover>
 			</div>
 			<div className={styles.buttonGroup}>
 				{props.viewType === 'side-by-side' ? (

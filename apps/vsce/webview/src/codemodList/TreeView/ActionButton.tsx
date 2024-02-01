@@ -1,7 +1,7 @@
 import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
 import cn from 'classnames';
 import { CSSProperties } from 'react';
-import IntuitaPopover from '../../shared/IntuitaPopover';
+import CustomPopover from '../../shared/CustomPopover';
 import s from './style.module.css';
 
 type Props = {
@@ -26,7 +26,7 @@ const ActionButton = ({
 	onClick,
 }: Props) => {
 	return (
-		<IntuitaPopover content={content} disabled={!content}>
+		<CustomPopover content={content} disabled={!content}>
 			<VSCodeButton
 				id={id}
 				className={cn(s.action, { [s.active!]: active })}
@@ -43,7 +43,7 @@ const ActionButton = ({
 				) : null}
 				{children}
 			</VSCodeButton>
-		</IntuitaPopover>
+		</CustomPopover>
 	);
 };
 

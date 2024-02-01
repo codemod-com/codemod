@@ -1,4 +1,4 @@
-import { createBeforeAfterSnippets } from '../components/webview/IntuitaPanelProvider';
+import { createBeforeAfterSnippets } from '../components/webview/CustomPanelProvider';
 import type { RootState } from '../data';
 
 const sanitizeCodeBlock = (codeBlock: string) =>

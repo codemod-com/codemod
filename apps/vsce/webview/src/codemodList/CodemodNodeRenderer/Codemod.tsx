@@ -2,7 +2,7 @@ import cn from 'classnames';
 import areEqual from 'fast-deep-equal';
 import { memo, useState } from 'react';
 import { CodemodNode } from '../../../../src/selectors/selectCodemodTree';
-import IntuitaPopover from '../../shared/IntuitaPopover';
+import CustomPopover from '../../shared/CustomPopover';
 import { CodemodHash } from '../../shared/types';
 import { vscode } from '../../shared/utilities/vscode';
 import ActionButton from '../TreeView/ActionButton';
@@ -126,9 +126,9 @@ const renderActionButtons = (
 
 	if (!codemodInProgress && queued) {
 		return (
-			<IntuitaPopover content="This codemod has already been queued for execution.">
+			<CustomPopover content="This codemod has already been queued for execution.">
 				<i className="codicon codicon-history mr-2" />
-			</IntuitaPopover>
+			</CustomPopover>
 		);
 	}
 
@@ -229,7 +229,7 @@ const Codemod = ({
 					setHovering(false);
 				}}
 			>
-				<IntuitaPopover content={popoverText}>
+				<CustomPopover content={popoverText}>
 					{icon === 'private' ? (
 						<span className={cn('codicon', 'codicon-star')} />
 					) : icon === 'certified' ? (
@@ -242,7 +242,7 @@ const Codemod = ({
 					) : (
 						<span className={cn('codicon', 'codicon-verified')} />
 					)}
-				</IntuitaPopover>
+				</CustomPopover>
 				<span
 					className={cn(
 						styles.labelContainer,

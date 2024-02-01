@@ -549,7 +549,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			};
 
 			const onFail = async () => {
-				this.__userService.unlinkUserIntuitaAccount();
+				this.__userService.unlinkCodemodComUserAccount();
 				this.__store.dispatch(
 					actions.setSourceControlTabProps({
 						kind: 'ISSUE_CREATION_WAITING_FOR_AUTH',

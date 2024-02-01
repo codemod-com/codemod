@@ -6,7 +6,7 @@ import {
 } from '../../../src/persistedState/explorerNodeCodec';
 import { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
 import { useProgressBar } from '../codemodList/useProgressBar';
-import { IntuitaTreeView } from '../intuitaTreeView';
+import { CustomTreeView } from '../customTreeView';
 import LoadingProgress from '../jobDiffView/Components/LoadingProgress';
 import Progress from '../shared/Progress';
 import SearchBar from '../shared/SearchBar';
@@ -116,7 +116,7 @@ export const App = (
 			)}
 			<div className={styles.treeContainer}>
 				{changeExplorerTree !== null ? (
-					<IntuitaTreeView<_ExplorerNodeHashDigest, _ExplorerNode>
+					<CustomTreeView<_ExplorerNodeHashDigest, _ExplorerNode>
 						{...changeExplorerTree}
 						nodeRenderer={explorerNodeRenderer(changeExplorerTree)}
 						onFlip={handleFlip}

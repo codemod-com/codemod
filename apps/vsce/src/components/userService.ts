@@ -20,11 +20,11 @@ export class UserService {
 		return this.__storage.getAccessToken();
 	}
 
-	unlinkUserIntuitaAccount(): void {
+	unlinkCodemodComUserAccount(): void {
 		this.__storage.setAccessToken(undefined);
 	}
 
-	linkUserIntuitaAccount(accessToken: string): void {
+	linkCodemodComUserAccount(accessToken: string): void {
 		this.__storage.setAccessToken(accessToken);
 	}
 }

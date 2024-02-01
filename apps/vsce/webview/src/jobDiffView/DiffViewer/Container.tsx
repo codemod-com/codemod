@@ -4,7 +4,7 @@ import './Container.css';
 import { PanelViewProps } from '../../../../src/components/webview/panelViewProps';
 import { ReactComponent as CopyIcon } from '../../assets/copy.svg';
 import { JobKind } from '../../shared/constants';
-import IntuitaPopover from '../../shared/IntuitaPopover';
+import CustomPopover from '../../shared/CustomPopover';
 import { vscode } from '../../shared/utilities/vscode';
 import { Diff } from './Diff';
 
@@ -85,7 +85,7 @@ HeaderProps) => {
 							{jobKindText}
 						</h4>
 					) : null}
-					<IntuitaPopover
+					<CustomPopover
 						disabled={
 							(jobKind as unknown as JobKind) !== JobKind.copyFile
 						}
@@ -94,7 +94,7 @@ HeaderProps) => {
 						<h4 className="my-0 ml-1 diff-title align-self-center user-select-none">
 							{title.startsWith('/') ? title.slice(1) : title}
 						</h4>
-					</IntuitaPopover>
+					</CustomPopover>
 					<VSCodeButton
 						onClick={handleCopyFileName}
 						appearance="icon"
@@ -103,7 +103,7 @@ HeaderProps) => {
 						<CopyIcon className="copy-icon" />
 					</VSCodeButton>
 					{modifiedByUser ? (
-						<IntuitaPopover
+						<CustomPopover
 							content={
 								<div
 									style={{
@@ -124,7 +124,7 @@ HeaderProps) => {
 							>
 								Saved
 							</h4>
-						</IntuitaPopover>
+						</CustomPopover>
 					) : null}
 				</div>
 
@@ -149,7 +149,7 @@ HeaderProps) => {
 							Reviewed
 						</p>
 					</div>
-					<IntuitaPopover
+					<CustomPopover
 						content={
 							<div
 								style={{
@@ -171,7 +171,7 @@ HeaderProps) => {
 						>
 							Report Issue
 						</VSCodeButton>
-					</IntuitaPopover>
+					</CustomPopover>
 					{/* <VSCodeButton
 						appearance="secondary"
 						onClick={onFixInStudio}

@@ -40,7 +40,7 @@ Upgrade your projects with the help of codemods created by experts in the commun
 -   The extension collects telemetry data to help us improve the product for you.
 -   **We never send PII, OS information, file, or folder names.**
 -   Telemetry can be disabled in the settings.
--   See more details in our [telemetry compliance considerations](https://docs.codemod.com/docs/about-intuita/legal/telemetry-compliance) doc.
+-   See more details in our [telemetry compliance considerations](https://docs.codemod.com/docs/about/telemetry-compliance) doc.
 
 ## Share Feedback 🎁
 
