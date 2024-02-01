@@ -27,7 +27,7 @@ import { UserService } from '../userService';
 import { CodemodHash, WebviewMessage, WebviewResponse } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
-const X_INTUITA_ACCESS_TOKEN = 'X-Intuita-Access-Token'.toLocaleLowerCase();
+const X_CODEMODCOM_ACCESS_TOKEN = 'X-Intuita-Access-Token'.toLocaleLowerCase();
 
 export const validateAccessToken = async (
 	accessToken: string,
@@ -39,7 +39,7 @@ export const validateAccessToken = async (
 			{},
 			{
 				headers: {
-					[X_INTUITA_ACCESS_TOKEN]: accessToken,
+					[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
 				},
 				timeout: 5000,
 			},
@@ -75,7 +75,7 @@ export const createIssue = async (
 		},
 		{
 			headers: {
-				[X_INTUITA_ACCESS_TOKEN]: accessToken,
+				[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
 			},
 		},
 	);
@@ -112,7 +112,7 @@ export const createIssue = async (
 
 const routeUserToStudioToAuthenticate = async () => {
 	const result = await window.showInformationMessage(
-		'To report issues, sign in to Intuita.',
+		'To report issues, sign in to Codemod.com.',
 		{ modal: true },
 		'Sign in with Github',
 	);

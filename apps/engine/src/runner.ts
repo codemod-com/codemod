@@ -41,14 +41,14 @@ export class Runner {
 
 	public async run() {
 		const EXTENSION_LINK_START = terminalLink(
-			'Click to view the live results of this run in the Intuita VSCode Extension!',
+			'Click to view the live results of this run in the Codemod VSCode Extension!',
 			`vscode://codemod.codemod-vscode-extension/cases/${this._runSettings.caseHashDigest.toString(
 				'base64url',
 			)}`,
 		);
 
 		const EXTENSION_LINK_END = terminalLink(
-			'The run has finished! Click to open the Intuita VSCode Extension and view the results.',
+			'The run has finished! Click to open the Codemod VSCode Extension and view the results.',
 			`vscode://codemod.codemod-vscode-extension/cases/${this._runSettings.caseHashDigest.toString(
 				'base64url',
 			)}`,
@@ -252,7 +252,7 @@ export class Runner {
 			});
 			this._telemetry.sendEvent({
 				kind: 'failedToExecuteCommand',
-				commandName: 'intuita.executeCodemod',
+				commandName: 'codemod.executeCodemod',
 			});
 		}
 	}

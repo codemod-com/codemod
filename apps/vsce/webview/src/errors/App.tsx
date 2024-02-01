@@ -66,7 +66,7 @@ export const App = () => {
 			<main>
 				<p className={styles.welcomeMessage}>
 					{props.kind === 'MAIN_WEBVIEW_VIEW_NOT_VISIBLE'
-						? 'Open the left-sided Intuita View Container to see the errors.'
+						? 'Open the left-sided Codemod View Container to see the errors.'
 						: props.kind === 'CODEMOD_RUNS_TAB_NOT_ACTIVE'
 						  ? 'Open the Codemod Runs tab to see the errors.'
 						  : 'Choose a codemod run from Codemod Runs to see its errors.'}

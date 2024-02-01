@@ -10,7 +10,7 @@ import { codemodConfigSchema } from './schemata/codemodConfigSchema.js';
 import { TarService } from './services/tarService.js';
 
 const CODEMOD_REGISTRY_URL =
-	'https://intuita-public.s3.us-west-1.amazonaws.com/codemod-registry';
+	'https://codemod-public.s3.us-west-1.amazonaws.com/codemod-registry';
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;

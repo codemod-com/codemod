@@ -18,3 +18,5 @@ out
 *.js
 yarn-error.log
 .trunk
+
+apps/engine/package

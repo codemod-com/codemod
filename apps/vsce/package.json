@@ -39,8 +39,8 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "codemod.showIntuitaSettings",
-				"title": "Configure Intuita settings",
+				"command": "codemod.showCodemodSettings",
+				"title": "Configure Codemod settings",
 				"icon": "$(settings-gear)"
 			},
 			{
@@ -55,7 +55,7 @@
 			},
 			{
 				"command": "codemod.clearOutputFiles",
-				"title": "Intuita: clear output files"
+				"title": "Codemod: clear output files"
 			},
 			{
 				"command": "codemod.clearState",
@@ -68,27 +68,27 @@
 			},
 			{
 				"command": "codemod.executeAsCodemod",
-				"title": "Intuita: Run as a codemod"
+				"title": "Codemod: Run as a codemod"
 			},
 			{
 				"command": "codemod.executeAsPiranhaRule",
-				"title": "Intuita: Run as a Piranha Rule"
+				"title": "Codemod: Run as a Piranha Rule"
 			},
 			{
 				"command": "codemod.executeCodemod",
-				"title": "Intuita: Execute Codemod"
+				"title": "Codemod: Execute Codemod"
 			},
 			{
 				"command": "codemod.executeCodemodWithinPath",
-				"title": "Intuita: Execute Codemod On Path"
+				"title": "Codemod: Execute Codemod On Path"
 			},
 			{
 				"command": "codemod.sendAsBeforeSnippet",
-				"title": "Intuita: Send as Before Snippet to the Codemod Studio"
+				"title": "Codemod: Send as Before Snippet to the Codemod Studio"
 			},
 			{
 				"command": "codemod.sendAsAfterSnippet",
-				"title": "Intuita: Send as After Snippet to the Codemod Studio"
+				"title": "Codemod: Send as After Snippet to the Codemod Studio"
 			}
 		],
 		"configuration": {
@@ -166,7 +166,7 @@
 		"menus": {
 			"view/title": [
 				{
-					"command": "codemod.showIntuitaSettings",
+					"command": "codemod.showCodemodSettings",
 					"when": "view == intuitaMainView",
 					"group": "navigation"
 				},

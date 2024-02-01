@@ -135,7 +135,7 @@ function App() {
 		return (
 			<main className="App" ref={ref}>
 				<p className="warning">
-					Open a workspace folder to use the Intuita VSCode Extension.
+					Open a workspace folder to use the Codemod VSCode Extension.
 				</p>
 			</main>
 		);

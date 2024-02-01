@@ -4,5 +4,5 @@
 	"description": "This codemod removes unused translation phrases from i18n resources",
 	"engine": "filemod",
 	"dependencyVersionLowerThan": [],
-	"owner": "intuita"
+	"owner": "codemod.com"
 }

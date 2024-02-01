@@ -24,7 +24,7 @@ If there is a codemod you would like to see available in Codemod Registry, pleas
 
 Adding or using codemods in Codemod Registry allows for:
 
-🔗 Automatic integration with the Codemod.com [CLI](https://docs.codemod.com/docs/cli/quickstart) and [VSCode extension](https://marketplace.visualstudio.com/items?itemName=Intuita.intuita-vscode-extension).
+🔗 Automatic integration with the Codemod.com [CLI](https://docs.codemod.com/docs/cli/quickstart) and [VSCode extension](https://marketplace.visualstudio.com/items?itemName=codemod.codemod-vscode-extension).
 
 :octocat: Ensuring codemods are reviewed and improved by [a community of codemod experts](https://join.slack.com/t/codemod-com/shared_invite/zt-1tvxm6ct0-mLZld_78yguDYOSM7DM7Cw).
 

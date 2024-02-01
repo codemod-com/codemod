@@ -213,10 +213,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('codemod.showIntuitaSettings', () => {
+		vscode.commands.registerCommand('codemod.showCodemodSettings', () => {
 			vscode.commands.executeCommand(
 				'workbench.action.openSettings',
-				'Intuita',
+				'Codemod',
 			);
 		}),
 	);

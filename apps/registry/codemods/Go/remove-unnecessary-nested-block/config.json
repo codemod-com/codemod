@@ -3,5 +3,5 @@
 	"name": "Remove Unnecessary Nested Block",
 	"engine": "piranha",
 	"language": "go",
-	"owner": "intuita"
+	"owner": "codemod.com"
 }
