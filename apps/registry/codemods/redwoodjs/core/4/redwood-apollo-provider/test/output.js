@@ -1,3 +1,4 @@
+import { AuthProvider, useAuth } from './auth';
 /*
 The MIT License (MIT)
 
@@ -24,7 +25,7 @@ THE SOFTWARE.
 
 import FatalErrorPage from 'src/pages/FatalErrorPage';
 import Routes from 'src/Routes';
-import { AuthProvider, useAuth } from './auth';
+
 import './index.css';
 
 const App = () => (
