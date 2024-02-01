@@ -1,6 +1,7 @@
 import { Mode } from 'node:fs';
-import axios from 'axios';
+import { isAxiosError } from 'axios';
 import { FileSystem, Uri } from 'vscode';
+import { DEFAULT_RETRY_COUNT, retryingClient } from '../axios';
 import { FileSystemUtilities } from './fileSystemUtilities';
 
 export class RequestError extends Error {}
@@ -29,13 +30,18 @@ export class DownloadService {
 		let response;
 
 		try {
-			response = await axios.head(url, { timeout: 5000 });
+			response = await retryingClient.head(url, {
+				timeout: 15000,
+				'axios-retry': {
+					retries: DEFAULT_RETRY_COUNT,
+				},
+			});
 		} catch (error) {
 			if (localModificationTime > 0) {
 				return false;
 			}
 
-			if (!axios.isAxiosError(error)) {
+			if (!isAxiosError(error)) {
 				throw error;
 			}
 
@@ -69,7 +75,12 @@ export class DownloadService {
 		uri: Uri,
 		chmod: Mode | null,
 	): Promise<void> {
-		const response = await axios.get(url, { responseType: 'arraybuffer' });
+		const response = await retryingClient.get(url, {
+			responseType: 'arraybuffer',
+			'axios-retry': {
+				retries: DEFAULT_RETRY_COUNT,
+			},
+		});
 		const content = new Uint8Array(response.data);
 
 		await this.#fileSystem.writeFile(uri, content);

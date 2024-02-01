@@ -1,9 +1,14 @@
 import type { CaseHash } from '../cases/types';
 
-export type ErrorEvent = Readonly<{
-	kind: 'failedToExecuteCommand';
-	commandName: string;
-}>;
+export type ErrorEvent =
+	| Readonly<{
+			kind: 'failedToExecuteCommand';
+			commandName: string;
+	  }>
+	| Readonly<{
+			kind: 'failedToBootstrapEngines';
+			message: string;
+	  }>;
 
 export type Event =
 	| Readonly<{

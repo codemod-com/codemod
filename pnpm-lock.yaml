@@ -4098,6 +4098,9 @@ importers:
       axios:
         specifier: ^1.2.2
         version: 1.6.6
+      axios-retry:
+        specifier: ^4.0.0
+        version: 4.0.0(axios@1.6.6)
       diff:
         specifier: ^5.1.0
         version: 5.1.0
@@ -4128,6 +4131,9 @@ importers:
       newtype-ts:
         specifier: ^0.3.5
         version: 0.3.5(fp-ts@2.16.2)(monocle-ts@2.3.13)
+      nock:
+        specifier: ^13.5.1
+        version: 13.5.1
       redux-persist:
         specifier: ^6.0.0
         version: 6.0.0(redux@5.0.1)
@@ -10788,6 +10794,15 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
+  /axios-retry@4.0.0(axios@1.6.6):
+    resolution: {integrity: sha512-F6P4HVGITD/v4z9Lw2mIA24IabTajvpDZmKa6zq/gGwn57wN5j1P3uWrAV0+diqnW6kTM2fTqmWNfgYWGmMuiA==}
+    peerDependencies:
+      axios: 0.x || 1.x
+    dependencies:
+      axios: 1.6.6
+      is-retry-allowed: 2.2.0
+    dev: false
+
   /axios@1.6.6:
     resolution: {integrity: sha512-XZLZDFfXKM9U/Y/B4nNynfCRUqNyVZ4sBC/n9GDRCkq9vd2mIvKjKKsbIh1WPmHmNbg6ND7cTBY3Y2+u1G3/2Q==}
     dependencies:
@@ -14644,6 +14659,11 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: true
 
+  /is-retry-allowed@2.2.0:
+    resolution: {integrity: sha512-XVm7LOeLpTW4jV19QSH38vkswxoLud8sQ57YwJVTPWdiaI9I8keEhGFpBlslyVsgdQy4Opg8QOLb8YRgsyZiQg==}
+    engines: {node: '>=10'}
+    dev: false
+
   /is-root@2.1.0:
     resolution: {integrity: sha512-AGOriNp96vNBd3HtU+RzFEc75FfR5ymiYv8E553I71SCeXBiMsVDUtdio1OEFvrPyLIQ9tVR5RxXIFe5PUFjMg==}
     engines: {node: '>=6'}
@@ -15527,6 +15547,10 @@ packages:
 
   /json-stable-stringify-without-jsonify@1.0.1:
     resolution: {integrity: sha512-Bdboy+l7tA3OGW6FjyFHWkP5LuByj1Tk33Ljyq0axyzdk9//JSi2u3fP1QSmd1KNwq6VOKYGlAu87CisVir6Pw==}
+
+  /json-stringify-safe@5.0.1:
+    resolution: {integrity: sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==}
+    dev: false
 
   /json5@1.0.2:
     resolution: {integrity: sha512-g1MWMLBiz8FKi1e4w0UyVL3w+iJceWAFBAaBnnGKOpNa5f8TLktkbre1+s6oICydWAm+HRUGTmI+//xv2hvXYA==}
@@ -16889,6 +16913,17 @@ packages:
       lower-case: 2.0.2
       tslib: 2.6.2
     dev: true
+
+  /nock@13.5.1:
+    resolution: {integrity: sha512-+s7b73fzj5KnxbKH4Oaqz07tQ8degcMilU4rrmnKvI//b0JMBU4wEXFQ8zqr+3+L4eWSfU3H/UoIVGUV0tue1Q==}
+    engines: {node: '>= 10.13'}
+    dependencies:
+      debug: 4.3.4(supports-color@8.1.1)
+      json-stringify-safe: 5.0.1
+      propagate: 2.0.1
+    transitivePeerDependencies:
+      - supports-color
+    dev: false
 
   /node-abi@3.54.0:
     resolution: {integrity: sha512-p7eGEiQil0YUV3ItH4/tBb781L5impVmmx2E9FRKF7d18XXzp4PGT2tdYMFY6wQqgxD0IwNZOiSJ0/K0fSi/OA==}
@@ -18342,6 +18377,11 @@ packages:
       loose-envify: 1.4.0
       object-assign: 4.1.1
       react-is: 16.13.1
+
+  /propagate@2.0.1:
+    resolution: {integrity: sha512-vGrhOavPSTz4QVNuBNdcNXePNdNMaO1xj9yBeH1ScQPjk/rhg9sSlCXPhMkFuaNNW/syTvYqsnbIJxMBfRbbag==}
+    engines: {node: '>= 8'}
+    dev: false
 
   /property-information@6.4.1:
     resolution: {integrity: sha512-OHYtXfu5aI2sS2LWFSN5rgJjrQ4pCy8i1jubJLe2QvMF8JJ++HXTUIVWFLfXJoaOfvYYjk2SN8J2wFUWIGXT4w==}

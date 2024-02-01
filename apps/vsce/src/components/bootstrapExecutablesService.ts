@@ -1,4 +1,5 @@
-import { FileSystem, Uri } from 'vscode';
+import { FileSystem, Uri, window } from 'vscode';
+import { Telemetry } from '../telemetry/telemetry';
 import { DownloadService, ForbiddenRequestError } from './downloadService';
 import { MessageBus, MessageKind } from './messageBus';
 
@@ -9,6 +10,7 @@ export class BootstrapExecutablesService {
 		private readonly __globalStorageUri: Uri,
 		private readonly __fileSystem: FileSystem,
 		private readonly __messageBus: MessageBus,
+		private readonly __telemetryService: Telemetry,
 	) {
 		__messageBus.subscribe(MessageKind.bootstrapEngine, () =>
 			this.__onBootstrapEngines(),
@@ -18,17 +20,30 @@ export class BootstrapExecutablesService {
 	private async __onBootstrapEngines() {
 		await this.__fileSystem.createDirectory(this.__globalStorageUri);
 
-		const codemodEngineNodeExecutableUri =
-			await this.__bootstrapCodemodEngineNodeExecutableUri();
+		try {
+			// Uri.file('/intuita/nora-node-engine/package/intuita-linux')
+			const codemodEngineNodeExecutableUri =
+				await this.__bootstrapCodemodEngineNodeExecutableUri();
 
-		const codemodEngineRustExecutableUri =
-			await this.__bootstrapCodemodEngineRustExecutableUri();
+			// Uri.file('/intuita/codemod-engine-rust/target/release/codemod-engine-rust');
+			const codemodEngineRustExecutableUri =
+				await this.__bootstrapCodemodEngineRustExecutableUri();
 
-		this.__messageBus.publish({
-			kind: MessageKind.engineBootstrapped,
-			codemodEngineNodeExecutableUri,
-			codemodEngineRustExecutableUri,
-		});
+			this.__messageBus.publish({
+				kind: MessageKind.engineBootstrapped,
+				codemodEngineNodeExecutableUri,
+				codemodEngineRustExecutableUri,
+			});
+		} catch (e) {
+			const message = e instanceof Error ? e.message : String(e);
+
+			window.showErrorMessage(message);
+
+			this.__telemetryService.sendError({
+				kind: 'failedToBootstrapEngines',
+				message,
+			});
+		}
 	}
 
 	private async __bootstrapCodemodEngineNodeExecutableUri(): Promise<Uri> {
@@ -52,7 +67,6 @@ export class BootstrapExecutablesService {
 		);
 
 		try {
-			// TODO codemod-public
 			await this.__downloadService.downloadFileIfNeeded(
 				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod/${executableName}`,
 				executableUri,
@@ -89,7 +103,6 @@ export class BootstrapExecutablesService {
 		);
 
 		try {
-			// TODO codemod-public
 			await this.__downloadService.downloadFileIfNeeded(
 				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
 				executableUri,
