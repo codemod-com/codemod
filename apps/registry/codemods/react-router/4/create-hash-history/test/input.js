@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
 
-import { Router, hashHistory } from 'react-router';
+import { hashHistory, Router } from 'react-router';
 
 const MyApp = () => (
   <Router history={hashHistory}>
