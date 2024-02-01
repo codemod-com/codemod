@@ -6,7 +6,8 @@
 		"cjs-builder": "./dist/index.js"
 	},
 	"scripts": {
-		"build:registry": "tsc"
+		"build:registry": "tsc",
+		"postinstall": "tsc"
 	},
 	"devDependencies": {
 		"esbuild": "^0.19.7"
