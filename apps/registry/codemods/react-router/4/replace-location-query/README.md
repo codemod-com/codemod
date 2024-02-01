@@ -10,9 +10,9 @@ This codemod replaces instances of `location.query` with `parse(location.search)
 
 ```jsx
 const List = ({ location }) => (
-	<div>
-		<h1>{location.query.sort}</h1>
-	</div>
+  <div>
+    <h1>{location.query.sort}</h1>
+  </div>
 );
 ```
 
@@ -22,9 +22,9 @@ const List = ({ location }) => (
 import { parse } from 'query-string';
 
 const List = ({ location }) => (
-	<div>
-		<h1>{parse(location.search).sort}</h1>
-	</div>
+  <div>
+    <h1>{parse(location.search).sort}</h1>
+  </div>
 );
 ```
 
