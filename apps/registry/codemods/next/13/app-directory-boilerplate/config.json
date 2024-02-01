@@ -4,5 +4,5 @@
 	"description": "This codemod provides boilerplate for the app directory.",
 	"engine": "filemod",
 	"dependencyVersionLowerThan": ["next", "13.0.0"],
-	"owner": "intuita"
+	"owner": "codemod.com"
 }

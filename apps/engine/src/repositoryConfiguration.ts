@@ -41,7 +41,7 @@ export const parseRepositoryConfiguration = (
 
 export const loadRepositoryConfiguration =
 	async (): Promise<RepositoryConfiguration> => {
-		const publicExplorer = cosmiconfig('intuita');
+		const publicExplorer = cosmiconfig('codemod');
 
 		const result = await publicExplorer.search();
 

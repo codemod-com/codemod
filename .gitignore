@@ -17,3 +17,5 @@ out
 .idea
 yarn-error.log
 .trunk
+
+apps/engine/package

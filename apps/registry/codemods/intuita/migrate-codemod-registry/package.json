@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/codemod-intuita-migrate-codemod-registry",
+	"name": "@codemod-com/codemod-migrate-codemod-registry",
 	"dependencies": {},
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",

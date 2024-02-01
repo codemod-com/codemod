@@ -214,7 +214,7 @@ const Codemod = ({
 		icon === 'private'
 			? 'Private codemod'
 			: icon === 'certified'
-			  ? 'Codemod maintained by Intuita'
+			  ? 'Codemod maintained by Codemod.com'
 			  : 'Codemod maintained by the community';
 
 	return (

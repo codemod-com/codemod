@@ -110,7 +110,7 @@ export class WebviewResolver {
 					">
 					<link href="${codiconsUri}" type="text/css" rel="stylesheet" />
 					<link rel="stylesheet" type="text/css" href="${stylesUri}">
-					<title>Intuita Panel</title>
+					<title>Codemod Panel</title>
 					<style>
 					 .placeholder {
 						text-align: center;

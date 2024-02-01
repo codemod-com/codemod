@@ -269,7 +269,7 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 			return {
 				event: 'error',
 				error: new Error(
-					'You tried to read a file that is not Intuita Case',
+					'You tried to read a file that is not Codemod Case',
 				),
 			};
 		}

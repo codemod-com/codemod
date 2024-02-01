@@ -405,7 +405,7 @@ export const convertToYaml = (
 
 			if (is(configJsonSchema, json)) {
 				slug = codemodName!.replace(/\//g, '-');
-				cliCommand = `intuita ${codemodName}`;
+				cliCommand = `codemod ${codemodName}`;
 			}
 		} catch (e) {
 			/* empty */

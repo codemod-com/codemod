@@ -8,13 +8,13 @@ Upgrade your projects with the help of codemods created by experts in the commun
 
 -   Codemod is **a one-stop shop for discovering & sharing quality-governed codemods.** You don't need to install and run many codemod engines for each dependency. Simply search for your framework codemods and click run. With codemod deep links, you can reach & run your target codemod with just one click.
 
-![Discover Codemods](https://github.com/codemod-com/intuita-docs/raw/main/static/img/vsce/vsce-discover.gif)
+![Discover Codemods](https://github.com/codemod-com/docs/raw/main/static/img/vsce/vsce-discover.gif)
 
 ## 2. Run
 
 -   **Safely dry-run the codemods**, preview the changes with a user-friendly experience, adjust the changes as necessary, and apply them to your code only when you feel confident.
 
-![Running Codemods](https://github.com/codemod-com/intuita-docs/raw/main/static/img/vsce/vsce-run.gif)
+![Running Codemods](https://github.com/codemod-com/docs/raw/main/static/img/vsce/vsce-run.gif)
 
 ## 3. Customize & Improve
 
@@ -31,7 +31,7 @@ Upgrade your projects with the help of codemods created by experts in the commun
 
 # Extension vs. the Platform
 
-![Codemod Platform Architecture](https://github.com/codemod-com/intuita-docs/raw/main/static/img/docs/intuita-platform-architecture.png)
+![Codemod Platform Architecture](https://github.com/codemod-com/docs/raw/main/static/img/docs/intuita-platform-architecture.png)
 
 -   **To learn more about codemod.studio, registry, and the CLI visit the [Codemod docs here](https://docs.codemod.com/docs/intro).**
 
