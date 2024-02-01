@@ -3,7 +3,7 @@ import type { API, FileInfo } from 'jscodeshift';
 function transform(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
 	const root = j(file.source);
-
+	let dirtyFlag = false;
 	root.find(j.MemberExpression, {
 		object: {
 			name: 'location',
@@ -11,14 +11,15 @@ function transform(file: FileInfo, api: API) {
 		property: {
 			name: 'query',
 		},
-	}).replaceWith(() =>
-		j.callExpression(j.identifier('parse'), [
+	}).replaceWith(() => {
+		dirtyFlag = true;
+		return j.callExpression(j.identifier('parse'), [
 			j.memberExpression(
 				j.identifier('location'),
 				j.identifier('search'),
 			),
-		]),
-	);
+		]);
+	});
 
 	const hasQueryStringImport =
 		root.find(j.ImportDeclaration, {
@@ -27,7 +28,7 @@ function transform(file: FileInfo, api: API) {
 			},
 		}).length > 0;
 
-	if (!hasQueryStringImport) {
+	if (!hasQueryStringImport && dirtyFlag) {
 		root.find(j.Program).forEach((path) => {
 			path.node.body.unshift(
 				j.importDeclaration(

@@ -118,4 +118,26 @@ describe('react-router 4 replace-location-query', function () {
 			OUTPUT.replace(/\W/gm, ''),
 		);
 	});
+
+	it('query-string import statement should not be added when location.query is not used', function () {
+		const INPUT = `
+			const x = location;
+        `;
+
+		const OUTPUT = `
+			const x = location;
+        `;
+
+		const fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
+
+		const actualOutput = transform(fileInfo, buildApi('tsx'));
+
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });
