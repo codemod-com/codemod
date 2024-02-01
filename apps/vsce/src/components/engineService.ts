@@ -829,7 +829,7 @@ export class EngineService {
 					]),
 				);
 
-				commands.executeCommand('intuitaMainView.focus');
+				commands.executeCommand('codemodMainView.focus');
 
 				if (
 					!this.#execution.halted &&

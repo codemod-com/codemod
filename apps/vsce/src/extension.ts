@@ -129,21 +129,22 @@ export async function activate(context: vscode.ExtensionContext) {
 		store,
 	);
 
-	new BootstrapExecutablesService(
-		downloadService,
-		context.globalStorageUri,
-		vscode.workspace.fs,
-		messageBus,
-	);
-
-	const intuitaTextDocumentContentProvider =
-		new CustomTextDocumentContentProvider();
-
 	const telemetryKey = 'd9f8ad27-50df-46e3-8acf-81ea279c8444';
 	const vscodeTelemetry = new VscodeTelemetry(
 		new TelemetryReporter(telemetryKey),
 		messageBus,
 	);
+
+	new BootstrapExecutablesService(
+		downloadService,
+		context.globalStorageUri,
+		vscode.workspace.fs,
+		messageBus,
+		vscodeTelemetry,
+	);
+
+	const customTextDocumentContentProvider =
+		new CustomTextDocumentContentProvider();
 
 	const mainViewProvider = new MainViewProvider(
 		context,
@@ -155,7 +156,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	const mainView = vscode.window.registerWebviewViewProvider(
-		'intuitaMainView',
+		'codemodMainView',
 		mainViewProvider,
 	);
 
@@ -614,7 +615,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					});
 
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 				} catch (e) {
 					const message = e instanceof Error ? e.message : String(e);
@@ -723,7 +724,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					});
 
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 
 					store.dispatch(
@@ -837,7 +838,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					});
 
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 				} catch (e) {
 					const message = e instanceof Error ? e.message : String(e);
@@ -967,7 +968,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(
 		vscode.workspace.registerTextDocumentContentProvider(
 			'codemod',
-			intuitaTextDocumentContentProvider,
+			customTextDocumentContentProvider,
 		),
 	);
 
@@ -994,7 +995,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				// user is routed to a specific dry run case
 				if (codemodRunCaseHash !== null) {
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 
 					const validation = caseHashCodec.decode(codemodRunCaseHash);
@@ -1013,7 +1014,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				// user is exporting codemod from studio into extension
 				if (codemodSource !== null) {
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 					const codemodSourceBuffer = Buffer.from(
 						codemodSource,
@@ -1096,7 +1097,7 @@ export async function activate(context: vscode.ExtensionContext) {
 				// user is opening a deep link to a specific codemod
 				else if (codemodHashDigest !== null) {
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 
 					// Expand collapsed parent directories of the relevant codemod
@@ -1190,7 +1191,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					};
 
 					vscode.commands.executeCommand(
-						'workbench.view.extension.intuitaViewId',
+						'workbench.view.extension.codemodViewId',
 					);
 
 					const valid = await validateAccessToken(accessToken);
@@ -1266,7 +1267,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.window.registerWebviewViewProvider(
-			'intuitaErrorViewId',
+			'codemodErrorViewId',
 			errorWebviewProvider,
 		),
 	);
