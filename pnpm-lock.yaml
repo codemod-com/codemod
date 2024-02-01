@@ -3187,6 +3187,36 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4(@types/node@20.10.4)
 
+  apps/registry/codemods/react-router/4/replace-location-query:
+    devDependencies:
+      '@codemod-com/registry-cjs-builder':
+        specifier: workspace:*
+        version: link:../../../../cjs-builder
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../../../packages/utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.1(vitest@1.0.4)
+      esbuild:
+        specifier: 0.19.5
+        version: 0.19.5
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.1
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.1(@types/node@20.10.4)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.0.4(@types/node@20.10.4)
+
   apps/registry/codemods/react-router/4/replace-param-prop:
     devDependencies:
       '@codemod-com/registry-cjs-builder':
@@ -10142,7 +10172,7 @@ packages:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.0.4(@types/node@20.10.4)
+      vitest: 1.0.4(@types/node@18.11.9)
     transitivePeerDependencies:
       - supports-color
     dev: true

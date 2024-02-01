@@ -1,0 +1,8 @@
+{
+	"loader": ["ts-node/esm"],
+	"full-trace": true,
+	"failZero": false,
+	"bail": true,
+	"spec": "./**/test.ts",
+	"timeout": 5000
+}
