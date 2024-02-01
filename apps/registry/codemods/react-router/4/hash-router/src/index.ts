@@ -78,10 +78,6 @@ function transform(
 		dirtyFlag = true;
 	});
 
-	if (dirtyFlag) {
-		return undefined;
-	}
-
 	return root.toSource(options);
 }
 
