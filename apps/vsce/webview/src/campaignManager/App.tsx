@@ -6,9 +6,9 @@ import { CaseHash } from '../../../src/cases/types';
 import { CodemodRunsTree } from '../../../src/selectors/selectCodemodRunsTree';
 import { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
 import { ReactComponent as CaseIcon } from '../assets/case.svg';
-import { IntuitaTreeView } from '../intuitaTreeView';
+import { CustomTreeView } from '../customTreeView';
 import LoadingProgress from '../jobDiffView/Components/LoadingProgress';
-import IntuitaPopover from '../shared/IntuitaPopover';
+import CustomPopover from '../shared/CustomPopover';
 import TreeItem from '../shared/TreeItem';
 
 type InfoIconProps = {
@@ -18,13 +18,13 @@ type InfoIconProps = {
 
 const InfoIcon = ({ createdAt, path }: InfoIconProps) => {
 	return (
-		<IntuitaPopover
+		<CustomPopover
 			content={`Executed on ${path} at ${new Date(
 				Number(createdAt),
 			).toLocaleTimeString()}`}
 		>
 			<span className={cn('codicon', 'codicon-info')} />
-		</IntuitaPopover>
+		</CustomPopover>
 	);
 };
 
@@ -54,7 +54,7 @@ export const App = (
 	}
 
 	return (
-		<IntuitaTreeView<CaseHash, CodemodRunsTree['nodeData'][0]['node']>
+		<CustomTreeView<CaseHash, CodemodRunsTree['nodeData'][0]['node']>
 			focusedNodeHashDigest={props.codemodRunsTree.selectedNodeHashDigest}
 			collapsedNodeHashDigests={[]}
 			nodeData={props.codemodRunsTree.nodeData}

@@ -6,7 +6,7 @@ import { RootState } from '../data';
 import { CodemodHash } from '../packageJsonAnalyzer/types';
 import { buildHash, capitalize } from '../utilities';
 
-const IntuitaCertifiedCodemods = [
+const codemodComCertifiedCodemods = [
 	'next/13/app-directory-boilerplate',
 	'next/13/built-in-next-font',
 	'next/13/comment-deletable-files',
@@ -105,7 +105,7 @@ export const buildCodemodNode = (
 		queued: queued,
 		icon: isPrivate
 			? 'private'
-			: IntuitaCertifiedCodemods.includes(codemod.name)
+			: codemodComCertifiedCodemods.includes(codemod.name)
 			  ? 'certified'
 			  : 'community',
 		permalink: isPrivate

@@ -2,7 +2,7 @@ import Tippy, { TippyProps } from '@tippyjs/react';
 
 type Props = TippyProps;
 
-const IntuitaPopover = ({ delay = [800, 100], ...others }: Props) => {
+const CustomPopover = ({ delay = [800, 100], ...others }: Props) => {
 	return (
 		<Tippy
 			trigger="mouseenter"
@@ -14,4 +14,4 @@ const IntuitaPopover = ({ delay = [800, 100], ...others }: Props) => {
 	);
 };
 
-export default IntuitaPopover;
+export default CustomPopover;

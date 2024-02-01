@@ -21,7 +21,6 @@ export {
 	buildHash,
 	streamToString,
 } from './functions/hash.js';
-export type { DistributiveOmit, IntuitaRange } from './functions/types.js';
 export {
 	assertsNeitherNullOrUndefined,
 	isNeitherNullNorUndefined,

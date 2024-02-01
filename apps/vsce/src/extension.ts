@@ -17,11 +17,11 @@ import { FileService } from './components/fileService';
 import { FileSystemUtilities } from './components/fileSystemUtilities';
 import { JobManager } from './components/jobManager';
 import { Command, MessageBus, MessageKind } from './components/messageBus';
-import { IntuitaTextDocumentContentProvider } from './components/textDocumentContentProvider';
+import { CustomTextDocumentContentProvider } from './components/textDocumentContentProvider';
 import { GlobalStateTokenStorage, UserService } from './components/userService';
 import { CodemodDescriptionProvider } from './components/webview/CodemodDescriptionProvider';
+import { CustomPanelProvider } from './components/webview/CustomPanelProvider';
 import { ErrorWebviewProvider } from './components/webview/ErrorWebviewProvider';
-import { IntuitaPanelProvider } from './components/webview/IntuitaPanelProvider';
 import {
 	createIssue,
 	MainViewProvider,
@@ -80,7 +80,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.executeCommand('setContext', 'codemod.signedIn', valid);
 
 		if (!valid) {
-			userService.unlinkUserIntuitaAccount();
+			userService.unlinkCodemodComUserAccount();
 			const decision = await vscode.window.showInformationMessage(
 				'You are signed out because your session has expired.',
 				'Do you want to sign in again?',
@@ -137,7 +137,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	const intuitaTextDocumentContentProvider =
-		new IntuitaTextDocumentContentProvider();
+		new CustomTextDocumentContentProvider();
 
 	const telemetryKey = 'd9f8ad27-50df-46e3-8acf-81ea279c8444';
 	const vscodeTelemetry = new VscodeTelemetry(
@@ -163,7 +163,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.fs,
 	);
 
-	new IntuitaPanelProvider(
+	new CustomPanelProvider(
 		context.extensionUri,
 		store,
 		mainViewProvider,
@@ -239,7 +239,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand('codemod.signOut', () => {
-			userService.unlinkUserIntuitaAccount();
+			userService.unlinkCodemodComUserAccount();
 			vscode.commands.executeCommand(
 				'setContext',
 				'codemod.signedIn',
@@ -1195,7 +1195,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					const valid = await validateAccessToken(accessToken);
 					if (valid) {
-						userService.linkUserIntuitaAccount(accessToken);
+						userService.linkCodemodComUserAccount(accessToken);
 						vscode.commands.executeCommand(
 							'setContext',
 							'codemod.signedIn',
@@ -1233,7 +1233,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					};
 
 					const onFail = async () => {
-						userService.unlinkUserIntuitaAccount();
+						userService.unlinkCodemodComUserAccount();
 						store.dispatch(
 							actions.setSourceControlTabProps({
 								kind: 'ISSUE_CREATION_WAITING_FOR_AUTH',

@@ -234,7 +234,7 @@ const selectPanelViewProps = (
 	};
 };
 
-export class IntuitaPanelProvider {
+export class CustomPanelProvider {
 	private __webviewPanel: WebviewPanel | null = null;
 
 	public constructor(

@@ -6,7 +6,7 @@ import {
 	Uri,
 } from 'vscode';
 
-export class IntuitaTextDocumentContentProvider
+export class CustomTextDocumentContentProvider
 	implements TextDocumentContentProvider
 {
 	readonly URI = Uri.parse('codemod:jscodeshiftCodemod.ts');

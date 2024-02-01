@@ -3,7 +3,7 @@ import {
 	VSCodeProgressRing,
 } from '@vscode/webview-ui-toolkit/react';
 import { CaseHash } from '../../../../src/cases/types';
-import IntuitaPopover from '../../shared/IntuitaPopover';
+import CustomPopover from '../../shared/CustomPopover';
 import { vscode } from '../../shared/utilities/vscode';
 import styles from './style.module.css';
 
@@ -59,7 +59,7 @@ export const ActionsFooter = ({
 					screenWidth >= 300 && { justifyContent: 'flex-end' }),
 			}}
 		>
-			<IntuitaPopover content={POPOVER_TEXTS.discard}>
+			<CustomPopover content={POPOVER_TEXTS.discard}>
 				<VSCodeButton
 					appearance="secondary"
 					onClick={(event) => {
@@ -72,8 +72,8 @@ export const ActionsFooter = ({
 				>
 					{getDiscardText(selectedJobCount)}
 				</VSCodeButton>
-			</IntuitaPopover>
-			<IntuitaPopover
+			</CustomPopover>
+			<CustomPopover
 				content={
 					selectedJobCount === 0
 						? POPOVER_TEXTS.cannotApply
@@ -95,7 +95,7 @@ export const ActionsFooter = ({
 					)}
 					{getApplyText(selectedJobCount)}
 				</VSCodeButton>
-			</IntuitaPopover>
+			</CustomPopover>
 		</div>
 	);
 };

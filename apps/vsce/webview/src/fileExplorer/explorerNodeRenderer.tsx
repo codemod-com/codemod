@@ -4,7 +4,7 @@ import {
 	_ExplorerNodeHashDigest,
 } from '../../../src/persistedState/explorerNodeCodec';
 import { ExplorerTree } from '../../../src/selectors/selectExplorerTree';
-import { NodeDatum } from '../intuitaTreeView';
+import { NodeDatum } from '../customTreeView';
 import { vscode } from '../shared/utilities/vscode';
 import TreeItem, { IconName } from './FileExplorerTreeNode';
 
