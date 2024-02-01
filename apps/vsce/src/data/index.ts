@@ -1,7 +1,7 @@
 import { configureStore, Dispatch, Reducer } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 import { PersistPartial } from 'redux-persist/es/persistReducer';
-import { Memento } from 'vscode';
+import { Memento, window } from 'vscode';
 import { persistedStateCodecNew } from '../persistedState/codecs';
 import rootReducer, { actions, getInitialState } from './slice';
 import MementoStorage from './storage';
@@ -17,7 +17,7 @@ const deserializeState = (serializedState: string) => {
 		const rawState = JSON.parse(serializedState);
 
 		if (typeof rawState !== 'object' || rawState === null) {
-			return;
+			return null;
 		}
 
 		Object.entries(rawState).forEach(([key, value]) => {
@@ -29,9 +29,36 @@ const deserializeState = (serializedState: string) => {
 		});
 	} catch (e) {
 		console.error(e);
+
+		return null;
 	}
 
 	return parsedState;
+};
+
+const getPreloadedState = async (storage: MementoStorage) => {
+	const initialState = await storage.getItem(
+		`${PERSISTANCE_PREFIX}:${PERSISTANCE_KEY}`,
+	);
+
+	if (!initialState) {
+		return null;
+	}
+
+	const deserializedState = deserializeState(initialState);
+
+	if (!deserializedState) {
+		return null;
+	}
+
+	const decodedState = persistedStateCodecNew.decode(deserializedState);
+
+	// should never happen because of codec fallback
+	if (decodedState._tag !== 'Right') {
+		return null;
+	}
+
+	return decodedState.right;
 };
 
 const buildStore = async (workspaceState: Memento) => {
@@ -64,21 +91,15 @@ const buildStore = async (workspaceState: Memento) => {
 		return persistedReducer(state, action);
 	};
 
-	const initialState =
-		(await storage.getItem(`${PERSISTANCE_PREFIX}:${PERSISTANCE_KEY}`)) ??
-		'';
-	const deserializedState = deserializeState(initialState);
+	const preloadedState = await getPreloadedState(storage);
 
-	const decodedState = persistedStateCodecNew.decode(deserializedState);
-
-	// should never happen because of codec fallback
-	if (decodedState._tag !== 'Right') {
-		throw new Error('Invalid state');
+	if (preloadedState === null) {
+		window.showWarningMessage('Unable to get preloaded state.');
 	}
 
 	const store = configureStore({
 		reducer: validatedReducer,
-		preloadedState: decodedState.right,
+		...(preloadedState !== null && { preloadedState }),
 	});
 
 	const persistor = persistStore(store);
