@@ -6,9 +6,7 @@
 			"persistent": true
 		},
 		"link": {
-			"dependsOn": [
-				"build"
-			]
+			"dependsOn": ["build"]
 		},
 		"clean": {
 			"cache": false
@@ -20,31 +18,17 @@
 			"cache": false
 		},
 		"build": {
-			"dependsOn": [
-				"^build"
-			],
-			"outputs": [
-				"build/**",
-				"dist/**"
-			]
+			"dependsOn": ["^build"],
+			"outputs": ["build/**", "dist/**"]
 		},
 		"build:cjs": {
-			"dependsOn": [
-				"^build"
-			],
+			"dependsOn": ["^build"],
 			"outputMode": "full",
-			"inputs": [
-				"src/**/*.ts",
-				"src/**/*.js"
-			],
-			"outputs": [
-				"dist/index.cjs"
-			]
+			"inputs": ["src/**/*.ts", "src/**/*.js"],
+			"outputs": ["dist/index.cjs"]
 		},
 		"create": {
-			"dependsOn": [
-				"^create"
-			],
+			"dependsOn": ["^create"],
 			"cache": false
 		}
 	}
