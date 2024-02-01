@@ -132,32 +132,32 @@
 		"viewsContainers": {
 			"activitybar": [
 				{
-					"id": "intuitaViewId",
+					"id": "codemodViewId",
 					"title": "Codemod",
 					"icon": "img/codemod.svg"
 				}
 			],
 			"panel": [
 				{
-					"id": "intuitaPanelViewContainerId",
+					"id": "codemodPanelViewContainerId",
 					"title": "Codemod",
 					"icon": "img/codemod.svg"
 				}
 			]
 		},
 		"views": {
-			"intuitaViewId": [
+			"codemodViewId": [
 				{
 					"type": "webview",
-					"id": "intuitaMainView",
+					"id": "codemodMainView",
 					"name": "",
 					"contextualTitle": "Main View"
 				}
 			],
-			"intuitaPanelViewContainerId": [
+			"codemodPanelViewContainerId": [
 				{
 					"type": "webview",
-					"id": "intuitaErrorViewId",
+					"id": "codemodErrorViewId",
 					"name": "Errors",
 					"contextualTitle": "Errors"
 				}
@@ -167,17 +167,17 @@
 			"view/title": [
 				{
 					"command": "codemod.showCodemodSettings",
-					"when": "view == intuitaMainView",
+					"when": "view == codemodMainView",
 					"group": "navigation"
 				},
 				{
 					"command": "codemod.signIn",
-					"when": "view == intuitaMainView && !codemod.signedIn",
+					"when": "view == codemodMainView && !codemod.signedIn",
 					"group": "navigation"
 				},
 				{
 					"command": "codemod.handleSignedInUser",
-					"when": "view == intuitaMainView && codemod.signedIn",
+					"when": "view == codemodMainView && codemod.signedIn",
 					"group": "navigation"
 				}
 			],

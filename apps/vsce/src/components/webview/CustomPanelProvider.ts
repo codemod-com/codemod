@@ -22,7 +22,7 @@ import { PanelViewProps } from './panelViewProps';
 import { WebviewMessage, WebviewResponse } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
-const TYPE = 'intuitaPanel';
+const TYPE = 'codemodPanel';
 const WEBVIEW_NAME = 'jobDiffView';
 
 export const createBeforeAfterSnippets = (
@@ -311,7 +311,7 @@ export class CustomPanelProvider {
 					) {
 						this.__store.dispatch(actions.focusOnChangeExplorer());
 
-						commands.executeCommand('intuitaMainView.focus');
+						commands.executeCommand('codemodMainView.focus');
 					}
 
 					if (
