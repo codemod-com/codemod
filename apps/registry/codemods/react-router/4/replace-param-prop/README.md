@@ -28,7 +28,7 @@ const PostEdit = ({ match }) => (
 
 ## Applicability Criteria
 
-react-router version 3
+React Router version 3.x.y
 
 ## Other Metadata
 

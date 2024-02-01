@@ -9,21 +9,21 @@ Safely removes `<a>` from `Link` components imported from the `next/link` module
 ### Before
 
 ```jsx
-const PostEdit = ({ params }) => (
-	<div>
-		<h1>Post {params.id}</h1>
-	</div>
-);
+export default function Component() {
+	return (
+		<Link href="/a">
+			<a>Anchor</a>
+		</Link>
+	);
+}
 ```
 
 ### After
 
 ```jsx
-const PostEdit = ({ match }) => (
-	<div>
-		<h1>Post {match.params.id}</h1>
-	</div>
-);
+export default function Component() {
+	return <Link href="/a">Anchor</Link>;
+}
 ```
 
 ## Applicability Criteria
