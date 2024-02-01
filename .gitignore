@@ -15,6 +15,5 @@ out
 .vscode-test/
 *.vsix
 .idea
-*.js
 yarn-error.log
 .trunk
