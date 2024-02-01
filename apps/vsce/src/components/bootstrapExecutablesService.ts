@@ -42,7 +42,7 @@ export class BootstrapExecutablesService {
 		// TODO rename to `codemod` on S3
 		// the codemod files should work with the codemod home directory
 
-		const executableBaseName = `intuita-${platform}`;
+		const executableBaseName = `codemod-${platform}`;
 		const executableExt = process.platform === 'win32' ? '.exe' : '';
 		const executableName = `${executableBaseName}${executableExt}`;
 
@@ -54,7 +54,7 @@ export class BootstrapExecutablesService {
 		try {
 			// TODO codemod-public
 			await this.__downloadService.downloadFileIfNeeded(
-				`https://intuita-public.s3.us-west-1.amazonaws.com/intuita/${executableName}`,
+				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod/${executableName}`,
 				executableUri,
 				'755',
 			);
@@ -91,7 +91,7 @@ export class BootstrapExecutablesService {
 		try {
 			// TODO codemod-public
 			await this.__downloadService.downloadFileIfNeeded(
-				`https://intuita-public.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
+				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
 				executableUri,
 				'755',
 			);
