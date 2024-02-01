@@ -7,10 +7,10 @@ export default function transformer(file: FileInfo, api: API) {
 	root.find(j.ClassDeclaration).forEach((path) => {
 		path.node.body.body.forEach((member) => {
 			if (
-				member.type === 'ClassMethod' ||
-				member.type === 'ClassProperty'
+				(member.type === 'ClassMethod' ||
+					member.type === 'ClassProperty') &&
+				'accessibility' in member
 			) {
-				// @ts-expect-error "Property 'accessibility' does not exist on type 'ClassProperty'." is wrong
 				member.accessibility = undefined;
 			}
 		});
