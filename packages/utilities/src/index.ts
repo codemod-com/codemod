@@ -36,4 +36,5 @@ export {
 	buildReadFile,
 	buildUnifiedFileSystem,
 	getUnifiedEntry,
+	trimLicense,
 } from './registry.js';
