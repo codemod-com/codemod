@@ -1,23 +1,32 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { buildApi, trimLicense } from '@codemod-com/utilities';
 import type { FileInfo } from 'jscodeshift';
 import { describe, it } from 'vitest';
 import transform from '../src/index.js';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-
 describe('react-router v4 create-hash-history', function () {
 	it('should add createHashHistory', async function () {
-		const input = await readFile(join(__dirname, 'input.js'), {
-			encoding: 'utf8',
-		});
+		const input = `
+		import { Router, hashHistory } from 'react-router';
 
-		const output = await readFile(join(__dirname, 'output.js'), {
-			encoding: 'utf8',
-		});
+		const MyApp = () => (
+		<Router history={hashHistory}>
+			<Route path="/posts" component={PostList} />
+		</Router>
+		);
+		`;
+
+		const output = `
+		const history = createHashHistory();
+		import createHashHistory from 'history/createHashHistory';
+		import { Router, hashHistory } from 'react-router';
+
+		const MyApp = () => (
+		<Router history={history}>
+			<Route path="/posts" component={PostList} />
+		</Router>
+		);
+		`;
 
 		const fileInfo: FileInfo = {
 			path: 'index.js',
