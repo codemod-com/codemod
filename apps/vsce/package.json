@@ -248,7 +248,7 @@
 		"lint:prettier": "prettier --write .",
 		"spellcheck": "pnpm cspell-cli '**/*.{ts,tsx}'",
 		"install:webview": "cd webview && pnpm install",
-		"build:webview": "cd webview && pnpm build",
+		"build:webview": "cd webview && pnpm build:webview",
 		"watch:webview": "cd webview && pnpm start",
 		"package": "vsce package --no-dependencies --no-yarn"
 	},

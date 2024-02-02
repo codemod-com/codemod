@@ -13,7 +13,7 @@
 		"typescript": "^5.2.2"
 	},
 	"scripts": {
-		"build": "tsx ./index.ts",
+		"build:registry": "tsx ./index.ts",
 		"build:homedir": "tsx --esm ./index.ts --homedir"
 	}
 }

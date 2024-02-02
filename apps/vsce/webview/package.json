@@ -30,7 +30,7 @@
 		"build:main": "NODE_ENV='production' TARGET_APP='main' vite build",
 		"build:jobDiffView": "NODE_ENV='production' TARGET_APP='jobDiffView' vite build",
 		"build:errors": "NODE_ENV='production' TARGET_APP='errors' vite build",
-		"build": "pnpm build:main && pnpm build:jobDiffView && pnpm build:errors"
+		"build:webview": "pnpm build:main && pnpm build:jobDiffView && pnpm build:errors"
 	},
 	"eslintConfig": {
 		"extends": [

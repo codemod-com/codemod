@@ -17,7 +17,7 @@
 		"vitest": "1.0.4"
 	},
 	"scripts": {
-		"build": "tsx build.ts",
+		"build:registry": "tsx build.ts",
 		"test": "vitest"
 	}
 }

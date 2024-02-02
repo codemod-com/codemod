@@ -6,7 +6,7 @@
 		"cjs-builder": "./dist/index.js"
 	},
 	"scripts": {
-		"build": "tsc",
+		"build:registry": "tsc",
 		"postinstall": "tsc"
 	},
 	"devDependencies": {
