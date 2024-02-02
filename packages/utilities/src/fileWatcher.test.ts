@@ -17,7 +17,7 @@ const withFile = async <T>(
 	}
 };
 
-describe.only('fileWatcher', function () {
+describe('fileWatcher', function () {
 	const fileName = `./${randomBytes(20).toString('base64url')}.data`;
 
 	afterAll(() => rm(fileName, { force: true }));
