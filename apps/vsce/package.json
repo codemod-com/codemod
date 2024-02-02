@@ -3,7 +3,7 @@
 	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
 	"version": "0.38.13",
-	"publisher": "Codemod.com",
+	"publisher": "codemod",
 	"icon": "img/codemod_square128.png",
 	"repository": {
 		"type": "git",
