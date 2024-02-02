@@ -1,23 +1,40 @@
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { buildApi } from '@codemod-com/utilities';
 import type { FileInfo } from 'jscodeshift';
 import { describe, it } from 'vitest';
 import transform from '../src/index.js';
 
-const __dirname = fileURLToPath(new URL('.', import.meta.url));
-
 describe('react-router v4 add-exact-prop', function () {
 	it('should add exact prop', async function () {
-		const input = await readFile(join(__dirname, 'input.js'), {
-			encoding: 'utf8',
-		});
+		const input = `
+		import { Route, Router, Switch } from 'react-router-dom';
 
-		const output = await readFile(join(__dirname, 'output.js'), {
-			encoding: 'utf8',
-		});
+		const MyApp = () => (
+			<Router history={history}>
+				<Switch>
+					<Route path="/posts" component={PostList} />
+					<Route path="/posts/:id" component={PostEdit} />
+					<Route path="/posts/:id/show" component={PostShow} />
+					<Route path="/posts/:id/delete" component={PostDelete} />
+				</Switch>
+			</Router>
+		);
+		`;
+
+		const output = `
+		import { Route, Router, Switch } from 'react-router-dom';
+
+		const MyApp = () => (
+			<Router history={history}>
+				<Switch>
+					<Route exact path="/posts" component={PostList} />
+					<Route exact path="/posts/:id" component={PostEdit} />
+					<Route exact path="/posts/:id/show" component={PostShow} />
+					<Route exact path="/posts/:id/delete" component={PostDelete} />
+				</Switch>
+			</Router>
+		);
+		`;
 
 		const fileInfo: FileInfo = {
 			path: 'index.js',
