@@ -2,8 +2,8 @@
 	"name": "codemod-vscode-extension",
 	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
-	"version": "0.38.12",
-	"publisher": "codemod",
+	"version": "0.38.13",
+	"publisher": "Codemod.com",
 	"icon": "img/codemod_square128.png",
 	"repository": {
 		"type": "git",
