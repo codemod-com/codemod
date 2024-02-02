@@ -1,6 +1,6 @@
 {
 	"name": "codemod-vscode-extension",
-	"displayName": "Codemod",
+	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
 	"version": "0.38.12",
 	"publisher": "codemod",
