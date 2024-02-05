@@ -2,8 +2,8 @@
   "$schema": "https://mintlify.com/schema.json",
   "name": "Starter Kit",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/codemod-logo-white.svg",
+    "light": "/logo/codemod-logo-dark.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -17,13 +17,13 @@
   },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "name": "Comunity",
+      "url": "https://codemod.com/community"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Get Started",
+    "url": "https://codemod.studio"
   },
   "tabs": [
     {
