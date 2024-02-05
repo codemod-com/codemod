@@ -1,15 +1,15 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "Codemod.com",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/codemod-logo-dark.svg",
+    "light": "/logo/codemod-logo-light.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
     "primary": "#0D9373",
-    "light": "#07C983",
-    "dark": "#0D9373",
+    "light": "#D6FF62",
+    "dark": "#000000",
     "anchors": {
       "from": "#0D9373",
       "to": "#07C983"
@@ -17,50 +17,55 @@
   },
   "topbarLinks": [
     {
-      "name": "Support",
-      "url": "mailto:hi@mintlify.com"
+      "name": "Community",
+      "url": "https://codemod.com/community"
     }
   ],
   "topbarCtaButton": {
-    "name": "Dashboard",
-    "url": "https://dashboard.mintlify.com"
+    "name": "Get Started",
+    "url": "https://codemod.studio"
   },
   "tabs": [
     {
-      "name": "API Reference",
+      "name": "Guides",
       "url": "api-reference"
     }
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "CLI",
+      "icon": "square-terminal",
+      "iconType": "regular",
+      "url": "https://codemod.com"
+    },
+    {
+      "name": "VS Code Extension",
+      "icon": "code",
+      "iconType": "solid",
+      "url": "https://codemod.com/extension"
     },
     {
       "name": "Community",
       "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "url": "https://codemod.com/community"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://codemod.com/blog"
     }
   ],
   "navigation": [
     {
-      "group": "Get Started",
+      "group": "introduction",
       "pages": [
-        "introduction",
-        "quickstart",
-        "development"
+        "introduction"
       ]
     },
     {
-      "group": "Essentials",
+      "group": "Codemod Studio",
       "pages": [
-        "essentials/markdown",
+        "codemod-studio/quickstart",
         "essentials/code",
         "essentials/images",
         "essentials/settings",
@@ -84,8 +89,8 @@
     }
   ],
   "footerSocials": {
-    "twitter": "https://twitter.com/mintlify",
-    "github": "https://github.com/mintlify",
-    "linkedin": "https://www.linkedin.com/company/mintsearch"
+    "twitter": "https://twitter.com/codemod",
+    "github": "https://github.com/codemod-com",
+    "linkedin": "https://www.linkedin.com/company/codemod"
   }
 }
