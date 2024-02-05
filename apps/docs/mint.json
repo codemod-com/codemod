@@ -3,7 +3,7 @@
   "name": "Starter Kit",
   "logo": {
     "dark": "/logo/codemod-logo-white.svg",
-    "light": "/logo/codemod-logo-dark.svg"
+    "light": "/logo/codemod-logo-black.svg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -33,19 +33,26 @@
   ],
   "anchors": [
     {
-      "name": "Documentation",
-      "icon": "book-open-cover",
-      "url": "https://mintlify.com/docs"
+      "name": "CLI",
+      "icon": "square-terminal",
+      "iconType": "regular",
+      "url": "https://marketplace.visualstudio.com/items?itemName=codemod.codemod-vscode-extension"
+    },
+    {
+      "name": "VS Code Extension",
+      "icon": "code",
+      "iconType": "solid",
+      "url": "https://marketplace.visualstudio.com/items?itemName=codemod.codemod-vscode-extension"
     },
     {
       "name": "Community",
       "icon": "slack",
-      "url": "https://mintlify.com/community"
+      "url": "https://codemod.com/community"
     },
     {
       "name": "Blog",
       "icon": "newspaper",
-      "url": "https://mintlify.com/blog"
+      "url": "https://codemod.com/blog"
     }
   ],
   "navigation": [
