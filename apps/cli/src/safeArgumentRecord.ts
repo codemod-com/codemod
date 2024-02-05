@@ -17,15 +17,22 @@ export const buildSafeArgumentRecord = (
 		{},
 	];
 
-	codemod.arguments.forEach((descriptor) => {
-		const unsafeValue = argumentRecord[descriptor.name];
+	codemod.arguments
+		.concat({ name: 'input', kind: 'string', default: '' })
+		.forEach((descriptor) => {
+			if (!argumentRecord[descriptor.name]) {
+				return;
+			}
 
-		if (typeof unsafeValue === descriptor.kind) {
-			safeArgumentRecord[0][descriptor.name] = unsafeValue;
-		} else if (descriptor.default !== undefined) {
-			safeArgumentRecord[0][descriptor.name] = descriptor.default;
-		}
-	});
+			const unsafeValue = argumentRecord[descriptor.name];
+
+			console.log(unsafeValue);
+			if (typeof unsafeValue === descriptor.kind) {
+				safeArgumentRecord[0][descriptor.name] = unsafeValue;
+			} else if (descriptor.default !== undefined) {
+				safeArgumentRecord[0][descriptor.name] = descriptor.default;
+			}
+		});
 
 	return safeArgumentRecord;
 };

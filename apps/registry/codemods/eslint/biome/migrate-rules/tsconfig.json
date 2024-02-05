@@ -1,6 +1,8 @@
 {
 	"extends": "@codemod-com/tsconfig/codemod.json",
 	"include": [
+		"types/biome.d.ts",
+		"types/eslint.d.ts",
 		"./src/**/*.ts",
 		"./src/**/*.js",
 		"./test/**/*.ts",

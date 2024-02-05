@@ -37,19 +37,67 @@ import {
 declare const __CODEMODCOM_CLI_VERSION__: string;
 
 export const executeMainThread = async () => {
+	// process.stdin.setEncoding('utf8');
+
+	// await new Promise((resolve, reject) => {
+	// 	let input = '';
+	// 	console.log('im there');
+
+	// 	process.stdin.setEncoding('utf8');
+
+	// 	process.stdin.on('readable', () => {
+	// 		const chunk = process.stdin.read();
+	// 		console.log('chunk', chunk);
+	// 		if (chunk !== null) {
+	// 			input += chunk;
+	// 		}
+	// 	});
+
+	// 	process.stdin.on('end', () => {
+	// 		console.log('ended');
+	// 		resolve(input);
+	// 	});
+
+	// 	process.stdin.on('error', (err) => {
+	// 		reject(err);
+	// 	});
+	// });
+	// let input = '';
+	// console.log('im there');
+
+	// process.stdin.setEncoding('utf8');
+
+	// process.stdin.on('readable', () => {
+	// 	const chunk = process.stdin.read();
+	// 	console.log('chunk', chunk);
+	// 	if (chunk !== null) {
+	// 		input += chunk;
+	// 	}
+	// });
+
 	const slicedArgv = hideBin(process.argv);
 
 	const interfaze = readline.createInterface(process.stdin);
 
-	const lineHandler = (line: string): void => {
-		if (line === 'shutdown') {
-			interfaze.off('line', lineHandler);
+	let userInput = '';
 
-			process.exit(0);
-		}
-	};
+	await new Promise((resolve, reject) => {
+		const lineHandler = (line: string): void => {
+			if (line === 'shutdown') {
+				interfaze.off('line', lineHandler);
 
-	interfaze.on('line', lineHandler);
+				process.exit(0);
+			}
+
+			userInput += line;
+		};
+
+		interfaze.on('line', lineHandler);
+
+		interfaze.on('close', () => {
+			resolve(null);
+		});
+	});
 
 	process.stdin.unref();
 
@@ -323,7 +371,10 @@ export const executeMainThread = async () => {
 	const codemodSettings = parseCodemodSettings(argv);
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = parseRunSettings(homedir(), argv);
-	const argumentRecord = buildArgumentRecord(argv);
+	const argumentRecord = buildArgumentRecord({
+		...argv,
+		'arg:input': userInput,
+	});
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,
