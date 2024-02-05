@@ -20,7 +20,7 @@
 	"types": "/dist/index.d.ts",
 	"scripts": {
 		"build:cjs": "cjs-builder ./src/index.ts",
-		"generate": "tsx generate-latest-biome-types.ts",
+		"generate": "tsx generate-latest-dts.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
