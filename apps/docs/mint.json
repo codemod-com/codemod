@@ -27,7 +27,7 @@
   },
   "tabs": [
     {
-      "name": "Guides",
+      "name": "Examples",
       "url": "api-reference"
     }
   ],
@@ -63,9 +63,39 @@
       ]
     },
     {
-      "group": "Codemod Studio",
+      "group": "Building Codemods",
       "pages": [
-        "codemod-studio/quickstart",
+        "codemod-studio/quickstart"
+      ]
+    },
+    {
+      "group": "Codemod Registry",
+      "pages": [
+        "codemod-registry/introduction",
+        "codemod-registry/importing-codemods"
+      ]
+    },
+    {
+      "group": "Deploying Codemods",
+      "pages": [
+            "deploying-codemods/introduction",
+            {
+                "group": "CLI",
+                "pages": [
+                  "deploying-codemods/cli/quickstart"
+                ]
+            },
+            {
+              "group": "VS Code Extension",
+              "pages": [
+                "deploying-codemods/vsce/quickstart"
+              ]
+          }
+      ]
+    },
+    {
+      "group": "Other Resources",
+      "pages": [
         "essentials/code",
         "essentials/images",
         "essentials/settings",
