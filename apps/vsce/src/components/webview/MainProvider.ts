@@ -136,6 +136,7 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __webviewResolver: WebviewResolver;
 	private __executionQueue: ReadonlyArray<CodemodHash> = [];
 	private __directoryPaths: ReadonlyArray<string> | null = null;
+	private __codemodEngineNodeLocated: boolean = false;
 
 	constructor(
 		context: ExtensionContext,
@@ -181,6 +182,20 @@ export class MainViewProvider implements WebviewViewProvider {
 				this.__postMessage({
 					kind: 'webview.main.setProps',
 					props: props,
+				});
+			},
+		);
+
+		this.__messageBus.subscribe(
+			MessageKind.codemodEngineNodeLocated,
+			() => {
+				this.__codemodEngineNodeLocated = true;
+
+				const props = this.__buildProps();
+
+				this.__postMessage({
+					kind: 'webview.main.setProps',
+					props,
 				});
 			},
 		);
@@ -285,6 +300,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			this.__rootUri,
 			this.__directoryPaths,
 			this.__executionQueue,
+			this.__codemodEngineNodeLocated,
 		);
 	}
 

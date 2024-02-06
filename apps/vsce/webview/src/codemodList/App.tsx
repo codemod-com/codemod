@@ -161,21 +161,22 @@ export const App = memo(
 									}
 								>
 									<p>
-										Make your own codemods in{' '}
+										Make your own codemods in
 										<a
 											rel="noopener noreferrer"
 											target="_blank"
 											href="https://codemod.studio/"
 										>
 											Codemod Studio
-										</a>{' '}
+										</a>
 										with the help of AI and specialized
 										debuggers.
 									</p>
 									<p>
 										You can also kick off your codemod
 										creation by creating a diff and running
-										this CLI command: `codemod learn`.
+										this CLI command:{' '}
+										<code>codemod learn</code>.
 									</p>
 								</div>
 							)}

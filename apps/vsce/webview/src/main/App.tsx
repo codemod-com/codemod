@@ -15,6 +15,7 @@ import { WebviewMessage } from '../shared/types';
 import { vscode } from '../shared/utilities/vscode';
 import { CodemodRuns } from './CodemodRuns';
 import 'react-toastify/dist/ReactToastify.css';
+import CodemodEngineNodeNotFound from '../CodemodEngineNodeNotFound';
 import { useTheme } from '../shared/Snippet/useTheme';
 
 const toastContainerProps = {
@@ -86,15 +87,14 @@ function App() {
 		};
 	}, []);
 
+	const toaster = mainWebviewViewProps?.toaster ?? null;
+
 	useEffect(() => {
-		if (
-			mainWebviewViewProps === null ||
-			mainWebviewViewProps.toaster === null
-		) {
+		if (toaster === null) {
 			return;
 		}
 
-		const { content, ...toasterProps } = mainWebviewViewProps.toaster;
+		const { content, ...toasterProps } = toaster;
 		let componentToRender = null;
 
 		if (toasterProps.toastId === 'handleSignedInUser') {
@@ -122,7 +122,7 @@ function App() {
 			kind: 'webview.main.setToaster',
 			value: null,
 		});
-	}, [mainWebviewViewProps, mainWebviewViewProps?.toaster]);
+	}, [toaster]);
 
 	const handlePanelTabClick = (id: ActiveTabId) => {
 		vscode.postMessage({
@@ -139,6 +139,10 @@ function App() {
 				</p>
 			</main>
 		);
+	}
+
+	if (!mainWebviewViewProps.codemodEngineNodeLocated) {
+		return <CodemodEngineNodeNotFound />;
 	}
 
 	return (
