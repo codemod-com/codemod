@@ -244,16 +244,18 @@ export class EngineService {
 					kind: MessageKind.codemodEngineNodeLocated,
 				});
 				this.__onCodemodEngineNodeLocated();
+
 				clearInterval(codemodEnginePollingIntervalId);
 			}
 		};
 
-		checkCodemodEngineNode();
 		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
 		const codemodEnginePollingIntervalId = setInterval(
 			checkCodemodEngineNode,
 			CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
 		);
+
+		checkCodemodEngineNode();
 	}
 
 	private async __onCodemodEngineNodeLocated() {

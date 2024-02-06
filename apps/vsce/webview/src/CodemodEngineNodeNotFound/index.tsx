@@ -2,7 +2,7 @@ import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
 import cn from 'classnames';
 import styles from './style.module.css';
 
-const INSTALL_CODEMOD_ENGINE_NODE_COMMAND = 'npm install --global codemod';
+const INSTALL_CODEMOD_ENGINE_NODE_COMMAND = 'npm i -g codemod';
 
 const handleCopyCommand = () => {
 	navigator.clipboard.writeText(INSTALL_CODEMOD_ENGINE_NODE_COMMAND);
