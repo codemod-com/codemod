@@ -2,7 +2,7 @@ import Axios from 'axios';
 import type FormData from 'form-data';
 import { nullable, object, parse, string, type Input } from 'valibot';
 
-const X_CODEMODCOM_ACCESS_TOKEN = 'X-Intuita-Access-Token'.toLocaleLowerCase();
+const X_CODEMOD_ACCESS_TOKEN = 'X-Codemod-Access-Token'.toLocaleLowerCase();
 
 const dataSchema = object({
 	username: nullable(string()),
@@ -14,11 +14,11 @@ export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<Data> => {
 	const response = await Axios.post(
-		'https://telemetry.intuita.io/validateAccessToken',
+		'https://backend.codemod.com/validateAccessToken',
 		{},
 		{
 			headers: {
-				[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			},
 			timeout: 5000,
 		},
@@ -31,18 +31,20 @@ export const publish = async (
 	accessToken: string,
 	formData: FormData,
 ): Promise<void> => {
-	await Axios.post('https://telemetry.intuita.io/publish', formData, {
+	await Axios.post('https://backend.codemod.com/publish', formData, {
 		headers: {
-			[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			'Content-Type': 'multipart/form-data',
 		},
 		timeout: 10000,
 	});
 };
 
-export const revokeCLIToken = async (token: string): Promise<void> => {
-	await Axios.delete('https://telemetry.intuita.io/revokeToken', {
-		headers: { [X_CODEMODCOM_ACCESS_TOKEN]: token },
+export const revokeCLIToken = async (accessToken: string): Promise<void> => {
+	await Axios.delete('https://backend.codemod.com/revokeToken', {
+		headers: {
+			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
+		},
 		timeout: 10000,
 	});
 };
