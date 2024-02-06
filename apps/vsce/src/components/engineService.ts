@@ -203,6 +203,7 @@ type ExecuteCodemodMessage = Message &
 
 const CODEMOD_ENGINE_NODE_COMMAND = 'codemod';
 const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
+const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export class EngineService {
 	readonly #configurationContainer: Container<Configuration>;
@@ -235,7 +236,13 @@ export class EngineService {
 	}
 
 	private async __pollCodemodEngineNode() {
+		let iterations = 0;
+
 		const checkCodemodEngineNode = async () => {
+			if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
+				clearInterval(codemodEnginePollingIntervalId);
+			}
+
 			const codemodEngineNodeLocated =
 				await this.isCodemodEngineNodeLocated();
 
@@ -247,6 +254,8 @@ export class EngineService {
 
 				clearInterval(codemodEnginePollingIntervalId);
 			}
+
+			iterations++;
 		};
 
 		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
