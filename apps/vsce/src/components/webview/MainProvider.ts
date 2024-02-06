@@ -27,19 +27,18 @@ import { UserService } from '../userService';
 import { CodemodHash, WebviewMessage, WebviewResponse } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
-const X_CODEMODCOM_ACCESS_TOKEN = 'X-Intuita-Access-Token'.toLocaleLowerCase();
+const X_CODEMOD_ACCESS_TOKEN = 'X-Codemod-Access-Token'.toLocaleLowerCase();
 
 export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<boolean> => {
 	try {
 		const response = await axios.post(
-			// TODO this should be backend.codemod.com
-			'https://telemetry.intuita.io/validateAccessToken',
+			'https://backend.codemod.com/validateAccessToken',
 			{},
 			{
 				headers: {
-					[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+					[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 				},
 				timeout: 5000,
 			},
@@ -67,7 +66,7 @@ export const createIssue = async (
 
 	// TODO point to backend.codemod.com
 	const result = await axios.post(
-		'https://telemetry.intuita.io/sourceControl/github/issues',
+		'https://backend.codemod.com/sourceControl/github/issues',
 		{
 			title,
 			body,
@@ -75,7 +74,7 @@ export const createIssue = async (
 		},
 		{
 			headers: {
-				[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			},
 		},
 	);
