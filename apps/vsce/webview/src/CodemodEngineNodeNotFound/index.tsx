@@ -13,8 +13,8 @@ const CodemodEngineNodeNotFound = () => {
 		<div className={styles.root}>
 			<h1>Halfway there!</h1>
 			<p>
-				Use this command to install the CLI and complete the
-				installation:
+				Use this command to install the CLI (or make it global, if its
+				already installed) and complete the installation:
 			</p>
 			<VSCodeTextField
 				className={styles.command}
