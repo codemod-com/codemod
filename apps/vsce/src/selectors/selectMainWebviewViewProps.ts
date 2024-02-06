@@ -15,6 +15,7 @@ export const selectMainWebviewViewProps = (
 	rootUri: Uri | null,
 	autocompleteItems: ReadonlyArray<string> | null,
 	executionQueue: ReadonlyArray<CodemodHash>,
+	codemodEngineNodeLocated: boolean,
 ) => {
 	if (rootUri === null) {
 		return null;
@@ -44,6 +45,7 @@ export const selectMainWebviewViewProps = (
 			privateRegistryCollapsed:
 				state.codemodDiscoveryView.privateRegistryCollapsed,
 			panelGroupSettings: state.codemodDiscoveryView.panelGroupSettings,
+			codemodEngineNodeLocated,
 		};
 	}
 
@@ -66,6 +68,7 @@ export const selectMainWebviewViewProps = (
 			resultsCollapsed: state.codemodRunsTab.resultsCollapsed,
 			changeExplorerCollapsed:
 				state.codemodRunsTab.changeExplorerCollapsed,
+			codemodEngineNodeLocated,
 		};
 	}
 
@@ -78,12 +81,14 @@ export const selectMainWebviewViewProps = (
 			title: sourceControlTabProps?.title ?? '',
 			body: sourceControlTabProps?.body ?? '',
 			loading: sourceControlTabProps?.loading ?? false,
+			codemodEngineNodeLocated,
 		};
 	}
 
 	return {
 		activeTabId: state.activeTabId,
 		toaster: state.toaster,
+		codemodEngineNodeLocated,
 	};
 };
 
