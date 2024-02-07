@@ -135,7 +135,8 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __webviewResolver: WebviewResolver;
 	private __executionQueue: ReadonlyArray<CodemodHash> = [];
 	private __directoryPaths: ReadonlyArray<string> | null = null;
-	private __codemodEngineNodeLocated: boolean = false;
+	// true by default to prevent banner blinking on load
+	private __codemodEngineNodeLocated: boolean = true;
 
 	constructor(
 		context: ExtensionContext,
@@ -187,8 +188,14 @@ export class MainViewProvider implements WebviewViewProvider {
 
 		this.__messageBus.subscribe(
 			MessageKind.codemodEngineNodeLocated,
-			() => {
-				this.__codemodEngineNodeLocated = true;
+			({ codemodEngineNodeLocated }) => {
+				if (
+					this.__codemodEngineNodeLocated === codemodEngineNodeLocated
+				) {
+					return;
+				}
+
+				this.__codemodEngineNodeLocated = codemodEngineNodeLocated;
 
 				const props = this.__buildProps();
 

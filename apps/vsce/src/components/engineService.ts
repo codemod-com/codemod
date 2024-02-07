@@ -1,4 +1,8 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
+import {
+	ChildProcessWithoutNullStreams,
+	exec,
+	spawn,
+} from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -246,12 +250,13 @@ export class EngineService {
 			const codemodEngineNodeLocated =
 				await this.isCodemodEngineNodeLocated();
 
-			if (codemodEngineNodeLocated) {
-				this.#messageBus.publish({
-					kind: MessageKind.codemodEngineNodeLocated,
-				});
-				this.__onCodemodEngineNodeLocated();
+			this.#messageBus.publish({
+				kind: MessageKind.codemodEngineNodeLocated,
+				codemodEngineNodeLocated,
+			});
 
+			if (codemodEngineNodeLocated) {
+				this.__onCodemodEngineNodeLocated();
 				clearInterval(codemodEnginePollingIntervalId);
 			}
 
@@ -312,9 +317,24 @@ export class EngineService {
 		});
 	}
 
-	// @TODO implement
 	public async isCodemodEngineNodeLocated(): Promise<boolean> {
-		return Promise.resolve(Math.random() > 0.8);
+		const command = [
+			CODEMOD_ENGINE_NODE_COMMAND,
+			buildCrossplatformArg('--help'),
+		].join(' ');
+
+		const childProcess = exec(command);
+
+		if (childProcess.stdout === null) {
+			childProcess.kill();
+			return false;
+		}
+
+		const result = await streamToString(childProcess.stdout);
+
+		childProcess.kill();
+
+		return result.length !== 0;
 	}
 
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {

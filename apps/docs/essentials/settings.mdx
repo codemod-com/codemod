@@ -35,50 +35,51 @@ Example: `mintlify`
 </ResponseField>
 
 <ResponseField name="logo" type="string or object">
-  Path to logo image or object with path to "light" and "dark" mode logo images
-  <Expandable title="Logo">
-    <ResponseField name="light" type="string">
-      Path to the logo in light mode
-    </ResponseField>
-    <ResponseField name="dark" type="string">
-      Path to the logo in dark mode
-    </ResponseField>
-    <ResponseField name="href" type="string" default="/">
-      Where clicking on the logo links you to
-    </ResponseField>
-  </Expandable>
+	Path to logo image or object with path to "light" and "dark" mode logo
+	images
+	<Expandable title="Logo">
+		<ResponseField name="light" type="string">
+			Path to the logo in light mode
+		</ResponseField>
+		<ResponseField name="dark" type="string">
+			Path to the logo in dark mode
+		</ResponseField>
+		<ResponseField name="href" type="string" default="/">
+			Where clicking on the logo links you to
+		</ResponseField>
+	</Expandable>
 </ResponseField>
 
 <ResponseField name="favicon" type="string">
-  Path to the favicon image
+	Path to the favicon image
 </ResponseField>
 
 <ResponseField name="colors" type="Colors">
-  Hex color codes for your global theme
-  <Expandable title="Colors">
-    <ResponseField name="primary" type="string" required>
-      The primary color. Used for most often for highlighted content, section
-      headers, accents, in light mode
-    </ResponseField>
-    <ResponseField name="light" type="string">
-      The primary color for dark mode. Used for most often for highlighted
-      content, section headers, accents, in dark mode
-    </ResponseField>
-    <ResponseField name="dark" type="string">
-      The primary color for important buttons
-    </ResponseField>
-    <ResponseField name="background" type="object">
-      The color of the background in both light and dark mode
-      <Expandable title="Object">
-        <ResponseField name="light" type="string" required>
-          The hex color code of the background in light mode
-        </ResponseField>
-        <ResponseField name="dark" type="string" required>
-          The hex color code of the background in dark mode
-        </ResponseField>
-      </Expandable>
-    </ResponseField>
-  </Expandable>
+	Hex color codes for your global theme
+	<Expandable title="Colors">
+		<ResponseField name="primary" type="string" required>
+			The primary color. Used for most often for highlighted content,
+			section headers, accents, in light mode
+		</ResponseField>
+		<ResponseField name="light" type="string">
+			The primary color for dark mode. Used for most often for highlighted
+			content, section headers, accents, in dark mode
+		</ResponseField>
+		<ResponseField name="dark" type="string">
+			The primary color for important buttons
+		</ResponseField>
+		<ResponseField name="background" type="object">
+			The color of the background in both light and dark mode
+			<Expandable title="Object">
+				<ResponseField name="light" type="string" required>
+					The hex color code of the background in light mode
+				</ResponseField>
+				<ResponseField name="dark" type="string" required>
+					The hex color code of the background in dark mode
+				</ResponseField>
+			</Expandable>
+		</ResponseField>
+	</Expandable>
 </ResponseField>
 
 <ResponseField name="topbarLinks" type="TopbarLink[]">
@@ -114,8 +115,8 @@ Example: `mintlify`
 </ResponseField>
 
 <ResponseField name="versions" type="string[]">
-  Array of version names. Only use this if you want to show different versions
-  of docs with a dropdown in the navigation bar.
+	Array of version names. Only use this if you want to show different versions
+	of docs with a dropdown in the navigation bar.
 </ResponseField>
 
 <ResponseField name="anchors" type="Anchor[]">
@@ -151,31 +152,32 @@ Example: `mintlify`
 </ResponseField>
 
 <ResponseField name="topAnchor" type="Object">
-  Override the default configurations for the top-most anchor.
-  <Expandable title="Object">
-    <ResponseField name="name" default="Documentation" type="string">
-      The name of the top-most anchor
-    </ResponseField>
-    <ResponseField name="icon" default="book-open" type="string">
-      Font Awesome icon.
-    </ResponseField>
-    <ResponseField name="iconType" default="duotone" type="string">
-      One of: "brands", "duotone", "light", "sharp-solid", "solid", or "thin"
-    </ResponseField>
-  </Expandable>
+	Override the default configurations for the top-most anchor.
+	<Expandable title="Object">
+		<ResponseField name="name" default="Documentation" type="string">
+			The name of the top-most anchor
+		</ResponseField>
+		<ResponseField name="icon" default="book-open" type="string">
+			Font Awesome icon.
+		</ResponseField>
+		<ResponseField name="iconType" default="duotone" type="string">
+			One of: "brands", "duotone", "light", "sharp-solid", "solid", or
+			"thin"
+		</ResponseField>
+	</Expandable>
 </ResponseField>
 
 <ResponseField name="tabs" type="Tabs[]">
-  An array of navigational tabs.
-  <Expandable title="Tabs">
-    <ResponseField name="name" type="string">
-      The name of the tab label.
-    </ResponseField>
-    <ResponseField name="url" type="string">
-      The start of the URL that marks what pages go in the tab. Generally, this
-      is the name of the folder you put your pages in.
-    </ResponseField>
-  </Expandable>
+	An array of navigational tabs.
+	<Expandable title="Tabs">
+		<ResponseField name="name" type="string">
+			The name of the tab label.
+		</ResponseField>
+		<ResponseField name="url" type="string">
+			The start of the URL that marks what pages go in the tab. Generally,
+			this is the name of the folder you put your pages in.
+		</ResponseField>
+	</Expandable>
 </ResponseField>
 
 <ResponseField name="api" type="API">
@@ -313,6 +315,6 @@ Example: `mintlify`
 </ResponseField>
 
 <ResponseField name="backgroundImage" type="string">
-  A background image to be displayed behind every page. See example with
-  [Infisical](https://infisical.com/docs) and [FRPC](https://frpc.io).
+	A background image to be displayed behind every page. See example with
+	[Infisical](https://infisical.com/docs) and [FRPC](https://frpc.io).
 </ResponseField>
