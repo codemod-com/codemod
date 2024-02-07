@@ -320,7 +320,7 @@ export class EngineService {
 	public async isCodemodEngineNodeLocated(): Promise<boolean> {
 		const command = [
 			CODEMOD_ENGINE_NODE_COMMAND,
-			buildCrossplatformArg('--help'),
+			buildCrossplatformArg('--version'),
 		].join(' ');
 
 		const childProcess = exec(command);
