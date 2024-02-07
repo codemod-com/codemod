@@ -4,13 +4,86 @@
 
 Run this codemod to upgrade configuration files for eslint with corresponding biome.json for all the found rules replacements.
 
-NOTE: Due to limitation of filemod engine being able to update one single file at a time, while having context of both, this codemod ignores eslintIgnore and eslintConfig fields in package.json files. You will need to manually update biome.json based on these fields if you need to.
-
 NOTE: This codemod requires internet connection to fetch the rules replacements.
 
 ## Example
 
 ### `package.json`
+
+### Before
+
+```json
+{
+	"name": "package-name",
+	"dependencies": {
+		"prettier": "^3.1.0",
+		"prettier-plugin-tailwindcss": "^0.5.4",
+		"@tanstack/eslint-plugin-query": "^4.29.25",
+		"@someorg/prettier-config": "^1.1.1"
+	},
+	"devDependencies": {
+		"eslint-plugin-airbnb": "^10.2.0",
+		"eslint": "^10.2.0",
+		"eslint-plugin-prettier": "^10.2.0",
+		"eslint-config-prettier": "^10.2.0"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {
+		"start": "pnpm run build:cjs && node ./dist/index.cjs",
+		"build:cjs": "cjs-builder ./src/index.ts",
+		"lint:eslint": "eslint . --fix",
+		"lint:prettier": "prettier --write ."
+	},
+	"eslintIgnore": ["ignore-key"],
+	"files": [
+		"prettier-test-no-replace",
+		"README.md",
+		"config.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"lint-staged": {
+		"*.js": "eslint --fix",
+		"*.ts": "eslint --fix"
+	},
+	"type": "module"
+}
+```
+
+### After
+
+```json
+{
+	"name": "package-name",
+	"dependencies": {},
+	"devDependencies": {
+		"@biomejs/biome": "1.5.3"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {
+		"start": "pnpm run build:cjs && node ./dist/index.cjs",
+		"build:cjs": "cjs-builder ./src/index.ts",
+		"lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
+		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
+		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
+		"NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"
+	},
+	"files": [
+		"prettier-test-no-replace",
+		"README.md",
+		"config.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"lint-staged": {
+		"*.js": "pnpm dlx @biomejs/biome lint --apply",
+		"*.ts": "pnpm dlx @biomejs/biome lint --apply"
+	},
+	"type": "module"
+}
+```
 
 ### `.eslintrc.json`
 
@@ -18,13 +91,56 @@ NOTE: This codemod requires internet connection to fetch the rules replacements.
 
 ```json
 {
-	...
+	"rules": [...]
 }
 ```
 
 ### After
 
-`Removed`
+`Removed and replaced with corresponding rules in biome.json`
+
+### `.prettierrc`
+
+### Before
+
+```json
+{
+	"printWidth": 80
+}
+```
+
+### After
+
+`Removed and replaced with corresponding values in biome.json`
+
+### `biome.json`
+
+```json
+{
+	"linter": {
+		"ignore": [
+			"ignore-key",
+			"dist",
+			"build",
+			"pnpm-lock.yaml",
+			"node_modules"
+		],
+		"rules": {
+			"suspicious": {
+				"noDoubleEquals": "warn",
+				"noAssignInExpressions": "warn"
+			},
+			"correctness": {
+				"noUnusedVariables": "off"
+			}
+		}
+	},
+	"formatter": {
+		"ignore": [],
+		"indentStyle": "tab"
+	}
+}
+```
 
 ## Applicability Criteria
 

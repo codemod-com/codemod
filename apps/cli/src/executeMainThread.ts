@@ -37,51 +37,13 @@ import {
 declare const __CODEMODCOM_CLI_VERSION__: string;
 
 export const executeMainThread = async () => {
-	// process.stdin.setEncoding('utf8');
-
-	// await new Promise((resolve, reject) => {
-	// 	let input = '';
-	// 	console.log('im there');
-
-	// 	process.stdin.setEncoding('utf8');
-
-	// 	process.stdin.on('readable', () => {
-	// 		const chunk = process.stdin.read();
-	// 		console.log('chunk', chunk);
-	// 		if (chunk !== null) {
-	// 			input += chunk;
-	// 		}
-	// 	});
-
-	// 	process.stdin.on('end', () => {
-	// 		console.log('ended');
-	// 		resolve(input);
-	// 	});
-
-	// 	process.stdin.on('error', (err) => {
-	// 		reject(err);
-	// 	});
-	// });
-	// let input = '';
-	// console.log('im there');
-
-	// process.stdin.setEncoding('utf8');
-
-	// process.stdin.on('readable', () => {
-	// 	const chunk = process.stdin.read();
-	// 	console.log('chunk', chunk);
-	// 	if (chunk !== null) {
-	// 		input += chunk;
-	// 	}
-	// });
-
 	const slicedArgv = hideBin(process.argv);
 
 	const interfaze = readline.createInterface(process.stdin);
 
 	let userInput = '';
 
-	await new Promise((resolve, reject) => {
+	await new Promise((resolve) => {
 		const lineHandler = (line: string): void => {
 			if (line === 'shutdown') {
 				interfaze.off('line', lineHandler);
