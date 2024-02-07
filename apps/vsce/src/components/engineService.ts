@@ -323,16 +323,13 @@ export class EngineService {
 			buildCrossplatformArg('--version'),
 		].join(' ');
 
-		const childProcess = exec(command);
+		const childProcess = exec(command, { timeout: 1000 });
 
 		if (childProcess.stdout === null) {
-			childProcess.kill();
 			return false;
 		}
 
 		const result = await streamToString(childProcess.stdout);
-
-		childProcess.kill();
 
 		return result.length !== 0;
 	}
