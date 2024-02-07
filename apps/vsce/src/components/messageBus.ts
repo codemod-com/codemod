@@ -180,6 +180,7 @@ export type Message =
 	  }>
 	| Readonly<{
 			kind: MessageKind.codemodEngineNodeLocated;
+			codemodEngineNodeLocated: boolean;
 	  }>;
 
 type EmitterMap<K extends MessageKind> = {
