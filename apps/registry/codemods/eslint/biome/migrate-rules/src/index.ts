@@ -1,70 +1,27 @@
 import type { Filemod } from '@codemod-com/filemod';
-import { any, Input, is, object, optional, record, string } from 'valibot';
-import { Configuration } from '../types/biome.js';
-import { JSONSchemaForESLintConfigurationFiles } from '../types/eslint.js';
+import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
+import { Input, is } from 'valibot';
+import { Configuration as BiomeConfig } from '../types/biome.js';
+import { JSONSchemaForESLintConfigurationFiles as EslintConfig } from '../types/eslint.js';
+import { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
+import {
+	buildFormatterConfig,
+	buildLinterConfig,
+	clearDependenciesAndAddNotes,
+	getPackageManager,
+	parseIgnoreEntries,
+	replaceKeys,
+} from './functions.js';
+import { packageJsonSchema, valibotEslintSchema } from './schemas.js';
+import { Dependencies, Options } from './types.js';
 
-const valibotEslintSchema = object({
-	rules: record(string()),
-});
-
-const packageJsonSchema = object({
-	name: optional(string()),
-	dependencies: optional(record(string())),
-	devDependencies: optional(record(string())),
-	scripts: optional(record(string())),
-	eslintConfig: optional(any()),
-	eslintIgnore: optional(any()),
-	packageManager: optional(string()),
-});
-
-function replaceKeys(
-	obj: Record<string, unknown>,
-	pattern: RegExp,
-	replacement: string,
-) {
-	// Check if the input is an object
-	if (typeof obj !== 'object' || obj === null) {
-		return obj;
-	}
-
-	// Iterate through each key in the object
-	for (const key in obj) {
-		if (obj.hasOwnProperty(key)) {
-			// If the value of the key is an object, recursively call the function
-			if (typeof obj[key] === 'object' && obj[key] !== null) {
-				obj[key] = replaceKeys(
-					obj[key] as Record<string, unknown>,
-					pattern,
-					replacement,
-				);
-			} else {
-				// If the value is not an object, check for the pattern in the string
-				if (
-					typeof obj[key] === 'string' &&
-					pattern.test(obj[key] as string)
-				) {
-					// Replace the key with the specified replacement
-					obj[key] = (obj[key] as string).replace(
-						pattern,
-						replacement,
-					);
-				}
-			}
-		}
-	}
-
-	return obj;
-}
-
-export const repomod: Filemod<
-	Record<string, never>,
-	{ config: JSONSchemaForESLintConfigurationFiles | null }
-> = {
+export const repomod: Filemod<Dependencies, Options> = {
 	includePatterns: [
-		// "**/biome.json",
 		'**/package.json',
 		'**/{,.}{eslintrc,eslint.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}',
 		'**/{,.}{prettierrc,prettier.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}',
+		'**/.eslintignore',
+		'**/.prettierignore',
 	],
 	excludePatterns: ['**/node_modules/**'],
 	initializeState: async (options) => {
@@ -72,7 +29,7 @@ export const repomod: Filemod<
 			return { config: null };
 		}
 
-		let eslintConfig: JSONSchemaForESLintConfigurationFiles;
+		let eslintConfig: EslintConfig;
 		try {
 			const json = JSON.parse(options.input);
 			if (!is(valibotEslintSchema, json)) {
@@ -87,13 +44,10 @@ export const repomod: Filemod<
 	},
 	handleFile: async (api, path, options) => {
 		const fileName = path.split('/').at(-1);
-		if (fileName === 'package.json') {
-			return [{ kind: 'upsertFile', path, options }];
-		}
 
-		if (fileName?.includes('eslint') || fileName?.includes('prettier')) {
+		if (fileName === 'package.json') {
 			return [
-				// { kind: 'deleteFile', path },
+				// FIRST (!), update biome.json linter.ignore based on eslintIgnore key
 				{
 					kind: 'upsertFile',
 					path,
@@ -102,93 +56,108 @@ export const repomod: Filemod<
 							await api.readFile('biome.json'),
 					},
 				},
+				// Then, update package.json and remove all eslint-related keys
+				{
+					kind: 'upsertFile',
+					path,
+					options,
+				},
 			];
 		}
 
-		return [];
+		return [
+			{
+				kind: 'upsertFile',
+				path,
+				options: {
+					biomeJsonStringContent: await api.readFile('biome.json'),
+				},
+			},
+			{
+				kind: 'deleteFile',
+				path,
+			},
+		];
 	},
 	handleData: async (
-		_,
+		api,
 		path,
 		data,
-		options: { biomeJsonStringContent?: string },
+		options: {
+			biomeJsonStringContent?: string;
+		},
 		state,
 	) => {
-		if (path.split('/').at(-1)?.includes('eslint')) {
-			const markDownUrl =
-				'https://raw.githubusercontent.com/biomejs/biome/main/website/src/content/docs/linter/rules-sources.mdx';
-			const biomeRules = await fetch(markDownUrl)
-				.then((res) => res.text())
-				.then((text) => text.split('\n').slice(5));
+		const fileName = path.split('/').at(-1)!;
 
+		let biomeJsonContent: BiomeConfig;
+		try {
+			biomeJsonContent = JSON.parse(options.biomeJsonStringContent!);
+		} catch (err) {
+			biomeJsonContent = {};
+		}
+
+		if (fileName.includes('ignore')) {
+			let key: 'linter' | 'formatter' = 'linter';
+			if (fileName.includes('prettier')) {
+				key = 'formatter';
+			}
+
+			const filesToIgnore = parseIgnoreEntries(data);
+			biomeJsonContent[key] = {
+				...biomeJsonContent[key],
+				ignore: [
+					...filesToIgnore,
+					...(biomeJsonContent[key]?.ignore ?? []),
+				],
+			};
+
+			return {
+				kind: 'upsertData',
+				data: JSON.stringify(biomeJsonContent),
+				path: 'biome.json',
+			};
+		}
+
+		if (fileName.includes('eslint')) {
 			if (!state?.config?.rules) {
 				return { kind: 'noop' };
 			}
 
-			let biomeJsonContent: Configuration;
+			biomeJsonContent.linter = await buildLinterConfig(
+				state.config.rules,
+				biomeJsonContent.linter,
+				api,
+			);
+
+			return {
+				kind: 'upsertData',
+				data: JSON.stringify(biomeJsonContent),
+				path: 'biome.json',
+			};
+		}
+
+		if (fileName.includes('prettier')) {
+			let prettierConfig: PrettierConfig;
 			try {
-				biomeJsonContent = JSON.parse(options.biomeJsonStringContent!);
+				prettierConfig = JSON.parse(data);
 			} catch (err) {
-				biomeJsonContent = {};
+				return { kind: 'noop' };
 			}
 
-			for (const [name, value] of Object.entries(state.config.rules)) {
-				if (value === 'off' || value === 0) {
-					continue;
-				}
+			biomeJsonContent.formatter = buildFormatterConfig(
+				prettierConfig,
+				biomeJsonContent.formatter,
+			);
 
-				const ruleIndex = biomeRules.findIndex((rule) =>
-					rule.includes(`[${name}]`),
-				);
-				let headerName: string | undefined;
-				for (let i = ruleIndex; i >= 0; i--) {
-					const item = biomeRules[i];
-
-					if (item?.startsWith('#')) {
-						headerName = item;
-						break;
-					}
-				}
-
-				// Shouldn't happen
-				if (!headerName) {
-					throw new Error('Oops, header not found');
-				}
-
-				const [rule, link] =
-					biomeRules[ruleIndex]?.match(/\[(.*?)\]/g) ?? [];
-
-				const biomePageContent = await fetch(
-					`https://biomejs.dev/${link}`,
-				).then((res) => res.text());
-
-				console.log(biomePageContent);
-
-				biomeJsonContent.linter = {
-					...(biomeJsonContent.linter ?? {}),
-					rules: {
-						...biomeJsonContent.linter?.rules,
-						// [name]: {
-						// 	value,
-						// 	source: headerName,
-						// 	description: rule,
-						// },
-					},
-				};
-			}
-
-			// Find corresponding rules based on the state passed and infer other stuff from eslint config
-			return { kind: 'noop' };
-			// return { kind: 'upsertData', data: '?', path: 'biome.json' };
+			return {
+				kind: 'upsertData',
+				data: JSON.stringify(biomeJsonContent),
+				path: 'biome.json',
+			};
 		}
 
-		if (path.split('/').at(-1)?.includes('prettier')) {
-			// Infer config from prettier and consider plugins
-			return { kind: 'noop' };
-			// return { kind: 'upsertData', data: '?', path: 'biome.json' };
-		}
-
-		if (path.split('/').at(-1)?.includes('package.json')) {
+		if (fileName.includes('package.json')) {
 			let packageJson: Input<typeof packageJsonSchema>;
 			try {
 				const json = JSON.parse(data);
@@ -200,99 +169,47 @@ export const repomod: Filemod<
 				return { kind: 'noop' };
 			}
 
-			// Remove possible eslint keys
-			if (packageJson.eslintConfig) {
-				delete packageJson.eslintConfig;
-			}
-			if (packageJson.eslintIgnore) {
-				delete packageJson.eslintIgnore;
-			}
+			// Means that we want to handle the case with eslintIgnore key in package.json here
+			if (isNeitherNullNorUndefined(options.biomeJsonStringContent)) {
+				if (
+					!packageJson.eslintIgnore ||
+					!Array.isArray(packageJson.eslintIgnore)
+				) {
+					return { kind: 'noop' };
+				}
 
-			let eslintDepExisted = false;
-			// Remove mocha and other mocha-compatibles from dependencies & devDependencies, add vitest devDep
-			if (packageJson.dependencies) {
-				Object.keys(packageJson.dependencies).forEach((dep) => {
-					if (dep.includes('eslint')) {
-						eslintDepExisted = true;
-						delete packageJson.dependencies![dep];
-					}
-				});
-			}
+				biomeJsonContent.linter = {
+					...biomeJsonContent.linter,
+					ignore: [
+						...packageJson.eslintIgnore,
+						...(biomeJsonContent.linter?.ignore ?? []),
+					],
+				};
 
-			if (packageJson.devDependencies) {
-				Object.keys(packageJson.devDependencies).forEach((dep) => {
-					if (dep.includes('eslint')) {
-						eslintDepExisted = true;
-						delete packageJson.devDependencies![dep];
-					}
-				});
-			}
-
-			const packageManager = packageJson.packageManager?.split('@').at(0);
-			const isYarn = (
-				packageManager ?? JSON.stringify(packageJson.scripts)
-			).match(/yarn/g);
-			const isPnpm = (
-				packageManager ?? JSON.stringify(packageJson.scripts)
-			).match(/pnpm/g);
-			const isBun = (
-				packageManager ?? JSON.stringify(packageJson.scripts)
-			).match(/bun/g);
-			const command = isYarn
-				? 'yarn dlx'
-				: isPnpm
-				  ? 'pnpm dlx'
-				  : isBun
-				    ? 'bunx'
-				    : 'npx';
-
-			replaceKeys(
-				packageJson,
-				/eslint --fix/g,
-				`${command} @biomejs/biome lint --apply`,
-			);
-			replaceKeys(
-				packageJson,
-				/prettier --write/g,
-				`${command} @biomejs/biome format --write`,
-			);
-
-			if (!packageJson.scripts) {
-				packageJson.scripts = {};
-			}
-			packageJson.scripts.NOTE =
-				'You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check';
-
-			if (eslintDepExisted) {
-				packageJson.devDependencies = {
-					...packageJson.devDependencies,
-					'@biomejs/biome': '1.5.3',
+				return {
+					kind: 'upsertData',
+					data: JSON.stringify(biomeJsonContent),
+					path: 'biome.json',
 				};
 			}
 
-			return { kind: 'noop' };
-			// return {
-			// 	kind: 'upsertData',
-			// 	data: JSON.stringify(packageJson),
-			// 	path,
-			// };
+			const [, command] = getPackageManager(packageJson);
+
+			packageJson = replaceKeys(packageJson, {
+				eslint: `${command} @biomejs/biome lint`,
+				'--fix': '--apply',
+				prettier: `${command} @biomejs/biome format`,
+			});
+
+			packageJson = clearDependenciesAndAddNotes(packageJson);
+
+			return {
+				kind: 'upsertData',
+				data: JSON.stringify(packageJson),
+				path,
+			};
 		}
 
-		// if (path.includes('eslint')) {
-		// 	if (!state?.config?.rules) {
-		// 		return { kind: 'noop' };
-		// 	}
-
-		// 	return {
-		// 		kind: 'upsertData',
-		// 		path,
-		// 		data: expressions.join('\n'),
-		// 	};
-		// }
-
-		return { kind: 'noop' };
-	},
-	handleFinish: async (options, state) => {
 		return { kind: 'noop' };
 	},
 };

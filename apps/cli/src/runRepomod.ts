@@ -50,6 +50,7 @@ export type Dependencies = Readonly<{
 	filterMdxAst: typeof filter;
 	visitMdxAst: typeof visit;
 	unifiedFileSystem: UnifiedFileSystem;
+	fetch: typeof fetch;
 }>;
 
 export const runRepomod = async (
@@ -159,6 +160,7 @@ export const runRepomod = async (
 			tsmorph,
 			parseMdx,
 			stringifyMdx,
+			fetch,
 			visitMdxAst: visit,
 			filterMdxAst: filter,
 			unifiedFileSystem,

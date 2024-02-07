@@ -4,101 +4,21 @@
 
 Run this codemod to upgrade configuration files for eslint with corresponding biome.json for all the found rules replacements.
 
+NOTE: Due to limitation of filemod engine being able to update one single file at a time, while having context of both, this codemod ignores eslintIgnore and eslintConfig fields in package.json files. You will need to manually update biome.json based on these fields if you need to.
+
+NOTE: This codemod requires internet connection to fetch the rules replacements.
+
 ## Example
 
 ### `package.json`
 
-### Before
-
-```json
-{
-	"name": "package-name",
-	"dependencies": {
-		"mocha": "^10.2.0",
-		"some-mocha-plugin": "^10.0.4"
-	},
-	"devDependencies": {
-		"mocha": "^10.2.0",
-		"@types/mocha": "^10.0.4"
-	},
-	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"test": "mocha"
-	},
-	"mocha": {
-		"config-key": "config-value"
-	},
-	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
-	"type": "module"
-}
-```
-
-### After
-
-```json
-{
-	"name": "package-name",
-	"dependencies": {},
-	"devDependencies": {
-		"vitest": "^1.0.1",
-		"@vitest/coverage-v8": "^1.0.1"
-	},
-	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"test": "vitest run",
-		"coverage": "vitest run --coverage"
-	},
-	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
-	"type": "module"
-}
-```
-
-### `tsconfig.json`
+### `.eslintrc.json`
 
 ### Before
 
 ```json
 {
-	"compilerOptions": { "types": ["mocha"] },
-	"include": [
-		"./src/**/*.ts",
-		"./src/**/*.js",
-		"./test/**/*.ts",
-		"./test/**/*.js"
-	]
-}
-```
-
-### After
-
-```json
-{
-	"compilerOptions": {},
-	"include": [
-		"./src/**/*.ts",
-		"./src/**/*.js",
-		"./test/**/*.ts",
-		"./test/**/*.js"
-	]
-}
-```
-
-### `.mocharc`
-
-### Before
-
-```json
-{
-	"loader": ["ts-node/esm"],
-	"full-trace": true,
-	"failZero": false,
-	"bail": true,
-	"spec": "./**/test.ts",
-	"timeout": 5000
+	...
 }
 ```
 
@@ -108,7 +28,7 @@ Run this codemod to upgrade configuration files for eslint with corresponding bi
 
 ## Applicability Criteria
 
-`mocha` >= 9.0.0
+`eslint` >= 0.0.0 || `prettier` >= 0.0.0
 
 ## Other Metadata
 
@@ -126,7 +46,7 @@ v1.0.0
 
 ### Estimated Time Saving
 
-5+ minutes per file
+4 hours per project with configured eslint and/or prettier
 
 ### Owner
 

@@ -11,3 +11,10 @@ const eslintSchema = await fetch(
 compile(eslintSchema, 'ESLint').then((ts) =>
 	writeFileSync('types/eslint.d.ts', ts),
 );
+
+const prettierSchema = await fetch(
+	'https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/prettierrc.json',
+).then((res) => res.json());
+compile(prettierSchema, 'Prettier').then((ts) =>
+	writeFileSync('types/prettier.d.ts', ts),
+);
