@@ -43,23 +43,25 @@ export const executeMainThread = async () => {
 
 	let userInput = '';
 
+	const lineHandler = (line: string): void => {
+		if (line === 'shutdown') {
+			interfaze.off('line', lineHandler);
+
+			process.exit(0);
+		}
+
+		userInput += line;
+	};
+
+	interfaze.on('line', lineHandler);
+
 	await new Promise((resolve) => {
-		const lineHandler = (line: string): void => {
-			if (line === 'shutdown') {
-				interfaze.off('line', lineHandler);
-
-				process.exit(0);
-			}
-
-			userInput += line;
-		};
-
-		interfaze.on('line', lineHandler);
-
 		interfaze.on('close', () => {
 			resolve(null);
 		});
 	});
+
+	console.log(userInput);
 
 	process.stdin.unref();
 
