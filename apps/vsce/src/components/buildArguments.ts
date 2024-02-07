@@ -1,19 +1,7 @@
-import { sep } from 'path';
 import { Uri } from 'vscode';
 import type { Configuration } from '../configuration';
-import { buildCrossplatformArg } from '../utilities';
+import { buildCrossplatformArg, buildGlobPattern } from '../utilities';
 import type { Message, MessageKind } from './messageBus';
-
-const buildGlobPattern = (targetUri: Uri, pattern?: string) => {
-	const { fsPath: targetUriFsPath } = targetUri;
-
-	// Glob patterns should always use / as a path separator, even on Windows systems, as \ is used to escape glob characters.
-	const pathParts = targetUriFsPath.split(sep);
-
-	pathParts.push(pattern ?? '');
-
-	return pathParts.join('/');
-};
 
 export const buildArguments = (
 	configuration: Configuration,

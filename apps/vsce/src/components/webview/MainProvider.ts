@@ -20,7 +20,7 @@ import {
 	selectCodemodArguments,
 } from '../../selectors/selectCodemodTree';
 import { selectMainWebviewViewProps } from '../../selectors/selectMainWebviewViewProps';
-import { isNeitherNullNorUndefined } from '../../utilities';
+import { buildGlobPattern, isNeitherNullNorUndefined } from '../../utilities';
 import { EngineService } from '../engineService';
 import { MessageBus, MessageKind } from '../messageBus';
 import { UserService } from '../userService';
@@ -265,13 +265,13 @@ export class MainViewProvider implements WebviewViewProvider {
 	}
 
 	private async __getDirectoryPaths() {
-		const basePath = this.__rootUri?.fsPath ?? null;
-
-		if (basePath === null) {
+		if (this.__rootUri === null) {
 			return;
 		}
 
-		const directoryPaths = await glob(`${basePath}/**`, {
+		const globPattern = buildGlobPattern(this.__rootUri, '/**');
+
+		const directoryPaths = await glob(globPattern, {
 			// ignore node_modules and files, match only directories
 			onlyDirectories: true,
 			ignore: ['**/node_modules/**'],
