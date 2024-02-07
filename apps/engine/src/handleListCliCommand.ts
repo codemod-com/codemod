@@ -5,9 +5,12 @@ import { join } from 'node:path';
 import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
 import { glob } from 'fast-glob';
 import * as v from 'valibot';
-import type { PrinterBlueprint } from './printer.js';
+import { syncRegistryOperation } from './executeMainThread.js';
+import { FileDownloadService } from './fileDownloadService.js';
+import type { Printer } from './printer.js';
+import { TarService } from './services/tarService.js';
 
-export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
+export const handleListNamesCommand = async (printer: Printer) => {
 	const configurationDirectoryPath = join(homedir(), '.codemod');
 
 	await mkdir(configurationDirectoryPath, { recursive: true });
@@ -39,4 +42,19 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 	const names = v.parse(v.array(v.string()), onlyValid);
 
 	printer.printOperationMessage({ kind: 'names', names });
+};
+
+export const handleListNamesAfterSyncing = async (
+	useCache: boolean,
+	printer: Printer,
+	fileDownloadService: FileDownloadService,
+	tarService: TarService,
+) => {
+	await syncRegistryOperation(
+		useCache,
+		printer,
+		fileDownloadService,
+		tarService,
+	);
+	await handleListNamesCommand(printer);
 };
