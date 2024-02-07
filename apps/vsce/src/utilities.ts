@@ -1,4 +1,5 @@
 import { createHash } from 'crypto';
+import { sep } from 'path';
 import * as t from 'io-ts';
 import { Project } from 'ts-morph';
 import { Uri, Webview } from 'vscode';
@@ -138,4 +139,15 @@ export const createInMemorySourceFile = (filePath: string, content: string) => {
 	});
 
 	return project.createSourceFile(filePath, content);
+};
+
+export const buildGlobPattern = (targetUri: Uri, pattern?: string) => {
+	const { fsPath: targetUriFsPath } = targetUri;
+
+	// Glob patterns should always use / as a path separator, even on Windows systems, as \ is used to escape glob characters.
+	const pathParts = targetUriFsPath.split(sep);
+
+	pathParts.push(pattern ?? '');
+
+	return pathParts.join('/');
 };
