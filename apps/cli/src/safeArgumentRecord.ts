@@ -1,5 +1,6 @@
 import { Codemod } from './codemod.js';
 import { ArgumentRecord } from './schemata/argumentRecordSchema.js';
+import { Arguments } from './schemata/argumentsSchema.js';
 
 export type SafeArgumentRecord = readonly [ArgumentRecord];
 
@@ -17,22 +18,24 @@ export const buildSafeArgumentRecord = (
 		{},
 	];
 
-	codemod.arguments
-		.concat({ name: 'input', kind: 'string', default: '' })
-		.forEach((descriptor) => {
-			if (!argumentRecord[descriptor.name]) {
-				return;
-			}
+	const codemodArgs: Arguments = [
+		...codemod.arguments,
+		{ name: 'input', kind: 'string', default: '' },
+	];
 
-			const unsafeValue = argumentRecord[descriptor.name];
+	codemodArgs.forEach((descriptor) => {
+		if (!argumentRecord[descriptor.name]) {
+			return;
+		}
 
-			console.log(unsafeValue);
-			if (typeof unsafeValue === descriptor.kind) {
-				safeArgumentRecord[0][descriptor.name] = unsafeValue;
-			} else if (descriptor.default !== undefined) {
-				safeArgumentRecord[0][descriptor.name] = descriptor.default;
-			}
-		});
+		const unsafeValue = argumentRecord[descriptor.name];
+
+		if (typeof unsafeValue === descriptor.kind) {
+			safeArgumentRecord[0][descriptor.name] = unsafeValue;
+		} else if (descriptor.default !== undefined) {
+			safeArgumentRecord[0][descriptor.name] = descriptor.default;
+		}
+	});
 
 	return safeArgumentRecord;
 };

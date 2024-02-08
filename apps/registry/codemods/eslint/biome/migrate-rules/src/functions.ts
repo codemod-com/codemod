@@ -1,12 +1,12 @@
-import { DataAPI } from '@codemod-com/filemod';
-import { Input } from 'valibot';
-import {
+import type { DataAPI } from '@codemod-com/filemod';
+import type { Input } from 'valibot';
+import type {
 	Configuration as BiomeConfig,
 	Rules as BiomeLinterRules,
 } from '../types/biome.js';
-import { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
-import { packageJsonSchema } from './schemas.js';
-import { Dependencies, RuleValue } from './types.js';
+import type { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
+import type { packageJsonSchema } from './schemas.js';
+import type { Dependencies, RuleValue } from './types.js';
 
 export function replaceKeys(
 	obj: Record<string, unknown>,

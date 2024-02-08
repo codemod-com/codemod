@@ -61,8 +61,6 @@ export const executeMainThread = async () => {
 		});
 	});
 
-	console.log(userInput);
-
 	process.stdin.unref();
 
 	const argvObject = yargs(slicedArgv)
@@ -121,7 +119,10 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const argv = await Promise.resolve(argvObject.argv);
+	const argv = {
+		...(await Promise.resolve(argvObject.argv)),
+		'arg:input': userInput,
+	};
 
 	const fetchBuffer = async (url: string) => {
 		const { data } = await Axios.get(url, {
@@ -335,10 +336,7 @@ export const executeMainThread = async () => {
 	const codemodSettings = parseCodemodSettings(argv);
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = parseRunSettings(homedir(), argv);
-	const argumentRecord = buildArgumentRecord({
-		...argv,
-		'arg:input': userInput,
-	});
+	const argumentRecord = buildArgumentRecord(argv);
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,

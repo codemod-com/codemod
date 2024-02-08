@@ -1,4 +1,4 @@
-import { JSONSchemaForESLintConfigurationFiles } from '../types/eslint.js';
+import type { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from '../types/eslint.js';
 
 export type RuleValue = 'error' | 'warn' | 'off';
 
@@ -7,5 +7,5 @@ export type Dependencies = Readonly<{
 }>;
 
 export type Options = Readonly<{
-	config: JSONSchemaForESLintConfigurationFiles | null;
+	config: ESLintConfig | null;
 }>;

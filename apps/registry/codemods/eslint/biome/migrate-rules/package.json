@@ -1,8 +1,5 @@
 {
 	"name": "@codemod-com/codemod-eslint-biome-rules",
-	"dependencies": {
-		"valibot": "^0.24.1"
-	},
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
@@ -14,6 +11,7 @@
 		"memfs": "^4.6.0",
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.2",
+		"valibot": "^0.24.1",
 		"vitest": "^1.0.1"
 	},
 	"main": "./dist/index.cjs",

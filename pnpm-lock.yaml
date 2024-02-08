@@ -1067,10 +1067,6 @@ importers:
         version: 1.0.4(@types/node@20.10.4)
 
   apps/registry/codemods/eslint/biome/migrate-rules:
-    dependencies:
-      valibot:
-        specifier: ^0.24.1
-        version: 0.24.1
     devDependencies:
       '@biomejs/biome':
         specifier: 1.5.3
@@ -1102,6 +1098,9 @@ importers:
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
+      valibot:
+        specifier: ^0.24.1
+        version: 0.24.1
       vitest:
         specifier: ^1.0.1
         version: 1.0.4(@types/node@20.10.4)

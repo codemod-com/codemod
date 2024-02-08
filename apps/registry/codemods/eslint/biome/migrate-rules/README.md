@@ -4,7 +4,17 @@
 
 Run this codemod to upgrade configuration files for eslint with corresponding biome.json for all the found rules replacements.
 
-NOTE: This codemod requires internet connection to fetch the rules replacements.
+### NOTE:
+
+This codemod accepts manual user input, which is required to migrate away from eslint. In order to run it properly, run the following command:
+
+```bash
+npx eslint --print-config <path-to-a-file-that-eslint-checks> | codemod eslint/biome/migrate-rules
+```
+
+It's important that you pass these rules to the codemod, because our codemods are limited in access for security purposes and have no access to most node features that could maliciously affect your system.
+
+This codemod requires internet connection to fetch the rules replacements.
 
 ## Example
 
@@ -147,6 +157,12 @@ NOTE: This codemod requires internet connection to fetch the rules replacements.
 `eslint` >= 0.0.0 || `prettier` >= 0.0.0
 
 ## Other Metadata
+
+Command:
+
+```bash
+npx eslint --print-config <path-to-a-file-that-eslint-checks> | codemod eslint/biome/migrate-rules
+```
 
 ### Codemod Version
 

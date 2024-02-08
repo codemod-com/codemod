@@ -4,8 +4,11 @@
 	"version": "1.1.0",
 	"description": "The utilities used across Codemod.com packages",
 	"type": "module",
-	"main": "./src/index.ts",
-	"exports": "./src/index.ts",
+	"main": "./dist/index.js",
+	"exports": {
+		".": "./src/index.ts",
+		"./functions/validationMethods": "./src/functions/validationMethods.ts"
+	},
 	"types": "./dist/index.d.ts",
 	"files": [
 		"./dist",

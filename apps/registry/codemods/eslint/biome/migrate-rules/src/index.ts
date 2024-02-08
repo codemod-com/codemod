@@ -1,9 +1,9 @@
 import type { Filemod } from '@codemod-com/filemod';
-import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
-import { Input, is } from 'valibot';
-import { Configuration as BiomeConfig } from '../types/biome.js';
-import { JSONSchemaForESLintConfigurationFiles as EslintConfig } from '../types/eslint.js';
-import { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
+import { isNeitherNullNorUndefined } from '@codemod-com/utilities/functions/validationMethods';
+import { is, type Input } from 'valibot';
+import type { Configuration as BiomeConfig } from '../types/biome.js';
+import type { JSONSchemaForESLintConfigurationFiles as EslintConfig } from '../types/eslint.js';
+import type { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
 import {
 	buildFormatterConfig,
 	buildLinterConfig,
@@ -13,7 +13,7 @@ import {
 	replaceKeys,
 } from './functions.js';
 import { packageJsonSchema, valibotEslintSchema } from './schemas.js';
-import { Dependencies, Options } from './types.js';
+import type { Dependencies, Options } from './types.js';
 
 export const repomod: Filemod<Dependencies, Options> = {
 	includePatterns: [
