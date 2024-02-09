@@ -71,7 +71,9 @@ export function eslintToBiomeRuleValue(value: string): RuleValue {
 
 	if (value === '0') {
 		return 'off';
-	} else if (value === '1') {
+	}
+
+	if (value === '1') {
 		return 'warn';
 	}
 
