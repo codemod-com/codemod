@@ -8,7 +8,7 @@ import {
 	string,
 	type Input,
 } from 'valibot';
-import { FileCommand } from '../../../../../../../packages/filemod/src/internalCommands.js';
+import type { FileCommand } from '../../../../../../../packages/filemod/src/internalCommands.js';
 
 const packageJsonSchema = object({
 	name: optional(string()),
