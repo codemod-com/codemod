@@ -48,7 +48,7 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4(@types/node@20.10.4)
 
-  apps/engine:
+  apps/cli:
     devDependencies:
       '@babel/core':
         specifier: ^7.20.2
@@ -4552,7 +4552,7 @@ packages:
       '@azure/abort-controller': 1.1.0
       '@azure/core-auth': 1.6.0
       '@azure/core-tracing': 1.0.1
-      '@azure/core-util': 1.2.0
+      '@azure/core-util': 1.6.1
       '@azure/logger': 1.0.4
       form-data: 4.0.0
       http-proxy-agent: 5.0.0
@@ -4591,6 +4591,7 @@ packages:
     dependencies:
       '@azure/abort-controller': 1.1.0
       tslib: 2.6.2
+    dev: true
 
   /@azure/core-util@1.7.0:
     resolution: {integrity: sha512-Zq2i3QO6k9DA8vnm29mYM4G8IE9u1mhF1GUabVEqPNX8Lj833gdxQ2NAFxt2BZsfAL+e9cT8SyVN7dFVJ/Hf0g==}
@@ -4598,7 +4599,6 @@ packages:
     dependencies:
       '@azure/abort-controller': 2.0.0
       tslib: 2.6.2
-    dev: false
 
   /@azure/logger@1.0.4:
     resolution: {integrity: sha512-ustrPY8MryhloQj7OWGe+HrYx+aoiOxzbXTtgblbV3xwCqpzUK36phH3XNHQKj3EPonyFUuDTfR3qFhTEAuZEg==}
