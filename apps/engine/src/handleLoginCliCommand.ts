@@ -43,6 +43,11 @@ export const handleLoginCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
+		`The access token was written into ${tokenTxtPath}`,
+	);
+
+	printer.printConsoleMessage(
+		'info',
 		'You are successfully logged in with the Codemod CLI!',
 	);
 };
