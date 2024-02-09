@@ -156,7 +156,7 @@ describe('parse/yaml', function () {
 
 		const yaml = convertToYaml(
 			parseResult,
-			'codemods/msw/2/imports/README.md',
+			'apps/registry/codemods/msw/2/imports/README.md',
 		);
 
 		const vscodeHashDigest = createHash('ripemd160')
