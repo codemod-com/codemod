@@ -85,6 +85,8 @@ describe('mocha config-files', function () {
     node_modules
   `;
 
+	const vitestConfigPath = 'vitest.config.ts';
+
 	it('should contain correct file commands', async function () {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
@@ -93,9 +95,10 @@ describe('mocha config-files', function () {
 			[mochaRcCjsPath]: mochaRcContent,
 			[mochaConfigPath]: mochaRcContent,
 			[gitIgnorePath]: gitIgnoreContent,
+			[vitestConfigPath]: '',
 		});
 
-		deepEqual(externalFileCommands.length, 6);
+		deepEqual(externalFileCommands.length, 7);
 
 		ok(
 			externalFileCommands.filter(
@@ -111,7 +114,9 @@ describe('mocha config-files', function () {
 					(command.kind === 'deleteFile' &&
 						command.path === mochaConfigPath) ||
 					(command.kind === 'upsertFile' &&
-						command.path === gitIgnorePath),
+						command.path === gitIgnorePath) ||
+					(command.kind === 'upsertFile' &&
+						command.path === vitestConfigPath),
 			).length === externalFileCommands.length,
 		);
 	});
@@ -185,7 +190,7 @@ describe('mocha config-files', function () {
 			[gitIgnorePath]: gitIgnoreContent,
 		});
 
-		equal(externalFileCommands.length, 1);
+		equal(externalFileCommands.length, 2);
 
 		ok(
 			externalFileCommands.some(
