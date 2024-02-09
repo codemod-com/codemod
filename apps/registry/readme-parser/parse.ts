@@ -422,7 +422,11 @@ export const convertToYaml = (
 	let titleWithVersion = title;
 	if (framework) {
 		if (frameworkVersion) {
-			titleWithVersion = `${framework} V${frameworkVersion} - ${title}`;
+			if (frameworkVersion?.match(/^\d+(\.\d+)*$/)) {
+				titleWithVersion = `${framework} V${frameworkVersion} - ${title}`;
+			} else {
+				titleWithVersion = `${framework} to ${frameworkVersion} - ${title}`;
+			}
 		} else {
 			titleWithVersion = `${framework} - ${title}`;
 		}
