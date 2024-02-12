@@ -1,7 +1,5 @@
 #!/usr/bin/env node
-import { exec } from 'child_process';
 import { writeFile } from 'fs/promises';
-import { promisify } from 'util';
 import * as yaml from 'js-yaml';
 import { simpleGit } from 'simple-git';
 import { any, record, parse as valibotParse } from 'valibot';
@@ -50,24 +48,18 @@ export const sync = async () => {
 	await git.fetch(['website', 'main']);
 	await git.fetch(['origin', 'main', '--depth=2']);
 
-	// const diff = await git.diff(['--name-only', 'origin/main~1']);
-	// const readmesChanged = diff
-	// 	.split('\n')
-	// 	.filter((path) => path.match(/.*\/codemods\/.*README\.md$/));
+	const diff = await git.diff(['--name-only', 'origin/main~1']);
+	const readmesChanged = diff
+		.split('\n')
+		.filter((path) => path.match(/.*\/codemods\/.*README\.md$/));
 
-	// if (!readmesChanged.length) {
-	// 	console.log('No READMEs changed. Exiting.');
-	// 	process.exit(0);
-	// }
-
-	// Try sync
-
-	const { stdout: readmePaths } = await promisify(exec)(
-		'find apps/registry/codemods -name "README.md" -type f;',
-	);
+	if (!readmesChanged.length) {
+		console.log('No READMEs changed. Exiting.');
+		process.exit(0);
+	}
 
 	const staged: Record<string, string> = {};
-	for (const path of readmePaths.split('\n').filter(Boolean)) {
+	for (const path of readmesChanged) {
 		console.log(`Syncing ${path}`);
 		const [migratingFrom, migratingTo, ...rest] = path
 			.split('/')
