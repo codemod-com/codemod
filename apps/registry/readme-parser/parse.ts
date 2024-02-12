@@ -483,11 +483,8 @@ tags: automations
 updated-on: ${new Date().toISOString()}
 published-on: ${new Date().toISOString()}
 seo:
-  title: ${titleWithVersion} | Codemod.com Automations
-  og:title: ${titleWithVersion} | Codemod.com Automations
-  twitter:title: ${titleWithVersion} | Codemod.com Automations
+  title: ${titleWithVersion}
   description: ${shortDescription}
-  twitter:card: ${shortDescription}
 `.trim();
 
 	return res;

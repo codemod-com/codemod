@@ -65,9 +65,14 @@ export const sync = async () => {
 			.split('/')
 			.slice(3, -1);
 
-		const generatedSlug = `${migratingFrom}-${
-			migratingTo?.match(/^\d+(\.\d+)*$/) ? '' : 'to-'
-		}${migratingTo}${rest.length ? `-${rest.join('-')}` : ''}`;
+		let generatedSlug = migratingFrom;
+
+		if (migratingTo) {
+			const joint = migratingTo.match(/^\d+(\.\d+)*$/) ? '-' : '-to-';
+			const leftoverParts = rest.length ? `-${rest.join('-')}` : '';
+
+			generatedSlug = `${migratingFrom}${joint}${migratingTo}${leftoverParts}`;
+		}
 
 		const websitePath = `cms/automations/${generatedSlug}.md`;
 
