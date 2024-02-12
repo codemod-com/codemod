@@ -9,7 +9,7 @@ import {
 	isFileInGitDirectory,
 } from './gitCommands.js';
 import { PrinterBlueprint } from './printer.js';
-import { doubleQuotify, openURL } from './utils.js';
+import { boldText, colorizeText, doubleQuotify, openURL } from './utils.js';
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>
@@ -161,7 +161,12 @@ export const handleLearnCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		`Learning \`git diff\` starts on ${path}...`,
+		colorizeText(
+			`Learning ${boldText('`git diff`')} at ${boldText(
+				path,
+			)} has begun...\n`,
+			'cyan',
+		),
 	);
 
 	const gitDiff = getGitDiffForFile(latestCommitHash, path);
@@ -277,7 +282,10 @@ export const handleLearnCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		'Learning went successful! Opening the Codemod Studio...',
+		colorizeText(
+			'Learning went successful! Opening the Codemod Studio...\n',
+			'cyan',
+		),
 	);
 
 	const success = openURL(url);
