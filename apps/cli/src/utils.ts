@@ -22,7 +22,7 @@ export const openURL = (url: string): boolean => {
 };
 
 export const boldText = (text: string) => {
-	return `\x1b[1m${text}\x1b[0m`;
+	return `\x1b[1m${text}\x1b[22m`;
 };
 
 export const colorizeText = (text: string, color: keyof typeof COLOR_MAP) => {

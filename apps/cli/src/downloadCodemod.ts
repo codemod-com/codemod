@@ -8,6 +8,7 @@ import { FileDownloadServiceBlueprint } from './fileDownloadService.js';
 import { PrinterBlueprint } from './printer.js';
 import { codemodConfigSchema } from './schemata/codemodConfigSchema.js';
 import { TarService } from './services/tarService.js';
+import { boldText, colorizeText } from './utils.js';
 
 const CODEMOD_REGISTRY_URL =
 	'https://codemod-public.s3.us-west-1.amazonaws.com/codemod-registry';
@@ -57,9 +58,13 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	): Promise<Codemod & { source: 'registry' }> {
 		this.__printer.printConsoleMessage(
 			'info',
-			`Downloading the "${name}" codemod, ${
-				this._cacheUsed ? '' : 'not '
-			}using cache`,
+
+			colorizeText(
+				`Downloading the ${boldText(`"${name}"`)} codemod${
+					this._cacheUsed ? '...' : ', not using cache...'
+				}`,
+				'cyan',
+			),
 		);
 
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
