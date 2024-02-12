@@ -20,3 +20,15 @@ export const openURL = (url: string): boolean => {
 		return false;
 	}
 };
+
+export const boldText = (text: string) => {
+	return `\x1b[1m${text}\x1b[0m`;
+};
+
+export const colorizeText = (text: string, color: keyof typeof COLOR_MAP) => {
+	return `${COLOR_MAP[color]}${text}\x1b[0m`;
+};
+
+export const COLOR_MAP = {
+	cyan: '\x1b[36m',
+};
