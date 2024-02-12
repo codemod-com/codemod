@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/engine",
+	"name": "@codemod-com/cli",
 	"author": "Codemod, Inc.",
 	"version": "0.8.1",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
