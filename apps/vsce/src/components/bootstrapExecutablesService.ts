@@ -21,15 +21,11 @@ export class BootstrapExecutablesService {
 		await this.__fileSystem.createDirectory(this.__globalStorageUri);
 
 		try {
-			const codemodEngineNodeExecutableUri =
-				await this.__bootstrapCodemodEngineNodeExecutableUri();
-
 			const codemodEngineRustExecutableUri =
 				await this.__bootstrapCodemodEngineRustExecutableUri();
 
 			this.__messageBus.publish({
 				kind: MessageKind.engineBootstrapped,
-				codemodEngineNodeExecutableUri,
 				codemodEngineRustExecutableUri,
 			});
 		} catch (e) {
@@ -42,45 +38,6 @@ export class BootstrapExecutablesService {
 				message,
 			});
 		}
-	}
-
-	private async __bootstrapCodemodEngineNodeExecutableUri(): Promise<Uri> {
-		const platform =
-			process.platform === 'darwin'
-				? 'macos'
-				: process.platform === 'win32'
-				  ? 'win'
-				  : encodeURIComponent(process.platform);
-
-		// TODO rename to `codemod` on S3
-		// the codemod files should work with the codemod home directory
-
-		const executableBaseName = `codemod-${platform}`;
-		const executableExt = process.platform === 'win32' ? '.exe' : '';
-		const executableName = `${executableBaseName}${executableExt}`;
-
-		const executableUri = Uri.joinPath(
-			this.__globalStorageUri,
-			executableName,
-		);
-
-		try {
-			await this.__downloadService.downloadFileIfNeeded(
-				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod/${executableName}`,
-				executableUri,
-				'755',
-			);
-		} catch (error) {
-			if (!(error instanceof ForbiddenRequestError)) {
-				throw error;
-			}
-
-			throw new Error(
-				`Your platform (${process.platform}) is not supported.`,
-			);
-		}
-
-		return executableUri;
 	}
 
 	private async __bootstrapCodemodEngineRustExecutableUri(): Promise<Uri | null> {

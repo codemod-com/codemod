@@ -387,21 +387,21 @@ export const convertToYaml = (
 		cleanPath = splitPath.slice(0, -1).join('/');
 
 		const parts = __dirname.split('/');
-		const pivot = parts.indexOf('readme-parser');
+		const pivot = parts.indexOf('apps');
 		const pathToCodemod = nodePath.join(
 			parts.slice(0, pivot).join('/'),
 			cleanPath,
 		);
 
-		framework = splitPath.at(1) ?? null;
-		frameworkVersion = splitPath.at(2) ?? null;
+		framework = splitPath.at(3) ?? null;
+		frameworkVersion = splitPath.at(4) ?? null;
 
 		try {
 			const config = readFileSync(
 				`${pathToCodemod}/config.json`,
 			).toString();
 			const json = JSON.parse(config);
-			codemodName = json.name ?? cleanPath.split('/').slice(1).join('/');
+			codemodName = json.name ?? cleanPath.split('/').slice(3).join('/');
 
 			if (is(configJsonSchema, json)) {
 				slug = codemodName!.replace(/\//g, '-');
@@ -422,7 +422,11 @@ export const convertToYaml = (
 	let titleWithVersion = title;
 	if (framework) {
 		if (frameworkVersion) {
-			titleWithVersion = `${framework} V${frameworkVersion} - ${title}`;
+			if (frameworkVersion?.match(/^\d+(\.\d+)*$/)) {
+				titleWithVersion = `${framework} V${frameworkVersion} - ${title}`;
+			} else {
+				titleWithVersion = `${framework} to ${frameworkVersion} - ${title}`;
+			}
 		} else {
 			titleWithVersion = `${framework} - ${title}`;
 		}
@@ -445,7 +449,7 @@ f_long-description: >-
   ${description.replace(/\n/g, '\n  ')}
   ${examples ? `\n\n  ${examples.replace(/\n/g, '\n  ')}` : ''}${
 		path
-			? `\nf_github-link: https://github.com/codemod-com/codemod/tree/main/apps/registry/${cleanPath}`
+			? `\nf_github-link: https://github.com/codemod-com/codemod/tree/main/${cleanPath}`
 			: ''
   }${
 		vscodeHashDigest
@@ -455,11 +459,16 @@ f_long-description: >-
 		framework ? `\nf_framework: cms/framework/${framework}.md` : ''
   }
 f_applicability-criteria: "${applicability}"
-f_verified-codemod: ${owner === 'Codemod.com' ? 'true' : 'false'}
-f_author: ${
-		owner === 'Codemod.com'
-			? 'cms/authors/codemod-com.md'
-			: `cms/authors/${owner?.toLowerCase().replace(/ /g, '-') ?? ''}.md`
+f_verified-codemod: ${owner === 'Codemod.com' ? 'true' : 'false'}${
+		owner
+			? `\nf_author: ${
+					owner === 'Codemod.com'
+						? 'cms/authors/codemod-com.md'
+						: `cms/authors/${
+								owner?.toLowerCase().replace(/ /g, '-') ?? ''
+						  }.md`
+			  }`
+			: ''
 	}
 layout: "[automations].html"${slug ? `\nslug: ${slug}` : ''}
 title: ${capitalize(titleWithVersion)}${slug ? `\nf_slug-name: ${slug}` : ''}
@@ -474,11 +483,8 @@ tags: automations
 updated-on: ${new Date().toISOString()}
 published-on: ${new Date().toISOString()}
 seo:
-  title: ${titleWithVersion} | Codemod.com Automations
-  og:title: ${titleWithVersion} | Codemod.com Automations
-  twitter:title: ${titleWithVersion} | Codemod.com Automations
+  title: ${titleWithVersion}
   description: ${shortDescription}
-  twitter:card: ${shortDescription}
 `.trim();
 
 	return res;

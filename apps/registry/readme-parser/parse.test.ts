@@ -156,7 +156,7 @@ describe('parse/yaml', function () {
 
 		const yaml = convertToYaml(
 			parseResult,
-			'codemods/msw/2/imports/README.md',
+			'apps/registry/codemods/msw/2/imports/README.md',
 		);
 
 		const vscodeHashDigest = createHash('ripemd160')
@@ -247,11 +247,8 @@ tags: automations
 updated-on: ${date.toISOString()}
 published-on: ${date.toISOString()}
 seo:
-  title: Msw V2 - Do the thing | Codemod.com Automations
-  og:title: Msw V2 - Do the thing | Codemod.com Automations
-  twitter:title: Msw V2 - Do the thing | Codemod.com Automations
+  title: Msw V2 - Do the thing
   description: This is an amazing codemod which does the thing
-  twitter:card: This is an amazing codemod which does the thing
 	`.trim(),
 		);
 	});

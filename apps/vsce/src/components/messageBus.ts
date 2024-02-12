@@ -49,6 +49,8 @@ export const enum MessageKind {
 
 	loadHomeDirectoryData = 40,
 	loadHomeDirectoryCase = 41,
+
+	codemodEngineNodeLocated = 42,
 }
 
 export type Command =
@@ -111,7 +113,6 @@ export type Message =
 	  }>
 	| Readonly<{
 			kind: MessageKind.engineBootstrapped;
-			codemodEngineNodeExecutableUri: Uri;
 			codemodEngineRustExecutableUri: Uri | null;
 	  }>
 	| Readonly<{
@@ -176,6 +177,10 @@ export type Message =
 	| Readonly<{
 			kind: MessageKind.loadHomeDirectoryCase;
 			caseHashDigest: CaseHash;
+	  }>
+	| Readonly<{
+			kind: MessageKind.codemodEngineNodeLocated;
+			codemodEngineNodeLocated: boolean;
 	  }>;
 
 type EmitterMap<K extends MessageKind> = {

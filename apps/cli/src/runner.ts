@@ -18,6 +18,7 @@ import type { FlowSettings } from './schemata/flowSettingsSchema.js';
 import { RunSettings } from './schemata/runArgvSettingsSchema.js';
 import { SurfaceAgnosticCaseService } from './services/surfaceAgnosticCaseService.js';
 import type { TelemetryBlueprint } from './telemetryService.js';
+import { boldText, colorizeText } from './utils.js';
 
 export class Runner {
 	private __modifiedFileCount: number;
@@ -172,7 +173,14 @@ export class Runner {
 			if (this._name !== null) {
 				this._printer.printConsoleMessage(
 					'info',
-					`Executing the "${this._name}" codemod against "${this._flowSettings.targetPath}"`,
+					colorizeText(
+						`Executing the ${boldText(
+							`"${this._name}"`,
+						)} codemod against ${boldText(
+							`"${this._flowSettings.targetPath}"`,
+						)}...\n`,
+						'cyan',
+					),
 				);
 
 				if (this._runSettings.dryRun) {

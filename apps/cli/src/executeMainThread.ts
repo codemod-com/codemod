@@ -17,7 +17,7 @@ import { APP_INSIGHTS_INSTRUMENTATION_STRING } from './constants.js';
 import { CodemodDownloader } from './downloadCodemod.js';
 import { FileDownloadService } from './fileDownloadService.js';
 import { handleLearnCliCommand } from './handleLearnCliCommand.js';
-import { handleListNamesCommand } from './handleListCliCommand.js';
+import { handleListNamesAfterSyncing } from './handleListCliCommand.js';
 import { handleLoginCliCommand } from './handleLoginCliCommand.js';
 import { handleLogoutCliCommand } from './handleLogoutCliCommand.js';
 import { handlePublishCliCommand } from './handlePublishCliCommand.js';
@@ -131,6 +131,7 @@ export const executeMainThread = async () => {
 
 	let telemetryService;
 	let exit = () => {};
+	const tarService = new TarService(fs as unknown as IFs);
 
 	if (!argv.telemetryDisable) {
 		// hack to prevent appInsights from trying to read applicationinsights.json
@@ -156,7 +157,13 @@ export const executeMainThread = async () => {
 
 	if (String(argv._) === 'list') {
 		try {
-			await handleListNamesCommand(printer);
+			await handleListNamesAfterSyncing(
+				argv.useCache,
+				printer,
+				fileDownloadService,
+				tarService,
+				true,
+			);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
@@ -173,30 +180,13 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const tarService = new TarService(fs as unknown as IFs);
-
 	if (String(argv._) === 'syncRegistry') {
-		const codemodDownloader = new CodemodDownloader(
-			printer,
-			join(homedir(), '.codemod'),
+		await syncRegistryOperation(
 			argv.useCache,
+			printer,
 			fileDownloadService,
 			tarService,
 		);
-
-		try {
-			await codemodDownloader.syncRegistry();
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: 'error',
-				message: error.message,
-			});
-		}
-
 		exit();
 
 		return;
@@ -365,3 +355,31 @@ export const executeMainThread = async () => {
 
 	exit();
 };
+
+export async function syncRegistryOperation(
+	useCache: boolean,
+	printer: Printer,
+	fileDownloadService: FileDownloadService,
+	tarService: TarService,
+) {
+	const codemodDownloader = new CodemodDownloader(
+		printer,
+		join(homedir(), '.codemod'),
+		useCache,
+		fileDownloadService,
+		tarService,
+	);
+
+	try {
+		await codemodDownloader.syncRegistry();
+	} catch (error) {
+		if (!(error instanceof Error)) {
+			return;
+		}
+
+		printer.printOperationMessage({
+			kind: 'error',
+			message: error.message,
+		});
+	}
+}

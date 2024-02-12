@@ -1,4 +1,8 @@
-import { ChildProcessWithoutNullStreams, spawn } from 'node:child_process';
+import {
+	ChildProcessWithoutNullStreams,
+	exec,
+	spawn,
+} from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
@@ -201,13 +205,16 @@ type ExecuteCodemodMessage = Message &
 		kind: MessageKind.executeCodemodSet;
 	}>;
 
+const CODEMOD_ENGINE_NODE_COMMAND = 'codemod';
+const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
+const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
+
 export class EngineService {
 	readonly #configurationContainer: Container<Configuration>;
 	readonly #fileSystem: FileSystem;
 	readonly #messageBus: MessageBus;
 
 	#execution: Execution | null = null;
-	private __codemodEngineNodeExecutableUri: Uri | null = null;
 	private __codemodEngineRustExecutableUri: Uri | null = null;
 	private __executionMessageQueue: ExecuteCodemodMessage[] = [];
 
@@ -228,30 +235,54 @@ export class EngineService {
 		messageBus.subscribe(MessageKind.executeCodemodSet, (message) => {
 			this.#onExecuteCodemodSetMessage(message);
 		});
+
+		this.__pollCodemodEngineNode();
+	}
+
+	private async __pollCodemodEngineNode() {
+		let iterations = 0;
+
+		const checkCodemodEngineNode = async () => {
+			if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
+				clearInterval(codemodEnginePollingIntervalId);
+			}
+
+			const codemodEngineNodeLocated =
+				await this.isCodemodEngineNodeLocated();
+
+			this.#messageBus.publish({
+				kind: MessageKind.codemodEngineNodeLocated,
+				codemodEngineNodeLocated,
+			});
+
+			if (codemodEngineNodeLocated) {
+				this.__onCodemodEngineNodeLocated();
+				clearInterval(codemodEnginePollingIntervalId);
+			}
+
+			iterations++;
+		};
+
+		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
+		const codemodEnginePollingIntervalId = setInterval(
+			checkCodemodEngineNode,
+			CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
+		);
+
+		checkCodemodEngineNode();
+	}
+
+	private async __onCodemodEngineNodeLocated() {
+		await this.syncRegistry();
+		await this.__fetchCodemods();
+		await this.fetchPrivateCodemods();
 	}
 
 	async #onEnginesBootstrappedMessage(
 		message: Message & { kind: MessageKind.engineBootstrapped },
 	) {
-		this.__codemodEngineNodeExecutableUri =
-			message.codemodEngineNodeExecutableUri;
 		this.__codemodEngineRustExecutableUri =
 			message.codemodEngineRustExecutableUri;
-
-		await this.syncRegistry();
-
-		await this.__fetchCodemods();
-		await this.fetchPrivateCodemods();
-	}
-
-	private __getCodemodEngineNodeExecutableCommand() {
-		if (this.__codemodEngineNodeExecutableUri === null) {
-			throw new Error('The engines are not bootstrapped.');
-		}
-
-		return buildCrossplatformArg(
-			this.__codemodEngineNodeExecutableUri.fsPath,
-		);
 	}
 
 	private __getCodemodEngineRustExecutableCommand() {
@@ -264,13 +295,9 @@ export class EngineService {
 		);
 	}
 
-	public isEngineBootstrapped() {
-		return this.__codemodEngineNodeExecutableUri !== null;
-	}
-
 	public async syncRegistry(): Promise<void> {
 		const childProcess = spawn(
-			this.__getCodemodEngineNodeExecutableCommand(),
+			CODEMOD_ENGINE_NODE_COMMAND,
 			['syncRegistry'],
 			{
 				stdio: 'pipe',
@@ -290,9 +317,26 @@ export class EngineService {
 		});
 	}
 
+	public async isCodemodEngineNodeLocated(): Promise<boolean> {
+		const command = [
+			CODEMOD_ENGINE_NODE_COMMAND,
+			buildCrossplatformArg('--version'),
+		].join(' ');
+
+		const childProcess = exec(command, { timeout: 3000 });
+
+		if (childProcess.stdout === null) {
+			return false;
+		}
+
+		const result = await streamToString(childProcess.stdout);
+
+		return result.length !== 0;
+	}
+
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
 		const childProcess = spawn(
-			this.__getCodemodEngineNodeExecutableCommand(),
+			CODEMOD_ENGINE_NODE_COMMAND,
 			['list', '--useJson', '--useCache'],
 			{
 				stdio: 'pipe',
@@ -569,7 +613,7 @@ export class EngineService {
 		const executableCommand =
 			message.command.kind === 'executePiranhaRule'
 				? this.__getCodemodEngineRustExecutableCommand()
-				: this.__getCodemodEngineNodeExecutableCommand();
+				: CODEMOD_ENGINE_NODE_COMMAND;
 		const childProcess = spawn(executableCommand, args, {
 			stdio: 'pipe',
 			shell: true,

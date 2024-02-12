@@ -8,6 +8,7 @@ import {
 	string,
 	type Input,
 } from 'valibot';
+import type { FileCommand } from '../../../../../../../packages/filemod/src/internalCommands.js';
 
 const packageJsonSchema = object({
 	name: optional(string()),
@@ -30,22 +31,63 @@ export const repomod: Filemod<Record<string, never>, Record<string, never>> = {
 		'**/.gitignore',
 	],
 	excludePatterns: ['**/node_modules/**'],
-	handleFile: async (_, path, options) => {
+	handleFile: async (api, path, options) => {
+		const commands: FileCommand[] = [];
+
+		const fileName = path.split('/').at(-1);
+		if (!fileName) {
+			return commands;
+		}
+
+		const vitestContent = await api.readFile('vitest.config.ts');
+		if (!vitestContent) {
+			commands.push({
+				kind: 'upsertFile',
+				path: 'vitest.config.ts',
+				options,
+			});
+		}
+
 		if (
-			path.endsWith('tsconfig.json') ||
-			path.endsWith('package.json') ||
-			path.endsWith('.gitignore')
+			fileName === 'tsconfig.json' ||
+			fileName === 'package.json' ||
+			fileName === '.gitignore'
 		) {
-			return [{ kind: 'upsertFile', path, options }];
+			commands.push({
+				kind: 'upsertFile',
+				path,
+				options,
+			});
 		}
 
-		if (path.includes('mocha')) {
-			return [{ kind: 'deleteFile', path }];
+		if (fileName.includes('mocha')) {
+			commands.push({
+				kind: 'deleteFile',
+				path,
+			});
 		}
 
-		return [];
+		return commands;
 	},
 	handleData: async (_, path, data) => {
+		if (path === 'vitest.config.ts') {
+			const vitestConfigContent = `
+import { configDefaults, defineConfig } from 'vitest/config';
+export default defineConfig({
+  test: {
+    include: [...configDefaults.include, '**/test/*.ts'],
+    passWithNoTests: true,
+    testTimeout: 10_000,
+  },
+});
+      `;
+			return {
+				kind: 'upsertData',
+				data: vitestConfigContent,
+				path,
+			};
+		}
+
 		if (path.endsWith('package.json')) {
 			let packageJson: Input<typeof packageJsonSchema>;
 			try {

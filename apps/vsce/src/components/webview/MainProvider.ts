@@ -20,26 +20,25 @@ import {
 	selectCodemodArguments,
 } from '../../selectors/selectCodemodTree';
 import { selectMainWebviewViewProps } from '../../selectors/selectMainWebviewViewProps';
-import { isNeitherNullNorUndefined } from '../../utilities';
+import { buildGlobPattern, isNeitherNullNorUndefined } from '../../utilities';
 import { EngineService } from '../engineService';
 import { MessageBus, MessageKind } from '../messageBus';
 import { UserService } from '../userService';
 import { CodemodHash, WebviewMessage, WebviewResponse } from './webviewEvents';
 import { WebviewResolver } from './WebviewResolver';
 
-const X_CODEMODCOM_ACCESS_TOKEN = 'X-Intuita-Access-Token'.toLocaleLowerCase();
+const X_CODEMOD_ACCESS_TOKEN = 'X-Codemod-Access-Token'.toLocaleLowerCase();
 
 export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<boolean> => {
 	try {
 		const response = await axios.post(
-			// TODO this should be backend.codemod.com
-			'https://telemetry.intuita.io/validateAccessToken',
+			'https://backend.codemod.com/validateAccessToken',
 			{},
 			{
 				headers: {
-					[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+					[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 				},
 				timeout: 5000,
 			},
@@ -67,7 +66,7 @@ export const createIssue = async (
 
 	// TODO point to backend.codemod.com
 	const result = await axios.post(
-		'https://telemetry.intuita.io/sourceControl/github/issues',
+		'https://backend.codemod.com/sourceControl/github/issues',
 		{
 			title,
 			body,
@@ -75,7 +74,7 @@ export const createIssue = async (
 		},
 		{
 			headers: {
-				[X_CODEMODCOM_ACCESS_TOKEN]: accessToken,
+				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			},
 		},
 	);
@@ -136,6 +135,8 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __webviewResolver: WebviewResolver;
 	private __executionQueue: ReadonlyArray<CodemodHash> = [];
 	private __directoryPaths: ReadonlyArray<string> | null = null;
+	// true by default to prevent banner blinking on load
+	private __codemodEngineNodeLocated: boolean = true;
 
 	constructor(
 		context: ExtensionContext,
@@ -181,6 +182,26 @@ export class MainViewProvider implements WebviewViewProvider {
 				this.__postMessage({
 					kind: 'webview.main.setProps',
 					props: props,
+				});
+			},
+		);
+
+		this.__messageBus.subscribe(
+			MessageKind.codemodEngineNodeLocated,
+			({ codemodEngineNodeLocated }) => {
+				if (
+					this.__codemodEngineNodeLocated === codemodEngineNodeLocated
+				) {
+					return;
+				}
+
+				this.__codemodEngineNodeLocated = codemodEngineNodeLocated;
+
+				const props = this.__buildProps();
+
+				this.__postMessage({
+					kind: 'webview.main.setProps',
+					props,
 				});
 			},
 		);
@@ -244,13 +265,13 @@ export class MainViewProvider implements WebviewViewProvider {
 	}
 
 	private async __getDirectoryPaths() {
-		const basePath = this.__rootUri?.fsPath ?? null;
-
-		if (basePath === null) {
+		if (this.__rootUri === null) {
 			return;
 		}
 
-		const directoryPaths = await glob(`${basePath}/**`, {
+		const globPattern = buildGlobPattern(this.__rootUri, '/**');
+
+		const directoryPaths = await glob(globPattern, {
 			// ignore node_modules and files, match only directories
 			onlyDirectories: true,
 			ignore: ['**/node_modules/**'],
@@ -285,6 +306,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			this.__rootUri,
 			this.__directoryPaths,
 			this.__executionQueue,
+			this.__codemodEngineNodeLocated,
 		);
 	}
 

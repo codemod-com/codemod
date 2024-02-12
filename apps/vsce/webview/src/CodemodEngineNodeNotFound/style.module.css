@@ -1,0 +1,22 @@
+.root {
+	text-align: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	height: 100%;
+}
+
+.icon {
+	cursor: pointer;
+}
+
+.command {
+	width: 200px;
+}
+
+.reminder {
+	/* margin-top: 10px; */
+	position: absolute;
+	margin-bottom: 20px;
+	bottom: 0;
+}

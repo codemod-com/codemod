@@ -61,7 +61,19 @@ export const sync = async () => {
 	const staged: Record<string, string> = {};
 	for (const path of readmesChanged) {
 		console.log(`Syncing ${path}`);
-		const generatedSlug = path.split('/').slice(1, -1).join('-');
+		const [migratingFrom, migratingTo, ...rest] = path
+			.split('/')
+			.slice(3, -1);
+
+		let generatedSlug = migratingFrom;
+
+		if (migratingTo) {
+			const joint = migratingTo.match(/^\d+(\.\d+)*$/) ? '-' : '-to-';
+			const leftoverParts = rest.length ? `-${rest.join('-')}` : '';
+
+			generatedSlug = `${migratingFrom}${joint}${migratingTo}${leftoverParts}`;
+		}
+
 		const websitePath = `cms/automations/${generatedSlug}.md`;
 
 		let websiteFile: string | null;

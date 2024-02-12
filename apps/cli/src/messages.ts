@@ -53,6 +53,11 @@ export type ErrorMessage = Readonly<{
 	path?: string;
 }>;
 
+export type StatusUpdateMessage = Readonly<{
+	kind: 'status';
+	message: string;
+}>;
+
 export type OperationMessage =
 	| RewriteMessage
 	| FinishMessage
@@ -63,4 +68,5 @@ export type OperationMessage =
 	| CopyMessage
 	| MetadataPathMessage
 	| NamesMessage
-	| ErrorMessage;
+	| ErrorMessage
+	| StatusUpdateMessage;
