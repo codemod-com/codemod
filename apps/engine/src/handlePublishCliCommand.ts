@@ -7,6 +7,7 @@ import FormData from 'form-data';
 import { object, optional, parse, string } from 'valibot';
 import { publish, validateAccessToken } from './apis.js';
 import type { PrinterBlueprint } from './printer.js';
+import { boldText, colorizeText } from './utils.js';
 
 const packageJsonSchema = object({
 	main: string(),
@@ -120,7 +121,12 @@ export const handlePublishCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		`\x1b[1m\x1b[36mSuccessfully published the ${pkg.name} codemod.\x1b[0m`,
+		boldText(
+			colorizeText(
+				`Successfully published the ${pkg.name} codemod.`,
+				'cyan',
+			),
+		),
 	);
 
 	const codemodHashDigest = createHash('ripemd160')
@@ -146,12 +152,16 @@ export const handlePublishCliCommand = async (
 
 		printer.printConsoleMessage(
 			'info',
-			`\n1. Make the codemod available for usage in the CLI or the VSCode Extension by syncing the Registry:\n\x1b[1m$ codemod sync ${pkg.name}\x1b[0m`,
+			`\n1. Make the codemod available for usage in the CLI or the VSCode Extension by syncing the Registry:\n${boldText(
+				`$ codemod sync ${pkg.name}`,
+			)}`,
 		);
 
 		printer.printConsoleMessage(
 			'info',
-			`\n2. Now, you can run the codemod anywhere:\n\x1b[1m$ codemod ${pkg.name}\x1b[0m`,
+			`\n2. Now, you can run the codemod anywhere:\n${boldText(
+				`$ codemod ${pkg.name}`,
+			)}`,
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
