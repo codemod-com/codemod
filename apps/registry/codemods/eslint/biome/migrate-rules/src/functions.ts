@@ -1,4 +1,5 @@
 import type { DataAPI } from '@codemod-com/filemod';
+import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
 import type { Input } from 'valibot';
 import type {
 	Configuration as BiomeConfig,
@@ -253,6 +254,16 @@ export async function buildLinterConfig(
 			biomePageContent.match(/lint\/(\w+)\/(\w+)/) ?? [];
 
 		if (!biomeRuleGroup || !biomeRuleName) {
+			continue;
+		}
+
+		// If key is already present
+		if (
+			isNeitherNullNorUndefined(
+				// @ts-expect-error avoid as keyof casts
+				newObj.rules?.[biomeRuleGroup]?.[biomeRuleName],
+			)
+		) {
 			continue;
 		}
 
