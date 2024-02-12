@@ -120,7 +120,7 @@ export const handlePublishCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		`Published the "${pkg.name}" codemod successfully.`,
+		`\x1b[1m\x1b[36mSuccessfully published the ${pkg.name} codemod.\x1b[0m`,
 	);
 
 	const codemodHashDigest = createHash('ripemd160')
@@ -146,7 +146,12 @@ export const handlePublishCliCommand = async (
 
 		printer.printConsoleMessage(
 			'info',
-			`Run the codemod anywhere with "codemod ${pkg.name}".`,
+			`\n1. Make the codemod available for usage in the CLI or the VSCode Extension by syncing the Registry:\n\x1b[1m$ codemod sync ${pkg.name}\x1b[0m`,
+		);
+
+		printer.printConsoleMessage(
+			'info',
+			`\n2. Now, you can run the codemod anywhere:\n\x1b[1m$ codemod ${pkg.name}\x1b[0m`,
 		);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
@@ -155,9 +160,4 @@ export const handlePublishCliCommand = async (
 			`Failed to write the codemod files into the local codemod registry: ${message}.`,
 		);
 	}
-
-	printer.printConsoleMessage(
-		'info',
-		`Use the command "codemod sync ${pkg.name}" to make the codemod available for usage in the CLI or the VSCode Extension.`,
-	);
 };
