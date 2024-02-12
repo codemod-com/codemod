@@ -113,11 +113,9 @@ export const handlePublishCliCommand = async (
 		await publish(token, formData);
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
-
-		printer.printConsoleMessage(
-			'error',
-			`Could not publish the "${pkg.name}" codemod: ${message}`,
-		);
+		const errorMessage = `Could not publish the "${pkg.name}" codemod: ${message}`;
+		printer.printConsoleMessage('error', errorMessage);
+		throw new Error(errorMessage);
 	}
 
 	printer.printConsoleMessage(
