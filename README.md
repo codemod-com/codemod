@@ -1,7 +1,6 @@
 # Codemod monorepo
 
-## Installation 
+## Installation
 
     npm install -g pnpm
-    npx pnpm install   
-
+    pnpm install
