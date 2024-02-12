@@ -1,5 +1,5 @@
 import type { DataAPI } from '@codemod-com/filemod';
-import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
+import { isNeitherNullNorUndefined } from '@codemod-com/utilities/functions/validationMethods';
 import type { Input } from 'valibot';
 import type {
 	Configuration as BiomeConfig,
@@ -153,18 +153,18 @@ export function clearDependenciesAndAddNotes(
 			...newObj.devDependencies,
 			'@biomejs/biome': '1.5.3',
 		};
-	}
 
-	if (!packageJson.scripts) {
-		packageJson.scripts = {};
-	}
+		if (!packageJson.scripts) {
+			packageJson.scripts = {};
+		}
 
-	packageJson.scripts.NOTE =
-		'You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check';
+		packageJson.scripts.NOTE =
+			'You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check';
 
-	if (tailwindPluginExisted) {
-		packageJson.scripts.NOTE2 =
-			'There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274';
+		if (tailwindPluginExisted) {
+			packageJson.scripts.NOTE2 =
+				'There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274';
+		}
 	}
 
 	return newObj;

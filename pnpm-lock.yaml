@@ -1082,7 +1082,7 @@ importers:
         version: link:../../../../../../packages/utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.1(vitest@1.0.4)
+        version: 1.2.2(vitest@1.0.4)
       esbuild:
         specifier: 0.19.5
         version: 0.19.5
@@ -22572,7 +22572,7 @@ packages:
       '@sinonjs/fake-timers': 10.3.0
       '@sinonjs/samsam': 8.0.0
       diff: 5.1.0
-      nise: 5.1.9
+      nise: 5.1.7
       supports-color: 7.2.0
 
   /sinon@17.0.1:
@@ -22582,7 +22582,7 @@ packages:
       '@sinonjs/fake-timers': 11.2.2
       '@sinonjs/samsam': 8.0.0
       diff: 5.1.0
-      nise: 5.1.9
+      nise: 5.1.7
       supports-color: 7.2.0
     dev: true
 
@@ -23873,13 +23873,6 @@ packages:
       media-typer: 0.3.0
       mime-types: 2.1.35
 
-<<<<<<< HEAD
-  /typed-array-buffer@1.0.1:
-    resolution: {integrity: sha512-RSqu1UEuSlrBhHTWC8O9FnPjOduNs4M7rJ4pRKoEjtx1zUNOPN2sSXHLDX+Y2WPbHIxbvg4JFo2DNAEfPIKWoQ==}
-||||||| parent of b5ff30c (wip)
-  /typed-array-buffer@1.0.0:
-    resolution: {integrity: sha512-Y8KTSIglk9OZEr8zywiIHG/kmQ7KWyjseXs1CbSo8vC42w7hg2HgYTxSWwP0+is7bWDc1H+Fo026CpHFwm8tkw==}
-=======
   /type@1.2.0:
     resolution: {integrity: sha512-+5nt5AAniqsCnu2cEQQdpzCAh33kVx8n0VoFidKpB1dVVLAN/F+bgVOqOJqOnEnrhp222clB5p3vUlD+1QAnfg==}
     dev: true
@@ -23888,9 +23881,8 @@ packages:
     resolution: {integrity: sha512-dzlvlNlt6AXU7EBSfpAscydQ7gXB+pPGsPnfJnZpiNJBDj7IaJzQlBZYGdEi4R9HmPdBv2XmWJ6YUtoTa7lmCw==}
     dev: true
 
-  /typed-array-buffer@1.0.0:
-    resolution: {integrity: sha512-Y8KTSIglk9OZEr8zywiIHG/kmQ7KWyjseXs1CbSo8vC42w7hg2HgYTxSWwP0+is7bWDc1H+Fo026CpHFwm8tkw==}
->>>>>>> b5ff30c (wip)
+  /typed-array-buffer@1.0.1:
+    resolution: {integrity: sha512-RSqu1UEuSlrBhHTWC8O9FnPjOduNs4M7rJ4pRKoEjtx1zUNOPN2sSXHLDX+Y2WPbHIxbvg4JFo2DNAEfPIKWoQ==}
     engines: {node: '>= 0.4'}
     dependencies:
       call-bind: 1.0.6
