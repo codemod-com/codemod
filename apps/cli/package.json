@@ -1,5 +1,6 @@
 {
 	"name": "codemod",
+	"author": "Codemod, Inc.",
 	"version": "0.8.1",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
@@ -80,7 +81,6 @@
 	"pkg": {
 		"outputPath": "./package/"
 	},
-	"author": "Caartaa, Inc.",
 	"license": "Apache License, Version 2.0",
 	"files": [
 		"./dist/index.cjs",

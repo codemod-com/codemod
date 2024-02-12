@@ -1,7 +1,8 @@
 {
 	"name": "@codemod-com/filemod",
+	"author": "Codemod, Inc.",
 	"version": "2.0.2",
-	"description": "The filemod by Codemod",
+	"description": "The filemod by Codemod.com",
 	"type": "module",
 	"main": "./src/index.ts",
 	"exports": "./src/index.ts",
@@ -24,7 +25,6 @@
 		"coverage": "vitest run --coverage"
 	},
 	"keywords": [],
-	"author": "Caartaa, Inc.",
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/node": "20.8.5",

@@ -1,7 +1,7 @@
 {
 	"name": "@codemod-com/config",
 	"version": "0.0.1",
-	"author": "Codemod.com",
+	"author": "Codemod, Inc.",
 	"license": "Apache License, Version 2.0",
 	"description": "Configurations for codemod.com monorepo",
 	"files": [
