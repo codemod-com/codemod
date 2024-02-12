@@ -1,6 +1,6 @@
 {
 	"name": "@codemod-com/vscode-extension",
-	"author": "Codemod.com",
+	"author": "Codemod Inc.",
 	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
 	"version": "0.38.14",

@@ -1,6 +1,6 @@
 {
 	"name": "@codemod-com/filemod",
-	"author": "Codemod.com",
+	"author": "Codemod Inc.",
 	"version": "2.0.2",
 	"description": "The filemod by Codemod.com",
 	"type": "module",
