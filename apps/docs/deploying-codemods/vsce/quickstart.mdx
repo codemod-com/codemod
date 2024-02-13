@@ -16,4 +16,85 @@ icon: 'code'
   alt="Codemod VS Code extension hero banner"
 />
 
-// TODO
+The Codemod VS Code Extension allows you to run codemods over your projects to successfully migrate your project dependencies from one version to the next. This page will walk you through running these codemods as well the useful features that make running codemods easier.
+
+## Getting started
+
+<Steps>
+  <Step title="Dry-run codemods">
+    Before applying a codemod to your project, you can test it out in the dry-run mode and decide which parts of your codebase it should modify. This simplifies dependency upgrade tasks and allows you to easily review large codebase changes.
+
+    To dry-run a codemod:
+    1. Find the codemod you would like to use.
+    2. Click `Dry Run`.
+
+    // TODO: dry run video
+
+    <AccordionGroup>
+
+      <Accordion title="Running the codemod over a specific directory" icon="folder-open" iconType="light">
+        Change the target path:
+          1. Go to the codemod you want to run.
+          2. Click on the edit icon.
+          3. Specify the target path.
+
+          // TODO: edit path video
+      </Accordion>
+
+      <Accordion title="Changing codemod arguments" icon="sliders" iconType="light">
+        Some codemods may require custom arguments to be set before running. This feature allows you to specify custom arguments when needed.
+
+        To set codemod arguments:
+
+        1. Click on the `Edit Codemod Arguments` icon.
+        2. Set the value of the available arguments.
+
+        // TODO: setting codemod arguments video
+      </Accordion>
+
+    </AccordionGroup>
+
+  </Step>
+  <Step title="Reviewing and applying changes">
+    When you dry-run a codemod, all the changes are temporarily in preview before being applied to your local files. This allows you to accept or discard specific changes before applying them to the project's files.
+    
+    To review the changes made:
+
+    **1. Select a dry run**
+
+    // TODO: select dry run video
+
+    **2. Accept or decline file changes**
+
+    // TODO: accept/decline file changes video
+
+    <Note>
+    Sometimes codemods may make unwanted changes to some files. In such cases, you can deselect changes to prevent them from being applied to your project.
+    </Note>
+
+    **3. Set changes as reviewed**
+
+    // TODO: set as viewed video
+
+    **4. Apply changes**
+
+    // TODO: apply changes video
+  </Step>
+</Steps>
+
+## More helpful features
+
+<AccordionGroup>
+  <Accordion title="Switch diff view" icon="code-compare" iconType="light">
+    You can switch between an inline or side-by-side diff view by clicking the view type toggle.
+    
+    // TODO: diff view switch video
+  </Accordion>
+  <Accordion title="Reporting issues" icon="bug" iconType="light">
+    If a codemod causes an incorrect change, you can report an issue by clicking **Report Issue**.
+        
+    ![Report codemod issue](https://docs.codemod.com/assets/images/report-issue-08464e0ebf8ceb03f1b3b072cc71c9c4.png)
+    // TODO: update image url
+  </Accordion>
+</AccordionGroup>
+

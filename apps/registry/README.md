@@ -68,7 +68,7 @@ To run any codemod in the registry, you can:
 
 Codemod Registry is an open-source, community-first, and community-powered project made for developers, by developers.
 
-If you would like to contribute to the Codemod Registry, please [follow our contribution guide](https://docs.codemod.com/docs/codemod-registry/importing-codemods). Please note that once you create a pull request, you will be asked to sign our Contributor License Agreement.
+If you would like to contribute to the Codemod Registry, please [follow our contribution guide](https://docs.codemod.com/docs/codemod-registry/publishing-codemods). Please note that once you create a pull request, you will be asked to sign our Contributor License Agreement.
 
 If you are a codemod builder and/or interested in codemods, please [join our community](https://codemod.com/community)!
 

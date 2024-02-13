@@ -1,0 +1,43 @@
+---
+title: 'Publishing Codemods'
+description: 'Learn how to publish your codemods to the Codemod Registry and share them with the world.'
+icon: 'grid-round-2-plus'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/codemod-registry/publishing-codemods-hero-light.svg"
+  alt="Codemod Registry hero banner"
+/>
+
+<img
+  className="hidden dark:block"
+  src="/images/codemod-registry/publishing-codemods-hero-dark.svg"
+  alt="Codemod Registry hero banner"
+/>
+
+Publishing your codemods to the Codemod Registry allows you to easily share them with thousands of developers around the world.
+
+Once added, they will automatically integrate with the Codemod platform. This simplifies codemod discovery and distribution, and offers a great developer experience for running codemods.
+
+<Tip>
+Publishing codemods to the registry is especially useful for framework/library builders. With features like shareable codemod deep links and Codemod CLI & IDE extenion, your users can adopt your latest releases with one click, straight from your migration doc!
+
+<Tooltip tip="MSW V2 migration">[See example here ->](https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods)</Tooltip>
+</Tip>
+
+To publish a codemod to the registry, you can either open a pull request with your codemod in the GitHub repository, or you can publish the codemod using Codemod CLI.
+
+## Option 1: Open PR in the GitHub repository
+
+By opening a pull request in the codemod registry's [GitHub repository](https://github.com/codemod-com/codemod/tree/main/apps/registry), your codemod will be automatically published to the codemod registry and made available in the Codemod platform.
+
+<Note>
+Before opening a pull request with your codemod, make sure that your codemod conforms to [the structure required by the Codemod platform](https://github.com/codemod-com/codemod/blob/main/apps/registry/codemods/pull_request_template.md).
+</Note>
+
+## Option 2: Publish with Codemod CLI
+
+<Info>
+The `codemod publish` workflow is currently undergoing a revamped DevX. Please check back soon for the updated guide, or [subscribe to our newsletter](https://codemod.com/#w-node-_5ff6cff2-fc85-f29c-29f2-50274a1e2780-acf13e51) to be notified when it is released.
+</Info>

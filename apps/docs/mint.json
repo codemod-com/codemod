@@ -7,12 +7,12 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0D9373",
+    "primary": "#0B151E",
     "light": "#D6FF62",
-    "dark": "#000000",
+    "dark": "#0B151E",
     "anchors": {
-      "from": "#0D9373",
-      "to": "#07C983"
+      "from": "#91c500",
+      "to": "#91c500"
     }
   },
   "topbarLinks": [
@@ -41,16 +41,18 @@
     {
       "name": "VS Code Extension",
       "icon": "code",
-      "iconType": "solid",
+      "iconType": "regular",
       "url": "https://codemod.com/extension"
     },
     {
       "name": "Community",
       "icon": "slack",
+      "iconType": "regular",
       "url": "https://codemod.com/community"
     },
     {
       "name": "Blog",
+      "iconType": "regular",
       "icon": "newspaper",
       "url": "https://codemod.com/blog"
     }
@@ -72,7 +74,7 @@
       "group": "Codemod Registry",
       "pages": [
         "codemod-registry/introduction",
-        "codemod-registry/importing-codemods"
+        "codemod-registry/publishing-codemods"
       ]
     },
     {
