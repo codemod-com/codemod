@@ -36,7 +36,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			colorizeText(
 				`Syncing the Codemod Registry into ${boldText(
 					this.__configurationDirectoryPath,
-				)}...`,
+				)}...\n`,
 				'cyan',
 			),
 		);
