@@ -3,7 +3,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { validateAccessToken } from './apis.js';
 import type { PrinterBlueprint } from './printer.js';
-import { openURL } from './utils.js';
+import { boldText, colorizeText, openURL } from './utils.js';
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = 'accessTokenRequestedByCLI';
 
@@ -14,7 +14,10 @@ export const handleLoginCliCommand = async (
 	if (token === null) {
 		printer.printConsoleMessage(
 			'info',
-			'Opening the Codemod Studio... Please Sign in with Github!',
+			colorizeText(
+				'Opening the Codemod Studio... Please Sign in with Github!\n',
+				'cyan',
+			),
 		);
 		const success = openURL(
 			`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}`,
@@ -43,6 +46,9 @@ export const handleLoginCliCommand = async (
 
 	printer.printConsoleMessage(
 		'info',
-		'You are successfully logged in with the Codemod CLI!',
+		colorizeText(
+			boldText('You are successfully logged in with the Codemod CLI!'),
+			'cyan',
+		),
 	);
 };
