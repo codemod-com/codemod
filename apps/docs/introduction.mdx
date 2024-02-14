@@ -1,71 +1,72 @@
 ---
-title: Introduction
-description: 'Welcome to the home of your new documentation'
+title: What is Codemod.com?
+description: 'Learn more about building, sharing, and deploying codemods using the Codemod platform.'
 ---
 
 <img
-	className="block dark:hidden"
-	src="/images/hero-light.svg"
-	alt="Hero Light"
+  className="block dark:hidden"
+  src="/images/intro/codemod-docs-hero-light.jpg"
+  alt="Codemod.com hero banner"
 />
+
 <img
-	className="hidden dark:block"
-	src="/images/hero-dark.svg"
-	alt="Hero Dark"
+  className="hidden dark:block"
+  src="/images/intro/codemod-docs-hero-dark.jpg"
+  alt="Codemod.com hero banner"
 />
 
-## Setting up
+At Codemod.com we are building the ecosystem, platform and tooling around code modification bots, aka codemods. The Codemod platform helps you create, distribute, and deploy codemods in codebases of any size.
 
-The first step to world-class documentation is setting up your editing environments.
+The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
+
+We are making dream migrations a reality for all developers in the world, one framework at a time.
+
+## The Platform
+
+<img
+  src="/images/intro/codemod-platform-architecture.png"
+  alt="Codemod platform architecture"
+/>
+
+### 1. Building Codemods
+
+Codemods have superpowers, but building them isn't easy. [Codemod Studio](https://codemod.studio/) lets you “instantly” create code transformation bots with AI, specialized helpers & debuggers, and a vibrant “codemod champion” community.
+
+### 2. Exploring & Sharing Codemods
+
+[Codemod Registry](https://github.com/codemod-com/codemod-registry) is a collection of codemods and automation recipes built on top of popular engines like Meta’s jscodeshift, ts-morph, and less popular yet very powerful ones such as Uber's piranha. 
+
+Contribute your codemods to the registry and make them easily accessible to your users worldwide.
+
+Progressive framework builders are already onboard, keeping their users up-to-date with automatic upgrades and migrations.
+
+### 3. Deploying Codemods
+
+Use Codemod [CLI](https://docs.codemod.com/docs/cli/quickstart) or [VS Code extension](https://codemod.com/extension) to effortlessly discover and run codemods, with a safe dry-run feature to preview changes before applying them. Easily customize or enhance existing codemods for yourself and the community with a quick feedback loop.
+
+### 4. Scaled Deployment (Enterprise)
+
+In large teams making thousands of changes isn't a walk in the park, but an even tougher challenge is getting those changes to land.
+
+We are building the Codemod platform which can help you orchestrate large changes across many teams and empower campaign owners to see through their large migration projects.
+
+This piece of the Codemod platform is only needed for enterprises with large codebases and teams. [Contact us](https://codemod.com/contact) for more info.
+
+## Getting started
+
+Take the first step towards modernizing your codebase.
 
 <CardGroup cols={2}>
-	<Card
-		title="Edit Your Docs"
-		icon="pen-to-square"
-		href="https://mintlify.com/docs/quickstart"
-	>
-		Get your docs set up locally for easy development
-	</Card>
-	<Card
-		title="Preview Changes"
-		icon="image"
-		href="https://mintlify.com/docs/development"
-	>
-		Preview your changes before you push to make sure they're perfect
-	</Card>
-</CardGroup>
-
-## Make it yours
-
-Update your docs to your brand and add valuable content for the best user conversion.
-
-<CardGroup cols={2}>
-	<Card
-		title="Customize Style"
-		icon="palette"
-		href="https://mintlify.com/docs/settings/global"
-	>
-		Customize your docs to your company's colors and brands
-	</Card>
-	<Card
-		title="Reference APIs"
-		icon="code"
-		href="https://mintlify.com/docs/api-playground/openapi"
-	>
-		Automatically generate endpoints from an OpenAPI spec
-	</Card>
-	<Card
-		title="Add Components"
-		icon="screwdriver-wrench"
-		href="https://mintlify.com/docs/components/accordion"
-	>
-		Build interactive features and designs to guide your users
-	</Card>
-	<Card
-		title="Get Inspiration"
-		icon="stars"
-		href="https://mintlify.com/showcase"
-	>
-		Check out our showcase of our favorite documentation
-	</Card>
+  <Card title="Codemod Studio" icon="screwdriver-wrench" href="#1-codemod-studio">
+    Build and share custom codemods, powered by AI.
+  </Card>
+  <Card title="Codemod Registry" icon="grid-2-plus" href="#2-codemod-registry">
+    Codemods for popular refactors, migrations, and dependency upgrades. 
+  </Card>
+  <Card title="CLI & IDE Extension" icon="terminal" href="#3-cli-and-ide-extension">
+    Deploy codemods locally over your projects and codebases.
+  </Card>
+  <Card title="Scaled Deployment (Enterprise)" icon="rocket" href="#4-scaled-deployment-enterprise">
+    Land large-scale code migrations across many teams.
+  </Card>
 </CardGroup>
