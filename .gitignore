@@ -19,3 +19,13 @@ yarn-error.log
 .trunk
 
 apps/engine/package
+
+# Studio
+/.pnp
+.pnp.js
+/coverage
+npm-debug.log*
+yarn-debug.log*
+.eslintcache
+.next
+.vercel

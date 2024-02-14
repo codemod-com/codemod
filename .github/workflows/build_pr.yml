@@ -21,4 +21,6 @@ jobs:
                       - recursive: true
                         args: [--frozen-lockfile, --strict-peer-dependencies]
             - name: Build projects
+              env:
+                  SKIP_ENV_VALIDATION: 1
               run: pnpm build
