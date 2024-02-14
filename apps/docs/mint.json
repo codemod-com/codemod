@@ -17,44 +17,44 @@
   },
   "topbarLinks": [
     {
-      "name": "Community",
-      "url": "https://codemod.com/community"
+      "name": "Blog",
+      "url": "https://docs.codemod.com/blog"
     }
   ],
   "topbarCtaButton": {
-    "name": "Get Started",
-    "url": "https://codemod.studio"
+    "name": "Community",
+    "url": "https://codemod.com/community"
   },
   "tabs": [
     {
       "name": "Examples",
-      "url": "api-reference"
+      "url": "examples"
     }
   ],
   "anchors": [
     {
+      "name": "Codemod Studio",
+      "icon": "screwdriver-wrench",
+      "iconType": "regular",
+      "url": "https://codemod.studio"
+    },
+    {
+      "name": "Codemod Registry",
+      "icon": "grid-2-plus",
+      "iconType": "regular",
+      "url": "https://codemod.com/automations"
+    },
+    {
       "name": "CLI",
       "icon": "square-terminal",
       "iconType": "regular",
-      "url": "https://codemod.com"
+      "url": "deploying-codemods/cli"
     },
     {
       "name": "VS Code Extension",
       "icon": "code",
       "iconType": "regular",
       "url": "https://codemod.com/extension"
-    },
-    {
-      "name": "Community",
-      "icon": "slack",
-      "iconType": "regular",
-      "url": "https://codemod.com/community"
-    },
-    {
-      "name": "Blog",
-      "iconType": "regular",
-      "icon": "newspaper",
-      "url": "https://codemod.com/blog"
     }
   ],
   "navigation": [
@@ -83,12 +83,14 @@
             "deploying-codemods/introduction",
             {
                 "group": "CLI",
+                "icon": "terminal",
                 "pages": [
                   "deploying-codemods/cli/quickstart"
                 ]
             },
             {
               "group": "VS Code Extension",
+              "icon": "browser",
               "pages": [
                 "deploying-codemods/vsce/quickstart"
               ]
@@ -98,25 +100,21 @@
     {
       "group": "Other Resources",
       "pages": [
-        "essentials/code",
-        "essentials/images",
-        "essentials/settings",
-        "essentials/navigation",
-        "essentials/reusable-snippets"
+        "more-resources/changelog",
+        {
+          "group": "Legal",
+          "pages": [
+            "more-resources/legal/telemetry-compliance",
+            "more-resources/legal/privacy-policy",
+            "more-resources/legal/terms-and-conditions"
+          ]
+      }
       ]
     },
     {
-      "group": "API Documentation",
+      "group": "Explore examples",
       "pages": [
-        "api-reference/introduction"
-      ]
-    },
-    {
-      "group": "Endpoint Examples",
-      "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "examples/introduction"
       ]
     }
   ],
