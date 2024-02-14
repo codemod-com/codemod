@@ -1,6 +1,6 @@
-# Codemod.com's Codemod Engine Node
+# Codemod's CLI
 
-Codemod.com gives you multiple ways to discover, run & share supported codemods and code automation recipes.
+Codemod platform gives you multiple ways to discover, run & share supported codemods and code automation recipes.
 
 ![Running Codemod CLI](https://raw.githubusercontent.com/codemod-com/website/main/theme/assets/images/hero-video.gif)
 
