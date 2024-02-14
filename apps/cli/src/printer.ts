@@ -1,5 +1,6 @@
 import type { OperationMessage } from './messages.js';
 import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import { boldText, colorizeText } from './utils.js';
 import { WorkerThreadMessage } from './workerThreadMessages.js';
 
 export type PrinterBlueprint = Readonly<{
@@ -36,6 +37,15 @@ export class Printer implements PrinterBlueprint {
 		}
 
 		if (message.kind === 'error') {
+			if (message.path) {
+				const errorAt = boldText(
+					colorizeText(`Error at ${message.path}:`, 'red'),
+				);
+				const errorText = colorizeText(message.message, 'red');
+				console.error(`\n${errorAt}\n\n${errorText}\n`);
+				return;
+			}
+
 			console.error(message.message);
 		}
 

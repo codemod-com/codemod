@@ -31,4 +31,5 @@ export const colorizeText = (text: string, color: keyof typeof COLOR_MAP) => {
 
 export const COLOR_MAP = {
 	cyan: '\x1b[36m',
+	red: '\x1b[31m',
 };
