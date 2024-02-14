@@ -33,7 +33,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public async syncRegistry() {
 		this.__printer.printConsoleMessage(
 			'info',
-			`Syncing the Codemod Registry into ${this.__configurationDirectoryPath}`,
+			colorizeText(
+				`Syncing the Codemod Registry into ${boldText(
+					this.__configurationDirectoryPath,
+				)}...\n`,
+				'cyan',
+			),
 		);
 
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
