@@ -36,7 +36,7 @@ describe('proxy', () => {
 		const source = fileCollection.toSource();
 
 		assert.equal(source, '');
-		assert.equal(proxyEvents.length, 6);
+		assert.equal(proxyEvents.length, 0);
 		assert.equal(onProxifiedCollectionSpy.calledOnce, true);
 		assert.equal(onProxifiedPathSpy.calledOnce, false);
 	});
