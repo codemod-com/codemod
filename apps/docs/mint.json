@@ -45,12 +45,6 @@
       "url": "https://codemod.com/automations"
     },
     {
-      "name": "CLI",
-      "icon": "square-terminal",
-      "iconType": "regular",
-      "url": "deploying-codemods/cli"
-    },
-    {
       "name": "VS Code Extension",
       "icon": "code",
       "iconType": "regular",
