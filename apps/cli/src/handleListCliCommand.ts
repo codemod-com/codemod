@@ -9,6 +9,7 @@ import { syncRegistryOperation } from './executeMainThread.js';
 import { FileDownloadService } from './fileDownloadService.js';
 import type { Printer } from './printer.js';
 import { TarService } from './services/tarService.js';
+import { colorizeText } from './utils.js';
 
 export const handleListNamesCommand = async (printer: Printer) => {
 	const configurationDirectoryPath = join(homedir(), '.codemod');
@@ -40,6 +41,14 @@ export const handleListNamesCommand = async (printer: Printer) => {
 		.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 
 	const names = v.parse(v.array(v.string()), onlyValid);
+	printer.printConsoleMessage(
+		'info',
+
+		colorizeText(
+			`Here's the up-to-date list of all available codemods!`,
+			'cyan',
+		),
+	);
 
 	printer.printOperationMessage({ kind: 'names', names });
 };
