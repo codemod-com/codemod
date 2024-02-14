@@ -57,6 +57,7 @@
 		"memfs": "^4.2.0",
 		"micromark-extension-mdxjs": "^2.0.0",
 		"minimatch": "^9.0.3",
+		"prettier": "^2",
 		"rehype-parse": "^8.0.4",
 		"sinon": "^17.0.0",
 		"tar": "^6.1.15",
@@ -89,8 +90,5 @@
 	],
 	"publishConfig": {
 		"access": "public"
-	},
-	"dependencies": {
-		"prettier": "^2"
 	}
 }
