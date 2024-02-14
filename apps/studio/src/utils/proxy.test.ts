@@ -1,6 +1,7 @@
 import assert from 'assert';
 import jscodeshift from 'jscodeshift';
 import sinon from 'sinon';
+import { describe, it } from 'vitest';
 import { Event } from '../schemata/eventSchemata';
 import { EventManager } from './eventManager';
 import { proxifyJSCodeshift } from './proxy';
