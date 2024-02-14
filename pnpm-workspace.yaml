@@ -1,3 +1,6 @@
 packages:
     - 'apps/**'
     - 'packages/**'
+    # https://github.com/vercel/turbo/issues/3340
+    # We dont want to pick .next folder as workspace
+    - '!**/.next/**'

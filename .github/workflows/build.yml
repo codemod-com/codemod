@@ -3,6 +3,9 @@ on:
     push:
         branches:
             - main
+env:
+    SKIP_ENV_VALIDATION: 1
+
 jobs:
     Build:
         runs-on: ubuntu-latest
