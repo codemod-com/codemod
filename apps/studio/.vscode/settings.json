@@ -1,0 +1,8 @@
+{
+    "cSpell.words": [
+        "jscodeshift", 
+        "intuita", 
+        "codemod"
+    ],
+    "typescript.tsdk": "node_modules/typescript/lib"
+}

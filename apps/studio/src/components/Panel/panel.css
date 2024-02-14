@@ -1,0 +1,47 @@
+.panel_panel_header {
+	@apply flex;
+	@apply justify-between;
+	@apply gap-x-0.5;
+}
+.panel_panel_tab {
+	@apply transition-all;
+	@apply px-2;
+	@apply flex-1;
+	@apply items-center;
+	@apply flex;
+	@apply py-1;
+	@apply bg-gray-bg;
+	@apply dark:bg-gray-darker;
+	@apply text-gray-text-title;
+	@apply font-semibold;
+	@apply cursor-pointer;
+}
+.panel_panel_tab_clicked {
+	@apply bg-gray-light-darker;
+	@apply dark:bg-gray-dark;
+	@apply hover:dark:bg-gray-darker;
+	@apply hover:bg-gray-bg;
+	@apply text-gray-text-title;
+}
+.panel_panel_tab_active {
+	@apply bg-gray-bg-light;
+	@apply hover:bg-gray-bg-light;
+	@apply dark:bg-gray-darker;
+	@apply dark:hover:bg-gray-darker;
+}
+.panel_panel_tab_inactive {
+	@apply bg-gray-lighter;
+	@apply hover:bg-gray-lighter;
+	@apply cursor-not-allowed;
+	@apply dark:bg-gray-darker;
+}
+
+.panel_panel_title {
+	@apply text-gray-text-normal;
+	@apply dark:text-gray-text-dark-normal;
+	@apply flex;
+	@apply items-center;
+	@apply w-full;
+	@apply gap-x-1;
+	@apply justify-between;
+}
