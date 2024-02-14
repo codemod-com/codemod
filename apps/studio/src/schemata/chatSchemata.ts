@@ -24,7 +24,10 @@ export const freezeMessage = (message: Message): FrozenMessage => ({
 	id: message.id,
 	createdAt: message.createdAt?.getTime(),
 	content: message.content,
-	role: message.role,
+	role:
+		message.role === 'data' || message.role === 'tool'
+			? 'system'
+			: message.role,
 	name: message.name,
 	functionCall:
 		typeof message.function_call === 'string'
