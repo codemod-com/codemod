@@ -26,7 +26,7 @@ export const boldText = (text: string) => {
 };
 
 export const colorizeText = (text: string, color: keyof typeof COLOR_MAP) => {
-	return `${COLOR_MAP[color]}${text}\x1b[0m`;
+	return `${COLOR_MAP[color]}${text}\x1b[39m`;
 };
 
 export const COLOR_MAP = {

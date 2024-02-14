@@ -38,11 +38,10 @@ export class Printer implements PrinterBlueprint {
 
 		if (message.kind === 'error') {
 			if (message.path) {
-				const errorAt = boldText(
-					colorizeText(`Error at ${message.path}:`, 'red'),
+				const errorAt = boldText(`Error at ${message.path}:`);
+				console.error(
+					colorizeText(`\n${errorAt}\n\n${message.message}\n`, 'red'),
 				);
-				const errorText = colorizeText(message.message, 'red');
-				console.error(`\n${errorAt}\n\n${errorText}\n`);
 				return;
 			}
 
