@@ -130,7 +130,7 @@ importers:
         version: 2.1.0
       memfs:
         specifier: ^4.2.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       micromark-extension-mdxjs:
         specifier: ^2.0.0
         version: 2.0.0
@@ -464,7 +464,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -503,7 +503,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -542,7 +542,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1091,7 +1091,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1520,7 +1520,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -1593,7 +1593,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-node:
         specifier: ^10.9.1
         version: 10.9.1(@types/node@20.10.4)(typescript@5.3.3)
@@ -2358,7 +2358,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2397,7 +2397,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2452,7 +2452,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2677,7 +2677,7 @@ importers:
         version: 0.14.0(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2716,7 +2716,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2755,7 +2755,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2813,7 +2813,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -2879,7 +2879,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -3995,7 +3995,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.23.9)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -4337,9 +4337,6 @@ importers:
       ts-morph:
         specifier: ^18.0.0
         version: 18.0.0
-      tslib:
-        specifier: 2.4.1
-        version: 2.4.1
       universal-base64url:
         specifier: ^1.1.0
         version: 1.1.0
@@ -4484,7 +4481,7 @@ importers:
         version: 1.9.7(react-redux@8.1.3)(react@18.2.0)
       '@vscode/extension-telemetry':
         specifier: ^0.7.7
-        version: 0.7.7(tslib@2.4.1)
+        version: 0.7.7(tslib@2.6.2)
       '@vscode/vsce':
         specifier: ^2.22.0
         version: 2.23.0
@@ -4766,7 +4763,7 @@ importers:
         version: 3.3.2
       memfs:
         specifier: 4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@types/node@20.8.5)(typescript@5.3.3)
@@ -4811,7 +4808,7 @@ importers:
         version: 1.2.2(vitest@1.0.4)
       memfs:
         specifier: ^4.6.0
-        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
+        version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-node:
         specifier: 10.9.1
         version: 10.9.1(@types/node@20.10.3)(typescript@5.3.3)
@@ -8198,74 +8195,74 @@ packages:
   /@leichtgewicht/ip-codec@2.0.4:
     resolution: {integrity: sha512-Hcv+nVC0kZnQ3tD9GVu5xSMR4VVYOteQIr/hwFPVEvPdlXqgGEuRjiheChHgdM+JyqdgNcmzZOX/tnl0JOiI7A==}
 
-  /@microsoft/1ds-core-js@3.2.15(tslib@2.4.1):
+  /@microsoft/1ds-core-js@3.2.15(tslib@2.6.2):
     resolution: {integrity: sha512-w/35jS80jVl+YBbL69BHg6iTHuIkmmnwSuy8LhfBHm8QDTQny2C73GdwUN8c00BqSClM1ldl2w2bQWW1aMJLTg==}
     dependencies:
-      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.4.1)
+      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.6.2)
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
     transitivePeerDependencies:
       - tslib
     dev: false
 
-  /@microsoft/1ds-post-js@3.2.15(tslib@2.4.1):
+  /@microsoft/1ds-post-js@3.2.15(tslib@2.6.2):
     resolution: {integrity: sha512-SZQdaiLpoPelTFC0G1EVZXnuQxzqPdY3F6tcBHfnmQv+h8aJR3HAIiy65xI+p7u9m9LdV+8Mx5buE0s6NfXnQA==}
     dependencies:
-      '@microsoft/1ds-core-js': 3.2.15(tslib@2.4.1)
+      '@microsoft/1ds-core-js': 3.2.15(tslib@2.6.2)
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
     transitivePeerDependencies:
       - tslib
     dev: false
 
-  /@microsoft/applicationinsights-channel-js@2.8.16(tslib@2.4.1):
+  /@microsoft/applicationinsights-channel-js@2.8.16(tslib@2.6.2):
     resolution: {integrity: sha512-k0W4UKmkVfKgdCyKjcadiysCfndK4PrO6FhU4Jt3B4PaUmTs2w2ematfq2EqKOTsfkSAfo036jx6Rf/OOT3Rfg==}
     peerDependencies:
       tslib: '*'
     dependencies:
-      '@microsoft/applicationinsights-common': 2.8.16(tslib@2.4.1)
-      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.4.1)
+      '@microsoft/applicationinsights-common': 2.8.16(tslib@2.6.2)
+      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.6.2)
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: false
 
-  /@microsoft/applicationinsights-common@2.8.16(tslib@2.4.1):
+  /@microsoft/applicationinsights-common@2.8.16(tslib@2.6.2):
     resolution: {integrity: sha512-rZutcK7gzixhdtfUVkjy10Kn+/i66ti6YqBN2pFopOkgpqyGydtVhWio2TGrtAK3Pjz8cj7yUkrO+Z0y6/McFA==}
     peerDependencies:
       tslib: '*'
     dependencies:
-      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.4.1)
+      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.6.2)
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: false
 
-  /@microsoft/applicationinsights-core-js@2.8.16(tslib@2.4.1):
+  /@microsoft/applicationinsights-core-js@2.8.16(tslib@2.6.2):
     resolution: {integrity: sha512-pO5rR6UuiPymiHFj8XxNXhQgBSTvyHWygf+gdEVDh0xpUXYFO99bZe0Ux0D0HqYqVkJrRfXzL1Ocru6+S0x53Q==}
     peerDependencies:
       tslib: '*'
     dependencies:
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: false
 
   /@microsoft/applicationinsights-shims@2.0.2:
     resolution: {integrity: sha512-PoHEgsnmcqruLNHZ/amACqdJ6YYQpED0KSRe6J7gIJTtpZC1FfFU9b1fmDKDKtFoUSrPzEh1qzO3kmRZP0betg==}
     dev: false
 
-  /@microsoft/applicationinsights-web-basic@2.8.16(tslib@2.4.1):
+  /@microsoft/applicationinsights-web-basic@2.8.16(tslib@2.6.2):
     resolution: {integrity: sha512-ZQvWZL4cbZtiloBXf9g6MD4r/aIvXy7udJ2rnL784MwWGBtrfPgTsM1mniBYL/v2a0ufW7blIKp3CYe381iKrg==}
     peerDependencies:
       tslib: '*'
     dependencies:
-      '@microsoft/applicationinsights-channel-js': 2.8.16(tslib@2.4.1)
-      '@microsoft/applicationinsights-common': 2.8.16(tslib@2.4.1)
-      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.4.1)
+      '@microsoft/applicationinsights-channel-js': 2.8.16(tslib@2.6.2)
+      '@microsoft/applicationinsights-common': 2.8.16(tslib@2.6.2)
+      '@microsoft/applicationinsights-core-js': 2.8.16(tslib@2.6.2)
       '@microsoft/applicationinsights-shims': 2.0.2
       '@microsoft/dynamicproto-js': 1.1.11
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: false
 
   /@microsoft/applicationinsights-web-snippet@1.0.1:
@@ -11838,13 +11835,13 @@ packages:
       pretty-format: 29.7.0
     dev: true
 
-  /@vscode/extension-telemetry@0.7.7(tslib@2.4.1):
+  /@vscode/extension-telemetry@0.7.7(tslib@2.6.2):
     resolution: {integrity: sha512-uW508BPjkWDBOKvvvSym3ZmGb7kHIiWaAfB/1PHzLz2x9TrC33CfjmFEI+CywIL/jBv4bqZxxjN4tfefB61F+g==}
     engines: {vscode: ^1.75.0}
     dependencies:
-      '@microsoft/1ds-core-js': 3.2.15(tslib@2.4.1)
-      '@microsoft/1ds-post-js': 3.2.15(tslib@2.4.1)
-      '@microsoft/applicationinsights-web-basic': 2.8.16(tslib@2.4.1)
+      '@microsoft/1ds-core-js': 3.2.15(tslib@2.6.2)
+      '@microsoft/1ds-post-js': 3.2.15(tslib@2.6.2)
+      '@microsoft/applicationinsights-web-basic': 2.8.16(tslib@2.6.2)
       applicationinsights: 2.5.0
     transitivePeerDependencies:
       - applicationinsights-native-metrics
@@ -17615,7 +17612,7 @@ packages:
   /json-buffer@3.0.1:
     resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
 
-  /json-joy@9.9.1(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1):
+  /json-joy@9.9.1(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2):
     resolution: {integrity: sha512-/d7th2nbQRBQ/nqTkBe6KjjvDciSwn9UICmndwk3Ed/Bk9AqkTRm4PnLVfXG4DKbT0rEY0nKnwE7NqZlqKE6kg==}
     engines: {node: '>=10.0'}
     hasBin: true
@@ -17628,7 +17625,7 @@ packages:
       hyperdyperid: 1.2.0
       quill-delta: 5.1.0
       rxjs: 7.8.1
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: true
 
   /json-parse-even-better-errors@2.3.1:
@@ -18350,15 +18347,15 @@ packages:
     dependencies:
       fs-monkey: 1.0.5
 
-  /memfs@4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1):
+  /memfs@4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2):
     resolution: {integrity: sha512-I6mhA1//KEZfKRQT9LujyW6lRbX7RkC24xKododIDO3AGShcaFAMKElv1yFGWX8fD4UaSiwasr3NeQ5TdtHY1A==}
     engines: {node: '>= 4.0.0'}
     peerDependencies:
       tslib: '2'
     dependencies:
-      json-joy: 9.9.1(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.4.1)
-      thingies: 1.16.0(tslib@2.4.1)
-      tslib: 2.4.1
+      json-joy: 9.9.1(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
+      thingies: 1.16.0(tslib@2.6.2)
+      tslib: 2.6.2
     transitivePeerDependencies:
       - quill-delta
       - rxjs
@@ -23105,13 +23102,13 @@ packages:
     dependencies:
       any-promise: 1.3.0
 
-  /thingies@1.16.0(tslib@2.4.1):
+  /thingies@1.16.0(tslib@2.6.2):
     resolution: {integrity: sha512-J23AVs11hSQxuJxvfQyMIaS9z1QpDxOCvMkL3ZxZl8/jmkgmnNGWrlyNxVz6Jbh0U6DuGmHqq6f7zUROfg/ncg==}
     engines: {node: '>=10.18'}
     peerDependencies:
       tslib: ^2
     dependencies:
-      tslib: 2.4.1
+      tslib: 2.6.2
     dev: true
 
   /throat@6.0.2:
