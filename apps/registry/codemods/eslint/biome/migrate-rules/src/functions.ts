@@ -170,15 +170,15 @@ export function clearDependenciesAndAddNotes(
 			'@biomejs/biome': '1.5.3',
 		};
 
-		if (!packageJson.scripts) {
-			packageJson.scripts = {};
+		if (!newObj.scripts) {
+			newObj.scripts = {};
 		}
 
-		packageJson.scripts.NOTE =
+		newObj.scripts.NOTE =
 			'You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check';
 
 		if (tailwindPluginExisted) {
-			packageJson.scripts.NOTE2 =
+			newObj.scripts.NOTE2 =
 				'There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274';
 		}
 	}
