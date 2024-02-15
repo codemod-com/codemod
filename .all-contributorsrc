@@ -1,0 +1,115 @@
+{
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": false,
+  "commitType": "docs",
+  "commitConvention": "angular",
+  "contributors": [
+    {
+      "login": "MaxLeiter",
+      "name": "Max Leiter",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8675906?v=4",
+      "profile": "https://maxleiter.com/",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "grzpab",
+      "name": "Greg Pabian",
+      "avatar_url": "https://avatars.githubusercontent.com/u/35925521?v=4",
+      "profile": "https://medium.com/@greg-pabian/",
+      "contributions": [
+        "code",
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "DmytroHryshyn",
+      "name": "DmytroHryshyn",
+      "avatar_url": "https://avatars.githubusercontent.com/u/125881252?v=4",
+      "profile": "https://github.com/DmytroHryshyn",
+      "contributions": [
+        "code",
+        "bug"
+      ]
+    },
+    {
+      "login": "alex-from-intuita",
+      "name": "Alex Bit",
+      "avatar_url": "https://avatars.githubusercontent.com/u/78109534?v=4",
+      "profile": "https://intuita.io/",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "hbjORbj",
+      "name": "Benny Joo",
+      "avatar_url": "https://avatars.githubusercontent.com/u/32841130?v=4",
+      "profile": "https://github.com/hbjORbj",
+      "contributions": [
+        "code",
+        "bug",
+        "doc"
+      ]
+    },
+    {
+      "login": "mohab-sameh",
+      "name": "Mohab Sameh",
+      "avatar_url": "https://avatars.githubusercontent.com/u/37941642?v=4",
+      "profile": "https://github.com/mohab-sameh",
+      "contributions": [
+        "code",
+        "doc"
+      ]
+    },
+    {
+      "login": "Zergus",
+      "name": "Serhii Melnyk",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5468045?v=4",
+      "profile": "https://zergus.github.io/",
+      "contributions": [
+        "ideas"
+      ]
+    },
+    {
+      "login": "kevtran2",
+      "name": "kevtran2",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44513934?v=4",
+      "profile": "https://github.com/kevtran2",
+      "contributions": [
+        "doc",
+        "code"
+      ]
+    },
+    {
+      "login": "GeorgeWL",
+      "name": "George W Langham",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5931248?v=4",
+      "profile": "https://georgewl.dev",
+      "contributions": [
+        "bug"
+      ]
+    },
+    {
+      "login": "AnielloFalcone",
+      "name": "Aniello Falcone",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16816912?v=4",
+      "profile": "https://github.com/AnielloFalcone",
+      "contributions": [
+        "bug"
+      ]
+    }
+  ],
+  "contributorsPerLine": 7,
+  "skipCi": true,
+  "repoType": "github",
+  "repoHost": "https://github.com",
+  "projectName": "codemod-registry",
+  "projectOwner": "codemod-com"
+}
