@@ -21,6 +21,7 @@ jobs:
                       - recursive: true
                         args: [--frozen-lockfile, --strict-peer-dependencies]
             - name: Build projects
-              env:
-                  SKIP_ENV_VALIDATION: 1
               run: pnpm build
+              env:
+                  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
+                  NEXT_PUBLIC_API_URL: 'http://localhost:5173'
