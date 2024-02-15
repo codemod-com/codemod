@@ -104,12 +104,22 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "r4zendev",
+      "name": "Sasha",
+      "avatar_url": "https://avatars.githubusercontent.com/u/44036750?v=4",
+      "profile": "http://r4zen.dev",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
   "skipCi": true,
   "repoType": "github",
   "repoHost": "https://github.com",
-  "projectName": "codemod-registry",
+  "projectName": "codemod",
   "projectOwner": "codemod-com"
 }
