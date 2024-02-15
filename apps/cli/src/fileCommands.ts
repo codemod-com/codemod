@@ -1,10 +1,10 @@
 import { createHash } from 'node:crypto';
 import { dirname, extname, join } from 'node:path';
-import { IFs } from 'memfs';
-import { Options } from 'prettier';
+import type { IFs } from 'memfs';
+import type { Options } from 'prettier';
 import { filterNeitherNullNorUndefined } from './filterNeitherNullNorUndefined.js';
-import { OperationMessage } from './messages.js';
-import { RunSettings } from './schemata/runArgvSettingsSchema.js';
+import type { OperationMessage } from './messages.js';
+import type { RunSettings } from './schemata/runArgvSettingsSchema.js';
 
 export type CreateFileCommand = Readonly<{
 	kind: 'createFile';
@@ -60,6 +60,26 @@ export const DEFAULT_PRETTIER_OPTIONS: Options = {
 	parser: 'typescript',
 };
 
+const parserMappers = new Map<string, Options['parser']>([
+	['ts', 'typescript'],
+	['tsx', 'typescript'],
+	['js', 'babel'],
+	['jsx', 'babel'],
+	['json', 'json'],
+	['json5', 'json5'],
+	['jsonc', 'json'],
+	['css', 'css'],
+	['scss', 'scss'],
+	['less', 'less'],
+	['graphql', 'graphql'],
+	['md', 'markdown'],
+	['mdx', 'mdx'],
+	['html', 'html'],
+	['vue', 'vue'],
+	['yaml', 'yaml'],
+	['yml', 'yaml'],
+]);
+
 export const getConfig = async (path: string): Promise<Options> => {
 	const { resolveConfig } = await import('prettier');
 
@@ -71,9 +91,8 @@ export const getConfig = async (path: string): Promise<Options> => {
 		throw new Error('Unable to resolve config');
 	}
 
-	const parser = path.endsWith('.css')
-		? 'css'
-		: config.parser ?? DEFAULT_PRETTIER_OPTIONS.parser;
+	const parser: Options['parser'] =
+		parserMappers.get(extname(path).slice(1)) ?? 'typescript';
 
 	return {
 		...config,
