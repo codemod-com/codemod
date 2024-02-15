@@ -6,6 +6,10 @@ on:
 jobs:
     Build:
         runs-on: ubuntu-latest
+        env:
+            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
+            NEXT_PUBLIC_API_URL: 'http://localhost:5173'
+
         steps:
             - name: Setup Node.js
               uses: actions/setup-node@v3
