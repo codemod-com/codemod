@@ -25,7 +25,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public constructor(
 		private readonly __printer: PrinterBlueprint,
 		private readonly __configurationDirectoryPath: string,
-		protected readonly _cacheUsed: boolean,
+		protected readonly _cacheDisabled: boolean,
 		protected readonly _fileDownloadService: FileDownloadServiceBlueprint,
 		protected readonly _tarService: TarService,
 	) {}
@@ -66,7 +66,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 			colorizeText(
 				`Downloading the ${boldText(`"${name}"`)} codemod${
-					this._cacheUsed ? '...' : ', not using cache...'
+					this._cacheDisabled ? ', not using cache...' : '...'
 				}`,
 				'cyan',
 			),

@@ -34,14 +34,11 @@ export const buildArguments = (
 	if (command.kind === 'executeCodemod') {
 		args.push(buildCrossplatformArg(command.name));
 	} else {
-		args.push(
-			'--sourcePath',
-			buildCrossplatformArg(command.codemodUri.fsPath),
-		);
-		args.push('--codemodEngine', 'jscodeshift');
+		args.push('--source', buildCrossplatformArg(command.codemodUri.fsPath));
+		args.push('--engine', 'jscodeshift');
 	}
 
-	args.push('--targetPath', buildCrossplatformArg(message.targetUri.fsPath));
+	args.push('--target', buildCrossplatformArg(message.targetUri.fsPath));
 
 	if (message.targetUriIsDirectory) {
 		configuration.includePatterns.forEach((includePattern) => {
@@ -68,21 +65,17 @@ export const buildArguments = (
 		);
 	}
 
-	args.push('--threadCount', String(configuration.workerThreadCount));
-	args.push('--fileLimit', String(configuration.fileLimit));
+	args.push('--threads', String(configuration.workerThreadCount));
+	args.push('--limit', String(configuration.fileLimit));
 
 	if (configuration.formatWithPrettier) {
-		args.push('--usePrettier');
+		args.push('--prettier');
 	}
 
-	args.push('--useJson');
-	args.push('--useCache');
+	args.push('--json');
 
-	args.push('--dryRun');
-	args.push(
-		'--outputDirectoryPath',
-		buildCrossplatformArg(storageUri.fsPath),
-	);
+	args.push('--dry');
+	args.push('--output', buildCrossplatformArg(storageUri.fsPath));
 	args.push(...codemodArguments);
 	return args;
 };
