@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/registry-builder",
+	"name": "@codemod-com/builder",
 	"type": "module",
 	"dependencies": {
 		"@effect/schema": "^0.48.4",
