@@ -1,3 +1,4 @@
+import { sep } from 'node:path';
 import type { Filemod } from '@codemod-com/filemod';
 import { isNeitherNullNorUndefined } from '@codemod-com/utilities/functions/validationMethods';
 import { is, type Input } from 'valibot';
@@ -43,7 +44,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 		return { config: eslintConfig };
 	},
 	handleFile: async (api, path, options) => {
-		const fileName = path.split('/').at(-1);
+		const fileName = path.split(sep).at(-1);
 
 		if (fileName === 'package.json') {
 			return [
@@ -88,7 +89,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 		},
 		state,
 	) => {
-		const fileName = path.split('/').at(-1)!;
+		const fileName = path.split(sep).at(-1)!;
 
 		let biomeJsonContent: BiomeConfig;
 		try {

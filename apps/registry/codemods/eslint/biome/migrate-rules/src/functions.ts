@@ -9,6 +9,22 @@ import type { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
 import type { packageJsonSchema } from './schemas.js';
 import type { Dependencies, RuleValue } from './types.js';
 
+function deepCopy<T>(obj: T): T {
+	if (typeof obj !== 'object' || obj === null) {
+		return obj;
+	}
+
+	const newObj = (Array.isArray(obj) ? [] : {}) as T;
+
+	for (const key in obj) {
+		if (obj.hasOwnProperty(key)) {
+			newObj[key] = deepCopy(obj[key]);
+		}
+	}
+
+	return newObj as T;
+}
+
 export function replaceKeys(
 	obj: Record<string, unknown>,
 	replacements: Record<string, string>,
@@ -18,7 +34,7 @@ export function replaceKeys(
 		return obj;
 	}
 
-	const newObj = Object.assign({}, obj);
+	const newObj = deepCopy(obj);
 
 	for (const [pattern, replacement] of Object.entries(replacements)) {
 		// Iterate through each key in the object
@@ -111,7 +127,7 @@ export function getPackageManager(
 export function clearDependenciesAndAddNotes(
 	packageJson: Input<typeof packageJsonSchema>,
 ): Input<typeof packageJsonSchema> {
-	const newObj = Object.assign({}, packageJson);
+	const newObj = deepCopy(packageJson);
 
 	if (newObj.eslintConfig) {
 		delete newObj.eslintConfig;
@@ -208,7 +224,7 @@ export async function buildLinterConfig(
 		.then((res) => res.text())
 		.then((text) => text.split('\n').slice(5));
 
-	const newObj = Object.assign({}, existingLinterConfig);
+	const newObj = existingLinterConfig ? deepCopy(existingLinterConfig) : {};
 
 	for (const [name, value] of Object.entries(rules)) {
 		const ruleValue =
