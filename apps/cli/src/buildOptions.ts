@@ -9,24 +9,25 @@ import {
 	DEFAULT_USE_PRETTIER,
 } from './constants.js';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const buildUseJsonOption = <T extends {}>(y: Argv<T>) =>
+export const buildUseJsonOption = <T extends Record<string, unknown>>(
+	y: Argv<T>,
+) =>
 	y.option('useJson', {
 		type: 'boolean',
 		description: 'Respond with JSON',
 		default: DEFAULT_USE_JSON,
 	});
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const buildUseCacheOption = <T extends {}>(y: Argv<T>) =>
+export const buildUseCacheOption = <T extends Record<string, unknown>>(
+	y: Argv<T>,
+) =>
 	y.option('useCache', {
 		type: 'boolean',
 		description: 'Use cache for HTTP(S) requests',
 		default: DEFAULT_USE_CACHE,
 	});
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-export const buildOptions = <T extends {}>(y: Argv<T>) => {
+export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 	return buildUseCacheOption(
 		buildUseJsonOption(
 			y

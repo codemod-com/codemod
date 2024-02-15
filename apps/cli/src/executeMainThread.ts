@@ -41,15 +41,25 @@ export const executeMainThread = async () => {
 
 	const interfaze = readline.createInterface(process.stdin);
 
+	let userInput = '';
+
 	const lineHandler = (line: string): void => {
 		if (line === 'shutdown') {
 			interfaze.off('line', lineHandler);
 
 			process.exit(0);
 		}
+
+		userInput += line;
 	};
 
 	interfaze.on('line', lineHandler);
+
+	await new Promise((resolve) => {
+		interfaze.on('close', () => {
+			resolve(null);
+		});
+	});
 
 	process.stdin.unref();
 
@@ -109,7 +119,10 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const argv = await Promise.resolve(argvObject.argv);
+	const argv = {
+		...(await Promise.resolve(argvObject.argv)),
+		'arg:input': userInput,
+	};
 
 	const fetchBuffer = async (url: string) => {
 		const { data } = await Axios.get(url, {
