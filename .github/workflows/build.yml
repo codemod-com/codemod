@@ -6,10 +6,6 @@ on:
 jobs:
     Build:
         runs-on: ubuntu-latest
-        env:
-            NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
-            NEXT_PUBLIC_API_URL: 'http://localhost:5173'
-
         steps:
             - name: Setup Node.js
               uses: actions/setup-node@v3
@@ -28,6 +24,9 @@ jobs:
                         args: [--frozen-lockfile, --strict-peer-dependencies]
             - name: Build projects
               run: pnpm build
+              env:
+                  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
+                  NEXT_PUBLIC_API_URL: 'http://localhost:5173'
             - name: Add new READMEs to website
               run: |
                   "$PWD"/apps/registry/readme-parser/dist/sync.js
