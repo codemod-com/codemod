@@ -22,8 +22,8 @@
     }
   ],
   "topbarCtaButton": {
-    "name": "Community",
-    "url": "https://codemod.com/community"
+    "name": "GitHub",
+    "url": "https://github.com/codemod-com/codemod"
   },
   "tabs": [
     {
@@ -32,6 +32,12 @@
     }
   ],
   "anchors": [
+    {
+      "name": "Join Community",
+      "icon": "slack",
+      "iconType": "regular",
+      "url": "https://codemod.com/community"
+    },
     {
       "name": "Codemod Studio",
       "icon": "screwdriver-wrench",
@@ -75,20 +81,8 @@
       "group": "Deploying Codemods",
       "pages": [
             "deploying-codemods/introduction",
-            {
-                "group": "CLI",
-                "icon": "terminal",
-                "pages": [
-                  "deploying-codemods/cli/quickstart"
-                ]
-            },
-            {
-              "group": "VS Code Extension",
-              "icon": "browser",
-              "pages": [
-                "deploying-codemods/vsce/quickstart"
-              ]
-          }
+            "deploying-codemods/cli",
+            "deploying-codemods/vsce"
       ]
     },
     {
