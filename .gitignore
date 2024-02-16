@@ -29,3 +29,6 @@ yarn-debug.log*
 .eslintcache
 .next
 .vercel
+
+# Backend
+build-ncc

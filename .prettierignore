@@ -11,3 +11,7 @@ output.js
 
 # Misc
 pnpm-lock.yaml
+node_modules
+
+# Backend
+build-ncc

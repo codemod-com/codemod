@@ -1,0 +1,62 @@
+{
+	"name": "studio-backend",
+	"version": "1.0.0",
+	"scripts": {
+		"start:ncc": "node ./build-ncc/index.js",
+		"test": "vitest --run",
+		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
+		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc",
+		"lint:eslint:write": "eslint ./src --fix --ext ts",
+		"lint:prettier:write": "prettier --write ."
+	},
+	"author": "caartaa inc.",
+	"private": true,
+	"devDependencies": {
+		"@types/node": "20.10.5",
+		"@types/parse-github-url": "1.0.3",
+		"@typescript-eslint/eslint-plugin": "^5.59.5",
+		"@typescript-eslint/parser": "^5.59.5",
+		"@vercel/ncc": "0.38.1",
+		"eslint": "^8.40.0",
+		"eslint-config-prettier": "^8.8.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"fastify-plugin": "4.5.1",
+		"nodemon": "3.0.2",
+		"prettier": "^2.8.8",
+		"sqlite3": "^5.1.7",
+		"ts-node": "10.9.2",
+		"typescript": "5.3.3",
+		"vitest": "1.1.0"
+	},
+	"dependencies": {
+		"@aws-sdk/client-s3": "^3.478.0",
+		"@clerk/fastify": "0.6.27",
+		"@clerk/backend": "0.36.0",
+		"@effect/schema": "0.54.0",
+		"@fastify/busboy": "^2.1.0",
+		"@fastify/cors": "8.5.0",
+		"@fastify/multipart": "^8.0.0",
+		"@fastify/rate-limit": "9.0.1",
+		"@types/tar": "^6.1.10",
+		"ai": "2.2.29",
+		"axios": "1.6.2",
+		"chatgpt": "5.2.5",
+		"chromadb": "1.7.2",
+		"fastify": "4.25.1",
+		"langchain": "0.0.209",
+		"lru-cache": "10.1.0",
+		"openai": "4.23.0",
+		"openai-edge": "1.2.2",
+		"parse-github-url": "1.0.2",
+		"pg": "^8.11.3",
+		"replicate": "0.25.2",
+		"sequelize": "^6.36.0",
+		"tar": "^6.2.0",
+		"valibot": "^0.24.1"
+	},
+	"type": "module",
+	"peerDependencies": {
+		"@clerk/backend": "0.36.0",
+		"fastify-plugin": "4.5.1"
+	}
+}
