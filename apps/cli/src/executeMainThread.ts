@@ -39,27 +39,32 @@ declare const __CODEMODCOM_CLI_VERSION__: string;
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
 
-	const interfaze = readline.createInterface(process.stdin);
-
-	let userInput = '';
+	const interfaze = readline.createInterface({
+		input: process.stdin,
+		output: process.stdout,
+	});
 
 	const lineHandler = (line: string): void => {
 		if (line === 'shutdown') {
 			interfaze.off('line', lineHandler);
-
+			interfaze.close();
 			process.exit(0);
 		}
 
-		userInput += line;
+		userInput += `${line}\n`;
 	};
 
 	interfaze.on('line', lineHandler);
 
-	await new Promise((resolve) => {
-		interfaze.on('close', () => {
-			resolve(null);
+	let userInput = '';
+
+	if (!process.stdin.isTTY) {
+		await new Promise((resolve) => {
+			interfaze.on('close', () => {
+				resolve(null);
+			});
 		});
-	});
+	}
 
 	process.stdin.unref();
 

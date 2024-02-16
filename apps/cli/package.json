@@ -1,7 +1,7 @@
 {
 	"name": "codemod",
 	"author": "Codemod, Inc.",
-	"version": "0.8.1",
+	"version": "0.8.2",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
@@ -74,7 +74,7 @@
 	},
 	"packageManager": "pnpm@8.6.7",
 	"scripts": {
-		"build": "esbuild ./src/index.ts  --define:__CODEMODCOM_CLI_VERSION__=\\\"0.8.1\\\" --bundle --platform=node --target=node18 --minify --format=cjs --legal-comments=inline --outfile=./dist/index.cjs",
+		"build": "esbuild ./src/index.ts  --define:__CODEMODCOM_CLI_VERSION__=\\\"0.8.2\\\" --bundle --platform=node --target=node18 --minify --format=cjs --legal-comments=inline --outfile=./dist/index.cjs",
 		"package": "pkg --compress GZip .",
 		"test": "TEST=1 vitest run",
 		"coverage": "TEST=1 vitest run --coverage"
