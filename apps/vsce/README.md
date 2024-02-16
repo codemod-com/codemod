@@ -1,47 +1,51 @@
-# A better way to discover & run community-led codemods
+<p align="center">
+  <a href="https://codemod.com">
+   <img src="https://raw.githubusercontent.com/codemod-com/docs/main/static/img/github/codemod-billboard.png" alt="Logo">
+  </a>
 
-Upgrade your projects with the help of codemods created by experts in the community, one framework at a time, starting with Next.js v13.4.
+  <p align="center">
+    <br />
+    <a href="https://github.com/codemod-com/codemod">GitHub</a>
+    ·
+    <a href="https://codemod.com/community">Community</a>
+    ·
+    <a href="https://docs.codemod.com">Documentation</a>
+  </p>
+</p>
 
-> 🎁 What frameworks should we support next? [Let us know →](https://feedback.codemod.com/codemod-requests)
+# A better way to build, discover, & run codemods
 
-## 1. Discover
+![Discover Codemods](https://raw.githubusercontent.com/codemod-com/codemod/main/apps/vsce/img/vsce-quick-look.gif)
 
--   Codemod is **a one-stop shop for discovering & sharing quality-governed codemods.** You don't need to install and run many codemod engines for each dependency. Simply search for your framework codemods and click run. With codemod deep links, you can reach & run your target codemod with just one click.
-
-![Discover Codemods](https://github.com/codemod-com/docs/raw/main/static/img/vsce/vsce-discover.gif)
-
-## 2. Run
-
--   **Safely dry-run the codemods**, preview the changes with a user-friendly experience, adjust the changes as necessary, and apply them to your code only when you feel confident.
-
-![Running Codemods](https://github.com/codemod-com/docs/raw/main/static/img/vsce/vsce-run.gif)
-
-## 3. Customize & Improve
+## 1. Build
 
 -   Leverage the **1-click integration with Codemod Studio** and the feedback loop with the **community of Codemod Champions** to continuously improve Codemods and customize them to your needs.
 
-> 💡 Codemod.com is in Public Beta and we’re continuously working on improving codemods and solving any compatibility issues.
-> If you run into an issue while running a codemod, please [let us know →](https://feedback.codemod.com/feature-requests-and-bugs)
+## 2. Discover
+
+-   Codemod is **a one-stop shop for discovering & sharing quality-governed codemods.** You don't need to install and run many codemod engines for each dependency. Simply search for your framework codemods and click run. With codemod deep links, you can reach & run your target codemod with just one click.
+
+## 3. Run
+
+-   **Safely dry-run the codemods**, preview the changes with a user-friendly experience, adjust the changes as necessary, and apply them to your code only when you feel confident.
 
 ## Other Features
 
 -   **Out-of-the-box Prettier Integration -** Your favorite code transformation engines such as Meta’s JSCodeshift or TS-morph will mess up the formatting. Codemod will automatically prettify the changes according to your settings, saving you much time and energy for more exciting features.
 -   **Multi-threading -** Execute codemods faster than you would with vanilla jscodeshift or ts-morph. Codemod's engine uses multi-threading, which is customizable via extension settings, to take full advantage of your machine's computing power and expedite large-scale changes.
--   For advanced settings & features, visit the [Codemod docs.](https://docs.codemod.com/docs/vs-code-extension/quickstart)
 
-# Extension vs. the Platform
+## Usage
 
-![Codemod Platform Architecture](https://github.com/codemod-com/docs/raw/main/static/img/docs/intuita-platform-architecture.png)
+To learn more about using the Codemod VS Code extension, read our [docs here](https://docs.codemod.com/deploying-codemods/vsce).
 
--   **To learn more about codemod.studio, registry, and the CLI visit the [Codemod docs here](https://docs.codemod.com/docs/intro).**
+## Community
+
+If you would like to ask questions, share feature requests, or chat with us, please join our [Slack Community](https://codemod.com/community).
 
 ## Telemetry 🔭
 
 -   The extension collects telemetry data to help us improve the product for you.
 -   **We never send PII, OS information, file, or folder names.**
 -   Telemetry can be disabled in the settings.
--   See more details in our [telemetry compliance considerations](https://docs.codemod.com/docs/about/telemetry-compliance) doc.
+-   See more details in our [telemetry compliance considerations](https://docs.codemod.com/more-resources/legal/telemetry-compliance) doc.
 
-## Share Feedback 🎁
-
--   Please share your ideas, questions, and feature requests **[here](https://feedback.codemod.com/)**, or chat with us in [Slack](https://join.slack.com/t/codemod-com/shared_invite/zt-1tvxm6ct0-mLZld_78yguDYOSM7DM7Cw).
