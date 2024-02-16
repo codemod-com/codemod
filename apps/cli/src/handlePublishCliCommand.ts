@@ -74,6 +74,7 @@ export const handlePublishCliCommand = async (
 		},
 	);
 
+	// We currently support publishing jscodeshift codemods only
 	const configJsonData = JSON.stringify(
 		{
 			schemaVersion: '1.0.0',
@@ -152,14 +153,7 @@ export const handlePublishCliCommand = async (
 
 		printer.printConsoleMessage(
 			'info',
-			`\n1. Make the codemod available for usage in the CLI or the VSCode Extension by syncing the Registry:\n${boldText(
-				`$ codemod sync ${pkg.name}`,
-			)}`,
-		);
-
-		printer.printConsoleMessage(
-			'info',
-			`\n2. Now, you can run the codemod anywhere:\n${boldText(
+			`\nNow, you can run the codemod anywhere:\n${boldText(
 				`$ codemod ${pkg.name}`,
 			)}`,
 		);
