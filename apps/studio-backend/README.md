@@ -1,6 +1,6 @@
 # studio-backend
 
-The backend for the (codemod) studio.
+The backend for the Codemod.com products.
 
 ## Developing locally
 
