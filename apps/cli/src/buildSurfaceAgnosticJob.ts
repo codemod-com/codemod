@@ -30,8 +30,8 @@ export const buildSurfaceAgnosticJob = (
 		return {
 			kind: JOB_KIND.COPY_FILE,
 			jobHashDigest,
-			sourcePathUri: command.oldPath,
-			targetPathUri: command.newPath,
+			sourceUri: command.oldPath,
+			targetUri: command.newPath,
 		};
 	}
 

@@ -55,59 +55,59 @@ export const buildSourcedCodemodOptions = async (
 	codemodOptions: CodemodSettings & { kind: 'runSourced' },
 ): Promise<Codemod & { source: 'fileSystem' }> => {
 	const isDirectorySource = await fs.promises
-		.lstat(codemodOptions.sourcePath)
+		.lstat(codemodOptions.source)
 		.then((pathStat) => pathStat.isDirectory());
 
 	if (!isDirectorySource) {
 		if (codemodOptions.codemodEngine === null) {
 			throw new Error(
-				'--codemodEngine has to be defined when running local codemod',
+				'--engine has to be defined when running local codemod',
 			);
 		}
 
 		return {
 			source: 'fileSystem' as const,
 			engine: codemodOptions.codemodEngine,
-			indexPath: codemodOptions.sourcePath,
+			indexPath: codemodOptions.source,
 		};
 	}
 
 	if (
 		!['config.json', 'package.json']
 			.map((lookedupFilePath) =>
-				path.join(codemodOptions.sourcePath, lookedupFilePath),
+				path.join(codemodOptions.source, lookedupFilePath),
 			)
 			.every(fs.existsSync)
 	) {
 		throw new Error(
-			`Codemod directory is of incorrect structure at ${codemodOptions.sourcePath}`,
+			`Codemod directory is of incorrect structure at ${codemodOptions.source}`,
 		);
 	}
 
 	const mainScriptRelativePath = await extractMainScriptRelativePath(
 		fs,
-		path.join(codemodOptions.sourcePath, 'package.json'),
+		path.join(codemodOptions.source, 'package.json'),
 	);
 
 	if (!mainScriptRelativePath) {
 		throw new Error(
-			`No main script specified for codemod at ${codemodOptions.sourcePath}`,
+			`No main script specified for codemod at ${codemodOptions.source}`,
 		);
 	}
 
 	const mainScriptPath = path.join(
-		codemodOptions.sourcePath,
+		codemodOptions.source,
 		mainScriptRelativePath,
 	);
 
 	const engine = await extractEngine(
 		fs,
-		path.join(codemodOptions.sourcePath, 'config.json'),
+		path.join(codemodOptions.source, 'config.json'),
 	);
 
 	if (engine === null) {
 		throw new Error(
-			`Engine specified in config.json at ${codemodOptions.sourcePath} is not a JavaScript codemod engine or does not exist.`,
+			`Engine specified in config.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
 		);
 	}
 

@@ -4,11 +4,11 @@ import * as S from '@effect/schema/Schema';
 
 const runArgvSettingsSchema = S.union(
 	S.struct({
-		dryRun: S.optional(S.literal(false)).withDefault(() => false),
+		dry: S.optional(S.literal(false)).withDefault(() => false),
 	}),
 	S.struct({
-		dryRun: S.literal(true),
-		outputDirectoryPath: S.optional(S.string),
+		dry: S.literal(true),
+		output: S.optional(S.string),
 	}),
 );
 
@@ -32,18 +32,18 @@ export const parseRunSettings = (
 
 	const flowSettings = S.parseSync(runArgvSettingsSchema)(input);
 
-	if (flowSettings.dryRun === false) {
+	if (flowSettings.dry === false) {
 		return {
 			dryRun: false,
 			caseHashDigest,
 		};
 	}
 
-	if (flowSettings.outputDirectoryPath !== undefined) {
+	if (flowSettings.output !== undefined) {
 		return {
 			dryRun: true,
 			streamingEnabled: false,
-			outputDirectoryPath: flowSettings.outputDirectoryPath,
+			outputDirectoryPath: flowSettings.output,
 			caseHashDigest,
 		};
 	}

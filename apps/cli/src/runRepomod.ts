@@ -56,7 +56,7 @@ export type Dependencies = Readonly<{
 export const runRepomod = async (
 	fileSystem: IFs,
 	filemod: Filemod<Dependencies, Record<string, unknown>>,
-	targetPath: string,
+	target: string,
 	formatWithPrettier: boolean,
 	safeArgumentRecord: SafeArgumentRecord,
 	onPrinterMessage: (message: OperationMessage) => void,
@@ -212,7 +212,7 @@ export const runRepomod = async (
 	const externalFileCommands = await executeFilemod(
 		api,
 		filemod,
-		targetPath,
+		target,
 		{
 			...safeArgumentRecord[0],
 		},

@@ -41,7 +41,7 @@ export const buildPaths = async (
 			filemod.includePatterns?.slice() ?? [],
 			{
 				absolute: true,
-				cwd: flowSettings.targetPath,
+				cwd: flowSettings.target,
 				ignore: filemod.excludePatterns?.slice(),
 				onlyFiles: true,
 				fs: fileSystemAdapter,
@@ -51,7 +51,7 @@ export const buildPaths = async (
 
 		const flowPaths = await glob(patterns.slice(), {
 			absolute: true,
-			cwd: flowSettings.targetPath,
+			cwd: flowSettings.target,
 			ignore: flowSettings.exclude.slice(),
 			onlyFiles: true,
 			fs: fileSystemAdapter,
@@ -60,19 +60,19 @@ export const buildPaths = async (
 
 		return filemodPaths
 			.filter((path) => flowPaths.includes(path))
-			.slice(0, flowSettings.fileLimit);
+			.slice(0, flowSettings.limit);
 	}
 
 	const paths = await glob(patterns.slice(), {
 		absolute: true,
-		cwd: flowSettings.targetPath,
+		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
 		ignore: flowSettings.exclude.slice(),
 		onlyFiles: true,
 		dot: true,
 	});
 
-	return paths.slice(0, flowSettings.fileLimit);
+	return paths.slice(0, flowSettings.limit);
 };
 
 async function* buildPathGenerator(
@@ -89,7 +89,7 @@ async function* buildPathGenerator(
 
 	const stream = globStream(patterns.slice(), {
 		absolute: true,
-		cwd: flowSettings.targetPath,
+		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
 		ignore,
 		onlyFiles: true,
@@ -99,7 +99,7 @@ async function* buildPathGenerator(
 	let fileCount = 0;
 
 	for await (const chunk of stream) {
-		if (fileCount >= flowSettings.fileLimit) {
+		if (fileCount >= flowSettings.limit) {
 			break;
 		}
 
@@ -244,7 +244,7 @@ export const runCodemod = async (
 
 		const newPaths = await glob(patterns.slice(), {
 			absolute: true,
-			cwd: flowSettings.targetPath,
+			cwd: flowSettings.target,
 			// @ts-expect-error type inconsistency
 			fs: mfs,
 			nodir: true,
@@ -291,8 +291,8 @@ export const runCodemod = async (
 		const fileCommands = await runRepomod(
 			fileSystem,
 			{ ...transformer, includePatterns: paths, excludePatterns: [] },
-			flowSettings.targetPath,
-			flowSettings.usePrettier,
+			flowSettings.target,
+			flowSettings.prettier,
 			safeArgumentRecord,
 			onPrinterMessage,
 			currentWorkingDirectory,
@@ -316,7 +316,7 @@ export const runCodemod = async (
 		let timeout: NodeJS.Timeout | null = null;
 
 		const workerThreadManager = new WorkerThreadManager(
-			flowSettings.threadCount,
+			flowSettings.threads,
 			async (path) => {
 				const data = await fileSystem.promises.readFile(path, {
 					encoding: 'utf8',
@@ -348,7 +348,7 @@ export const runCodemod = async (
 			codemod.indexPath,
 			engine,
 			transpiledSource,
-			flowSettings.usePrettier,
+			flowSettings.prettier,
 			safeArgumentRecord,
 		);
 	});

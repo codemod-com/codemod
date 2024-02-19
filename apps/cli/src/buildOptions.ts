@@ -3,8 +3,8 @@ import {
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_INCLUDE_PATTERNS,
+	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
-	DEFAULT_USE_CACHE,
 	DEFAULT_USE_JSON,
 	DEFAULT_USE_PRETTIER,
 } from './constants.js';
@@ -12,7 +12,7 @@ import {
 export const buildUseJsonOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y.option('useJson', {
+	y.option('json', {
 		type: 'boolean',
 		description: 'Respond with JSON',
 		default: DEFAULT_USE_JSON,
@@ -21,10 +21,10 @@ export const buildUseJsonOption = <T extends Record<string, unknown>>(
 export const buildUseCacheOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y.option('useCache', {
+	y.option('no-cache', {
 		type: 'boolean',
-		description: 'Use cache for HTTP(S) requests',
-		default: DEFAULT_USE_CACHE,
+		description: 'Disable cache for HTTP(S) requests',
+		default: DEFAULT_NO_CACHE,
 	});
 
 export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
@@ -47,49 +47,34 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 					type: 'string',
 					description: 'Input directory path',
 				})
-				.option('targetPath', {
-					type: 'string',
-					description:
-						'(DEPRECATED by "target") Input directory path',
-				})
 				.option('source', {
 					type: 'string',
 					description: 'Source path of the local codemod to run',
 				})
-				.option('sourcePath', {
-					type: 'string',
-					description:
-						'(DEPRECATED by "source") Source path of the local codemod to run',
-				})
-				.option('codemodEngine', {
+				.option('engine', {
 					type: 'string',
 					description:
 						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
 				})
-				.option('fileLimit', {
+				.option('limit', {
 					type: 'number',
 					description: 'File limit for processing',
 					default: 1000,
 				})
-				.option('usePrettier', {
+				.option('prettier', {
 					type: 'boolean',
 					description: 'Format output with Prettier',
 					default: DEFAULT_USE_PRETTIER,
 				})
-				.option('threadCount', {
+				.option('threads', {
 					type: 'number',
 					description: 'Number of worker threads',
 					default: DEFAULT_THREAD_COUNT,
 				})
-				.option('dryRun', {
+				.option('dry', {
 					type: 'boolean',
 					description: 'Perform a dry run',
 					default: DEFAULT_DRY_RUN,
-				})
-				.option('outputDirectoryPath', {
-					type: 'string',
-					description:
-						'(DEPRECATED, do not use) Output directory path for dry-run only',
 				})
 				.option('telemetryDisable', {
 					type: 'boolean',

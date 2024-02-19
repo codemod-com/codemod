@@ -96,13 +96,14 @@ describe('Runner', function () {
 		const flowSettings: FlowSettings = {
 			include: [],
 			exclude: [],
-			targetPath: '/code',
+			target: '/code',
 			files: ['/code/a.ts', '/code/b.ts', '/code/c.ts'],
-			fileLimit: 3,
-			usePrettier: false,
-			useCache: false,
-			useJson: true,
-			threadCount: 1,
+			limit: 3,
+			prettier: false,
+			'no-cache': false,
+			noCache: false,
+			json: true,
+			threads: 1,
 		};
 
 		const currentWorkingDirectory = '/';

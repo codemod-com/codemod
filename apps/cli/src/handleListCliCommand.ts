@@ -45,13 +45,13 @@ export const handleListNamesCommand = async (printer: Printer) => {
 };
 
 export const handleListNamesAfterSyncing = async (
-	useCache: boolean,
+	disableCache: boolean,
 	printer: Printer,
 	fileDownloadService: FileDownloadService,
 	tarService: TarService,
 ) => {
 	await syncRegistryOperation(
-		useCache,
+		disableCache,
 		printer,
 		fileDownloadService,
 		tarService,
