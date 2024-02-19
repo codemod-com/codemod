@@ -25,7 +25,8 @@
 		"preserveWatchOutput": true,
 		"baseUrl": ".",
 		"paths": {
-			"~/*": ["src/*"]
+			"~/*": ["src/*"],
+			"tslib": ["node_modules/tslib"]
 		},
 		"plugins": [{ "name": "next" }]
 	},
