@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { validateAccessToken } from './apis.js';
@@ -40,8 +40,11 @@ export const handleLoginCliCommand = async (
 		);
 	}
 
-	const tokenTxtPath = join(homedir(), '.codemod', 'token.txt');
+	// Ensure that `/.codemod.` folder exists
+	const codemodDirectoryPath = join(homedir(), '.codemod');
+	await mkdir(codemodDirectoryPath, { recursive: true });
 
+	const tokenTxtPath = join(codemodDirectoryPath, 'token.txt');
 	await writeFile(tokenTxtPath, token, 'utf-8');
 
 	printer.printConsoleMessage(
