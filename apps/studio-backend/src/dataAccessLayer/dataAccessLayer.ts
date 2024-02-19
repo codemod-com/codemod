@@ -3,7 +3,18 @@ import { buildTokenMetadataRepository } from './buildTokenMetadataRepository.js'
 import { buildTokenRevocationRepository } from './buildTokenRevocationsRepository.js';
 
 export const buildDataAccessLayer = async (uri: string) => {
-	const sequelize = new Sequelize(uri, { logging: false });
+	const sequelize = new Sequelize(uri, {
+		logging: false,
+		dialect: 'postgres',
+		ssl: true,
+		// required to be able to connect to postgres from EC2
+		dialectOptions: {
+			ssl: {
+				require: true,
+				rejectUnauthorized: false,
+			},
+		},
+	});
 
 	const tokenMetadataRepository = buildTokenMetadataRepository(sequelize);
 	const tokenRevocationRepository = buildTokenRevocationRepository(sequelize);

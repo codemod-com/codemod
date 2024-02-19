@@ -5,7 +5,7 @@
 		"start:ncc": "node ./build-ncc/index.js",
 		"test": "vitest --run",
 		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
-		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc",
+		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc -e sequelize",
 		"lint:eslint:write": "eslint ./src --fix --ext ts",
 		"lint:prettier:write": "prettier --write ."
 	},

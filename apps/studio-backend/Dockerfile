@@ -20,7 +20,7 @@ FROM node:19-alpine3.16 as stage1
 WORKDIR /opt/studio-backend
 
 COPY --from=stage0 /opt/studio-backend/build-ncc/ /opt/studio-backend
-
+COPY --from=stage0 /opt/studio-backend/node_modules /opt/studio-backend/node_modules
 EXPOSE 8081
 
 CMD ["node", "./index.js"]
