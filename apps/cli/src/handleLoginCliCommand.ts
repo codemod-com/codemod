@@ -44,7 +44,7 @@ export const handleLoginCliCommand = async (
 	const codemodDirectoryPath = join(homedir(), '.codemod');
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
-	const tokenTxtPath = join(homedir(), '.codemod', 'token.txt');
+	const tokenTxtPath = join(codemodDirectoryPath, 'token.txt');
 	await writeFile(tokenTxtPath, token, 'utf-8');
 
 	printer.printConsoleMessage(
