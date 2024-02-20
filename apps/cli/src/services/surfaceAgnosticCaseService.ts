@@ -39,7 +39,7 @@ export class SurfaceAgnosticCaseService {
 				this._runSettings.caseHashDigest.toString('base64url'),
 			codemodHashDigest: this._codemodHashDigest.toString('base64url'),
 			createdAt: BigInt(Date.now()),
-			absolutetarget: this._flowSettings.target,
+			absoluteTargetPath: this._flowSettings.target,
 			argumentRecord: this._argumentRecord,
 		});
 	}

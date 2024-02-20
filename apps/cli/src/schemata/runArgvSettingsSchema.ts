@@ -39,15 +39,6 @@ export const parseRunSettings = (
 		};
 	}
 
-	if (flowSettings.output !== undefined) {
-		return {
-			dryRun: true,
-			streamingEnabled: false,
-			outputDirectoryPath: flowSettings.output,
-			caseHashDigest,
-		};
-	}
-
 	const outputDirectoryPath = join(
 		homeDirectoryPath,
 		'.codemod',
