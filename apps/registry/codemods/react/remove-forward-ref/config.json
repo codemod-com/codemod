@@ -1,0 +1,8 @@
+{
+	"schemaVersion": "1.0.0",
+	"name": "react/remove-forward-ref",
+	"description": "Codemod to remove forwardRef function",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"owner": "Codemod.com"
+}
