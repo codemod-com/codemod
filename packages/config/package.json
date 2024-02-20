@@ -6,8 +6,5 @@
 	"description": "Configurations for codemod.com monorepo",
 	"files": ["eslint.js", "prettier.js"],
 	"dependencies": {},
-	"devDependencies": { "typescript": "^5.2.2", "@biomejs/biome": "1.5.3" },
-	"scripts": {
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
-	}
+	"devDependencies": { "typescript": "^5.2.2", "@biomejs/biome": "1.5.3" }
 }

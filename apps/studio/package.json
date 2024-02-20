@@ -79,9 +79,7 @@
 		"start": "next start",
 		"build": "next build",
 		"lint:prettier": "npx @biomejs/biome format 'src/**/*.{ts,tsx}' --write",
-		"lint:eslint": "npx @biomejs/biome lint . --ext .tsx --color",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
-		"NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"
+		"lint:eslint": "npx @biomejs/biome lint . --ext .tsx --color"
 	},
 	"browserslist": {
 		"production": [">0.2%", "not dead", "not op_mini all"],

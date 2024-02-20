@@ -7,8 +7,7 @@
 		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
 		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc",
 		"lint:eslint:write": "npx @biomejs/biome lint ./src --apply --ext ts",
-		"lint:prettier:write": "npx @biomejs/biome format --write .",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
+		"lint:prettier:write": "npx @biomejs/biome format --write ."
 	},
 	"author": "Codemod inc.",
 	"private": true,

@@ -77,8 +77,7 @@
 		"build": "esbuild ./src/index.ts  --define:__CODEMODCOM_CLI_VERSION__=\\\"0.8.3\\\" --bundle --platform=node --target=node18 --minify --format=cjs --legal-comments=inline --outfile=./dist/index.cjs",
 		"package": "pkg --compress GZip .",
 		"test": "TEST=1 vitest run",
-		"coverage": "TEST=1 vitest run --coverage",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
+		"coverage": "TEST=1 vitest run --coverage"
 	},
 	"engines": { "node": ">=18.5.0" },
 	"pkg": { "outputPath": "./package/" },
