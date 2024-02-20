@@ -30,7 +30,7 @@ const getToken = (): Promise<string> => {
 
 export const handlePublishCliCommand = async (
 	printer: PrinterBlueprint,
-	sourcePath: string,
+	source: string,
 ) => {
 	const token = await getToken();
 	const { username } = await validateAccessToken(token);
@@ -44,7 +44,7 @@ export const handlePublishCliCommand = async (
 	printer.printConsoleMessage('info', `You are logged in as '${username}'.`);
 
 	const packageJsonData = await fs.promises.readFile(
-		join(sourcePath, 'package.json'),
+		join(source, 'package.json'),
 		{
 			encoding: 'utf-8',
 		},
@@ -67,12 +67,9 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	const indexCjsData = await fs.promises.readFile(
-		join(sourcePath, pkg.main),
-		{
-			encoding: 'utf-8',
-		},
-	);
+	const indexCjsData = await fs.promises.readFile(join(source, pkg.main), {
+		encoding: 'utf-8',
+	});
 
 	// We currently support publishing jscodeshift codemods only
 	const configJsonData = JSON.stringify(
@@ -89,7 +86,7 @@ export const handlePublishCliCommand = async (
 
 	try {
 		descriptionMdData = await fs.promises.readFile(
-			join(sourcePath, 'README.md'),
+			join(source, 'README.md'),
 			{
 				encoding: 'utf-8',
 			},

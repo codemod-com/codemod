@@ -17,7 +17,7 @@ export type FileDownloadServiceBlueprint = Readonly<{
 
 export class FileDownloadService implements FileDownloadServiceBlueprint {
 	public constructor(
-		protected readonly _cacheUsed: boolean,
+		protected readonly _disableCache: boolean,
 		protected readonly _fetchBuffer: (url: string) => Promise<Buffer>,
 		protected readonly _getNow: () => number,
 		protected readonly _ifs: IFs,
@@ -25,7 +25,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 	) {}
 
 	public async download(url: string, path: string): Promise<Buffer> {
-		if (this._cacheUsed) {
+		if (!this._disableCache) {
 			try {
 				const stats = await this._ifs.promises.stat(path);
 

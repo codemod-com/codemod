@@ -44,17 +44,17 @@ After running this command, if any git diff exists, `codemod` will use the diff 
 
 ### Options
 
--   [`--include`](https://docs.codemod.com/docs/cli/advanced-usage#--include)
--   [`--exclude`](https://docs.codemod.com/docs/cli/advanced-usage#--exclude)
--   [`--targetPath`](https://docs.codemod.com/docs/cli/advanced-usage#--targetpath)
--   [`--sourcePath`](https://docs.codemod.com/docs/cli/advanced-usage#--sourcepath)
--   [`--codemodEngine`](https://docs.codemod.com/docs/cli/advanced-usage#--codemodengine)
--   [`--fileLimit`](https://docs.codemod.com/docs/cli/advanced-usage#--filelimit)
--   [`--usePrettier`](https://docs.codemod.com/docs/cli/advanced-usage#--useprettier)
--   [`--useCache`](https://docs.codemod.com/docs/cli/advanced-usage#--usecache)
--   [`--useJson`](https://docs.codemod.com/docs/cli/advanced-usage#--usejson)
--   [`--threadCount`](https://docs.codemod.com/docs/cli/advanced-usage#--threadcount)
--   [`--dryRun`](https://docs.codemod.com/docs/cli/advanced-usage#--dryrun)
+-   [`--include` or `-i`](https://docs.codemod.com/docs/cli/advanced-usage#--include)
+-   [`--exclude` or `-e`](https://docs.codemod.com/docs/cli/advanced-usage#--exclude)
+-   [`--target` or `-t`](https://docs.codemod.com/docs/cli/advanced-usage#--target)
+-   [`--source` or `-s`](https://docs.codemod.com/docs/cli/advanced-usage#--source)
+-   [`--engine`](https://docs.codemod.com/docs/cli/advanced-usage#--engine)
+-   [`--limit` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--limit)
+-   [`--raw` or `-r`](https://docs.codemod.com/docs/cli/advanced-usage#--raw)
+-   [`--no-cache`](https://docs.codemod.com/docs/cli/advanced-usage#--no-cache)
+-   [`--json` or `-j`](https://docs.codemod.com/docs/cli/advanced-usage#--json)
+-   [`--threads` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--threads)
+-   [`--dry` or `-d`](https://docs.codemod.com/docs/cli/advanced-usage#--dry)
 -   [`--telemetryDisable`](https://docs.codemod.com/docs/cli/advanced-usage#--telemetrydisable)
 
 ## Contribution

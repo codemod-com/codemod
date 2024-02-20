@@ -68,7 +68,7 @@ export class Runner {
 				);
 
 				const codemodHashDigest = createHash('ripemd160')
-					.update(this._codemodSettings.sourcePath)
+					.update(this._codemodSettings.source)
 					.digest();
 
 				const surfaceAgnosticCaseService =
@@ -134,7 +134,7 @@ export class Runner {
 					if (preCommitCodemod.source === 'registry') {
 						const codemod = await this._codemodDownloader.download(
 							preCommitCodemod.name,
-							this._flowSettings.useCache,
+							this._flowSettings.noCache,
 						);
 
 						const safeArgumentRecord = buildSafeArgumentRecord(
@@ -177,7 +177,7 @@ export class Runner {
 						`Executing the ${boldText(
 							`"${this._name}"`,
 						)} codemod against ${boldText(
-							`"${this._flowSettings.targetPath}"`,
+							`"${this._flowSettings.target}"`,
 						)}...\n`,
 						'cyan',
 					),
@@ -192,7 +192,7 @@ export class Runner {
 
 				const codemod = await this._codemodDownloader.download(
 					this._name,
-					this._flowSettings.useCache,
+					this._flowSettings.noCache,
 				);
 
 				const codemodHashDigest = createHash('ripemd160')

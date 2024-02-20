@@ -12,7 +12,7 @@ export type PrinterBlueprint = Readonly<{
 }>;
 
 export class Printer implements PrinterBlueprint {
-	public constructor(private readonly __useJson: boolean) {}
+	public constructor(private readonly __jsonOutput: boolean) {}
 
 	public printMessage(
 		message: OperationMessage | (WorkerThreadMessage & { kind: 'console' }),
@@ -26,7 +26,7 @@ export class Printer implements PrinterBlueprint {
 	}
 
 	public printOperationMessage(message: OperationMessage) {
-		if (this.__useJson) {
+		if (this.__jsonOutput) {
 			if (message.kind === 'error') {
 				console.error(JSON.stringify(message));
 				return;
@@ -68,7 +68,7 @@ export class Printer implements PrinterBlueprint {
 	}
 
 	public printConsoleMessage(kind: ConsoleKind, message: string) {
-		if (this.__useJson) {
+		if (this.__jsonOutput) {
 			return;
 		}
 

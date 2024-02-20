@@ -125,7 +125,7 @@ function InstructionsContent({ pm }: { pm: 'pnpm' | 'npm' }) {
 	return (
 		<div className="space-y-1">
 			<CopyTerminalCommands
-				text={`${npxDialect} codemod --dryRun <codemod_path>`}
+				text={`${npxDialect} codemod --dry <codemod_path>`}
 			/>
 		</div>
 	);

@@ -102,21 +102,21 @@ export function getPackageManager(
 ) {
 	const isYarn = (
 		packageJson.packageManager ?? JSON.stringify(packageJson.scripts)
-	).match(/yarn/g);
+	)?.match(/yarn/g);
 	if (isYarn) {
 		return ['yarn', 'yarn dlx'] as const;
 	}
 
 	const isPnpm = (
 		packageJson.packageManager ?? JSON.stringify(packageJson.scripts)
-	).match(/pnpm/g);
+	)?.match(/pnpm/g);
 	if (isPnpm) {
 		return ['pnpm', 'pnpm dlx'] as const;
 	}
 
 	const isBun = (
 		packageJson.packageManager ?? JSON.stringify(packageJson.scripts)
-	).match(/bun/g);
+	)?.match(/bun/g);
 	if (isBun) {
 		return ['bun', 'bunx'] as const;
 	}

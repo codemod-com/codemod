@@ -337,7 +337,7 @@ export class EngineService {
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
 		const childProcess = spawn(
 			CODEMOD_ENGINE_NODE_COMMAND,
-			['list', '--useJson', '--useCache'],
+			['list', '--json'],
 			{
 				stdio: 'pipe',
 				shell: true,

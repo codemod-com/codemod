@@ -11,7 +11,6 @@ export const codemodSettingsSchema = S.union(
 	S.struct({
 		_: S.array(S.string),
 		source: S.optional(S.string),
-		sourcePath: S.optional(S.string),
 		codemodEngine: S.optional(codemodEngineSchema),
 	}),
 );
@@ -26,7 +25,7 @@ export type CodemodSettings =
 	  }>
 	| Readonly<{
 			kind: 'runSourced';
-			sourcePath: string;
+			source: string;
 			codemodEngine: S.To<typeof codemodEngineSchema> | null;
 	  }>;
 
@@ -39,15 +38,12 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
 		};
 	}
 
-	const sourcePath =
-		'source' in codemodSettings
-			? codemodSettings.source
-			: codemodSettings.sourcePath;
+	const source = codemodSettings.source;
 
-	if (sourcePath) {
+	if (source) {
 		return {
 			kind: 'runSourced',
-			sourcePath,
+			source,
 			codemodEngine: codemodSettings.codemodEngine ?? null,
 		};
 	}

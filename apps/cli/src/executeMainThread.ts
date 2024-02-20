@@ -98,7 +98,7 @@ export const executeMainThread = async () => {
 			'learn',
 			'exports the current `git diff` in a file to before/after panels in the Codemod Studio',
 			(y) =>
-				buildUseJsonOption(y).option('targetPath', {
+				buildUseJsonOption(y).option('target', {
 					type: 'string',
 					description: 'Input file path',
 				}),
@@ -137,10 +137,10 @@ export const executeMainThread = async () => {
 		return Buffer.from(data);
 	};
 
-	const printer = new Printer(argv.useJson);
+	const printer = new Printer(argv.json);
 
 	const fileDownloadService = new FileDownloadService(
-		argv.useCache,
+		argv.noCache,
 		fetchBuffer,
 		() => Date.now(),
 		fs as unknown as IFs,
@@ -176,11 +176,10 @@ export const executeMainThread = async () => {
 	if (String(argv._) === 'list') {
 		try {
 			await handleListNamesAfterSyncing(
-				argv.useCache,
+				argv.noCache,
 				printer,
 				fileDownloadService,
 				tarService,
-				true,
 			);
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -200,7 +199,7 @@ export const executeMainThread = async () => {
 
 	if (String(argv._) === 'syncRegistry') {
 		await syncRegistryOperation(
-			argv.useCache,
+			argv.noCache,
 			printer,
 			fileDownloadService,
 			tarService,
@@ -238,11 +237,11 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === 'learn') {
-		const printer = new Printer(argv.useJson);
-		const targetPath = argv.target ?? argv.targetPath ?? null;
+		const printer = new Printer(argv.json);
+		const target = argv.target ?? argv.target ?? null;
 
 		try {
-			await handleLearnCliCommand(printer, targetPath);
+			await handleLearnCliCommand(printer, target);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
@@ -260,7 +259,7 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === 'login') {
-		const printer = new Printer(argv.useJson);
+		const printer = new Printer(argv.json);
 		const token = argv.token ?? null;
 
 		try {
@@ -282,7 +281,7 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === 'logout') {
-		const printer = new Printer(argv.useJson);
+		const printer = new Printer(argv.json);
 
 		try {
 			await handleLogoutCliCommand(printer);
@@ -303,12 +302,12 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === 'publish') {
-		const printer = new Printer(argv.useJson);
+		const printer = new Printer(argv.json);
 
 		try {
 			await handlePublishCliCommand(
 				printer,
-				argv.sourcePath ?? argv.source ?? process.cwd(),
+				argv.source ?? process.cwd(),
 			);
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -346,7 +345,7 @@ export const executeMainThread = async () => {
 	const codemodDownloader = new CodemodDownloader(
 		printer,
 		configurationDirectoryPath,
-		argv.useCache,
+		argv.noCache,
 		fileDownloadService,
 		tarService,
 	);
@@ -375,7 +374,7 @@ export const executeMainThread = async () => {
 };
 
 export async function syncRegistryOperation(
-	useCache: boolean,
+	disableCache: boolean,
 	printer: Printer,
 	fileDownloadService: FileDownloadService,
 	tarService: TarService,
@@ -383,7 +382,7 @@ export async function syncRegistryOperation(
 	const codemodDownloader = new CodemodDownloader(
 		printer,
 		join(homedir(), '.codemod'),
-		useCache,
+		disableCache,
 		fileDownloadService,
 		tarService,
 	);

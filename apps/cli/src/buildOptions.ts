@@ -1,18 +1,19 @@
 import { Argv } from 'yargs';
 import {
+	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_INCLUDE_PATTERNS,
+	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
-	DEFAULT_USE_CACHE,
 	DEFAULT_USE_JSON,
-	DEFAULT_USE_PRETTIER,
 } from './constants.js';
 
 export const buildUseJsonOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y.option('useJson', {
+	y.option('json', {
+		alias: 'j',
 		type: 'boolean',
 		description: 'Respond with JSON',
 		default: DEFAULT_USE_JSON,
@@ -21,10 +22,10 @@ export const buildUseJsonOption = <T extends Record<string, unknown>>(
 export const buildUseCacheOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y.option('useCache', {
+	y.option('no-cache', {
 		type: 'boolean',
-		description: 'Use cache for HTTP(S) requests',
-		default: DEFAULT_USE_CACHE,
+		description: 'Disable cache for HTTP(S) requests',
+		default: DEFAULT_NO_CACHE,
 	});
 
 export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
@@ -32,64 +33,57 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 		buildUseJsonOption(
 			y
 				.option('include', {
+					alias: 'i',
 					type: 'string',
 					array: true,
 					description: 'Glob pattern(s) for files to include',
 					default: DEFAULT_INCLUDE_PATTERNS,
 				})
 				.option('exclude', {
+					alias: 'e',
 					type: 'string',
 					array: true,
 					description: 'Glob pattern(s) for files to exclude',
 					default: DEFAULT_EXCLUDE_PATTERNS,
 				})
 				.option('target', {
+					alias: 't',
 					type: 'string',
 					description: 'Input directory path',
 				})
-				.option('targetPath', {
-					type: 'string',
-					description:
-						'(DEPRECATED by "target") Input directory path',
-				})
 				.option('source', {
+					alias: 's',
 					type: 'string',
 					description: 'Source path of the local codemod to run',
 				})
-				.option('sourcePath', {
-					type: 'string',
-					description:
-						'(DEPRECATED by "source") Source path of the local codemod to run',
-				})
-				.option('codemodEngine', {
+				.option('engine', {
 					type: 'string',
 					description:
 						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
 				})
-				.option('fileLimit', {
+				.option('limit', {
+					alias: 'f',
 					type: 'number',
 					description: 'File limit for processing',
 					default: 1000,
 				})
-				.option('usePrettier', {
+				.option('raw', {
+					alias: 'r',
 					type: 'boolean',
-					description: 'Format output with Prettier',
-					default: DEFAULT_USE_PRETTIER,
+					description: 'Disable formatting output with Prettier',
+					default: DEFAULT_DISABLE_PRETTIER,
 				})
-				.option('threadCount', {
+				.option('threads', {
+					alias: 'n',
 					type: 'number',
 					description: 'Number of worker threads',
 					default: DEFAULT_THREAD_COUNT,
 				})
-				.option('dryRun', {
+				.option('dry', {
+					alias: 'd',
 					type: 'boolean',
 					description: 'Perform a dry run',
 					default: DEFAULT_DRY_RUN,
-				})
-				.option('outputDirectoryPath', {
-					type: 'string',
-					description:
-						'(DEPRECATED, do not use) Output directory path for dry-run only',
 				})
 				.option('telemetryDisable', {
 					type: 'boolean',
