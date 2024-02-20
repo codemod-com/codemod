@@ -47,5 +47,3 @@ jscodeshift
 ### Owner
 
 [Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
