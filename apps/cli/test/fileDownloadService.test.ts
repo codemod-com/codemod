@@ -31,7 +31,7 @@ describe('FileDownloadService', function () {
 		const ifs = createFsFromVolume(volume);
 
 		const fileDownloadService = new FileDownloadService(
-			false,
+			true,
 			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
 			() => NEW_MTIME,
 			ifs,
@@ -57,7 +57,7 @@ describe('FileDownloadService', function () {
 		const ifs = createFsFromVolume(volume);
 
 		const fileDownloadService = new FileDownloadService(
-			true,
+			false,
 			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
 			() => NEW_MTIME,
 			ifs,
@@ -83,7 +83,7 @@ describe('FileDownloadService', function () {
 		const ifs = createFsFromVolume(volume);
 
 		const fileDownloadService = new FileDownloadService(
-			true,
+			false,
 			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
 			() => OLD_MTIME,
 			ifs,
