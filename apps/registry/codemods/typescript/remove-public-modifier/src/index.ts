@@ -1,4 +1,4 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
 export default function transformer(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
@@ -7,9 +7,8 @@ export default function transformer(file: FileInfo, api: API) {
 	root.find(j.ClassDeclaration).forEach((path) => {
 		path.node.body.body.forEach((member) => {
 			if (
-				(member.type === 'ClassMethod' ||
-					member.type === 'ClassProperty') &&
-				'accessibility' in member
+				(member.type === "ClassMethod" || member.type === "ClassProperty") &&
+				"accessibility" in member
 			) {
 				member.accessibility = undefined;
 			}

@@ -1,16 +1,16 @@
 import {
 	ArrowElbowDownLeft as ArrowElbowDownLeftIcon,
 	Trash as TrashIcon,
-} from '@phosphor-icons/react';
-import { type UseChatHelpers } from 'ai/react';
-import * as React from 'react';
-import Textarea from 'react-textarea-autosize';
-import Tooltip from '~/components/Tooltip/Tooltip';
-import { Button, buttonVariants } from '~/components/ui/button';
-import { useEnterSubmit } from '~/hooks/useEnterSubmit';
-import { cn } from '~/lib/utils';
+} from "@phosphor-icons/react";
+import { type UseChatHelpers } from "ai/react";
+import * as React from "react";
+import Textarea from "react-textarea-autosize";
+import Tooltip from "~/components/Tooltip/Tooltip";
+import { Button, buttonVariants } from "~/components/ui/button";
+import { useEnterSubmit } from "~/hooks/useEnterSubmit";
+import { cn } from "~/lib/utils";
 
-export interface Props extends Pick<UseChatHelpers, 'input' | 'setInput'> {
+export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
 	onSubmit: (value: string) => Promise<void>;
 	onReset: () => void;
 	isLoading: boolean;
@@ -35,7 +35,7 @@ const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
 					if (!input?.trim()) {
 						return;
 					}
-					setInput('');
+					setInput("");
 					await onSubmit(input);
 				}}
 				ref={formRef}
@@ -50,10 +50,10 @@ const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
 								}}
 								className={cn(
 									buttonVariants({
-										size: 'sm',
-										variant: 'outline',
+										size: "sm",
+										variant: "outline",
 									}),
-									'absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4',
+									"absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4",
 								)}
 							>
 								<TrashIcon />
@@ -81,13 +81,11 @@ const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
 								<Button
 									type="submit"
 									size="sm"
-									disabled={isLoading || input === ''}
+									disabled={isLoading || input === ""}
 									variant="outline"
 								>
 									<ArrowElbowDownLeftIcon />
-									<span className="sr-only">
-										Send message
-									</span>
+									<span className="sr-only">Send message</span>
 								</Button>
 							}
 							content="Send message"
@@ -99,6 +97,6 @@ const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
 	},
 );
 
-PromptForm.displayName = 'PromptForm';
+PromptForm.displayName = "PromptForm";
 
 export default PromptForm;

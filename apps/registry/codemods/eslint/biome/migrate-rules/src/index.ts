@@ -1,10 +1,10 @@
-import { sep } from 'node:path';
-import type { Filemod } from '@codemod-com/filemod';
-import { isNeitherNullNorUndefined } from '@codemod-com/utilities/functions/validationMethods';
-import { is, type Input } from 'valibot';
-import type { Configuration as BiomeConfig } from '../types/biome.js';
-import type { JSONSchemaForESLintConfigurationFiles as EslintConfig } from '../types/eslint.js';
-import type { OptionsDefinition as PrettierConfig } from '../types/prettier.js';
+import { sep } from "node:path";
+import type { Filemod } from "@codemod-com/filemod";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities/functions/validationMethods";
+import { is, type Input } from "valibot";
+import type { Configuration as BiomeConfig } from "../types/biome.js";
+import type { JSONSchemaForESLintConfigurationFiles as EslintConfig } from "../types/eslint.js";
+import type { OptionsDefinition as PrettierConfig } from "../types/prettier.js";
 import {
 	buildFormatterConfig,
 	buildLinterConfig,
@@ -12,21 +12,21 @@ import {
 	getPackageManager,
 	parseIgnoreEntries,
 	replaceKeys,
-} from './functions.js';
-import { packageJsonSchema, valibotEslintSchema } from './schemas.js';
-import type { Dependencies, Options } from './types.js';
+} from "./functions.js";
+import { packageJsonSchema, valibotEslintSchema } from "./schemas.js";
+import type { Dependencies, Options } from "./types.js";
 
 export const repomod: Filemod<Dependencies, Options> = {
 	includePatterns: [
-		'**/package.json',
-		'**/{,.}{eslintrc,eslint.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}',
-		'**/{,.}{prettierrc,prettier.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}',
-		'**/.eslintignore',
-		'**/.prettierignore',
+		"**/package.json",
+		"**/{,.}{eslintrc,eslint.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}",
+		"**/{,.}{prettierrc,prettier.config}{,.js,.json,.cjs,.mjs,.yaml,.yml}",
+		"**/.eslintignore",
+		"**/.prettierignore",
 	],
-	excludePatterns: ['**/node_modules/**'],
+	excludePatterns: ["**/node_modules/**"],
 	initializeState: async (options) => {
-		if (typeof options.input !== 'string') {
+		if (typeof options.input !== "string") {
 			return { config: null };
 		}
 
@@ -46,20 +46,19 @@ export const repomod: Filemod<Dependencies, Options> = {
 	handleFile: async (api, path, options) => {
 		const fileName = path.split(sep).at(-1);
 
-		if (fileName === 'package.json') {
+		if (fileName === "package.json") {
 			return [
 				// FIRST (!), update biome.json linter.ignore based on eslintIgnore key
 				{
-					kind: 'upsertFile',
+					kind: "upsertFile",
 					path,
 					options: {
-						biomeJsonStringContent:
-							await api.readFile('biome.json'),
+						biomeJsonStringContent: await api.readFile("biome.json"),
 					},
 				},
 				// Then, update package.json and remove all eslint-related keys
 				{
-					kind: 'upsertFile',
+					kind: "upsertFile",
 					path,
 					options,
 				},
@@ -68,14 +67,14 @@ export const repomod: Filemod<Dependencies, Options> = {
 
 		return [
 			{
-				kind: 'upsertFile',
+				kind: "upsertFile",
 				path,
 				options: {
-					biomeJsonStringContent: await api.readFile('biome.json'),
+					biomeJsonStringContent: await api.readFile("biome.json"),
 				},
 			},
 			{
-				kind: 'deleteFile',
+				kind: "deleteFile",
 				path,
 			},
 		];
@@ -98,31 +97,28 @@ export const repomod: Filemod<Dependencies, Options> = {
 			biomeJsonContent = {};
 		}
 
-		if (fileName.includes('ignore')) {
-			let key: 'linter' | 'formatter' = 'linter';
-			if (fileName.includes('prettier')) {
-				key = 'formatter';
+		if (fileName.includes("ignore")) {
+			let key: "linter" | "formatter" = "linter";
+			if (fileName.includes("prettier")) {
+				key = "formatter";
 			}
 
 			const filesToIgnore = parseIgnoreEntries(data);
 			biomeJsonContent[key] = {
 				...biomeJsonContent[key],
-				ignore: [
-					...filesToIgnore,
-					...(biomeJsonContent[key]?.ignore ?? []),
-				],
+				ignore: [...filesToIgnore, ...(biomeJsonContent[key]?.ignore ?? [])],
 			};
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: 'biome.json',
+				path: "biome.json",
 			};
 		}
 
-		if (fileName.includes('eslint')) {
+		if (fileName.includes("eslint")) {
 			if (!state?.config?.rules) {
-				return { kind: 'noop' };
+				return { kind: "noop" };
 			}
 
 			biomeJsonContent.linter = await buildLinterConfig(
@@ -132,18 +128,18 @@ export const repomod: Filemod<Dependencies, Options> = {
 			);
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: 'biome.json',
+				path: "biome.json",
 			};
 		}
 
-		if (fileName.includes('prettier')) {
+		if (fileName.includes("prettier")) {
 			let prettierConfig: PrettierConfig;
 			try {
 				prettierConfig = JSON.parse(data);
 			} catch (err) {
-				return { kind: 'noop' };
+				return { kind: "noop" };
 			}
 
 			biomeJsonContent.formatter = buildFormatterConfig(
@@ -152,22 +148,22 @@ export const repomod: Filemod<Dependencies, Options> = {
 			);
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: 'biome.json',
+				path: "biome.json",
 			};
 		}
 
-		if (fileName.includes('package.json')) {
+		if (fileName.includes("package.json")) {
 			let packageJson: Input<typeof packageJsonSchema>;
 			try {
 				const json = JSON.parse(data);
 				if (!is(packageJsonSchema, json)) {
-					return { kind: 'noop' };
+					return { kind: "noop" };
 				}
 				packageJson = json;
 			} catch (err) {
-				return { kind: 'noop' };
+				return { kind: "noop" };
 			}
 
 			// Means that we want to handle the case with eslintIgnore key in package.json here
@@ -176,7 +172,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 					!packageJson.eslintIgnore ||
 					!Array.isArray(packageJson.eslintIgnore)
 				) {
-					return { kind: 'noop' };
+					return { kind: "noop" };
 				}
 
 				biomeJsonContent.linter = {
@@ -188,9 +184,9 @@ export const repomod: Filemod<Dependencies, Options> = {
 				};
 
 				return {
-					kind: 'upsertData',
+					kind: "upsertData",
 					data: JSON.stringify(biomeJsonContent),
-					path: 'biome.json',
+					path: "biome.json",
 				};
 			}
 
@@ -198,19 +194,19 @@ export const repomod: Filemod<Dependencies, Options> = {
 
 			packageJson = replaceKeys(packageJson, {
 				eslint: `${command} @biomejs/biome lint`,
-				'--fix': '--apply',
+				"--fix": "--apply",
 				prettier: `${command} @biomejs/biome format`,
 			});
 
 			packageJson = clearDependenciesAndAddNotes(packageJson);
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				data: JSON.stringify(packageJson),
 				path,
 			};
 		}
 
-		return { kind: 'noop' };
+		return { kind: "noop" };
 	},
 };

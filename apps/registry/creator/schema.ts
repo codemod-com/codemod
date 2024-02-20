@@ -1,13 +1,13 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 const argvSchema = S.struct({
 	name: S.string,
 	engine: S.union(
-		S.literal('piranha'),
-		S.literal('jscodeshift'),
-		S.literal('ts-morph'),
-		S.literal('filemod'),
-		S.literal('recipe'),
+		S.literal("piranha"),
+		S.literal("jscodeshift"),
+		S.literal("ts-morph"),
+		S.literal("filemod"),
+		S.literal("recipe"),
 	),
 });
 

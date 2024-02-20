@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from 'axios';
+import axios, { isAxiosError } from "axios";
 
 export class AuthError extends Error {}
 
@@ -8,16 +8,16 @@ export class Auth {
 	private readonly __authHeader: string;
 	constructor(authKey: string) {
 		if (!authKey) {
-			throw new AuthError('Invalid auth key provided.');
+			throw new AuthError("Invalid auth key provided.");
 		}
 
 		this.__authHeader = `Bearer ${authKey}`;
 	}
 
-	async getOAuthToken(userId: string, provider: 'github'): Promise<string> {
+	async getOAuthToken(userId: string, provider: "github"): Promise<string> {
 		try {
 			if (!USER_ID_REGEX.test(userId)) {
-				throw new AuthError('Invalid userId.');
+				throw new AuthError("Invalid userId.");
 			}
 
 			const result = await axios.get(
@@ -32,7 +32,7 @@ export class Auth {
 			const token = result.data[0]?.token;
 
 			if (!token) {
-				throw new AuthError('Missing OAuth token');
+				throw new AuthError("Missing OAuth token");
 			}
 
 			return token;

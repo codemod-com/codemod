@@ -1,10 +1,10 @@
-import type { CaseHash } from '../../cases/types';
-import type { JobKind } from '../../jobs/types';
-import type { JobHash } from './webviewEvents';
+import type { CaseHash } from "../../cases/types";
+import type { JobKind } from "../../jobs/types";
+import type { JobHash } from "./webviewEvents";
 
 export type PanelViewProps =
 	| Readonly<{
-			kind: 'JOB';
+			kind: "JOB";
 			title: string;
 			caseHash: CaseHash;
 			jobHash: JobHash;
@@ -17,7 +17,7 @@ export type PanelViewProps =
 			reviewed: boolean;
 	  }>
 	| Readonly<{
-			kind: 'CODEMOD';
+			kind: "CODEMOD";
 			title: string;
 			description: string;
 	  }>;

@@ -1,6 +1,6 @@
-import axios, { type AxiosError } from 'axios';
-import toast from 'react-hot-toast';
-import { env } from '~/env';
+import axios, { type AxiosError } from "axios";
+import toast from "react-hot-toast";
+import { env } from "~/env";
 
 const apiClient = axios.create({
 	baseURL: env.NEXT_PUBLIC_API_URL,
@@ -9,8 +9,8 @@ const apiClient = axios.create({
 
 const errorHandler = (error: AxiosError<{ message?: string }>) => {
 	if (error.response?.status) {
-		toast.error(error.response?.data.message ?? 'Network Error', {
-			position: 'top-center',
+		toast.error(error.response?.data.message ?? "Network Error", {
+			position: "top-center",
 		});
 	}
 

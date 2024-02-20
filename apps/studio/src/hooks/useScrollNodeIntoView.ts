@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-import type React from 'react';
-import { type TreeNode } from '../components/Tree';
+import type React from "react";
+import { type TreeNode } from "../components/Tree";
 
 const useScrollNodeIntoView = () => {
 	const scrollIntoView = async (
@@ -19,7 +19,7 @@ const useScrollNodeIntoView = () => {
 		if (foundElem && treeRef.current) {
 			treeRef.current.scrollTo({
 				top: foundElem.offsetTop - treeRef.current.offsetTop,
-				behavior: 'smooth',
+				behavior: "smooth",
 			});
 		}
 	};

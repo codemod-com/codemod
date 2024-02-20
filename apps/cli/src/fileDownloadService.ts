@@ -1,11 +1,11 @@
-import type { IFs } from 'memfs';
-import type { TDataOut } from 'memfs/lib/encoding.js';
-import { PrinterBlueprint } from './printer.js';
+import type { IFs } from "memfs";
+import type { TDataOut } from "memfs/lib/encoding.js";
+import { PrinterBlueprint } from "./printer.js";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 
 const toBuffer = (tDataOut: TDataOut): Buffer => {
-	if (typeof tDataOut === 'string') {
+	if (typeof tDataOut === "string") {
 		return Buffer.from(tDataOut);
 	}
 	return tDataOut;
@@ -35,7 +35,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 
 				if (now - mtime < CACHE_EVICTION_THRESHOLD) {
 					this._printer.printConsoleMessage(
-						'info',
+						"info",
 						`Loading the cached content of "${url}".`,
 					);
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect } from "react";
 
 /**
  * Hook that detects when ctl/meta + some key is pressed
@@ -14,9 +14,9 @@ export const useCTLKey = (key: string, callback: () => void) => {
 	);
 
 	useEffect(() => {
-		document.addEventListener('keydown', keyPressCallback);
+		document.addEventListener("keydown", keyPressCallback);
 
-		return () => document.removeEventListener('keydown', keyPressCallback);
+		return () => document.removeEventListener("keydown", keyPressCallback);
 	}, [keyPressCallback]);
 };
 
@@ -25,7 +25,7 @@ export const useCTLKey = (key: string, callback: () => void) => {
  */
 export const useKey = (
 	container: HTMLElement | null,
-	key: KeyboardEvent['key'],
+	key: KeyboardEvent["key"],
 	callback: () => void,
 ) => {
 	const keyDownCallback = useCallback(
@@ -42,10 +42,10 @@ export const useKey = (
 		if (container === null) {
 			return;
 		}
-		container.addEventListener('keydown', keyDownCallback);
+		container.addEventListener("keydown", keyDownCallback);
 
 		return () => {
-			container.removeEventListener('keydown', keyDownCallback);
+			container.removeEventListener("keydown", keyDownCallback);
 		};
 	}, [keyDownCallback, container]);
 };

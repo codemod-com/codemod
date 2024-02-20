@@ -1,4 +1,4 @@
-import type { ParameterDeclaration, SourceFile } from 'ts-morph';
+import type { ParameterDeclaration, SourceFile } from "ts-morph";
 import {
 	SyntaxKind,
 	type ArrowFunction,
@@ -7,7 +7,7 @@ import {
 	type CallExpression,
 	type FunctionExpression,
 	type ImportSpecifier,
-} from 'ts-morph';
+} from "ts-morph";
 
 function addNamedImportDeclaration(
 	sourceFile: SourceFile,
@@ -65,11 +65,11 @@ function searchIdentifiers(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -93,19 +93,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -168,9 +168,7 @@ export function replaceReferences(
 	codeBlock
 		.getDescendantsOfKind(SyntaxKind.PropertyAccessExpression)
 		.forEach((accessExpr) => {
-			const accessIds = accessExpr.getChildrenOfKind(
-				SyntaxKind.Identifier,
-			);
+			const accessIds = accessExpr.getChildrenOfKind(SyntaxKind.Identifier);
 
 			const accessOwnerName = accessIds.at(0)?.getText();
 			const accessedPropertyName = accessIds.at(-1)?.getText();
@@ -180,7 +178,7 @@ export function replaceReferences(
 				accessOwnerName === callerName
 			) {
 				if (!accessedPropertyName) {
-					throw new Error('Could not find accessed identifier');
+					throw new Error("Could not find accessed identifier");
 				}
 
 				didReplace = true;
@@ -210,18 +208,15 @@ export function replaceReferences(
 			if (toReplaceFromBinding.length) {
 				didReplace = true;
 
-				const toReplaceRegex = toReplaceFromBinding.join('|');
+				const toReplaceRegex = toReplaceFromBinding.join("|");
 				bindingPattern?.replaceWithText(
 					bindingPattern
 						.getText()
 						.replace(
-							new RegExp(
-								`(,\\s*)?(${toReplaceRegex})+(\\s*,)?`,
-								'g',
-							),
+							new RegExp(`(,\\s*)?(${toReplaceRegex})+(\\s*,)?`, "g"),
 							(fullMatch, p1, _p2, p3) => {
 								if (![p1, p3].includes(fullMatch)) {
-									return '';
+									return "";
 								}
 
 								return fullMatch;
@@ -230,15 +225,11 @@ export function replaceReferences(
 				);
 
 				if (
-					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier)
-						.length
+					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier).length
 				) {
 					bindingPattern
 						.getAncestors()
-						.find(
-							(a) =>
-								a.getKind() === SyntaxKind.VariableDeclaration,
-						)
+						.find((a) => a.getKind() === SyntaxKind.VariableDeclaration)
 						?.asKindOrThrow(SyntaxKind.VariableDeclaration)
 						.remove();
 				} else {
@@ -255,7 +246,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -278,20 +269,18 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 			const [callbackBody, callbackParams] = callbackData;
 			const [, , ctxParam] = callbackParams;
 
-			const matchedValues = searchIdentifiers(callbackBody, ['fetch']);
+			const matchedValues = searchIdentifiers(callbackBody, ["fetch"]);
 
 			if (matchedValues.size) {
-				addNamedImportDeclaration(sourceFile, 'msw', 'bypass');
+				addNamedImportDeclaration(sourceFile, "msw", "bypass");
 
 				callbackBody
 					.getDescendantsOfKind(SyntaxKind.CallExpression)
 					.forEach((call) => {
 						const [caller, , param] = call.getChildren();
 
-						if (caller?.getText().includes('fetch')) {
-							param?.replaceWithText(
-								`bypass(${param.getText()})`,
-							);
+						if (caller?.getText().includes("fetch")) {
+							param?.replaceWithText(`bypass(${param.getText()})`);
 						}
 					});
 

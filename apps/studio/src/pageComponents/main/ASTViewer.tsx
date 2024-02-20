@@ -1,20 +1,20 @@
 /* eslint-disable no-nested-ternary */
-import { useCallback, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { useAppDispatch } from '~/store';
-import { executeRangeCommandOnBeforeInputThunk } from '~/store/executeRangeCommandOnBeforeInputThunk';
-import Text from '../../components/Text';
-import Tree, { type TreeNode } from '../../components/Tree';
-import useScrollNodeIntoView from '../../hooks/useScrollNodeIntoView';
-import { codemodOutputSlice } from '../../store/slices/codemodOutput';
+import { useCallback, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { useAppDispatch } from "~/store";
+import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
+import Text from "../../components/Text";
+import Tree, { type TreeNode } from "../../components/Tree";
+import useScrollNodeIntoView from "../../hooks/useScrollNodeIntoView";
+import { codemodOutputSlice } from "../../store/slices/codemodOutput";
 import {
 	selectFirstTreeNode,
 	selectSnippetsFor,
 	setOutputSelection,
-} from '../../store/slices/snippets';
+} from "../../store/slices/snippets";
 
 type Props = {
-	type: 'before' | 'after' | 'output';
+	type: "before" | "after" | "output";
 };
 
 const ASTViewer = ({ type }: Props) => {
@@ -23,9 +23,9 @@ const ASTViewer = ({ type }: Props) => {
 	const firstTreeNode = useSelector(selectFirstTreeNode(type));
 
 	const setRange =
-		type === 'before'
+		type === "before"
 			? executeRangeCommandOnBeforeInputThunk
-			: type === 'after'
+			: type === "after"
 			  ? setOutputSelection
 			  : codemodOutputSlice.actions.setSelections;
 
@@ -36,7 +36,7 @@ const ASTViewer = ({ type }: Props) => {
 		(node: TreeNode) => {
 			dispatch(
 				setRange({
-					kind: 'FIND_CLOSEST_PARENT',
+					kind: "FIND_CLOSEST_PARENT",
 					ranges: [node],
 				}),
 			);
@@ -65,8 +65,7 @@ const ASTViewer = ({ type }: Props) => {
 					/>
 				) : (
 					<Text>
-						Please provide a snippet to render an Abstract Syntax
-						Tree for it.
+						Please provide a snippet to render an Abstract Syntax Tree for it.
 					</Text>
 				)}
 			</div>

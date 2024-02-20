@@ -1,12 +1,12 @@
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { OffsetRange } from '~/schemata/offsetRangeSchemata';
-import type { RootState } from '~/store';
-import { isParsedResultFile, parseSnippet } from '~/utils/babelParser';
-import mapBabelASTToRenderableTree from '~/utils/mappers';
-import { buildRanges, type RangeCommand } from '~/utils/tree';
-import type { TreeNode } from '../../types/tree';
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { RootState } from "~/store";
+import { isParsedResultFile, parseSnippet } from "~/utils/babelParser";
+import mapBabelASTToRenderableTree from "~/utils/mappers";
+import { buildRanges, type RangeCommand } from "~/utils/tree";
+import type { TreeNode } from "../../types/tree";
 
 type CodemodOutputState = Readonly<{
 	content: string | null;
@@ -21,7 +21,7 @@ const initialState: CodemodOutputState = {
 };
 
 export const codemodOutputSlice = createSlice({
-	name: 'codemodOutput',
+	name: "codemodOutput",
 	initialState,
 	reducers: {
 		setContent(state, action: PayloadAction<string>) {

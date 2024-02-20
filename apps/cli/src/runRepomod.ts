@@ -1,5 +1,5 @@
-import { createHash } from 'node:crypto';
-import { basename, dirname, join } from 'node:path';
+import { createHash } from "node:crypto";
+import { basename, dirname, join } from "node:path";
 import {
 	buildApi,
 	CallbackService,
@@ -10,23 +10,23 @@ import {
 	PathHashDigest,
 	UnifiedEntry,
 	UnifiedFileSystem,
-} from '@codemod-com/filemod';
-import hastToBabelAst from '@svgr/hast-util-to-babel-ast';
-import { FileSystemAdapter, glob } from 'fast-glob';
-import jscodeshift from 'jscodeshift';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import { IFs } from 'memfs';
-import { mdxjs } from 'micromark-extension-mdxjs';
-import rehypeParse from 'rehype-parse';
-import tsmorph from 'ts-morph';
-import { unified } from 'unified';
-import { filter } from 'unist-util-filter';
-import { visit } from 'unist-util-visit';
-import { FileCommand } from './fileCommands.js';
-import { OperationMessage } from './messages.js';
-import { SafeArgumentRecord } from './safeArgumentRecord.js';
+} from "@codemod-com/filemod";
+import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
+import { FileSystemAdapter, glob } from "fast-glob";
+import jscodeshift from "jscodeshift";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
+import { toMarkdown } from "mdast-util-to-markdown";
+import { IFs } from "memfs";
+import { mdxjs } from "micromark-extension-mdxjs";
+import rehypeParse from "rehype-parse";
+import tsmorph from "ts-morph";
+import { unified } from "unified";
+import { filter } from "unist-util-filter";
+import { visit } from "unist-util-visit";
+import { FileCommand } from "./fileCommands.js";
+import { OperationMessage } from "./messages.js";
+import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 
 const parseMdx = (data: string) =>
 	fromMarkdown(data, {
@@ -63,23 +63,21 @@ export const runRepomod = async (
 	currentWorkingDirectory: string,
 ): Promise<readonly FileCommand[]> => {
 	const buildPathHashDigest = (path: string) =>
-		createHash('ripemd160')
-			.update(path)
-			.digest('base64url') as PathHashDigest;
+		createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
 
 	const getUnifiedEntry = async (path: string): Promise<UnifiedEntry> => {
 		const stat = await fileSystem.promises.stat(path);
 
 		if (stat.isDirectory()) {
 			return {
-				kind: 'directory',
+				kind: "directory",
 				path,
 			};
 		}
 
 		if (stat.isFile()) {
 			return {
-				kind: 'file',
+				kind: "file",
 				path,
 			};
 		}
@@ -105,31 +103,31 @@ export const runRepomod = async (
 		});
 
 		return entries.map((entry) => {
-			if (typeof entry === 'string' || !('isDirectory' in entry)) {
-				throw new Error('Entry can neither be a string or a Buffer');
+			if (typeof entry === "string" || !("isDirectory" in entry)) {
+				throw new Error("Entry can neither be a string or a Buffer");
 			}
 
 			if (entry.isDirectory()) {
 				return {
-					kind: 'directory' as const,
+					kind: "directory" as const,
 					path: join(path, entry.name.toString()),
 				};
 			}
 
 			if (entry.isFile()) {
 				return {
-					kind: 'file' as const,
+					kind: "file" as const,
 					path: join(path, entry.name.toString()),
 				};
 			}
 
-			throw new Error('The entry is neither directory not file');
+			throw new Error("The entry is neither directory not file");
 		});
 	};
 
 	const readFile = async (path: string): Promise<string> => {
 		const data = await fileSystem.promises.readFile(path, {
-			encoding: 'utf8',
+			encoding: "utf8",
 		});
 
 		return data.toString();
@@ -174,35 +172,32 @@ export const runRepomod = async (
 
 	for (const path of filemod.includePatterns ?? []) {
 		totalPathHashDigests.add(
-			createHash('ripemd160').update(path).digest('base64url'),
+			createHash("ripemd160").update(path).digest("base64url"),
 		);
 	}
 
 	const callbackService: CallbackService = {
 		onCommandExecuted: (command) => {
-			if (
-				command.kind !== 'upsertData' &&
-				command.kind !== 'deleteFile'
-			) {
+			if (command.kind !== "upsertData" && command.kind !== "deleteFile") {
 				return;
 			}
 
-			const hashDigest = createHash('ripemd160')
+			const hashDigest = createHash("ripemd160")
 				.update(command.path)
-				.digest('base64url');
+				.digest("base64url");
 
 			processedPathHashDigests.add(hashDigest);
 			totalPathHashDigests.add(hashDigest);
 
 			onPrinterMessage({
-				kind: 'progress',
+				kind: "progress",
 				processedFileNumber: processedPathHashDigests.size,
 				totalFileNumber: totalPathHashDigests.size,
 			});
 		},
 		onError: (path, message) => {
 			onPrinterMessage({
-				kind: 'error',
+				kind: "error",
 				path,
 				message,
 			});
@@ -221,20 +216,20 @@ export const runRepomod = async (
 
 	return Promise.all(
 		externalFileCommands.map(async (externalFileCommand) => {
-			if (externalFileCommand.kind === 'upsertFile') {
+			if (externalFileCommand.kind === "upsertFile") {
 				try {
 					await fileSystem.promises.stat(externalFileCommand.path);
 
 					return {
-						kind: 'updateFile',
+						kind: "updateFile",
 						oldPath: externalFileCommand.path,
-						oldData: '', // TODO get the old data from the filemod
+						oldData: "", // TODO get the old data from the filemod
 						newData: externalFileCommand.data,
 						formatWithPrettier: !disablePrettier, // TODO have a list of extensions that prettier supports
 					};
 				} catch (error) {
 					return {
-						kind: 'createFile',
+						kind: "createFile",
 						newPath: externalFileCommand.path,
 						newData: externalFileCommand.data,
 						formatWithPrettier: !disablePrettier,
@@ -243,7 +238,7 @@ export const runRepomod = async (
 			}
 
 			return {
-				kind: 'deleteFile',
+				kind: "deleteFile",
 				oldPath: externalFileCommand.path,
 			};
 		}),

@@ -1,11 +1,11 @@
-import * as S from '@effect/schema/Schema';
-import { Arguments } from './schemata/argumentsSchema.js';
+import * as S from "@effect/schema/Schema";
+import { Arguments } from "./schemata/argumentsSchema.js";
 
 export const javaScriptCodemodEngineSchema = S.union(
-	S.literal('jscodeshift'),
-	S.literal('repomod-engine'),
-	S.literal('filemod'),
-	S.literal('ts-morph'),
+	S.literal("jscodeshift"),
+	S.literal("repomod-engine"),
+	S.literal("filemod"),
+	S.literal("ts-morph"),
 );
 
 export type JavaScriptCodemodEngine = S.To<
@@ -14,15 +14,15 @@ export type JavaScriptCodemodEngine = S.To<
 
 export type Codemod =
 	| Readonly<{
-			source: 'registry';
+			source: "registry";
 			name: string;
-			engine: 'recipe';
+			engine: "recipe";
 			directoryPath: string;
 			codemods: ReadonlyArray<Codemod>;
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: 'registry';
+			source: "registry";
 			name: string;
 			engine: JavaScriptCodemodEngine;
 			directoryPath: string;
@@ -30,14 +30,14 @@ export type Codemod =
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: 'registry';
+			source: "registry";
 			name: string;
-			engine: 'piranha';
+			engine: "piranha";
 			directoryPath: string;
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: 'fileSystem';
+			source: "fileSystem";
 			engine: JavaScriptCodemodEngine;
 			indexPath: string;
 	  }>;

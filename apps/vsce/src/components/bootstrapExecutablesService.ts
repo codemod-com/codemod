@@ -1,7 +1,7 @@
-import { FileSystem, Uri, window } from 'vscode';
-import { Telemetry } from '../telemetry/telemetry';
-import { DownloadService, ForbiddenRequestError } from './downloadService';
-import { MessageBus, MessageKind } from './messageBus';
+import { FileSystem, Uri, window } from "vscode";
+import { Telemetry } from "../telemetry/telemetry";
+import { DownloadService, ForbiddenRequestError } from "./downloadService";
+import { MessageBus, MessageKind } from "./messageBus";
 
 // aka bootstrap engines
 export class BootstrapExecutablesService {
@@ -34,7 +34,7 @@ export class BootstrapExecutablesService {
 			window.showErrorMessage(message);
 
 			this.__telemetryService.sendError({
-				kind: 'failedToBootstrapEngines',
+				kind: "failedToBootstrapEngines",
 				message,
 			});
 		}
@@ -42,11 +42,11 @@ export class BootstrapExecutablesService {
 
 	private async __bootstrapCodemodEngineRustExecutableUri(): Promise<Uri | null> {
 		const platform =
-			process.platform === 'darwin'
-				? 'macos'
+			process.platform === "darwin"
+				? "macos"
 				: encodeURIComponent(process.platform);
 
-		if (platform === 'win32') {
+		if (platform === "win32") {
 			return null;
 		}
 
@@ -61,16 +61,14 @@ export class BootstrapExecutablesService {
 			await this.__downloadService.downloadFileIfNeeded(
 				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
 				executableUri,
-				'755',
+				"755",
 			);
 		} catch (error) {
 			if (!(error instanceof ForbiddenRequestError)) {
 				throw error;
 			}
 
-			throw new Error(
-				`Your platform (${process.platform}) is not supported.`,
-			);
+			throw new Error(`Your platform (${process.platform}) is not supported.`);
 		}
 
 		return executableUri;

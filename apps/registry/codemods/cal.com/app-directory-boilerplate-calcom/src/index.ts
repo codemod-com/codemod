@@ -1,7 +1,7 @@
-import { format, parse, sep } from 'node:path';
-import type { Filemod, HandleData, HandleFile } from '@codemod-com/filemod';
-import type { Identifier, SourceFile } from 'ts-morph';
-import tsmorph, { Node, SyntaxKind } from 'ts-morph';
+import { format, parse, sep } from "node:path";
+import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
+import type { Identifier, SourceFile } from "ts-morph";
+import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
@@ -9,18 +9,18 @@ type Dependencies = Readonly<{
 }>;
 
 const removeLeadingLineBreaks = (input: string): string => {
-	return input.replace(/^\n+/, '');
+	return input.replace(/^\n+/, "");
 };
 
 const enum FilePurpose {
-	ORIGINAL_PAGE = 'ORIGINAL_PAGE',
+	ORIGINAL_PAGE = "ORIGINAL_PAGE",
 	// route directories
-	ROUTE_PAGE = 'ROUTE_PAGE',
+	ROUTE_PAGE = "ROUTE_PAGE",
 }
 
 const map = new Map([
-	[FilePurpose.ORIGINAL_PAGE, ''],
-	[FilePurpose.ROUTE_PAGE, ''],
+	[FilePurpose.ORIGINAL_PAGE, ""],
+	[FilePurpose.ROUTE_PAGE, ""],
 ]);
 
 type State = Record<string, never>;
@@ -42,13 +42,13 @@ const addUseClientStatement = (
 		},
 	});
 
-	const sourceFile = project.createSourceFile(oldPath ?? '', oldData);
+	const sourceFile = project.createSourceFile(oldPath ?? "", oldData);
 
 	const hasUseClient = sourceFile
 		.getDescendantsOfKind(SyntaxKind.StringLiteral)
 		.some((node) => {
 			const literal = node.getLiteralText();
-			return literal === 'use client';
+			return literal === "use client";
 		});
 
 	if (!hasUseClient) {
@@ -56,20 +56,20 @@ const addUseClientStatement = (
 	}
 
 	return {
-		kind: 'upsertData',
+		kind: "upsertData",
 		path: oldPath,
 		data: sourceFile.getFullText(),
 	};
 };
 
 const ROUTE_SEGMENT_CONFIG_OPTIONS = [
-	'dynamic',
-	'dynamicParams',
-	'revalidate',
-	'fetchCache',
-	'runtime',
-	'preferredRegion',
-	'maxDuration',
+	"dynamic",
+	"dynamicParams",
+	"revalidate",
+	"fetchCache",
+	"runtime",
+	"preferredRegion",
+	"maxDuration",
 ];
 
 const getAncestorByDeclaration = (declarationNode: Node): Node | null => {
@@ -93,9 +93,8 @@ const getAncestorByDeclaration = (declarationNode: Node): Node | null => {
 		ancestor = declarationNode.getParent()?.getParent() ?? null;
 	} else if (Node.isBindingElement(declarationNode)) {
 		ancestor =
-			declarationNode.getFirstAncestorByKind(
-				SyntaxKind.VariableStatement,
-			) ?? null;
+			declarationNode.getFirstAncestorByKind(SyntaxKind.VariableStatement) ??
+			null;
 	}
 
 	return ancestor;
@@ -134,8 +133,7 @@ const getDependenciesForIdentifiers = (
 			return;
 		}
 
-		const [firstDeclaration] =
-			identifier.getSymbol()?.getDeclarations() ?? [];
+		const [firstDeclaration] = identifier.getSymbol()?.getDeclarations() ?? [];
 
 		const localSourceFile = identifier.getFirstAncestorByKind(
 			SyntaxKind.SourceFile,
@@ -191,10 +189,7 @@ const getDependenciesForIdentifiers = (
 				return (
 					!Node.isBindingElement(parent) &&
 					!Node.isPropertyAssignment(parent) &&
-					!(
-						Node.isPropertyAccessExpression(parent) &&
-						i.getChildIndex() !== 0
-					)
+					!(Node.isPropertyAccessExpression(parent) && i.getChildIndex() !== 0)
 				);
 			});
 
@@ -209,11 +204,11 @@ const getDependenciesForIdentifiers = (
 };
 
 const getRouteSegmentConfig = (sourceFile: SourceFile): string => {
-	let nextjsConfig = '';
+	let nextjsConfig = "";
 
 	sourceFile.getVariableStatements().forEach((statement) => {
 		statement.getDeclarations().forEach((declaration) => {
-			const id = declaration.getName() ?? '';
+			const id = declaration.getName() ?? "";
 
 			if (
 				declaration.hasExportKeyword() &&
@@ -228,15 +223,14 @@ const getRouteSegmentConfig = (sourceFile: SourceFile): string => {
 };
 
 const getServerSideDataHookWithDeps = (sourceFile: SourceFile) => {
-	let dataHooksWithDeps = '';
+	let dataHooksWithDeps = "";
 
 	const getDataAF = sourceFile
 		.getDescendantsOfKind(SyntaxKind.ArrowFunction)
 		.find((AF) => {
 			const parent = AF.getParent();
 			return (
-				Node.isVariableDeclaration(parent) &&
-				parent.getName() === 'getData'
+				Node.isVariableDeclaration(parent) && parent.getName() === "getData"
 			);
 		});
 
@@ -250,11 +244,10 @@ const getServerSideDataHookWithDeps = (sourceFile: SourceFile) => {
 
 	const dependencies = getDependenciesForIdentifiers(identifiers);
 
-	dataHooksWithDeps += Object.values(dependencies).reverse().join('\n');
+	dataHooksWithDeps += Object.values(dependencies).reverse().join("\n");
 	dataHooksWithDeps += `${
-		getDataAF
-			.getFirstAncestorByKind(SyntaxKind.VariableStatement)
-			?.getText() ?? ''
+		getDataAF.getFirstAncestorByKind(SyntaxKind.VariableStatement)?.getText() ??
+		""
 	} \n`;
 
 	return dataHooksWithDeps;
@@ -288,12 +281,12 @@ const buildPageFileData = (
 		});
 
 		const oldPath =
-			typeof options.oldPath === 'string' ? options.oldPath : null;
+			typeof options.oldPath === "string" ? options.oldPath : null;
 
-		const sourceFile = project.createSourceFile(path ?? '', input);
+		const sourceFile = project.createSourceFile(path ?? "", input);
 
 		const legacyPageSourceFile = project.createSourceFile(
-			oldPath ?? '',
+			oldPath ?? "",
 			legacyPageData,
 		);
 
@@ -316,14 +309,10 @@ const buildPageFileData = (
 				return;
 			}
 
-			const id = fn.getName() ?? '';
+			const id = fn.getName() ?? "";
 
 			if (
-				[
-					'getStaticProps',
-					'getServerSideProps',
-					'getStaticPaths',
-				].includes(id)
+				["getStaticProps", "getServerSideProps", "getStaticPaths"].includes(id)
 			) {
 				fn.setIsExported(false);
 			}
@@ -331,14 +320,12 @@ const buildPageFileData = (
 
 		sourceFile.getVariableStatements().forEach((statement) => {
 			statement.getDeclarations().forEach((declaration) => {
-				const id = declaration.getName() ?? '';
+				const id = declaration.getName() ?? "";
 
 				if (
-					[
-						'getStaticProps',
-						'getServerSideProps',
-						'getStaticPaths',
-					].includes(id) &&
+					["getStaticProps", "getServerSideProps", "getStaticPaths"].includes(
+						id,
+					) &&
 					declaration.hasExportKeyword()
 				) {
 					statement.setIsExported(false);
@@ -350,35 +337,32 @@ const buildPageFileData = (
 			.getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
 			.filter(
 				(jsxOpeningElement) =>
-					jsxOpeningElement.getTagNameNode().getText() === 'Head',
+					jsxOpeningElement.getTagNameNode().getText() === "Head",
 			)
 			.map((declaration) => {
-				return declaration.getFirstAncestorByKind(
-					SyntaxKind.JsxElement,
-				);
+				return declaration.getFirstAncestorByKind(SyntaxKind.JsxElement);
 			})
 			.forEach((jsxElement) => {
 				const parenthesizedExpressionParent =
-					jsxElement?.getParentIfKind(
-						SyntaxKind.ParenthesizedExpression,
-					) ?? null;
+					jsxElement?.getParentIfKind(SyntaxKind.ParenthesizedExpression) ??
+					null;
 
 				if (parenthesizedExpressionParent !== null) {
-					parenthesizedExpressionParent.replaceWithText('null');
+					parenthesizedExpressionParent.replaceWithText("null");
 
 					return;
 				}
 
-				jsxElement?.replaceWithText('');
+				jsxElement?.replaceWithText("");
 			});
 
 		if (filePurpose === FilePurpose.ROUTE_PAGE) {
 			sourceFile.getImportDeclarations().forEach((declaration) => {
 				const moduleSpecifier = declaration.getModuleSpecifierValue();
 
-				if (moduleSpecifier.startsWith('./')) {
+				if (moduleSpecifier.startsWith("./")) {
 					declaration.setModuleSpecifier(`.${moduleSpecifier}`);
-				} else if (moduleSpecifier.startsWith('../')) {
+				} else if (moduleSpecifier.startsWith("../")) {
 					declaration.setModuleSpecifier(`../${moduleSpecifier}`);
 				}
 			});
@@ -388,23 +372,23 @@ const buildPageFileData = (
 	};
 
 	return {
-		kind: 'upsertData',
+		kind: "upsertData",
 		path,
 		data: rewriteWithTsMorph(
-			String(options.oldData ?? ''),
-			String(options.legacyPageData ?? ''),
+			String(options.oldData ?? ""),
+			String(options.legacyPageData ?? ""),
 		),
 	};
 };
 
-const SERVER_SIDE_DATA_HOOKS_NAMES = ['getStaticProps', 'getServerSideProps'];
+const SERVER_SIDE_DATA_HOOKS_NAMES = ["getStaticProps", "getServerSideProps"];
 
 const usesServerSideData = (sourceFile: SourceFile) => {
 	return (
 		sourceFile
 			.getFunctions()
 			.some((fn) =>
-				SERVER_SIDE_DATA_HOOKS_NAMES.includes(fn.getName() ?? ''),
+				SERVER_SIDE_DATA_HOOKS_NAMES.includes(fn.getName() ?? ""),
 			) ||
 		sourceFile
 			.getVariableStatements()
@@ -412,9 +396,7 @@ const usesServerSideData = (sourceFile: SourceFile) => {
 				statement
 					.getDeclarations()
 					.some((declaration) =>
-						SERVER_SIDE_DATA_HOOKS_NAMES.includes(
-							declaration.getName() ?? '',
-						),
+						SERVER_SIDE_DATA_HOOKS_NAMES.includes(declaration.getName() ?? ""),
 					),
 			)
 	);
@@ -425,8 +407,7 @@ const usesLayout = (sourceFile: SourceFile) => {
 		.getImportDeclarations()
 		.some(
 			(importDeclaration) =>
-				importDeclaration.getNamedImports()[0]?.getName() ===
-				'getLayout',
+				importDeclaration.getNamedImports()[0]?.getName() === "getLayout",
 		);
 };
 
@@ -435,7 +416,7 @@ const getPageContent = (
 	usesLayout: boolean,
 	nestedPathWithoutExtension: string,
 ) => {
-	if (newPagePath.endsWith('embed')) {
+	if (newPagePath.endsWith("embed")) {
 		return `
 import type { Params } from "next/dist/shared/lib/router/utils/route-matcher";
 import { getData } from "../page";
@@ -452,7 +433,7 @@ const Page = ({ params }: PageProps) => {
 	
 export default Page;`;
 	}
-	if (newPagePath.includes('(individual-page-wrapper')) {
+	if (newPagePath.includes("(individual-page-wrapper")) {
 		return `
 import OldPage from "@pages/${nestedPathWithoutExtension}";
 import { _generateMetadata } from "app/_utils";
@@ -464,7 +445,7 @@ import { buildLegacyCtx } from "@lib/buildLegacyCtx";
 ${
 	usesLayout
 		? 'import { getLayout } from "@calcom/features/MainLayoutAppDir";'
-		: ''
+		: ""
 }
 
 export const generateMetadata = async () => await _generateMetadata(() => "", () => "");
@@ -481,9 +462,7 @@ const Page = async ({ params }: PageProps) => {
 	const props = await getData(legacyCtx);
 	
 	return (
-		<PageWrapper ${
-			usesLayout ? 'getLayout={getLayout} ' : ''
-		} requiresLicense={false} nonce={nonce} themeBasis={null}>
+		<PageWrapper ${usesLayout ? "getLayout={getLayout} " : ""} requiresLicense={false} nonce={nonce} themeBasis={null}>
 			<OldPage {...props} />
 		</PageWrapper>
 	);
@@ -508,125 +487,123 @@ const getNewPagePath = (
 	usesLayout: boolean,
 ) => {
 	const newDirArr = directoryNames.map((name) => {
-		if (name !== 'pages') {
+		if (name !== "pages") {
 			return name;
 		}
 
 		if (usesServerSideData) {
-			return 'app/future/(individual-page-wrapper)';
+			return "app/future/(individual-page-wrapper)";
 		}
 
 		if (usesLayout) {
-			return 'app/future/(shared-page-wrapper)/(layout)';
+			return "app/future/(shared-page-wrapper)/(layout)";
 		}
 
-		return 'app/future/(shared-page-wrapper)/(no-layout)';
+		return "app/future/(shared-page-wrapper)/(no-layout)";
 	});
 
-	if (fileName !== 'index') {
+	if (fileName !== "index") {
 		newDirArr.push(fileName);
 	}
 
 	return newDirArr.join(sep);
 };
 
-const handleFile: Filemod<
-	Dependencies,
-	Record<string, never>
->['handleFile'] = async (api, path, options) => {
-	const parsedPath = parse(path);
-	const directoryNames = parsedPath.dir.split(sep);
-	const endsWithPages =
-		directoryNames.length > 0 &&
-		directoryNames.lastIndexOf('pages') === directoryNames.length - 1;
+const handleFile: Filemod<Dependencies, Record<string, never>>["handleFile"] =
+	async (api, path, options) => {
+		const parsedPath = parse(path);
+		const directoryNames = parsedPath.dir.split(sep);
+		const endsWithPages =
+			directoryNames.length > 0 &&
+			directoryNames.lastIndexOf("pages") === directoryNames.length - 1;
 
-	const nameIsIndex = parsedPath.name === 'index';
+		const nameIsIndex = parsedPath.name === "index";
 
-	if (endsWithPages && nameIsIndex) {
+		if (endsWithPages && nameIsIndex) {
+			return [];
+		}
+
+		const oldData = await api.readFile(path);
+
+		if (!endsWithPages) {
+			const project = new tsmorph.Project({
+				useInMemoryFileSystem: true,
+				skipFileDependencyResolution: true,
+				compilerOptions: {
+					allowJs: true,
+				},
+			});
+
+			const sourceFile = project.createSourceFile(path ?? "", oldData);
+
+			const pageUsesServerSideData = usesServerSideData(sourceFile);
+			const pageUsesLayout = usesLayout(sourceFile);
+
+			const newPagePath = getNewPagePath(
+				directoryNames,
+				parsedPath.name,
+				pageUsesServerSideData,
+				pageUsesLayout,
+			);
+
+			const nestedPathWithoutExtension = `${
+				parsedPath.dir.split("/pages/")[1] ?? ""
+			}/${parsedPath.name}`;
+
+			const pageContent = getPageContent(
+				newPagePath,
+				pageUsesLayout,
+				nestedPathWithoutExtension,
+			);
+
+			const commands: FileCommand[] = [
+				{
+					kind: "upsertFile",
+					path: format({
+						root: parsedPath.root,
+						dir: newPagePath,
+						ext: parsedPath.ext,
+						name: "page",
+					}),
+					options: {
+						...options,
+						filePurpose: FilePurpose.ROUTE_PAGE,
+						oldPath: path,
+						oldData: removeLeadingLineBreaks(pageContent),
+						legacyPageData: oldData,
+					},
+				},
+				{
+					kind: "upsertFile",
+					path: format({
+						root: parsedPath.root,
+						dir: parsedPath.dir,
+						ext: parsedPath.ext,
+						name: parsedPath.name,
+					}),
+					options: {
+						...options,
+						filePurpose: FilePurpose.ORIGINAL_PAGE,
+						oldPath: path,
+						oldData,
+					},
+				},
+			];
+
+			return commands;
+		}
+
+		if (parsedPath.name === "_app" || parsedPath.name === "_document") {
+			return [
+				{
+					kind: "deleteFile",
+					path,
+				},
+			];
+		}
+
 		return [];
-	}
-
-	const oldData = await api.readFile(path);
-
-	if (!endsWithPages) {
-		const project = new tsmorph.Project({
-			useInMemoryFileSystem: true,
-			skipFileDependencyResolution: true,
-			compilerOptions: {
-				allowJs: true,
-			},
-		});
-
-		const sourceFile = project.createSourceFile(path ?? '', oldData);
-
-		const pageUsesServerSideData = usesServerSideData(sourceFile);
-		const pageUsesLayout = usesLayout(sourceFile);
-
-		const newPagePath = getNewPagePath(
-			directoryNames,
-			parsedPath.name,
-			pageUsesServerSideData,
-			pageUsesLayout,
-		);
-
-		const nestedPathWithoutExtension = `${
-			parsedPath.dir.split('/pages/')[1] ?? ''
-		}/${parsedPath.name}`;
-
-		const pageContent = getPageContent(
-			newPagePath,
-			pageUsesLayout,
-			nestedPathWithoutExtension,
-		);
-
-		const commands: FileCommand[] = [
-			{
-				kind: 'upsertFile',
-				path: format({
-					root: parsedPath.root,
-					dir: newPagePath,
-					ext: parsedPath.ext,
-					name: 'page',
-				}),
-				options: {
-					...options,
-					filePurpose: FilePurpose.ROUTE_PAGE,
-					oldPath: path,
-					oldData: removeLeadingLineBreaks(pageContent),
-					legacyPageData: oldData,
-				},
-			},
-			{
-				kind: 'upsertFile',
-				path: format({
-					root: parsedPath.root,
-					dir: parsedPath.dir,
-					ext: parsedPath.ext,
-					name: parsedPath.name,
-				}),
-				options: {
-					...options,
-					filePurpose: FilePurpose.ORIGINAL_PAGE,
-					oldPath: path,
-					oldData,
-				},
-			},
-		];
-
-		return commands;
-	}
-
-	if (parsedPath.name === '_app' || parsedPath.name === '_document') {
-		return [
-			{
-				kind: 'deleteFile',
-				path,
-			},
-		];
-	}
-
-	return [];
-};
+	};
 
 const handleData: HandleData<Dependencies, State> = async (
 	api,
@@ -639,7 +616,7 @@ const handleData: HandleData<Dependencies, State> = async (
 
 		if (filePurpose === null) {
 			return {
-				kind: 'noop',
+				kind: "noop",
 			};
 		}
 
@@ -647,7 +624,7 @@ const handleData: HandleData<Dependencies, State> = async (
 
 		if (content === null) {
 			return {
-				kind: 'noop',
+				kind: "noop",
 			};
 		}
 
@@ -667,20 +644,20 @@ const handleData: HandleData<Dependencies, State> = async (
 		}
 
 		return {
-			kind: 'upsertData',
+			kind: "upsertData",
 			path,
 			data: content,
 		};
 	} catch (error) {
 		return {
-			kind: 'noop',
+			kind: "noop",
 		};
 	}
 };
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/pages/**/*.{js,jsx,ts,tsx}'],
-	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	includePatterns: ["**/pages/**/*.{js,jsx,ts,tsx}"],
+	excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
 	handleFile,
 	handleData,
 };

@@ -1,11 +1,11 @@
-import assert from 'node:assert/strict';
-import { buildApi, trimLicense } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert/strict";
+import { buildApi, trimLicense } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('react-router v4 hash-router', function () {
-	it('should replace Router component with HashRouter, add HashRouter import', async function () {
+describe("react-router v4 hash-router", function () {
+	it("should replace Router component with HashRouter, add HashRouter import", async function () {
 		const input = `
 		import { Router, hashHistory } from 'react-router';
 		const MyApp = () => (
@@ -31,17 +31,17 @@ describe('react-router v4 hash-router', function () {
 		);
 		`;
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: trimLicense(input),
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'), {
-			quote: 'single',
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
 		});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			trimLicense(output).replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			trimLicense(output).replace(/\W/gm, ""),
 		);
 	});
 });

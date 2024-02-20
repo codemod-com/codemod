@@ -1,20 +1,20 @@
-import { useSelector } from 'react-redux';
-import { selectFirstTreeNode } from '~/store/slices/snippets';
-import Panel from '../../../components/Panel';
-import Text from '../../../components/Text';
-import useFeatureFlags from '../../../hooks/useFeatureFlags';
-import ParentNodesSelector from '../ParentNodesSelector';
-import GeneratedOutput from './GeneratedOutput';
-import NodeSelectorTreeContainer from './NodeSelectorTreeContainer';
-import NodeSelectorTreeContainerCheckboxes from './NodeSelectorTreeContainerCheckboxes';
-import NodeTreeValues from './NodeTreeValues';
-import SelectionShowCase from './SelectionShowCase';
-import useUpdateCFSStateEffect from './useCFS';
+import { useSelector } from "react-redux";
+import { selectFirstTreeNode } from "~/store/slices/snippets";
+import Panel from "../../../components/Panel";
+import Text from "../../../components/Text";
+import useFeatureFlags from "../../../hooks/useFeatureFlags";
+import ParentNodesSelector from "../ParentNodesSelector";
+import GeneratedOutput from "./GeneratedOutput";
+import NodeSelectorTreeContainer from "./NodeSelectorTreeContainer";
+import NodeSelectorTreeContainerCheckboxes from "./NodeSelectorTreeContainerCheckboxes";
+import NodeTreeValues from "./NodeTreeValues";
+import SelectionShowCase from "./SelectionShowCase";
+import useUpdateCFSStateEffect from "./useCFS";
 
 const CFSContent = () => {
 	const features = useFeatureFlags();
-	const showCheckboxes = features.includes('cfrs-checkbox');
-	const firstTreeNode = useSelector(selectFirstTreeNode('before'));
+	const showCheckboxes = features.includes("cfrs-checkbox");
+	const firstTreeNode = useSelector(selectFirstTreeNode("before"));
 
 	useUpdateCFSStateEffect();
 

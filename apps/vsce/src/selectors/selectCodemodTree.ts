@@ -1,29 +1,29 @@
-import { join, relative, sep } from 'node:path';
-import * as T from 'fp-ts/These';
-import * as t from 'io-ts';
-import { CodemodEntry, PrivateCodemodEntry } from '../codemods/types';
-import { RootState } from '../data';
-import { CodemodHash } from '../packageJsonAnalyzer/types';
-import { buildHash, capitalize } from '../utilities';
+import { join, relative, sep } from "node:path";
+import * as T from "fp-ts/These";
+import * as t from "io-ts";
+import { CodemodEntry, PrivateCodemodEntry } from "../codemods/types";
+import { RootState } from "../data";
+import { CodemodHash } from "../packageJsonAnalyzer/types";
+import { buildHash, capitalize } from "../utilities";
 
 const codemodComCertifiedCodemods = [
-	'next/13/app-directory-boilerplate',
-	'next/13/built-in-next-font',
-	'next/13/comment-deletable-files',
-	'next/13/move-css-in-js-styles',
-	'next/13/new-image-experimental',
-	'next/13/new-link',
-	'next/13/next-image-to-legacy-image',
-	'next/13/remove-get-static-props',
-	'next/13/remove-next-export',
-	'next/13/replace-next-head',
-	'next/13/replace-next-head-v2',
-	'next/13/replace-next-router',
-	'next/13/upsert-use-client-directive',
-	'next/13/replace-next-head-repomod',
-	'next/13/app-router',
-	'next/13/app-router-recipe',
-	'next/13/replace-api-routes',
+	"next/13/app-directory-boilerplate",
+	"next/13/built-in-next-font",
+	"next/13/comment-deletable-files",
+	"next/13/move-css-in-js-styles",
+	"next/13/new-image-experimental",
+	"next/13/new-link",
+	"next/13/next-image-to-legacy-image",
+	"next/13/remove-get-static-props",
+	"next/13/remove-next-export",
+	"next/13/replace-next-head",
+	"next/13/replace-next-head-v2",
+	"next/13/replace-next-router",
+	"next/13/upsert-use-client-directive",
+	"next/13/replace-next-head-repomod",
+	"next/13/app-router",
+	"next/13/app-router-recipe",
+	"next/13/replace-api-routes",
 ];
 
 interface CodemodNodeHashDigestBrand {
@@ -34,7 +34,7 @@ export const codemodNodeHashDigestCodec = t.brand(
 	t.string,
 	(hashDigest): hashDigest is t.Branded<string, CodemodNodeHashDigestBrand> =>
 		hashDigest.length > 0,
-	'__CodemodNodeHashDigest',
+	"__CodemodNodeHashDigest",
 );
 
 export type CodemodNodeHashDigest = t.TypeOf<typeof codemodNodeHashDigestCodec>;
@@ -51,22 +51,22 @@ export type NodeDatum = Readonly<{
 
 const buildCodemodTitle = (name: string): string => {
 	return name
-		.split('-')
+		.split("-")
 		.map((word) => capitalize(word))
-		.join(' ');
+		.join(" ");
 };
 
 export const buildRootNode = () =>
 	({
-		hashDigest: buildHash('ROOT') as CodemodNodeHashDigest,
-		kind: 'ROOT' as const,
-		label: '',
+		hashDigest: buildHash("ROOT") as CodemodNodeHashDigest,
+		kind: "ROOT" as const,
+		label: "",
 	}) as const;
 
 export const buildDirectoryNode = (name: string, path: string) =>
 	({
-		hashDigest: buildHash([path, name].join('_')) as CodemodNodeHashDigest,
-		kind: 'DIRECTORY' as const,
+		hashDigest: buildHash([path, name].join("_")) as CodemodNodeHashDigest,
+		kind: "DIRECTORY" as const,
 		label: name,
 	}) as const;
 
@@ -96,7 +96,7 @@ export const buildCodemodNode = (
 	args: ReadonlyArray<CodemodArgumentWithValue>,
 ) => {
 	return {
-		kind: 'CODEMOD' as const,
+		kind: "CODEMOD" as const,
 		name: codemod.name,
 		isPrivate,
 		hashDigest: codemod.hashDigest as CodemodNodeHashDigest,
@@ -104,13 +104,11 @@ export const buildCodemodNode = (
 		executionPath: T.right(executionPath),
 		queued: queued,
 		icon: isPrivate
-			? 'private'
+			? "private"
 			: codemodComCertifiedCodemods.includes(codemod.name)
-			  ? 'certified'
-			  : 'community',
-		permalink: isPrivate
-			? (codemod as PrivateCodemodEntry).permalink
-			: null,
+			  ? "certified"
+			  : "community",
+		permalink: isPrivate ? (codemod as PrivateCodemodEntry).permalink : null,
 		args,
 	} as const;
 };
@@ -133,12 +131,11 @@ export const selectPrivateCodemods = (
 		const { name, hashDigest } = codemod;
 		const { executionPaths } = state.codemodDiscoveryView;
 
-		const executionPath =
-			executionPaths[codemod.hashDigest] ?? rootPath ?? '';
+		const executionPath = executionPaths[codemod.hashDigest] ?? rootPath ?? "";
 
 		const executionRelativePath = absoluteToRelativePath(
 			executionPath,
-			rootPath ?? '',
+			rootPath ?? "",
 		);
 
 		const args = selectCodemodArguments(
@@ -156,16 +153,14 @@ export const selectPrivateCodemods = (
 		);
 
 		const argumentsExpanded =
-			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest ===
-			hashDigest;
+			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest === hashDigest;
 
 		return {
 			node,
 			depth: 0,
 			expanded: false,
 			focused:
-				state.codemodDiscoveryView.focusedCodemodHashDigest ===
-				hashDigest,
+				state.codemodDiscoveryView.focusedCodemodHashDigest === hashDigest,
 			collapsable: false,
 			reviewed: false,
 			argumentsExpanded,
@@ -174,8 +169,7 @@ export const selectPrivateCodemods = (
 
 	return {
 		nodeData,
-		focusedNodeHashDigest:
-			state.codemodDiscoveryView.focusedCodemodHashDigest,
+		focusedNodeHashDigest: state.codemodDiscoveryView.focusedCodemodHashDigest,
 		collapsedNodeHashDigests: [],
 	};
 };
@@ -211,9 +205,9 @@ export const selectCodemodTree = (
 			return;
 		}
 
-		const sep = name.indexOf('/') !== -1 ? '/' : ':';
+		const sep = name.indexOf("/") !== -1 ? "/" : ":";
 
-		const pathParts = name.split(sep).filter((part) => part !== '');
+		const pathParts = name.split(sep).filter((part) => part !== "");
 
 		if (pathParts.length === 0) {
 			return;
@@ -231,11 +225,11 @@ export const selectCodemodTree = (
 
 			if (idx === pathParts.length - 1) {
 				const executionPath =
-					executionPaths[codemod.hashDigest] ?? rootPath ?? '/';
+					executionPaths[codemod.hashDigest] ?? rootPath ?? "/";
 
 				const executionRelativePath = absoluteToRelativePath(
 					executionPath,
-					rootPath ?? '',
+					rootPath ?? "",
 				);
 
 				const args = selectCodemodArguments(
@@ -275,10 +269,7 @@ export const selectCodemodTree = (
 
 	const nodeData: NodeDatum[] = [];
 
-	const appendNodeData = (
-		hashDigest: CodemodNodeHashDigest,
-		depth: number,
-	) => {
+	const appendNodeData = (hashDigest: CodemodNodeHashDigest, depth: number) => {
 		const node = nodes[hashDigest] ?? null;
 
 		if (node === null) {
@@ -290,17 +281,14 @@ export const selectCodemodTree = (
 		// searched nodes should always be expanded
 		const expanded =
 			isSearching ||
-			state.codemodDiscoveryView.expandedNodeHashDigests.includes(
-				hashDigest,
-			);
+			state.codemodDiscoveryView.expandedNodeHashDigests.includes(hashDigest);
 
 		const focused =
 			state.codemodDiscoveryView.focusedCodemodHashDigest === hashDigest;
 		const childSet = children[node.hashDigest] ?? [];
 
 		const argumentsExpanded =
-			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest ===
-			hashDigest;
+			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest === hashDigest;
 
 		if (depth !== -1) {
 			nodeData.push({
@@ -336,8 +324,7 @@ export const selectCodemodTree = (
 
 	return {
 		nodeData,
-		focusedNodeHashDigest:
-			state.codemodDiscoveryView.focusedCodemodHashDigest,
+		focusedNodeHashDigest: state.codemodDiscoveryView.focusedCodemodHashDigest,
 		collapsedNodeHashDigests,
 	};
 };
@@ -348,7 +335,7 @@ export const selectExecutionPaths = (state: RootState) => {
 
 export type CodemodArgumentWithValue =
 	| {
-			kind: 'string';
+			kind: "string";
 			name: string;
 			description: string;
 			required: boolean;
@@ -356,7 +343,7 @@ export type CodemodArgumentWithValue =
 			value: string;
 	  }
 	| {
-			kind: 'number';
+			kind: "number";
 			name: string;
 			description: string;
 			required: boolean;
@@ -364,7 +351,7 @@ export type CodemodArgumentWithValue =
 			value: number;
 	  }
 	| {
-			kind: 'boolean';
+			kind: "boolean";
 			name: string;
 			description: string;
 			required: boolean;
@@ -372,7 +359,7 @@ export type CodemodArgumentWithValue =
 			value: boolean;
 	  }
 	| {
-			kind: 'options';
+			kind: "options";
 			name: string;
 			description: string;
 			required: boolean;
@@ -398,25 +385,25 @@ export const selectCodemodArguments = (
 		state.codemodDiscoveryView.codemodArguments[hashDigest] ?? null;
 
 	return argumentsSchema.map((arg) => {
-		const value = codemodArgumentsValues?.[arg.name] ?? arg.default ?? '';
+		const value = codemodArgumentsValues?.[arg.name] ?? arg.default ?? "";
 
 		switch (arg.kind) {
-			case 'string': {
+			case "string": {
 				return {
 					...arg,
 					value: String(value),
 				};
 			}
-			case 'number': {
+			case "number": {
 				return {
 					...arg,
 					value: Number(value),
 				};
 			}
-			case 'boolean': {
+			case "boolean": {
 				return {
 					...arg,
-					value: value === 'true',
+					value: value === "true",
 				};
 			}
 		}

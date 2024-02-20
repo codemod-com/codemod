@@ -1,11 +1,11 @@
-import { SyntaxKind, type SourceFile } from 'ts-morph';
+import { SyntaxKind, type SourceFile } from "ts-morph";
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
 	return (
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -20,17 +20,14 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 		.getDescendantsOfKind(SyntaxKind.CallExpression)
 		.map((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
 		.flat()
-		.filter((id) => id.getText() === 'printHandlers')
+		.filter((id) => id.getText() === "printHandlers")
 		.forEach((id) => {
-			id.replaceWithText('listHandlers');
+			id.replaceWithText("listHandlers");
 
 			const callExpressionEndPosition =
 				id
 					.getAncestors()
-					.find(
-						(parent) =>
-							parent.getKind() === SyntaxKind.CallExpression,
-					)
+					.find((parent) => parent.getKind() === SyntaxKind.CallExpression)
 					?.getEnd() ?? null;
 
 			if (callExpressionEndPosition === null) {

@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { Toaster } from 'react-hot-toast';
-import { Tooltip } from 'react-tooltip';
-import { MainPage } from '~/pageComponents';
+import { Toaster } from "react-hot-toast";
+import { Tooltip } from "react-tooltip";
+import { MainPage } from "~/pageComponents";
 
 export default function Page() {
 	return (
@@ -20,4 +20,4 @@ export default function Page() {
 	);
 }
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";

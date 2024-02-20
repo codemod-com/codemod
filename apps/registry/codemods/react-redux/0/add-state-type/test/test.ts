@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('react-redux-8 add-state-type', function () {
-	it('should add the State type for state parameter of the mapStateToProps arrow function', function () {
+describe("react-redux-8 add-state-type", function () {
+	it("should add the State type for state parameter of the mapStateToProps arrow function", function () {
 		const INPUT = `
             const mapStateToProps = (state) => ({
                 a: selectA(state),
@@ -21,19 +21,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state destructured parameter of the mapStateToProps arrow function', function () {
+	it("should add the State type for state destructured parameter of the mapStateToProps arrow function", function () {
 		const INPUT = `
             const mapStateToProps = ({ a }) => ({
                 a,
@@ -49,19 +49,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the mapStateToProps function', function () {
+	it("should add the State type for state parameter of the mapStateToProps function", function () {
 		const INPUT = `
 			function mapStateToProps (a) {
 				return {
@@ -81,19 +81,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state destructured parameter of the mapStateToProps function', function () {
+	it("should add the State type for state destructured parameter of the mapStateToProps function", function () {
 		const INPUT = `
 			function mapStateToProps ({ a }) {
 				return {
@@ -113,19 +113,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the mapDispatchToProps arrow function', function () {
+	it("should add the State type for state parameter of the mapDispatchToProps arrow function", function () {
 		const INPUT = `
             const mapDispatchToProps = (dispatch) => ({
                 onA: (a) => dispatch(a),
@@ -142,19 +142,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the mapDispatchToProps arrow function', function () {
+	it("should add the State type for state parameter of the mapDispatchToProps arrow function", function () {
 		const INPUT = `
             function mapDispatchToProps (dispatch) {
 				return {
@@ -175,19 +175,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps arrow function', function () {
+	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps arrow function", function () {
 		const INPUT = `
 			function mapStateToProps (state) {
 				return {
@@ -220,19 +220,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps function', function () {
+	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps function", function () {
 		const INPUT = `
 			const mapStateToProps = (state) => {
 				return {
@@ -265,19 +265,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the select function', function () {
+	it("should add the State type for state parameter of the select function", function () {
 		const INPUT = `
 			function selectX (state) {
 				return {
@@ -297,19 +297,19 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add the State type for state parameter of the select function', function () {
+	it("should add the State type for state parameter of the select function", function () {
 		const INPUT = `
 			const selectX = (state) => {
 				return {
@@ -329,15 +329,15 @@ describe('react-redux-8 add-state-type', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {});
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

@@ -1,15 +1,15 @@
-import { Node } from '@babel/types';
-import { OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { TreeNode } from '../components/Tree';
-import { isNeitherNullNorUndefined } from './isNeitherNullNorUndefined';
+import { Node } from "@babel/types";
+import { OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { TreeNode } from "../components/Tree";
+import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 
 export type RangeCommand =
 	| Readonly<{
-			kind: 'PASS_THROUGH';
+			kind: "PASS_THROUGH";
 			ranges: ReadonlyArray<TreeNode | OffsetRange>;
 	  }>
 	| Readonly<{
-			kind: 'FIND_CLOSEST_PARENT';
+			kind: "FIND_CLOSEST_PARENT";
 			ranges: ReadonlyArray<TreeNode | OffsetRange>;
 	  }>;
 
@@ -27,16 +27,12 @@ export const buildRanges = (
 				return null;
 			}
 
-			if (rangeCommand.kind === 'PASS_THROUGH') {
+			if (rangeCommand.kind === "PASS_THROUGH") {
 				return range;
 			}
 
-			if (rangeCommand.kind === 'FIND_CLOSEST_PARENT') {
-				return findClosestParentWithinRange(
-					rootNode,
-					range.start,
-					range.end,
-				);
+			if (rangeCommand.kind === "FIND_CLOSEST_PARENT") {
+				return findClosestParentWithinRange(rootNode, range.start, range.end);
 			}
 
 			return null;
@@ -78,7 +74,7 @@ const extractIdsAndTypes = ({
 	children = [],
 	actualNode,
 }: TreeNode): ReadonlyArray<
-	[TreeNode['id'], TreeNode['actualNode']['type']]
+	[TreeNode["id"], TreeNode["actualNode"]["type"]]
 > => [
 	[id, actualNode.type],
 	...children.flatMap((child) => extractIdsAndTypes(child)),
@@ -105,10 +101,10 @@ const getNodeById = (node: TreeNode, id: string): TreeNode | null => {
 
 export const isNode = (node: unknown): node is Node => {
 	return (
-		typeof node === 'object' &&
+		typeof node === "object" &&
 		node !== null &&
-		'type' in node &&
-		typeof (node as Node).type === 'string'
+		"type" in node &&
+		typeof (node as Node).type === "string"
 	);
 };
 

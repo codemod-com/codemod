@@ -25,7 +25,7 @@ SOFTWARE.
 Changes to the original file: added options
 */
 
-import type { Transform } from 'jscodeshift';
+import type { Transform } from "jscodeshift";
 
 const transform: Transform = (file, api, options) => {
 	const j = api.jscodeshift;
@@ -33,20 +33,20 @@ const transform: Transform = (file, api, options) => {
 	const root = j(file.source);
 	const immutableImports = root.find(j.ImportDeclaration, {
 		source: {
-			value: 'immutable',
+			value: "immutable",
 		},
 	});
 
 	if (immutableImports.length > 0) {
 		const deprecationMessage = [
-			j.commentLine(' ImmutableJS usage is deprecated', true, false),
+			j.commentLine(" ImmutableJS usage is deprecated", true, false),
 			j.commentLine(
-				' Please, do not copy & paste or use this snippet as reference :)',
+				" Please, do not copy & paste or use this snippet as reference :)",
 				true,
 				false,
 			),
 			j.commentLine(
-				' How to refactor? See https://github.com/quintoandar/farewell-immutablejs/blob/master/MIGRATION.md',
+				" How to refactor? See https://github.com/quintoandar/farewell-immutablejs/blob/master/MIGRATION.md",
 				true,
 				false,
 			),

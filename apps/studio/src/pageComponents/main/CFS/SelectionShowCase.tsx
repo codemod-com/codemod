@@ -1,25 +1,25 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import { isTSTypeAnnotation, type Node } from '@babel/types';
-import dynamic from 'next/dynamic';
-import { useMemo } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { isTSTypeAnnotation, type Node } from "@babel/types";
+import dynamic from "next/dynamic";
+import { useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 // @TODO return to this component later
 import {
 	nodeHasValues,
 	selectNodesByState,
 	states,
 	transitionNodeState,
-} from '../../../store/slices/CFS';
+} from "../../../store/slices/CFS";
 import {
 	selectFirstTreeNode,
 	selectSnippets,
-} from '../../../store/slices/snippets';
-import { type TreeNode } from '../../../types/tree';
-import { findClosestParentWithinRange } from '../../../utils/tree';
+} from "../../../store/slices/snippets";
+import { type TreeNode } from "../../../types/tree";
+import { findClosestParentWithinRange } from "../../../utils/tree";
 
-const CodeSnippet = dynamic(() => import('~/components/Snippet'), {
+const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
 	ssr: false,
 });
@@ -31,16 +31,16 @@ export type Token = Readonly<{
 }>;
 
 function tokensToSource(tokens: Token[]): string {
-	let source = '';
+	let source = "";
 	let prevEnd = -1;
 
 	for (let i = 0; i < tokens.length; i++) {
 		const token = tokens[i]!;
 
 		if (prevEnd !== -1 && prevEnd !== token.start) {
-			source += ' ';
+			source += " ";
 		}
-		source += token.value ?? '';
+		source += token.value ?? "";
 		prevEnd = token.end;
 	}
 
@@ -58,7 +58,7 @@ function getTokenAtPosition(tokens: Token[], position: number): Token | null {
 			result += 1;
 		}
 
-		const value = token.value ?? '';
+		const value = token.value ?? "";
 		result += value.length;
 		if (result >= position) {
 			return token;
@@ -82,7 +82,7 @@ const getTokensWithinRange = (
 const buildTokenForUnselectedNode = (node: Node): Token => ({
 	start: node.start ?? 0,
 	end: node.end ?? 0,
-	value: isTSTypeAnnotation(node) ? '' : '...',
+	value: isTSTypeAnnotation(node) ? "" : "...",
 });
 
 const buildTokenForTypeNode = (start: number, end: number, index: number) => ({
@@ -125,9 +125,7 @@ const getFilteredTokens = (
 		);
 
 		if (filteredTokens.length !== result.length) {
-			filteredTokens.push(
-				buildTokenForTypeNode(node.start, node.end, index),
-			);
+			filteredTokens.push(buildTokenForTypeNode(node.start, node.end, index));
 			result = filteredTokens;
 			index++;
 		}
@@ -138,13 +136,11 @@ const getFilteredTokens = (
 
 const SelectionShowCase = () => {
 	const { beforeInputTokens } = useSelector(selectSnippets);
-	const selectedNode = useSelector(selectFirstTreeNode('before'));
+	const selectedNode = useSelector(selectFirstTreeNode("before"));
 	const unselectedNodes = useSelector(
 		selectNodesByState(selectedNode, states.UNSELECTED),
 	);
-	const typeNodes = useSelector(
-		selectNodesByState(selectedNode, states.TYPE),
-	);
+	const typeNodes = useSelector(selectNodesByState(selectedNode, states.TYPE));
 	const dispatch = useDispatch();
 
 	const tokensInSelectedNode = useMemo(() => {
@@ -192,7 +188,7 @@ const SelectionShowCase = () => {
 	};
 
 	const hightForSnippet = useMemo(() => {
-		const { length } = sourceString.split('\n');
+		const { length } = sourceString.split("\n");
 		return length > 0 && length < 6 ? length * 20 : 90;
 	}, [sourceString]);
 

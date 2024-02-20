@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('ember 5 jquery-event', function () {
-	it('basic', function () {
+describe("ember 5 jquery-event", function () {
+	it("basic", function () {
 		const INPUT = `
 		// your event handler:
         export default Component.extend({
@@ -25,15 +25,15 @@ describe('ember 5 jquery-event', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

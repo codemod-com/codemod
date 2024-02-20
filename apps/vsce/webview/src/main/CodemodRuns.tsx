@@ -1,21 +1,21 @@
-import { VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react';
-import { useEffect, useMemo, useRef } from 'react';
+import { VSCodeProgressRing } from "@vscode/webview-ui-toolkit/react";
+import { useEffect, useMemo, useRef } from "react";
 import {
 	ImperativePanelHandle,
 	PanelGroupStorage,
 	PanelResizeHandle,
-} from 'react-resizable-panels';
-import { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
-import { App as CampaignManager } from '../campaignManager/App';
-import { App as FileExplorer } from '../fileExplorer/App';
-import { PanelGroup, ResizablePanel } from '../shared/Panel';
-import { SectionHeader } from '../shared/SectionHeader';
-import { Command } from '../shared/types';
-import { vscode } from '../shared/utilities/vscode';
+} from "react-resizable-panels";
+import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import { App as CampaignManager } from "../campaignManager/App";
+import { App as FileExplorer } from "../fileExplorer/App";
+import { PanelGroup, ResizablePanel } from "../shared/Panel";
+import { SectionHeader } from "../shared/SectionHeader";
+import { Command } from "../shared/types";
+import { vscode } from "../shared/utilities/vscode";
 
 export const CodemodRuns = (
 	props: MainWebviewViewProps & {
-		activeTabId: 'codemodRuns';
+		activeTabId: "codemodRuns";
 		screenWidth: number | null;
 	},
 ) => {
@@ -41,7 +41,7 @@ export const CodemodRuns = (
 			getItem: () => JSON.stringify(props.panelGroupSettings),
 			setItem: (_, panelGroupSettings: string): void => {
 				vscode.postMessage({
-					kind: 'webview.main.setCodemodRunsPanelGroupSettings',
+					kind: "webview.main.setCodemodRunsPanelGroupSettings",
 					panelGroupSettings,
 				});
 			},
@@ -53,15 +53,15 @@ export const CodemodRuns = (
 
 	if (props.clearingInProgress) {
 		commands.push({
-			icon: 'circle-slash',
-			title: 'Stop clearing',
-			command: 'codemod.stopStateClearing',
+			icon: "circle-slash",
+			title: "Stop clearing",
+			command: "codemod.stopStateClearing",
 		});
 	} else {
 		commands.push({
-			icon: 'clear-all',
-			title: 'Clear all',
-			command: 'codemod.clearState',
+			icon: "clear-all",
+			title: "Clear all",
+			command: "codemod.clearState",
 		});
 	}
 
@@ -73,14 +73,14 @@ export const CodemodRuns = (
 				autoSaveId="codemodRunsPanelGroup"
 			>
 				<SectionHeader
-					title={'Results'}
+					title={"Results"}
 					commands={commands}
 					collapsed={props.resultsCollapsed}
 					onClick={(event) => {
 						event.preventDefault();
 
 						vscode.postMessage({
-							kind: 'webview.global.collapseResultsPanel',
+							kind: "webview.global.collapseResultsPanel",
 							collapsed: !props.resultsCollapsed,
 						});
 					}}
@@ -90,17 +90,17 @@ export const CodemodRuns = (
 					minSize={0}
 					defaultSize={
 						props.resultsCollapsed
-							? props.panelGroupSettings['0,0']?.[0] ?? 50
+							? props.panelGroupSettings["0,0"]?.[0] ?? 50
 							: 0
 					}
 					style={{
-						overflowY: 'auto',
-						overflowX: 'hidden',
+						overflowY: "auto",
+						overflowX: "hidden",
 					}}
 					ref={resultsRef}
 					onCollapse={(collapsed) => {
 						vscode.postMessage({
-							kind: 'webview.global.collapseResultsPanel',
+							kind: "webview.global.collapseResultsPanel",
 							collapsed,
 						});
 					}}
@@ -113,14 +113,14 @@ export const CodemodRuns = (
 				</ResizablePanel>
 				<PanelResizeHandle className="resize-handle" />
 				<SectionHeader
-					title={'Change Explorer'}
+					title={"Change Explorer"}
 					commands={[]}
 					collapsed={props.changeExplorerCollapsed}
 					onClick={(event) => {
 						event.preventDefault();
 
 						vscode.postMessage({
-							kind: 'webview.global.collapseChangeExplorerPanel',
+							kind: "webview.global.collapseChangeExplorerPanel",
 							collapsed: !props.changeExplorerCollapsed,
 						});
 					}}
@@ -131,16 +131,16 @@ export const CodemodRuns = (
 					defaultSize={
 						props.changeExplorerCollapsed
 							? 0
-							: props.panelGroupSettings['0,0']?.[1] ?? 50
+							: props.panelGroupSettings["0,0"]?.[1] ?? 50
 					}
 					style={{
-						overflowY: 'auto',
-						overflowX: 'hidden',
+						overflowY: "auto",
+						overflowX: "hidden",
 					}}
 					ref={changeExplorerRef}
 					onCollapse={(collapsed) => {
 						vscode.postMessage({
-							kind: 'webview.global.collapseChangeExplorerPanel',
+							kind: "webview.global.collapseChangeExplorerPanel",
 							collapsed,
 						});
 					}}

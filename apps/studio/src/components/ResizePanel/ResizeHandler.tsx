@@ -1,13 +1,13 @@
-import { PanelResizeHandle } from 'react-resizable-panels';
+import { PanelResizeHandle } from "react-resizable-panels";
 
 const ResizeHandle = ({
-	className = '',
+	className = "",
 	id,
 	direction,
 }: {
 	className?: string;
 	id?: string;
-	direction: 'vertical' | 'horizontal';
+	direction: "vertical" | "horizontal";
 }) => (
 	<PanelResizeHandle
 		className={`resizeHandleOuter resizeHandlerOuter-${direction}  ${className} `}

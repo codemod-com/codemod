@@ -30,20 +30,22 @@ export default function transform(file, api, options) {
 
 	const root = j(file.source);
 
-	root.find(j.CallExpression, {
-		callee: {
-			object: {
-				name: 'Seq',
-			},
+	root
+		.find(j.CallExpression, {
+			callee: {
+				object: {
+					name: "Seq",
+				},
 
-			property: {
-				name: 'of',
+				property: {
+					name: "of",
+				},
 			},
-		},
-	}).replaceWith((path) => {
-		const args = path.value.arguments;
-		return j.callExpression(j.identifier('Seq'), [j.arrayExpression(args)]);
-	});
+		})
+		.replaceWith((path) => {
+			const args = path.value.arguments;
+			return j.callExpression(j.identifier("Seq"), [j.arrayExpression(args)]);
+		});
 
 	return root.toSource(options);
 }

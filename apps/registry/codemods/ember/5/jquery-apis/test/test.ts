@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('ember 5 jquery-apis', function () {
-	it('Events', function () {
+describe("ember 5 jquery-apis", function () {
+	it("Events", function () {
 		const INPUT = `
 		import Component from '@ember/component';
 
@@ -26,19 +26,19 @@ describe('ember 5 jquery-apis', function () {
         });
         `;
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('Query Selector', function () {
+	it("Query Selector", function () {
 		const INPUT = `
 		import Component from '@ember/component';
 
@@ -59,15 +59,15 @@ describe('ember 5 jquery-apis', function () {
         });
         `;
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

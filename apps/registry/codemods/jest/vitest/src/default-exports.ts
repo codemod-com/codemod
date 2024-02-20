@@ -22,22 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { dirname, join, resolve } from 'path';
-import type core from 'jscodeshift';
-import type { Collection } from 'jscodeshift';
+import { dirname, join, resolve } from "path";
+import type core from "jscodeshift";
+import type { Collection } from "jscodeshift";
 
 export const updateDefaultExportMocks = <T>(
 	root: Collection<T>,
 	j: core.JSCodeshift,
 	filePath: string,
 ) => {
-	root.find(j.CallExpression, {
-		callee: {
-			type: 'MemberExpression',
-			object: { type: 'Identifier', name: 'jest' },
-			property: { type: 'Identifier' },
-		},
-	})
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				object: { type: "Identifier", name: "jest" },
+				property: { type: "Identifier" },
+			},
+		})
 		.filter((path) => {
 			const { callee } = path.value;
 			if (
@@ -47,7 +48,7 @@ export const updateDefaultExportMocks = <T>(
 				return false;
 			}
 
-			return ['mock', 'setMock'].includes(callee.property.name);
+			return ["mock", "setMock"].includes(callee.property.name);
 		})
 		.forEach((path) => {
 			const { arguments: args } = path.value;
@@ -59,15 +60,15 @@ export const updateDefaultExportMocks = <T>(
 			const [moduleName, mock] = args;
 
 			if (
-				mock.type !== 'ArrowFunctionExpression' &&
-				mock.type !== 'FunctionExpression'
+				mock.type !== "ArrowFunctionExpression" &&
+				mock.type !== "FunctionExpression"
 			) {
 				return;
 			}
 
 			if (
-				moduleName.type !== 'Literal' &&
-				moduleName.type !== 'StringLiteral'
+				moduleName.type !== "Literal" &&
+				moduleName.type !== "StringLiteral"
 			) {
 				return;
 			}
@@ -79,34 +80,31 @@ export const updateDefaultExportMocks = <T>(
 			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const module = require(modulePath);
 
-			if (typeof module === 'object') {
+			if (typeof module === "object") {
 				return;
 			}
 
-			if (mock.type === 'ArrowFunctionExpression') {
+			if (mock.type === "ArrowFunctionExpression") {
 				const mockBody = mock.body;
 				if (
-					mockBody.type === 'ObjectExpression' &&
+					mockBody.type === "ObjectExpression" &&
 					mockBody.properties
 						.map((p) => {
-							if (
-								!j.ObjectProperty.check(p) ||
-								!j.Identifier.check(p.key)
-							) {
+							if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
 								return;
 							}
 
 							return p.key.name;
 						})
 						.filter(Boolean)
-						.includes('default')
+						.includes("default")
 				) {
 					return;
 				}
 
-				if (mockBody.type !== 'BlockStatement') {
+				if (mockBody.type !== "BlockStatement") {
 					mock.body = j.objectExpression([
-						j.property('init', j.identifier('default'), mockBody),
+						j.property("init", j.identifier("default"), mockBody),
 					]);
 					return;
 				}
@@ -126,35 +124,28 @@ export const updateDefaultExportMocks = <T>(
 			}
 
 			const returnStatement = mockBody.body[mockBody.body.length - 1];
-			if (returnStatement.type === 'ReturnStatement') {
+			if (returnStatement.type === "ReturnStatement") {
 				const returnArgument = returnStatement.argument;
 
 				if (returnArgument) {
 					if (
-						returnArgument.type === 'ObjectExpression' &&
+						returnArgument.type === "ObjectExpression" &&
 						returnArgument.properties
 							.map((p) => {
-								if (
-									!j.ObjectProperty.check(p) ||
-									!j.Identifier.check(p.key)
-								) {
+								if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
 									return;
 								}
 
 								return p.key.name;
 							})
 							.filter(Boolean)
-							.includes('default')
+							.includes("default")
 					) {
 						return;
 					}
 
 					returnStatement.argument = j.objectExpression([
-						j.property(
-							'init',
-							j.identifier('default'),
-							returnArgument,
-						),
+						j.property("init", j.identifier("default"), returnArgument),
 					]);
 				}
 			}

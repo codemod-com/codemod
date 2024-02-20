@@ -1,35 +1,35 @@
-import type { CaseHash } from '../cases/types';
+import type { CaseHash } from "../cases/types";
 
 export type ErrorEvent =
 	| Readonly<{
-			kind: 'failedToExecuteCommand';
+			kind: "failedToExecuteCommand";
 			commandName: string;
 	  }>
 	| Readonly<{
-			kind: 'failedToBootstrapEngines';
+			kind: "failedToBootstrapEngines";
 			message: string;
 	  }>;
 
 export type Event =
 	| Readonly<{
-			kind: 'codemodExecuted';
+			kind: "codemodExecuted";
 			fileCount: number;
 			executionId: CaseHash;
 			codemodName: string;
 	  }>
 	| Readonly<{
-			kind: 'codemodHalted';
+			kind: "codemodHalted";
 			fileCount: number;
 			executionId: CaseHash;
 			codemodName: string;
 	  }>
 	| Readonly<{
-			kind: 'jobsAccepted';
+			kind: "jobsAccepted";
 			jobCount: number;
 			executionId: CaseHash;
 	  }>
 	| Readonly<{
-			kind: 'jobsRejected';
+			kind: "jobsRejected";
 			jobCount: number;
 			executionId: CaseHash;
 	  }>;

@@ -31,18 +31,16 @@ export default function transform(file, api) {
 	const root = j(file.source);
 
 	const POSSIBLE_MODULES = [
-		{ expression: { callee: { name: 'module' } } },
-		{ expression: { callee: { name: 'moduleFor' } } },
-		{ expression: { callee: { name: 'moduleForComponent' } } },
-		{ expression: { callee: { name: 'moduleForModel' } } },
-		{ expression: { callee: { name: 'moduleForAcceptance' } } },
+		{ expression: { callee: { name: "module" } } },
+		{ expression: { callee: { name: "moduleFor" } } },
+		{ expression: { callee: { name: "moduleForComponent" } } },
+		{ expression: { callee: { name: "moduleForModel" } } },
+		{ expression: { callee: { name: "moduleForAcceptance" } } },
 	];
 
 	class ModuleInfo {
 		static isModuleDefinition(nodePath) {
-			return POSSIBLE_MODULES.some((matcher) =>
-				j.match(nodePath, matcher),
-			);
+			return POSSIBLE_MODULES.some((matcher) => j.match(nodePath, matcher));
 		}
 
 		constructor(p) {
@@ -58,7 +56,7 @@ export default function transform(file, api) {
 				moduleCallbackBody;
 			let calleeArguments = p.node.expression.arguments.slice();
 			let lastArgument = calleeArguments[calleeArguments.length - 1];
-			if (lastArgument.type === 'ObjectExpression') {
+			if (lastArgument.type === "ObjectExpression") {
 				options = calleeArguments.pop();
 			}
 
@@ -70,9 +68,9 @@ export default function transform(file, api) {
 				moduleCallbackBody = moduleCallback.body.body;
 			} else if (
 				calleeArguments[1] &&
-				(j.match(calleeArguments[1], { type: 'FunctionExpression' }) ||
+				(j.match(calleeArguments[1], { type: "FunctionExpression" }) ||
 					j.match(calleeArguments[1], {
-						type: 'ArrowFunctionExpression',
+						type: "ArrowFunctionExpression",
 					}))
 			) {
 				isNestedModule = true;
@@ -84,29 +82,27 @@ export default function transform(file, api) {
 				subject = calleeArguments[0];
 			}
 
-			let setupIdentifier = calleeName === 'module' ? null : 'setupTest';
+			let setupIdentifier = calleeName === "module" ? null : "setupTest";
 			if (options) {
 				hasIntegrationFlag = options.properties.some(
-					(p) => p.key.name === 'integration',
+					(p) => p.key.name === "integration",
 				);
 				hasCustomSubject = options.properties.some(
-					(p) => p.key.name === 'subject',
+					(p) => p.key.name === "subject",
 				);
 			}
 
 			if (calleeName === `moduleForAcceptance`) {
-				setupIdentifier = 'setupApplicationTest';
+				setupIdentifier = "setupApplicationTest";
 				subject = null;
 			} else if (calleeName === `moduleForComponent`) {
 				if (hasIntegrationFlag) {
-					setupIdentifier = 'setupRenderingTest';
+					setupIdentifier = "setupRenderingTest";
 					subject = null;
 				} else {
-					subject = j.literal(
-						`component:${calleeArguments[0].value}`,
-					);
+					subject = j.literal(`component:${calleeArguments[0].value}`);
 				}
-			} else if (calleeName === 'moduleForModel') {
+			} else if (calleeName === "moduleForModel") {
 				subject = j.literal(`model:${calleeArguments[0].value}`);
 			}
 
@@ -141,7 +137,7 @@ export default function transform(file, api) {
 			.forEach((i) => combinedSpecifiers.add(i.node.imported.name))
 			.remove();
 
-		importStatement.get('specifiers').replace(
+		importStatement.get("specifiers").replace(
 			Array.from(combinedSpecifiers)
 				.sort()
 				.map((s) => j.importSpecifier(j.identifier(s))),
@@ -149,7 +145,7 @@ export default function transform(file, api) {
 	}
 
 	function ensureImport(source, anchor, method) {
-		method = method || 'insertAfter';
+		method = method || "insertAfter";
 
 		let desiredImport = root.find(j.ImportDeclaration, {
 			source: { value: source },
@@ -178,19 +174,16 @@ export default function transform(file, api) {
 
 	function moveQUnitImportsFromEmberQUnit() {
 		let emberQUnitImports = root.find(j.ImportDeclaration, {
-			source: { value: 'ember-qunit' },
+			source: { value: "ember-qunit" },
 		});
 		// Find `module` and `test` imports
-		let migrateToQUnitImport = ['module', 'test', 'skip', 'todo'];
+		let migrateToQUnitImport = ["module", "test", "skip", "todo"];
 
 		let specifiers = new Set();
 		// Replace old with new test helpers imports
 		emberQUnitImports
 			.find(j.ImportSpecifier)
-			.filter(
-				(p) =>
-					migrateToQUnitImport.indexOf(p.node.imported.name) !== -1,
-			)
+			.filter((p) => migrateToQUnitImport.indexOf(p.node.imported.name) !== -1)
 			.forEach((p) => specifiers.add(p.node.imported.name))
 			.remove();
 
@@ -199,22 +192,22 @@ export default function transform(file, api) {
 		}
 
 		ensureImportWithSpecifiers({
-			source: 'qunit',
-			anchor: 'ember-qunit',
-			positionMethod: 'insertBefore',
+			source: "qunit",
+			anchor: "ember-qunit",
+			positionMethod: "insertBefore",
 			specifiers,
 		});
 	}
 
 	function updateToNewEmberQUnitImports() {
 		let mapping = {
-			moduleFor: 'setupTest',
-			moduleForComponent: 'setupRenderingTest',
-			moduleForModel: 'setupTest',
+			moduleFor: "setupTest",
+			moduleForComponent: "setupRenderingTest",
+			moduleForModel: "setupTest",
 		};
 
 		let emberQUnitImports = root.find(j.ImportDeclaration, {
-			source: { value: 'ember-qunit' },
+			source: { value: "ember-qunit" },
 		});
 		if (emberQUnitImports.size() === 0) {
 			return;
@@ -232,24 +225,26 @@ export default function transform(file, api) {
 
 				if (mappedName !== importName) {
 					ensureImportWithSpecifiers({
-						source: 'qunit',
-						anchor: 'ember-qunit',
-						positionMethod: 'insertBefore',
-						specifiers: ['module'],
+						source: "qunit",
+						anchor: "ember-qunit",
+						positionMethod: "insertBefore",
+						specifiers: ["module"],
 					});
 				}
 
 				// If importName is `moduleForComponent` determine if we need
 				// `setupTest` (unit) or `setupRenderingTest` (integration)
-				if (importName === 'moduleForComponent') {
-					root.find(j.ExpressionStatement, {
-						expression: {
-							callee: { name: 'moduleForComponent' },
-						},
-					}).forEach((p) => {
-						let moduleInfo = new ModuleInfo(p);
-						emberQUnitSpecifiers.add(moduleInfo.setupType);
-					});
+				if (importName === "moduleForComponent") {
+					root
+						.find(j.ExpressionStatement, {
+							expression: {
+								callee: { name: "moduleForComponent" },
+							},
+						})
+						.forEach((p) => {
+							let moduleInfo = new ModuleInfo(p);
+							emberQUnitSpecifiers.add(moduleInfo.setupType);
+						});
 				} else {
 					emberQUnitSpecifiers.add(mappedName);
 				}
@@ -258,7 +253,7 @@ export default function transform(file, api) {
 			.remove();
 
 		emberQUnitImports
-			.get('specifiers')
+			.get("specifiers")
 			.replace(
 				Array.from(emberQUnitSpecifiers).map((s) =>
 					j.importSpecifier(j.identifier(s)),
@@ -277,21 +272,21 @@ export default function transform(file, api) {
 		imports
 			.find(j.ImportDefaultSpecifier, {
 				local: {
-					type: 'Identifier',
-					name: 'moduleForAcceptance',
+					type: "Identifier",
+					name: "moduleForAcceptance",
 				},
 			})
 			.forEach((p) => {
 				// add setupApplicationTest import
 				ensureImportWithSpecifiers({
-					source: 'ember-qunit',
-					anchor: 'qunit',
-					specifiers: ['setupApplicationTest'],
+					source: "ember-qunit",
+					anchor: "qunit",
+					specifiers: ["setupApplicationTest"],
 				});
 				// ensure module import if acceptance test
 				ensureImportWithSpecifiers({
-					source: 'qunit',
-					specifiers: ['module'],
+					source: "qunit",
+					specifiers: ["module"],
 				});
 				// remove existing moduleForAcceptance import
 				j(p.parentPath.parentPath).remove();
@@ -302,7 +297,7 @@ export default function transform(file, api) {
 		return collection.find(j.ExpressionStatement, {
 			expression: {
 				callee: {
-					type: 'Identifier',
+					type: "Identifier",
 					name: property,
 				},
 			},
@@ -314,7 +309,7 @@ export default function transform(file, api) {
 			expression: {
 				callee: {
 					object: {
-						type: 'ThisExpression',
+						type: "ThisExpression",
 					},
 					property: {
 						name: property,
@@ -325,7 +320,7 @@ export default function transform(file, api) {
 	}
 
 	function addHooksParam(moduleInfo) {
-		moduleInfo.moduleCallback.params = [j.identifier('hooks')];
+		moduleInfo.moduleCallback.params = [j.identifier("hooks")];
 	}
 
 	function addToBeforeEach(moduleInfo, expression) {
@@ -338,10 +333,7 @@ export default function transform(file, api) {
 			let beforeEachBlockStatement = j.blockStatement([]);
 			let beforeEachExpression = j.expressionStatement(
 				j.callExpression(
-					j.memberExpression(
-						j.identifier('hooks'),
-						j.identifier('beforeEach'),
-					),
+					j.memberExpression(j.identifier("hooks"), j.identifier("beforeEach")),
 					[
 						j.functionExpression(
 							null,
@@ -357,11 +349,7 @@ export default function transform(file, api) {
 			beforeEachBody = moduleInfo.moduleBeforeEachBody =
 				beforeEachBlockStatement.body;
 			let insertAt = moduleInfo.setupType ? 1 : 0;
-			moduleInfo.moduleCallbackBody.splice(
-				insertAt,
-				0,
-				beforeEachExpression,
-			);
+			moduleInfo.moduleCallbackBody.splice(insertAt, 0, beforeEachExpression);
 		}
 
 		beforeEachBody.push(expression);
@@ -369,26 +357,24 @@ export default function transform(file, api) {
 
 	function updateModuleForToNestedModule() {
 		const LIFE_CYCLE_METHODS = [
-			{ key: { name: 'before' }, value: { type: 'FunctionExpression' } },
-			{ type: 'ObjectMethod', key: { name: 'before' } },
+			{ key: { name: "before" }, value: { type: "FunctionExpression" } },
+			{ type: "ObjectMethod", key: { name: "before" } },
 			{
-				key: { name: 'beforeEach' },
-				value: { type: 'FunctionExpression' },
+				key: { name: "beforeEach" },
+				value: { type: "FunctionExpression" },
 			},
-			{ type: 'ObjectMethod', key: { name: 'beforeEach' } },
+			{ type: "ObjectMethod", key: { name: "beforeEach" } },
 			{
-				key: { name: 'afterEach' },
-				value: { type: 'FunctionExpression' },
+				key: { name: "afterEach" },
+				value: { type: "FunctionExpression" },
 			},
-			{ type: 'ObjectMethod', key: { name: 'afterEach' } },
-			{ key: { name: 'after' }, value: { type: 'FunctionExpression' } },
-			{ type: 'ObjectMethod', key: { name: 'after' } },
+			{ type: "ObjectMethod", key: { name: "afterEach" } },
+			{ key: { name: "after" }, value: { type: "FunctionExpression" } },
+			{ type: "ObjectMethod", key: { name: "after" } },
 		];
 
 		function isLifecycleHook(nodePath) {
-			return LIFE_CYCLE_METHODS.some((matcher) =>
-				j.match(nodePath, matcher),
-			);
+			return LIFE_CYCLE_METHODS.some((matcher) => j.match(nodePath, matcher));
 		}
 
 		function createModule(p) {
@@ -401,7 +387,7 @@ export default function transform(file, api) {
 				needsHooks = true;
 				moduleSetupExpression = j.expressionStatement(
 					j.callExpression(j.identifier(moduleInfo.setupType), [
-						j.identifier('hooks'),
+						j.identifier("hooks"),
 					]),
 				);
 				moduleInfo.moduleSetupExpression = moduleSetupExpression;
@@ -459,12 +445,8 @@ export default function transform(file, api) {
 
 				moduleInfo.moduleOptions.properties.forEach((property) => {
 					let value =
-						property.type === 'ObjectMethod'
-							? j.functionExpression(
-									null,
-									property.params,
-									property.body,
-							  )
+						property.type === "ObjectMethod"
+							? j.functionExpression(null, property.params, property.body)
 							: property.value;
 
 					if (property.async) {
@@ -480,9 +462,8 @@ export default function transform(file, api) {
 						updateInjectCalls(expressionCollection);
 						updateOnCalls(expressionCollection, moduleInfo);
 
-						if (j.match(property, { key: { name: 'resolver' } })) {
-							let setupExpression =
-								moduleInfo.moduleSetupExpression;
+						if (j.match(property, { key: { name: "resolver" } })) {
+							let setupExpression = moduleInfo.moduleSetupExpression;
 							setupExpression.expression.arguments.push(
 								j.objectExpression([property]),
 							);
@@ -494,10 +475,7 @@ export default function transform(file, api) {
 						needsHooks = true;
 						let lifecycleStatement = j.expressionStatement(
 							j.callExpression(
-								j.memberExpression(
-									j.identifier('hooks'),
-									property.key,
-								),
+								j.memberExpression(j.identifier("hooks"), property.key),
 								[value],
 							),
 						);
@@ -506,34 +484,21 @@ export default function transform(file, api) {
 						lifecycleStatement.comments = property.comments;
 
 						if (moduleInfo.isNestedModule) {
-							callback.body.body.splice(
-								insertLocation,
-								0,
-								lifecycleStatement,
-							);
+							callback.body.body.splice(insertLocation, 0, lifecycleStatement);
 							insertLocation++;
 						} else {
 							callback.body.body.push(lifecycleStatement);
 						}
 					} else {
-						const IGNORED_PROPERTIES = [
-							'integration',
-							'needs',
-							'unit',
-						];
-						if (
-							IGNORED_PROPERTIES.indexOf(property.key.name) !== -1
-						) {
+						const IGNORED_PROPERTIES = ["integration", "needs", "unit"];
+						if (IGNORED_PROPERTIES.indexOf(property.key.name) !== -1) {
 							return;
 						}
 
 						let methodAssignment = j.expressionStatement(
 							j.assignmentExpression(
-								'=',
-								j.memberExpression(
-									j.thisExpression(),
-									property.key,
-								),
+								"=",
+								j.memberExpression(j.thisExpression(), property.key),
 								value,
 							),
 						);
@@ -545,7 +510,7 @@ export default function transform(file, api) {
 					}
 				});
 
-				if (moduleInfo.setupType === 'setupRenderingTest') {
+				if (moduleInfo.setupType === "setupRenderingTest") {
 					processExpressionForRenderingTest(callback);
 				} else {
 					processSubject(callback, moduleInfo);
@@ -568,7 +533,7 @@ export default function transform(file, api) {
 			let replacements = testExpressionCollection
 				.find(j.CallExpression, {
 					callee: {
-						name: 'andThen',
+						name: "andThen",
 					},
 				})
 				.map((path) => path.parent)
@@ -594,16 +559,16 @@ export default function transform(file, api) {
 
 			// Second - Transform to await visit(), click, fillIn, touch, etc and adds `async` to scope
 			[
-				'visit',
-				'find',
-				'waitFor',
-				'fillIn',
-				'click',
-				'blur',
-				'focus',
-				'tap',
-				'triggerEvent',
-				'triggerKeyEvent',
+				"visit",
+				"find",
+				"waitFor",
+				"fillIn",
+				"click",
+				"blur",
+				"focus",
+				"tap",
+				"triggerEvent",
+				"triggerKeyEvent",
 			].forEach((type) => {
 				findApplicationTestHelperUsageOf(
 					testExpressionCollection,
@@ -611,13 +576,10 @@ export default function transform(file, api) {
 				).forEach((p) => {
 					specifiers.add(type);
 
-					let expression = p.get('expression');
+					let expression = p.get("expression");
 
 					let awaitExpression = j.awaitExpression(
-						j.callExpression(
-							j.identifier(type),
-							expression.node.arguments,
-						),
+						j.callExpression(j.identifier(type), expression.node.arguments),
 					);
 					expression.replace(awaitExpression);
 					p.scope.node.async = true;
@@ -625,11 +587,11 @@ export default function transform(file, api) {
 			});
 
 			// Third - update call expressions that do not await
-			['currentURL', 'currentRouteName'].forEach((type) => {
+			["currentURL", "currentRouteName"].forEach((type) => {
 				testExpressionCollection
 					.find(j.CallExpression, {
 						callee: {
-							type: 'Identifier',
+							type: "Identifier",
 							name: type,
 						},
 					})
@@ -643,28 +605,23 @@ export default function transform(file, api) {
 			let specifiers = new Set();
 
 			// Transform to await render() or await clearRender()
-			['render', 'clearRender'].forEach((type) => {
-				findTestHelperUsageOf(testExpressionCollection, type).forEach(
-					(p) => {
-						specifiers.add(type);
+			["render", "clearRender"].forEach((type) => {
+				findTestHelperUsageOf(testExpressionCollection, type).forEach((p) => {
+					specifiers.add(type);
 
-						let expression = p.get('expression');
+					let expression = p.get("expression");
 
-						let awaitExpression = j.awaitExpression(
-							j.callExpression(
-								j.identifier(type),
-								expression.node.arguments,
-							),
-						);
-						expression.replace(awaitExpression);
-						p.scope.node.async = true;
-					},
-				);
+					let awaitExpression = j.awaitExpression(
+						j.callExpression(j.identifier(type), expression.node.arguments),
+					);
+					expression.replace(awaitExpression);
+					p.scope.node.async = true;
+				});
 			});
 
 			ensureImportWithSpecifiers({
-				source: '@ember/test-helpers',
-				anchor: 'ember-qunit',
+				source: "@ember/test-helpers",
+				anchor: "ember-qunit",
 				specifiers,
 			});
 
@@ -672,31 +629,31 @@ export default function transform(file, api) {
 			testExpressionCollection
 				.find(j.MemberExpression, {
 					object: {
-						type: 'ThisExpression',
+						type: "ThisExpression",
 					},
 					property: {
-						name: '_element',
+						name: "_element",
 					},
 				})
 				.forEach((p) => {
-					let property = p.get('property');
-					property.node.name = 'element';
+					let property = p.get("property");
+					property.node.name = "element";
 				});
 		}
 
 		function processStore(testExpression, moduleInfo) {
-			if (moduleInfo.originalSetupType !== 'moduleForModel') {
+			if (moduleInfo.originalSetupType !== "moduleForModel") {
 				return;
 			}
 
 			let thisDotStoreUsage = j(testExpression).find(j.CallExpression, {
 				callee: {
-					type: 'MemberExpression',
+					type: "MemberExpression",
 					object: {
-						type: 'ThisExpression',
+						type: "ThisExpression",
 					},
 					property: {
-						name: 'store',
+						name: "store",
 					},
 				},
 			});
@@ -709,13 +666,10 @@ export default function transform(file, api) {
 				p.replace(
 					j.callExpression(
 						j.memberExpression(
-							j.memberExpression(
-								j.thisExpression(),
-								j.identifier('owner'),
-							),
-							j.identifier('lookup'),
+							j.memberExpression(j.thisExpression(), j.identifier("owner")),
+							j.identifier("lookup"),
 						),
-						[j.literal('service:store')],
+						[j.literal("service:store")],
 					),
 				);
 			});
@@ -725,12 +679,12 @@ export default function transform(file, api) {
 			let subject = moduleInfo.subjectContainerKey;
 			let thisDotSubjectUsage = j(testExpression).find(j.CallExpression, {
 				callee: {
-					type: 'MemberExpression',
+					type: "MemberExpression",
 					object: {
-						type: 'ThisExpression',
+						type: "ThisExpression",
 					},
 					property: {
-						name: 'subject',
+						name: "subject",
 					},
 				},
 			});
@@ -741,11 +695,11 @@ export default function transform(file, api) {
 
 			thisDotSubjectUsage.forEach((p) => {
 				let options = p.node.arguments[0];
-				let split = subject.value.split(':');
+				let split = subject.value.split(":");
 				let subjectType = split[0];
 				let subjectName = split[1];
 				let isSingletonSubject =
-					['model', 'component'].indexOf(subjectType) === -1;
+					["model", "component"].indexOf(subjectType) === -1;
 
 				// if we don't have `options` and the type is a singleton type
 				// use `this.owner.lookup(subject)`
@@ -753,23 +707,20 @@ export default function transform(file, api) {
 					p.replace(
 						j.callExpression(
 							j.memberExpression(
-								j.memberExpression(
-									j.thisExpression(),
-									j.identifier('owner'),
-								),
-								j.identifier('lookup'),
+								j.memberExpression(j.thisExpression(), j.identifier("owner")),
+								j.identifier("lookup"),
 							),
 							[subject],
 						),
 					);
-				} else if (subjectType === 'model') {
+				} else if (subjectType === "model") {
 					ensureImportWithSpecifiers({
-						source: '@ember/runloop',
-						specifiers: ['run'],
+						source: "@ember/runloop",
+						specifiers: ["run"],
 					});
 
 					p.replace(
-						j.callExpression(j.identifier('run'), [
+						j.callExpression(j.identifier("run"), [
 							j.arrowFunctionExpression(
 								[],
 								j.callExpression(
@@ -778,17 +729,15 @@ export default function transform(file, api) {
 											j.memberExpression(
 												j.memberExpression(
 													j.thisExpression(),
-													j.identifier('owner'),
+													j.identifier("owner"),
 												),
-												j.identifier('lookup'),
+												j.identifier("lookup"),
 											),
-											[j.literal('service:store')],
+											[j.literal("service:store")],
 										),
-										j.identifier('createRecord'),
+										j.identifier("createRecord"),
 									),
-									[j.literal(subjectName), options].filter(
-										Boolean,
-									),
+									[j.literal(subjectName), options].filter(Boolean),
 								),
 								true,
 							),
@@ -802,13 +751,13 @@ export default function transform(file, api) {
 									j.memberExpression(
 										j.memberExpression(
 											j.thisExpression(),
-											j.identifier('owner'),
+											j.identifier("owner"),
 										),
-										j.identifier('factoryFor'),
+										j.identifier("factoryFor"),
 									),
 									[subject],
 								),
-								j.identifier('create'),
+								j.identifier("create"),
 							),
 							[options].filter(Boolean),
 						),
@@ -826,11 +775,7 @@ export default function transform(file, api) {
 					expressionPath.replace(moduleInfo.moduleInvocation);
 
 					if (moduleInfo.isNestedModule) {
-						processBody(
-							j(moduleInfo.moduleCallback)
-								.get('body')
-								.get('body'),
-						);
+						processBody(j(moduleInfo.moduleCallback).get("body").get("body"));
 						return;
 					}
 
@@ -841,7 +786,7 @@ export default function transform(file, api) {
 					currentModuleInfo.moduleCallbackBody.push(expression);
 
 					let isTest = j.match(expression, {
-						expression: { callee: { name: 'test' } },
+						expression: { callee: { name: "test" } },
 					});
 					if (isTest) {
 						let expressionCollection = j(expression);
@@ -851,22 +796,15 @@ export default function transform(file, api) {
 						updateOnCalls(expressionCollection, currentModuleInfo);
 						// passing the specific function callback here, because `getOwner` is only
 						// transformed if the call site's scope is the same as the expression passed
-						updateGetOwnerThisUsage(
-							j(expression.expression.arguments[1]),
-						);
+						updateGetOwnerThisUsage(j(expression.expression.arguments[1]));
 						processStore(expression, currentModuleInfo);
 
-						if (
-							currentModuleInfo.setupType ===
-							'setupApplicationTest'
-						) {
+						if (currentModuleInfo.setupType === "setupApplicationTest") {
 							processExpressionForApplicationTest(expression);
-						} else if (
-							currentModuleInfo.setupType === 'setupRenderingTest'
-						) {
+						} else if (currentModuleInfo.setupType === "setupRenderingTest") {
 							processExpressionForRenderingTest(expression);
 						} else if (
-							currentModuleInfo.setupType === 'setupTest' &&
+							currentModuleInfo.setupType === "setupTest" &&
 							!currentModuleInfo.hasCustomSubjectImplementation
 						) {
 							processSubject(expression, currentModuleInfo);
@@ -876,64 +814,70 @@ export default function transform(file, api) {
 			});
 		}
 
-		let programPath = root.get('program');
-		let bodyPath = programPath.get('body');
+		let programPath = root.get("program");
+		let bodyPath = programPath.get("body");
 
 		processBody(bodyPath);
 	}
 
 	function updateLookupCalls(ctx) {
-		ctx.find(j.MemberExpression, {
-			object: {
-				object: { type: 'ThisExpression' },
-				property: { name: 'container' },
-			},
-			property: { name: 'lookup' },
-		}).forEach((path) => {
-			let thisDotOwner = j.memberExpression(
-				j.thisExpression(),
-				j.identifier('owner'),
-			);
-			path.replace(j.memberExpression(thisDotOwner, path.value.property));
-		});
+		ctx
+			.find(j.MemberExpression, {
+				object: {
+					object: { type: "ThisExpression" },
+					property: { name: "container" },
+				},
+				property: { name: "lookup" },
+			})
+			.forEach((path) => {
+				let thisDotOwner = j.memberExpression(
+					j.thisExpression(),
+					j.identifier("owner"),
+				);
+				path.replace(j.memberExpression(thisDotOwner, path.value.property));
+			});
 	}
 
 	function updateRegisterCalls(ctx) {
-		ctx.find(j.MemberExpression, {
-			object: {
-				object: { type: 'ThisExpression' },
-				property: { name: 'registry' },
-			},
-			property: { name: 'register' },
-		}).forEach((path) => {
-			let thisDotOwner = j.memberExpression(
-				j.thisExpression(),
-				j.identifier('owner'),
-			);
-			path.replace(j.memberExpression(thisDotOwner, path.value.property));
-		});
+		ctx
+			.find(j.MemberExpression, {
+				object: {
+					object: { type: "ThisExpression" },
+					property: { name: "registry" },
+				},
+				property: { name: "register" },
+			})
+			.forEach((path) => {
+				let thisDotOwner = j.memberExpression(
+					j.thisExpression(),
+					j.identifier("owner"),
+				);
+				path.replace(j.memberExpression(thisDotOwner, path.value.property));
+			});
 
-		ctx.find(j.MemberExpression, {
-			object: { type: 'ThisExpression' },
-			property: { name: 'register' },
-		}).forEach((path) => {
-			let thisDotOwner = j.memberExpression(
-				j.thisExpression(),
-				j.identifier('owner'),
-			);
-			path.replace(j.memberExpression(thisDotOwner, path.value.property));
-		});
+		ctx
+			.find(j.MemberExpression, {
+				object: { type: "ThisExpression" },
+				property: { name: "register" },
+			})
+			.forEach((path) => {
+				let thisDotOwner = j.memberExpression(
+					j.thisExpression(),
+					j.identifier("owner"),
+				);
+				path.replace(j.memberExpression(thisDotOwner, path.value.property));
+			});
 	}
 
 	function updateOnCalls(ctx, moduleInfo) {
 		let usages = ctx.find(j.CallExpression, {
 			callee: {
-				type: 'MemberExpression',
+				type: "MemberExpression",
 				object: {
-					type: 'ThisExpression',
+					type: "ThisExpression",
 				},
 				property: {
-					name: 'on',
+					name: "on",
 				},
 			},
 		});
@@ -948,12 +892,9 @@ export default function transform(file, api) {
 			}
 
 			let assignment = j.assignmentExpression(
-				'=',
+				"=",
 				j.memberExpression(
-					j.memberExpression(
-						j.thisExpression(),
-						j.identifier('actions'),
-					),
+					j.memberExpression(j.thisExpression(), j.identifier("actions")),
 					property,
 				),
 				p.node.arguments[1],
@@ -968,11 +909,8 @@ export default function transform(file, api) {
 				moduleInfo,
 				j.expressionStatement(
 					j.assignmentExpression(
-						'=',
-						j.memberExpression(
-							j.thisExpression(),
-							j.identifier('actions'),
-						),
+						"=",
+						j.memberExpression(j.thisExpression(), j.identifier("actions")),
 						j.objectExpression([]),
 					),
 				),
@@ -982,29 +920,23 @@ export default function transform(file, api) {
 				moduleInfo,
 				j.expressionStatement(
 					j.assignmentExpression(
-						'=',
-						j.memberExpression(
-							j.thisExpression(),
-							j.identifier('send'),
-						),
+						"=",
+						j.memberExpression(j.thisExpression(), j.identifier("send")),
 						j.arrowFunctionExpression(
-							[
-								j.identifier('actionName'),
-								j.restElement(j.identifier('args')),
-							],
+							[j.identifier("actionName"), j.restElement(j.identifier("args"))],
 							j.callExpression(
 								j.memberExpression(
 									j.memberExpression(
 										j.memberExpression(
 											j.thisExpression(),
-											j.identifier('actions'),
+											j.identifier("actions"),
 										),
-										j.identifier('actionName'),
+										j.identifier("actionName"),
 										true,
 									),
-									j.identifier('apply'),
+									j.identifier("apply"),
 								),
-								[j.thisExpression(), j.identifier('args')],
+								[j.thisExpression(), j.identifier("args")],
 							),
 						),
 					),
@@ -1014,62 +946,61 @@ export default function transform(file, api) {
 	}
 
 	function updateInjectCalls(ctx) {
-		ctx.find(j.CallExpression, {
-			callee: {
-				type: 'MemberExpression',
-				object: {
+		ctx
+			.find(j.CallExpression, {
+				callee: {
+					type: "MemberExpression",
 					object: {
-						type: 'ThisExpression',
-					},
-					property: {
-						name: 'inject',
+						object: {
+							type: "ThisExpression",
+						},
+						property: {
+							name: "inject",
+						},
 					},
 				},
-			},
-		}).forEach((p) => {
-			let injectType = p.node.callee.property.name;
-			let injectedName = p.node.arguments[0].value;
-			let localName = injectedName;
-			if (p.node.arguments[1]) {
-				let options = p.node.arguments[1];
-				let as = options.properties.find(
-					(property) => property.key.name === 'as',
-				);
-				if (as) {
-					localName = as.value.value;
+			})
+			.forEach((p) => {
+				let injectType = p.node.callee.property.name;
+				let injectedName = p.node.arguments[0].value;
+				let localName = injectedName;
+				if (p.node.arguments[1]) {
+					let options = p.node.arguments[1];
+					let as = options.properties.find(
+						(property) => property.key.name === "as",
+					);
+					if (as) {
+						localName = as.value.value;
+					}
 				}
-			}
-			let property = j.identifier(localName);
-			// rudimentary attempt to confirm the property name is valid
-			// as `this.propertyName`
-			if (!localName.match(/^[a-zA-Z_][a-zA-Z0-9]+$/)) {
-				// if not, use `this['property-name']`
-				property = j.literal(localName);
-			}
-			let assignment = j.assignmentExpression(
-				'=',
-				j.memberExpression(j.thisExpression(), property),
-				j.callExpression(
-					j.memberExpression(
+				let property = j.identifier(localName);
+				// rudimentary attempt to confirm the property name is valid
+				// as `this.propertyName`
+				if (!localName.match(/^[a-zA-Z_][a-zA-Z0-9]+$/)) {
+					// if not, use `this['property-name']`
+					property = j.literal(localName);
+				}
+				let assignment = j.assignmentExpression(
+					"=",
+					j.memberExpression(j.thisExpression(), property),
+					j.callExpression(
 						j.memberExpression(
-							j.thisExpression(),
-							j.identifier('owner'),
+							j.memberExpression(j.thisExpression(), j.identifier("owner")),
+							j.identifier("lookup"),
 						),
-						j.identifier('lookup'),
+						[j.literal(`${injectType}:${injectedName}`)],
 					),
-					[j.literal(`${injectType}:${injectedName}`)],
-				),
-			);
+				);
 
-			p.replace(assignment);
-		});
+				p.replace(assignment);
+			});
 	}
 
 	function updateGetOwnerThisUsage(expressionCollection) {
 		let expression = expressionCollection.get().node;
 		let thisDotOwner = j.memberExpression(
 			j.thisExpression(),
-			j.identifier('owner'),
+			j.identifier("owner"),
 		);
 
 		function replacement(path) {
@@ -1081,7 +1012,7 @@ export default function transform(file, api) {
 		expressionCollection
 			.find(j.CallExpression, {
 				callee: {
-					name: 'getOwner',
+					name: "getOwner",
 				},
 			})
 			.forEach(replacement);
@@ -1089,12 +1020,12 @@ export default function transform(file, api) {
 		expressionCollection
 			.find(j.CallExpression, {
 				callee: {
-					type: 'MemberExpression',
+					type: "MemberExpression",
 					object: {
-						name: 'Ember',
+						name: "Ember",
 					},
 					property: {
-						name: 'getOwner',
+						name: "getOwner",
 					},
 				},
 			})
@@ -1103,16 +1034,16 @@ export default function transform(file, api) {
 
 	function updateWaitUsage() {
 		let waitImport = root.find(j.ImportDeclaration, {
-			source: { value: 'ember-test-helpers/wait' },
+			source: { value: "ember-test-helpers/wait" },
 		});
 
 		if (waitImport.size() > 0) {
 			let importedName;
 
 			ensureImportWithSpecifiers({
-				source: '@ember/test-helpers',
-				anchor: 'ember-qunit',
-				specifiers: ['settled'],
+				source: "@ember/test-helpers",
+				anchor: "ember-qunit",
+				specifiers: ["settled"],
 			});
 
 			waitImport
@@ -1120,15 +1051,17 @@ export default function transform(file, api) {
 				.forEach((p) => (importedName = p.node.local.name));
 			waitImport.remove();
 
-			root.find(j.CallExpression, {
-				callee: { name: importedName },
-			}).forEach((p) => {
-				p.node.callee.name = 'settled';
-			});
+			root
+				.find(j.CallExpression, {
+					callee: { name: importedName },
+				})
+				.forEach((p) => {
+					p.node.callee.name = "settled";
+				});
 		}
 	}
 
-	const printOptions = { quote: 'single', wrapColumn: 100 };
+	const printOptions = { quote: "single", wrapColumn: 100 };
 
 	moveQUnitImportsFromEmberQUnit();
 	updateToNewEmberQUnitImports();

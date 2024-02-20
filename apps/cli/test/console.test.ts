@@ -1,12 +1,12 @@
-import { deepStrictEqual } from 'node:assert';
-import vm from 'node:vm';
-import { describe, it } from 'vitest';
-import { buildVmConsole } from '../src/buildVmConsole.js';
-import { CONSOLE_OVERRIDE } from '../src/consoleOverride.js';
-import { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
+import { deepStrictEqual } from "node:assert";
+import vm from "node:vm";
+import { describe, it } from "vitest";
+import { buildVmConsole } from "../src/buildVmConsole.js";
+import { CONSOLE_OVERRIDE } from "../src/consoleOverride.js";
+import { ConsoleKind } from "../src/schemata/consoleKindSchema.js";
 
-describe('console', () => {
-	it('should pick the console statements from the VM', async () => {
+describe("console", () => {
+	it("should pick the console statements from the VM", async () => {
 		const codeToExecute = `
             // bindings
 			${CONSOLE_OVERRIDE}
@@ -39,12 +39,12 @@ describe('console', () => {
 		await vm.runInContext(codeToExecute, context);
 
 		deepStrictEqual(messages, [
-			['debug', '1 debug test'],
-			['error', '2 error test'],
-			['log', '3 log test'],
-			['info', '4 info test'],
-			['trace', '5 trace test'],
-			['warn', '6 warn test'],
+			["debug", "1 debug test"],
+			["error", "2 error test"],
+			["log", "3 log test"],
+			["info", "4 info test"],
+			["trace", "5 trace test"],
+			["warn", "6 warn test"],
 		]);
 	});
 });

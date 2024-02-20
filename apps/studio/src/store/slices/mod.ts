@@ -1,14 +1,14 @@
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { INITIAL_STATE } from '~/store/getInitialState';
-import { type TreeNode } from '../../types/tree';
-import { isParsedResultFile, parseSnippet } from '../../utils/babelParser';
-import mapBabelASTToRenderableTree from '../../utils/mappers';
-import { buildRanges, type RangeCommand } from '../../utils/tree';
-import type { RootState } from '../index';
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { INITIAL_STATE } from "~/store/getInitialState";
+import { type TreeNode } from "../../types/tree";
+import { isParsedResultFile, parseSnippet } from "../../utils/babelParser";
+import mapBabelASTToRenderableTree from "../../utils/mappers";
+import { buildRanges, type RangeCommand } from "../../utils/tree";
+import type { RootState } from "../index";
 
-const SLICE_KEY = 'mod';
+const SLICE_KEY = "mod";
 
 type ModState = Readonly<{
 	internalContent: string | null;
@@ -60,12 +60,12 @@ const modSlice = createSlice({
 			state.ranges = buildRanges(state.parsedContent, action.payload);
 			state.rangesUpdatedAt = Date.now();
 		},
-		setCurrentCommand(state, action: PayloadAction<ModState['command']>) {
+		setCurrentCommand(state, action: PayloadAction<ModState["command"]>) {
 			state.command = action.payload;
 		},
 	},
 	extraReducers: {
-		'CFS/fixCodemod/fulfilled': (
+		"CFS/fixCodemod/fulfilled": (
 			state,
 			action: PayloadAction<{ text: string }>,
 		) => {

@@ -1,4 +1,4 @@
-import type { ParameterDeclaration, SourceFile } from 'ts-morph';
+import type { ParameterDeclaration, SourceFile } from "ts-morph";
 import {
 	SyntaxKind,
 	type ArrowFunction,
@@ -7,7 +7,7 @@ import {
 	type CallExpression,
 	type FunctionExpression,
 	type ImportSpecifier,
-} from 'ts-morph';
+} from "ts-morph";
 
 function addNamedImportDeclaration(
 	sourceFile: SourceFile,
@@ -74,16 +74,15 @@ function replaceReferences(
 		.forEach((accessExpr) => {
 			if (
 				replaced.includes(accessExpr.getName()) &&
-				accessExpr
-					.getChildrenOfKind(SyntaxKind.Identifier)[0]
-					?.getText() === callerName
+				accessExpr.getChildrenOfKind(SyntaxKind.Identifier)[0]?.getText() ===
+					callerName
 			) {
 				const accessed = accessExpr
 					.getChildrenOfKind(SyntaxKind.Identifier)
 					.at(-1)
 					?.getText();
 				if (!accessed) {
-					throw new Error('Could not find accessed identifier');
+					throw new Error("Could not find accessed identifier");
 				}
 
 				didReplace = true;
@@ -117,29 +116,22 @@ function replaceReferences(
 						.getText()
 						.replace(
 							new RegExp(
-								`(,\\s*)?(${toReplaceFromBinding.join(
-									'|',
-								)})+(\\s*,)?`,
-								'g',
+								`(,\\s*)?(${toReplaceFromBinding.join("|")})+(\\s*,)?`,
+								"g",
 							),
 							(fullMatch, p1, _p2, p3) => {
-								if (fullMatch && ![p1, p3].includes(fullMatch))
-									return '';
+								if (fullMatch && ![p1, p3].includes(fullMatch)) return "";
 								return fullMatch;
 							},
 						),
 				);
 
 				if (
-					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier)
-						.length
+					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier).length
 				) {
 					bindingPattern
 						.getAncestors()
-						.find(
-							(a) =>
-								a.getKind() === SyntaxKind.VariableDeclaration,
-						)
+						.find((a) => a.getKind() === SyntaxKind.VariableDeclaration)
 						?.asKindOrThrow(SyntaxKind.VariableDeclaration)
 						.remove();
 				} else {
@@ -152,11 +144,11 @@ function replaceReferences(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -180,19 +172,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -234,7 +226,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -259,11 +251,11 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 			const didReplacePassthrough = replaceReferences(
 				callbackBody,
-				['passthrough'],
+				["passthrough"],
 				reqParam?.getText(),
 			);
 			if (didReplacePassthrough) {
-				addNamedImportDeclaration(sourceFile, 'msw', 'passthrough');
+				addNamedImportDeclaration(sourceFile, "msw", "passthrough");
 			}
 		});
 

@@ -1,15 +1,15 @@
-import { forwardRef, KeyboardEvent, memo, useCallback, useState } from 'react';
-import { Collapsable } from '../Components/Collapsable';
-import { exportToCodemodStudio, reportIssue } from '../util';
-import { Header } from './Container';
-import { Diff, DiffComponent } from './Diff';
-import './DiffItem.css';
-import { PanelViewProps } from '../../../../src/components/webview/panelViewProps';
-import debounce from '../../shared/utilities/debounce';
-import { vscode } from '../../shared/utilities/vscode';
+import { forwardRef, KeyboardEvent, memo, useCallback, useState } from "react";
+import { Collapsable } from "../Components/Collapsable";
+import { exportToCodemodStudio, reportIssue } from "../util";
+import { Header } from "./Container";
+import { Diff, DiffComponent } from "./Diff";
+import "./DiffItem.css";
+import { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
+import debounce from "../../shared/utilities/debounce";
+import { vscode } from "../../shared/utilities/vscode";
 
-type Props = PanelViewProps & { kind: 'JOB' } & {
-	viewType: 'inline' | 'side-by-side';
+type Props = PanelViewProps & { kind: "JOB" } & {
+	viewType: "inline" | "side-by-side";
 	theme: string;
 };
 
@@ -36,24 +36,17 @@ export const JobDiffView = memo(
 			const report = useCallback(() => {
 				reportIssue(
 					jobHash,
-					oldFileContent ?? '',
-					originalNewFileContent ?? '',
-					originalNewFileContent !== newFileContent
-						? newFileContent
-						: null,
+					oldFileContent ?? "",
+					originalNewFileContent ?? "",
+					originalNewFileContent !== newFileContent ? newFileContent : null,
 				);
-			}, [
-				jobHash,
-				oldFileContent,
-				newFileContent,
-				originalNewFileContent,
-			]);
+			}, [jobHash, oldFileContent, newFileContent, originalNewFileContent]);
 
 			const exportToCS = useCallback(() => {
 				exportToCodemodStudio(
 					jobHash,
-					oldFileContent ?? '',
-					newFileContent ?? '',
+					oldFileContent ?? "",
+					newFileContent ?? "",
 				);
 			}, [jobHash, oldFileContent, newFileContent]);
 
@@ -65,7 +58,7 @@ export const JobDiffView = memo(
 				const changed = newContent !== newFileContent;
 				if (changed) {
 					vscode.postMessage({
-						kind: 'webview.panel.contentModified',
+						kind: "webview.panel.contentModified",
 						newContent,
 						jobHash,
 					});
@@ -78,11 +71,11 @@ export const JobDiffView = memo(
 					className="px-5 pb-2-5 diff-view-container h-full"
 					tabIndex={0}
 					onKeyDown={(event: KeyboardEvent) => {
-						if (event.key === 'ArrowLeft') {
+						if (event.key === "ArrowLeft") {
 							event.preventDefault();
 
 							vscode.postMessage({
-								kind: 'webview.panel.focusOnChangeExplorer',
+								kind: "webview.panel.focusOnChangeExplorer",
 							});
 						}
 					}}
@@ -96,14 +89,12 @@ export const JobDiffView = memo(
 						headerComponent={
 							<Header
 								diff={diff}
-								modifiedByUser={
-									originalNewFileContent !== newFileContent
-								}
-								oldFileTitle={oldFileTitle ?? ''}
+								modifiedByUser={originalNewFileContent !== newFileContent}
+								oldFileTitle={oldFileTitle ?? ""}
 								jobKind={jobKind}
 								caseHash={caseHash}
 								jobHash={jobHash}
-								title={title ?? ''}
+								title={title ?? ""}
 								reviewed={reviewed}
 								onReportIssue={report}
 								onFixInStudio={exportToCS}

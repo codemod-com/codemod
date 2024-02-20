@@ -1,12 +1,12 @@
-import { deepStrictEqual } from 'node:assert';
-import { Project } from 'ts-morph';
-import { describe, it } from 'vitest';
-import { handleSourceFile } from '../src/index.js';
+import { deepStrictEqual } from "node:assert";
+import { Project } from "ts-morph";
+import { describe, it } from "vitest";
+import { handleSourceFile } from "../src/index.js";
 
 export const transform = (
 	beforeText: string,
 	afterText: string,
-	extension: '.js' | '.tsx',
+	extension: ".js" | ".tsx",
 ) => {
 	const project = new Project({
 		useInMemoryFileSystem: true,
@@ -32,8 +32,8 @@ export const transform = (
 	};
 };
 
-describe('next 13 upsert-client-directive', function () {
-	it('should not rewrite the file', function () {
+describe("next 13 upsert-client-directive", function () {
+	it("should not rewrite the file", function () {
 		const beforeText = `
             'use client';
 
@@ -42,7 +42,7 @@ describe('next 13 upsert-client-directive', function () {
             }
 		`;
 
-		const { actual } = transform(beforeText, beforeText, '.tsx');
+		const { actual } = transform(beforeText, beforeText, ".tsx");
 		deepStrictEqual(actual, undefined);
 	});
 
@@ -68,7 +68,7 @@ describe('next 13 upsert-client-directive', function () {
             }
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, '.tsx');
+		const { actual, expected } = transform(beforeText, afterText, ".tsx");
 		deepStrictEqual(actual, expected);
 	});
 
@@ -79,7 +79,7 @@ describe('next 13 upsert-client-directive', function () {
             }
 		`;
 
-		const { actual } = transform(beforeText, beforeText, '.tsx');
+		const { actual } = transform(beforeText, beforeText, ".tsx");
 		deepStrictEqual(actual, undefined);
 	});
 
@@ -90,7 +90,7 @@ describe('next 13 upsert-client-directive', function () {
             }
 		`;
 
-		const { actual } = transform(beforeText, beforeText, '.tsx');
+		const { actual } = transform(beforeText, beforeText, ".tsx");
 		deepStrictEqual(actual, undefined);
 	});
 
@@ -112,7 +112,7 @@ describe('next 13 upsert-client-directive', function () {
             }
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, '.tsx');
+		const { actual, expected } = transform(beforeText, afterText, ".tsx");
 		deepStrictEqual(actual, expected);
 	});
 });

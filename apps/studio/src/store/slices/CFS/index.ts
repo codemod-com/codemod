@@ -1,19 +1,19 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
-import { type Node } from '@babel/types';
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import { type SendMessageResponse } from '~/api/sendMessage';
-import { type TreeNode } from '~/components/Tree';
-import type { RootState } from '~/store';
-import { getNodeById, getNodeHash, isNode } from '~/utils/tree';
-import { autoGenerateCodemodPrompt, type PromptPreset } from './prompts';
+import { type Node } from "@babel/types";
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type SendMessageResponse } from "~/api/sendMessage";
+import { type TreeNode } from "~/components/Tree";
+import type { RootState } from "~/store";
+import { getNodeById, getNodeHash, isNode } from "~/utils/tree";
+import { autoGenerateCodemodPrompt, type PromptPreset } from "./prompts";
 
-const SLICE_KEY = 'CFS';
+const SLICE_KEY = "CFS";
 
 const states = {
-	VALUE: 'Value',
-	TYPE: 'Type',
-	UNSELECTED: 'Unselected',
+	VALUE: "Value",
+	TYPE: "Type",
+	UNSELECTED: "Unselected",
 } as const;
 
 function isNeitherNullNorUndefined<T>(
@@ -28,11 +28,11 @@ type TreeNodeSelectorState = typeof states extends Record<any, infer V>
 	: never;
 
 const ENGINES = [
-	'gpt-4',
-	'claude-2.0',
-	'claude-instant-1.2',
-	'replit-code-v1-3b',
-	'gpt-4-with-chroma',
+	"gpt-4",
+	"claude-2.0",
+	"claude-instant-1.2",
+	"replit-code-v1-3b",
+	"gpt-4-with-chroma",
 ] as const;
 
 type Engine = (typeof ENGINES)[number];
@@ -69,20 +69,20 @@ const AIAssistantInitialState = {
 	codemodHasRuntimeErrors: false,
 	selectedPreset: null,
 	open: false,
-	engine: 'gpt-4' as const,
+	engine: "gpt-4" as const,
 };
 
 const defaultState: CFSState = {
 	isOpen: false,
 	parentNodes: [],
 	selectedNodeIds: [],
-	generatedOutput: '',
+	generatedOutput: "",
 	nodeSelectorTreeState: {},
 	hoveredNode: null,
 	AIAssistant: AIAssistantInitialState,
 };
 
-const ignoredKeys = ['tokens', 'loc', 'start', 'end', 'extra'];
+const ignoredKeys = ["tokens", "loc", "start", "end", "extra"];
 
 const generatePartialAST = (
 	node: Node,
@@ -105,7 +105,7 @@ const generatePartialAST = (
 
 		if (
 			nodeSelectorTreeState[nodeId] === states.TYPE &&
-			['name', 'value'].includes(key)
+			["name", "value"].includes(key)
 		) {
 			return;
 		}
@@ -130,10 +130,7 @@ const generatePartialAST = (
 				return;
 			}
 
-			(newNode as any)[key] = generatePartialAST(
-				child,
-				nodeSelectorTreeState,
-			);
+			(newNode as any)[key] = generatePartialAST(child, nodeSelectorTreeState);
 		} else {
 			(newNode as any)[key] = child;
 		}
@@ -152,7 +149,7 @@ const generateFindExpression = (
 		acc += `.find(j.${node.label}) \n`;
 
 		return acc;
-	}, 'root \n');
+	}, "root \n");
 
 	generatedOutput += `.find(j.${selectedNode?.label}, ${JSON.stringify(
 		generatePartialAST(selectedNode.actualNode, nodeSelectorTreeState),
@@ -235,8 +232,7 @@ const CFSSlice = createSlice({
 
 			const idx = availableStates.findIndex((s) => currState === s);
 
-			const nextState =
-				availableStates[(idx + 1) % availableStates.length];
+			const nextState = availableStates[(idx + 1) % availableStates.length];
 			if (!nextState) {
 				return;
 			}
@@ -282,7 +278,7 @@ const selectCFSOutput =
 		const { selectedNodes, nodeSelectorTreeState } = selectCFS(state);
 
 		if (!selectedNode) {
-			return '';
+			return "";
 		}
 
 		return generateFindExpression(
@@ -310,10 +306,8 @@ const selectNodesByState =
 			: [];
 	};
 
-const nodeHasValues = (type: Node['type']): boolean =>
-	type === 'Identifier' ||
-	type === 'StringLiteral' ||
-	type === 'NumberLiteral';
+const nodeHasValues = (type: Node["type"]): boolean =>
+	type === "Identifier" || type === "StringLiteral" || type === "NumberLiteral";
 
 export {
 	nodeHasValues,

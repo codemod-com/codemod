@@ -1,6 +1,6 @@
-import * as estreePlugin from 'prettier/plugins/estree';
-import * as tsPlugin from 'prettier/plugins/typescript';
-import * as prettier from 'prettier/standalone';
+import * as estreePlugin from "prettier/plugins/estree";
+import * as tsPlugin from "prettier/plugins/typescript";
+import * as prettier from "prettier/standalone";
 
 // Prettier is temporarily excluded, due to switching its API to async after upgrading to v3
 const prettifyDeprecated = (text: string): string => {
@@ -27,8 +27,8 @@ export const prettify = async (text: string): Promise<string> => {
 			semi: true,
 			singleQuote: true,
 			jsxSingleQuote: true,
-			trailingComma: 'all',
-			parser: 'typescript',
+			trailingComma: "all",
+			parser: "typescript",
 			tabWidth: 4,
 			plugins: [tsPlugin, estreePlugin],
 		});

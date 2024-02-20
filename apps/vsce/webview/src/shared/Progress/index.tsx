@@ -1,5 +1,5 @@
-import { VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react';
-import s from './style.module.css';
+import { VSCodeProgressRing } from "@vscode/webview-ui-toolkit/react";
+import s from "./style.module.css";
 
 const Progress = () => {
 	return (

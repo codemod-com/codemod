@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('remove-public-modifier', () => {
-	it('basic', function () {
+describe("remove-public-modifier", () => {
+	it("basic", function () {
 		const INPUT = `
 				class MyClass {
 					public myProperty: string;
@@ -30,19 +30,19 @@ describe('remove-public-modifier', () => {
 				}
 			`;
 		const fileInfo: FileInfo = {
-			path: 'index.ts',
+			path: "index.ts",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('no public modifier', function () {
+	it("no public modifier", function () {
 		const INPUT = `
 				class MyClass {
 					myMethod(): void {
@@ -61,19 +61,19 @@ describe('remove-public-modifier', () => {
 				}
 			`;
 		const fileInfo: FileInfo = {
-			path: 'index.ts',
+			path: "index.ts",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('class with other modifiers (static, readonly)', function () {
+	it("class with other modifiers (static, readonly)", function () {
 		const INPUT = `
 				class MyClass {
 					public static readonly myProperty: string = 'value';
@@ -86,19 +86,19 @@ describe('remove-public-modifier', () => {
 				}	
 			`;
 		const fileInfo: FileInfo = {
-			path: 'index.ts',
+			path: "index.ts",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('multiple classes in the same file', function () {
+	it("multiple classes in the same file", function () {
 		const INPUT = `
 				class Class1 {
 					public method1(): void {}
@@ -119,15 +119,15 @@ describe('remove-public-modifier', () => {
 				}	
 			`;
 		const fileInfo: FileInfo = {
-			path: 'index.ts',
+			path: "index.ts",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

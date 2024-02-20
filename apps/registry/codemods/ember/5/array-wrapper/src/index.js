@@ -33,20 +33,24 @@ export default function transform(file, api) {
 
 	const root = j(file.source);
 
-	root.find(j.NewExpression, {
-		callee: {
-			name: 'A',
-		},
-	}).replaceWith(() => {
-		root.find(j.ImportSpecifier, {
-			imported: { name: 'A' },
-			local: { name: 'A' },
-		}).replaceWith(() => {
-			return j.importSpecifier(j.identifier('A'), j.identifier('emberA'));
-		});
+	root
+		.find(j.NewExpression, {
+			callee: {
+				name: "A",
+			},
+		})
+		.replaceWith(() => {
+			root
+				.find(j.ImportSpecifier, {
+					imported: { name: "A" },
+					local: { name: "A" },
+				})
+				.replaceWith(() => {
+					return j.importSpecifier(j.identifier("A"), j.identifier("emberA"));
+				});
 
-		return j.callExpression(j.identifier('A'), []);
-	});
+			return j.callExpression(j.identifier("A"), []);
+		});
 
 	return root.toSource();
 }

@@ -1,35 +1,35 @@
-import { OutgoingHttpHeaders } from 'node:http';
-import { clerkPlugin, createClerkClient, getAuth } from '@clerk/fastify';
-import cors, { FastifyCorsOptions } from '@fastify/cors';
-import fastifyMultipart from '@fastify/multipart';
-import fastifyRateLimit from '@fastify/rate-limit';
-import { OpenAIStream } from 'ai';
-import Fastify, { RouteHandlerMethod } from 'fastify';
-import * as openAiEdge from 'openai-edge';
-import { buildSafeChromaService } from './chroma.js';
-import { ClaudeService } from './claudeService.js';
-import { COMPLETION_PARAMS } from './constants.js';
+import { OutgoingHttpHeaders } from "node:http";
+import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
+import cors, { FastifyCorsOptions } from "@fastify/cors";
+import fastifyMultipart from "@fastify/multipart";
+import fastifyRateLimit from "@fastify/rate-limit";
+import { OpenAIStream } from "ai";
+import Fastify, { RouteHandlerMethod } from "fastify";
+import * as openAiEdge from "openai-edge";
+import { buildSafeChromaService } from "./chroma.js";
+import { ClaudeService } from "./claudeService.js";
+import { COMPLETION_PARAMS } from "./constants.js";
 import {
 	CustomHandler,
 	ForbiddenError,
 	UnauthorizedError,
-} from './customHandler.js';
-import { buildDataAccessLayer } from './dataAccessLayer/dataAccessLayer.js';
-import { buildAccessTokenHandler } from './handlers/buildAccessTokenHandler.js';
-import { revokeTokenHandler } from './handlers/revokeTokenHandler.js';
-import { validationHandler } from './handlers/validationHandler.js';
-import { publishHandler } from './publishHandler.js';
-import { ReplicateService } from './replicateService.js';
+} from "./customHandler.js";
+import { buildDataAccessLayer } from "./dataAccessLayer/dataAccessLayer.js";
+import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
+import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
+import { validationHandler } from "./handlers/validationHandler.js";
+import { publishHandler } from "./publishHandler.js";
+import { ReplicateService } from "./replicateService.js";
 import {
 	Environment,
 	parseCreateIssueBody,
 	parseCreateIssueParams,
 	parseSendChatBody,
 	parseSendMessageBody,
-} from './schema.js';
-import { Auth } from './services/Auth.js';
-import { GithubProvider } from './services/GithubProvider.js';
-import { SourceControl } from './services/SourceControl.js';
+} from "./schema.js";
+import { Auth } from "./services/Auth.js";
+import { GithubProvider } from "./services/GithubProvider.js";
+import { SourceControl } from "./services/SourceControl.js";
 import {
 	CLAIM_ISSUE_CREATION,
 	TokenExpiredError,
@@ -38,16 +38,16 @@ import {
 	TokenNotVerifiedError,
 	TokenRevokedError,
 	TokenService,
-} from './services/tokenService.js';
-import { areClerkKeysSet, getCustomAccessToken } from './util.js';
+} from "./services/tokenService.js";
+import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
 const getSourceControlProvider = (
-	provider: 'github',
+	provider: "github",
 	repo: string,
 	oAuthToken: string,
 ) => {
 	switch (provider) {
-		case 'github': {
+		case "github": {
 			return new GithubProvider(repo, oAuthToken);
 		}
 	}
@@ -56,10 +56,10 @@ const getSourceControlProvider = (
 export const runServer = async (environment: Environment) => {
 	const port = parseInt(environment.PORT, 10);
 	const X_CODEMOD_ACCESS_TOKEN = (
-		environment.X_CODEMOD_ACCESS_TOKEN ?? ''
+		environment.X_CODEMOD_ACCESS_TOKEN ?? ""
 	).toLocaleLowerCase();
 	const X_INTUITA_ACCESS_TOKEN = (
-		environment.X_INTUITA_ACCESS_TOKEN ?? ''
+		environment.X_INTUITA_ACCESS_TOKEN ?? ""
 	).toLocaleLowerCase();
 
 	if (Number.isNaN(port)) {
@@ -67,10 +67,10 @@ export const runServer = async (environment: Environment) => {
 	}
 
 	const dataAccessLayer = await buildDataAccessLayer(
-		environment.DATABASE_URI ?? 'sqlite::memory:',
+		environment.DATABASE_URI ?? "sqlite::memory:",
 	);
 
-	const { ChatGPTAPI } = await import('chatgpt');
+	const { ChatGPTAPI } = await import("chatgpt");
 
 	const chromaService = await buildSafeChromaService(environment);
 
@@ -109,29 +109,29 @@ export const runServer = async (environment: Environment) => {
 				return;
 			}
 
-			const hostname = new URL(origin).hostname.replace(/^www\./, '');
+			const hostname = new URL(origin).hostname.replace(/^www\./, "");
 
-			if (hostname === 'localhost' || hostname === 'codemod.studio') {
+			if (hostname === "localhost" || hostname === "codemod.studio") {
 				cb(null, true);
 				return;
 			}
 
-			cb(new Error('Not allowed'), false);
+			cb(new Error("Not allowed"), false);
 		},
-		methods: ['POST', 'PUT', 'PATCH', 'GET', 'DELETE', 'OPTIONS'],
+		methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
 		exposedHeaders: [
 			X_CODEMOD_ACCESS_TOKEN,
 			// TODO deprecated
 			X_INTUITA_ACCESS_TOKEN,
-			'x-clerk-auth-reason',
-			'x-clerk-auth-message',
+			"x-clerk-auth-reason",
+			"x-clerk-auth-message",
 		],
 		allowedHeaders: [
 			X_CODEMOD_ACCESS_TOKEN,
 			// TODO deprecated
 			X_INTUITA_ACCESS_TOKEN,
-			'Content-Type',
-			'Authorization',
+			"Content-Type",
+			"Authorization",
 		],
 	} satisfies FastifyCorsOptions);
 
@@ -144,9 +144,9 @@ export const runServer = async (environment: Environment) => {
 
 	const tokenService = new TokenService(
 		dataAccessLayer,
-		environment.ENCRYPTION_KEY ?? '',
-		environment.SIGNATURE_PRIVATE_KEY ?? '',
-		environment.PEPPER ?? '',
+		environment.ENCRYPTION_KEY ?? "",
+		environment.SIGNATURE_PRIVATE_KEY ?? "",
+		environment.PEPPER ?? "",
 	);
 
 	const clerkClient = areClerkKeysSet(environment)
@@ -161,10 +161,7 @@ export const runServer = async (environment: Environment) => {
 		<T>(handler: CustomHandler<T>): RouteHandlerMethod =>
 		async (request, reply) => {
 			const getAccessTokenOrThrow = () => {
-				const accessToken = getCustomAccessToken(
-					environment,
-					request.headers,
-				);
+				const accessToken = getCustomAccessToken(environment, request.headers);
 
 				if (accessToken === null) {
 					throw new UnauthorizedError();
@@ -200,40 +197,40 @@ export const runServer = async (environment: Environment) => {
 					now,
 				});
 
-				reply.type('application/json').code(200);
+				reply.type("application/json").code(200);
 
 				return data;
 			} catch (error) {
 				if (error instanceof TokenExpiredError) {
-					reply.type('application/json').code(400);
+					reply.type("application/json").code(400);
 
 					return {
-						error: 'Token expired',
+						error: "Token expired",
 					};
 				}
 
 				if (error instanceof TokenRevokedError) {
-					reply.type('application/json').code(400);
+					reply.type("application/json").code(400);
 					return {
-						error: 'Token revoked',
+						error: "Token revoked",
 					};
 				}
 				if (error instanceof TokenNotFoundError) {
-					reply.type('application/json').code(400);
+					reply.type("application/json").code(400);
 					return {
-						error: 'Token not found',
+						error: "Token not found",
 					};
 				}
 				if (error instanceof TokenInsufficientClaimsError) {
-					reply.type('application/json').code(400);
+					reply.type("application/json").code(400);
 					return {
-						error: 'Token has insufficient claims',
+						error: "Token has insufficient claims",
 					};
 				}
 				if (error instanceof TokenNotVerifiedError) {
-					reply.type('application/json').code(400);
+					reply.type("application/json").code(400);
 					return {
-						error: 'Token not verified',
+						error: "Token not verified",
 					};
 				}
 
@@ -257,71 +254,58 @@ export const runServer = async (environment: Environment) => {
 		_opts,
 		done,
 	) => {
-		instance.get('/', async (_, reply) => {
-			reply.type('application/json').code(200);
+		instance.get("/", async (_, reply) => {
+			reply.type("application/json").code(200);
 			return { data: {} };
 		});
 
 		instance.post(
-			'/validateAccessToken',
+			"/validateAccessToken",
 			wrapRequestHandlerMethod(validationHandler),
 		);
 
 		instance.delete(
-			'/revokeToken',
+			"/revokeToken",
 			wrapRequestHandlerMethod(revokeTokenHandler),
 		);
 
-		instance.post(
-			'/sourceControl/:provider/issues',
-			async (request, reply) => {
-				if (!auth) {
-					throw new Error(
-						'This endpoint requires auth configuration.',
-					);
-				}
+		instance.post("/sourceControl/:provider/issues", async (request, reply) => {
+			if (!auth) {
+				throw new Error("This endpoint requires auth configuration.");
+			}
 
-				const { provider } = parseCreateIssueParams(request.params);
+			const { provider } = parseCreateIssueParams(request.params);
 
-				const { repo, title, body } = parseCreateIssueBody(
-					request.body,
-				);
+			const { repo, title, body } = parseCreateIssueBody(request.body);
 
-				const accessToken = getCustomAccessToken(
-					environment,
-					request.headers,
-				);
+			const accessToken = getCustomAccessToken(environment, request.headers);
 
-				if (accessToken === null) {
-					return reply.code(401).send();
-				}
+			if (accessToken === null) {
+				return reply.code(401).send();
+			}
 
-				const userId = await tokenService.findUserIdMetadataFromToken(
-					accessToken,
-					Date.now(),
-					CLAIM_ISSUE_CREATION,
-				);
+			const userId = await tokenService.findUserIdMetadataFromToken(
+				accessToken,
+				Date.now(),
+				CLAIM_ISSUE_CREATION,
+			);
 
-				const oAuthToken = await auth.getOAuthToken(userId, provider);
+			const oAuthToken = await auth.getOAuthToken(userId, provider);
 
-				const sourceControlProvider = getSourceControlProvider(
-					provider,
-					repo,
-					oAuthToken,
-				);
+			const sourceControlProvider = getSourceControlProvider(
+				provider,
+				repo,
+				oAuthToken,
+			);
 
-				const result = await sourceControl.createIssue(
-					sourceControlProvider,
-					{
-						title,
-						body,
-					},
-				);
+			const result = await sourceControl.createIssue(sourceControlProvider, {
+				title,
+				body,
+			});
 
-				reply.type('application/json').code(200);
-				return result;
-			},
-		);
+			reply.type("application/json").code(200);
+			return result;
+		});
 
 		done();
 	};
@@ -339,7 +323,7 @@ export const runServer = async (environment: Environment) => {
 
 			instance.register(clerkPlugin, clerkOptions);
 		} else {
-			console.warn('No Clerk keys set. Authentication is disabled.');
+			console.warn("No Clerk keys set. Authentication is disabled.");
 		}
 
 		const claudeService = new ClaudeService(
@@ -352,29 +336,25 @@ export const runServer = async (environment: Environment) => {
 		);
 
 		instance.post(
-			'/buildAccessToken',
+			"/buildAccessToken",
 			wrapRequestHandlerMethod(buildAccessTokenHandler),
 		);
 
-		instance.post('/sendMessage', async (request, reply) => {
+		instance.post("/sendMessage", async (request, reply) => {
 			if (areClerkKeysSet(environment)) {
 				const { userId } = getAuth(request);
 				if (!userId) {
 					return reply.code(401).send();
 				}
 			} else {
-				console.warn('No Clerk keys set. Authentication is disabled.');
+				console.warn("No Clerk keys set. Authentication is disabled.");
 			}
 
 			if (chatGptApi === null) {
-				throw new Error(
-					'The Chat GPT API requires the authentication key',
-				);
+				throw new Error("The Chat GPT API requires the authentication key");
 			}
 
-			const { message, parentMessageId } = parseSendMessageBody(
-				request.body,
-			);
+			const { message, parentMessageId } = parseSendMessageBody(request.body);
 
 			const options: {
 				parentMessageId?: string;
@@ -386,18 +366,18 @@ export const runServer = async (environment: Environment) => {
 
 			const result = await chatGptApi.sendMessage(message, options);
 
-			reply.type('application/json').code(200);
+			reply.type("application/json").code(200);
 			return result;
 		});
 
-		instance.post('/sendChat', async (request, reply) => {
+		instance.post("/sendChat", async (request, reply) => {
 			if (areClerkKeysSet(environment)) {
 				const { userId } = getAuth(request);
 				if (!userId) {
 					return reply.code(401).send();
 				}
 			} else {
-				console.warn('No Clerk keys set. Authentication is disabled.');
+				console.warn("No Clerk keys set. Authentication is disabled.");
 			}
 
 			const { messages, engine } = parseSendChatBody(request.body);
@@ -406,43 +386,41 @@ export const runServer = async (environment: Environment) => {
 				return reply.code(400).send();
 			}
 
-			if (engine === 'claude-2.0' || engine === 'claude-instant-1.2') {
+			if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
 				const completion = await claudeService.complete(
 					engine,
 					messages[0].content,
 				);
 
-				reply.type('text/plain; charset=utf-8').code(200);
+				reply.type("text/plain; charset=utf-8").code(200);
 
-				return completion ?? '';
+				return completion ?? "";
 			}
 
-			if (engine === 'replit-code-v1-3b') {
-				const completion = await replicateService.complete(
-					messages[0].content,
-				);
+			if (engine === "replit-code-v1-3b") {
+				const completion = await replicateService.complete(messages[0].content);
 
-				reply.type('text/plain; charset=utf-8').code(200);
+				reply.type("text/plain; charset=utf-8").code(200);
 
-				return completion ?? '';
+				return completion ?? "";
 			}
 
-			if (engine === 'gpt-4-with-chroma') {
+			if (engine === "gpt-4-with-chroma") {
 				// chat history is not supported. passing all messages as single prompt.
 				const prompt = messages
 					.map(({ content, role }) => `${role}: ${content}`)
-					.join('\n');
+					.join("\n");
 
 				const completion = await chromaService.complete(prompt);
 
-				reply.type('text/plain; charset=utf-8').code(200);
+				reply.type("text/plain; charset=utf-8").code(200);
 
-				return completion ?? '';
+				return completion ?? "";
 			}
 
 			if (openAiEdgeApi === null) {
 				throw new Error(
-					'You need to provide the OPEN_AI_API_KEY to use this endpoint',
+					"You need to provide the OPEN_AI_API_KEY to use this endpoint",
 				);
 			}
 
@@ -466,14 +444,14 @@ export const runServer = async (environment: Environment) => {
 			Object.keys(replyHeaders).forEach((key) => {
 				const value = replyHeaders[key];
 
-				if (value === undefined || typeof value === 'number') {
+				if (value === undefined || typeof value === "number") {
 					return;
 				}
 
 				headers[key] = value;
 			});
 
-			headers['Content-Type'] = 'text/plain; charset=utf-8';
+			headers["Content-Type"] = "text/plain; charset=utf-8";
 
 			reply.raw.writeHead(200, headers);
 
@@ -497,19 +475,19 @@ export const runServer = async (environment: Environment) => {
 			return;
 		});
 
-		instance.post('/publish', publishHandler(environment, tokenService));
+		instance.post("/publish", publishHandler(environment, tokenService));
 
 		done();
 	};
 
 	// @ts-expect-error setup a display name not to trigger require.cache down the line
-	protectedRoutes[Symbol.for('fastify.display-name')] = 'protectedRoutes';
+	protectedRoutes[Symbol.for("fastify.display-name")] = "protectedRoutes";
 	// @ts-expect-error setup a display name not to trigger require.cache down the line
-	publicRoutes[Symbol.for('fastify.display-name')] = 'publicRoutes';
+	publicRoutes[Symbol.for("fastify.display-name")] = "publicRoutes";
 
 	fastify.register(protectedRoutes);
 	fastify.register(publicRoutes);
-	await fastify.listen({ port, host: '0.0.0.0' });
+	await fastify.listen({ port, host: "0.0.0.0" });
 
 	return () => {
 		return fastify.close();

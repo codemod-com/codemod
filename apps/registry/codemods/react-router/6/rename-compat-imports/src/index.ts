@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -40,13 +40,15 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.find(j.ImportDeclaration, {
-		source: { value: 'react-router-dom-v5-compat' },
-	}).forEach((path) => {
-		path.value.source.value = 'react-router-dom';
+	root
+		.find(j.ImportDeclaration, {
+			source: { value: "react-router-dom-v5-compat" },
+		})
+		.forEach((path) => {
+			path.value.source.value = "react-router-dom";
 
-		dirtyFlag = true;
-	});
+			dirtyFlag = true;
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

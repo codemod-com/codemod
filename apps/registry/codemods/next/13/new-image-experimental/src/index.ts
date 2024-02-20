@@ -27,8 +27,8 @@ SOFTWARE.
 Changes to the original file: add any typings in places where the compiler complained, nullability checks
 */
 
-import { writeFileSync } from 'fs';
-import { basename } from 'path';
+import { writeFileSync } from "fs";
+import { basename } from "path";
 import type {
 	API,
 	Collection,
@@ -37,7 +37,7 @@ import type {
 	JSCodeshift,
 	JSXAttribute,
 	Options,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 function findAndReplaceProps(
 	j: JSCodeshift,
@@ -45,114 +45,93 @@ function findAndReplaceProps(
 	tagName: string,
 ) {
 	const layoutToStyle: Record<string, Record<string, string> | null> = {
-		intrinsic: { maxWidth: '100%', height: 'auto' },
-		responsive: { width: '100%', height: 'auto' },
+		intrinsic: { maxWidth: "100%", height: "auto" },
+		responsive: { width: "100%", height: "auto" },
 		fill: null,
 		fixed: null,
 	};
 	const layoutToSizes: Record<string, string | null> = {
 		intrinsic: null,
-		responsive: '100vw',
-		fill: '100vw',
+		responsive: "100vw",
+		fill: "100vw",
 		fixed: null,
 	};
-	root.find(j.JSXElement)
+	root
+		.find(j.JSXElement)
 		.filter(
 			(el) =>
 				el.value.openingElement.name &&
-				el.value.openingElement.name.type === 'JSXIdentifier' &&
+				el.value.openingElement.name.type === "JSXIdentifier" &&
 				el.value.openingElement.name.name === tagName,
 		)
 		.forEach((el) => {
-			let layout = 'intrinsic';
+			let layout = "intrinsic";
 			let objectFit = null;
 			let objectPosition = null;
 			let styleExpProps: any[] = [];
 			let sizesAttr: JSXAttribute | null = null;
-			const attributes = el.node.openingElement.attributes?.filter(
-				(a) => {
-					if (a.type !== 'JSXAttribute') {
-						return true;
-					}
-
-					if (
-						a.name.name === 'layout' &&
-						a.value &&
-						'value' in a.value
-					) {
-						layout = String(a.value.value);
-						return false;
-					}
-					if (
-						a.name.name === 'objectFit' &&
-						a.value &&
-						'value' in a.value
-					) {
-						objectFit = String(a.value.value);
-						return false;
-					}
-					if (
-						a.name.name === 'objectPosition' &&
-						a.value &&
-						'value' in a.value
-					) {
-						objectPosition = String(a.value.value);
-						return false;
-					}
-					if (a.name.name === 'lazyBoundary') {
-						return false;
-					}
-					if (a.name.name === 'lazyRoot') {
-						return false;
-					}
-
-					if (a.name.name === 'style') {
-						if (
-							a.value?.type === 'JSXExpressionContainer' &&
-							a.value.expression.type === 'ObjectExpression'
-						) {
-							styleExpProps = a.value.expression.properties;
-						} else if (
-							a.value?.type === 'JSXExpressionContainer' &&
-							a.value.expression.type === 'Identifier'
-						) {
-							styleExpProps = [
-								j.spreadElement(
-									j.identifier(a.value.expression.name),
-								),
-							];
-						} else {
-							console.warn(
-								'Unknown style attribute value detected',
-								a.value,
-							);
-						}
-						return false;
-					}
-					if (a.name.name === 'sizes') {
-						sizesAttr = a;
-						return false;
-					}
-					if (a.name.name === 'lazyBoundary') {
-						return false;
-					}
-					if (a.name.name === 'lazyRoot') {
-						return false;
-					}
+			const attributes = el.node.openingElement.attributes?.filter((a) => {
+				if (a.type !== "JSXAttribute") {
 					return true;
-				},
-			);
+				}
 
-			if (layout === 'fill') {
-				attributes?.push(j.jsxAttribute(j.jsxIdentifier('fill')));
+				if (a.name.name === "layout" && a.value && "value" in a.value) {
+					layout = String(a.value.value);
+					return false;
+				}
+				if (a.name.name === "objectFit" && a.value && "value" in a.value) {
+					objectFit = String(a.value.value);
+					return false;
+				}
+				if (a.name.name === "objectPosition" && a.value && "value" in a.value) {
+					objectPosition = String(a.value.value);
+					return false;
+				}
+				if (a.name.name === "lazyBoundary") {
+					return false;
+				}
+				if (a.name.name === "lazyRoot") {
+					return false;
+				}
+
+				if (a.name.name === "style") {
+					if (
+						a.value?.type === "JSXExpressionContainer" &&
+						a.value.expression.type === "ObjectExpression"
+					) {
+						styleExpProps = a.value.expression.properties;
+					} else if (
+						a.value?.type === "JSXExpressionContainer" &&
+						a.value.expression.type === "Identifier"
+					) {
+						styleExpProps = [
+							j.spreadElement(j.identifier(a.value.expression.name)),
+						];
+					} else {
+						console.warn("Unknown style attribute value detected", a.value);
+					}
+					return false;
+				}
+				if (a.name.name === "sizes") {
+					sizesAttr = a;
+					return false;
+				}
+				if (a.name.name === "lazyBoundary") {
+					return false;
+				}
+				if (a.name.name === "lazyRoot") {
+					return false;
+				}
+				return true;
+			});
+
+			if (layout === "fill") {
+				attributes?.push(j.jsxAttribute(j.jsxIdentifier("fill")));
 			}
 
 			const sizes = layoutToSizes[layout];
 			if (sizes && !sizesAttr) {
-				sizesAttr = j.jsxAttribute(
-					j.jsxIdentifier('sizes'),
-					j.literal(sizes),
-				);
+				sizesAttr = j.jsxAttribute(j.jsxIdentifier("sizes"), j.literal(sizes));
 			}
 
 			if (sizesAttr) {
@@ -172,14 +151,11 @@ function findAndReplaceProps(
 				}
 				Object.entries(style).forEach(([key, value]) => {
 					styleExpProps.push(
-						j.objectProperty(
-							j.identifier(key),
-							j.stringLiteral(value),
-						),
+						j.objectProperty(j.identifier(key), j.stringLiteral(value)),
 					);
 				});
 				const styleAttribute = j.jsxAttribute(
-					j.jsxIdentifier('style'),
+					j.jsxIdentifier("style"),
 					j.jsxExpressionContainer(j.objectExpression(styleExpProps)),
 				);
 				attributes?.push(styleAttribute);
@@ -208,14 +184,14 @@ function nextConfigTransformer(
 	dryRun: boolean,
 ) {
 	root.find(j.ObjectExpression).forEach((objectExpressionPath) => {
-		const LOADERS = ['imgix', 'cloudinary', 'akamai'];
+		const LOADERS = ["imgix", "cloudinary", "akamai"];
 
 		const imagesObjectPropertyPaths = j(objectExpressionPath).find(
 			j.ObjectProperty,
 			{
 				key: {
-					type: 'Identifier',
-					name: 'images',
+					type: "Identifier",
+					name: "images",
 				},
 			},
 		);
@@ -225,8 +201,8 @@ function nextConfigTransformer(
 				j(objectPropertyPath)
 					.find(j.ObjectProperty, {
 						key: {
-							type: 'Identifier',
-							name: 'loader',
+							type: "Identifier",
+							name: "loader",
 						},
 					})
 					.paths(),
@@ -244,8 +220,8 @@ function nextConfigTransformer(
 				j(objectPropertyPath)
 					.find(j.ObjectProperty, {
 						key: {
-							type: 'Identifier',
-							name: 'path',
+							type: "Identifier",
+							name: "path",
 						},
 					})
 					.paths(),
@@ -265,17 +241,15 @@ function nextConfigTransformer(
 
 		const filename = `./${loaderType}-loader.js`;
 
-		loaderTypeStringLiteralsPaths.replaceWith(() =>
-			j.stringLiteral('custom'),
-		);
+		loaderTypeStringLiteralsPaths.replaceWith(() => j.stringLiteral("custom"));
 
 		pathObjectPropertyPaths.remove();
 
 		j(objectExpressionPath)
 			.find(j.ObjectProperty, {
 				key: {
-					type: 'Identifier',
-					name: 'images',
+					type: "Identifier",
+					name: "images",
 				},
 			})
 			.forEach((objectPropertyPath) => {
@@ -288,8 +262,8 @@ function nextConfigTransformer(
 						const properties = [
 							...objectExpression.properties,
 							j.property(
-								'init',
-								j.identifier('loaderFile'),
+								"init",
+								j.identifier("loaderFile"),
 								j.literal(filename),
 							),
 						];
@@ -303,7 +277,7 @@ function nextConfigTransformer(
 
 		const normalizeSrc = `const normalizeSrc = (src) => src[0] === '/' ? src.slice(1) : src`;
 
-		if (loaderType === 'imgix' && !dryRun) {
+		if (loaderType === "imgix" && !dryRun) {
 			writeFileSync(
 				filename,
 				`${normalizeSrc}
@@ -316,11 +290,11 @@ function nextConfigTransformer(
 			if (quality) { params.set('q', quality.toString()) }
 			return url.href
 		}`
-					.split('\n')
+					.split("\n")
 					.map((l) => l.trim())
-					.join('\n'),
+					.join("\n"),
 			);
-		} else if (loaderType === 'cloudinary' && !dryRun) {
+		} else if (loaderType === "cloudinary" && !dryRun) {
 			writeFileSync(
 				filename,
 				`${normalizeSrc}
@@ -329,20 +303,20 @@ function nextConfigTransformer(
 			const paramsString = params.join(',') + '/'
 			return '${pathPrefix}' + paramsString + normalizeSrc(src)
 		}`
-					.split('\n')
+					.split("\n")
 					.map((l) => l.trim())
-					.join('\n'),
+					.join("\n"),
 			);
-		} else if (loaderType === 'akamai' && !dryRun) {
+		} else if (loaderType === "akamai" && !dryRun) {
 			writeFileSync(
 				filename,
 				`${normalizeSrc}
 		export default function akamaiLoader({ src, width, quality }) {
 			return '${pathPrefix}' + normalizeSrc(src) + '?imwidth=' + width
 		}`
-					.split('\n')
+					.split("\n")
 					.map((l) => l.trim())
-					.join('\n'),
+					.join("\n"),
 			);
 		}
 	});
@@ -356,17 +330,13 @@ export default function transformer(
 	options: Options,
 ) {
 	const name = basename(file.path);
-	const isConfig = name.startsWith('next.config.');
+	const isConfig = name.startsWith("next.config.");
 
 	if (isConfig) {
-		const j = api.jscodeshift.withParser('tsx');
+		const j = api.jscodeshift.withParser("tsx");
 		const root = j(file.source);
 
-		return nextConfigTransformer(
-			j,
-			root,
-			Boolean(options.dryRun),
-		).toSource();
+		return nextConfigTransformer(j, root, Boolean(options.dryRun)).toSource();
 	}
 
 	const j = api.jscodeshift;
@@ -374,44 +344,48 @@ export default function transformer(
 
 	// Before: import Image from "next/legacy/image"
 	//  After: import Image from "next/image"
-	root.find(j.ImportDeclaration, {
-		source: { value: 'next/legacy/image' },
-	}).forEach((importDeclarationPath) => {
-		const defaultSpecifier = importDeclarationPath.node.specifiers?.find(
-			(node) => node.type === 'ImportDefaultSpecifier',
-		) as ImportDefaultSpecifier | undefined;
-		const tagName = defaultSpecifier?.local?.name;
+	root
+		.find(j.ImportDeclaration, {
+			source: { value: "next/legacy/image" },
+		})
+		.forEach((importDeclarationPath) => {
+			const defaultSpecifier = importDeclarationPath.node.specifiers?.find(
+				(node) => node.type === "ImportDefaultSpecifier",
+			) as ImportDefaultSpecifier | undefined;
+			const tagName = defaultSpecifier?.local?.name;
 
-		if (tagName) {
-			importDeclarationPath.node.source = j.stringLiteral('next/image');
+			if (tagName) {
+				importDeclarationPath.node.source = j.stringLiteral("next/image");
 
-			findAndReplaceProps(j, root, tagName);
-		}
-	});
+				findAndReplaceProps(j, root, tagName);
+			}
+		});
 	// Before: const Image = await import("next/legacy/image")
 	//  After: const Image = await import("next/image")
-	root.find(j.ImportExpression, {
-		source: { value: 'next/legacy/image' },
-	}).forEach((importExpressionPath) => {
-		importExpressionPath.node.source = j.stringLiteral('next/image');
-	});
+	root
+		.find(j.ImportExpression, {
+			source: { value: "next/legacy/image" },
+		})
+		.forEach((importExpressionPath) => {
+			importExpressionPath.node.source = j.stringLiteral("next/image");
+		});
 
 	// Before: const Image = require("next/legacy/image")
 	//  After: const Image = require("next/image")
 	root.find(j.CallExpression).forEach((requireExp) => {
 		if (
-			requireExp?.value?.callee?.type === 'Identifier' &&
-			requireExp.value.callee.name === 'require'
+			requireExp?.value?.callee?.type === "Identifier" &&
+			requireExp.value.callee.name === "require"
 		) {
 			const firstArg = requireExp.value.arguments[0];
 			if (
 				firstArg &&
-				firstArg.type === 'Literal' &&
-				firstArg.value === 'next/legacy/image'
+				firstArg.type === "Literal" &&
+				firstArg.value === "next/legacy/image"
 			) {
 				const tagName = requireExp?.parentPath?.value?.id?.name;
 				if (tagName) {
-					requireExp.value.arguments[0] = j.literal('next/image');
+					requireExp.value.arguments[0] = j.literal("next/image");
 					findAndReplaceProps(j, root, tagName);
 				}
 			}

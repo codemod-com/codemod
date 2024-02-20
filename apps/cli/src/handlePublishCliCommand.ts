@@ -1,13 +1,13 @@
-import { createHash } from 'crypto';
-import * as fs from 'fs';
-import { mkdir, writeFile } from 'fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import FormData from 'form-data';
-import { object, optional, parse, string } from 'valibot';
-import { publish, validateAccessToken } from './apis.js';
-import type { PrinterBlueprint } from './printer.js';
-import { boldText, colorizeText } from './utils.js';
+import { createHash } from "crypto";
+import * as fs from "fs";
+import { mkdir, writeFile } from "fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import FormData from "form-data";
+import { object, optional, parse, string } from "valibot";
+import { publish, validateAccessToken } from "./apis.js";
+import type { PrinterBlueprint } from "./printer.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const packageJsonSchema = object({
 	main: string(),
@@ -16,11 +16,11 @@ const packageJsonSchema = object({
 });
 
 const getToken = (): Promise<string> => {
-	const configurationDirectoryPath = join(homedir(), '.codemod');
-	const tokenTxtPath = join(configurationDirectoryPath, 'token.txt');
+	const configurationDirectoryPath = join(homedir(), ".codemod");
+	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
 
 	try {
-		return fs.promises.readFile(tokenTxtPath, 'utf-8');
+		return fs.promises.readFile(tokenTxtPath, "utf-8");
 	} catch (error) {
 		throw new Error(
 			`Log in first using the 'codemod login' command to publish codemods.`,
@@ -37,22 +37,22 @@ export const handlePublishCliCommand = async (
 
 	if (username === null) {
 		throw new Error(
-			'The GitHub username of the current user is not known. Contact Codemod.com.',
+			"The GitHub username of the current user is not known. Contact Codemod.com.",
 		);
 	}
 
-	printer.printConsoleMessage('info', `You are logged in as '${username}'.`);
+	printer.printConsoleMessage("info", `You are logged in as '${username}'.`);
 
 	const packageJsonData = await fs.promises.readFile(
-		join(source, 'package.json'),
+		join(source, "package.json"),
 		{
-			encoding: 'utf-8',
+			encoding: "utf-8",
 		},
 	);
 
 	const pkg = parse(packageJsonSchema, JSON.parse(packageJsonData));
 
-	if (pkg.license !== 'MIT' && pkg.license !== 'Apache-2.0') {
+	if (pkg.license !== "MIT" && pkg.license !== "Apache-2.0") {
 		throw new Error(
 			`Please provide a "MIT" or "Apache-2.0" license in your package.json's "license" field to publish your codemod.`,
 		);
@@ -68,15 +68,15 @@ export const handlePublishCliCommand = async (
 	}
 
 	const indexCjsData = await fs.promises.readFile(join(source, pkg.main), {
-		encoding: 'utf-8',
+		encoding: "utf-8",
 	});
 
 	// We currently support publishing jscodeshift codemods only
 	const configJsonData = JSON.stringify(
 		{
-			schemaVersion: '1.0.0',
+			schemaVersion: "1.0.0",
 			name: pkg.name,
-			engine: 'jscodeshift',
+			engine: "jscodeshift",
 		},
 		null,
 		2,
@@ -85,27 +85,24 @@ export const handlePublishCliCommand = async (
 	let descriptionMdData: string | null = null;
 
 	try {
-		descriptionMdData = await fs.promises.readFile(
-			join(source, 'README.md'),
-			{
-				encoding: 'utf-8',
-			},
-		);
+		descriptionMdData = await fs.promises.readFile(join(source, "README.md"), {
+			encoding: "utf-8",
+		});
 	} catch {
 		//
 	}
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		`Publishing the "${pkg.name}" codemod to the Codemod Registry.`,
 	);
 
 	const formData = new FormData();
-	formData.append('index.cjs', Buffer.from(indexCjsData));
-	formData.append('config.json', Buffer.from(configJsonData));
+	formData.append("index.cjs", Buffer.from(indexCjsData));
+	formData.append("config.json", Buffer.from(configJsonData));
 
 	if (descriptionMdData) {
-		formData.append('description.md', descriptionMdData);
+		formData.append("description.md", descriptionMdData);
 	}
 
 	try {
@@ -113,43 +110,37 @@ export const handlePublishCliCommand = async (
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		const errorMessage = `Could not publish the "${pkg.name}" codemod: ${message}`;
-		printer.printConsoleMessage('error', errorMessage);
+		printer.printConsoleMessage("error", errorMessage);
 		throw new Error(errorMessage);
 	}
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		boldText(
-			colorizeText(
-				`Successfully published the ${pkg.name} codemod.`,
-				'cyan',
-			),
+			colorizeText(`Successfully published the ${pkg.name} codemod.`, "cyan"),
 		),
 	);
 
-	const codemodHashDigest = createHash('ripemd160')
+	const codemodHashDigest = createHash("ripemd160")
 		.update(pkg.name)
-		.digest('base64url');
+		.digest("base64url");
 
-	const codemodDirectoryPath = join(homedir(), '.codemod', codemodHashDigest);
+	const codemodDirectoryPath = join(homedir(), ".codemod", codemodHashDigest);
 
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
 	try {
-		await writeFile(
-			join(codemodDirectoryPath, 'config.json'),
-			configJsonData,
-		);
-		await writeFile(join(codemodDirectoryPath, 'index.cjs'), indexCjsData);
+		await writeFile(join(codemodDirectoryPath, "config.json"), configJsonData);
+		await writeFile(join(codemodDirectoryPath, "index.cjs"), indexCjsData);
 		if (descriptionMdData) {
 			await writeFile(
-				join(codemodDirectoryPath, 'description.md'),
+				join(codemodDirectoryPath, "description.md"),
 				descriptionMdData,
 			);
 		}
 
 		printer.printConsoleMessage(
-			'info',
+			"info",
 			`\nNow, you can run the codemod anywhere:\n${boldText(
 				`$ codemod ${pkg.name}`,
 			)}`,

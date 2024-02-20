@@ -1,7 +1,7 @@
-import { type AxiosError } from 'axios';
-import { SEND_MESSAGE } from '../constants';
-import { Either } from '../utils/Either';
-import apiClient from './client';
+import { type AxiosError } from "axios";
+import { SEND_MESSAGE } from "../constants";
+import { Either } from "../utils/Either";
+import apiClient from "./client";
 
 type SendMessageResponse = Readonly<{
 	text: string;
@@ -38,9 +38,7 @@ const sendMessage = async ({
 		return Either.right(res.data);
 	} catch (e) {
 		const err = e as AxiosError<{ message?: string }>;
-		return Either.left(
-			new Error(err.response?.data.message ?? err.message),
-		);
+		return Either.left(new Error(err.response?.data.message ?? err.message));
 	}
 };
 

@@ -1,22 +1,22 @@
-import cn from 'classnames';
-import areEqual from 'fast-deep-equal';
-import { memo, useEffect, useMemo, useRef } from 'react';
+import cn from "classnames";
+import areEqual from "fast-deep-equal";
+import { memo, useEffect, useMemo, useRef } from "react";
 import {
 	ImperativePanelHandle,
 	PanelGroupStorage,
 	PanelResizeHandle,
-} from 'react-resizable-panels';
-import type { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
-import { PanelGroup, ResizablePanel } from '../shared/Panel';
-import SearchBar from '../shared/SearchBar';
-import { SectionHeader } from '../shared/SectionHeader';
-import { vscode } from '../shared/utilities/vscode';
-import styles from './style.module.css';
-import TreeView from './TreeView';
+} from "react-resizable-panels";
+import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import { PanelGroup, ResizablePanel } from "../shared/Panel";
+import SearchBar from "../shared/SearchBar";
+import { SectionHeader } from "../shared/SectionHeader";
+import { vscode } from "../shared/utilities/vscode";
+import styles from "./style.module.css";
+import TreeView from "./TreeView";
 
 const setSearchPhrase = (searchPhrase: string) => {
 	vscode.postMessage({
-		kind: 'webview.global.setCodemodSearchPhrase',
+		kind: "webview.global.setCodemodSearchPhrase",
 		searchPhrase,
 	});
 };
@@ -24,7 +24,7 @@ const setSearchPhrase = (searchPhrase: string) => {
 export const App = memo(
 	(
 		props: MainWebviewViewProps & {
-			activeTabId: 'codemods';
+			activeTabId: "codemods";
 			screenWidth: number | null;
 		},
 	) => {
@@ -50,7 +50,7 @@ export const App = memo(
 				getItem: () => JSON.stringify(props.panelGroupSettings),
 				setItem: (_, panelGroupSettings: string): void => {
 					vscode.postMessage({
-						kind: 'webview.main.setCodemodDiscoveryPanelGroupSettings',
+						kind: "webview.main.setCodemodDiscoveryPanelGroupSettings",
 						panelGroupSettings,
 					});
 				},
@@ -60,21 +60,21 @@ export const App = memo(
 
 		return (
 			<>
-				<main className={cn('w-full', 'h-full', 'overflow-y-auto')}>
+				<main className={cn("w-full", "h-full", "overflow-y-auto")}>
 					<PanelGroup
 						direction="vertical"
 						storage={storage}
 						autoSaveId="codemodListPanelGroup"
 					>
 						<SectionHeader
-							title={'Public Registry'}
+							title={"Public Registry"}
 							commands={[]}
 							collapsed={props.publicRegistryCollapsed}
 							onClick={(event) => {
 								event.preventDefault();
 
 								vscode.postMessage({
-									kind: 'webview.global.collapsePublicRegistryPanel',
+									kind: "webview.global.collapsePublicRegistryPanel",
 									collapsed: !props.publicRegistryCollapsed,
 								});
 							}}
@@ -82,17 +82,15 @@ export const App = memo(
 						<ResizablePanel
 							collapsible
 							minSize={0}
-							defaultSize={
-								props.panelGroupSettings['0,0']?.[0] ?? 50
-							}
+							defaultSize={props.panelGroupSettings["0,0"]?.[0] ?? 50}
 							style={{
-								overflowY: 'auto',
-								overflowX: 'hidden',
+								overflowY: "auto",
+								overflowX: "hidden",
 							}}
 							ref={publicRegistryRef}
 							onCollapse={(collapsed) => {
 								vscode.postMessage({
-									kind: 'webview.global.collapsePublicRegistryPanel',
+									kind: "webview.global.collapsePublicRegistryPanel",
 									collapsed,
 								});
 							}}
@@ -118,31 +116,27 @@ export const App = memo(
 								event.preventDefault();
 
 								vscode.postMessage({
-									kind: 'webview.global.collapsePrivateRegistryPanel',
+									kind: "webview.global.collapsePrivateRegistryPanel",
 									collapsed: !props.privateRegistryCollapsed,
 								});
 							}}
 							style={{
-								backgroundColor:
-									'var(--vscode-tab-inactiveBackground)',
+								backgroundColor: "var(--vscode-tab-inactiveBackground)",
 							}}
 						/>
 						<ResizablePanel
 							collapsible
 							minSize={0}
-							defaultSize={
-								props.panelGroupSettings['0,0']?.[1] ?? 50
-							}
+							defaultSize={props.panelGroupSettings["0,0"]?.[1] ?? 50}
 							style={{
-								overflowY: 'auto',
-								overflowX: 'hidden',
-								backgroundColor:
-									'var(--vscode-tab-inactiveBackground)',
+								overflowY: "auto",
+								overflowX: "hidden",
+								backgroundColor: "var(--vscode-tab-inactiveBackground)",
 							}}
 							ref={privateRegistryRef}
 							onCollapse={(collapsed) => {
 								vscode.postMessage({
-									kind: 'webview.global.collapsePrivateRegistryPanel',
+									kind: "webview.global.collapsePrivateRegistryPanel",
 									collapsed,
 								});
 							}}
@@ -155,11 +149,7 @@ export const App = memo(
 									autocompleteItems={props.autocompleteItems}
 								/>
 							) : (
-								<div
-									className={
-										styles.privateCodemodWelcomeMessage
-									}
-								>
+								<div className={styles.privateCodemodWelcomeMessage}>
 									<p>
 										Make your own codemods in
 										<a
@@ -169,13 +159,11 @@ export const App = memo(
 										>
 											Codemod Studio
 										</a>
-										with the help of AI and specialized
-										debuggers.
+										with the help of AI and specialized debuggers.
 									</p>
 									<p>
-										You can also kick off your codemod
-										creation by creating a diff and running
-										this CLI command:{' '}
+										You can also kick off your codemod creation by creating a
+										diff and running this CLI command:{" "}
 										<code>codemod learn</code>.
 									</p>
 								</div>

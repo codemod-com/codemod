@@ -1,6 +1,6 @@
-import cn from 'classnames';
-import { CSSProperties, ReactNode, useLayoutEffect, useRef } from 'react';
-import styles from './style.module.css';
+import cn from "classnames";
+import { CSSProperties, ReactNode, useLayoutEffect, useRef } from "react";
+import styles from "./style.module.css";
 
 const getLabelComponent = (
 	label: string,
@@ -11,9 +11,7 @@ const getLabelComponent = (
 		searchPhrase.length >= 2 &&
 		label.toLowerCase().includes(searchPhrase.toLowerCase())
 	) {
-		const startIndex = label
-			.toLowerCase()
-			.indexOf(searchPhrase.toLowerCase());
+		const startIndex = label.toLowerCase().indexOf(searchPhrase.toLowerCase());
 		const endIndex = startIndex + searchPhrase.length - 1;
 		return (
 			<span className={styles.label} style={style}>
@@ -75,9 +73,9 @@ const TreeItem = ({
 		if (focused) {
 			const timeout = setTimeout(() => {
 				ref.current?.scrollIntoView({
-					behavior: 'smooth',
-					block: 'nearest',
-					inline: 'center',
+					behavior: "smooth",
+					block: "nearest",
+					inline: "center",
 				});
 			}, 0);
 
@@ -106,9 +104,9 @@ const TreeItem = ({
 			{hasChildren ? (
 				<span
 					onClick={onPressChevron}
-					className={cn('codicon', {
-						'codicon-chevron-right': !open,
-						'codicon-chevron-down': open,
+					className={cn("codicon", {
+						"codicon-chevron-right": !open,
+						"codicon-chevron-down": open,
 					})}
 				/>
 			) : null}

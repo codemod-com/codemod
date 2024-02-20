@@ -4,6 +4,6 @@ export {
 	RunCodemodsCommand,
 	CodemodHash,
 	JobHash,
-} from '../../../src/components/webview/webviewEvents';
+} from "../../../src/components/webview/webviewEvents";
 
-export type DiffViewType = 'inline' | 'side-by-side';
+export type DiffViewType = "inline" | "side-by-side";

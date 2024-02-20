@@ -27,17 +27,17 @@ SOFTWARE.
 Changes to the original file: added options
 */
 
-import type { MemberExpression, Transform } from 'jscodeshift';
+import type { MemberExpression, Transform } from "jscodeshift";
 
 const transform: Transform = (file, api, options) => {
 	const j = api.jscodeshift;
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'MemberExpression',
+			type: "MemberExpression",
 			property: {
-				type: 'Identifier',
-				name: 'toJS',
+				type: "Identifier",
+				name: "toJS",
 			},
 		},
 	});

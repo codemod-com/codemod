@@ -1,8 +1,8 @@
-import { getBullImportSpecifiers } from './get-import-declaration.js';
-import type { ModifyFunction } from './types.js';
+import { getBullImportSpecifiers } from "./get-import-declaration.js";
+import type { ModifyFunction } from "./types.js";
 
 const typeMapper: Record<string, string> = {
-	JobOptions: 'DefaultJobOptions',
+	JobOptions: "DefaultJobOptions",
 };
 
 // Any references on the right side of queue are meant to be replaced with equivalents
@@ -19,16 +19,16 @@ export const replaceTypeReferences: ModifyFunction = (root, j) => {
 		if (
 			!j.Identifier.check(left) ||
 			!j.Identifier.check(right) ||
-			left.name !== 'Queue'
+			left.name !== "Queue"
 		) {
 			return;
 		}
 
 		const newTypeName = typeMapper[right.name];
 		bullImportSpecifiers.push({
-			type: 'ImportSpecifier',
+			type: "ImportSpecifier",
 			imported: {
-				type: 'Identifier',
+				type: "Identifier",
 				name: newTypeName,
 			},
 		});
@@ -36,7 +36,7 @@ export const replaceTypeReferences: ModifyFunction = (root, j) => {
 		const { parentPath } = path;
 		if (j.TSTypeReference.check(parentPath.value)) {
 			parentPath.value.typeName = {
-				type: 'Identifier',
+				type: "Identifier",
 				name: newTypeName,
 			};
 		}

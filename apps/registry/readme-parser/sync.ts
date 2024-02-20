@@ -1,12 +1,12 @@
 #!/usr/bin/env node
-import { writeFile } from 'fs/promises';
-import * as yaml from 'js-yaml';
-import { simpleGit } from 'simple-git';
-import { any, record, parse as valibotParse } from 'valibot';
-import { convertToYaml, parse } from './parse.js';
+import { writeFile } from "fs/promises";
+import * as yaml from "js-yaml";
+import { simpleGit } from "simple-git";
+import { any, record, parse as valibotParse } from "valibot";
+import { convertToYaml, parse } from "./parse.js";
 
 const findKeyLineRange = (yaml: string, key: string) => {
-	const splitYaml = yaml.split('\n');
+	const splitYaml = yaml.split("\n");
 
 	let fieldStartLine: number | null = null;
 	let fieldEndLine: number | null = null;
@@ -38,38 +38,33 @@ const findKeyLineRange = (yaml: string, key: string) => {
 export const sync = async () => {
 	const git = simpleGit();
 
-	await git.addRemote(
-		'website',
-		'https://github.com/codemod-com/website.git',
-	);
-	await git.addConfig('user.email', 'auto@codemod.com', false, 'local');
-	await git.addConfig('user.name', 'codemod.com', false, 'local');
+	await git.addRemote("website", "https://github.com/codemod-com/website.git");
+	await git.addConfig("user.email", "auto@codemod.com", false, "local");
+	await git.addConfig("user.name", "codemod.com", false, "local");
 
-	await git.fetch(['website', 'main']);
-	await git.fetch(['origin', 'main', '--depth=2']);
+	await git.fetch(["website", "main"]);
+	await git.fetch(["origin", "main", "--depth=2"]);
 
-	const diff = await git.diff(['--name-only', 'origin/main~1']);
+	const diff = await git.diff(["--name-only", "origin/main~1"]);
 	const readmesChanged = diff
-		.split('\n')
+		.split("\n")
 		.filter((path) => path.match(/.*\/codemods\/.*README\.md$/));
 
 	if (!readmesChanged.length) {
-		console.log('No READMEs changed. Exiting.');
+		console.log("No READMEs changed. Exiting.");
 		process.exit(0);
 	}
 
 	const staged: Record<string, string> = {};
 	for (const path of readmesChanged) {
 		console.log(`Syncing ${path}`);
-		const [migratingFrom, migratingTo, ...rest] = path
-			.split('/')
-			.slice(3, -1);
+		const [migratingFrom, migratingTo, ...rest] = path.split("/").slice(3, -1);
 
 		let generatedSlug = migratingFrom;
 
 		if (migratingTo) {
-			const joint = migratingTo.match(/^\d+(\.\d+)*$/) ? '-' : '-to-';
-			const leftoverParts = rest.length ? `-${rest.join('-')}` : '';
+			const joint = migratingTo.match(/^\d+(\.\d+)*$/) ? "-" : "-to-";
+			const leftoverParts = rest.length ? `-${rest.join("-")}` : "";
 
 			generatedSlug = `${migratingFrom}${joint}${migratingTo}${leftoverParts}`;
 		}
@@ -80,22 +75,19 @@ export const sync = async () => {
 		let oldFile: string | null;
 		let newFile: string | null;
 		try {
-			websiteFile = await git.catFile([
-				'-p',
-				`website/main:${websitePath}`,
-			]);
+			websiteFile = await git.catFile(["-p", `website/main:${websitePath}`]);
 		} catch (err) {
 			websiteFile = null;
 		}
 
 		try {
-			oldFile = await git.catFile(['-p', `origin/main~1:${path}`]);
+			oldFile = await git.catFile(["-p", `origin/main~1:${path}`]);
 		} catch (err) {
 			oldFile = null;
 		}
 
 		try {
-			newFile = await git.catFile(['-p', `origin/main:${path}`]);
+			newFile = await git.catFile(["-p", `origin/main:${path}`]);
 		} catch (err) {
 			newFile = null;
 		}
@@ -112,9 +104,7 @@ export const sync = async () => {
 			console.error(`Could not parse new README file under ${path}`);
 			continue;
 		}
-		const newFileShortDescription = parsedNewFile.description
-			.split('\n')
-			.at(0);
+		const newFileShortDescription = parsedNewFile.description.split("\n").at(0);
 		const newReadmeYamlContent = convertToYaml(parsedNewFile, path);
 
 		// If !websiteFile, we just add the file
@@ -135,7 +125,7 @@ export const sync = async () => {
 		// 4. Otherwise, proceed and add update the fields in the object, based on website version
 		// 5. Commit the file
 
-		const websiteContentSplit = websiteFile.split('---', 3);
+		const websiteContentSplit = websiteFile.split("---", 3);
 
 		const websiteYamlContent = websiteContentSplit.at(1)?.trim();
 
@@ -193,17 +183,15 @@ export const sync = async () => {
 		}
 
 		// Also update the updated-on field
-		changedKeys.push('updated-on');
+		changedKeys.push("updated-on");
 		// Yaml to be updated on each iteration serving as a target to make replacements in
 		let updatedYaml = websiteYamlContent;
-		const newFileLines = newReadmeYamlContent.split('\n');
+		const newFileLines = newReadmeYamlContent.split("\n");
 
 		for (const key of changedKeys) {
 			const websiteRange = findKeyLineRange(updatedYaml, key);
 			if (!websiteRange) {
-				console.error(
-					`Could not find ${key} in website file ${websitePath}`,
-				);
+				console.error(`Could not find ${key} in website file ${websitePath}`);
 				process.exit(1);
 			}
 
@@ -217,13 +205,13 @@ export const sync = async () => {
 			const [newFileStartIndex, newFileEndIndex] = newFileRange;
 
 			// Use the latest version of yaml that's being updated
-			const websiteLines = updatedYaml.split('\n');
+			const websiteLines = updatedYaml.split("\n");
 
 			updatedYaml = [
 				...websiteLines.slice(0, websiteStartIndex),
 				...newFileLines.slice(newFileStartIndex, newFileEndIndex),
 				...websiteLines.slice(websiteEndIndex),
-			].join('\n');
+			].join("\n");
 		}
 
 		const websiteLeftoverDescription = websiteContentSplit.at(2)?.trim();
@@ -235,11 +223,11 @@ export const sync = async () => {
 	}
 
 	if (Object.keys(staged).length === 0) {
-		console.log('No commits were created. Skipping push...');
+		console.log("No commits were created. Skipping push...");
 		process.exit(0);
 	}
 
-	await git.checkout(['-b', 'update-codemods', 'website/main']);
+	await git.checkout(["-b", "update-codemods", "website/main"]);
 
 	for (const [websitePath, newContent] of Object.entries(staged)) {
 		await writeFile(websitePath, newContent);
@@ -248,8 +236,8 @@ export const sync = async () => {
 		console.log(`Created commit for ${websitePath}`);
 	}
 
-	await git.push('website', 'HEAD:main');
-	console.log('Successfully pushed to website repo');
+	await git.push("website", "HEAD:main");
+	console.log("Successfully pushed to website repo");
 
 	process.exit(0);
 };

@@ -1,13 +1,13 @@
-import { type ButtonHTMLAttributes, type ReactNode } from 'react';
-import { cn } from '~/lib/utils';
+import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { cn } from "~/lib/utils";
 
-type Variant = 'solid' | 'outline' | 'ghost';
-type Size = 'xs' | 'sm' | 'lg' | 'xl' | 'base';
+type Variant = "solid" | "outline" | "ghost";
+type Size = "xs" | "sm" | "lg" | "xl" | "base";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 	variant: Variant;
 	disabled: boolean;
-	color: 'gray' | 'primary';
+	color: "gray" | "primary";
 	children: ReactNode;
 	size?: Size;
 	className: string;
@@ -31,41 +31,39 @@ const Button = ({
 	...restProps
 }: ButtonProps) => {
 	const buttonClasses = cn(
-		'btn',
-		color === 'gray' && variant === 'solid' && 'btn-gray btn-gray-solid',
-		color === 'gray' &&
-			variant === 'outline' &&
-			'btn-gray btn-gray-outline',
-		color === 'gray' && variant === 'ghost' && 'btn-gray btn-gray-ghost',
+		"btn",
+		color === "gray" && variant === "solid" && "btn-gray btn-gray-solid",
+		color === "gray" && variant === "outline" && "btn-gray btn-gray-outline",
+		color === "gray" && variant === "ghost" && "btn-gray btn-gray-ghost",
 
-		color === 'primary' &&
-			variant === 'solid' &&
-			'btn-primary btn-primary-solid',
-		color === 'primary' &&
-			variant === 'outline' &&
-			'btn-primary btn-primary-outline',
-		color === 'primary' &&
-			variant === 'ghost' &&
-			'btn-primary btn-primary-ghost',
+		color === "primary" &&
+			variant === "solid" &&
+			"btn-primary btn-primary-solid",
+		color === "primary" &&
+			variant === "outline" &&
+			"btn-primary btn-primary-outline",
+		color === "primary" &&
+			variant === "ghost" &&
+			"btn-primary btn-primary-ghost",
 
-		size === 'sm' && 'btn-sm',
-		size === 'xs' && 'btn-xs',
-		size === 'lg' && 'btn-lg',
-		size === 'xl' && 'btn-xl',
-		size === 'base' || (!size && 'btn-base'),
-		disabled || (loading && 'btn-loading'),
-		!disabled && 'btn-disabled',
-		active && 'btn-active',
+		size === "sm" && "btn-sm",
+		size === "xs" && "btn-xs",
+		size === "lg" && "btn-lg",
+		size === "xl" && "btn-xl",
+		size === "base" || (!size && "btn-base"),
+		disabled || (loading && "btn-loading"),
+		!disabled && "btn-disabled",
+		active && "btn-active",
 		className,
 	);
 
 	const iconClasses = cn(
-		'inline w-4 h-4 mr-2 animate-spin  fill-current',
-		size === 'sm' && 'w-4 h-4',
-		size === 'xs' && 'w-4 h-4',
-		size === 'lg' && 'w-5 h-5',
-		size === 'xl' && 'w-6 h-6',
-		(size === 'base' || !size) && 'w-5 h-5',
+		"inline w-4 h-4 mr-2 animate-spin  fill-current",
+		size === "sm" && "w-4 h-4",
+		size === "xs" && "w-4 h-4",
+		size === "lg" && "w-5 h-5",
+		size === "xl" && "w-6 h-6",
+		(size === "base" || !size) && "w-5 h-5",
 	);
 
 	return (
@@ -73,12 +71,12 @@ const Button = ({
 			<span
 				className="flex h-full w-full items-center justify-center"
 				data-tip-disable={false}
-				data-tooltip-content={tooltipContent ?? ''}
-				data-tooltip-id={tooltipContent ? 'button-tooltip' : undefined}
+				data-tooltip-content={tooltipContent ?? ""}
+				data-tooltip-id={tooltipContent ? "button-tooltip" : undefined}
 			>
 				<span
 					className={`transition-all ${
-						loading ? 'opacity-100   ' : 'w-0 opacity-0'
+						loading ? "opacity-100   " : "w-0 opacity-0"
 					}  `}
 					role="status"
 				>

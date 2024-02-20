@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -41,13 +41,13 @@ function transform(
 	let dirtyFlag = false;
 
 	const isCompatRouteImportFound = root.find(j.ImportDeclaration, {
-		source: { value: 'react-router-dom-v5-compat' },
+		source: { value: "react-router-dom-v5-compat" },
 	}).length;
 
 	if (!isCompatRouteImportFound) {
 		const computedImport = j.importDeclaration(
-			[j.importSpecifier(j.identifier('CompatRoute'))],
-			j.literal('react-router-dom-v5-compat'),
+			[j.importSpecifier(j.identifier("CompatRoute"))],
+			j.literal("react-router-dom-v5-compat"),
 		);
 
 		const body = root.get().value.program.body;
@@ -56,15 +56,17 @@ function transform(
 		dirtyFlag = true;
 	}
 
-	root.find(j.JSXElement, {
-		openingElement: { name: { name: 'Route' } },
-	}).forEach((path) => {
-		if ('name' in path.value.openingElement.name) {
-			path.value.openingElement.name.name = 'CompatRoute';
+	root
+		.find(j.JSXElement, {
+			openingElement: { name: { name: "Route" } },
+		})
+		.forEach((path) => {
+			if ("name" in path.value.openingElement.name) {
+				path.value.openingElement.name.name = "CompatRoute";
 
-			dirtyFlag = true;
-		}
-	});
+				dirtyFlag = true;
+			}
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

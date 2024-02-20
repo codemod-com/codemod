@@ -1,9 +1,9 @@
-import { createHash } from 'crypto';
-import { sep } from 'path';
-import * as t from 'io-ts';
-import { Project } from 'ts-morph';
-import { Uri, Webview } from 'vscode';
-import { _ExplorerNode } from './persistedState/explorerNodeCodec';
+import { createHash } from "crypto";
+import { sep } from "path";
+import * as t from "io-ts";
+import { Project } from "ts-morph";
+import { Uri, Webview } from "vscode";
+import { _ExplorerNode } from "./persistedState/explorerNodeCodec";
 
 export function isNeitherNullNorUndefined<T>(
 	value: T,
@@ -17,12 +17,12 @@ export function assertsNeitherNullOrUndefined<T>(
 	// eslint-disable-next-line @typescript-eslint/ban-types
 ): asserts value is T & {} {
 	if (value === null || value === undefined) {
-		throw new Error('The value cannot be null or undefined');
+		throw new Error("The value cannot be null or undefined");
 	}
 }
 
 export const buildHash = (data: string) =>
-	createHash('ripemd160').update(data).digest('base64url');
+	createHash("ripemd160").update(data).digest("base64url");
 
 export const buildTypeCodec = <T extends t.Props>(
 	props: T,
@@ -45,8 +45,7 @@ export const debounce = <R>(callback: (...args: any[]) => R, ms: number) => {
 export const timeout = (ms: number) =>
 	new Promise((_, reject) =>
 		setTimeout(
-			() =>
-				reject(new Error('Timeout while looking for a git repository')),
+			() => reject(new Error("Timeout while looking for a git repository")),
 			ms,
 		),
 	);
@@ -55,9 +54,9 @@ export const singleQuotify = (str: string) => `'${str}'`;
 export const doubleQuotify = (str: string) => `"${str}"`;
 
 export const buildCrossplatformArg = (str: string) => {
-	const isWin = process.platform === 'win32';
+	const isWin = process.platform === "win32";
 	// remove trailing "\"
-	return isWin ? doubleQuotify(str.replace(/\\+$/, '')) : singleQuotify(str);
+	return isWin ? doubleQuotify(str.replace(/\\+$/, "")) : singleQuotify(str);
 };
 
 export function getUri(
@@ -70,7 +69,7 @@ export function getUri(
 
 export const capitalize = (str: string): string => {
 	if (!str) {
-		return '';
+		return "";
 	}
 
 	return str.charAt(0).toUpperCase() + str.slice(1);
@@ -89,14 +88,11 @@ export const streamToString = async (stream: NodeJS.ReadableStream) => {
 		chunks.push(Buffer.from(chunk));
 	}
 
-	return Buffer.concat(chunks).toString('utf-8');
+	return Buffer.concat(chunks).toString("utf-8");
 };
 
 export const buildCodemodMetadataHash = (name: string) =>
-	createHash('ripemd160')
-		.update('README.md')
-		.update(name)
-		.digest('base64url');
+	createHash("ripemd160").update("README.md").update(name).digest("base64url");
 
 export const findParentExplorerNode = (
 	index: number,
@@ -123,12 +119,12 @@ export const findParentExplorerNode = (
 
 // remove all special characters and whitespace
 export const removeSpecialCharacters = (str: string) =>
-	str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, '').replace(/\s/g, '');
+	str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, "").replace(/\s/g, "");
 
 export const removeLineBreaksAtStartAndEnd = (str: string) =>
 	str
-		.replace(/^\n+/, '') // remove all occurrences of `\n` at the start
-		.replace(/\n+$/, ''); // remove all occurrences of `\n` at the end
+		.replace(/^\n+/, "") // remove all occurrences of `\n` at the start
+		.replace(/\n+$/, ""); // remove all occurrences of `\n` at the end
 
 export const createInMemorySourceFile = (filePath: string, content: string) => {
 	const project = new Project({
@@ -147,7 +143,7 @@ export const buildGlobPattern = (targetUri: Uri, pattern?: string) => {
 	// Glob patterns should always use / as a path separator, even on Windows systems, as \ is used to escape glob characters.
 	const pathParts = targetUriFsPath.split(sep);
 
-	pathParts.push(pattern ?? '');
+	pathParts.push(pattern ?? "");
 
-	return pathParts.join('/');
+	return pathParts.join("/");
 };

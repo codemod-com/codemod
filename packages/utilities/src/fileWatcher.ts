@@ -1,5 +1,5 @@
-import type { FSWatcher } from 'node:fs';
-import { watch, type PathLike } from 'node:fs';
+import type { FSWatcher } from "node:fs";
+import { watch, type PathLike } from "node:fs";
 
 export class FileWatcher {
 	private __fsWatcher: FSWatcher | null = null;
@@ -10,7 +10,7 @@ export class FileWatcher {
 
 	public watch() {
 		this.__fsWatcher = watch(this.__pathLike, (watchEventType) => {
-			if (watchEventType !== 'change') {
+			if (watchEventType !== "change") {
 				return;
 			}
 

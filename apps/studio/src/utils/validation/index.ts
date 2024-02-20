@@ -1,4 +1,4 @@
-export * from './rules';
+export * from "./rules";
 
 // @TODO ask if we can use some validation lib like yup or similar
 

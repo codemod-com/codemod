@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('netlify 0.8.1 disableBuildEventHandlers', function () {
-	it('changes disableBuildhook to disableBuildEventHandlers', function () {
+describe("netlify 0.8.1 disableBuildEventHandlers", function () {
+	it("changes disableBuildhook to disableBuildEventHandlers", function () {
 		const INPUT = `
 			await client.enableBuildhook(siteId);
         `;
@@ -15,15 +15,15 @@ describe('netlify 0.8.1 disableBuildEventHandlers', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

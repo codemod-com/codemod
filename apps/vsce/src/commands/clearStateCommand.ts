@@ -1,10 +1,10 @@
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { FileType, Uri, workspace } from 'vscode';
-import { FileService } from '../components/fileService';
-import { Store } from '../data';
-import { actions } from '../data/slice';
-import { doesJobAddNewFile } from '../selectors/comparePersistedJobs';
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { FileType, Uri, workspace } from "vscode";
+import { FileService } from "../components/fileService";
+import { Store } from "../data";
+import { actions } from "../data/slice";
+import { doesJobAddNewFile } from "../selectors/comparePersistedJobs";
 
 type Dependencies = Readonly<{
 	store: Store;
@@ -26,7 +26,7 @@ export const createClearStateCommand =
 					!job ||
 					!doesJobAddNewFile(job.kind) ||
 					job.newContentUri === null ||
-					job.newContentUri.includes('.codemod/cases')
+					job.newContentUri.includes(".codemod/cases")
 				) {
 					continue;
 				}
@@ -40,9 +40,7 @@ export const createClearStateCommand =
 		}
 
 		try {
-			const casesDirectoryUri = Uri.parse(
-				join(homedir(), '.codemod', 'cases'),
-			);
+			const casesDirectoryUri = Uri.parse(join(homedir(), ".codemod", "cases"));
 
 			const files = await workspace.fs.readDirectory(casesDirectoryUri);
 

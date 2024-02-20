@@ -1,4 +1,4 @@
-import { useRef, type RefObject } from 'react';
+import { useRef, type RefObject } from "react";
 
 export const useEnterSubmit = (): {
 	formRef: RefObject<HTMLFormElement>;
@@ -10,7 +10,7 @@ export const useEnterSubmit = (): {
 		event: React.KeyboardEvent<HTMLTextAreaElement>,
 	): void => {
 		if (
-			event.key === 'Enter' &&
+			event.key === "Enter" &&
 			!event.shiftKey &&
 			!event.nativeEvent.isComposing
 		) {

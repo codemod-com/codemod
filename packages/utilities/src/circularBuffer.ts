@@ -26,9 +26,7 @@ export class CircularBuffer {
 
 	public write(buffer: Buffer, byteLength: number): void {
 		if (byteLength === 0) {
-			throw new Error(
-				'You cannot write 0 bytes into the circular buffer',
-			);
+			throw new Error("You cannot write 0 bytes into the circular buffer");
 		}
 
 		const freeByteLength = this.getFreeByteLength();
@@ -46,24 +44,14 @@ export class CircularBuffer {
 			const firstSourceEnd = Math.min(freeRightByteLength, byteLength);
 
 			if (firstSourceEnd !== 0) {
-				buffer.copy(
-					this._buffer,
-					this._end,
-					firstSourceStart,
-					firstSourceEnd,
-				);
+				buffer.copy(this._buffer, this._end, firstSourceStart, firstSourceEnd);
 			}
 
 			const secondSourceStart = firstSourceEnd;
 			const secondSourceEnd = byteLength;
 
 			if (firstSourceEnd !== byteLength) {
-				buffer.copy(
-					this._buffer,
-					0,
-					secondSourceStart,
-					secondSourceEnd,
-				);
+				buffer.copy(this._buffer, 0, secondSourceStart, secondSourceEnd);
 			}
 		} else {
 			// end < start
@@ -108,18 +96,12 @@ export class CircularBuffer {
 				this._MAX_BYTE_LENGTH,
 			);
 
-			this._buffer.copy(
-				targetBuffer,
-				0,
-				firstSourceStart,
-				firstSourceEnd,
-			);
+			this._buffer.copy(targetBuffer, 0, firstSourceStart, firstSourceEnd);
 
 			const secondSourceStart = 0;
 			const secondSourceEnd =
 				this._requestedByteLength > this._MAX_BYTE_LENGTH - this._start
-					? this._requestedByteLength -
-					  (this._MAX_BYTE_LENGTH - this._start)
+					? this._requestedByteLength - (this._MAX_BYTE_LENGTH - this._start)
 					: 0;
 
 			const targetStart = firstSourceEnd - firstSourceStart;

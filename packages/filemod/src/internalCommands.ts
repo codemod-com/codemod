@@ -1,25 +1,25 @@
-import type { Options } from './options.js';
+import type { Options } from "./options.js";
 
 export interface UpsertFileCommand {
-	readonly kind: 'upsertFile';
+	readonly kind: "upsertFile";
 	readonly path: string;
 	readonly options: Options;
 }
 
 export interface DeleteFileCommand {
-	readonly kind: 'deleteFile';
+	readonly kind: "deleteFile";
 	readonly path: string;
 }
 
 export interface MoveFileCommand {
-	readonly kind: 'moveFile';
+	readonly kind: "moveFile";
 	readonly oldPath: string;
 	readonly newPath: string;
 	readonly options: Options;
 }
 
 export interface CopyFileCommand {
-	readonly kind: 'copyFile';
+	readonly kind: "copyFile";
 	readonly oldPath: string;
 	readonly newPath: string;
 	readonly options: Options;
@@ -32,13 +32,13 @@ export type FileCommand =
 	| CopyFileCommand;
 
 export interface HandleDirectoryCommand {
-	readonly kind: 'handleDirectory';
+	readonly kind: "handleDirectory";
 	readonly path: string;
 	readonly options: Options;
 }
 
 export interface HandleFileCommand {
-	readonly kind: 'handleFile';
+	readonly kind: "handleFile";
 	readonly path: string;
 	readonly options: Options;
 }
@@ -46,19 +46,19 @@ export interface HandleFileCommand {
 export type DirectoryCommand = HandleDirectoryCommand | HandleFileCommand;
 
 export interface UpsertDataCommand {
-	readonly kind: 'upsertData';
+	readonly kind: "upsertData";
 	readonly data: string;
 	readonly path: string; // TODO we can remove it and add from context at a later stage
 }
 
 export interface NoopCommand {
-	readonly kind: 'noop';
+	readonly kind: "noop";
 }
 
 export type DataCommand = UpsertDataCommand | NoopCommand;
 
 export interface RestartCommand {
-	readonly kind: 'restart';
+	readonly kind: "restart";
 }
 
 export type FinishCommand = RestartCommand | NoopCommand;

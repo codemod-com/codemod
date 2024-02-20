@@ -1,10 +1,10 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 const codemodEngineSchema = S.union(
-	S.literal('jscodeshift'),
-	S.literal('repomod-engine'),
-	S.literal('filemod'),
-	S.literal('ts-morph'),
+	S.literal("jscodeshift"),
+	S.literal("repomod-engine"),
+	S.literal("filemod"),
+	S.literal("ts-morph"),
 );
 
 export const codemodSettingsSchema = S.union(
@@ -17,14 +17,14 @@ export const codemodSettingsSchema = S.union(
 
 export type CodemodSettings =
 	| Readonly<{
-			kind: 'runOnPreCommit';
+			kind: "runOnPreCommit";
 	  }>
 	| Readonly<{
-			kind: 'runNamed';
+			kind: "runNamed";
 			name: string;
 	  }>
 	| Readonly<{
-			kind: 'runSourced';
+			kind: "runSourced";
 			source: string;
 			codemodEngine: S.To<typeof codemodEngineSchema> | null;
 	  }>;
@@ -32,9 +32,9 @@ export type CodemodSettings =
 export const parseCodemodSettings = (input: unknown): CodemodSettings => {
 	const codemodSettings = S.parseSync(codemodSettingsSchema)(input);
 
-	if (codemodSettings._.includes('runOnPreCommit')) {
+	if (codemodSettings._.includes("runOnPreCommit")) {
 		return {
-			kind: 'runOnPreCommit',
+			kind: "runOnPreCommit",
 		};
 	}
 
@@ -42,7 +42,7 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
 
 	if (source) {
 		return {
-			kind: 'runSourced',
+			kind: "runSourced",
 			source,
 			codemodEngine: codemodSettings.codemodEngine ?? null,
 		};
@@ -51,11 +51,11 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
 	const codemodName = codemodSettings._.at(-1);
 
 	if (!codemodName) {
-		throw new Error('Codemod to run was not specified!');
+		throw new Error("Codemod to run was not specified!");
 	}
 
 	return {
-		kind: 'runNamed',
+		kind: "runNamed",
 		name: codemodName,
 	};
 };

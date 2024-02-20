@@ -1,16 +1,16 @@
 // eslint-disable-next-line import/extensions
-import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api.d.ts';
-import dynamic from 'next/dynamic';
-import { useCallback, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { useAppDispatch } from '~/store';
-import { setRangeThunk } from '~/store/setRangeThunk';
-import { selectActiveEvent } from '../../store/slices/log';
-import { selectMod, setContent } from '../../store/slices/mod';
-import prettifyDeprecated from '../../utils/prettify';
+import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
+import dynamic from "next/dynamic";
+import { useCallback, useEffect, useRef } from "react";
+import { useSelector } from "react-redux";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { useAppDispatch } from "~/store";
+import { setRangeThunk } from "~/store/setRangeThunk";
+import { selectActiveEvent } from "../../store/slices/log";
+import { selectMod, setContent } from "../../store/slices/mod";
+import prettifyDeprecated from "../../utils/prettify";
 
-const CodeSnippet = dynamic(() => import('~/components/Snippet'), {
+const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
 	ssr: false,
 });
@@ -21,7 +21,7 @@ const Codemod = () => {
 	const dispatch = useAppDispatch();
 	const activeEvent = useSelector(selectActiveEvent);
 
-	const content = internalContent ?? '';
+	const content = internalContent ?? "";
 
 	const onBlur = useCallback(() => {
 		const prettified = prettifyDeprecated(content);
@@ -32,13 +32,13 @@ const Codemod = () => {
 
 	const onKeyUp = useCallback(
 		(event: monaco.IKeyboardEvent) => {
-			if (event.code === 'Escape') {
+			if (event.code === "Escape") {
 				return;
 			}
 
 			dispatch(
 				setRangeThunk({
-					target: 'CODEMOD_INPUT',
+					target: "CODEMOD_INPUT",
 					ranges: [],
 				}),
 			);
@@ -50,7 +50,7 @@ const Codemod = () => {
 		(range: OffsetRange) => {
 			dispatch(
 				setRangeThunk({
-					target: 'CODEMOD_INPUT',
+					target: "CODEMOD_INPUT",
 					ranges: [range],
 				}),
 			);
@@ -82,7 +82,7 @@ const Codemod = () => {
 			highlights={ranges}
 			language="typescript"
 			onBlur={onBlur}
-			onChange={(value) => dispatch(setContent(value ?? ''))}
+			onChange={(value) => dispatch(setContent(value ?? ""))}
 			onKeyUp={({ event }) => onKeyUp(event)}
 			path="codemod.ts"
 			value={content}

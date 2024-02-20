@@ -1,10 +1,10 @@
-import { deepEqual, ok } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { describe, it } from 'vitest';
-import { repomod } from '../src/index.js';
+import { deepEqual, ok } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import type { DirectoryJSON } from "memfs";
+import { createFsFromVolume, Volume } from "memfs";
+import { describe, it } from "vitest";
+import { repomod } from "../src/index.js";
 
 const transform = async (json: DirectoryJSON) => {
 	const volume = Volume.fromJSON(json);
@@ -12,26 +12,26 @@ const transform = async (json: DirectoryJSON) => {
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const api = buildApi(unifiedFileSystem, () => ({ fetch }), pathApi);
 
 	return executeFilemod(
 		api,
 		repomod,
-		'/',
+		"/",
 		{
 			input: JSON.stringify({
 				rules: {
-					eqeqeq: ['warn', 'smart'],
-					'no-cond-assign': ['warn', 'except-parens'],
-					'no-unused-vars': ['off'],
+					eqeqeq: ["warn", "smart"],
+					"no-cond-assign": ["warn", "except-parens"],
+					"no-unused-vars": ["off"],
 				},
 				ignorePatterns: [
-					'**/dist/**',
-					'**/build/**',
-					'pnpm-lock.yaml',
-					'**/node_modules/**',
+					"**/dist/**",
+					"**/build/**",
+					"pnpm-lock.yaml",
+					"**/node_modules/**",
 				],
 			}),
 		},
@@ -39,8 +39,8 @@ const transform = async (json: DirectoryJSON) => {
 	);
 };
 
-describe('eslint and prettier to biome migration', function () {
-	const packageJsonPath = '/opt/project/package.json';
+describe("eslint and prettier to biome migration", function () {
+	const packageJsonPath = "/opt/project/package.json";
 	const packageJsonConfig = `
     {
       "name": "package-name",
@@ -80,8 +80,8 @@ describe('eslint and prettier to biome migration', function () {
     }
   `;
 
-	const eslintRcPath = '/opt/project/.eslintrc';
-	const eslintIgnorePath = '/opt/project/.eslintignore';
+	const eslintRcPath = "/opt/project/.eslintrc";
+	const eslintIgnorePath = "/opt/project/.eslintignore";
 	const eslintIgnoreContent = `
     # config-key: config-value
     dist
@@ -90,7 +90,7 @@ describe('eslint and prettier to biome migration', function () {
     node_modules
   `;
 
-	const prettierRcPath = '/opt/project/.prettierrc';
+	const prettierRcPath = "/opt/project/.prettierrc";
 	const prettierRcContent = `
     {
       "semi": false,
@@ -99,17 +99,17 @@ describe('eslint and prettier to biome migration', function () {
       "trailingComma": "all"
     }
   `;
-	const prettierIgnorePath = '/opt/project/.prettierignore';
+	const prettierIgnorePath = "/opt/project/.prettierignore";
 
-	const biomeJsonPath = 'biome.json';
+	const biomeJsonPath = "biome.json";
 
-	it('should contain correct file commands', async function () {
+	it("should contain correct file commands", async function () {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
-			[eslintRcPath]: '',
+			[eslintRcPath]: "",
 			[eslintIgnorePath]: eslintIgnoreContent,
 			[prettierRcPath]: prettierRcContent,
-			[prettierIgnorePath]: '',
+			[prettierIgnorePath]: "",
 		});
 
 		deepEqual(externalFileCommands.length, 6);
@@ -117,37 +117,33 @@ describe('eslint and prettier to biome migration', function () {
 		ok(
 			externalFileCommands.filter(
 				(command) =>
-					(command.kind === 'upsertFile' &&
-						command.path === packageJsonPath) ||
-					(command.kind === 'deleteFile' &&
-						command.path === eslintRcPath) ||
-					(command.kind === 'deleteFile' &&
+					(command.kind === "upsertFile" && command.path === packageJsonPath) ||
+					(command.kind === "deleteFile" && command.path === eslintRcPath) ||
+					(command.kind === "deleteFile" &&
 						command.path === eslintIgnorePath) ||
-					(command.kind === 'deleteFile' &&
-						command.path === prettierRcPath) ||
-					(command.kind === 'deleteFile' &&
+					(command.kind === "deleteFile" && command.path === prettierRcPath) ||
+					(command.kind === "deleteFile" &&
 						command.path === prettierIgnorePath) ||
-					(command.kind === 'upsertFile' &&
-						command.path === biomeJsonPath),
+					(command.kind === "upsertFile" && command.path === biomeJsonPath),
 			).length === externalFileCommands.length,
 		);
 	});
 
-	it('should correctly modify package.json and create proper biome.json', async function () {
+	it("should correctly modify package.json and create proper biome.json", async function () {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
-			[eslintRcPath]: '',
+			[eslintRcPath]: "",
 			[eslintIgnorePath]: eslintIgnoreContent,
 			[prettierRcPath]: prettierRcContent,
-			[prettierIgnorePath]: '',
+			[prettierIgnorePath]: "",
 		});
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path === packageJsonPath &&
-					command.data.replace(/\W/gm, '') ===
+					command.data.replace(/\W/gm, "") ===
 						`
               {
                 "name": "package-name",
@@ -178,16 +174,16 @@ describe('eslint and prettier to biome migration', function () {
                 },
                 "type": "module"
               }
-	          `.replace(/\W/gm, ''),
+	          `.replace(/\W/gm, ""),
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path === biomeJsonPath &&
-					command.data.replace(/\W/gm, '') ===
+					command.data.replace(/\W/gm, "") ===
 						`
               {
                 "linter": {
@@ -213,7 +209,7 @@ describe('eslint and prettier to biome migration', function () {
                   "indentStyle": "tab"
                 }
               }
-	          `.replace(/\W/gm, ''),
+	          `.replace(/\W/gm, ""),
 			),
 		);
 	});

@@ -1,11 +1,11 @@
-import vm from 'node:vm';
-import * as S from '@effect/schema/Schema';
-import tsmorph from 'ts-morph';
-import { buildVmConsole } from './buildVmConsole.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
-import type { FileCommand } from './fileCommands.js';
-import { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import vm from "node:vm";
+import * as S from "@effect/schema/Schema";
+import tsmorph from "ts-morph";
+import { buildVmConsole } from "./buildVmConsole.js";
+import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
+import type { FileCommand } from "./fileCommands.js";
+import { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
 const transform = (
 	codemodSource: string,
@@ -61,7 +61,7 @@ const transform = (
 		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
 		__CODEMOD_SOURCE__: codemodSource,
 		require: (name: string) => {
-			if (name === 'ts-morph') {
+			if (name === "ts-morph") {
 				return tsmorph;
 			}
 		},
@@ -88,13 +88,13 @@ export const runTsMorphCodemod = (
 		consoleCallback,
 	);
 
-	if (typeof newData !== 'string' || oldData === newData) {
+	if (typeof newData !== "string" || oldData === newData) {
 		return [];
 	}
 
 	return [
 		{
-			kind: 'updateFile',
+			kind: "updateFile",
 			oldPath,
 			oldData,
 			newData,

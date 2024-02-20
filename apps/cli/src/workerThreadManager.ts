@@ -1,13 +1,13 @@
-import { dirname, join } from 'node:path';
-import { Worker } from 'node:worker_threads';
-import { FormattedFileCommand } from './fileCommands.js';
-import { MainThreadMessage } from './mainThreadMessages.js';
-import { OperationMessage } from './messages.js';
-import { SafeArgumentRecord } from './safeArgumentRecord.js';
+import { dirname, join } from "node:path";
+import { Worker } from "node:worker_threads";
+import { FormattedFileCommand } from "./fileCommands.js";
+import { MainThreadMessage } from "./mainThreadMessages.js";
+import { OperationMessage } from "./messages.js";
+import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import {
 	decodeWorkerThreadMessage,
 	WorkerThreadMessage,
-} from './workerThreadMessages.js';
+} from "./workerThreadMessages.js";
 
 const WORKER_THREAD_TIME_LIMIT = 10000;
 
@@ -26,16 +26,14 @@ export class WorkerThreadManager {
 		private readonly __workerCount: number,
 		private readonly __getData: (path: string) => Promise<string>,
 		private readonly __onPrinterMessage: (
-			message:
-				| OperationMessage
-				| (WorkerThreadMessage & { kind: 'console' }),
+			message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
 		) => void,
 		private readonly __onCommand: (
 			command: FormattedFileCommand,
 		) => Promise<void>,
 		private readonly __pathGenerator: AsyncGenerator<string, void, void>,
 		codemodPath: string,
-		codemodEngine: 'ts-morph' | 'jscodeshift',
+		codemodEngine: "ts-morph" | "jscodeshift",
 		codemodSource: string,
 		disablePrettier: boolean,
 		safeArgumentRecord: SafeArgumentRecord,
@@ -45,15 +43,15 @@ export class WorkerThreadManager {
 			this.__workerTimestamps.push(Date.now());
 
 			const filename = process.env.TEST
-				? join(dirname(__filename), '../dist/index.cjs')
+				? join(dirname(__filename), "../dist/index.cjs")
 				: __filename;
 
 			const worker = new Worker(filename);
 
-			worker.on('message', this.__buildOnWorkerMessage(i));
+			worker.on("message", this.__buildOnWorkerMessage(i));
 
 			worker.postMessage({
-				kind: 'initialization',
+				kind: "initialization",
 				codemodPath,
 				codemodEngine,
 				codemodSource,
@@ -65,7 +63,7 @@ export class WorkerThreadManager {
 		}
 
 		this.__onPrinterMessage({
-			kind: 'progress',
+			kind: "progress",
 			processedFileNumber: 0,
 			totalFileNumber: this.__currentFileCount,
 		});
@@ -81,11 +79,11 @@ export class WorkerThreadManager {
 					this.__workers[i]?.terminate();
 
 					const filename = process.env.TEST
-						? join(dirname(__filename), '../dist/index.cjs')
+						? join(dirname(__filename), "../dist/index.cjs")
 						: __filename;
 
 					const worker = new Worker(filename);
-					worker.on('message', this.__buildOnWorkerMessage(i));
+					worker.on("message", this.__buildOnWorkerMessage(i));
 
 					this.__workers[i] = worker;
 
@@ -160,7 +158,7 @@ export class WorkerThreadManager {
 		const data = await this.__getData(filePath);
 
 		this.__workers[id]?.postMessage({
-			kind: 'runCodemod',
+			kind: "runCodemod",
 			path: filePath,
 			data,
 		} satisfies MainThreadMessage);
@@ -174,11 +172,11 @@ export class WorkerThreadManager {
 		clearInterval(this.__interval);
 
 		for (const worker of this.__workers) {
-			worker.postMessage({ kind: 'exit' } satisfies MainThreadMessage);
+			worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
 		}
 
 		this.__onPrinterMessage({
-			kind: 'finish',
+			kind: "finish",
 		});
 	}
 
@@ -186,21 +184,20 @@ export class WorkerThreadManager {
 		return async (m: unknown): Promise<void> => {
 			const workerThreadMessage = decodeWorkerThreadMessage(m);
 
-			if (workerThreadMessage.kind === 'console') {
+			if (workerThreadMessage.kind === "console") {
 				this.__onPrinterMessage(workerThreadMessage);
 				return;
 			}
 
-			if (workerThreadMessage.kind === 'commands') {
-				const commands =
-					workerThreadMessage.commands as FormattedFileCommand[];
+			if (workerThreadMessage.kind === "commands") {
+				const commands = workerThreadMessage.commands as FormattedFileCommand[];
 
 				for (const command of commands) {
 					await this.__onCommand(command);
 				}
-			} else if (workerThreadMessage.kind === 'error') {
+			} else if (workerThreadMessage.kind === "error") {
 				this.__onPrinterMessage({
-					kind: 'error',
+					kind: "error",
 					message: workerThreadMessage.message,
 					path: workerThreadMessage.path,
 				});
@@ -209,7 +206,7 @@ export class WorkerThreadManager {
 			++this.__processedFileNumber;
 
 			this.__onPrinterMessage({
-				kind: 'progress',
+				kind: "progress",
 				processedFileNumber: this.__processedFileNumber,
 				totalFileNumber: this.__currentFileCount,
 			});

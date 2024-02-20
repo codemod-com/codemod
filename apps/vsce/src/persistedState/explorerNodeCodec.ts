@@ -1,6 +1,6 @@
-import * as t from 'io-ts';
-import { jobHashCodec } from '../jobs/types';
-import { buildTypeCodec } from '../utilities';
+import * as t from "io-ts";
+import { jobHashCodec } from "../jobs/types";
+import { buildTypeCodec } from "../utilities";
 
 interface ExplorerNodeHashDigestBrand {
 	readonly __ExplorerNodeHashDigest: unique symbol;
@@ -8,11 +8,9 @@ interface ExplorerNodeHashDigestBrand {
 
 export const _explorerNodeHashDigestCodec = t.brand(
 	t.string,
-	(
-		hashDigest,
-	): hashDigest is t.Branded<string, ExplorerNodeHashDigestBrand> =>
+	(hashDigest): hashDigest is t.Branded<string, ExplorerNodeHashDigestBrand> =>
 		hashDigest.length > 0,
-	'__ExplorerNodeHashDigest',
+	"__ExplorerNodeHashDigest",
 );
 
 export type _ExplorerNodeHashDigest = t.TypeOf<
@@ -22,14 +20,14 @@ export type _ExplorerNodeHashDigest = t.TypeOf<
 export const _explorerNodeCodec = t.union([
 	buildTypeCodec({
 		hashDigest: _explorerNodeHashDigestCodec,
-		kind: t.literal('ROOT'),
+		kind: t.literal("ROOT"),
 		label: t.string,
 		depth: t.number,
 		childCount: t.number,
 	}),
 	buildTypeCodec({
 		hashDigest: _explorerNodeHashDigestCodec,
-		kind: t.literal('DIRECTORY'),
+		kind: t.literal("DIRECTORY"),
 		path: t.string,
 		label: t.string,
 		depth: t.number,
@@ -37,7 +35,7 @@ export const _explorerNodeCodec = t.union([
 	}),
 	buildTypeCodec({
 		hashDigest: _explorerNodeHashDigestCodec,
-		kind: t.literal('FILE'),
+		kind: t.literal("FILE"),
 		path: t.string,
 		label: t.string,
 		depth: t.number,

@@ -1,5 +1,5 @@
-import { Monaco } from '@monaco-editor/react';
-import type { editor } from 'monaco-editor';
+import { Monaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 
 const ignoreCodes = [
 	2304, // unresolved vars
@@ -18,7 +18,7 @@ const configure = (e: editor.IStandaloneDiffEditor, m: Monaco) => {
 	const path = model?.uri.path;
 	const lang = model?.getLanguageId();
 
-	if (lang === 'typescript' && path?.endsWith('.tsx')) {
+	if (lang === "typescript" && path?.endsWith(".tsx")) {
 		m.languages.typescript.typescriptDefaults.setCompilerOptions({
 			jsx: m.languages.typescript.JsxEmit.React,
 		});

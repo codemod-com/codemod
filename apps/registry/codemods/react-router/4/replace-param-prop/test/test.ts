@@ -1,10 +1,10 @@
-import assert from 'node:assert/strict';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert/strict";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('react-router v4 replace-param-prop', function () {
+describe("react-router v4 replace-param-prop", function () {
 	it('should replace "params" prop with "match.params" ', async function () {
 		const input = `
 		const PostEdit = ({ params }) => (
@@ -23,17 +23,17 @@ describe('react-router v4 replace-param-prop', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: input,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'), {
-			quote: 'single',
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
 		});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			output.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
 		);
 	});
 });

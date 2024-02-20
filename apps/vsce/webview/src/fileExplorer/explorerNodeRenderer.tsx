@@ -1,23 +1,23 @@
-import { useCallback } from 'react';
+import { useCallback } from "react";
 import {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
-} from '../../../src/persistedState/explorerNodeCodec';
-import { ExplorerTree } from '../../../src/selectors/selectExplorerTree';
-import { NodeDatum } from '../customTreeView';
-import { vscode } from '../shared/utilities/vscode';
-import TreeItem, { IconName } from './FileExplorerTreeNode';
+} from "../../../src/persistedState/explorerNodeCodec";
+import { ExplorerTree } from "../../../src/selectors/selectExplorerTree";
+import { NodeDatum } from "../customTreeView";
+import { vscode } from "../shared/utilities/vscode";
+import TreeItem, { IconName } from "./FileExplorerTreeNode";
 
 const getIconName = (explorerNode: _ExplorerNode): IconName | null => {
-	if (explorerNode.kind === 'FILE') {
-		return explorerNode.fileAdded ? 'file-add' : 'file';
+	if (explorerNode.kind === "FILE") {
+		return explorerNode.fileAdded ? "file-add" : "file";
 	}
 
 	return null;
 };
 
 const getLabel = (explorerNode: _ExplorerNode, opened: boolean): string => {
-	return explorerNode.kind !== 'FILE' && !opened
+	return explorerNode.kind !== "FILE" && !opened
 		? `${explorerNode.label} (${explorerNode.childCount})`
 		: explorerNode.label;
 };
@@ -41,12 +41,12 @@ export const explorerNodeRenderer =
 			explorerTree.indeterminateExplorerNodeHashDigests.includes(
 				explorerNodeHashDigest,
 			)
-				? 'indeterminate'
+				? "indeterminate"
 				: explorerTree.selectedExplorerNodeHashDigests.includes(
 							explorerNodeHashDigest,
-				    )
-				  ? 'checked'
-				  : 'blank';
+					  )
+				  ? "checked"
+				  : "blank";
 
 		const handleClick = useCallback(
 			(event: React.MouseEvent) => {
@@ -62,7 +62,7 @@ export const explorerNodeRenderer =
 				event.stopPropagation();
 
 				vscode.postMessage({
-					kind: 'webview.global.flipSelectedExplorerNode',
+					kind: "webview.global.flipSelectedExplorerNode",
 					caseHashDigest: explorerTree.caseHash,
 					explorerNodeHashDigest,
 				});

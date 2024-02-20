@@ -1,11 +1,11 @@
-import type { WebviewApi } from 'vscode-webview';
-import { WebviewResponse } from '../../../../src/components/webview/webviewEvents';
+import type { WebviewApi } from "vscode-webview";
+import { WebviewResponse } from "../../../../src/components/webview/webviewEvents";
 
 class VSCodeAPIWrapper {
 	private readonly vsCodeApi: WebviewApi<unknown> | undefined;
 
 	constructor() {
-		if (typeof acquireVsCodeApi === 'function') {
+		if (typeof acquireVsCodeApi === "function") {
 			this.vsCodeApi = acquireVsCodeApi();
 		}
 	}
@@ -22,7 +22,7 @@ class VSCodeAPIWrapper {
 		if (this.vsCodeApi) {
 			return this.vsCodeApi.getState();
 		} else {
-			const state = localStorage.getItem('vscodeState');
+			const state = localStorage.getItem("vscodeState");
 			return state ? JSON.parse(state) : undefined;
 		}
 	}
@@ -31,7 +31,7 @@ class VSCodeAPIWrapper {
 		if (this.vsCodeApi) {
 			return this.vsCodeApi.setState(newState);
 		} else {
-			localStorage.setItem('vscodeState', JSON.stringify(newState));
+			localStorage.setItem("vscodeState", JSON.stringify(newState));
 			return newState;
 		}
 	}

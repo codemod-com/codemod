@@ -1,12 +1,12 @@
-import areEqual from 'fast-deep-equal';
-import { ExtensionContext, WebviewView, WebviewViewProvider } from 'vscode';
-import { Store } from '../../data';
-import { actions } from '../../data/slice';
-import { selectErrorWebviewViewProps } from '../../selectors/selectErrorWebviewViewProps';
-import { MessageBus, MessageKind } from '../messageBus';
-import { MainViewProvider } from './MainProvider';
-import { WebviewMessage } from './webviewEvents';
-import { WebviewResolver } from './WebviewResolver';
+import areEqual from "fast-deep-equal";
+import { ExtensionContext, WebviewView, WebviewViewProvider } from "vscode";
+import { Store } from "../../data";
+import { actions } from "../../data/slice";
+import { selectErrorWebviewViewProps } from "../../selectors/selectErrorWebviewViewProps";
+import { MessageBus, MessageKind } from "../messageBus";
+import { MainViewProvider } from "./MainProvider";
+import { WebviewMessage } from "./webviewEvents";
+import { WebviewResolver } from "./WebviewResolver";
 
 export class ErrorWebviewProvider implements WebviewViewProvider {
 	private readonly __webviewResolver: WebviewResolver;
@@ -32,22 +32,19 @@ export class ErrorWebviewProvider implements WebviewViewProvider {
 			prevProps = nextProps;
 
 			this.__postMessage({
-				kind: 'webview.error.setProps',
+				kind: "webview.error.setProps",
 				errorWebviewViewProps: nextProps,
 			});
 
 			if (
-				nextProps.kind === 'CASE_SELECTED' &&
+				nextProps.kind === "CASE_SELECTED" &&
 				nextProps.executionErrors.length !== 0
 			) {
 				this.showView();
 			}
 		};
 
-		messageBus.subscribe(
-			MessageKind.mainWebviewViewVisibilityChange,
-			handler,
-		);
+		messageBus.subscribe(MessageKind.mainWebviewViewVisibilityChange, handler);
 
 		messageBus.subscribe(
 			MessageKind.codemodSetExecuted,
@@ -70,9 +67,9 @@ export class ErrorWebviewProvider implements WebviewViewProvider {
 		const resolve = () => {
 			this.__webviewResolver.resolveWebview(
 				webviewView.webview,
-				'errors',
+				"errors",
 				JSON.stringify(this.__buildViewProps()),
-				'errorWebviewViewProps',
+				"errorWebviewViewProps",
 			);
 		};
 

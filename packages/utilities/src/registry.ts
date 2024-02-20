@@ -1,34 +1,34 @@
-import { createHash } from 'node:crypto';
-import { basename, dirname, join } from 'node:path';
+import { createHash } from "node:crypto";
+import { basename, dirname, join } from "node:path";
 import type {
 	GlobArguments,
 	PathAPI,
 	PathHashDigest,
 	UnifiedEntry,
-} from '@codemod-com/filemod';
-import { UnifiedFileSystem } from '@codemod-com/filemod';
-import { FileSystemAdapter, glob } from 'fast-glob';
-import type { API } from 'jscodeshift';
-import jscodeshift from 'jscodeshift';
-import { type IFs } from 'memfs';
+} from "@codemod-com/filemod";
+import { UnifiedFileSystem } from "@codemod-com/filemod";
+import { FileSystemAdapter, glob } from "fast-glob";
+import type { API } from "jscodeshift";
+import jscodeshift from "jscodeshift";
+import { type IFs } from "memfs";
 
 export const buildApi = (parser: string | undefined): API => ({
 	j: parser ? jscodeshift.withParser(parser) : jscodeshift,
 	jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
 	stats: () => {
 		console.error(
-			'The stats function was called, which is not supported on purpose',
+			"The stats function was called, which is not supported on purpose",
 		);
 	},
 	report: () => {
 		console.error(
-			'The report function was called, which is not supported on purpose',
+			"The report function was called, which is not supported on purpose",
 		);
 	},
 });
 
 export const buildPathHashDigest = (path: string) =>
-	createHash('ripemd160').update(path).digest('base64url') as PathHashDigest;
+	createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
 
 export const getUnifiedEntry =
 	(fileSystem: IFs) =>
@@ -37,14 +37,14 @@ export const getUnifiedEntry =
 
 		if (stat.isDirectory()) {
 			return {
-				kind: 'directory',
+				kind: "directory",
 				path,
 			};
 		}
 
 		if (stat.isFile()) {
 			return {
-				kind: 'file',
+				kind: "file",
 				path,
 			};
 		}
@@ -71,25 +71,25 @@ export const buildReadDirectory =
 		});
 
 		return entries.map((entry) => {
-			if (typeof entry === 'string' || !('isDirectory' in entry)) {
-				throw new Error('Entry can neither be a string or a Buffer');
+			if (typeof entry === "string" || !("isDirectory" in entry)) {
+				throw new Error("Entry can neither be a string or a Buffer");
 			}
 
 			if (entry.isDirectory()) {
 				return {
-					kind: 'directory' as const,
+					kind: "directory" as const,
 					path: join(path, entry.name.toString()),
 				};
 			}
 
 			if (entry.isFile()) {
 				return {
-					kind: 'file' as const,
+					kind: "file" as const,
 					path: join(path, entry.name.toString()),
 				};
 			}
 
-			throw new Error('The entry is neither directory not file');
+			throw new Error("The entry is neither directory not file");
 		});
 	};
 
@@ -97,7 +97,7 @@ export const buildReadFile =
 	(fileSystem: IFs) =>
 	async (path: string): Promise<string> => {
 		const data = await fileSystem.promises.readFile(path, {
-			encoding: 'utf8',
+			encoding: "utf8",
 		});
 
 		return data.toString();
@@ -120,5 +120,5 @@ export const buildPathAPI = (currentWorkingDirectory: string): PathAPI => ({
 });
 
 export const trimLicense = (testFixture: string): string => {
-	return testFixture.replace(/\/\*[\s\S]*?\*\//gm, '');
+	return testFixture.replace(/\/\*[\s\S]*?\*\//gm, "");
 };

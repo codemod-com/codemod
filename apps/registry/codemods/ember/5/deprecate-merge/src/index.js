@@ -29,24 +29,28 @@ export default function transform(file, api) {
 	const j = api.jscodeshift;
 	const root = j(file.source);
 
-	root.find(j.CallExpression, {
-		callee: {
-			name: 'merge',
-		},
-	}).forEach((path) => {
-		path.value.callee.name = 'assign';
-	});
+	root
+		.find(j.CallExpression, {
+			callee: {
+				name: "merge",
+			},
+		})
+		.forEach((path) => {
+			path.value.callee.name = "assign";
+		});
 
-	root.find(j.ImportDeclaration, {
-		specifiers: [{ local: { name: 'merge' } }],
-	}).forEach((i) => {
-		i.value.specifiers
-			.filter((s) => {
-				return s.local.name === 'merge';
-			})
-			.forEach((t) => {
-				t.local.name = 'assign';
-			});
-	});
+	root
+		.find(j.ImportDeclaration, {
+			specifiers: [{ local: { name: "merge" } }],
+		})
+		.forEach((i) => {
+			i.value.specifiers
+				.filter((s) => {
+					return s.local.name === "merge";
+				})
+				.forEach((t) => {
+					t.local.name = "assign";
+				});
+		});
 	return root.toSource();
 }

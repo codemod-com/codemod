@@ -1,20 +1,20 @@
-import type { ExternalFileCommand } from './externalFileCommands.js';
-import { LeftRightHashSetManager } from './leftRightHashSetManager.js';
+import type { ExternalFileCommand } from "./externalFileCommands.js";
+import { LeftRightHashSetManager } from "./leftRightHashSetManager.js";
 
 export interface UnifiedFile {
-	readonly kind: 'file';
+	readonly kind: "file";
 	readonly path: string;
 }
 
 export interface UnifiedDirectory {
-	readonly kind: 'directory';
+	readonly kind: "directory";
 	readonly path: string;
 }
 
 export type UnifiedEntry = UnifiedFile | UnifiedDirectory;
 
 export type PathHashDigest = string & {
-	__PathHashDigest: '__PathHashDigest';
+	__PathHashDigest: "__PathHashDigest";
 };
 
 export interface GlobArguments {
@@ -43,9 +43,7 @@ export class UnifiedFileSystem {
 		private __readFile: (path: string) => Promise<string>,
 	) {}
 
-	public async upsertUnifiedEntry(
-		path: string,
-	): Promise<UnifiedEntry | null> {
+	public async upsertUnifiedEntry(path: string): Promise<UnifiedEntry | null> {
 		const unifiedDirectory = await this.upsertUnifiedDirectory(path);
 
 		if (unifiedDirectory) {
@@ -58,13 +56,12 @@ export class UnifiedFileSystem {
 	public async upsertUnifiedDirectory(
 		directoryPath: string,
 	): Promise<UnifiedEntry | null> {
-		const directoryPathHashDigest =
-			this.__buildPathHashDigest(directoryPath);
+		const directoryPathHashDigest = this.__buildPathHashDigest(directoryPath);
 
 		if (!this.__entries.has(directoryPathHashDigest)) {
 			const unifiedEntry = await this.__getUnifiedEntry(directoryPath);
 
-			if (unifiedEntry.kind !== 'directory') {
+			if (unifiedEntry.kind !== "directory") {
 				return null;
 			}
 
@@ -84,7 +81,7 @@ export class UnifiedFileSystem {
 		if (!this.__entries.has(filePathHashDigest)) {
 			const unifiedEntry = await this.__getUnifiedEntry(filePath);
 
-			if (unifiedEntry.kind !== 'file') {
+			if (unifiedEntry.kind !== "file") {
 				return null;
 			}
 
@@ -99,33 +96,24 @@ export class UnifiedFileSystem {
 	public async readDirectory(
 		directoryPath: string,
 	): Promise<readonly string[]> {
-		const directoryPathHashDigest =
-			this.__buildPathHashDigest(directoryPath);
+		const directoryPathHashDigest = this.__buildPathHashDigest(directoryPath);
 
 		const unifiedEntries = await this.__readDirectory(directoryPath);
 
 		unifiedEntries.forEach((unifiedEntry) => {
-			const pathHashDigest = this.__buildPathHashDigest(
-				unifiedEntry.path,
-			);
+			const pathHashDigest = this.__buildPathHashDigest(unifiedEntry.path);
 
-			if (unifiedEntry.kind === 'directory') {
+			if (unifiedEntry.kind === "directory") {
 				// TODO check if it's not removed
 
-				this.__directoryFiles.upsert(
-					directoryPathHashDigest,
-					pathHashDigest,
-				);
+				this.__directoryFiles.upsert(directoryPathHashDigest, pathHashDigest);
 				this.__entries.set(pathHashDigest, unifiedEntry);
 			}
 
-			if (unifiedEntry.kind === 'file') {
+			if (unifiedEntry.kind === "file") {
 				// TODO check if it's not removed
 
-				this.__directoryFiles.upsert(
-					directoryPathHashDigest,
-					pathHashDigest,
-				);
+				this.__directoryFiles.upsert(directoryPathHashDigest, pathHashDigest);
 				this.__entries.set(pathHashDigest, unifiedEntry);
 			}
 		});
@@ -154,29 +142,25 @@ export class UnifiedFileSystem {
 			try {
 				return await this.__readFile(path);
 			} catch (error) {
-				return '';
+				return "";
 			}
 		}
 
 		if (upsertedData === null) {
-			throw new Error('This file has already been deleted');
+			throw new Error("This file has already been deleted");
 		}
 
 		return upsertedData;
 	}
 
 	public isDirectory(directoryPath: string): boolean {
-		const directoryPathHashDigest =
-			this.__buildPathHashDigest(directoryPath);
+		const directoryPathHashDigest = this.__buildPathHashDigest(directoryPath);
 
-		return (
-			this.__entries.get(directoryPathHashDigest)?.kind === 'directory'
-		);
+		return this.__entries.get(directoryPathHashDigest)?.kind === "directory";
 	}
 
 	public exists(directoryPath: string): boolean {
-		const directoryPathHashDigest =
-			this.__buildPathHashDigest(directoryPath);
+		const directoryPathHashDigest = this.__buildPathHashDigest(directoryPath);
 
 		return this.__entries.has(directoryPathHashDigest);
 	}
@@ -195,12 +179,12 @@ export class UnifiedFileSystem {
 		)
 			// fast-glob has hardcoded separator pathSegmentSeparator: '/', so for windows platform we need to replace backslashes to forwardslashes
 			.map((path) =>
-				process.platform === 'win32' ? path.replace(/\//g, '\\') : path,
+				process.platform === "win32" ? path.replace(/\//g, "\\") : path,
 			);
 
 		paths.forEach((path) => {
 			const unifiedFile: UnifiedFile = {
-				kind: 'file',
+				kind: "file",
 				path,
 			};
 
@@ -216,7 +200,7 @@ export class UnifiedFileSystem {
 		const pathHashDigest = this.__buildPathHashDigest(filePath);
 
 		const unifiedFile: UnifiedFile = {
-			kind: 'file',
+			kind: "file",
 			path: filePath,
 		};
 
@@ -228,7 +212,7 @@ export class UnifiedFileSystem {
 		const pathHashDigest = this.__buildPathHashDigest(filePath);
 
 		const unifiedFile: UnifiedFile = {
-			kind: 'file',
+			kind: "file",
 			path: filePath,
 		};
 
@@ -245,14 +229,14 @@ export class UnifiedFileSystem {
 
 			if (entry && data === null) {
 				commands.push({
-					kind: 'deleteFile',
+					kind: "deleteFile",
 					path: entry.path,
 				});
 			}
 
 			if (entry && data !== null) {
 				commands.push({
-					kind: 'upsertFile',
+					kind: "upsertFile",
 					path: entry.path,
 					data,
 				});

@@ -42,28 +42,22 @@ export default function transform(file, api, options) {
 		};
 	};
 
-	root.findJSXElements('Switch')
-		.filter(hasChildren('Redirect'))
+	root
+		.findJSXElements("Switch")
+		.filter(hasChildren("Redirect"))
 		.forEach((path) => {
 			j(path)
-				.findJSXElements('Redirect')
+				.findJSXElements("Redirect")
 				.forEach((c) => {
-					c.value.openingElement.name.name = 'Route';
+					c.value.openingElement.name.name = "Route";
 					const attrs = c.value.openingElement.attributes;
-					const [fromAttr] = attrs.filter(
-						(a) => a.name.name === 'from',
-					);
-					const [toAttr] = attrs.filter((a) => a.name.name === 'to');
+					const [fromAttr] = attrs.filter((a) => a.name.name === "from");
+					const [toAttr] = attrs.filter((a) => a.name.name === "to");
 
 					const newEl = j.jsxElement(
 						j.jsxOpeningElement(
-							j.jsxIdentifier('Route'),
-							[
-								j.jsxAttribute(
-									j.jsxIdentifier('to'),
-									toAttr.value,
-								),
-							],
+							j.jsxIdentifier("Route"),
+							[j.jsxAttribute(j.jsxIdentifier("to"), toAttr.value)],
 							true,
 						),
 						null,
@@ -72,12 +66,10 @@ export default function transform(file, api, options) {
 					);
 
 					const newAttrs = [
-						j.jsxAttribute(j.jsxIdentifier('path'), fromAttr.value),
+						j.jsxAttribute(j.jsxIdentifier("path"), fromAttr.value),
 						j.jsxAttribute(
-							j.jsxIdentifier('render'),
-							j.jsxExpressionContainer(
-								j.arrowFunctionExpression([], newEl),
-							),
+							j.jsxIdentifier("render"),
+							j.jsxExpressionContainer(j.arrowFunctionExpression([], newEl)),
 						),
 					];
 

@@ -1,10 +1,10 @@
-import { deepEqual, equal, ok } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { describe, it } from 'vitest';
-import { repomod } from '../src/index.js';
+import { deepEqual, equal, ok } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import type { DirectoryJSON } from "memfs";
+import { createFsFromVolume, Volume } from "memfs";
+import { describe, it } from "vitest";
+import { repomod } from "../src/index.js";
 
 const transform = async (json: DirectoryJSON) => {
 	const volume = Volume.fromJSON(json);
@@ -12,15 +12,15 @@ const transform = async (json: DirectoryJSON) => {
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const api = buildApi(unifiedFileSystem, () => ({}), pathApi);
 
-	return executeFilemod(api, repomod, '/', {}, {});
+	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe('mocha config-files', function () {
-	const packageJsonPath = '/opt/project/package.json';
+describe("mocha config-files", function () {
+	const packageJsonPath = "/opt/project/package.json";
 	const packageJsonConfig = `
     {
       "name": "package-name",
@@ -51,7 +51,7 @@ describe('mocha config-files', function () {
     }
   `;
 
-	const tsconfigPath = '/opt/project/tsconfig.json';
+	const tsconfigPath = "/opt/project/tsconfig.json";
 	const tsconfigContent = `
     {
       "compilerOptions": { "types": ["mocha"] },
@@ -64,9 +64,9 @@ describe('mocha config-files', function () {
     }
   `;
 
-	const mochaRcPath = '/opt/project/.mocharc';
-	const mochaRcCjsPath = '/opt/project/.mocharc.cjs';
-	const mochaConfigPath = '/opt/project/mocha.config.mjs';
+	const mochaRcPath = "/opt/project/.mocharc";
+	const mochaRcCjsPath = "/opt/project/.mocharc.cjs";
+	const mochaConfigPath = "/opt/project/mocha.config.mjs";
 	const mochaRcContent = `
     {
       "loader": ["ts-node/esm"],
@@ -78,16 +78,16 @@ describe('mocha config-files', function () {
     }
   `;
 
-	const gitIgnorePath = '/opt/project/.gitignore';
+	const gitIgnorePath = "/opt/project/.gitignore";
 	const gitIgnoreContent = `
     build
     dist
     node_modules
   `;
 
-	const vitestConfigPath = 'vitest.config.ts';
+	const vitestConfigPath = "vitest.config.ts";
 
-	it('should contain correct file commands', async function () {
+	it("should contain correct file commands", async function () {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[tsconfigPath]: tsconfigContent,
@@ -95,7 +95,7 @@ describe('mocha config-files', function () {
 			[mochaRcCjsPath]: mochaRcContent,
 			[mochaConfigPath]: mochaRcContent,
 			[gitIgnorePath]: gitIgnoreContent,
-			[vitestConfigPath]: '',
+			[vitestConfigPath]: "",
 		});
 
 		deepEqual(externalFileCommands.length, 7);
@@ -103,25 +103,18 @@ describe('mocha config-files', function () {
 		ok(
 			externalFileCommands.filter(
 				(command) =>
-					(command.kind === 'upsertFile' &&
-						command.path === packageJsonPath) ||
-					(command.kind === 'upsertFile' &&
-						command.path === tsconfigPath) ||
-					(command.kind === 'deleteFile' &&
-						command.path === mochaRcPath) ||
-					(command.kind === 'deleteFile' &&
-						command.path === mochaRcCjsPath) ||
-					(command.kind === 'deleteFile' &&
-						command.path === mochaConfigPath) ||
-					(command.kind === 'upsertFile' &&
-						command.path === gitIgnorePath) ||
-					(command.kind === 'upsertFile' &&
-						command.path === vitestConfigPath),
+					(command.kind === "upsertFile" && command.path === packageJsonPath) ||
+					(command.kind === "upsertFile" && command.path === tsconfigPath) ||
+					(command.kind === "deleteFile" && command.path === mochaRcPath) ||
+					(command.kind === "deleteFile" && command.path === mochaRcCjsPath) ||
+					(command.kind === "deleteFile" && command.path === mochaConfigPath) ||
+					(command.kind === "upsertFile" && command.path === gitIgnorePath) ||
+					(command.kind === "upsertFile" && command.path === vitestConfigPath),
 			).length === externalFileCommands.length,
 		);
 	});
 
-	it('should correctly modify package and tsconfig jsons', async function () {
+	it("should correctly modify package and tsconfig jsons", async function () {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[tsconfigPath]: tsconfigContent,
@@ -133,9 +126,9 @@ describe('mocha config-files', function () {
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path === packageJsonPath &&
-					command.data.replace(/\W/gm, '') ===
+					command.data.replace(/\W/gm, "") ===
 						`
               {
                 "name": "package-name",
@@ -160,16 +153,16 @@ describe('mocha config-files', function () {
                 ],
                 "type": "module"
               }
-            `.replace(/\W/gm, ''),
+            `.replace(/\W/gm, ""),
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path === tsconfigPath &&
-					command.data.replace(/\W/gm, '') ===
+					command.data.replace(/\W/gm, "") ===
 						`
               {
                 "compilerOptions": {},
@@ -180,12 +173,12 @@ describe('mocha config-files', function () {
                   "./test/**/*.js"
                 ]
               }
-            `.replace(/\W/gm, ''),
+            `.replace(/\W/gm, ""),
 			),
 		);
 	});
 
-	it('should correctly transform the .gitignore file', async function () {
+	it("should correctly transform the .gitignore file", async function () {
 		const externalFileCommands = await transform({
 			[gitIgnorePath]: gitIgnoreContent,
 		});
@@ -195,15 +188,15 @@ describe('mocha config-files', function () {
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path === gitIgnorePath &&
-					command.data.replace(/\W/gm, '') ===
+					command.data.replace(/\W/gm, "") ===
 						`
             build
             dist
             node_modules
             coverage
-            `.replace(/\W/gm, ''),
+            `.replace(/\W/gm, ""),
 			),
 		);
 	});

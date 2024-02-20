@@ -1,8 +1,8 @@
-import { deepStrictEqual } from 'node:assert';
-import { describe, it } from 'vitest';
-import { transpile } from '../src/getTransformer.js';
-import { runTsMorphCodemod } from '../src/runTsMorphCodemod.js';
-import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
+import { deepStrictEqual } from "node:assert";
+import { describe, it } from "vitest";
+import { transpile } from "../src/getTransformer.js";
+import { runTsMorphCodemod } from "../src/runTsMorphCodemod.js";
+import type { ConsoleKind } from "../src/schemata/consoleKindSchema.js";
 
 const codemodSource = transpile(`
 import { SourceFile, EmitHint } from 'ts-morph';
@@ -20,13 +20,13 @@ export const handleSourceFile = (
 };
 `);
 
-describe('runTsMorphCodemod', () => {
-	it('should return transformed output', () => {
+describe("runTsMorphCodemod", () => {
+	it("should return transformed output", () => {
 		const messages: [ConsoleKind, string][] = [];
 
 		const fileCommands = runTsMorphCodemod(
 			codemodSource,
-			'index.ts',
+			"index.ts",
 			``,
 			false,
 			[{}],
@@ -40,13 +40,13 @@ describe('runTsMorphCodemod', () => {
 		const [fileCommand] = fileCommands;
 
 		deepStrictEqual(fileCommand, {
-			kind: 'updateFile',
-			oldPath: 'index.ts',
-			oldData: '',
-			newData: 'class Test {\n}\n',
+			kind: "updateFile",
+			oldPath: "index.ts",
+			oldData: "",
+			newData: "class Test {\n}\n",
 			formatWithPrettier: true,
 		});
 
-		deepStrictEqual(messages, [['log', '/index.ts']]);
+		deepStrictEqual(messages, [["log", "/index.ts"]]);
 	});
 });

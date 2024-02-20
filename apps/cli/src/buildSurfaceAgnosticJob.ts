@@ -1,18 +1,18 @@
-import { randomBytes } from 'crypto';
-import { JOB_KIND, type SurfaceAgnosticJob } from '@codemod-com/utilities';
+import { randomBytes } from "crypto";
+import { JOB_KIND, type SurfaceAgnosticJob } from "@codemod-com/utilities";
 import {
 	buildNewDataPathForCreateFileCommand,
 	buildNewDataPathForUpdateFileCommand,
 	type FormattedFileCommand,
-} from './fileCommands.js';
+} from "./fileCommands.js";
 
 export const buildSurfaceAgnosticJob = (
 	outputDirectoryPath: string,
 	command: FormattedFileCommand,
 ): SurfaceAgnosticJob => {
-	const jobHashDigest = randomBytes(20).toString('base64url');
+	const jobHashDigest = randomBytes(20).toString("base64url");
 
-	if (command.kind === 'createFile') {
+	if (command.kind === "createFile") {
 		const dataUri = buildNewDataPathForCreateFileCommand(
 			outputDirectoryPath,
 			command,
@@ -26,7 +26,7 @@ export const buildSurfaceAgnosticJob = (
 		};
 	}
 
-	if (command.kind === 'copyFile') {
+	if (command.kind === "copyFile") {
 		return {
 			kind: JOB_KIND.COPY_FILE,
 			jobHashDigest,
@@ -35,7 +35,7 @@ export const buildSurfaceAgnosticJob = (
 		};
 	}
 
-	if (command.kind === 'deleteFile') {
+	if (command.kind === "deleteFile") {
 		return {
 			kind: JOB_KIND.DELETE_FILE,
 			jobHashDigest,
@@ -43,7 +43,7 @@ export const buildSurfaceAgnosticJob = (
 		};
 	}
 
-	if (command.kind === 'moveFile') {
+	if (command.kind === "moveFile") {
 		return {
 			kind: JOB_KIND.MOVE_FILE,
 			jobHashDigest,
@@ -52,7 +52,7 @@ export const buildSurfaceAgnosticJob = (
 		};
 	}
 
-	if (command.kind === 'updateFile') {
+	if (command.kind === "updateFile") {
 		const newDataUri = buildNewDataPathForUpdateFileCommand(
 			outputDirectoryPath,
 			command,
@@ -66,5 +66,5 @@ export const buildSurfaceAgnosticJob = (
 		};
 	}
 
-	throw new Error('Unsupported command kind');
+	throw new Error("Unsupported command kind");
 };

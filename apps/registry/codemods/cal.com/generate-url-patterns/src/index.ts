@@ -1,18 +1,18 @@
-import { parse, sep } from 'node:path';
+import { parse, sep } from "node:path";
 import type {
 	Filemod,
 	HandleData,
 	HandleFile,
 	HandleFinish,
 	InitializeState,
-} from '@codemod-com/filemod';
-import type { TSAsExpressionKind } from 'ast-types/gen/kinds.js';
-import type { JSCodeshift } from 'jscodeshift';
+} from "@codemod-com/filemod";
+import type { TSAsExpressionKind } from "ast-types/gen/kinds.js";
+import type { JSCodeshift } from "jscodeshift";
 
 type Dependencies = { jscodeshift: JSCodeshift };
 
 type State = {
-	step: 'READING' | 'UPSERTING';
+	step: "READING" | "UPSERTING";
 	turboPath: string;
 	abTestMiddlewarePath: string;
 	middlewarePath: string;
@@ -27,7 +27,7 @@ const initializeState: InitializeState<State> = async (
 	if (previousState !== null) {
 		return {
 			...previousState,
-			step: 'UPSERTING',
+			step: "UPSERTING",
 		};
 	}
 
@@ -38,22 +38,20 @@ const initializeState: InitializeState<State> = async (
 		generateAsPageGroup,
 	} = options;
 
-	if (typeof turboPath !== 'string') {
-		throw new Error('The turbo.json absolute path has not been defined');
+	if (typeof turboPath !== "string") {
+		throw new Error("The turbo.json absolute path has not been defined");
 	}
 
-	if (typeof abTestMiddlewarePath !== 'string') {
-		throw new Error(
-			'The abTestMiddleware absolute path has not been defined',
-		);
+	if (typeof abTestMiddlewarePath !== "string") {
+		throw new Error("The abTestMiddleware absolute path has not been defined");
 	}
 
-	if (typeof middlewarePath !== 'string') {
-		throw new Error('The middleware.ts absolute path has not been defined');
+	if (typeof middlewarePath !== "string") {
+		throw new Error("The middleware.ts absolute path has not been defined");
 	}
 
 	return {
-		step: 'READING',
+		step: "READING",
 		turboPath,
 		abTestMiddlewarePath,
 		middlewarePath,
@@ -90,12 +88,12 @@ const buildEnvVarNameFromPathParts = (pathParts: string[]) => {
 
 			const somePart = cpart ?? dspart ?? cadspart ?? ocadspart ?? null;
 
-			return somePart?.replace(/-/g, '_').toUpperCase() ?? null;
+			return somePart?.replace(/-/g, "_").toUpperCase() ?? null;
 		})
 		.filter(isNeitherNullNorUndefined)
-		.join('_');
+		.join("_");
 
-	return ['APP_ROUTER', partialEnvVar, 'ENABLED'].join('_');
+	return ["APP_ROUTER", partialEnvVar, "ENABLED"].join("_");
 };
 
 const handleFile: HandleFile<Dependencies, State> = async (
@@ -105,20 +103,20 @@ const handleFile: HandleFile<Dependencies, State> = async (
 	state,
 ) => {
 	if (state === null) {
-		throw new Error('The state is not set');
+		throw new Error("The state is not set");
 	}
 
-	if (state.step === 'READING') {
+	if (state.step === "READING") {
 		const parsedPath = parse(path);
 		const directoryNames = parsedPath.dir.split(sep);
 
-		if (!directoryNames.includes('app') || parsedPath.name !== 'page') {
+		if (!directoryNames.includes("app") || parsedPath.name !== "page") {
 			return [];
 		}
 
 		const parts = directoryNames
-			.slice(directoryNames.lastIndexOf('app') + 1)
-			.filter((part) => part !== 'future');
+			.slice(directoryNames.lastIndexOf("app") + 1)
+			.filter((part) => part !== "future");
 
 		if (state.generateAsPageGroup) {
 			const [topLevelPageName] = parts;
@@ -137,8 +135,7 @@ const handleFile: HandleFile<Dependencies, State> = async (
 
 		const pathname = parts
 			.map((part) => {
-				const { cpart, dspart, cadspart, ocadspart } =
-					getRegexGroups(part);
+				const { cpart, dspart, cadspart, ocadspart } = getRegexGroups(part);
 
 				if (cpart !== undefined) {
 					return cpart;
@@ -160,7 +157,7 @@ const handleFile: HandleFile<Dependencies, State> = async (
 			})
 			.filter(isNeitherNullNorUndefined)
 			.map((part) => `/${part}`)
-			.join('');
+			.join("");
 
 		const envVar = buildEnvVarNameFromPathParts(parts);
 
@@ -178,7 +175,7 @@ const handleFile: HandleFile<Dependencies, State> = async (
 	) {
 		return [
 			{
-				kind: 'upsertFile',
+				kind: "upsertFile",
 				path,
 				options,
 			},
@@ -196,7 +193,7 @@ const handleData: HandleData<Dependencies, State> = async (
 	state,
 ) => {
 	if (state === null) {
-		throw new Error('The state is not set');
+		throw new Error("The state is not set");
 	}
 
 	if (path === state.turboPath) {
@@ -214,7 +211,7 @@ const handleData: HandleData<Dependencies, State> = async (
 		});
 
 		return {
-			kind: 'upsertData',
+			kind: "upsertData",
 			path,
 			data: newData,
 		};
@@ -223,11 +220,11 @@ const handleData: HandleData<Dependencies, State> = async (
 	// adds page paths to the matcher
 	if (path === state.middlewarePath) {
 		const { jscodeshift } = api.getDependencies();
-		const j = jscodeshift.withParser('tsx');
+		const j = jscodeshift.withParser("tsx");
 		const root = j(data);
 
 		root.find(j.VariableDeclaration).forEach((path) => {
-			if (path.node.declarations[0].type !== 'VariableDeclarator') {
+			if (path.node.declarations[0].type !== "VariableDeclarator") {
 				return;
 			}
 
@@ -235,7 +232,7 @@ const handleData: HandleData<Dependencies, State> = async (
 
 			if (
 				!j.Identifier.check(declarator.id) ||
-				declarator.id.name !== 'config'
+				declarator.id.name !== "config"
 			) {
 				return;
 			}
@@ -248,7 +245,7 @@ const handleData: HandleData<Dependencies, State> = async (
 				(prop) =>
 					j.ObjectProperty.check(prop) &&
 					j.Identifier.check(prop.key) &&
-					prop.key.name === 'matcher',
+					prop.key.name === "matcher",
 			);
 
 			if (
@@ -268,49 +265,49 @@ const handleData: HandleData<Dependencies, State> = async (
 			matcherProperty.value.elements.push(...literals);
 		});
 
-		return { kind: 'upsertData', path, data: root.toSource() };
+		return { kind: "upsertData", path, data: root.toSource() };
 	}
 
 	if (path === state.abTestMiddlewarePath) {
 		const { jscodeshift } = api.getDependencies();
 		const { VariableDeclarator, Program } = jscodeshift;
-		const root = jscodeshift.withParser('tsx')(data);
+		const root = jscodeshift.withParser("tsx")(data);
 
 		const buildElement = (
 			pathname: string,
 			envVar: string,
 		): TSAsExpressionKind => {
 			return {
-				type: 'TSAsExpression',
+				type: "TSAsExpression",
 				expression: {
-					type: 'ArrayExpression',
+					type: "ArrayExpression",
 					elements: [
 						{
-							type: 'StringLiteral',
+							type: "StringLiteral",
 							value: pathname,
 						},
 						{
-							type: 'CallExpression',
+							type: "CallExpression",
 							callee: {
-								type: 'Identifier',
-								name: 'Boolean',
+								type: "Identifier",
+								name: "Boolean",
 							},
 							arguments: [
 								{
-									type: 'MemberExpression',
+									type: "MemberExpression",
 									object: {
-										type: 'MemberExpression',
+										type: "MemberExpression",
 										object: {
-											type: 'Identifier',
-											name: 'process',
+											type: "Identifier",
+											name: "process",
 										},
 										property: {
-											type: 'Identifier',
-											name: 'env',
+											type: "Identifier",
+											name: "env",
 										},
 									},
 									property: {
-										type: 'Identifier',
+										type: "Identifier",
 										name: envVar,
 									},
 								},
@@ -319,10 +316,10 @@ const handleData: HandleData<Dependencies, State> = async (
 					],
 				},
 				typeAnnotation: {
-					type: 'TSTypeReference',
+					type: "TSTypeReference",
 					typeName: {
-						type: 'Identifier',
-						name: 'const',
+						type: "Identifier",
+						name: "const",
 					},
 				},
 			};
@@ -334,24 +331,24 @@ const handleData: HandleData<Dependencies, State> = async (
 
 		const variableDeclarator = jscodeshift.variableDeclarator(
 			{
-				type: 'Identifier',
-				name: 'ROUTES',
+				type: "Identifier",
+				name: "ROUTES",
 				typeAnnotation: {
-					type: 'TSTypeAnnotation',
+					type: "TSTypeAnnotation",
 					typeAnnotation: {
-						type: 'TSArrayType',
+						type: "TSArrayType",
 						elementType: {
-							type: 'TSTupleType',
+							type: "TSTupleType",
 							elementTypes: [
 								{
-									type: 'TSTypeReference',
+									type: "TSTypeReference",
 									typeName: {
-										type: 'Identifier',
-										name: 'URLPattern',
+										type: "Identifier",
+										name: "URLPattern",
 									},
 								},
 								{
-									type: 'TSBooleanKeyword',
+									type: "TSBooleanKeyword",
 								},
 							],
 						},
@@ -359,58 +356,58 @@ const handleData: HandleData<Dependencies, State> = async (
 				},
 			},
 			{
-				type: 'CallExpression',
+				type: "CallExpression",
 				callee: {
-					type: 'MemberExpression',
+					type: "MemberExpression",
 					object: {
-						type: 'ArrayExpression',
+						type: "ArrayExpression",
 						elements,
 					},
 					property: {
-						type: 'Identifier',
-						name: 'map',
+						type: "Identifier",
+						name: "map",
 					},
 				},
 				arguments: [
 					{
-						type: 'ArrowFunctionExpression',
+						type: "ArrowFunctionExpression",
 						params: [
 							{
-								type: 'ArrayPattern',
+								type: "ArrayPattern",
 								elements: [
 									{
-										type: 'Identifier',
-										name: 'pathname',
+										type: "Identifier",
+										name: "pathname",
 									},
 									{
-										type: 'Identifier',
-										name: 'enabled',
+										type: "Identifier",
+										name: "enabled",
 									},
 								],
 							},
 						],
 						body: {
-							type: 'ArrayExpression',
+							type: "ArrayExpression",
 							elements: [
 								{
-									type: 'NewExpression',
+									type: "NewExpression",
 									callee: {
-										type: 'Identifier',
-										name: 'URLPattern',
+										type: "Identifier",
+										name: "URLPattern",
 									},
 									arguments: [
 										{
-											type: 'ObjectExpression',
+											type: "ObjectExpression",
 											properties: [
 												{
-													type: 'ObjectProperty',
+													type: "ObjectProperty",
 													key: {
-														type: 'Identifier',
-														name: 'pathname',
+														type: "Identifier",
+														name: "pathname",
 													},
 													value: {
-														type: 'Identifier',
-														name: 'pathname',
+														type: "Identifier",
+														name: "pathname",
 													},
 													shorthand: true,
 												},
@@ -419,8 +416,8 @@ const handleData: HandleData<Dependencies, State> = async (
 									],
 								},
 								{
-									type: 'Identifier',
-									name: 'enabled',
+									type: "Identifier",
+									name: "enabled",
 								},
 							],
 						},
@@ -430,15 +427,15 @@ const handleData: HandleData<Dependencies, State> = async (
 		);
 
 		const routesVariableDeclarators = root.find(VariableDeclarator, {
-			type: 'VariableDeclarator',
+			type: "VariableDeclarator",
 			id: {
-				type: 'Identifier',
-				name: 'ROUTES',
+				type: "Identifier",
+				name: "ROUTES",
 			},
 		});
 
 		if (routesVariableDeclarators.length === 0) {
-			const variableDeclation = jscodeshift.variableDeclaration('const', [
+			const variableDeclation = jscodeshift.variableDeclaration("const", [
 				variableDeclarator,
 			]);
 
@@ -449,25 +446,25 @@ const handleData: HandleData<Dependencies, State> = async (
 
 		const source = root.toSource();
 
-		return { kind: 'upsertData', path, data: source };
+		return { kind: "upsertData", path, data: source };
 	}
 
-	return { kind: 'noop' };
+	return { kind: "noop" };
 };
 
 const handleFinish: HandleFinish<State> = async (_, state) => {
 	if (state === null) {
-		throw new Error('The state is not set');
+		throw new Error("The state is not set");
 	}
 
 	return {
-		kind: state.step === 'READING' ? 'restart' : 'noop',
+		kind: state.step === "READING" ? "restart" : "noop",
 	};
 };
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/*.{js,jsx,ts,tsx,json}'],
-	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	includePatterns: ["**/*.{js,jsx,ts,tsx,json}"],
+	excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
 	initializeState,
 	handleFile,
 	handleData,

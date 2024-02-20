@@ -1,4 +1,4 @@
-import type { ParameterDeclaration } from 'ts-morph';
+import type { ParameterDeclaration } from "ts-morph";
 import {
 	SyntaxKind,
 	VariableDeclarationKind,
@@ -8,7 +8,7 @@ import {
 	type CallExpression,
 	type FunctionExpression,
 	type SourceFile,
-} from 'ts-morph';
+} from "ts-morph";
 
 function getImportDeclarationAlias(
 	sourceFile: SourceFile,
@@ -64,9 +64,7 @@ function replaceDestructureAliases(
 	if (directIds.length === 2) {
 		aliasNode
 			.findReferencesAsNodes()
-			.forEach((ref) =>
-				ref.replaceWithText(newName ?? nameNode.getText()),
-			);
+			.forEach((ref) => ref.replaceWithText(newName ?? nameNode.getText()));
 	}
 }
 
@@ -83,16 +81,15 @@ function replaceReferences(
 		.forEach((accessExpr) => {
 			if (
 				replaced.includes(accessExpr.getName()) &&
-				accessExpr
-					.getChildrenOfKind(SyntaxKind.Identifier)[0]
-					?.getText() === callerName
+				accessExpr.getChildrenOfKind(SyntaxKind.Identifier)[0]?.getText() ===
+					callerName
 			) {
 				const accessed = accessExpr
 					.getChildrenOfKind(SyntaxKind.Identifier)
 					.at(-1)
 					?.getText();
 				if (!accessed) {
-					throw new Error('Could not find accessed identifier');
+					throw new Error("Could not find accessed identifier");
 				}
 
 				didReplace = true;
@@ -126,29 +123,22 @@ function replaceReferences(
 						.getText()
 						.replace(
 							new RegExp(
-								`(,\\s*)?(${toReplaceFromBinding.join(
-									'|',
-								)})+(\\s*,)?`,
-								'g',
+								`(,\\s*)?(${toReplaceFromBinding.join("|")})+(\\s*,)?`,
+								"g",
 							),
 							(fullMatch, p1, _p2, p3) => {
-								if (fullMatch && ![p1, p3].includes(fullMatch))
-									return '';
+								if (fullMatch && ![p1, p3].includes(fullMatch)) return "";
 								return fullMatch;
 							},
 						),
 				);
 
 				if (
-					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier)
-						.length
+					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier).length
 				) {
 					bindingPattern
 						.getAncestors()
-						.find(
-							(a) =>
-								a.getKind() === SyntaxKind.VariableDeclaration,
-						)
+						.find((a) => a.getKind() === SyntaxKind.VariableDeclaration)
 						?.asKindOrThrow(SyntaxKind.VariableDeclaration)
 						.remove();
 				} else {
@@ -161,11 +151,11 @@ function replaceReferences(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -189,19 +179,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -243,7 +233,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -267,8 +257,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 			const [reqParam] = callbackParams;
 
 			const signatureMatches = searchIdentifiers(callbackBody, [
-				'cookies',
-				'params',
+				"cookies",
+				"params",
 			]);
 
 			if (signatureMatches.size) {
@@ -280,19 +270,19 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 			}
 
 			const reqCallMatches = searchIdentifiers(callbackBody, [
-				'searchParams',
-				'url',
+				"searchParams",
+				"url",
 			]);
 
 			if (reqCallMatches.size) {
-				replaceReferences(callbackBody, ['url'], reqParam?.getText());
+				replaceReferences(callbackBody, ["url"], reqParam?.getText());
 
 				// call searchParams on newly created url object
 				const varStatement = callbackBody.insertVariableStatement(0, {
 					declarations: [
 						{
-							name: 'url',
-							initializer: 'new URL(request.url)',
+							name: "url",
+							initializer: "new URL(request.url)",
 						},
 					],
 				});
@@ -304,15 +294,13 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					.getDescendantsOfKind(SyntaxKind.Identifier)
 					.forEach((id) => {
 						if (
-							id.getText() === 'searchParams' &&
+							id.getText() === "searchParams" &&
 							id
-								.getParentIfKind(
-									SyntaxKind.PropertyAccessExpression,
-								)
+								.getParentIfKind(SyntaxKind.PropertyAccessExpression)
 								?.getFirstChild()
-								?.getText() === 'searchParams'
+								?.getText() === "searchParams"
 						) {
-							id.replaceWithText('url.searchParams');
+							id.replaceWithText("url.searchParams");
 						}
 					});
 			}
@@ -323,23 +311,22 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					.getDescendantsOfKind(SyntaxKind.VariableDeclaration)
 					.find(
 						(vd) =>
-							vd
-								.getFirstChildIfKind(SyntaxKind.Identifier)
-								?.getText() === 'body',
+							vd.getFirstChildIfKind(SyntaxKind.Identifier)?.getText() ===
+							"body",
 					) ?? false;
 
 			const replacementOccurred = replaceReferences(
 				callbackBody,
-				['body'],
+				["body"],
 				reqParam?.getText(),
-				isVariableNameTaken ? 'reqBody' : undefined,
+				isVariableNameTaken ? "reqBody" : undefined,
 			);
 			if (replacementOccurred) {
 				callbackBody.insertVariableStatement(0, {
 					declarations: [
 						{
-							name: isVariableNameTaken ? 'reqBody' : 'body',
-							initializer: 'await request.json()',
+							name: isVariableNameTaken ? "reqBody" : "body",
+							initializer: "await request.json()",
 						},
 					],
 					declarationKind: VariableDeclarationKind.Const,

@@ -3,20 +3,20 @@ import {
 	VSCodePanels,
 	VSCodePanelTab,
 	VSCodePanelView,
-} from '@vscode/webview-ui-toolkit/react';
-import { useEffect, useRef, useState } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
-import { ActiveTabId } from '../../../src/persistedState/codecs';
-import type { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
-import { App as CodemodList } from '../codemodList/App';
-import { CommunityTab } from '../communityTab/CommunityTab';
-import CreateIssue from '../CreateIssue';
-import { WebviewMessage } from '../shared/types';
-import { vscode } from '../shared/utilities/vscode';
-import { CodemodRuns } from './CodemodRuns';
-import 'react-toastify/dist/ReactToastify.css';
-import CodemodEngineNodeNotFound from '../CodemodEngineNodeNotFound';
-import { useTheme } from '../shared/Snippet/useTheme';
+} from "@vscode/webview-ui-toolkit/react";
+import { useEffect, useRef, useState } from "react";
+import { toast, ToastContainer } from "react-toastify";
+import { ActiveTabId } from "../../../src/persistedState/codecs";
+import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import { App as CodemodList } from "../codemodList/App";
+import { CommunityTab } from "../communityTab/CommunityTab";
+import CreateIssue from "../CreateIssue";
+import { WebviewMessage } from "../shared/types";
+import { vscode } from "../shared/utilities/vscode";
+import { CodemodRuns } from "./CodemodRuns";
+import "react-toastify/dist/ReactToastify.css";
+import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
+import { useTheme } from "../shared/Snippet/useTheme";
 
 const toastContainerProps = {
 	pauseOnHover: false,
@@ -45,17 +45,17 @@ function App() {
 
 	useEffect(() => {
 		const handler = (event: MessageEvent<WebviewMessage>) => {
-			if (event.data.kind !== 'webview.main.setProps') {
+			if (event.data.kind !== "webview.main.setProps") {
 				return;
 			}
 
 			setMainWebviewViewProps(event.data.props);
 		};
 
-		window.addEventListener('message', handler);
+		window.addEventListener("message", handler);
 
 		return () => {
-			window.removeEventListener('message', handler);
+			window.removeEventListener("message", handler);
 		};
 	}, []);
 
@@ -97,7 +97,7 @@ function App() {
 		const { content, ...toasterProps } = toaster;
 		let componentToRender = null;
 
-		if (toasterProps.toastId === 'handleSignedInUser') {
+		if (toasterProps.toastId === "handleSignedInUser") {
 			componentToRender = (
 				<div className="toasterComponent">
 					<p>{content}</p>
@@ -106,7 +106,7 @@ function App() {
 						onClick={() => {
 							toast.dismiss(toasterProps.toastId);
 							vscode.postMessage({
-								kind: 'webview.main.signOut',
+								kind: "webview.main.signOut",
 							});
 						}}
 					>
@@ -119,14 +119,14 @@ function App() {
 
 		// remove the current toaster props from Redux state
 		vscode.postMessage({
-			kind: 'webview.main.setToaster',
+			kind: "webview.main.setToaster",
 			value: null,
 		});
 	}, [toaster]);
 
 	const handlePanelTabClick = (id: ActiveTabId) => {
 		vscode.postMessage({
-			kind: 'webview.main.setActiveTabId',
+			kind: "webview.main.setActiveTabId",
 			activeTabId: id,
 		});
 	};
@@ -151,8 +151,7 @@ function App() {
 				activeid={mainWebviewViewProps.activeTabId}
 				onChange={(e) => {
 					const newValue =
-						(e as unknown as { detail: HTMLElement | null }).detail
-							?.id ?? null;
+						(e as unknown as { detail: HTMLElement | null }).detail?.id ?? null;
 
 					if (newValue === null) {
 						return;
@@ -164,16 +163,16 @@ function App() {
 				}}
 				className="h-full w-full vscode-panels"
 			>
-				<VSCodePanelTab className="vscode-tab" id={'codemods'}>
+				<VSCodePanelTab className="vscode-tab" id={"codemods"}>
 					Codemod Discovery
 				</VSCodePanelTab>
-				<VSCodePanelTab className="vscode-tab" id={'codemodRuns'}>
+				<VSCodePanelTab className="vscode-tab" id={"codemodRuns"}>
 					Codemod Runs
 				</VSCodePanelTab>
-				<VSCodePanelTab className="vscode-tab" id={'community'}>
+				<VSCodePanelTab className="vscode-tab" id={"community"}>
 					Community
 				</VSCodePanelTab>
-				<VSCodePanelTab className="vscode-tab" id={'sourceControl'}>
+				<VSCodePanelTab className="vscode-tab" id={"sourceControl"}>
 					Github Issue
 				</VSCodePanelTab>
 
@@ -181,35 +180,29 @@ function App() {
 					className="vscode-panel-view h-full w-full"
 					id="codemodsView"
 				>
-					{mainWebviewViewProps.activeTabId === 'codemods' ? (
-						<CodemodList
-							screenWidth={screenWidth}
-							{...mainWebviewViewProps}
-						/>
+					{mainWebviewViewProps.activeTabId === "codemods" ? (
+						<CodemodList screenWidth={screenWidth} {...mainWebviewViewProps} />
 					) : null}
 					<ToastContainer
 						{...toastContainerProps}
 						containerId="codemodListToastContainer"
 						position="bottom-right"
-						theme={theme === 'vs-light' ? 'light' : 'dark'}
+						theme={theme === "vs-light" ? "light" : "dark"}
 					/>
 				</VSCodePanelView>
 				<VSCodePanelView
 					className="vscode-panel-view h-full w-full"
 					id="codemodRunsView"
 				>
-					{mainWebviewViewProps.activeTabId === 'codemodRuns' ? (
-						<CodemodRuns
-							screenWidth={screenWidth}
-							{...mainWebviewViewProps}
-						/>
+					{mainWebviewViewProps.activeTabId === "codemodRuns" ? (
+						<CodemodRuns screenWidth={screenWidth} {...mainWebviewViewProps} />
 					) : null}
 				</VSCodePanelView>
 				<VSCodePanelView
 					className="vscode-panel-view h-full w-full"
 					id="communityView"
 				>
-					{mainWebviewViewProps.activeTabId === 'community' ? (
+					{mainWebviewViewProps.activeTabId === "community" ? (
 						<CommunityTab />
 					) : null}
 				</VSCodePanelView>
@@ -217,7 +210,7 @@ function App() {
 					className="vscode-panel-view h-full w-full"
 					id="createIssueView"
 				>
-					{mainWebviewViewProps.activeTabId === 'sourceControl' ? (
+					{mainWebviewViewProps.activeTabId === "sourceControl" ? (
 						<CreateIssue {...mainWebviewViewProps} />
 					) : null}
 				</VSCodePanelView>
@@ -225,7 +218,7 @@ function App() {
 			<ToastContainer
 				{...toastContainerProps}
 				containerId="primarySidebarToastContainer"
-				theme={theme === 'vs-light' ? 'light' : 'dark'}
+				theme={theme === "vs-light" ? "light" : "dark"}
 				position="top-right"
 			/>
 		</main>

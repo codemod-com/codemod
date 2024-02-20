@@ -1,10 +1,10 @@
-import { forwardRef, type FC, type ReactNode } from 'react';
+import { forwardRef, type FC, type ReactNode } from "react";
 import {
 	Panel,
 	PanelGroup,
 	type ImperativePanelHandle,
 	type PanelProps,
-} from 'react-resizable-panels';
+} from "react-resizable-panels";
 
 type Props = {
 	children?: ReactNode;
@@ -20,21 +20,21 @@ Layout.Content = (({ children, gap }) => (
 	<PanelGroup
 		autoSaveId="Top-Layout"
 		className={`grid grow overflow-hidden lg:grid-cols-3 ${
-			gap ?? 'gap-6'
+			gap ?? "gap-6"
 		}  p-2 pt-0`}
 		direction="horizontal"
 	>
 		{children}
 	</PanelGroup>
 )) as FC<Props & { gap?: string }>;
-Layout.Content.displayName = 'LayoutContent';
+Layout.Content.displayName = "LayoutContent";
 
 Layout.Header = (({ children }) => (
 	<div className="flex h-[80px] w-full bg-gray-lighter p-2 dark:bg-gray-darker">
 		{children}
 	</div>
 )) as FC<Props>;
-Layout.Header.displayName = 'LayoutHeader';
+Layout.Header.displayName = "LayoutHeader";
 
 const Column = ({ children }: Props) => (
 	<Panel
@@ -52,7 +52,7 @@ Layout.Pane = (({ children }) => (
 		{children}
 	</div>
 )) as FC<Props>;
-Layout.Pane.displayName = 'LayoutPane';
+Layout.Pane.displayName = "LayoutPane";
 
 Layout.PaneItemVertical = (({ children }) => (
 	<Panel
@@ -64,7 +64,7 @@ Layout.PaneItemVertical = (({ children }) => (
 		<div className="flex h-full w-full flex-col p-2 ">{children}</div>
 	</Panel>
 )) as FC<Props>;
-Layout.PaneItemVertical.displayName = 'LayoutPane';
+Layout.PaneItemVertical.displayName = "LayoutPane";
 
 Layout.Column = Column;
 type ResizablePanelProps = {
@@ -77,18 +77,12 @@ type ResizablePanelProps = {
 
 const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 	(props, ref) => {
-		const {
-			children,
-			defaultSize,
-			minSize,
-			collapsible,
-			className,
-			...rest
-		} = props;
+		const { children, defaultSize, minSize, collapsible, className, ...rest } =
+			props;
 		return (
 			<Panel
 				{...rest}
-				className={` min-h-0 ${className ?? ''} `}
+				className={` min-h-0 ${className ?? ""} `}
 				collapsible={collapsible}
 				defaultSize={defaultSize}
 				minSize={minSize}
@@ -99,7 +93,7 @@ const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 		);
 	},
 );
-ResizablePanel.displayName = 'ResizablePanel';
+ResizablePanel.displayName = "ResizablePanel";
 Layout.Column = Column;
 Layout.ResizablePanel = ResizablePanel;
 

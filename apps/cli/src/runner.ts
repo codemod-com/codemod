@@ -1,24 +1,24 @@
-import { createHash } from 'crypto';
-import type { IFs } from 'memfs';
-import terminalLink from 'terminal-link';
-import { buildSourcedCodemodOptions } from './buildCodemodOptions.js';
-import type { CodemodDownloaderBlueprint } from './downloadCodemod.js';
+import { createHash } from "crypto";
+import type { IFs } from "memfs";
+import terminalLink from "terminal-link";
+import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
+import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import {
 	buildPrinterMessageUponCommand,
 	modifyFileSystemUponCommand,
 	type FormattedFileCommand,
-} from './fileCommands.js';
-import type { PrinterBlueprint } from './printer.js';
-import type { RepositoryConfiguration } from './repositoryConfiguration.js';
-import { runCodemod } from './runCodemod.js';
-import { buildSafeArgumentRecord } from './safeArgumentRecord.js';
-import type { ArgumentRecord } from './schemata/argumentRecordSchema.js';
-import type { CodemodSettings } from './schemata/codemodSettingsSchema.js';
-import type { FlowSettings } from './schemata/flowSettingsSchema.js';
-import { RunSettings } from './schemata/runArgvSettingsSchema.js';
-import { SurfaceAgnosticCaseService } from './services/surfaceAgnosticCaseService.js';
-import type { TelemetryBlueprint } from './telemetryService.js';
-import { boldText, colorizeText } from './utils.js';
+} from "./fileCommands.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { RepositoryConfiguration } from "./repositoryConfiguration.js";
+import { runCodemod } from "./runCodemod.js";
+import { buildSafeArgumentRecord } from "./safeArgumentRecord.js";
+import type { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
+import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
+import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
+import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
+import type { TelemetryBlueprint } from "./telemetryService.js";
+import { boldText, colorizeText } from "./utils.js";
 
 export class Runner {
 	private __modifiedFileCount: number;
@@ -42,21 +42,21 @@ export class Runner {
 
 	public async run() {
 		const EXTENSION_LINK_START = terminalLink(
-			'Click to view the live results of this run in the Codemod VSCode Extension!',
+			"Click to view the live results of this run in the Codemod VSCode Extension!",
 			`vscode://codemod.codemod-vscode-extension/cases/${this._runSettings.caseHashDigest.toString(
-				'base64url',
+				"base64url",
 			)}`,
 		);
 
 		const EXTENSION_LINK_END = terminalLink(
-			'The run has finished! Click to open the Codemod VSCode Extension and view the results.',
+			"The run has finished! Click to open the Codemod VSCode Extension and view the results.",
 			`vscode://codemod.codemod-vscode-extension/cases/${this._runSettings.caseHashDigest.toString(
-				'base64url',
+				"base64url",
 			)}`,
 		);
 
 		try {
-			if (this._codemodSettings.kind === 'runSourced') {
+			if (this._codemodSettings.kind === "runSourced") {
 				const codemodOptions = await buildSourcedCodemodOptions(
 					this._fs,
 					this._codemodSettings,
@@ -67,26 +67,22 @@ export class Runner {
 					this._argumentRecord,
 				);
 
-				const codemodHashDigest = createHash('ripemd160')
+				const codemodHashDigest = createHash("ripemd160")
 					.update(this._codemodSettings.source)
 					.digest();
 
-				const surfaceAgnosticCaseService =
-					new SurfaceAgnosticCaseService(
-						this._fs,
-						this._runSettings,
-						this._flowSettings,
-						this._argumentRecord,
-						codemodHashDigest,
-					);
+				const surfaceAgnosticCaseService = new SurfaceAgnosticCaseService(
+					this._fs,
+					this._runSettings,
+					this._flowSettings,
+					this._argumentRecord,
+					codemodHashDigest,
+				);
 
 				await surfaceAgnosticCaseService.emitPreamble();
 
 				if (this._runSettings.dryRun) {
-					this._printer.printConsoleMessage(
-						'log',
-						EXTENSION_LINK_START,
-					);
+					this._printer.printConsoleMessage("log", EXTENSION_LINK_START);
 				}
 
 				await runCodemod(
@@ -109,29 +105,24 @@ export class Runner {
 				await surfaceAgnosticCaseService.emitPostamble();
 
 				this._telemetry.sendEvent({
-					kind: 'codemodExecuted',
-					codemodName: 'Codemod from FS',
-					executionId:
-						this._runSettings.caseHashDigest.toString('base64url'),
+					kind: "codemodExecuted",
+					codemodName: "Codemod from FS",
+					executionId: this._runSettings.caseHashDigest.toString("base64url"),
 					fileCount: this.__modifiedFileCount,
 				});
 
 				if (this._runSettings.dryRun) {
-					this._printer.printConsoleMessage(
-						'log',
-						EXTENSION_LINK_END,
-					);
+					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
 				}
 
 				return;
 			}
 
-			if (this._codemodSettings.kind === 'runOnPreCommit') {
-				const { preCommitCodemods } =
-					await this._loadRepositoryConfiguration();
+			if (this._codemodSettings.kind === "runOnPreCommit") {
+				const { preCommitCodemods } = await this._loadRepositoryConfiguration();
 
 				for (const preCommitCodemod of preCommitCodemods) {
-					if (preCommitCodemod.source === 'registry') {
+					if (preCommitCodemod.source === "registry") {
 						const codemod = await this._codemodDownloader.download(
 							preCommitCodemod.name,
 							this._flowSettings.noCache,
@@ -156,12 +147,10 @@ export class Runner {
 						);
 
 						this._telemetry.sendEvent({
-							kind: 'codemodExecuted',
+							kind: "codemodExecuted",
 							codemodName: codemod.name,
 							executionId:
-								this._runSettings.caseHashDigest.toString(
-									'base64url',
-								),
+								this._runSettings.caseHashDigest.toString("base64url"),
 							fileCount: this.__modifiedFileCount,
 						});
 					}
@@ -172,22 +161,19 @@ export class Runner {
 
 			if (this._name !== null) {
 				this._printer.printConsoleMessage(
-					'info',
+					"info",
 					colorizeText(
 						`Executing the ${boldText(
 							`"${this._name}"`,
 						)} codemod against ${boldText(
 							`"${this._flowSettings.target}"`,
 						)}...\n`,
-						'cyan',
+						"cyan",
 					),
 				);
 
 				if (this._runSettings.dryRun) {
-					this._printer.printConsoleMessage(
-						'log',
-						EXTENSION_LINK_START,
-					);
+					this._printer.printConsoleMessage("log", EXTENSION_LINK_START);
 				}
 
 				const codemod = await this._codemodDownloader.download(
@@ -195,7 +181,7 @@ export class Runner {
 					this._flowSettings.noCache,
 				);
 
-				const codemodHashDigest = createHash('ripemd160')
+				const codemodHashDigest = createHash("ripemd160")
 					.update(codemod.name)
 					.digest();
 
@@ -204,14 +190,13 @@ export class Runner {
 					this._argumentRecord,
 				);
 
-				const surfaceAgnosticCaseService =
-					new SurfaceAgnosticCaseService(
-						this._fs,
-						this._runSettings,
-						this._flowSettings,
-						this._argumentRecord,
-						codemodHashDigest,
-					);
+				const surfaceAgnosticCaseService = new SurfaceAgnosticCaseService(
+					this._fs,
+					this._runSettings,
+					this._flowSettings,
+					this._argumentRecord,
+					codemodHashDigest,
+				);
 
 				await surfaceAgnosticCaseService.emitPreamble();
 
@@ -235,18 +220,14 @@ export class Runner {
 				await surfaceAgnosticCaseService.emitPostamble();
 
 				this._telemetry.sendEvent({
-					kind: 'codemodExecuted',
+					kind: "codemodExecuted",
 					codemodName: codemod.name,
-					executionId:
-						this._runSettings.caseHashDigest.toString('base64url'),
+					executionId: this._runSettings.caseHashDigest.toString("base64url"),
 					fileCount: this.__modifiedFileCount,
 				});
 
 				if (this._runSettings.dryRun) {
-					this._printer.printConsoleMessage(
-						'log',
-						EXTENSION_LINK_END,
-					);
+					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
 				}
 			}
 		} catch (error) {
@@ -255,19 +236,17 @@ export class Runner {
 			}
 
 			this._printer.printOperationMessage({
-				kind: 'error',
+				kind: "error",
 				message: error.message,
 			});
 			this._telemetry.sendEvent({
-				kind: 'failedToExecuteCommand',
-				commandName: 'codemod.executeCodemod',
+				kind: "failedToExecuteCommand",
+				commandName: "codemod.executeCodemod",
 			});
 		}
 	}
 
-	protected async _handleCommand(
-		command: FormattedFileCommand,
-	): Promise<void> {
+	protected async _handleCommand(command: FormattedFileCommand): Promise<void> {
 		await modifyFileSystemUponCommand(this._fs, this._runSettings, command);
 
 		if (!this._runSettings.dryRun) {

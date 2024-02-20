@@ -1,5 +1,5 @@
-import { getBullImportDeclaration } from './get-import-declaration.js';
-import type { ModifyFunction } from './types.js';
+import { getBullImportDeclaration } from "./get-import-declaration.js";
+import type { ModifyFunction } from "./types.js";
 
 export const replaceOldQueueImport: ModifyFunction = (root, j) => {
 	const declaration = getBullImportDeclaration(root, j);
@@ -14,22 +14,22 @@ export const replaceOldQueueImport: ModifyFunction = (root, j) => {
 		return;
 	}
 
-	source.value = 'bullmq';
+	source.value = "bullmq";
 
 	const queueImportIndex = bullImportSpecifiers.findIndex(
-		(sp) => sp.local?.name === 'Queue',
+		(sp) => sp.local?.name === "Queue",
 	);
 	const jobOptionsImportIndex = bullImportSpecifiers.findIndex(
-		(sp) => sp.local?.name === 'JobOptions',
+		(sp) => sp.local?.name === "JobOptions",
 	);
 
 	if (queueImportIndex !== -1) {
 		bullImportSpecifiers.splice(queueImportIndex, 1);
 		bullImportSpecifiers.push({
-			type: 'ImportSpecifier',
+			type: "ImportSpecifier",
 			imported: {
-				type: 'Identifier',
-				name: 'Queue',
+				type: "Identifier",
+				name: "Queue",
 			},
 		});
 	}
@@ -37,17 +37,17 @@ export const replaceOldQueueImport: ModifyFunction = (root, j) => {
 	if (jobOptionsImportIndex !== -1) {
 		bullImportSpecifiers.splice(jobOptionsImportIndex, 1);
 		bullImportSpecifiers.push({
-			type: 'ImportSpecifier',
+			type: "ImportSpecifier",
 			imported: {
-				type: 'Identifier',
-				name: 'JobsOptions',
+				type: "Identifier",
+				name: "JobsOptions",
 			},
 		});
 
 		root.find(j.Identifier).forEach((path) => {
 			const { name } = path.value;
-			if (name === 'JobOptions') {
-				path.value.name = 'JobsOptions';
+			if (name === "JobOptions") {
+				path.value.name = "JobsOptions";
 			}
 		});
 	}

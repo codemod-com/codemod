@@ -1,19 +1,19 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from "react-redux";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from '~/components/ui/select';
-import { cn } from '~/lib/utils';
-import { useTheme } from '../../pageComponents/main/themeContext';
+} from "~/components/ui/select";
+import { cn } from "~/lib/utils";
+import { useTheme } from "../../pageComponents/main/themeContext";
 import {
 	ENGINES,
 	selectEngine,
 	setEngine,
 	type Engine,
-} from '../../store/slices/CFS';
+} from "../../store/slices/CFS";
 
 const EngineSelector = () => {
 	const dispatch = useDispatch();
@@ -28,12 +28,9 @@ const EngineSelector = () => {
 		<Select onValueChange={handleEngineChange} value={engine}>
 			<SelectTrigger className="flex w-full select-none items-center font-semibold">
 				<span
-					className={cn(
-						'mr-[0.75rem] text-xs font-light text-slate-500',
-						{
-							'text-slate-200': isDark,
-						},
-					)}
+					className={cn("mr-[0.75rem] text-xs font-light text-slate-500", {
+						"text-slate-200": isDark,
+					})}
 				>
 					LLM:
 				</span>
@@ -45,7 +42,7 @@ const EngineSelector = () => {
 						key={e}
 						value={e}
 						className={cn({
-							'font-semibold': engine === e,
+							"font-semibold": engine === e,
 						})}
 					>
 						{e}

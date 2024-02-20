@@ -1,16 +1,16 @@
-import { deepStrictEqual, ok } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { mdxjs } from 'micromark-extension-mdxjs';
-import tsmorph from 'ts-morph';
-import { visit } from 'unist-util-visit';
-import { describe, it } from 'vitest';
-import { repomod } from '../src/index.js';
+import { deepStrictEqual, ok } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
+import { toMarkdown } from "mdast-util-to-markdown";
+import type { DirectoryJSON } from "memfs";
+import { createFsFromVolume, Volume } from "memfs";
+import { mdxjs } from "micromark-extension-mdxjs";
+import tsmorph from "ts-morph";
+import { visit } from "unist-util-visit";
+import { describe, it } from "vitest";
+import { repomod } from "../src/index.js";
 
 const INDEX_CONTENT = `
 import A from './testQWE';
@@ -47,7 +47,7 @@ const transform = async (json: DirectoryJSON) => {
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const parseMdx = (data: string) =>
 		fromMarkdown(data, {
@@ -76,21 +76,21 @@ const transform = async (json: DirectoryJSON) => {
 		pathApi,
 	);
 
-	return executeFilemod(api, repomod, '/', {}, {});
+	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe('next 13 app-directory-boilerplate', () => {
-	it('should build correct files', async function () {
+describe("next 13 app-directory-boilerplate", () => {
+	it("should build correct files", async function () {
 		const externalFileCommands = await transform({
-			'C:\\project\\pages\\index.jsx': INDEX_CONTENT,
-			'C:\\project\\pages\\_app.jsx': 'any',
-			'C:\\project\\pages\\app.jsx': 'any',
-			'C:\\project\\pages\\_document.jsx': 'any',
-			'C:\\project\\pages\\_error.jsx': 'any',
-			'C:\\project\\pages\\_404.jsx': 'any',
-			'C:\\project\\pages\\[a]\\[b].tsx': A_B_CONTENT,
-			'C:\\project\\pages\\[a]\\c.tsx': A_C_CONTENT,
-			'C:\\project\\pages\\a\\index.tsx': 'any',
+			"C:\\project\\pages\\index.jsx": INDEX_CONTENT,
+			"C:\\project\\pages\\_app.jsx": "any",
+			"C:\\project\\pages\\app.jsx": "any",
+			"C:\\project\\pages\\_document.jsx": "any",
+			"C:\\project\\pages\\_error.jsx": "any",
+			"C:\\project\\pages\\_404.jsx": "any",
+			"C:\\project\\pages\\[a]\\[b].tsx": A_B_CONTENT,
+			"C:\\project\\pages\\[a]\\c.tsx": A_C_CONTENT,
+			"C:\\project\\pages\\a\\index.tsx": "any",
 		});
 
 		deepStrictEqual(externalFileCommands.length, 18);
@@ -98,79 +98,76 @@ describe('next 13 app-directory-boilerplate', () => {
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'deleteFile' &&
-					command.path.endsWith('project\\pages\\_app.jsx'),
+					command.kind === "deleteFile" &&
+					command.path.endsWith("project\\pages\\_app.jsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'deleteFile' &&
-					command.path.endsWith('project\\pages\\_document.jsx'),
+					command.kind === "deleteFile" &&
+					command.path.endsWith("project\\pages\\_document.jsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\layout.tsx'),
+				command.path.endsWith("project\\app\\layout.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\error.tsx'),
+				command.path.endsWith("project\\app\\error.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\not-found.tsx'),
+				command.path.endsWith("project\\app\\not-found.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\page.tsx'),
+				command.path.endsWith("project\\app\\page.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\[a]\\[b]\\page.tsx'),
+				command.path.endsWith("project\\app\\[a]\\[b]\\page.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\[a]\\c\\page.tsx'),
+				command.path.endsWith("project\\app\\[a]\\c\\page.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) =>
-				command.path.endsWith('project\\app\\a\\page.tsx'),
+				command.path.endsWith("project\\app\\a\\page.tsx"),
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path.endsWith('project\\app\\components.tsx') &&
+					command.kind === "upsertFile" &&
+					command.path.endsWith("project\\app\\components.tsx") &&
 					command.data
-						.replace(
-							/\/\/ This file has been sourced from.*\n/g,
-							'',
-						)
-						.replace(/\W/gm, '') ===
+						.replace(/\/\/ This file has been sourced from.*\n/g, "")
+						.replace(/\W/gm, "") ===
 						`
 	        'use client';
 
 	        export default function Index({}) {
 	            return null;
 	        }
-	    ;`.replace(/\W/gm, '')
+	    ;`.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -178,14 +175,11 @@ describe('next 13 app-directory-boilerplate', () => {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path.endsWith('project\\app\\[a]\\c\\page.tsx') &&
+					command.kind === "upsertFile" &&
+					command.path.endsWith("project\\app\\[a]\\c\\page.tsx") &&
 					command.data
-						.replace(
-							/\/\/ This file has been sourced from.*\n/g,
-							'',
-						)
-						.replace(/\W/gm, '') ===
+						.replace(/\/\/ This file has been sourced from.*\n/g, "")
+						.replace(/\W/gm, "") ===
 						`
 	            import Components from "./components";
 	            // TODO reimplement getServerSideProps with custom logic
@@ -194,7 +188,7 @@ describe('next 13 app-directory-boilerplate', () => {
 	            export default async function Page(props: any) {
 	                return <Components {...props}/>;
 	            }
-	        `.replace(/\W/gm, '')
+	        `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -202,19 +196,14 @@ describe('next 13 app-directory-boilerplate', () => {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path.endsWith(
-						'project\\app\\[a]\\[b]\\components.tsx',
-					) &&
+					command.kind === "upsertFile" &&
+					command.path.endsWith("project\\app\\[a]\\[b]\\components.tsx") &&
 					command.data
-						.replace(
-							/\/\/ This file has been sourced from.*\n/g,
-							'',
-						)
-						.replace(/\W/gm, '') ===
+						.replace(/\/\/ This file has been sourced from.*\n/g, "")
+						.replace(/\W/gm, "") ===
 						`
 	            'use client';
-	            `.replace(/\W/gm, '')
+	            `.replace(/\W/gm, "")
 				);
 			}),
 		);

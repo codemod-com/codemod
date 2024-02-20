@@ -1,6 +1,6 @@
-import { isAbsolute, join, parse, relative } from 'node:path';
-import type { Filemod, UnifiedFileSystem } from '@codemod-com/filemod';
-import type { fromMarkdown } from 'mdast-util-from-markdown';
+import { isAbsolute, join, parse, relative } from "node:path";
+import type { Filemod, UnifiedFileSystem } from "@codemod-com/filemod";
+import type { fromMarkdown } from "mdast-util-from-markdown";
 import type {
 	ArrowFunction,
 	FunctionDeclaration,
@@ -15,10 +15,10 @@ import type {
 	JsxSelfClosingElement,
 	SourceFile,
 	StringLiteral,
-} from 'ts-morph';
-import tsmorph, { ModuleKind, Node, SyntaxKind } from 'ts-morph';
-import type { filter } from 'unist-util-filter';
-import type { visit } from 'unist-util-visit';
+} from "ts-morph";
+import tsmorph, { ModuleKind, Node, SyntaxKind } from "ts-morph";
+import type { filter } from "unist-util-filter";
+import type { visit } from "unist-util-visit";
 
 /**
  * Copied from "../replace-next-head"
@@ -32,48 +32,48 @@ type Dependency = {
 };
 
 const openGraphWebsiteTags = [
-	'og:type',
-	'og:determiner',
-	'og:title',
-	'og:description',
-	'og:url',
-	'og:site_name',
-	'og:locale',
-	'og:locale:alternate',
-	'og:country_name',
-	'og:ttl',
-	'og:image',
-	'og:image:url',
-	'og:image:width',
-	'og:image:height',
-	'og:image:alt',
-	'og:audio',
-	'og:audio:secure_url',
-	'og:audio:type',
-	'og:video',
-	'og:video:secure_url',
-	'og:video:type',
-	'og:video:width',
-	'og:video:height',
+	"og:type",
+	"og:determiner",
+	"og:title",
+	"og:description",
+	"og:url",
+	"og:site_name",
+	"og:locale",
+	"og:locale:alternate",
+	"og:country_name",
+	"og:ttl",
+	"og:image",
+	"og:image:url",
+	"og:image:width",
+	"og:image:height",
+	"og:image:alt",
+	"og:audio",
+	"og:audio:secure_url",
+	"og:audio:type",
+	"og:video",
+	"og:video:secure_url",
+	"og:video:type",
+	"og:video:width",
+	"og:video:height",
 ];
 
 const openGraphArticleTags = [
-	'article:published_time',
-	'article:modified_time',
-	'article:expiration_time',
-	'article:author',
-	'article:section',
-	'article:tag',
+	"article:published_time",
+	"article:modified_time",
+	"article:expiration_time",
+	"article:author",
+	"article:section",
+	"article:tag",
 ];
 
 const twitterTags = [
-	'twitter:card',
-	'twitter:site',
-	'twitter:site:id',
-	'twitter:creator',
-	'twitter:creator:id',
-	'twitter:title',
-	'twitter:description',
+	"twitter:card",
+	"twitter:site",
+	"twitter:site:id",
+	"twitter:creator",
+	"twitter:creator:id",
+	"twitter:title",
+	"twitter:description",
 ];
 
 // @TODO card=app
@@ -81,43 +81,43 @@ const twitterTags = [
 
 // @TODO appLinks
 
-const alternatesLinks = ['canonical', 'alternate'];
+const alternatesLinks = ["canonical", "alternate"];
 
 const basicTags = [
-	'title',
-	'description',
-	'application-name',
-	'author',
-	'manifest',
-	'generator',
-	'keywords',
-	'referrer',
-	'theme-color',
-	'color-scheme',
-	'viewport',
-	'creator',
-	'publisher',
-	'robots',
-	'abstract',
-	'archives',
-	'assets',
-	'bookmarks',
-	'category',
-	'classification',
+	"title",
+	"description",
+	"application-name",
+	"author",
+	"manifest",
+	"generator",
+	"keywords",
+	"referrer",
+	"theme-color",
+	"color-scheme",
+	"viewport",
+	"creator",
+	"publisher",
+	"robots",
+	"abstract",
+	"archives",
+	"assets",
+	"bookmarks",
+	"category",
+	"classification",
 ];
 
-const iTunesMeta = ['apple-itunes-app'];
-const formatDetectionTags = ['format-detection'];
+const iTunesMeta = ["apple-itunes-app"];
+const formatDetectionTags = ["format-detection"];
 // @TODO AppleWebAppMeta
 const verificationTags = [
-	'google-site-verification',
-	'y_key',
-	'yandex-verification',
+	"google-site-verification",
+	"y_key",
+	"yandex-verification",
 ];
 
-const iconTags = ['icon', 'apple-touch-icon', 'shortcut icon', 'mask-icon'];
+const iconTags = ["icon", "apple-touch-icon", "shortcut icon", "mask-icon"];
 
-const otherMetaTags = ['msapplication-TileColor', 'msapplication-config'];
+const otherMetaTags = ["msapplication-TileColor", "msapplication-config"];
 
 const knownNames = [
 	...openGraphWebsiteTags,
@@ -134,7 +134,7 @@ const knownNames = [
 
 export const camelize = (str: string) =>
 	str.replace(/[-_]([a-z])/g, function (g) {
-		return (g[1] ?? '').toUpperCase();
+		return (g[1] ?? "").toUpperCase();
 	});
 
 export const buildContainer = <T>(initialValue: T) => {
@@ -187,9 +187,8 @@ const getAncestorByDeclaration = (declarationNode: Node): Node | null => {
 		ancestor = declarationNode.getParent()?.getParent() ?? null;
 	} else if (Node.isBindingElement(declarationNode)) {
 		ancestor =
-			declarationNode.getFirstAncestorByKind(
-				SyntaxKind.VariableStatement,
-			) ?? null;
+			declarationNode.getFirstAncestorByKind(SyntaxKind.VariableStatement) ??
+			null;
 	}
 
 	return ancestor;
@@ -223,8 +222,7 @@ const getDependenciesForIdentifiers = (
 			return;
 		}
 
-		const [firstDeclaration] =
-			identifier.getSymbol()?.getDeclarations() ?? [];
+		const [firstDeclaration] = identifier.getSymbol()?.getDeclarations() ?? [];
 
 		const localSourceFile = identifier.getFirstAncestorByKind(
 			SyntaxKind.SourceFile,
@@ -250,9 +248,8 @@ const getDependenciesForIdentifiers = (
 			kind: ancestor.getKind(),
 			isBindingPattern:
 				ancestor.getKind() === SyntaxKind.Parameter &&
-				ancestor.getFirstDescendantByKind(
-					SyntaxKind.ObjectBindingPattern,
-				) !== undefined,
+				ancestor.getFirstDescendantByKind(SyntaxKind.ObjectBindingPattern) !==
+					undefined,
 		};
 
 		// recursivelly check for dependencies until reached parameter or import
@@ -288,10 +285,7 @@ const getDependenciesForIdentifiers = (
 				return (
 					!Node.isBindingElement(parent) &&
 					!Node.isPropertyAssignment(parent) &&
-					!(
-						Node.isPropertyAccessExpression(parent) &&
-						i.getChildIndex() !== 0
-					)
+					!(Node.isPropertyAccessExpression(parent) && i.getChildIndex() !== 0)
 				);
 			});
 
@@ -312,14 +306,13 @@ const handleJsxSelfClosingElement = (
 ) => {
 	const tagName = jsxSelfClosingElement.getTagNameNode().getText();
 
-	if (!['link', 'meta'].includes(tagName)) {
+	if (!["link", "meta"].includes(tagName)) {
 		return;
 	}
 
-	const ancestorBinaryExpression =
-		jsxSelfClosingElement.getFirstAncestorByKind(
-			SyntaxKind.BinaryExpression,
-		);
+	const ancestorBinaryExpression = jsxSelfClosingElement.getFirstAncestorByKind(
+		SyntaxKind.BinaryExpression,
+	);
 
 	const ancestorConditionalExpression =
 		jsxSelfClosingElement.getFirstAncestorByKind(
@@ -366,18 +359,17 @@ const handleJsxSelfClosingElement = (
 					dependencies: { ...prev.dependencies, ...dependencies },
 				}));
 
-				metadataAttributes[name] =
-					initializer.getExpression()?.getText() ?? '';
+				metadataAttributes[name] = initializer.getExpression()?.getText() ?? "";
 			}
 
 			return metadataAttributes;
 		}, {});
 
 	const metadataName = (
-		tagName === 'link'
+		tagName === "link"
 			? metadataAttributes.rel
 			: metadataAttributes.name ?? metadataAttributes.property
-	)?.replace(/\"/g, '');
+	)?.replace(/\"/g, "");
 
 	if (metadataName && knownNames.includes(metadataName)) {
 		handleTag(
@@ -385,8 +377,7 @@ const handleJsxSelfClosingElement = (
 				tagName,
 				metadataName,
 				metadataAttributes,
-				conditionText:
-					binaryExpr?.getText() ?? conditionalExpr?.getText(),
+				conditionText: binaryExpr?.getText() ?? conditionalExpr?.getText(),
 			},
 			metadataContainer,
 		);
@@ -398,13 +389,13 @@ const handleHeadChildJsxElement = (
 	metadataContainer: Container<Record<string, any>>,
 	settingsContainer: Container<Record<string, any>>,
 ) => {
-	if (jsxElement.getOpeningElement().getTagNameNode().getText() !== 'title') {
+	if (jsxElement.getOpeningElement().getTagNameNode().getText() !== "title") {
 		return;
 	}
 
 	const children = jsxElement.getJsxChildren();
 
-	let text = '';
+	let text = "";
 
 	const ancestorBinaryExpression = jsxElement.getFirstAncestorByKind(
 		SyntaxKind.BinaryExpression,
@@ -433,9 +424,7 @@ const handleHeadChildJsxElement = (
 			text += child.getFullText();
 		} else if (Node.isJsxExpression(child)) {
 			const expression = child.getExpression();
-			const identifiers = child.getDescendantsOfKind(
-				SyntaxKind.Identifier,
-			);
+			const identifiers = child.getDescendantsOfKind(SyntaxKind.Identifier);
 
 			settingsContainer.set((prev) => ({
 				...prev,
@@ -446,7 +435,7 @@ const handleHeadChildJsxElement = (
 			}));
 
 			if (Node.isTemplateExpression(expression)) {
-				const t = expression.getFullText().replace(/\`/g, '');
+				const t = expression.getFullText().replace(/\`/g, "");
 				text += t;
 				return;
 			}
@@ -463,8 +452,8 @@ const handleHeadChildJsxElement = (
 
 	handleTag(
 		{
-			tagName: 'title',
-			metadataName: 'title',
+			tagName: "title",
+			metadataName: "title",
 			metadataAttributes: {
 				children: `\`${text}\``,
 			},
@@ -484,11 +473,7 @@ const handleHeadChild = (
 	}
 
 	if (Node.isJsxSelfClosingElement(child)) {
-		handleJsxSelfClosingElement(
-			child,
-			metadataContainer,
-			settingsContainer,
-		);
+		handleJsxSelfClosingElement(child, metadataContainer, settingsContainer);
 	}
 
 	if (Node.isParenthesizedExpression(child)) {
@@ -515,11 +500,7 @@ const handleHeadChild = (
 			const whenFalse = expression.getWhenFalse();
 
 			[whenTrue, whenFalse].forEach((expression) =>
-				handleHeadChild(
-					expression,
-					metadataContainer,
-					settingsContainer,
-				),
+				handleHeadChild(expression, metadataContainer, settingsContainer),
 			);
 		}
 	}
@@ -549,11 +530,7 @@ const handleHeadIdentifier = (
 			const grandparent = parent.getParent();
 
 			if (Node.isJsxElement(grandparent)) {
-				handleHeadJsxElement(
-					grandparent,
-					metadataContainer,
-					settingsContainer,
-				);
+				handleHeadJsxElement(grandparent, metadataContainer, settingsContainer);
 			}
 		}
 	});
@@ -566,7 +543,7 @@ export const handleImportDeclaration = (
 ) => {
 	const moduleSpecifier = importDeclaration.getModuleSpecifier();
 
-	if (moduleSpecifier.getLiteralText() !== 'next/head') {
+	if (moduleSpecifier.getLiteralText() !== "next/head") {
 		return;
 	}
 
@@ -594,12 +571,12 @@ export const handleTag = (
 	metadataContainer: Container<Record<string, any>>,
 ) => {
 	const metadataObject = metadataContainer.get();
-	if (metadataName === 'title') {
-		metadataObject[metadataName] = metadataAttributes.children ?? '';
+	if (metadataName === "title") {
+		metadataObject[metadataName] = metadataAttributes.children ?? "";
 		metadataObject[`_CONDITION_TEXT_${metadataName}`] = conditionText;
 	}
 
-	if (tagName === 'meta') {
+	if (tagName === "meta") {
 		const content = metadataAttributes.content;
 
 		if (otherMetaTags.includes(metadataName)) {
@@ -611,14 +588,14 @@ export const handleTag = (
 			return;
 		}
 
-		if (metadataName.startsWith('article')) {
+		if (metadataName.startsWith("article")) {
 			const { content } = metadataAttributes;
 
 			if (!metadataObject.openGraph) {
 				metadataObject.openGraph = {};
 			}
 
-			if (metadataName === 'article:author') {
+			if (metadataName === "article:author") {
 				if (!metadataObject.openGraph.authors) {
 					metadataObject.openGraph.authors = [];
 				}
@@ -628,7 +605,7 @@ export const handleTag = (
 				return;
 			}
 
-			if (metadataName === 'article:tag') {
+			if (metadataName === "article:tag") {
 				if (!metadataObject.openGraph.tags) {
 					metadataObject.openGraph.tags = [];
 				}
@@ -638,23 +615,22 @@ export const handleTag = (
 				return;
 			}
 
-			metadataObject.openGraph[
-				camelize(metadataName.replace('article:', ''))
-			] = content;
+			metadataObject.openGraph[camelize(metadataName.replace("article:", ""))] =
+				content;
 
 			return;
 		}
 
-		if (metadataName === 'author') {
+		if (metadataName === "author") {
 			if (!metadataObject.authors) {
 				metadataObject.authors = [];
 			}
 
-			metadataObject['authors'].push({ name: content });
+			metadataObject["authors"].push({ name: content });
 			return;
 		}
 
-		if (metadataName === 'theme-color') {
+		if (metadataName === "theme-color") {
 			const { content, media } = metadataAttributes;
 
 			if (!content && !media) {
@@ -675,35 +651,32 @@ export const handleTag = (
 			return;
 		}
 
-		if (metadataName === 'googlebot') {
+		if (metadataName === "googlebot") {
 			return;
 		}
 
-		if (metadataName.startsWith('og:')) {
-			const n = camelize(metadataName.replace('og:', ''));
+		if (metadataName.startsWith("og:")) {
+			const n = camelize(metadataName.replace("og:", ""));
 
 			if (!metadataObject.openGraph) {
 				metadataObject.openGraph = {};
 			}
 
 			// image structured property
-			if (metadataName.startsWith('og:image')) {
+			if (metadataName.startsWith("og:image")) {
 				const { content } = metadataAttributes;
 
 				if (!metadataObject.openGraph.images) {
 					metadataObject.openGraph.images = [];
 				}
 
-				if (
-					metadataName === 'og:image:url' ||
-					metadataName === 'og:image'
-				) {
+				if (metadataName === "og:image:url" || metadataName === "og:image") {
 					metadataObject.openGraph.images.push({
 						url: content,
 					});
 				} else {
 					const image = metadataObject.openGraph.images.at(-1);
-					const propName = metadataName.replace('og:image:', '');
+					const propName = metadataName.replace("og:image:", "");
 
 					image[propName] = content;
 				}
@@ -711,20 +684,20 @@ export const handleTag = (
 				return;
 			}
 
-			if (metadataName.startsWith('og:audio')) {
+			if (metadataName.startsWith("og:audio")) {
 				const { content } = metadataAttributes;
 
 				if (!metadataObject.openGraph.audio) {
 					metadataObject.openGraph.audio = [];
 				}
 
-				if (metadataName === 'og:audio') {
+				if (metadataName === "og:audio") {
 					metadataObject.openGraph.audio.push({
 						url: content,
 					});
 				} else {
 					const audio = metadataObject.openGraph.audio.at(-1);
-					const propName = metadataName.replace('og:audio:', '');
+					const propName = metadataName.replace("og:audio:", "");
 
 					audio[camelize(propName)] = content;
 				}
@@ -732,20 +705,20 @@ export const handleTag = (
 				return;
 			}
 
-			if (metadataName.startsWith('og:video')) {
+			if (metadataName.startsWith("og:video")) {
 				const { content } = metadataAttributes;
 
 				if (!metadataObject.openGraph.videos) {
 					metadataObject.openGraph.videos = [];
 				}
 
-				if (metadataName === 'og:video') {
+				if (metadataName === "og:video") {
 					metadataObject.openGraph.videos.push({
 						url: content,
 					});
 				} else {
 					const video = metadataObject.openGraph.videos.at(-1);
-					const propName = metadataName.replace('og:video:', '');
+					const propName = metadataName.replace("og:video:", "");
 
 					video[camelize(propName)] = content;
 				}
@@ -753,7 +726,7 @@ export const handleTag = (
 				return;
 			}
 
-			if (metadataName === 'og:locale:alternate') {
+			if (metadataName === "og:locale:alternate") {
 				const { content } = metadataAttributes;
 
 				if (!metadataObject.openGraph.alternateLocale) {
@@ -768,19 +741,19 @@ export const handleTag = (
 			return;
 		}
 
-		if (metadataName.startsWith('twitter:')) {
-			const n = camelize(metadataName.replace('twitter:', ''));
+		if (metadataName.startsWith("twitter:")) {
+			const n = camelize(metadataName.replace("twitter:", ""));
 
 			if (!metadataObject.twitter) {
 				metadataObject.twitter = {};
 			}
 
-			if (metadataName === 'twitter:site:id') {
+			if (metadataName === "twitter:site:id") {
 				metadataObject.twitter.siteId = content;
 				return;
 			}
 
-			if (metadataName === 'twitter:creator:id') {
+			if (metadataName === "twitter:creator:id") {
 				metadataObject.twitter.creatorId = content;
 				return;
 			}
@@ -790,9 +763,9 @@ export const handleTag = (
 		}
 
 		const verification: Record<string, string> = {
-			'google-site-verification': 'google',
-			'yandex-verification': 'yandex',
-			y_key: 'yahoo',
+			"google-site-verification": "google",
+			"yandex-verification": "yandex",
+			y_key: "yahoo",
 		};
 
 		if (Object.keys(verification).includes(metadataName)) {
@@ -810,7 +783,7 @@ export const handleTag = (
 			return;
 		}
 
-		if (metadataName === 'format-detection') {
+		if (metadataName === "format-detection") {
 			return;
 		}
 
@@ -819,21 +792,20 @@ export const handleTag = (
 		metadataObject[`_CONDITION_TEXT_${metadataName}`] = conditionText;
 	}
 
-	if (tagName === 'link') {
+	if (tagName === "link") {
 		const content = metadataAttributes.href;
 
-		if (metadataName === 'author') {
+		if (metadataName === "author") {
 			if (metadataObject.authors.length === 0) {
 				return;
 			}
 
-			metadataObject.authors[metadataObject.authors.length - 1].url =
-				content;
+			metadataObject.authors[metadataObject.authors.length - 1].url = content;
 
 			return;
 		}
 
-		if (['archives', 'assets', 'bookmarks'].includes(metadataName)) {
+		if (["archives", "assets", "bookmarks"].includes(metadataName)) {
 			if (!metadataObject[metadataName]) {
 				metadataObject[metadataName] = [];
 			}
@@ -843,12 +815,12 @@ export const handleTag = (
 			return;
 		}
 
-		if (['canonical', 'alternate'].includes(metadataName)) {
+		if (["canonical", "alternate"].includes(metadataName)) {
 			if (!metadataObject.alternates) {
 				metadataObject.alternates = {};
 			}
 
-			if (metadataName === 'canonical') {
+			if (metadataName === "canonical") {
 				metadataObject.alternates[metadataName] = content;
 			}
 
@@ -881,15 +853,15 @@ export const handleTag = (
 			return;
 		}
 
-		const otherIcons = ['mask-icon'];
+		const otherIcons = ["mask-icon"];
 
 		const icons: Record<string, string> = {
-			'shortcut icon': 'shortcut',
-			icon: 'icon',
-			'apple-touch-icon': 'apple',
-			'mask-icon': 'other',
+			"shortcut icon": "shortcut",
+			icon: "icon",
+			"apple-touch-icon": "apple",
+			"mask-icon": "other",
 			...Object.fromEntries(
-				otherIcons.map((otherIcon) => [otherIcon, 'other']),
+				otherIcons.map((otherIcon) => [otherIcon, "other"]),
 			),
 		};
 
@@ -922,7 +894,7 @@ export const handleTag = (
 			return;
 		}
 
-		if (metadataName.startsWith('al:')) {
+		if (metadataName.startsWith("al:")) {
 			return;
 		}
 
@@ -953,7 +925,7 @@ function formatObjectAsString(metadataObject: Record<string, any>) {
 	const pairs: string[] = [];
 
 	for (const [key, value] of Object.entries(metadataObject)) {
-		if (key.startsWith('_')) {
+		if (key.startsWith("_")) {
 			continue;
 		}
 
@@ -961,17 +933,17 @@ function formatObjectAsString(metadataObject: Record<string, any>) {
 
 		if (Array.isArray(value)) {
 			const formattedArray = value.map((element) =>
-				typeof element === 'object' && element !== null
+				typeof element === "object" && element !== null
 					? formatObjectAsString(element)
 					: String(element),
 			);
 
-			const pair = `${key}: [${formattedArray.join(', \n')}]`;
+			const pair = `${key}: [${formattedArray.join(", \n")}]`;
 			const pairText = conditionText
 				? `...(${conditionText} && {${pair} })`
 				: pair;
 			pairs.push(pairText);
-		} else if (typeof value === 'object' && value !== null) {
+		} else if (typeof value === "object" && value !== null) {
 			const pair = `${key}: ${formatObjectAsString(value)}`;
 			const pairText = conditionText
 				? `...(${conditionText} && {${pair} })`
@@ -991,7 +963,7 @@ function formatObjectAsString(metadataObject: Record<string, any>) {
 		}
 	}
 
-	return `{ \n ${pairs.join(', \n')} \n }`;
+	return `{ \n ${pairs.join(", \n")} \n }`;
 }
 
 const buildMetadataStatement = (metadataObject: Record<string, unknown>) => {
@@ -1022,7 +994,7 @@ type MetadataTreeNode = {
 };
 
 type FileAPI = Parameters<
-	NonNullable<Filemod<Dependencies, State>['handleFile']>
+	NonNullable<Filemod<Dependencies, State>["handleFile"]>
 >[0];
 
 export const projectContainer = buildContainer<tsmorph.Project | null>(null);
@@ -1073,9 +1045,7 @@ const removeMdxNodes = (
 		const tree = parseMdx(content);
 
 		const newTree = filterMdxAst(tree, (node) => {
-			return ['root', 'mdxJsxFlowElement', 'mdxjsEsm'].includes(
-				node.type,
-			);
+			return ["root", "mdxJsxFlowElement", "mdxjsEsm"].includes(node.type);
 		});
 
 		if (newTree === undefined) {
@@ -1085,7 +1055,7 @@ const removeMdxNodes = (
 		const mdxJsxFlowElements: string[] = [];
 
 		visitMdxAst(newTree, (node) => {
-			if (node.type === 'mdxJsxFlowElement') {
+			if (node.type === "mdxJsxFlowElement") {
 				// @ts-expect-error stringify any node
 				const value = stringifyMdx(node);
 				mdxJsxFlowElements.push(value);
@@ -1107,7 +1077,7 @@ const removeMdxNodes = (
 
 const initTsMorphProject = async (
 	dependencies: Dependencies,
-	unifiedFileSystem: Dependencies['unifiedFileSystem'],
+	unifiedFileSystem: Dependencies["unifiedFileSystem"],
 	rootPath: string,
 	compilerOptions?: tsmorph.CompilerOptions,
 ) => {
@@ -1125,20 +1095,17 @@ const initTsMorphProject = async (
 
 	const allFilePaths = await unifiedFileSystem.getFilePaths(
 		rootPath,
-		['**/*.{jsx,tsx,ts,js,cjs,ejs,mdx}'],
-		['**/node_modules/**'],
+		["**/*.{jsx,tsx,ts,js,cjs,ejs,mdx}"],
+		["**/node_modules/**"],
 	);
 
 	for (const path of allFilePaths) {
 		const content = await unifiedFileSystem.readFile(path);
-		if (path.endsWith('.mdx')) {
-			const contentWithoutMdxNodes = removeMdxNodes(
-				dependencies,
-				content,
-			);
+		if (path.endsWith(".mdx")) {
+			const contentWithoutMdxNodes = removeMdxNodes(dependencies, content);
 
 			project.createSourceFile(
-				path.replace('.mdx', '.tsx'),
+				path.replace(".mdx", ".tsx"),
 				contentWithoutMdxNodes,
 			);
 			continue;
@@ -1199,13 +1166,10 @@ const mapRelativeToAbsolutePaths = (
 ): Record<string, Dependency> =>
 	Object.entries(dependencies).reduce<Record<string, Dependency>>(
 		(acc, [key, val]) => {
-			if (
-				val.kind === SyntaxKind.ImportDeclaration &&
-				val.structure !== null
-			) {
+			if (val.kind === SyntaxKind.ImportDeclaration && val.structure !== null) {
 				const resolvedModuleName =
 					resolveModuleName(
-						val.structure.moduleSpecifier ?? '',
+						val.structure.moduleSpecifier ?? "",
 						containingPath,
 					) ?? val.structure.moduleSpecifier;
 
@@ -1232,10 +1196,7 @@ const mergeNodes = (
 	child: MetadataTreeNode,
 	pagePath: string,
 ) => {
-	const componentPropsValues = findComponentPropValue(
-		parent.path,
-		child.path,
-	);
+	const componentPropsValues = findComponentPropValue(parent.path, child.path);
 
 	const nextDependencies = Object.entries(child.dependencies).reduce(
 		(acc, [identifierName, value]) => {
@@ -1244,11 +1205,11 @@ const mergeNodes = (
 
 				// handle props object
 				if (!value.isBindingPattern) {
-					const propsObjectText = Object.entries(
-						componentPropsValues,
-					).reduce<Record<string, string>>((acc, [key, value]) => {
+					const propsObjectText = Object.entries(componentPropsValues).reduce<
+						Record<string, string>
+					>((acc, [key, value]) => {
 						acc[key] = Node.isJsxExpression(value)
-							? value.getExpression()?.getText() ?? ''
+							? value.getExpression()?.getText() ?? ""
 							: value.getText();
 
 						return acc;
@@ -1266,14 +1227,11 @@ const mergeNodes = (
 
 					Object.values(componentPropsValues).forEach((propValue) => {
 						identifiers.push(
-							...propValue.getDescendantsOfKind(
-								SyntaxKind.Identifier,
-							),
+							...propValue.getDescendantsOfKind(SyntaxKind.Identifier),
 						);
 					});
 
-					const newDependencies =
-						getDependenciesForIdentifiers(identifiers);
+					const newDependencies = getDependenciesForIdentifiers(identifiers);
 
 					Object.entries(newDependencies).forEach(
 						([identifier, dependency]) => {
@@ -1299,27 +1257,24 @@ const mergeNodes = (
 					SyntaxKind.Identifier,
 				);
 
-				const newDependencies =
-					getDependenciesForIdentifiers(identifiers);
+				const newDependencies = getDependenciesForIdentifiers(identifiers);
 
 				//add dependencies of propValue
-				Object.entries(newDependencies).forEach(
-					([identifier, dependency]) => {
-						if (
-							pagePath === parent.path &&
-							dependency.kind !== SyntaxKind.Parameter
-						) {
-							return;
-						}
+				Object.entries(newDependencies).forEach(([identifier, dependency]) => {
+					if (
+						pagePath === parent.path &&
+						dependency.kind !== SyntaxKind.Parameter
+					) {
+						return;
+					}
 
-						acc[identifier] = dependency;
-					},
-				);
+					acc[identifier] = dependency;
+				});
 
 				// add propValue declaration
 
 				const propValueText = Node.isJsxExpression(propValue)
-					? propValue.getExpression()?.getText() ?? ''
+					? propValue.getExpression()?.getText() ?? ""
 					: propValue.getText();
 
 				if (propValueText !== identifierName) {
@@ -1367,7 +1322,7 @@ const buildMetadataTreeNode = (containingPath: string, pagePath: string) => {
 	const project = projectContainer.get();
 
 	const sourceFile =
-		project?.getSourceFile(containingPath.replace('.mdx', '.tsx')) ?? null;
+		project?.getSourceFile(containingPath.replace(".mdx", ".tsx")) ?? null;
 
 	if (sourceFile === null) {
 		return treeNode;
@@ -1409,10 +1364,7 @@ const findComponentByModuleSpecifier = (
 		sourceFile
 			.getDescendants()
 			.find((d): d is JsxOpeningElement | JsxSelfClosingElement => {
-				if (
-					!Node.isJsxOpeningElement(d) &&
-					!Node.isJsxSelfClosingElement(d)
-				) {
+				if (!Node.isJsxOpeningElement(d) && !Node.isJsxSelfClosingElement(d)) {
 					return false;
 				}
 
@@ -1425,7 +1377,7 @@ const findComponentByModuleSpecifier = (
 					.getLiteralText();
 
 				const absolutePath = resolveModuleName(
-					moduleSpecifier ?? '',
+					moduleSpecifier ?? "",
 					sourceFile.getFilePath().toString(),
 				);
 
@@ -1441,7 +1393,7 @@ const findComponentPropValue = (
 	const project = projectContainer.get();
 
 	const sourceFile =
-		project?.getSourceFile(path.replace('.mdx', '.tsx')) ?? null;
+		project?.getSourceFile(path.replace(".mdx", ".tsx")) ?? null;
 
 	if (sourceFile === null) {
 		return {};
@@ -1499,9 +1451,7 @@ const addMetadataImport = (sourceFile: SourceFile) => {
 				declaration
 					.getImportClause()
 					?.getNamedImports()
-					.find(
-						(imp) => imp.getNameNode().getText() === 'Metadata',
-					) ?? null;
+					.find((imp) => imp.getNameNode().getText() === "Metadata") ?? null;
 			return (
 				specifier !== null &&
 				declaration.getModuleSpecifier().getText() === '"next"'
@@ -1606,11 +1556,7 @@ const getPositionAfterImports = (sourceFile: SourceFile): number => {
 
 const mergeOrCreateImports = (
 	sourceFile: SourceFile,
-	{
-		moduleSpecifier,
-		namedImports,
-		defaultImport,
-	}: ImportDeclarationStructure,
+	{ moduleSpecifier, namedImports, defaultImport }: ImportDeclarationStructure,
 	path: string,
 ) => {
 	const importDeclarations = sourceFile.getImportDeclarations();
@@ -1654,7 +1600,7 @@ const mergeOrCreateImports = (
 			.map((i) => i.getText());
 
 		const importName =
-			typeof namedImport === 'string' ? namedImport : namedImport.name;
+			typeof namedImport === "string" ? namedImport : namedImport.name;
 
 		if (!oldNamedImports.includes(importName)) {
 			importedModule.addNamedImport(importName);
@@ -1684,7 +1630,7 @@ const insertDependencies = (
 		if (usesDynamicMetadata) {
 			const generateMetadataBody = sourceFile
 				.getDescendantsOfKind(SyntaxKind.FunctionDeclaration)
-				.find((f) => f.getName() === 'generateMetadata')
+				.find((f) => f.getName() === "generateMetadata")
 				?.getBody();
 
 			if (Node.isBlock(generateMetadataBody)) {
@@ -1707,11 +1653,11 @@ const insertDependencies = (
 
 // @TODO monorepo support
 const getTsCompilerOptions = async (api: FileAPI, baseUrl: string) => {
-	const tsConfigPath = join(baseUrl, 'tsconfig.json');
+	const tsConfigPath = join(baseUrl, "tsconfig.json");
 
 	try {
 		const tsConfigStr = await api.readFile(tsConfigPath);
-		const configWithoutComments = tsConfigStr.replace(/^\s*?\/\/.*$/gm, '');
+		const configWithoutComments = tsConfigStr.replace(/^\s*?\/\/.*$/gm, "");
 		return JSON.parse(configWithoutComments).compilerOptions;
 	} catch (e) {
 		console.error(e);
@@ -1720,13 +1666,13 @@ const getTsCompilerOptions = async (api: FileAPI, baseUrl: string) => {
 };
 
 export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
-	includePatterns: ['**/pages/**/*.{jsx,tsx,js,ts,cjs,ejs,mdx}'],
-	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	includePatterns: ["**/pages/**/*.{jsx,tsx,js,ts,cjs,ejs,mdx}"],
+	excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
 	handleFile: async (api, path, options) => {
 		const { unifiedFileSystem } = api.getDependencies();
 		const parsedPath = parse(path);
 
-		const baseUrl = parsedPath.dir.split('pages')[0] ?? null;
+		const baseUrl = parsedPath.dir.split("pages")[0] ?? null;
 
 		if (baseUrl === null) {
 			return [];
@@ -1752,7 +1698,7 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 
 		return [
 			{
-				kind: 'upsertFile',
+				kind: "upsertFile",
 				path,
 				options: {
 					...options,
@@ -1776,12 +1722,12 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 
 		try {
 			const { metadata, dependencies } = JSON.parse(
-				String(options.metadata ?? '{}'),
+				String(options.metadata ?? "{}"),
 			);
 
 			if (Object.entries(metadata ?? {}).length === 0) {
 				return {
-					kind: 'noop',
+					kind: "noop",
 				};
 			}
 
@@ -1798,7 +1744,7 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 			insertDependencies(sourceFile, dependencies, path, Boolean(param));
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				path,
 				data: sourceFile.getFullText(),
 			};
@@ -1807,7 +1753,7 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 		}
 
 		return {
-			kind: 'noop',
+			kind: "noop",
 		};
 	},
 };

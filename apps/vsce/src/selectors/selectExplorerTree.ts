@@ -1,23 +1,23 @@
-import platformPath from 'path';
-import { go } from 'fuzzysort';
-import { CaseHash } from '../cases/types';
-import { RootState } from '../data';
-import { JobHash } from '../jobs/types';
-import { LeftRightHashSetManager } from '../leftRightHashes/leftRightHashSetManager';
+import platformPath from "path";
+import { go } from "fuzzysort";
+import { CaseHash } from "../cases/types";
+import { RootState } from "../data";
+import { JobHash } from "../jobs/types";
+import { LeftRightHashSetManager } from "../leftRightHashes/leftRightHashSetManager";
 import {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
-} from '../persistedState/explorerNodeCodec';
-import { buildHash, isNeitherNullNorUndefined } from '../utilities';
+} from "../persistedState/explorerNodeCodec";
+import { buildHash, isNeitherNullNorUndefined } from "../utilities";
 import {
 	comparePersistedJobs,
 	doesJobAddNewFile,
 	getPersistedJobUri,
-} from './comparePersistedJobs';
+} from "./comparePersistedJobs";
 
 const FUZZY_SEARCH_MINIMUM_SCORE = -1000;
 export const selectSearchPhrase = (state: RootState, caseHash: CaseHash) =>
-	(state.explorerSearchPhrases[caseHash] ?? '').trim().toLocaleLowerCase();
+	(state.explorerSearchPhrases[caseHash] ?? "").trim().toLocaleLowerCase();
 
 export const selectExplorerNodes = (
 	state: RootState,
@@ -42,8 +42,8 @@ export const selectExplorerNodes = (
 	> = {};
 
 	const rootNode: _ExplorerNode = {
-		kind: 'ROOT',
-		hashDigest: buildHash('ROOT') as _ExplorerNodeHashDigest,
+		kind: "ROOT",
+		hashDigest: buildHash("ROOT") as _ExplorerNodeHashDigest,
 		label: platformPath.basename(rootPath),
 		depth: 0,
 		childCount: 0,
@@ -84,22 +84,23 @@ export const selectExplorerNodes = (
 		}
 
 		if (
-			properSearchPhrase !== '' &&
+			properSearchPhrase !== "" &&
 			!searchResults.includes(uri.fsPath.toLocaleLowerCase())
 		) {
 			continue;
 		}
 
-		const path = uri.fsPath.replace(rootPath, '');
+		const path = uri.fsPath.replace(rootPath, "");
 
-		path.split(platformPath.sep)
-			.filter((name) => name !== '')
+		path
+			.split(platformPath.sep)
+			.filter((name) => name !== "")
 			.map((name, i, names) => {
 				if (names.length - 1 === i) {
 					return {
-						kind: 'FILE' as const,
+						kind: "FILE" as const,
 						hashDigest: buildHash(
-							['FILE', job.hash, name].join(''),
+							["FILE", job.hash, name].join(""),
 						) as _ExplorerNodeHashDigest,
 						path,
 						label: name,
@@ -109,15 +110,13 @@ export const selectExplorerNodes = (
 					};
 				}
 
-				const directoryPath = names
-					.slice(0, i + 1)
-					.join(platformPath.sep);
+				const directoryPath = names.slice(0, i + 1).join(platformPath.sep);
 
 				return {
-					kind: 'DIRECTORY' as const,
+					kind: "DIRECTORY" as const,
 					path: directoryPath,
 					hashDigest: buildHash(
-						['DIRECTORY', directoryPath, name].join(''),
+						["DIRECTORY", directoryPath, name].join(""),
 					) as _ExplorerNodeHashDigest,
 					label: name,
 					depth: 0,
@@ -133,8 +132,7 @@ export const selectExplorerNodes = (
 				children[parentNodeHash]?.add(node.hashDigest);
 
 				nodes[node.hashDigest] = node;
-				children[node.hashDigest] =
-					children[node.hashDigest] ?? new Set();
+				children[node.hashDigest] = children[node.hashDigest] ?? new Set();
 			});
 	}
 
@@ -151,7 +149,7 @@ export const selectExplorerNodes = (
 			(childHash) => nodes[childHash],
 		);
 
-		if (childNodes.length === 1 && childNodes[0]?.kind === 'DIRECTORY') {
+		if (childNodes.length === 1 && childNodes[0]?.kind === "DIRECTORY") {
 			const firstChild = childNodes[0];
 			const nextNode = {
 				...node,
@@ -194,10 +192,10 @@ export const selectExplorerNodes = (
 				if (!childA || !childB) {
 					return 0;
 				}
-				if (childA.kind === 'DIRECTORY' && childB.kind === 'FILE') {
+				if (childA.kind === "DIRECTORY" && childB.kind === "FILE") {
 					return -1;
 				}
-				if (childA.kind === 'FILE' && childB.kind === 'DIRECTORY') {
+				if (childA.kind === "FILE" && childB.kind === "DIRECTORY") {
 					return 1;
 				}
 				return 0;
@@ -208,10 +206,8 @@ export const selectExplorerNodes = (
 			.map((childHash) => nodes[childHash])
 			.filter(
 				(node) =>
-					node?.kind === 'FILE' &&
-					state.selectedExplorerNodes[caseHash]?.includes(
-						node.hashDigest,
-					),
+					node?.kind === "FILE" &&
+					state.selectedExplorerNodes[caseHash]?.includes(node.hashDigest),
 			).length;
 
 		const pushedAtIndex = explorerNodes.push(node) - 1;
@@ -220,7 +216,7 @@ export const selectExplorerNodes = (
 			selectedFileCount += appendExplorerNode(child, depth + 1);
 		});
 
-		if (node.kind === 'FILE') {
+		if (node.kind === "FILE") {
 			return selectedFileCount;
 		}
 
@@ -259,7 +255,7 @@ export const selectNodeData = (
 				}
 
 				const collapsed =
-					node.kind !== 'FILE' &&
+					node.kind !== "FILE" &&
 					collapsedExplorerNodes.includes(node.hashDigest);
 
 				if (collapsed) {
@@ -267,7 +263,7 @@ export const selectNodeData = (
 				}
 
 				const reviewed =
-					node.kind === 'FILE' &&
+					node.kind === "FILE" &&
 					reviewedExplorerNodes.includes(node.hashDigest);
 
 				return {
@@ -275,10 +271,8 @@ export const selectNodeData = (
 					depth: node.depth,
 					expanded: !collapsed,
 					reviewed,
-					focused:
-						state.focusedExplorerNodes[caseHash] ===
-						node.hashDigest,
-					collapsable: node.kind !== 'FILE',
+					focused: state.focusedExplorerNodes[caseHash] === node.hashDigest,
+					collapsable: node.kind !== "FILE",
 				};
 			})
 			.filter(isNeitherNullNorUndefined) ?? []
@@ -307,8 +301,7 @@ export const selectExplorerTree = (state: RootState, rootPath: string) => {
 	const nodes = explorerNodes;
 
 	const fileNodes = nodes.filter(
-		(node): node is _ExplorerNode & { kind: 'FILE' } =>
-			node.kind === 'FILE',
+		(node): node is _ExplorerNode & { kind: "FILE" } => node.kind === "FILE",
 	);
 
 	const selectedExplorerNodeHashDigests =
@@ -329,7 +322,7 @@ export const selectExplorerTree = (state: RootState, rootPath: string) => {
 		focusedNodeHashDigest: state.focusedExplorerNodes[caseHash] ?? null,
 		collapsedNodeHashDigests: state.collapsedExplorerNodes[caseHash] ?? [],
 		selectedExplorerNodeHashDigests,
-		searchPhrase: state.explorerSearchPhrases[caseHash] ?? '',
+		searchPhrase: state.explorerSearchPhrases[caseHash] ?? "",
 		selectedJobHashes,
 		selectedJobCount: selectedFiles.length,
 		indeterminateExplorerNodeHashDigests,

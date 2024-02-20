@@ -1,5 +1,5 @@
-import type { RSU } from './options.js';
-import type { UnifiedFileSystem } from './unifiedFileSystem.js';
+import type { RSU } from "./options.js";
+import type { UnifiedFileSystem } from "./unifiedFileSystem.js";
 
 export interface PathAPI {
 	readonly getDirname: (path: string) => string;
@@ -19,9 +19,7 @@ export interface FileAPI<D extends RSU> extends PathAPI, DataAPI<D> {
 }
 
 export interface DirectoryAPI<D extends RSU> extends FileAPI<D> {
-	readonly readDirectory: (
-		directoryPath: string,
-	) => Promise<readonly string[]>;
+	readonly readDirectory: (directoryPath: string) => Promise<readonly string[]>;
 }
 
 export interface API<D extends RSU> {
@@ -33,7 +31,7 @@ export interface API<D extends RSU> {
 
 export const buildApi = <D extends RSU>(
 	unifiedFileSystem: UnifiedFileSystem,
-	getDependencies: DataAPI<D>['getDependencies'],
+	getDependencies: DataAPI<D>["getDependencies"],
 	pathAPI: PathAPI,
 ): API<D> => {
 	const dataAPI: DataAPI<D> = {

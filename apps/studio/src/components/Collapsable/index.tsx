@@ -1,5 +1,5 @@
-import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react';
-import { useState, type ReactNode } from 'react';
+import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
+import { useState, type ReactNode } from "react";
 
 type CollapsableProps = {
 	defaultCollapsed: boolean;
@@ -23,7 +23,7 @@ const Collapsable = ({
 	return (
 		<div
 			className={`w-full ${
-				className ?? ''
+				className ?? ""
 			} rounded border border-gray-bg p-2 dark:border-gray-dark `}
 		>
 			<div
@@ -35,15 +35,15 @@ const Collapsable = ({
 					{rightContent}
 					<ArrowDownIcon
 						className={`h-4 w-4 transition-all ${
-							collapsed ? 'rotate-180 transform' : ''
+							collapsed ? "rotate-180 transform" : ""
 						} dark:text-white `}
 						alt="arrow-down"
 					/>
 				</div>
 			</div>
 			<div
-				className={`${collapsed ? ' hidden ' : ' block '} ${
-					contentWrapperClassName ?? ''
+				className={`${collapsed ? " hidden " : " block "} ${
+					contentWrapperClassName ?? ""
 				} mt-2 px-3`}
 			>
 				{children}

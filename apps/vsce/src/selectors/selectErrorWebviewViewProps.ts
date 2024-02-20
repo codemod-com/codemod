@@ -1,4 +1,4 @@
-import { RootState } from '../data';
+import { RootState } from "../data";
 
 export const selectErrorWebviewViewProps = (
 	state: RootState,
@@ -6,13 +6,13 @@ export const selectErrorWebviewViewProps = (
 ) => {
 	if (!visible) {
 		return {
-			kind: 'MAIN_WEBVIEW_VIEW_NOT_VISIBLE' as const,
+			kind: "MAIN_WEBVIEW_VIEW_NOT_VISIBLE" as const,
 		};
 	}
 
-	if (state.activeTabId !== 'codemodRuns') {
+	if (state.activeTabId !== "codemodRuns") {
 		return {
-			kind: 'CODEMOD_RUNS_TAB_NOT_ACTIVE' as const,
+			kind: "CODEMOD_RUNS_TAB_NOT_ACTIVE" as const,
 		};
 	}
 
@@ -20,12 +20,12 @@ export const selectErrorWebviewViewProps = (
 
 	if (caseHash === null) {
 		return {
-			kind: 'CASE_NOT_SELECTED' as const,
+			kind: "CASE_NOT_SELECTED" as const,
 		};
 	}
 
 	return {
-		kind: 'CASE_SELECTED' as const,
+		kind: "CASE_SELECTED" as const,
 		caseHash,
 		executionErrors: state.executionErrors[caseHash] ?? [],
 	};

@@ -3,9 +3,9 @@ import {
 	VSCodeDropdown,
 	VSCodeOption,
 	VSCodeTextField,
-} from '@vscode/webview-ui-toolkit/react';
-import { CodemodArgumentWithValue } from '../../../../../src/selectors/selectCodemodTree';
-import styles from './style.module.css';
+} from "@vscode/webview-ui-toolkit/react";
+import { CodemodArgumentWithValue } from "../../../../../src/selectors/selectCodemodTree";
+import styles from "./style.module.css";
 
 type Props = CodemodArgumentWithValue & {
 	onChange(value: string): void;
@@ -13,32 +13,28 @@ type Props = CodemodArgumentWithValue & {
 
 const FormField = (props: Props) => {
 	const { name, kind, value, description, required, onChange } = props;
-	if (kind === 'string' || kind === 'number') {
+	if (kind === "string" || kind === "number") {
 		return (
 			<VSCodeTextField
 				placeholder={name}
 				value={String(value)}
 				// we need to explicitly set the type of target
 				onInput={(e) =>
-					onChange(
-						(e as React.ChangeEvent<HTMLInputElement>).target.value,
-					)
+					onChange((e as React.ChangeEvent<HTMLInputElement>).target.value)
 				}
 				className={styles.field}
 				title={description}
 			>
-				{name} {required && '(required)'}
+				{name} {required && "(required)"}
 			</VSCodeTextField>
 		);
 	}
 
-	if (kind === 'options') {
+	if (kind === "options") {
 		return (
 			<VSCodeDropdown
 				onChange={(e) =>
-					onChange(
-						(e as React.ChangeEvent<HTMLInputElement>).target.value,
-					)
+					onChange((e as React.ChangeEvent<HTMLInputElement>).target.value)
 				}
 				value={value}
 			>
@@ -52,17 +48,14 @@ const FormField = (props: Props) => {
 	return (
 		<div className={styles.fieldLayout}>
 			<label className={styles.label}>
-				{name} {required && '*'}
+				{name} {required && "*"}
 			</label>
 			<VSCodeCheckbox
 				title={description}
 				checked={value}
 				onChange={(e) => {
 					onChange(
-						String(
-							(e as React.ChangeEvent<HTMLInputElement>).target
-								.checked,
-						),
+						String((e as React.ChangeEvent<HTMLInputElement>).target.checked),
 					);
 				}}
 			/>

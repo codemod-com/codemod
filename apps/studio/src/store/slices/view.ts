@@ -1,11 +1,11 @@
 /* eslint-disable import/group-exports */
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from '~/store';
+import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import type { RootState } from "~/store";
 
 export const enum TabNames {
-	MODGPT = 'MODGPT',
-	GUIBuilder = 'FIND_AND_REPLACE',
-	DEBUG = 'DEBUG_CONSOLE',
+	MODGPT = "MODGPT",
+	GUIBuilder = "FIND_AND_REPLACE",
+	DEBUG = "DEBUG_CONSOLE",
 }
 
 type ViewState = Readonly<{
@@ -19,10 +19,10 @@ const initialState: ViewState = {
 };
 
 export const viewSlice = createSlice({
-	name: 'view',
+	name: "view",
 	initialState,
 	reducers: {
-		setActiveTab(state, action: PayloadAction<ViewState['activeTab']>) {
+		setActiveTab(state, action: PayloadAction<ViewState["activeTab"]>) {
 			// eslint-disable-next-line no-param-reassign
 			state.activeTab = action.payload;
 		},

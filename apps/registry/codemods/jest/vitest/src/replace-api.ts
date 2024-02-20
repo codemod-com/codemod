@@ -22,39 +22,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from 'jscodeshift';
-import type { Collection, Identifier } from 'jscodeshift';
+import type core from "jscodeshift";
+import type { Collection, Identifier } from "jscodeshift";
 
-const jestFailsApisName = 'failing';
-const vitestFailsApisName = 'fails';
+const jestFailsApisName = "failing";
+const vitestFailsApisName = "fails";
 
 export const replaceTestApiFailing = <T>(
 	root: Collection<T>,
 	j: core.JSCodeshift,
 ): void => {
-	for (const testApiName of ['it', 'test']) {
+	for (const testApiName of ["it", "test"]) {
 		// Replace `(it|test).failing` with `(it|test).fails`
-		root.find(j.MemberExpression, {
-			object: { type: 'Identifier', name: testApiName },
-			property: { type: 'Identifier', name: jestFailsApisName },
-		}).forEach((path) => {
-			(path.node.property as Identifier).name = vitestFailsApisName;
-		});
-
-		// Replace `(it|test).(only|skip).failing` with `(it|test).(only|skip).fails`
-		for (const testApiModifierName of ['only', 'skip']) {
-			root.find(j.MemberExpression, {
-				object: {
-					object: { type: 'Identifier', name: testApiName },
-					property: {
-						type: 'Identifier',
-						name: testApiModifierName,
-					},
-				},
-				property: { type: 'Identifier', name: jestFailsApisName },
-			}).forEach((path) => {
+		root
+			.find(j.MemberExpression, {
+				object: { type: "Identifier", name: testApiName },
+				property: { type: "Identifier", name: jestFailsApisName },
+			})
+			.forEach((path) => {
 				(path.node.property as Identifier).name = vitestFailsApisName;
 			});
+
+		// Replace `(it|test).(only|skip).failing` with `(it|test).(only|skip).fails`
+		for (const testApiModifierName of ["only", "skip"]) {
+			root
+				.find(j.MemberExpression, {
+					object: {
+						object: { type: "Identifier", name: testApiName },
+						property: {
+							type: "Identifier",
+							name: testApiModifierName,
+						},
+					},
+					property: { type: "Identifier", name: jestFailsApisName },
+				})
+				.forEach((path) => {
+					(path.node.property as Identifier).name = vitestFailsApisName;
+				});
 		}
 	}
 };
@@ -63,26 +67,30 @@ export const replaceTestApiFit = <T>(
 	root: Collection<T>,
 	j: core.JSCodeshift,
 ): void => {
-	const jestApiName = 'fit';
+	const jestApiName = "fit";
 	const vitestApiObject = j.memberExpression(
-		j.identifier('it'),
-		j.identifier('only'),
+		j.identifier("it"),
+		j.identifier("only"),
 	);
 
 	// Replace `fit` with `it.only`
-	root.find(j.CallExpression, {
-		callee: { type: 'Identifier', name: jestApiName },
-	}).forEach((path) => {
-		path.node.callee = vitestApiObject;
-	});
+	root
+		.find(j.CallExpression, {
+			callee: { type: "Identifier", name: jestApiName },
+		})
+		.forEach((path) => {
+			path.node.callee = vitestApiObject;
+		});
 
 	// Replace `fit.(each|failing)` with `it.only.(each|failing)`
-	for (const fitModifierName of ['each', 'failing']) {
-		root.find(j.MemberExpression, {
-			object: { type: 'Identifier', name: jestApiName },
-			property: { type: 'Identifier', name: fitModifierName },
-		}).forEach((path) => {
-			path.node.object = vitestApiObject;
-		});
+	for (const fitModifierName of ["each", "failing"]) {
+		root
+			.find(j.MemberExpression, {
+				object: { type: "Identifier", name: jestApiName },
+				property: { type: "Identifier", name: fitModifierName },
+			})
+			.forEach((path) => {
+				path.node.object = vitestApiObject;
+			});
 	}
 };

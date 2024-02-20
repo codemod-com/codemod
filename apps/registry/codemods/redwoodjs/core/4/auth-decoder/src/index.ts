@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -39,47 +39,49 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.find(j.CallExpression, {
-		callee: { name: 'createGraphQLHandler' },
-	}).forEach((path) => {
-		const arg = path.value.arguments[0];
+	root
+		.find(j.CallExpression, {
+			callee: { name: "createGraphQLHandler" },
+		})
+		.forEach((path) => {
+			const arg = path.value.arguments[0];
 
-		if (!arg || !('properties' in arg)) {
-			return;
-		}
+			if (!arg || !("properties" in arg)) {
+				return;
+			}
 
-		const hasProp = arg.properties.filter((property) =>
-			'key' in property && 'name' in property.key
-				? property.key.name === 'authDecoder'
-				: false,
-		).length;
+			const hasProp = arg.properties.filter((property) =>
+				"key" in property && "name" in property.key
+					? property.key.name === "authDecoder"
+					: false,
+			).length;
 
-		if (hasProp) {
-			return;
-		}
+			if (hasProp) {
+				return;
+			}
 
-		dirtyFlag = true;
+			dirtyFlag = true;
 
-		arg.properties.unshift(
-			j.objectProperty(
-				j.identifier('authDecoder'),
-				j.identifier('authDecoder'),
-			),
-		);
-
-		const importDecl = j.importDeclaration(
-			[
-				j.importSpecifier(
-					j.identifier('authDecoder'),
-					j.identifier('authDecoder'),
+			arg.properties.unshift(
+				j.objectProperty(
+					j.identifier("authDecoder"),
+					j.identifier("authDecoder"),
 				),
-			],
-			j.stringLiteral('@redwoodjs/auth-auth0-api'),
-		);
+			);
 
-		const body = root.get().value.program.body;
-		body.unshift(importDecl);
-	});
+			const importDecl = j.importDeclaration(
+				[
+					j.importSpecifier(
+						j.identifier("authDecoder"),
+						j.identifier("authDecoder"),
+					),
+				],
+				j.stringLiteral("@redwoodjs/auth-auth0-api"),
+			);
+
+			const body = root.get().value.program.body;
+			body.unshift(importDecl);
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

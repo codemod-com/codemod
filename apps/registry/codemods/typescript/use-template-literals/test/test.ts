@@ -1,12 +1,12 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('use-template-literals', () => {
-	describe('variables declared with let', function () {
-		it('one variable', function () {
+describe("use-template-literals", () => {
+	describe("variables declared with let", function () {
+		it("one variable", function () {
 			const INPUT = `
 				let name = 'John';
 				let greeting = 'Hello, ' + name + '!';
@@ -17,19 +17,19 @@ describe('use-template-literals', () => {
 				let greeting = \`Hello, \${name}!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('two variables', function () {
+		it("two variables", function () {
 			const INPUT = `
 				let name = 'John';
 				let age = 12;
@@ -42,19 +42,19 @@ describe('use-template-literals', () => {
 				let greeting = \`\${name} is \${age} years old!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('three variables', function () {
+		it("three variables", function () {
 			const INPUT = `
 				let name = 'John';
 				let age = 12;
@@ -69,21 +69,21 @@ describe('use-template-literals', () => {
 				let greeting = \`\${name}\${age}\${gender}\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 	});
 
-	describe('variables declared with var', function () {
-		it('one variable', function () {
+	describe("variables declared with var", function () {
+		it("one variable", function () {
 			const INPUT = `
 				var name = 'John';
 				var greeting = 'Hello, ' + name + '!';
@@ -94,19 +94,19 @@ describe('use-template-literals', () => {
 				var greeting = \`Hello, \${name}!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('two variables', function () {
+		it("two variables", function () {
 			const INPUT = `
 				var name = 'John';
 				var age = 12;
@@ -119,19 +119,19 @@ describe('use-template-literals', () => {
 				var greeting = \`\${name} is \${age} years old!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('three variables', function () {
+		it("three variables", function () {
 			const INPUT = `
 				var name = 'John';
 				var age = 12;
@@ -146,21 +146,21 @@ describe('use-template-literals', () => {
 				var greeting = \`\${name}\${age}\${gender}\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 	});
 
-	describe('variables declared with const', function () {
-		it('one variable', function () {
+	describe("variables declared with const", function () {
+		it("one variable", function () {
 			const INPUT = `
 				const name = 'John';
 				const greeting = 'Hello, ' + name + '!';
@@ -171,19 +171,19 @@ describe('use-template-literals', () => {
 				const greeting = \`Hello, \${name}!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('two variables', function () {
+		it("two variables", function () {
 			const INPUT = `
 				const name = 'John';
 				const age = 12;
@@ -196,19 +196,19 @@ describe('use-template-literals', () => {
 				const greeting = \`\${name} is \${age} years old!\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('three variables', function () {
+		it("three variables", function () {
 			const INPUT = `
 				const name = 'John';
 				const age = 12;
@@ -223,15 +223,15 @@ describe('use-template-literals', () => {
 				const greeting = \`\${name}\${age}\${gender}\`;
 			`;
 			const fileInfo: FileInfo = {
-				path: 'index.ts',
+				path: "index.ts",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 	});

@@ -1,8 +1,8 @@
-import { deepStrictEqual } from 'node:assert';
-import { extname } from 'node:path';
-import { Project } from 'ts-morph';
-import { describe, it } from 'vitest';
-import { handleSourceFile } from '../src/index.js';
+import { deepStrictEqual } from "node:assert";
+import { extname } from "node:path";
+import { Project } from "ts-morph";
+import { describe, it } from "vitest";
+import { handleSourceFile } from "../src/index.js";
 
 const transform = (beforeText: string, afterText: string, path: string) => {
 	const project = new Project({
@@ -15,12 +15,12 @@ const transform = (beforeText: string, afterText: string, path: string) => {
 
 	const actualSourceFile = project.createSourceFile(path, beforeText);
 
-	const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, '');
+	const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, "");
 
 	const expected = project
 		.createSourceFile(`expected${extname(path)}`, afterText)
 		.getFullText()
-		.replace(/\s/gm, '');
+		.replace(/\s/gm, "");
 
 	return {
 		actual,
@@ -28,7 +28,7 @@ const transform = (beforeText: string, afterText: string, path: string) => {
 	};
 };
 
-describe('next 13 replace-next-router', function () {
+describe("next 13 replace-next-router", function () {
 	it('should add useSearchParams import because of "router.query"', async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
@@ -52,11 +52,7 @@ describe('next 13 replace-next-router', function () {
 			}
 	    `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -82,11 +78,7 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -114,11 +106,7 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -146,11 +134,7 @@ describe('next 13 replace-next-router', function () {
 			}
 			`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -176,11 +160,7 @@ describe('next 13 replace-next-router', function () {
 			}
 			`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 		deepStrictEqual(actual, expected);
 	});
 
@@ -208,11 +188,7 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -239,16 +215,12 @@ describe('next 13 replace-next-router', function () {
 			}
 			`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace ...router.query with ...Object.fromEntries(searchParams)', async function () {
+	it("should replace ...router.query with ...Object.fromEntries(searchParams)", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -276,11 +248,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -321,11 +289,7 @@ describe('next 13 replace-next-router', function () {
 
 		// TODO useMemo second parameter -> searchParams if at all
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -355,16 +319,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should delete query from destructured useRouter call', async function () {
+	it("should delete query from destructured useRouter call", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -378,16 +338,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should delete empty useRouter destructuring', async function () {
+	it("should delete empty useRouter destructuring", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -402,16 +358,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should remove unused useRouter import specifiers', async function () {
+	it("should remove unused useRouter import specifiers", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -426,16 +378,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should not remove CSS imports', async function () {
+	it("should not remove CSS imports", async function () {
 		const beforeText = `
 			import './index.css';
 		`;
@@ -444,7 +392,7 @@ describe('next 13 replace-next-router', function () {
 			import './index.css';
 		`;
 
-		const { actual } = transform(beforeText, afterText, 'index.tsx');
+		const { actual } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, undefined);
 	});
@@ -474,16 +422,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().pathname with usePathname()', async function () {
+	it("should replace useRouter().pathname with usePathname()", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -500,16 +444,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.pathname with usePathname()', async function () {
+	it("should replace router.pathname with usePathname()", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -528,16 +468,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace { pathname } destructed from useRouter() with usePathname()', async function () {
+	it("should replace { pathname } destructed from useRouter() with usePathname()", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -555,16 +491,12 @@ describe('next 13 replace-next-router', function () {
 	        }
 	    `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace { pathname } destructed from router with usePathname()', async function () {
+	it("should replace { pathname } destructed from router with usePathname()", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -584,16 +516,12 @@ describe('next 13 replace-next-router', function () {
 	        }
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace { pathname: p } destructed from router with const p = usePathname()', async function () {
+	it("should replace { pathname: p } destructed from router with const p = usePathname()", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -611,16 +539,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.isReady with useSearchParams in variable declaration', async function () {
+	it("should replace router.isReady with useSearchParams in variable declaration", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -639,16 +563,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.isReady with useSearchParams in ternary variable assignment', async function () {
+	it("should replace router.isReady with useSearchParams in ternary variable assignment", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -666,16 +586,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace !router.isReady with useSearchParams in variable declaration', async function () {
+	it("should replace !router.isReady with useSearchParams in variable declaration", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -693,16 +609,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace !router.isReady with useSearchParams in ternary variable assignment', async function () {
+	it("should replace !router.isReady with useSearchParams in ternary variable assignment", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -720,16 +632,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace !router.isReady with useSearchParams in `if` statement', async function () {
+	it("should replace !router.isReady with useSearchParams in `if` statement", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -751,16 +659,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().isReady with true', async function () {
+	it("should replace useRouter().isReady with true", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -778,16 +682,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should remove { isReady } and replace usages with true', async function () {
+	it("should remove { isReady } and replace usages with true", async function () {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -807,16 +707,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	      `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should noop for already-existing import', async function () {
+	it("should noop for already-existing import", async function () {
 		const beforeText = `
 			import { usePathname } from 'next/navigation';
 
@@ -825,12 +721,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual } = transform(beforeText, beforeText, 'index.tsx');
+		const { actual } = transform(beforeText, beforeText, "index.tsx");
 
 		deepStrictEqual(actual, undefined);
 	});
 
-	it('should replace query.a if query comes from useRouter return value destructurizing', async function () {
+	it("should replace query.a if query comes from useRouter return value destructurizing", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -858,16 +754,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace { route } = useRouter() with usePathname()', async function () {
+	it("should replace { route } = useRouter() with usePathname()", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -891,16 +783,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().query[A] with useSearchParams', async function () {
+	it("should replace useRouter().query[A] with useSearchParams", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -925,16 +813,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().query as A with useSearchParams', async function () {
+	it("should replace useRouter().query as A with useSearchParams", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -956,16 +840,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.pathname with pathname', async function () {
+	it("should replace router.pathname with pathname", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -987,16 +867,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.asPath with usePathname + useSearchParams', async function () {
+	it("should replace router.asPath with usePathname + useSearchParams", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1021,16 +897,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should switch the useRouter import source to next/router for router.push', async function () {
+	it("should switch the useRouter import source to next/router for router.push", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1055,16 +927,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should transform usages within a JS default function', () => {
+	it("should transform usages within a JS default function", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1095,16 +963,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().query with ...Object.fromEntries(searchParams ?? new URLSearchParams())', () => {
+	it("should replace useRouter().query with ...Object.fromEntries(searchParams ?? new URLSearchParams())", () => {
 		const beforeText = `
 			import React from 'react'
 			import { useRouter } from 'next/router'
@@ -1133,16 +997,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.isReady, router.asPath, router.href with proper replacements', () => {
+	it("should replace router.isReady, router.asPath, router.href with proper replacements", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router'
 
@@ -1173,16 +1033,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter().isFallback with false', () => {
+	it("should replace useRouter().isFallback with false", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1205,16 +1061,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.isFallback with false', () => {
+	it("should replace router.isFallback with false", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router'
 
@@ -1239,16 +1091,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should retain the useRouter import when router is in use', () => {
+	it("should retain the useRouter import when router is in use", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router'
 
@@ -1288,16 +1136,12 @@ describe('next 13 replace-next-router', function () {
 
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should use searchParams when dealing with function(query)', () => {
+	it("should use searchParams when dealing with function(query)", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router'
 
@@ -1317,16 +1161,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should use searchParams when dealing with function(query)', () => {
+	it("should use searchParams when dealing with function(query)", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router'
 
@@ -1343,16 +1183,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.js',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.js");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.asPath.startsWith with pathname?.startsWith', () => {
+	it("should replace router.asPath.startsWith with pathname?.startsWith", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 
@@ -1397,11 +1233,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1435,11 +1267,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1472,11 +1300,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1509,11 +1333,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1539,11 +1359,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1574,11 +1390,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1604,16 +1416,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter import when push is destructured', () => {
+	it("should replace useRouter import when push is destructured", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1632,16 +1440,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace useRouter import when push is destructured  2', () => {
+	it("should replace useRouter import when push is destructured  2", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1671,11 +1475,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1710,11 +1510,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1745,11 +1541,7 @@ describe('next 13 replace-next-router', function () {
 				return null;}
 				`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1777,11 +1569,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1809,16 +1597,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace NextRouter with AppRouterInstance', () => {
+	it("should replace NextRouter with AppRouterInstance", () => {
 		const beforeText = `
 			import type { NextRouter } from "next/router"; 
 			function(router: NextRouter) {}
@@ -1829,11 +1613,7 @@ describe('next 13 replace-next-router', function () {
 			function(router: AppRouterInstance) {}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1859,16 +1639,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should support call expression parent node', () => {
+	it("should support call expression parent node", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1887,16 +1663,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should ensure that `useRouter` import is updated', () => {
+	it("should ensure that `useRouter` import is updated", () => {
 		const beforeText = `
 		import { useRouter } from "next/router";
 		
@@ -1915,16 +1687,12 @@ describe('next 13 replace-next-router', function () {
 		}
 	`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should ensure that `useRouter` import is added when `router` is used as a short-hand property', () => {
+	it("should ensure that `useRouter` import is added when `router` is used as a short-hand property", () => {
 		const beforeText = `
 		import { useRouter } from "next/router";
 		
@@ -1949,11 +1717,7 @@ describe('next 13 replace-next-router', function () {
 		}
 	`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2010,11 +1774,7 @@ describe('next 13 replace-next-router', function () {
 			}, [searchParams, router]);
 		}`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2056,16 +1816,12 @@ describe('next 13 replace-next-router', function () {
 				: obj;
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should change the useRouter import from next/router into next/navigation', () => {
+	it("should change the useRouter import from next/router into next/navigation", () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -2086,16 +1842,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should use different names for params and searchParams if the defaults are already used', () => {
+	it("should use different names for params and searchParams if the defaults are already used", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 
@@ -2131,16 +1883,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should not add React hook imports to type-only imports', () => {
+	it("should not add React hook imports to type-only imports", () => {
 		const beforeText = `
 			import type { ReactNode } from 'react';
 			import { useRouter } from "next/router";
@@ -2166,16 +1914,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should convert router.push within arrow functions', () => {
+	it("should convert router.push within arrow functions", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 			import { useEffect } from "react";
@@ -2205,16 +1949,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should transform Object.entries(router.query) properly', () => {
+	it("should transform Object.entries(router.query) properly", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 
@@ -2255,11 +1995,7 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2291,16 +2027,12 @@ describe('next 13 replace-next-router', function () {
 		
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should not duplicate existing useCallback and useMemo named imports', () => {
+	it("should not duplicate existing useCallback and useMemo named imports", () => {
 		const beforeText = `
 			import { useCallback, useMemo } from "react";
 			import { useRouter } from "next/router";
@@ -2333,16 +2065,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace asPath from destructuring a router', async function () {
+	it("should replace asPath from destructuring a router", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {
@@ -2365,16 +2093,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	    `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace asPath from destructuring a router with different name and property nodes', async function () {
+	it("should replace asPath from destructuring a router with different name and property nodes", async function () {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {
@@ -2399,16 +2123,12 @@ describe('next 13 replace-next-router', function () {
 			}
 	    `;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should extract the property name instead of a name when destructuring router.query', () => {
+	it("should extract the property name instead of a name when destructuring router.query", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 			function Component() {
@@ -2431,16 +2151,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace destructuring of useRouter().query properly', () => {
+	it("should replace destructuring of useRouter().query properly", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 			
@@ -2465,16 +2181,12 @@ describe('next 13 replace-next-router', function () {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace next/router jest mock with next/navigation', () => {
+	it("should replace next/router jest mock with next/navigation", () => {
 		const beforeText = `
 			jest.mock('next/router', () => ({
 				useRouter: jest.fn(() => router),
@@ -2487,16 +2199,12 @@ describe('next 13 replace-next-router', function () {
 			}));
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			'index.tsx',
-		);
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should simplify getParam(x) if the file path contains dynamic segments', () => {
+	it("should simplify getParam(x) if the file path contains dynamic segments", () => {
 		const beforeText = `
 			import { useRouter } from "next/router";
 				
@@ -2522,7 +2230,7 @@ describe('next 13 replace-next-router', function () {
 		const { actual, expected } = transform(
 			beforeText,
 			afterText,
-			'/pages/[[...a]]/[b]/[c].tsx',
+			"/pages/[[...a]]/[b]/[c].tsx",
 		);
 
 		deepStrictEqual(actual, expected);

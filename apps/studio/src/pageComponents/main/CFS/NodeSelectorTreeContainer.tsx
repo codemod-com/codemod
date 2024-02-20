@@ -1,19 +1,19 @@
-import { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectFirstTreeNode } from "~/store/slices/snippets";
 import {
 	getAvailableState,
 	selectCFS,
 	setNodeState,
 	type TreeNodeSelectorState,
-} from '../../../store/slices/CFS';
-import { type TreeNode } from '../../../types/tree';
-import NodeSelectorTree from './NodeSelectorTree';
+} from "../../../store/slices/CFS";
+import { type TreeNode } from "../../../types/tree";
+import NodeSelectorTree from "./NodeSelectorTree";
 
 const NodeSelectorTreeContainer = () => {
 	const { nodeSelectorTreeState } = useSelector(selectCFS);
 
-	const firstRange = useSelector(selectFirstTreeNode('before'));
+	const firstRange = useSelector(selectFirstTreeNode("before"));
 
 	const dispatch = useDispatch();
 

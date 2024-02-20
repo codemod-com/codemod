@@ -1,8 +1,8 @@
-import { randomBytes } from 'node:crypto';
-import type { PathLike } from 'node:fs';
-import { open, rm, writeFile } from 'node:fs/promises';
-import { afterAll, describe, it } from 'vitest';
-import { FileWatcher } from './fileWatcher.js';
+import { randomBytes } from "node:crypto";
+import type { PathLike } from "node:fs";
+import { open, rm, writeFile } from "node:fs/promises";
+import { afterAll, describe, it } from "vitest";
+import { FileWatcher } from "./fileWatcher.js";
 
 const withFile = async <T>(
 	pathLike: string,
@@ -17,12 +17,12 @@ const withFile = async <T>(
 	}
 };
 
-describe('fileWatcher', function () {
-	const fileName = `./${randomBytes(20).toString('base64url')}.data`;
+describe("fileWatcher", function () {
+	const fileName = `./${randomBytes(20).toString("base64url")}.data`;
 
 	afterAll(() => rm(fileName, { force: true }));
 
-	it('should report the correct number of changes', async function () {
+	it("should report the correct number of changes", async function () {
 		await withFile(fileName, async (pathLike) => {
 			let callback: (() => void) | null = null;
 
@@ -32,7 +32,7 @@ describe('fileWatcher', function () {
 
 			watcher.watch();
 
-			const fileHandle = await open(pathLike, 'w');
+			const fileHandle = await open(pathLike, "w");
 
 			const write = async () => {
 				for (let i = 0; i < 3; ++i) {

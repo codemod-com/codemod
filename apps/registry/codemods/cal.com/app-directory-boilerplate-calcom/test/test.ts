@@ -1,18 +1,18 @@
-import { deepStrictEqual, ok } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import tsmorph from 'ts-morph';
-import { describe, it } from 'vitest';
-import { repomod } from '../src/index.js';
+import { deepStrictEqual, ok } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import type { DirectoryJSON } from "memfs";
+import { createFsFromVolume, Volume } from "memfs";
+import tsmorph from "ts-morph";
+import { describe, it } from "vitest";
+import { repomod } from "../src/index.js";
 
 const transform = async (json: DirectoryJSON) => {
 	const volume = Volume.fromJSON(json);
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const api = buildApi<{
 		tsmorph: typeof tsmorph;
@@ -24,22 +24,22 @@ const transform = async (json: DirectoryJSON) => {
 		pathApi,
 	);
 
-	return executeFilemod(api, repomod, '/', {}, {});
+	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe('cal.com app-directory-boilerplate-calcom', function () {
-	it('should build correct files', async function () {
+describe("cal.com app-directory-boilerplate-calcom", function () {
+	it("should build correct files", async function () {
 		const externalFileCommands = await transform({
-			'/opt/project/pages/a/index.tsx': 'TODO content',
-			'/opt/project/pages/a/embed.tsx': 'TODO content',
-			'/opt/project/pages/a/b.tsx': `
+			"/opt/project/pages/a/index.tsx": "TODO content",
+			"/opt/project/pages/a/embed.tsx": "TODO content",
+			"/opt/project/pages/a/b.tsx": `
 			import { getLayout } from './getLayout';
 			export default function B(props) {
 				return <Component />;
 			}
 			B.getLayout = getLayout;
 			`,
-			'/opt/project/pages/a/[b]/c.tsx': `
+			"/opt/project/pages/a/[b]/c.tsx": `
 			export const getServerSideProps = (ctx) => {
 				return null;
 			}
@@ -47,7 +47,7 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 				return <Component />;
 			}
 			`,
-			'/opt/project/pages/a/d.tsx': `
+			"/opt/project/pages/a/d.tsx": `
 			export const getStaticProps = (ctx) => {
 				return null;
 			}
@@ -62,86 +62,86 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/page.tsx',
+						"/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/page.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/index.tsx',
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/index.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/embed.tsx',
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/embed.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(shared-page-wrapper)/(layout)/a/b/page.tsx',
+						"/opt/project/app/future/(shared-page-wrapper)/(layout)/a/b/page.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/b.tsx',
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/b.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(individual-page-wrapper)/a/[b]/c/page.tsx',
+						"/opt/project/app/future/(individual-page-wrapper)/a/[b]/c/page.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/[b]/c.tsx',
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/[b]/c.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(individual-page-wrapper)/a/d/page.tsx',
+						"/opt/project/app/future/(individual-page-wrapper)/a/d/page.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some(
 				(command) =>
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/d.tsx',
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/d.tsx",
 			),
 		);
 
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/embed/page.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+						"/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/embed/page.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
             import type { Params } from "next/dist/shared/lib/router/utils/route-matcher";
             import { getData } from "../page";
@@ -156,7 +156,7 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
                 return null;
             };
                 
-            export default Page;`.replace(/\W/gm, '')
+            export default Page;`.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -164,17 +164,17 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/page.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+						"/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/page.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 import Page from "@pages/a/index";
                 import { _generateMetadata } from "app/_utils";
 
                 export const generateMetadata = async () => await _generateMetadata(() => "", () => "");
                 export default Page;
-            `.replace(/\W/gm, '')
+            `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -182,13 +182,13 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/index.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/index.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 'use client';
                 TODO content
-                `.replace(/\W/gm, '')
+                `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -196,17 +196,17 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(shared-page-wrapper)/(layout)/a/b/page.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+						"/opt/project/app/future/(shared-page-wrapper)/(layout)/a/b/page.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 import Page from "@pages/a/b";
                 import { _generateMetadata } from "app/_utils";
                 
                 export const generateMetadata = async () => await _generateMetadata(() => "", () => "");
                 export default Page;
-            `.replace(/\W/gm, '')
+            `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -214,9 +214,9 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/b.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/b.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 'use client';
                 import { getLayout } from './getLayout';
@@ -224,7 +224,7 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
                     return <Component />;
                 }
                 B.getLayout = getLayout;
-                `.replace(/\W/gm, '')
+                `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -262,11 +262,10 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 					export default Page;`;
 
 				return (
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(individual-page-wrapper)/a/[b]/c/page.tsx' &&
-					command.data.replace(/\W/gm, '') ===
-						expected.replace(/\W/gm, '')
+						"/opt/project/app/future/(individual-page-wrapper)/a/[b]/c/page.tsx" &&
+					command.data.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -274,9 +273,9 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/[b]/c.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/[b]/c.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 'use client';
                 export const getServerSideProps = (ctx) => {
@@ -285,7 +284,7 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
                 export default function C(props) {
                     return <Component />;
                 }
-                `.replace(/\W/gm, '')
+                `.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -322,11 +321,10 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 					
 					export default Page;`;
 				return (
-					command.kind === 'upsertFile' &&
+					command.kind === "upsertFile" &&
 					command.path ===
-						'/opt/project/app/future/(individual-page-wrapper)/a/d/page.tsx' &&
-					command.data.replace(/\W/gm, '') ===
-						expected.replace(/\W/gm, '')
+						"/opt/project/app/future/(individual-page-wrapper)/a/d/page.tsx" &&
+					command.data.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
 				);
 			}),
 		);
@@ -334,9 +332,9 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 		ok(
 			externalFileCommands.some((command) => {
 				return (
-					command.kind === 'upsertFile' &&
-					command.path === '/opt/project/pages/a/d.tsx' &&
-					command.data.replace(/\W/gm, '') ===
+					command.kind === "upsertFile" &&
+					command.path === "/opt/project/pages/a/d.tsx" &&
+					command.data.replace(/\W/gm, "") ===
 						`
                 'use client';
                 export const getStaticProps = (ctx) => {
@@ -345,15 +343,15 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
                 export default function C(props) {
                     return <Component />;
                 }
-                `.replace(/\W/gm, '')
+                `.replace(/\W/gm, "")
 				);
 			}),
 		);
 	});
 
-	it('should insert router segment config and server-side data hooks to the future page', async function () {
+	it("should insert router segment config and server-side data hooks to the future page", async function () {
 		const [upsertPageCommand] = await transform({
-			'/opt/project/pages/a/index.tsx': `
+			"/opt/project/pages/a/index.tsx": `
 			import C from 'C';
 			import { a } from 'a';
 			import b from 'b';
@@ -374,14 +372,14 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 			`,
 		});
 
-		deepStrictEqual(upsertPageCommand?.kind, 'upsertFile');
+		deepStrictEqual(upsertPageCommand?.kind, "upsertFile");
 		deepStrictEqual(
 			upsertPageCommand?.path,
-			'/opt/project/app/future/(individual-page-wrapper)/a/page.tsx',
+			"/opt/project/app/future/(individual-page-wrapper)/a/page.tsx",
 		);
 
 		deepStrictEqual(
-			upsertPageCommand?.data.replace(/(?!\.)\s/gm, ''),
+			upsertPageCommand?.data.replace(/(?!\.)\s/gm, ""),
 			`import OldPage from "@pages/a/index";
 			import {_generateMetadata} from "app/_utils";
 			import type {Params} from "next/dist/shared/lib/router/utils/route-matcher";
@@ -411,13 +409,13 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 			};
 			export default Page;
 			export const dynamic="force-dynamic";
-			`.replace(/(?!\.)\s/gm, ''),
+			`.replace(/(?!\.)\s/gm, ""),
 		);
 	});
 
 	it('should not insert "use client" directive twice', async function () {
 		const [, upsertLegacyPage] = await transform({
-			'/opt/project/pages/a/index.tsx': `
+			"/opt/project/pages/a/index.tsx": `
 			'use client'
 			import C from 'C';
 
@@ -428,21 +426,18 @@ describe('cal.com app-directory-boilerplate-calcom', function () {
 			`,
 		});
 
-		deepStrictEqual(upsertLegacyPage?.kind, 'upsertFile');
-		deepStrictEqual(
-			upsertLegacyPage?.path,
-			'/opt/project/pages/a/index.tsx',
-		);
+		deepStrictEqual(upsertLegacyPage?.kind, "upsertFile");
+		deepStrictEqual(upsertLegacyPage?.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			upsertLegacyPage?.data.replace(/(?!\.)\s/gm, ''),
+			upsertLegacyPage?.data.replace(/(?!\.)\s/gm, ""),
 			`'use client'
 			import C from 'C';
 
 			export default function P() {
 				return <C />;
 			}
-			`.replace(/(?!\.)\s/gm, ''),
+			`.replace(/(?!\.)\s/gm, ""),
 		);
 	});
 });

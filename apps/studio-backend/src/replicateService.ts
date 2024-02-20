@@ -1,4 +1,4 @@
-import Replicate from 'replicate';
+import Replicate from "replicate";
 
 export class ReplicateService {
 	private readonly __replicate: Replicate | null;
@@ -16,14 +16,14 @@ export class ReplicateService {
 	public async complete(prompt: string): Promise<string | null> {
 		if (this.__replicate === null) {
 			throw new Error(
-				'The Replicate service requires the authentication key to be provided',
+				"The Replicate service requires the authentication key to be provided",
 			);
 		}
 
 		const abortController = new AbortController();
 
 		const runPromise = this.__replicate.run(
-			'replit/replit-code-v1-3b:b84f4c074b807211cd75e3e8b1589b6399052125b4c27106e43d47189e8415ad',
+			"replit/replit-code-v1-3b:b84f4c074b807211cd75e3e8b1589b6399052125b4c27106e43d47189e8415ad",
 			{
 				input: {
 					prompt,
@@ -47,7 +47,7 @@ export class ReplicateService {
 
 		abortController.abort();
 
-		return Array.isArray(output) && typeof output[0] === 'string'
+		return Array.isArray(output) && typeof output[0] === "string"
 			? output[0]
 			: null;
 	}

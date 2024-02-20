@@ -1,22 +1,22 @@
-import { execSync } from 'node:child_process';
-import { dirname, extname } from 'node:path';
-import { Project } from 'ts-morph';
+import { execSync } from "node:child_process";
+import { dirname, extname } from "node:path";
+import { Project } from "ts-morph";
 import {
 	findLastlyModifiedFile,
 	findModifiedFiles,
 	getGitDiffForFile,
 	getLatestCommitHash,
 	isFileInGitDirectory,
-} from './gitCommands.js';
-import { PrinterBlueprint } from './printer.js';
-import { boldText, colorizeText, doubleQuotify, openURL } from './utils.js';
+} from "./gitCommands.js";
+import { PrinterBlueprint } from "./printer.js";
+import { boldText, colorizeText, doubleQuotify, openURL } from "./utils.js";
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>
-	str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, '').replace(/\s/g, '');
+	str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, "").replace(/\s/g, "");
 
 const isJSorTS = (name: string) =>
-	name.startsWith('.ts') || name.startsWith('.js');
+	name.startsWith(".ts") || name.startsWith(".js");
 
 const getFileExtension = (filePath: string) => {
 	return extname(filePath).toLowerCase();
@@ -64,14 +64,14 @@ const getSourceFile = (filePath: string, fileExtension: string) => {
 };
 
 const encode = (code: string): string =>
-	Buffer.from(code).toString('base64url');
+	Buffer.from(code).toString("base64url");
 
 const UrlParamKeys = {
-	Engine: 'engine' as const,
-	BeforeSnippet: 'beforeSnippet' as const,
-	AfterSnippet: 'afterSnippet' as const,
-	CodemodSource: 'codemodSource' as const,
-	Command: 'command' as const,
+	Engine: "engine" as const,
+	BeforeSnippet: "beforeSnippet" as const,
+	AfterSnippet: "afterSnippet" as const,
+	CodemodSource: "codemodSource" as const,
+	Command: "command" as const,
 };
 
 const createCodemodStudioURL = ({
@@ -79,7 +79,7 @@ const createCodemodStudioURL = ({
 	beforeSnippet,
 	afterSnippet,
 }: {
-	engine: 'jscodeshift' | 'tsmorph';
+	engine: "jscodeshift" | "tsmorph";
 	beforeSnippet: string;
 	afterSnippet: string;
 }): string | null => {
@@ -88,12 +88,12 @@ const createCodemodStudioURL = ({
 		const encodedBeforeSnippet = encode(beforeSnippet);
 		const encodedAfterSnippet = encode(afterSnippet);
 
-		const url = new URL('https://codemod.studio/');
+		const url = new URL("https://codemod.studio/");
 		const searchParams = new URLSearchParams([
 			[UrlParamKeys.Engine, encodedEngine],
 			[UrlParamKeys.BeforeSnippet, encodedBeforeSnippet],
 			[UrlParamKeys.AfterSnippet, encodedAfterSnippet],
-			[UrlParamKeys.Command, 'learn'],
+			[UrlParamKeys.Command, "learn"],
 		]);
 
 		url.search = searchParams.toString();
@@ -111,9 +111,9 @@ export const handleLearnCliCommand = async (
 ) => {
 	if (filePath !== null && !isFileInGitDirectory(filePath)) {
 		printer.printOperationMessage({
-			kind: 'error',
+			kind: "error",
 			message:
-				'The file on which you tried to run operation is not in a git repository.',
+				"The file on which you tried to run operation is not in a git repository.",
 		});
 		return;
 	}
@@ -122,9 +122,8 @@ export const handleLearnCliCommand = async (
 
 	if (path === null) {
 		printer.printOperationMessage({
-			kind: 'error',
-			message:
-				'We could not find any modified file to run the command on.',
+			kind: "error",
+			message: "We could not find any modified file to run the command on.",
 		});
 		return;
 	}
@@ -133,10 +132,10 @@ export const handleLearnCliCommand = async (
 
 	if (!isJSorTS(fileExtension)) {
 		printer.printOperationMessage({
-			kind: 'error',
+			kind: "error",
 			message:
-				'At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n' +
-				'Soon, we will support other engines and hence other extensions including .md, .mdx and more!',
+				"At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n" +
+				"Soon, we will support other engines and hence other extensions including .md, .mdx and more!",
 		});
 		return;
 	}
@@ -144,9 +143,9 @@ export const handleLearnCliCommand = async (
 	const latestCommitHash = getLatestCommitHash(dirname(path));
 	if (latestCommitHash === null) {
 		printer.printOperationMessage({
-			kind: 'error',
+			kind: "error",
 			message:
-				'Unexpected error occurred while getting the latest commit hash.',
+				"Unexpected error occurred while getting the latest commit hash.",
 		});
 		return;
 	}
@@ -154,51 +153,44 @@ export const handleLearnCliCommand = async (
 	const modifiedFiles = findModifiedFiles();
 	if (modifiedFiles !== null && modifiedFiles.length > 1) {
 		printer.printConsoleMessage(
-			'warn',
-			'Only the changes in the most recently edited file will be processed.',
+			"warn",
+			"Only the changes in the most recently edited file will be processed.",
 		);
 	}
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		colorizeText(
-			`Learning ${boldText('`git diff`')} at ${boldText(
-				path,
-			)} has begun...\n`,
-			'cyan',
+			`Learning ${boldText("`git diff`")} at ${boldText(path)} has begun...\n`,
+			"cyan",
 		),
 	);
 
 	const gitDiff = getGitDiffForFile(latestCommitHash, path);
 	if (gitDiff === null) {
 		printer.printOperationMessage({
-			kind: 'error',
-			message:
-				'Unexpected error occurred while running `git diff` command.',
+			kind: "error",
+			message: "Unexpected error occurred while running `git diff` command.",
 		});
 		return;
 	}
 
 	if (gitDiff.length === 0) {
 		printer.printOperationMessage({
-			kind: 'error',
+			kind: "error",
 			message:
-				'There is no difference between the status of the file and that at the previous commit.',
+				"There is no difference between the status of the file and that at the previous commit.",
 		});
 		return;
 	}
 
-	const oldSourceFile = getOldSourceFile(
-		latestCommitHash,
-		path,
-		fileExtension,
-	);
+	const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
 	const sourceFile = getSourceFile(path, fileExtension);
 
 	if (oldSourceFile === null || sourceFile === null) {
 		printer.printOperationMessage({
-			kind: 'error',
-			message: 'Unexpected error occurred while getting AST of the file.',
+			kind: "error",
+			message: "Unexpected error occurred while getting AST of the file.",
 		});
 		return;
 	}
@@ -206,10 +198,10 @@ export const handleLearnCliCommand = async (
 	const beforeNodeTexts = new Set<string>();
 	const afterNodeTexts = new Set<string>();
 
-	const lines = gitDiff.split('\n');
+	const lines = gitDiff.split("\n");
 
 	for (const line of lines) {
-		if (!line.startsWith('-') && !line.startsWith('+')) {
+		if (!line.startsWith("-") && !line.startsWith("+")) {
 			continue;
 		}
 
@@ -218,26 +210,20 @@ export const handleLearnCliCommand = async (
 			continue;
 		}
 
-		if (line.startsWith('-')) {
+		if (line.startsWith("-")) {
 			oldSourceFile.forEachChild((node) => {
 				const content = node.getFullText();
 
-				if (
-					content.includes(codeString) &&
-					!beforeNodeTexts.has(content)
-				) {
+				if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
 					beforeNodeTexts.add(content);
 				}
 			});
 		}
 
-		if (line.startsWith('+')) {
+		if (line.startsWith("+")) {
 			sourceFile.forEachChild((node) => {
 				const content = node.getFullText();
-				if (
-					content.includes(codeString) &&
-					!afterNodeTexts.has(content)
-				) {
+				if (content.includes(codeString) && !afterNodeTexts.has(content)) {
 					afterNodeTexts.add(content);
 				}
 			});
@@ -258,42 +244,41 @@ export const handleLearnCliCommand = async (
 	});
 
 	const beforeSnippet = Array.from(beforeNodeTexts)
-		.join('')
+		.join("")
 		// remove all occurrences of `\n` at the beginning
-		.replace(/^\n+/, '');
+		.replace(/^\n+/, "");
 	const afterSnippet = Array.from(afterNodeTexts)
-		.join('')
+		.join("")
 		// remove all occurrences of `\n` at the beginning
-		.replace(/^\n+/, '');
+		.replace(/^\n+/, "");
 	const url = createCodemodStudioURL({
 		// TODO: Support other engines in the future
-		engine: 'jscodeshift',
+		engine: "jscodeshift",
 		beforeSnippet,
 		afterSnippet,
 	});
 
 	if (url === null) {
 		printer.printOperationMessage({
-			kind: 'error',
-			message: 'Unexpected error occurred while creating a URL.',
+			kind: "error",
+			message: "Unexpected error occurred while creating a URL.",
 		});
 		return;
 	}
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		colorizeText(
-			'Learning went successful! Opening the Codemod Studio...\n',
-			'cyan',
+			"Learning went successful! Opening the Codemod Studio...\n",
+			"cyan",
 		),
 	);
 
 	const success = openURL(url);
 	if (!success) {
 		printer.printOperationMessage({
-			kind: 'error',
-			message:
-				'Unexpected error occurred while opening the Codemod Studio.',
+			kind: "error",
+			message: "Unexpected error occurred while opening the Codemod Studio.",
 		});
 		return;
 	}

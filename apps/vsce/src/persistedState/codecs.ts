@@ -1,29 +1,29 @@
-import * as t from 'io-ts';
-import { withFallback } from 'io-ts-types';
-import { caseCodec, caseHashCodec } from '../cases/types';
-import { codemodEntryCodec, privateCodemodEntryCodec } from '../codemods/types';
-import { executionErrorCodec } from '../errors/types';
-import { persistedJobCodec } from '../jobs/types';
-import { codemodNodeHashDigestCodec } from '../selectors/selectCodemodTree';
-import { buildTypeCodec } from '../utilities';
-import { _explorerNodeHashDigestCodec } from './explorerNodeCodec';
+import * as t from "io-ts";
+import { withFallback } from "io-ts-types";
+import { caseCodec, caseHashCodec } from "../cases/types";
+import { codemodEntryCodec, privateCodemodEntryCodec } from "../codemods/types";
+import { executionErrorCodec } from "../errors/types";
+import { persistedJobCodec } from "../jobs/types";
+import { codemodNodeHashDigestCodec } from "../selectors/selectCodemodTree";
+import { buildTypeCodec } from "../utilities";
+import { _explorerNodeHashDigestCodec } from "./explorerNodeCodec";
 
 export const syntheticErrorCodec = buildTypeCodec({
-	kind: t.literal('syntheticError'),
+	kind: t.literal("syntheticError"),
 	message: t.string,
 });
 
 export const workspaceStateCodec = t.union([
 	buildTypeCodec({
-		_tag: t.literal('Left'),
+		_tag: t.literal("Left"),
 		left: syntheticErrorCodec,
 	}),
 	buildTypeCodec({
-		_tag: t.literal('Right'),
+		_tag: t.literal("Right"),
 		right: t.string,
 	}),
 	buildTypeCodec({
-		_tag: t.literal('Both'),
+		_tag: t.literal("Both"),
 		left: syntheticErrorCodec,
 		right: t.string,
 	}),
@@ -40,10 +40,10 @@ const buildCollectionCodec = <T extends t.Mixed>(entityCodec: T) => {
 };
 
 const activeTabIdCodec = t.union([
-	t.literal('codemods'),
-	t.literal('codemodRuns'),
-	t.literal('community'),
-	t.literal('sourceControl'),
+	t.literal("codemods"),
+	t.literal("codemodRuns"),
+	t.literal("community"),
+	t.literal("sourceControl"),
 ]);
 
 export type ActiveTabId = t.TypeOf<typeof activeTabIdCodec>;
@@ -66,13 +66,8 @@ export const persistedStateCodecNew = buildTypeCodec({
 	codemodDiscoveryView: withFallback(
 		buildTypeCodec({
 			executionPaths: t.record(t.string, t.string),
-			focusedCodemodHashDigest: t.union([
-				codemodNodeHashDigestCodec,
-				t.null,
-			]),
-			expandedNodeHashDigests: t.readonlyArray(
-				codemodNodeHashDigestCodec,
-			),
+			focusedCodemodHashDigest: t.union([codemodNodeHashDigestCodec, t.null]),
+			expandedNodeHashDigests: t.readonlyArray(codemodNodeHashDigestCodec),
 			searchPhrase: t.string,
 			publicRegistryCollapsed: withFallback(t.boolean, false),
 			privateRegistryCollapsed: withFallback(t.boolean, false),
@@ -87,11 +82,11 @@ export const persistedStateCodecNew = buildTypeCodec({
 			executionPaths: {},
 			focusedCodemodHashDigest: null,
 			expandedNodeHashDigests: [],
-			searchPhrase: '',
+			searchPhrase: "",
 			publicRegistryCollapsed: false,
 			privateRegistryCollapsed: false,
 			panelGroupSettings: {
-				'0,0': [50, 50],
+				"0,0": [50, 50],
 			},
 			codemodArgumentsPopupHashDigest: null,
 			codemodArguments: {},
@@ -109,7 +104,7 @@ export const persistedStateCodecNew = buildTypeCodec({
 			changeExplorerCollapsed: false,
 			selectedCaseHash: null,
 			panelGroupSettings: {
-				'0,0': [50, 50],
+				"0,0": [50, 50],
 			},
 		},
 	),
@@ -124,28 +119,28 @@ export const persistedStateCodecNew = buildTypeCodec({
 	sourceControl: withFallback(
 		t.union([
 			buildTypeCodec({
-				kind: t.literal('ISSUE_CREATION'),
+				kind: t.literal("ISSUE_CREATION"),
 				jobHash: t.string,
 				oldFileContent: t.string,
 				newFileContent: t.string,
 				modifiedFileContent: t.union([t.string, t.null]),
 			}),
 			buildTypeCodec({
-				kind: t.literal('ISSUE_CREATION_WAITING_FOR_AUTH'),
+				kind: t.literal("ISSUE_CREATION_WAITING_FOR_AUTH"),
 				title: t.string,
 				body: t.string,
 			}),
 			buildTypeCodec({
-				kind: t.literal('WAITING_FOR_ISSUE_CREATION_API_RESPONSE'),
+				kind: t.literal("WAITING_FOR_ISSUE_CREATION_API_RESPONSE"),
 				title: t.string,
 				body: t.string,
 			}),
 			buildTypeCodec({
-				kind: t.literal('IDLENESS'),
+				kind: t.literal("IDLENESS"),
 			}),
 		]),
 		{
-			kind: 'IDLENESS',
+			kind: "IDLENESS",
 		},
 	),
 	toaster: withFallback(
@@ -163,7 +158,7 @@ export const persistedStateCodecNew = buildTypeCodec({
 	caseHashJobHashes: withFallback(t.readonlyArray(t.string), []),
 	caseHashInProgress: withFallback(t.union([caseHashCodec, t.null]), null),
 	applySelectedInProgress: withFallback(t.boolean, false),
-	activeTabId: withFallback(activeTabIdCodec, 'codemods'),
+	activeTabId: withFallback(activeTabIdCodec, "codemods"),
 	explorerSearchPhrases: withFallback(t.record(caseHashCodec, t.string), {}),
 	selectedExplorerNodes: withFallback(
 		t.record(caseHashCodec, t.readonlyArray(_explorerNodeHashDigestCodec)),
