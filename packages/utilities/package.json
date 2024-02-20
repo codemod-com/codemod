@@ -25,8 +25,7 @@
 		"lint:eslint:write": "npx @biomejs/biome lint . --apply",
 		"lint:prettier:write": "npx @biomejs/biome format --write .",
 		"test": "vitest run",
-		"coverage": "vitest run --coverage",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
+		"coverage": "vitest run --coverage"
 	},
 	"keywords": [],
 	"license": "Apache-2.0",

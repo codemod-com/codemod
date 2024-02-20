@@ -11,8 +11,7 @@
 		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
 		"test": "vitest run test.ts",
 		"test:win": "vitest run test.win.ts",
-		"coverage": "vitest run --coverage",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
+		"coverage": "vitest run --coverage"
 	},
 	"devDependencies": {
 		"@codemod-com/registry-cjs-builder": "workspace:*",

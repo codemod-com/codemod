@@ -29,13 +29,14 @@
 		"build": "turbo run build",
 		"clean": "turbo run clean",
 		"link": "turbo run link",
-		"lint:eslint": "pnpm dlx @biomejs/biome lint --apply .",
-		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
+		"lint": "biome check .",
+		"lint:apply": "biome check --apply .",
+		"lint:linter": "biome lint --apply .",
+		"lint:formatter": "biome format --write .",
 		"test": "vitest run test.ts",
 		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage",
-		"prepare": "husky install",
-		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
+		"prepare": "husky install"
 	},
 	"devDependencies": {
 		"@codemod-com/config": "workspace:*",
