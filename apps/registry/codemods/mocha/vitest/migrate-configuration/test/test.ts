@@ -2,7 +2,7 @@ import { deepEqual, equal, ok } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -19,7 +19,7 @@ const transform = async (json: DirectoryJSON) => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("mocha config-files", function () {
+describe("mocha config-files", () => {
 	const packageJsonPath = "/opt/project/package.json";
 	const packageJsonConfig = `
     {
@@ -87,7 +87,7 @@ describe("mocha config-files", function () {
 
 	const vitestConfigPath = "vitest.config.ts";
 
-	it("should contain correct file commands", async function () {
+	it("should contain correct file commands", async () => {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[tsconfigPath]: tsconfigContent,
@@ -114,7 +114,7 @@ describe("mocha config-files", function () {
 		);
 	});
 
-	it("should correctly modify package and tsconfig jsons", async function () {
+	it("should correctly modify package and tsconfig jsons", async () => {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[tsconfigPath]: tsconfigContent,
@@ -178,7 +178,7 @@ describe("mocha config-files", function () {
 		);
 	});
 
-	it("should correctly transform the .gitignore file", async function () {
+	it("should correctly transform the .gitignore file", async () => {
 		const externalFileCommands = await transform({
 			[gitIgnorePath]: gitIgnoreContent,
 		});

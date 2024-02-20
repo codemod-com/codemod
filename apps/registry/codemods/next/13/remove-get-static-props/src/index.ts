@@ -1,7 +1,7 @@
 import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
 import type {
-	ArrowFunctionExpression,
 	ASTNode,
+	ArrowFunctionExpression,
 	Collection,
 	File,
 	FunctionDeclaration,
@@ -1297,7 +1297,7 @@ const handleData: HandleData<Dependencies, State> = async (
 	return noop;
 };
 
-const enum RepomodStep {
+enum RepomodStep {
 	ADD_BUILD_LEGACY_CTX_UTIL = "ADD_BUILD_LEGACY_CTX_UTIL",
 	ADD_GET_SERVER_SIDE_DATA_HOOKS = "ADD_GET_SERVER_SIDE_DATA_HOOKS",
 }

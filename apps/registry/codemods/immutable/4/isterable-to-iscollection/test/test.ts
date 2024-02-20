@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("immutable-4 isiterable-to-iscollection", function () {
-	it("should change the isIterable identifier into the isCollection identifier", function () {
+describe("immutable-4 isiterable-to-iscollection", () => {
+	it("should change the isIterable identifier into the isCollection identifier", () => {
 		const INPUT = `
             Immutable.Iterable.isIterable();
         `;

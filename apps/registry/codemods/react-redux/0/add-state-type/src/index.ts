@@ -26,7 +26,7 @@ export const upsertTypeAnnotationOnStateIdentifier: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
 	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&
@@ -82,7 +82,7 @@ export const upsertTypeAnnotationOnDispatchIdentifier: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
 	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&
@@ -148,7 +148,7 @@ export const upsertTypeAnnotationOnStateObjectPattern: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
 	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&

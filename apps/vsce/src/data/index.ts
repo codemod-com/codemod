@@ -1,4 +1,4 @@
-import { configureStore, Dispatch, Reducer } from "@reduxjs/toolkit";
+import { Dispatch, Reducer, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import { PersistPartial } from "redux-persist/es/persistReducer";
 import { Memento, window } from "vscode";

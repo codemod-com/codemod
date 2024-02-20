@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("mui/5/core-styles-import", function () {
-	it("basic test", function () {
+describe("mui/5/core-styles-import", () => {
+	it("basic test", () => {
 		const INPUT = `
         import { darken, lighten } from '@material-ui/core/styles/colorManipulator';
 		import { Overrides } from '@material-ui/core/styles/overrides';

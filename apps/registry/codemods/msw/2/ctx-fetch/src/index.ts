@@ -1,12 +1,12 @@
 import type { ParameterDeclaration, SourceFile } from "ts-morph";
 import {
-	SyntaxKind,
 	type ArrowFunction,
 	type BindingElement,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type ImportSpecifier,
+	SyntaxKind,
 } from "ts-morph";
 
 function addNamedImportDeclaration(

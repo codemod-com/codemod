@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 wrap-with-imports", function () {
-	it("should wrap Route components with Switch", async function () {
+describe("react-router v4 wrap-with-imports", () => {
+	it("should wrap Route components with Switch", async () => {
 		const input = `
 		import { Route, Router } from 'react-router-dom';
 

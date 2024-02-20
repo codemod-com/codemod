@@ -14,12 +14,12 @@ import { Node, ts } from "ts-morph";
 // https://nextjs.org/docs/app/api-reference/functions/use-router#router-events
 
 class FileLevelUsageManager {
-	private __pathnameUsed: boolean = false;
-	private __routerUsed: boolean = false;
-	private __searchParamsUsed: boolean = false;
-	private __paramsUsed: boolean = false;
-	public useCallbackUsed: boolean = false;
-	public useMemoUsed: boolean = false;
+	private __pathnameUsed = false;
+	private __routerUsed = false;
+	private __searchParamsUsed = false;
+	private __paramsUsed = false;
+	public useCallbackUsed = false;
+	public useMemoUsed = false;
 
 	private __useRouterPresent: boolean;
 	private __nextRouterPresent: boolean;
@@ -106,13 +106,13 @@ class FileLevelUsageManager {
 type Param = Readonly<{ propertyName: string; name: string }>;
 
 class BlockLevelUsageManager {
-	private __getParamUsed: boolean = false;
+	private __getParamUsed = false;
 
-	private __paramsUsed: boolean = false;
-	private __searchParamsUsed: boolean = false;
-	private __paramMapUsed: boolean = false;
+	private __paramsUsed = false;
+	private __searchParamsUsed = false;
+	private __paramMapUsed = false;
 
-	private __routerUsed: boolean = false;
+	private __routerUsed = false;
 
 	private __pathnames: Set<string> = new Set();
 	private __asPaths: Set<string> = new Set();

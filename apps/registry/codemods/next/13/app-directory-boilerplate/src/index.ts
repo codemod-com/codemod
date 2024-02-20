@@ -62,7 +62,7 @@ export default function RootLayout({
   };
 `;
 
-const enum FilePurpose {
+enum FilePurpose {
 	// root directory
 	ROOT_LAYOUT = "ROOT_LAYOUT",
 	ROOT_LAYOUT_COMPONENT = "ROOT_LAYOUT_COMPONENT",

@@ -1,4 +1,4 @@
-import { NextResponse, type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
 	if (process.env.NODE_ENV === "development") {

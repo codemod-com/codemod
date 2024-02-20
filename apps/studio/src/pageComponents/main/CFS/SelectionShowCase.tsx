@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-syntax */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-plusplus */
-import { isTSTypeAnnotation, type Node } from "@babel/types";
+import { type Node, isTSTypeAnnotation } from "@babel/types";
 import dynamic from "next/dynamic";
 import { useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";

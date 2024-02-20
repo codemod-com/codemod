@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 array-wrapper", function () {
-	it("basic", function () {
+describe("ember 5 array-wrapper", () => {
+	it("basic", () => {
 		const INPUT = `
 		import { A } from '@ember/array';
         let arr = new A();

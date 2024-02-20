@@ -1,6 +1,6 @@
-import { pipe } from "fp-ts/lib/function";
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/These";
+import { pipe } from "fp-ts/lib/function";
 import {
 	CodemodArgumentWithValue,
 	CodemodNodeHashDigest,

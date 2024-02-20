@@ -1,7 +1,7 @@
 import { deepStrictEqual } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import tsmorph from "ts-morph";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
@@ -66,8 +66,8 @@ const transform = async () => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("next 13 remove-next-export", function () {
-	it("should build correct files", async function () {
+describe("next 13 remove-next-export", () => {
+	it("should build correct files", async () => {
 		const externalFileCommands = await transform();
 
 		deepStrictEqual(externalFileCommands, [

@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("netlify 0.8.1 export zod", function () {
-	it("exports zod to netlify sdk", function () {
+describe("netlify 0.8.1 export zod", () => {
+	it("exports zod to netlify sdk", () => {
 		const INPUT = `
             import { z } from 'zod';
         `;

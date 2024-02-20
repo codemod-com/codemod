@@ -28,8 +28,8 @@ Changes to the original file: added options, nullability fixes
 */
 
 import type {
-	ArrayExpression,
 	ASTPath,
+	ArrayExpression,
 	CallExpression,
 	Identifier,
 	JSCodeshift,

@@ -3,7 +3,7 @@ import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import jscodeshift from "jscodeshift";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -42,8 +42,8 @@ const transform = async (json: DirectoryJSON, options: Options) => {
 	);
 };
 
-describe("next 13 replace-replace-use-search-params", function () {
-	it("should replace useSearchParams with useCompatSearchParams", async function () {
+describe("next 13 replace-replace-use-search-params", () => {
+	it("should replace useSearchParams with useCompatSearchParams", async () => {
 		const A_CONTENT = `
 			import { useSearchParams, useParams } from 'next/navigation';
 
@@ -87,7 +87,7 @@ describe("next 13 replace-replace-use-search-params", function () {
 		);
 	});
 
-	it("should replace useSearchParams with useCompatSearchParams but not create the hook file", async function () {
+	it("should replace useSearchParams with useCompatSearchParams but not create the hook file", async () => {
 		const A_CONTENT = `
 			import { useSearchParams, useParams } from 'next/navigation';
 
@@ -127,7 +127,7 @@ describe("next 13 replace-replace-use-search-params", function () {
 		);
 	});
 
-	it("should remove next/navigation import if no specifiers left after useSearchParams specifier removal", async function () {
+	it("should remove next/navigation import if no specifiers left after useSearchParams specifier removal", async () => {
 		const A_CONTENT = `
 			import { useSearchParams } from 'next/navigation';
 
@@ -164,7 +164,7 @@ describe("next 13 replace-replace-use-search-params", function () {
 		);
 	});
 
-	it("should replace useSearchParams with useCompatSearchParams without creating the hook file", async function () {
+	it("should replace useSearchParams with useCompatSearchParams without creating the hook file", async () => {
 		const A_CONTENT = `
 			import { useSearchParams, useParams } from 'next/navigation';
 

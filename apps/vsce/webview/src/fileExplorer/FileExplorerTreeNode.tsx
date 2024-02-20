@@ -1,8 +1,8 @@
 import cn from "classnames";
 import { memo } from "react";
 import { _ExplorerNode } from "../../../src/persistedState/explorerNodeCodec";
-import { ReactComponent as CheckboxOutlineBlankMaterialIcon } from "../assets/material-icons/check_box_outline_blank.svg";
 import { ReactComponent as CheckboxMaterialIcon } from "../assets/material-icons/check_box.svg";
+import { ReactComponent as CheckboxOutlineBlankMaterialIcon } from "../assets/material-icons/check_box_outline_blank.svg";
 import { ReactComponent as IndeterminateCheckboxMaterialIcon } from "../assets/material-icons/indeterminate_check_box.svg";
 import TreeItem, { Props as TreeItemProps } from "../shared/TreeItem";
 import styles from "./style.module.css";

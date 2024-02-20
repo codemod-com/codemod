@@ -12,12 +12,12 @@ import * as readline from "node:readline";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
-import { commands, FileSystem, Uri, window, workspace } from "vscode";
+import { FileSystem, Uri, commands, window, workspace } from "vscode";
 import { Case } from "../cases/types";
 import {
 	CodemodEntry,
-	codemodNamesCodec,
 	PrivateCodemodEntry,
+	codemodNamesCodec,
 } from "../codemods/types";
 import { Configuration } from "../configuration";
 import { Container } from "../container";
@@ -52,7 +52,7 @@ export const Messages = {
 
 const TERMINATE_IDLE_PROCESS_TIMEOUT = 30 * 1000;
 
-export const enum EngineMessageKind {
+export enum EngineMessageKind {
 	finish = 2,
 	rewrite = 3,
 	progress = 6,
@@ -594,7 +594,7 @@ export class EngineService {
 
 		const executionErrors: ExecutionError[] = [];
 
-		childProcess.stderr.on("data", function (chunk: unknown) {
+		childProcess.stderr.on("data", (chunk: unknown) => {
 			if (!(chunk instanceof Buffer)) {
 				return;
 			}

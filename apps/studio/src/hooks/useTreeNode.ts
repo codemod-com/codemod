@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import {
-	isParsedResultFile,
 	type FileParseResult,
 	type ParseError,
+	isParsedResultFile,
 } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 

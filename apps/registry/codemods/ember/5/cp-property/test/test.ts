@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 cp-property", function () {
-	it("basic", function () {
+describe("ember 5 cp-property", () => {
+	it("basic", () => {
 		const INPUT = `
 		const Person = EmberObject.extend({
             fullName: computed(function() {

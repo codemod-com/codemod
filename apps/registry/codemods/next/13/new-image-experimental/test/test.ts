@@ -59,7 +59,7 @@ describe("new-image-experimental", () => {
 		  })
 	`;
 
-	it("should replace next.config.ts with the tsx parser", function () {
+	it("should replace next.config.ts with the tsx parser", () => {
 		const fileInfo: FileInfo = {
 			path: "next.config.ts",
 			source: INPUT,
@@ -75,7 +75,7 @@ describe("new-image-experimental", () => {
 		);
 	});
 
-	it("should replace next.config.ts with the recast parser", function () {
+	it("should replace next.config.ts with the recast parser", () => {
 		const fileInfo: FileInfo = {
 			path: "next.config.ts",
 			source: INPUT,

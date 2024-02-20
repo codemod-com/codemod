@@ -1,5 +1,5 @@
 import type { FSWatcher } from "node:fs";
-import { watch, type PathLike } from "node:fs";
+import { type PathLike, watch } from "node:fs";
 
 export class FileWatcher {
 	private __fsWatcher: FSWatcher | null = null;

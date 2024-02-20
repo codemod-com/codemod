@@ -1,6 +1,7 @@
 import cn from "classnames";
 import areEqual from "fast-deep-equal";
 import { memo, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
 import { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
 import CustomPopover from "../../shared/CustomPopover";
 import { CodemodHash } from "../../shared/types";
@@ -8,7 +9,6 @@ import { vscode } from "../../shared/utilities/vscode";
 import ActionButton from "../TreeView/ActionButton";
 import { Progress } from "../useProgressBar";
 import styles from "./style.module.css";
-import "react-toastify/dist/ReactToastify.css";
 
 type CodemodItemNode = CodemodNode & { kind: "CODEMOD" };
 

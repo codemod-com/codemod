@@ -28,8 +28,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("next 14 next-og-import", function () {
-	it("should move transform import from server to og", function () {
+describe("next 14 next-og-import", () => {
+	it("should move transform import from server to og", () => {
 		const INPUT = `
             import { ImageResponse } from 'next/server';
         `;

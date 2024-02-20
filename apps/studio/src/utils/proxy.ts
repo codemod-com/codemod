@@ -1,4 +1,4 @@
-import { isNode, Node } from "@babel/types";
+import { Node, isNode } from "@babel/types";
 import { ASTNode } from "ast-types";
 import { ASTPath, Collection, JSCodeshift } from "jscodeshift";
 import { print } from "recast";
@@ -640,7 +640,7 @@ export const proxifyJSCodeshift = (
 	onProxifiedPath: (proxifiedPath: ProxifiedPath<any>) => void,
 ): JSCodeshift => {
 	return new Proxy(jscodeshift, {
-		apply: function (target, thisArg, argArray) {
+		apply: (target, thisArg, argArray) => {
 			if (argArray.length === 4 && typeof argArray[0] === "string") {
 				eventManager.pushEvent({
 					kind: "jscodeshiftApplyString",

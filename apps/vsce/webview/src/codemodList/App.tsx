@@ -11,8 +11,8 @@ import { PanelGroup, ResizablePanel } from "../shared/Panel";
 import SearchBar from "../shared/SearchBar";
 import { SectionHeader } from "../shared/SectionHeader";
 import { vscode } from "../shared/utilities/vscode";
-import styles from "./style.module.css";
 import TreeView from "./TreeView";
+import styles from "./style.module.css";
 
 const setSearchPhrase = (searchPhrase: string) => {
 	vscode.postMessage({

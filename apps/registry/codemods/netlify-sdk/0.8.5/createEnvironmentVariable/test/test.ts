@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("netlify 0.8.5 createEnvironmentVariable", function () {
-	it("changes createEnvironmentVariable to pass an object instead of the separate arguments", function () {
+describe("netlify 0.8.5 createEnvironmentVariable", () => {
+	it("changes createEnvironmentVariable to pass an object instead of the separate arguments", () => {
 		const INPUT = `
             createEnvironmentVariable(accountId, siteId, key, values);
         `;

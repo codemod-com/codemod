@@ -2,7 +2,7 @@ import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
 import { useRef, useState } from "react";
 import { type monaco } from "~/customMonaco";
 import { useTheme } from "../../pageComponents/main/themeContext";
-import { useEditor, type EditorProps } from "./hook";
+import { type EditorProps, useEditor } from "./hook";
 
 type CustomProps = {
 	id?: string;

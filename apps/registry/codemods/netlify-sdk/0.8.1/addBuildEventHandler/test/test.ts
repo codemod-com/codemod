@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("netlify 0.8.1 addBuildEventContext", function () {
-	it("changes addBuildHook to addBuildEventContext", function () {
+describe("netlify 0.8.1 addBuildEventContext", () => {
+	it("changes addBuildHook to addBuildEventContext", () => {
 		const INPUT = `
 			integration.addBuildHook("onPreBuild", () => {});
         `;

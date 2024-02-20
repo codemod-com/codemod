@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("use-template-literals", () => {
-	describe("variables declared with let", function () {
-		it("one variable", function () {
+	describe("variables declared with let", () => {
+		it("one variable", () => {
 			const INPUT = `
 				let name = 'John';
 				let greeting = 'Hello, ' + name + '!';
@@ -29,7 +29,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("two variables", function () {
+		it("two variables", () => {
 			const INPUT = `
 				let name = 'John';
 				let age = 12;
@@ -54,7 +54,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("three variables", function () {
+		it("three variables", () => {
 			const INPUT = `
 				let name = 'John';
 				let age = 12;
@@ -82,8 +82,8 @@ describe("use-template-literals", () => {
 		});
 	});
 
-	describe("variables declared with var", function () {
-		it("one variable", function () {
+	describe("variables declared with var", () => {
+		it("one variable", () => {
 			const INPUT = `
 				var name = 'John';
 				var greeting = 'Hello, ' + name + '!';
@@ -106,7 +106,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("two variables", function () {
+		it("two variables", () => {
 			const INPUT = `
 				var name = 'John';
 				var age = 12;
@@ -131,7 +131,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("three variables", function () {
+		it("three variables", () => {
 			const INPUT = `
 				var name = 'John';
 				var age = 12;
@@ -159,8 +159,8 @@ describe("use-template-literals", () => {
 		});
 	});
 
-	describe("variables declared with const", function () {
-		it("one variable", function () {
+	describe("variables declared with const", () => {
+		it("one variable", () => {
 			const INPUT = `
 				const name = 'John';
 				const greeting = 'Hello, ' + name + '!';
@@ -183,7 +183,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("two variables", function () {
+		it("two variables", () => {
 			const INPUT = `
 				const name = 'John';
 				const age = 12;
@@ -208,7 +208,7 @@ describe("use-template-literals", () => {
 			);
 		});
 
-		it("three variables", function () {
+		it("three variables", () => {
 			const INPUT = `
 				const name = 'John';
 				const age = 12;

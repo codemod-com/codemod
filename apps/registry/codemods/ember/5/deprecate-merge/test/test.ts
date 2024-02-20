@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 deprecate-merge", function () {
-	it("basic", function () {
+describe("ember 5 deprecate-merge", () => {
+	it("basic", () => {
 		const INPUT = `
 		import { merge } from '@ember/polyfills';
 

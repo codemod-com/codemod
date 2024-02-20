@@ -1,8 +1,8 @@
 /* eslint-disable import/group-exports */
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { RootState } from "~/store";
 
-export const enum TabNames {
+export enum TabNames {
 	MODGPT = "MODGPT",
 	GUIBuilder = "FIND_AND_REPLACE",
 	DEBUG = "DEBUG_CONSOLE",

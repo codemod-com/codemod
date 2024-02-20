@@ -2,10 +2,10 @@ import { useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { selectFirstTreeNode } from "~/store/slices/snippets";
 import {
+	type TreeNodeSelectorState,
 	getAvailableState,
 	selectCFS,
 	setNodeState,
-	type TreeNodeSelectorState,
 } from "../../../store/slices/CFS";
 import { type TreeNode } from "../../../types/tree";
 import NodeSelectorTree from "./NodeSelectorTree";

@@ -28,8 +28,8 @@ Changes to the original file: added options, remove hasDefault
 */
 
 import type {
-	ArrayExpression,
 	ASTPath,
+	ArrayExpression,
 	CallExpression,
 	Identifier,
 	JSCodeshift,

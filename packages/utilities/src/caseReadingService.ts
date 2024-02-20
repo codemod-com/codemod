@@ -177,7 +177,7 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 	throw new Error("The job kind is not recognized.");
 };
 
-const enum POSITION {
+enum POSITION {
 	BEFORE_PREAMBLE = 0,
 	BEFORE_OUTER_CASE = 1,
 	BEFORE_INNER_CASE = 2,

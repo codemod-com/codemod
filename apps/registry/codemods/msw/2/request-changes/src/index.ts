@@ -1,13 +1,13 @@
 import type { ParameterDeclaration } from "ts-morph";
 import {
-	SyntaxKind,
-	VariableDeclarationKind,
 	type ArrowFunction,
 	type BindingElement,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type SourceFile,
+	SyntaxKind,
+	VariableDeclarationKind,
 } from "ts-morph";
 
 function getImportDeclarationAlias(

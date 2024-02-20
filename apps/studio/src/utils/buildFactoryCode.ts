@@ -1,4 +1,4 @@
-import { File, isFile, isStatement, Node } from "@babel/types";
+import { File, Node, isFile, isStatement } from "@babel/types";
 import { buildAST } from "ast-node-builder";
 
 const stringifyNode = (node: Node): string => {

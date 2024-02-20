@@ -1,13 +1,13 @@
 // eslint-disable-next-line import/extensions
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
-import { useMemo, useRef, type MouseEventHandler } from "react";
+import { type MouseEventHandler, useMemo, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import ButtonWithOnClickTextChange from "~/components/button/ButtonWithOnClickTextChange";
 import Collapsable from "~/components/Collapsable";
 import Panel from "~/components/Panel";
 import Text from "~/components/Text";
+import ButtonWithOnClickTextChange from "~/components/button/ButtonWithOnClickTextChange";
 import { selectCFSOutput, setIsOpen } from "~/store/slices/CFS";
 import { selectMod, setContent } from "~/store/slices/mod";
 import { selectFirstTreeNode } from "~/store/slices/snippets";

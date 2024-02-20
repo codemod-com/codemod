@@ -1,14 +1,14 @@
 import type { ParameterDeclaration } from "ts-morph";
 import {
-	createWrappedNode,
-	SyntaxKind,
-	ts,
 	type ArrowFunction,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type ImportSpecifier,
 	type SourceFile,
+	SyntaxKind,
+	createWrappedNode,
+	ts,
 } from "ts-morph";
 
 function addNamedImportDeclaration(

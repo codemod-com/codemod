@@ -28,8 +28,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("next 14 next-og-import", function () {
-	it("should migrate viewport metadata to viewport export.", function () {
+describe("next 14 next-og-import", () => {
+	it("should migrate viewport metadata to viewport export.", () => {
 		const INPUT = `
 			export const metadata = {
 				title: 'My App',

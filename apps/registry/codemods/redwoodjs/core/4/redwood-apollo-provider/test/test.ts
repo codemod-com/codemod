@@ -9,8 +9,8 @@ import transform from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("@redwoodjs/core v4 redwood-apollo-provider", function () {
-	it("should add AuthProvider and useAuth", async function () {
+describe("@redwoodjs/core v4 redwood-apollo-provider", () => {
+	it("should add AuthProvider and useAuth", async () => {
 		const input = await readFile(join(__dirname, "input.js"), {
 			encoding: "utf8",
 		});

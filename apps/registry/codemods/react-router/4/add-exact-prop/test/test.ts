@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 add-exact-prop", function () {
-	it("should add exact prop", async function () {
+describe("react-router v4 add-exact-prop", () => {
+	it("should add exact prop", async () => {
 		const input = `
 		import { Route, Router, Switch } from 'react-router-dom';
 

@@ -233,7 +233,7 @@ const packageJson = ({
 };
 
 const definition = (engine: ProjectDownloadInput["engine"]) => {
-	let def = "";
+	const def = "";
 
 	if (engine === "jscodeshift") {
 		return beautify(`
@@ -258,7 +258,7 @@ const testBody = ({
 	after,
 	engine,
 }: Pick<ProjectDownloadInput, "name" | "before" | "after" | "engine">) => {
-	let body = "";
+	const body = "";
 
 	if (engine === "jscodeshift") {
 		return beautify(`

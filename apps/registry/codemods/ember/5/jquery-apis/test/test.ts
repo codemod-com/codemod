@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 jquery-apis", function () {
-	it("Events", function () {
+describe("ember 5 jquery-apis", () => {
+	it("Events", () => {
 		const INPUT = `
 		import Component from '@ember/component';
 
@@ -38,7 +38,7 @@ describe("ember 5 jquery-apis", function () {
 		);
 	});
 
-	it("Query Selector", function () {
+	it("Query Selector", () => {
 		const INPUT = `
 		import Component from '@ember/component';
 

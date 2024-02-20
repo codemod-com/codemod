@@ -1,11 +1,11 @@
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { INITIAL_STATE } from "~/store/getInitialState";
 import { type TreeNode } from "../../types/tree";
 import { isParsedResultFile, parseSnippet } from "../../utils/babelParser";
 import mapBabelASTToRenderableTree from "../../utils/mappers";
-import { buildRanges, type RangeCommand } from "../../utils/tree";
+import { type RangeCommand, buildRanges } from "../../utils/tree";
 import type { RootState } from "../index";
 
 const SLICE_KEY = "mod";

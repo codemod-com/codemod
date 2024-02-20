@@ -1,4 +1,4 @@
-import { SyntaxKind, type SourceFile } from "ts-morph";
+import { type SourceFile, SyntaxKind } from "ts-morph";
 
 export const handleSourceFile = (
 	sourceFile: SourceFile,

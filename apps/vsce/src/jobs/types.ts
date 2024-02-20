@@ -16,7 +16,7 @@ export const jobHashCodec = t.brand(
 
 export type JobHash = t.TypeOf<typeof jobHashCodec>;
 
-export const enum JobKind {
+export enum JobKind {
 	rewriteFile = 1,
 	createFile = 2,
 	deleteFile = 3,

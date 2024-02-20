@@ -1,7 +1,7 @@
-import { forwardRef, type ReactNode } from "react";
+import { type ReactNode, forwardRef } from "react";
 import {
-	Panel as RResizablePanel,
 	type ImperativePanelHandle,
+	Panel as RResizablePanel,
 	type PanelProps,
 } from "react-resizable-panels";
 import { cn } from "~/lib/utils";

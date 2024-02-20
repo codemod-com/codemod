@@ -2,11 +2,11 @@ import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "fast-glob";
 import {
-	commands,
 	ExtensionContext,
 	Uri,
 	WebviewView,
 	WebviewViewProvider,
+	commands,
 	window,
 	workspace,
 } from "vscode";
@@ -24,8 +24,8 @@ import { buildGlobPattern, isNeitherNullNorUndefined } from "../../utilities";
 import { EngineService } from "../engineService";
 import { MessageBus, MessageKind } from "../messageBus";
 import { UserService } from "../userService";
-import { CodemodHash, WebviewMessage, WebviewResponse } from "./webviewEvents";
 import { WebviewResolver } from "./WebviewResolver";
+import { CodemodHash, WebviewMessage, WebviewResponse } from "./webviewEvents";
 
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
@@ -136,7 +136,7 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __executionQueue: ReadonlyArray<CodemodHash> = [];
 	private __directoryPaths: ReadonlyArray<string> | null = null;
 	// true by default to prevent banner blinking on load
-	private __codemodEngineNodeLocated: boolean = true;
+	private __codemodEngineNodeLocated = true;
 
 	constructor(
 		context: ExtensionContext,

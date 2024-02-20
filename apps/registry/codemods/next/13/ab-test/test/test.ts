@@ -3,7 +3,7 @@ import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import jscodeshift from "jscodeshift";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -40,8 +40,8 @@ const removeWhitespaces = (
 	};
 };
 
-describe("ab-test", function () {
-	it("should build correct files", async function () {
+describe("ab-test", () => {
+	it("should build correct files", async () => {
 		const [middlewareTsCommand, abTestMiddlewareTsCommand] = await transform({
 			"/opt/project/middleware.ts": `
 				const middleware = async () => {};

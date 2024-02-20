@@ -91,10 +91,10 @@ Maybe more...
 - [Link2](https://example1.com/)
 `;
 
-describe("parse/yaml", function () {
+describe("parse/yaml", () => {
 	const parseResult = parse(DATA);
 
-	it("should parse correctly", async function () {
+	it("should parse correctly", async () => {
 		deepEqual(parseResult, {
 			name: "Do the thing",
 			description:
@@ -141,7 +141,7 @@ describe("parse/yaml", function () {
 		});
 	});
 
-	it("should output correct YAML", async function () {
+	it("should output correct YAML", async () => {
 		beforeEach(() => {
 			vi.useFakeTimers();
 		});

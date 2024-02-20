@@ -12,7 +12,7 @@ const removeLeadingLineBreaks = (input: string): string => {
 	return input.replace(/^\n+/, "");
 };
 
-const enum FilePurpose {
+enum FilePurpose {
 	ORIGINAL_PAGE = "ORIGINAL_PAGE",
 	// route directories
 	ROUTE_PAGE = "ROUTE_PAGE",
@@ -103,7 +103,7 @@ const DEPENDENCY_TREE_MAX_DEPTH = 3;
 
 const getDependenciesForIdentifiers = (
 	identifiers: ReadonlyArray<Identifier>,
-	depth: number = 0,
+	depth = 0,
 ) => {
 	if (depth > DEPENDENCY_TREE_MAX_DEPTH) {
 		return {};

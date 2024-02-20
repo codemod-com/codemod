@@ -1,13 +1,13 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { INITIAL_STATE } from "~/store/getInitialState";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
-import { buildRanges, type RangeCommand } from "~/utils/tree";
+import { type RangeCommand, buildRanges } from "~/utils/tree";
 import { isParsedResultFile, parseSnippet } from "../../utils/babelParser";
 import type { RootState } from "../index";
 import { selectCodemodOutput } from "./codemodOutput";

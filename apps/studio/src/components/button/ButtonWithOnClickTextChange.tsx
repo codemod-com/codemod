@@ -1,4 +1,4 @@
-import { useState, type MouseEventHandler, type ReactNode } from "react";
+import { type MouseEventHandler, type ReactNode, useState } from "react";
 import Button, { type ButtonProps } from ".";
 
 type ButtonWithOnClickTextChangeProps = {

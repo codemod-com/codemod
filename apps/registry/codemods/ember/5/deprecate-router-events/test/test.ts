@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 deprecate-router-events", function () {
-	it("basic", function () {
+describe("ember 5 deprecate-router-events", () => {
+	it("basic", () => {
 		const INPUT = `
 		import Router from '@ember/routing/router';
         import { inject as service } from '@ember/service';

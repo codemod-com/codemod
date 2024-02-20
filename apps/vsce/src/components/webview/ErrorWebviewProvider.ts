@@ -5,8 +5,8 @@ import { actions } from "../../data/slice";
 import { selectErrorWebviewViewProps } from "../../selectors/selectErrorWebviewViewProps";
 import { MessageBus, MessageKind } from "../messageBus";
 import { MainViewProvider } from "./MainProvider";
-import { WebviewMessage } from "./webviewEvents";
 import { WebviewResolver } from "./WebviewResolver";
+import { WebviewMessage } from "./webviewEvents";
 
 export class ErrorWebviewProvider implements WebviewViewProvider {
 	private readonly __webviewResolver: WebviewResolver;

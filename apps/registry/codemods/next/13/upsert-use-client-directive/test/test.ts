@@ -32,8 +32,8 @@ export const transform = (
 	};
 };
 
-describe("next 13 upsert-client-directive", function () {
-	it("should not rewrite the file", function () {
+describe("next 13 upsert-client-directive", () => {
+	it("should not rewrite the file", () => {
 		const beforeText = `
             'use client';
 
@@ -46,7 +46,7 @@ describe("next 13 upsert-client-directive", function () {
 		deepStrictEqual(actual, undefined);
 	});
 
-	it("should upsert the 'use client' directive when React hooks are used", function () {
+	it("should upsert the 'use client' directive when React hooks are used", () => {
 		const beforeText = `
             import { useState } from 'react';
 
@@ -72,7 +72,7 @@ describe("next 13 upsert-client-directive", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should not upsert the 'use client' directive when fetch is used", function () {
+	it("should not upsert the 'use client' directive when fetch is used", () => {
 		const beforeText = `
             export default async function Page() {
                 return fetch('http://example.com);
@@ -83,7 +83,7 @@ describe("next 13 upsert-client-directive", function () {
 		deepStrictEqual(actual, undefined);
 	});
 
-	it("should not upsert the 'use client' directive when fetch is used", function () {
+	it("should not upsert the 'use client' directive when fetch is used", () => {
 		const beforeText = `
             export default async function Page() {
                 return fetch('http://example.com);
@@ -94,7 +94,7 @@ describe("next 13 upsert-client-directive", function () {
 		deepStrictEqual(actual, undefined);
 	});
 
-	it("should upsert the 'use client' directive when an event handler is used", function () {
+	it("should upsert the 'use client' directive when an event handler is used", () => {
 		const beforeText = `
             export default async function Page() {
                 return <div onClick={null}>

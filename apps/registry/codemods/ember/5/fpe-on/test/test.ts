@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 fpe-on", function () {
-	it("basic", function () {
+describe("ember 5 fpe-on", () => {
+	it("basic", () => {
 		const INPUT = `
 		import EmberObject from '@ember/object';
         import { sendEvent } from '@ember/object/events';

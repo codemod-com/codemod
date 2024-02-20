@@ -2,7 +2,7 @@ import { memo } from "react";
 import TreeView from "react-treeview";
 import IconButton from "../../../components/IconButton";
 import Text from "../../../components/Text";
-import { states, type TreeNodeSelectorState } from "../../../store/slices/CFS";
+import { type TreeNodeSelectorState, states } from "../../../store/slices/CFS";
 import { type TreeNode } from "../../../types/tree";
 
 type Props = Readonly<{

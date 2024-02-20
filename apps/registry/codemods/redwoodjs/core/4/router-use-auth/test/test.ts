@@ -9,8 +9,8 @@ import transform from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("@redwoodjs/core v4 router-use-auth", function () {
-	it("should add useAuth", async function () {
+describe("@redwoodjs/core v4 router-use-auth", () => {
+	it("should add useAuth", async () => {
 		const input = await readFile(join(__dirname, "input.js"), {
 			encoding: "utf8",
 		});

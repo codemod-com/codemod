@@ -2,7 +2,7 @@ import { deepEqual, ok } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -39,7 +39,7 @@ const transform = async (json: DirectoryJSON) => {
 	);
 };
 
-describe("eslint and prettier to biome migration", function () {
+describe("eslint and prettier to biome migration", () => {
 	const packageJsonPath = "/opt/project/package.json";
 	const packageJsonConfig = `
     {
@@ -103,7 +103,7 @@ describe("eslint and prettier to biome migration", function () {
 
 	const biomeJsonPath = "biome.json";
 
-	it("should contain correct file commands", async function () {
+	it("should contain correct file commands", async () => {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[eslintRcPath]: "",
@@ -129,7 +129,7 @@ describe("eslint and prettier to biome migration", function () {
 		);
 	});
 
-	it("should correctly modify package.json and create proper biome.json", async function () {
+	it("should correctly modify package.json and create proper biome.json", async () => {
 		const externalFileCommands = await transform({
 			[packageJsonPath]: packageJsonConfig,
 			[eslintRcPath]: "",

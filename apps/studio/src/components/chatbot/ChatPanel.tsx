@@ -6,15 +6,15 @@ import {
 	Stop as StopIcon,
 } from "@phosphor-icons/react";
 import { type UseChatHelpers } from "ai/react";
-import { useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useSelector } from "react-redux";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import {
+	type Aliases,
 	applyAliases,
 	getAliases,
-	type Aliases,
 } from "~/store/slices/CFS/alias";
 import {
 	autoGenerateCodemodPrompt,

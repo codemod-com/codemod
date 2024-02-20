@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 app-controller-router-props", function () {
-	it("basic", function () {
+describe("ember 5 app-controller-router-props", () => {
+	it("basic", () => {
 		const INPUT = `
 		import Controller from '@ember/controller';
         import fetch from 'fetch';

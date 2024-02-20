@@ -1,10 +1,10 @@
 import { deepEqual } from "assert";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { FileDownloadService } from "../src/fileDownloadService.js";
 import { PrinterBlueprint } from "../src/printer.js";
 
-describe("FileDownloadService", function () {
+describe("FileDownloadService", () => {
 	const FILE_PATH = "file.ts";
 	const OLD_CONTENT = "OLD_CONTENT";
 	const NEW_CONTENT = "NEW_CONTENT";

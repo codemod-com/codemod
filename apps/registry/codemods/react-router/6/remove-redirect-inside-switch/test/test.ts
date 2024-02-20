@@ -9,8 +9,8 @@ import transform from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("react-router v6 remove-redirect-inside-switch", function () {
-	it("should remove Redirect inside Switch", async function () {
+describe("react-router v6 remove-redirect-inside-switch", () => {
+	it("should remove Redirect inside Switch", async () => {
 		const input = await readFile(join(__dirname, "input.js"), {
 			encoding: "utf8",
 		});

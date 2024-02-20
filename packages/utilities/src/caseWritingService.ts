@@ -126,7 +126,7 @@ export interface CaseWritingService extends EventEmitter {
 	emit(event: "finish"): boolean;
 }
 
-const enum MODE {
+enum MODE {
 	AWAITING_CASE = 1,
 	AWAITING_JOBS = 2,
 	ENDED = 3,

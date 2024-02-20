@@ -1,10 +1,10 @@
 import { createHash, randomBytes } from "crypto";
 import { existsSync, rmSync } from "fs";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import { homedir } from "os";
 import { join } from "path";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
+import { mkdir, readFile, writeFile } from "fs/promises";
 import prettyReporter from "io-ts-reporters";
 import * as vscode from "vscode";
 import { CaseManager } from "./cases/caseManager";
@@ -23,8 +23,8 @@ import { CodemodDescriptionProvider } from "./components/webview/CodemodDescript
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
 import {
-	createIssue,
 	MainViewProvider,
+	createIssue,
 	validateAccessToken,
 } from "./components/webview/MainProvider";
 import { getConfiguration } from "./configuration";
@@ -32,8 +32,8 @@ import { buildContainer } from "./container";
 import { buildStore } from "./data";
 import {
 	CodemodConfig,
-	parsePiranhaLanguage,
 	PIRANHA_LANGUAGES,
+	parsePiranhaLanguage,
 } from "./data/codemodConfigSchema";
 import { parsePrivateCodemodsEnvelope } from "./data/privateCodemodsEnvelopeSchema";
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
@@ -48,7 +48,7 @@ import { buildCaseHash } from "./telemetry/hashes";
 import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
 import { buildHash, isNeitherNullNorUndefined } from "./utilities";
 
-export const enum SEARCH_PARAMS_KEYS {
+export enum SEARCH_PARAMS_KEYS {
 	ENGINE = "engine",
 	BEFORE_SNIPPET = "beforeSnippet",
 	AFTER_SNIPPET = "afterSnippet",

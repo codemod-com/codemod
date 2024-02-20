@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/clerk-react";
-import { useEffect, useState, type Dispatch, type SetStateAction } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import getAccessToken from "~/api/getAccessToken";
 import { Dialog, DialogContent } from "~/components/ui/dialog";
 import { CopyTerminalCommands } from "./DownloadZip";

@@ -3,7 +3,7 @@ import type { UnifiedFileSystem } from "@codemod-com/filemod";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import tsmorph from "ts-morph";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
@@ -31,8 +31,8 @@ const transform = async (json: DirectoryJSON) => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("next 13 replace-API-routes", function () {
-	it("should transform API router handler: functionDeclaration", async function () {
+describe("next 13 replace-API-routes", () => {
+	it("should transform API router handler: functionDeclaration", async () => {
 		const A_CONTENT = `
 		export default function handler() {
 			if(req.method === 'GET') {
@@ -65,7 +65,7 @@ describe("next 13 replace-API-routes", function () {
 		);
 	});
 
-	it("should transform API router handler: arrow function", async function () {
+	it("should transform API router handler: arrow function", async () => {
 		const A_CONTENT = `
 			const handler = () => {
 				if(req.method === 'GET') {
@@ -100,7 +100,7 @@ describe("next 13 replace-API-routes", function () {
 		);
 	});
 
-	it("should split single handler to method handlers: should support all HTTP methods ", async function () {
+	it("should split single handler to method handlers: should support all HTTP methods ", async () => {
 		const A_CONTENT = `
 		export default function handler() {
 			if(req.method === 'GET') {
@@ -182,7 +182,7 @@ describe("next 13 replace-API-routes", function () {
 		"should split single handler to method handlers: should support nested binary expressions and external refs",
 	);
 
-	it("should rewrite response callExpressions: support chained call expressions", async function () {
+	it("should rewrite response callExpressions: support chained call expressions", async () => {
 		const A_CONTENT = `
 		export default function handler(req, res) {
 			if(req.method === 'GET') {
@@ -252,7 +252,7 @@ describe("next 13 replace-API-routes", function () {
 	 */
 	it("should rewrite response callExpressions: support appendHeader");
 
-	it("should rewrite response callExpressions: support nested scopes", async function () {
+	it("should rewrite response callExpressions: support nested scopes", async () => {
 		const A_CONTENT = `
 			export default function handler(req, res) {
 				if(req.method === 'GET') {
@@ -310,7 +310,7 @@ describe("next 13 replace-API-routes", function () {
 		);
 	});
 
-	it("should rewrite response callExpressions: support json, send, end methods", async function () {
+	it("should rewrite response callExpressions: support json, send, end methods", async () => {
 		const A_CONTENT = `
 			export default function handler(req, res) {
 				if(req.method === 'GET') {

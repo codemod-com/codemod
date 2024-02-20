@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("mocha/vitest test", function () {
-	it("when `expect` for `chai` is being imported", function () {
+describe("mocha/vitest test", () => {
+	it("when `expect` for `chai` is being imported", () => {
 		const INPUT = `
         import { expect } from 'chai';
 
@@ -51,7 +51,7 @@ describe("mocha/vitest test", function () {
 		);
 	});
 
-	it("when `chai` is not used", function () {
+	it("when `chai` is not used", () => {
 		const INPUT = `
         describe('Test Suite 1', () => {
           it('addition', () => {
@@ -95,7 +95,7 @@ describe("mocha/vitest test", function () {
 		);
 	});
 
-	it("should keep the preceding comments", function () {
+	it("should keep the preceding comments", () => {
 		const INPUT = `
         // preceding comments
         import { expect } from 'chai';
@@ -131,7 +131,7 @@ describe("mocha/vitest test", function () {
 		);
 	});
 
-	it("when beforeEach or afterAll are used", function () {
+	it("when beforeEach or afterAll are used", () => {
 		const INPUT = `
         describe('Test Suite 1', () => {
           beforeEach(() => {
@@ -188,7 +188,7 @@ describe("mocha/vitest test", function () {
 	});
 
 	// Also removes this: Context entirely, but
-	it("when there are imports from mocha", function () {
+	it("when there are imports from mocha", () => {
 		const INPUT = `
         import type { Context } from 'mocha';
 
@@ -230,7 +230,7 @@ describe("mocha/vitest test", function () {
 		);
 	});
 
-	it("when there are imports from vitest", function () {
+	it("when there are imports from vitest", () => {
 		const INPUT = `
         import { describe, it } from 'vitest';
 
@@ -251,7 +251,7 @@ describe("mocha/vitest test", function () {
 		assert.deepEqual(actualOutput, undefined);
 	});
 
-	it("when there is a named import: test", function () {
+	it("when there is a named import: test", () => {
 		const INPUT = `
         import { test } from "../lib/fixtures";
         describe('Test Suite 1', () => {

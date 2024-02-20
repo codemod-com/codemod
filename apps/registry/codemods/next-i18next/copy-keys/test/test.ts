@@ -2,7 +2,7 @@ import { deepStrictEqual } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -25,8 +25,8 @@ const transform = async (json: DirectoryJSON, options: Options) => {
 	return executeFilemod(api, repomod, "/", options, {});
 };
 
-describe("next-i18n copy keys", function () {
-	it("should copy a key into a new namespace", async function () {
+describe("next-i18n copy keys", () => {
+	it("should copy a key into a new namespace", async () => {
 		const EN_COMMON_JSON = `
 			{
 				"copyKey": "copyKeyEnglish",
@@ -82,7 +82,7 @@ describe("next-i18n copy keys", function () {
 		}
 	});
 
-	it("should copy a key into an existing namespace", async function () {
+	it("should copy a key into an existing namespace", async () => {
 		const EN_COMMON_JSON = `
 			{
 				"copyKey": "copyKeyEnglish",

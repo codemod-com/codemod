@@ -9,8 +9,8 @@ import transform from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("@redwoodjs/core v4 auth-decoder", function () {
-	it("should add authDecoder", async function () {
+describe("@redwoodjs/core v4 auth-decoder", () => {
+	it("should add authDecoder", async () => {
 		const input = await readFile(join(__dirname, "input.js"), {
 			encoding: "utf8",
 		});

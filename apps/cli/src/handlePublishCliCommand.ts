@@ -1,9 +1,9 @@
 import { createHash } from "crypto";
 import * as fs from "fs";
-import { mkdir, writeFile } from "fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import FormData from "form-data";
+import { mkdir, writeFile } from "fs/promises";
 import { object, optional, parse, string } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";

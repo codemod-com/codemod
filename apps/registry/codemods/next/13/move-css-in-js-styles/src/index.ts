@@ -25,7 +25,7 @@ export default function transform(file: FileInfo, api: API, options: Options) {
 				return;
 			}
 
-			let cssSource: string = "";
+			let cssSource = "";
 
 			j(jsxElementPath)
 				.find(j.TemplateElement)

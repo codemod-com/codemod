@@ -2,7 +2,7 @@ import { deepStrictEqual, ok } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import tsmorph from "ts-morph";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
@@ -27,8 +27,8 @@ const transform = async (json: DirectoryJSON) => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("cal.com app-directory-boilerplate-calcom", function () {
-	it("should build correct files", async function () {
+describe("cal.com app-directory-boilerplate-calcom", () => {
+	it("should build correct files", async () => {
 		const externalFileCommands = await transform({
 			"/opt/project/pages/a/index.tsx": "TODO content",
 			"/opt/project/pages/a/embed.tsx": "TODO content",
@@ -349,7 +349,7 @@ describe("cal.com app-directory-boilerplate-calcom", function () {
 		);
 	});
 
-	it("should insert router segment config and server-side data hooks to the future page", async function () {
+	it("should insert router segment config and server-side data hooks to the future page", async () => {
 		const [upsertPageCommand] = await transform({
 			"/opt/project/pages/a/index.tsx": `
 			import C from 'C';
@@ -413,7 +413,7 @@ describe("cal.com app-directory-boilerplate-calcom", function () {
 		);
 	});
 
-	it('should not insert "use client" directive twice', async function () {
+	it('should not insert "use client" directive twice', async () => {
 		const [, upsertLegacyPage] = await transform({
 			"/opt/project/pages/a/index.tsx": `
 			'use client'

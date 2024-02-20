@@ -1,8 +1,8 @@
 import { parentPort } from "node:worker_threads";
 import { buildFormattedFileCommands } from "./fileCommands.js";
 import {
-	decodeMainThreadMessage,
 	type MainThreadMessage,
+	decodeMainThreadMessage,
 } from "./mainThreadMessages.js";
 import { runJscodeshiftCodemod } from "./runJscodeshiftCodemod.js";
 import { runTsMorphCodemod } from "./runTsMorphCodemod.js";

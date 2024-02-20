@@ -16,7 +16,7 @@ import {
 	type SurfaceAgnosticJob,
 } from "./schemata/surfaceAgnosticJobSchema.js";
 
-describe("CaseWritingService", function () {
+describe("CaseWritingService", () => {
 	const caseHashDigest = randomBytes(20);
 	const codemodHashDigest = randomBytes(20);
 
@@ -78,7 +78,7 @@ describe("CaseWritingService", function () {
 
 	afterAll(() => rm(pathLike, { force: true }));
 
-	it("should write the case", async function () {
+	it("should write the case", async () => {
 		const writingFileHandle = await open(pathLike, "w");
 
 		try {
@@ -117,7 +117,7 @@ describe("CaseWritingService", function () {
 		}
 	});
 
-	it("should write the case into a buffer", function () {
+	it("should write the case into a buffer", () => {
 		const buffers: Buffer[] = [];
 		const hash = createHash("ripemd160");
 
@@ -142,7 +142,7 @@ describe("CaseWritingService", function () {
 		expect(buffer.length).toEqual(615);
 	});
 
-	it("x", async function () {
+	it("x", async () => {
 		const pathLike = `./${randomBytes(20).toString("base64url")}.data`;
 
 		const fileHandle = await open(pathLike, "w");

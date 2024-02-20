@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("remove-unused-feature-flags", function () {
-	it("should not change code without feature flags", function () {
+describe("remove-unused-feature-flags", () => {
+	it("should not change code without feature flags", () => {
 		const INPUT = `
         const Component = () => {
 			return <div>A</div>;
@@ -22,7 +22,7 @@ describe("remove-unused-feature-flags", function () {
 		assert.deepEqual(actualOutput, undefined);
 	});
 
-	it("should remove a feature flag check within Promise.all()", function () {
+	it("should remove a feature flag check within Promise.all()", () => {
 		const INPUT = `
         const [a, b] = await Promise.all([
             Promise.resolve('a'),
@@ -55,7 +55,7 @@ describe("remove-unused-feature-flags", function () {
 		);
 	});
 
-	it("should remove a feature flag check within Promise.all() (with options)", function () {
+	it("should remove a feature flag check within Promise.all() (with options)", () => {
 		const INPUT = `
         const [b, a] = await Promise.all([
 			fnc('b'),
@@ -91,7 +91,7 @@ describe("remove-unused-feature-flags", function () {
 		);
 	});
 
-	it("should replace await isFlagEnabled('featureFlag') with true", function () {
+	it("should replace await isFlagEnabled('featureFlag') with true", () => {
 		const INPUT = `const a = await isFlagEnabled('featureFlag');`;
 
 		const OUTPUT = "const a = true;";

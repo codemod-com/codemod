@@ -4,12 +4,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
+import Panel from "~/components/Panel";
 import AuthenticatedAccess from "~/components/authenticatedAccess";
 import ClearInputButton from "~/components/button/ClearInputButton";
-import { ExportButton } from "~/components/button/exportButton";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
+import { ExportButton } from "~/components/button/exportButton";
 import Chat from "~/components/chatbot/Chat";
-import Panel from "~/components/Panel";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -25,7 +25,7 @@ import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
-import { selectActiveTab, TabNames, viewSlice } from "~/store/slices/view";
+import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
 import { openLink } from "~/utils/openLink";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";

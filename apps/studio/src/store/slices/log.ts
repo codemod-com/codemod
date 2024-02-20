@@ -1,9 +1,9 @@
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { Event } from "~/schemata/eventSchemata";
 import type { RootState } from "../index";
-import { selectActiveTab, TabNames } from "./view";
+import { TabNames, selectActiveTab } from "./view";
 
 export const SLICE_KEY = "log";
 

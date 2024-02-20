@@ -1,6 +1,3 @@
-import { vscode } from "../shared/utilities/vscode";
-import styles from "./style.module.css";
-import "../shared/util.css";
 import cn from "classnames";
 import { CaseHash } from "../../../src/cases/types";
 import { CodemodRunsTree } from "../../../src/selectors/selectCodemodRunsTree";
@@ -10,6 +7,9 @@ import { CustomTreeView } from "../customTreeView";
 import LoadingProgress from "../jobDiffView/Components/LoadingProgress";
 import CustomPopover from "../shared/CustomPopover";
 import TreeItem from "../shared/TreeItem";
+import "../shared/util.css";
+import { vscode } from "../shared/utilities/vscode";
+import styles from "./style.module.css";
 
 type InfoIconProps = {
 	createdAt: number;
@@ -91,7 +91,7 @@ export const App = (
 				);
 			}}
 			onFlip={() => {}}
-			onFocus={function (hashDigest: CaseHash): void {
+			onFocus={(hashDigest: CaseHash): void => {
 				vscode.postMessage({
 					kind: "webview.campaignManager.setSelectedCaseHash",
 					caseHash: hashDigest,

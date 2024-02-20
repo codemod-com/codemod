@@ -1,6 +1,6 @@
 import { equal } from "node:assert";
 import { randomBytes } from "node:crypto";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { CodemodDownloaderBlueprint } from "../src/downloadCodemod.js";
 import { PrinterBlueprint } from "../src/printer.js";
@@ -25,7 +25,7 @@ export default function transform(file, api, options) {
 }
 `;
 
-describe("Runner", function () {
+describe("Runner", () => {
 	it("should transform staged files using the pre-commit codemods", async () => {
 		const volume = Volume.fromJSON({
 			"/code/a.ts": "unchanged",

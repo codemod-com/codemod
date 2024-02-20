@@ -17,12 +17,12 @@ const withFile = async <T>(
 	}
 };
 
-describe("fileWatcher", function () {
+describe("fileWatcher", () => {
 	const fileName = `./${randomBytes(20).toString("base64url")}.data`;
 
 	afterAll(() => rm(fileName, { force: true }));
 
-	it("should report the correct number of changes", async function () {
+	it("should report the correct number of changes", async () => {
 		await withFile(fileName, async (pathLike) => {
 			let callback: (() => void) | null = null;
 

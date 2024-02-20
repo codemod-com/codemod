@@ -28,8 +28,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("next 13 new-link", function () {
-	it("add legacy behavior", function () {
+describe("next 13 new-link", () => {
+	it("add legacy behavior", () => {
 		// adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
 
 		const INPUT = `

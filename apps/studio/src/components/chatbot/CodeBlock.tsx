@@ -2,7 +2,7 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
 import { Check as CheckIcon, Copy as CopyIcon } from "@phosphor-icons/react";
-import { memo, type FC } from "react";
+import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { Button } from "~/components/ui/button";

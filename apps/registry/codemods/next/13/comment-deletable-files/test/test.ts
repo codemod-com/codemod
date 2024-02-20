@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("next 13 comment-deletable-files", function () {
-	it("should not add a comment if a file basename does not start with _app / _document / _error", async function () {
+describe("next 13 comment-deletable-files", () => {
+	it("should not add a comment if a file basename does not start with _app / _document / _error", async () => {
 		const INPUT = `
 			import { useRouter } from 'next/router';
 
@@ -28,7 +28,7 @@ describe("next 13 comment-deletable-files", function () {
 		assert.deepEqual(actualOutput, undefined);
 	});
 
-	it("should add a comment if a file basename starts with _app", async function () {
+	it("should add a comment if a file basename starts with _app", async () => {
 		const INPUT = `
 			import { useRouter } from 'next/router';
 

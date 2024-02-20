@@ -1,12 +1,12 @@
 import type { Filemod } from "@codemod-com/filemod";
 import {
+	type Input,
 	array,
 	is,
 	object,
 	optional,
 	record,
 	string,
-	type Input,
 } from "valibot";
 import type { FileCommand } from "../../../../../../../packages/filemod/src/internalCommands.js";
 

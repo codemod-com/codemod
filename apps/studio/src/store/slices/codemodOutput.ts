@@ -1,11 +1,11 @@
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import type { RootState } from "~/store";
 import { isParsedResultFile, parseSnippet } from "~/utils/babelParser";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
-import { buildRanges, type RangeCommand } from "~/utils/tree";
+import { type RangeCommand, buildRanges } from "~/utils/tree";
 import type { TreeNode } from "../../types/tree";
 
 type CodemodOutputState = Readonly<{

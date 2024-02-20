@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-redux-8 add-state-type", function () {
-	it("should add the State type for state parameter of the mapStateToProps arrow function", function () {
+describe("react-redux-8 add-state-type", () => {
+	it("should add the State type for state parameter of the mapStateToProps arrow function", () => {
 		const INPUT = `
             const mapStateToProps = (state) => ({
                 a: selectA(state),
@@ -33,7 +33,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state destructured parameter of the mapStateToProps arrow function", function () {
+	it("should add the State type for state destructured parameter of the mapStateToProps arrow function", () => {
 		const INPUT = `
             const mapStateToProps = ({ a }) => ({
                 a,
@@ -61,7 +61,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the mapStateToProps function", function () {
+	it("should add the State type for state parameter of the mapStateToProps function", () => {
 		const INPUT = `
 			function mapStateToProps (a) {
 				return {
@@ -93,7 +93,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state destructured parameter of the mapStateToProps function", function () {
+	it("should add the State type for state destructured parameter of the mapStateToProps function", () => {
 		const INPUT = `
 			function mapStateToProps ({ a }) {
 				return {
@@ -125,7 +125,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the mapDispatchToProps arrow function", function () {
+	it("should add the State type for state parameter of the mapDispatchToProps arrow function", () => {
 		const INPUT = `
             const mapDispatchToProps = (dispatch) => ({
                 onA: (a) => dispatch(a),
@@ -154,7 +154,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the mapDispatchToProps arrow function", function () {
+	it("should add the State type for state parameter of the mapDispatchToProps arrow function", () => {
 		const INPUT = `
             function mapDispatchToProps (dispatch) {
 				return {
@@ -187,7 +187,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps arrow function", function () {
+	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps arrow function", () => {
 		const INPUT = `
 			function mapStateToProps (state) {
 				return {
@@ -232,7 +232,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps function", function () {
+	it("should add the State type for state parameter of the mapStateToProps and the mapDispatchToProps function", () => {
 		const INPUT = `
 			const mapStateToProps = (state) => {
 				return {
@@ -277,7 +277,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the select function", function () {
+	it("should add the State type for state parameter of the select function", () => {
 		const INPUT = `
 			function selectX (state) {
 				return {
@@ -309,7 +309,7 @@ describe("react-redux-8 add-state-type", function () {
 		);
 	});
 
-	it("should add the State type for state parameter of the select function", function () {
+	it("should add the State type for state parameter of the select function", () => {
 		const INPUT = `
 			const selectX = (state) => {
 				return {

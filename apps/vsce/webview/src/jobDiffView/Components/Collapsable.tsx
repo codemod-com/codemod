@@ -1,7 +1,7 @@
+import cn from "classnames";
 import React from "react";
 import { ReactComponent as ArrowDownIcon } from "../../assets/arrow-down.svg";
 import "./Collapsable.css";
-import cn from "classnames";
 
 type CollapsableProps = Readonly<{
 	defaultExpanded: boolean;

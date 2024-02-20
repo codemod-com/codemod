@@ -1,11 +1,11 @@
 import { VSCodeButton, VSCodeCheckbox } from "@vscode/webview-ui-toolkit/react";
 import React from "react";
-import "./Container.css";
 import { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
 import { ReactComponent as CopyIcon } from "../../assets/copy.svg";
-import { JobKind } from "../../shared/constants";
 import CustomPopover from "../../shared/CustomPopover";
+import { JobKind } from "../../shared/constants";
 import { vscode } from "../../shared/utilities/vscode";
+import "./Container.css";
 import { Diff } from "./Diff";
 
 type HeaderProps = Readonly<{

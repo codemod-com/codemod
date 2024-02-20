@@ -1,4 +1,4 @@
-import { SyntaxKind, type SourceFile } from "ts-morph";
+import { type SourceFile, SyntaxKind } from "ts-morph";
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
 	return (
@@ -18,8 +18,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 	sourceFile
 		.getDescendantsOfKind(SyntaxKind.CallExpression)
-		.map((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
-		.flat()
+		.flatMap((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
 		.filter((id) => id.getText() === "printHandlers")
 		.forEach((id) => {
 			id.replaceWithText("listHandlers");

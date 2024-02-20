@@ -23,8 +23,8 @@ Changes to the original file: fixed ts errors
 
 import type {
 	API,
-	ArrowFunctionExpression,
 	ASTPath,
+	ArrowFunctionExpression,
 	FileInfo,
 	FunctionExpression,
 	Identifier,

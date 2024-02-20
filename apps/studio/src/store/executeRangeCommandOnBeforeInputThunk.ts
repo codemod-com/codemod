@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import type { AppDispatch, RootState } from "~/store";
-import { extractIdsAndTypes, type RangeCommand } from "~/utils/tree";
+import { type RangeCommand, extractIdsAndTypes } from "~/utils/tree";
 import {
+	type TreeNodeSelectorState,
 	nodeHasValues,
 	setNodeSelectorTreeState,
-	type TreeNodeSelectorState,
 } from "./slices/CFS";
 import { selectFirstTreeNode, setInputSelection } from "./slices/snippets";
 

@@ -3,7 +3,7 @@ import type { UnifiedFileSystem } from "@codemod-com/filemod";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import tsmorph from "ts-morph";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
@@ -30,8 +30,8 @@ const transform = async (json: DirectoryJSON) => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("i18n remove unused translations", function () {
-	it("should support t('translationKey')", async function () {
+describe("i18n remove unused translations", () => {
+	it("should support t('translationKey')", async () => {
 		const A_CONTENT = `
 		import { useLocale } from "@calcom/lib/hooks/useLocale";
 		
@@ -79,7 +79,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support props.language('translationKey')", async function () {
+	it("should support props.language('translationKey')", async () => {
 		const A_CONTENT = `
 		import { useLocale } from "@calcom/lib/hooks/useLocale";
 		
@@ -118,7 +118,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support this.getTextBody('translationKey1', 'translationText2')", async function () {
+	it("should support this.getTextBody('translationKey1', 'translationText2')", async () => {
 		const A_CONTENT = `
 		import { useLocale } from "@calcom/lib/hooks/useLocale";
 		
@@ -163,7 +163,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support a.translate('translationKey')", async function () {
+	it("should support a.translate('translationKey')", async () => {
 		const A_CONTENT = `
 		import { useLocale } from "@calcom/lib/hooks/useLocale";
 		
@@ -202,7 +202,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support <Trans i18nKey='translationKey'>", async function () {
+	it("should support <Trans i18nKey='translationKey'>", async () => {
 		const A_CONTENT = `
 		import { Trans } from "next-i18next";
 		
@@ -241,7 +241,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support <Trans i18nKey={`key${variable}`}>", async function () {
+	it("should support <Trans i18nKey={`key${variable}`}>", async () => {
 		const A_CONTENT = `
 			import { Trans } from "next-i18next";
 			
@@ -288,7 +288,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support <Trans i18nKey={`${variable}_tail`}>", async function () {
+	it("should support <Trans i18nKey={`${variable}_tail`}>", async () => {
 		const A_CONTENT = `
 			import { Trans } from "next-i18next";
 			
@@ -331,7 +331,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should support t(`${variable}_tail`)", async function () {
+	it("should support t(`${variable}_tail`)", async () => {
 		const A_CONTENT = `
 			t(\`\${variable2}_tail\`);
 		`;
@@ -366,7 +366,7 @@ describe("i18n remove unused translations", function () {
 		);
 	});
 
-	it("should consider snake_case component props i18n keys>", async function () {
+	it("should consider snake_case component props i18n keys>", async () => {
 		const A_CONTENT = `			
 			export default function Component() {
 				return <Component a='key_1' b='key_2' c='name' />

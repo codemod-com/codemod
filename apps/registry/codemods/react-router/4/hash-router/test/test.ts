@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 hash-router", function () {
-	it("should replace Router component with HashRouter, add HashRouter import", async function () {
+describe("react-router v4 hash-router", () => {
+	it("should replace Router component with HashRouter, add HashRouter import", async () => {
 		const input = `
 		import { Router, hashHistory } from 'react-router';
 		const MyApp = () => (

@@ -17,8 +17,8 @@ import jscodeshift, {
 import * as tsmorph from "ts-morph";
 import * as ts from "typescript";
 import {
-	parseWebWorkerIncomingMessage,
 	WebWorkerOutgoingMessage,
+	parseWebWorkerIncomingMessage,
 } from "../schemata/webWorkersSchemata";
 import { EventManager } from "./eventManager";
 import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";

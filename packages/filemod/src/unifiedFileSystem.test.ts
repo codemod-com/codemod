@@ -2,7 +2,7 @@ import { createHash } from "crypto";
 import { deepStrictEqual } from "node:assert";
 import { join } from "node:path";
 import { FileSystemAdapter, glob } from "fast-glob";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import type {
 	GlobArguments,
@@ -14,8 +14,8 @@ import { UnifiedFileSystem } from "./unifiedFileSystem.js";
 export const buildHashDigest = (data: string) =>
 	createHash("ripemd160").update(data).digest("base64url");
 
-describe("unifiedFileSystem", function () {
-	it("should get proper file paths", async function () {
+describe("unifiedFileSystem", () => {
+	it("should get proper file paths", async () => {
 		const volume = Volume.fromJSON({
 			"/opt/project/a.json": "",
 			"/opt/project/package.json": "",

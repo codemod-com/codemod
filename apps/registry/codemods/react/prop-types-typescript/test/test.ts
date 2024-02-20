@@ -26,8 +26,8 @@ import { buildApi } from "@codemod-com/utilities";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ratchet", function () {
-	it("arrow-function", function () {
+describe("ratchet", () => {
+	it("arrow-function", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport const MyComponent = (props) => {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n';
 
@@ -46,7 +46,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("class-component-static", function () {
+	it("class-component-static", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport class MyComponent extends React.Component {\n  static propTypes = {\n    bar: PropTypes.string.isRequired,\n    foo: PropTypes.number,\n  }\n\n  render() {\n    return <span />\n  }\n}\n';
 
@@ -65,7 +65,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("class-component", function () {
+	it("class-component", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport class MyComponent extends React.Component {\n  render() {\n    return <span />\n  }\n}\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n';
 
@@ -84,7 +84,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("comments", function () {
+	it("comments", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  /**\n   * A string with a\n   * wrapping comment.\n   * @example "foo"\n   */\n  bar: PropTypes.string.isRequired,\n  /**\n   * Some function\n   */\n  foo: PropTypes.func,\n}\n';
 
@@ -103,7 +103,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("complex-props", function () {
+	it("complex-props", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  optionalArray: PropTypes.array,\n  optionalBool: PropTypes.bool,\n  optionalFunc: PropTypes.func,\n  optionalNumber: PropTypes.number,\n  optionalObject: PropTypes.object,\n  optionalString: PropTypes.string,\n  optionalSymbol: PropTypes.symbol,\n  optionalNode: PropTypes.node,\n  optionalElement: PropTypes.element,\n  optionalElementType: PropTypes.elementType,\n  optionalEnum: PropTypes.oneOf(["News", "Photos"]),\n  optionalNumericEnum: PropTypes.oneOf([1, 2, 3]),\n  optionalMixedEnum: PropTypes.oneOf([1, "Unknown", false, () => {}]),\n  optionalUnknownEnum: PropTypes.oneOf(Object.keys(arr)),\n  optionalUnion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),\n  optionalArrayOf: PropTypes.arrayOf(PropTypes.number),\n  optionalObjectOf: PropTypes.objectOf(PropTypes.number),\n  optionalInstanceOf: PropTypes.instanceOf(Message),\n  optionalObjectWithShape: PropTypes.shape({\n    optionalProperty: PropTypes.string,\n    requiredProperty: PropTypes.number.isRequired,\n    functionProperty: PropTypes.func,\n  }),\n  optionalObjectWithStrictShape: PropTypes.exact({\n    optionalProperty: PropTypes.string,\n    requiredProperty: PropTypes.number.isRequired,\n  }),\n  requiredArray: PropTypes.array.isRequired,\n  requiredBool: PropTypes.bool.isRequired,\n  requiredFunc: PropTypes.func.isRequired,\n  requiredNumber: PropTypes.number.isRequired,\n  requiredObject: PropTypes.object.isRequired,\n  requiredString: PropTypes.string.isRequired,\n  requiredSymbol: PropTypes.symbol.isRequired,\n  requiredNode: PropTypes.node.isRequired,\n  requiredElement: PropTypes.element.isRequired,\n  requiredElementType: PropTypes.elementType.isRequired,\n  requiredEnum: PropTypes.oneOf(["News", "Photos"]).isRequired,\n  requiredUnion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,\n  requiredArrayOf: PropTypes.arrayOf(PropTypes.number).isRequired,\n  requiredObjectOf: PropTypes.objectOf(PropTypes.number).isRequired,\n  requiredInstanceOf: PropTypes.instanceOf(Message).isRequired,\n  requiredObjectWithShape: PropTypes.shape({\n    optionalProperty: PropTypes.string,\n    requiredProperty: PropTypes.number.isRequired,\n  }).isRequired,\n  requiredObjectWithStrictShape: PropTypes.exact({\n    optionalProperty: PropTypes.string,\n    requiredProperty: PropTypes.number.isRequired,\n  }).isRequired,\n}\n';
 
@@ -124,7 +124,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("custom-validator", function () {
+	it("custom-validator", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  a: PropTypes.string,\n  b: function () {},\n  c: () => {},\n  d: PropTypes.arrayOf(function() {}),\n  e: PropTypes.arrayOf(() => {}),\n  f: PropTypes.objectOf(function() {}),\n  g: PropTypes.objectOf(() => {}),\n  h: PropTypes.arrayOf(function() {}).isRequired,\n  i: PropTypes.arrayOf(() => {}).isRequired,\n  j: PropTypes.objectOf(function() {}).isRequired,\n  k: PropTypes.objectOf(() => {}).isRequired\n}\n';
 
@@ -143,7 +143,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("extended-props", function () {
+	it("extended-props", () => {
 		const INPUT =
 			'import BaseComponent from "./base"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = BaseComponent.propTypes\n';
 
@@ -162,7 +162,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("forward-ref-and-func", function () {
+	it("forward-ref-and-func", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React, { forwardRef } from "react"\n\nexport const MyComponent = forwardRef((props, ref) => {\n  return <span ref={ref} />\n})\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n\nexport function ComponentA(props) {\n  return <span />\n}\n\nComponentA.propTypes = {\n  a: PropTypes.string.isRequired,\n  b: PropTypes.number,\n}\n';
 
@@ -181,7 +181,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("forward-ref", function () {
+	it("forward-ref", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nconst MyComponent = React.forwardRef((props, ref) => {\n  return <span ref={ref} />\n})\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n\nexport default MyComponent\n';
 
@@ -200,7 +200,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("function-and-class", function () {
+	it("function-and-class", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function ComponentA(props) {\n  return <span />\n}\n\nComponentA.propTypes = {\n  a: PropTypes.string.isRequired,\n  b: PropTypes.number,\n}\n\nexport class ComponentB extends React.Component {\n  render() {\n    return <span />\n  }\n}\n\nComponentB.propTypes = {\n  c: PropTypes.array,\n  d: PropTypes.object.isRequired,\n}\n';
 
@@ -219,7 +219,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("function-component", function () {
+	it("function-component", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n';
 
@@ -238,7 +238,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("literal-prop", function () {
+	it("literal-prop", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  \'data-testid\': PropTypes.string,\n}\n';
 
@@ -257,7 +257,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("memo-export", function () {
+	it("memo-export", () => {
 		const INPUT =
 			"import PropTypes from 'prop-types'\nimport React from 'react'\n\nexport const MyComponent = React.memo(function MyComponent(props) {\n  return null\n})\n\nMyComponent.propTypes = {\n  a: PropTypes.number\n}\n";
 
@@ -276,7 +276,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("memo", function () {
+	it("memo", () => {
 		const INPUT =
 			"import PropTypes from 'prop-types'\nimport React from 'react'\n\nconst MyComponent = React.memo(function MyComponent(props) {\n  return null\n})\n\nMyComponent.propTypes = {\n  a: PropTypes.number\n}\n";
 
@@ -295,7 +295,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("multiple-class-components-static", function () {
+	it("multiple-class-components-static", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport class ComponentA extends React.Component {\n  static propTypes = {\n    a: PropTypes.string.isRequired,\n    b: PropTypes.number,\n  }\n\n  render() {\n    return <span />\n  }\n}\n\nexport class ComponentB extends React.Component {\n  static propTypes = {\n    c: PropTypes.array,\n    d: PropTypes.object.isRequired,\n  }\n\n  render() {\n    return <span />\n  }\n}\n';
 
@@ -314,7 +314,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("multiple-components", function () {
+	it("multiple-components", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function ComponentA(props) {\n  return <span />\n}\n\nComponentA.propTypes = {\n  a: PropTypes.string.isRequired,\n  b: PropTypes.number,\n}\n\nexport function ComponentB(props) {\n  return <span />\n}\n\nComponentB.propTypes = {\n  c: PropTypes.array,\n  d: PropTypes.object.isRequired,\n}\n';
 
@@ -333,7 +333,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("no-export", function () {
+	it("no-export", () => {
 		const INPUT =
 			"import PropTypes from 'prop-types'\nimport React from 'react'\n\nfunction MyComponent(props) {\n  return null\n}\n\nMyComponent.propTypes = {\n  a: PropTypes.number\n}\n";
 
@@ -352,7 +352,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("no-prop-types", function () {
+	it("no-prop-types", () => {
 		const INPUT =
 			'import React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n';
 
@@ -365,7 +365,7 @@ describe("ratchet", function () {
 		assert.deepEqual(actualOutput, undefined);
 	});
 
-	it("odd-required", function () {
+	it("odd-required", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport const MyComponent = (props) => {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  a: PropTypes.arrayOf(PropTypes.shape({\n    name: PropTypes.number.isRequired\n  }).isRequired),\n  b: PropTypes.objectOf(PropTypes.number.isRequired)\n}\n';
 
@@ -384,7 +384,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("preserve-none", function () {
+	it("preserve-none", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function ComponentA(props) {\n  return <span />\n}\n\nComponentA.propTypes = {\n  ...OtherComponent,\n  a: PropTypes.string.isRequired,\n  b() {}\n}\n\nexport function ComponentB(props) {\n  return <span />\n}\n\nComponentB.propTypes = {\n  ...ThisComponent,\n  c: PropTypes.number,\n  d() {}\n}\n';
 
@@ -403,7 +403,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("preserve-prop-types", function () {
+	it("preserve-prop-types", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n';
 
@@ -424,7 +424,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("preserve-unconverted-shape", function () {
+	it("preserve-unconverted-shape", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  a: PropTypes.string,\n  b: function () {},\n  c: PropTypes.shape({\n    d: PropTypes.bool\n  })\n}\n';
 
@@ -445,7 +445,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("preserve-unconverted-static", function () {
+	it("preserve-unconverted-static", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport class MyComponent extends React.Component {\n  static propTypes = {\n    bar: PropTypes.string.isRequired,\n    foo() {}\n  }\n\n  render() {\n    return <span />\n  }\n}\n';
 
@@ -466,7 +466,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("preserve-unconverted", function () {
+	it("preserve-unconverted", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  ...OtherComponent.propTypes,\n  a: PropTypes.string,\n  b: function () {},\n  c: () => {},\n  d: PropTypes.arrayOf(function() {}),\n  e: PropTypes.arrayOf(() => {}),\n  f: PropTypes.objectOf(function() {}),\n  g: PropTypes.objectOf(() => {}),\n}\n';
 
@@ -487,7 +487,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("spread-element", function () {
+	it("spread-element", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  return <span />\n}\n\nMyComponent.propTypes = {\n  ...OtherComponent.propTypes,\n  a: PropTypes.string,\n}\n';
 
@@ -508,7 +508,7 @@ describe("ratchet", function () {
 		);
 	});
 
-	it("typescript", function () {
+	it("typescript", () => {
 		const INPUT =
 			'import PropTypes from "prop-types"\nimport React from "react"\n\nexport function MyComponent(props) {\n  const foo: string = \'bar\'\n  return <span />\n}\n\nMyComponent.propTypes = {\n  bar: PropTypes.string.isRequired,\n  foo: PropTypes.number,\n}\n';
 

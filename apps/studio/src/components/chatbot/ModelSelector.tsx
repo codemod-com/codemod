@@ -10,9 +10,9 @@ import { cn } from "~/lib/utils";
 import { useTheme } from "../../pageComponents/main/themeContext";
 import {
 	ENGINES,
+	type Engine,
 	selectEngine,
 	setEngine,
-	type Engine,
 } from "../../store/slices/CFS";
 
 const EngineSelector = () => {

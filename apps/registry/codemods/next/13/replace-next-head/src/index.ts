@@ -133,9 +133,7 @@ const knownNames = [
 ];
 
 export const camelize = (str: string) =>
-	str.replace(/[-_]([a-z])/g, function (g) {
-		return (g[1] ?? "").toUpperCase();
-	});
+	str.replace(/[-_]([a-z])/g, (g) => (g[1] ?? "").toUpperCase());
 
 export const buildContainer = <T>(initialValue: T) => {
 	let currentValue: T = initialValue;
@@ -196,7 +194,7 @@ const getAncestorByDeclaration = (declarationNode: Node): Node | null => {
 
 const getDependenciesForIdentifiers = (
 	identifiers: ReadonlyArray<Identifier>,
-	depth: number = 0,
+	depth = 0,
 ) => {
 	if (depth > DEPENDENCY_TREE_MAX_DEPTH) {
 		return {};

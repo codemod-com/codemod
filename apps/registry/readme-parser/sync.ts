@@ -2,7 +2,7 @@
 import { writeFile } from "fs/promises";
 import * as yaml from "js-yaml";
 import { simpleGit } from "simple-git";
-import { any, record, parse as valibotParse } from "valibot";
+import { any, parse as valibotParse, record } from "valibot";
 import { convertToYaml, parse } from "./parse.js";
 
 const findKeyLineRange = (yaml: string, key: string) => {
@@ -13,7 +13,7 @@ const findKeyLineRange = (yaml: string, key: string) => {
 	let startFound = false;
 
 	for (const [index, line] of splitYaml.entries()) {
-		if (startFound && new RegExp(`^[A-Za-z0-9_-]+:\\s`).test(line)) {
+		if (startFound && /^[A-Za-z0-9_-]+:\s/.test(line)) {
 			fieldEndLine = index;
 			break;
 		}

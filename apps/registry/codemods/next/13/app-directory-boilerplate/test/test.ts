@@ -5,7 +5,7 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
 import { toMarkdown } from "mdast-util-to-markdown";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { mdxjs } from "micromark-extension-mdxjs";
 import tsmorph from "ts-morph";
 import { visit } from "unist-util-visit";
@@ -80,8 +80,8 @@ const transform = async (json: DirectoryJSON) => {
 	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe("next 13 app-directory-boilerplate", function () {
-	it("should build correct files", async function () {
+describe("next 13 app-directory-boilerplate", () => {
+	it("should build correct files", async () => {
 		const externalFileCommands = await transform({
 			"/opt/project/pages/index.jsx": INDEX_CONTENT,
 			"/opt/project/pages/_app.jsx": "",
@@ -206,7 +206,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("migrated page should keep only data-fetching hooks and wrapped client component", async function () {
+	it("migrated page should keep only data-fetching hooks and wrapped client component", async () => {
 		const INDEX_CONTENT = `'
 		const Index = () => '';
 		
@@ -242,7 +242,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should build root layout file with default content when _document does not exist, should not create client component", async function () {
+	it("should build root layout file with default content when _document does not exist, should not create client component", async () => {
 		const INDEX_CONTENT = `'
 		const Index = () => '';
 		
@@ -267,7 +267,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should build neither error files nor not-found files if no such previous files were found", async function () {
+	it("should build neither error files nor not-found files if no such previous files were found", async () => {
 		const externalFileCommands = await transform({
 			"/opt/project/pages/index.jsx": "",
 			"/opt/project/pages/_app.jsx": "",
@@ -301,7 +301,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should build correct MDX files", async function () {
+	it("should build correct MDX files", async () => {
 		const externalFileCommands = await transform({
 			"/opt/project/pages/index.jsx": INDEX_CONTENT,
 			"/opt/project/pages/_app.jsx": "",
@@ -359,7 +359,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should remove the Head tag", async function () {
+	it("should remove the Head tag", async () => {
 		const content = `
 		import Head from 'next/head';
 
@@ -396,7 +396,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should remove the Head tag when surrounded with ()", async function () {
+	it("should remove the Head tag when surrounded with ()", async () => {
 		const content = `
 		import Head from "next/head";
 
@@ -432,7 +432,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should move the CSS import statement from _app to layout", async function () {
+	it("should move the CSS import statement from _app to layout", async () => {
 		const _app = `
 		import { AppProps } from 'next/app'
 		import '../styles/index.css'
@@ -517,7 +517,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should replace next/document tags with html tags in layout file", async function () {
+	it("should replace next/document tags with html tags in layout file", async () => {
 		const index = `
 			export default async function Index() {
 				return null;
@@ -616,7 +616,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		);
 	});
 
-	it("should create a new client side file", async function () {
+	it("should create a new client side file", async () => {
 		const index = `
 			import ErrorPage from 'next/error';
 
@@ -653,7 +653,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		deepStrictEqual(deleteFileCommand?.path, "/opt/project/pages/index.tsx");
 	});
 
-	it("should create a new client side file for a non-index page", async function () {
+	it("should create a new client side file for a non-index page", async () => {
 		const index = `
 			import ErrorPage from 'next/error';
 
@@ -687,7 +687,7 @@ describe("next 13 app-directory-boilerplate", function () {
 		deepStrictEqual(deleteFileCommand?.path, "/opt/project/pages/a/b/c.tsx");
 	});
 
-	it("should remove export keyword from old data fetching methods", async function () {
+	it("should remove export keyword from old data fetching methods", async () => {
 		const index = `
 			export async function getStaticProps() {};
 			

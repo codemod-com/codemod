@@ -33,8 +33,8 @@ export default () => (
 const STYLE_FILE =
 	"\n         p {\n          color: red;\n         }\n        ";
 
-describe("next 13 move-css-in-js-styles", function () {
-	it("should remove the style component, add an import and a class name", async function () {
+describe("next 13 move-css-in-js-styles", () => {
+	it("should remove the style component, add an import and a class name", async () => {
 		const fileInfo: FileInfo = {
 			path: "/opt/repository/pages/index.js",
 			source: INPUT,

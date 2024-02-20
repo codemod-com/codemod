@@ -1,7 +1,7 @@
 import * as S from "@effect/schema/Schema";
 import { Link as LinkIcon } from "@phosphor-icons/react";
 import { Loader2 } from "lucide-react";
-import { useCallback, useState, type MouseEventHandler } from "react";
+import { type MouseEventHandler, useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { useShareLink } from "~/hooks/useShareLink";

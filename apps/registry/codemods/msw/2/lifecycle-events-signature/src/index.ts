@@ -1,4 +1,4 @@
-import { SyntaxKind, type SourceFile } from "ts-morph";
+import { type SourceFile, SyntaxKind } from "ts-morph";
 
 // The issue with that approach in this particular codemod is that caller of the .on method
 // should be imported from MSW. I believe there is a way to check if the caller is from 3rd party lib

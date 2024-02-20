@@ -4,9 +4,9 @@ import terminalLink from "terminal-link";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import {
+	type FormattedFileCommand,
 	buildPrinterMessageUponCommand,
 	modifyFileSystemUponCommand,
-	type FormattedFileCommand,
 } from "./fileCommands.js";
 import type { PrinterBlueprint } from "./printer.js";
 import type { RepositoryConfiguration } from "./repositoryConfiguration.js";

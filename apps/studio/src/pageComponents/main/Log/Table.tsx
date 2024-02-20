@@ -1,28 +1,28 @@
 import {
+	type MouseEventHandler,
 	memo,
 	useCallback,
 	useMemo,
 	useState,
-	type MouseEventHandler,
 } from "react";
 import { useSelector } from "react-redux";
 import { Label } from "~/components/ui/label";
 import {
 	Table as ShadCNTable,
-	TableRow as ShadCNTableRow,
 	TableBody,
 	TableCell,
 	TableHead,
 	TableHeader,
+	TableRow as ShadCNTableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
-import { useAppDispatch, useAppStore, type RootState } from "~/store";
+import { type RootState, useAppDispatch, useAppStore } from "~/store";
 import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
 import { setActiveEventThunk } from "~/store/setActiveEventThunk";
 import { codemodOutputSlice } from "~/store/slices/codemodOutput";
 import { setCodemodSelection } from "~/store/slices/mod";
 import { setOutputSelection } from "~/store/slices/snippets";
-import { selectLog, type Event } from "../../../store/slices/log";
+import { type Event, selectLog } from "../../../store/slices/log";
 
 type TableRow = Readonly<{
 	index: number;

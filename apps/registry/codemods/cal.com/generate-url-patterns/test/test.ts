@@ -3,7 +3,7 @@ import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import jscodeshift from "jscodeshift";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -49,8 +49,8 @@ const removeWhitespaces = (
 	};
 };
 
-describe("generate-url-patterns", function () {
-	it("should build correct files", async function () {
+describe("generate-url-patterns", () => {
+	it("should build correct files", async () => {
 		const [abTestMiddlewareTsCommand, middlewareTsCommand, turboJsonCommand] =
 			await transform(
 				{
@@ -162,7 +162,7 @@ describe("generate-url-patterns", function () {
 		);
 	});
 
-	it("should support generateAsPageGroup option", async function () {
+	it("should support generateAsPageGroup option", async () => {
 		const [abTestMiddlewareTsCommand, turboJsonCommand] = await transform(
 			{
 				"/opt/project/turbo.json": JSON.stringify({

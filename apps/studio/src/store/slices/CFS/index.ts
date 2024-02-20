@@ -1,12 +1,12 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable no-param-reassign */
 import { type Node } from "@babel/types";
-import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { type SendMessageResponse } from "~/api/sendMessage";
 import { type TreeNode } from "~/components/Tree";
 import type { RootState } from "~/store";
 import { getNodeById, getNodeHash, isNode } from "~/utils/tree";
-import { autoGenerateCodemodPrompt, type PromptPreset } from "./prompts";
+import { type PromptPreset, autoGenerateCodemodPrompt } from "./prompts";
 
 const SLICE_KEY = "CFS";
 

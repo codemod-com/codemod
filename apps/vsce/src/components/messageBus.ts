@@ -6,7 +6,7 @@ import type { Job, JobHash } from "../jobs/types";
 import { CodemodHash } from "../packageJsonAnalyzer/types";
 import { CodemodArgumentWithValue } from "../selectors/selectCodemodTree";
 
-export const enum MessageKind {
+export enum MessageKind {
 	/** cases and jobs */
 	upsertCase = 3,
 	upsertJobs = 4,

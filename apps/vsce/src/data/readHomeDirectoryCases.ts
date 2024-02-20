@@ -11,7 +11,7 @@ import { Store } from ".";
 import { Case, CaseHash, caseHashCodec } from "../cases/types";
 import { CodemodEntry } from "../codemods/types";
 import { MessageBus, MessageKind } from "../components/messageBus";
-import { Job, jobHashCodec, JobKind } from "../jobs/types";
+import { Job, JobKind, jobHashCodec } from "../jobs/types";
 import { actions } from "./slice";
 
 interface HomeDirectoryEventEmitter extends EventEmitter {

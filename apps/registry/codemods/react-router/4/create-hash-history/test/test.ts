@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 create-hash-history", function () {
-	it("should add createHashHistory", async function () {
+describe("react-router v4 create-hash-history", () => {
+	it("should add createHashHistory", async () => {
 		const input = `
 		import { Router, hashHistory } from 'react-router';
 

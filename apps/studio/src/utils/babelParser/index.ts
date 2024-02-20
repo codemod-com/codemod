@@ -1,4 +1,4 @@
-import { parse, type ParseError } from "@babel/parser";
+import { type ParseError, parse } from "@babel/parser";
 import type * as BabelTypes from "@babel/types";
 import tsxParserOptions from "./parserOptions";
 

@@ -1,11 +1,11 @@
 import {
-	SyntaxKind,
 	type ArrowFunction,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type ParameterDeclaration,
 	type SourceFile,
+	SyntaxKind,
 } from "ts-morph";
 
 function getImportDeclarationAlias(

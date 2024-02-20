@@ -5,7 +5,7 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("remove-public-modifier", () => {
-	it("basic", function () {
+	it("basic", () => {
 		const INPUT = `
 				class MyClass {
 					public myProperty: string;
@@ -42,7 +42,7 @@ describe("remove-public-modifier", () => {
 		);
 	});
 
-	it("no public modifier", function () {
+	it("no public modifier", () => {
 		const INPUT = `
 				class MyClass {
 					myMethod(): void {
@@ -73,7 +73,7 @@ describe("remove-public-modifier", () => {
 		);
 	});
 
-	it("class with other modifiers (static, readonly)", function () {
+	it("class with other modifiers (static, readonly)", () => {
 		const INPUT = `
 				class MyClass {
 					public static readonly myProperty: string = 'value';
@@ -98,7 +98,7 @@ describe("remove-public-modifier", () => {
 		);
 	});
 
-	it("multiple classes in the same file", function () {
+	it("multiple classes in the same file", () => {
 		const INPUT = `
 				class Class1 {
 					public method1(): void {}

@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 replace-param-prop", function () {
-	it('should replace "params" prop with "match.params" ', async function () {
+describe("react-router v4 replace-param-prop", () => {
+	it('should replace "params" prop with "match.params" ', async () => {
 		const input = `
 		const PostEdit = ({ params }) => (
 			<div>

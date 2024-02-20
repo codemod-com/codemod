@@ -1,5 +1,5 @@
 import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
-import { useState, type ReactNode } from "react";
+import { type ReactNode, useState } from "react";
 
 type CollapsableProps = {
 	defaultCollapsed: boolean;

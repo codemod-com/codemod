@@ -2,7 +2,7 @@ import { deepStrictEqual } from "node:assert";
 import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { buildData, repomod } from "../src/index.js";
 
@@ -37,8 +37,8 @@ const removeWhitespaces = (
 	};
 };
 
-describe("generate-metadata-tests", function () {
-	it("should build correct files", async function () {
+describe("generate-metadata-tests", () => {
+	it("should build correct files", async () => {
 		const [command] = await transform({
 			"/opt/project/pages/a/index.tsx": "",
 		});
@@ -52,7 +52,7 @@ describe("generate-metadata-tests", function () {
 		});
 	});
 
-	it("should build correct files", async function () {
+	it("should build correct files", async () => {
 		const [command] = await transform({
 			"/opt/project/pages/a/[b].tsx": "",
 		});
@@ -66,7 +66,7 @@ describe("generate-metadata-tests", function () {
 		});
 	});
 
-	it("should build correct files", async function () {
+	it("should build correct files", async () => {
 		const [command] = await transform({
 			"/opt/project/pages/a/[b]/c.tsx": "",
 		});

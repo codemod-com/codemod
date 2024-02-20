@@ -5,7 +5,7 @@ import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
 import { toMarkdown } from "mdast-util-to-markdown";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { mdxjs } from "micromark-extension-mdxjs";
 import tsmorph from "ts-morph";
 import { visit } from "unist-util-visit";
@@ -80,7 +80,7 @@ const transform = async (json: DirectoryJSON) => {
 };
 
 describe("next 13 app-directory-boilerplate", () => {
-	it("should build correct files", async function () {
+	it("should build correct files", async () => {
 		const externalFileCommands = await transform({
 			"C:\\project\\pages\\index.jsx": INDEX_CONTENT,
 			"C:\\project\\pages\\_app.jsx": "any",

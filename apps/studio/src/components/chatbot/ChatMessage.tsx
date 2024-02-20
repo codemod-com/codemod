@@ -3,7 +3,7 @@
 import { CaretDown, CaretRight, User as UserIcon } from "@phosphor-icons/react";
 import { type Message } from "ai";
 import Image from "next/image";
-import { memo, useState, type FC } from "react";
+import { type FC, memo, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";

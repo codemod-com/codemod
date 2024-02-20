@@ -1,12 +1,12 @@
-import { forwardRef, KeyboardEvent, memo, useCallback, useState } from "react";
+import { KeyboardEvent, forwardRef, memo, useCallback, useState } from "react";
+import { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
+import debounce from "../../shared/utilities/debounce";
+import { vscode } from "../../shared/utilities/vscode";
 import { Collapsable } from "../Components/Collapsable";
 import { exportToCodemodStudio, reportIssue } from "../util";
 import { Header } from "./Container";
 import { Diff, DiffComponent } from "./Diff";
 import "./DiffItem.css";
-import { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
-import debounce from "../../shared/utilities/debounce";
-import { vscode } from "../../shared/utilities/vscode";
 
 type Props = PanelViewProps & { kind: "JOB" } & {
 	viewType: "inline" | "side-by-side";

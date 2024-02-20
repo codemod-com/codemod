@@ -1,10 +1,10 @@
-import { isIdentifier, isStringLiteral, type Node } from "@babel/types";
+import { type Node, isIdentifier, isStringLiteral } from "@babel/types";
 import { memo } from "react";
 import TreeView from "react-treeview";
 import { cn } from "~/lib/utils";
 import Checkbox from "../../../components/CheckBox";
 import Text from "../../../components/Text";
-import { states, type TreeNodeSelectorState } from "../../../store/slices/CFS";
+import { type TreeNodeSelectorState, states } from "../../../store/slices/CFS";
 import { type TreeNode } from "../../../types/tree";
 
 type Props = Readonly<{

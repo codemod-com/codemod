@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 index-router", function () {
-	it('Should replace IndexRoute with Route with "exact" prop', async function () {
+describe("react-router v4 index-router", () => {
+	it('Should replace IndexRoute with Route with "exact" prop', async () => {
 		const input = `
 		const App = () => (
 			<div>

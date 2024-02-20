@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("netlify 0.8.1 addBuildEventContext", function () {
-	it("changes addBuildContext to addBuildEventContext", function () {
+describe("netlify 0.8.1 addBuildEventContext", () => {
+	it("changes addBuildContext to addBuildEventContext", () => {
 		const INPUT = `
 			integration.addHandler('some-function', async (event, context) => {});
         `;

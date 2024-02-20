@@ -1,8 +1,8 @@
 import platformPath from "path";
 import {
+	PayloadAction,
 	createEntityAdapter,
 	createSlice,
-	PayloadAction,
 } from "@reduxjs/toolkit";
 import * as vscode from "vscode";
 import { Case, CaseHash } from "../cases/types";
@@ -12,8 +12,8 @@ import { ExecutionError } from "../errors/types";
 import { PersistedJob } from "../jobs/types";
 import {
 	ActiveTabId,
-	panelGroupSettingsCodec,
 	RootState,
+	panelGroupSettingsCodec,
 } from "../persistedState/codecs";
 import { _ExplorerNodeHashDigest } from "../persistedState/explorerNodeCodec";
 import { CodemodNodeHashDigest } from "../selectors/selectCodemodTree";

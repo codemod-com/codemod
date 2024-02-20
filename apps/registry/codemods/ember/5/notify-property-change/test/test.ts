@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 notify-property-change", function () {
-	it("basic", function () {
+describe("ember 5 notify-property-change", () => {
+	it("basic", () => {
 		const INPUT = `
 		Ember.propertyWillChange(object, 'someProperty');
 		doStuff(object);

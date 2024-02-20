@@ -2,8 +2,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Event } from "~/schemata/eventSchemata";
 import {
-	parseWebWorkerOutgoingMessage,
 	type WebWorkerIncomingMessage,
+	parseWebWorkerOutgoingMessage,
 } from "~/schemata/webWorkersSchemata";
 import type { Engine } from "~/store/slices/snippets";
 

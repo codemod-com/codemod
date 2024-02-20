@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { PanelGroup, type ImperativePanelHandle } from "react-resizable-panels";
+import { type ImperativePanelHandle, PanelGroup } from "react-resizable-panels";
 import Pane from "~/components/Panel";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { Button } from "~/components/ui/button";
@@ -14,16 +14,16 @@ import Layout from "./Layout";
 import SnippetUI from "./SnippetUI";
 
 enum Panel {
-	BEFORE_AST,
-	BEFORE_SNIPPET,
-	BEFORE_SECTION,
-	AFTER_AST,
-	AFTER_SNIPPET,
-	AFTER_SECTION,
-	OUTPUT_AST,
-	OUTPUT_SNIPPET,
-	AST_SECTION,
-	SNIPPETS_SECTION,
+	BEFORE_AST = 0,
+	BEFORE_SNIPPET = 1,
+	BEFORE_SECTION = 2,
+	AFTER_AST = 3,
+	AFTER_SNIPPET = 4,
+	AFTER_SECTION = 5,
+	OUTPUT_AST = 6,
+	OUTPUT_SNIPPET = 7,
+	AST_SECTION = 8,
+	SNIPPETS_SECTION = 9,
 }
 
 const isServer = typeof window === "undefined";

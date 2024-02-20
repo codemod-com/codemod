@@ -5,8 +5,8 @@ import { MainThreadMessage } from "./mainThreadMessages.js";
 import { OperationMessage } from "./messages.js";
 import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import {
-	decodeWorkerThreadMessage,
 	WorkerThreadMessage,
+	decodeWorkerThreadMessage,
 } from "./workerThreadMessages.js";
 
 const WORKER_THREAD_TIME_LIMIT = 10000;

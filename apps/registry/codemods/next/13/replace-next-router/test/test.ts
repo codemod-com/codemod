@@ -28,8 +28,8 @@ const transform = (beforeText: string, afterText: string, path: string) => {
 	};
 };
 
-describe("next 13 replace-next-router", function () {
-	it('should add useSearchParams import because of "router.query"', async function () {
+describe("next 13 replace-next-router", () => {
+	it('should add useSearchParams import because of "router.query"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -57,7 +57,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should add useSearchParams import because of "useRouter().query"', async function () {
+	it('should add useSearchParams import because of "useRouter().query"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -83,7 +83,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should add useSearchParams import because of "const { query } = useRouter()"', async function () {
+	it('should add useSearchParams import because of "const { query } = useRouter()"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -111,7 +111,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should add searchParams variable declarator because of "useRouter()"', async function () {
+	it('should add searchParams variable declarator because of "useRouter()"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -139,7 +139,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace "...?.query" with "Object.fromEntries(...)"', async function () {
+	it('should replace "...?.query" with "Object.fromEntries(...)"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -164,7 +164,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace "?.query" with "searchParams"', async function () {
+	it('should replace "?.query" with "searchParams"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -193,7 +193,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace "useRouter().query" with "useSearchParams()"', async function () {
+	it('should replace "useRouter().query" with "useSearchParams()"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -220,7 +220,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace ...router.query with ...Object.fromEntries(searchParams)", async function () {
+	it("should replace ...router.query with ...Object.fromEntries(searchParams)", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -253,7 +253,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace router.query.a with getParam("a")', async function () {
+	it('should replace router.query.a with getParam("a")', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -294,7 +294,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should replace "query" with "searchParams"', async function () {
+	it('should replace "query" with "searchParams"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -324,7 +324,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should delete query from destructured useRouter call", async function () {
+	it("should delete query from destructured useRouter call", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -343,7 +343,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should delete empty useRouter destructuring", async function () {
+	it("should delete empty useRouter destructuring", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -363,7 +363,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should remove unused useRouter import specifiers", async function () {
+	it("should remove unused useRouter import specifiers", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -383,7 +383,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should not remove CSS imports", async function () {
+	it("should not remove CSS imports", async () => {
 		const beforeText = `
 			import './index.css';
 		`;
@@ -397,7 +397,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, undefined);
 	});
 
-	it('should replace { a } = query with a = getParam("a")', async function () {
+	it('should replace { a } = query with a = getParam("a")', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -427,7 +427,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace useRouter().pathname with usePathname()", async function () {
+	it("should replace useRouter().pathname with usePathname()", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -449,7 +449,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace router.pathname with usePathname()", async function () {
+	it("should replace router.pathname with usePathname()", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -473,7 +473,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace { pathname } destructed from useRouter() with usePathname()", async function () {
+	it("should replace { pathname } destructed from useRouter() with usePathname()", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -496,7 +496,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace { pathname } destructed from router with usePathname()", async function () {
+	it("should replace { pathname } destructed from router with usePathname()", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -521,7 +521,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace { pathname: p } destructed from router with const p = usePathname()", async function () {
+	it("should replace { pathname: p } destructed from router with const p = usePathname()", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -544,7 +544,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace router.isReady with useSearchParams in variable declaration", async function () {
+	it("should replace router.isReady with useSearchParams in variable declaration", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -568,7 +568,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace router.isReady with useSearchParams in ternary variable assignment", async function () {
+	it("should replace router.isReady with useSearchParams in ternary variable assignment", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -591,7 +591,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace !router.isReady with useSearchParams in variable declaration", async function () {
+	it("should replace !router.isReady with useSearchParams in variable declaration", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -614,7 +614,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace !router.isReady with useSearchParams in ternary variable assignment", async function () {
+	it("should replace !router.isReady with useSearchParams in ternary variable assignment", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -637,7 +637,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace !router.isReady with useSearchParams in `if` statement", async function () {
+	it("should replace !router.isReady with useSearchParams in `if` statement", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -664,7 +664,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace useRouter().isReady with true", async function () {
+	it("should replace useRouter().isReady with true", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -687,7 +687,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should remove { isReady } and replace usages with true", async function () {
+	it("should remove { isReady } and replace usages with true", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
 
@@ -712,7 +712,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should noop for already-existing import", async function () {
+	it("should noop for already-existing import", async () => {
 		const beforeText = `
 			import { usePathname } from 'next/navigation';
 
@@ -726,7 +726,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, undefined);
 	});
 
-	it("should replace query.a if query comes from useRouter return value destructurizing", async function () {
+	it("should replace query.a if query comes from useRouter return value destructurizing", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -759,7 +759,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace { route } = useRouter() with usePathname()", async function () {
+	it("should replace { route } = useRouter() with usePathname()", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -788,7 +788,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace useRouter().query[A] with useSearchParams", async function () {
+	it("should replace useRouter().query[A] with useSearchParams", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -818,7 +818,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace useRouter().query as A with useSearchParams", async function () {
+	it("should replace useRouter().query as A with useSearchParams", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -845,7 +845,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace router.pathname with pathname", async function () {
+	it("should replace router.pathname with pathname", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -872,7 +872,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace router.asPath with usePathname + useSearchParams", async function () {
+	it("should replace router.asPath with usePathname + useSearchParams", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -902,7 +902,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should switch the useRouter import source to next/router for router.push", async function () {
+	it("should switch the useRouter import source to next/router for router.push", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -1618,7 +1618,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it('should support rest operator "{ p1, p2, ...r } = r.query"', async function () {
+	it('should support rest operator "{ p1, p2, ...r } = r.query"', async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 
@@ -2070,7 +2070,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace asPath from destructuring a router", async function () {
+	it("should replace asPath from destructuring a router", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {
@@ -2098,7 +2098,7 @@ describe("next 13 replace-next-router", function () {
 		deepStrictEqual(actual, expected);
 	});
 
-	it("should replace asPath from destructuring a router with different name and property nodes", async function () {
+	it("should replace asPath from destructuring a router with different name and property nodes", async () => {
 		const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {

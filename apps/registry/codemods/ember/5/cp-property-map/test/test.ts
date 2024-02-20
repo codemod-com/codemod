@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 cp-property-map", function () {
-	it("basic", function () {
+describe("ember 5 cp-property-map", () => {
+	it("basic", () => {
 		const INPUT = `
 		const Person = EmberObject.extend({
             friendNames: map('friends', function(friend) {

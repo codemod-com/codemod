@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v4 remove-with-props", function () {
-	it("Should replace withProps HOC", async function () {
+describe("react-router v4 remove-with-props", () => {
+	it("Should replace withProps HOC", async () => {
 		const input = `
 		import withProps from 'recompose/withProps';
 		import Dashboard from './Dashboard';

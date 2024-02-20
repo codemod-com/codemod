@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("ember 5 ember-jquery-legacy", function () {
-	it("basic", function () {
+describe("ember 5 ember-jquery-legacy", () => {
+	it("basic", () => {
 		const INPUT = `
 		export default Component.extend({
             click(event) {

@@ -2,10 +2,10 @@ type Callback = (buffer: Buffer) => void;
 
 export class CircularBuffer {
 	protected _buffer: Buffer;
-	protected _start: number = 0;
-	protected _end: number = 0;
-	protected _currentByteLength: number = 0;
-	protected _requestedByteLength: number = 0;
+	protected _start = 0;
+	protected _end = 0;
+	protected _currentByteLength = 0;
+	protected _requestedByteLength = 0;
 
 	public constructor(
 		protected readonly _MAX_BYTE_LENGTH: number,

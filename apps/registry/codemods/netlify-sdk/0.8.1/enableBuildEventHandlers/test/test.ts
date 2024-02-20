@@ -4,8 +4,8 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("netlify 0.8.1 disableBuildEventHandlers", function () {
-	it("changes disableBuildhook to disableBuildEventHandlers", function () {
+describe("netlify 0.8.1 disableBuildEventHandlers", () => {
+	it("changes disableBuildhook to disableBuildEventHandlers", () => {
 		const INPUT = `
 			await client.enableBuildhook(siteId);
         `;

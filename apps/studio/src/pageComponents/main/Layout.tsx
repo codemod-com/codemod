@@ -1,8 +1,8 @@
-import { forwardRef, type FC, type ReactNode } from "react";
+import { type FC, type ReactNode, forwardRef } from "react";
 import {
+	type ImperativePanelHandle,
 	Panel,
 	PanelGroup,
-	type ImperativePanelHandle,
 	type PanelProps,
 } from "react-resizable-panels";
 

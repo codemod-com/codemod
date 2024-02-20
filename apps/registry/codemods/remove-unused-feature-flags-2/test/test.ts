@@ -3,7 +3,7 @@ import { buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import jscodeshift from "jscodeshift";
 import type { DirectoryJSON } from "memfs";
-import { createFsFromVolume, Volume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
@@ -53,8 +53,8 @@ const directoryJSON: DirectoryJSON = {
 	`,
 };
 
-describe("remove unused feature flags 2", function () {
-	it("should build correct files", async function () {
+describe("remove unused feature flags 2", () => {
+	it("should build correct files", async () => {
 		const externalFileCommands = await transform(directoryJSON);
 
 		deepStrictEqual(externalFileCommands.length, 1);

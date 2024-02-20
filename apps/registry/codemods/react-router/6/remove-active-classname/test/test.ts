@@ -9,8 +9,8 @@ import transform from "../src/index.js";
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
-describe("react-router v6 remove-active-classname", function () {
-	it("should remove activeClassName", async function () {
+describe("react-router v6 remove-active-classname", () => {
+	it("should remove activeClassName", async () => {
 		const input = await readFile(join(__dirname, "input.js"), {
 			encoding: "utf8",
 		});
