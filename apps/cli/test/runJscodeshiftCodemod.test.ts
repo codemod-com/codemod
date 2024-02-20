@@ -66,7 +66,7 @@ describe('runJscodeshiftCodemod', () => {
 			codemodSource,
 			'/index.ts',
 			oldData,
-			true,
+			false,
 			[{}],
 			(consoleKind, message) => {
 				messages.push([consoleKind, message]);
