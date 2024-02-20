@@ -6,10 +6,7 @@
 	"description": "A monorepo for all the interconnected tools of codemod.com",
 	"private": true,
 	"packageManager": "pnpm@8.7.5",
-	"engines": {
-		"node": ">=20.x",
-		"pnpm": ">=8.7.x"
-	},
+	"engines": { "node": ">=20.x", "pnpm": ">=8.7.x" },
 	"keywords": [
 		"codemod",
 		"migration",
@@ -32,12 +29,13 @@
 		"build": "turbo run build",
 		"clean": "turbo run clean",
 		"link": "turbo run link",
-		"lint:eslint": "eslint --fix .",
-		"lint:prettier": "prettier --write .",
+		"lint:eslint": "pnpm dlx @biomejs/biome lint --apply .",
+		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
 		"test": "vitest run test.ts",
 		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
 	},
 	"devDependencies": {
 		"@codemod-com/config": "workspace:*",
@@ -49,14 +47,14 @@
 		"concurrently": "^8.2.0",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.1.0",
-		"prettier": "3.1.0",
 		"tsx": "^4.2.0",
 		"turbo": "^1.10.14",
 		"typescript": "^5.2.0",
-		"vitest": "^1.0.1"
+		"vitest": "^1.0.1",
+		"@biomejs/biome": "1.5.3"
 	},
 	"lint-staged": {
-		"**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "prettier --write",
-		"**/*.{js,ts,jsx,tsx}": "eslint --fix"
+		"**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "pnpm dlx @biomejs/biome format --write",
+		"**/*.{js,ts,jsx,tsx}": "pnpm dlx @biomejs/biome lint --apply"
 	}
 }

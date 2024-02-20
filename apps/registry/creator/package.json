@@ -13,7 +13,5 @@
 		"ts-node": "^10.9.1",
 		"typescript": "^5.2.2"
 	},
-	"scripts": {
-		"create": "ts-node --esm ./index.ts"
-	}
+	"scripts": { "create": "ts-node --esm ./index.ts" }
 }
