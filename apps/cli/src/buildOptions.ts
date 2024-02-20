@@ -1,12 +1,12 @@
 import { Argv } from 'yargs';
 import {
+	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_INCLUDE_PATTERNS,
 	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
-	DEFAULT_USE_PRETTIER,
 } from './constants.js';
 
 export const buildUseJsonOption = <T extends Record<string, unknown>>(
@@ -61,10 +61,10 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 					description: 'File limit for processing',
 					default: 1000,
 				})
-				.option('prettier', {
+				.option('raw', {
 					type: 'boolean',
-					description: 'Format output with Prettier',
-					default: DEFAULT_USE_PRETTIER,
+					description: 'Disable formatting output with Prettier',
+					default: DEFAULT_DISABLE_PRETTIER,
 				})
 				.option('threads', {
 					type: 'number',

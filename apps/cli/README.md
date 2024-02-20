@@ -50,7 +50,7 @@ After running this command, if any git diff exists, `codemod` will use the diff 
 -   [`--source`](https://docs.codemod.com/docs/cli/advanced-usage#--source)
 -   [`--engine`](https://docs.codemod.com/docs/cli/advanced-usage#--engine)
 -   [`--limit`](https://docs.codemod.com/docs/cli/advanced-usage#--limit)
--   [`--prettier`](https://docs.codemod.com/docs/cli/advanced-usage#--prettier)
+-   [`--raw`](https://docs.codemod.com/docs/cli/advanced-usage#--raw)
 -   [`--no-cache`](https://docs.codemod.com/docs/cli/advanced-usage#--no-cache)
 -   [`--json`](https://docs.codemod.com/docs/cli/advanced-usage#--json)
 -   [`--threads`](https://docs.codemod.com/docs/cli/advanced-usage#--threads)

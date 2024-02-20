@@ -37,7 +37,7 @@ export class WorkerThreadManager {
 		codemodPath: string,
 		codemodEngine: 'ts-morph' | 'jscodeshift',
 		codemodSource: string,
-		formatWithPrettier: boolean,
+		disablePrettier: boolean,
 		safeArgumentRecord: SafeArgumentRecord,
 	) {
 		for (let i = 0; i < __workerCount; ++i) {
@@ -57,7 +57,7 @@ export class WorkerThreadManager {
 				codemodPath,
 				codemodEngine,
 				codemodSource,
-				formatWithPrettier,
+				disablePrettier,
 				safeArgumentRecord,
 			} satisfies MainThreadMessage);
 

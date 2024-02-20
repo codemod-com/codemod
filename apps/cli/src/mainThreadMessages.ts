@@ -7,7 +7,7 @@ const mainThreadMessageSchema = S.union(
 		codemodPath: S.string,
 		codemodSource: S.string,
 		codemodEngine: S.union(S.literal('jscodeshift'), S.literal('ts-morph')),
-		formatWithPrettier: S.boolean,
+		disablePrettier: S.boolean,
 		safeArgumentRecord: S.tuple(argumentRecordSchema),
 	}),
 	S.struct({

@@ -292,7 +292,7 @@ export const runCodemod = async (
 			fileSystem,
 			{ ...transformer, includePatterns: paths, excludePatterns: [] },
 			flowSettings.target,
-			flowSettings.prettier,
+			flowSettings.raw,
 			safeArgumentRecord,
 			onPrinterMessage,
 			currentWorkingDirectory,
@@ -348,7 +348,7 @@ export const runCodemod = async (
 			codemod.indexPath,
 			engine,
 			transpiledSource,
-			flowSettings.prettier,
+			flowSettings.raw,
 			safeArgumentRecord,
 		);
 	});

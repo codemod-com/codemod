@@ -1,5 +1,6 @@
 import * as S from '@effect/schema/Schema';
 import {
+	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_FILE_LIMIT,
 	DEFAULT_INCLUDE_PATTERNS,
@@ -7,7 +8,6 @@ import {
 	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
-	DEFAULT_USE_PRETTIER,
 } from '../constants.js';
 
 export const flowSettingsSchema = S.struct({
@@ -22,7 +22,7 @@ export const flowSettingsSchema = S.struct({
 	limit: S.optional(S.number.pipe(S.int()).pipe(S.positive())).withDefault(
 		() => DEFAULT_FILE_LIMIT,
 	),
-	prettier: S.optional(S.boolean).withDefault(() => DEFAULT_USE_PRETTIER),
+	raw: S.optional(S.boolean).withDefault(() => DEFAULT_DISABLE_PRETTIER),
 	'no-cache': S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
 	noCache: S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
 	json: S.optional(S.boolean).withDefault(() => DEFAULT_USE_JSON),

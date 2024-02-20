@@ -72,7 +72,7 @@ export const runJscodeshiftCodemod = (
 	codemodSource: string,
 	oldPath: string,
 	oldData: string,
-	formatWithPrettier: boolean,
+	disablePrettier: boolean,
 	safeArgumentRecord: SafeArgumentRecord,
 	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
@@ -83,7 +83,7 @@ export const runJscodeshiftCodemod = (
 			kind: 'createFile',
 			newPath,
 			newData,
-			formatWithPrettier,
+			formatWithPrettier: !disablePrettier,
 		});
 	};
 
@@ -133,7 +133,7 @@ export const runJscodeshiftCodemod = (
 		oldPath,
 		oldData: oldData,
 		newData,
-		formatWithPrettier,
+		formatWithPrettier: !disablePrettier,
 	});
 
 	return commands;

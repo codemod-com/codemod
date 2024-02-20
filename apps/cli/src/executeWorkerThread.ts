@@ -55,7 +55,7 @@ const messageHandler = async (m: unknown) => {
 							initializationMessage.codemodSource,
 							message.path,
 							message.data,
-							initializationMessage.formatWithPrettier,
+							initializationMessage.disablePrettier,
 							initializationMessage.safeArgumentRecord,
 							consoleCallback,
 					  )
@@ -63,7 +63,7 @@ const messageHandler = async (m: unknown) => {
 							initializationMessage.codemodSource,
 							message.path,
 							message.data,
-							initializationMessage.formatWithPrettier,
+							initializationMessage.disablePrettier,
 							initializationMessage.safeArgumentRecord,
 							consoleCallback,
 					  );

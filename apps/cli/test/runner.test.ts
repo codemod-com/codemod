@@ -99,7 +99,7 @@ describe('Runner', function () {
 			target: '/code',
 			files: ['/code/a.ts', '/code/b.ts', '/code/c.ts'],
 			limit: 3,
-			prettier: false,
+			raw: true,
 			'no-cache': false,
 			noCache: false,
 			json: true,

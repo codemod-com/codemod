@@ -57,7 +57,7 @@ export const runRepomod = async (
 	fileSystem: IFs,
 	filemod: Filemod<Dependencies, Record<string, unknown>>,
 	target: string,
-	formatWithPrettier: boolean,
+	disablePrettier: boolean,
 	safeArgumentRecord: SafeArgumentRecord,
 	onPrinterMessage: (message: OperationMessage) => void,
 	currentWorkingDirectory: string,
@@ -230,14 +230,14 @@ export const runRepomod = async (
 						oldPath: externalFileCommand.path,
 						oldData: '', // TODO get the old data from the filemod
 						newData: externalFileCommand.data,
-						formatWithPrettier, // TODO have a list of extensions that prettier supports
+						formatWithPrettier: !disablePrettier, // TODO have a list of extensions that prettier supports
 					};
 				} catch (error) {
 					return {
 						kind: 'createFile',
 						newPath: externalFileCommand.path,
 						newData: externalFileCommand.data,
-						formatWithPrettier,
+						formatWithPrettier: !disablePrettier,
 					};
 				}
 			}

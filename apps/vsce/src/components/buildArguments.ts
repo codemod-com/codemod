@@ -68,8 +68,8 @@ export const buildArguments = (
 	args.push('--threads', String(configuration.workerThreadCount));
 	args.push('--limit', String(configuration.fileLimit));
 
-	if (configuration.formatWithPrettier) {
-		args.push('--prettier');
+	if (!configuration.formatWithPrettier) {
+		args.push('--raw');
 	}
 
 	args.push('--json');
