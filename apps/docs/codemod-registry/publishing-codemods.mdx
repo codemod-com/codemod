@@ -20,24 +20,52 @@ Publishing your codemods to the Codemod Registry allows you to easily share them
 
 Once added, they will automatically integrate with the Codemod platform. This simplifies codemod discovery and distribution, and offers a great developer experience for running codemods.
 
+<Info>
+Publishing codemods to the registry is especially useful for framework/library builders. With features like shareable codemod deep links and Codemod CLI & IDE extenion, your users can adopt your latest releases with one click, straight from your migration doc. <Tooltip tip="MSW V2 migration">[See example ->](https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods)</Tooltip>
+</Info>
+
+---
+
+To publish a codemod to the registry, you can either [open a pull request](#option-1-open-pr-in-the-github-repository) with your codemod in the GitHub repository, or you can [publish the codemod using Codemod CLI](#option-2-publish-with-codemod-cli).
+
 <Tip>
-Publishing codemods to the registry is especially useful for framework/library builders. With features like shareable codemod deep links and Codemod CLI & IDE extenion, your users can adopt your latest releases with one click, straight from your migration doc!
+Before publishing your codemod, make sure that your codemod conforms to [the structure required by the Codemod platform](https://github.com/codemod-com/codemod/blob/main/apps/registry/codemods/pull_request_template.md).
 
-<Tooltip tip="MSW V2 migration">[See example here ->](https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods)</Tooltip>
+The easiest way to do this is by placing your codemod in [Codemod Studio](https://codemod.studio) and then clicking "Export Locally" to download a registry-compatible local codemod.
 </Tip>
-
-To publish a codemod to the registry, you can either open a pull request with your codemod in the GitHub repository, or you can publish the codemod using Codemod CLI.
 
 ## Option 1: Open PR in the GitHub repository
 
 By opening a pull request in the codemod registry's [GitHub repository](https://github.com/codemod-com/codemod/tree/main/apps/registry), your codemod will be automatically published to the codemod registry and made available in the Codemod platform.
 
-<Note>
-Before opening a pull request with your codemod, make sure that your codemod conforms to [the structure required by the Codemod platform](https://github.com/codemod-com/codemod/blob/main/apps/registry/codemods/pull_request_template.md).
-</Note>
-
 ## Option 2: Publish with Codemod CLI
 
-<Info>
-The `codemod publish` workflow is currently undergoing a revamped DevX. Please check back soon for the updated guide, or [subscribe to our newsletter](https://codemod.com/#w-node-_5ff6cff2-fc85-f29c-29f2-50274a1e2780-acf13e51) to be notified when it is released.
-</Info>
+You can use Codemod CLI to publish a local codemod to the codemod registry.
+
+<Steps>
+  <Step title="Login to the Codemod platform">
+  Login to the Codemod platform by using:
+  
+  ```bash
+  codemod login
+  ```
+  
+  When logging in, you will be redirected to your generated auth token on the web platform. Simply copy your token and enter it into your terminal to login with Codemod CLI.
+  </Step>
+
+  <Step title="Build your local project">
+  If you local project is not already built, navigate to the directory of your codemod and run:
+
+  ```bash
+  pnpm install && pnpm build
+  ```
+  </Step>
+
+  <Step title="Publish your codemod">
+  Publish your codemod by using the following command inside your project's directory:
+
+  ```bash
+  codemod publish
+  ```
+  </Step>
+</Steps>
