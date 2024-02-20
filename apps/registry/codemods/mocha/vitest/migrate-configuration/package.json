@@ -1,8 +1,6 @@
 {
 	"name": "@codemod-com/codemod-mocha-vitest-migrate-configuration",
-	"dependencies": {
-		"valibot": "^0.24.1"
-	},
+	"dependencies": { "valibot": "^0.24.1" },
 	"devDependencies": {
 		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
@@ -24,11 +22,6 @@
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
-	"files": [
-		"README.md",
-		"config.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }

@@ -16,8 +16,5 @@
 		"typescript": "5.3.3",
 		"vitest": "1.0.4"
 	},
-	"scripts": {
-		"build:registry": "tsx build.ts",
-		"test": "vitest"
-	}
+	"scripts": { "build:registry": "tsx build.ts", "test": "vitest" }
 }

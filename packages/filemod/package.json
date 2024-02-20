@@ -17,24 +17,24 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint:eslint:check": "eslint . --no-color",
-		"lint:prettier:check": "prettier . --check --no-color ",
-		"lint:eslint:write": "eslint . --fix",
-		"lint:prettier:write": "prettier --write .",
+		"lint:eslint:check": "npx @biomejs/biome lint . --no-color",
+		"lint:prettier:check": "npx @biomejs/biome format . --check --no-color ",
+		"lint:eslint:write": "npx @biomejs/biome lint . --apply",
+		"lint:prettier:write": "npx @biomejs/biome format --write .",
 		"test": "vitest run",
-		"coverage": "vitest run --coverage"
+		"coverage": "vitest run --coverage",
+		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check"
 	},
 	"keywords": [],
 	"license": "Apache-2.0",
 	"devDependencies": {
 		"@types/node": "20.8.5",
-		"@typescript-eslint/eslint-plugin": "6.7.5",
-		"@typescript-eslint/parser": "6.7.5",
 		"memfs": "4.6.0",
 		"fast-glob": "3.3.2",
 		"ts-node": "10.9.1",
 		"typescript": "^5.2.2",
 		"vitest": "^1.0.1",
-		"@vitest/coverage-v8": "^1.0.1"
+		"@vitest/coverage-v8": "^1.0.1",
+		"@biomejs/biome": "1.5.3"
 	}
 }

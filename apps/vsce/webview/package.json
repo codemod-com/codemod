@@ -32,18 +32,8 @@
 		"build:errors": "NODE_ENV='production' TARGET_APP='errors' vite build",
 		"build:webview": "pnpm build:main && pnpm build:jobDiffView && pnpm build:errors"
 	},
-	"eslintConfig": {
-		"extends": [
-			"react-app",
-			"react-app/jest"
-		]
-	},
 	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
+		"production": [">0.2%", "not dead", "not op_mini all"],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",

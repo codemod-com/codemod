@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/codemod-eslint-biome-rules",
+	"name": "@codemod-com/codemod-npx @biomejs/biome lint-biome-rules",
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
@@ -23,11 +23,6 @@
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
-	"files": [
-		"README.md",
-		"config.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }

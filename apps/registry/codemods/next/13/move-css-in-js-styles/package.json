@@ -1,8 +1,6 @@
 {
 	"name": "@codemod-com/codemod-next-13-move-css-in-js-styles",
-	"dependencies": {
-		"sinon": "^15.0.1"
-	},
+	"dependencies": { "sinon": "^15.0.1" },
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",
 		"@codemod-com/registry-cjs-builder": "workspace:*",
@@ -22,11 +20,6 @@
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
-	"files": [
-		"README.md",
-		"config.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }

@@ -50,7 +50,6 @@
 		"next": "14.0.3",
 		"os-browserify": "^0.3.0",
 		"pako": "^2.1.0",
-		"prettier": "^3.1.0",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "^7.48.2",
@@ -79,21 +78,13 @@
 		"dev": "next dev",
 		"start": "next start",
 		"build": "next build",
-		"lint:prettier": "prettier 'src/**/*.{ts,tsx}' --write",
-		"lint:eslint": "eslint . --ext .tsx --color"
-	},
-	"eslintConfig": {
-		"extends": [
-			"react-app",
-			"react-app/jest"
-		]
+		"lint:prettier": "npx @biomejs/biome format 'src/**/*.{ts,tsx}' --write",
+		"lint:eslint": "npx @biomejs/biome lint . --ext .tsx --color",
+		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
+		"NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"
 	},
 	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
+		"production": [">0.2%", "not dead", "not op_mini all"],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
@@ -103,7 +94,6 @@
 	"devDependencies": {
 		"@babel/core": "^7.21.0",
 		"@babel/preset-env": "^7.1.6",
-		"@ianvs/prettier-plugin-sort-imports": "^4.1.1",
 		"@testing-library/dom": "^9.0.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",
@@ -121,31 +111,17 @@
 		"@types/react-virtualized-auto-sizer": "^1.0.1",
 		"@types/sinon": "^10.0.13",
 		"@types/testing-library__jest-dom": "^5.14.5",
-		"@typescript-eslint/eslint-plugin": "^6.3.0",
-		"@typescript-eslint/parser": "^6.3.0",
 		"assert": "^2.0.0",
 		"autoprefixer": "^10.4.14",
 		"csstype": "^3.1.1",
-		"eslint": "^8.34.0",
-		"eslint-config-airbnb-base": "^15.0.0",
-		"eslint-config-next": "^14.0.3",
-		"eslint-config-prettier": "^8.6.0",
-		"eslint-import-resolver-typescript": "^3.5.3",
-		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-prettier": "^5.0.0",
-		"eslint-plugin-react": "^7.32.2",
-		"eslint-plugin-react-hooks": "^4.6.0",
 		"monaco-editor-webpack-plugin": "^7.0.1",
 		"postcss": "^8.4.21",
-		"prettier-plugin-tailwindcss": "^0.5.7",
 		"raw-loader": "^4.0.2",
 		"sinon": "^15.0.2",
 		"tailwindcss": "^3.3.3",
 		"tailwindcss-animate": "^1.0.7",
-		"webpack": "^5.75.0"
+		"webpack": "^5.75.0",
+		"@biomejs/biome": "1.5.3"
 	},
-	"peerDependencies": {
-		"csstype": "^3.1.1",
-		"webpack": "^5.75.0"
-	}
+	"peerDependencies": { "csstype": "^3.1.1", "webpack": "^5.75.0" }
 }
