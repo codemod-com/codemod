@@ -44,17 +44,17 @@ After running this command, if any git diff exists, `codemod` will use the diff 
 
 ### Options
 
--   [`--include`](https://docs.codemod.com/docs/cli/advanced-usage#--include)
--   [`--exclude`](https://docs.codemod.com/docs/cli/advanced-usage#--exclude)
--   [`--target`](https://docs.codemod.com/docs/cli/advanced-usage#--target)
--   [`--source`](https://docs.codemod.com/docs/cli/advanced-usage#--source)
+-   [`--include` or `-i`](https://docs.codemod.com/docs/cli/advanced-usage#--include)
+-   [`--exclude` or `-e`](https://docs.codemod.com/docs/cli/advanced-usage#--exclude)
+-   [`--target` or `-t`](https://docs.codemod.com/docs/cli/advanced-usage#--target)
+-   [`--source` or `-s`](https://docs.codemod.com/docs/cli/advanced-usage#--source)
 -   [`--engine`](https://docs.codemod.com/docs/cli/advanced-usage#--engine)
--   [`--limit`](https://docs.codemod.com/docs/cli/advanced-usage#--limit)
--   [`--raw`](https://docs.codemod.com/docs/cli/advanced-usage#--raw)
+-   [`--limit` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--limit)
+-   [`--raw` or `-r`](https://docs.codemod.com/docs/cli/advanced-usage#--raw)
 -   [`--no-cache`](https://docs.codemod.com/docs/cli/advanced-usage#--no-cache)
--   [`--json`](https://docs.codemod.com/docs/cli/advanced-usage#--json)
--   [`--threads`](https://docs.codemod.com/docs/cli/advanced-usage#--threads)
--   [`--dry](https://docs.codemod.com/docs/cli/advanced-usage#--dry)
+-   [`--json` or `-j`](https://docs.codemod.com/docs/cli/advanced-usage#--json)
+-   [`--threads` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--threads)
+-   [`--dry` or `-d`](https://docs.codemod.com/docs/cli/advanced-usage#--dry)
 -   [`--telemetryDisable`](https://docs.codemod.com/docs/cli/advanced-usage#--telemetrydisable)
 
 ## Contribution

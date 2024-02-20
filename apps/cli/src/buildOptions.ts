@@ -13,6 +13,7 @@ export const buildUseJsonOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
 	y.option('json', {
+		alias: 'j',
 		type: 'boolean',
 		description: 'Respond with JSON',
 		default: DEFAULT_USE_JSON,
@@ -32,22 +33,26 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 		buildUseJsonOption(
 			y
 				.option('include', {
+					alias: 'i',
 					type: 'string',
 					array: true,
 					description: 'Glob pattern(s) for files to include',
 					default: DEFAULT_INCLUDE_PATTERNS,
 				})
 				.option('exclude', {
+					alias: 'e',
 					type: 'string',
 					array: true,
 					description: 'Glob pattern(s) for files to exclude',
 					default: DEFAULT_EXCLUDE_PATTERNS,
 				})
 				.option('target', {
+					alias: 't',
 					type: 'string',
 					description: 'Input directory path',
 				})
 				.option('source', {
+					alias: 's',
 					type: 'string',
 					description: 'Source path of the local codemod to run',
 				})
@@ -57,21 +62,25 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
 				})
 				.option('limit', {
+					alias: 'f',
 					type: 'number',
 					description: 'File limit for processing',
 					default: 1000,
 				})
 				.option('raw', {
+					alias: 'r',
 					type: 'boolean',
 					description: 'Disable formatting output with Prettier',
 					default: DEFAULT_DISABLE_PRETTIER,
 				})
 				.option('threads', {
+					alias: 'n',
 					type: 'number',
 					description: 'Number of worker threads',
 					default: DEFAULT_THREAD_COUNT,
 				})
 				.option('dry', {
+					alias: 'd',
 					type: 'boolean',
 					description: 'Perform a dry run',
 					default: DEFAULT_DRY_RUN,
