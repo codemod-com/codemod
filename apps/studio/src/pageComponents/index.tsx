@@ -23,12 +23,13 @@ const MainPageContent = () => {
 					Studio.
 				</Label>
 				<iframe
+					title="Codemod Studio Demo"
 					src="https://www.loom.com/embed/06ba23e8d91a4535943c0ce494e90820?sid=539fecab-cc75-4a33-bedf-48736cda7550"
 					allowFullScreen
 					// width="100%"
 					height="40%"
 					style={{ borderRadius: "5%" }}
-				></iframe>
+				/>
 			</div>
 		);
 	}

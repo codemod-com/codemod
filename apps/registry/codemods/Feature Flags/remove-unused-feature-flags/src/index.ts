@@ -5,8 +5,8 @@ export default function transform(
 	api: API,
 	options: Options,
 ): string | undefined {
-	const functionName = String(options["functionName"] ?? "isFlagEnabled");
-	const featureFlagName = String(options["featureFlagName"] ?? "featureFlag");
+	const functionName = String(options.functionName ?? "isFlagEnabled");
+	const featureFlagName = String(options.featureFlagName ?? "featureFlag");
 
 	let dirtyFlag = false;
 

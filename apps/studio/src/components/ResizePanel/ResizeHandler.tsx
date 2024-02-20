@@ -13,7 +13,7 @@ const ResizeHandle = ({
 		className={`resizeHandleOuter resizeHandlerOuter-${direction}  ${className} `}
 		id={id}
 	>
-		<div className={`resizeHandleInner-${direction}`}></div>
+		<div className={`resizeHandleInner-${direction}`} />
 	</PanelResizeHandle>
 );
 

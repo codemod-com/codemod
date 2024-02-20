@@ -35,7 +35,8 @@
 				"noCommentText": "warn",
 				"noDuplicateJsxProps": "warn",
 				"noExplicitAny": "warn",
-				"noUnsafeDeclarationMerging": "warn"
+				"noUnsafeDeclarationMerging": "warn",
+				"noArrayIndexKey": "off"
 			},
 			"correctness": {
 				"noUndeclaredVariables": "off",
@@ -84,7 +85,10 @@
 				"noDistractingElements": "warn",
 				"noRedundantAlt": "warn",
 				"useAriaPropsForRole": "warn",
-				"noHeaderScope": "warn"
+				"noHeaderScope": "warn",
+				"useButtonType": "warn",
+				"useKeyWithClickEvents": "off",
+				"noNoninteractiveTabindex": "warn"
 			},
 			"performance": { "noDelete": "off" },
 			"security": { "noDangerouslySetInnerHtml": "warn" }

@@ -93,15 +93,15 @@ class Handler {
 			const memberExpression = this.path.node.callee as MemberExpression;
 
 			return memberExpression.object as Identifier;
-		} else {
-			const arg = arrayArguments.elements[index];
-
-			return this.j.optionalMemberExpression(
-				this.generate(arrayArguments, index - 1),
-				this.normalizeProperty(arg),
-				this.isComputed(arg),
-			);
 		}
+
+		const arg = arrayArguments.elements[index];
+
+		return this.j.optionalMemberExpression(
+			this.generate(arrayArguments, index - 1),
+			this.normalizeProperty(arg),
+			this.isComputed(arg),
+		);
 	}
 
 	private normalizeProperty(arg: any) {

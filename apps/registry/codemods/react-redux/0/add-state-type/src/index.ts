@@ -481,7 +481,7 @@ export const addImportDeclaration: AtomicMod<File, "write"> = (
 
 	if (!name || !value) {
 		throw new Error(
-			`addStateImportDeclaration requires a name and a value in settings`,
+			"addStateImportDeclaration requires a name and a value in settings",
 		);
 	}
 

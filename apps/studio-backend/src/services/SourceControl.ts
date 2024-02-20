@@ -45,6 +45,7 @@ export interface SourceControlProvider {
 	getAssignees(): Promise<Assignee[]>;
 }
 
+// biome-ignore lint/complexity/noStaticOnlyClass: reason?
 export class SourceControlError extends Error {
 	static parse(e: unknown) {
 		const message =

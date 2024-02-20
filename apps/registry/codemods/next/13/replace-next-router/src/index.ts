@@ -281,10 +281,10 @@ const handlePushCallExpression = (node: CallExpression) => {
 	const pathNameValue = pathnameNode.getInitializer()?.getText() ?? "";
 	const queryNode = arg.getProperty("query");
 
-	let newText = ``;
-	let newArgText = ``;
+	let newText = "";
+	let newArgText = "";
 	if (Node.isPropertyAssignment(queryNode)) {
-		newText += `const urlSearchParams = new URLSearchParams();\n`;
+		newText += "const urlSearchParams = new URLSearchParams();\n";
 
 		const initializer = queryNode.getInitializer();
 		if (Node.isObjectLiteralExpression(initializer)) {
@@ -347,7 +347,7 @@ const handleRouterPropertyAccessExpression = (
 			blockLevelUsageManager.reportGetParamUsage();
 		} else if (Node.isSpreadAssignment(parentNode)) {
 			parentNode.replaceWithText(
-				`...Object.fromEntries(searchParams ?? new URLSearchParams())`,
+				"...Object.fromEntries(searchParams ?? new URLSearchParams())",
 			);
 
 			blockLevelUsageManager.reportSearchParamsUsage();
@@ -372,7 +372,7 @@ const handleRouterPropertyAccessExpression = (
 					);
 					vdl?.addDeclaration({
 						name: bindingPatternText,
-						initializer: `Object.fromEntries(searchParams?.entries() ?? [])`,
+						initializer: "Object.fromEntries(searchParams?.entries() ?? [])",
 					});
 				}
 
@@ -755,7 +755,7 @@ const handleUseRouterCallExpression = (
 		} else if (text === "query") {
 			if (Node.isCallExpression(grandparent)) {
 				parent.replaceWithText(
-					`...Object.fromEntries(searchParams ?? new URLSearchParams())`,
+					"...Object.fromEntries(searchParams ?? new URLSearchParams())",
 				);
 
 				blockLevelUsageManager.reportSearchParamsUsage();

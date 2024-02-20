@@ -21,7 +21,8 @@
 		"strict": true,
 		"module": "esnext",
 		"incremental": true,
-		"noUncheckedIndexedAccess": true
+		"noUncheckedIndexedAccess": true,
+		"noPropertyAccessFromIndexSignature": false
 	},
 	"exclude": ["node_modules/**/*", "dist/**/*"],
 	"ts-node": {

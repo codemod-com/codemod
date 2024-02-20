@@ -57,7 +57,6 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 
 			if (typeof value === "number") {
 				measurements[key] = value;
-				continue;
 			}
 		}
 

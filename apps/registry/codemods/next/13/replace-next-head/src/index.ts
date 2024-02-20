@@ -624,7 +624,7 @@ export const handleTag = (
 				metadataObject.authors = [];
 			}
 
-			metadataObject["authors"].push({ name: content });
+			metadataObject.authors.push({ name: content });
 			return;
 		}
 

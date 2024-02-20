@@ -57,7 +57,7 @@ export default function transform(file: FileInfo, api: API) {
 	}
 
 	let metadataProperties = metadataObject.properties;
-	let viewportProperties;
+	let viewportProperties: any;
 
 	const viewport = metadataProperties.find(
 		(prop: { key: { name: string } }) => prop.key.name === "viewport",

@@ -491,7 +491,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 	// download hack
 	const link = document.createElement("a");
 	link.href = window.URL.createObjectURL(blob);
-	link.download = (input.name || "codemod") + ".zip";
+	link.download = `${input.name ?? "codemod"}.zip`;
 	link.click();
 	window.URL.revokeObjectURL(link.href);
 };

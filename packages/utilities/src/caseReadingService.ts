@@ -93,8 +93,8 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 
 	const readUris = (bufferCount: number) => {
 		const uris: string[] = [];
-		let start = 21,
-			end = 23;
+		let start = 21;
+		let end = 23;
 
 		for (let i = 0; i < bufferCount; ++i) {
 			const byteLength = outerJob.innerData.subarray(start, end).readUint16BE();
