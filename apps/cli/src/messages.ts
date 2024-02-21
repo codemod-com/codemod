@@ -42,11 +42,6 @@ export type MetadataPathMessage = Readonly<{
 	path: string;
 }>;
 
-export type NamesMessage = Readonly<{
-	kind: 'names';
-	names: ReadonlyArray<string>;
-}>;
-
 export type ErrorMessage = Readonly<{
 	kind: 'error';
 	message: string;
@@ -67,6 +62,5 @@ export type OperationMessage =
 	| CreateMessage
 	| CopyMessage
 	| MetadataPathMessage
-	| NamesMessage
 	| ErrorMessage
 	| StatusUpdateMessage;

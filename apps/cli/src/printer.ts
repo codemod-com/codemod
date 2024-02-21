@@ -59,12 +59,6 @@ export class Printer implements PrinterBlueprint {
 				message.totalFileNumber,
 			);
 		}
-
-		if (message.kind === 'names') {
-			for (const name of message.names) {
-				console.log(name);
-			}
-		}
 	}
 
 	public printConsoleMessage(kind: ConsoleKind, message: string) {
