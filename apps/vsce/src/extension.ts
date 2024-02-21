@@ -465,7 +465,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 				if (!configurationUriIsDirectory) {
 					throw new Error(
-						`To execute a configuration URI as a Piranha rule, it has to be a directory`,
+						"To execute a configuration URI as a Piranha rule, it has to be a directory",
 					);
 				}
 

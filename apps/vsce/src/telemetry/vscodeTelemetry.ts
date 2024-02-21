@@ -101,7 +101,6 @@ export class VscodeTelemetry implements Telemetry {
 
 			if (typeof value === "number") {
 				measurements[key] = value;
-				continue;
 			}
 		}
 

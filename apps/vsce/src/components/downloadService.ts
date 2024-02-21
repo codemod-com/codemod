@@ -1,5 +1,5 @@
 import { Mode } from "node:fs";
-import { isAxiosError } from "axios";
+import { AxiosResponse, isAxiosError } from "axios";
 import { FileSystem, Uri } from "vscode";
 import { DEFAULT_RETRY_COUNT, retryingClient } from "../axios";
 import { FileSystemUtilities } from "./fileSystemUtilities";
@@ -27,7 +27,7 @@ export class DownloadService {
 		const localModificationTime =
 			await this.#fileSystemUtilities.getModificationTime(uri);
 
-		let response;
+		let response: AxiosResponse | undefined;
 
 		try {
 			response = await retryingClient.head(url, {
