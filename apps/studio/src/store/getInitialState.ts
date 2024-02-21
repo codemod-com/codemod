@@ -4,7 +4,7 @@ import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";
 import { parseState } from "~/schemata/stateSchemata";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
-import prettifyDeprecated from "~/utils/prettify";
+import { prettify } from "~/utils/prettify";
 
 export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
     const { data } = state;
@@ -94,7 +94,7 @@ export const buildDefaultCodemodSource = (
 	engine: "jscodeshift" | "tsmorph",
 ) => {
 	if (engine === "jscodeshift") {
-		return prettifyDeprecated(
+		return prettify(
 			STARTER_SNIPPET.replace(
 				"{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
 				DEFAULT_FIND_REPLACE_EXPRESSION,
