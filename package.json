@@ -39,7 +39,6 @@
 		"prepare": "husky install"
 	},
 	"devDependencies": {
-		"@codemod-com/config": "workspace:*",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
@@ -55,7 +54,6 @@
 		"@biomejs/biome": "1.5.3"
 	},
 	"lint-staged": {
-		"**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "pnpm dlx @biomejs/biome format --write",
-		"**/*.{js,ts,jsx,tsx}": "pnpm dlx @biomejs/biome lint --apply"
+		"**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "biome check --apply"
 	}
 }
