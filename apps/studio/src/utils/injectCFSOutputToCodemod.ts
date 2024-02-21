@@ -1,4 +1,4 @@
-import prettifyDeprecated from './prettify';
+import { prettify } from "./prettify";
 
 const CommentForGeneratedOutput = `
 //// Generated Output from CFS ////
@@ -24,7 +24,7 @@ export const injectCFSOutputToCodemod = (
 		);
 		const afterContent = codemod.slice(firstMatchIndex + firstMatch.length);
 		const newContent = `${beforeContent}${CommentForGeneratedOutput}${cfsOutput}${CommentForEndOfGeneratedOutput}${afterContent}`;
-		return prettifyDeprecated(newContent);
+		return prettify(newContent);
 	}
 	return null;
 };

@@ -50,6 +50,7 @@
 		"next": "14.0.3",
 		"os-browserify": "^0.3.0",
 		"pako": "^2.1.0",
+		"prettier": "^2.8.8",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "^7.48.2",
@@ -80,7 +81,11 @@
 		"build": "next build"
 	},
 	"browserslist": {
-		"production": [">0.2%", "not dead", "not op_mini all"],
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
