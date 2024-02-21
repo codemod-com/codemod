@@ -33,7 +33,7 @@ import type {
 	JSCodeshift,
 	MemberExpression,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 class Handler {
 	private j: JSCodeshift;
@@ -55,7 +55,7 @@ class Handler {
 
 		const firstArg = node.arguments[0];
 
-		if (firstArg?.type !== 'Literal' && firstArg?.type !== 'Identifier') {
+		if (firstArg?.type !== "Literal" && firstArg?.type !== "Identifier") {
 			return false;
 		}
 
@@ -71,7 +71,7 @@ class Handler {
 		let newArgument: any = argument;
 		let computed = true;
 
-		if (argument?.type === 'Literal') {
+		if (argument?.type === "Literal") {
 			newArgument = this.j.identifier(`${argument.value}`);
 			computed = false;
 		}
@@ -85,11 +85,7 @@ class Handler {
 
 		const defaultExpression = this.path.node.arguments[1] as any;
 		this.path.replace(
-			this.j.assignmentExpression(
-				'=',
-				newMemberExpression,
-				defaultExpression,
-			),
+			this.j.assignmentExpression("=", newMemberExpression, defaultExpression),
 		);
 	}
 }
@@ -99,10 +95,10 @@ const transform: Transform = (file, api, options) => {
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'MemberExpression',
+			type: "MemberExpression",
 			property: {
-				type: 'Identifier',
-				name: 'set',
+				type: "Identifier",
+				name: "set",
 			},
 		},
 	});

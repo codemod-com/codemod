@@ -1,40 +1,40 @@
-import { useAuth } from '@clerk/nextjs';
+import { useAuth } from "@clerk/nextjs";
 import {
 	ArrowElbowDownLeft,
 	BracketsCurly,
 	MagicWand,
 	Stop as StopIcon,
-} from '@phosphor-icons/react';
-import { type UseChatHelpers } from 'ai/react';
-import { useRef, useState, type Dispatch, type SetStateAction } from 'react';
-import { flushSync } from 'react-dom';
-import { useSelector } from 'react-redux';
-import { Button } from '~/components/ui/button';
-import { cn } from '~/lib/utils';
+} from "@phosphor-icons/react";
+import { type UseChatHelpers } from "ai/react";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import { useSelector } from "react-redux";
+import { Button } from "~/components/ui/button";
+import { cn } from "~/lib/utils";
 import {
+	type Aliases,
 	applyAliases,
 	getAliases,
-	type Aliases,
-} from '~/store/slices/CFS/alias';
+} from "~/store/slices/CFS/alias";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
-} from '../../store/slices/CFS/prompts';
-import { capitalizeWord } from '../../utils/string';
-import PromptForm from './PromptForm';
-import ScrollToBottomButton from './ScrollToBottomButton';
+} from "../../store/slices/CFS/prompts";
+import { capitalizeWord } from "../../utils/string";
+import PromptForm from "./PromptForm";
+import ScrollToBottomButton from "./ScrollToBottomButton";
 
 export interface ChatPanelProps
 	extends Pick<
 		UseChatHelpers,
-		| 'append'
-		| 'isLoading'
-		| 'reload'
-		| 'messages'
-		| 'stop'
-		| 'input'
-		| 'setInput'
-		| 'setMessages'
+		| "append"
+		| "isLoading"
+		| "reload"
+		| "messages"
+		| "stop"
+		| "input"
+		| "setInput"
+		| "setMessages"
 	> {
 	id?: string;
 	setToken: Dispatch<SetStateAction<string | null>>;
@@ -42,18 +42,14 @@ export interface ChatPanelProps
 
 const getPrompts = (aliases: Aliases) => {
 	const prompts = [
-		[
-			'Build a codemod to transform before to after',
-			autoGenerateCodemodPrompt,
-		],
+		["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
 	];
 
-	const codemodHighlightedValue =
-		aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? '';
+	const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 
-	if (codemodHighlightedValue !== '') {
+	if (codemodHighlightedValue !== "") {
 		prompts.unshift([
-			'Regenerate specified code block',
+			"Regenerate specified code block",
 			fixCodemodBlockNoDebugInfoPrompt,
 		]);
 	}
@@ -66,7 +62,7 @@ const getOrderedAliasList = (aliases: Aliases) =>
 	Object.entries(aliases)
 		.filter(([, v]) => v !== null)
 		.sort(([, a], [, b]) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))
-		.map(([k, v]) => [k, v?.value ?? '']);
+		.map(([k, v]) => [k, v?.value ?? ""]);
 
 export function ChatPanel({
 	id,
@@ -101,7 +97,7 @@ export function ChatPanel({
 		await append({
 			id,
 			content: aliasesAppliedValue,
-			role: 'user',
+			role: "user",
 		});
 	};
 
@@ -121,7 +117,7 @@ export function ChatPanel({
 
 		setInput(newValue);
 		const textareaNode =
-			document.getElementsByClassName('promptTextarea')?.[0] ?? null;
+			document.getElementsByClassName("promptTextarea")?.[0] ?? null;
 		if (textareaNode !== null) {
 			(textareaNode as HTMLTextAreaElement).focus();
 		}
@@ -153,15 +149,11 @@ export function ChatPanel({
 							<div className="mb-1 flex w-full gap-1 overflow-x-auto px-1">
 								{promptsList.map(([label, value]) => (
 									<Button
-										variant={
-											hasMessages ? 'outline' : 'default'
-										}
+										variant={hasMessages ? "outline" : "default"}
 										size="sm"
 										key={label}
 										title={value}
-										onClick={() =>
-											value && handleSubmit(value)
-										}
+										onClick={() => value && handleSubmit(value)}
 										className="group my-0 h-8 whitespace-nowrap !py-0 text-xs"
 									>
 										{label}
@@ -178,19 +170,13 @@ export function ChatPanel({
 										variant="outline"
 										size="sm"
 										key={label}
-										title={value ?? ''}
-										onClick={() =>
-											label && handleInsertValue(label)
-										}
+										title={value ?? ""}
+										onClick={() => label && handleInsertValue(label)}
 										className="my-0 h-8 whitespace-nowrap !py-0 text-xs"
 									>
 										<BracketsCurly /> &nbsp;
 										{label &&
-											capitalizeWord(
-												label
-													.substring(1)
-													.replace(/_/gi, ' '),
-											)}
+											capitalizeWord(label.substring(1).replace(/_/gi, " "))}
 									</Button>
 								))}
 							</div>
@@ -212,13 +198,13 @@ export function ChatPanel({
 							size="icon"
 							title={
 								expandedHelper
-									? 'Hide recommended prompts & aliases'
-									: 'Show recommended prompts & aliases'
+									? "Hide recommended prompts & aliases"
+									: "Show recommended prompts & aliases"
 							}
 							onClick={() => setExpandedHelper(!expandedHelper)}
 							className={cn(
-								'absolute right-[-65px] top-[10px]',
-								expandedHelper && 'bg-accent',
+								"absolute right-[-65px] top-[10px]",
+								expandedHelper && "bg-accent",
 							)}
 						>
 							<MagicWand />

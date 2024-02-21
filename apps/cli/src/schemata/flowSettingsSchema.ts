@@ -1,4 +1,4 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_EXCLUDE_PATTERNS,
@@ -8,7 +8,7 @@ import {
 	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
-} from '../constants.js';
+} from "../constants.js";
 
 export const flowSettingsSchema = S.struct({
 	include: S.optional(S.array(S.string)).withDefault(
@@ -23,13 +23,13 @@ export const flowSettingsSchema = S.struct({
 		() => DEFAULT_FILE_LIMIT,
 	),
 	raw: S.optional(S.boolean).withDefault(() => DEFAULT_DISABLE_PRETTIER),
-	'no-cache': S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
+	"no-cache": S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
 	noCache: S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
 	json: S.optional(S.boolean).withDefault(() => DEFAULT_USE_JSON),
 	threads: S.optional(S.number).withDefault(() => DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Omit<S.To<typeof flowSettingsSchema>, 'target'> & {
+export type FlowSettings = Omit<S.To<typeof flowSettingsSchema>, "target"> & {
 	target: string;
 };
 

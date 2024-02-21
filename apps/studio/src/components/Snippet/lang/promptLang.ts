@@ -1,13 +1,13 @@
-import { type Monaco } from '@monaco-editor/react';
-import { monaco } from '~/customMonaco';
+import { type Monaco } from "@monaco-editor/react";
+import { monaco } from "~/customMonaco";
 
-const LANG_ID = 'promptLang';
+const LANG_ID = "promptLang";
 const tokens = [
-	'BEFORE',
-	'AFTER',
-	'CODEMOD',
-	'HIGHLIGHTED_IN_BEFORE',
-	'HIGHLIGHTED_IN_AFTER',
+	"BEFORE",
+	"AFTER",
+	"CODEMOD",
+	"HIGHLIGHTED_IN_BEFORE",
+	"HIGHLIGHTED_IN_AFTER",
 ];
 
 const getAutocompleteOptions = (

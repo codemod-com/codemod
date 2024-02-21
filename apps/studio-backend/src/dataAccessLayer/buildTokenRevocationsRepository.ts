@@ -4,9 +4,9 @@ import {
 	ModelStatic,
 	Sequelize,
 	Transaction,
-} from 'sequelize';
-import { Input, object, parse, regex, string } from 'valibot';
-import { coercedNumberSchema } from './schemata.js';
+} from "sequelize";
+import { Input, object, parse, regex, string } from "valibot";
+import { coercedNumberSchema } from "./schemata.js";
 
 export const tokenRevocationSchema = object({
 	// a RIPEMD-160 hash digest has 160 bits = 20 bytes
@@ -71,22 +71,22 @@ export const buildTokenRevocationRepository = (
 			pepperedAccessTokenHashDigest: {
 				type: DataTypes.STRING(Math.ceil((20 * 8) / 6)),
 				primaryKey: true,
-				field: 'pathd',
+				field: "pathd",
 			},
 			revokedAt: {
 				type: DataTypes.BIGINT(),
 				allowNull: false,
-				field: 'r',
+				field: "r",
 			},
 			signature: {
 				type: DataTypes.STRING(Math.ceil((32 * 8) / 6)),
 				allowNull: false,
-				field: 's',
+				field: "s",
 			},
 		},
 		{
 			sequelize,
-			tableName: 'tokenRevocations',
+			tableName: "tokenRevocations",
 			timestamps: false,
 		},
 	);

@@ -1,11 +1,11 @@
 /* DO NOT LOG ANYTHING. IT WILL BE APPENDED TO THE TOP OF THE GENERATED STRING */
 
-import { createHash } from 'crypto';
-import { readFileSync } from 'fs';
-import * as nodePath from 'node:path';
-import type { Heading, PhrasingContent, RootContent } from 'mdast';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { is, object, optional, string } from 'valibot';
+import { createHash } from "crypto";
+import { readFileSync } from "fs";
+import * as nodePath from "node:path";
+import type { Heading, PhrasingContent, RootContent } from "mdast";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { is, object, optional, string } from "valibot";
 
 const configJsonSchema = object({
 	schemaVersion: optional(string()),
@@ -13,7 +13,7 @@ const configJsonSchema = object({
 	engine: string(),
 });
 
-const UNESCAPED = ['inlineCode', 'link'];
+const UNESCAPED = ["inlineCode", "link"];
 
 const noFirstLetterLowerCase = (str: string) =>
 	str.length ? str[0] + str.slice(1).toLowerCase() : str;
@@ -32,23 +32,23 @@ const getTextFromNode = (
 		return null;
 	}
 
-	if ('value' in node) {
-		if (node.type === 'inlineCode') {
+	if ("value" in node) {
+		if (node.type === "inlineCode") {
 			return `\`${node.value}\``;
 		}
 
 		return node.value;
 	}
 
-	if ('children' in node) {
-		let textContent = '';
+	if ("children" in node) {
+		let textContent = "";
 		for (const child of node.children) {
 			if (!style) {
 				textContent += getTextFromNode(child, style);
 				continue;
 			}
 
-			if (node.type === 'strong') {
+			if (node.type === "strong") {
 				textContent += `**${getTextFromNode(child, style)}**`;
 			} else {
 				textContent += getTextFromNode(child, style);
@@ -68,11 +68,11 @@ const getUrlFromNode = (
 		return null;
 	}
 
-	if ('url' in node) {
+	if ("url" in node) {
 		return node.url;
 	}
 
-	if ('children' in node) {
+	if ("children" in node) {
 		return getUrlFromNode(node.children[0] ?? null);
 	}
 
@@ -85,7 +85,7 @@ const getHeading = (
 	name: string | null,
 ): Heading | null => {
 	for (const rootContent of rootContents) {
-		if (rootContent.type !== 'heading') {
+		if (rootContent.type !== "heading") {
 			continue;
 		}
 
@@ -120,7 +120,7 @@ const getTextByHeader = (
 	);
 	const nextHeaderIndex = rootContents.findIndex(
 		(rc) =>
-			rc.type === 'heading' &&
+			rc.type === "heading" &&
 			rc.position?.start.line &&
 			heading.position?.start.line &&
 			rc.position?.start.line > heading.position?.start.line &&
@@ -135,39 +135,36 @@ const getTextByHeader = (
 	const textParts: string[] = [];
 
 	for (const rc of contentParts) {
-		if ('children' in rc) {
+		if ("children" in rc) {
 			rc.children
 				.map((child, idx, arr) => {
 					const isDescription =
-						getTextFromNode(heading)?.includes('Description');
+						getTextFromNode(heading)?.includes("Description");
 
-					const isLinks = getTextFromNode(heading)?.includes('Links');
+					const isLinks = getTextFromNode(heading)?.includes("Links");
 
 					// Preserve ### on higher-depth headings
 					if (
-						rc.type === 'heading' &&
+						rc.type === "heading" &&
 						rc.depth > heading.depth &&
 						idx === 0 &&
-						(child.type === 'text' ||
-							child.type === 'inlineCode' ||
-							child.type === 'strong')
+						(child.type === "text" ||
+							child.type === "inlineCode" ||
+							child.type === "strong")
 					) {
 						const conditionalDelimiter = delimiter.repeat(
 							isDescription ? 2 : 1,
 						);
-						return `${conditionalDelimiter}${'#'.repeat(
+						return `${conditionalDelimiter}${"#".repeat(
 							rc.depth,
-						)} ${getTextFromNode(
-							child,
-							true,
-						)}${conditionalDelimiter}`;
+						)} ${getTextFromNode(child, true)}${conditionalDelimiter}`;
 					}
 
-					if (child.type === 'inlineCode') {
+					if (child.type === "inlineCode") {
 						return `\`${child.value}\``;
 					}
 
-					if (child.type === 'text') {
+					if (child.type === "text") {
 						const nextEl = arr[idx + 1];
 						if (nextEl && UNESCAPED.includes(nextEl.type)) {
 							return child.value;
@@ -176,7 +173,7 @@ const getTextByHeader = (
 						return `${child.value}${delimiter}`;
 					}
 
-					if (child.type === 'listItem') {
+					if (child.type === "listItem") {
 						if (isDescription) {
 							return `  -   ${getTextFromNode(
 								child.children[0] ?? null,
@@ -185,17 +182,13 @@ const getTextByHeader = (
 						}
 
 						if (isLinks) {
-							return `${getUrlFromNode(
-								child.children[0] ?? null,
-							)}${delimiter}`;
+							return `${getUrlFromNode(child.children[0] ?? null)}${delimiter}`;
 						}
 
-						return `${getTextFromNode(
-							child.children[0] ?? null,
-						)}${delimiter}`;
+						return `${getTextFromNode(child.children[0] ?? null)}${delimiter}`;
 					}
 
-					if (child.type === 'link') {
+					if (child.type === "link") {
 						if (isDescription) {
 							return `[${getTextFromNode(
 								child.children[0] ?? null,
@@ -203,13 +196,10 @@ const getTextByHeader = (
 							)}](${getUrlFromNode(child ?? null)})`;
 						}
 
-						return getTextFromNode(
-							child.children[0] ?? null,
-							isDescription,
-						);
+						return getTextFromNode(child.children[0] ?? null, isDescription);
 					}
 
-					if (child.type === 'strong') {
+					if (child.type === "strong") {
 						return getTextFromNode(child.children[0] ?? null);
 					}
 
@@ -227,8 +217,8 @@ const getTextByHeader = (
 				});
 		}
 
-		if ('value' in rc) {
-			if (rc.type === 'code') {
+		if ("value" in rc) {
+			if (rc.type === "code") {
 				textParts.push(`\n\`\`\`${rc.lang}\n\n${rc.value}\n\n\`\`\`\n`);
 			} else {
 				textParts.push(`${rc.value}${delimiter}`);
@@ -238,9 +228,9 @@ const getTextByHeader = (
 
 	// Trim last el to remove delimiter
 	textParts[textParts.length - 1] =
-		textParts.at(-1)?.replace(new RegExp(`${delimiter}$`), '') ?? '';
+		textParts.at(-1)?.replace(new RegExp(`${delimiter}$`), "") ?? "";
 
-	return textParts.join('');
+	return textParts.join("");
 };
 
 export const parse = (data: string) => {
@@ -248,103 +238,103 @@ export const parse = (data: string) => {
 
 	const nameHeading = getHeading(children, 1, null);
 	const name =
-		nameHeading?.children[0] && 'value' in nameHeading.children[0]
+		nameHeading?.children[0] && "value" in nameHeading.children[0]
 			? nameHeading.children[0].value
 			: null;
 
 	if (!name) {
-		throw new Error('Name not found');
+		throw new Error("Name not found");
 	}
 
-	const descHeading = getHeading(children, 2, 'Description');
+	const descHeading = getHeading(children, 2, "Description");
 	const description = descHeading
-		? getTextByHeader(children, descHeading, '\n')
+		? getTextByHeader(children, descHeading, "\n")
 		: null;
 	if (!description) {
-		throw new Error('Description not found');
+		throw new Error("Description not found");
 	}
 
-	const exampleHeading = getHeading(children, 2, 'Example');
+	const exampleHeading = getHeading(children, 2, "Example");
 	const examples = exampleHeading
-		? getTextByHeader(children, exampleHeading, '\n')
+		? getTextByHeader(children, exampleHeading, "\n")
 		: null;
 	// if (!examples) {
 	// 	throw new Error('Examples not found');
 	// }
 
-	const applicabilityHeader = getHeading(children, 2, 'Applicability');
+	const applicabilityHeader = getHeading(children, 2, "Applicability");
 	const applicability = applicabilityHeader
-		? getTextByHeader(children, applicabilityHeader, '\n')
+		? getTextByHeader(children, applicabilityHeader, "\n")
 		: null;
 	if (!applicability) {
-		throw new Error('Applicability criteria not found');
+		throw new Error("Applicability criteria not found");
 	}
 	// This should be enforced for future codemods. For now, validation should be disabled.
 	// if (!applicability.match(/[\w]+ (>|>=) \d+\.\d+\.\d+/)) {
 	// 	throw new Error('Applicability criteria is of a wrong format');
 	// }
 
-	const versionHeader = getHeading(children, 3, 'Codemod Version');
+	const versionHeader = getHeading(children, 3, "Codemod Version");
 	const version = versionHeader
-		? getTextByHeader(children, versionHeader, '\n')
+		? getTextByHeader(children, versionHeader, "\n")
 		: null;
 	if (!version) {
-		throw new Error('Codemod version not found');
+		throw new Error("Codemod version not found");
 	}
 	const versionMatch = version.match(/(v)?(\d+\.\d+\.\d+)/)?.at(2);
 
-	const changeModeHeader = getHeading(children, 3, 'Change Mode');
+	const changeModeHeader = getHeading(children, 3, "Change Mode");
 	const changeModeText = changeModeHeader
-		? getTextByHeader(children, changeModeHeader, '\n').toLowerCase()
+		? getTextByHeader(children, changeModeHeader, "\n").toLowerCase()
 		: null;
 	if (!changeModeText) {
-		throw new Error('Change mode not found');
+		throw new Error("Change mode not found");
 	}
 	let changeMode: string | null = null;
-	if (changeModeText.includes('assistive')) {
-		changeMode = 'assistive';
-	} else if (changeModeText.includes('autonomous')) {
-		changeMode = 'autonomous';
+	if (changeModeText.includes("assistive")) {
+		changeMode = "assistive";
+	} else if (changeModeText.includes("autonomous")) {
+		changeMode = "autonomous";
 	}
 	if (!changeMode) {
-		throw new Error('Change mode is of a wrong format');
+		throw new Error("Change mode is of a wrong format");
 	}
 
-	const engineHeader = getHeading(children, 3, 'Codemod Engine');
+	const engineHeader = getHeading(children, 3, "Codemod Engine");
 	const engineText = engineHeader
-		? getTextByHeader(children, engineHeader, '\n')
+		? getTextByHeader(children, engineHeader, "\n")
 		: null;
 	if (!engineText) {
-		throw new Error('Codemod engine not found');
+		throw new Error("Codemod engine not found");
 	}
 	let engine: string | null = null;
-	if (engineText.includes('ts-morph')) {
-		engine = 'ts-morph';
-	} else if (engineText.includes('jscodeshift')) {
-		engine = 'jscodeshift';
-	} else if (engineText.toLowerCase().includes('file')) {
-		engine = 'filemod';
+	if (engineText.includes("ts-morph")) {
+		engine = "ts-morph";
+	} else if (engineText.includes("jscodeshift")) {
+		engine = "jscodeshift";
+	} else if (engineText.toLowerCase().includes("file")) {
+		engine = "filemod";
 	}
 	if (!engine) {
-		throw new Error('Codemod engine is of a wrong format');
+		throw new Error("Codemod engine is of a wrong format");
 	}
 
-	const timeSaveHeader = getHeading(children, 3, 'Estimated Time Saving');
+	const timeSaveHeader = getHeading(children, 3, "Estimated Time Saving");
 	const timeSave = timeSaveHeader
-		? getTextByHeader(children, timeSaveHeader, '\n').replace(' per ', '/')
+		? getTextByHeader(children, timeSaveHeader, "\n").replace(" per ", "/")
 		: null;
 	if (!timeSave) {
-		throw new Error('Estimated time saving not found');
+		throw new Error("Estimated time saving not found");
 	}
 
-	const ownerHeader = getHeading(children, 3, 'Owner');
+	const ownerHeader = getHeading(children, 3, "Owner");
 	const owner = ownerHeader
-		? getTextByHeader(children, ownerHeader, '\n') ?? 'Codemod.com'
+		? getTextByHeader(children, ownerHeader, "\n") ?? "Codemod.com"
 		: null;
 
-	const linksHeader = getHeading(children, 3, 'Links');
+	const linksHeader = getHeading(children, 3, "Links");
 	const links = linksHeader
-		? getTextByHeader(children, linksHeader, ',')
+		? getTextByHeader(children, linksHeader, ",")
 		: null;
 
 	return {
@@ -383,13 +373,13 @@ export const convertToYaml = (
 	let cleanPath: string | null = null;
 	let codemodName: string | null = null;
 	if (path) {
-		const splitPath = path.split('/');
-		cleanPath = splitPath.slice(0, -1).join('/');
+		const splitPath = path.split("/");
+		cleanPath = splitPath.slice(0, -1).join("/");
 
-		const parts = __dirname.split('/');
-		const pivot = parts.indexOf('apps');
+		const parts = __dirname.split("/");
+		const pivot = parts.indexOf("apps");
 		const pathToCodemod = nodePath.join(
-			parts.slice(0, pivot).join('/'),
+			parts.slice(0, pivot).join("/"),
 			cleanPath,
 		);
 
@@ -397,14 +387,12 @@ export const convertToYaml = (
 		frameworkVersion = splitPath.at(4) ?? null;
 
 		try {
-			const config = readFileSync(
-				`${pathToCodemod}/config.json`,
-			).toString();
+			const config = readFileSync(`${pathToCodemod}/config.json`).toString();
 			const json = JSON.parse(config);
-			codemodName = json.name ?? cleanPath.split('/').slice(3).join('/');
+			codemodName = json.name ?? cleanPath.split("/").slice(3).join("/");
 
 			if (is(configJsonSchema, json)) {
-				slug = codemodName!.replace(/\//g, '-');
+				slug = codemodName!.replace(/\//g, "-");
 				cliCommand = `codemod ${codemodName}`;
 			}
 		} catch (e) {
@@ -414,9 +402,9 @@ export const convertToYaml = (
 
 	let vscodeHashDigest: string | null = null;
 	if (codemodName) {
-		vscodeHashDigest = createHash('ripemd160')
+		vscodeHashDigest = createHash("ripemd160")
 			.update(codemodName)
-			.digest('base64url');
+			.digest("base64url");
 	}
 
 	let titleWithVersion = title;
@@ -434,49 +422,47 @@ export const convertToYaml = (
 	titleWithVersion = capitalize(titleWithVersion);
 
 	const shortDescription = description
-		.split('\n')
+		.split("\n")
 		.at(0)
-		?.split('.')
+		?.split(".")
 		.at(0)
-		?.replace('`', '')
-		.replace(/\W$/g, '');
+		?.replace("`", "")
+		.replace(/\W$/g, "");
 
 	const res = `
 created-on: ${new Date().toISOString()}
 f_long-description: >-
   ## Description
   \n
-  ${description.replace(/\n/g, '\n  ')}
-  ${examples ? `\n\n  ${examples.replace(/\n/g, '\n  ')}` : ''}${
+  ${description.replace(/\n/g, "\n  ")}
+  ${examples ? `\n\n  ${examples.replace(/\n/g, "\n  ")}` : ""}${
 		path
 			? `\nf_github-link: https://github.com/codemod-com/codemod/tree/main/${cleanPath}`
-			: ''
-  }${
+			: ""
+	}${
 		vscodeHashDigest
 			? `\nf_vs-code-link: vscode://codemod.codemod-vscode-extension/showCodemod?chd=${vscodeHashDigest}`
-			: ''
-  }${cliCommand ? `\nf_cli-command: ${cliCommand}` : ''}${
-		framework ? `\nf_framework: cms/framework/${framework}.md` : ''
-  }
+			: ""
+	}${cliCommand ? `\nf_cli-command: ${cliCommand}` : ""}${
+		framework ? `\nf_framework: cms/framework/${framework}.md` : ""
+	}
 f_applicability-criteria: "${applicability}"
-f_verified-codemod: ${owner === 'Codemod.com' ? 'true' : 'false'}${
+f_verified-codemod: ${owner === "Codemod.com" ? "true" : "false"}${
 		owner
 			? `\nf_author: ${
-					owner === 'Codemod.com'
-						? 'cms/authors/codemod-com.md'
-						: `cms/authors/${
-								owner?.toLowerCase().replace(/ /g, '-') ?? ''
-						  }.md`
+					owner === "Codemod.com"
+						? "cms/authors/codemod-com.md"
+						: `cms/authors/${owner?.toLowerCase().replace(/ /g, "-") ?? ""}.md`
 			  }`
-			: ''
+			: ""
 	}
-layout: "[automations].html"${slug ? `\nslug: ${slug}` : ''}
-title: ${capitalize(titleWithVersion)}${slug ? `\nf_slug-name: ${slug}` : ''}
+layout: "[automations].html"${slug ? `\nslug: ${slug}` : ""}
+title: ${capitalize(titleWithVersion)}${slug ? `\nf_slug-name: ${slug}` : ""}
 f_codemod-engine: cms/codemod-engines/${engine}.md
 f_change-mode-2: ${capitalize(changeMode)}
 f_estimated-time-saving: ${
-		timeSave.includes('\n')
-			? `>-\n  ${timeSave.replace(/\n/, '\n  ')}`
+		timeSave.includes("\n")
+			? `>-\n  ${timeSave.replace(/\n/, "\n  ")}`
 			: `"${timeSave}"`
 	}
 tags: automations

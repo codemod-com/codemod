@@ -1,11 +1,11 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 export const environmentSchema = S.struct({
 	PORT: S.string,
 	DATA: S.optional(S.string),
 	X_CODEMOD_ACCESS_TOKEN: S.optional(S.string),
 	X_INTUITA_ACCESS_TOKEN: S.optional(S.string),
-	CLERK_DISABLED: S.optional(S.literal('true')),
+	CLERK_DISABLED: S.optional(S.literal("true")),
 	// unused start
 	ENCRYPTION_KEY: S.optional(S.string),
 	SIGNATURE_PRIVATE_KEY: S.optional(S.string),
@@ -28,11 +28,11 @@ export type Environment = S.Schema.To<typeof environmentSchema>;
 export const parseEnvironment = S.parseSync(environmentSchema);
 
 const engineSchema = S.union(
-	S.literal('gpt-4'),
-	S.literal('claude-2.0'),
-	S.literal('claude-instant-1.2'),
-	S.literal('replit-code-v1-3b'),
-	S.literal('gpt-4-with-chroma'),
+	S.literal("gpt-4"),
+	S.literal("claude-2.0"),
+	S.literal("claude-instant-1.2"),
+	S.literal("replit-code-v1-3b"),
+	S.literal("gpt-4-with-chroma"),
 );
 
 export const sendMessageBodySchema = S.struct({
@@ -47,20 +47,20 @@ export const sendChatBodySchema = S.struct({
 		S.struct({
 			content: S.string,
 			role: S.union(
-				S.literal('system'),
-				S.literal('user'),
-				S.literal('assistant'),
+				S.literal("system"),
+				S.literal("user"),
+				S.literal("assistant"),
 			),
 			name: S.optional(S.string),
 		}),
 	),
-	engine: S.optional(engineSchema).withDefault(() => 'gpt-4'),
+	engine: S.optional(engineSchema).withDefault(() => "gpt-4"),
 });
 
 export const parseSendChatBody = S.parseSync(sendChatBodySchema);
 
 export const createIssueParamsSchema = S.struct({
-	provider: S.literal('github'),
+	provider: S.literal("github"),
 });
 
 export const parseCreateIssueParams = S.parseSync(createIssueParamsSchema);

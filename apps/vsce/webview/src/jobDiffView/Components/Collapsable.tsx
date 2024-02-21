@@ -1,7 +1,7 @@
-import React from 'react';
-import { ReactComponent as ArrowDownIcon } from '../../assets/arrow-down.svg';
-import './Collapsable.css';
-import cn from 'classnames';
+import cn from "classnames";
+import React from "react";
+import { ReactComponent as ArrowDownIcon } from "../../assets/arrow-down.svg";
+import "./Collapsable.css";
 
 type CollapsableProps = Readonly<{
 	defaultExpanded: boolean;
@@ -27,30 +27,25 @@ export const Collapsable = ({
 	children,
 }: CollapsableProps) => {
 	return (
-		<div className={cn('collapsable', className)}>
+		<div className={cn("collapsable", className)}>
 			<div
 				className={cn(headerClassName, {
 					collapsable__header: true,
-					'collapsable__header--sticky': headerSticky,
+					"collapsable__header--sticky": headerSticky,
 				})}
 				onClick={() => onToggle?.(!defaultCollapsed)}
 			>
 				{onToggle && (
 					<ArrowDownIcon
-						className={cn(
-							'collapsable__arrow',
-							headerChevronClassName,
-							{
-								'collapsable__arrow--collapsed':
-									!defaultCollapsed,
-							},
-						)}
+						className={cn("collapsable__arrow", headerChevronClassName, {
+							"collapsable__arrow--collapsed": !defaultCollapsed,
+						})}
 					/>
 				)}
 				{headerComponent}
 			</div>
 			{defaultCollapsed && (
-				<div className={cn('collapsable_content', contentClassName)}>
+				<div className={cn("collapsable_content", contentClassName)}>
 					{children}
 				</div>
 			)}

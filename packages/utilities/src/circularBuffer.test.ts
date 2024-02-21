@@ -1,11 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import { EventEmitter } from 'node:events';
-import { describe, expect, it } from 'vitest';
-import { CircularBuffer } from './circularBuffer.js';
+import { EventEmitter } from "node:events";
+import { describe, expect, it } from "vitest";
+import { CircularBuffer } from "./circularBuffer.js";
 
 interface TestEventEmitter extends EventEmitter {
-	emit(event: 'buffer', buffer: Buffer): boolean;
-	once(event: 'buffer', listener: (buffer: Buffer) => void): this;
+	emit(event: "buffer", buffer: Buffer): boolean;
+	once(event: "buffer", listener: (buffer: Buffer) => void): this;
 }
 
 class TestEventEmitter extends EventEmitter {}
@@ -17,7 +17,7 @@ class TestCircularBuffer extends CircularBuffer {
 		const eventEmitter = new TestEventEmitter();
 
 		super(_MAX_BYTE_LENGTH, (buffer) => {
-			eventEmitter.emit('buffer', buffer);
+			eventEmitter.emit("buffer", buffer);
 		});
 
 		this._eventEmitter = eventEmitter;
@@ -26,7 +26,7 @@ class TestCircularBuffer extends CircularBuffer {
 	public requireBytes(byteLength: number): () => Promise<Buffer> {
 		return () =>
 			new Promise<Buffer>((resolve) => {
-				this._eventEmitter.once('buffer', (buffer) => {
+				this._eventEmitter.once("buffer", (buffer) => {
 					resolve(buffer);
 				});
 				this.requireByteLength(byteLength);
@@ -49,8 +49,8 @@ class TestCircularBuffer extends CircularBuffer {
 	}
 }
 
-describe('CircularBuffer', () => {
-	it('should call the requireByteLength callback if it contains enough bytes already', async () => {
+describe("CircularBuffer", () => {
+	it("should call the requireByteLength callback if it contains enough bytes already", async () => {
 		const circularBuffer = new TestCircularBuffer(1);
 
 		circularBuffer.write(Buffer.from([1]), 1);
@@ -64,7 +64,7 @@ describe('CircularBuffer', () => {
 		expect(circularBuffer.getFreeByteLength()).toEqual(1);
 	});
 
-	it('should call the requireByteLength callback when it contains enough bytes', async () => {
+	it("should call the requireByteLength callback when it contains enough bytes", async () => {
 		const circularBuffer = new TestCircularBuffer(1);
 
 		expect(circularBuffer.getFreeByteLength()).toEqual(1);
@@ -80,15 +80,13 @@ describe('CircularBuffer', () => {
 		expect(circularBuffer.getFreeByteLength()).toEqual(1);
 	});
 
-	it('should read and write without overflowing the buffer', async () => {
+	it("should read and write without overflowing the buffer", async () => {
 		const circularBuffer = new TestCircularBuffer(3);
 
 		{
 			circularBuffer.write(Buffer.from([1, 2]), 2);
 
-			expect(circularBuffer.getBuffer()).toStrictEqual(
-				Buffer.from([1, 2, 0]),
-			);
+			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([1, 2, 0]));
 			expect(circularBuffer.getStart()).toEqual(0);
 			expect(circularBuffer.getEnd()).toEqual(2);
 			expect(circularBuffer.getFreeByteLength()).toEqual(1);
@@ -107,9 +105,7 @@ describe('CircularBuffer', () => {
 		{
 			circularBuffer.write(Buffer.from([3, 4]), 2);
 
-			expect(circularBuffer.getBuffer()).toStrictEqual(
-				Buffer.from([4, 2, 3]),
-			);
+			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([4, 2, 3]));
 			expect(circularBuffer.getStart()).toEqual(1);
 			expect(circularBuffer.getEnd()).toEqual(1);
 			expect(circularBuffer.getFreeByteLength()).toEqual(0);
@@ -137,9 +133,7 @@ describe('CircularBuffer', () => {
 		{
 			circularBuffer.write(Buffer.from([5, 6, 7]), 3);
 
-			expect(circularBuffer.getBuffer()).toStrictEqual(
-				Buffer.from([7, 5, 6]),
-			);
+			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([7, 5, 6]));
 			expect(circularBuffer.getStart()).toEqual(1);
 			expect(circularBuffer.getEnd()).toEqual(1);
 			expect(circularBuffer.getFreeByteLength()).toEqual(0);
@@ -156,23 +150,23 @@ describe('CircularBuffer', () => {
 		}
 	});
 
-	it('should not allow for writing zero bytes', () => {
+	it("should not allow for writing zero bytes", () => {
 		const circularBuffer = new TestCircularBuffer(1);
 
 		expect(() => circularBuffer.write(Buffer.from([]), 0)).throw(
-			'You cannot write 0 bytes into the circular buffer',
+			"You cannot write 0 bytes into the circular buffer",
 		);
 	});
 
-	it('should not allow for writing more bytes than available', () => {
+	it("should not allow for writing more bytes than available", () => {
 		const circularBuffer = new TestCircularBuffer(1);
 
 		expect(() => circularBuffer.write(Buffer.from([1, 2]), 2)).throw(
-			'You cannot write 2 byte(s) when only 1 is/are available',
+			"You cannot write 2 byte(s) when only 1 is/are available",
 		);
 	});
 
-	it('should writing bytes if the end mark is lower than the start mark', async () => {
+	it("should writing bytes if the end mark is lower than the start mark", async () => {
 		const circularBuffer = new TestCircularBuffer(3);
 
 		circularBuffer.write(Buffer.from([1, 2]), 2);
@@ -183,18 +177,14 @@ describe('CircularBuffer', () => {
 
 		await circularBuffer.requireBytes(1)();
 
-		expect(circularBuffer.getBuffer()).toStrictEqual(
-			Buffer.from([4, 2, 3]),
-		);
+		expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([4, 2, 3]));
 		expect(circularBuffer.getStart()).toEqual(2);
 		expect(circularBuffer.getEnd()).toEqual(1);
 		expect(circularBuffer.getFreeByteLength()).toEqual(1);
 
 		circularBuffer.write(Buffer.from([5]), 1);
 
-		expect(circularBuffer.getBuffer()).toStrictEqual(
-			Buffer.from([4, 5, 3]),
-		);
+		expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([4, 5, 3]));
 		expect(circularBuffer.getStart()).toEqual(2);
 		expect(circularBuffer.getEnd()).toEqual(2);
 		expect(circularBuffer.getFreeByteLength()).toEqual(0);

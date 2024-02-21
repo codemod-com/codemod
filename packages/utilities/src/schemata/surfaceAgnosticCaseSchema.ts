@@ -1,5 +1,5 @@
-import * as S from '@effect/schema/Schema';
-import { argumentRecordSchema } from './argumentRecordSchema.js';
+import * as S from "@effect/schema/Schema";
+import { argumentRecordSchema } from "./argumentRecordSchema.js";
 
 const surfaceAgnosticCaseSchema = S.struct({
 	caseHashDigest: S.string,

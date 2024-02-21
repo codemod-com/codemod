@@ -1,5 +1,5 @@
-import axios from 'axios';
-import gh from 'parse-github-url';
+import axios from "axios";
+import gh from "parse-github-url";
 import {
 	Assignee,
 	CreatePRParams,
@@ -8,7 +8,7 @@ import {
 	NewIssueParams,
 	PullRequest,
 	SourceControlProvider,
-} from './SourceControl.js';
+} from "./SourceControl.js";
 
 type Repository = {
 	owner: string;
@@ -23,7 +23,7 @@ function parseGithubRepoUrl(url: string): Repository {
 		const { owner, name } = gh(url) ?? {};
 
 		if (!owner || !name) {
-			throw new InvalidGithubUrlError('Missing owner or name');
+			throw new InvalidGithubUrlError("Missing owner or name");
 		}
 
 		return { owner, name };
@@ -71,15 +71,16 @@ export class GithubProvider implements SourceControlProvider {
 	}
 
 	async getPullRequests(params: ListPRParams): Promise<PullRequest[]> {
-		const queryParams = Object.entries(params).reduce<
-			Record<string, string>
-		>((acc, [key, value]) => {
-			if (value) {
-				acc[key] = value;
-			}
+		const queryParams = Object.entries(params).reduce<Record<string, string>>(
+			(acc, [key, value]) => {
+				if (value) {
+					acc[key] = value;
+				}
 
-			return acc;
-		}, {});
+				return acc;
+			},
+			{},
+		);
 
 		const query = new URLSearchParams(queryParams).toString();
 

@@ -1,11 +1,11 @@
-import { isIdentifier, isStringLiteral, type Node } from '@babel/types';
-import { memo } from 'react';
-import TreeView from 'react-treeview';
-import { cn } from '~/lib/utils';
-import Checkbox from '../../../components/CheckBox';
-import Text from '../../../components/Text';
-import { states, type TreeNodeSelectorState } from '../../../store/slices/CFS';
-import { type TreeNode } from '../../../types/tree';
+import { type Node, isIdentifier, isStringLiteral } from "@babel/types";
+import { memo } from "react";
+import TreeView from "react-treeview";
+import { cn } from "~/lib/utils";
+import Checkbox from "../../../components/CheckBox";
+import Text from "../../../components/Text";
+import { type TreeNodeSelectorState, states } from "../../../store/slices/CFS";
+import { type TreeNode } from "../../../types/tree";
 
 type Props = Readonly<{
 	node: TreeNode;
@@ -17,9 +17,9 @@ type Props = Readonly<{
 }>;
 
 const TOOLTIPS = {
-	Type: 'Match only the type of this node',
-	Value: 'Match the type and the value of this node',
-	Unselected: 'Do not match this node',
+	Type: "Match only the type of this node",
+	Value: "Match the type and the value of this node",
+	Unselected: "Do not match this node",
 };
 
 const getNodeValue = (node: Node): string => {
@@ -31,11 +31,11 @@ const getNodeValue = (node: Node): string => {
 		return node.value;
 	}
 
-	if (node.type === 'NumberLiteral') {
+	if (node.type === "NumberLiteral") {
 		return String(node.value);
 	}
 
-	return '';
+	return "";
 };
 
 const getFormattedNodeName = (
@@ -50,7 +50,7 @@ const getFormattedNodeName = (
 		case states.VALUE:
 			return `${node.label} "${getNodeValue(node.actualNode)}"`;
 		case states.UNSELECTED:
-			return 'Anything';
+			return "Anything";
 	}
 };
 
@@ -100,8 +100,8 @@ const NodeSelectorTree = ({
 			>
 				<Text
 					className={cn(
-						isTextClickable && 'cursor-pointer',
-						!isTextClickable && 'opacity-50',
+						isTextClickable && "cursor-pointer",
+						!isTextClickable && "opacity-50",
 					)}
 					id={node.id}
 					onClick={() => {

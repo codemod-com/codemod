@@ -29,24 +29,24 @@ Changes to the original file:
 2. removed getDependencies
 */
 
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
+import fs from "fs";
+import os from "os";
+import path from "path";
 
 const markerPath = path.join(
-	process.env.NODE_ENV === 'local' ? process.cwd() : os.tmpdir(),
-	'./antd5-codemod-marker.log',
+	process.env.NODE_ENV === "local" ? process.cwd() : os.tmpdir(),
+	"./antd5-codemod-marker.log",
 );
 
-const newline = '\n';
+const newline = "\n";
 
 function ensureFile() {
-	return fs.openSync(markerPath, 'w');
+	return fs.openSync(markerPath, "w");
 }
 
 function markDependency(depName) {
 	ensureFile();
-	return fs.appendFileSync(markerPath, depName + newline, 'utf8');
+	return fs.appendFileSync(markerPath, depName + newline, "utf8");
 }
 
 export { markDependency };

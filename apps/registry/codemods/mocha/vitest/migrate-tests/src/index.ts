@@ -1,16 +1,16 @@
-import type { API, FileInfo, ImportDeclaration } from 'jscodeshift';
+import type { API, FileInfo, ImportDeclaration } from "jscodeshift";
 
 const mochaGlobalApis = [
-	'afterAll',
-	'afterEach',
-	'beforeAll',
-	'beforeEach',
-	'describe',
-	'test',
-	'it',
+	"afterAll",
+	"afterEach",
+	"beforeAll",
+	"beforeEach",
+	"describe",
+	"test",
+	"it",
 ];
 
-const mochaApiProps = ['only', 'skip'];
+const mochaApiProps = ["only", "skip"];
 const mochaGlobalApiProps = {
 	describe: mochaApiProps,
 	it: mochaApiProps,
@@ -27,8 +27,8 @@ export default function transform(
 
 	const vitestImportDeclarations = root.find(j.ImportDeclaration, {
 		source: {
-			type: 'StringLiteral',
-			value: 'vitest',
+			type: "StringLiteral",
+			value: "vitest",
 		},
 	});
 
@@ -37,7 +37,7 @@ export default function transform(
 	}
 
 	const describeIdentifiers = root.find(j.Identifier, {
-		name: 'describe',
+		name: "describe",
 	});
 
 	if (describeIdentifiers.length === 0) {
@@ -47,14 +47,14 @@ export default function transform(
 	// Find the import declaration for 'chai'
 	const chaiImportDeclarations = root.find(j.ImportDeclaration, {
 		source: {
-			type: 'StringLiteral',
-			value: 'chai',
+			type: "StringLiteral",
+			value: "chai",
 		},
 	});
 
 	root.find(j.ImportDeclaration).forEach((importDeclaration) => {
 		importDeclaration.node.specifiers?.forEach((specifier) => {
-			if (specifier.type !== 'ImportSpecifier') {
+			if (specifier.type !== "ImportSpecifier") {
 				return;
 			}
 			const importName = specifier.imported.name;
@@ -62,8 +62,7 @@ export default function transform(
 			if (!mochaGlobalApiKeys.includes(importName)) {
 				return;
 			}
-			const castedImportName =
-				importName as keyof typeof mochaGlobalApiProps;
+			const castedImportName = importName as keyof typeof mochaGlobalApiProps;
 			if (!mochaGlobalApiProps[castedImportName]) {
 				return;
 			}
@@ -71,7 +70,7 @@ export default function transform(
 		});
 	});
 
-	const comments: NonNullable<ImportDeclaration['comments']> = [];
+	const comments: NonNullable<ImportDeclaration["comments"]> = [];
 
 	const namesToImport = new Set<string>();
 
@@ -92,7 +91,7 @@ export default function transform(
 	// Remove mocha imports and references
 	const toRemove: string[] = [];
 	const mochaImport = root.find(j.ImportDeclaration, {
-		source: { type: 'StringLiteral', value: 'mocha' },
+		source: { type: "StringLiteral", value: "mocha" },
 	});
 
 	mochaImport.forEach((declaration) => {
@@ -105,22 +104,22 @@ export default function transform(
 	});
 
 	toRemove.forEach((spec) => {
-		root.find(j.TSTypeAnnotation, {
-			typeAnnotation: {
-				typeName: { type: 'Identifier', name: spec },
-			},
-		}).forEach((annotation) => {
-			const { value: typedIdentifier } = annotation.parent;
-			if (j.Identifier.check(typedIdentifier)) {
-				if (typedIdentifier.name !== 'this') {
-					return j(annotation.parentPath).replaceWith(
-						typedIdentifier.name,
-					);
-				}
+		root
+			.find(j.TSTypeAnnotation, {
+				typeAnnotation: {
+					typeName: { type: "Identifier", name: spec },
+				},
+			})
+			.forEach((annotation) => {
+				const { value: typedIdentifier } = annotation.parent;
+				if (j.Identifier.check(typedIdentifier)) {
+					if (typedIdentifier.name !== "this") {
+						return j(annotation.parentPath).replaceWith(typedIdentifier.name);
+					}
 
-				j(annotation.parentPath).remove();
-			}
-		});
+					j(annotation.parentPath).remove();
+				}
+			});
 
 		root.find(j.Identifier, { name: spec }).forEach((identifier) => {
 			j(identifier).remove();
@@ -131,13 +130,10 @@ export default function transform(
 		const propNamesList = root
 			.find(j.MemberExpression, {
 				object: { name: api },
-				property: { type: 'Identifier' },
+				property: { type: "Identifier" },
 			})
 			.nodes()
-			.map(
-				(node) =>
-					j.Identifier.check(node.property) && node.property.name,
-			)
+			.map((node) => j.Identifier.check(node.property) && node.property.name)
 			.filter(Boolean) as string[];
 
 		const propNames = [...new Set(propNamesList)];
@@ -193,7 +189,7 @@ export default function transform(
 			0,
 			j.importDeclaration.from({
 				comments,
-				source: j.literal('vitest'),
+				source: j.literal("vitest"),
 				specifiers: Array.from(namesToImport).map((name) =>
 					j.importSpecifier(j.identifier(name)),
 				),

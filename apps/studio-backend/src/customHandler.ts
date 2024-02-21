@@ -1,5 +1,5 @@
-import { type Clerk } from '@clerk/backend';
-import { type TokenService } from './services/tokenService.js';
+import { type Clerk } from "@clerk/backend";
+import { type TokenService } from "./services/tokenService.js";
 
 export type CustomHandler<T> = (args: {
 	tokenService: TokenService;

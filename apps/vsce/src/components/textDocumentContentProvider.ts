@@ -4,16 +4,16 @@ import {
 	ProviderResult,
 	TextDocumentContentProvider,
 	Uri,
-} from 'vscode';
+} from "vscode";
 
 export class CustomTextDocumentContentProvider
 	implements TextDocumentContentProvider
 {
-	readonly URI = Uri.parse('codemod:jscodeshiftCodemod.ts');
+	readonly URI = Uri.parse("codemod:jscodeshiftCodemod.ts");
 	readonly #onDidChangeEmitter = new EventEmitter<Uri>();
 	readonly onDidChange: Event<Uri> | undefined = undefined;
 
-	#content = '';
+	#content = "";
 
 	constructor() {
 		this.onDidChange = this.#onDidChangeEmitter.event;

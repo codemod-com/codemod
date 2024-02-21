@@ -1,10 +1,10 @@
-import * as S from '@effect/schema/Schema';
-import { Link as LinkIcon } from '@phosphor-icons/react';
-import { Loader2 } from 'lucide-react';
-import { useCallback, useState, type MouseEventHandler } from 'react';
-import { toast } from 'react-hot-toast';
-import { Button } from '~/components/ui/button';
-import { useShareLink } from '~/hooks/useShareLink';
+import * as S from "@effect/schema/Schema";
+import { Link as LinkIcon } from "@phosphor-icons/react";
+import { Loader2 } from "lucide-react";
+import { type MouseEventHandler, useCallback, useState } from "react";
+import { toast } from "react-hot-toast";
+import { Button } from "~/components/ui/button";
+import { useShareLink } from "~/hooks/useShareLink";
 
 const responseSchema = S.struct({
 	shortURL: S.string,
@@ -33,29 +33,26 @@ export const PublicLinkSharingButton = () => {
 				// because we want unlogged users to create links as well
 
 				const data = {
-					domain: 'go.intuita.io',
+					domain: "go.intuita.io",
 					originalURL: url.toString(),
 				};
 
-				const response = await fetch(
-					'https://api.short.io/links/public',
-					{
-						method: 'post',
-						headers: {
-							accept: 'application/json',
-							'Content-Type': 'application/json',
-							authorization: 'pk_IWp4WTezk4Dgb5bc',
-						},
-						body: JSON.stringify(data),
+				const response = await fetch("https://api.short.io/links/public", {
+					method: "post",
+					headers: {
+						accept: "application/json",
+						"Content-Type": "application/json",
+						authorization: "pk_IWp4WTezk4Dgb5bc",
 					},
-				);
+					body: JSON.stringify(data),
+				});
 
 				const json = await response.json();
 
 				const { shortURL } = parseResponse(json);
 
 				navigator.clipboard.writeText(shortURL);
-				toast.success('Copied the shared link into the clipboard');
+				toast.success("Copied the shared link into the clipboard");
 			} catch (error) {
 				console.error(error);
 			}

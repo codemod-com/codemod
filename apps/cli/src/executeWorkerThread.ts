@@ -1,13 +1,13 @@
-import { parentPort } from 'node:worker_threads';
-import { buildFormattedFileCommands } from './fileCommands.js';
+import { parentPort } from "node:worker_threads";
+import { buildFormattedFileCommands } from "./fileCommands.js";
 import {
-	decodeMainThreadMessage,
 	type MainThreadMessage,
-} from './mainThreadMessages.js';
-import { runJscodeshiftCodemod } from './runJscodeshiftCodemod.js';
-import { runTsMorphCodemod } from './runTsMorphCodemod.js';
-import { ConsoleKind } from './schemata/consoleKindSchema.js';
-import { type WorkerThreadMessage } from './workerThreadMessages.js';
+	decodeMainThreadMessage,
+} from "./mainThreadMessages.js";
+import { runJscodeshiftCodemod } from "./runJscodeshiftCodemod.js";
+import { runTsMorphCodemod } from "./runTsMorphCodemod.js";
+import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import { type WorkerThreadMessage } from "./workerThreadMessages.js";
 
 class PathAwareError extends Error {
 	constructor(
@@ -20,27 +20,27 @@ class PathAwareError extends Error {
 
 const consoleCallback = (consoleKind: ConsoleKind, message: string): void => {
 	parentPort?.postMessage({
-		kind: 'console',
+		kind: "console",
 		consoleKind,
 		message,
 	} satisfies WorkerThreadMessage);
 };
 
 let initializationMessage:
-	| (MainThreadMessage & { kind: 'initialization' })
+	| (MainThreadMessage & { kind: "initialization" })
 	| null = null;
 
 const messageHandler = async (m: unknown) => {
 	try {
 		const message = decodeMainThreadMessage(m);
 
-		if (message.kind === 'initialization') {
+		if (message.kind === "initialization") {
 			initializationMessage = message;
 			return;
 		}
 
-		if (message.kind === 'exit') {
-			parentPort?.off('message', messageHandler);
+		if (message.kind === "exit") {
+			parentPort?.off("message", messageHandler);
 			return;
 		}
 
@@ -50,7 +50,7 @@ const messageHandler = async (m: unknown) => {
 
 		try {
 			const fileCommands =
-				initializationMessage.codemodEngine === 'jscodeshift'
+				initializationMessage.codemodEngine === "jscodeshift"
 					? runJscodeshiftCodemod(
 							initializationMessage.codemodSource,
 							message.path,
@@ -71,7 +71,7 @@ const messageHandler = async (m: unknown) => {
 			const commands = await buildFormattedFileCommands(fileCommands);
 
 			parentPort?.postMessage({
-				kind: 'commands',
+				kind: "commands",
 				commands,
 			} satisfies WorkerThreadMessage);
 		} catch (error) {
@@ -82,7 +82,7 @@ const messageHandler = async (m: unknown) => {
 		}
 	} catch (error) {
 		parentPort?.postMessage({
-			kind: 'error',
+			kind: "error",
 			message: error instanceof Error ? error.message : String(error),
 			path: error instanceof PathAwareError ? error.path : undefined,
 		} satisfies WorkerThreadMessage);
@@ -90,5 +90,5 @@ const messageHandler = async (m: unknown) => {
 };
 
 export const executeWorkerThread = () => {
-	parentPort?.on('message', messageHandler);
+	parentPort?.on("message", messageHandler);
 };

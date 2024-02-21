@@ -1,26 +1,26 @@
 /* eslint-disable import/prefer-default-export */
-import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Event } from '~/schemata/eventSchemata';
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { Event } from "~/schemata/eventSchemata";
 import {
-	parseWebWorkerOutgoingMessage,
 	type WebWorkerIncomingMessage,
-} from '~/schemata/webWorkersSchemata';
-import type { Engine } from '~/store/slices/snippets';
+	parseWebWorkerOutgoingMessage,
+} from "~/schemata/webWorkersSchemata";
+import type { Engine } from "~/store/slices/snippets";
 
 type State =
 	| {
-			readonly kind: 'LEFT';
+			readonly kind: "LEFT";
 			readonly error: Error;
 	  }
 	| {
-			readonly kind: 'RIGHT';
+			readonly kind: "RIGHT";
 			readonly events: ReadonlyArray<Event>;
 			readonly output: string | null | undefined;
 	  };
 
 export const useWebWorker = () => {
 	const [state, setState] = useState<State>({
-		kind: 'RIGHT',
+		kind: "RIGHT",
 		events: [],
 		output: undefined,
 	});
@@ -29,17 +29,17 @@ export const useWebWorker = () => {
 
 	useEffect(() => {
 		const worker = new Worker(
-			new URL('../utils/webworker.ts', import.meta.url),
+			new URL("../utils/webworker.ts", import.meta.url),
 			{
-				type: 'module',
-				credentials: 'omit',
+				type: "module",
+				credentials: "omit",
 			},
 		);
 
 		worker.onmessageerror = () => {
 			setState({
-				kind: 'LEFT',
-				error: new Error('Could not deserialize a worker message'),
+				kind: "LEFT",
+				error: new Error("Could not deserialize a worker message"),
 			});
 		};
 
@@ -47,7 +47,7 @@ export const useWebWorker = () => {
 			const data = parseWebWorkerOutgoingMessage(messageEvent.data);
 
 			setState({
-				kind: 'RIGHT',
+				kind: "RIGHT",
 				...data,
 			});
 		};
@@ -56,10 +56,10 @@ export const useWebWorker = () => {
 			const error =
 				ee.error instanceof Error
 					? ee.error
-					: new Error('Unknown worker error');
+					: new Error("Unknown worker error");
 
 			setState({
-				kind: 'LEFT',
+				kind: "LEFT",
 				error,
 			});
 		};

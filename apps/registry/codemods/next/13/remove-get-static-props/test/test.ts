@@ -1,14 +1,14 @@
-import assert, { deepStrictEqual } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import jscodeshift from 'jscodeshift';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { describe, it } from 'vitest';
-import { transform as jscodeshiftTransform, repomod } from '../src/index.js';
+import assert, { deepStrictEqual } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import jscodeshift from "jscodeshift";
+import type { DirectoryJSON } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
+import { describe, it } from "vitest";
+import { repomod, transform as jscodeshiftTransform } from "../src/index.js";
 
 const globalOptions = {
-	buildLegacyCtxUtilAbsolutePath: '/opt/project/hooks/buildLegacyCtx.tsx',
+	buildLegacyCtxUtilAbsolutePath: "/opt/project/hooks/buildLegacyCtx.tsx",
 };
 
 const transform = async (json: DirectoryJSON) => {
@@ -17,7 +17,7 @@ const transform = async (json: DirectoryJSON) => {
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const api = buildApi<{
 		jscodeshift: typeof jscodeshift;
@@ -29,11 +29,11 @@ const transform = async (json: DirectoryJSON) => {
 		pathApi,
 	);
 
-	return executeFilemod(api, repomod, '/', globalOptions, {});
+	return executeFilemod(api, repomod, "/", globalOptions, {});
 };
 
-describe('next 13 remove-get-static-props', function () {
-	it('should build correct file', async function () {
+describe("next 13 remove-get-static-props", () => {
+	it("should build correct file", async () => {
 		const A_CONTENT = `
 		export async function getServerSideProps(ctx) {
 			const users = await promise;
@@ -47,7 +47,7 @@ describe('next 13 remove-get-static-props', function () {
 
 		const [upsertBuildLegacyCtxUtilCommand, upsertFileCommand] =
 			await transform({
-				'/opt/project/pages/a.tsx': A_CONTENT,
+				"/opt/project/pages/a.tsx": A_CONTENT,
 			});
 
 		const expectedResult = `
@@ -81,29 +81,29 @@ describe('next 13 remove-get-static-props', function () {
 		}
 		`;
 
-		deepStrictEqual(upsertBuildLegacyCtxUtilCommand?.kind, 'upsertFile');
+		deepStrictEqual(upsertBuildLegacyCtxUtilCommand?.kind, "upsertFile");
 		deepStrictEqual(
 			upsertBuildLegacyCtxUtilCommand.path,
-			'/opt/project/hooks/buildLegacyCtx.tsx',
+			"/opt/project/hooks/buildLegacyCtx.tsx",
 		);
 
-		deepStrictEqual(upsertFileCommand?.kind, 'upsertFile');
-		deepStrictEqual(upsertFileCommand.path, '/opt/project/pages/a.tsx');
+		deepStrictEqual(upsertFileCommand?.kind, "upsertFile");
+		deepStrictEqual(upsertFileCommand.path, "/opt/project/pages/a.tsx");
 
 		deepStrictEqual(
-			upsertFileCommand.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			upsertFileCommand.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should not remove anything if getStaticProps', function () {
+	it("should not remove anything if getStaticProps", () => {
 		const INPUT = `
 			export default function Component() {
 	          }
 	      `;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
@@ -111,7 +111,7 @@ describe('next 13 remove-get-static-props', function () {
 		assert.deepEqual(actualOutput, undefined);
 	});
 
-	it('should create an additional function if getStaticProps is present', function () {
+	it("should create an additional function if getStaticProps is present", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -161,17 +161,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should create an additional function if getStaticProps returns an Identifier', function () {
+	it("should create an additional function if getStaticProps returns an Identifier", () => {
 		const INPUT = `
 			export async function getStaticProps(context: GetStaticPropsContext) {
 				const users = await promise(context.params);
@@ -228,18 +228,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should replace props nested props properly', function () {
+	it("should replace props nested props properly", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const allPosts = await promise;
@@ -285,17 +285,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should create additional functions if getStaticProps is present', function () {
+	it("should create additional functions if getStaticProps is present", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -347,18 +347,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when props are not destructured', function () {
+	it("should inject data fetching function when props are not destructured", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -406,17 +406,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when export keyword is used', function () {
+	it("should inject data fetching function when export keyword is used", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				return { props: { a } };
@@ -461,17 +461,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when export keyword is used 2', function () {
+	it("should inject data fetching function when export keyword is used 2", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				return { props: { a } };
@@ -515,17 +515,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when Page has 0 args', function () {
+	it("should inject data fetching function when Page has 0 args", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				sideEffect();
@@ -573,17 +573,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when Page component has implicit return', function () {
+	it("should inject data fetching function when Page component has implicit return", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -628,17 +628,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when Page component has implicit return 2', function () {
+	it("should inject data fetching function when Page component has implicit return 2", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -683,17 +683,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should inject data fetching function when Page component is functionexpression', function () {
+	it("should inject data fetching function when Page component is functionexpression", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -740,17 +740,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add data hooks on the top level of the component ', function () {
+	it("should add data hooks on the top level of the component ", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
@@ -806,18 +806,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add generated code after import statements', function () {
+	it("should add generated code after import statements", () => {
 		const INPUT = `
 			import x from "y";
 			export async function getStaticProps() {
@@ -876,18 +876,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should work with arrow functions', function () {
+	it("should work with arrow functions", () => {
 		const INPUT = `
 			import x from "y";
 			export const getStaticProps = async () => {
@@ -946,18 +946,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should work with hooks that have multiple return statements', function () {
+	it("should work with hooks that have multiple return statements", () => {
 		const INPUT = `
 			import x from "y";
 			export const getStaticProps =  async () => {
@@ -1029,17 +1029,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should not duplicate revalidate prop', function () {
+	it("should not duplicate revalidate prop", () => {
 		const INPUT = `
 			import x from "y";
 			
@@ -1112,18 +1112,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should add dynamic="force-static" if a page implements getStaticProps', function () {
+	it('should add dynamic="force-static" if a page implements getStaticProps', () => {
 		const INPUT = `
 			
 		export const getStaticProps = async () => {
@@ -1168,18 +1168,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT?.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT?.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should replace getServerSideProps', function () {
+	it("should replace getServerSideProps", () => {
 		const INPUT = `
 			export async function getServerSideProps() {
 				const res = await fetch(\`https://...\`);
@@ -1239,18 +1239,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should handle getStaticPaths', function () {
+	it("should handle getStaticPaths", () => {
 		const INPUT = `
 			import PostLayout from '@/components/post-layout';
 
@@ -1324,17 +1324,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should transform fallback property correctly 2', function () {
+	it("should transform fallback property correctly 2", () => {
 		const INPUT = `
 			import PostLayout from '@/components/post-layout';
 
@@ -1408,17 +1408,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should transform fallback property correctly', function () {
+	it("should transform fallback property correctly", () => {
 		const INPUT = `
 			import PostLayout from '@/components/post-layout';
 
@@ -1492,17 +1492,17 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should move the default export to the bottom of the file', function () {
+	it("should move the default export to the bottom of the file", () => {
 		const INPUT = `
 			import PostLayout from '@/components/post-layout';
 
@@ -1576,18 +1576,18 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should wrap original getStaticProps when at least one of returnStatement argument is not ObjectExpression', function () {
+	it("should wrap original getStaticProps when at least one of returnStatement argument is not ObjectExpression", () => {
 		const INPUT = `
 			export async function getStaticProps() {
 				return fetchData();
@@ -1640,13 +1640,13 @@ describe('next 13 remove-get-static-props', function () {
 		`;
 
 		const actualOutput = jscodeshiftTransform(
-			jscodeshift.withParser('tsx'),
+			jscodeshift.withParser("tsx"),
 			INPUT,
 			globalOptions,
 		);
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

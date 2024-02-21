@@ -1,6 +1,6 @@
-import Pane from '~/components/Panel';
-import Text from '~/components/Text';
-import LiveIcon from './LiveIcon';
+import Pane from "~/components/Panel";
+import Text from "~/components/Text";
+import LiveIcon from "./LiveIcon";
 
 const CodemodOutputHeader = () => (
 	<Pane.Header>

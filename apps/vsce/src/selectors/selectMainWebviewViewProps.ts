@@ -1,14 +1,14 @@
-import type { Uri } from 'vscode';
-import type { RootState } from '../data';
-import { CodemodHash } from '../packageJsonAnalyzer/types';
-import { selectCodemodRunsTree } from './selectCodemodRunsTree';
+import type { Uri } from "vscode";
+import type { RootState } from "../data";
+import { CodemodHash } from "../packageJsonAnalyzer/types";
+import { selectCodemodRunsTree } from "./selectCodemodRunsTree";
 import {
 	absoluteToRelativePath,
 	selectCodemodTree,
 	selectPrivateCodemods,
-} from './selectCodemodTree';
-import { selectExplorerTree } from './selectExplorerTree';
-import { selectSourceControlTabProps } from './selectSourceControlTabProps';
+} from "./selectCodemodTree";
+import { selectExplorerTree } from "./selectExplorerTree";
+import { selectSourceControlTabProps } from "./selectSourceControlTabProps";
 
 export const selectMainWebviewViewProps = (
 	state: RootState,
@@ -21,13 +21,13 @@ export const selectMainWebviewViewProps = (
 		return null;
 	}
 
-	if (state.activeTabId === 'codemods') {
+	if (state.activeTabId === "codemods") {
 		return {
 			activeTabId: state.activeTabId,
 			toaster: state.toaster,
 			searchPhrase: state.codemodDiscoveryView.searchPhrase,
 			autocompleteItems: (autocompleteItems ?? []).map((item) =>
-				absoluteToRelativePath(item, rootUri.fsPath ?? ''),
+				absoluteToRelativePath(item, rootUri.fsPath ?? ""),
 			),
 			codemodTree: selectCodemodTree(
 				state,
@@ -49,37 +49,32 @@ export const selectMainWebviewViewProps = (
 		};
 	}
 
-	if (state.activeTabId === 'codemodRuns') {
+	if (state.activeTabId === "codemodRuns") {
 		return {
 			clearingInProgress: state.clearingInProgress,
 			activeTabId: state.activeTabId,
 			toaster: state.toaster,
 			applySelectedInProgress: state.applySelectedInProgress,
 			codemodRunsTree:
-				rootUri !== null
-					? selectCodemodRunsTree(state, rootUri.fsPath)
-					: null,
+				rootUri !== null ? selectCodemodRunsTree(state, rootUri.fsPath) : null,
 			changeExplorerTree:
-				rootUri !== null
-					? selectExplorerTree(state, rootUri.fsPath)
-					: null,
+				rootUri !== null ? selectExplorerTree(state, rootUri.fsPath) : null,
 			codemodExecutionInProgress: state.caseHashInProgress !== null,
 			panelGroupSettings: state.codemodRunsTab.panelGroupSettings,
 			resultsCollapsed: state.codemodRunsTab.resultsCollapsed,
-			changeExplorerCollapsed:
-				state.codemodRunsTab.changeExplorerCollapsed,
+			changeExplorerCollapsed: state.codemodRunsTab.changeExplorerCollapsed,
 			codemodEngineNodeLocated,
 		};
 	}
 
-	if (state.activeTabId === 'sourceControl') {
+	if (state.activeTabId === "sourceControl") {
 		const sourceControlTabProps = selectSourceControlTabProps(state);
 
 		return {
 			activeTabId: state.activeTabId,
 			toaster: state.toaster,
-			title: sourceControlTabProps?.title ?? '',
-			body: sourceControlTabProps?.body ?? '',
+			title: sourceControlTabProps?.title ?? "",
+			body: sourceControlTabProps?.body ?? "",
 			loading: sourceControlTabProps?.loading ?? false,
 			codemodEngineNodeLocated,
 		};

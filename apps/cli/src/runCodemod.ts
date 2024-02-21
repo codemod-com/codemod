@@ -1,25 +1,25 @@
-import { Filemod } from '@codemod-com/filemod';
-import { FileSystemAdapter, glob, globStream } from 'fast-glob';
-import { createFsFromVolume, IFs, Volume } from 'memfs';
-import { buildFileCommands } from './buildFileCommands.js';
-import { buildFileMap } from './buildFileMap.js';
-import { Codemod } from './codemod.js';
+import { Filemod } from "@codemod-com/filemod";
+import { FileSystemAdapter, glob, globStream } from "fast-glob";
+import { IFs, Volume, createFsFromVolume } from "memfs";
+import { buildFileCommands } from "./buildFileCommands.js";
+import { buildFileMap } from "./buildFileMap.js";
+import { Codemod } from "./codemod.js";
 import {
-	buildFormattedFileCommands,
 	FormattedFileCommand,
+	buildFormattedFileCommands,
 	modifyFileSystemUponCommand,
-} from './fileCommands.js';
-import { getTransformer, transpile } from './getTransformer.js';
-import { OperationMessage } from './messages.js';
-import { PrinterBlueprint } from './printer.js';
-import { Dependencies, runRepomod } from './runRepomod.js';
-import { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { FlowSettings } from './schemata/flowSettingsSchema.js';
-import { RunSettings } from './schemata/runArgvSettingsSchema.js';
-import { WorkerThreadManager } from './workerThreadManager.js';
-import { WorkerThreadMessage } from './workerThreadMessages.js';
+} from "./fileCommands.js";
+import { getTransformer, transpile } from "./getTransformer.js";
+import { OperationMessage } from "./messages.js";
+import { PrinterBlueprint } from "./printer.js";
+import { Dependencies, runRepomod } from "./runRepomod.js";
+import { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
+import { WorkerThreadManager } from "./workerThreadManager.js";
+import { WorkerThreadMessage } from "./workerThreadMessages.js";
 
-export { escape } from 'minimatch';
+export { escape } from "minimatch";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
@@ -34,20 +34,17 @@ export const buildPaths = async (
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
 	if (
-		(codemod.engine === 'repomod-engine' || codemod.engine === 'filemod') &&
+		(codemod.engine === "repomod-engine" || codemod.engine === "filemod") &&
 		filemod !== null
 	) {
-		const filemodPaths = await glob(
-			filemod.includePatterns?.slice() ?? [],
-			{
-				absolute: true,
-				cwd: flowSettings.target,
-				ignore: filemod.excludePatterns?.slice(),
-				onlyFiles: true,
-				fs: fileSystemAdapter,
-				dot: true,
-			},
-		);
+		const filemodPaths = await glob(filemod.includePatterns?.slice() ?? [], {
+			absolute: true,
+			cwd: flowSettings.target,
+			ignore: filemod.excludePatterns?.slice(),
+			onlyFiles: true,
+			fs: fileSystemAdapter,
+			dot: true,
+		});
 
 		const flowPaths = await glob(patterns.slice(), {
 			absolute: true,
@@ -81,9 +78,7 @@ async function* buildPathGenerator(
 ): AsyncGenerator<string, void, unknown> {
 	const patterns = flowSettings.files ?? flowSettings.include ?? [];
 	const ignore =
-		flowSettings.files === undefined
-			? flowSettings.exclude.slice()
-			: undefined;
+		flowSettings.files === undefined ? flowSettings.exclude.slice() : undefined;
 
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
@@ -108,7 +103,7 @@ async function* buildPathGenerator(
 		++fileCount;
 	}
 
-	stream.emit('close');
+	stream.emit("close");
 }
 
 export const runCodemod = async (
@@ -119,24 +114,24 @@ export const runCodemod = async (
 	runSettings: RunSettings,
 	onCommand: (command: FormattedFileCommand) => Promise<void>,
 	onPrinterMessage: (
-		message: OperationMessage | (WorkerThreadMessage & { kind: 'console' }),
+		message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
 	) => void,
 	safeArgumentRecord: SafeArgumentRecord,
 	currentWorkingDirectory: string,
 	getCodemodSource: (path: string) => Promise<string>,
 ): Promise<void> => {
-	const name = 'name' in codemod ? codemod.name : codemod.indexPath;
+	const name = "name" in codemod ? codemod.name : codemod.indexPath;
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		`Running the "${name}" codemod using "${codemod.engine}"`,
 	);
 
-	if (codemod.engine === 'piranha') {
-		throw new Error('Piranha not supported');
+	if (codemod.engine === "piranha") {
+		throw new Error("Piranha not supported");
 	}
 
-	if (codemod.engine === 'recipe') {
+	if (codemod.engine === "recipe") {
 		if (!runSettings.dryRun) {
 			for (const subCodemod of codemod.codemods) {
 				const commands: FormattedFileCommand[] = [];
@@ -151,7 +146,7 @@ export const runCodemod = async (
 						commands.push(command);
 					},
 					(message) => {
-						if (message.kind === 'error') {
+						if (message.kind === "error") {
 							onPrinterMessage(message);
 						}
 						// we are discarding any printer messages from subcodemods
@@ -163,11 +158,7 @@ export const runCodemod = async (
 				);
 
 				for (const command of commands) {
-					await modifyFileSystemUponCommand(
-						fileSystem,
-						runSettings,
-						command,
-					);
+					await modifyFileSystemUponCommand(fileSystem, runSettings, command);
 				}
 			}
 
@@ -200,19 +191,17 @@ export const runCodemod = async (
 					commands.push(command);
 				},
 				(message) => {
-					if (message.kind === 'error') {
+					if (message.kind === "error") {
 						onPrinterMessage(message);
 					}
 
-					if (message.kind === 'progress') {
+					if (message.kind === "progress") {
 						onPrinterMessage({
-							kind: 'progress',
+							kind: "progress",
 							processedFileNumber:
-								message.totalFileNumber * i +
-								message.processedFileNumber,
+								message.totalFileNumber * i + message.processedFileNumber,
 							totalFileNumber:
-								message.totalFileNumber *
-								codemod.codemods.length,
+								message.totalFileNumber * codemod.codemods.length,
 						});
 					}
 
@@ -225,7 +214,7 @@ export const runCodemod = async (
 			);
 
 			for (const command of commands) {
-				if (command.kind === 'deleteFile') {
+				if (command.kind === "deleteFile") {
 					deletedPaths.push(command.oldPath);
 				}
 
@@ -268,7 +257,7 @@ export const runCodemod = async (
 
 	const codemodSource = await getCodemodSource(codemod.indexPath);
 
-	const transpiledSource = codemod.indexPath.endsWith('.ts')
+	const transpiledSource = codemod.indexPath.endsWith(".ts")
 		? transpile(codemodSource.toString())
 		: codemodSource.toString();
 
@@ -280,7 +269,7 @@ export const runCodemod = async (
 		);
 	}
 
-	if (codemod.engine === 'repomod-engine' || codemod.engine === 'filemod') {
+	if (codemod.engine === "repomod-engine" || codemod.engine === "filemod") {
 		const paths = await buildPaths(
 			fileSystem,
 			flowSettings,
@@ -319,7 +308,7 @@ export const runCodemod = async (
 			flowSettings.threads,
 			async (path) => {
 				const data = await fileSystem.promises.readFile(path, {
-					encoding: 'utf8',
+					encoding: "utf8",
 				});
 
 				return data as string;
@@ -331,7 +320,7 @@ export const runCodemod = async (
 					clearTimeout(timeout);
 				}
 
-				if (message.kind === 'finish') {
+				if (message.kind === "finish") {
 					resolve();
 
 					return;

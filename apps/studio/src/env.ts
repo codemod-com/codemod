@@ -1,5 +1,5 @@
-import { createEnv } from '@t3-oss/env-nextjs';
-import { z } from 'zod';
+import { createEnv } from "@t3-oss/env-nextjs";
+import { z } from "zod";
 
 export const env = createEnv({
 	/**
@@ -10,8 +10,8 @@ export const env = createEnv({
 	emptyStringAsUndefined: true,
 	server: {
 		NODE_ENV: z
-			.enum(['development', 'test', 'production'])
-			.default('development'),
+			.enum(["development", "test", "production"])
+			.default("development"),
 	},
 	client: {
 		NEXT_PUBLIC_API_URL: z.string(),

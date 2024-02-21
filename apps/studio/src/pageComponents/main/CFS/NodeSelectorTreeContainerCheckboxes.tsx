@@ -1,20 +1,20 @@
-import { memo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { memo, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { selectFirstTreeNode } from "~/store/slices/snippets";
 import {
 	getAvailableState,
 	selectCFS,
 	setHoveredNode,
 	setNodeState,
 	states,
-} from '../../../store/slices/CFS';
-import { type TreeNode } from '../../../types/tree';
-import NodeSelectorTree from './NodeSelectorTreeCheckboxes';
+} from "../../../store/slices/CFS";
+import { type TreeNode } from "../../../types/tree";
+import NodeSelectorTree from "./NodeSelectorTreeCheckboxes";
 
 const NodeSelectorTreeContainer = () => {
 	const { nodeSelectorTreeState } = useSelector(selectCFS);
 
-	const firstTreeNode = useSelector(selectFirstTreeNode('before'));
+	const firstTreeNode = useSelector(selectFirstTreeNode("before"));
 
 	const dispatch = useDispatch();
 
@@ -34,8 +34,7 @@ const NodeSelectorTreeContainer = () => {
 	}
 
 	const onCheckboxClick = (node: TreeNode) => {
-		const isUnselected =
-			nodeSelectorTreeState[node.id] === states.UNSELECTED;
+		const isUnselected = nodeSelectorTreeState[node.id] === states.UNSELECTED;
 
 		dispatch(
 			setNodeState({

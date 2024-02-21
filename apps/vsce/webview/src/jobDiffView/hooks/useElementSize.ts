@@ -1,4 +1,4 @@
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from "react";
 
 type Size = Readonly<{
 	width: number;
@@ -22,10 +22,10 @@ export function useElementSize<T extends HTMLElement>(ref: RefObject<T>): Size {
 
 		if (element) {
 			handleResize();
-			window.addEventListener('resize', handleResize);
+			window.addEventListener("resize", handleResize);
 		}
 		return () => {
-			window.removeEventListener('resize', handleResize);
+			window.removeEventListener("resize", handleResize);
 		};
 	}, [ref]);
 

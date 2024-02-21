@@ -1,5 +1,5 @@
-import * as t from 'io-ts';
-import { buildTypeCodec } from '../utilities';
+import * as t from "io-ts";
+import { buildTypeCodec } from "../utilities";
 
 export const executionErrorCodec = buildTypeCodec({
 	message: t.string,

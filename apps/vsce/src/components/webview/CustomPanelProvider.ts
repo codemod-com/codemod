@@ -1,39 +1,39 @@
-import { readFileSync } from 'fs';
-import { diffTrimmedLines } from 'diff';
-import areEqual from 'fast-deep-equal';
-import { encode } from 'universal-base64url';
-import { commands, Uri, ViewColumn, WebviewPanel, window } from 'vscode';
-import type { RootState, Store } from '../../data';
-import { actions } from '../../data/slice';
-import { SEARCH_PARAMS_KEYS } from '../../extension';
-import { JobKind, mapPersistedJobToJob } from '../../jobs/types';
-import { _ExplorerNode } from '../../persistedState/explorerNodeCodec';
-import { selectExplorerTree } from '../../selectors/selectExplorerTree';
+import { readFileSync } from "fs";
+import { diffTrimmedLines } from "diff";
+import areEqual from "fast-deep-equal";
+import { encode } from "universal-base64url";
+import { Uri, ViewColumn, WebviewPanel, commands, window } from "vscode";
+import type { RootState, Store } from "../../data";
+import { actions } from "../../data/slice";
+import { SEARCH_PARAMS_KEYS } from "../../extension";
+import { JobKind, mapPersistedJobToJob } from "../../jobs/types";
+import { _ExplorerNode } from "../../persistedState/explorerNodeCodec";
+import { selectExplorerTree } from "../../selectors/selectExplorerTree";
 import {
 	createInMemorySourceFile,
 	removeLineBreaksAtStartAndEnd,
 	removeSpecialCharacters,
-} from '../../utilities';
-import { JobManager } from '../jobManager';
-import { MessageBus, MessageKind } from '../messageBus';
-import { CodemodDescriptionProvider } from './CodemodDescriptionProvider';
-import { MainViewProvider } from './MainProvider';
-import { PanelViewProps } from './panelViewProps';
-import { WebviewMessage, WebviewResponse } from './webviewEvents';
-import { WebviewResolver } from './WebviewResolver';
+} from "../../utilities";
+import { JobManager } from "../jobManager";
+import { MessageBus, MessageKind } from "../messageBus";
+import { CodemodDescriptionProvider } from "./CodemodDescriptionProvider";
+import { MainViewProvider } from "./MainProvider";
+import { WebviewResolver } from "./WebviewResolver";
+import { PanelViewProps } from "./panelViewProps";
+import { WebviewMessage, WebviewResponse } from "./webviewEvents";
 
-const TYPE = 'codemodPanel';
-const WEBVIEW_NAME = 'jobDiffView';
+const TYPE = "codemodPanel";
+const WEBVIEW_NAME = "jobDiffView";
 
 export const createBeforeAfterSnippets = (
 	beforeContent: string,
 	afterContent: string,
 ): { beforeSnippet: string; afterSnippet: string } => {
 	const oldSourceFile = createInMemorySourceFile(
-		'oldFileContent',
+		"oldFileContent",
 		beforeContent,
 	);
-	const sourceFile = createInMemorySourceFile('newFileContent', afterContent);
+	const sourceFile = createInMemorySourceFile("newFileContent", afterContent);
 
 	const beforeNodeTexts = new Set<string>();
 	const afterNodeTexts = new Set<string>();
@@ -56,10 +56,7 @@ export const createBeforeAfterSnippets = (
 			oldSourceFile.forEachChild((node) => {
 				const content = node.getFullText();
 
-				if (
-					content.includes(codeString) &&
-					!beforeNodeTexts.has(content)
-				) {
+				if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
 					beforeNodeTexts.add(content);
 				}
 			});
@@ -68,10 +65,7 @@ export const createBeforeAfterSnippets = (
 		if (diffObj.added) {
 			sourceFile.forEachChild((node) => {
 				const content = node.getFullText();
-				if (
-					content.includes(codeString) &&
-					!afterNodeTexts.has(content)
-				) {
+				if (content.includes(codeString) && !afterNodeTexts.has(content)) {
 					afterNodeTexts.add(content);
 				}
 			});
@@ -92,11 +86,11 @@ export const createBeforeAfterSnippets = (
 	});
 
 	const beforeSnippet = removeLineBreaksAtStartAndEnd(
-		Array.from(beforeNodeTexts).join(''),
+		Array.from(beforeNodeTexts).join(""),
 	);
 
 	const afterSnippet = removeLineBreaksAtStartAndEnd(
-		Array.from(afterNodeTexts).join(''),
+		Array.from(afterNodeTexts).join(""),
 	);
 	return { beforeSnippet, afterSnippet };
 };
@@ -117,7 +111,7 @@ const selectPanelViewProps = (
 
 	const { activeTabId } = state;
 
-	if (activeTabId === 'codemods') {
+	if (activeTabId === "codemods") {
 		const { focusedCodemodHashDigest } = state.codemodDiscoveryView;
 
 		if (focusedCodemodHashDigest === null) {
@@ -138,13 +132,13 @@ const selectPanelViewProps = (
 		);
 
 		return {
-			kind: 'CODEMOD',
+			kind: "CODEMOD",
 			title: codemod.name,
 			description: description,
 		};
 	}
 
-	if (rootPath === null || activeTabId === 'community') {
+	if (rootPath === null || activeTabId === "community") {
 		return null;
 	}
 
@@ -172,8 +166,7 @@ const selectPanelViewProps = (
 	const jobNodes = nodeData
 		.map(({ node }) => node)
 		.filter(
-			(node): node is _ExplorerNode & { kind: 'FILE' } =>
-				node.kind === 'FILE',
+			(node): node is _ExplorerNode & { kind: "FILE" } => node.kind === "FILE",
 		);
 
 	const jobIndex = jobNodes.findIndex(
@@ -189,19 +182,17 @@ const selectPanelViewProps = (
 
 	const job = mapPersistedJobToJob(persistedJob);
 
-	const newFileTitle = job.newUri?.fsPath.replace(rootPath, '') ?? null;
+	const newFileTitle = job.newUri?.fsPath.replace(rootPath, "") ?? null;
 	const oldFileTitle =
-		[
-			JobKind.moveFile,
-			JobKind.moveAndRewriteFile,
-			JobKind.copyFile,
-		].includes(job.kind) && job.oldUri
-			? job.oldUri.fsPath.replace(rootPath, '')
+		[JobKind.moveFile, JobKind.moveAndRewriteFile, JobKind.copyFile].includes(
+			job.kind,
+		) && job.oldUri
+			? job.oldUri.fsPath.replace(rootPath, "")
 			: null;
 
 	const newFileContent =
 		job.newContentUri !== null
-			? readFileSync(job.newContentUri.fsPath).toString('utf8')
+			? readFileSync(job.newContentUri.fsPath).toString("utf8")
 			: null;
 
 	const oldFileContent =
@@ -212,7 +203,7 @@ const selectPanelViewProps = (
 			JobKind.moveAndRewriteFile,
 			JobKind.moveFile,
 		].includes(job.kind)
-			? readFileSync(job.oldUri.fsPath).toString('utf8')
+			? readFileSync(job.oldUri.fsPath).toString("utf8")
 			: null;
 
 	const reviewed = (
@@ -220,8 +211,8 @@ const selectPanelViewProps = (
 	).includes(focusedExplorerNodeHashDigest);
 
 	return {
-		kind: 'JOB',
-		title: newFileTitle ?? oldFileTitle ?? '',
+		kind: "JOB",
+		title: newFileTitle ?? oldFileTitle ?? "",
 		caseHash: selectedCaseHash,
 		jobHash: job.hash,
 		jobKind: job.kind,
@@ -275,10 +266,7 @@ export class CustomPanelProvider {
 		__store.subscribe(listener);
 
 		__codemodDescriptionProvider.onDidChange(listener);
-		messageBus.subscribe(
-			MessageKind.mainWebviewViewVisibilityChange,
-			listener,
-		);
+		messageBus.subscribe(MessageKind.mainWebviewViewVisibilityChange, listener);
 	}
 
 	private async __upsertPanel(
@@ -301,23 +289,18 @@ export class CustomPanelProvider {
 				this.__webviewPanel.webview,
 				WEBVIEW_NAME,
 				JSON.stringify(panelViewProps),
-				'panelViewProps',
+				"panelViewProps",
 			);
 
 			this.__webviewPanel.webview.onDidReceiveMessage(
 				async (message: WebviewResponse) => {
-					if (
-						message.kind === 'webview.panel.focusOnChangeExplorer'
-					) {
+					if (message.kind === "webview.panel.focusOnChangeExplorer") {
 						this.__store.dispatch(actions.focusOnChangeExplorer());
 
-						commands.executeCommand('codemodMainView.focus');
+						commands.executeCommand("codemodMainView.focus");
 					}
 
-					if (
-						message.kind ===
-						'webview.global.focusExplorerNodeSibling'
-					) {
+					if (message.kind === "webview.global.focusExplorerNodeSibling") {
 						this.__store.dispatch(
 							actions.focusExplorerNodeSibling([
 								message.caseHashDigest,
@@ -326,48 +309,40 @@ export class CustomPanelProvider {
 						);
 					}
 
-					if (message.kind === 'webview.global.openIssueCreation') {
+					if (message.kind === "webview.global.openIssueCreation") {
 						const state = this.__store.getState();
 
-						const job =
-							state.job.entities[message.faultyJobHash] ?? null;
+						const job = state.job.entities[message.faultyJobHash] ?? null;
 
 						if (job === null) {
-							throw new Error('Unable to get the job');
+							throw new Error("Unable to get the job");
 						}
 
-						this.__store.dispatch(
-							actions.setActiveTabId('sourceControl'),
-						);
+						this.__store.dispatch(actions.setActiveTabId("sourceControl"));
 						this.__store.dispatch(
 							actions.setSourceControlTabProps({
-								kind: 'ISSUE_CREATION',
+								kind: "ISSUE_CREATION",
 								jobHash: message.faultyJobHash,
 								oldFileContent: message.oldFileContent,
 								newFileContent: message.newFileContent,
-								modifiedFileContent:
-									message.modifiedFileContent,
+								modifiedFileContent: message.modifiedFileContent,
 							}),
 						);
 					}
 
-					if (
-						message.kind === 'webview.global.exportToCodemodStudio'
-					) {
+					if (message.kind === "webview.global.exportToCodemodStudio") {
 						const state = this.__store.getState();
 
-						const job =
-							state.job.entities[message.faultyJobHash] ?? null;
+						const job = state.job.entities[message.faultyJobHash] ?? null;
 
 						if (job === null) {
-							throw new Error('Unable to get the job');
+							throw new Error("Unable to get the job");
 						}
 
-						const { beforeSnippet, afterSnippet } =
-							createBeforeAfterSnippets(
-								message.oldFileContent,
-								message.newFileContent,
-							);
+						const { beforeSnippet, afterSnippet } = createBeforeAfterSnippets(
+							message.oldFileContent,
+							message.newFileContent,
+						);
 
 						const searchParams = new URLSearchParams();
 
@@ -384,16 +359,13 @@ export class CustomPanelProvider {
 							encode(job.codemodName),
 						);
 
-						const url = new URL('https://codemod.studio');
+						const url = new URL("https://codemod.studio");
 						url.search = searchParams.toString();
 
-						commands.executeCommand('codemod.redirect', url);
+						commands.executeCommand("codemod.redirect", url);
 					}
 
-					if (
-						message.kind ===
-						'webview.global.flipReviewedExplorerNode'
-					) {
+					if (message.kind === "webview.global.flipReviewedExplorerNode") {
 						this.__store.dispatch(
 							actions.flipReviewedExplorerNode([
 								message.caseHashDigest,
@@ -403,13 +375,11 @@ export class CustomPanelProvider {
 						);
 					}
 
-					if (
-						message.kind === 'webview.global.showInformationMessage'
-					) {
+					if (message.kind === "webview.global.showInformationMessage") {
 						window.showInformationMessage(message.value);
 					}
 
-					if (message.kind === 'webview.jobDiffView.webviewMounted') {
+					if (message.kind === "webview.jobDiffView.webviewMounted") {
 						const nextViewProps = selectPanelViewProps(
 							this.__mainWebviewViewProvider,
 							this.__codemodDescriptionProvider,
@@ -417,22 +387,19 @@ export class CustomPanelProvider {
 							this.__rootPath,
 						);
 
-						if (
-							nextViewProps === null ||
-							this.__webviewPanel === null
-						) {
+						if (nextViewProps === null || this.__webviewPanel === null) {
 							return;
 						}
 
 						this.__webviewPanel.webview.postMessage({
-							kind: 'webview.setPanelViewProps',
+							kind: "webview.setPanelViewProps",
 							panelViewProps: nextViewProps,
 						} satisfies WebviewMessage);
 
 						this.__webviewPanel.reveal(undefined, preserveFocus);
 					}
 
-					if (message.kind === 'webview.panel.contentModified') {
+					if (message.kind === "webview.panel.contentModified") {
 						if (this.__webviewPanel === null) {
 							return;
 						}
@@ -450,7 +417,7 @@ export class CustomPanelProvider {
 						);
 
 						this.__webviewPanel.webview.postMessage({
-							kind: 'webview.main.setProps',
+							kind: "webview.main.setProps",
 							props: nextViewProps,
 						});
 					}
@@ -467,7 +434,7 @@ export class CustomPanelProvider {
 
 		this.__webviewPanel.title = panelViewProps.title;
 		await this.__webviewPanel.webview.postMessage({
-			kind: 'webview.setPanelViewProps',
+			kind: "webview.setPanelViewProps",
 			panelViewProps,
 		} satisfies WebviewMessage);
 		this.__webviewPanel.reveal(undefined, preserveFocus);

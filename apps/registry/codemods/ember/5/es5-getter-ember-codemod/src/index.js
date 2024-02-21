@@ -37,17 +37,17 @@ export default function transform(file, api) {
 	const root = j(file.source);
 
 	function isNestedKey(key) {
-		return key.indexOf('.') !== -1;
+		return key.indexOf(".") !== -1;
 	}
 
 	function performReplacement(path, keyIndex, object) {
 		let keyNode = path.node.arguments[keyIndex];
 
-		if (keyNode.type !== 'StringLiteral' && keyNode.type !== 'Literal') {
+		if (keyNode.type !== "StringLiteral" && keyNode.type !== "Literal") {
 			return;
 		}
 
-		if (typeof keyNode.value !== 'string' || isNestedKey(keyNode.value)) {
+		if (typeof keyNode.value !== "string" || isNestedKey(keyNode.value)) {
 			return;
 		}
 
@@ -63,10 +63,10 @@ export default function transform(file, api) {
 			.find(j.CallExpression, {
 				callee: {
 					object: {
-						type: 'ThisExpression',
+						type: "ThisExpression",
 					},
 					property: {
-						name: 'get',
+						name: "get",
 					},
 				},
 			})
@@ -80,7 +80,7 @@ export default function transform(file, api) {
 	}
 
 	function transformGetOnObject(typicalEmberAssignment) {
-		typicalEmberAssignment = typicalEmberAssignment || 'model';
+		typicalEmberAssignment = typicalEmberAssignment || "model";
 
 		return root
 			.find(j.CallExpression, {
@@ -89,13 +89,11 @@ export default function transform(file, api) {
 						name: typicalEmberAssignment,
 					},
 					property: {
-						name: 'get',
+						name: "get",
 					},
 				},
 			})
-			.forEach((path) =>
-				performReplacement(path, 0, path.node.callee.object),
-			);
+			.forEach((path) => performReplacement(path, 0, path.node.callee.object));
 	}
 
 	function transformGetPropertiesOnObject() {
@@ -103,15 +101,15 @@ export default function transform(file, api) {
 			.find(j.CallExpression, {
 				callee: {
 					property: {
-						name: 'getProperties',
+						name: "getProperties",
 					},
 				},
 			})
 			.filter((path) => {
 				// check that this is part of a destructuring operation
 				if (
-					path.parentPath.node.type !== 'VariableDeclarator' ||
-					path.parentPath.node.id.type !== 'ObjectPattern'
+					path.parentPath.node.type !== "VariableDeclarator" ||
+					path.parentPath.node.id.type !== "ObjectPattern"
 				) {
 					return false;
 				}
@@ -119,14 +117,14 @@ export default function transform(file, api) {
 				// check that there are no "deep" paths (e.g. "foo.bar")
 				if (
 					path.node.arguments.length === 1 &&
-					path.node.arguments[0].type === 'ArrayExpression'
+					path.node.arguments[0].type === "ArrayExpression"
 				) {
 					return path.node.arguments[0].elements.every(
-						(arg) => arg.value.indexOf('.') === -1,
+						(arg) => arg.value.indexOf(".") === -1,
 					);
 				} else {
 					return path.node.arguments.every(
-						(arg) => arg.value.indexOf('.') === -1,
+						(arg) => arg.value.indexOf(".") === -1,
 					);
 				}
 			})
@@ -139,12 +137,12 @@ export default function transform(file, api) {
 		let hasGetImport = !!j(file.source)
 			.find(j.ImportDeclaration, {
 				source: {
-					value: '@ember/object',
+					value: "@ember/object",
 				},
 			})
 			.find(j.ImportSpecifier, {
 				local: {
-					name: 'get',
+					name: "get",
 				},
 			}).length;
 
@@ -155,13 +153,13 @@ export default function transform(file, api) {
 		return root
 			.find(j.CallExpression, {
 				callee: {
-					name: 'get',
+					name: "get",
 				},
 				arguments: [j.thisExpression],
 			})
 			.forEach(function (path) {
 				let isNotThisExpression =
-					path.node.arguments[0].type !== 'ThisExpression';
+					path.node.arguments[0].type !== "ThisExpression";
 				if (isNotThisExpression) {
 					return;
 				}
@@ -175,17 +173,17 @@ export default function transform(file, api) {
 			.find(j.CallExpression, {
 				callee: {
 					object: {
-						name: 'Ember',
+						name: "Ember",
 					},
 					property: {
-						name: 'get',
+						name: "get",
 					},
 				},
 				arguments: [j.thisExpression],
 			})
 			.forEach(function (path) {
 				let isNotThisExpression =
-					path.node.arguments[0].type !== 'ThisExpression';
+					path.node.arguments[0].type !== "ThisExpression";
 				if (isNotThisExpression) {
 					return;
 				}
@@ -196,7 +194,7 @@ export default function transform(file, api) {
 
 	transformThisExpression();
 
-	['route', 'controller'].forEach(function (typicalEmberAssignment) {
+	["route", "controller"].forEach(function (typicalEmberAssignment) {
 		transformGetOnObject(typicalEmberAssignment);
 	});
 

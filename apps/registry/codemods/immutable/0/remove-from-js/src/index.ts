@@ -25,15 +25,15 @@ SOFTWARE.
 Changes to the original file: added options
 */
 
-import type { CallExpression, Transform } from 'jscodeshift';
+import type { CallExpression, Transform } from "jscodeshift";
 
 const transform: Transform = (file, api, options) => {
 	const j = api.jscodeshift;
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'Identifier',
-			name: 'fromJS',
+			type: "Identifier",
+			name: "fromJS",
 		},
 	});
 

@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import styles from './style.module.css';
+import { ReactNode } from "react";
+import styles from "./style.module.css";
 
 type Props = {
 	message: string;

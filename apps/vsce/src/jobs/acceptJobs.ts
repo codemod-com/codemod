@@ -1,6 +1,6 @@
-import { Uri } from 'vscode';
-import { FileService } from '../components/fileService';
-import { Job, JobKind } from './types';
+import { Uri } from "vscode";
+import { FileService } from "../components/fileService";
+import { Job, JobKind } from "./types";
 
 export const acceptJobs = async (
 	fileService: FileService,
@@ -12,11 +12,7 @@ export const acceptJobs = async (
 	const moveJobOutputs: [Uri, Uri, Uri][] = [];
 
 	for (const job of jobs) {
-		if (
-			job.kind === JobKind.createFile &&
-			job.newUri &&
-			job.newContentUri
-		) {
+		if (job.kind === JobKind.createFile && job.newUri && job.newContentUri) {
 			createJobOutputs.push([job.newUri, job.newContentUri]);
 		}
 
@@ -34,11 +30,7 @@ export const acceptJobs = async (
 			moveJobOutputs.push([job.oldUri, job.newUri, job.newContentUri]);
 		}
 
-		if (
-			job.kind === JobKind.rewriteFile &&
-			job.oldUri &&
-			job.newContentUri
-		) {
+		if (job.kind === JobKind.rewriteFile && job.oldUri && job.newContentUri) {
 			updateJobOutputs.push([job.oldUri, job.newContentUri]);
 		}
 

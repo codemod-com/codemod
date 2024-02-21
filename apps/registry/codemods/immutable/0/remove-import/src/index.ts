@@ -27,14 +27,14 @@ SOFTWARE.
 Changes to the original file: added options
 */
 
-import type { Transform } from 'jscodeshift';
+import type { Transform } from "jscodeshift";
 
 const transform: Transform = (file, api, options) => {
 	const j = api.jscodeshift;
 	const root = j(file.source);
 	const collections = root.find(j.ImportDeclaration, {
 		source: {
-			value: 'immutable',
+			value: "immutable",
 		},
 	});
 

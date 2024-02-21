@@ -1,8 +1,8 @@
 /* eslint-disable no-unused-expressions */
-import { withSession } from '@clerk/nextjs';
-import { useEffect } from 'react';
+import { withSession } from "@clerk/nextjs";
+import { useEffect } from "react";
 
-const TOKEN_STORAGE_KEY = 'token';
+const TOKEN_STORAGE_KEY = "token";
 
 type AuthStoreProps = {
 	session: {
@@ -12,7 +12,7 @@ type AuthStoreProps = {
 
 const AuthStore = ({ session }: AuthStoreProps) => {
 	useEffect(() => {
-		if (typeof window === 'undefined') {
+		if (typeof window === "undefined") {
 			return;
 		}
 

@@ -33,27 +33,27 @@ import {
 	parseStrToArray,
 	printOptions,
 	removeEmptyModuleImport,
-} from '@codemod-com/antd5-utils';
+} from "@codemod-com/antd5-utils";
 
 // import { markDependency } from '@codemod-com/antd5-utils/marker';
 
 const removedComponentConfig = {
 	Comment: {
-		importSource: '@ant-design/compatible',
+		importSource: "@ant-design/compatible",
 	},
 	PageHeader: {
-		importSource: '@ant-design/pro-layout',
+		importSource: "@ant-design/pro-layout",
 	},
 	BackTop: {
-		importSource: 'antd',
-		rename: 'FloatButton.BackTop',
+		importSource: "antd",
+		rename: "FloatButton.BackTop",
 	},
 };
 
 const transform = (file, api, options) => {
 	const j = api.jscodeshift;
 	const root = j(file.source);
-	const antdPkgNames = parseStrToArray(options.antdPkgNames || 'antd');
+	const antdPkgNames = parseStrToArray(options.antdPkgNames || "antd");
 
 	// import { Comment } from '@ant-design/compatible'
 	// import { PageHeader } from '@ant-design/pro-components'
@@ -64,11 +64,12 @@ const transform = (file, api, options) => {
 		// import { Comment, PageHeader } from '@forked/antd';
 		const componentNameList = Object.keys(removedComponentConfig);
 
-		root.find(j.Identifier)
+		root
+			.find(j.Identifier)
 			.filter(
 				(path) =>
 					componentNameList.includes(path.node.name) &&
-					path.parent.node.type === 'ImportSpecifier' &&
+					path.parent.node.type === "ImportSpecifier" &&
 					antdPkgNames.includes(path.parent.parent.node.source.value),
 			)
 			.forEach((path) => {
@@ -78,22 +79,20 @@ const transform = (file, api, options) => {
 
 				// remove old imports
 				const importDeclaration = path.parent.parent.node;
-				importDeclaration.specifiers =
-					importDeclaration.specifiers.filter(
-						(specifier) =>
-							!specifier.imported ||
-							specifier.imported.name !== importedComponentName,
-					);
+				importDeclaration.specifiers = importDeclaration.specifiers.filter(
+					(specifier) =>
+						!specifier.imported ||
+						specifier.imported.name !== importedComponentName,
+				);
 
 				// add new import from '@ant-design/compatible'
 				const localComponentName = path.parent.node.local.name;
-				const importConfig =
-					removedComponentConfig[importedComponentName];
+				const importConfig = removedComponentConfig[importedComponentName];
 				if (importConfig.rename) {
-					if (importConfig.rename.includes('.')) {
+					if (importConfig.rename.includes(".")) {
 						// `FloatButton.BackTop`
 						const [newComponentName, compoundComponentName] =
-							importConfig.rename.split('.');
+							importConfig.rename.split(".");
 						// import part
 						const importedLocalName = addSubmoduleImport(j, root, {
 							moduleName: importConfig.importSource,
@@ -101,17 +100,18 @@ const transform = (file, api, options) => {
 							before: antdPkgName,
 						});
 						// rename part
-						root.find(j.JSXElement, {
-							openingElement: {
-								name: { name: localComponentName },
-							},
-						}).forEach((path) => {
-							path.node.openingElement.name =
-								j.jsxMemberExpression(
+						root
+							.find(j.JSXElement, {
+								openingElement: {
+									name: { name: localComponentName },
+								},
+							})
+							.forEach((path) => {
+								path.node.openingElement.name = j.jsxMemberExpression(
 									j.jsxIdentifier(importedLocalName),
 									j.jsxIdentifier(compoundComponentName),
 								);
-						});
+							});
 					}
 				} else {
 					addSubmoduleImport(j, root, {

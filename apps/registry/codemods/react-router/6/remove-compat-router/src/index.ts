@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -40,24 +40,28 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.find(j.ImportSpecifier, {
-		imported: { name: 'CompatRouter' },
-	}).forEach((path) => {
-		j(path.parentPath.parentPath).remove();
-		dirtyFlag = true;
-	});
+	root
+		.find(j.ImportSpecifier, {
+			imported: { name: "CompatRouter" },
+		})
+		.forEach((path) => {
+			j(path.parentPath.parentPath).remove();
+			dirtyFlag = true;
+		});
 
-	root.find(j.JSXElement, {
-		openingElement: { name: { name: 'CompatRouter' } },
-	}).forEach((path) => {
-		const children = path.value.children;
-		const parent = path.parentPath.parentPath.node;
+	root
+		.find(j.JSXElement, {
+			openingElement: { name: { name: "CompatRouter" } },
+		})
+		.forEach((path) => {
+			const children = path.value.children;
+			const parent = path.parentPath.parentPath.node;
 
-		j(path).remove();
-		parent.children = children;
+			j(path).remove();
+			parent.children = children;
 
-		dirtyFlag = true;
-	});
+			dirtyFlag = true;
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

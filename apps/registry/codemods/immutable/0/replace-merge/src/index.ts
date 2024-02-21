@@ -34,7 +34,7 @@ import type {
 	MemberExpression,
 	ObjectExpression,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 class Handler {
 	private j: JSCodeshift;
@@ -66,7 +66,7 @@ class Handler {
 		const argument = this.path.node.arguments[0] as any;
 		let newArgument: any[] = [this.j.spreadElement(argument)];
 
-		if (argument.type === 'ObjectExpression') {
+		if (argument.type === "ObjectExpression") {
 			const objectArgument = argument as ObjectExpression;
 
 			newArgument = [...objectArgument.properties];
@@ -86,10 +86,10 @@ const transform: Transform = (file, api, options) => {
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'MemberExpression',
+			type: "MemberExpression",
 			property: {
-				type: 'Identifier',
-				name: 'merge',
+				type: "Identifier",
+				name: "merge",
 			},
 		},
 	});

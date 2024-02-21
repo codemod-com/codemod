@@ -33,33 +33,30 @@ import type {
 	JSCodeshift,
 	JSXAttribute,
 	TSParameterProperty,
-} from 'jscodeshift';
+} from "jscodeshift";
 
-export const createObjectProperty = function <T extends TSParameterProperty>(
+export const createObjectProperty = <T extends TSParameterProperty>(
 	j: JSCodeshift,
 	key: string,
 	value: T,
-) {
-	return j.property('init', j.identifier(key), value);
-};
+) => j.property("init", j.identifier(key), value);
 
-export const createObjectExpression = function <T>(j: JSCodeshift, obj: T) {
-	return j.objectExpression(
+export const createObjectExpression = <T>(j: JSCodeshift, obj: T) =>
+	j.objectExpression(
 		// @ts-expect-error type ambiguity
 		Object.entries(obj).map(([key, val]) =>
 			// @ts-expect-error type ambiguity
 			createObjectProperty(j, key, val),
 		),
 	);
-};
 
-export const getJSXAttributeValue = function (
+export const getJSXAttributeValue = (
 	j: JSCodeshift,
 	nodePath: ASTPath<JSXAttribute>,
-) {
+) => {
 	// <Tag visible={1} />
 	// 取出来 JSXExpressionContainer 其中值部分
-	if (nodePath.value?.value?.type === 'JSXExpressionContainer') {
+	if (nodePath.value?.value?.type === "JSXExpressionContainer") {
 		return nodePath.value.value.expression;
 	}
 
@@ -75,7 +72,7 @@ export const findAllAssignedNames = <T>(
 ) => {
 	const collection = root.find(j.VariableDeclarator, {
 		init: {
-			type: 'Identifier',
+			type: "Identifier",
 			name: localAssignedName,
 		},
 	});

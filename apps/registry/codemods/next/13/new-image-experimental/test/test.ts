@@ -26,13 +26,13 @@ SOFTWARE.
 Changes to the original input and output variables that were incorporated from https://github.com/vercel/next.js/pull/45970: formatting
 */
 
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('new-image-experimental', () => {
+describe("new-image-experimental", () => {
 	const INPUT = `
 		const withPwa = (opts) => {
 			// no-op but image this adds props
@@ -59,25 +59,25 @@ describe('new-image-experimental', () => {
 		  })
 	`;
 
-	it('should replace next.config.ts with the tsx parser', function () {
+	it("should replace next.config.ts with the tsx parser", () => {
 		const fileInfo: FileInfo = {
-			path: 'next.config.ts',
+			path: "next.config.ts",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'), {
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {
 			dryRun: true,
 		});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('should replace next.config.ts with the recast parser', function () {
+	it("should replace next.config.ts with the recast parser", () => {
 		const fileInfo: FileInfo = {
-			path: 'next.config.ts',
+			path: "next.config.ts",
 			source: INPUT,
 		};
 
@@ -86,8 +86,8 @@ describe('new-image-experimental', () => {
 		});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

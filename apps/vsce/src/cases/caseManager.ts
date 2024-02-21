@@ -1,10 +1,10 @@
-import { Message, MessageBus, MessageKind } from '../components/messageBus';
-import { Store } from '../data';
-import { actions } from '../data/slice';
-import { JobHash } from '../jobs/types';
-import { LeftRightHashSetManager } from '../leftRightHashes/leftRightHashSetManager';
-import { isNeitherNullNorUndefined } from '../utilities';
-import { CaseHash } from './types';
+import { Message, MessageBus, MessageKind } from "../components/messageBus";
+import { Store } from "../data";
+import { actions } from "../data/slice";
+import { JobHash } from "../jobs/types";
+import { LeftRightHashSetManager } from "../leftRightHashes/leftRightHashSetManager";
+import { isNeitherNullNorUndefined } from "../utilities";
+import { CaseHash } from "./types";
 
 export class CaseManager {
 	public constructor(
@@ -47,7 +47,7 @@ export class CaseManager {
 		const state = this.__store.getState();
 
 		if (!state.case.ids.includes(message.caseHash)) {
-			throw new Error('You tried to accept a case that does not exist.');
+			throw new Error("You tried to accept a case that does not exist.");
 		}
 
 		const caseHashJobHashSetManager = new LeftRightHashSetManager<
@@ -86,16 +86,14 @@ export class CaseManager {
 		const removableCaseHashes: CaseHash[] = [];
 
 		for (const kase of cases) {
-			const caseJobHashes =
-				caseHashJobHashSetManager.getRightHashesByLeftHash(kase.hash);
+			const caseJobHashes = caseHashJobHashSetManager.getRightHashesByLeftHash(
+				kase.hash,
+			);
 
 			let deletedCount = 0;
 
 			for (const job of message.deletedJobs) {
-				const deleted = caseHashJobHashSetManager.delete(
-					kase.hash,
-					job.hash,
-				);
+				const deleted = caseHashJobHashSetManager.delete(kase.hash, job.hash);
 
 				deletedCount += Number(deleted);
 			}

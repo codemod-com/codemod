@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 
 export const useScrollToBottomDetector = (container: Element | null) => {
 	const [isAtBottom, setIsAtBottom] = useState(false);
@@ -9,7 +9,7 @@ export const useScrollToBottomDetector = (container: Element | null) => {
 
 		const handleScroll = () => {
 			const chatPanel =
-				document.getElementsByClassName('chatPanel')?.[0] ?? null;
+				document.getElementsByClassName("chatPanel")?.[0] ?? null;
 			const scrollOffset =
 				container.scrollHeight -
 				container.clientHeight -
@@ -18,13 +18,13 @@ export const useScrollToBottomDetector = (container: Element | null) => {
 			setIsAtBottom(container.scrollTop >= scrollOffset);
 		};
 
-		container.addEventListener('scroll', handleScroll, {
+		container.addEventListener("scroll", handleScroll, {
 			passive: true,
 		});
 		handleScroll();
 
 		return () => {
-			container.removeEventListener('scroll', handleScroll);
+			container.removeEventListener("scroll", handleScroll);
 		};
 	}, [container]);
 

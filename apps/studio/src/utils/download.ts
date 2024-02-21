@@ -1,22 +1,22 @@
-import { useSession } from '@clerk/nextjs';
-import initSwc, { transform } from '@swc/wasm-web';
-import * as changeCase from 'change-case';
-import { js } from 'js-beautify';
-import JSZip from 'jszip';
+import { useSession } from "@clerk/nextjs";
+import initSwc, { transform } from "@swc/wasm-web";
+import * as changeCase from "change-case";
+import { js } from "js-beautify";
+import JSZip from "jszip";
 
 interface ProjectDownloadInput {
 	modBody: string;
 	name: string;
 	before: string;
 	after: string;
-	engine: 'jscodeshift' | 'tsmorph';
+	engine: "jscodeshift" | "tsmorph";
 	framework?: string;
 	version?: string;
-	user?: NonNullable<ReturnType<typeof useSession>['session']>['user'];
+	user?: NonNullable<ReturnType<typeof useSession>["session"]>["user"];
 }
 
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
-	js(input, { brace_style: 'preserve-inline', indent_size: 2, ...options });
+	js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
 const readme = ({
 	name,
@@ -28,9 +28,9 @@ const readme = ({
 	user,
 }: ProjectDownloadInput) => {
 	const engineLink =
-		engine === 'jscodeshift'
-			? 'https://github.com/facebook/jscodeshift'
-			: 'https://github.com/dsherret/ts-morph';
+		engine === "jscodeshift"
+			? "https://github.com/facebook/jscodeshift"
+			: "https://github.com/dsherret/ts-morph";
 
 	const applicabilityText =
 		framework && version
@@ -39,13 +39,13 @@ const readme = ({
         ${framework} ${version}
 
       `)
-			: '';
+			: "";
 
 	const userText = user?.username
 		? beautify(`
           [${user.username}](https://github.com/${user.username})
         `)
-		: '[Anonymous](https://github.com/)';
+		: "[Anonymous](https://github.com/)";
 
 	return `
 # ${changeCase.sentenceCase(name)}
@@ -89,11 +89,11 @@ ${userText}
 `;
 };
 
-const license = ({ user }: Pick<ProjectDownloadInput, 'user'>) => {
+const license = ({ user }: Pick<ProjectDownloadInput, "user">) => {
 	return `
 The MIT License (MIT)
 
-Copyright (c) 2023${user?.username ? ` ${user.username}` : ''}
+Copyright (c) 2023${user?.username ? ` ${user.username}` : ""}
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -120,14 +120,14 @@ const configJson = ({
 	version,
 	name,
 	engine,
-}: Pick<ProjectDownloadInput, 'framework' | 'version' | 'name' | 'engine'>) => {
+}: Pick<ProjectDownloadInput, "framework" | "version" | "name" | "engine">) => {
 	const configName = [
 		framework?.toLowerCase(),
 		version,
 		changeCase.kebabCase(name),
 	]
 		.filter(Boolean)
-		.join('/');
+		.join("/");
 
 	return beautify(`
       {
@@ -174,7 +174,7 @@ const packageJson = ({
 	user,
 }: Pick<
 	ProjectDownloadInput,
-	'framework' | 'version' | 'name' | 'engine' | 'user'
+	"framework" | "version" | "name" | "engine" | "user"
 >) => {
 	const packageName = [
 		framework?.toLowerCase(),
@@ -182,19 +182,19 @@ const packageJson = ({
 		changeCase.kebabCase(name),
 	]
 		.filter(Boolean)
-		.join('-');
+		.join("-");
 
 	const finalName = user?.username
 		? `@${user.username}/${packageName}`
 		: packageName;
 
-	let packages = '';
-	if (engine === 'jscodeshift') {
+	let packages = "";
+	if (engine === "jscodeshift") {
 		packages = `
         "jscodeshift": "^0.15.1",
         "@types/jscodeshift": "^0.11.10"
       `;
-	} else if (engine === 'tsmorph') {
+	} else if (engine === "tsmorph") {
 		packages = `
         "ts-morph": "^20.0.0"
       `;
@@ -232,17 +232,17 @@ const packageJson = ({
   `);
 };
 
-const definition = (engine: ProjectDownloadInput['engine']) => {
-	let def = '';
+const definition = (engine: ProjectDownloadInput["engine"]) => {
+	const def = "";
 
-	if (engine === 'jscodeshift') {
+	if (engine === "jscodeshift") {
 		return beautify(`
       import type { API, FileInfo } from 'jscodeshift';
       export default function transform(file: FileInfo, api: API): string;
     `);
 	}
 
-	if (engine === 'tsmorph') {
+	if (engine === "tsmorph") {
 		return beautify(`
       import type { SourceFile } from 'ts-morph';
       export function handleSourceFile(sourceFile: SourceFile): string | undefined;
@@ -257,10 +257,10 @@ const testBody = ({
 	before,
 	after,
 	engine,
-}: Pick<ProjectDownloadInput, 'name' | 'before' | 'after' | 'engine'>) => {
-	let body = '';
+}: Pick<ProjectDownloadInput, "name" | "before" | "after" | "engine">) => {
+	const body = "";
 
-	if (engine === 'jscodeshift') {
+	if (engine === "jscodeshift") {
 		return beautify(`
         import { describe, it } from 'vitest';
         import jscodeshift, { API } from 'jscodeshift';
@@ -309,7 +309,7 @@ ${beautify(after, { indent_level: 4 })}
     `);
 	}
 
-	if (engine === 'tsmorph') {
+	if (engine === "tsmorph") {
 		return beautify(`
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
@@ -454,44 +454,44 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 	const code = beautify(input.modBody);
 	const licenseContent = license(input);
 
-	zip.file('src/index.ts', code);
-	zip.file('test/test.ts', testBody(input));
-	zip.file('LICENSE', licenseContent);
+	zip.file("src/index.ts", code);
+	zip.file("test/test.ts", testBody(input));
+	zip.file("LICENSE", licenseContent);
 
 	await initSwc();
 	const { code: compiled } = await transform(code, {
 		minify: true,
-		module: { type: 'commonjs' },
+		module: { type: "commonjs" },
 		jsc: {
-			target: 'es5',
+			target: "es5",
 			loose: false,
-			parser: { syntax: 'typescript', tsx: true },
+			parser: { syntax: "typescript", tsx: true },
 		},
 	});
 
 	zip.file(
-		'dist/index.cjs',
+		"dist/index.cjs",
 		`/*! @license\n${licenseContent}\n*/\n${compiled}`,
 	);
 
-	zip.file('README.md', readme(input));
-	zip.file('build.ts', buildScript());
+	zip.file("README.md", readme(input));
+	zip.file("build.ts", buildScript());
 
-	zip.file('vitest.config.ts', vitestConfig());
-	zip.file('index.d.ts', definition(input.engine));
+	zip.file("vitest.config.ts", vitestConfig());
+	zip.file("index.d.ts", definition(input.engine));
 
-	zip.file('package.json', packageJson(input));
-	zip.file('tsconfig.json', tsconfigJson());
-	zip.file('config.json', configJson(input));
+	zip.file("package.json", packageJson(input));
+	zip.file("tsconfig.json", tsconfigJson());
+	zip.file("config.json", configJson(input));
 
-	zip.file('.gitignore', 'node_modules\ndist\nbuild.ts');
+	zip.file(".gitignore", "node_modules\ndist\nbuild.ts");
 
-	const blob = await zip.generateAsync({ type: 'blob' });
+	const blob = await zip.generateAsync({ type: "blob" });
 
 	// download hack
-	const link = document.createElement('a');
+	const link = document.createElement("a");
 	link.href = window.URL.createObjectURL(blob);
-	link.download = (input.name || 'codemod') + '.zip';
+	link.download = (input.name || "codemod") + ".zip";
 	link.click();
 	window.URL.revokeObjectURL(link.href);
 };

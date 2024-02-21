@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -40,51 +40,53 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.find(j.CallExpression, {
-		callee: { name: 'matchPath' },
-	}).forEach((path) => {
-		const args = path.value.arguments;
+	root
+		.find(j.CallExpression, {
+			callee: { name: "matchPath" },
+		})
+		.forEach((path) => {
+			const args = path.value.arguments;
 
-		if (args[0] && args[1] && 'properties' in args[1]) {
-			const [exact] = args[1].properties.filter((p) =>
-				'key' in p && 'name' in p.key ? p.key.name === 'exact' : false,
-			);
+			if (args[0] && args[1] && "properties" in args[1]) {
+				const [exact] = args[1].properties.filter((p) =>
+					"key" in p && "name" in p.key ? p.key.name === "exact" : false,
+				);
 
-			if (
-				exact &&
-				'key' in exact &&
-				'name' in exact.key &&
-				'value' in exact &&
-				'value' in exact.value
-			) {
-				exact.key.name = 'caseSensitive';
-				exact.value.value = false;
+				if (
+					exact &&
+					"key" in exact &&
+					"name" in exact.key &&
+					"value" in exact &&
+					"value" in exact.value
+				) {
+					exact.key.name = "caseSensitive";
+					exact.value.value = false;
+				}
+
+				const [strict] = args[1].properties.filter((p) =>
+					"key" in p && "name" in p.key ? p.key.name === "strict" : false,
+				);
+
+				if (
+					strict &&
+					"key" in strict &&
+					"name" in strict.key &&
+					"value" in strict &&
+					"value" in strict.value
+				) {
+					strict.key.name = "end";
+					strict.value.value = true;
+				}
+
+				// reset args
+				path.value.arguments = [];
+				// swap arg positions
+				path.value.arguments[0] = args[1];
+				path.value.arguments[1] = args[0];
+
+				dirtyFlag = true;
 			}
-
-			const [strict] = args[1].properties.filter((p) =>
-				'key' in p && 'name' in p.key ? p.key.name === 'strict' : false,
-			);
-
-			if (
-				strict &&
-				'key' in strict &&
-				'name' in strict.key &&
-				'value' in strict &&
-				'value' in strict.value
-			) {
-				strict.key.name = 'end';
-				strict.value.value = true;
-			}
-
-			// reset args
-			path.value.arguments = [];
-			// swap arg positions
-			path.value.arguments[0] = args[1];
-			path.value.arguments[1] = args[0];
-
-			dirtyFlag = true;
-		}
-	});
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

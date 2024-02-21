@@ -34,40 +34,42 @@ export default function transform(file, api) {
 
 	const importDeclaration = root.find(j.ImportDeclaration, {
 		source: {
-			value: '@ember/object',
+			value: "@ember/object",
 		},
 	});
 
 	const importComputed = importDeclaration.find(j.ImportSpecifier, {
-		imported: { name: 'computed' },
+		imported: { name: "computed" },
 	});
 
 	if (importComputed.size()) alreadyHasImport = true;
 
-	root.find(j.CallExpression, {
-		callee: {
-			type: 'MemberExpression',
-			object: { type: 'FunctionExpression' },
-			property: { name: 'property' },
-		},
-	}).replaceWith((path) => {
-		let computedImport = j.importDeclaration(
-			[j.importSpecifier(j.identifier('computed'))],
-			j.literal('@ember/object'),
-		);
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				object: { type: "FunctionExpression" },
+				property: { name: "property" },
+			},
+		})
+		.replaceWith((path) => {
+			let computedImport = j.importDeclaration(
+				[j.importSpecifier(j.identifier("computed"))],
+				j.literal("@ember/object"),
+			);
 
-		if (!alreadyHasImport) {
-			let body = root.get().value.program.body;
+			if (!alreadyHasImport) {
+				let body = root.get().value.program.body;
 
-			body.unshift(computedImport);
-			alreadyHasImport = true;
-		}
+				body.unshift(computedImport);
+				alreadyHasImport = true;
+			}
 
-		return j.callExpression(
-			j.identifier('computed'),
-			path.value.arguments.concat(path.value.callee.object),
-		);
-	});
+			return j.callExpression(
+				j.identifier("computed"),
+				path.value.arguments.concat(path.value.callee.object),
+			);
+		});
 
-	return root.toSource({ quote: 'single' });
+	return root.toSource({ quote: "single" });
 }

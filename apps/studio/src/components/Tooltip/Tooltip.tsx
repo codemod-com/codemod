@@ -1,10 +1,10 @@
-import { type ReactNode } from 'react';
+import { type ReactNode } from "react";
 import {
 	Tooltip as ShadcnTooltip,
 	TooltipContent,
 	TooltipProvider,
 	TooltipTrigger,
-} from '~/components/ui/tooltip';
+} from "~/components/ui/tooltip";
 
 type Props = {
 	trigger: ReactNode;

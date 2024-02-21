@@ -1,8 +1,8 @@
-import { DiffEditor, Monaco } from '@monaco-editor/react';
-import { editor } from 'monaco-editor';
-import { memo, useEffect, useRef, useState } from 'react';
-import { Diff, getDiff } from '../../shared/Snippet/calculateDiff';
-import configure from './configure';
+import { DiffEditor, Monaco } from "@monaco-editor/react";
+import { editor } from "monaco-editor";
+import { memo, useEffect, useRef, useState } from "react";
+import { Diff, getDiff } from "../../shared/Snippet/calculateDiff";
+import configure from "./configure";
 
 export type { Diff };
 
@@ -10,7 +10,7 @@ type Props = Readonly<{
 	jobHash: string;
 	oldFileContent: string | null;
 	newFileContent: string | null;
-	viewType: 'inline' | 'side-by-side';
+	viewType: "inline" | "side-by-side";
 	theme: string;
 	onDiffCalculated: (diff: Diff) => void;
 	onChange(content: string): void;
@@ -105,20 +105,20 @@ export const DiffComponent = memo(
 				options={{
 					readOnly: false,
 					originalEditable: false,
-					renderSideBySide: viewType === 'side-by-side',
-					wrappingStrategy: 'advanced',
-					wordWrap: 'wordWrapColumn',
+					renderSideBySide: viewType === "side-by-side",
+					wrappingStrategy: "advanced",
+					wordWrap: "wordWrapColumn",
 					wordWrapColumn: 75,
-					wrappingIndent: 'indent',
+					wrappingIndent: "indent",
 					scrollBeyondLastLine: false,
-					wordBreak: 'normal',
-					diffAlgorithm: 'smart',
+					wordBreak: "normal",
+					diffAlgorithm: "smart",
 					scrollBeyondLastColumn: 0,
 					contextmenu: false,
 					scrollbar: {
-						horizontal: 'hidden',
+						horizontal: "hidden",
 						verticalSliderSize: 0,
-						vertical: 'hidden',
+						vertical: "hidden",
 						alwaysConsumeMouseWheel: false,
 					},
 				}}

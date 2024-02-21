@@ -1,8 +1,8 @@
-import { DiffEditor, type DiffEditorProps } from '@monaco-editor/react';
-import { useRef, useState } from 'react';
-import { type monaco } from '~/customMonaco';
-import { useTheme } from '../../pageComponents/main/themeContext';
-import { useEditor, type EditorProps } from './hook';
+import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
+import { useRef, useState } from "react";
+import { type monaco } from "~/customMonaco";
+import { useTheme } from "../../pageComponents/main/themeContext";
+import { type EditorProps, useEditor } from "./hook";
 
 type CustomProps = {
 	id?: string;
@@ -12,8 +12,8 @@ type CustomProps = {
 };
 
 const defaultOptions = {
-	wordWrap: 'on',
-	wrappingIndent: 'indent',
+	wordWrap: "on",
+	wrappingIndent: "indent",
 	minimap: {
 		enabled: false,
 	},
@@ -46,7 +46,7 @@ const MonacoDiffEditor = ({
 				editorRef.current = editor;
 				setMounted(true);
 			}}
-			theme={isDark ? 'vs-dark' : 'vs'}
+			theme={isDark ? "vs-dark" : "vs"}
 			options={{ ...(options ?? {}), ...defaultOptions }}
 			{...restProps}
 		/>

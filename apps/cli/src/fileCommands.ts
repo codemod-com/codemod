@@ -1,20 +1,20 @@
-import { createHash } from 'node:crypto';
-import { dirname, extname, join } from 'node:path';
-import type { IFs } from 'memfs';
-import type { Options } from 'prettier';
-import { filterNeitherNullNorUndefined } from './filterNeitherNullNorUndefined.js';
-import type { OperationMessage } from './messages.js';
-import type { RunSettings } from './schemata/runArgvSettingsSchema.js';
+import { createHash } from "node:crypto";
+import { dirname, extname, join } from "node:path";
+import type { IFs } from "memfs";
+import type { Options } from "prettier";
+import { filterNeitherNullNorUndefined } from "./filterNeitherNullNorUndefined.js";
+import type { OperationMessage } from "./messages.js";
+import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 
 export type CreateFileCommand = Readonly<{
-	kind: 'createFile';
+	kind: "createFile";
 	newPath: string;
 	newData: string;
 	formatWithPrettier: boolean;
 }>;
 
 export type UpdateFileCommand = Readonly<{
-	kind: 'updateFile';
+	kind: "updateFile";
 	oldPath: string;
 	oldData: string;
 	newData: string;
@@ -22,18 +22,18 @@ export type UpdateFileCommand = Readonly<{
 }>;
 
 export type DeleteFileCommand = Readonly<{
-	kind: 'deleteFile';
+	kind: "deleteFile";
 	oldPath: string;
 }>;
 
 export type MoveFileCommand = Readonly<{
-	kind: 'moveFile';
+	kind: "moveFile";
 	oldPath: string;
 	newPath: string;
 }>;
 
 export type CopyFileCommand = Readonly<{
-	kind: 'copyFile';
+	kind: "copyFile";
 	oldPath: string;
 	newPath: string;
 }>;
@@ -52,47 +52,47 @@ export const DEFAULT_PRETTIER_OPTIONS: Options = {
 	useTabs: true,
 	semi: true,
 	singleQuote: true,
-	quoteProps: 'as-needed',
-	trailingComma: 'all',
+	quoteProps: "as-needed",
+	trailingComma: "all",
 	bracketSpacing: true,
-	arrowParens: 'always',
-	endOfLine: 'lf',
-	parser: 'typescript',
+	arrowParens: "always",
+	endOfLine: "lf",
+	parser: "typescript",
 };
 
-const parserMappers = new Map<string, Options['parser']>([
-	['ts', 'typescript'],
-	['tsx', 'typescript'],
-	['js', 'babel'],
-	['jsx', 'babel'],
-	['json', 'json'],
-	['json5', 'json5'],
-	['jsonc', 'json'],
-	['css', 'css'],
-	['scss', 'scss'],
-	['less', 'less'],
-	['graphql', 'graphql'],
-	['md', 'markdown'],
-	['mdx', 'mdx'],
-	['html', 'html'],
-	['vue', 'vue'],
-	['yaml', 'yaml'],
-	['yml', 'yaml'],
+const parserMappers = new Map<string, Options["parser"]>([
+	["ts", "typescript"],
+	["tsx", "typescript"],
+	["js", "babel"],
+	["jsx", "babel"],
+	["json", "json"],
+	["json5", "json5"],
+	["jsonc", "json"],
+	["css", "css"],
+	["scss", "scss"],
+	["less", "less"],
+	["graphql", "graphql"],
+	["md", "markdown"],
+	["mdx", "mdx"],
+	["html", "html"],
+	["vue", "vue"],
+	["yaml", "yaml"],
+	["yml", "yaml"],
 ]);
 
 export const getConfig = async (path: string): Promise<Options> => {
-	const { resolveConfig } = await import('prettier');
+	const { resolveConfig } = await import("prettier");
 
 	const config = await resolveConfig(path, {
 		editorconfig: false,
 	});
 
 	if (config === null || Object.keys(config).length === 0) {
-		throw new Error('Unable to resolve config');
+		throw new Error("Unable to resolve config");
 	}
 
-	const parser: Options['parser'] =
-		parserMappers.get(extname(path).slice(1)) ?? 'typescript';
+	const parser: Options["parser"] =
+		parserMappers.get(extname(path).slice(1)) ?? "typescript";
 
 	return {
 		...config,
@@ -105,14 +105,14 @@ export const formatText = async (
 	oldData: string,
 	formatWithPrettier: boolean,
 ): Promise<string> => {
-	const newData = oldData.replace(/\/\*\* \*\*\//gm, '');
+	const newData = oldData.replace(/\/\*\* \*\*\//gm, "");
 
 	if (!formatWithPrettier) {
 		return newData;
 	}
 
 	try {
-		const { format } = await import('prettier');
+		const { format } = await import("prettier");
 		const options = await getConfig(path);
 		return format(newData, options);
 	} catch (err) {
@@ -123,7 +123,7 @@ export const formatText = async (
 export const buildFormattedFileCommand = async (
 	command: FileCommand,
 ): Promise<FormattedFileCommand | null> => {
-	if (command.kind === 'createFile') {
+	if (command.kind === "createFile") {
 		const newData = await formatText(
 			command.newPath,
 			command.newData,
@@ -137,7 +137,7 @@ export const buildFormattedFileCommand = async (
 		};
 	}
 
-	if (command.kind === 'updateFile') {
+	if (command.kind === "updateFile") {
 		const newData = await formatText(
 			command.oldPath,
 			command.newData,
@@ -175,7 +175,7 @@ export const modifyFileSystemUponWetRunCommand = async (
 	fileSystem: IFs,
 	command: FormattedFileCommand,
 ): Promise<void> => {
-	if (command.kind === 'createFile') {
+	if (command.kind === "createFile") {
 		const directoryPath = dirname(command.newPath);
 
 		await fileSystem.promises.mkdir(directoryPath, { recursive: true });
@@ -183,21 +183,21 @@ export const modifyFileSystemUponWetRunCommand = async (
 		return fileSystem.promises.writeFile(command.newPath, command.newData);
 	}
 
-	if (command.kind === 'deleteFile') {
+	if (command.kind === "deleteFile") {
 		return fileSystem.promises.unlink(command.oldPath);
 	}
 
-	if (command.kind === 'moveFile') {
+	if (command.kind === "moveFile") {
 		await fileSystem.promises.copyFile(command.oldPath, command.newPath);
 
 		return fileSystem.promises.unlink(command.oldPath);
 	}
 
-	if (command.kind === 'updateFile') {
+	if (command.kind === "updateFile") {
 		return fileSystem.promises.writeFile(command.oldPath, command.newData);
 	}
 
-	if (command.kind === 'copyFile') {
+	if (command.kind === "copyFile") {
 		const directoryPath = dirname(command.newPath);
 
 		await fileSystem.promises.mkdir(directoryPath, { recursive: true });
@@ -208,13 +208,13 @@ export const modifyFileSystemUponWetRunCommand = async (
 
 export const buildNewDataPathForCreateFileCommand = (
 	outputDirectoryPath: string,
-	command: FormattedFileCommand & { kind: 'createFile' },
+	command: FormattedFileCommand & { kind: "createFile" },
 ): string => {
-	const hashDigest = createHash('md5')
+	const hashDigest = createHash("md5")
 		.update(command.kind)
 		.update(command.newPath)
 		.update(command.newData)
-		.digest('base64url');
+		.digest("base64url");
 
 	const extName = extname(command.newPath);
 
@@ -223,13 +223,13 @@ export const buildNewDataPathForCreateFileCommand = (
 
 export const buildNewDataPathForUpdateFileCommand = (
 	outputDirectoryPath: string,
-	command: FormattedFileCommand & { kind: 'updateFile' },
+	command: FormattedFileCommand & { kind: "updateFile" },
 ): string => {
-	const hashDigest = createHash('md5')
+	const hashDigest = createHash("md5")
 		.update(command.kind)
 		.update(command.oldPath)
 		.update(command.newData)
-		.digest('base64url');
+		.digest("base64url");
 
 	const extName = extname(command.oldPath);
 
@@ -241,7 +241,7 @@ export const modifyFileSystemUponDryRunCommand = async (
 	outputDirectoryPath: string,
 	command: FormattedFileCommand,
 ): Promise<void> => {
-	if (command.kind === 'createFile') {
+	if (command.kind === "createFile") {
 		const newDataPath = buildNewDataPathForCreateFileCommand(
 			outputDirectoryPath,
 			command,
@@ -250,7 +250,7 @@ export const modifyFileSystemUponDryRunCommand = async (
 		await fileSystem.promises.writeFile(newDataPath, command.newData);
 	}
 
-	if (command.kind === 'updateFile') {
+	if (command.kind === "updateFile") {
 		const newDataPath = buildNewDataPathForUpdateFileCommand(
 			outputDirectoryPath,
 			command,
@@ -282,54 +282,54 @@ export const buildPrinterMessageUponCommand = (
 		return null;
 	}
 
-	if (command.kind === 'createFile') {
+	if (command.kind === "createFile") {
 		const newDataPath = buildNewDataPathForCreateFileCommand(
 			runSettings.outputDirectoryPath,
 			command,
 		);
 
 		return {
-			kind: 'create',
+			kind: "create",
 			newFilePath: command.newPath,
 			newContentPath: newDataPath,
 		};
 	}
 
-	if (command.kind === 'deleteFile') {
+	if (command.kind === "deleteFile") {
 		return {
-			kind: 'delete',
+			kind: "delete",
 			oldFilePath: command.oldPath,
 		};
 	}
 
-	if (command.kind === 'moveFile') {
+	if (command.kind === "moveFile") {
 		return {
-			kind: 'move',
+			kind: "move",
 			oldFilePath: command.oldPath,
 			newFilePath: command.newPath,
 		};
 	}
 
-	if (command.kind === 'updateFile') {
+	if (command.kind === "updateFile") {
 		const newDataPath = buildNewDataPathForUpdateFileCommand(
 			runSettings.outputDirectoryPath,
 			command,
 		);
 
 		return {
-			kind: 'rewrite',
+			kind: "rewrite",
 			oldPath: command.oldPath,
 			newDataPath,
 		};
 	}
 
-	if (command.kind === 'copyFile') {
+	if (command.kind === "copyFile") {
 		return {
-			kind: 'copy',
+			kind: "copy",
 			oldFilePath: command.oldPath,
 			newFilePath: command.newPath,
 		};
 	}
 
-	throw new Error('Not supported command');
+	throw new Error("Not supported command");
 };

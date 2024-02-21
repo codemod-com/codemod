@@ -1,13 +1,13 @@
-import type { API, DataAPI, DirectoryAPI, FileAPI } from './api.js';
-import type { ExternalFileCommand } from './externalFileCommands.js';
+import type { API, DataAPI, DirectoryAPI, FileAPI } from "./api.js";
+import type { ExternalFileCommand } from "./externalFileCommands.js";
 import type {
 	Command,
 	DataCommand,
 	DirectoryCommand,
 	FileCommand,
 	FinishCommand,
-} from './internalCommands.js';
-import type { Options, RSU, State } from './options.js';
+} from "./internalCommands.js";
+import type { Options, RSU, State } from "./options.js";
 
 type DistributedOmit<T, K> = T extends NonNullable<unknown>
 	? Pick<T, Exclude<keyof T, K>>
@@ -15,7 +15,7 @@ type DistributedOmit<T, K> = T extends NonNullable<unknown>
 
 export type CallbackService = Readonly<{
 	onCommandExecuted?: (
-		command: DistributedOmit<Command, 'data' | 'options'>,
+		command: DistributedOmit<Command, "data" | "options">,
 	) => void;
 	onError?: (path: string, message: string) => void;
 }>;
@@ -76,13 +76,13 @@ const defaultHandleDirectory: HandleDirectory<RSU, State> = async (
 
 		if (directory) {
 			commands.push({
-				kind: 'handleDirectory',
+				kind: "handleDirectory",
 				path,
 				options,
 			});
 		} else {
 			commands.push({
-				kind: 'handleFile',
+				kind: "handleFile",
 				path,
 				options,
 			});
@@ -92,22 +92,22 @@ const defaultHandleDirectory: HandleDirectory<RSU, State> = async (
 	return commands;
 };
 
-const defaultHandleFile: Filemod<RSU, State>['handleFile'] = async (
+const defaultHandleFile: Filemod<RSU, State>["handleFile"] = async (
 	_,
 	path,
 	options,
 ) =>
 	Promise.resolve([
 		{
-			kind: 'upsertFile',
+			kind: "upsertFile",
 			path,
 			options,
 		},
 	]);
 
-const defaultHandleData: Filemod<RSU, State>['handleData'] = async () =>
+const defaultHandleData: Filemod<RSU, State>["handleData"] = async () =>
 	Promise.resolve({
-		kind: 'noop',
+		kind: "noop",
 	});
 
 const handleCommand = async <D extends RSU, S extends State>(
@@ -117,7 +117,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 	callbackService: CallbackService,
 	state: S | null,
 ): Promise<void> => {
-	if (command.kind === 'handleDirectory') {
+	if (command.kind === "handleDirectory") {
 		if (filemod.includePatterns && filemod.includePatterns.length > 0) {
 			const paths = await api.unifiedFileSystem.getFilePaths(
 				command.path,
@@ -130,7 +130,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 					api,
 					filemod,
 					{
-						kind: 'handleFile',
+						kind: "handleFile",
 						path,
 						options: command.options,
 					},
@@ -157,8 +157,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 			? defaultHandleDirectory
 			: null;
 
-		const handleDirectory =
-			filemod.handleDirectory ?? defaultDirectoryHandler;
+		const handleDirectory = filemod.handleDirectory ?? defaultDirectoryHandler;
 
 		if (handleDirectory === null) {
 			return;
@@ -181,7 +180,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 		});
 	}
 
-	if (command.kind === 'handleFile') {
+	if (command.kind === "handleFile") {
 		const unifiedEntry = await api.unifiedFileSystem.upsertUnifiedFile(
 			command.path,
 		);
@@ -201,13 +200,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 			);
 
 			for (const command of commands) {
-				await handleCommand(
-					api,
-					filemod,
-					command,
-					callbackService,
-					state,
-				);
+				await handleCommand(api, filemod, command, callbackService, state);
 			}
 		} catch (error) {
 			callbackService.onError?.(
@@ -222,7 +215,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 		});
 	}
 
-	if (command.kind === 'upsertFile') {
+	if (command.kind === "upsertFile") {
 		const data = await api.unifiedFileSystem.readFile(command.path);
 
 		const handleData = filemod.handleData ?? defaultHandleData;
@@ -236,13 +229,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 				state,
 			);
 
-			await handleCommand(
-				api,
-				filemod,
-				dataCommand,
-				callbackService,
-				state,
-			);
+			await handleCommand(api, filemod, dataCommand, callbackService, state);
 		} catch (error) {
 			callbackService.onError?.(
 				command.path,
@@ -256,7 +243,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 		});
 	}
 
-	if (command.kind === 'deleteFile') {
+	if (command.kind === "deleteFile") {
 		api.unifiedFileSystem.deleteFile(command.path);
 
 		callbackService.onCommandExecuted?.({
@@ -265,7 +252,7 @@ const handleCommand = async <D extends RSU, S extends State>(
 		});
 	}
 
-	if (command.kind === 'upsertData') {
+	if (command.kind === "upsertData") {
 		api.unifiedFileSystem.upsertData(command.path, command.data);
 
 		callbackService.onCommandExecuted?.({
@@ -290,10 +277,7 @@ export const executeFilemod = async <D extends RSU, S extends State>(
 	}
 
 	const command: DirectoryCommand = {
-		kind:
-			unifiedEntry.kind === 'directory'
-				? 'handleDirectory'
-				: 'handleFile',
+		kind: unifiedEntry.kind === "directory" ? "handleDirectory" : "handleFile",
 		path,
 		options,
 	};
@@ -303,22 +287,13 @@ export const executeFilemod = async <D extends RSU, S extends State>(
 	const nextState =
 		(await filemod.initializeState?.(options, previousState)) ?? null;
 
-	await handleCommand<D, S>(
-		api,
-		filemod,
-		command,
-		callbackService,
-		nextState,
-	);
+	await handleCommand<D, S>(api, filemod, command, callbackService, nextState);
 
-	const finishCommand = (await filemod.handleFinish?.(
-		options,
-		nextState,
-	)) ?? {
-		kind: 'noop',
+	const finishCommand = (await filemod.handleFinish?.(options, nextState)) ?? {
+		kind: "noop",
 	};
 
-	if (finishCommand.kind === 'noop') {
+	if (finishCommand.kind === "noop") {
 		return api.unifiedFileSystem.buildExternalFileCommands();
 	}
 

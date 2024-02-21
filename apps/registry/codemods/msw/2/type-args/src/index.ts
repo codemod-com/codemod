@@ -1,12 +1,12 @@
 import {
-	SyntaxKind,
 	type ArrowFunction,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type ParameterDeclaration,
 	type SourceFile,
-} from 'ts-morph';
+	SyntaxKind,
+} from "ts-morph";
 
 function getImportDeclarationAlias(
 	sourceFile: SourceFile,
@@ -51,11 +51,11 @@ function addNamedImportDeclaration(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -79,19 +79,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -155,7 +155,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -170,7 +170,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 	// Unwrap MockedRequest
 	sourceFile
 		.getDescendantsOfKind(SyntaxKind.TypeReference)
-		.filter((tr) => tr.getText().startsWith('MockedRequest'))
+		.filter((tr) => tr.getText().startsWith("MockedRequest"))
 		.forEach((tr) => {
 			const [bodyType] = tr.getTypeArguments();
 			if (bodyType === undefined) {
@@ -185,16 +185,16 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 	sourceFile
 		.getDescendantsOfKind(SyntaxKind.TypeReference)
-		.filter((tr) => tr.getText().startsWith('ResponseResolver'))
+		.filter((tr) => tr.getText().startsWith("ResponseResolver"))
 		.forEach((tr) => {
 			const [bodyType, ctxType] = tr.getTypeArguments();
 			if (bodyType === undefined) {
 				return;
 			}
 
-			if (bodyType.getText() === 'RestRequest') {
-				bodyType.replaceWithText('DefaultBodyType');
-				addNamedImportDeclaration(sourceFile, 'msw', 'DefaultBodyType');
+			if (bodyType.getText() === "RestRequest") {
+				bodyType.replaceWithText("DefaultBodyType");
+				addNamedImportDeclaration(sourceFile, "msw", "DefaultBodyType");
 			}
 
 			if (ctxType) {
@@ -203,7 +203,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 				tr.insertTypeArgument(1, bodyType.getText());
 			}
 
-			bodyType.replaceWithText('HttpRequestResolverExtras<PathParams>');
+			bodyType.replaceWithText("HttpRequestResolverExtras<PathParams>");
 
 			modifiedResponseResolver = true;
 		});
@@ -211,21 +211,20 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 	if (modifiedResponseResolver) {
 		addNamedImportDeclaration(
 			sourceFile,
-			'msw/lib/core/handlers/HttpHandler',
-			'HttpRequestResolverExtras',
+			"msw/lib/core/handlers/HttpHandler",
+			"HttpRequestResolverExtras",
 			true,
 		);
-		addNamedImportDeclaration(sourceFile, 'msw', 'PathParams', true);
+		addNamedImportDeclaration(sourceFile, "msw", "PathParams", true);
 	}
 
 	// const handlers: RestHandler<BodyType>[] => const handlers = [http.get<any, BodyType>()]
 	sourceFile
 		.getDescendantsOfKind(SyntaxKind.TypeReference)
-		.filter((tr) => tr.getText().startsWith('HttpHandler'))
+		.filter((tr) => tr.getText().startsWith("HttpHandler"))
 		.forEach((tr) => {
-			if (tr.getText() !== 'HttpHandler') {
-				const [bodyType, paramsType, resBodyType] =
-					tr.getTypeArguments();
+			if (tr.getText() !== "HttpHandler") {
+				const [bodyType, paramsType, resBodyType] = tr.getTypeArguments();
 
 				if (bodyType === undefined) {
 					return;
@@ -240,7 +239,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					return;
 				}
 
-				const toReplaceReferenceWith = 'HttpHandler';
+				const toReplaceReferenceWith = "HttpHandler";
 
 				parentBlock
 					.getDescendantsOfKind(SyntaxKind.CallExpression)
@@ -249,7 +248,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 						const genericTypeArgs = expression.getTypeArguments();
 
 						const newArgs = [
-							paramsType?.getText() || 'any',
+							paramsType?.getText() || "any",
 							bodyType.getText(),
 							resBodyType?.getText() || undefined,
 						].filter(isNeitherNullNorUndefined);
@@ -261,9 +260,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 							);
 						} else {
 							const braceToken =
-								expression.getFirstChildByKind(
-									SyntaxKind.OpenParenToken,
-								) ?? null;
+								expression.getFirstChildByKind(SyntaxKind.OpenParenToken) ??
+								null;
 
 							if (braceToken === null) {
 								return;
@@ -272,13 +270,9 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 							// To avoid messing up the insert indices
 							const deletionShift =
 								braceToken.getEnd() -
-								(1 +
-									(tr.getText().length -
-										toReplaceReferenceWith.length));
+								(1 + (tr.getText().length - toReplaceReferenceWith.length));
 
-							toInsertManually[deletionShift] = `<${newArgs.join(
-								', ',
-							)}>`;
+							toInsertManually[deletionShift] = `<${newArgs.join(", ")}>`;
 						}
 					});
 
@@ -304,13 +298,12 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 				.filter((asExpr) =>
 					asExpr
 						.getDescendantsOfKind(SyntaxKind.Identifier)
-						.find((id) => id.getText() === 'body'),
+						.find((id) => id.getText() === "body"),
 				);
 
 			if (bodyCasts.length) {
 				bodyCasts.forEach((asExpr) => {
-					const castedProperty =
-						asExpr.getFirstChild()?.getText() ?? null;
+					const castedProperty = asExpr.getFirstChild()?.getText() ?? null;
 					const castedToType =
 						asExpr
 							.getChildrenOfKind(SyntaxKind.TypeReference)
@@ -323,14 +316,12 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 					asExpr.replaceWithText(castedProperty);
 
-					const existingBodyType =
-						expression.getTypeArguments().at(1) ?? null;
+					const existingBodyType = expression.getTypeArguments().at(1) ?? null;
 
 					if (existingBodyType !== null) {
 						existingBodyType.replaceWithText(castedToType);
 					} else {
-						const callerEndPos =
-							expression.getFirstChild()?.getEnd() ?? null;
+						const callerEndPos = expression.getFirstChild()?.getEnd() ?? null;
 
 						if (callerEndPos === null) {
 							return;
@@ -342,8 +333,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 						// sourceFile.insertText(callerEndPos, `<any, ${castedToType}>`);
 
 						// using new Map would be nicer, but it's harder to iterate over, so whatever
-						toInsertManually[callerEndPos] =
-							`<any, ${castedToType}>`;
+						toInsertManually[callerEndPos] = `<any, ${castedToType}>`;
 					}
 				});
 			}

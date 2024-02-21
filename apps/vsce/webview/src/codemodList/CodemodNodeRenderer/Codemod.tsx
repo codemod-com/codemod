@@ -1,18 +1,18 @@
-import cn from 'classnames';
-import areEqual from 'fast-deep-equal';
-import { memo, useState } from 'react';
-import { CodemodNode } from '../../../../src/selectors/selectCodemodTree';
-import CustomPopover from '../../shared/CustomPopover';
-import { CodemodHash } from '../../shared/types';
-import { vscode } from '../../shared/utilities/vscode';
-import ActionButton from '../TreeView/ActionButton';
-import { Progress } from '../useProgressBar';
-import styles from './style.module.css';
-import 'react-toastify/dist/ReactToastify.css';
+import cn from "classnames";
+import areEqual from "fast-deep-equal";
+import { memo, useState } from "react";
+import "react-toastify/dist/ReactToastify.css";
+import { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
+import CustomPopover from "../../shared/CustomPopover";
+import { CodemodHash } from "../../shared/types";
+import { vscode } from "../../shared/utilities/vscode";
+import ActionButton from "../TreeView/ActionButton";
+import { Progress } from "../useProgressBar";
+import styles from "./style.module.css";
 
-type CodemodItemNode = CodemodNode & { kind: 'CODEMOD' };
+type CodemodItemNode = CodemodNode & { kind: "CODEMOD" };
 
-type Props = Omit<CodemodItemNode, 'name' | 'kind'> &
+type Props = Omit<CodemodItemNode, "name" | "kind"> &
 	Readonly<{
 		progress: Progress | null;
 		screenWidth: number | null;
@@ -21,9 +21,9 @@ type Props = Omit<CodemodItemNode, 'name' | 'kind'> &
 	}>;
 
 const renderActionButtons = (
-	hashDigest: CodemodItemNode['hashDigest'],
-	isPrivate: CodemodItemNode['isPrivate'],
-	permalink: CodemodItemNode['permalink'],
+	hashDigest: CodemodItemNode["hashDigest"],
+	isPrivate: CodemodItemNode["isPrivate"],
+	permalink: CodemodItemNode["permalink"],
 	codemodInProgress: boolean,
 	queued: boolean,
 	label: string,
@@ -35,8 +35,8 @@ const renderActionButtons = (
 
 			vscode.postMessage({
 				kind: isPrivate
-					? 'webview.codemodList.dryRunPrivateCodemod'
-					: 'webview.codemodList.dryRunCodemod',
+					? "webview.codemodList.dryRunPrivateCodemod"
+					: "webview.codemodList.dryRunCodemod",
 				value: hashDigest as unknown as CodemodHash,
 				name: label,
 			});
@@ -49,36 +49,37 @@ const renderActionButtons = (
 					`vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				);
 				vscode.postMessage({
-					kind: 'webview.global.showInformationMessage',
-					value: 'Codemod link copied to clipboard',
+					kind: "webview.global.showInformationMessage",
+					value: "Codemod link copied to clipboard",
 				});
 				return;
 			}
 			if (permalink === null) {
 				vscode.postMessage({
-					kind: 'webview.global.showWarningMessage',
-					value: 'Permalink for this codemod is missing. Re-export it from Codemod studio.',
+					kind: "webview.global.showWarningMessage",
+					value:
+						"Permalink for this codemod is missing. Re-export it from Codemod studio.",
 				});
 				return;
 			}
 
 			navigator.clipboard.writeText(permalink);
 			vscode.postMessage({
-				kind: 'webview.global.showInformationMessage',
-				value: 'Permalink in codemod studio copied to clipboard',
+				kind: "webview.global.showInformationMessage",
+				value: "Permalink in codemod studio copied to clipboard",
 			});
 		};
 
 		const handleCodemodArgumentsClick = () => {
 			vscode.postMessage({
-				kind: 'webview.global.setCodemodArgumentsPopupHashDigest',
+				kind: "webview.global.setCodemodArgumentsPopupHashDigest",
 				hashDigest: argumentsExpanded ? null : hashDigest,
 			});
 		};
 
 		const handleRemovePrivateCodemod = () => {
 			vscode.postMessage({
-				kind: 'webview.main.removePrivateCodemod',
+				kind: "webview.main.removePrivateCodemod",
 				hashDigest,
 			});
 		};
@@ -91,33 +92,33 @@ const renderActionButtons = (
 					onClick={handleCodemodArgumentsClick}
 					active={argumentsExpanded}
 				>
-					<span className={cn('codicon', 'codicon-settings-gear')} />
+					<span className={cn("codicon", "codicon-settings-gear")} />
 				</ActionButton>
 				<ActionButton
 					id={`${hashDigest}-dryRunButton`}
 					content="Dry-run this codemod (without making change to file system)."
 					onClick={handleDryRunClick}
 				>
-					<span className={cn('codicon', 'codicon-play')} />
+					<span className={cn("codicon", "codicon-play")} />
 				</ActionButton>
 				<ActionButton
 					id={`${hashDigest}-shareButton`}
 					content={
 						isPrivate
-							? 'Copy to clipboard the permalink in codemod studio.'
-							: 'Copy to clipboard the link to this codemod.'
+							? "Copy to clipboard the permalink in codemod studio."
+							: "Copy to clipboard the link to this codemod."
 					}
 					onClick={handleCodemodLinkCopy}
 				>
-					<span className={cn('codicon', 'codicon-link')} />
+					<span className={cn("codicon", "codicon-link")} />
 				</ActionButton>
 				{isPrivate && (
 					<ActionButton
 						id={`${hashDigest}-deleteButton`}
-						content={'Remove from Private Registry'}
+						content={"Remove from Private Registry"}
 						onClick={handleRemovePrivateCodemod}
 					>
-						<span className={cn('codicon', 'codicon-trash')} />
+						<span className={cn("codicon", "codicon-trash")} />
 					</ActionButton>
 				)}
 			</>
@@ -139,7 +140,7 @@ const renderActionButtons = (
 			onClick={(e) => {
 				e.stopPropagation();
 				vscode.postMessage({
-					kind: 'webview.codemodList.haltCodemodExecution',
+					kind: "webview.codemodList.haltCodemodExecution",
 				});
 			}}
 		/>
@@ -190,9 +191,9 @@ const getActionGroupStyle = (
 		return { marginLeft: 0 };
 	}
 	if (screenWidth <= 265) {
-		return { marginLeft: '4px' };
+		return { marginLeft: "4px" };
 	}
-	return { marginLeft: '8px' };
+	return { marginLeft: "8px" };
 };
 
 const Codemod = ({
@@ -211,11 +212,11 @@ const Codemod = ({
 	const areButtonsVisible = focused || hovering;
 
 	const popoverText =
-		icon === 'private'
-			? 'Private codemod'
-			: icon === 'certified'
-			  ? 'Codemod maintained by Codemod.com'
-			  : 'Codemod maintained by the community';
+		icon === "private"
+			? "Private codemod"
+			: icon === "certified"
+			  ? "Codemod maintained by Codemod.com"
+			  : "Codemod maintained by the community";
 
 	return (
 		<>
@@ -230,25 +231,20 @@ const Codemod = ({
 				}}
 			>
 				<CustomPopover content={popoverText}>
-					{icon === 'private' ? (
-						<span className={cn('codicon', 'codicon-star')} />
-					) : icon === 'certified' ? (
+					{icon === "private" ? (
+						<span className={cn("codicon", "codicon-star")} />
+					) : icon === "certified" ? (
 						<span
-							className={cn('codicon', 'codicon-verified')}
+							className={cn("codicon", "codicon-verified")}
 							style={{
-								color: 'var(--vscode-focusBorder)',
+								color: "var(--vscode-focusBorder)",
 							}}
 						/>
 					) : (
-						<span className={cn('codicon', 'codicon-verified')} />
+						<span className={cn("codicon", "codicon-verified")} />
 					)}
 				</CustomPopover>
-				<span
-					className={cn(
-						styles.labelContainer,
-						focused && styles.focused,
-					)}
-				>
+				<span className={cn(styles.labelContainer, focused && styles.focused)}>
 					<span
 						className={styles.label}
 						style={getLabelStyle(areButtonsVisible, screenWidth)}
@@ -258,10 +254,7 @@ const Codemod = ({
 					<div
 						className={styles.actionGroup}
 						style={{
-							...getActionGroupStyle(
-								areButtonsVisible,
-								screenWidth,
-							),
+							...getActionGroupStyle(areButtonsVisible, screenWidth),
 						}}
 					>
 						{renderActionButtons(

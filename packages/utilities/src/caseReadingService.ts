@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
 /* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
-import type { Hash } from 'node:crypto';
-import { createHash } from 'node:crypto';
-import EventEmitter from 'node:events';
-import { type PathLike } from 'node:fs';
-import { CircularBuffer } from './circularBuffer.js';
-import { FileReadingService } from './fileReadingService.js';
-import { FileWatcher } from './fileWatcher.js';
-import { parseArgumentRecordSchema } from './schemata/argumentRecordSchema.js';
-import type { SurfaceAgnosticCase } from './schemata/surfaceAgnosticCaseSchema.js';
+import type { Hash } from "node:crypto";
+import { createHash } from "node:crypto";
+import EventEmitter from "node:events";
+import { type PathLike } from "node:fs";
+import { CircularBuffer } from "./circularBuffer.js";
+import { FileReadingService } from "./fileReadingService.js";
+import { FileWatcher } from "./fileWatcher.js";
+import { parseArgumentRecordSchema } from "./schemata/argumentRecordSchema.js";
+import type { SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
 import {
 	JOB_KIND,
 	type SurfaceAgnosticJob,
-} from './schemata/surfaceAgnosticJobSchema.js';
+} from "./schemata/surfaceAgnosticJobSchema.js";
 
 type OuterData = Readonly<{
 	byteLength: number;
@@ -20,12 +20,12 @@ type OuterData = Readonly<{
 	innerData: Buffer;
 }>;
 
-type OuterCase = OuterData & { kind: 'case' };
+type OuterCase = OuterData & { kind: "case" };
 
-type OuterJob = OuterData & { kind: 'job' };
+type OuterJob = OuterData & { kind: "job" };
 
 const buildCase = (outerCase: OuterCase): SurfaceAgnosticCase => {
-	const innerDataHashDigest = createHash('ripemd160')
+	const innerDataHashDigest = createHash("ripemd160")
 		.update(outerCase.innerData)
 		.digest();
 
@@ -37,10 +37,10 @@ const buildCase = (outerCase: OuterCase): SurfaceAgnosticCase => {
 
 	const caseHashDigest = outerCase.innerData
 		.subarray(0, 20)
-		.toString('base64url');
+		.toString("base64url");
 	const codemodHashDigest = outerCase.innerData
 		.subarray(20, 40)
-		.toString('base64url');
+		.toString("base64url");
 
 	const createdAt = outerCase.innerData.subarray(40, 48).readBigInt64BE();
 
@@ -75,7 +75,7 @@ const buildCase = (outerCase: OuterCase): SurfaceAgnosticCase => {
 };
 
 const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
-	const innerDataHashDigest = createHash('ripemd160')
+	const innerDataHashDigest = createHash("ripemd160")
 		.update(outerJob.innerData)
 		.digest();
 
@@ -87,7 +87,7 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 
 	const jobHashDigest = outerJob.innerData
 		.subarray(0, 20)
-		.toString('base64url');
+		.toString("base64url");
 
 	const kind = outerJob.innerData.subarray(20).readUInt8();
 
@@ -97,13 +97,9 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 			end = 23;
 
 		for (let i = 0; i < bufferCount; ++i) {
-			const byteLength = outerJob.innerData
-				.subarray(start, end)
-				.readUint16BE();
+			const byteLength = outerJob.innerData.subarray(start, end).readUint16BE();
 
-			uris.push(
-				outerJob.innerData.subarray(end, end + byteLength).toString(),
-			);
+			uris.push(outerJob.innerData.subarray(end, end + byteLength).toString());
 
 			start += byteLength + 2;
 			end += byteLength + 2;
@@ -118,8 +114,8 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			pathUri: pathUri?.toString() ?? '',
-			dataUri: dataUri?.toString() ?? '',
+			pathUri: pathUri?.toString() ?? "",
+			dataUri: dataUri?.toString() ?? "",
 		};
 	}
 
@@ -129,8 +125,8 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			pathUri: pathUri?.toString() ?? '',
-			newDataUri: newDataUri?.toString() ?? '',
+			pathUri: pathUri?.toString() ?? "",
+			newDataUri: newDataUri?.toString() ?? "",
 		};
 	}
 
@@ -140,8 +136,8 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			oldPathUri: oldPathUri?.toString() ?? '',
-			newPathUri: newPathUri?.toString() ?? '',
+			oldPathUri: oldPathUri?.toString() ?? "",
+			newPathUri: newPathUri?.toString() ?? "",
 		};
 	}
 
@@ -151,9 +147,9 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			oldPathUri: oldPathUri?.toString() ?? '',
-			newPathUri: newPathUri?.toString() ?? '',
-			newDataUri: newDataUri?.toString() ?? '',
+			oldPathUri: oldPathUri?.toString() ?? "",
+			newPathUri: newPathUri?.toString() ?? "",
+			newDataUri: newDataUri?.toString() ?? "",
 		};
 	}
 
@@ -163,7 +159,7 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			pathUri: pathUri?.toString() ?? '',
+			pathUri: pathUri?.toString() ?? "",
 		};
 	}
 
@@ -173,15 +169,15 @@ const buildJob = (outerJob: OuterJob): SurfaceAgnosticJob => {
 		return {
 			jobHashDigest,
 			kind,
-			sourcePathUri: sourcePathUri?.toString() ?? '',
-			targetPathUri: targetPathUri?.toString() ?? '',
+			sourcePathUri: sourcePathUri?.toString() ?? "",
+			targetPathUri: targetPathUri?.toString() ?? "",
 		};
 	}
 
-	throw new Error('The job kind is not recognized.');
+	throw new Error("The job kind is not recognized.");
 };
 
-const enum POSITION {
+enum POSITION {
 	BEFORE_PREAMBLE = 0,
 	BEFORE_OUTER_CASE = 1,
 	BEFORE_INNER_CASE = 2,
@@ -221,10 +217,7 @@ const getByteLength = (state: State): number => {
 		return 2 + 20;
 	}
 
-	if (
-		state.position === POSITION.BEFORE_INNER_JOB &&
-		state.outerJob !== null
-	) {
+	if (state.position === POSITION.BEFORE_INNER_JOB && state.outerJob !== null) {
 		return state.outerJob.byteLength;
 	}
 
@@ -233,27 +226,27 @@ const getByteLength = (state: State): number => {
 	}
 
 	throw new Error(
-		'Could not get the readable byte length for the current state',
+		"Could not get the readable byte length for the current state",
 	);
 };
 
 type StateRecipe =
 	| Readonly<{
-			event: 'error';
+			event: "error";
 			error: Error;
 	  }>
 	| (Readonly<{
-			event: 'case';
+			event: "case";
 			surfaceAgnosticCase: SurfaceAgnosticCase;
 	  }> &
 			State)
 	| (Readonly<{
-			event: 'job';
+			event: "job";
 			surfaceAgnosticJob: SurfaceAgnosticJob;
 	  }> &
 			State)
 	| Readonly<{
-			event: 'end';
+			event: "end";
 			hashDigest: Buffer;
 	  }>
 	| State;
@@ -267,21 +260,16 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 			) !== 0
 		) {
 			return {
-				event: 'error',
-				error: new Error(
-					'You tried to read a file that is not Codemod Case',
-				),
+				event: "error",
+				error: new Error("You tried to read a file that is not Codemod Case"),
 			};
 		}
 
 		if (
-			Buffer.compare(
-				buffer.subarray(4, 8),
-				new Uint8Array([1, 0, 0, 0]),
-			) !== 0
+			Buffer.compare(buffer.subarray(4, 8), new Uint8Array([1, 0, 0, 0])) !== 0
 		) {
 			return {
-				event: 'error',
+				event: "error",
 				error: new Error(),
 			};
 		}
@@ -300,15 +288,15 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 			) !== 0
 		) {
 			return {
-				event: 'error',
-				error: new Error('Expect to find the case header'),
+				event: "error",
+				error: new Error("Expect to find the case header"),
 			};
 		}
 
 		return {
 			...state,
 			outerCase: {
-				kind: 'case',
+				kind: "case",
 				byteLength: buffer.subarray(4, 6).readUint16BE(),
 				innerData: Buffer.from([]),
 				hashDigest: buffer.subarray(6),
@@ -331,33 +319,29 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 				...state,
 				outerCase: null,
 				position: POSITION.BEFORE_OUTER_JOB_OR_POSTAMBLE,
-				event: 'case',
+				event: "case",
 				surfaceAgnosticCase,
 			};
 		} catch (error) {
 			return {
-				event: 'error',
+				event: "error",
 				error:
 					error instanceof Error
 						? error
-						: new Error('Unknown case creation error'),
+						: new Error("Unknown case creation error"),
 			};
 		}
 	}
 
 	if (state.position === POSITION.BEFORE_OUTER_JOB_OR_POSTAMBLE) {
-		if (
-			Buffer.compare(buffer, Buffer.from([0xa2, 0xb2, 0xc2, 0xd2])) === 0
-		) {
+		if (Buffer.compare(buffer, Buffer.from([0xa2, 0xb2, 0xc2, 0xd2])) === 0) {
 			return {
 				...state,
 				position: POSITION.BEFORE_INNER_JOB_BYTE_LENGTH,
 			};
 		}
 
-		if (
-			Buffer.compare(buffer, Buffer.from([0xdd, 0xcc, 0xbb, 0xaa])) === 0
-		) {
+		if (Buffer.compare(buffer, Buffer.from([0xdd, 0xcc, 0xbb, 0xaa])) === 0) {
 			return {
 				...state,
 				position: POSITION.BEFORE_POSTAMBLE_HASH_DIGEST,
@@ -365,10 +349,8 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 		}
 
 		return {
-			event: 'error',
-			error: new Error(
-				'Could not recognize neither job or postamble headers',
-			),
+			event: "error",
+			error: new Error("Could not recognize neither job or postamble headers"),
 		};
 	}
 
@@ -376,7 +358,7 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 		return {
 			...state,
 			outerJob: {
-				kind: 'job',
+				kind: "job",
 				byteLength: buffer.subarray(0, 2).readUint16BE(),
 				hashDigest: buffer.subarray(2),
 				innerData: Buffer.from([]),
@@ -385,10 +367,7 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 		};
 	}
 
-	if (
-		state.position === POSITION.BEFORE_INNER_JOB &&
-		state.outerJob !== null
-	) {
+	if (state.position === POSITION.BEFORE_INNER_JOB && state.outerJob !== null) {
 		try {
 			const surfaceAgnosticJob = buildJob({
 				...state.outerJob,
@@ -399,23 +378,23 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 				...state,
 				position: POSITION.BEFORE_OUTER_JOB_OR_POSTAMBLE,
 				outerJob: null,
-				event: 'job',
+				event: "job",
 				surfaceAgnosticJob,
 			};
 		} catch (error) {
 			return {
-				event: 'error',
+				event: "error",
 				error:
 					error instanceof Error
 						? error
-						: new Error('Unknown job creation error'),
+						: new Error("Unknown job creation error"),
 			};
 		}
 	}
 
 	if (state.position === POSITION.BEFORE_POSTAMBLE_HASH_DIGEST) {
 		return {
-			event: 'end',
+			event: "end",
 			hashDigest: buffer,
 		};
 	}
@@ -424,22 +403,22 @@ const read = (buffer: Buffer, state: State): StateRecipe => {
 };
 
 export interface CaseReadingService extends EventEmitter {
-	once(event: 'error', callback: (error: Error) => void): this;
-	once(event: 'finish', callback: () => void): this;
-	once(event: 'case', callback: (kase: SurfaceAgnosticCase) => void): this;
-	on(event: 'job', callback: (job: SurfaceAgnosticJob) => void): this;
+	once(event: "error", callback: (error: Error) => void): this;
+	once(event: "finish", callback: () => void): this;
+	once(event: "case", callback: (kase: SurfaceAgnosticCase) => void): this;
+	on(event: "job", callback: (job: SurfaceAgnosticJob) => void): this;
 
-	emit(event: 'error', error: Error): boolean;
-	emit(event: 'finish'): boolean;
-	emit(event: 'case', kase: SurfaceAgnosticCase): boolean;
-	emit(event: 'job', kase: SurfaceAgnosticJob): boolean;
+	emit(event: "error", error: Error): boolean;
+	emit(event: "finish"): boolean;
+	emit(event: "case", kase: SurfaceAgnosticCase): boolean;
+	emit(event: "job", kase: SurfaceAgnosticJob): boolean;
 }
 
 export class CaseReadingService extends EventEmitter {
 	protected _circularBuffer: CircularBuffer;
 	protected _fileReadingService: FileReadingService;
 	protected _fileWatcher: FileWatcher;
-	protected _hash: Hash = createHash('ripemd160');
+	protected _hash: Hash = createHash("ripemd160");
 	protected _state: State = {
 		position: POSITION.BEFORE_PREAMBLE,
 		outerCase: null,
@@ -477,67 +456,61 @@ export class CaseReadingService extends EventEmitter {
 	protected _read(buffer: Buffer) {
 		const stateRecipe = read(buffer, this._state);
 
-		if ('event' in stateRecipe && stateRecipe.event === 'error') {
+		if ("event" in stateRecipe && stateRecipe.event === "error") {
 			this._fileWatcher.close();
 			this._fileReadingService
 				.close()
 				.then(() => {
-					this.emit('error', stateRecipe.error);
+					this.emit("error", stateRecipe.error);
 				})
 				.catch((error) => {
 					this.emit(
-						'error',
+						"error",
 						error instanceof Error
 							? error
-							: new Error(
-									'Could not close the FileReadingService',
-							  ),
+							: new Error("Could not close the FileReadingService"),
 					);
 				});
 
 			return;
 		}
 
-		if ('event' in stateRecipe && stateRecipe.event === 'end') {
+		if ("event" in stateRecipe && stateRecipe.event === "end") {
 			this._fileWatcher.close();
 			this._fileReadingService
 				.close()
 				.then(() => {
 					const hashDigest = this._hash.digest();
 
-					if (
-						Buffer.compare(stateRecipe.hashDigest, hashDigest) !== 0
-					) {
+					if (Buffer.compare(stateRecipe.hashDigest, hashDigest) !== 0) {
 						this.emit(
-							'error',
+							"error",
 							new Error(
-								'The read data hash of does not match the calculated one',
+								"The read data hash of does not match the calculated one",
 							),
 						);
 					} else {
-						this.emit('finish');
+						this.emit("finish");
 					}
 				})
 				.catch((error) => {
 					this.emit(
-						'error',
+						"error",
 						error instanceof Error
 							? error
-							: new Error(
-									'Could not close the FileReadingService',
-							  ),
+							: new Error("Could not close the FileReadingService"),
 					);
 				});
 
 			return;
 		}
 
-		if ('event' in stateRecipe && stateRecipe.event === 'case') {
-			this.emit('case', stateRecipe.surfaceAgnosticCase);
+		if ("event" in stateRecipe && stateRecipe.event === "case") {
+			this.emit("case", stateRecipe.surfaceAgnosticCase);
 		}
 
-		if ('event' in stateRecipe && stateRecipe.event === 'job') {
-			this.emit('job', stateRecipe.surfaceAgnosticJob);
+		if ("event" in stateRecipe && stateRecipe.event === "job") {
+			this.emit("job", stateRecipe.surfaceAgnosticJob);
 		}
 
 		if (

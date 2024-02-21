@@ -1,8 +1,5 @@
 {
 	"schemaVersion": "1.0.0",
 	"engine": "recipe",
-	"names": [
-		"mocha/vitest/migrate-configuration",
-		"mocha/vitest/migrate-tests"
-	]
+	"names": ["mocha/vitest/migrate-configuration", "mocha/vitest/migrate-tests"]
 }

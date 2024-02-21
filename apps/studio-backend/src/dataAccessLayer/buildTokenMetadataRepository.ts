@@ -4,9 +4,9 @@ import {
 	ModelStatic,
 	Sequelize,
 	Transaction,
-} from 'sequelize';
-import { Input, object, parse, regex, string } from 'valibot';
-import { coercedNumberSchema } from './schemata.js';
+} from "sequelize";
+import { Input, object, parse, regex, string } from "valibot";
+import { coercedNumberSchema } from "./schemata.js";
 
 export const tokenMetadataSchema = object({
 	// a RIPEMD-160 hash digest has 160 bits = 20 bytes
@@ -34,9 +34,7 @@ export type TokenMetadata = Readonly<Input<typeof tokenMetadataSchema>>;
 
 class TokenMetadataRepository {
 	public constructor(
-		protected readonly _model: ModelStatic<
-			Model<TokenMetadata, TokenMetadata>
-		>,
+		protected readonly _model: ModelStatic<Model<TokenMetadata, TokenMetadata>>,
 	) {}
 
 	public async create(
@@ -91,46 +89,46 @@ export const buildTokenMetadataRepository = (
 			pepperedAccessTokenHashDigest: {
 				type: DataTypes.STRING(Math.ceil((20 * 8) / 6)),
 				primaryKey: true,
-				field: 'pathd',
+				field: "pathd",
 			},
 			backendInitializationVector: {
 				type: DataTypes.STRING(Math.ceil((16 * 8) / 6)),
 				allowNull: false,
-				field: 'biv',
+				field: "biv",
 			},
 			encryptedUserId: {
 				type: DataTypes.STRING(Math.ceil((48 * 8) / 6)),
 				allowNull: false,
-				field: 'euid',
+				field: "euid",
 			},
 			createdAt: {
 				type: DataTypes.BIGINT(),
 				allowNull: false,
-				field: 'ca',
+				field: "ca",
 			},
 			expiresAt: {
 				type: DataTypes.BIGINT(),
 				allowNull: false,
-				field: 'ea',
+				field: "ea",
 			},
 			claims: {
 				type: DataTypes.BIGINT(),
 				allowNull: false,
-				field: 'c',
+				field: "c",
 			},
 			signature: {
 				type: DataTypes.STRING(Math.ceil((32 * 8) / 6)),
 				allowNull: false,
-				field: 's',
+				field: "s",
 			},
 		},
 		{
 			sequelize,
-			tableName: 'tokenMetadata',
+			tableName: "tokenMetadata",
 			timestamps: false,
 			name: {
-				singular: 'tokenMetadatum',
-				plural: 'tokenMetadata',
+				singular: "tokenMetadatum",
+				plural: "tokenMetadata",
 			},
 		},
 	);

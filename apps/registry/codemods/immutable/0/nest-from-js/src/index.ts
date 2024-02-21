@@ -28,13 +28,13 @@ import type {
 	ObjectExpression,
 	Property,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 const hasValidArguments = (callExpression: CallExpression) => {
 	return (
 		callExpression.arguments.length === 1 &&
 		callExpression.arguments[0] &&
-		callExpression.arguments[0].type === 'ObjectExpression'
+		callExpression.arguments[0].type === "ObjectExpression"
 	);
 };
 
@@ -43,8 +43,8 @@ const transform: Transform = (file, api) => {
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'Identifier',
-			name: 'fromJS',
+			type: "Identifier",
+			name: "fromJS",
 		},
 	});
 
@@ -55,7 +55,7 @@ const transform: Transform = (file, api) => {
 			objectExpression.properties.forEach((p) => {
 				const property = p as Property;
 
-				if (property.value.type === 'Literal') {
+				if (property.value.type === "Literal") {
 					const literal = property.value as any;
 
 					if (literal.raw) {
@@ -63,7 +63,7 @@ const transform: Transform = (file, api) => {
 					}
 				}
 
-				property.value = j.callExpression(j.identifier('fromJS'), [
+				property.value = j.callExpression(j.identifier("fromJS"), [
 					property.value as any,
 				]);
 			});

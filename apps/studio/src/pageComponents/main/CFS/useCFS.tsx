@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
 	selectFirstTreeNode,
 	selectSnippetsFor,
-} from '~/store/slices/snippets';
-import { setParentNodes } from '../../../store/slices/CFS';
-import extractParentNodes from '../../../utils/extractParentNodes';
+} from "~/store/slices/snippets";
+import { setParentNodes } from "../../../store/slices/CFS";
+import extractParentNodes from "../../../utils/extractParentNodes";
 
 const useUpdateCFSStateEffect = () => {
-	const firstNodeTree = useSelector(selectFirstTreeNode('before'));
-	const { rootNode } = useSelector(selectSnippetsFor('before'));
+	const firstNodeTree = useSelector(selectFirstTreeNode("before"));
+	const { rootNode } = useSelector(selectSnippetsFor("before"));
 
 	const dispatch = useDispatch();
 

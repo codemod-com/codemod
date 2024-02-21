@@ -1,30 +1,30 @@
-import type { Filemod, HandleFile } from '@codemod-com/filemod';
+import type { Filemod, HandleFile } from "@codemod-com/filemod";
 import type {
 	CallExpression,
 	Collection,
 	File,
 	ImportDeclaration,
 	JSCodeshift,
-} from 'jscodeshift';
-import type jscodeshift from 'jscodeshift';
+} from "jscodeshift";
+import type jscodeshift from "jscodeshift";
 
 type State = {
 	hookModuleCreated: boolean;
 	hookModuleSpecifier: string;
-	hookPathType: 'relative' | 'absolute';
+	hookPathType: "relative" | "absolute";
 	hookPath: string;
 	hookModuleCreation: boolean;
 };
 
-type ModFunction<T, D extends 'read' | 'write'> = (
+type ModFunction<T, D extends "read" | "write"> = (
 	j: JSCodeshift,
 	root: Collection<T>,
 	settings: State,
-) => [D extends 'write' ? boolean : false, ReadonlyArray<LazyModFunction>];
+) => [D extends "write" ? boolean : false, ReadonlyArray<LazyModFunction>];
 
 type LazyModFunction = [
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	ModFunction<any, 'read' | 'write'>,
+	ModFunction<any, "read" | "write">,
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Collection<any>,
 	State,
@@ -60,37 +60,39 @@ export const useCompatSearchParams = () => {
 
 `;
 
-const replaceCallExpression: ModFunction<CallExpression, 'write'> = (
+const replaceCallExpression: ModFunction<CallExpression, "write"> = (
 	j,
 	callExpression,
 ) => {
 	callExpression.replaceWith(
-		j.callExpression(j.identifier('useCompatSearchParams'), []),
+		j.callExpression(j.identifier("useCompatSearchParams"), []),
 	);
 
 	return [true, []];
 };
 
-const findCallExpressions: ModFunction<File, 'read'> = (j, root, settings) => {
+const findCallExpressions: ModFunction<File, "read"> = (j, root, settings) => {
 	const lazyModFunctions: LazyModFunction[] = [];
 
-	root.find(j.CallExpression, {
-		callee: {
-			type: 'Identifier',
-			name: 'useSearchParams',
-		},
-	}).forEach((callExpressionPath) => {
-		lazyModFunctions.push([
-			replaceCallExpression,
-			j(callExpressionPath),
-			settings,
-		]);
-	});
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "Identifier",
+				name: "useSearchParams",
+			},
+		})
+		.forEach((callExpressionPath) => {
+			lazyModFunctions.push([
+				replaceCallExpression,
+				j(callExpressionPath),
+				settings,
+			]);
+		});
 
 	return [false, lazyModFunctions];
 };
 
-const addImportDeclaration: ModFunction<File, 'write'> = (
+const addImportDeclaration: ModFunction<File, "write"> = (
 	j,
 	root,
 	{ hookModuleSpecifier },
@@ -98,7 +100,7 @@ const addImportDeclaration: ModFunction<File, 'write'> = (
 	root.find(j.Program).forEach((programPath) => {
 		programPath.value.body.unshift(
 			j.importDeclaration(
-				[j.importSpecifier(j.identifier('useCompatSearchParams'))],
+				[j.importSpecifier(j.identifier("useCompatSearchParams"))],
 				j.literal(hookModuleSpecifier),
 			),
 		);
@@ -107,7 +109,7 @@ const addImportDeclaration: ModFunction<File, 'write'> = (
 	return [false, []];
 };
 
-const replaceImportDeclaration: ModFunction<ImportDeclaration, 'write'> = (
+const replaceImportDeclaration: ModFunction<ImportDeclaration, "write"> = (
 	j,
 	importDeclaration,
 ) => {
@@ -117,7 +119,7 @@ const replaceImportDeclaration: ModFunction<ImportDeclaration, 'write'> = (
 			importDeclarationPath.value.specifiers?.filter((specifier) => {
 				return (
 					!j.ImportSpecifier.check(specifier) ||
-					specifier.imported.name !== 'useSearchParams'
+					specifier.imported.name !== "useSearchParams"
 				);
 			});
 
@@ -133,24 +135,26 @@ const replaceImportDeclaration: ModFunction<ImportDeclaration, 'write'> = (
 	return [true, []];
 };
 
-const findImportDeclaration: ModFunction<File, 'read'> = (
+const findImportDeclaration: ModFunction<File, "read"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyModFunctions: LazyModFunction[] = [];
 
-	root.find(j.ImportDeclaration, {
-		source: {
-			value: 'next/navigation',
-		},
-	}).forEach((importDeclarationPath) => {
-		lazyModFunctions.push([
-			replaceImportDeclaration,
-			j(importDeclarationPath),
-			settings,
-		]);
-	});
+	root
+		.find(j.ImportDeclaration, {
+			source: {
+				value: "next/navigation",
+			},
+		})
+		.forEach((importDeclarationPath) => {
+			lazyModFunctions.push([
+				replaceImportDeclaration,
+				j(importDeclarationPath),
+				settings,
+			]);
+		});
 
 	return [false, lazyModFunctions];
 };
@@ -161,7 +165,7 @@ function transform(
 	settings: State,
 ): string | undefined {
 	let dirtyFlag = false;
-	const j = jscodeshift.withParser('tsx');
+	const j = jscodeshift.withParser("tsx");
 	const root = j(data);
 
 	const lazyModFunctions: LazyModFunction[] = [
@@ -199,12 +203,12 @@ function transform(
 }
 
 const noop = {
-	kind: 'noop',
+	kind: "noop",
 } as const;
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/*.{jsx,tsx,js,ts,cjs,ejs}'],
-	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	includePatterns: ["**/*.{jsx,tsx,js,ts,cjs,ejs}"],
+	excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
 	initializeState: async (options, previousState) => {
 		const {
 			useCompatSearchParamsHookAbsolutePath,
@@ -213,17 +217,17 @@ export const repomod: Filemod<Dependencies, State> = {
 		} = options;
 
 		const absolutePathPresent =
-			typeof useCompatSearchParamsHookAbsolutePath === 'string' &&
-			useCompatSearchParamsHookAbsolutePath !== '';
+			typeof useCompatSearchParamsHookAbsolutePath === "string" &&
+			useCompatSearchParamsHookAbsolutePath !== "";
 
 		const relativePathPresent =
-			typeof useCompatSearchParamsHookRelativePath === 'string' &&
-			useCompatSearchParamsHookRelativePath !== '';
+			typeof useCompatSearchParamsHookRelativePath === "string" &&
+			useCompatSearchParamsHookRelativePath !== "";
 
 		const hookPathType = absolutePathPresent
-			? 'absolute'
+			? "absolute"
 			: relativePathPresent
-			  ? 'relative'
+			  ? "relative"
 			  : null;
 
 		const hookPath = absolutePathPresent
@@ -235,15 +239,15 @@ export const repomod: Filemod<Dependencies, State> = {
 		if (
 			hookPathType === null ||
 			hookPath === null ||
-			typeof useCompatSearchParamsHookModuleSpecifier !== 'string'
+			typeof useCompatSearchParamsHookModuleSpecifier !== "string"
 		) {
 			throw new Error(
-				'Neither the absolute nor the relative hook paths are present in the options',
+				"Neither the absolute nor the relative hook paths are present in the options",
 			);
 		}
 
 		const hookModuleCreation =
-			typeof options.hookModuleCreation === 'boolean'
+			typeof options.hookModuleCreation === "boolean"
 				? options.hookModuleCreation
 				: true;
 
@@ -265,7 +269,7 @@ export const repomod: Filemod<Dependencies, State> = {
 			state.hookModuleCreation &&
 			!state.hookModuleCreated
 		) {
-			if (state.hookPathType === 'relative') {
+			if (state.hookPathType === "relative") {
 				const hookPath = api.joinPaths(
 					api.currentWorkingDirectory,
 					state.hookPath,
@@ -275,7 +279,7 @@ export const repomod: Filemod<Dependencies, State> = {
 
 				if (!hookPathExists) {
 					commands.push({
-						kind: 'upsertFile',
+						kind: "upsertFile",
 						path: hookPath,
 						options: {
 							...options,
@@ -285,12 +289,12 @@ export const repomod: Filemod<Dependencies, State> = {
 				}
 
 				state.hookModuleCreated = true;
-			} else if (state.hookPathType === 'absolute') {
+			} else if (state.hookPathType === "absolute") {
 				const hookPathExists = api.exists(state.hookPath);
 
 				if (!hookPathExists) {
 					commands.push({
-						kind: 'upsertFile',
+						kind: "upsertFile",
 						path: state.hookPath,
 						options: {
 							...options,
@@ -304,7 +308,7 @@ export const repomod: Filemod<Dependencies, State> = {
 		}
 
 		commands.push({
-			kind: 'upsertFile',
+			kind: "upsertFile",
 			path,
 			options,
 		});
@@ -313,15 +317,12 @@ export const repomod: Filemod<Dependencies, State> = {
 	},
 	handleData: async (api, path, data, options, state) => {
 		if (!state) {
-			throw new Error('Could not find state.');
+			throw new Error("Could not find state.");
 		}
 
-		if (
-			'fileContent' in options &&
-			typeof options.fileContent === 'string'
-		) {
+		if ("fileContent" in options && typeof options.fileContent === "string") {
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				path,
 				data: options.fileContent,
 			};
@@ -336,7 +337,7 @@ export const repomod: Filemod<Dependencies, State> = {
 		}
 
 		return {
-			kind: 'upsertData',
+			kind: "upsertData",
 			path,
 			data: rewrittenData,
 		};

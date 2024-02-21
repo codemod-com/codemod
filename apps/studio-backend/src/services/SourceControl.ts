@@ -1,4 +1,4 @@
-import { isAxiosError } from 'axios';
+import { isAxiosError } from "axios";
 
 export type NewIssueParams = Readonly<{
 	body: string;

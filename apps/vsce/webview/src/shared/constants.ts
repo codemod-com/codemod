@@ -1,6 +1,6 @@
 // Imported from /src/jobs/types.ts
 
-export const enum JobKind {
+export enum JobKind {
 	rewriteFile = 1,
 	createFile = 2,
 	deleteFile = 3,

@@ -1,13 +1,13 @@
-export { CaseReadingService } from './caseReadingService.js';
-export { CaseWritingService } from './caseWritingService.js';
-export { FileWatcher } from './fileWatcher.js';
+export { CaseReadingService } from "./caseReadingService.js";
+export { CaseWritingService } from "./caseWritingService.js";
+export { FileWatcher } from "./fileWatcher.js";
 export {
 	JOB_KIND,
 	parseSurfaceAgnosticJob,
 	type SurfaceAgnosticJob,
-} from './schemata/surfaceAgnosticJobSchema.js';
+} from "./schemata/surfaceAgnosticJobSchema.js";
 
-export { debounce } from './functions/debounce.js';
+export { debounce } from "./functions/debounce.js";
 export {
 	buildCrossplatformArg,
 	capitalize,
@@ -15,16 +15,16 @@ export {
 	removeLineBreaksAtStartAndEnd,
 	removeSpecialCharacters,
 	singleQuotify,
-} from './functions/formatting.js';
+} from "./functions/formatting.js";
 export {
 	buildCodemodMetadataHash,
 	buildHash,
 	streamToString,
-} from './functions/hash.js';
+} from "./functions/hash.js";
 export {
 	assertsNeitherNullOrUndefined,
 	isNeitherNullNorUndefined,
-} from './functions/validationMethods.js';
+} from "./functions/validationMethods.js";
 
 export {
 	buildApi,
@@ -36,4 +36,4 @@ export {
 	buildUnifiedFileSystem,
 	getUnifiedEntry,
 	trimLicense,
-} from './registry.js';
+} from "./registry.js";

@@ -91,14 +91,14 @@ export const handleSourceFile = (
 `;
 
 export const buildDefaultCodemodSource = (
-	engine: 'jscodeshift' | 'tsmorph',
+	engine: "jscodeshift" | "tsmorph",
 ) => {
 	if (engine === "jscodeshift") {
 		return prettify(
 			STARTER_SNIPPET.replace(
-				'{%DEFAULT_FIND_REPLACE_EXPRESSION%}',
+				"{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
 				DEFAULT_FIND_REPLACE_EXPRESSION,
-			).replace('{%COMMENT%}', ''),
+			).replace("{%COMMENT%}", ""),
 		);
 	}
 
@@ -107,39 +107,39 @@ export const buildDefaultCodemodSource = (
 
 /* eslint-disable import/group-exports */
 export const SEARCH_PARAMS_KEYS = Object.freeze({
-	ENGINE: 'engine' as const,
-	BEFORE_SNIPPET: 'beforeSnippet' as const,
-	AFTER_SNIPPET: 'afterSnippet' as const,
-	CODEMOD_SOURCE: 'codemodSource' as const,
-	CODEMOD_NAME: 'codemodName' as const,
-	COMMAND: 'command' as const,
-	COMPRESSED_SHAREABLE_CODEMOD: 'c' as const,
-	ACCESS_TOKEN: 'accessToken' as const,
+	ENGINE: "engine" as const,
+	BEFORE_SNIPPET: "beforeSnippet" as const,
+	AFTER_SNIPPET: "afterSnippet" as const,
+	CODEMOD_SOURCE: "codemodSource" as const,
+	CODEMOD_NAME: "codemodName" as const,
+	COMMAND: "command" as const,
+	COMPRESSED_SHAREABLE_CODEMOD: "c" as const,
+	ACCESS_TOKEN: "accessToken" as const,
 });
 
 type InitialState = Readonly<{
-	engine: 'jscodeshift' | 'tsmorph';
+	engine: "jscodeshift" | "tsmorph";
 	beforeSnippet: string;
 	afterSnippet: string;
 	codemodSource: string;
 	codemodName: string | null;
 	command:
-		| 'learn'
-		| 'accessTokenRequested'
-		| 'accessTokenRequestedByCLI'
-		| 'accessTokenRequestedByVSCE'
+		| "learn"
+		| "accessTokenRequested"
+		| "accessTokenRequestedByCLI"
+		| "accessTokenRequestedByVSCE"
 		| null;
 }>;
 
 export const getInitialState = (): InitialState => {
 	{
-		if (typeof window === 'undefined') {
+		if (typeof window === "undefined") {
 			return {
-				engine: 'jscodeshift',
-				beforeSnippet: '',
-				afterSnippet: '',
-				codemodSource: '',
-				codemodName: '',
+				engine: "jscodeshift",
+				beforeSnippet: "",
+				afterSnippet: "",
+				codemodSource: "",
+				codemodName: "",
 				command: null,
 			};
 		}
@@ -161,7 +161,7 @@ export const getInitialState = (): InitialState => {
 		if (csc !== null) {
 			try {
 				const encryptedString = window.atob(
-					csc.replaceAll('-', '+').replaceAll('_', '/'),
+					csc.replaceAll("-", "+").replaceAll("_", "/"),
 				);
 
 				const numberArray = Array.from(encryptedString)
@@ -170,17 +170,17 @@ export const getInitialState = (): InitialState => {
 
 				const uint8Array = Uint8Array.from(numberArray);
 
-				const decryptedString = inflate(uint8Array, { to: 'string' });
+				const decryptedString = inflate(uint8Array, { to: "string" });
 
 				const shareableCodemod = parseShareableCodemod(
 					JSON.parse(decryptedString),
 				);
 
 				return {
-					engine: shareableCodemod.e ?? 'jscodeshift',
-					beforeSnippet: shareableCodemod.b ?? '',
-					afterSnippet: shareableCodemod.a ?? '',
-					codemodSource: shareableCodemod.c ?? '',
+					engine: shareableCodemod.e ?? "jscodeshift",
+					beforeSnippet: shareableCodemod.b ?? "",
+					afterSnippet: shareableCodemod.a ?? "",
+					codemodSource: shareableCodemod.c ?? "",
 					codemodName: shareableCodemod.n ?? null,
 					command: null,
 				};
@@ -189,9 +189,7 @@ export const getInitialState = (): InitialState => {
 			}
 		}
 
-		const engine = decodeNullable(
-			searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
-		);
+		const engine = decodeNullable(searchParams.get(SEARCH_PARAMS_KEYS.ENGINE));
 		const beforeSnippet = decodeNullable(
 			searchParams.get(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET),
 		);
@@ -217,26 +215,26 @@ export const getInitialState = (): InitialState => {
 		].some((s) => s !== null);
 
 		if (someSearchParamsSet) {
-			const parsedEngine: 'jscodeshift' | 'tsmorph' =
-				engine === 'jscodeshift' || engine === 'tsmorph'
+			const parsedEngine: "jscodeshift" | "tsmorph" =
+				engine === "jscodeshift" || engine === "tsmorph"
 					? engine
-					: ('jscodeshift' as const);
+					: ("jscodeshift" as const);
 
 			return {
 				engine: parsedEngine,
-				beforeSnippet: beforeSnippet ?? '',
-				afterSnippet: afterSnippet ?? '',
-				codemodSource: codemodSource ?? '',
-				codemodName: codemodName ?? '',
+				beforeSnippet: beforeSnippet ?? "",
+				afterSnippet: afterSnippet ?? "",
+				codemodSource: codemodSource ?? "",
+				codemodName: codemodName ?? "",
 				command:
-					command === 'learn' || command === 'accessTokenRequested'
+					command === "learn" || command === "accessTokenRequested"
 						? command
 						: null,
 			};
 		}
 	}
 
-	const stringifiedState = localStorage.getItem('state');
+	const stringifiedState = localStorage.getItem("state");
 
 	if (stringifiedState !== null) {
 		try {
@@ -246,7 +244,7 @@ export const getInitialState = (): InitialState => {
 				state.afterSnippet,
 				state.beforeSnippet,
 				state.codemodSource,
-			].every((s) => s === '');
+			].every((s) => s === "");
 
 			const beforeSnippet = everyValueIsEmpty
 				? BEFORE_SNIPPET_DEFAULT_CODE
@@ -275,10 +273,10 @@ export const getInitialState = (): InitialState => {
 	}
 
 	return {
-		engine: 'jscodeshift' as const,
+		engine: "jscodeshift" as const,
 		beforeSnippet: BEFORE_SNIPPET_DEFAULT_CODE,
 		afterSnippet: AFTER_SNIPPET_DEFAULT_CODE,
-		codemodSource: buildDefaultCodemodSource('jscodeshift'),
+		codemodSource: buildDefaultCodemodSource("jscodeshift"),
 		codemodName: null,
 		command: null,
 	};

@@ -1,41 +1,41 @@
-import { Analytics } from '@vercel/analytics/react';
-import { type Metadata, type Viewport } from 'next';
-import { headers } from 'next/headers';
-import Script from 'next/script';
-import { ReduxProvider } from '~/lib/context/state';
-import { ThemeProvider } from '~/pageComponents/main/themeContext';
-import AuthProvider from '../auth/AuthProvider';
-import '../index.css';
+import { Analytics } from "@vercel/analytics/react";
+import { type Metadata, type Viewport } from "next";
+import { headers } from "next/headers";
+import Script from "next/script";
+import { ReduxProvider } from "~/lib/context/state";
+import { ThemeProvider } from "~/pageComponents/main/themeContext";
+import AuthProvider from "../auth/AuthProvider";
+import "../index.css";
 
 export const metadata: Metadata = {
-	title: 'Codemod Studio',
+	title: "Codemod Studio",
 	description:
-		'Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.',
+		"Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.",
 	keywords:
-		'codemod studio, codemod, codemods, codebase migration, code evolution',
-	manifest: './manifest.json',
+		"codemod studio, codemod, codemods, codebase migration, code evolution",
+	manifest: "./manifest.json",
 	icons: {
-		icon: './favicon.ico',
-		apple: './logo192.png',
+		icon: "./favicon.ico",
+		apple: "./logo192.png",
 	},
 	twitter: {
-		title: 'Codemod Studio',
+		title: "Codemod Studio",
 		description:
-			'Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.',
-		creator: '@codemod',
+			"Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.",
+		creator: "@codemod",
 	},
 	openGraph: {
-		title: 'Codemod Studio',
+		title: "Codemod Studio",
 		description:
-			'Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.',
-		url: 'https://codemod.studio',
-		siteName: 'Codemod Studio',
-		locale: 'en_US',
+			"Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.",
+		url: "https://codemod.studio",
+		siteName: "Codemod Studio",
+		locale: "en_US",
 	},
 };
 
 export const viewport: Viewport = {
-	themeColor: 'black',
+	themeColor: "black",
 };
 
 export default async function RootLayout({
@@ -43,7 +43,7 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode;
 }) {
-	const nonce = headers().get('x-nonce') ?? undefined;
+	const nonce = headers().get("x-nonce") ?? undefined;
 
 	return (
 		<html lang="en" className="h-full">

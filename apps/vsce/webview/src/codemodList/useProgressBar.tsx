@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { CodemodHash, WebviewMessage } from '../shared/types';
+import { useEffect, useState } from "react";
+import { CodemodHash, WebviewMessage } from "../shared/types";
 
 export type Progress = Readonly<{
 	codemodHash: CodemodHash;
-	progressKind: 'finite' | 'infinite';
+	progressKind: "finite" | "infinite";
 	totalFileNumber: number;
 	processedFileNumber: number;
 }>;
@@ -16,7 +16,7 @@ export const useProgressBar = (): Progress | null => {
 		const handler = (e: MessageEvent<WebviewMessage>) => {
 			const message = e.data;
 
-			if (message.kind === 'webview.global.setCodemodExecutionProgress') {
+			if (message.kind === "webview.global.setCodemodExecutionProgress") {
 				setCodemodExecutionProgress({
 					codemodHash: message.codemodHash,
 					progressKind: message.progressKind,
@@ -25,15 +25,15 @@ export const useProgressBar = (): Progress | null => {
 				});
 			}
 
-			if (message.kind === 'webview.global.codemodExecutionHalted') {
+			if (message.kind === "webview.global.codemodExecutionHalted") {
 				setCodemodExecutionProgress(null);
 			}
 		};
 
-		window.addEventListener('message', handler);
+		window.addEventListener("message", handler);
 
 		return () => {
-			window.removeEventListener('message', handler);
+			window.removeEventListener("message", handler);
 		};
 	}, [codemodExecutionProgress?.codemodHash]);
 

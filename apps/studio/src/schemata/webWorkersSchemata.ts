@@ -1,6 +1,6 @@
 /* eslint-disable import/group-exports */
-import * as S from '@effect/schema/Schema';
-import { eventSchema } from './eventSchemata';
+import * as S from "@effect/schema/Schema";
+import { eventSchema } from "./eventSchemata";
 
 export const webWorkerIncomingMessageSchema = S.struct({
 	engine: S.string,

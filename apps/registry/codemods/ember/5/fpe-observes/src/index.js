@@ -32,17 +32,19 @@ export default function transform(file, api) {
 
 	const root = j(file.source);
 
-	root.find(j.CallExpression, {
-		callee: {
-			type: 'MemberExpression',
-			property: { name: 'observes' },
-		},
-	}).replaceWith((path) => {
-		return j.callExpression(
-			j.identifier('observer'),
-			path.value.arguments.concat(path.value.callee.object),
-		);
-	});
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				property: { name: "observes" },
+			},
+		})
+		.replaceWith((path) => {
+			return j.callExpression(
+				j.identifier("observer"),
+				path.value.arguments.concat(path.value.callee.object),
+			);
+		});
 
 	return root.toSource();
 }

@@ -1,23 +1,23 @@
-import { useCallback } from 'react';
-import { CaseHash } from '../../../src/cases/types';
+import { useCallback } from "react";
+import { CaseHash } from "../../../src/cases/types";
 import {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
-} from '../../../src/persistedState/explorerNodeCodec';
-import { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
-import { useProgressBar } from '../codemodList/useProgressBar';
-import { CustomTreeView } from '../customTreeView';
-import LoadingProgress from '../jobDiffView/Components/LoadingProgress';
-import Progress from '../shared/Progress';
-import SearchBar from '../shared/SearchBar';
-import { vscode } from '../shared/utilities/vscode';
-import { ActionsFooter } from './ActionsFooter';
-import { explorerNodeRenderer } from './explorerNodeRenderer';
-import styles from './style.module.css';
+} from "../../../src/persistedState/explorerNodeCodec";
+import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import { useProgressBar } from "../codemodList/useProgressBar";
+import { CustomTreeView } from "../customTreeView";
+import LoadingProgress from "../jobDiffView/Components/LoadingProgress";
+import Progress from "../shared/Progress";
+import SearchBar from "../shared/SearchBar";
+import { vscode } from "../shared/utilities/vscode";
+import { ActionsFooter } from "./ActionsFooter";
+import { explorerNodeRenderer } from "./explorerNodeRenderer";
+import styles from "./style.module.css";
 
 const setSearchPhrase = (caseHashDigest: CaseHash, searchPhrase: string) => {
 	vscode.postMessage({
-		kind: 'webview.global.setChangeExplorerSearchPhrase',
+		kind: "webview.global.setChangeExplorerSearchPhrase",
 		caseHashDigest,
 		searchPhrase,
 	});
@@ -28,7 +28,7 @@ const onFocus = (
 	explorerNodeHashDigest: _ExplorerNodeHashDigest,
 ) => {
 	vscode.postMessage({
-		kind: 'webview.global.focusExplorerNode',
+		kind: "webview.global.focusExplorerNode",
 		caseHashDigest,
 		explorerNodeHashDigest,
 	});
@@ -39,7 +39,7 @@ const onCollapsibleExplorerNodeFlip = (
 	explorerNodeHashDigest: _ExplorerNodeHashDigest,
 ) => {
 	vscode.postMessage({
-		kind: 'webview.global.flipCollapsibleExplorerNode',
+		kind: "webview.global.flipCollapsibleExplorerNode",
 		caseHashDigest,
 		explorerNodeHashDigest,
 	});
@@ -49,7 +49,7 @@ const onCollapsibleExplorerNodeFlip = (
 
 export const App = (
 	props: { screenWidth: number | null } & MainWebviewViewProps & {
-			activeTabId: 'codemodRuns';
+			activeTabId: "codemodRuns";
 		},
 ) => {
 	const { changeExplorerTree, codemodExecutionInProgress } = props;
@@ -84,7 +84,7 @@ export const App = (
 			<LoadingProgress
 				description={
 					progress === null
-						? 'Processing files...'
+						? "Processing files..."
 						: `Processed ${progress.processedFileNumber} / ${progress.totalFileNumber}`
 				}
 			/>
@@ -99,17 +99,14 @@ export const App = (
 		<main
 			className={styles.container}
 			style={{
-				...(changeExplorerTree === null && { cursor: 'not-allowed' }),
+				...(changeExplorerTree === null && { cursor: "not-allowed" }),
 			}}
 		>
 			{changeExplorerTree !== null && (
 				<SearchBar
 					searchPhrase={changeExplorerTree.searchPhrase}
 					setSearchPhrase={(searchPhrase) =>
-						setSearchPhrase(
-							changeExplorerTree.caseHash,
-							searchPhrase,
-						)
+						setSearchPhrase(changeExplorerTree.caseHash, searchPhrase)
 					}
 					placeholder="Search by file name"
 				/>

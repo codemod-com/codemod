@@ -1,12 +1,12 @@
-import { Disposable, EventEmitter, Uri } from 'vscode';
-import type { Case, CaseHash } from '../cases/types';
-import { PiranhaLanguage } from '../data/codemodConfigSchema';
-import { ExecutionError } from '../errors/types';
-import type { Job, JobHash } from '../jobs/types';
-import { CodemodHash } from '../packageJsonAnalyzer/types';
-import { CodemodArgumentWithValue } from '../selectors/selectCodemodTree';
+import { Disposable, EventEmitter, Uri } from "vscode";
+import type { Case, CaseHash } from "../cases/types";
+import { PiranhaLanguage } from "../data/codemodConfigSchema";
+import { ExecutionError } from "../errors/types";
+import type { Job, JobHash } from "../jobs/types";
+import { CodemodHash } from "../packageJsonAnalyzer/types";
+import { CodemodArgumentWithValue } from "../selectors/selectCodemodTree";
 
-export const enum MessageKind {
+export enum MessageKind {
 	/** cases and jobs */
 	upsertCase = 3,
 	upsertJobs = 4,
@@ -55,19 +55,19 @@ export const enum MessageKind {
 
 export type Command =
 	| Readonly<{
-			kind: 'executeCodemod';
+			kind: "executeCodemod";
 			codemodHash: CodemodHash;
 			name: string;
 			arguments?: ReadonlyArray<CodemodArgumentWithValue>;
 	  }>
 	| Readonly<{
-			kind: 'executeLocalCodemod';
+			kind: "executeLocalCodemod";
 			codemodUri: Uri;
 			codemodHash: CodemodHash | null;
 			name: string;
 	  }>
 	| Readonly<{
-			kind: 'executePiranhaRule';
+			kind: "executePiranhaRule";
 			name: string;
 			configurationUri: Uri;
 			language: PiranhaLanguage;
@@ -160,7 +160,7 @@ export type Message =
 	| Readonly<{
 			kind: MessageKind.showProgress;
 			codemodHash: CodemodHash | null;
-			progressKind: 'finite' | 'infinite';
+			progressKind: "finite" | "infinite";
 			totalFileNumber: number;
 			processedFileNumber: number;
 	  }>

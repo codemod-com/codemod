@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -40,7 +40,7 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.findJSXElements('NavLink').forEach((path) => {
+	root.findJSXElements("NavLink").forEach((path) => {
 		const attrs = path.value.openingElement.attributes;
 
 		if (!attrs) {
@@ -48,60 +48,57 @@ function transform(
 		}
 
 		const [classNameAttr] = attrs.filter((a) =>
-			'name' in a ? a.name.name === 'className' : false,
+			"name" in a ? a.name.name === "className" : false,
 		);
 
 		if (
 			!classNameAttr ||
-			!('value' in classNameAttr) ||
+			!("value" in classNameAttr) ||
 			!classNameAttr.value ||
-			!('value' in classNameAttr.value) ||
+			!("value" in classNameAttr.value) ||
 			!classNameAttr.value.value
 		) {
 			return;
 		}
 
 		const [activeClassNameAttr] = attrs.filter((a) =>
-			'name' in a ? a.name.name === 'activeClassName' : false,
+			"name" in a ? a.name.name === "activeClassName" : false,
 		);
 
 		if (
 			!activeClassNameAttr ||
-			!('value' in activeClassNameAttr) ||
+			!("value" in activeClassNameAttr) ||
 			!activeClassNameAttr.value ||
-			!('value' in activeClassNameAttr.value)
+			!("value" in activeClassNameAttr.value)
 		) {
 			return;
 		}
 
 		const idx = attrs.findIndex((a) =>
-			'name' in a ? a.name.name === 'activeClassName' : false,
+			"name" in a ? a.name.name === "activeClassName" : false,
 		);
 
 		// remove activeclass name
 		attrs.splice(idx, 1);
 
 		const propertyNode = j.property(
-			'init',
-			j.literal('isActive'),
-			j.identifier('isActive'),
+			"init",
+			j.literal("isActive"),
+			j.identifier("isActive"),
 		);
 
 		const arrFuncBody = j.binaryExpression(
-			'+',
+			"+",
 			j.literal(classNameAttr.value.value),
 			j.conditionalExpression(
-				j.identifier('isActive'),
+				j.identifier("isActive"),
 				j.literal(` ${activeClassNameAttr.value.value}`),
-				j.literal(''),
+				j.literal(""),
 			),
 		);
 
 		classNameAttr.value = j.jsxExpressionContainer(
-			j.arrowFunctionExpression(
-				[j.objectPattern([propertyNode])],
-				arrFuncBody,
-			),
+			j.arrowFunctionExpression([j.objectPattern([propertyNode])], arrFuncBody),
 		);
 
 		dirtyFlag = true;
