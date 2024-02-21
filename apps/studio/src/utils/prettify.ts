@@ -1,24 +1,23 @@
-import * as estreePlugin from 'prettier/plugins/estree';
-import * as tsPlugin from 'prettier/plugins/typescript';
-import * as prettier from 'prettier/standalone';
+function promiseState<T>(p: Promise<T>) {
+	let state: T | undefined;
 
-// Prettier is temporarily excluded, due to switching its API to async after upgrading to v3
-const prettifyDeprecated = (text: string): string => {
-	if (prettier === undefined || tsPlugin === undefined) {
-		return text;
-	}
+	p.then((resolved) => {
+		state = resolved;
+	});
 
-	try {
-		return text;
-	} catch (error) {
-		console.error(error);
+	return () => state;
+}
 
-		return text;
-	}
-};
+const getPrettier = promiseState(import("prettier/standalone"));
+const getPrettierParserTypeScript = promiseState(
+	import("prettier/parser-typescript"),
+);
 
-export const prettify = async (text: string): Promise<string> => {
-	if (prettier === undefined || tsPlugin === undefined) {
+export const prettify = (text: string): string => {
+	const prettier = getPrettier();
+	const prettierParserTypeScript = getPrettierParserTypeScript();
+
+	if (prettier === undefined || prettierParserTypeScript === undefined) {
 		return text;
 	}
 
@@ -30,7 +29,7 @@ export const prettify = async (text: string): Promise<string> => {
 			trailingComma: 'all',
 			parser: 'typescript',
 			tabWidth: 4,
-			plugins: [tsPlugin, estreePlugin],
+			plugins: [prettierParserTypeScript],
 		});
 	} catch (error) {
 		console.error(error);
@@ -38,5 +37,3 @@ export const prettify = async (text: string): Promise<string> => {
 		return text;
 	}
 };
-
-export default prettifyDeprecated;

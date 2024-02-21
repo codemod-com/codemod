@@ -1,10 +1,10 @@
 /* eslint-disable import/group-exports */
-import { inflate } from 'pako';
-import { decode } from 'universal-base64url';
-import { parseShareableCodemod } from '~/schemata/shareableCodemodSchemata';
-import { parseState } from '~/schemata/stateSchemata';
-import { isNeitherNullNorUndefined } from '~/utils/isNeitherNullNorUndefined';
-import prettifyDeprecated from '~/utils/prettify';
+import { inflate } from "pako";
+import { decode } from "universal-base64url";
+import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";
+import { parseState } from "~/schemata/stateSchemata";
+import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
+import { prettify } from "~/utils/prettify";
 
 export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
     const { data } = state;
@@ -93,8 +93,8 @@ export const handleSourceFile = (
 export const buildDefaultCodemodSource = (
 	engine: 'jscodeshift' | 'tsmorph',
 ) => {
-	if (engine === 'jscodeshift') {
-		return prettifyDeprecated(
+	if (engine === "jscodeshift") {
+		return prettify(
 			STARTER_SNIPPET.replace(
 				'{%DEFAULT_FIND_REPLACE_EXPRESSION%}',
 				DEFAULT_FIND_REPLACE_EXPRESSION,
