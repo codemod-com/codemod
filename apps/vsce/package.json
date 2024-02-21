@@ -215,8 +215,6 @@
 		"compile": "webpack",
 		"watch": "webpack --watch",
 		"build": "pnpm install:webview && pnpm build:webview && pnpm install && NODE_ENV='production' webpack --devtool hidden-source-map",
-		"lint:eslint": "yarn dlx @biomejs/biome lint src --apply --ext ts",
-		"lint:prettier": "yarn dlx @biomejs/biome format --write .",
 		"spellcheck": "pnpm cspell-cli '**/*.{ts,tsx}'",
 		"install:webview": "cd webview && pnpm install",
 		"build:webview": "cd webview && pnpm build:webview",

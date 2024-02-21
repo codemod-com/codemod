@@ -20,10 +20,6 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"lint:eslint:check": "npx @biomejs/biome lint . --no-color",
-		"lint:prettier:check": "npx @biomejs/biome format . --check --no-color ",
-		"lint:eslint:write": "npx @biomejs/biome lint . --apply",
-		"lint:prettier:write": "npx @biomejs/biome format --write .",
 		"test": "vitest run",
 		"coverage": "vitest run --coverage"
 	},

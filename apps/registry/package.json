@@ -7,8 +7,6 @@
 		"build": "turbo run build:cjs && pnpm --filter @codemod-com/builder build:registry && pnpm --filter @codemod-com/readme-parser build:registry",
 		"build:homedir": "turbo run build:cjs && pnpm --filter @codemod-com/builder build:homedir",
 		"create": "turbo run create",
-		"lint:eslint": "pnpm dlx @biomejs/biome lint --apply .",
-		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
 		"test": "vitest run test.ts",
 		"test:win": "vitest run test.win.ts",
 		"coverage": "vitest run --coverage"

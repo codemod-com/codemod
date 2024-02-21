@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/codemod-npx @biomejs/biome lint-biome-rules",
+	"name": "@codemod-com/codemod-eslint-to-biome-rules",
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
