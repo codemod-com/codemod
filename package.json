@@ -52,8 +52,5 @@
 		"typescript": "^5.2.0",
 		"vitest": "^1.0.1",
 		"@biomejs/biome": "1.5.3"
-	},
-	"lint-staged": {
-		"**/*.{js,ts,jsx,tsx,html,css,json,yaml,yml,md,mdx}": "biome check --apply"
 	}
 }
