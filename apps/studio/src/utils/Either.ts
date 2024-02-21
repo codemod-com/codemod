@@ -53,8 +53,9 @@ export class Either<L, R> {
 			throw Error(
 				errorMessage
 					? errorMessage
-					: "An error has ocurred retrieving value: " +
-							JSON.stringify(this.value),
+					: `An error has ocurred retrieving value: ${JSON.stringify(
+							this.value,
+					  )}`,
 			);
 		};
 
@@ -66,7 +67,7 @@ export class Either<L, R> {
 
 	getLeft(): L {
 		const throwFn = () => {
-			throw Error("The value is right: " + JSON.stringify(this.value));
+			throw Error(`The value is right: ${JSON.stringify(this.value)}`);
 		};
 
 		return this.fold(
