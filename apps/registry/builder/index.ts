@@ -73,27 +73,32 @@ const codemodConfigSchema = S.union(
 		engine: S.literal('piranha'),
 		language: piranhaLanguageSchema,
 		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
 	S.struct({
 		schemaVersion: S.literal('1.0.0'),
 		engine: S.literal('jscodeshift'),
 		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
 	S.struct({
 		schemaVersion: S.literal('1.0.0'),
 		engine: S.literal('ts-morph'),
 		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
 	S.struct({
 		schemaVersion: S.literal('1.0.0'),
 		engine: S.literal('filemod'),
 		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
 	S.struct({
 		schemaVersion: S.literal('1.0.0'),
 		engine: S.literal('recipe'),
 		names: S.array(S.string),
 		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
 );
 
