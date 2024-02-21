@@ -1,70 +1,58 @@
-# Codemod's CLI
+![Codemod](https://raw.githubusercontent.com/codemod-com/docs/main/static/img/github/codemod-billboard.png)
 
-Codemod platform gives you multiple ways to discover, run & share supported codemods and code automation recipes.
+<p align="center">
+  <br />
+  <a href="https://github.com/codemod-com/codemod">GitHub</a>
+  ·
+  <a href="https://docs.codemod.com">Documentation</a>
+  .
+  <a href="https://codemod.com/community">Community</a>
+</p>
 
-![Running Codemod CLI](https://raw.githubusercontent.com/codemod-com/website/main/theme/assets/images/hero-video.gif)
+The Codemod platform helps you create, distribute, and deploy codemods in codebases of any size.
 
-## Installation
-
-    npm i codemod
+The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
 
 ## Global installation (recommended)
 
     npm i -g codemod
 
-## Usage
+## Usage & Documentation
+
+For details on how to use the Codemod platform, check out our [documentation](https://docs.codemod.com).
+
+## Quickstart
+
+### List available codemods
+
+The `list` command can be used to list all codemods available in the [Codemod Registry](https://codemod.com/automations).
+
+    codemod list
 
 ### Running a codemod
 
     codemod [framework/version/codemod-name]
 
-#### Example (running Next.js app router receipe codemod)
+#### Example:
 
     codemod next/13/app-router-recipe
 
-### List available codemods
-
-The `list` command can be used to list all codemods available in the [Codemod Registry](https://github.com/codemod-com/codemod-registry).
-
-    codemod list
-
-### Sync registry
-
-The `syncRegistry` command can be used to sync local codemods with the public [Codemod Registry](https://github.com/codemod-com/codemod-registry).
-
-    codemod syncRegistry
-
-### Generate codemod from file diff
+### Create codemod with AI
 
 The `learn` command can be used to send the diff of the latest edited file to the Codemod Studio and have it automatically build an explainable and debuggable codemod.
 
-After running this command, if any git diff exists, `codemod` will use the diff as before/after snippets in the [Codemod Studio](https://codemod.studio).
-
     codemod learn
 
-### Options
+After running this command, if any git diff exists, `codemod` will use the diff as before/after snippets in the [Codemod Studio](https://codemod.studio).
 
--   [`--include` or `-i`](https://docs.codemod.com/docs/cli/advanced-usage#--include)
--   [`--exclude` or `-e`](https://docs.codemod.com/docs/cli/advanced-usage#--exclude)
--   [`--target` or `-t`](https://docs.codemod.com/docs/cli/advanced-usage#--target)
--   [`--source` or `-s`](https://docs.codemod.com/docs/cli/advanced-usage#--source)
--   [`--engine`](https://docs.codemod.com/docs/cli/advanced-usage#--engine)
--   [`--limit` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--limit)
--   [`--raw` or `-r`](https://docs.codemod.com/docs/cli/advanced-usage#--raw)
--   [`--no-cache`](https://docs.codemod.com/docs/cli/advanced-usage#--no-cache)
--   [`--json` or `-j`](https://docs.codemod.com/docs/cli/advanced-usage#--json)
--   [`--threads` or `-n`](https://docs.codemod.com/docs/cli/advanced-usage#--threads)
--   [`--dry` or `-d`](https://docs.codemod.com/docs/cli/advanced-usage#--dry)
--   [`--telemetryDisable`](https://docs.codemod.com/docs/cli/advanced-usage#--telemetrydisable)
+## Community
 
-## Contribution
+The Codemod community can be found on [Slack](https://codemod.com/community), where you can ask questions, share your feedback, and contribute to the community.
 
-We'd love for you to contribute to the [Codemod Engine](https://github.com/codemod-com/codemod-engine-node) and the [Codemod Registry](https://github.com/codemod-com/codemod-registry). Please note that once you create a pull request, you will be asked to sign our [Contributor License Agreement](https://cla-assistant.io/codemod-com/codemod-registry).
+Our [Code of Conduct](https://github.com/codemod-com/codemod/blob/main/CODE_OF_CONDUCT.md) applies to all Codemod community channels.
 
-We're always excited to support codemods for more frameworks and libraries. Contributing allows us to make codemods more accessible to more framework builders, developers, and more.
-
-## Telemetry 🔭
+## Telemetry
 
 We collect anonymous usage data to improve our product. Collected data cannot be linked to individual users. We do not store personal data/code.
 
-For more details and samples of collected data see our [telemetry compliance considerations](https://docs.codemod.com/docs/about/telemetry-compliance) doc.
+For more details and samples of collected data see our [telemetry compliance considerations](https://go.codemod.com/telemetry) doc.
