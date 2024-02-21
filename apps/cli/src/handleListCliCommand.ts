@@ -77,7 +77,13 @@ export const handleListNamesCommand = async (printer: Printer) => {
 		onlyValid,
 	);
 
-	printer.printConsoleMessage('info', columnify(parsedObjects));
+	printer.printConsoleMessage(
+		'info',
+		columnify(parsedObjects, {
+			headingTransform: (heading) =>
+				boldText(heading.toLocaleUpperCase()),
+		}),
+	);
 
 	printer.printConsoleMessage(
 		'info',
