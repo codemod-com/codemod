@@ -145,7 +145,7 @@ export const executeMainThread = async () => {
 		printer,
 	);
 
-	let telemetryService;
+	let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
 	let exit = () => {};
 	const tarService = new TarService(fs as unknown as IFs);
 
@@ -153,7 +153,7 @@ export const executeMainThread = async () => {
 		// hack to prevent appInsights from trying to read applicationinsights.json
 		// this env should be set before appinsights is imported
 		// https://github.com/microsoft/ApplicationInsights-node.js/blob/0217324c477a96b5dd659510bbccad27934084a3/Library/JsonConfig.ts#L122
-		process.env["APPLICATIONINSIGHTS_CONFIGURATION_CONTENT"] = "{}";
+		process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = "{}";
 		const appInsights = await import("applicationinsights");
 
 		// .start() is skipped intentionally, to prevent any non-custom events from tracking

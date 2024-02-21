@@ -27,7 +27,7 @@ describe("runTsMorphCodemod", () => {
 		const fileCommands = runTsMorphCodemod(
 			codemodSource,
 			"index.ts",
-			``,
+			"",
 			false,
 			[{}],
 			(consoleKind, message) => {
