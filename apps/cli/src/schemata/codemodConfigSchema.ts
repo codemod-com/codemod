@@ -49,3 +49,5 @@ export const codemodConfigSchema = S.union(
 		arguments: optionalArgumentsSchema,
 	}),
 );
+
+export type CodemodConfig = S.To<typeof codemodConfigSchema>;

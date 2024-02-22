@@ -8,7 +8,7 @@ import { glob } from 'fast-glob';
 import * as v from 'valibot';
 import { syncRegistryOperation } from './executeMainThread.js';
 import { FileDownloadService } from './fileDownloadService.js';
-import type { Printer } from './printer.js';
+import type { Printer, PrinterBlueprint } from './printer.js';
 import { TarService } from './services/tarService.js';
 import { boldText, colorizeText } from './utils.js';
 
@@ -18,7 +18,7 @@ const configJsonSchema = v.object({
 	owner: v.optional(v.string()),
 });
 
-export const handleListNamesCommand = async (printer: Printer) => {
+export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 	const configurationDirectoryPath = join(homedir(), '.codemod');
 
 	await mkdir(configurationDirectoryPath, { recursive: true });

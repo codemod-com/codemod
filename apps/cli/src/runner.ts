@@ -171,6 +171,11 @@ export class Runner {
 			}
 
 			if (this._name !== null) {
+				const codemod = await this._codemodDownloader.download(
+					this._name,
+					this._flowSettings.noCache,
+				);
+
 				this._printer.printConsoleMessage(
 					'info',
 					colorizeText(
@@ -189,11 +194,6 @@ export class Runner {
 						EXTENSION_LINK_START,
 					);
 				}
-
-				const codemod = await this._codemodDownloader.download(
-					this._name,
-					this._flowSettings.noCache,
-				);
 
 				const codemodHashDigest = createHash('ripemd160')
 					.update(codemod.name)
