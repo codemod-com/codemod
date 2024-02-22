@@ -15,20 +15,18 @@
       "to": "#91c500"
     }
   },
-  "topbarLinks": [
-    {
-      "name": "Blog",
-      "url": "https://docs.codemod.com/blog"
-    }
-  ],
   "topbarCtaButton": {
-    "name": "GitHub",
+    "type": "github",
     "url": "https://github.com/codemod-com/codemod"
   },
   "tabs": [
     {
       "name": "Examples",
       "url": "examples"
+    },
+    {
+      "name": "Blog",
+      "url": "https://docs.codemod.com/blog"
     }
   ],
   "anchors": [
