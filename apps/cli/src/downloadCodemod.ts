@@ -5,8 +5,12 @@ import * as S from '@effect/schema/Schema';
 import Axios from 'axios';
 import { Codemod } from './codemod.js';
 import { FileDownloadServiceBlueprint } from './fileDownloadService.js';
+import { handleListNamesCommand } from './handleListCliCommand.js';
 import { PrinterBlueprint } from './printer.js';
-import { codemodConfigSchema } from './schemata/codemodConfigSchema.js';
+import {
+	CodemodConfig,
+	codemodConfigSchema,
+} from './schemata/codemodConfigSchema.js';
 import { TarService } from './services/tarService.js';
 import { boldText, colorizeText } from './utils.js';
 
@@ -86,29 +90,42 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		// download the config
-		const configPath = join(directoryPath, 'config.json');
+		let parsedConfig: unknown;
 
-		const buffer = await this._fileDownloadService.download(
-			`${CODEMOD_REGISTRY_URL}/${hashDigest}/config.json`,
-			configPath,
-		);
+		try {
+			// download the config
+			const configPath = join(directoryPath, 'config.json');
 
-		const parsedConfig = JSON.parse(buffer.toString('utf8'));
+			const buffer = await this._fileDownloadService.download(
+				`${CODEMOD_REGISTRY_URL}/${hashDigest}/config.json`,
+				configPath,
+			);
 
-		const config = S.parseSync(codemodConfigSchema)(parsedConfig);
+			parsedConfig = JSON.parse(buffer.toString('utf8'));
+		} catch (error) {
+			await handleListNamesCommand(this.__printer);
 
-		{
-			const descriptionPath = join(directoryPath, 'description.md');
+			throw new Error(
+				`Could not find codemod ${name} in the registry. Verify the name to be in the list above and try again.`,
+			);
+		}
 
-			try {
-				await this._fileDownloadService.download(
-					`${CODEMOD_REGISTRY_URL}/${hashDigest}/description.md`,
-					descriptionPath,
-				);
-			} catch {
-				// do nothing, descriptions might not exist
-			}
+		let config: CodemodConfig;
+		try {
+			config = S.parseSync(codemodConfigSchema)(parsedConfig);
+		} catch (err) {
+			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
+		}
+
+		const descriptionPath = join(directoryPath, 'description.md');
+
+		try {
+			await this._fileDownloadService.download(
+				`${CODEMOD_REGISTRY_URL}/${hashDigest}/description.md`,
+				descriptionPath,
+			);
+		} catch {
+			// do nothing, descriptions might not exist
 		}
 
 		if (config.engine === 'piranha') {

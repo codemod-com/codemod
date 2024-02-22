@@ -28,7 +28,9 @@ export class Printer implements PrinterBlueprint {
 	public printOperationMessage(message: OperationMessage) {
 		if (this.__jsonOutput) {
 			if (message.kind === 'error') {
-				console.error(JSON.stringify(message));
+				console.error(
+					colorizeText(`\n${JSON.stringify(message)}\n`, 'red'),
+				);
 				return;
 			}
 
@@ -39,17 +41,13 @@ export class Printer implements PrinterBlueprint {
 		if (message.kind === 'error') {
 			const { message: text, path } = message;
 
+			let errorText: string = text;
+
 			if (path) {
-				console.error(
-					colorizeText(
-						`\n${boldText(`Error at ${path}:`)}\n\n${text}\n`,
-						'red',
-					),
-				);
-				return;
+				errorText = `${boldText(`Error at ${path}:`)}\n\n${text}`;
 			}
 
-			console.error(text);
+			console.error(colorizeText(`\n${errorText}\n`, 'red'));
 		}
 
 		if (message.kind === 'progress') {
