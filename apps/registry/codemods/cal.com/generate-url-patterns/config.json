@@ -22,5 +22,6 @@
 			"kind": "boolean",
 			"required": false
 		}
-	]
+	],
+	"owner": "Codemod.com"
 }

@@ -3,12 +3,20 @@ import { mkdir, readFile } from 'node:fs/promises';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
+import columnify from 'columnify';
 import { glob } from 'fast-glob';
 import * as v from 'valibot';
 import { syncRegistryOperation } from './executeMainThread.js';
 import { FileDownloadService } from './fileDownloadService.js';
 import type { Printer } from './printer.js';
 import { TarService } from './services/tarService.js';
+import { boldText, colorizeText } from './utils.js';
+
+const configJsonSchema = v.object({
+	name: v.string(),
+	engine: v.string(),
+	owner: v.optional(v.string()),
+});
 
 export const handleListNamesCommand = async (printer: Printer) => {
 	const configurationDirectoryPath = join(homedir(), '.codemod');
@@ -22,26 +30,58 @@ export const handleListNamesCommand = async (printer: Printer) => {
 		onlyFiles: true,
 	});
 
-	const codemodNames = await Promise.allSettled(
+	const codemodObjects = await Promise.allSettled(
 		configFiles.map(async (cfg) => {
 			const configJson = await readFile(cfg, 'utf8');
 
 			const parsedConfig = v.safeParse(
-				v.object({ name: v.string() }),
+				configJsonSchema,
 				JSON.parse(configJson),
 			);
-			return parsedConfig.success ? parsedConfig.output.name : null;
+
+			if (!parsedConfig.success) {
+				return null;
+			}
+
+			const { name, engine, owner } = parsedConfig.output;
+
+			if (owner?.toLocaleLowerCase() === 'codemod.com') {
+				return {
+					name: boldText(colorizeText(name, 'cyan')),
+					engine: boldText(colorizeText(engine, 'cyan')),
+					owner: boldText(colorizeText(owner, 'cyan')),
+				};
+			}
+
+			return {
+				name,
+				engine,
+				owner: owner ?? 'Community',
+			};
 		}),
 	);
 
-	const onlyValid = codemodNames
+	const onlyValid = codemodObjects
 		.map((x) => (x.status === 'fulfilled' ? x.value : null))
 		.filter(isNeitherNullNorUndefined)
-		.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
+		.sort((a, b) =>
+			a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+		);
 
-	const names = v.parse(v.array(v.string()), onlyValid);
+	const parsedObjects = v.parse(v.array(configJsonSchema), onlyValid);
 
-	printer.printOperationMessage({ kind: 'names', names });
+	printer.printConsoleMessage(
+		'info',
+		columnify(parsedObjects, {
+			headingTransform: (heading) =>
+				boldText(heading.toLocaleUpperCase()),
+		}),
+	);
+
+	printer.printConsoleMessage(
+		'info',
+		'\nColored codemods are verified by the Codemod.com engineering team',
+	);
 };
 
 export const handleListNamesAfterSyncing = async (

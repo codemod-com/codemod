@@ -5,5 +5,5 @@
 	"engine": "ts-morph",
 	"extensions": ["js*", "ts*"],
 	"dependencyVersionLowerThan": ["next", "13.0.0"],
-	"owner": "codemod.com"
+	"owner": "Codemod.com"
 }

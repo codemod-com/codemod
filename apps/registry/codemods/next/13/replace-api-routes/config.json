@@ -4,5 +4,5 @@
 	"description": "This codemod replaces API Routes with Route Handlers",
 	"engine": "filemod",
 	"dependencyVersionLowerThan": ["next", "13.0.0"],
-	"owner": "codemod.com"
+	"owner": "Codemod.com"
 }
