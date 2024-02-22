@@ -106,7 +106,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			await handleListNamesCommand(this.__printer);
 
 			throw new Error(
-				`Could not find codemod ${name} in the registry. Verify the name to be in the list above and try again.`,
+				`Could not find codemod ${boldText(
+					name,
+				)} in the registry. Verify the name to be in the list above and try again.`,
 			);
 		}
 
