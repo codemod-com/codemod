@@ -31,7 +31,7 @@ The `list` command can be used to list all codemods available in the [Codemod Re
 
 ### Running a codemod
 
-    codemod [framework/version/codemod-name]
+    codemod [codemod-name]
 
 #### Example:
 
