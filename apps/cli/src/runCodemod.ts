@@ -261,6 +261,11 @@ export const runCodemod = async (
 		return;
 	}
 
+	if (codemod.engine === 'ast-grep') {
+		await runAstgrep(printer, codemod.yamlPath, flowSettings.target);
+		return;
+	}
+
 	const codemodSource = await getCodemodSource(codemod.indexPath);
 
 	const transpiledSource = codemod.indexPath.endsWith(".ts")

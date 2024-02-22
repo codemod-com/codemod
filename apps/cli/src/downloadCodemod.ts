@@ -122,8 +122,27 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			// do nothing, descriptions might not exist
 		}
 
+		if (config.engine === "ast-grep") {
+			const yamlPath = join(directoryPath, 'rule.yaml');
+			const yamlData = await this._fileDownloadService.download(
+				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rule.yaml`,
+				yamlPath,
+			);
+
+			await writeFile(yamlPath, yamlData);
+
+			return {
+				source: 'registry',
+				name,
+				engine: config.engine,
+				yamlPath: yamlPath,
+				directoryPath,
+				arguments: config.arguments,
+			};
+		}
+
 		if (config.engine === "piranha") {
-			const rulesPath = join(directoryPath, "rules.toml");
+			const rulesPath = join(directoryPath, 'rules.toml');
 
 			await this._fileDownloadService.download(
 				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rules.toml`,
