@@ -1,7 +1,7 @@
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="/assets/images/header-dark.png">
-  <source media="(prefers-color-scheme: light)" srcset="/assets/images/header-light.png">
-  <img alt="Codemod Registry Header" src="/assets/images/header-light.png">
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/images/codemod-registry-hero-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="./assets/images/codemod-registry-hero-light.svg">
+  <img alt="Codemod Registry Header" src="./assets/images/codemod-registry-hero-light.svg">
 </picture>
 
 # Codemod Registry
