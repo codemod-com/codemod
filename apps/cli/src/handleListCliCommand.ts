@@ -12,6 +12,12 @@ import type { Printer } from './printer.js';
 import { TarService } from './services/tarService.js';
 import { boldText, colorizeText } from './utils.js';
 
+const configJsonSchema = v.object({
+	name: v.string(),
+	engine: v.string(),
+	owner: v.optional(v.string()),
+});
+
 export const handleListNamesCommand = async (printer: Printer) => {
 	const configurationDirectoryPath = join(homedir(), '.codemod');
 
@@ -29,11 +35,7 @@ export const handleListNamesCommand = async (printer: Printer) => {
 			const configJson = await readFile(cfg, 'utf8');
 
 			const parsedConfig = v.safeParse(
-				v.object({
-					name: v.string(),
-					engine: v.string(),
-					owner: v.optional(v.string()),
-				}),
+				configJsonSchema,
 				JSON.parse(configJson),
 			);
 
@@ -66,16 +68,7 @@ export const handleListNamesCommand = async (printer: Printer) => {
 			a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
 		);
 
-	const parsedObjects = v.parse(
-		v.array(
-			v.object({
-				name: v.string(),
-				engine: v.string(),
-				owner: v.optional(v.string()),
-			}),
-		),
-		onlyValid,
-	);
+	const parsedObjects = v.parse(v.array(configJsonSchema), onlyValid);
 
 	printer.printConsoleMessage(
 		'info',
