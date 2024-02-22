@@ -166,8 +166,16 @@ export const executeMainThread = async () => {
 		);
 
 		exit = () => {
-			appInsights.dispose();
-			process.exit(0);
+			// appInsights telemetry client uses batches to send telemetry.
+			// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
+			// see Channel2.prototype.send
+			// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+			appInsights.defaultClient.flush({
+				callback: () => {
+					appInsights.dispose();
+					process.exit(0);
+				},
+			});
 		};
 	} else {
 		telemetryService = new NoTelemetryService();

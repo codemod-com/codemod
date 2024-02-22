@@ -4643,6 +4643,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0(@types/node@20.10.5)
 
+  apps/studio-backend/build-ncc: {}
+
   apps/vsce:
     dependencies:
       '@effect/schema':

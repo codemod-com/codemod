@@ -30,6 +30,7 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 		this.__telemetryClient.addTelemetryProcessor(this.__processTelemetry);
 	}
 
+	// remove unnecessary info from the event (for GDPR compliance)
 	private __processTelemetry = (envelope: Contracts.EnvelopeTelemetry) => {
 		const allowedTagEntries = Object.entries(envelope.tags).filter(
 			([tagName]) => ALLOWED_ENVELOPE_TAGS.includes(tagName),
@@ -62,7 +63,7 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 		}
 
 		return {
-			name: event.kind,
+			name: `codemod.cli.${event.kind}`,
 			properties,
 			measurements,
 		};
