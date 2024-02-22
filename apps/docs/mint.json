@@ -104,6 +104,11 @@
       ]
     }
   ],
+  "feedback": {
+    "thumbsRating": true,
+    "suggestEdit": true,
+    "raiseIssue": true
+  },
   "footerSocials": {
     "twitter": "https://twitter.com/codemod",
     "github": "https://github.com/codemod-com",
