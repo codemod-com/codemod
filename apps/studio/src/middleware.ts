@@ -1,7 +1,7 @@
-import { NextResponse, type NextRequest } from 'next/server';
+import { type NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-	if (process.env.NODE_ENV === 'development') {
+	if (process.env.NODE_ENV === "development") {
 		return NextResponse.next({
 			request,
 		});
@@ -10,7 +10,7 @@ export function middleware(request: NextRequest) {
 	// based off the examples presented on:
 	// https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
 
-	const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+	const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 	const cspHeader = `
         default-src 'self';
         script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline';
@@ -28,12 +28,12 @@ export function middleware(request: NextRequest) {
     `;
 
 	const contentSecurityPolicyHeaderValue = cspHeader
-		.replace(/\s{2,}/g, ' ')
+		.replace(/\s{2,}/g, " ")
 		.trim();
 
 	const headers = new Headers(request.headers);
-	headers.set('x-nonce', nonce);
-	headers.set('Content-Security-Policy', contentSecurityPolicyHeaderValue);
+	headers.set("x-nonce", nonce);
+	headers.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
 
 	const response = NextResponse.next({
 		request: {
@@ -42,7 +42,7 @@ export function middleware(request: NextRequest) {
 	});
 
 	response.headers.set(
-		'Content-Security-Policy',
+		"Content-Security-Policy",
 		contentSecurityPolicyHeaderValue,
 	);
 
@@ -55,10 +55,10 @@ export function middleware(request: NextRequest) {
 export const config = {
 	matcher: [
 		{
-			source: '/((?!api|_next/static|_next/image|favicon.ico).*)',
+			source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
 			missing: [
-				{ type: 'header', key: 'next-router-prefetch' },
-				{ type: 'header', key: 'purpose', value: 'prefetch' },
+				{ type: "header", key: "next-router-prefetch" },
+				{ type: "header", key: "purpose", value: "prefetch" },
 			],
 		},
 	],

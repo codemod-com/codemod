@@ -97,8 +97,7 @@ function hasSubmoduleImport(j, root, moduleName, submoduleName) {
 
 	// local 默认设置为 null
 	return (
-		targetImport[0]?.value?.local?.name ||
-		targetImport[0]?.value?.imported.name
+		targetImport[0]?.value?.local?.name || targetImport[0]?.value?.imported.name
 	);
 }
 
@@ -112,23 +111,26 @@ function hasModuleImport(j, root, moduleName) {
 
 function hasModuleDefaultImport(j, root, pkgName, localModuleName) {
 	let found = false;
-	root.find(j.ImportDeclaration, {
-		source: { value: pkgName },
-	}).forEach((nodePath) => {
-		const defaultImport = nodePath.node.specifiers.filter(
-			(n) =>
-				n.type === 'ImportDefaultSpecifier' &&
-				n.local.name === localModuleName,
-		);
-		if (defaultImport.length) {
-			found = true;
-		}
-	});
+	root
+		.find(j.ImportDeclaration, {
+			source: { value: pkgName },
+		})
+		.forEach((nodePath) => {
+			const defaultImport = nodePath.node.specifiers.filter(
+				(n) =>
+					n.type === "ImportDefaultSpecifier" &&
+					n.local.name === localModuleName,
+			);
+			if (defaultImport.length) {
+				found = true;
+			}
+		});
 	return found;
 }
 
 function removeEmptyModuleImport(j, root, moduleName) {
-	root.find(j.ImportDeclaration)
+	root
+		.find(j.ImportDeclaration)
 		.filter(
 			(path) =>
 				path.node.specifiers.length === 0 &&
@@ -139,39 +141,37 @@ function removeEmptyModuleImport(j, root, moduleName) {
 
 // Program uses var keywords
 function useVar(j, root) {
-	return root.find(j.VariableDeclaration, { kind: 'const' }).length === 0;
+	return root.find(j.VariableDeclaration, { kind: "const" }).length === 0;
 }
 
 function getFirstNode(j, root) {
-	return root.find(j.Program).get('body', 0).node;
+	return root.find(j.Program).get("body", 0).node;
 }
 
 function addModuleImport(j, root, { pkgName, importSpecifier, before }) {
 	// if has module imported, just import new submodule from existed
 	// else just create a new import
 	if (hasModuleImport(j, root, pkgName)) {
-		root.find(j.ImportDeclaration, {
-			source: { value: pkgName },
-		})
+		root
+			.find(j.ImportDeclaration, {
+				source: { value: pkgName },
+			})
 			.at(0)
 			.replaceWith(({ node }) => {
 				const mergedImportSpecifiers = node.specifiers
 					.concat(importSpecifier)
 					.sort((a, b) => {
-						if (a.type === 'ImportDefaultSpecifier') {
+						if (a.type === "ImportDefaultSpecifier") {
 							return -1;
 						}
 
-						if (b.type === 'ImportDefaultSpecifier') {
+						if (b.type === "ImportDefaultSpecifier") {
 							return 1;
 						}
 
 						return a.imported.name.localeCompare(b.imported.name);
 					});
-				return j.importDeclaration(
-					mergedImportSpecifiers,
-					j.literal(pkgName),
-				);
+				return j.importDeclaration(mergedImportSpecifiers, j.literal(pkgName));
 			});
 		return true;
 	}
@@ -252,8 +252,8 @@ function addStyleModuleImport(j, root, { moduleName, after }) {
 }
 
 function parseStrToArray(antdPkgNames) {
-	return (antdPkgNames || '')
-		.split(',')
+	return (antdPkgNames || "")
+		.split(",")
 		.filter((n) => n)
 		.map((n) => n.trim());
 }

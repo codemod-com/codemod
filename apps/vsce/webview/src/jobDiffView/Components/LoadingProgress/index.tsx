@@ -1,5 +1,5 @@
-import { VSCodeProgressRing } from '@vscode/webview-ui-toolkit/react';
-import styles from './style.module.css';
+import { VSCodeProgressRing } from "@vscode/webview-ui-toolkit/react";
+import styles from "./style.module.css";
 
 type Props = {
 	description: string;

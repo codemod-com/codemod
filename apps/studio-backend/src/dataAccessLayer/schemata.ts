@@ -1,9 +1,9 @@
-import { coerce, integer, minValue, number } from 'valibot';
+import { coerce, integer, minValue, number } from "valibot";
 
 export const coercedNumberSchema = coerce(
 	number([integer(), minValue(0)]),
 	(input) => {
-		if (typeof input === 'number') {
+		if (typeof input === "number") {
 			return input;
 		}
 

@@ -1,11 +1,11 @@
-import assert from 'node:assert/strict';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert/strict";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('react-router 4 replace-location-query', function () {
-	it('one instance', function () {
+describe("react-router 4 replace-location-query", () => {
+	it("one instance", () => {
 		const INPUT = `
 			const id = location.query.id;
         `;
@@ -16,19 +16,19 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('multiple instances', function () {
+	it("multiple instances", () => {
 		const INPUT = `
 			const id = location.query.id;
 			const name = location.query.name;
@@ -41,19 +41,19 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('one instance in a functional component', function () {
+	it("one instance in a functional component", () => {
 		const INPUT = `
 			const List = ({ location }) => (
 				<div>
@@ -72,19 +72,19 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('multiple instances in a functional component', function () {
+	it("multiple instances in a functional component", () => {
 		const INPUT = `
 			const List = ({ location }) => (
 				<div>
@@ -107,19 +107,19 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	it('query-string import statement should not be added when location.query is not used', function () {
+	it("query-string import statement should not be added when location.query is not used", () => {
 		const INPUT = `
 			const x = location;
         `;
@@ -129,20 +129,20 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 
-	describe('examples from netlify-react-ui', function () {
-		it('example 1', function () {
+	describe("examples from netlify-react-ui", () => {
+		it("example 1", () => {
 			const INPUT = `
 			function getOptions(props) {
 				return { ...props.location.query };
@@ -158,16 +158,16 @@ describe('react-router 4 replace-location-query', function () {
         `;
 
 			const fileInfo: FileInfo = {
-				path: 'index.js',
+				path: "index.js",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-			actualOutput?.replace(/\W/gm, ''), OUTPUT.replace(/\W/gm, '');
+			actualOutput?.replace(/\W/gm, ""), OUTPUT.replace(/\W/gm, "");
 		});
 
-		it('example 2', function () {
+		it("example 2", () => {
 			const INPUT = `
 			function mapStateToProps(state: State, ownProps) {
 				const { site, plan } = ownProps.location.query;
@@ -193,19 +193,19 @@ describe('react-router 4 replace-location-query', function () {
 			`;
 
 			const fileInfo: FileInfo = {
-				path: 'index.js',
+				path: "index.js",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 
-		it('example 3', function () {
+		it("example 3", () => {
 			const INPUT = `
 			const SiteAuditLog = (props) => {
 				const { page } = props.location.query;
@@ -225,15 +225,15 @@ describe('react-router 4 replace-location-query', function () {
 			`;
 
 			const fileInfo: FileInfo = {
-				path: 'index.js',
+				path: "index.js",
 				source: INPUT,
 			};
 
-			const actualOutput = transform(fileInfo, buildApi('tsx'));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 			assert.deepEqual(
-				actualOutput?.replace(/\W/gm, ''),
-				OUTPUT.replace(/\W/gm, ''),
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
 			);
 		});
 	});

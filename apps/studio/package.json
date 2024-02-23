@@ -50,7 +50,7 @@
 		"next": "14.0.3",
 		"os-browserify": "^0.3.0",
 		"pako": "^2.1.0",
-		"prettier": "^3.1.0",
+		"prettier": "^2.8.8",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "^7.48.2",
@@ -70,23 +70,15 @@
 		"remark-math": "^5.1.1",
 		"tailwind-merge": "^1.10.0",
 		"ts-morph": "^18.0.0",
+		"tslib": "2.4.1",
 		"universal-base64url": "^1.1.0",
 		"web-vitals": "^2.1.4",
-		"zod": "3.21.4",
-		"tslib": "2.4.1"
+		"zod": "3.21.4"
 	},
 	"scripts": {
 		"dev": "next dev",
 		"start": "next start",
-		"build": "next build",
-		"lint:prettier": "prettier 'src/**/*.{ts,tsx}' --write",
-		"lint:eslint": "eslint . --ext .tsx --color"
-	},
-	"eslintConfig": {
-		"extends": [
-			"react-app",
-			"react-app/jest"
-		]
+		"build": "next build"
 	},
 	"browserslist": {
 		"production": [
@@ -103,7 +95,7 @@
 	"devDependencies": {
 		"@babel/core": "^7.21.0",
 		"@babel/preset-env": "^7.1.6",
-		"@ianvs/prettier-plugin-sort-imports": "^4.1.1",
+		"@biomejs/biome": "1.5.3",
 		"@testing-library/dom": "^9.0.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",
@@ -121,23 +113,11 @@
 		"@types/react-virtualized-auto-sizer": "^1.0.1",
 		"@types/sinon": "^10.0.13",
 		"@types/testing-library__jest-dom": "^5.14.5",
-		"@typescript-eslint/eslint-plugin": "^6.3.0",
-		"@typescript-eslint/parser": "^6.3.0",
 		"assert": "^2.0.0",
 		"autoprefixer": "^10.4.14",
 		"csstype": "^3.1.1",
-		"eslint": "^8.34.0",
-		"eslint-config-airbnb-base": "^15.0.0",
-		"eslint-config-next": "^14.0.3",
-		"eslint-config-prettier": "^8.6.0",
-		"eslint-import-resolver-typescript": "^3.5.3",
-		"eslint-plugin-import": "^2.27.5",
-		"eslint-plugin-prettier": "^5.0.0",
-		"eslint-plugin-react": "^7.32.2",
-		"eslint-plugin-react-hooks": "^4.6.0",
 		"monaco-editor-webpack-plugin": "^7.0.1",
 		"postcss": "^8.4.21",
-		"prettier-plugin-tailwindcss": "^0.5.7",
 		"raw-loader": "^4.0.2",
 		"sinon": "^15.0.2",
 		"tailwindcss": "^3.3.3",

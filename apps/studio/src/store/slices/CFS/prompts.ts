@@ -1,5 +1,5 @@
-import { STARTER_SNIPPET } from '~/store/getInitialState';
-import { injectCFSOutputToCodemod } from '../../../utils/injectCFSOutputToCodemod';
+import { STARTER_SNIPPET } from "~/store/getInitialState";
+import { injectCFSOutputToCodemod } from "../../../utils/injectCFSOutputToCodemod";
 
 const generateCodemodNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
@@ -120,7 +120,7 @@ const fixCodemodBlockNoDebugInfoPrompt = `
 	Only provide the code. Do not share extra explanations.
  `;
 
-type PromptPresetKind = 'fixCodemod' | 'autoGenerateCodemod' | 'customPrompt';
+type PromptPresetKind = "fixCodemod" | "autoGenerateCodemod" | "customPrompt";
 type PromptPreset = {
 	kind: PromptPresetKind;
 	prompt: string;
@@ -129,10 +129,7 @@ type PromptPreset = {
 };
 
 interface ProcessPromptResponseStrategy {
-	getCodemodFromLLMResponse(
-		prevCodemod: string,
-		responseText: string,
-	): string;
+	getCodemodFromLLMResponse(prevCodemod: string, responseText: string): string;
 }
 
 const overwriteAll = {
@@ -141,9 +138,9 @@ const overwriteAll = {
 		responseText: string,
 	): string =>
 		STARTER_SNIPPET.replace(
-			'{%DEFAULT_FIND_REPLACE_EXPRESSION%}',
+			"{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
 			responseText,
-		).replace('{%COMMENT%}', ''),
+		).replace("{%COMMENT%}", ""),
 };
 
 const insertAtTheTop = {
@@ -151,7 +148,7 @@ const insertAtTheTop = {
 		prevCodemod: string,
 		responseText: string,
 		// @TODO rename
-	): string => injectCFSOutputToCodemod(prevCodemod, responseText) ?? '',
+	): string => injectCFSOutputToCodemod(prevCodemod, responseText) ?? "",
 };
 
 const promptStrategies: Readonly<

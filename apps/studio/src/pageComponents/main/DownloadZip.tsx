@@ -1,19 +1,19 @@
-import { useAuth, useSession } from '@clerk/nextjs';
-import { Export } from '@phosphor-icons/react';
-import { Check, Copy, Loader2 } from 'lucide-react';
-import { useMemo, useState } from 'react';
-import { useSelector } from 'react-redux';
-import sendMessage from '~/api/sendMessage';
-import Tooltip from '~/components/Tooltip/Tooltip';
-import { Button } from '~/components/ui/button';
-import { Dialog, DialogContent, DialogTrigger } from '~/components/ui/dialog';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '~/components/ui/tabs';
-import { useCopyToClipboard } from '~/hooks/useCopyToClipboard';
-import { cn } from '~/lib/utils';
-import { generateCodemodHumanNamePrompt } from '~/store/slices/CFS/prompts';
-import { selectMod } from '~/store/slices/mod';
-import { selectEngine, selectSnippets } from '~/store/slices/snippets';
-import { downloadProject } from '~/utils/download';
+import { useAuth, useSession } from "@clerk/nextjs";
+import { Export } from "@phosphor-icons/react";
+import { Check, Copy, Loader2 } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
+import sendMessage from "~/api/sendMessage";
+import Tooltip from "~/components/Tooltip/Tooltip";
+import { Button } from "~/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
+import { cn } from "~/lib/utils";
+import { generateCodemodHumanNamePrompt } from "~/store/slices/CFS/prompts";
+import { selectMod } from "~/store/slices/mod";
+import { selectEngine, selectSnippets } from "~/store/slices/snippets";
+import { downloadProject } from "~/utils/download";
 
 export const DownloadZip = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -40,7 +40,7 @@ export const DownloadZip = () => {
 				: null;
 
 		await downloadProject({
-			name: humanCodemodName?.name ?? 'codemod',
+			name: humanCodemodName?.name ?? "codemod",
 			framework: humanCodemodName?.framework,
 			version: humanCodemodName?.version,
 			modBody: modContext.internalContent,
@@ -54,7 +54,7 @@ export const DownloadZip = () => {
 		setIsOpen(true);
 	};
 
-	if (engine === 'tsmorph') {
+	if (engine === "tsmorph") {
 		return null;
 	}
 
@@ -64,9 +64,7 @@ export const DownloadZip = () => {
 				<Tooltip
 					trigger={
 						<Button
-							disabled={
-								!modContext.internalContent || isDownloading
-							}
+							disabled={!modContext.internalContent || isDownloading}
 							onClick={handleClick}
 							id="download-zip-button"
 							size="sm"
@@ -90,9 +88,8 @@ export const DownloadZip = () => {
 
 			<DialogContent className="max-w-2xl">
 				<p>
-					Unzip the codemod package into your preferred folder, copy
-					its path, update the command below with the copied path, and
-					run it.
+					Unzip the codemod package into your preferred folder, copy its path,
+					update the command below with the copied path, and run it.
 				</p>
 
 				<Tabs defaultValue="npm">
@@ -113,13 +110,13 @@ export const DownloadZip = () => {
 	);
 };
 
-function InstructionsContent({ pm }: { pm: 'pnpm' | 'npm' }) {
+function InstructionsContent({ pm }: { pm: "pnpm" | "npm" }) {
 	const npxDialect = useMemo(() => {
-		if (pm === 'pnpm') {
-			return 'pnpm dlx';
+		if (pm === "pnpm") {
+			return "pnpm dlx";
 		}
 
-		return 'npx';
+		return "npx";
 	}, [pm]);
 
 	return (
@@ -149,8 +146,8 @@ export function CopyTerminalCommands({ text }: { text: string }) {
 				) : (
 					<Copy
 						className={cn(
-							'h-4 w-4 cursor-pointer transition-colors hover:text-primary-light',
-							isCopied && 'text-primary-light',
+							"h-4 w-4 cursor-pointer transition-colors hover:text-primary-light",
+							isCopied && "text-primary-light",
 						)}
 					/>
 				)}
@@ -169,10 +166,10 @@ async function getHumanCodemodName(
 }> {
 	try {
 		if (!codemod) {
-			throw new Error('codemod content not found');
+			throw new Error("codemod content not found");
 		}
 
-		let codemodName = '';
+		let codemodName = "";
 		if (token !== null) {
 			// Ask LLM to come up with a name for the given codemod
 			const codemodNameOrError = await sendMessage({
@@ -187,7 +184,7 @@ async function getHumanCodemodName(
 			}
 		}
 
-		const splitResult = codemodName.split('/');
+		const splitResult = codemodName.split("/");
 
 		if (splitResult.length === 1) {
 			return {
@@ -204,13 +201,13 @@ async function getHumanCodemodName(
 		}
 
 		return {
-			name: '',
+			name: "",
 		};
 	} catch (error) {
 		console.error(error);
 
 		return {
-			name: '',
+			name: "",
 		};
 	}
 }

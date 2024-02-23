@@ -29,5 +29,5 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-            - name: Run ESLint
-              run: pnpm eslint . --ext ts
+            - name: Run Biome.js checks
+              run: pnpm biome check .

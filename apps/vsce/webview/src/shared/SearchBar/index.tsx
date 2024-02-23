@@ -1,6 +1,6 @@
-import { VSCodeTextField } from '@vscode/webview-ui-toolkit/react';
-import cn from 'classnames';
-import styles from './style.module.css';
+import { VSCodeTextField } from "@vscode/webview-ui-toolkit/react";
+import cn from "classnames";
+import styles from "./style.module.css";
 
 type Props = Readonly<{
 	searchPhrase: string;
@@ -19,20 +19,20 @@ const SearchBar = (props: Props) => {
 			onInput={(event) => {
 				if (
 					event.target === null ||
-					!('value' in event.target) ||
-					typeof event.target.value !== 'string'
+					!("value" in event.target) ||
+					typeof event.target.value !== "string"
 				) {
 					return;
 				}
 
 				props.setSearchPhrase(event.target.value);
 			}}
-			className={cn(styles.container, 'w-full')}
+			className={cn(styles.container, "w-full")}
 		>
 			<span
 				slot="start"
-				className={cn('codicon', 'codicon-search')}
-				style={{ marginInlineStart: '2px' }}
+				className={cn("codicon", "codicon-search")}
+				style={{ marginInlineStart: "2px" }}
 			/>
 		</VSCodeTextField>
 	);

@@ -26,7 +26,7 @@ SOFTWARE.
 Changes to the original file: add any typings in places where the compiler complained, added dirtyFlag
 */
 
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
 export default function transform(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
@@ -37,10 +37,10 @@ export default function transform(file: FileInfo, api: API) {
 	// Find the metadata export
 	const metadataExport = root.find(j.ExportNamedDeclaration, {
 		declaration: {
-			type: 'VariableDeclaration',
+			type: "VariableDeclaration",
 			declarations: [
 				{
-					id: { name: 'metadata' },
+					id: { name: "metadata" },
 				},
 			],
 		},
@@ -52,43 +52,42 @@ export default function transform(file: FileInfo, api: API) {
 
 	const metadataObject = metadataExport.find(j.ObjectExpression).get(0).node;
 	if (!metadataObject) {
-		console.error('Could not find metadata object');
+		console.error("Could not find metadata object");
 		return;
 	}
 
 	let metadataProperties = metadataObject.properties;
-	let viewportProperties;
+	let viewportProperties: any;
 
 	const viewport = metadataProperties.find(
-		(prop: { key: { name: string } }) => prop.key.name === 'viewport',
+		(prop: { key: { name: string } }) => prop.key.name === "viewport",
 	);
 	if (viewport) {
 		viewportProperties = viewport.value.properties;
 		metadataProperties = metadataProperties.filter(
-			(prop: { key: { name: string } }) => prop.key.name !== 'viewport',
+			(prop: { key: { name: string } }) => prop.key.name !== "viewport",
 		);
 	} else {
 		viewportProperties = [];
 	}
 
 	const colorScheme = metadataProperties.find(
-		(prop: { key: { name: string } }) => prop.key.name === 'colorScheme',
+		(prop: { key: { name: string } }) => prop.key.name === "colorScheme",
 	);
 	if (colorScheme) {
 		viewportProperties.push(colorScheme);
 		metadataProperties = metadataProperties.filter(
-			(prop: { key: { name: string } }) =>
-				prop.key.name !== 'colorScheme',
+			(prop: { key: { name: string } }) => prop.key.name !== "colorScheme",
 		);
 	}
 
 	const themeColor = metadataProperties.find(
-		(prop: { key: { name: string } }) => prop.key.name === 'themeColor',
+		(prop: { key: { name: string } }) => prop.key.name === "themeColor",
 	);
 	if (themeColor) {
 		viewportProperties.push(themeColor);
 		metadataProperties = metadataProperties.filter(
-			(prop: { key: { name: string } }) => prop.key.name !== 'themeColor',
+			(prop: { key: { name: string } }) => prop.key.name !== "themeColor",
 		);
 	}
 
@@ -99,9 +98,9 @@ export default function transform(file: FileInfo, api: API) {
 
 	// Create the new viewport object
 	const viewportExport = j.exportNamedDeclaration(
-		j.variableDeclaration('const', [
+		j.variableDeclaration("const", [
 			j.variableDeclarator(
-				j.identifier('viewport'),
+				j.identifier("viewport"),
 				j.objectExpression(viewportProperties),
 			),
 		]),

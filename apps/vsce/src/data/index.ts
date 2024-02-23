@@ -1,13 +1,13 @@
-import { configureStore, Dispatch, Reducer } from '@reduxjs/toolkit';
-import { persistReducer, persistStore } from 'redux-persist';
-import { PersistPartial } from 'redux-persist/es/persistReducer';
-import { Memento, window } from 'vscode';
-import { persistedStateCodecNew } from '../persistedState/codecs';
-import rootReducer, { actions, getInitialState } from './slice';
-import MementoStorage from './storage';
+import { Dispatch, Reducer, configureStore } from "@reduxjs/toolkit";
+import { persistReducer, persistStore } from "redux-persist";
+import { PersistPartial } from "redux-persist/es/persistReducer";
+import { Memento, window } from "vscode";
+import { persistedStateCodecNew } from "../persistedState/codecs";
+import rootReducer, { actions, getInitialState } from "./slice";
+import MementoStorage from "./storage";
 
-const PERSISTANCE_PREFIX = 'persist';
-const PERSISTANCE_KEY = 'compressedRoot';
+const PERSISTANCE_PREFIX = "persist";
+const PERSISTANCE_KEY = "compressedRoot";
 const HYDRATION_TIMEOUT = 3 * 1000;
 
 const deserializeState = (serializedState: string) => {
@@ -16,12 +16,12 @@ const deserializeState = (serializedState: string) => {
 	try {
 		const rawState = JSON.parse(serializedState);
 
-		if (typeof rawState !== 'object' || rawState === null) {
+		if (typeof rawState !== "object" || rawState === null) {
 			return null;
 		}
 
 		Object.entries(rawState).forEach(([key, value]) => {
-			if (typeof value !== 'string') {
+			if (typeof value !== "string") {
 				return;
 			}
 
@@ -54,7 +54,7 @@ const getPreloadedState = async (storage: MementoStorage) => {
 	const decodedState = persistedStateCodecNew.decode(deserializedState);
 
 	// should never happen because of codec fallback
-	if (decodedState._tag !== 'Right') {
+	if (decodedState._tag !== "Right") {
 		return null;
 	}
 
@@ -73,14 +73,15 @@ const buildStore = async (workspaceState: Memento) => {
 		rootReducer,
 	);
 
-	const validatedReducer: Reducer<
-		(RootState & PersistPartial) | undefined
-	> = (state, action) => {
-		if (action.type === 'persist/REHYDRATE') {
+	const validatedReducer: Reducer<(RootState & PersistPartial) | undefined> = (
+		state,
+		action,
+	) => {
+		if (action.type === "persist/REHYDRATE") {
 			const decoded = persistedStateCodecNew.decode(action.payload);
 
 			const validatedPayload =
-				decoded._tag === 'Right' ? decoded.right : getInitialState();
+				decoded._tag === "Right" ? decoded.right : getInitialState();
 
 			return persistedReducer(state, {
 				...action,
@@ -94,7 +95,7 @@ const buildStore = async (workspaceState: Memento) => {
 	const preloadedState = await getPreloadedState(storage);
 
 	if (preloadedState === null) {
-		window.showWarningMessage('Unable to get preloaded state.');
+		window.showWarningMessage("Unable to get preloaded state.");
 	}
 
 	const store = configureStore({
@@ -112,7 +113,7 @@ type Actions = { [K in keyof ActionCreators]: ReturnType<ActionCreators[K]> };
 type Action = Actions[keyof Actions];
 
 type AppDispatch = Dispatch<Action>;
-type Store = Awaited<ReturnType<typeof buildStore>>['store'];
+type Store = Awaited<ReturnType<typeof buildStore>>["store"];
 
 export { buildStore };
 

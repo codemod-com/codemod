@@ -1,11 +1,11 @@
-import { ArrowDown as ArrowDownIcon } from '@phosphor-icons/react';
-import { Button, type ButtonProps } from '~/components/ui/button';
-import { useScrollToBottomDetector } from '~/hooks/useScrollToBottomDetector';
-import { cn } from '~/lib/utils';
+import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
+import { Button, type ButtonProps } from "~/components/ui/button";
+import { useScrollToBottomDetector } from "~/hooks/useScrollToBottomDetector";
+import { cn } from "~/lib/utils";
 
 const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
 	const scrollWindow =
-		document.getElementsByClassName('scrollWindow')?.[0] ?? null;
+		document.getElementsByClassName("scrollWindow")?.[0] ?? null;
 	const isAtBottom = useScrollToBottomDetector(scrollWindow);
 
 	return (
@@ -13,14 +13,14 @@ const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
 			variant="outline"
 			size="icon"
 			className={cn(
-				'absolute right-4 bg-background transition-opacity duration-300',
-				isAtBottom ? 'opacity-0' : 'opacity-100',
+				"absolute right-4 bg-background transition-opacity duration-300",
+				isAtBottom ? "opacity-0" : "opacity-100",
 				className,
 			)}
 			onClick={() =>
 				scrollWindow?.scrollTo({
 					top: scrollWindow?.scrollHeight,
-					behavior: 'smooth',
+					behavior: "smooth",
 				})
 			}
 			{...props}
@@ -31,6 +31,6 @@ const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
 	);
 };
 
-ScrollToBottomButton.displayName = 'ScrollToBottomButton';
+ScrollToBottomButton.displayName = "ScrollToBottomButton";
 
 export default ScrollToBottomButton;

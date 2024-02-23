@@ -1,6 +1,6 @@
-import { format, parse, sep } from 'node:path';
-import type { ParsedPath } from 'path';
-import type { Filemod, UnifiedFileSystem } from '@codemod-com/filemod';
+import { format, parse, sep } from "node:path";
+import type { ParsedPath } from "path";
+import type { Filemod, UnifiedFileSystem } from "@codemod-com/filemod";
 import type {
 	ArrowFunction,
 	Block,
@@ -8,8 +8,8 @@ import type {
 	FunctionDeclaration,
 	FunctionExpression,
 	SourceFile,
-} from 'ts-morph';
-import tsmorph, { Node, SyntaxKind } from 'ts-morph';
+} from "ts-morph";
+import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
@@ -23,10 +23,10 @@ const getNewDirectoryName = ({ dir, name }: ParsedPath) => {
 	const directoryNameSegments = dir.split(sep);
 
 	const newDirectoryNameSegments = directoryNameSegments.map((segment) =>
-		segment === 'pages' ? 'app' : segment,
+		segment === "pages" ? "app" : segment,
 	);
 
-	if (name !== 'index') {
+	if (name !== "index") {
 		newDirectoryNameSegments.push(name);
 	}
 
@@ -82,13 +82,13 @@ const getPositionAfterImports = (sourceFile: SourceFile): number => {
 	return (lastImportDeclaration?.getChildIndex() ?? 0) + 1;
 };
 
-const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'] as const;
+const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"] as const;
 
 export type HTTPMethod = (typeof HTTP_METHODS)[number];
 
-const RESPONSE_INIT_FIELDS = ['headers', 'status', 'statusText'] as const;
+const RESPONSE_INIT_FIELDS = ["headers", "status", "statusText"] as const;
 
-const OLD_RESPONSE_METHODS = ['json', 'send', 'end'];
+const OLD_RESPONSE_METHODS = ["json", "send", "end"];
 
 type ResponseInitParam = (typeof RESPONSE_INIT_FIELDS)[number];
 type ResponseInit = Partial<{ [k in ResponseInitParam]: unknown }>;
@@ -124,11 +124,10 @@ const getResponseInit = (block: Block): ResponseInit => {
 
 				if (
 					Node.isPropertyAccessExpression(callExpressionExpr) &&
-					callExpressionExpr.getName() === 'status'
+					callExpressionExpr.getName() === "status"
 				) {
-					responseInit[
-						callExpressionExpr.getName() as ResponseInitParam
-					] = nestedCallExpression.getArguments()[0]?.getText() ?? '';
+					responseInit[callExpressionExpr.getName() as ResponseInitParam] =
+						nestedCallExpression.getArguments()[0]?.getText() ?? "";
 				}
 			});
 		}
@@ -141,9 +140,9 @@ const getResponseInit = (block: Block): ResponseInit => {
 			if (
 				Node.isPropertyAccessExpression(left) &&
 				Node.isIdentifier(left.getNameNode()) &&
-				left.getNameNode().getText() === 'statusCode'
+				left.getNameNode().getText() === "statusCode"
 			) {
-				responseInit['status'] = Node.isStringLiteral(right)
+				responseInit.status = Node.isStringLiteral(right)
 					? right.getLiteralText()
 					: right.getText();
 			}
@@ -165,25 +164,25 @@ const getNewResponseText = (
 	bodyInit: string,
 	responseInit: ResponseInit,
 ) => {
-	if (type === 'json') {
+	if (type === "json") {
 		return `return NextResponse.json(${bodyInit}, ${JSON.stringify(
 			responseInit,
 		)})`;
 	}
 
-	if (type === 'send') {
+	if (type === "send") {
 		return `return new NextResponse(${bodyInit}, ${JSON.stringify(
 			responseInit,
 		)})`;
 	}
 
-	if (type === 'end') {
+	if (type === "end") {
 		return `return new NextResponse(undefined, ${JSON.stringify(
 			responseInit,
 		)})`;
 	}
 
-	return '';
+	return "";
 };
 
 const removeResReferences = (handler: Handler) => {
@@ -200,22 +199,17 @@ const removeResReferences = (handler: Handler) => {
 };
 
 const rewriteResponseCallExpressions = (handler: Handler) => {
-	const callExpressionResponseInitMap = new Map<
-		CallExpression,
-		ResponseInit
-	>();
+	const callExpressionResponseInitMap = new Map<CallExpression, ResponseInit>();
 
 	handler
 		.getDescendantsOfKind(SyntaxKind.CallExpression)
 		.filter((callExpression) =>
 			OLD_RESPONSE_METHODS.includes(
-				getCallExpressionName(callExpression) ?? '',
+				getCallExpressionName(callExpression) ?? "",
 			),
 		)
 		.forEach((callExpression) => {
-			const block = callExpression.getFirstAncestorByKind(
-				SyntaxKind.Block,
-			);
+			const block = callExpression.getFirstAncestorByKind(SyntaxKind.Block);
 
 			if (block === undefined) {
 				return;
@@ -227,10 +221,10 @@ const rewriteResponseCallExpressions = (handler: Handler) => {
 
 	Array.from(callExpressionResponseInitMap).forEach(
 		([callExpression, responseInit]) => {
-			const bodyInit = callExpression.getArguments()[0]?.getText() ?? '';
+			const bodyInit = callExpression.getArguments()[0]?.getText() ?? "";
 
 			const newResponseText = getNewResponseText(
-				getCallExpressionName(callExpression) ?? '',
+				getCallExpressionName(callExpression) ?? "",
 				bodyInit,
 				responseInit,
 			);
@@ -246,7 +240,7 @@ const rewriteResponseCallExpressions = (handler: Handler) => {
 const rewriteReqResImports = (sourceFile: SourceFile) => {
 	const importDeclaration = sourceFile
 		.getImportDeclarations()
-		.find((d) => d.getModuleSpecifier().getLiteralText() === 'next');
+		.find((d) => d.getModuleSpecifier().getLiteralText() === "next");
 	importDeclaration?.remove();
 
 	sourceFile.insertStatements(
@@ -258,7 +252,7 @@ const rewriteReqResImports = (sourceFile: SourceFile) => {
 const rewriteParams = (handler: Handler) => {
 	const params = handler.getParameters();
 
-	params[0]?.setType('NextRequest');
+	params[0]?.setType("NextRequest");
 	params[1]?.remove();
 };
 
@@ -282,7 +276,7 @@ const rewriteAPIRoute = (sourceFile: SourceFile) => {
 			const condition = node.getExpression();
 			if (
 				Node.isBinaryExpression(condition) &&
-				condition.getLeft().getText() === 'req.method'
+				condition.getLeft().getText() === "req.method"
 			) {
 				const rightNodeText = condition.getRight().getText();
 
@@ -309,7 +303,7 @@ const rewriteAPIRoute = (sourceFile: SourceFile) => {
 			`export async function ${method}(${handler
 				.getParameters()
 				.map((p) => p.getText())
-				.join(',')}) 
+				.join(",")}) 
 			 ${methodHandler}
 			`,
 		);
@@ -344,8 +338,8 @@ const rewriteAPIRoute = (sourceFile: SourceFile) => {
 };
 
 export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
-	includePatterns: ['**/pages/api/**/*.{js,ts,cjs,ejs}'],
-	excludePatterns: ['**/node_modules/**'],
+	includePatterns: ["**/pages/api/**/*.{js,ts,cjs,ejs}"],
+	excludePatterns: ["**/node_modules/**"],
 	handleFile: async (api, path) => {
 		const parsedPath = parse(path);
 
@@ -353,12 +347,12 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 
 		return [
 			{
-				kind: 'upsertFile',
+				kind: "upsertFile",
 				path: format({
 					root: parsedPath.root,
 					dir: getNewDirectoryName(parsedPath),
-					ext: '.ts',
-					name: 'route',
+					ext: ".ts",
+					name: "route",
 				}),
 				options: {
 					oldPath: path,
@@ -377,14 +371,14 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 		});
 
 		const sourceFile = project.createSourceFile(
-			String(options.oldPath ?? ''),
+			String(options.oldPath ?? ""),
 			String(options.oldData),
 		);
 
 		rewriteAPIRoute(sourceFile);
 
 		return {
-			kind: 'upsertData',
+			kind: "upsertData",
 			path,
 			data: sourceFile.getFullText(),
 		};

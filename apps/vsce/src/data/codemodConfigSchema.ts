@@ -1,24 +1,24 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 export const argumentSchema = S.union(
 	S.struct({
 		name: S.string,
-		kind: S.literal('string'),
-		description: S.optional(S.string).withDefault(() => ''),
+		kind: S.literal("string"),
+		description: S.optional(S.string).withDefault(() => ""),
 		required: S.optional(S.boolean).withDefault(() => false),
 		default: S.optional(S.string),
 	}),
 	S.struct({
 		name: S.string,
-		kind: S.literal('number'),
-		description: S.optional(S.string).withDefault(() => ''),
+		kind: S.literal("number"),
+		description: S.optional(S.string).withDefault(() => ""),
 		required: S.optional(S.boolean).withDefault(() => false),
 		default: S.optional(S.number),
 	}),
 	S.struct({
 		name: S.string,
-		kind: S.literal('boolean'),
-		description: S.optional(S.string).withDefault(() => ''),
+		kind: S.literal("boolean"),
+		description: S.optional(S.string).withDefault(() => ""),
 		required: S.optional(S.boolean).withDefault(() => false),
 		default: S.optional(S.boolean),
 	}),
@@ -34,14 +34,14 @@ export const argumentSchema = S.union(
 export const argumentsSchema = S.array(argumentSchema);
 
 export const PIRANHA_LANGUAGES = [
-	'java',
-	'kt',
-	'go',
-	'py',
-	'swift',
-	'ts',
-	'tsx',
-	'scala',
+	"java",
+	"kt",
+	"go",
+	"py",
+	"swift",
+	"ts",
+	"tsx",
+	"scala",
 ] as const;
 
 const piranhaLanguageSchema = S.union(
@@ -54,34 +54,34 @@ export const parsePiranhaLanguage = S.parseSync(piranhaLanguageSchema);
 
 export const codemodConfigSchema = S.union(
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('piranha'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("piranha"),
 		language: piranhaLanguageSchema,
 		arguments: S.optional(argumentsSchema),
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('jscodeshift'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("jscodeshift"),
 		arguments: S.optional(argumentsSchema),
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('ts-morph'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("ts-morph"),
 		arguments: S.optional(argumentsSchema),
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('filemod'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("filemod"),
 		arguments: S.optional(argumentsSchema),
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('repomod-engine'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("repomod-engine"),
 		arguments: S.optional(argumentsSchema),
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('recipe'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("recipe"),
 		names: S.array(S.string),
 		arguments: S.optional(argumentsSchema),
 	}),

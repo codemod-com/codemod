@@ -1,10 +1,10 @@
 import {
 	VSCodeOption,
 	VSCodeTextField,
-} from '@vscode/webview-ui-toolkit/react';
-import cn from 'classnames';
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import styles from './style.module.css';
+} from "@vscode/webview-ui-toolkit/react";
+import cn from "classnames";
+import React, { useEffect, useLayoutEffect, useState } from "react";
+import styles from "./style.module.css";
 
 type Props = {
 	initialValue: string;
@@ -20,7 +20,7 @@ const getFilteredOptions = (
 ) => {
 	// ignores slashes at the beginning, ignores whitespace
 	const trimmedLowerCaseValue = value
-		.replace(/^[/\\]+/, '')
+		.replace(/^[/\\]+/, "")
 		.trim()
 		.toLocaleLowerCase();
 
@@ -34,9 +34,7 @@ export const DirectorySelector = ({
 	autocompleteItems,
 }: Props) => {
 	const [value, setValue] = useState(initialValue);
-	const [focusedOptionIdx, setFocusedOptionIdx] = useState<number | null>(
-		null,
-	);
+	const [focusedOptionIdx, setFocusedOptionIdx] = useState<number | null>(null);
 	const [showOptions, setShowOptions] = useState(false);
 
 	useEffect(() => {
@@ -57,25 +55,25 @@ export const DirectorySelector = ({
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLElement>) => {
 		const maxLength = autocompleteOptions.length;
 
-		if (e.key === 'Esc') {
+		if (e.key === "Esc") {
 			setFocusedOptionIdx(0);
 			setShowOptions(false);
 		}
 
-		if (e.key === 'Enter') {
+		if (e.key === "Enter") {
 			setShowOptions(false);
 
 			if (focusedOptionIdx === null) {
 				return;
 			}
 
-			const nextValue = autocompleteOptions[focusedOptionIdx] ?? '';
+			const nextValue = autocompleteOptions[focusedOptionIdx] ?? "";
 
 			onChange(nextValue);
 			setValue(nextValue);
 		}
 
-		if (e.key === 'ArrowUp') {
+		if (e.key === "ArrowUp") {
 			const nextValue =
 				focusedOptionIdx === null
 					? maxLength
@@ -85,22 +83,18 @@ export const DirectorySelector = ({
 			e.preventDefault();
 		}
 
-		if (e.key === 'ArrowDown') {
+		if (e.key === "ArrowDown") {
 			const nextValue =
-				focusedOptionIdx === null
-					? 0
-					: (focusedOptionIdx + 1) % maxLength;
+				focusedOptionIdx === null ? 0 : (focusedOptionIdx + 1) % maxLength;
 
 			setFocusedOptionIdx(nextValue);
 			e.stopPropagation();
 			e.preventDefault();
 		}
 
-		if (e.key === 'Tab') {
+		if (e.key === "Tab") {
 			const nextValue =
-				focusedOptionIdx === null
-					? 0
-					: (focusedOptionIdx + 1) % maxLength;
+				focusedOptionIdx === null ? 0 : (focusedOptionIdx + 1) % maxLength;
 			setFocusedOptionIdx(nextValue);
 			e.stopPropagation();
 			e.preventDefault();
@@ -115,7 +109,7 @@ export const DirectorySelector = ({
 		<div
 			className="flex flex-row justify-between align-items-center"
 			style={{
-				width: '100%',
+				width: "100%",
 			}}
 			onKeyDown={handleKeyDown}
 			tabIndex={0}

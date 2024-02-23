@@ -1,11 +1,11 @@
-import { Line } from 'rc-progress';
+import { Line } from "rc-progress";
 
 const ProgressBar = (
 	props: Readonly<{
 		percent: number;
 	}>,
 ) => (
-	<div className="flex mb-2" style={{ height: '4.5px', width: '100%' }}>
+	<div className="flex mb-2" style={{ height: "4.5px", width: "100%" }}>
 		<Line
 			percent={props.percent}
 			strokeWidth={1.5}

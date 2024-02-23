@@ -27,7 +27,7 @@ SOFTWARE.
 Changes to the original file: add any typings in places where the compiler complained, added dirtyFlag
 */
 
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
 export default function transform(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
@@ -36,8 +36,9 @@ export default function transform(file: FileInfo, api: API) {
 
 	let dirtyFlag = false;
 
-	root.find(j.ImportDeclaration, { source: { value: 'next/link' } }).forEach(
-		(path) => {
+	root
+		.find(j.ImportDeclaration, { source: { value: "next/link" } })
+		.forEach((path) => {
 			const defaultImport = j(path).find(j.ImportDefaultSpecifier);
 			if (defaultImport.size() === 0) {
 				return;
@@ -46,23 +47,19 @@ export default function transform(file: FileInfo, api: API) {
 			const variableName = j(path)
 				.find(j.ImportDefaultSpecifier)
 				.find(j.Identifier)
-				.get('name').value;
+				.get("name").value;
 			if (!variableName) {
 				return;
 			}
 
 			const linkElements = root.findJSXElements(variableName);
-			const hasStylesJSX = root
-				.findJSXElements('style')
-				.some((stylePath) => {
-					const $style = j(stylePath);
-					const hasJSXProp =
-						$style
-							.find(j.JSXAttribute, { name: { name: 'jsx' } })
-							.size() !== 0;
+			const hasStylesJSX = root.findJSXElements("style").some((stylePath) => {
+				const $style = j(stylePath);
+				const hasJSXProp =
+					$style.find(j.JSXAttribute, { name: { name: "jsx" } }).size() !== 0;
 
-					return hasJSXProp;
-				});
+				return hasJSXProp;
+			});
 
 			linkElements.forEach((linkPath) => {
 				const $link = j(linkPath).filter((childPath) => {
@@ -70,7 +67,7 @@ export default function transform(file: FileInfo, api: API) {
 					return (
 						j(childPath)
 							.find(j.JSXAttribute, {
-								name: { name: 'legacyBehavior' },
+								name: { name: "legacyBehavior" },
 							})
 							.size() === 0
 					);
@@ -84,24 +81,22 @@ export default function transform(file: FileInfo, api: API) {
 				// and keep <a> to  stay on the safe side
 				if (hasStylesJSX) {
 					$link
-						.get('attributes')
-						.push(
-							j.jsxAttribute(j.jsxIdentifier('legacyBehavior')),
-						);
+						.get("attributes")
+						.push(j.jsxAttribute(j.jsxIdentifier("legacyBehavior")));
 
 					dirtyFlag = true;
 
 					return;
 				}
 
-				const linkChildrenNodes = $link.get('children');
+				const linkChildrenNodes = $link.get("children");
 
 				// Text-only link children are already correct with the new behavior
 				// `next/link` would previously auto-wrap typeof 'string' children already
 				if (
 					linkChildrenNodes.value &&
 					linkChildrenNodes.value.length === 1 &&
-					linkChildrenNodes.value[0].type === 'JSXText'
+					linkChildrenNodes.value[0].type === "JSXText"
 				) {
 					return;
 				}
@@ -110,33 +105,29 @@ export default function transform(file: FileInfo, api: API) {
 				const $childrenElements = $link.childElements();
 				const $childrenWithA = $childrenElements.filter((childPath) => {
 					return (
-						j(childPath)
-							.find(j.JSXOpeningElement)
-							.get('name')
-							.get('name').value === 'a'
+						j(childPath).find(j.JSXOpeningElement).get("name").get("name")
+							.value === "a"
 					);
 				});
 
 				// No <a> as child to <Link> so the old behavior is used
 				if ($childrenWithA.size() !== 1) {
 					$link
-						.get('attributes')
-						.push(
-							j.jsxAttribute(j.jsxIdentifier('legacyBehavior')),
-						);
+						.get("attributes")
+						.push(j.jsxAttribute(j.jsxIdentifier("legacyBehavior")));
 
 					dirtyFlag = true;
 
 					return;
 				}
 
-				const props = $childrenWithA.get('attributes').value;
+				const props = $childrenWithA.get("attributes").value;
 				const hasProps = props.length > 0;
 
 				if (hasProps) {
 					// Add only unique props to <Link> (skip duplicate props)
 					const linkPropNames = $link
-						.get('attributes')
+						.get("attributes")
 						.value.map((linkProp: any) => linkProp?.name?.name);
 					const uniqueProps: any[] = [];
 
@@ -146,7 +137,7 @@ export default function transform(file: FileInfo, api: API) {
 						}
 					});
 
-					$link.get('attributes').value.push(...uniqueProps);
+					$link.get("attributes").value.push(...uniqueProps);
 
 					dirtyFlag = true;
 
@@ -154,13 +145,12 @@ export default function transform(file: FileInfo, api: API) {
 					props.length = 0;
 				}
 
-				const childrenProps = $childrenWithA.get('children');
+				const childrenProps = $childrenWithA.get("children");
 				$childrenWithA.replaceWith(childrenProps.value);
 
 				dirtyFlag = true;
 			});
-		},
-	);
+		});
 
 	if (!dirtyFlag) {
 		return undefined;

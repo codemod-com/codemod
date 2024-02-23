@@ -1,12 +1,12 @@
-import type { ParameterDeclaration } from 'ts-morph';
+import type { ParameterDeclaration } from "ts-morph";
 import {
-	SyntaxKind,
 	type ArrowFunction,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type SourceFile,
-} from 'ts-morph';
+	SyntaxKind,
+} from "ts-morph";
 
 function getImportDeclarationAlias(
 	sourceFile: SourceFile,
@@ -30,11 +30,11 @@ function getImportDeclarationAlias(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -58,19 +58,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -112,7 +112,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -136,19 +136,18 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 			const references = reqParam?.findReferencesAsNodes() ?? [];
 			references.forEach((ref) => {
-				ref.replaceWithText('request');
+				ref.replaceWithText("request");
 			});
 
 			const paramList =
 				syntaxCb.getLastChildByKind(SyntaxKind.SyntaxList) ?? null;
 			const isParenthesized =
-				syntaxCb.getChildrenOfKind(SyntaxKind.OpenParenToken).length >
-				0;
+				syntaxCb.getChildrenOfKind(SyntaxKind.OpenParenToken).length > 0;
 			if (paramList === null) {
 				return;
 			}
 
-			const possibleParams = ['request', 'params', 'cookies'];
+			const possibleParams = ["request", "params", "cookies"];
 			const foundDeclarations: string[] = [];
 			// In order to prevent duplicate identifier error, since it won't get replaced
 			// by fixUnusedIdentifiers call.
@@ -157,9 +156,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 				.forEach((vd) =>
 					possibleParams.forEach((param) => {
 						const found =
-							vd
-								.getFirstChildIfKind(SyntaxKind.Identifier)
-								?.getText() === param;
+							vd.getFirstChildIfKind(SyntaxKind.Identifier)?.getText() ===
+							param;
 						if (found) {
 							foundDeclarations.push(param);
 						}
@@ -170,7 +168,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 				(p) => !foundDeclarations.includes(p),
 			);
 			// paramsToAdd
-			const toReplaceWith = `{ ${toAddFinal.join(', ')} }`;
+			const toReplaceWith = `{ ${toAddFinal.join(", ")} }`;
 			paramList.replaceWithText(
 				isParenthesized ? toReplaceWith : `(${toReplaceWith})`,
 			);

@@ -1,9 +1,8 @@
-/* eslint-disable no-restricted-globals */
 import {
 	isCallExpression,
 	isIdentifier,
 	isMemberExpression,
-} from '@babel/types';
+} from "@babel/types";
 import jscodeshift, {
 	API,
 	ArrowFunctionExpression,
@@ -13,20 +12,20 @@ import jscodeshift, {
 	FunctionDeclaration,
 	FunctionExpression,
 	JSCodeshift,
-} from 'jscodeshift';
-import * as tsmorph from 'ts-morph';
-import * as ts from 'typescript';
+} from "jscodeshift";
+import * as tsmorph from "ts-morph";
+import * as ts from "typescript";
 import {
-	parseWebWorkerIncomingMessage,
 	WebWorkerOutgoingMessage,
-} from '../schemata/webWorkersSchemata';
-import { EventManager } from './eventManager';
-import { isNeitherNullNorUndefined } from './isNeitherNullNorUndefined';
+	parseWebWorkerIncomingMessage,
+} from "../schemata/webWorkersSchemata";
+import { EventManager } from "./eventManager";
+import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 import {
 	ProxifiedCollection,
 	ProxifiedPath,
 	proxifyJSCodeshift,
-} from './proxy';
+} from "./proxy";
 
 type Exports =
 	| {
@@ -34,6 +33,7 @@ type Exports =
 			default?: unknown;
 			handleSourceFile?: unknown;
 	  }
+	// biome-ignore lint/complexity/noBannedTypes: Function
 	| Function;
 
 // disable access for particular objects exposed on the global this
@@ -67,98 +67,98 @@ SOFTWARE.
 */
 
 const keys = [
-	'fetch',
-	'importScripts',
-	'addEventListener',
-	'removeEventListener',
-	'caches',
-	'close',
-	'fonts',
-	'indexedDB',
-	'location',
-	'navigator',
-	'performance',
-	'webkitRequestFileSystem',
-	'webkitRequestFileSystemSync',
-	'webkitResolveLocalFileSystemSyncURL',
-	'webkitResolveLocalFileSystemURL',
-	'BackgroundFetchManager',
-	'BackgroundFetchRecord',
-	'BackgroundFetchRegistration',
-	'BarcodeDetector',
-	'BroadcastChannel',
-	'Cache',
-	'CacheStorage',
-	'DedicatedWorkerGlobalScope',
-	'File',
-	'FileList',
-	'FileReader',
-	'FileReaderSync',
-	'FileSystemDirectoryHandle',
-	'FileSystemFileHandle',
-	'FileSystemHandle',
-	'FileSystemWritableFileStream',
-	'FinalizationRegistry',
-	'FontFace',
-	'Headers',
-	'IDBCursor',
-	'IDBCursorWithValue',
-	'IDBDatabase',
-	'IDBFactory',
-	'IDBIndex',
-	'IDBKeyRange',
-	'IDBObjectStore',
-	'IDBOpenDBRequest',
-	'IDBRequest',
-	'IDBTransaction',
-	'IDBVersionChangeEvent',
-	'ImageBitmap',
-	'ImageBitmapRenderingContext',
-	'ImageData',
-	'MediaCapabilities',
-	'MessageChannel',
-	'MessagePort',
-	'NavigationPreloadManager',
-	'NavigatorUAData',
-	'NetworkInformation',
-	'Notification',
-	'PaymentInstruments',
-	'Performance',
-	'PeriodicSyncManager',
-	'PermissionStatus',
-	'Permissions',
-	'PushManager',
-	'PushSubscription',
-	'PushSubscriptionOptions',
-	'ReadableByteStreamController',
-	'ReadableStream',
-	'ReadableStreamBYOBReader',
-	'ReadableStreamBYOBRequest',
-	'ReadableStreamDefaultController',
-	'ReadableStreamDefaultReader',
-	'Request',
-	'Response',
-	'Serial',
-	'SerialPort',
-	'ServiceWorkerRegistration',
-	'StorageManager',
-	'SyncManager',
-	'USB',
-	'USBConfiguration',
-	'USBDevice',
-	'USBEndpoint',
-	'UserActivation',
-	'WebAssembly',
-	'WebSocket',
-	'Worker',
-	'WorkerGlobalScope',
-	'WorkerLocation',
-	'WorkerNavigator',
-	'WritableStream',
-	'WritableStreamDefaultWriter',
-	'XMLHttpRequest',
-	'XMLHttpRequestEventTarget',
-	'XMLHttpRequestUpload',
+	"fetch",
+	"importScripts",
+	"addEventListener",
+	"removeEventListener",
+	"caches",
+	"close",
+	"fonts",
+	"indexedDB",
+	"location",
+	"navigator",
+	"performance",
+	"webkitRequestFileSystem",
+	"webkitRequestFileSystemSync",
+	"webkitResolveLocalFileSystemSyncURL",
+	"webkitResolveLocalFileSystemURL",
+	"BackgroundFetchManager",
+	"BackgroundFetchRecord",
+	"BackgroundFetchRegistration",
+	"BarcodeDetector",
+	"BroadcastChannel",
+	"Cache",
+	"CacheStorage",
+	"DedicatedWorkerGlobalScope",
+	"File",
+	"FileList",
+	"FileReader",
+	"FileReaderSync",
+	"FileSystemDirectoryHandle",
+	"FileSystemFileHandle",
+	"FileSystemHandle",
+	"FileSystemWritableFileStream",
+	"FinalizationRegistry",
+	"FontFace",
+	"Headers",
+	"IDBCursor",
+	"IDBCursorWithValue",
+	"IDBDatabase",
+	"IDBFactory",
+	"IDBIndex",
+	"IDBKeyRange",
+	"IDBObjectStore",
+	"IDBOpenDBRequest",
+	"IDBRequest",
+	"IDBTransaction",
+	"IDBVersionChangeEvent",
+	"ImageBitmap",
+	"ImageBitmapRenderingContext",
+	"ImageData",
+	"MediaCapabilities",
+	"MessageChannel",
+	"MessagePort",
+	"NavigationPreloadManager",
+	"NavigatorUAData",
+	"NetworkInformation",
+	"Notification",
+	"PaymentInstruments",
+	"Performance",
+	"PeriodicSyncManager",
+	"PermissionStatus",
+	"Permissions",
+	"PushManager",
+	"PushSubscription",
+	"PushSubscriptionOptions",
+	"ReadableByteStreamController",
+	"ReadableStream",
+	"ReadableStreamBYOBReader",
+	"ReadableStreamBYOBRequest",
+	"ReadableStreamDefaultController",
+	"ReadableStreamDefaultReader",
+	"Request",
+	"Response",
+	"Serial",
+	"SerialPort",
+	"ServiceWorkerRegistration",
+	"StorageManager",
+	"SyncManager",
+	"USB",
+	"USBConfiguration",
+	"USBDevice",
+	"USBEndpoint",
+	"UserActivation",
+	"WebAssembly",
+	"WebSocket",
+	"Worker",
+	"WorkerGlobalScope",
+	"WorkerLocation",
+	"WorkerNavigator",
+	"WritableStream",
+	"WritableStreamDefaultWriter",
+	"XMLHttpRequest",
+	"XMLHttpRequestEventTarget",
+	"XMLHttpRequestUpload",
 ];
 
 keys.forEach((key) => {
@@ -175,7 +175,7 @@ keys.forEach((key) => {
 		return;
 	}
 
-	if (typeof self[key as keyof typeof self] === 'function') {
+	if (typeof self[key as keyof typeof self] === "function") {
 		// defining property for e.g "fetch" disable it
 
 		// @ts-expect-error
@@ -220,19 +220,19 @@ const replaceCallExpression = (
 	const { property, object: obj } = callee;
 
 	const ALLOWED_PROPERTY_NAMES = [
-		'every',
-		'find',
-		'findVariableDeclarators',
-		'findJSXElements',
-		'filter',
-		'forEach',
-		'map',
-		'paths',
-		'remove',
-		'replace',
-		'replaceWith',
-		'some',
-		'toSource',
+		"every",
+		"find",
+		"findVariableDeclarators",
+		"findJSXElements",
+		"filter",
+		"forEach",
+		"map",
+		"paths",
+		"remove",
+		"replace",
+		"replaceWith",
+		"some",
+		"toSource",
 	];
 
 	if (
@@ -242,8 +242,8 @@ const replaceCallExpression = (
 		return node;
 	}
 
-	const argumentsParam: CallExpression['arguments'] = [
-		obj.type === 'CallExpression' ? replaceCallExpression(j, obj) : obj,
+	const argumentsParam: CallExpression["arguments"] = [
+		obj.type === "CallExpression" ? replaceCallExpression(j, obj) : obj,
 		j.stringLiteral(property.name),
 	];
 
@@ -266,7 +266,7 @@ const replaceCallExpression = (
 	}
 
 	const innerCE = j.callExpression(
-		j.memberExpression(j.identifier('api'), j.identifier('__method')),
+		j.memberExpression(j.identifier("api"), j.identifier("__method")),
 		argumentsParam,
 	);
 
@@ -313,8 +313,7 @@ export const findTransformFunction = (
 				j.VariableDeclaration.check(node) &&
 				j.VariableDeclarator.check(node.declarations[0]) &&
 				j.Identifier.check(node.declarations[0].id) &&
-				node.declarations[0].id.name ===
-					defaultExportDeclaration.name &&
+				node.declarations[0].id.name === defaultExportDeclaration.name &&
 				(j.ArrowFunctionExpression.check(node.declarations[0].init) ||
 					j.FunctionExpression.check(node.declarations[0].init))
 			) {
@@ -327,7 +326,7 @@ export const findTransformFunction = (
 };
 
 function rewriteCodemod(input: string): string {
-	const j = jscodeshift.withParser('tsx');
+	const j = jscodeshift.withParser("tsx");
 	const root = j(input);
 
 	const transformFunction = findTransformFunction(j, root);
@@ -337,16 +336,16 @@ function rewriteCodemod(input: string): string {
 	transformFunction
 		?.find(j.CallExpression, ({ callee }) => {
 			// e.g. `j(*)`
-			if (callee.type === 'Identifier') {
-				return callee.name === 'j' || callee.name === 'jscodeshift';
+			if (callee.type === "Identifier") {
+				return callee.name === "j" || callee.name === "jscodeshift";
 			}
 
 			// e.g. `*.jscodeshift(*)`
-			if (callee.type === 'MemberExpression') {
+			if (callee.type === "MemberExpression") {
 				return (
-					callee.property.type === 'Identifier' &&
-					(callee.property.name === 'j' ||
-						callee.property.name === 'jscodeshift')
+					callee.property.type === "Identifier" &&
+					(callee.property.name === "j" ||
+						callee.property.name === "jscodeshift")
 				);
 			}
 
@@ -357,12 +356,10 @@ function rewriteCodemod(input: string): string {
 				return node;
 			}
 
-			const argumentsParam: CallExpression['arguments'] = [
-				...node.arguments,
-			];
+			const argumentsParam: CallExpression["arguments"] = [...node.arguments];
 
 			if (argumentsParam.length === 1) {
-				argumentsParam.push(j.identifier('undefined'));
+				argumentsParam.push(j.identifier("undefined"));
 			}
 
 			if (
@@ -378,52 +375,54 @@ function rewriteCodemod(input: string): string {
 
 	transformFunction
 		?.find(j.CallExpression, {
-			type: 'CallExpression',
+			type: "CallExpression",
 			callee: {
-				type: 'MemberExpression',
+				type: "MemberExpression",
 				property: {
-					type: 'Identifier',
+					type: "Identifier",
 				},
 			},
 		})
 		.replaceWith(({ node }) => replaceCallExpression(j, node));
 
-	root.find(j.CallExpression, {
-		type: 'CallExpression',
-		callee: {
-			type: 'MemberExpression',
-			object: {
-				type: 'Identifier',
-				name: 'console',
-			},
-			property: {
-				type: 'Identifier',
-			},
-		},
-	}).replaceWith(({ node }) => {
-		if (!isCallExpression(node)) {
-			return node;
-		}
-
-		const argumentsParam: CallExpression['arguments'] = [...node.arguments];
-
-		if (
-			isNeitherNullNorUndefined(node.start) &&
-			isNeitherNullNorUndefined(node.end)
-		) {
-			argumentsParam.push(j.numericLiteral(node.start));
-			argumentsParam.push(j.numericLiteral(node.end));
-		}
-
-		return {
-			...node,
+	root
+		.find(j.CallExpression, {
+			type: "CallExpression",
 			callee: {
-				type: 'Identifier',
-				name: 'printMessage',
+				type: "MemberExpression",
+				object: {
+					type: "Identifier",
+					name: "console",
+				},
+				property: {
+					type: "Identifier",
+				},
 			},
-			arguments: argumentsParam,
-		};
-	});
+		})
+		.replaceWith(({ node }) => {
+			if (!isCallExpression(node)) {
+				return node;
+			}
+
+			const argumentsParam: CallExpression["arguments"] = [...node.arguments];
+
+			if (
+				isNeitherNullNorUndefined(node.start) &&
+				isNeitherNullNorUndefined(node.end)
+			) {
+				argumentsParam.push(j.numericLiteral(node.start));
+				argumentsParam.push(j.numericLiteral(node.end));
+			}
+
+			return {
+				...node,
+				callee: {
+					type: "Identifier",
+					name: "printMessage",
+				},
+				arguments: argumentsParam,
+			};
+		});
 
 	return root.toSource();
 }
@@ -431,6 +430,7 @@ function rewriteCodemod(input: string): string {
 export const getTransformFunction = async (
 	eventManager: EventManager,
 	input: string,
+	// biome-ignore lint/complexity/noBannedTypes: Function
 ): Promise<Function> => {
 	const rewrittenInput = rewriteCodemod(input);
 
@@ -442,7 +442,7 @@ export const getTransformFunction = async (
 	const module = { exports };
 
 	const requireFunction = (name: string) => {
-		if (name === 'ts-morph') {
+		if (name === "ts-morph") {
 			return tsmorph;
 		}
 	};
@@ -452,55 +452,48 @@ export const getTransformFunction = async (
 			.slice(0, -2)
 			.map((a) => {
 				try {
-					return typeof a === 'object'
-						? JSON.stringify(a)
-						: String(a);
+					return typeof a === "object" ? JSON.stringify(a) : String(a);
 				} catch (error) {
 					console.error(error);
-					return '';
+					return "";
 				}
 			})
-			.join(', ');
+			.join(", ");
 
 		const start =
-			typeof args[args.length - 2] === 'number'
-				? args[args.length - 2]
-				: NaN;
+			typeof args[args.length - 2] === "number" ? args[args.length - 2] : NaN;
 		const end =
-			typeof args[args.length - 1] === 'number'
-				? args[args.length - 1]
-				: NaN;
+			typeof args[args.length - 1] === "number" ? args[args.length - 1] : NaN;
 
 		eventManager.pushEvent({
-			kind: 'printedMessage',
+			kind: "printedMessage",
 			codemodSourceRange: {
 				start,
 				end,
 			},
 			message,
 			timestamp: Date.now(),
-			mode: 'control',
+			mode: "control",
 		});
 	};
 
-	const keys = ['module', 'exports', 'require', 'printMessage'];
+	const keys = ["module", "exports", "require", "printMessage"];
 	const values = [module, exports, requireFunction, printMessage];
 
 	// eslint-disable-next-line prefer-spread
 	new Function(...keys, compiledCode.outputText).apply(null, values);
 
 	const transformer =
-		typeof exports === 'function'
+		typeof exports === "function"
 			? exports
-			: exports.__esModule && typeof exports.default === 'function'
+			: exports.__esModule && typeof exports.default === "function"
 			  ? exports.default
-			  : exports.__esModule &&
-			      typeof exports.handleSourceFile === 'function'
-			    ? exports.handleSourceFile
-			    : null;
+			  : exports.__esModule && typeof exports.handleSourceFile === "function"
+				  ? exports.handleSourceFile
+				  : null;
 
 	if (transformer === null) {
-		throw new Error('Could not compile the provided codemod');
+		throw new Error("Could not compile the provided codemod");
 	}
 
 	return transformer;
@@ -517,6 +510,7 @@ interface ProxifiedAPI extends API {
 
 const executeTransformFunction = (
 	eventManager: EventManager,
+	// biome-ignore lint/complexity/noBannedTypes: Function
 	transform: Function,
 	input: string,
 ) => {
@@ -524,7 +518,7 @@ const executeTransformFunction = (
 	const proxifiedPaths = new Set<ProxifiedPath<any>>();
 
 	const j = proxifyJSCodeshift(
-		jscodeshift.withParser('tsx'),
+		jscodeshift.withParser("tsx"),
 		eventManager,
 		(proxifiedCollection) => {
 			proxifiedCollections.add(proxifiedCollection);
@@ -539,12 +533,12 @@ const executeTransformFunction = (
 		jscodeshift: j,
 		stats: () => {
 			console.error(
-				'The stats function was called, which is not supported on purpose',
+				"The stats function was called, which is not supported on purpose",
 			);
 		},
 		report: () => {
 			console.error(
-				'The report function was called, which is not supported on purpose',
+				"The report function was called, which is not supported on purpose",
 			);
 		},
 		__method: (obj, methodName, start, end) => {
@@ -569,13 +563,13 @@ const executeTransformFunction = (
 	const api = buildApi();
 
 	const fileInfo: FileInfo = {
-		path: 'index.ts',
+		path: "index.ts",
 		source: input,
 	};
 
 	const output = transform.apply(undefined, [fileInfo, api, {}]);
 
-	if (typeof output === 'string' || output === undefined || output === null) {
+	if (typeof output === "string" || output === undefined || output === null) {
 		const events = eventManager.getEvents();
 
 		return { output: output as string | null | undefined, events };
@@ -592,7 +586,7 @@ self.onmessage = async (messageEvent) => {
 	const eventManager = new EventManager();
 
 	try {
-		if (engine === 'jscodeshift') {
+		if (engine === "jscodeshift") {
 			const transformFunction = await getTransformFunction(
 				eventManager,
 				content,
@@ -609,7 +603,7 @@ self.onmessage = async (messageEvent) => {
 			} satisfies WebWorkerOutgoingMessage);
 		}
 
-		if (engine === 'tsmorph') {
+		if (engine === "tsmorph") {
 			const transformFunction = await getTransformFunction(
 				eventManager,
 				content,
@@ -618,10 +612,10 @@ self.onmessage = async (messageEvent) => {
 			const project = new tsmorph.Project({
 				useInMemoryFileSystem: true,
 			});
-			const sourceFile = project.createSourceFile('index.tsx', input);
+			const sourceFile = project.createSourceFile("index.tsx", input);
 			const output = transformFunction(sourceFile);
 
-			if (typeof output === 'string') {
+			if (typeof output === "string") {
 				self.postMessage({
 					output,
 					events: [],
@@ -635,18 +629,18 @@ self.onmessage = async (messageEvent) => {
 		}
 
 		self.postMessage({
-			output: '',
+			output: "",
 			events: [
 				{
 					hashDigest: crypto.randomUUID(),
-					kind: 'codemodExecutionError',
+					kind: "codemodExecutionError",
 					codemodSourceRange: {
 						start: 0,
 						end: 0,
 					},
 					message: error.message,
 					timestamp: Date.now(),
-					mode: 'control',
+					mode: "control",
 				},
 			],
 		} satisfies WebWorkerOutgoingMessage);

@@ -1,29 +1,29 @@
-import { deepStrictEqual } from 'node:assert';
-import type { UnifiedFileSystem } from '@codemod-com/filemod';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import { fromMarkdown } from 'mdast-util-from-markdown';
-import { mdxFromMarkdown, mdxToMarkdown } from 'mdast-util-mdx';
-import { toMarkdown } from 'mdast-util-to-markdown';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { mdxjs } from 'micromark-extension-mdxjs';
-import tsmorph from 'ts-morph';
-import { filter } from 'unist-util-filter';
-import { visit } from 'unist-util-visit';
-import { beforeEach, describe, it } from 'vitest';
+import { deepStrictEqual } from "node:assert";
+import type { UnifiedFileSystem } from "@codemod-com/filemod";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import { fromMarkdown } from "mdast-util-from-markdown";
+import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
+import { toMarkdown } from "mdast-util-to-markdown";
+import type { DirectoryJSON } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
+import { mdxjs } from "micromark-extension-mdxjs";
+import tsmorph from "ts-morph";
+import { filter } from "unist-util-filter";
+import { visit } from "unist-util-visit";
+import { beforeEach, describe, it } from "vitest";
 import {
 	projectContainer,
 	repomod,
 	subTreeCacheContainer,
-} from '../src/index.js';
+} from "../src/index.js";
 
 const transform = async (json: DirectoryJSON) => {
 	const volume = Volume.fromJSON(json);
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const parseMdx = (data: string) =>
 		fromMarkdown(data, {
@@ -56,16 +56,16 @@ const transform = async (json: DirectoryJSON) => {
 		pathApi,
 	);
 
-	return executeFilemod(api, repomod, '/', {}, {});
+	return executeFilemod(api, repomod, "/", {}, {});
 };
 
-describe('next 13 replace-next-head', function () {
+describe("next 13 replace-next-head", () => {
 	beforeEach(() => {
 		projectContainer.set(() => null);
 		subTreeCacheContainer.set(() => new Map());
 	});
 
-	it('should support mdx files', async function () {
+	it("should support mdx files", async () => {
 		const A_CONTENT = `
 import Meta from '../../components/a.tsx'
 
@@ -99,8 +99,8 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.mdx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.mdx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -125,16 +125,16 @@ Checkout my React component:
 		
 		<Meta title={meta.title}/>`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.mdx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.mdx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should find and merge metadata in Page child components', async function () {
+	it("should find and merge metadata in Page child components", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		export default function Page() {
@@ -168,9 +168,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/components/b.tsx': B_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/components/b.tsx": B_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -183,16 +183,16 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should respect tsconfig.json paths', async function () {
+	it("should respect tsconfig.json paths", async () => {
 		const A_CONTENT = `
 		import Meta from '#/components/a.tsx';
 		export default function Page() {
@@ -222,9 +222,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/tsconfig.json': TSCONFIG_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/tsconfig.json": TSCONFIG_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -236,15 +236,15 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should respect tsconfig.json paths: should support tsconfig with comments', async function () {
+	it("should respect tsconfig.json paths: should support tsconfig with comments", async () => {
 		const A_CONTENT = `
 		import Meta from '#/components/a.tsx';
 		export default function Page() {
@@ -275,9 +275,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/tsconfig.json': TSCONFIG_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/tsconfig.json": TSCONFIG_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -289,15 +289,15 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should move definitions of identifiers used in meta tag expr to the Page file', async function () {
+	it("should move definitions of identifiers used in meta tag expr to the Page file", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		export default function Page() {
@@ -323,9 +323,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/utils/index.ts': '',
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/utils/index.ts": "",
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -341,16 +341,16 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should move definitions of identifiers used in meta tag expr to the Page file: recursive dependencies', async function () {
+	it("should move definitions of identifiers used in meta tag expr to the Page file: recursive dependencies", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		export default function Page() {
@@ -375,9 +375,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/utils/index.ts': '',
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/utils/index.ts": "",
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -394,16 +394,16 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should move identifier definitions that are ImportDeclarations: should update the moduleSpecifier when moved ', async function () {
+	it("should move identifier definitions that are ImportDeclarations: should update the moduleSpecifier when moved ", async () => {
 		const A_CONTENT = `
 			import Meta from '../../components/a.tsx';
 			export default function Page() {
@@ -425,9 +425,9 @@ Checkout my React component:
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/utils/index.ts': '',
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/utils/index.ts": "",
 		});
 
 		const expectedResult = `
@@ -442,16 +442,16 @@ Checkout my React component:
 			}
 		`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should move identifier definitions that are ImportDeclarations: should not copy dependencies multiple times ', async function () {
+	it("should move identifier definitions that are ImportDeclarations: should not copy dependencies multiple times ", async () => {
 		const A_CONTENT = `
 		import Head from 'next/head';
 		import A from 'lib';
@@ -467,7 +467,7 @@ Checkout my React component:
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
 		});
 
 		const expectedResult = `
@@ -493,16 +493,16 @@ Checkout my React component:
 			}
 		`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should move identifier definitions that are ImportDeclarations: should not update moduleSpecifier if moving a library ', async function () {
+	it("should move identifier definitions that are ImportDeclarations: should not update moduleSpecifier if moving a library ", async () => {
 		const A_CONTENT = `
 			import Meta from '../../components/a.tsx';
 			
@@ -525,9 +525,9 @@ Checkout my React component:
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/utils/index.ts': '',
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/utils/index.ts": "",
 		});
 
 		const expectedResult = `
@@ -542,16 +542,16 @@ Checkout my React component:
 			}
 		`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should find definitions of identifiers within function  params', async function () {
+	it("should find definitions of identifiers within function  params", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		const title="title";
@@ -591,9 +591,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/components/b.tsx': B_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/components/b.tsx": B_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -612,16 +612,16 @@ Checkout my React component:
 				return <Meta title={title} description={description}/>;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create variable declaration when prop value is jsxExpression', async function () {
+	it("should create variable declaration when prop value is jsxExpression", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		
@@ -660,9 +660,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/components/b.tsx': B_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/components/b.tsx": B_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `import { Metadata } from "next";
@@ -678,15 +678,15 @@ Checkout my React component:
 				return <Meta />;
 		}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create generateMetadata function if Page props referenced in child metadata', async function () {
+	it("should create generateMetadata function if Page props referenced in child metadata", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		
@@ -722,9 +722,9 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
-			'/opt/project/components/b.tsx': B_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
+			"/opt/project/components/b.tsx": B_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `
@@ -751,16 +751,16 @@ Checkout my React component:
 				};
 }`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create generateMetadata function if Page props referenced in child metadata: props on Page', async function () {
+	it("should create generateMetadata function if Page props referenced in child metadata: props on Page", async () => {
 		const A_CONTENT = `
 		import Head from 'next/head';
 		import { E } from '../../constants';
@@ -787,8 +787,8 @@ Checkout my React component:
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/constants.tsx': '',
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/constants.tsx": "",
 		});
 
 		const expectedResult = `
@@ -843,16 +843,16 @@ export async function generateMetadata(
 	| \${ E }\` };
 }`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create generateMetadata function if Page props referenced in child metadata: when props are not destructured', async function () {
+	it("should create generateMetadata function if Page props referenced in child metadata: when props are not destructured", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		
@@ -875,8 +875,8 @@ export async function generateMetadata(
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `
@@ -907,16 +907,16 @@ export async function generateMetadata(
 				};
 	}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create generateMetadata function if Page props referenced in child metadata: nested functions', async function () {
+	it("should create generateMetadata function if Page props referenced in child metadata: nested functions", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		
@@ -945,8 +945,8 @@ export async function generateMetadata(
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `
@@ -974,15 +974,15 @@ export async function generateMetadata(
 				return { title: \`\${a(props.title)}\` };
 	}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should create generateMetadata function if Page props referenced in child metadata: should copy dependencies inside generate metadata function', async function () {
+	it("should create generateMetadata function if Page props referenced in child metadata: should copy dependencies inside generate metadata function", async () => {
 		const A_CONTENT = `
 		import Meta from '../../components/a.tsx';
 		
@@ -1007,8 +1007,8 @@ export async function generateMetadata(
 `;
 
 		const [command] = await transform({
-			'/opt/project/pages/a/index.tsx': A_CONTENT,
-			'/opt/project/components/a.tsx': A_COMPONENT_CONTENT,
+			"/opt/project/pages/a/index.tsx": A_CONTENT,
+			"/opt/project/components/a.tsx": A_COMPONENT_CONTENT,
 		});
 
 		const expectedResult = `
@@ -1032,16 +1032,16 @@ export async function generateMetadata(
 						description:  b  };
 	}`;
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/a/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			expectedResult.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			expectedResult.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should copy the clause import, not the variable definition', async function () {
+	it("should copy the clause import, not the variable definition", async () => {
 		const INDEX_DATA = `
 			import Head from 'next/head';
 			import { A } from '../lib/a';
@@ -1060,12 +1060,12 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
-			'/opt/project/lib/a.tsx': A_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
+			"/opt/project/lib/a.tsx": A_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 			import { Metadata } from "next";
@@ -1087,12 +1087,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should copy the default import, not the variable definition', async function () {
+	it("should copy the default import, not the variable definition", async () => {
 		const INDEX_DATA = `
 			import Head from 'next/head';
 			import A from '../lib/a';
@@ -1111,12 +1111,12 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
-			'/opt/project/lib/a.tsx': A_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
+			"/opt/project/lib/a.tsx": A_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 			import { Metadata } from "next";
@@ -1138,12 +1138,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should insert generateMetadata function if metadata tags depend on component props', async function () {
+	it("should insert generateMetadata function if metadata tags depend on component props", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 
@@ -1157,11 +1157,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1190,12 +1190,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should not remove JSX comments', async function () {
+	it("should not remove JSX comments", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1211,11 +1211,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1236,12 +1236,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tags content: support link, meta and title tags', async function () {
+	it("should replace meta tags content: support link, meta and title tags", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 		
@@ -1260,11 +1260,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1294,12 +1294,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tags content: support conditionally rendered meta tags (binaryExpression)', async function () {
+	it("should replace meta tags content: support conditionally rendered meta tags (binaryExpression)", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 		
@@ -1317,11 +1317,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1346,12 +1346,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tags content: support conditionally rendered meta tags (ternaryExpression)', async function () {
+	it("should replace meta tags content: support conditionally rendered meta tags (ternaryExpression)", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 		
@@ -1369,11 +1369,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1398,12 +1398,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tag content: tag content can be a JSXText', async function () {
+	it("should replace meta tag content: tag content can be a JSXText", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1418,11 +1418,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1442,12 +1442,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tag content: tag content can be a jsxExpression', async function () {
+	it("should replace meta tag content: tag content can be a jsxExpression", async () => {
 		const INDEX_DATA = `
 		import { Metadata } from "next";
 	  import Head from 'next/head';
@@ -1461,11 +1461,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1483,12 +1483,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tag content: self closing tag jsx expression', async function () {
+	it("should replace meta tag content: self closing tag jsx expression", async () => {
 		const INDEX_DATA = `
 		import { Metadata } from "next";
 	  import Head from 'next/head';
@@ -1502,11 +1502,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1525,12 +1525,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should replace meta tag content: tag content can be a StringLiteral', async function () {
+	it("should replace meta tag content: tag content can be a StringLiteral", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1543,11 +1543,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1565,8 +1565,8 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
@@ -1574,7 +1574,7 @@ export async function generateMetadata(
 	 * Alternates
 	 */
 
-	it('should support alternates meta tags', async function () {
+	it("should support alternates meta tags", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1601,11 +1601,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1650,8 +1650,8 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
@@ -1659,7 +1659,7 @@ export async function generateMetadata(
 	 * Icons
 	 */
 
-	it('should support icons meta tags', async function () {
+	it("should support icons meta tags", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1696,11 +1696,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1761,12 +1761,12 @@ export async function generateMetadata(
 
 		// @TODO replace \W with \s in all tests
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support verification meta tags', async function () {
+	it("should support verification meta tags", async () => {
 		const INDEX_DATA = `
 	  import Head from 'next/head';
 	  export default function Page() {
@@ -1783,11 +1783,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1814,12 +1814,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support openGraph meta tags: website', async function () {
+	it("should support openGraph meta tags: website", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1857,11 +1857,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -1936,12 +1936,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support openGraph meta tags: article', async function () {
+	it("should support openGraph meta tags: article", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -1964,11 +1964,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -2005,12 +2005,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support openGraph meta tags: twitter', async function () {
+	it("should support openGraph meta tags: twitter", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -2028,11 +2028,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -2063,12 +2063,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support other meta tags', async function () {
+	it("should support other meta tags", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	  export default function Page() {
@@ -2082,11 +2082,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -2109,12 +2109,12 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 
-	it('should support basic meta tags', async function () {
+	it("should support basic meta tags", async () => {
 		const INDEX_DATA = `
 		import Head from 'next/head';
 	
@@ -2152,11 +2152,11 @@ export async function generateMetadata(
 		`;
 
 		const [command] = await transform({
-			'/opt/project/pages/index.tsx': INDEX_DATA,
+			"/opt/project/pages/index.tsx": INDEX_DATA,
 		});
 
-		deepStrictEqual(command?.kind, 'upsertFile');
-		deepStrictEqual(command.path, '/opt/project/pages/index.tsx');
+		deepStrictEqual(command?.kind, "upsertFile");
+		deepStrictEqual(command.path, "/opt/project/pages/index.tsx");
 
 		const NEW_DATA = `
 		import { Metadata } from "next";
@@ -2221,8 +2221,8 @@ export async function generateMetadata(
 		`;
 
 		deepStrictEqual(
-			command.data.replace(/\s/gm, ''),
-			NEW_DATA.replace(/\s/gm, ''),
+			command.data.replace(/\s/gm, ""),
+			NEW_DATA.replace(/\s/gm, ""),
 		);
 	});
 });

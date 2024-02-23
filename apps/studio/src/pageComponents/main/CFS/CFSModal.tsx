@@ -1,13 +1,13 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { selectFirstTreeNode } from '~/store/slices/snippets';
-import Modal from '../../../components/Modal';
-import Text from '../../../components/Text';
-import { selectCFS, setIsOpen } from '../../../store/slices/CFS';
-import CFSContent from './CFSContent';
+import { useDispatch, useSelector } from "react-redux";
+import { selectFirstTreeNode } from "~/store/slices/snippets";
+import Modal from "../../../components/Modal";
+import Text from "../../../components/Text";
+import { selectCFS, setIsOpen } from "../../../store/slices/CFS";
+import CFSContent from "./CFSContent";
 
 const CFSModal = () => {
 	const { isOpen } = useSelector(selectCFS);
-	const firstTreeNode = useSelector(selectFirstTreeNode('after'));
+	const firstTreeNode = useSelector(selectFirstTreeNode("after"));
 	const dispatch = useDispatch();
 
 	return isOpen ? (
@@ -19,15 +19,10 @@ const CFSModal = () => {
 			width="w-9/12"
 		>
 			<Modal.Header>
-				<Text
-					className="my-2"
-					fontWeight="semibold"
-					heading="h3"
-					isTitle
-				>
+				<Text className="my-2" fontWeight="semibold" heading="h3" isTitle>
 					{firstTreeNode !== null
-						? 'Create Find & Replace Statement'
-						: 'Create Find Statement'}
+						? "Create Find & Replace Statement"
+						: "Create Find Statement"}
 				</Text>
 			</Modal.Header>
 			<Modal.Body>

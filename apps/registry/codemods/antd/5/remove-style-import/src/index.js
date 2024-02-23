@@ -27,7 +27,7 @@ The source code has been taken from https://raw.githubusercontent.com/ant-design
 Changes: migrate imports from cjs to esm
 */
 
-import { parseStrToArray, printOptions } from '@codemod-com/antd5-utils';
+import { parseStrToArray, printOptions } from "@codemod-com/antd5-utils";
 
 // handle forked antd
 const commentOutStyleImport = [
@@ -40,7 +40,7 @@ const commentOutStyleImport = [
 const transform = (file, api, options) => {
 	const j = api.jscodeshift;
 	const root = j(file.source);
-	const antdPkgNames = parseStrToArray(options.antdPkgNames || 'antd');
+	const antdPkgNames = parseStrToArray(options.antdPkgNames || "antd");
 
 	// import 'antd/es/auto-complete/style';
 	// import 'antd/dist/antd.compact.min.css';
@@ -52,23 +52,22 @@ const transform = (file, api, options) => {
 				return new RegExp(
 					[
 						antdPkg,
-						`(${commentOutStyleImport
-							.map((re) => re.source)
-							.join('|')})`,
-					].join('/'),
+						`(${commentOutStyleImport.map((re) => re.source).join("|")})`,
+					].join("/"),
 				);
 			})
 			.concat(
 				// import '@ant-design/compatible/assets/index.css';
-				new RegExp('@ant-design/compatible/assets/index\\.css'),
+				new RegExp("@ant-design/compatible/assets/index\\.css"),
 			);
 
 		// import { Comment, PageHeader } from 'antd';
 		// import { Comment, PageHeader } from '@forked/antd';
-		root.find(j.ImportDeclaration)
+		root
+			.find(j.ImportDeclaration)
 			.filter(
 				(path) =>
-					path.node.source.type === 'StringLiteral' &&
+					path.node.source.type === "StringLiteral" &&
 					regexList.some((re) => re.test(path.node.source.value)),
 			)
 			.forEach((path) => {
@@ -77,9 +76,7 @@ const transform = (file, api, options) => {
 					// 不加空行会导致无法执行 root.toSource()
 					const empty = j.emptyStatement();
 					// add indent
-					empty.comments = [
-						j.commentLine(` ${j(path.node).toSource()}`),
-					];
+					empty.comments = [j.commentLine(` ${j(path.node).toSource()}`)];
 					return empty;
 				});
 			});

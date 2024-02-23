@@ -1,4 +1,4 @@
-import crypto, { createHmac } from 'node:crypto';
+import crypto, { createHmac } from "node:crypto";
 
 // low-level methods (first tier)
 
@@ -8,7 +8,7 @@ export type KeyIvPair = Readonly<{
 }>;
 
 export const encrypt = (
-	algorithm: 'aes-128-xts' | 'aes-256-cbc',
+	algorithm: "aes-128-xts" | "aes-256-cbc",
 	{ key, iv }: KeyIvPair,
 	data: Buffer,
 ) => {
@@ -18,7 +18,7 @@ export const encrypt = (
 };
 
 export const decrypt = (
-	algorithm: 'aes-128-xts' | 'aes-256-cbc',
+	algorithm: "aes-128-xts" | "aes-256-cbc",
 	{ key, iv }: KeyIvPair,
 	data: Buffer,
 ) => {
@@ -50,13 +50,13 @@ export type EncryptedTokenMetadata = Readonly<{
 export const encryptUserId = (
 	metadata: Pick<
 		DecryptedTokenMetadata,
-		'backendKeyIvPair' | 'userKeyIvPair' | 'userId'
+		"backendKeyIvPair" | "userKeyIvPair" | "userId"
 	>,
 ): Buffer => {
 	return encrypt(
-		'aes-256-cbc',
+		"aes-256-cbc",
 		metadata.userKeyIvPair,
-		encrypt('aes-128-xts', metadata.backendKeyIvPair, metadata.userId),
+		encrypt("aes-128-xts", metadata.backendKeyIvPair, metadata.userId),
 	);
 };
 
@@ -66,14 +66,14 @@ export const decryptUserId = (
 	encryptedBuffer: Buffer,
 ): Buffer => {
 	return decrypt(
-		'aes-128-xts',
+		"aes-128-xts",
 		backendCipherParameters,
-		decrypt('aes-256-cbc', userCipherParameters, encryptedBuffer),
+		decrypt("aes-256-cbc", userCipherParameters, encryptedBuffer),
 	);
 };
 
 export const sign = (data: Buffer, signatureKey: Buffer) =>
-	createHmac('sha256', signatureKey).update(data).digest();
+	createHmac("sha256", signatureKey).update(data).digest();
 
 export const verify = (
 	buffer: Buffer,

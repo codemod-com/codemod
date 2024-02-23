@@ -1,4 +1,4 @@
-import { any, object, optional, record, string, tuple } from 'valibot';
+import { any, object, optional, record, string, tuple } from "valibot";
 
 export const valibotEslintSchema = object({
 	rules: record(tuple([string()])),

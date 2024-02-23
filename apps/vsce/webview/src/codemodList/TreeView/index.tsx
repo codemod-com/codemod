@@ -3,11 +3,11 @@ import {
 	CodemodNodeHashDigest,
 	CodemodTree,
 	NodeDatum,
-} from '../../../../src/selectors/selectCodemodTree';
-import { CustomTreeView } from '../../customTreeView';
-import { vscode } from '../../shared/utilities/vscode';
-import { getCodemodNodeRenderer } from '../CodemodNodeRenderer';
-import { useProgressBar } from '../useProgressBar';
+} from "../../../../src/selectors/selectCodemodTree";
+import { CustomTreeView } from "../../customTreeView";
+import { vscode } from "../../shared/utilities/vscode";
+import { getCodemodNodeRenderer } from "../CodemodNodeRenderer";
+import { useProgressBar } from "../useProgressBar";
 
 type Props = Readonly<{
 	tree: CodemodTree;
@@ -18,14 +18,14 @@ type Props = Readonly<{
 
 const onFocus = (hashDigest: CodemodNodeHashDigest) => {
 	vscode.postMessage({
-		kind: 'webview.global.selectCodemodNodeHashDigest',
+		kind: "webview.global.selectCodemodNodeHashDigest",
 		selectedCodemodNodeHashDigest: hashDigest,
 	});
 };
 
 const onFlip = (hashDigest: CodemodNodeHashDigest) => {
 	vscode.postMessage({
-		kind: 'webview.global.flipCodemodHashDigest',
+		kind: "webview.global.flipCodemodHashDigest",
 		codemodNodeHashDigest: hashDigest,
 	});
 

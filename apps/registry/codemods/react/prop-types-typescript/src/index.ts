@@ -21,7 +21,7 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 Changes to the original file: fixed ts errors
 */
 
-import type { NodePath } from 'ast-types/lib/node-path.js';
+import type { NodePath } from "ast-types/lib/node-path.js";
 import type {
 	API,
 	Collection,
@@ -34,15 +34,15 @@ import type {
 	Options,
 	TSAnyKeyword,
 	TSFunctionType,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 let j: JSCodeshift;
 let options: {
-	preservePropTypes: 'none' | 'unconverted' | 'all';
+	preservePropTypes: "none" | "unconverted" | "all";
 };
 
 function reactType(type: string) {
-	return j.tsQualifiedName(j.identifier('React'), j.identifier(type));
+	return j.tsQualifiedName(j.identifier("React"), j.identifier(type));
 }
 
 type TSType = {
@@ -53,7 +53,7 @@ type TSType = {
 };
 
 function createPropertySignature({ comments, key, required, type }: TSType) {
-	if (type.type === 'TSFunctionType') {
+	if (type.type === "TSFunctionType") {
 		return j.tsMethodSignature.from({
 			comments,
 			key,
@@ -73,28 +73,26 @@ function createPropertySignature({ comments, key, required, type }: TSType) {
 
 function isCustomValidator(path: NodePath) {
 	return (
-		path.get('type').value === 'FunctionExpression' ||
-		path.get('type').value === 'ArrowFunctionExpression'
+		path.get("type").value === "FunctionExpression" ||
+		path.get("type").value === "ArrowFunctionExpression"
 	);
 }
 
 const resolveRequired = (path: NodePath) =>
-	isRequired(path) ? path.get('object') : path;
+	isRequired(path) ? path.get("object") : path;
 
 //@ts-expect-error any
 function getTSType(path: NodePath) {
 	const { value: name } =
-		path.get('type').value === 'MemberExpression'
-			? path.get('property', 'name')
-			: path.get('callee', 'property', 'name');
+		path.get("type").value === "MemberExpression"
+			? path.get("property", "name")
+			: path.get("callee", "property", "name");
 
 	switch (name) {
-		case 'func': {
+		case "func": {
 			const restElement = j.restElement.from({
-				argument: j.identifier('args'),
-				typeAnnotation: j.tsTypeAnnotation(
-					j.tsArrayType(j.tsUnknownKeyword()),
-				),
+				argument: j.identifier("args"),
+				typeAnnotation: j.tsTypeAnnotation(j.tsArrayType(j.tsUnknownKeyword())),
 			});
 
 			return j.tsFunctionType.from({
@@ -103,19 +101,19 @@ function getTSType(path: NodePath) {
 			});
 		}
 
-		case 'arrayOf': {
-			const type = path.get('arguments', 0);
+		case "arrayOf": {
+			const type = path.get("arguments", 0);
 			return isCustomValidator(type)
 				? j.tsUnknownKeyword()
 				: j.tsArrayType(getTSType(resolveRequired(type)));
 		}
 
-		case 'objectOf': {
-			const type = path.get('arguments', 0);
+		case "objectOf": {
+			const type = path.get("arguments", 0);
 			return isCustomValidator(type)
 				? j.tsUnknownKeyword()
 				: j.tsTypeReference(
-						j.identifier('Record'),
+						j.identifier("Record"),
 						j.tsTypeParameterInstantiation([
 							j.tsStringKeyword(),
 							getTSType(resolveRequired(type)),
@@ -123,52 +121,46 @@ function getTSType(path: NodePath) {
 				  );
 		}
 
-		case 'oneOf': {
-			const arg = path.get('arguments', 0);
+		case "oneOf": {
+			const arg = path.get("arguments", 0);
 
-			return arg.get('type').value !== 'ArrayExpression'
+			return arg.get("type").value !== "ArrayExpression"
 				? j.tsArrayType(j.tsUnknownKeyword())
 				: j.tsUnionType(
 						//@ts-expect-error any
-						arg.get('elements').value.map(({ type, value }) => {
-							switch (type) {
-								case 'StringLiteral':
-									return j.tsLiteralType(
-										j.stringLiteral(value),
-									);
+						arg
+							.get("elements")
+							.value.map(({ type, value }) => {
+								switch (type) {
+									case "StringLiteral":
+										return j.tsLiteralType(j.stringLiteral(value));
 
-								case 'NumericLiteral':
-									return j.tsLiteralType(
-										j.numericLiteral(value),
-									);
+									case "NumericLiteral":
+										return j.tsLiteralType(j.numericLiteral(value));
 
-								case 'BooleanLiteral':
-									return j.tsLiteralType(
-										j.booleanLiteral(value),
-									);
+									case "BooleanLiteral":
+										return j.tsLiteralType(j.booleanLiteral(value));
 
-								default:
-									return j.tsUnknownKeyword();
-							}
-						}),
+									default:
+										return j.tsUnknownKeyword();
+								}
+							}),
 				  );
 		}
 
-		case 'oneOfType':
-			return j.tsUnionType(
-				path.get('arguments', 0, 'elements').map(getTSType),
-			);
+		case "oneOfType":
+			return j.tsUnionType(path.get("arguments", 0, "elements").map(getTSType));
 
-		case 'instanceOf':
+		case "instanceOf":
 			return j.tsTypeReference(
-				j.identifier(path.get('arguments', 0, 'name').value),
+				j.identifier(path.get("arguments", 0, "name").value),
 			);
 
-		case 'shape':
-		case 'exact':
+		case "shape":
+		case "exact":
 			return j.tsTypeLiteral(
 				path
-					.get('arguments', 0, 'properties')
+					.get("arguments", 0, "properties")
 					.map(mapType)
 					.map(createPropertySignature),
 			);
@@ -178,9 +170,9 @@ function getTSType(path: NodePath) {
 		any: j.tsAnyKeyword(),
 		array: j.tsArrayType(j.tsUnknownKeyword()),
 		bool: j.tsBooleanKeyword(),
-		element: j.tsTypeReference(reactType('ReactElement')),
-		elementType: j.tsTypeReference(reactType('ElementType')),
-		node: j.tsTypeReference(reactType('ReactNode')),
+		element: j.tsTypeReference(reactType("ReactElement")),
+		elementType: j.tsTypeReference(reactType("ElementType")),
+		node: j.tsTypeReference(reactType("ReactNode")),
 		number: j.tsNumberKeyword(),
 		object: j.tsObjectKeyword(),
 		string: j.tsStringKeyword(),
@@ -192,23 +184,20 @@ function getTSType(path: NodePath) {
 }
 
 const isRequired = (path: NodePath) =>
-	path.get('type').value === 'MemberExpression' &&
-	path.get('property', 'name').value === 'isRequired';
+	path.get("type").value === "MemberExpression" &&
+	path.get("property", "name").value === "isRequired";
 
 function mapType(path: NodePath): TSType {
-	const required = isRequired(path.get('value'));
-	const key = path.get('key').value;
-	const comments = path.get('leadingComments').value;
+	const required = isRequired(path.get("value"));
+	const key = path.get("key").value;
+	const comments = path.get("leadingComments").value;
 	const type = getTSType(
-		required ? path.get('value', 'object') : path.get('value'),
+		required ? path.get("value", "object") : path.get("value"),
 	);
 
 	// If all types should be removed or the type was able to be converted,
 	// we remove the type.
-	if (
-		options.preservePropTypes !== 'all' &&
-		type.type !== 'TSUnknownKeyword'
-	) {
+	if (options.preservePropTypes !== "all" && type.type !== "TSUnknownKeyword") {
 		path.replace();
 	}
 
@@ -230,7 +219,7 @@ function getTSTypes(
 	getComponentName: (path: NodePath) => string,
 ) {
 	const collected = [] as CollectedTypes;
-	const propertyTypes = ['Property', 'ObjectProperty', 'ObjectMethod'];
+	const propertyTypes = ["Property", "ObjectProperty", "ObjectMethod"];
 
 	source
 		.filter((path) => path.value)
@@ -252,18 +241,16 @@ function getTSTypes(
 
 //@ts-expect-error any
 function getFunctionParent(path: NodePath) {
-	return path.parent.get('type').value === 'Program'
+	return path.parent.get("type").value === "Program"
 		? path
 		: getFunctionParent(path.parent);
 }
 
 function getComponentName(path: NodePath) {
 	const root =
-		path.get('type').value === 'ArrowFunctionExpression'
-			? path.parent
-			: path;
+		path.get("type").value === "ArrowFunctionExpression" ? path.parent : path;
 
-	return root.get('id', 'name').value ?? root.parent.get('id', 'name').value;
+	return root.get("id", "name").value ?? root.parent.get("id", "name").value;
 }
 function createInterface(path: NodePath, componentTypes: CollectedTypes) {
 	const componentName = getComponentName(path);
@@ -289,12 +276,12 @@ function createInterface(path: NodePath, componentTypes: CollectedTypes) {
  */
 function addForwardRefTypes(path: NodePath, typeName: string): boolean {
 	// for `React.forwardRef()`
-	if (path.node.callee?.property?.name === 'forwardRef') {
+	if (path.node.callee?.property?.name === "forwardRef") {
 		path.node.callee.property.name = `forwardRef<HTMLElement, ${typeName}>`;
 		return true;
 	}
 	// if calling `forwardRef()` directly
-	if (path.node.callee?.name === 'forwardRef') {
+	if (path.node.callee?.name === "forwardRef") {
 		path.node.callee.name = `forwardRef<HTMLElement, ${typeName}>`;
 		return true;
 	}
@@ -313,7 +300,7 @@ function addFunctionTSTypes(
 		if (addForwardRefTypes(path.parentPath, typeName)) return;
 		// Function components & Class Components
 		// Add the TS types to the props param
-		path.get('params', 0).value.typeAnnotation = j.tsTypeReference(
+		path.get("params", 0).value.typeAnnotation = j.tsTypeReference(
 			// For some reason, jscodeshift isn't adding the colon so we have to do
 			// that ourselves.
 			j.identifier(`: ${typeName}`),
@@ -337,18 +324,17 @@ function collectPropTypes(source: Collection) {
 	return source
 		.find(j.AssignmentExpression)
 		.filter(
-			(path) =>
-				path.get('left', 'property', 'name').value === 'propTypes',
+			(path) => path.get("left", "property", "name").value === "propTypes",
 		)
-		.map((path) => path.get('right', 'properties'));
+		.map((path) => path.get("right", "properties"));
 }
 
 function collectStaticPropTypes(source: Collection) {
 	return source
 		.find(j.ClassProperty)
 		.filter((path) => !!path.value.static)
-		.filter((path) => path.get('key', 'name').value === 'propTypes')
-		.map((path) => path.get('value', 'properties'));
+		.filter((path) => path.get("key", "name").value === "propTypes")
+		.map((path) => path.get("value", "properties"));
 }
 
 function cleanup(
@@ -357,20 +343,20 @@ function cleanup(
 	staticPropTypes: Collection,
 ) {
 	propTypes.forEach((path) => {
-		if (!path.parent.get('right', 'properties', 'length').value) {
+		if (!path.parent.get("right", "properties", "length").value) {
 			path.parent.prune();
 		}
 	});
 
 	staticPropTypes.forEach((path) => {
-		if (!path.parent.get('value', 'properties', 'length').value) {
+		if (!path.parent.get("value", "properties", "length").value) {
 			path.parent.prune();
 		}
 	});
 
 	const propTypesUsages = source
 		.find(j.MemberExpression)
-		.filter((path) => path.get('object', 'name').value === 'PropTypes');
+		.filter((path) => path.get("object", "name").value === "PropTypes");
 
 	// We can remove the import without caring about the preserve-prop-types
 	// option since the criteria for removal is that no PropTypes.* member
@@ -378,7 +364,7 @@ function cleanup(
 	if (propTypesUsages.length === 0) {
 		source
 			.find(j.ImportDeclaration)
-			.filter((path) => path.value.source.value === 'prop-types')
+			.filter((path) => path.value.source.value === "prop-types")
 			.remove();
 	}
 }
@@ -392,7 +378,7 @@ const isOnlyWhitespace = (str: string) => !/\S/.test(str);
  * @see https://github.com/benjamn/recast/blob/8cc1f42408c41b5616d82574f5552c2da3e11cf7/lib/lines.ts#L280-L314
  */
 function guessTabWidth(source: string) {
-	const lines = source.split('\n');
+	const lines = source.split("\n");
 	const counts: number[] = [];
 	let lastIndent = 0;
 
@@ -406,7 +392,7 @@ function guessTabWidth(source: string) {
 		// asterisk. This is because these lines are often part of block comments
 		// which are indented an extra space which throws off our tab width guessing.
 		const indent = line.match(/^(\s*)/)
-			? line.trim().startsWith('*')
+			? line.trim().startsWith("*")
 				? lastIndent
 				: RegExp.$1.length
 			: 0;
@@ -433,7 +419,7 @@ function guessTabWidth(source: string) {
 
 // Use the TSX to allow parsing of TypeScript code that still contains prop
 // types. Though not typical, this exists in the wild.
-export const parser = 'tsx';
+export const parser = "tsx";
 
 export default function transform(file: FileInfo, api: API, opts: Options) {
 	j = api.jscodeshift;
@@ -442,16 +428,16 @@ export default function transform(file: FileInfo, api: API, opts: Options) {
 	// Parse the CLI options
 	options = {
 		preservePropTypes:
-			opts['preserve-prop-types'] === true
-				? 'all'
-				: opts['preserve-prop-types'] || 'none',
+			opts["preserve-prop-types"] === true
+				? "all"
+				: opts["preserve-prop-types"] || "none",
 	};
 
 	const propTypes = collectPropTypes(source);
 
 	const tsTypes = getTSTypes(
 		propTypes,
-		(path) => path.parent.get('left', 'object', 'name').value,
+		(path) => path.parent.get("left", "object", "name").value,
 	);
 
 	const staticPropTypes = collectStaticPropTypes(source);
@@ -471,7 +457,7 @@ export default function transform(file: FileInfo, api: API, opts: Options) {
 	addClassTSTypes(source, tsTypes);
 	addClassTSTypes(source, staticTSTypes);
 
-	if (options.preservePropTypes === 'none') {
+	if (options.preservePropTypes === "none") {
 		propTypes.remove();
 		staticPropTypes.remove();
 	}

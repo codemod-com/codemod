@@ -1,8 +1,8 @@
 #!/usr/bin/env node
-import { isMainThread } from 'node:worker_threads';
+import { isMainThread } from "node:worker_threads";
 
 if (isMainThread) {
-	import('./executeMainThread.js')
+	import("./executeMainThread.js")
 		.then(({ executeMainThread }) => executeMainThread())
 		.catch((error) => {
 			if (error instanceof Error) {
@@ -10,7 +10,7 @@ if (isMainThread) {
 			}
 		});
 } else {
-	import('./executeWorkerThread.js').then(({ executeWorkerThread }) =>
+	import("./executeWorkerThread.js").then(({ executeWorkerThread }) =>
 		executeWorkerThread(),
 	);
 }

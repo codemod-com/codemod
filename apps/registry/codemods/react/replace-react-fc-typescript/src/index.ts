@@ -23,8 +23,8 @@ Changes to the original file: fixed ts errors
 
 import type {
 	API,
-	ArrowFunctionExpression,
 	ASTPath,
+	ArrowFunctionExpression,
 	FileInfo,
 	FunctionExpression,
 	Identifier,
@@ -35,31 +35,29 @@ import type {
 	TSTypeLiteral,
 	TSTypeReference,
 	VariableDeclarator,
-} from 'jscodeshift';
+} from "jscodeshift";
 
-export const parser = 'tsx';
+export const parser = "tsx";
 
 const isIdentifier = (x: unknown): x is Identifier =>
-	(x as Identifier).type === 'Identifier';
+	(x as Identifier).type === "Identifier";
 const isTsTypeReference = (x: unknown): x is TSTypeReference =>
-	(x as TSTypeReference).type === 'TSTypeReference';
+	(x as TSTypeReference).type === "TSTypeReference";
 const isObjectPattern = (x: unknown): x is ObjectPattern =>
-	(x as ObjectPattern).type === 'ObjectPattern';
+	(x as ObjectPattern).type === "ObjectPattern";
 
 const isArrowFunctionExpression = (x: unknown): x is ArrowFunctionExpression =>
-	(x as ArrowFunctionExpression).type === 'ArrowFunctionExpression';
+	(x as ArrowFunctionExpression).type === "ArrowFunctionExpression";
 // Using a function that accepts a component definition
 
 export default function transform(fileInfo: FileInfo, api: API) {
 	const j = api.j;
 	function addPropsTypeToComponentBody(n: ASTPath<VariableDeclarator>) {
 		// extract the Prop's type text
-		let reactFcOrSfcNode;
+		let reactFcOrSfcNode: any;
 		if (isIdentifier(n.node.id)) {
 			if (
-				j.TSIntersectionType.check(
-					n.node.id.typeAnnotation!.typeAnnotation,
-				)
+				j.TSIntersectionType.check(n.node.id.typeAnnotation!.typeAnnotation)
 			) {
 				reactFcOrSfcNode = n.node.id.typeAnnotation!.typeAnnotation
 					?.types[0] as TSTypeReference;
@@ -91,19 +89,13 @@ export default function transform(fileInfo: FileInfo, api: API) {
 		if (!paramsLength) {
 			// if no params, it could be that the component is not actually using props, so nothing to do here
 			return;
-		} else {
-			restParameters = componentFunctionNode.params.slice(
-				1,
-				paramsLength,
-			);
 		}
+
+		restParameters = componentFunctionNode.params.slice(1, paramsLength);
 
 		const firstParam = componentFunctionNode.params[0];
 
-		let componentFunctionFirstParameter:
-			| Identifier
-			| ObjectPattern
-			| undefined;
+		let componentFunctionFirstParameter: Identifier | ObjectPattern | undefined;
 		// form of (props) =>
 		if (isIdentifier(firstParam)) {
 			componentFunctionFirstParameter = j.identifier.from({
@@ -120,12 +112,10 @@ export default function transform(fileInfo: FileInfo, api: API) {
 				// remove locations because properties might have a spread like ({ id, ...rest }) => and it breaks otherwise
 				/* eslint-disable @typescript-eslint/no-unused-vars*/
 				properties: properties.map(({ loc, ...rest }) => {
-					const key =
-						rest.type.slice(0, 1).toLowerCase() +
-						rest.type.slice(1);
+					const key = rest.type.slice(0, 1).toLowerCase() + rest.type.slice(1);
 					// This workaround is because the AST parsed has "RestElement, but codeshift (as well as the types) expects "RestProperty"
 					// manually doing this works ok. restElement has the properties needed
-					if (key === 'restElement') {
+					if (key === "restElement") {
 						const prop = rest as unknown;
 						// @ts-expect-error props unknonw
 						return j.restProperty.from({ argument: prop.argument });
@@ -187,44 +177,36 @@ export default function transform(fileInfo: FileInfo, api: API) {
 			.find(j.VariableDeclarator, (n: unknown) => {
 				// @ts-expect-error n unknown
 				const identifier = n?.id;
-				let typeName;
+				let typeName: any;
 				if (
-					j.TSIntersectionType.check(
-						identifier?.typeAnnotation?.typeAnnotation,
-					)
+					j.TSIntersectionType.check(identifier?.typeAnnotation?.typeAnnotation)
 				) {
-					typeName =
-						identifier.typeAnnotation.typeAnnotation.types[0]
-							.typeName;
+					typeName = identifier.typeAnnotation.typeAnnotation.types[0].typeName;
 				} else {
-					typeName =
-						identifier?.typeAnnotation?.typeAnnotation?.typeName;
+					typeName = identifier?.typeAnnotation?.typeAnnotation?.typeName;
 				}
 
 				const genericParamsType =
-					identifier?.typeAnnotation?.typeAnnotation?.typeParameters
-						?.type;
+					identifier?.typeAnnotation?.typeAnnotation?.typeParameters?.type;
 				// verify it is the shape of React.FC<Props> React.SFC<Props>, React.FC<{ type: string }>, FC<Props>, SFC<Props>, and so on
 
 				const isEqualFcOrFunctionComponent = (name: string) =>
-					['FC', 'FunctionComponent'].includes(name);
+					["FC", "FunctionComponent"].includes(name);
 				const isFC =
-					(typeName?.left?.name === 'React' &&
+					(typeName?.left?.name === "React" &&
 						isEqualFcOrFunctionComponent(typeName?.right?.name)) ||
 					isEqualFcOrFunctionComponent(typeName?.name);
 				const isSFC =
-					(typeName?.left?.name === 'React' &&
-						typeName?.right?.name === 'SFC') ||
-					typeName?.name === 'SFC';
+					(typeName?.left?.name === "React" &&
+						typeName?.right?.name === "SFC") ||
+					typeName?.name === "SFC";
 
 				return (
 					(isFC || isSFC) &&
-					([
-						'TSQualifiedName',
-						'TSTypeParameterInstantiation',
-					].includes(genericParamsType) ||
-						!identifier?.typeAnnotation?.typeAnnotation
-							?.typeParameters)
+					(["TSQualifiedName", "TSTypeParameterInstantiation"].includes(
+						genericParamsType,
+					) ||
+						!identifier?.typeAnnotation?.typeAnnotation?.typeParameters)
 				);
 			})
 			.forEach((n) => {

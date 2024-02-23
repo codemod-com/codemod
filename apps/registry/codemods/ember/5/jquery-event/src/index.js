@@ -31,23 +31,25 @@ export default function transform(file, api) {
 	const j = api.jscodeshift;
 
 	const root = j(file.source);
-	root.find(j.MemberExpression, {
-		object: {
-			type: 'MemberExpression',
+	root
+		.find(j.MemberExpression, {
 			object: {
-				name: 'event',
+				type: "MemberExpression",
+				object: {
+					name: "event",
+				},
+				property: {
+					name: "originalEvent",
+				},
 			},
-			property: {
-				name: 'originalEvent',
-			},
-		},
-	}).replaceWith((path) => {
-		return j.memberExpression(
-			j.identifier(path.value.object.object.name),
-			j.identifier(path.value.property.name),
-			false,
-		);
-	});
+		})
+		.replaceWith((path) => {
+			return j.memberExpression(
+				j.identifier(path.value.object.object.name),
+				j.identifier(path.value.property.name),
+				false,
+			);
+		});
 
 	return root.toSource();
 }

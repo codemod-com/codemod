@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 /**
  * watch for a change in body [data-vscode-theme-kind] attribute and update the theme
  */
 
-import { detectBaseTheme } from './detectTheme';
+import { detectBaseTheme } from "./detectTheme";
 
 export const useTheme = () => {
 	const [theme, setTheme] = useState(detectBaseTheme());
@@ -11,8 +11,8 @@ export const useTheme = () => {
 		const observer = new MutationObserver((mutations) => {
 			mutations.forEach((mutation) => {
 				if (
-					mutation.type === 'attributes' &&
-					mutation.attributeName === 'data-vscode-theme-kind'
+					mutation.type === "attributes" &&
+					mutation.attributeName === "data-vscode-theme-kind"
 				) {
 					setTheme(detectBaseTheme());
 				}

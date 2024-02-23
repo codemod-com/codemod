@@ -1,12 +1,12 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 export const consoleKindSchema = S.union(
-	S.literal('debug'),
-	S.literal('error'),
-	S.literal('log'),
-	S.literal('info'),
-	S.literal('trace'),
-	S.literal('warn'),
+	S.literal("debug"),
+	S.literal("error"),
+	S.literal("log"),
+	S.literal("info"),
+	S.literal("trace"),
+	S.literal("warn"),
 );
 
 export const parseConsoleKind = S.parseSync(consoleKindSchema);

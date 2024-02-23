@@ -1,6 +1,6 @@
-import { dirname, join } from 'node:path';
-import { IFs } from 'memfs';
-import * as tar from 'tar';
+import { dirname, join } from "node:path";
+import { IFs } from "memfs";
+import * as tar from "tar";
 
 export class TarService {
 	public constructor(protected readonly _ifs: IFs) {}
@@ -24,7 +24,7 @@ export class TarService {
 			};
 
 			const entryHandler = (entry: tar.ReadEntry): void => {
-				if (entry.type !== 'File') {
+				if (entry.type !== "File") {
 					return;
 				}
 
@@ -37,32 +37,32 @@ export class TarService {
 					bufferMap.set(entry.path, buffers);
 				};
 
-				entry.on('data', dataHandler);
+				entry.on("data", dataHandler);
 
-				entry.once('error', (error) => {
-					entry.off('data', dataHandler);
-					parse.off('entry', entryHandler);
+				entry.once("error", (error) => {
+					entry.off("data", dataHandler);
+					parse.off("entry", entryHandler);
 
 					reject(error);
 				});
 
-				entry.once('finish', () => {
-					entry.off('data', dataHandler);
+				entry.once("finish", () => {
+					entry.off("data", dataHandler);
 					--remainingEntryCount;
 
 					conditionalResolve();
 				});
 			};
 
-			parse.on('entry', entryHandler);
+			parse.on("entry", entryHandler);
 
-			parse.once('error', (error) => {
-				parse.off('entry', entryHandler);
+			parse.once("error", (error) => {
+				parse.off("entry", entryHandler);
 				reject(error);
 			});
 
-			parse.once('finish', () => {
-				parse.off('entry', entryHandler);
+			parse.once("finish", () => {
+				parse.off("entry", entryHandler);
 				finished = true;
 
 				conditionalResolve();
@@ -79,7 +79,7 @@ export class TarService {
 				recursive: true,
 			});
 
-			await this._ifs.promises.writeFile(absolutePath, buffers.join(''));
+			await this._ifs.promises.writeFile(absolutePath, buffers.join(""));
 		}
 	}
 }

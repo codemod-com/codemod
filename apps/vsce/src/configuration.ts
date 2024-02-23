@@ -1,22 +1,21 @@
-import * as vscode from 'vscode';
+import * as vscode from "vscode";
 
 export const getConfiguration = () => {
-	const configuration = vscode.workspace.getConfiguration('codemod');
+	const configuration = vscode.workspace.getConfiguration("codemod");
 
-	const fileLimit = configuration.get<number>('fileLimit') ?? 100;
+	const fileLimit = configuration.get<number>("fileLimit") ?? 100;
 
-	const workerThreadCount =
-		configuration.get<number>('workerThreadCount') ?? 4;
+	const workerThreadCount = configuration.get<number>("workerThreadCount") ?? 4;
 
-	const includePatterns = configuration.get<string[]>('include') ?? [
-		'**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}',
+	const includePatterns = configuration.get<string[]>("include") ?? [
+		"**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}",
 	];
-	const excludePatterns = configuration.get<string[]>('exclude') ?? [
-		'**/node_modules/**/*.*',
+	const excludePatterns = configuration.get<string[]>("exclude") ?? [
+		"**/node_modules/**/*.*",
 	];
 
 	const formatWithPrettier =
-		configuration.get<boolean>('formatWithPrettier') ?? false;
+		configuration.get<boolean>("formatWithPrettier") ?? false;
 
 	return {
 		fileLimit,
@@ -32,7 +31,7 @@ export const setConfigurationProperty = async (
 	value: unknown,
 	configurationTarget: vscode.ConfigurationTarget,
 ) => {
-	const configuration = vscode.workspace.getConfiguration('codemod');
+	const configuration = vscode.workspace.getConfiguration("codemod");
 
 	return configuration.update(propertyName, value, configurationTarget);
 };

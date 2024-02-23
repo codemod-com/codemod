@@ -1,11 +1,11 @@
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { Event } from '~/schemata/eventSchemata';
-import type { RootState } from '../index';
-import { selectActiveTab, TabNames } from './view';
+import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { Event } from "~/schemata/eventSchemata";
+import type { RootState } from "../index";
+import { TabNames, selectActiveTab } from "./view";
 
-export const SLICE_KEY = 'log';
+export const SLICE_KEY = "log";
 
 type LogState = Readonly<{
 	events: ReadonlyArray<Event>;
@@ -28,8 +28,7 @@ const logSlice = createSlice({
 			state.events = payload;
 
 			const executionErrorExists =
-				payload.find((e) => e.kind === 'codemodExecutionError') !==
-				undefined;
+				payload.find((e) => e.kind === "codemodExecutionError") !== undefined;
 
 			if (executionErrorExists) {
 				state.executionErrorUpdateAt = Date.now();
@@ -37,7 +36,7 @@ const logSlice = createSlice({
 		},
 		setActiveEventHashDigest(
 			state,
-			action: PayloadAction<LogState['activeEventHashDigest']>,
+			action: PayloadAction<LogState["activeEventHashDigest"]>,
 		) {
 			state.activeEventHashDigest = action.payload;
 		},

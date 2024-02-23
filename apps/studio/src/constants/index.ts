@@ -1,1 +1,1 @@
-export * from './apiEndpoints';
+export * from "./apiEndpoints";

@@ -1,4 +1,4 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 const urlParamsEnvelopeSchema = S.struct({
 	urlParams: S.string,

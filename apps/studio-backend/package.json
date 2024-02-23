@@ -5,28 +5,21 @@
 		"start:ncc": "node ./build-ncc/index.js",
 		"test": "vitest --run",
 		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
-		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc",
-		"lint:eslint:write": "eslint ./src --fix --ext ts",
-		"lint:prettier:write": "prettier --write ."
+		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc"
 	},
 	"author": "Codemod inc.",
 	"private": true,
 	"devDependencies": {
 		"@types/node": "20.10.5",
 		"@types/parse-github-url": "1.0.3",
-		"@typescript-eslint/eslint-plugin": "^5.59.5",
-		"@typescript-eslint/parser": "^5.59.5",
 		"@vercel/ncc": "0.38.1",
-		"eslint": "^8.40.0",
-		"eslint-config-prettier": "^8.8.0",
-		"eslint-plugin-prettier": "^4.2.1",
 		"fastify-plugin": "4.5.1",
 		"nodemon": "3.0.2",
-		"prettier": "^2.8.8",
 		"sqlite3": "^5.1.7",
 		"ts-node": "10.9.2",
 		"typescript": "5.3.3",
-		"vitest": "1.1.0"
+		"vitest": "1.1.0",
+		"@biomejs/biome": "1.5.3"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.478.0",

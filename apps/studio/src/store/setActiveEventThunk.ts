@@ -1,18 +1,18 @@
-import { createAsyncThunk } from '@reduxjs/toolkit';
-import jscodeshift from 'jscodeshift';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { type AppDispatch, type RootState } from '~/store';
-import { parseSnippet } from '~/utils/babelParser';
-import { isNeitherNullNorUndefined } from '~/utils/isNeitherNullNorUndefined';
-import { type RangeCommand } from '~/utils/tree';
-import { executeRangeCommandOnBeforeInputThunk } from './executeRangeCommandOnBeforeInputThunk';
-import { codemodOutputSlice } from './slices/codemodOutput';
-import { setActiveEventHashDigest } from './slices/log';
-import { setCodemodSelection } from './slices/mod';
-import { setOutputSelection } from './slices/snippets';
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import jscodeshift from "jscodeshift";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { type AppDispatch, type RootState } from "~/store";
+import { parseSnippet } from "~/utils/babelParser";
+import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
+import { type RangeCommand } from "~/utils/tree";
+import { executeRangeCommandOnBeforeInputThunk } from "./executeRangeCommandOnBeforeInputThunk";
+import { codemodOutputSlice } from "./slices/codemodOutput";
+import { setActiveEventHashDigest } from "./slices/log";
+import { setCodemodSelection } from "./slices/mod";
+import { setOutputSelection } from "./slices/snippets";
 
 const alphanumerizeString = (input: string): string => {
-	let output = '';
+	let output = "";
 
 	// eslint-disable-next-line no-restricted-syntax
 	for (const character of input) {
@@ -31,7 +31,7 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 	const parseResult = parseSnippet(snippet);
 
 	const tokens =
-		parseResult !== null && 'tokens' in parseResult
+		parseResult !== null && "tokens" in parseResult
 			? parseResult.tokens ?? []
 			: [];
 
@@ -41,26 +41,24 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 				return null;
 			}
 
-			if ('value' in token) {
+			if ("value" in token) {
 				const { value } = token;
 
-				if (typeof value === 'string') {
+				if (typeof value === "string") {
 					return value;
 				}
 			}
 
-			if ('type' in token) {
+			if ("type" in token) {
 				const { type } = token;
 
-				if (typeof type !== 'object' || type === null) {
+				if (typeof type !== "object" || type === null) {
 					return null;
 				}
 
 				const { label } = type;
 
-				return typeof label === 'string' &&
-					label !== 'eof' &&
-					label !== ';'
+				return typeof label === "string" && label !== "eof" && label !== ";"
 					? label
 					: null;
 			}
@@ -73,7 +71,7 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 const buildPhrasesUsingIdentifiers = (
 	snippet: string,
 ): ReadonlyArray<string> => {
-	const j = jscodeshift.withParser('tsx');
+	const j = jscodeshift.withParser("tsx");
 	const root = j(snippet);
 
 	return root
@@ -112,7 +110,7 @@ const calculateReplacementRanges = (
 				return;
 			}
 
-			const regex = new RegExp(phrases.join('.*?'), 'gs');
+			const regex = new RegExp(phrases.join(".*?"), "gs");
 
 			// eslint-disable-next-line no-restricted-syntax
 			for (const regExpMatchArray of output.matchAll(regex)) {
@@ -141,14 +139,14 @@ export const setActiveEventThunk = createAsyncThunk<
 		dispatch: AppDispatch;
 		state: RootState;
 	}
->('thunks/setActiveEventThunk', async (eventHashDigest, thunkAPI) => {
+>("thunks/setActiveEventThunk", async (eventHashDigest, thunkAPI) => {
 	const { getState, dispatch } = thunkAPI;
 
 	if (eventHashDigest === null) {
 		dispatch(setActiveEventHashDigest(null));
 
 		const rangeCommand: RangeCommand = {
-			kind: 'PASS_THROUGH',
+			kind: "PASS_THROUGH",
 			ranges: [],
 		};
 
@@ -163,9 +161,8 @@ export const setActiveEventThunk = createAsyncThunk<
 	const state = getState();
 
 	const event =
-		state.log.events.find(
-			({ hashDigest }) => hashDigest === eventHashDigest,
-		) ?? null;
+		state.log.events.find(({ hashDigest }) => hashDigest === eventHashDigest) ??
+		null;
 
 	if (event === null) {
 		return;
@@ -175,7 +172,7 @@ export const setActiveEventThunk = createAsyncThunk<
 
 	dispatch(
 		setCodemodSelection({
-			kind: 'PASS_THROUGH',
+			kind: "PASS_THROUGH",
 			ranges: [event.codemodSourceRange],
 		}),
 	);
@@ -183,23 +180,22 @@ export const setActiveEventThunk = createAsyncThunk<
 	dispatch(
 		executeRangeCommandOnBeforeInputThunk({
 			// the selection from the evens will thus be reflected in the Find & Replace panel
-			kind: 'FIND_CLOSEST_PARENT',
-			ranges:
-				'snippetBeforeRanges' in event ? event.snippetBeforeRanges : [],
+			kind: "FIND_CLOSEST_PARENT",
+			ranges: "snippetBeforeRanges" in event ? event.snippetBeforeRanges : [],
 		}),
 	);
 	dispatch(
 		setOutputSelection({
-			kind: 'PASS_THROUGH',
+			kind: "PASS_THROUGH",
 			ranges: [],
 		}),
 	);
 	dispatch(
 		codemodOutputSlice.actions.setSelections({
-			kind: 'PASS_THROUGH',
+			kind: "PASS_THROUGH",
 			ranges: calculateReplacementRanges(
-				state.codemodOutput.content ?? '',
-				'codes' in event ? event.codes : [],
+				state.codemodOutput.content ?? "",
+				"codes" in event ? event.codes : [],
 			),
 		}),
 	);

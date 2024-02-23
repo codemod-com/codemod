@@ -22,14 +22,14 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('next 13 new-link', function () {
-	it('add legacy behavior', function () {
+describe("next 13 new-link", () => {
+	it("add legacy behavior", () => {
 		// adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
 
 		const INPUT = `
@@ -65,15 +65,15 @@ describe('next 13 new-link', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('tsx'));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

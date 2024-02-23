@@ -22,32 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from 'jscodeshift';
-import type { Collection } from 'jscodeshift';
+import type core from "jscodeshift";
+import type { Collection } from "jscodeshift";
 
 const jestGlobalApis = [
-	'afterAll',
-	'afterEach',
-	'beforeAll',
-	'beforeEach',
-	'describe',
-	'test',
-	'it',
-	'fit',
-	'expect',
+	"afterAll",
+	"afterEach",
+	"beforeAll",
+	"beforeEach",
+	"describe",
+	"test",
+	"it",
+	"fit",
+	"expect",
 ];
 
-const testApiProps = ['concurrent', 'each', 'only', 'skip', 'todo', 'failing'];
+const testApiProps = ["concurrent", "each", "only", "skip", "todo", "failing"];
 const jestGlobalApiProps = {
-	describe: ['each', 'only', 'skip'],
-	fit: ['each', 'failing'],
+	describe: ["each", "only", "skip"],
+	fit: ["each", "failing"],
 	it: testApiProps,
 	test: testApiProps,
 };
 
 const jestToVitestApiMap: Record<string, string> = {
-	fit: 'it',
-	jest: 'vi',
+	fit: "it",
+	jest: "vi",
 };
 
 export const getApisFromMemberExpression = <T>(
@@ -60,36 +60,31 @@ export const getApisFromMemberExpression = <T>(
 		const propNamesList = root
 			.find(j.MemberExpression, {
 				object: { name: jestApi },
-				property: { type: 'Identifier' },
+				property: { type: "Identifier" },
 			})
 			.nodes()
-			.map(
-				(node) =>
-					j.Identifier.check(node.property) && node.property.name,
-			)
+			.map((node) => j.Identifier.check(node.property) && node.property.name)
 			.filter(Boolean) as string[];
 
 		const propNames = [...new Set(propNamesList)];
 		for (const propName of propNames) {
 			if (jestApiProps.includes(propName)) {
-				apisFromMemberExpression.push(
-					jestToVitestApiMap[jestApi] ?? jestApi,
-				);
+				apisFromMemberExpression.push(jestToVitestApiMap[jestApi] ?? jestApi);
 				break;
 			}
 		}
 	}
 
-	const jestObjectName = 'jest';
+	const jestObjectName = "jest";
 	const jestObjectApiCalls = root
 		.find(j.MemberExpression, {
 			object: { name: jestObjectName },
-			property: { type: 'Identifier' },
+			property: { type: "Identifier" },
 		})
 		.filter(
 			(path) =>
 				j.Identifier.check(path.node.property) &&
-				path.node.property.name !== 'disableAutomock',
+				path.node.property.name !== "disableAutomock",
 		);
 
 	if (jestObjectApiCalls.length) {
@@ -114,7 +109,7 @@ export const getApisFromCallExpression = <T>(
 
 		if (calls.length > 0) {
 			apisFromCallExpression.push(
-				jestGlobalApi !== 'fit' ? jestGlobalApi : 'it',
+				jestGlobalApi !== "fit" ? jestGlobalApi : "it",
 			);
 		}
 	}

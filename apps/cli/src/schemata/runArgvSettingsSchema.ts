@@ -1,6 +1,6 @@
-import { randomBytes } from 'node:crypto';
-import { join } from 'node:path';
-import * as S from '@effect/schema/Schema';
+import { randomBytes } from "node:crypto";
+import { join } from "node:path";
+import * as S from "@effect/schema/Schema";
 
 const runArgvSettingsSchema = S.union(
 	S.struct({
@@ -41,9 +41,9 @@ export const parseRunSettings = (
 
 	const outputDirectoryPath = join(
 		homeDirectoryPath,
-		'.codemod',
-		'cases',
-		caseHashDigest.toString('base64url'),
+		".codemod",
+		"cases",
+		caseHashDigest.toString("base64url"),
 	);
 
 	return {

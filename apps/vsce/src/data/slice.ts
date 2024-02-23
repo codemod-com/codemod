@@ -1,29 +1,29 @@
-import platformPath from 'path';
+import platformPath from "path";
 import {
+	PayloadAction,
 	createEntityAdapter,
 	createSlice,
-	PayloadAction,
-} from '@reduxjs/toolkit';
-import * as vscode from 'vscode';
-import { Case, CaseHash } from '../cases/types';
-import { CodemodEntry, PrivateCodemodEntry } from '../codemods/types';
-import { CodemodHash, JobHash } from '../components/webview/webviewEvents';
-import { ExecutionError } from '../errors/types';
-import { PersistedJob } from '../jobs/types';
+} from "@reduxjs/toolkit";
+import * as vscode from "vscode";
+import { Case, CaseHash } from "../cases/types";
+import { CodemodEntry, PrivateCodemodEntry } from "../codemods/types";
+import { CodemodHash, JobHash } from "../components/webview/webviewEvents";
+import { ExecutionError } from "../errors/types";
+import { PersistedJob } from "../jobs/types";
 import {
 	ActiveTabId,
-	panelGroupSettingsCodec,
 	RootState,
-} from '../persistedState/codecs';
-import { _ExplorerNodeHashDigest } from '../persistedState/explorerNodeCodec';
-import { CodemodNodeHashDigest } from '../selectors/selectCodemodTree';
+	panelGroupSettingsCodec,
+} from "../persistedState/codecs";
+import { _ExplorerNodeHashDigest } from "../persistedState/explorerNodeCodec";
+import { CodemodNodeHashDigest } from "../selectors/selectCodemodTree";
 import {
 	selectExplorerNodes,
 	selectNodeData,
-} from '../selectors/selectExplorerTree';
-import { buildHash, findParentExplorerNode } from '../utilities';
+} from "../selectors/selectExplorerTree";
+import { buildHash, findParentExplorerNode } from "../utilities";
 
-const SLICE_KEY = 'root';
+const SLICE_KEY = "root";
 
 export const codemodAdapter = createEntityAdapter<CodemodEntry>({
 	selectId: (codemod) => codemod.hashDigest,
@@ -56,19 +56,19 @@ export const getInitialState = (): RootState => {
 			changeExplorerCollapsed: false,
 			selectedCaseHash: null,
 			panelGroupSettings: {
-				'0,0': [50, 50],
+				"0,0": [50, 50],
 			},
 		},
 		codemodDiscoveryView: {
 			publicRegistryCollapsed: false,
 			privateRegistryCollapsed: false,
 			panelGroupSettings: {
-				'0,0': [50, 50],
+				"0,0": [50, 50],
 			},
 			executionPaths: {},
 			focusedCodemodHashDigest: null,
 			expandedNodeHashDigests: [],
-			searchPhrase: '',
+			searchPhrase: "",
 			codemodArgumentsPopupHashDigest: null,
 			codemodArguments: {},
 		},
@@ -76,11 +76,11 @@ export const getInitialState = (): RootState => {
 			visible: false,
 		},
 		sourceControl: {
-			kind: 'IDLENESS',
+			kind: "IDLENESS",
 		},
 		caseHashInProgress: null,
 		applySelectedInProgress: false,
-		activeTabId: 'codemods',
+		activeTabId: "codemods",
 		explorerSearchPhrases: {},
 		selectedExplorerNodes: {},
 		// indeterminate explorer node is a node some (but not all) of whose children are deselected.
@@ -97,18 +97,12 @@ const rootSlice = createSlice({
 	name: SLICE_KEY,
 	initialState: getInitialState(),
 	reducers: {
-		upsertCase(
-			state,
-			action: PayloadAction<[Case, ReadonlyArray<string>]>,
-		) {
+		upsertCase(state, action: PayloadAction<[Case, ReadonlyArray<string>]>) {
 			const [kase, caseHashJobHashes] = action.payload;
 
 			caseAdapter.upsertOne(state.case, kase);
 
-			const set = new Set([
-				...state.caseHashJobHashes,
-				...caseHashJobHashes,
-			]);
+			const set = new Set([...state.caseHashJobHashes, ...caseHashJobHashes]);
 
 			state.caseHashJobHashes = Array.from(set);
 		},
@@ -168,19 +162,13 @@ const rootSlice = createSlice({
 			state,
 			action: PayloadAction<ReadonlyArray<PrivateCodemodEntry>>,
 		) {
-			privateCodemodAdapter.upsertMany(
-				state.privateCodemods,
-				action.payload,
-			);
+			privateCodemodAdapter.upsertMany(state.privateCodemods, action.payload);
 		},
 		removePrivateCodemods(
 			state,
 			action: PayloadAction<ReadonlyArray<CodemodHash>>,
 		) {
-			privateCodemodAdapter.removeMany(
-				state.privateCodemods,
-				action.payload,
-			);
+			privateCodemodAdapter.removeMany(state.privateCodemods, action.payload);
 		},
 		/**
 		 * Codemod runs
@@ -212,7 +200,7 @@ const rootSlice = createSlice({
 			action: PayloadAction<CodemodNodeHashDigest | null>,
 		) {
 			const hashDigest = action.payload;
-			state.activeTabId = 'codemods';
+			state.activeTabId = "codemods";
 			state.codemodDiscoveryView.focusedCodemodHashDigest = hashDigest;
 			state.jobDiffView.visible = true;
 
@@ -221,14 +209,10 @@ const rootSlice = createSlice({
 				hashDigest !==
 				state.codemodDiscoveryView.codemodArgumentsPopupHashDigest
 			) {
-				state.codemodDiscoveryView.codemodArgumentsPopupHashDigest =
-					null;
+				state.codemodDiscoveryView.codemodArgumentsPopupHashDigest = null;
 			}
 		},
-		flipCodemodHashDigest(
-			state,
-			action: PayloadAction<CodemodNodeHashDigest>,
-		) {
+		flipCodemodHashDigest(state, action: PayloadAction<CodemodNodeHashDigest>) {
 			const hashDigest = action.payload;
 
 			const set = new Set<CodemodNodeHashDigest>(
@@ -272,9 +256,7 @@ const rootSlice = createSlice({
 
 			const caseHashJobHashes = state.caseHashJobHashes.filter(
 				(caseHashJobHash) =>
-					jobHashes.every(
-						(jobHash) => !caseHashJobHash.endsWith(jobHash),
-					),
+					jobHashes.every((jobHash) => !caseHashJobHash.endsWith(jobHash)),
 			);
 
 			state.caseHashJobHashes = caseHashJobHashes;
@@ -305,14 +287,11 @@ const rootSlice = createSlice({
 					JSON.parse(action.payload),
 				);
 
-				if (validation._tag === 'Left') {
-					throw new Error(
-						'Could not decode the panel group settings',
-					);
+				if (validation._tag === "Left") {
+					throw new Error("Could not decode the panel group settings");
 				}
 
-				state.codemodDiscoveryView.panelGroupSettings =
-					validation.right;
+				state.codemodDiscoveryView.panelGroupSettings = validation.right;
 			} catch (error) {
 				console.error(error);
 			}
@@ -323,16 +302,14 @@ const rootSlice = createSlice({
 					JSON.parse(action.payload),
 				);
 
-				if (validation._tag === 'Left') {
-					throw new Error(
-						'Could not decode the panel group settings',
-					);
+				if (validation._tag === "Left") {
+					throw new Error("Could not decode the panel group settings");
 				}
 
 				// if we persist collapsed state (e.g [0, 100]), last noticed panel sizes (user's resizing) will be lost when panel is unmounted
 				// so we want to persist only users resizing
 				// collapsed state is already handled by boolean flags resultsCollapsed, changeExplorerCollapsed
-				if (validation.right['0,0']?.some((size) => size === 0)) {
+				if (validation.right["0,0"]?.some((size) => size === 0)) {
 					return;
 				}
 
@@ -343,14 +320,14 @@ const rootSlice = createSlice({
 		},
 		focusExplorerNodeSibling(
 			state,
-			action: PayloadAction<[CaseHash, 'prev' | 'next']>,
+			action: PayloadAction<[CaseHash, "prev" | "next"]>,
 		) {
 			const [caseHash, direction] = action.payload;
 			const explorerNodes =
 				selectExplorerNodes(
 					state,
 					caseHash,
-					vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '',
+					vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
 				) ?? [];
 			const prevNodeData = selectNodeData(state, caseHash, explorerNodes);
 			const focused = state.focusedExplorerNodes[caseHash] ?? null;
@@ -370,7 +347,7 @@ const rootSlice = createSlice({
 				...prevNodeData.slice(0, index),
 			];
 
-			if (direction === 'prev') {
+			if (direction === "prev") {
 				// if we are looking for the previous file,
 				// we can reverse the array (as if we were looking for the next file)
 				nodeData.reverse();
@@ -378,17 +355,17 @@ const rootSlice = createSlice({
 
 			const nodeDatum =
 				nodeData.find((nodeDatum) => {
-					return nodeDatum.node.kind === 'FILE';
+					return nodeDatum.node.kind === "FILE";
 				}) ?? null;
 
-			if (nodeDatum === null || nodeDatum.node.kind !== 'FILE') {
+			if (nodeDatum === null || nodeDatum.node.kind !== "FILE") {
 				return;
 			}
 
 			state.focusedExplorerNodes[caseHash] = nodeDatum.node.hashDigest;
 		},
 		focusOnChangeExplorer(state) {
-			state.activeTabId = 'codemodRuns';
+			state.activeTabId = "codemodRuns";
 			state.codemodRunsTab.changeExplorerCollapsed = false;
 		},
 		setExplorerNodes(state, action: PayloadAction<[CaseHash, string]>) {
@@ -408,7 +385,7 @@ const rootSlice = createSlice({
 			}
 
 			if (explorerNodes.length !== 0) {
-				state.activeTabId = 'codemodRuns';
+				state.activeTabId = "codemodRuns";
 			}
 
 			state.collapsedExplorerNodes[caseHash] = [];
@@ -419,8 +396,7 @@ const rootSlice = createSlice({
 			);
 
 			const focusedExplorerNode =
-				explorerNodes.find((node) => node.kind === 'FILE')
-					?.hashDigest ?? null;
+				explorerNodes.find((node) => node.kind === "FILE")?.hashDigest ?? null;
 
 			if (focusedExplorerNode === null) {
 				delete state.focusedExplorerNodes[caseHash];
@@ -431,10 +407,7 @@ const rootSlice = createSlice({
 		clearSelectedExplorerNodes(state, action: PayloadAction<CaseHash>) {
 			state.selectedExplorerNodes[action.payload] = [];
 		},
-		clearIndeterminateExplorerNodes(
-			state,
-			action: PayloadAction<CaseHash>,
-		) {
+		clearIndeterminateExplorerNodes(state, action: PayloadAction<CaseHash>) {
 			state.indeterminateExplorerNodes[action.payload] = [];
 		},
 		flipSelectedExplorerNode(
@@ -447,7 +420,7 @@ const rootSlice = createSlice({
 				selectExplorerNodes(
 					state,
 					caseHash,
-					vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? '',
+					vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
 				) ?? [];
 
 			const index =
@@ -461,10 +434,9 @@ const rootSlice = createSlice({
 				return;
 			}
 
-			const selectedHashDigests =
-				state.selectedExplorerNodes[caseHash] ?? [];
+			const selectedHashDigests = state.selectedExplorerNodes[caseHash] ?? [];
 
-			if (explorerNode.kind === 'FILE') {
+			if (explorerNode.kind === "FILE") {
 				if (selectedHashDigests.includes(explorerNodeHashDigest)) {
 					selectedHashDigests.splice(
 						selectedHashDigests.indexOf(explorerNodeHashDigest),
@@ -477,9 +449,7 @@ const rootSlice = createSlice({
 				state.selectedExplorerNodes[caseHash] = selectedHashDigests;
 			} else {
 				// get the root/directory and subordinate directory/files
-				const hashDigests: _ExplorerNodeHashDigest[] = [
-					explorerNodeHashDigest,
-				];
+				const hashDigests: _ExplorerNodeHashDigest[] = [explorerNodeHashDigest];
 
 				for (let i = index + 1; i < explorerNodes.length; i++) {
 					const node = explorerNodes[i] ?? null;
@@ -504,10 +474,9 @@ const rootSlice = createSlice({
 					indeterminateHashDigests.includes(explorerNodeHashDigest)
 				) {
 					// deselect the directory and the files within it
-					state.selectedExplorerNodes[caseHash] =
-						selectedHashDigests.filter(
-							(hashDigest) => !hashDigests.includes(hashDigest),
-						);
+					state.selectedExplorerNodes[caseHash] = selectedHashDigests.filter(
+						(hashDigest) => !hashDigests.includes(hashDigest),
+					);
 				} else {
 					// select the directory and the files within it
 					state.selectedExplorerNodes[caseHash] = Array.from(
@@ -531,10 +500,7 @@ const rootSlice = createSlice({
 					return;
 				}
 
-				const parentNode = findParentExplorerNode(
-					currIndex,
-					explorerNodes,
-				);
+				const parentNode = findParentExplorerNode(currIndex, explorerNodes);
 
 				if (parentNode === null) {
 					return;
@@ -544,11 +510,7 @@ const rootSlice = createSlice({
 
 				const childNodeHashDigests: _ExplorerNodeHashDigest[] = [];
 
-				for (
-					let i = parentNode.index + 1;
-					i < explorerNodes.length;
-					i++
-				) {
+				for (let i = parentNode.index + 1; i < explorerNodes.length; i++) {
 					const node = explorerNodes[i] ?? null;
 
 					if (node === null || node.depth < currNode.depth) {
@@ -564,16 +526,13 @@ const rootSlice = createSlice({
 					updatedSelectedHashDigests.includes(hashDigest),
 				);
 				const allDeselected = childNodeHashDigests.every(
-					(hashDigest) =>
-						!updatedSelectedHashDigests.includes(hashDigest),
+					(hashDigest) => !updatedSelectedHashDigests.includes(hashDigest),
 				);
 
 				if (allSelected) {
 					state.selectedExplorerNodes[caseHash] = Array.from(
 						new Set<_ExplorerNodeHashDigest>(
-							updatedSelectedHashDigests.concat([
-								parentHashDigest,
-							]),
+							updatedSelectedHashDigests.concat([parentHashDigest]),
 						),
 					);
 					state.indeterminateExplorerNodes[caseHash] =
@@ -627,8 +586,7 @@ const rootSlice = createSlice({
 				collapsedExplorerNodes.push(explorerNodeHashDigest);
 			}
 
-			state.collapsedExplorerNodes[caseHashDigest] =
-				collapsedExplorerNodes;
+			state.collapsedExplorerNodes[caseHashDigest] = collapsedExplorerNodes;
 		},
 		flipReviewedExplorerNode(
 			state,
@@ -638,10 +596,10 @@ const rootSlice = createSlice({
 
 			const fileName = path
 				.split(platformPath.sep)
-				.filter((name) => name !== '')
+				.filter((name) => name !== "")
 				.slice(-1)[0];
 			const explorerNodeHashDigest = buildHash(
-				['FILE', jobHash, fileName].join(''),
+				["FILE", jobHash, fileName].join(""),
 			) as _ExplorerNodeHashDigest;
 			const reviewedExplorerNodes =
 				state.reviewedExplorerNodes[caseHashDigest] ?? [];
@@ -672,11 +630,11 @@ const rootSlice = createSlice({
 		},
 		setSourceControlTabProps(
 			state,
-			action: PayloadAction<RootState['sourceControl']>,
+			action: PayloadAction<RootState["sourceControl"]>,
 		) {
 			state.sourceControl = action.payload;
 		},
-		setToaster(state, action: PayloadAction<RootState['toaster']>) {
+		setToaster(state, action: PayloadAction<RootState["toaster"]>) {
 			state.toaster = action.payload;
 		},
 		collapseResultsPanel(state, action: PayloadAction<boolean>) {
@@ -689,8 +647,7 @@ const rootSlice = createSlice({
 			state.codemodDiscoveryView.publicRegistryCollapsed = action.payload;
 		},
 		collapsePrivateRegistryPanel(state, action: PayloadAction<boolean>) {
-			state.codemodDiscoveryView.privateRegistryCollapsed =
-				action.payload;
+			state.codemodDiscoveryView.privateRegistryCollapsed = action.payload;
 		},
 		setCodemodArgumentsPopupHashDigest(
 			state,
@@ -700,8 +657,7 @@ const rootSlice = createSlice({
 				action.payload;
 
 			if (action.payload !== null) {
-				state.codemodDiscoveryView.focusedCodemodHashDigest =
-					action.payload;
+				state.codemodDiscoveryView.focusedCodemodHashDigest = action.payload;
 			}
 		},
 		setCodemodArgument(

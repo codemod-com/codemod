@@ -3,5 +3,5 @@
 	"name": "Delete Unused Fields",
 	"engine": "piranha",
 	"language": "java",
-	"owner": "Codemod.com"
+	"owner": "codemod.com"
 }

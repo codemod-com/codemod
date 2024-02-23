@@ -1,8 +1,8 @@
-import { createHash } from 'node:crypto';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { EventEmitter, FileSystem, Uri } from 'vscode';
-import { buildCodemodMetadataHash } from '../../utilities';
+import { createHash } from "node:crypto";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { EventEmitter, FileSystem, Uri } from "vscode";
+import { buildCodemodMetadataHash } from "../../utilities";
 
 export class CodemodDescriptionProvider {
 	private __descriptions = new Map<string, string>();
@@ -14,11 +14,9 @@ export class CodemodDescriptionProvider {
 	public getCodemodDescription(name: string): string {
 		const hash = buildCodemodMetadataHash(name);
 
-		const hashDigest = createHash('ripemd160')
-			.update(name)
-			.digest('base64url');
+		const hashDigest = createHash("ripemd160").update(name).digest("base64url");
 
-		const path = join(homedir(), '.codemod', hashDigest, 'description.md');
+		const path = join(homedir(), ".codemod", hashDigest, "description.md");
 
 		const data = this.__descriptions.get(hash) ?? null;
 
@@ -31,7 +29,7 @@ export class CodemodDescriptionProvider {
 				this.onDidChangeEmitter.fire(null);
 			});
 
-			return 'No description or metadata found.';
+			return "No description or metadata found.";
 		}
 
 		return data;

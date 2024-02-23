@@ -1,35 +1,35 @@
-import EventEmitter from 'events';
-import { homedir } from 'os';
-import { join } from 'path';
+import EventEmitter from "events";
+import { homedir } from "os";
+import { join } from "path";
 import {
 	CaseReadingService,
 	JOB_KIND,
 	SurfaceAgnosticJob,
-} from '@intuita-inc/utilities';
-import { FileType, Uri, window, workspace } from 'vscode';
-import { Store } from '.';
-import { Case, CaseHash, caseHashCodec } from '../cases/types';
-import { CodemodEntry } from '../codemods/types';
-import { MessageBus, MessageKind } from '../components/messageBus';
-import { Job, jobHashCodec, JobKind } from '../jobs/types';
-import { actions } from './slice';
+} from "@intuita-inc/utilities";
+import { FileType, Uri, window, workspace } from "vscode";
+import { Store } from ".";
+import { Case, CaseHash, caseHashCodec } from "../cases/types";
+import { CodemodEntry } from "../codemods/types";
+import { MessageBus, MessageKind } from "../components/messageBus";
+import { Job, JobKind, jobHashCodec } from "../jobs/types";
+import { actions } from "./slice";
 
 interface HomeDirectoryEventEmitter extends EventEmitter {
-	emit(event: 'start'): boolean;
-	emit(event: 'end'): boolean;
-	emit(event: 'job', kase: Case, jobs: ReadonlyArray<Job>): boolean;
+	emit(event: "start"): boolean;
+	emit(event: "end"): boolean;
+	emit(event: "job", kase: Case, jobs: ReadonlyArray<Job>): boolean;
 
-	once(event: 'start', listener: () => void): this;
-	once(event: 'end', listener: () => void): this;
+	once(event: "start", listener: () => void): this;
+	once(event: "end", listener: () => void): this;
 	on(
-		event: 'job',
+		event: "job",
 		listener: (kase: Case, jobs: ReadonlyArray<Job>) => void,
 	): this;
 }
 
 const buildPartialJob = (
 	surfaceAgnosticJob: SurfaceAgnosticJob,
-): Pick<Job, 'kind' | 'oldUri' | 'newContentUri' | 'newUri'> => {
+): Pick<Job, "kind" | "oldUri" | "newContentUri" | "newUri"> => {
 	if (surfaceAgnosticJob.kind === JOB_KIND.CREATE_FILE) {
 		return {
 			kind: JobKind.createFile,
@@ -84,7 +84,7 @@ const buildPartialJob = (
 		};
 	}
 
-	throw new Error('Unsupported surface agnostic job');
+	throw new Error("Unsupported surface agnostic job");
 };
 
 const readHomeDirectoryCase = async (
@@ -97,20 +97,16 @@ const readHomeDirectoryCase = async (
 
 	let kase: Case | null = null;
 
-	caseReadingService.once('case', (surfaceAgnosticCase) => {
-		if (
-			!surfaceAgnosticCase.absoluteTargetPath.startsWith(rootUri.fsPath)
-		) {
-			console.info(
-				'The current case does not belong to the opened workspace',
-			);
-			caseReadingService.emit('finish');
+	caseReadingService.once("case", (surfaceAgnosticCase) => {
+		if (!surfaceAgnosticCase.absoluteTargetPath.startsWith(rootUri.fsPath)) {
+			console.info("The current case does not belong to the opened workspace");
+			caseReadingService.emit("finish");
 			return;
 		}
 
 		if (!caseHashCodec.is(surfaceAgnosticCase.caseHashDigest)) {
-			console.error('Could not validate the case hash digest');
-			caseReadingService.emit('finish');
+			console.error("Could not validate the case hash digest");
+			caseReadingService.emit("finish");
 			return;
 		}
 
@@ -126,19 +122,19 @@ const readHomeDirectoryCase = async (
 			path: surfaceAgnosticCase.absoluteTargetPath,
 		};
 
-		homeDirectoryEventEmitter.emit('job', kase, []);
+		homeDirectoryEventEmitter.emit("job", kase, []);
 	});
 
 	const jobHandler = (surfaceAgnosticJob: SurfaceAgnosticJob) => {
 		if (!kase) {
-			console.error('You need to have a case to create a job');
-			caseReadingService.emit('finish');
+			console.error("You need to have a case to create a job");
+			caseReadingService.emit("finish");
 			return;
 		}
 
 		if (!jobHashCodec.is(surfaceAgnosticJob.jobHashDigest)) {
-			console.error('Could not validate the job hash digest');
-			caseReadingService.emit('finish');
+			console.error("Could not validate the job hash digest");
+			caseReadingService.emit("finish");
 			return;
 		}
 
@@ -151,10 +147,10 @@ const readHomeDirectoryCase = async (
 			...buildPartialJob(surfaceAgnosticJob),
 		};
 
-		homeDirectoryEventEmitter.emit('job', kase, [job]);
+		homeDirectoryEventEmitter.emit("job", kase, [job]);
 	};
 
-	caseReadingService.on('job', jobHandler);
+	caseReadingService.on("job", jobHandler);
 
 	const TIMEOUT = 120_000;
 
@@ -164,34 +160,34 @@ const readHomeDirectoryCase = async (
 		const timeout = setTimeout(() => {
 			timedOut = true;
 
-			caseReadingService.off('job', jobHandler);
-			caseReadingService.emit('finish');
+			caseReadingService.off("job", jobHandler);
+			caseReadingService.emit("finish");
 
 			reject(new Error(`Reading the case timed out after ${TIMEOUT}ms`));
 		}, TIMEOUT);
 
-		caseReadingService.once('error', (error) => {
+		caseReadingService.once("error", (error) => {
 			if (timedOut) {
 				return;
 			}
 
-			caseReadingService.off('job', jobHandler);
+			caseReadingService.off("job", jobHandler);
 
 			clearTimeout(timeout);
 			reject(error);
 		});
 
-		caseReadingService.once('finish', () => {
+		caseReadingService.once("finish", () => {
 			if (timedOut) {
 				return;
 			}
 
-			caseReadingService.off('job', jobHandler);
+			caseReadingService.off("job", jobHandler);
 
 			clearTimeout(timeout);
 
 			if (kase === null) {
-				reject(new Error('Could not extract the case'));
+				reject(new Error("Could not extract the case"));
 				return;
 			}
 
@@ -209,27 +205,22 @@ export const readSingleHomeDirectoryCase = async (
 ) => {
 	const path = join(
 		homedir(),
-		'.codemod',
-		'cases',
+		".codemod",
+		"cases",
 		caseHashDigest,
-		'case.data',
+		"case.data",
 	);
 
 	const eventEmitter: HomeDirectoryEventEmitter = new EventEmitter();
 
-	eventEmitter.once('start', async () => {
+	eventEmitter.once("start", async () => {
 		try {
-			await readHomeDirectoryCase(
-				eventEmitter,
-				rootUri,
-				codemodEntities,
-				path,
-			);
+			await readHomeDirectoryCase(eventEmitter, rootUri, codemodEntities, path);
 		} catch (error) {
 			console.error(error);
 		}
 
-		eventEmitter.emit('end');
+		eventEmitter.emit("end");
 	});
 
 	return eventEmitter;
@@ -245,8 +236,8 @@ export const readHomeDirectoryCases = async (
 
 	const eventEmitter: HomeDirectoryEventEmitter = new EventEmitter();
 
-	eventEmitter.once('start', async () => {
-		const casesDirectoryPath = join(homedir(), '.codemod', 'cases');
+	eventEmitter.once("start", async () => {
+		const casesDirectoryPath = join(homedir(), ".codemod", "cases");
 
 		const casesDirectoryUri = Uri.file(casesDirectoryPath);
 
@@ -255,21 +246,16 @@ export const readHomeDirectoryCases = async (
 
 			const caseDataPaths = entries
 				.filter(([, fileType]) => fileType === FileType.Directory)
-				.map(([name]) => join(casesDirectoryPath, name, 'case.data'));
+				.map(([name]) => join(casesDirectoryPath, name, "case.data"));
 
 			const results = await Promise.allSettled(
 				caseDataPaths.map((path) =>
-					readHomeDirectoryCase(
-						eventEmitter,
-						rootUri,
-						codemodEntities,
-						path,
-					),
+					readHomeDirectoryCase(eventEmitter, rootUri, codemodEntities, path),
 				),
 			);
 
 			for (const result of results) {
-				if (result.status === 'rejected') {
+				if (result.status === "rejected") {
 					console.error(result.reason);
 				}
 			}
@@ -277,7 +263,7 @@ export const readHomeDirectoryCases = async (
 			console.error(error);
 		}
 
-		eventEmitter.emit('end');
+		eventEmitter.emit("end");
 	});
 
 	return eventEmitter;
@@ -307,13 +293,13 @@ export class HomeDirectoryService {
 				});
 			};
 
-			eventEmitter?.once('end', () => {
-				eventEmitter.off('job', jobHandler);
+			eventEmitter?.once("end", () => {
+				eventEmitter.off("job", jobHandler);
 			});
 
-			eventEmitter?.on('job', jobHandler);
+			eventEmitter?.on("job", jobHandler);
 
-			eventEmitter?.emit('start');
+			eventEmitter?.emit("start");
 		});
 
 		__messageBus.subscribe(
@@ -347,23 +333,21 @@ export class HomeDirectoryService {
 			if (!caseExists) {
 				caseExists = true;
 
-				this.__store.dispatch(actions.setActiveTabId('codemodRuns'));
-				this.__store.dispatch(
-					actions.setSelectedCaseHash(caseHashDigest),
-				);
+				this.__store.dispatch(actions.setActiveTabId("codemodRuns"));
+				this.__store.dispatch(actions.setSelectedCaseHash(caseHashDigest));
 			}
 		};
 
-		eventEmitter?.once('end', () => {
+		eventEmitter?.once("end", () => {
 			if (!caseExists) {
-				window.showErrorMessage('The requested dry-run does not exist');
+				window.showErrorMessage("The requested dry-run does not exist");
 			}
 
-			eventEmitter.off('job', jobHandler);
+			eventEmitter.off("job", jobHandler);
 		});
 
-		eventEmitter?.on('job', jobHandler);
+		eventEmitter?.on("job", jobHandler);
 
-		eventEmitter?.emit('start');
+		eventEmitter?.emit("start");
 	}
 }

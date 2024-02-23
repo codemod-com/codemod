@@ -5,9 +5,7 @@
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
-	"repository": {
-		"type": "git"
-	},
+	"repository": { "type": "git" },
 	"keywords": [
 		"codemod",
 		"jscodeshift",
@@ -59,7 +57,6 @@
 		"memfs": "^4.2.0",
 		"micromark-extension-mdxjs": "^2.0.0",
 		"minimatch": "^9.0.3",
-		"prettier": "^2",
 		"rehype-parse": "^8.0.4",
 		"sinon": "^17.0.0",
 		"tar": "^6.1.15",
@@ -72,7 +69,8 @@
 		"unist-util-visit": "^5.0.0",
 		"valibot": "^0.24.1",
 		"vitest": "^1.0.1",
-		"yargs": "^17.6.2"
+		"yargs": "^17.6.2",
+		"@biomejs/biome": "1.5.3"
 	},
 	"packageManager": "pnpm@8.6.7",
 	"scripts": {
@@ -81,19 +79,9 @@
 		"test": "TEST=1 vitest run",
 		"coverage": "TEST=1 vitest run --coverage"
 	},
-	"engines": {
-		"node": ">=18.5.0"
-	},
-	"pkg": {
-		"outputPath": "./package/"
-	},
+	"engines": { "node": ">=18.5.0" },
+	"pkg": { "outputPath": "./package/" },
 	"license": "Apache License, Version 2.0",
-	"files": [
-		"./dist/index.cjs",
-		"LICENSE",
-		"README.md"
-	],
-	"publishConfig": {
-		"access": "public"
-	}
+	"files": ["./dist/index.cjs", "LICENSE", "README.md"],
+	"publishConfig": { "access": "public" }
 }

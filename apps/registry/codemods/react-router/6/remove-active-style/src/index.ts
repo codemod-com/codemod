@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -40,7 +40,8 @@ function transform(
 
 	let dirtyFlag = false;
 
-	root.findJSXElements('NavLink')
+	root
+		.findJSXElements("NavLink")
 		// .filter(hasAttributes({ style: () => true, activeStyle: () => true }))
 		.forEach((path) => {
 			const attrs = path.value.openingElement.attributes;
@@ -50,21 +51,21 @@ function transform(
 			}
 
 			const [styleAttr] = attrs.filter((a) =>
-				'name' in a ? a.name.name === 'style' : false,
+				"name" in a ? a.name.name === "style" : false,
 			);
 
 			if (
 				!styleAttr ||
-				!('value' in styleAttr) ||
+				!("value" in styleAttr) ||
 				!styleAttr.value ||
-				!('expression' in styleAttr.value) ||
+				!("expression" in styleAttr.value) ||
 				!styleAttr.value.expression ||
-				!('properties' in styleAttr.value.expression) ||
+				!("properties" in styleAttr.value.expression) ||
 				!styleAttr.value.expression.properties[0] ||
-				!('key' in styleAttr.value.expression.properties[0]) ||
-				!('name' in styleAttr.value.expression.properties[0].key) ||
-				!('value' in styleAttr.value.expression.properties[0]) ||
-				!('value' in styleAttr.value.expression.properties[0].value) ||
+				!("key" in styleAttr.value.expression.properties[0]) ||
+				!("name" in styleAttr.value.expression.properties[0].key) ||
+				!("value" in styleAttr.value.expression.properties[0]) ||
+				!("value" in styleAttr.value.expression.properties[0].value) ||
 				!styleAttr.value.expression.properties[0].value.value
 			) {
 				return;
@@ -72,57 +73,50 @@ function transform(
 
 			const cssProp = styleAttr.value.expression.properties[0].key.name;
 
-			if (typeof cssProp != 'string') {
+			if (typeof cssProp != "string") {
 				return;
 			}
 
 			const [activeStyleAttr] = attrs.filter((a) =>
-				'name' in a ? a.name.name === 'activeStyle' : false,
+				"name" in a ? a.name.name === "activeStyle" : false,
 			);
 
 			if (
 				!activeStyleAttr ||
-				!('value' in activeStyleAttr) ||
+				!("value" in activeStyleAttr) ||
 				!activeStyleAttr.value ||
-				!('expression' in activeStyleAttr.value) ||
-				!('properties' in activeStyleAttr.value.expression) ||
+				!("expression" in activeStyleAttr.value) ||
+				!("properties" in activeStyleAttr.value.expression) ||
 				!activeStyleAttr.value.expression.properties[0] ||
-				!('value' in activeStyleAttr.value.expression.properties[0]) ||
-				!(
-					'value' in
-					activeStyleAttr.value.expression.properties[0].value
-				) ||
+				!("value" in activeStyleAttr.value.expression.properties[0]) ||
+				!("value" in activeStyleAttr.value.expression.properties[0].value) ||
 				!activeStyleAttr.value.expression.properties[0].value.value
 			) {
 				return;
 			}
 
 			const idx = attrs.findIndex((a) =>
-				'name' in a ? a.name.name === 'activeStyle' : false,
+				"name" in a ? a.name.name === "activeStyle" : false,
 			);
 			// remove activeStyle prop
 			attrs.splice(idx, 1);
 
 			const propertyNode = j.property(
-				'init',
-				j.literal('isActive'),
-				j.identifier('isActive'),
+				"init",
+				j.literal("isActive"),
+				j.identifier("isActive"),
 			);
 
 			const arrFuncBody = j.objectExpression([
 				j.property(
-					'init',
+					"init",
 					j.literal(cssProp),
 					j.conditionalExpression(
-						j.identifier('isActive'),
+						j.identifier("isActive"),
 						j.literal(
-							activeStyleAttr.value.expression.properties[0].value
-								.value,
+							activeStyleAttr.value.expression.properties[0].value.value,
 						),
-						j.literal(
-							styleAttr.value.expression.properties[0].value
-								.value,
-						),
+						j.literal(styleAttr.value.expression.properties[0].value.value),
 					),
 				),
 			]);

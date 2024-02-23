@@ -1,6 +1,6 @@
-import { createHash } from 'node:crypto';
-import { IFs } from 'memfs';
-import { FileCommand } from './fileCommands.js';
+import { createHash } from "node:crypto";
+import { IFs } from "memfs";
+import { FileCommand } from "./fileCommands.js";
 
 export const buildFileCommands = async (
 	fileMap: ReadonlyMap<string, string>,
@@ -19,22 +19,22 @@ export const buildFileCommands = async (
 		if (oldDataFileHash === null) {
 			// the file has been created
 			fileCommands.push({
-				kind: 'createFile',
+				kind: "createFile",
 				newPath,
 				newData,
 				formatWithPrettier: false,
 			});
 		} else {
-			const newDataFileHash = createHash('ripemd160')
+			const newDataFileHash = createHash("ripemd160")
 				.update(newData)
-				.digest('base64url');
+				.digest("base64url");
 
 			if (newDataFileHash !== oldDataFileHash) {
 				fileCommands.push({
-					kind: 'updateFile',
+					kind: "updateFile",
 					oldPath: newPath,
 					newData,
-					oldData: '', // TODO no longer necessary
+					oldData: "", // TODO no longer necessary
 					formatWithPrettier: false,
 				});
 			}
@@ -48,7 +48,7 @@ export const buildFileCommands = async (
 
 	for (const oldPath of oldPaths) {
 		fileCommands.push({
-			kind: 'deleteFile',
+			kind: "deleteFile",
 			oldPath,
 		});
 	}

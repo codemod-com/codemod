@@ -1,18 +1,18 @@
-import { ChromaClient } from 'chromadb';
-import { ConversationalRetrievalQAChain } from 'langchain/chains';
-import { OpenAIEmbeddings } from 'langchain/embeddings/openai';
-import { OpenAI } from 'langchain/llms/openai';
-import { Chroma } from 'langchain/vectorstores/chroma';
-import { findFunctionComponent } from './chromaSnippets/findFunctionComponent.js';
-import { findPositionAfterImports } from './chromaSnippets/findPositionAfterImports.js';
-import { Environment } from './schema.js';
+import { ChromaClient } from "chromadb";
+import { ConversationalRetrievalQAChain } from "langchain/chains";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { OpenAI } from "langchain/llms/openai";
+import { Chroma } from "langchain/vectorstores/chroma";
+import { findFunctionComponent } from "./chromaSnippets/findFunctionComponent.js";
+import { findPositionAfterImports } from "./chromaSnippets/findPositionAfterImports.js";
+import { Environment } from "./schema.js";
 
 const buildChromaService = async (environment: Environment) => {
 	if (environment.OPEN_AI_API_KEY === undefined) {
 		return {
 			complete: () => {
 				throw new Error(
-					'You cannot run the Chroma service without providing an API key',
+					"You cannot run the Chroma service without providing an API key",
 				);
 			},
 		};
@@ -20,14 +20,14 @@ const buildChromaService = async (environment: Environment) => {
 
 	const model = new OpenAI({
 		openAIApiKey: environment.OPEN_AI_API_KEY,
-		modelName: 'gpt-4',
+		modelName: "gpt-4",
 		topP: 0.1,
 		temperature: 0.2,
 		// IMPORTANT!
 		maxTokens: -1,
 	});
 
-	const COLLECTION_NAME = 'codemod_snippets';
+	const COLLECTION_NAME = "codemod_snippets";
 
 	const c = new ChromaClient();
 	c.deleteCollection({ name: COLLECTION_NAME });
@@ -57,7 +57,7 @@ const buildChromaService = async (environment: Environment) => {
 				${prompt} 
 				 Remember to injected the SNIPPET functions value into the result codemod.
 				 `,
-			chat_history: '',
+			chat_history: "",
 			timeout,
 			signal: abortController.signal,
 		});
@@ -72,7 +72,7 @@ const buildChromaService = async (environment: Environment) => {
 
 		abortController.abort();
 
-		return output !== null ? output['text'] : null;
+		return output !== null ? output.text : null;
 	};
 
 	return {

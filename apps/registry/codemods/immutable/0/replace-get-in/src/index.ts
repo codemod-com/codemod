@@ -28,8 +28,8 @@ Changes to the original file: added options, nullability fixes
 */
 
 import type {
-	ArrayExpression,
 	ASTPath,
+	ArrayExpression,
 	CallExpression,
 	Identifier,
 	JSCodeshift,
@@ -37,7 +37,7 @@ import type {
 	MemberExpression,
 	OptionalMemberExpression,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 class Handler {
 	private j: JSCodeshift;
@@ -60,7 +60,7 @@ class Handler {
 
 		this.hasDefault = node.arguments.length === 2;
 
-		return node.arguments[0]?.type === 'ArrayExpression';
+		return node.arguments[0]?.type === "ArrayExpression";
 	}
 
 	transform() {
@@ -75,7 +75,7 @@ class Handler {
 
 			this.path.replace(
 				this.j.logicalExpression(
-					'??',
+					"??",
 					this.generate(arrayArguments),
 					defaultExpression,
 				),
@@ -93,19 +93,19 @@ class Handler {
 			const memberExpression = this.path.node.callee as MemberExpression;
 
 			return memberExpression.object as Identifier;
-		} else {
-			const arg = arrayArguments.elements[index];
-
-			return this.j.optionalMemberExpression(
-				this.generate(arrayArguments, index - 1),
-				this.normalizeProperty(arg),
-				this.isComputed(arg),
-			);
 		}
+
+		const arg = arrayArguments.elements[index];
+
+		return this.j.optionalMemberExpression(
+			this.generate(arrayArguments, index - 1),
+			this.normalizeProperty(arg),
+			this.isComputed(arg),
+		);
 	}
 
 	private normalizeProperty(arg: any) {
-		if (arg?.type === 'Literal') {
+		if (arg?.type === "Literal") {
 			return this.j.identifier(`${(arg as Literal).value}`);
 		}
 
@@ -113,7 +113,7 @@ class Handler {
 	}
 
 	private isComputed(arg: any) {
-		return arg?.type !== 'Literal';
+		return arg?.type !== "Literal";
 	}
 }
 
@@ -122,10 +122,10 @@ const transform: Transform = (file, api, options) => {
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'MemberExpression',
+			type: "MemberExpression",
 			property: {
-				type: 'Identifier',
-				name: 'getIn',
+				type: "Identifier",
+				name: "getIn",
 			},
 		},
 	});

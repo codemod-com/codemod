@@ -2,12 +2,12 @@ import {
 	VSCodeDataGrid,
 	VSCodeDataGridCell,
 	VSCodeDataGridRow,
-} from '@vscode/webview-ui-toolkit/react';
-import { useEffect, useState } from 'react';
-import type { WebviewMessage } from '../../../src/components/webview/webviewEvents';
-import type { ExecutionError } from '../../../src/errors/types';
-import type { ErrorWebviewViewProps } from '../../../src/selectors/selectErrorWebviewViewProps';
-import styles from './style.module.css';
+} from "@vscode/webview-ui-toolkit/react";
+import { useEffect, useState } from "react";
+import type { WebviewMessage } from "../../../src/components/webview/webviewEvents";
+import type { ExecutionError } from "../../../src/errors/types";
+import type { ErrorWebviewViewProps } from "../../../src/selectors/selectErrorWebviewViewProps";
+import styles from "./style.module.css";
 
 const header = (
 	<VSCodeDataGridRow row-type="sticky-header">
@@ -30,7 +30,7 @@ const buildExecutionErrorRow = (
 				{executionError.message}
 			</VSCodeDataGridCell>
 			<VSCodeDataGridCell grid-column="2">
-				{executionError.path ?? ''}
+				{executionError.path ?? ""}
 			</VSCodeDataGridCell>
 		</VSCodeDataGridRow>
 	);
@@ -47,29 +47,29 @@ export const App = () => {
 
 	useEffect(() => {
 		const handler = (event: MessageEvent<WebviewMessage>) => {
-			if (event.data.kind !== 'webview.error.setProps') {
+			if (event.data.kind !== "webview.error.setProps") {
 				return;
 			}
 
 			setProps(event.data.errorWebviewViewProps);
 		};
 
-		window.addEventListener('message', handler);
+		window.addEventListener("message", handler);
 
 		return () => {
-			window.removeEventListener('message', handler);
+			window.removeEventListener("message", handler);
 		};
 	}, []);
 
-	if (props.kind !== 'CASE_SELECTED') {
+	if (props.kind !== "CASE_SELECTED") {
 		return (
 			<main>
 				<p className={styles.welcomeMessage}>
-					{props.kind === 'MAIN_WEBVIEW_VIEW_NOT_VISIBLE'
-						? 'Open the left-sided Codemod View Container to see the errors.'
-						: props.kind === 'CODEMOD_RUNS_TAB_NOT_ACTIVE'
-						  ? 'Open the Codemod Runs tab to see the errors.'
-						  : 'Choose a codemod run from Codemod Runs to see its errors.'}
+					{props.kind === "MAIN_WEBVIEW_VIEW_NOT_VISIBLE"
+						? "Open the left-sided Codemod View Container to see the errors."
+						: props.kind === "CODEMOD_RUNS_TAB_NOT_ACTIVE"
+						  ? "Open the Codemod Runs tab to see the errors."
+						  : "Choose a codemod run from Codemod Runs to see its errors."}
 				</p>
 			</main>
 		);

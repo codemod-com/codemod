@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options } from 'jscodeshift';
+import type { API, FileInfo, Options } from "jscodeshift";
 
 /**
  * @param {import('jscodeshift').FileInfo} file
@@ -13,26 +13,23 @@ export default function transformer(
 	const root = j(file.source);
 
 	const printOptions = options.printOptions || {
-		quote: 'single',
+		quote: "single",
 	};
 
 	let importStyles = root
 		.find(j.ImportDeclaration)
-		.filter((path) => path.node.source.value === '@material-ui/core/styles')
+		.filter((path) => path.node.source.value === "@material-ui/core/styles")
 		.nodes()[0];
 
-	root.find(j.ImportDeclaration)
-		.filter(
-			(path) =>
-				path.node.source.value &&
-				path.node.source.value.match(
-					/^@material-ui\/core\/styles\/.+$/,
-				),
+	root
+		.find(j.ImportDeclaration)
+		.filter((path) =>
+			path.node.source.value?.match(/^@material-ui\/core\/styles\/.+$/),
 		)
 		.forEach((path) => {
 			const specifiers = path.node.specifiers?.map((s) => {
-				if (s.type === 'ImportDefaultSpecifier') {
-					return j.importSpecifier(j.identifier(s.local?.name ?? ''));
+				if (s.type === "ImportDefaultSpecifier") {
+					return j.importSpecifier(j.identifier(s.local?.name ?? ""));
 				}
 				return s;
 			});
@@ -40,7 +37,7 @@ export default function transformer(
 			if (!importStyles) {
 				importStyles = j.importDeclaration(
 					specifiers,
-					j.literal('@material-ui/core/styles'),
+					j.literal("@material-ui/core/styles"),
 				);
 				path.insertBefore(importStyles);
 			} else {

@@ -1,10 +1,10 @@
-import { deepStrictEqual } from 'node:assert';
-import { buildApi, executeFilemod } from '@codemod-com/filemod';
-import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
-import type { DirectoryJSON } from 'memfs';
-import { createFsFromVolume, Volume } from 'memfs';
-import { describe, it } from 'vitest';
-import { repomod } from '../src/index.js';
+import { deepStrictEqual } from "node:assert";
+import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
+import type { DirectoryJSON } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
+import { describe, it } from "vitest";
+import { repomod } from "../src/index.js";
 
 type Options = Readonly<Record<string, string | number | boolean | undefined>>;
 
@@ -14,7 +14,7 @@ const transform = async (json: DirectoryJSON, options: Options) => {
 	const fs = createFsFromVolume(volume);
 
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI('/');
+	const pathApi = buildPathAPI("/");
 
 	const api = buildApi<Record<string, never>>(
 		unifiedFileSystem,
@@ -22,11 +22,11 @@ const transform = async (json: DirectoryJSON, options: Options) => {
 		pathApi,
 	);
 
-	return executeFilemod(api, repomod, '/', options, {});
+	return executeFilemod(api, repomod, "/", options, {});
 };
 
-describe('next-i18n copy keys', function () {
-	it('should copy a key into a new namespace', async function () {
+describe("next-i18n copy keys", () => {
+	it("should copy a key into a new namespace", async () => {
 		const EN_COMMON_JSON = `
 			{
 				"copyKey": "copyKeyEnglish",
@@ -43,48 +43,46 @@ describe('next-i18n copy keys', function () {
 
 		const [upsertDeDataCommand, upsertEnDataCommand] = await transform(
 			{
-				'/opt/project/public/static/locales/en/common.json':
-					EN_COMMON_JSON,
-				'/opt/project/public/static/locales/de/common.json':
-					DE_COMMON_JSON,
+				"/opt/project/public/static/locales/en/common.json": EN_COMMON_JSON,
+				"/opt/project/public/static/locales/de/common.json": DE_COMMON_JSON,
 			},
 			{
-				oldNamespace: 'common',
-				newNamespace: 'new',
-				keys: 'copyKey',
+				oldNamespace: "common",
+				newNamespace: "new",
+				keys: "copyKey",
 			},
 		);
 
 		{
-			deepStrictEqual(upsertEnDataCommand?.kind, 'upsertFile');
+			deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
 
 			deepStrictEqual(
 				upsertEnDataCommand.path,
-				'/opt/project/public/static/locales/en/new.json',
+				"/opt/project/public/static/locales/en/new.json",
 			);
 
 			deepStrictEqual(
-				upsertEnDataCommand.data.replace(/\W/gm, ''),
-				`{"copyKey": "copyKeyEnglish"}`.replace(/\W/gm, ''),
+				upsertEnDataCommand.data.replace(/\W/gm, ""),
+				`{"copyKey": "copyKeyEnglish"}`.replace(/\W/gm, ""),
 			);
 		}
 
 		{
-			deepStrictEqual(upsertDeDataCommand?.kind, 'upsertFile');
+			deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
 
 			deepStrictEqual(
 				upsertDeDataCommand.path,
-				'/opt/project/public/static/locales/de/new.json',
+				"/opt/project/public/static/locales/de/new.json",
 			);
 
 			deepStrictEqual(
-				upsertDeDataCommand.data.replace(/\W/gm, ''),
-				`{"copyKey": "copyKeyGerman"}`.replace(/\W/gm, ''),
+				upsertDeDataCommand.data.replace(/\W/gm, ""),
+				`{"copyKey": "copyKeyGerman"}`.replace(/\W/gm, ""),
 			);
 		}
 	});
 
-	it('should copy a key into an existing namespace', async function () {
+	it("should copy a key into an existing namespace", async () => {
 		const EN_COMMON_JSON = `
 			{
 				"copyKey": "copyKeyEnglish",
@@ -113,52 +111,48 @@ describe('next-i18n copy keys', function () {
 
 		const [upsertDeDataCommand, upsertEnDataCommand] = await transform(
 			{
-				'/opt/project/public/static/locales/en/common.json':
-					EN_COMMON_JSON,
-				'/opt/project/public/static/locales/en/existing.json':
-					EN_EXISTING_JSON,
-				'/opt/project/public/static/locales/de/common.json':
-					DE_COMMON_JSON,
-				'/opt/project/public/static/locales/de/existing.json':
-					DE_EXISTING_JSON,
+				"/opt/project/public/static/locales/en/common.json": EN_COMMON_JSON,
+				"/opt/project/public/static/locales/en/existing.json": EN_EXISTING_JSON,
+				"/opt/project/public/static/locales/de/common.json": DE_COMMON_JSON,
+				"/opt/project/public/static/locales/de/existing.json": DE_EXISTING_JSON,
 			},
 			{
-				oldNamespace: 'common',
-				newNamespace: 'existing',
-				keys: 'copyKey',
+				oldNamespace: "common",
+				newNamespace: "existing",
+				keys: "copyKey",
 			},
 		);
 
 		{
-			deepStrictEqual(upsertEnDataCommand?.kind, 'upsertFile');
+			deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
 
 			deepStrictEqual(
 				upsertEnDataCommand.path,
-				'/opt/project/public/static/locales/en/existing.json',
+				"/opt/project/public/static/locales/en/existing.json",
 			);
 
 			deepStrictEqual(
-				upsertEnDataCommand.data.replace(/\W/gm, ''),
+				upsertEnDataCommand.data.replace(/\W/gm, ""),
 				`{"otherKey": "otherKeyEnglish","copyKey": "copyKeyEnglish"}`.replace(
 					/\W/gm,
-					'',
+					"",
 				),
 			);
 		}
 
 		{
-			deepStrictEqual(upsertDeDataCommand?.kind, 'upsertFile');
+			deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
 
 			deepStrictEqual(
 				upsertDeDataCommand.path,
-				'/opt/project/public/static/locales/de/existing.json',
+				"/opt/project/public/static/locales/de/existing.json",
 			);
 
 			deepStrictEqual(
-				upsertDeDataCommand.data.replace(/\W/gm, ''),
+				upsertDeDataCommand.data.replace(/\W/gm, ""),
 				`{"otherKey": "otherKeyGerman","copyKey": "copyKeyGerman",}`.replace(
 					/\W/gm,
-					'',
+					"",
 				),
 			);
 		}

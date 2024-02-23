@@ -1,6 +1,6 @@
-import { Mode } from 'node:fs';
-import { chmod } from 'node:fs/promises';
-import { FileSystem, FileSystemError, Uri } from 'vscode';
+import { Mode } from "node:fs";
+import { chmod } from "node:fs/promises";
+import { FileSystem, FileSystemError, Uri } from "vscode";
 
 export class FileSystemUtilities {
 	readonly #fs: FileSystem;
@@ -23,8 +23,8 @@ export class FileSystemUtilities {
 	}
 
 	public async setChmod(uri: Uri, mode: Mode): Promise<void> {
-		if (uri.scheme !== 'file' && uri.scheme !== 'vscode-userdata') {
-			console.warn('Cannot set chmod for a non-file URI', uri);
+		if (uri.scheme !== "file" && uri.scheme !== "vscode-userdata") {
+			console.warn("Cannot set chmod for a non-file URI", uri);
 
 			return;
 		}

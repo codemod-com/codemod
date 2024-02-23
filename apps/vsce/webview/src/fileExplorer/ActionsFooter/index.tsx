@@ -1,40 +1,40 @@
 import {
 	VSCodeButton,
 	VSCodeProgressRing,
-} from '@vscode/webview-ui-toolkit/react';
-import { CaseHash } from '../../../../src/cases/types';
-import CustomPopover from '../../shared/CustomPopover';
-import { vscode } from '../../shared/utilities/vscode';
-import styles from './style.module.css';
+} from "@vscode/webview-ui-toolkit/react";
+import { CaseHash } from "../../../../src/cases/types";
+import CustomPopover from "../../shared/CustomPopover";
+import { vscode } from "../../shared/utilities/vscode";
+import styles from "./style.module.css";
 
 const POPOVER_TEXTS = {
-	discard: 'Discard selected changes for the highlighted codemod.',
-	apply: 'Save selected changes to file(s).',
-	cannotApply: 'At least one job should be selected to apply the changes.',
+	discard: "Discard selected changes for the highlighted codemod.",
+	apply: "Save selected changes to file(s).",
+	cannotApply: "At least one job should be selected to apply the changes.",
 };
 
 const discardSelected = (caseHashDigest: CaseHash) => {
 	vscode.postMessage({
-		kind: 'webview.global.discardSelected',
+		kind: "webview.global.discardSelected",
 		caseHashDigest,
 	});
 };
 
 const applySelected = (caseHashDigest: CaseHash) => {
 	vscode.postMessage({
-		kind: 'webview.global.applySelected',
+		kind: "webview.global.applySelected",
 		caseHashDigest,
 	});
 };
 
 const getDiscardText = (selectedJobCount: number) => {
 	return `Discard ${selectedJobCount} ${
-		selectedJobCount === 1 ? 'file' : 'files'
+		selectedJobCount === 1 ? "file" : "files"
 	}`;
 };
 const getApplyText = (selectedJobCount: number) => {
 	return `Apply ${selectedJobCount} ${
-		selectedJobCount === 1 ? 'file' : 'files'
+		selectedJobCount === 1 ? "file" : "files"
 	}`;
 };
 
@@ -56,7 +56,7 @@ export const ActionsFooter = ({
 			className={styles.root}
 			style={{
 				...(screenWidth !== null &&
-					screenWidth >= 300 && { justifyContent: 'flex-end' }),
+					screenWidth >= 300 && { justifyContent: "flex-end" }),
 			}}
 		>
 			<CustomPopover content={POPOVER_TEXTS.discard}>

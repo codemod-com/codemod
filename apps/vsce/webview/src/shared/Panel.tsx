@@ -1,11 +1,11 @@
-import { forwardRef, ReactNode, useEffect, useRef } from 'react';
+import { ReactNode, forwardRef, useEffect, useRef } from "react";
 import {
 	ImperativePanelHandle,
-	PanelGroupProps,
-	PanelProps,
 	Panel as RResizablePanel,
 	PanelGroup as RResizablePanelGroup,
-} from 'react-resizable-panels';
+	PanelGroupProps,
+	PanelProps,
+} from "react-resizable-panels";
 
 type ResizablePanelProps = {
 	children?: ReactNode;
@@ -23,7 +23,7 @@ const PanelGroup = (props: PanelGroupProps) => {
 		const onStartResizing = (e: MouseEvent) => {
 			if (
 				(e.target as HTMLDivElement | null)?.getAttribute(
-					'data-panel-resize-handle-id',
+					"data-panel-resize-handle-id",
 				) === undefined
 			) {
 				return;
@@ -46,53 +46,39 @@ const PanelGroup = (props: PanelGroupProps) => {
 			return;
 		}
 
-		containerRef.current.addEventListener('mousedown', onStartResizing);
+		containerRef.current.addEventListener("mousedown", onStartResizing);
 
-		containerRef.current.addEventListener('mouseup', onEndResizing);
-		containerRef.current.addEventListener('contextmenu', onEndResizing);
+		containerRef.current.addEventListener("mouseup", onEndResizing);
+		containerRef.current.addEventListener("contextmenu", onEndResizing);
 
-		containerRef.current.addEventListener('mousemove', onResize);
+		containerRef.current.addEventListener("mousemove", onResize);
 
 		return () => {
 			if (containerRef.current === null) {
 				return;
 			}
 
-			containerRef.current.removeEventListener(
-				'mousedown',
-				onStartResizing,
-			);
+			containerRef.current.removeEventListener("mousedown", onStartResizing);
 
-			containerRef.current.removeEventListener('mouseup', onEndResizing);
-			containerRef.current.removeEventListener(
-				'contextmenu',
-				onEndResizing,
-			);
+			containerRef.current.removeEventListener("mouseup", onEndResizing);
+			containerRef.current.removeEventListener("contextmenu", onEndResizing);
 
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-			containerRef.current.removeEventListener('mousemove', onResize);
+			containerRef.current.removeEventListener("mousemove", onResize);
 		};
 	}, []);
 
 	return (
 		<div ref={containerRef} className="w-full h-full">
-			<RResizablePanelGroup {...props}>
-				{props.children}
-			</RResizablePanelGroup>
+			<RResizablePanelGroup {...props}>{props.children}</RResizablePanelGroup>
 		</div>
 	);
 };
 
 const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 	(props, ref) => {
-		const {
-			children,
-			defaultSize,
-			minSize,
-			collapsible,
-			className,
-			...rest
-		} = props;
+		const { children, defaultSize, minSize, collapsible, className, ...rest } =
+			props;
 		return (
 			<RResizablePanel
 				{...rest}

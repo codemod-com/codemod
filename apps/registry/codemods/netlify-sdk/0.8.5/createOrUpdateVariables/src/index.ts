@@ -1,4 +1,4 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
 const isNeitherNullNorUndefined = <T>(
 	t: NonNullable<T> | null | undefined,
@@ -16,9 +16,9 @@ export default function transform(
 	// Find all CallExpression nodes
 	root.find(j.CallExpression).forEach((path) => {
 		if (
-			path.node.type !== 'CallExpression' ||
-			path.node.callee.type !== 'Identifier' ||
-			path.node.callee.name !== 'createOrUpdateVariables'
+			path.node.type !== "CallExpression" ||
+			path.node.callee.type !== "Identifier" ||
+			path.node.callee.name !== "createOrUpdateVariables"
 		) {
 			return;
 		}
@@ -28,14 +28,14 @@ export default function transform(
 			path.node.arguments
 				.map((arg, i) => {
 					// Create a property from the identifier
-					if (i > 2 || arg.type === 'SpreadElement') {
+					if (i > 2 || arg.type === "SpreadElement") {
 						return null;
 					}
 
-					const name = ['accountId', 'siteId', 'key'][i] ?? 'error';
+					const name = ["accountId", "siteId", "key"][i] ?? "error";
 
 					return j.property.from({
-						kind: 'init',
+						kind: "init",
 						key: j.identifier.from({ name }),
 						value: arg,
 					});

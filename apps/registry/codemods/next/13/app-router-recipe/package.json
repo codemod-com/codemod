@@ -1,8 +1,5 @@
 {
 	"name": "@codemod-com/codemod-next-13-app-router-recipe",
-	"files": [
-		"README.md",
-		"config.json"
-	],
+	"files": ["README.md", "config.json"],
 	"type": "module"
 }

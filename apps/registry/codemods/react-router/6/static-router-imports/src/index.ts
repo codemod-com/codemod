@@ -27,7 +27,7 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -43,11 +43,11 @@ function transform(
 	root.find(j.ImportDeclaration, {}).forEach((decl) => {
 		if (
 			decl.value.specifiers?.filter((s) =>
-				'imported' in s ? s.imported.name === 'StaticRouter' : false,
+				"imported" in s ? s.imported.name === "StaticRouter" : false,
 			).length ??
 			0 > 0
 		) {
-			decl.value.source.value = 'react-router-dom/server';
+			decl.value.source.value = "react-router-dom/server";
 		}
 	});
 

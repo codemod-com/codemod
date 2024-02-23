@@ -1,11 +1,11 @@
-import assert from 'node:assert';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('ember 5 object-new-constructor', function () {
-	it('basic', function () {
+describe("ember 5 object-new-constructor", () => {
+	it("basic", () => {
 		const INPUT = `
 		let obj1 = new EmberObject();
 		let obj2 = new EmberObject({ prop: 'value' });
@@ -23,15 +23,15 @@ describe('ember 5 object-new-constructor', function () {
         `;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: INPUT,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			OUTPUT.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
 		);
 	});
 });

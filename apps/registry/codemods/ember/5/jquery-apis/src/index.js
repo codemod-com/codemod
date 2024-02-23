@@ -32,28 +32,28 @@ export default function transform(file, api) {
 
 	const root = j(file.source);
 
-	root.find(j.CallExpression, {
-		callee: {
-			object: {
-				callee: {
-					object: {
-						type: 'ThisExpression',
-					},
-					property: {
-						name: '$',
+	root
+		.find(j.CallExpression, {
+			callee: {
+				object: {
+					callee: {
+						object: {
+							type: "ThisExpression",
+						},
+						property: {
+							name: "$",
+						},
 					},
 				},
 			},
-		},
-	})
+		})
 		.forEach(() => {
 			//console.log(path);
 		})
 		.replaceWith((path) => {
 			//callee.object.arguments
 			//console.log(path.value.callee.object.arguments);
-			const isQuerySelector =
-				path.value.callee.object.arguments.length > 0;
+			const isQuerySelector = path.value.callee.object.arguments.length > 0;
 			//console.log(isQuerySelector);
 			let newCallExp;
 			if (isQuerySelector) {
@@ -63,23 +63,23 @@ export default function transform(file, api) {
 							j.memberExpression(
 								j.memberExpression(
 									j.thisExpression(),
-									j.identifier('element'),
+									j.identifier("element"),
 									false,
 								),
-								j.identifier('querySelectorAll'),
+								j.identifier("querySelectorAll"),
 							),
 							path.value.callee.object.arguments,
 						),
-						j.identifier('forEach'),
+						j.identifier("forEach"),
 						false,
 					),
 					[
 						j.arrowFunctionExpression(
-							[j.identifier('el')],
+							[j.identifier("el")],
 							j.callExpression(
 								j.memberExpression(
-									j.identifier('el'),
-									j.identifier('addEventListener'),
+									j.identifier("el"),
+									j.identifier("addEventListener"),
 									false,
 								),
 								path.value.arguments,
@@ -93,10 +93,10 @@ export default function transform(file, api) {
 					j.memberExpression(
 						j.memberExpression(
 							j.thisExpression(),
-							j.identifier('element'),
+							j.identifier("element"),
 							false,
 						),
-						j.identifier('addEventListener'),
+						j.identifier("addEventListener"),
 						false,
 					),
 					path.value.arguments,

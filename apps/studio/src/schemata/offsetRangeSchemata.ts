@@ -1,4 +1,4 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 export const offsetRangeSchema = S.struct({
 	start: S.number,

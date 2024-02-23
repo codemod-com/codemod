@@ -1,4 +1,4 @@
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
 export default function transform(
 	file: FileInfo,
@@ -8,25 +8,27 @@ export default function transform(
 	const root = j(file.source);
 
 	// Find all calls to addHandler method
-	root.find(j.CallExpression, {
-		callee: {
-			type: 'MemberExpression',
-			property: {
-				type: 'Identifier',
-				name: 'addHandler',
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				property: {
+					type: "Identifier",
+					name: "addHandler",
+				},
 			},
-		},
-	}).replaceWith((path) => {
-		// Replace addHandler with addApiHandler
-		if (
-			'property' in path.node.callee &&
-			'name' in path.node.callee.property
-		) {
-			path.node.callee.property.name = 'addApiHandler';
-		}
+		})
+		.replaceWith((path) => {
+			// Replace addHandler with addApiHandler
+			if (
+				"property" in path.node.callee &&
+				"name" in path.node.callee.property
+			) {
+				path.node.callee.property.name = "addApiHandler";
+			}
 
-		return path.node;
-	});
+			return path.node;
+		});
 
 	return root.toSource();
 }

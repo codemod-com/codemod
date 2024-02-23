@@ -1,7 +1,7 @@
-import * as t from 'io-ts';
-import { Uri } from 'vscode';
-import { CaseHash, caseHashCodec } from '../cases/types';
-import { buildTypeCodec } from '../utilities';
+import * as t from "io-ts";
+import { Uri } from "vscode";
+import { CaseHash, caseHashCodec } from "../cases/types";
+import { buildTypeCodec } from "../utilities";
 
 interface JobHashBrand {
 	readonly __JobHash: unique symbol;
@@ -11,12 +11,12 @@ export const jobHashCodec = t.brand(
 	t.string,
 	(hashDigest): hashDigest is t.Branded<string, JobHashBrand> =>
 		hashDigest.length > 0,
-	'__JobHash',
+	"__JobHash",
 );
 
 export type JobHash = t.TypeOf<typeof jobHashCodec>;
 
-export const enum JobKind {
+export enum JobKind {
 	rewriteFile = 1,
 	createFile = 2,
 	deleteFile = 3,

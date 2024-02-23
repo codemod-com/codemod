@@ -1,11 +1,11 @@
-import { join } from 'path';
-import { CaseWritingService } from '@codemod-com/utilities';
-import { IFs } from 'memfs';
-import { buildSurfaceAgnosticJob } from '../buildSurfaceAgnosticJob.js';
-import { FormattedFileCommand } from '../fileCommands.js';
-import { ArgumentRecord } from '../schemata/argumentRecordSchema.js';
-import { FlowSettings } from '../schemata/flowSettingsSchema.js';
-import { RunSettings } from '../schemata/runArgvSettingsSchema.js';
+import { join } from "path";
+import { CaseWritingService } from "@codemod-com/utilities";
+import { IFs } from "memfs";
+import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
+import { FormattedFileCommand } from "../fileCommands.js";
+import { ArgumentRecord } from "../schemata/argumentRecordSchema.js";
+import { FlowSettings } from "../schemata/flowSettingsSchema.js";
+import { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
 export class SurfaceAgnosticCaseService {
 	protected _caseWritingService: CaseWritingService | null = null;
@@ -28,16 +28,15 @@ export class SurfaceAgnosticCaseService {
 		});
 
 		const fileHandle = await this._fs.promises.open(
-			join(this._runSettings.outputDirectoryPath, 'case.data'),
-			'w',
+			join(this._runSettings.outputDirectoryPath, "case.data"),
+			"w",
 		);
 
 		this._caseWritingService = new CaseWritingService(fileHandle);
 
 		await this._caseWritingService?.writeCase({
-			caseHashDigest:
-				this._runSettings.caseHashDigest.toString('base64url'),
-			codemodHashDigest: this._codemodHashDigest.toString('base64url'),
+			caseHashDigest: this._runSettings.caseHashDigest.toString("base64url"),
+			codemodHashDigest: this._codemodHashDigest.toString("base64url"),
 			createdAt: BigInt(Date.now()),
 			absoluteTargetPath: this._flowSettings.target,
 			argumentRecord: this._argumentRecord,
@@ -54,10 +53,7 @@ export class SurfaceAgnosticCaseService {
 		}
 
 		await this._caseWritingService.writeJob(
-			buildSurfaceAgnosticJob(
-				this._runSettings.outputDirectoryPath,
-				command,
-			),
+			buildSurfaceAgnosticJob(this._runSettings.outputDirectoryPath, command),
 		);
 	}
 

@@ -1,12 +1,12 @@
-import cn from 'classnames';
-import { CSSProperties } from 'react';
-import { Command } from 'vscode';
-import { vscode } from '../utilities/vscode';
-import s from './style.module.css';
+import cn from "classnames";
+import { CSSProperties } from "react";
+import { Command } from "vscode";
+import { vscode } from "../utilities/vscode";
+import s from "./style.module.css";
 
 const handleCommand = (value: Command) => {
 	vscode.postMessage({
-		kind: 'webview.command',
+		kind: "webview.command",
 		value,
 	});
 };
@@ -29,10 +29,8 @@ export const SectionHeader = (
 			<span
 				className={cn(
 					s.icon,
-					'codicon',
-					!props.collapsed
-						? 'codicon-chevron-down'
-						: 'codicon-chevron-right',
+					"codicon",
+					!props.collapsed ? "codicon-chevron-down" : "codicon-chevron-right",
 				)}
 			/>
 			<span className={s.title}>{props.title}</span>
@@ -41,11 +39,7 @@ export const SectionHeader = (
 					return (
 						<span
 							key={c.command}
-							className={cn(
-								s.icon,
-								'codicon',
-								`codicon-${c.icon}`,
-							)}
+							className={cn(s.icon, "codicon", `codicon-${c.icon}`)}
 							onClick={(e) => {
 								e.stopPropagation();
 								handleCommand(c);

@@ -1,15 +1,15 @@
-import type { ParameterDeclaration } from 'ts-morph';
+import type { ParameterDeclaration } from "ts-morph";
 import {
-	createWrappedNode,
-	SyntaxKind,
-	ts,
 	type ArrowFunction,
 	type Block,
 	type CallExpression,
 	type FunctionExpression,
 	type ImportSpecifier,
 	type SourceFile,
-} from 'ts-morph';
+	SyntaxKind,
+	createWrappedNode,
+	ts,
+} from "ts-morph";
 
 function addNamedImportDeclaration(
 	sourceFile: SourceFile,
@@ -49,11 +49,11 @@ function getImportDeclarationAlias(
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-	const httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
 	const graphqlCallerName = getImportDeclarationAlias(
 		sourceFile,
-		'msw',
-		'graphql',
+		"msw",
+		"graphql",
 	);
 
 	const identifiers =
@@ -77,19 +77,19 @@ function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
 		// This is what would be cool to get through inferring the type via
 		// typeChecker/langServer/diagnostics etc, for example
 		[
-			'all',
-			'get',
-			'post',
-			'put',
-			'patch',
-			'delete',
-			'head',
-			'options',
+			"all",
+			"get",
+			"post",
+			"put",
+			"patch",
+			"delete",
+			"head",
+			"options",
 		].includes(methodText);
 
 	const isGraphQLCall =
 		caller.getText() === graphqlCallerName &&
-		['query', 'mutation'].includes(methodText);
+		["query", "mutation"].includes(methodText);
 
 	return isHttpCall || isGraphQLCall;
 }
@@ -127,9 +127,9 @@ function getCallbackData(
 }
 
 const contentTypeToMethod: Record<string, string> = {
-	'application/json': 'json',
-	'application/xml': 'xml',
-	'text/plain': 'text',
+	"application/json": "json",
+	"application/xml": "xml",
+	"text/plain": "text",
 };
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
@@ -137,7 +137,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -181,8 +181,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 							.map((c) => c.getText()) ?? [];
 
 					// https://mswjs.io/docs/migrations/1.x-to-2.x/#resonce
-					if (resMethod === 'once') {
-						expression.addArgument('{ once: true }');
+					if (resMethod === "once") {
+						expression.addArgument("{ once: true }");
 					}
 
 					const intrinsicCtxCalls = callExpr
@@ -196,10 +196,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 						);
 
 					let httpResponseMethod: string | null = null;
-					let httpResponseBody:
-						| Record<string, unknown>
-						| string
-						| null = null;
+					let httpResponseBody: Record<string, unknown> | string | null = null;
 					let httpResponseCookieString: string | null = null;
 					let httpResponseStatus: string | null = null;
 					const httpResponseHeaders: Record<string, string> = {};
@@ -216,73 +213,57 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 							.at(1)
 							?.getText();
 
-						if (
-							!callType ||
-							!ctxCallBody ||
-							!ctxCallPropertyAccessor
-						) {
+						if (!callType || !ctxCallBody || !ctxCallPropertyAccessor) {
 							continue;
 						}
 
-						if (['json', 'xml', 'text'].includes(callType)) {
+						if (["json", "xml", "text"].includes(callType)) {
 							httpResponseMethod = callType;
 							httpResponseBody = ctxCallBody.getText();
-						} else if (callType === 'status') {
+						} else if (callType === "status") {
 							httpResponseStatus = ctxCallBody.getText();
-						} else if (callType === 'cookie') {
-							const [cookieName, cookieValue] =
-								ctxCallBody.getChildrenOfKind(
-									SyntaxKind.StringLiteral,
-								);
+						} else if (callType === "cookie") {
+							const [cookieName, cookieValue] = ctxCallBody.getChildrenOfKind(
+								SyntaxKind.StringLiteral,
+							);
 							if (!cookieName || !cookieValue) {
 								continue;
 							}
 
 							if (httpResponseCookieString === null) {
-								httpResponseCookieString = '';
+								httpResponseCookieString = "";
 							}
 
 							httpResponseCookieString += `${cookieName.getLiteralText()}=${encodeURIComponent(
 								cookieValue.getLiteralText(),
 							)};`;
-						} else if (callType === 'set') {
-							const [headerName, headerValue] =
-								ctxCallBody.getChildrenOfKind(
-									SyntaxKind.StringLiteral,
-								);
+						} else if (callType === "set") {
+							const [headerName, headerValue] = ctxCallBody.getChildrenOfKind(
+								SyntaxKind.StringLiteral,
+							);
 							if (!headerName || !headerValue) {
 								continue;
 							}
 
 							if (
-								headerName.getLiteralText().toLowerCase() ===
-								'content-type'
+								headerName.getLiteralText().toLowerCase() === "content-type"
 							) {
 								httpResponseMethod =
 									httpResponseMethod ??
 									contentTypeToMethod[
-										headerValue
-											.getLiteralText()
-											.toLowerCase()
+										headerValue.getLiteralText().toLowerCase()
 									] ??
 									null;
 							} else {
-								httpResponseHeaders[
-									headerName.getLiteralText()
-								] = headerValue.getLiteralText();
+								httpResponseHeaders[headerName.getLiteralText()] =
+									headerValue.getLiteralText();
 							}
-						} else if (callType === 'delay') {
+						} else if (callType === "delay") {
 							const delayTimeNode = ctxCallBody.getFirstChild();
 
-							addNamedImportDeclaration(
-								sourceFile,
-								'msw',
-								'delay',
-							);
+							addNamedImportDeclaration(sourceFile, "msw", "delay");
 
-							const posBeforeDelayed = callExpr
-								.getParent()
-								?.getChildIndex();
+							const posBeforeDelayed = callExpr.getParent()?.getChildIndex();
 
 							if (!delayTimeNode || !posBeforeDelayed) {
 								continue;
@@ -301,15 +282,14 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 								.getParent()
 								?.asKindOrThrow(SyntaxKind.CallExpression)
 								.removeArgument(call);
-						} else if (callType === 'data') {
+						} else if (callType === "data") {
 							httpResponseData = ctxCallBody.getText();
-						} else if (callType === 'errors') {
+						} else if (callType === "errors") {
 							httpResponseErrors = ctxCallBody.getText();
-						} else if (callType === 'extensions') {
+						} else if (callType === "extensions") {
 							httpResponseExtensions = ctxCallBody.getText();
-						} else if (callType === 'body') {
-							httpResponseBody =
-								httpResponseBody ?? ctxCallBody.getText();
+						} else if (callType === "body") {
+							httpResponseBody = httpResponseBody ?? ctxCallBody.getText();
 						}
 					}
 
@@ -324,10 +304,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					if (httpResponseCookieString) {
 						headers.push(
 							ts.factory.createPropertyAssignment(
-								ts.factory.createStringLiteral('Set-Cookie'),
-								ts.factory.createStringLiteral(
-									httpResponseCookieString,
-								),
+								ts.factory.createStringLiteral("Set-Cookie"),
+								ts.factory.createStringLiteral(httpResponseCookieString),
 							),
 						);
 					}
@@ -336,21 +314,16 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 						...(httpResponseStatus
 							? [
 									ts.factory.createPropertyAssignment(
-										ts.factory.createIdentifier('status'),
-										ts.factory.createNumericLiteral(
-											httpResponseStatus,
-										),
+										ts.factory.createIdentifier("status"),
+										ts.factory.createNumericLiteral(httpResponseStatus),
 									),
 							  ]
 							: []),
 						...(headers.length
 							? [
 									ts.factory.createPropertyAssignment(
-										ts.factory.createIdentifier('headers'),
-										ts.factory.createObjectLiteralExpression(
-											headers,
-											false,
-										),
+										ts.factory.createIdentifier("headers"),
+										ts.factory.createObjectLiteralExpression(headers, false),
 									),
 							  ]
 							: []),
@@ -359,19 +332,12 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					const responseCall = createWrappedNode(
 						ts.factory.createCallExpression(
 							ts.factory.createPropertyAccessExpression(
-								ts.factory.createIdentifier('HttpResponse'),
-								ts.factory.createIdentifier(
-									httpResponseMethod ?? 'json',
-								),
+								ts.factory.createIdentifier("HttpResponse"),
+								ts.factory.createIdentifier(httpResponseMethod ?? "json"),
 							),
 							undefined,
 							resOptions.length
-								? [
-										ts.factory.createObjectLiteralExpression(
-											resOptions,
-											false,
-										),
-								  ]
+								? [ts.factory.createObjectLiteralExpression(resOptions, false)]
 								: undefined,
 						),
 						{ sourceFile: sourceFile.compilerNode },
@@ -386,7 +352,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					);
 
 					callExpr.replaceWithText(result);
-					callExpr.insertArgument(0, httpResponseBody ?? 'null');
+					callExpr.insertArgument(0, httpResponseBody ?? "null");
 
 					if (
 						httpResponseData ||
@@ -394,25 +360,24 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 						httpResponseExtensions
 					) {
 						const tsMorphOptsNode = (
-							callExpr.getArguments().at(1) ??
-							callExpr.insertArgument(1, '{}')
+							callExpr.getArguments().at(1) ?? callExpr.insertArgument(1, "{}")
 						).asKindOrThrow(SyntaxKind.ObjectLiteralExpression);
 
 						if (httpResponseData) {
 							tsMorphOptsNode.addPropertyAssignment({
-								name: 'data',
+								name: "data",
 								initializer: httpResponseData,
 							});
 						}
 						if (httpResponseErrors) {
 							tsMorphOptsNode.addPropertyAssignment({
-								name: 'errors',
+								name: "errors",
 								initializer: httpResponseErrors,
 							});
 						}
 						if (httpResponseExtensions) {
 							tsMorphOptsNode.addPropertyAssignment({
-								name: 'extensions',
+								name: "extensions",
 								initializer: httpResponseExtensions,
 							});
 						}
@@ -422,7 +387,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 				});
 		});
 
-	addNamedImportDeclaration(sourceFile, 'msw', 'HttpResponse');
+	addNamedImportDeclaration(sourceFile, "msw", "HttpResponse");
 
 	return sourceFile.getFullText();
 }

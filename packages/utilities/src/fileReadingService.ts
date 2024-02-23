@@ -1,11 +1,11 @@
-import { type PathLike } from 'node:fs';
-import { open, type FileHandle } from 'node:fs/promises';
-import { type CircularBuffer } from './circularBuffer.js';
+import { type PathLike } from "node:fs";
+import { type FileHandle, open } from "node:fs/promises";
+import { type CircularBuffer } from "./circularBuffer.js";
 
 export class FileReadingService {
-	protected _bytesRead: number = 0;
-	protected _busy: boolean = false;
-	protected _pendingWork: boolean = false;
+	protected _bytesRead = 0;
+	protected _busy = false;
+	protected _pendingWork = false;
 	protected _fileHandle: FileHandle | null = null;
 
 	public constructor(
@@ -14,7 +14,7 @@ export class FileReadingService {
 	) {}
 
 	public async open() {
-		this._fileHandle = await open(this._pathLike, 'r');
+		this._fileHandle = await open(this._pathLike, "r");
 
 		this.onFileChanged();
 	}
@@ -22,7 +22,7 @@ export class FileReadingService {
 	public onFileChanged(): void {
 		if (this._fileHandle === null) {
 			throw new Error(
-				'The file has not been opened (or has been closed) but it has been changed by a writer.',
+				"The file has not been opened (or has been closed) but it has been changed by a writer.",
 			);
 		}
 
@@ -57,10 +57,7 @@ export class FileReadingService {
 					return;
 				}
 
-				return this._circularBuffer.write(
-					buffer,
-					fileReadResult.bytesRead,
-				);
+				return this._circularBuffer.write(buffer, fileReadResult.bytesRead);
 			})
 			.finally(() => {
 				this._busy = false;

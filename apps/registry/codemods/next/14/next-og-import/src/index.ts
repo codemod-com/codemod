@@ -26,9 +26,9 @@ SOFTWARE.
 Changes to the original file: add any typings in places where the compiler complained, added dirtyFlag
 */
 
-import type { API, FileInfo } from 'jscodeshift';
+import type { API, FileInfo } from "jscodeshift";
 
-const importToChange = 'ImageResponse';
+const importToChange = "ImageResponse";
 
 export default function transform(file: FileInfo, api: API) {
 	const j = api.jscodeshift;
@@ -39,7 +39,7 @@ export default function transform(file: FileInfo, api: API) {
 	file.source = j(file.source)
 		.find(j.ImportDeclaration, {
 			source: {
-				value: 'next/server',
+				value: "next/server",
 			},
 		})
 		.forEach((path) => {
@@ -62,7 +62,7 @@ export default function transform(file: FileInfo, api: API) {
 				// path.node.specifiers = remainingSpecifiers
 				const newImportStatement = j.importDeclaration(
 					importNamesToChange,
-					j.stringLiteral('next/og'),
+					j.stringLiteral("next/og"),
 				);
 				path.insertBefore(newImportStatement);
 				dirtyFlag = true;
@@ -76,7 +76,7 @@ export default function transform(file: FileInfo, api: API) {
 
 				const nextServerRemainImportsStatement = j.importDeclaration(
 					remainingSpecifiers,
-					j.stringLiteral('next/server'),
+					j.stringLiteral("next/server"),
 				);
 				path.insertBefore(nextServerRemainImportsStatement);
 				dirtyFlag = true;

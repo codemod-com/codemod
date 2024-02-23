@@ -1,18 +1,18 @@
-import { randomBytes } from 'crypto';
-import { Uri, Webview } from 'vscode';
-import { getUri } from '../../utilities';
+import { randomBytes } from "crypto";
+import { Uri, Webview } from "vscode";
+import { getUri } from "../../utilities";
 
 const monacoWorkers: Record<string, string> = {
-	editorWorkerService: 'editor.worker.bundle.js',
-	css: 'css.worker.bundle.js',
-	html: 'html.worker.bundle.js',
-	json: 'json.worker.bundle.js',
-	typescript: 'ts.worker.bundle.js',
-	javascript: 'ts.worker.bundle.js',
-	less: 'css.worker.bundle.js',
-	scss: 'css.worker.bundle.js',
-	handlebars: 'html.worker.bundle.js',
-	razor: 'html.worker.bundle.js',
+	editorWorkerService: "editor.worker.bundle.js",
+	css: "css.worker.bundle.js",
+	html: "html.worker.bundle.js",
+	json: "json.worker.bundle.js",
+	typescript: "ts.worker.bundle.js",
+	javascript: "ts.worker.bundle.js",
+	less: "css.worker.bundle.js",
+	scss: "css.worker.bundle.js",
+	handlebars: "html.worker.bundle.js",
+	razor: "html.worker.bundle.js",
 };
 export class WebviewResolver {
 	constructor(private readonly __extensionPath: Uri) {}
@@ -21,8 +21,8 @@ export class WebviewResolver {
 		return {
 			enableScripts: true,
 			localResourceRoots: [
-				Uri.joinPath(this.__extensionPath, 'webview/build'),
-				Uri.joinPath(this.__extensionPath, 'resources'),
+				Uri.joinPath(this.__extensionPath, "webview/build"),
+				Uri.joinPath(this.__extensionPath, "resources"),
 			],
 			retainContextWhenHidden: true,
 		};
@@ -50,24 +50,24 @@ export class WebviewResolver {
 		initialStateKey: string,
 	) {
 		const stylesUri = getUri(webview, this.__extensionPath, [
-			'webview',
-			'build',
+			"webview",
+			"build",
 			webviewName,
-			'assets',
-			`index.css`,
+			"assets",
+			"index.css",
 		]);
 		const scriptUri = getUri(webview, this.__extensionPath, [
-			'webview',
-			'build',
+			"webview",
+			"build",
 			webviewName,
-			'assets',
+			"assets",
 			`${webviewName}.js`,
 		]);
 
-		const nonce = randomBytes(16).toString('hex');
+		const nonce = randomBytes(16).toString("hex");
 		const codiconsUri = getUri(webview, this.__extensionPath, [
-			'resources',
-			'codicon.css',
+			"resources",
+			"codicon.css",
 		]);
 
 		const scriptSources = [`'nonce-${nonce}'`];
@@ -78,19 +78,19 @@ export class WebviewResolver {
 
 		const imageSources = [
 			webview.cspSource,
-			`'self'`,
-			`data:`,
-			`vscode-resource:`,
-			`https:`,
+			"'self'",
+			"data:",
+			"vscode-resource:",
+			"https:",
 		];
 
 		const getWorkerUri = (name: string) =>
 			getUri(webview, this.__extensionPath, [
-				'webview',
-				'build',
+				"webview",
+				"build",
 				webviewName,
-				'monacoeditorwork',
-				monacoWorkers[name] ?? '',
+				"monacoeditorwork",
+				monacoWorkers[name] ?? "",
 			]);
 
 		return /*html*/ `
@@ -102,11 +102,11 @@ export class WebviewResolver {
 					<meta name="theme-color" content="#000000">
 					<meta http-equiv="Content-Security-Policy" content="
 					default-src 'none';
-					script-src ${scriptSources.join(' ')}; 
-					font-src ${fontSources.join(' ')};
-					style-src ${styleSources.join(' ')};
+					script-src ${scriptSources.join(" ")}; 
+					font-src ${fontSources.join(" ")};
+					style-src ${styleSources.join(" ")};
 					worker-src 'self';
-					img-src ${imageSources.join(' ')};
+					img-src ${imageSources.join(" ")};
 					">
 					<link href="${codiconsUri}" type="text/css" rel="stylesheet" />
 					<link rel="stylesheet" type="text/css" href="${stylesUri}">
@@ -133,12 +133,12 @@ export class WebviewResolver {
 							}
 						};
 					})({
-							"editorWorkerService": "${getWorkerUri('editorWorkerService')}",
-							"css": "${getWorkerUri('css')}",
-							"html": "${getWorkerUri('html')}",
-							"json": "${getWorkerUri('json')}",
-							"typescript": "${getWorkerUri('typescript')}",
-							"javascript": "${getWorkerUri('javascript')}"
+							"editorWorkerService": "${getWorkerUri("editorWorkerService")}",
+							"css": "${getWorkerUri("css")}",
+							"html": "${getWorkerUri("html")}",
+							"json": "${getWorkerUri("json")}",
+							"typescript": "${getWorkerUri("typescript")}",
+							"javascript": "${getWorkerUri("javascript")}"
 					});
 			</script>
 				</body>

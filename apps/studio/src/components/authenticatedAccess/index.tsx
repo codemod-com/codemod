@@ -1,5 +1,5 @@
-import { useAuth } from '@clerk/nextjs';
-import { type ReactNode } from 'react';
+import { useAuth } from "@clerk/nextjs";
+import { type ReactNode } from "react";
 
 type Props = {
 	isAuthenticated?: boolean;
@@ -7,9 +7,9 @@ type Props = {
 };
 
 const tooltipProps = {
-	'data-tip-disable': false,
-	'data-tooltip-content': 'Sign in to use ModGPT',
-	'data-tooltip-id': 'button-tooltip',
+	"data-tip-disable": false,
+	"data-tooltip-content": "Sign in to use ModGPT",
+	"data-tooltip-id": "button-tooltip",
 };
 
 const AuthenticatedAccess = ({ children }: Props) => {

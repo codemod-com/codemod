@@ -1,11 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from 'react-tooltip';
-import Checkbox from '~/components/CheckBox';
-import Collapsable from '~/components/Collapsable';
-import Panel from '~/components/Panel';
-import Text from '~/components/Text';
-import { selectCFS, toggleSelectedNodeId } from '~/store/slices/CFS';
-import { selectSnippets } from '~/store/slices/snippets';
+import { useDispatch, useSelector } from "react-redux";
+import { Tooltip } from "react-tooltip";
+import Checkbox from "~/components/CheckBox";
+import Collapsable from "~/components/Collapsable";
+import Panel from "~/components/Panel";
+import Text from "~/components/Text";
+import { selectCFS, toggleSelectedNodeId } from "~/store/slices/CFS";
+import { selectSnippets } from "~/store/slices/snippets";
 
 const ParentNodesSelector = () => {
 	const { selectedNodeIds, parentNodes } = useSelector(selectCFS);
@@ -14,7 +14,7 @@ const ParentNodesSelector = () => {
 	const dispatch = useDispatch();
 
 	const filteredParentNodes = parentNodes.filter(
-		({ label }) => !['File', 'Program'].includes(label),
+		({ label }) => !["File", "Program"].includes(label),
 	);
 
 	if (!filteredParentNodes.length) {
@@ -64,10 +64,7 @@ const ParentNodesSelector = () => {
 									data-tooltip-id="parent-source-code-tooltip"
 								>
 									<Text className=" line-clamp-1">
-										{inputSnippet.slice(
-											node.start,
-											node.end,
-										)}
+										{inputSnippet.slice(node.start, node.end)}
 									</Text>
 								</div>
 							</div>

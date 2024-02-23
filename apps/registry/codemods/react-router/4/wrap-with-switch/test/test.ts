@@ -1,11 +1,11 @@
-import assert from 'node:assert/strict';
-import { buildApi } from '@codemod-com/utilities';
-import type { FileInfo } from 'jscodeshift';
-import { describe, it } from 'vitest';
-import transform from '../src/index.js';
+import assert from "node:assert/strict";
+import { buildApi } from "@codemod-com/utilities";
+import type { FileInfo } from "jscodeshift";
+import { describe, it } from "vitest";
+import transform from "../src/index.js";
 
-describe('react-router v4 wrap-with-imports', function () {
-	it('should wrap Route components with Switch', async function () {
+describe("react-router v4 wrap-with-imports", () => {
+	it("should wrap Route components with Switch", async () => {
 		const input = `
 		import { Route, Router } from 'react-router-dom';
 
@@ -35,17 +35,17 @@ describe('react-router v4 wrap-with-imports', function () {
 		`;
 
 		const fileInfo: FileInfo = {
-			path: 'index.js',
+			path: "index.js",
 			source: input,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi('js'), {
-			quote: 'single',
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
 		});
 
 		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ''),
-			output.replace(/\W/gm, ''),
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
 		);
 	});
 });

@@ -28,15 +28,15 @@ Changes to the original file: added options, remove hasDefault
 */
 
 import type {
-	ArrayExpression,
 	ASTPath,
+	ArrayExpression,
 	CallExpression,
 	Identifier,
 	JSCodeshift,
 	Literal,
 	MemberExpression,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
 class Handler {
 	private j: JSCodeshift;
@@ -56,7 +56,7 @@ class Handler {
 			return false;
 		}
 
-		return node.arguments[0]?.type === 'ArrayExpression';
+		return node.arguments[0]?.type === "ArrayExpression";
 	}
 
 	transform() {
@@ -68,11 +68,7 @@ class Handler {
 		const value = this.path.node.arguments[1] as any;
 
 		this.path.replace(
-			this.j.assignmentExpression(
-				'=',
-				this.generate(arrayArguments),
-				value,
-			),
+			this.j.assignmentExpression("=", this.generate(arrayArguments), value),
 		);
 	}
 
@@ -84,19 +80,19 @@ class Handler {
 			const memberExpression = this.path.node.callee as MemberExpression;
 
 			return memberExpression.object as Identifier;
-		} else {
-			const arg = arrayArguments.elements[index];
-
-			return this.j.memberExpression(
-				this.generate(arrayArguments, index - 1),
-				this.normalizeProperty(arg),
-				this.isComputed(arg),
-			);
 		}
+
+		const arg = arrayArguments.elements[index];
+
+		return this.j.memberExpression(
+			this.generate(arrayArguments, index - 1),
+			this.normalizeProperty(arg),
+			this.isComputed(arg),
+		);
 	}
 
 	private normalizeProperty(arg: any) {
-		if (arg?.type === 'Literal') {
+		if (arg?.type === "Literal") {
 			return this.j.identifier(`${(arg as Literal).value}`);
 		}
 
@@ -104,7 +100,7 @@ class Handler {
 	}
 
 	private isComputed(arg: any) {
-		return arg?.type !== 'Literal';
+		return arg?.type !== "Literal";
 	}
 }
 
@@ -113,10 +109,10 @@ const transform: Transform = (file, api, options) => {
 	const root = j(file.source);
 	const collections = root.find(j.CallExpression, {
 		callee: {
-			type: 'MemberExpression',
+			type: "MemberExpression",
 			property: {
-				type: 'Identifier',
-				name: 'setIn',
+				type: "Identifier",
+				name: "setIn",
 			},
 		},
 	});

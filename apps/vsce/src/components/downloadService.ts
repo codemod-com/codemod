@@ -1,8 +1,8 @@
-import { Mode } from 'node:fs';
-import { isAxiosError } from 'axios';
-import { FileSystem, Uri } from 'vscode';
-import { DEFAULT_RETRY_COUNT, retryingClient } from '../axios';
-import { FileSystemUtilities } from './fileSystemUtilities';
+import { Mode } from "node:fs";
+import { AxiosResponse, isAxiosError } from "axios";
+import { FileSystem, Uri } from "vscode";
+import { DEFAULT_RETRY_COUNT, retryingClient } from "../axios";
+import { FileSystemUtilities } from "./fileSystemUtilities";
 
 export class RequestError extends Error {}
 export class ForbiddenRequestError extends Error {}
@@ -27,12 +27,12 @@ export class DownloadService {
 		const localModificationTime =
 			await this.#fileSystemUtilities.getModificationTime(uri);
 
-		let response;
+		let response: AxiosResponse | undefined;
 
 		try {
 			response = await retryingClient.head(url, {
 				timeout: 15000,
-				'axios-retry': {
+				"axios-retry": {
 					retries: DEFAULT_RETRY_COUNT,
 				},
 			});
@@ -56,7 +56,7 @@ export class DownloadService {
 			throw new RequestError(`Could not make a request to ${url}`);
 		}
 
-		const lastModified = response?.headers['last-modified'] ?? null;
+		const lastModified = response?.headers["last-modified"] ?? null;
 		const remoteModificationTime = lastModified
 			? Date.parse(lastModified)
 			: localModificationTime;
@@ -76,8 +76,8 @@ export class DownloadService {
 		chmod: Mode | null,
 	): Promise<void> {
 		const response = await retryingClient.get(url, {
-			responseType: 'arraybuffer',
-			'axios-retry': {
+			responseType: "arraybuffer",
+			"axios-retry": {
 				retries: DEFAULT_RETRY_COUNT,
 			},
 		});

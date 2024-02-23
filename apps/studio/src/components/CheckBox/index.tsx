@@ -1,5 +1,5 @@
-import { type ChangeEvent } from 'react';
-import Text from '../Text';
+import { type ChangeEvent } from "react";
+import Text from "../Text";
 
 type CheckboxProps = {
 	checked?: boolean;

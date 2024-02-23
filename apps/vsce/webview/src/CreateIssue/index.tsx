@@ -1,26 +1,26 @@
-import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
-import { EditorContent, useEditor } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import CodeBlockLowlight from "@tiptap/extension-code-block-lowlight";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import {
 	VSCodeButton,
 	VSCodeProgressRing,
 	VSCodeTextField,
-} from '@vscode/webview-ui-toolkit/react';
-import { common, createLowlight } from 'lowlight';
-import { useEffect, useState } from 'react';
-import { vscode } from '../shared/utilities/vscode';
-import styles from './style.module.css';
-import './tiptap.css';
+} from "@vscode/webview-ui-toolkit/react";
+import { common, createLowlight } from "lowlight";
+import { useEffect, useState } from "react";
+import { vscode } from "../shared/utilities/vscode";
+import styles from "./style.module.css";
+import "./tiptap.css";
 
 const lowlight = createLowlight(common);
 const unsanitizeCodeBlock = (codeBlock: string) =>
-	codeBlock.replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+	codeBlock.replace(/&lt;/g, "<").replace(/&gt;/g, ">");
 
 const convertHTMLCodeBlockToMarkdownString = (htmlSnippet: string) =>
 	htmlSnippet.replace(
 		/<pre><code(?:\s+class="language-(.*?)")?>(.*?)<\/code><\/pre>/gs,
 		(_match, language, content) =>
-			`\n\n\`\`\`${language ?? 'typescript'}\n${unsanitizeCodeBlock(
+			`\n\n\`\`\`${language ?? "typescript"}\n${unsanitizeCodeBlock(
 				content,
 			)}\n\`\`\`\n\n`,
 	);
@@ -32,11 +32,11 @@ type Props = Readonly<{
 }>;
 
 const CreateIssue = (props: Props) => {
-	const [title, setTitle] = useState('');
+	const [title, setTitle] = useState("");
 
 	const onChangeTitle = (e: Event | React.FormEvent<HTMLElement>) => {
 		const value =
-			'target' in e && e.target !== null && 'value' in e.target
+			"target" in e && e.target !== null && "value" in e.target
 				? String(e.target.value)
 				: null;
 
@@ -56,7 +56,7 @@ const CreateIssue = (props: Props) => {
 		const htmlSnippet = editor.getHTML();
 
 		vscode.postMessage({
-			kind: 'webview.sourceControl.createIssue',
+			kind: "webview.sourceControl.createIssue",
 			data: {
 				title,
 				body: convertHTMLCodeBlockToMarkdownString(htmlSnippet),
@@ -73,7 +73,7 @@ const CreateIssue = (props: Props) => {
 			// in our editor, we provide 1 syntax highlighting for all languages;
 			// once transmitted to Github, the syntax highlighting will be handled there, and therefore
 			// different syntax highlighting will be applied to different languages there;
-			defaultLanguage: 'typescript',
+			defaultLanguage: "typescript",
 		}),
 	];
 
@@ -116,20 +116,18 @@ const CreateIssue = (props: Props) => {
 						disabled={
 							props.loading ||
 							title.length <= 3 ||
-							(editor?.getText() ?? '').length <= 5
+							(editor?.getText() ?? "").length <= 5
 						}
 						type="submit"
 						className={styles.actionButton}
 					>
 						{props.loading ? (
 							<div className={styles.loadingContainer}>
-								<VSCodeProgressRing
-									className={styles.progressRing}
-								/>
+								<VSCodeProgressRing className={styles.progressRing} />
 								<span>Creating...</span>
 							</div>
 						) : (
-							'Create Issue'
+							"Create Issue"
 						)}
 					</VSCodeButton>
 				</div>

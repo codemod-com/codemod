@@ -1,4 +1,4 @@
-import type { editor } from 'monaco-editor';
+import type { editor } from "monaco-editor";
 
 export type Diff = { added: number; removed: number };
 
