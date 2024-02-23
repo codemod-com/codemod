@@ -5,12 +5,6 @@ const parseCode = (code: string) => parse(code, tsxParserOptions);
 
 type FileParseResult = ReturnType<typeof parseCode>;
 
-function isFileParseResult(
-	value: FileParseResult | ParseError | null,
-): value is FileParseResult {
-	return value !== null && "type" in value;
-}
-
 const isParseError = (err: unknown): err is ParseError =>
 	typeof err === "object" &&
 	err !== null &&
@@ -31,5 +25,5 @@ const parseSnippet = (snippet: string) => {
 	}
 };
 
-export { parseCode, isParseError, parseSnippet, isFileParseResult };
+export { parseCode, isParseError, parseSnippet };
 export type { FileParseResult, ParseError };
