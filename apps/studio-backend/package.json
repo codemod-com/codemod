@@ -9,7 +9,7 @@
 		"lint:eslint:write": "eslint ./src --fix --ext ts",
 		"lint:prettier:write": "prettier --write ."
 	},
-	"author": "caartaa inc.",
+	"author": "Codemod inc.",
 	"private": true,
 	"devDependencies": {
 		"@types/node": "20.10.5",
