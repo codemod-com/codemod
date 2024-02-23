@@ -8,33 +8,20 @@ This codemod will convert the usage of `useContext` to the new hook format, intr
 
 ### Before:
 
-```jsx
-import PropTypes from 'prop-types';
-import React from 'react';
+```tsx
+import { useContext } from "react";
+import ThemeContext from "./ThemeContext";
 
-export function MyComponent(props) {
-	return <span />;
-}
-
-MyComponent.propTypes = {
-	bar: PropTypes.string.isRequired,
-	foo: PropTypes.number,
-};
+const theme = useContext(ThemeContext);
 ```
 
 ### After:
 
 ```tsx
-import React from 'react';
+import { use } from "react";
+import ThemeContext from "./ThemeContext";
 
-interface MyComponentProps {
-	bar: string;
-	foo?: number;
-}
-
-export function MyComponent(props: MyComponentProps) {
-	return <span />;
-}
+const theme = use(ThemeContext);
 ```
 
 ## Applicability Criteria
@@ -65,3 +52,4 @@ jscodeshift
 
 ### Links for more info
 
+- https://react.dev/reference/react/use#reading-context-with-use
