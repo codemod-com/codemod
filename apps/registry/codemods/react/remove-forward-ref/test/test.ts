@@ -178,7 +178,7 @@ describe('react/remove-forward-ref', function () {
 		);
 	});
 
-	it.only('Typescript: reuses forwardRef typeArguments', function () {
+	it('Typescript: reuses forwardRef typeArguments', function () {
 		const INPUT = `
 			import { forwardRef } from 'react';
 			type Props = { a: 1 };
