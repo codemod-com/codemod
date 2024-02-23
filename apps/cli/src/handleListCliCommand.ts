@@ -1,5 +1,5 @@
 import * as fs from "fs";
-import { mkdir, readFile } from "node:fs/promises";
+import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
@@ -18,10 +18,8 @@ const configJsonSchema = v.object({
 	owner: v.optional(v.string()),
 });
 
-export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
+export const getConfigFiles = async () => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
-
-	await mkdir(configurationDirectoryPath, { recursive: true });
 
 	const configFiles = await glob("**/config.json", {
 		absolute: true,
@@ -30,9 +28,14 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 		onlyFiles: true,
 	});
 
-	const codemodObjects = await Promise.allSettled(
+	const codemodObjects = await Promise.all(
 		configFiles.map(async (cfg) => {
-			const configJson = await readFile(cfg, "utf8");
+			let configJson: string | null = null;
+			try {
+				configJson = await readFile(cfg, "utf8");
+			} catch (e) {
+				return null;
+			}
 
 			const parsedConfig = v.safeParse(
 				configJsonSchema,
@@ -43,8 +46,28 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 				return null;
 			}
 
-			const { name, engine, owner } = parsedConfig.output;
+			return parsedConfig.output;
+		}),
+	);
 
+	return codemodObjects.filter(isNeitherNullNorUndefined);
+};
+
+export const handleListNamesCommand = async (
+	printer: PrinterBlueprint,
+	short: boolean,
+) => {
+	const configObjects = await getConfigFiles();
+
+	// required for vsce
+	if (short) {
+		const names = configObjects.map(({ name }) => name);
+		printer.printOperationMessage({ kind: "names", names });
+		return;
+	}
+
+	const prettified = configObjects
+		.map(({ name, engine, owner }) => {
 			if (owner?.toLocaleLowerCase() === "codemod.com") {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
@@ -58,19 +81,12 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 				engine,
 				owner: owner ?? "Community",
 			};
-		}),
-	);
-
-	const onlyValid = codemodObjects
-		.map((x) => (x.status === "fulfilled" ? x.value : null))
-		.filter(isNeitherNullNorUndefined)
+		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
-
-	const parsedObjects = v.parse(v.array(configJsonSchema), onlyValid);
 
 	printer.printConsoleMessage(
 		"info",
-		columnify(parsedObjects, {
+		columnify(prettified, {
 			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
 		}),
 	);
@@ -83,6 +99,7 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 
 export const handleListNamesAfterSyncing = async (
 	disableCache: boolean,
+	short: boolean,
 	printer: Printer,
 	fileDownloadService: FileDownloadService,
 	tarService: TarService,
@@ -93,5 +110,6 @@ export const handleListNamesAfterSyncing = async (
 		fileDownloadService,
 		tarService,
 	);
-	await handleListNamesCommand(printer);
+
+	await handleListNamesCommand(printer, short);
 };

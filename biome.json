@@ -10,7 +10,8 @@
 			"node_modules",
 			".eslint*",
 			".next",
-			".vscode"
+			".vscode",
+			"build-ncc"
 		],
 		"rules": {
 			"suspicious": {

@@ -36,6 +36,8 @@ import {
 // the build script contains the version
 declare const __CODEMODCOM_CLI_VERSION__: string;
 
+const WAIT_INPUT_TIMEOUT = 300;
+
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
 
@@ -60,6 +62,13 @@ export const executeMainThread = async () => {
 
 	if (!process.stdin.isTTY) {
 		await new Promise((resolve) => {
+			setTimeout(() => {
+				if (userInput.trim() === "") {
+					// skip if no input in 1000 ms
+					resolve(null);
+				}
+			}, WAIT_INPUT_TIMEOUT);
+
 			interfaze.on("close", () => {
 				resolve(null);
 			});
@@ -183,6 +192,7 @@ export const executeMainThread = async () => {
 		try {
 			await handleListNamesAfterSyncing(
 				argv.noCache,
+				argv.short,
 				printer,
 				fileDownloadService,
 				tarService,

@@ -53,6 +53,11 @@ export type StatusUpdateMessage = Readonly<{
 	message: string;
 }>;
 
+export type NamesMessage = Readonly<{
+	kind: "names";
+	names: ReadonlyArray<string>;
+}>;
+
 export type OperationMessage =
 	| RewriteMessage
 	| FinishMessage
@@ -63,4 +68,5 @@ export type OperationMessage =
 	| CopyMessage
 	| MetadataPathMessage
 	| ErrorMessage
-	| StatusUpdateMessage;
+	| StatusUpdateMessage
+	| NamesMessage;
