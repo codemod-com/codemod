@@ -123,7 +123,7 @@ describe("Remove memoization hooks", () => {
 		);
 	});
 
-	it.only("should remove React.useMemo, React.useCallback, React.memo", () => {
+	it("should remove React.useMemo, React.useCallback, React.memo", () => {
 		const input = `
 		import React from 'react';
 
