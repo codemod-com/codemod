@@ -10,12 +10,12 @@
 		"HSL"
 	],
 	"colorize.include": [
-		
 		"**/*.css",
 		"**/*.scss",
 		"**/*.sass",
 		"**/*.less",
 		"**/*.styl",
 		"**/*.json",
-	]
+	],
+	"editor.defaultFormatter": "biomejs.biome"
 }

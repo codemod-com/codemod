@@ -54,7 +54,7 @@ export type StatusUpdateMessage = Readonly<{
 }>;
 
 export type NamesMessage = Readonly<{
-	kind: 'names';
+	kind: "names";
 	names: ReadonlyArray<string>;
 }>;
 
