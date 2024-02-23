@@ -1,14 +1,11 @@
+import { isFile } from "@babel/types";
 import { useMemo } from "react";
-import {
-	type FileParseResult,
-	type ParseError,
-	isParsedResultFile,
-} from "../utils/babelParser";
+import { type FileParseResult, type ParseError } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 
 function useTreeNode(astOutput: FileParseResult | ParseError | null) {
 	const res = useMemo(() => {
-		if (!isParsedResultFile(astOutput)) {
+		if (!isFile(astOutput)) {
 			return null;
 		}
 		return mapBabelASTToRenderableTree(astOutput);

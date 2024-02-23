@@ -1,16 +1,9 @@
 import { type ParseError, parse } from "@babel/parser";
-import type * as BabelTypes from "@babel/types";
 import tsxParserOptions from "./parserOptions";
 
 const parseCode = (code: string) => parse(code, tsxParserOptions);
 
 type FileParseResult = ReturnType<typeof parseCode>;
-
-function isFileParseResult(
-	value: FileParseResult | ParseError | null,
-): value is FileParseResult {
-	return value !== null && "type" in value;
-}
 
 const isParseError = (err: unknown): err is ParseError =>
 	typeof err === "object" &&
@@ -32,15 +25,5 @@ const parseSnippet = (snippet: string) => {
 	}
 };
 
-const isParsedResultFile = (
-	val: null | ParseError | BabelTypes.File,
-): val is BabelTypes.File => val !== null && "type" in val && "program" in val;
-
-export {
-	parseCode,
-	isParseError,
-	parseSnippet,
-	isParsedResultFile,
-	isFileParseResult,
-};
+export { parseCode, isParseError, parseSnippet };
 export type { FileParseResult, ParseError };

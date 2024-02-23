@@ -1,9 +1,10 @@
 /* eslint-disable no-param-reassign */
+import { isFile } from "@babel/types";
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { INITIAL_STATE } from "~/store/getInitialState";
 import { type TreeNode } from "../../types/tree";
-import { isParsedResultFile, parseSnippet } from "../../utils/babelParser";
+import { parseSnippet } from "../../utils/babelParser";
 import mapBabelASTToRenderableTree from "../../utils/mappers";
 import { type RangeCommand, buildRanges } from "../../utils/tree";
 import type { RootState } from "../index";
@@ -22,7 +23,7 @@ type ModState = Readonly<{
 const getInitialState = (): ModState => {
 	const parsed = parseSnippet(INITIAL_STATE.codemodSource);
 
-	const parsedContent = isParsedResultFile(parsed)
+	const parsedContent = isFile(parsed)
 		? mapBabelASTToRenderableTree(parsed)
 		: null;
 
@@ -48,7 +49,7 @@ const modSlice = createSlice({
 
 			const parsed = parseSnippet(action.payload);
 
-			state.parsedContent = isParsedResultFile(parsed)
+			state.parsedContent = isFile(parsed)
 				? mapBabelASTToRenderableTree(parsed)
 				: null;
 		},

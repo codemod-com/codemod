@@ -1,6 +1,7 @@
 /* eslint-disable no-nested-ternary */
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
+import { isFile } from "@babel/types";
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
@@ -8,7 +9,7 @@ import { INITIAL_STATE } from "~/store/getInitialState";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
-import { isParsedResultFile, parseSnippet } from "../../utils/babelParser";
+import { parseSnippet } from "../../utils/babelParser";
 import type { RootState } from "../index";
 import { selectCodemodOutput } from "./codemodOutput";
 
@@ -40,11 +41,11 @@ const getInitialState = (): SnippetState => {
 	// before input
 	const beforeInputParsed = parseSnippet(beforeSnippet);
 
-	const beforeInputRootNode = isParsedResultFile(beforeInputParsed)
+	const beforeInputRootNode = isFile(beforeInputParsed)
 		? mapBabelASTToRenderableTree(beforeInputParsed)
 		: null;
 
-	const beforeInputTokens = isParsedResultFile(beforeInputParsed)
+	const beforeInputTokens = isFile(beforeInputParsed)
 		? Array.isArray(beforeInputParsed.tokens)
 			? (beforeInputParsed.tokens as any[]).map(({ start, end, value }) => ({
 					start,
@@ -57,11 +58,11 @@ const getInitialState = (): SnippetState => {
 	// after input
 	const afterInputParsed = parseSnippet(afterSnippet);
 
-	const afterInputRootNode = isParsedResultFile(afterInputParsed)
+	const afterInputRootNode = isFile(afterInputParsed)
 		? mapBabelASTToRenderableTree(afterInputParsed)
 		: null;
 
-	const afterInputTokens = isParsedResultFile(afterInputParsed)
+	const afterInputTokens = isFile(afterInputParsed)
 		? Array.isArray(afterInputParsed.tokens)
 			? (afterInputParsed.tokens as any[]).map(({ start, end, value }) => ({
 					start,
@@ -98,7 +99,7 @@ const snippetsSlice = createSlice({
 
 			state.inputSnippet = action.payload;
 			// state.beforeInputRanges = [];
-			state.beforeInputRootNode = isParsedResultFile(beforeInputParsed)
+			state.beforeInputRootNode = isFile(beforeInputParsed)
 				? mapBabelASTToRenderableTree(beforeInputParsed)
 				: null;
 		},
@@ -107,7 +108,7 @@ const snippetsSlice = createSlice({
 
 			state.outputSnippet = action.payload;
 			// state.afterInputRanges = [];
-			state.afterInputRootNode = isParsedResultFile(afterInputParsed)
+			state.afterInputRootNode = isFile(afterInputParsed)
 				? mapBabelASTToRenderableTree(afterInputParsed)
 				: null;
 		},

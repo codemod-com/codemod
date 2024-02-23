@@ -1,9 +1,10 @@
 /* eslint-disable import/group-exports */
 /* eslint-disable no-param-reassign */
+import { isFile } from "@babel/types";
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import type { RootState } from "~/store";
-import { isParsedResultFile, parseSnippet } from "~/utils/babelParser";
+import { parseSnippet } from "~/utils/babelParser";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
 import type { TreeNode } from "../../types/tree";
@@ -29,7 +30,7 @@ export const codemodOutputSlice = createSlice({
 
 			const parsed = parseSnippet(action.payload);
 
-			state.rootNode = isParsedResultFile(parsed)
+			state.rootNode = isFile(parsed)
 				? mapBabelASTToRenderableTree(parsed)
 				: null;
 		},
