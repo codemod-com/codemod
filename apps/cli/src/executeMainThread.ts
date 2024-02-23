@@ -9,9 +9,9 @@ import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { buildArgumentRecord } from "./buildArgumentRecord.js";
 import {
-	buildOptions,
-	buildUseCacheOption,
-	buildUseJsonOption,
+  buildOptions,
+  buildUseCacheOption,
+  buildUseJsonOption,
 } from "./buildOptions.js";
 import { APP_INSIGHTS_INSTRUMENTATION_STRING } from "./constants.js";
 import { CodemodDownloader } from "./downloadCodemod.js";
@@ -29,377 +29,387 @@ import { parseFlowSettings } from "./schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { TarService } from "./services/tarService.js";
 import {
-	AppInsightsTelemetryService,
-	NoTelemetryService,
+  AppInsightsTelemetryService,
+  NoTelemetryService,
 } from "./telemetryService.js";
 
 // the build script contains the version
 declare const __CODEMODCOM_CLI_VERSION__: string;
 
+const WAIT_INPUT_TIMEOUT = 1000;
+
 export const executeMainThread = async () => {
-	const slicedArgv = hideBin(process.argv);
+  const slicedArgv = hideBin(process.argv);
 
-	const interfaze = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout,
-	});
+  const interfaze = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  });
 
-	const lineHandler = (line: string): void => {
-		if (line === "shutdown") {
-			interfaze.off("line", lineHandler);
-			interfaze.close();
-			process.exit(0);
-		}
+  const lineHandler = (line: string): void => {
+    if (line === "shutdown") {
+      interfaze.off("line", lineHandler);
+      interfaze.close();
+      process.exit(0);
+    }
 
-		userInput += `${line}\n`;
-	};
+    userInput += `${line}\n`;
+  };
 
-	interfaze.on("line", lineHandler);
+  interfaze.on("line", lineHandler);
 
-	let userInput = "";
+  let userInput = "";
 
-	if (!process.stdin.isTTY) {
-		await new Promise((resolve) => {
-			interfaze.on("close", () => {
-				resolve(null);
-			});
-		});
-	}
+  if (!process.stdin.isTTY) {
+    await new Promise((resolve) => {
+      setTimeout(() => {
+        if (userInput.trim() === "") {
+          // skip if no input in 1000 ms
+          resolve(null);
+        }
+      }, WAIT_INPUT_TIMEOUT);
 
-	process.stdin.unref();
+      interfaze.on("close", () => {
+        resolve(null);
+      });
+    });
+  }
 
-	const argvObject = yargs(slicedArgv)
-		.scriptName("codemod")
-		.command("*", "runs a codemod or recipe", (y) => buildOptions(y))
-		.command(
-			"runOnPreCommit [files...]",
-			"run pre-commit codemods against staged files passed positionally",
-			(y) => buildUseJsonOption(buildUseCacheOption(y)),
-		)
-		.command(
-			"list",
-			"lists all the codemods & recipes in the public registry",
-			(y) => buildUseJsonOption(buildUseCacheOption(y)),
-		)
-		.command("syncRegistry", "syncs all the codemods from the registry", (y) =>
-			buildUseJsonOption(y),
-		)
-		.command("sync [name]", "synchronize a codemod", (y) =>
-			buildUseJsonOption(
-				y.positional("name", {
-					type: "string",
-					description: "The name of the codemod",
-				}),
-			),
-		)
-		.command(
-			"learn",
-			"exports the current `git diff` in a file to before/after panels in the Codemod Studio",
-			(y) =>
-				buildUseJsonOption(y).option("target", {
-					type: "string",
-					description: "Input file path",
-				}),
-		)
-		.command(
-			"login",
-			"logs in through authentication in the Codemod Studio",
-			(y) =>
-				buildUseJsonOption(y).option("token", {
-					type: "string",
-					description: "token required to sign in to the Codemod CLI",
-				}),
-		)
-		.command("logout", "logs out", (y) => buildUseJsonOption(y))
-		.command("publish", "publish the codemod to Codemod Registry", (y) =>
-			buildUseJsonOption(y),
-		)
-		.help()
-		.version(__CODEMODCOM_CLI_VERSION__);
+  process.stdin.unref();
 
-	if (slicedArgv.length === 0) {
-		argvObject.showHelp();
-		return;
-	}
+  const argvObject = yargs(slicedArgv)
+    .scriptName("codemod")
+    .command("*", "runs a codemod or recipe", (y) => buildOptions(y))
+    .command(
+      "runOnPreCommit [files...]",
+      "run pre-commit codemods against staged files passed positionally",
+      (y) => buildUseJsonOption(buildUseCacheOption(y))
+    )
+    .command(
+      "list",
+      "lists all the codemods & recipes in the public registry",
+      (y) => buildUseJsonOption(buildUseCacheOption(y))
+    )
+    .command("syncRegistry", "syncs all the codemods from the registry", (y) =>
+      buildUseJsonOption(y)
+    )
+    .command("sync [name]", "synchronize a codemod", (y) =>
+      buildUseJsonOption(
+        y.positional("name", {
+          type: "string",
+          description: "The name of the codemod",
+        })
+      )
+    )
+    .command(
+      "learn",
+      "exports the current `git diff` in a file to before/after panels in the Codemod Studio",
+      (y) =>
+        buildUseJsonOption(y).option("target", {
+          type: "string",
+          description: "Input file path",
+        })
+    )
+    .command(
+      "login",
+      "logs in through authentication in the Codemod Studio",
+      (y) =>
+        buildUseJsonOption(y).option("token", {
+          type: "string",
+          description: "token required to sign in to the Codemod CLI",
+        })
+    )
+    .command("logout", "logs out", (y) => buildUseJsonOption(y))
+    .command("publish", "publish the codemod to Codemod Registry", (y) =>
+      buildUseJsonOption(y)
+    )
+    .help()
+    .version(__CODEMODCOM_CLI_VERSION__);
 
-	const argv = {
-		...(await Promise.resolve(argvObject.argv)),
-		"arg:input": userInput,
-	};
+  if (slicedArgv.length === 0) {
+    argvObject.showHelp();
+    return;
+  }
 
-	const fetchBuffer = async (url: string) => {
-		const { data } = await Axios.get(url, {
-			responseType: "arraybuffer",
-		});
+  const argv = {
+    ...(await Promise.resolve(argvObject.argv)),
+    "arg:input": userInput,
+  };
 
-		return Buffer.from(data);
-	};
+  const fetchBuffer = async (url: string) => {
+    const { data } = await Axios.get(url, {
+      responseType: "arraybuffer",
+    });
 
-	const printer = new Printer(argv.json);
+    return Buffer.from(data);
+  };
 
-	const fileDownloadService = new FileDownloadService(
-		argv.noCache,
-		fetchBuffer,
-		() => Date.now(),
-		fs as unknown as IFs,
-		printer,
-	);
+  const printer = new Printer(argv.json);
 
-	let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
-	let exit = () => {};
-	const tarService = new TarService(fs as unknown as IFs);
+  const fileDownloadService = new FileDownloadService(
+    argv.noCache,
+    fetchBuffer,
+    () => Date.now(),
+    fs as unknown as IFs,
+    printer
+  );
 
-	if (!argv.telemetryDisable) {
-		// hack to prevent appInsights from trying to read applicationinsights.json
-		// this env should be set before appinsights is imported
-		// https://github.com/microsoft/ApplicationInsights-node.js/blob/0217324c477a96b5dd659510bbccad27934084a3/Library/JsonConfig.ts#L122
-		process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = "{}";
-		const appInsights = await import("applicationinsights");
+  let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
+  let exit = () => {};
+  const tarService = new TarService(fs as unknown as IFs);
 
-		// .start() is skipped intentionally, to prevent any non-custom events from tracking
-		appInsights.setup(APP_INSIGHTS_INSTRUMENTATION_STRING);
+  if (!argv.telemetryDisable) {
+    // hack to prevent appInsights from trying to read applicationinsights.json
+    // this env should be set before appinsights is imported
+    // https://github.com/microsoft/ApplicationInsights-node.js/blob/0217324c477a96b5dd659510bbccad27934084a3/Library/JsonConfig.ts#L122
+    process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = "{}";
+    const appInsights = await import("applicationinsights");
 
-		telemetryService = new AppInsightsTelemetryService(
-			appInsights.defaultClient,
-		);
+    // .start() is skipped intentionally, to prevent any non-custom events from tracking
+    appInsights.setup(APP_INSIGHTS_INSTRUMENTATION_STRING);
 
-		exit = () => {
-			// appInsights telemetry client uses batches to send telemetry.
-			// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-			// see Channel2.prototype.send
-			// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-			appInsights.defaultClient.flush({
-				callback: () => {
-					appInsights.dispose();
-					process.exit(0);
-				},
-			});
-		};
-	} else {
-		telemetryService = new NoTelemetryService();
-	}
+    telemetryService = new AppInsightsTelemetryService(
+      appInsights.defaultClient
+    );
 
-	if (String(argv._) === "list") {
-		try {
-			await handleListNamesAfterSyncing(
-				argv.noCache,
-				printer,
-				fileDownloadService,
-				tarService,
-			);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+    exit = () => {
+      // appInsights telemetry client uses batches to send telemetry.
+      // this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
+      // see Channel2.prototype.send
+      // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+      appInsights.defaultClient.flush({
+        callback: () => {
+          appInsights.dispose();
+          process.exit(0);
+        },
+      });
+    };
+  } else {
+    telemetryService = new NoTelemetryService();
+  }
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+  if (String(argv._) === "list") {
+    try {
+      await handleListNamesAfterSyncing(
+        argv.noCache,
+        argv.short,
+        printer,
+        fileDownloadService,
+        tarService
+      );
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	if (String(argv._) === "syncRegistry") {
-		await syncRegistryOperation(
-			argv.noCache,
-			printer,
-			fileDownloadService,
-			tarService,
-		);
-		exit();
+    return;
+  }
 
-		return;
-	}
+  if (String(argv._) === "syncRegistry") {
+    await syncRegistryOperation(
+      argv.noCache,
+      printer,
+      fileDownloadService,
+      tarService
+    );
+    exit();
 
-	if (argv._.at(0) === "sync" && argv.name !== undefined) {
-		const codemodDownloader = new CodemodDownloader(
-			printer,
-			join(homedir(), ".codemod"),
-			false,
-			fileDownloadService,
-			tarService,
-		);
+    return;
+  }
 
-		try {
-			await codemodDownloader.download(argv.name);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  if (argv._.at(0) === "sync" && argv.name !== undefined) {
+    const codemodDownloader = new CodemodDownloader(
+      printer,
+      join(homedir(), ".codemod"),
+      false,
+      fileDownloadService,
+      tarService
+    );
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+    try {
+      await codemodDownloader.download(argv.name);
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	if (String(argv._) === "learn") {
-		const printer = new Printer(argv.json);
-		const target = argv.target ?? argv.target ?? null;
+    return;
+  }
 
-		try {
-			await handleLearnCliCommand(printer, target);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  if (String(argv._) === "learn") {
+    const printer = new Printer(argv.json);
+    const target = argv.target ?? argv.target ?? null;
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+    try {
+      await handleLearnCliCommand(printer, target);
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	if (String(argv._) === "login") {
-		const printer = new Printer(argv.json);
-		const token = argv.token ?? null;
+    return;
+  }
 
-		try {
-			await handleLoginCliCommand(printer, token);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  if (String(argv._) === "login") {
+    const printer = new Printer(argv.json);
+    const token = argv.token ?? null;
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+    try {
+      await handleLoginCliCommand(printer, token);
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	if (String(argv._) === "logout") {
-		const printer = new Printer(argv.json);
+    return;
+  }
 
-		try {
-			await handleLogoutCliCommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  if (String(argv._) === "logout") {
+    const printer = new Printer(argv.json);
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+    try {
+      await handleLogoutCliCommand(printer);
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	if (String(argv._) === "publish") {
-		const printer = new Printer(argv.json);
+    return;
+  }
 
-		try {
-			await handlePublishCliCommand(printer, argv.source ?? process.cwd());
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  if (String(argv._) === "publish") {
+    const printer = new Printer(argv.json);
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+    try {
+      await handlePublishCliCommand(printer, argv.source ?? process.cwd());
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		exit();
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return;
-	}
+    exit();
 
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
+    return;
+  }
 
-	const lastArgument = argv._[argv._.length - 1];
-	const nameOrPath = typeof lastArgument === "string" ? lastArgument : null;
+  const configurationDirectoryPath = join(
+    String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+    ".codemod"
+  );
 
-	if (nameOrPath && fs.existsSync(nameOrPath)) {
-		argv.source = nameOrPath;
-	}
+  const lastArgument = argv._[argv._.length - 1];
+  const nameOrPath = typeof lastArgument === "string" ? lastArgument : null;
 
-	const codemodSettings = parseCodemodSettings(argv);
-	const flowSettings = parseFlowSettings(argv);
-	const runSettings = parseRunSettings(homedir(), argv);
-	const argumentRecord = buildArgumentRecord(argv);
+  if (nameOrPath && fs.existsSync(nameOrPath)) {
+    argv.source = nameOrPath;
+  }
 
-	const codemodDownloader = new CodemodDownloader(
-		printer,
-		configurationDirectoryPath,
-		argv.noCache,
-		fileDownloadService,
-		tarService,
-	);
+  const codemodSettings = parseCodemodSettings(argv);
+  const flowSettings = parseFlowSettings(argv);
+  const runSettings = parseRunSettings(homedir(), argv);
+  const argumentRecord = buildArgumentRecord(argv);
 
-	const getCodemodSource = (path: string) =>
-		readFile(path, { encoding: "utf8" });
+  const codemodDownloader = new CodemodDownloader(
+    printer,
+    configurationDirectoryPath,
+    argv.noCache,
+    fileDownloadService,
+    tarService
+  );
 
-	const runner = new Runner(
-		fs as unknown as IFs,
-		printer,
-		telemetryService,
-		codemodDownloader,
-		loadRepositoryConfiguration,
-		codemodSettings,
-		flowSettings,
-		runSettings,
-		argumentRecord,
-		nameOrPath,
-		process.cwd(),
-		getCodemodSource,
-	);
+  const getCodemodSource = (path: string) =>
+    readFile(path, { encoding: "utf8" });
 
-	await runner.run();
+  const runner = new Runner(
+    fs as unknown as IFs,
+    printer,
+    telemetryService,
+    codemodDownloader,
+    loadRepositoryConfiguration,
+    codemodSettings,
+    flowSettings,
+    runSettings,
+    argumentRecord,
+    nameOrPath,
+    process.cwd(),
+    getCodemodSource
+  );
 
-	exit();
+  await runner.run();
+
+  exit();
 };
 
 export async function syncRegistryOperation(
-	disableCache: boolean,
-	printer: Printer,
-	fileDownloadService: FileDownloadService,
-	tarService: TarService,
+  disableCache: boolean,
+  printer: Printer,
+  fileDownloadService: FileDownloadService,
+  tarService: TarService
 ) {
-	const codemodDownloader = new CodemodDownloader(
-		printer,
-		join(homedir(), ".codemod"),
-		disableCache,
-		fileDownloadService,
-		tarService,
-	);
+  const codemodDownloader = new CodemodDownloader(
+    printer,
+    join(homedir(), ".codemod"),
+    disableCache,
+    fileDownloadService,
+    tarService
+  );
 
-	try {
-		await codemodDownloader.syncRegistry();
-	} catch (error) {
-		if (!(error instanceof Error)) {
-			return;
-		}
+  try {
+    await codemodDownloader.syncRegistry();
+  } catch (error) {
+    if (!(error instanceof Error)) {
+      return;
+    }
 
-		printer.printOperationMessage({
-			kind: "error",
-			message: error.message,
-		});
-	}
+    printer.printOperationMessage({
+      kind: "error",
+      message: error.message,
+    });
+  }
 }
