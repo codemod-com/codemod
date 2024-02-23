@@ -8,13 +8,15 @@ export default function transform(
 	const root = j(file.source);
 
 	root.findJSXElements().forEach((elementPath) => {
-		const value = elementPath.value;
+		const { value } = elementPath;
 		const elements = [value.openingElement, value.closingElement];
 		elements.forEach((element) => {
+			if (!element) {
+				return;
+			}
 			if (
-				!element ||
-				element.name.type !== "JSXMemberExpression" ||
-				element.name.object.type !== "JSXIdentifier"
+				!j.JSXMemberExpression.check(element.name) ||
+				!j.JSXIdentifier.check(element.name.object)
 			) {
 				return;
 			}
