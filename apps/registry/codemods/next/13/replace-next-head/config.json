@@ -4,5 +4,5 @@
 	"description": "This codemod generates Next 13 metadata object",
 	"engine": "filemod",
 	"dependencyVersionLowerThan": ["next", "13.0.0"],
-	"owner": "Codemod.com"
+	"owner": "codemod.com"
 }

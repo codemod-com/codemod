@@ -273,11 +273,11 @@ const buildComponentsFileData = (
 				path,
 				data,
 			};
-		} else {
-			return {
-				kind: "noop",
-			};
 		}
+
+		return {
+			kind: "noop",
+		};
 	}
 
 	return {
@@ -462,11 +462,11 @@ const buildPageFileData = (
 				path,
 				data,
 			};
-		} else {
-			return {
-				kind: "noop",
-			};
 		}
+
+		return {
+			kind: "noop",
+		};
 	}
 
 	return {
@@ -603,7 +603,7 @@ const updateLayoutComponent = (sourceFile: SourceFile) => {
 
 	if (param === undefined) {
 		layoutComponent.addParameter({
-			name: `{children}`,
+			name: "{children}",
 			type: `{
 				children: React.ReactNode
 			}`,
@@ -686,7 +686,7 @@ const buildLayoutClientComponentFromUnderscoreApp = (
 	param?.remove();
 
 	component.addParameter({
-		name: `{children}`,
+		name: "{children}",
 		type: `{
 				children: React.ReactNode
 			}`,

@@ -264,11 +264,7 @@ export const repomod: Filemod<Dependencies, State> = {
 	handleFile: async (api, path, options, state) => {
 		const commands: FileCommand[] = [];
 
-		if (
-			state !== null &&
-			state.hookModuleCreation &&
-			!state.hookModuleCreated
-		) {
+		if (state?.hookModuleCreation && !state.hookModuleCreated) {
 			if (state.hookPathType === "relative") {
 				const hookPath = api.joinPaths(
 					api.currentWorkingDirectory,

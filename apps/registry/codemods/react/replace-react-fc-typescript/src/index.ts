@@ -54,7 +54,7 @@ export default function transform(fileInfo: FileInfo, api: API) {
 	const j = api.j;
 	function addPropsTypeToComponentBody(n: ASTPath<VariableDeclarator>) {
 		// extract the Prop's type text
-		let reactFcOrSfcNode;
+		let reactFcOrSfcNode: any;
 		if (isIdentifier(n.node.id)) {
 			if (
 				j.TSIntersectionType.check(n.node.id.typeAnnotation!.typeAnnotation)
@@ -89,9 +89,9 @@ export default function transform(fileInfo: FileInfo, api: API) {
 		if (!paramsLength) {
 			// if no params, it could be that the component is not actually using props, so nothing to do here
 			return;
-		} else {
-			restParameters = componentFunctionNode.params.slice(1, paramsLength);
 		}
+
+		restParameters = componentFunctionNode.params.slice(1, paramsLength);
 
 		const firstParam = componentFunctionNode.params[0];
 
@@ -177,7 +177,7 @@ export default function transform(fileInfo: FileInfo, api: API) {
 			.find(j.VariableDeclarator, (n: unknown) => {
 				// @ts-expect-error n unknown
 				const identifier = n?.id;
-				let typeName;
+				let typeName: any;
 				if (
 					j.TSIntersectionType.check(identifier?.typeAnnotation?.typeAnnotation)
 				) {

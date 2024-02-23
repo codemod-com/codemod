@@ -224,7 +224,9 @@ const getCallExpressionName = (callExpression: CallExpression) => {
 
 	if (Node.isIdentifier(expr)) {
 		return expr.getText();
-	} else if (Node.isPropertyAccessExpression(expr)) {
+	}
+
+	if (Node.isPropertyAccessExpression(expr)) {
 		return expr.getNameNode().getText();
 	}
 

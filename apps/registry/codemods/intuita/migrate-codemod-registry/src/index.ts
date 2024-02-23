@@ -235,17 +235,16 @@ const handleData: HandleData<Dependencies, State> = async (
 
 	if (state.step === "UPSERTING_CODEMODS") {
 		if (path.endsWith("package.json")) {
-			const name = typeof options["name"] === "string" ? options["name"] : null;
+			const name = typeof options.name === "string" ? options.name : null;
 
-			const engine =
-				typeof options["engine"] === "string" ? options["engine"] : null;
+			const engine = typeof options.engine === "string" ? options.engine : null;
 
 			const extension =
-				typeof options["extension"] === "string" ? options["extension"] : null;
+				typeof options.extension === "string" ? options.extension : null;
 
 			const testTsDoesExist =
-				typeof options["testTsDoesExist"] === "boolean"
-					? options["testTsDoesExist"]
+				typeof options.testTsDoesExist === "boolean"
+					? options.testTsDoesExist
 					: false;
 
 			if (name === null || engine === null || extension === null) {
@@ -272,18 +271,16 @@ const handleData: HandleData<Dependencies, State> = async (
 				: undefined;
 
 			if (devDependencies !== undefined && engine === "jscodeshift") {
-				devDependencies["jscodeshift"] = "^0.15.1";
+				devDependencies.jscodeshift = "^0.15.1";
 				devDependencies["@types/jscodeshift"] = "^0.11.10";
 			} else if (devDependencies !== undefined && engine === "ts-morph") {
 				devDependencies["ts-morph"] = "^19.0.0";
 			} else if (devDependencies !== undefined && engine === "filemod") {
 				devDependencies["@codemod-com/filemod"] = "1.1.0";
 				// this might be required sometimes
-				devDependencies["memfs"] = "^4.6.0";
+				devDependencies.memfs = "^4.6.0";
 				devDependencies["ts-morph"] = "^19.0.0";
-				devDependencies["jscodeshift"] = !path.includes(
-					"remove-get-static-props",
-				)
+				devDependencies.jscodeshift = !path.includes("remove-get-static-props")
 					? "^0.15.1"
 					: "0.14.0";
 				devDependencies["@types/jscodeshift"] = "^0.11.10";
@@ -292,11 +289,11 @@ const handleData: HandleData<Dependencies, State> = async (
 			if (dependencies && path.includes("ember/5/no-implicit-this")) {
 				dependencies["ember-codemods-telemetry-helpers"] = "^3.0.0";
 				dependencies["ember-template-recast"] = "^6.1.4";
-				dependencies["debug"] = "^4.3.4";
+				dependencies.debug = "^4.3.4";
 			}
 
 			if (dependencies && path.includes("next/13/move-css-in-js-styles")) {
-				dependencies["sinon"] = "^15.0.1";
+				dependencies.sinon = "^15.0.1";
 			}
 
 			if (
@@ -325,7 +322,7 @@ const handleData: HandleData<Dependencies, State> = async (
 				: undefined;
 
 			if (scripts !== undefined && testTsDoesExist) {
-				scripts["test"] = "mocha";
+				scripts.test = "mocha";
 			}
 
 			const files: string[] = ["README.md", "config.json"];
@@ -353,8 +350,7 @@ const handleData: HandleData<Dependencies, State> = async (
 		}
 
 		if (path.endsWith("index.d.ts")) {
-			const engine =
-				typeof options["engine"] === "string" ? options["engine"] : null;
+			const engine = typeof options.engine === "string" ? options.engine : null;
 
 			if (engine === null) {
 				throw new Error("Name and engine need to be defined for package.json");
@@ -421,7 +417,7 @@ const handleData: HandleData<Dependencies, State> = async (
 		}
 
 		if (path.endsWith("test.ts")) {
-			const data = typeof options["data"] === "string" ? options["data"] : null;
+			const data = typeof options.data === "string" ? options.data : null;
 
 			if (data === null) {
 				throw new Error("Data must be present for test.ts files");
@@ -460,11 +456,11 @@ const handleData: HandleData<Dependencies, State> = async (
 			};
 		}
 
-		if (typeof options["data"] === "string") {
+		if (typeof options.data === "string") {
 			return {
 				kind: "upsertData",
 				path,
-				data: options["data"],
+				data: options.data,
 			};
 		}
 
