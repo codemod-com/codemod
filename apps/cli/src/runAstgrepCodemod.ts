@@ -39,7 +39,11 @@ export const runAstgrep = async (
 					continue;
 				}
 				const astCommand = `sg scan -r ${rulePath} ${entryPath} -U`;
-				execSync(astCommand);
+				if (process.platform == 'win32') {
+					execSync(`powershell -Command "${astCommand}"`);
+				} else {
+					execSync(astCommand);
+				}
 			}
 		}
 	};
@@ -73,6 +77,11 @@ const installSgCommandIfNotAvailable = (printer: PrinterBlueprint): void => {
 			'info',
 			'ast-grep is not avialable, installing it globally',
 		);
-		execSync('npm install -g @ast-grep/cli');
+		const astInstallCommand = `npm install -g @ast-grep/cli`;
+		if (process.platform == 'win32') {
+			execSync(`powershell -Command "${astInstallCommand}"`);
+		} else {
+			execSync(astInstallCommand);
+		}
 	}
 };
