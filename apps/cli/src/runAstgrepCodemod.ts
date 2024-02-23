@@ -12,10 +12,11 @@ export const runAstgrep = async (
 ): Promise<void> => {
 	const yamlString = await readFile(rulePath, { encoding: 'utf8' });
 	const yamlObject = yaml.load(yamlString);
-	const language = languageToExtension(yamlObject.language);
+	const extension = languageToExtension(yamlObject.language);
+	installSgCommandIfNotAvailable(printer);
 	printer.printConsoleMessage(
 		'info',
-		`Executing ast-grep for language : ${language}`,
+		`Executing ast-grep for language : ${extension}`,
 	);
 
 	// Function to recursively iterate over files in the directory
@@ -34,7 +35,7 @@ export const runAstgrep = async (
 			} else if (entry.isFile()) {
 				// If the entry is a file, log its path
 				const fileExtension = path.extname(entryPath).slice(1);
-				if (fileExtension !== language) {
+				if (fileExtension !== extension) {
 					continue;
 				}
 				const astCommand = `sg scan -r ${rulePath} ${entryPath} -U`;
@@ -60,3 +61,18 @@ function languageToExtension(language: string) {
 			);
 	}
 }
+
+// Function to check if ast-grep is available or not
+const installSgCommandIfNotAvailable = (printer: PrinterBlueprint): void => {
+	try {
+		// Use `which` command to check if the command is available
+		execSync(`which sg`);
+	} catch (error) {
+		// If `which` command fails, the command is not available
+		printer.printConsoleMessage(
+			'info',
+			'ast-grep is not avialable, installing it globally',
+		);
+		execSync('npm install -g @ast-grep/cli');
+	}
+};

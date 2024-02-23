@@ -123,22 +123,27 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		}
 
 		if (config.engine === "ast-grep") {
-			const yamlPath = join(directoryPath, 'rule.yaml');
-			const yamlData = await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rule.yaml`,
-				yamlPath,
-			);
+			try {
+				const yamlPath = join(directoryPath, 'rule.yaml');
 
-			await writeFile(yamlPath, yamlData);
+				return {
+					source: 'registry',
+					name,
+					engine: config.engine,
+					yamlPath,
+					directoryPath,
+					arguments: config.arguments,
+				};
+			} catch (error) {
+				if (!(error instanceof Error)) {
+					throw new Error('Error while downloading ast-grep codemod');
+				}
 
-			return {
-				source: 'registry',
-				name,
-				engine: config.engine,
-				yamlPath: yamlPath,
-				directoryPath,
-				arguments: config.arguments,
-			};
+				this.__printer.printOperationMessage({
+					kind: 'error',
+					message: error.message,
+				});
+			}
 		}
 
 		if (config.engine === "piranha") {
