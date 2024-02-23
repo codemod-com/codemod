@@ -138,7 +138,7 @@ export const proxifyPath = <T>(
 			if (p.startsWith("replace_")) {
 				const codemodSourceRange = getOffsetRangeFromMethodName("replace", p);
 
-				return new Proxy(target["replace"], {
+				return new Proxy(target.replace, {
 					apply: (replaceTarget, thisArg, argArray) => {
 						const codes: string[] = [];
 
@@ -200,7 +200,7 @@ export const proxifyCollection = <T>(
 			if (p.startsWith("paths_")) {
 				const codemodSourceRange = getOffsetRangeFromMethodName("paths", p);
 
-				return new Proxy(target["paths"], {
+				return new Proxy(target.paths, {
 					apply: (findTarget, thisArg, argArray) => {
 						const astPaths: ASTPath<any>[] = Reflect.apply(
 							findTarget,
@@ -469,7 +469,7 @@ export const proxifyCollection = <T>(
 			if (p.startsWith("toSource_")) {
 				const codemodSourceRange = getOffsetRangeFromMethodName("toSource", p);
 
-				return new Proxy(target["toSource"], {
+				return new Proxy(target.toSource, {
 					apply: (toSourceTarget, thisArg, argArray) => {
 						const source = Reflect.apply(toSourceTarget, thisArg, argArray);
 
@@ -491,7 +491,7 @@ export const proxifyCollection = <T>(
 			if (p.startsWith("remove_")) {
 				const codemodSourceRange = getOffsetRangeFromMethodName("remove", p);
 
-				return new Proxy(target["remove"], {
+				return new Proxy(target.remove, {
 					apply: (
 						removeTarget,
 						thisArg: ProxifiedCollection<any>,
@@ -523,7 +523,7 @@ export const proxifyCollection = <T>(
 					p,
 				);
 
-				return new Proxy(target["replaceWith"], {
+				return new Proxy(target.replaceWith, {
 					apply: (
 						replaceWithTarget,
 						thisArg: ProxifiedCollection<any>,
@@ -553,7 +553,9 @@ export const proxifyCollection = <T>(
 							}
 
 							return value;
-						} else if (typeof firstArgument === "function") {
+						}
+
+						if (typeof firstArgument === "function") {
 							const { value, codes } = withNoSend(thisArg)(() => {
 								const codes: string[] = [];
 
@@ -587,7 +589,9 @@ export const proxifyCollection = <T>(
 							}
 
 							return value;
-						} else if (typeof firstArgument === "object") {
+						}
+
+						if (typeof firstArgument === "object") {
 							if (thisArg._doSend) {
 								const codes = [];
 

@@ -144,12 +144,10 @@ const generateFindExpression = (
 	selectedNode: TreeNode,
 	nodeSelectorTreeState: Record<string, TreeNodeSelectorState>,
 ): string => {
-	let generatedOutput = parentNodes.reduce((acc, node) => {
-		// eslint-disable-next-line no-param-reassign
-		acc += `.find(j.${node.label}) \n`;
-
-		return acc;
-	}, "root \n");
+	let generatedOutput = parentNodes.reduce(
+		(acc, node) => `${acc}.find(j.${node.label}) \n`,
+		"root \n",
+	);
 
 	generatedOutput += `.find(j.${selectedNode?.label}, ${JSON.stringify(
 		generatePartialAST(selectedNode.actualNode, nodeSelectorTreeState),

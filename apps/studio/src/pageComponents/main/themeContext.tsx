@@ -59,8 +59,7 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
 };
 
 const isBrowserSchemeDark = () =>
-	window.matchMedia &&
-	window.matchMedia("(prefers-color-scheme: dark)").matches;
+	window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 
 const useTheme = () => useContext(ThemeContext);
 

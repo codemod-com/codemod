@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-globals */
 import {
 	isCallExpression,
 	isIdentifier,
@@ -34,6 +33,7 @@ type Exports =
 			default?: unknown;
 			handleSourceFile?: unknown;
 	  }
+	// biome-ignore lint/complexity/noBannedTypes: Function
 	| Function;
 
 // disable access for particular objects exposed on the global this
@@ -430,6 +430,7 @@ function rewriteCodemod(input: string): string {
 export const getTransformFunction = async (
 	eventManager: EventManager,
 	input: string,
+	// biome-ignore lint/complexity/noBannedTypes: Function
 ): Promise<Function> => {
 	const rewrittenInput = rewriteCodemod(input);
 
@@ -509,6 +510,7 @@ interface ProxifiedAPI extends API {
 
 const executeTransformFunction = (
 	eventManager: EventManager,
+	// biome-ignore lint/complexity/noBannedTypes: Function
 	transform: Function,
 	input: string,
 ) => {
