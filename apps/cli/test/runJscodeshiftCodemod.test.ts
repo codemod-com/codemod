@@ -60,7 +60,7 @@ describe("runJscodeshiftCodemod", () => {
 	it("should return transformed output", () => {
 		const messages: [ConsoleKind, string][] = [];
 
-		const oldData = `function mapStateToProps(state) {}`;
+		const oldData = "function mapStateToProps(state) {}";
 
 		const fileCommands = runJscodeshiftCodemod(
 			codemodSource,
@@ -77,7 +77,7 @@ describe("runJscodeshiftCodemod", () => {
 
 		const [fileCommand] = fileCommands;
 
-		const newData = `function mapStateToProps(state: State) {}`;
+		const newData = "function mapStateToProps(state: State) {}";
 
 		deepStrictEqual(fileCommand, {
 			kind: "updateFile",

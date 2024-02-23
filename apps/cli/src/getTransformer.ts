@@ -24,8 +24,7 @@ export const getTransformer = (source: string) => {
 				repomod?: Filemod<Dependencies, Record<string, unknown>>;
 				filemod?: Filemod<Dependencies, Record<string, unknown>>;
 		  }
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		| Function;
+		| (() => void);
 
 	const module = { exports: {} as Exports };
 	const _require = (name: string) => {
