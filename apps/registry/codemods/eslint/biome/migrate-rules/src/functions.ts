@@ -17,7 +17,7 @@ function deepCopy<T>(obj: T): T {
 	const newObj = (Array.isArray(obj) ? [] : {}) as T;
 
 	for (const key in obj) {
-		if (obj.hasOwnProperty(key)) {
+		if (Object.hasOwn(obj, key)) {
 			newObj[key] = deepCopy(obj[key]);
 		}
 	}
@@ -39,7 +39,7 @@ export function replaceKeys(
 	for (const [pattern, replacement] of Object.entries(replacements)) {
 		// Iterate through each key in the object
 		for (const key in newObj) {
-			if (newObj.hasOwnProperty(key)) {
+			if (Object.hasOwn(newObj, key)) {
 				// If the value of the key is an object, recursively call the function
 				if (typeof newObj[key] === "object" && newObj[key] !== null) {
 					// We don't want to modify anything that is not under scripts or lint-staged keys for now

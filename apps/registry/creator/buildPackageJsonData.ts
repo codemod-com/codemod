@@ -28,7 +28,7 @@ export const buildPackageJsonData = (argv: ArgvSchema): string => {
 		devDependencies !== undefined &&
 		(argv.engine === "jscodeshift" || argv.engine === "filemod")
 	) {
-		devDependencies["jscodeshift"] = "^0.15.1";
+		devDependencies.jscodeshift = "^0.15.1";
 		devDependencies["@types/jscodeshift"] = "^0.11.10";
 	}
 
@@ -41,7 +41,7 @@ export const buildPackageJsonData = (argv: ArgvSchema): string => {
 
 	if (devDependencies !== undefined && argv.engine === "filemod") {
 		devDependencies["@codemod-com/filemod"] = "1.1.0";
-		devDependencies["memfs"] = "^4.6.0";
+		devDependencies.memfs = "^4.6.0";
 	}
 
 	const main = jsEngineUsed ? "./dist/index.cjs" : undefined;
@@ -49,7 +49,7 @@ export const buildPackageJsonData = (argv: ArgvSchema): string => {
 
 	const scripts: Record<string, string> | undefined = jsEngineUsed
 		? {
-				"build:cjs": `cjs-builder ./src/index.ts`,
+				"build:cjs": "cjs-builder ./src/index.ts",
 				test: "mocha",
 		  }
 		: undefined;

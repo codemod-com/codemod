@@ -12,9 +12,9 @@ export const repomod: Filemod<Dependencies, State> = {
 	includePatterns: ["**/locales/**/*.json"],
 	excludePatterns: ["**/node_modules/**"],
 	initializeState: async (options) => {
-		const oldNamespace = options["oldNamespace"];
-		const newNamespace = options["newNamespace"];
-		const keys = options["keys"];
+		const oldNamespace = options.oldNamespace;
+		const newNamespace = options.newNamespace;
+		const keys = options.keys;
 
 		return {
 			oldNamespace: typeof oldNamespace === "string" ? oldNamespace : "common",

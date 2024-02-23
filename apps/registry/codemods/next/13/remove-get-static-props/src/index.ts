@@ -182,7 +182,7 @@ const buildGetDataVariableDeclaration = (
 	firstParam: Node | null,
 ) => {
 	const callExpression = j.awaitExpression(
-		j.callExpression(j.identifier(`getData`), [j.identifier("legacyCtx")]),
+		j.callExpression(j.identifier("getData"), [j.identifier("legacyCtx")]),
 	);
 
 	const id = j.Identifier.check(firstParam)

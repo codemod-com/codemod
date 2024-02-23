@@ -142,7 +142,7 @@ const getResponseInit = (block: Block): ResponseInit => {
 				Node.isIdentifier(left.getNameNode()) &&
 				left.getNameNode().getText() === "statusCode"
 			) {
-				responseInit["status"] = Node.isStringLiteral(right)
+				responseInit.status = Node.isStringLiteral(right)
 					? right.getLiteralText()
 					: right.getText();
 			}

@@ -23,10 +23,8 @@ export default function transformer(
 
 	root
 		.find(j.ImportDeclaration)
-		.filter(
-			(path) =>
-				path.node.source.value &&
-				path.node.source.value.match(/^@material-ui\/core\/styles\/.+$/),
+		.filter((path) =>
+			path.node.source.value?.match(/^@material-ui\/core\/styles\/.+$/),
 		)
 		.forEach((path) => {
 			const specifiers = path.node.specifiers?.map((s) => {

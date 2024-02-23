@@ -58,8 +58,7 @@ export const replaceJestObjectWithVi = <T>(
 
 			if (propertyName === "enableAutomock") {
 				throw new Error(
-					`The automocking API "${propertyName}" is not supported in vitest.\n` +
-						"See https://vitest.dev/guide/migration.html",
+					`The automocking API "${propertyName}" is not supported in vitest.\nSee https://vitest.dev/guide/migration.html`,
 				);
 			}
 
@@ -69,7 +68,7 @@ export const replaceJestObjectWithVi = <T>(
 			}
 
 			if (apiNamesRecord[propertyName]) {
-				path.node.property.name = apiNamesRecord[propertyName];
+				path.node.property.name = apiNamesRecord[propertyName]!;
 			}
 
 			if (apiNamesToMakeAsync.includes(propertyName)) {
