@@ -12,20 +12,22 @@ export default function transform(
 		const elements = [value.openingElement, value.closingElement];
 		elements.forEach((element) => {
 			if (
-				element &&
-				element.name.type === "JSXMemberExpression" &&
-				element.name.object.type === "JSXIdentifier"
+				!element ||
+				element.name.type !== "JSXMemberExpression" ||
+				element.name.object.type !== "JSXIdentifier"
 			) {
-				const objectName = element.name.object.name;
-				const propertyName = element.name.property.name;
-				if (
-					objectName.toLocaleLowerCase().includes("context") &&
-					propertyName === "Provider"
-				) {
-					element.name = element.name.object;
-				}
+				return;
 			}
-			return null;
+
+			const objectName = element.name.object.name;
+			const propertyName = element.name.property.name;
+
+			if (
+				objectName.toLocaleLowerCase().includes("context") &&
+				propertyName === "Provider"
+			) {
+				element.name = element.name.object;
+			}
 		});
 	});
 
