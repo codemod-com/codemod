@@ -54,6 +54,6 @@
 		"@biomejs/biome": "1.5.3"
 	},
 	"lint-staged": {
-		"**/*.{js,ts,jsx,tsx,html,css,json,md,mdx}": "biome check --apply"
+		"**/*.{js,ts,jsx,tsx}": "biome check --apply"
 	}
 }
