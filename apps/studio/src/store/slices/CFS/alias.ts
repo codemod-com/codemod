@@ -1,5 +1,7 @@
 import type { RootState } from '../..';
 import { type Event } from '../log';
+import { selectIndividualSnippet } from '../snippets';
+import { selectActiveSnippet } from '../view';
 
 type AliasName =
 	| '$CODEMOD'
@@ -13,6 +15,8 @@ type AliasName =
 type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
 
 const getAliases = (state: RootState): Aliases => {
+	const activeSnippet = selectActiveSnippet(state);
+	const currentSnippet = selectIndividualSnippet(activeSnippet)(state);
 	const {
 		internalContent,
 		ranges: codemodInputRanges,
@@ -26,7 +30,7 @@ const getAliases = (state: RootState): Aliases => {
 		afterRangeUpdatedAt,
 		beforeInputRanges,
 		beforeRangeUpdatedAt,
-	} = state.snippets;
+	} = currentSnippet!;
 
 	const codemodExecutionError =
 		state.log.events.find(

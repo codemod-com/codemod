@@ -4,12 +4,18 @@ import {
 	selectFirstTreeNode,
 	selectSnippetsFor,
 } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import { setParentNodes } from '../../../store/slices/CFS';
 import extractParentNodes from '../../../utils/extractParentNodes';
 
 const useUpdateCFSStateEffect = () => {
-	const firstNodeTree = useSelector(selectFirstTreeNode('before'));
-	const { rootNode } = useSelector(selectSnippetsFor('before'));
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const firstNodeTree = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
+	const { rootNode } = useSelector(
+		selectSnippetsFor('before', activeSnippet),
+	);
 
 	const dispatch = useDispatch();
 

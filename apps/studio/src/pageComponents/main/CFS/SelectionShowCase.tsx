@@ -5,6 +5,7 @@ import { isTSTypeAnnotation, type Node } from '@babel/types';
 import dynamic from 'next/dynamic';
 import { useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { selectActiveSnippet } from '~/store/slices/view';
 // @TODO return to this component later
 import {
 	nodeHasValues,
@@ -14,7 +15,7 @@ import {
 } from '../../../store/slices/CFS';
 import {
 	selectFirstTreeNode,
-	selectSnippets,
+	selectIndividualSnippet,
 } from '../../../store/slices/snippets';
 import { type TreeNode } from '../../../types/tree';
 import { findClosestParentWithinRange } from '../../../utils/tree';
@@ -137,8 +138,11 @@ const getFilteredTokens = (
 };
 
 const SelectionShowCase = () => {
-	const { beforeInputTokens } = useSelector(selectSnippets);
-	const selectedNode = useSelector(selectFirstTreeNode('before'));
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const currentSnippet = useSelector(selectIndividualSnippet(activeSnippet));
+	const selectedNode = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
 	const unselectedNodes = useSelector(
 		selectNodesByState(selectedNode, states.UNSELECTED),
 	);
@@ -148,16 +152,16 @@ const SelectionShowCase = () => {
 	const dispatch = useDispatch();
 
 	const tokensInSelectedNode = useMemo(() => {
-		if (selectedNode === null) {
+		if (selectedNode === null || !currentSnippet) {
 			return [];
 		}
 
 		return getTokensWithinRange(
-			beforeInputTokens,
+			currentSnippet.beforeInputTokens,
 			selectedNode.start,
 			selectedNode.end,
 		);
-	}, [selectedNode, beforeInputTokens]);
+	}, [selectedNode, currentSnippet]);
 
 	const filteredTokens = getFilteredTokens(
 		tokensInSelectedNode,

@@ -14,8 +14,15 @@ import { Button } from '../../components/ui/button';
 import { setActiveEventThunk } from '../../store/setActiveEventThunk';
 import { selectLog, setEvents } from '../../store/slices/log';
 import { selectMod, setHasRuntimeErrors } from '../../store/slices/mod';
-import { selectSnippets } from '../../store/slices/snippets';
-import { TabNames, viewSlice } from '../../store/slices/view';
+import {
+	selectIndividualSnippet,
+	selectSnippets,
+} from '../../store/slices/snippets';
+import {
+	selectActiveSnippet,
+	TabNames,
+	viewSlice,
+} from '../../store/slices/view';
 import { useSnippet } from './SnippetUI';
 
 const MonacoDiffEditor = dynamic(
@@ -27,8 +34,10 @@ const MonacoDiffEditor = dynamic(
 );
 
 const LiveCodemodResult = () => {
-	const { engine, inputSnippet, afterInputRanges } =
-		useSelector(selectSnippets);
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const currentSnippet = useSelector(selectIndividualSnippet(activeSnippet));
+
+	const { engine } = useSelector(selectSnippets);
 
 	const { internalContent } = useSelector(selectMod);
 	const { events } = useSelector(selectLog);
@@ -42,7 +51,9 @@ const LiveCodemodResult = () => {
 
 	const content = internalContent ?? '';
 
-	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(
+		currentSnippet?.inputSnippet ?? '',
+	);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
 	const firstCodemodExecutionErrorEvent = events.find(
@@ -61,10 +72,12 @@ const LiveCodemodResult = () => {
 			return;
 		}
 
-		postMessage(engine, content, inputSnippet);
+		if (currentSnippet?.inputSnippet) {
+			postMessage(engine, content, currentSnippet.inputSnippet);
+		}
 	}, [
 		engine,
-		inputSnippet,
+		currentSnippet,
 		content,
 		dispatch,
 		snippetBeforeHasOnlyWhitespaces,
@@ -103,6 +116,11 @@ const LiveCodemodResult = () => {
 		},
 		[dispatch],
 	);
+
+	if (!currentSnippet) {
+		console.warn('Snippet not found', activeSnippet);
+		return null;
+	}
 
 	return (
 		<div className="relative flex h-full w-full flex-col">
@@ -150,7 +168,7 @@ const LiveCodemodResult = () => {
 						originalEditable: true,
 					}}
 					originalEditorProps={{
-						highlights: afterInputRanges,
+						highlights: currentSnippet.afterInputRanges,
 						onSelectionChange: handleSelectionChange,
 						onChange: onSnippetChange,
 						value,

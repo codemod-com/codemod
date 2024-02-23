@@ -5,11 +5,13 @@ import Collapsable from '~/components/Collapsable';
 import Panel from '~/components/Panel';
 import Text from '~/components/Text';
 import { selectCFS, toggleSelectedNodeId } from '~/store/slices/CFS';
-import { selectSnippets } from '~/store/slices/snippets';
+import { selectIndividualSnippet } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 
 const ParentNodesSelector = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const { selectedNodeIds, parentNodes } = useSelector(selectCFS);
-	const { inputSnippet } = useSelector(selectSnippets);
+	const currentSnippet = useSelector(selectIndividualSnippet(activeSnippet));
 
 	const dispatch = useDispatch();
 
@@ -17,9 +19,11 @@ const ParentNodesSelector = () => {
 		({ label }) => !['File', 'Program'].includes(label),
 	);
 
-	if (!filteredParentNodes.length) {
+	if (!filteredParentNodes.length || !currentSnippet) {
 		return null;
 	}
+
+	const { inputSnippet } = currentSnippet;
 
 	return (
 		<Panel className="flex max-h-1/3 w-full flex-col overflow-hidden">

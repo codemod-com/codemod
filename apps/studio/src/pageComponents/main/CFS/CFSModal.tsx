@@ -1,13 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import Modal from '../../../components/Modal';
 import Text from '../../../components/Text';
 import { selectCFS, setIsOpen } from '../../../store/slices/CFS';
 import CFSContent from './CFSContent';
 
 const CFSModal = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const { isOpen } = useSelector(selectCFS);
-	const firstTreeNode = useSelector(selectFirstTreeNode('after'));
+	const firstTreeNode = useSelector(
+		selectFirstTreeNode('after', activeSnippet),
+	);
 	const dispatch = useDispatch();
 
 	return isOpen ? (

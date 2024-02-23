@@ -1,8 +1,10 @@
 /* eslint-disable no-nested-ternary */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { useSelector } from 'react-redux';
 import { useAppDispatch } from '~/store';
 import { executeRangeCommandOnBeforeInputThunk } from '~/store/executeRangeCommandOnBeforeInputThunk';
+import { selectActiveSnippet } from '~/store/slices/view';
+import { RangeCommand } from '~/utils/tree';
 import Text from '../../components/Text';
 import Tree, { type TreeNode } from '../../components/Tree';
 import useScrollNodeIntoView from '../../hooks/useScrollNodeIntoView';
@@ -19,15 +21,29 @@ type Props = {
 
 const ASTViewer = ({ type }: Props) => {
 	const ASTTreeRef = useRef<HTMLDivElement>(null);
-	const { rootNode } = useSelector(selectSnippetsFor(type));
-	const firstTreeNode = useSelector(selectFirstTreeNode(type));
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const { rootNode } = useSelector(selectSnippetsFor(type, activeSnippet));
+	const firstTreeNode = useSelector(selectFirstTreeNode(type, activeSnippet));
 
-	const setRange =
-		type === 'before'
-			? executeRangeCommandOnBeforeInputThunk
-			: type === 'after'
-			  ? setOutputSelection
-			  : codemodOutputSlice.actions.setSelections;
+	const setRange = useMemo(() => {
+		switch (type) {
+			case 'before':
+				return (range: RangeCommand) =>
+					executeRangeCommandOnBeforeInputThunk({
+						name: activeSnippet,
+						range,
+					});
+			case 'after':
+				return (range: RangeCommand) =>
+					setOutputSelection({
+						name: activeSnippet,
+						range,
+					});
+			case 'output':
+			default:
+				return codemodOutputSlice.actions.setSelections;
+		}
+	}, [activeSnippet, type]);
 
 	const scrollNodeIntoView = useScrollNodeIntoView();
 	const dispatch = useAppDispatch();

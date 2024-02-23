@@ -9,8 +9,10 @@ import {
 } from '~/store/getInitialState';
 import { setContent } from '~/store/slices/mod';
 import { selectEngine, setInput, setOutput } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 
 const InsertExampleButton = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
 	return (
@@ -19,8 +21,18 @@ const InsertExampleButton = () => {
 				<Button
 					className="flex items-center justify-center"
 					onClick={() => {
-						dispatch(setInput(BEFORE_SNIPPET_DEFAULT_CODE));
-						dispatch(setOutput(AFTER_SNIPPET_DEFAULT_CODE));
+						dispatch(
+							setInput({
+								name: activeSnippet,
+								snippetContent: BEFORE_SNIPPET_DEFAULT_CODE,
+							}),
+						);
+						dispatch(
+							setOutput({
+								name: activeSnippet,
+								snippetContent: AFTER_SNIPPET_DEFAULT_CODE,
+							}),
+						);
 						dispatch(setContent(buildDefaultCodemodSource(engine)));
 					}}
 					size="sm"

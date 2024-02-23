@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux';
 import { type TreeNode } from '~/components/Tree';
 import { cn } from '~/lib/utils';
+import { selectActiveSnippet } from '~/store/slices/view';
 import Text from '../../../components/Text';
 import { selectCFS } from '../../../store/slices/CFS';
 import {
@@ -11,7 +12,10 @@ import {
 const EmptyNodeValue = '_(No value)_';
 
 const NodeTreeValues = () => {
-	const firstRange = useSelector(selectFirstTreeNode('before'));
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const firstRange = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
 	const snippet = useSelector(selectSnippets);
 	const { hoveredNode } = useSelector(selectCFS);
 

@@ -17,33 +17,44 @@ const states = {
 
 export const executeRangeCommandOnBeforeInputThunk = createAsyncThunk<
 	void,
-	RangeCommand,
+	{
+		range: RangeCommand;
+		name: string;
+	},
 	{
 		dispatch: AppDispatch;
 		state: RootState;
 	}
->('thunks/executeRangeCommandOnBeforeInputThunk', async (ranges, thunkAPI) => {
-	const { dispatch, getState } = thunkAPI;
+>(
+	'thunks/executeRangeCommandOnBeforeInputThunk',
+	async ({ range, name }, thunkAPI) => {
+		const { dispatch, getState } = thunkAPI;
 
-	dispatch(setInputSelection(ranges));
+		dispatch(
+			setInputSelection({
+				name,
+				range,
+			}),
+		);
 
-	const firstTreeNode = selectFirstTreeNode('before')(getState());
+		const firstTreeNode = selectFirstTreeNode('before', name)(getState());
 
-	if (firstTreeNode === null) {
-		return;
-	}
-
-	const ids = extractIdsAndTypes(firstTreeNode);
-	const map: Record<string, TreeNodeSelectorState> = {};
-
-	ids.forEach(([id, type]) => {
-		if (nodeHasValues(type)) {
-			map[id] = states.VALUE;
+		if (firstTreeNode === null) {
 			return;
 		}
 
-		map[id] = states.TYPE;
-	});
+		const ids = extractIdsAndTypes(firstTreeNode);
+		const map: Record<string, TreeNodeSelectorState> = {};
 
-	dispatch(setNodeSelectorTreeState(map));
-});
+		ids.forEach(([id, type]) => {
+			if (nodeHasValues(type)) {
+				map[id] = states.VALUE;
+				return;
+			}
+
+			map[id] = states.TYPE;
+		});
+
+		dispatch(setNodeSelectorTreeState(map));
+	},
+);

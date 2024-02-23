@@ -11,6 +11,7 @@ import Text from '~/components/Text';
 import { selectCFSOutput, setIsOpen } from '~/store/slices/CFS';
 import { selectMod, setContent } from '~/store/slices/mod';
 import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import { buildFactoryCode } from '~/utils/buildFactoryCode';
 import { injectCFSOutputToCodemod } from '~/utils/injectCFSOutputToCodemod';
 import prettifyDeprecated from '~/utils/prettify';
@@ -21,8 +22,13 @@ const CodeSnippet = dynamic(() => import('~/components/Snippet'), {
 });
 
 const GeneratedOutput = () => {
-	const selectedBeforeInputNode = useSelector(selectFirstTreeNode('before'));
-	const selectedAfterInputNode = useSelector(selectFirstTreeNode('after'));
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const selectedBeforeInputNode = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
+	const selectedAfterInputNode = useSelector(
+		selectFirstTreeNode('after', activeSnippet),
+	);
 	const generatedOutput = useSelector(
 		selectCFSOutput(selectedBeforeInputNode),
 	);

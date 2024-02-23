@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
 import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import Panel from '../../../components/Panel';
 import Text from '../../../components/Text';
 import useFeatureFlags from '../../../hooks/useFeatureFlags';
@@ -12,9 +13,12 @@ import SelectionShowCase from './SelectionShowCase';
 import useUpdateCFSStateEffect from './useCFS';
 
 const CFSContent = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const features = useFeatureFlags();
 	const showCheckboxes = features.includes('cfrs-checkbox');
-	const firstTreeNode = useSelector(selectFirstTreeNode('before'));
+	const firstTreeNode = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
 
 	useUpdateCFSStateEffect();
 

@@ -10,6 +10,7 @@ import { codemodOutputSlice } from './slices/codemodOutput';
 import { setActiveEventHashDigest } from './slices/log';
 import { setCodemodSelection } from './slices/mod';
 import { setOutputSelection } from './slices/snippets';
+import { selectActiveSnippet } from './slices/view';
 
 const alphanumerizeString = (input: string): string => {
 	let output = '';
@@ -143,6 +144,9 @@ export const setActiveEventThunk = createAsyncThunk<
 	}
 >('thunks/setActiveEventThunk', async (eventHashDigest, thunkAPI) => {
 	const { getState, dispatch } = thunkAPI;
+	const state = getState();
+
+	const activeSnippet = selectActiveSnippet(state);
 
 	if (eventHashDigest === null) {
 		dispatch(setActiveEventHashDigest(null));
@@ -153,14 +157,22 @@ export const setActiveEventThunk = createAsyncThunk<
 		};
 
 		dispatch(setCodemodSelection(rangeCommand));
-		dispatch(executeRangeCommandOnBeforeInputThunk(rangeCommand));
-		dispatch(setOutputSelection(rangeCommand));
+		dispatch(
+			executeRangeCommandOnBeforeInputThunk({
+				name: activeSnippet,
+				range: rangeCommand,
+			}),
+		);
+		dispatch(
+			setOutputSelection({
+				name: activeSnippet,
+				range: rangeCommand,
+			}),
+		);
 		dispatch(codemodOutputSlice.actions.setSelections(rangeCommand));
 
 		return;
 	}
-
-	const state = getState();
 
 	const event =
 		state.log.events.find(
@@ -182,16 +194,24 @@ export const setActiveEventThunk = createAsyncThunk<
 
 	dispatch(
 		executeRangeCommandOnBeforeInputThunk({
-			// the selection from the evens will thus be reflected in the Find & Replace panel
-			kind: 'FIND_CLOSEST_PARENT',
-			ranges:
-				'snippetBeforeRanges' in event ? event.snippetBeforeRanges : [],
+			name: activeSnippet,
+			range: {
+				// the selection from the evens will thus be reflected in the Find & Replace panel
+				kind: 'FIND_CLOSEST_PARENT',
+				ranges:
+					'snippetBeforeRanges' in event
+						? event.snippetBeforeRanges
+						: [],
+			},
 		}),
 	);
 	dispatch(
 		setOutputSelection({
-			kind: 'PASS_THROUGH',
-			ranges: [],
+			name: activeSnippet,
+			range: {
+				kind: 'PASS_THROUGH',
+				ranges: [],
+			},
 		}),
 	);
 	dispatch(

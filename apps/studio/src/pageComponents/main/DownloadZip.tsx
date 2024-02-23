@@ -12,15 +12,17 @@ import { useCopyToClipboard } from '~/hooks/useCopyToClipboard';
 import { cn } from '~/lib/utils';
 import { generateCodemodHumanNamePrompt } from '~/store/slices/CFS/prompts';
 import { selectMod } from '~/store/slices/mod';
-import { selectEngine, selectSnippets } from '~/store/slices/snippets';
+import { selectEngine, selectIndividualSnippet } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import { downloadProject } from '~/utils/download';
 
 export const DownloadZip = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const snippetsContext = useSelector(selectIndividualSnippet(activeSnippet));
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 
 	const modContext = useSelector(selectMod);
-	const snippetsContext = useSelector(selectSnippets);
 	const engine = useSelector(selectEngine);
 
 	const { session } = useSession();
@@ -39,16 +41,20 @@ export const DownloadZip = () => {
 				? await getHumanCodemodName(modContext.internalContent, token)
 				: null;
 
-		await downloadProject({
-			name: humanCodemodName?.name ?? 'codemod',
-			framework: humanCodemodName?.framework,
-			version: humanCodemodName?.version,
-			modBody: modContext.internalContent,
-			before: snippetsContext.inputSnippet,
-			after: snippetsContext.outputSnippet,
-			engine,
-			user: session?.user,
-		});
+		if (snippetsContext) {
+			await downloadProject({
+				name: humanCodemodName?.name ?? 'codemod',
+				framework: humanCodemodName?.framework,
+				version: humanCodemodName?.version,
+				modBody: modContext.internalContent,
+				before: snippetsContext.inputSnippet,
+				after: snippetsContext.outputSnippet,
+				engine,
+				user: session?.user,
+			});
+		} else {
+			console.warn('No snippets context found', activeSnippet);
+		}
 
 		setIsDownloading(false);
 		setIsOpen(true);

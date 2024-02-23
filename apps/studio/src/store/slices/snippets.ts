@@ -14,29 +14,54 @@ import { selectCodemodOutput } from './codemodOutput';
 
 const SLICE_KEY = 'snippets';
 
-type SnippetState = Readonly<{
-	engine: 'jscodeshift' | 'tsmorph';
+const DEFAULT_SNIPPET_NAME = 'Main';
 
-	// beforeInput
+type IndividualSnippetState = {
+	// Both the name and the identifier
+	name: string;
+
+	// beforeInput - input code
 	inputSnippet: string;
 	beforeInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
 	beforeRangeUpdatedAt: number;
 	beforeInputRootNode: TreeNode | null;
 	beforeInputTokens: ReadonlyArray<Token>;
 
-	// afterInput
+	// codemod result
 	outputSnippet: string;
+
+	// afterInput - expected
 	afterInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
 	afterRangeUpdatedAt: number;
 	afterInputRootNode: TreeNode | null;
 	afterInputTokens: ReadonlyArray<Token>;
+};
+
+type SnippetState = Readonly<{
+	engine: 'jscodeshift' | 'tsmorph';
+
+	snippets: IndividualSnippetState[];
+}>;
+
+type SetSnippetAction = PayloadAction<{
+	name: string;
+	snippetContent: string;
+}>;
+
+type SetRangeAction = PayloadAction<{
+	name: string;
+	range: RangeCommand;
 }>;
 
 type Engine = SnippetState['engine'];
 
-const getInitialState = (): SnippetState => {
-	const { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
-
+const generateInitialSnippetState = ({
+	beforeSnippet,
+	afterSnippet,
+}: {
+	beforeSnippet: string;
+	afterSnippet: string;
+}) => {
 	// before input
 	const beforeInputParsed = parseSnippet(beforeSnippet);
 
@@ -76,17 +101,43 @@ const getInitialState = (): SnippetState => {
 		: [];
 
 	return {
-		engine,
 		beforeInputRootNode,
 		afterInputRootNode,
-		outputSnippet: afterSnippet,
-		inputSnippet: beforeSnippet,
-		beforeInputRanges: [],
-		beforeRangeUpdatedAt: Date.now(),
-		afterInputRanges: [],
-		afterRangeUpdatedAt: Date.now(),
 		beforeInputTokens,
 		afterInputTokens,
+	};
+};
+
+const getInitialState = (): SnippetState => {
+	const { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
+
+	const {
+		beforeInputRootNode,
+		afterInputRootNode,
+		beforeInputTokens,
+		afterInputTokens,
+	} = generateInitialSnippetState({
+		beforeSnippet,
+		afterSnippet,
+	});
+
+	return {
+		engine,
+		snippets: [
+			{
+				name: DEFAULT_SNIPPET_NAME,
+				beforeInputRootNode,
+				afterInputRootNode,
+				inputSnippet: beforeSnippet,
+				outputSnippet: afterSnippet,
+				beforeInputRanges: [],
+				beforeRangeUpdatedAt: Date.now(),
+				afterInputRanges: [],
+				afterRangeUpdatedAt: Date.now(),
+				beforeInputTokens,
+				afterInputTokens,
+			},
+		],
 	};
 };
 
@@ -94,47 +145,144 @@ const snippetsSlice = createSlice({
 	name: 'snippets',
 	initialState: getInitialState(),
 	reducers: {
+		addSnippet(
+			state,
+			action: PayloadAction<{
+				name?: string;
+			}>,
+		) {
+			let { name } = action.payload;
+
+			if (!name) {
+				const untitledNameRegex = /Untitled\s?(\((\d+)\))?/;
+
+				const untitledNumber = state.snippets.reduce(
+					(currentNumber, { name }) => {
+						const matches = name.match(untitledNameRegex);
+						const untitledNumber = matches?.[2]
+							? Number(matches[2])
+							: 0;
+
+						if (untitledNumber > currentNumber) {
+							return untitledNumber;
+						}
+
+						return currentNumber;
+					},
+					0,
+				);
+
+				name =
+					untitledNumber === 0
+						? 'Untitled'
+						: `Untitled (${untitledNumber + 1})`;
+			}
+
+			const beforeSnippet = '';
+			const afterSnippet = '';
+
+			const {
+				beforeInputRootNode,
+				afterInputRootNode,
+				beforeInputTokens,
+				afterInputTokens,
+			} = generateInitialSnippetState({
+				beforeSnippet,
+				afterSnippet,
+			});
+
+			const newSnippet = {
+				name,
+				inputSnippet: beforeSnippet,
+				outputSnippet: afterSnippet,
+				beforeInputRanges: [],
+				beforeRangeUpdatedAt: Date.now(),
+				afterInputRanges: [],
+				afterRangeUpdatedAt: Date.now(),
+				beforeInputRootNode,
+				afterInputRootNode,
+				beforeInputTokens,
+				afterInputTokens,
+			};
+
+			state.snippets.push(newSnippet);
+		},
 		setEngine(state, action: PayloadAction<SnippetState['engine']>) {
 			state.engine = action.payload;
 		},
-		setInput(state, action: PayloadAction<string>) {
-			const beforeInputParsed = parseSnippet(action.payload);
+		setInput(state, action: SetSnippetAction) {
+			const beforeInputParsed = parseSnippet(
+				action.payload.snippetContent,
+			);
 
-			state.inputSnippet = action.payload;
+			const currentSnippet = state.snippets.find(
+				({ name }) => name === action.payload.name,
+			);
+			if (!currentSnippet) {
+				return;
+			}
+
+			currentSnippet.inputSnippet = action.payload.snippetContent;
 			// state.beforeInputRanges = [];
-			state.beforeInputRootNode = isParsedResultFile(beforeInputParsed)
+			currentSnippet.beforeInputRootNode = isParsedResultFile(
+				beforeInputParsed,
+			)
 				? mapBabelASTToRenderableTree(beforeInputParsed)
 				: null;
 		},
-		setOutput(state, action: PayloadAction<string>) {
-			const afterInputParsed = parseSnippet(action.payload);
+		setOutput(state, action: SetSnippetAction) {
+			const afterInputParsed = parseSnippet(
+				action.payload.snippetContent,
+			);
 
-			state.outputSnippet = action.payload;
+			const currentSnippet = state.snippets.find(
+				({ name }) => name === action.payload.name,
+			);
+			if (!currentSnippet) {
+				return;
+			}
+
+			currentSnippet.outputSnippet = action.payload.snippetContent;
 			// state.afterInputRanges = [];
-			state.afterInputRootNode = isParsedResultFile(afterInputParsed)
+			currentSnippet.afterInputRootNode = isParsedResultFile(
+				afterInputParsed,
+			)
 				? mapBabelASTToRenderableTree(afterInputParsed)
 				: null;
 		},
-		setInputSelection(state, action: PayloadAction<RangeCommand>) {
-			// @ts-expect-error immutability
-			state.beforeInputRanges = buildRanges(
-				state.beforeInputRootNode,
-				action.payload,
+		setInputSelection(state, action: SetRangeAction) {
+			const currentSnippet = state.snippets.find(
+				({ name }) => name === action.payload.name,
 			);
-			state.beforeRangeUpdatedAt = Date.now();
+			if (!currentSnippet) {
+				return;
+			}
+			// @ts-expect-error immutability
+			currentSnippet.beforeInputRanges = buildRanges(
+				currentSnippet.beforeInputRootNode,
+				action.payload.range,
+			);
+			currentSnippet.beforeRangeUpdatedAt = Date.now();
 		},
-		setOutputSelection(state, action: PayloadAction<RangeCommand>) {
-			// @ts-expect-error immutability
-			state.afterInputRanges = buildRanges(
-				state.afterInputRootNode,
-				action.payload,
+		setOutputSelection(state, action: SetRangeAction) {
+			const currentSnippet = state.snippets.find(
+				({ name }) => name === action.payload.name,
 			);
-			state.afterRangeUpdatedAt = Date.now();
+			if (!currentSnippet) {
+				return;
+			}
+			// @ts-expect-error immutability
+			currentSnippet.afterInputRanges = buildRanges(
+				currentSnippet.afterInputRootNode,
+				action.payload.range,
+			);
+			currentSnippet.afterRangeUpdatedAt = Date.now();
 		},
 	},
 });
 
 const {
+	addSnippet,
 	setEngine,
 	setInput,
 	setOutput,
@@ -146,10 +294,32 @@ const selectSnippets = (state: RootState) => state[SLICE_KEY];
 
 const selectEngine = (state: RootState) => selectSnippets(state).engine;
 
+const selectIndividualSnippet =
+	(name: string) =>
+	(state: RootState): IndividualSnippetState | undefined =>
+		selectSnippets(state).snippets.find(
+			({ name: candidateName }) => candidateName === name,
+		);
+
+const selectSnippetNames = (state: RootState) =>
+	selectSnippets(state).snippets.map(({ name }) => name);
+
 const selectSnippetsFor =
-	(type: 'before' | 'after' | 'output') => (state: RootState) => {
+	(type: 'before' | 'after' | 'output', name: string) =>
+	(state: RootState) => {
 		// @TODO make reusable reducer for the code snippet
 		// that will include snippet, rootNode, ranges,
+
+		const currentSnippet = selectIndividualSnippet(name)(state);
+
+		if (!currentSnippet) {
+			console.warn('Snippet not found', name);
+			return {
+				snippet: '',
+				rootNode: null,
+				ranges: [],
+			};
+		}
 
 		const {
 			inputSnippet,
@@ -158,7 +328,7 @@ const selectSnippetsFor =
 			afterInputRootNode,
 			beforeInputRanges,
 			afterInputRanges,
-		} = selectSnippets(state);
+		} = currentSnippet;
 
 		const { ranges, content, rootNode } = selectCodemodOutput(state);
 
@@ -193,9 +363,15 @@ const selectSnippetsFor =
 	};
 
 export const selectFirstTreeNode =
-	(type: 'before' | 'after' | 'output') =>
+	(type: 'before' | 'after' | 'output', name: string) =>
 	(state: RootState): TreeNode | null => {
-		const { beforeInputRanges, afterInputRanges } = selectSnippets(state);
+		const currentSnippet = selectIndividualSnippet(name)(state);
+
+		if (!currentSnippet) {
+			return null;
+		}
+
+		const { beforeInputRanges, afterInputRanges } = currentSnippet;
 		const { ranges } = selectCodemodOutput(state);
 
 		const [firstRange] =
@@ -209,6 +385,7 @@ export const selectFirstTreeNode =
 	};
 
 export {
+	addSnippet,
 	setEngine,
 	setInput,
 	setOutput,
@@ -217,7 +394,10 @@ export {
 	selectSnippetsFor,
 	setInputSelection,
 	setOutputSelection,
+	selectSnippetNames,
+	selectIndividualSnippet,
 	SLICE_KEY,
+	DEFAULT_SNIPPET_NAME,
 };
 
 export type { Engine };

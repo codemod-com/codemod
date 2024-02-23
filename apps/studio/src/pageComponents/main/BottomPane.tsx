@@ -1,10 +1,15 @@
+import { Plus } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { PanelGroup, type ImperativePanelHandle } from 'react-resizable-panels';
 import Pane from '~/components/Panel';
 import ResizeHandle from '~/components/ResizePanel/ResizeHandler';
 import { Button } from '~/components/ui/button';
-import { selectEngine } from '~/store/slices/snippets';
+import snippets, {
+	addSnippet,
+	selectEngine,
+	selectSnippetNames,
+} from '~/store/slices/snippets';
 import { selectASTViewCollapsed, viewSlice } from '~/store/slices/view';
 import { debounce } from '~/utils/debounce';
 import ASTViewer from './ASTViewer';
@@ -32,11 +37,21 @@ const PageBottomPane = () => {
 	const engine = useSelector(selectEngine);
 	const astViewCollapsed = useSelector(selectASTViewCollapsed);
 
+	const snippetNames = useSelector(selectSnippetNames);
+
 	const dispatch = useDispatch();
 	const panelRefs = useRef<Record<string, ImperativePanelHandle | null>>({});
 
 	const togglePanel = () => {
 		dispatch(viewSlice.actions.setASTViewCollapsed(!astViewCollapsed));
+	};
+
+	const updateActiveSnippet = (name: string) => {
+		dispatch(viewSlice.actions.setActiveSnippet(name));
+	};
+
+	const addNewTab = () => {
+		dispatch(addSnippet({}));
 	};
 
 	useEffect(() => {
@@ -171,6 +186,23 @@ const PageBottomPane = () => {
 						panelRefs.current[Panel.SNIPPETS_SECTION] = ref;
 					}}
 				>
+					<div
+						role="tablist"
+						className="flex gap-3 w-full bg-slate-200 p-2"
+					>
+						{snippetNames.map((name) => (
+							<Button
+								key={name}
+								variant="outline"
+								onClick={() => updateActiveSnippet(name)}
+							>
+								{name}
+							</Button>
+						))}
+						<Button variant="outline" onClick={() => addNewTab()}>
+							Add Snippet <Plus />
+						</Button>
+					</div>
 					<PanelGroup direction="horizontal">
 						<Layout.ResizablePanel
 							className="relative bg-gray-bg dark:bg-gray-light"

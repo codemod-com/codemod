@@ -7,12 +7,26 @@ import { type ShareableCodemod } from '~/schemata/shareableCodemodSchemata';
 import { SEARCH_PARAMS_KEYS } from '~/store/getInitialState';
 import { generateCodemodNamePrompt } from '~/store/slices/CFS/prompts';
 import { selectMod } from '~/store/slices/mod';
-import { selectSnippets } from '~/store/slices/snippets';
+import {
+	selectIndividualSnippet,
+	selectSnippets,
+} from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 
 export const useShareLink = () => {
-	const { engine, inputSnippet, outputSnippet } = useSelector(selectSnippets);
+	const activeSnippet = useSelector(selectActiveSnippet);
+
+	const { engine } = useSelector(selectSnippets);
+	const currentSnippet = useSelector(selectIndividualSnippet(activeSnippet));
 	const { internalContent } = useSelector(selectMod);
 	const { getToken } = useAuth();
+
+	if (!currentSnippet) {
+		console.warn("Couldn't find current snippet");
+		return null;
+	}
+
+	const { inputSnippet, outputSnippet } = currentSnippet;
 
 	const getExtensionUrl = async (): Promise<URL | null> => {
 		try {

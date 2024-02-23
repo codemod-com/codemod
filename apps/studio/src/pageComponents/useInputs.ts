@@ -4,28 +4,36 @@ import { type State } from '~/schemata/stateSchemata';
 import { SEARCH_PARAMS_KEYS } from '~/store/getInitialState';
 import { selectMod, setContent } from '~/store/slices/mod';
 import {
-	selectSnippets,
+	selectEngine,
+	selectIndividualSnippet,
 	setEngine,
 	setInput,
 	setOutput,
 } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 
 export const useInputs = () => {
-	const { engine, inputSnippet, outputSnippet } = useSelector(selectSnippets);
+	const activeSnippet = useSelector(selectActiveSnippet);
+	const engine = useSelector(selectEngine);
 	const { internalContent } = useSelector(selectMod);
 	const dispatch = useDispatch();
 
+	const currentSnippet = useSelector(selectIndividualSnippet(activeSnippet));
+
 	useEffect(() => {
+		if (!currentSnippet) {
+			return;
+		}
 		localStorage.setItem(
 			'state',
 			JSON.stringify({
 				engine,
-				beforeSnippet: inputSnippet,
-				afterSnippet: outputSnippet,
+				beforeSnippet: currentSnippet.inputSnippet,
+				afterSnippet: currentSnippet.outputSnippet,
 				codemodSource: internalContent ?? '',
 			} satisfies State),
 		);
-	}, [engine, inputSnippet, outputSnippet, internalContent]);
+	}, [engine, internalContent, currentSnippet]);
 
 	useEffect(() => {
 		const storageEventListener = (storageEvent: StorageEvent) => {
@@ -42,11 +50,21 @@ export const useInputs = () => {
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.AFTER_SNIPPET) {
-				dispatch(setInput(storageEvent.newValue ?? ''));
+				dispatch(
+					setInput({
+						name: activeSnippet,
+						snippetContent: storageEvent.newValue ?? '',
+					}),
+				);
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.BEFORE_SNIPPET) {
-				dispatch(setOutput(storageEvent.newValue ?? ''));
+				dispatch(
+					setOutput({
+						name: activeSnippet,
+						snippetContent: storageEvent.newValue ?? '',
+					}),
+				);
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.CODEMOD_SOURCE) {
@@ -59,5 +77,5 @@ export const useInputs = () => {
 		return () => {
 			window.removeEventListener('storage', storageEventListener);
 		};
-	}, [dispatch]);
+	}, [activeSnippet, dispatch]);
 };

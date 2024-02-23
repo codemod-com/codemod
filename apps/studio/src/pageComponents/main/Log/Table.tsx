@@ -21,7 +21,11 @@ import { executeRangeCommandOnBeforeInputThunk } from '~/store/executeRangeComma
 import { setActiveEventThunk } from '~/store/setActiveEventThunk';
 import { codemodOutputSlice } from '~/store/slices/codemodOutput';
 import { setCodemodSelection } from '~/store/slices/mod';
-import { setOutputSelection } from '~/store/slices/snippets';
+import {
+	selectIndividualSnippet,
+	setOutputSelection,
+} from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import { selectLog, type Event } from '../../../store/slices/log';
 
 type TableRow = Readonly<{
@@ -93,16 +97,25 @@ const buildTableRow = (
 	details: getTableRowDetails(event),
 });
 
-const getRanges = (state: RootState) => ({
-	codemodInputRanges: state.mod.ranges,
-	codemodOutputRanges: state.codemodOutput.ranges,
-	beforeInputRanges: state.snippets.beforeInputRanges,
-	afterInputRanges: state.snippets.afterInputRanges,
-});
+const getRanges = (state: RootState, name: string) => {
+	const currentSnippet = selectIndividualSnippet(name)(state);
+
+	if (!currentSnippet) {
+		throw new Error('Snippet not found');
+	}
+
+	return {
+		codemodInputRanges: state.mod.ranges,
+		codemodOutputRanges: state.codemodOutput.ranges,
+		beforeInputRanges: currentSnippet.beforeInputRanges,
+		afterInputRanges: currentSnippet.afterInputRanges,
+	};
+};
 
 type Ranges = ReturnType<typeof getRanges>;
 
 const Table = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const store = useAppStore();
 	const { activeEventHashDigest, events } = useSelector(selectLog);
 	const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
@@ -129,20 +142,20 @@ const Table = () => {
 
 				await dispatch(setActiveEventThunk(hashDigest));
 
-				setOldRanges(getRanges(store.getState()));
+				setOldRanges(getRanges(store.getState(), activeSnippet));
 				setOldEventHashDigest(hashDigest);
 			},
-		[dispatch, store],
+		[activeSnippet, dispatch, store],
 	);
 
 	const onMouseEnter: MouseEventHandler<HTMLTableElement> = useCallback(
 		(event) => {
 			event.preventDefault();
 
-			setOldRanges(getRanges(store.getState()));
+			setOldRanges(getRanges(store.getState(), activeSnippet));
 			setOldEventHashDigest(activeEventHashDigest);
 		},
-		[activeEventHashDigest, store],
+		[activeEventHashDigest, activeSnippet, store],
 	);
 
 	const onMouseLeave: MouseEventHandler<HTMLTableElement> = useCallback(
@@ -169,18 +182,24 @@ const Table = () => {
 			);
 			dispatch(
 				executeRangeCommandOnBeforeInputThunk({
-					kind: 'PASS_THROUGH',
-					ranges: oldRanges.beforeInputRanges,
+					name: activeSnippet,
+					range: {
+						kind: 'PASS_THROUGH',
+						ranges: oldRanges.beforeInputRanges,
+					},
 				}),
 			);
 			dispatch(
 				setOutputSelection({
-					kind: 'PASS_THROUGH',
-					ranges: oldRanges.afterInputRanges,
+					name: activeSnippet,
+					range: {
+						kind: 'PASS_THROUGH',
+						ranges: oldRanges.afterInputRanges,
+					},
 				}),
 			);
 		},
-		[dispatch, oldEventHashDigest, oldRanges],
+		[activeSnippet, dispatch, oldEventHashDigest, oldRanges],
 	);
 
 	const tableRows = useMemo(

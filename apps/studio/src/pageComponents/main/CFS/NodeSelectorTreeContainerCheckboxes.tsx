@@ -1,6 +1,7 @@
 import { memo, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectFirstTreeNode } from '~/store/slices/snippets';
+import { selectActiveSnippet } from '~/store/slices/view';
 import {
 	getAvailableState,
 	selectCFS,
@@ -12,9 +13,12 @@ import { type TreeNode } from '../../../types/tree';
 import NodeSelectorTree from './NodeSelectorTreeCheckboxes';
 
 const NodeSelectorTreeContainer = () => {
+	const activeSnippet = useSelector(selectActiveSnippet);
 	const { nodeSelectorTreeState } = useSelector(selectCFS);
 
-	const firstTreeNode = useSelector(selectFirstTreeNode('before'));
+	const firstTreeNode = useSelector(
+		selectFirstTreeNode('before', activeSnippet),
+	);
 
 	const dispatch = useDispatch();
 
