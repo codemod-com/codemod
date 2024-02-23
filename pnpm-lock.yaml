@@ -3829,6 +3829,66 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4(@types/node@20.10.5)
 
+  apps/registry/codemods/react/19/remove-context-provider:
+    devDependencies:
+      '@codemod-com/registry-cjs-builder':
+        specifier: workspace:*
+        version: link:../../../../cjs-builder
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../../../packages/utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.1.0)
+      esbuild:
+        specifier: 0.19.5
+        version: 0.19.5
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.1(@babel/preset-env@7.23.9)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.10.5)
+
+  apps/registry/codemods/react/19/remove-memoization-components:
+    devDependencies:
+      '@codemod-com/registry-cjs-builder':
+        specifier: workspace:*
+        version: link:../../../../cjs-builder
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../../../packages/utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.1.0)
+      esbuild:
+        specifier: 0.19.5
+        version: 0.19.5
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.1(@babel/preset-env@7.23.9)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.10.5)
+
   apps/registry/codemods/react/19/use-context-hook:
     devDependencies:
       '@codemod-com/registry-cjs-builder':
@@ -25127,9 +25187,6 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
-    peerDependenciesMeta:
-      node-gyp:
-        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0
