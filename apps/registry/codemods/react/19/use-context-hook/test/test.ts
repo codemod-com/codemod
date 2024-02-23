@@ -34,4 +34,31 @@ describe("useContext -> use", () => {
 			output.replace(/\W/gm, ""),
 		);
 	});
+
+	it("should replace React.useContext with use", async () => {
+		const input = `
+    import React from "react";
+    import ThemeContext from "./ThemeContext";
+
+		const theme = React.useContext(ThemeContext);
+		`;
+
+		const output = `
+    import React from "react";
+    import ThemeContext from "./ThemeContext";
+
+		const theme = React.use(ThemeContext);
+		`;
+
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: input,
+		};
+
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
+		});
+
+		assert.deepEqual(actualOutput, output);
+	});
 });
