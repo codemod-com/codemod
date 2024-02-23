@@ -35,9 +35,7 @@ describe("Context.Provider -> Context", () => {
 			source: input,
 		};
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
-		});
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
 			actualOutput?.replace(/\W/gm, ""),
