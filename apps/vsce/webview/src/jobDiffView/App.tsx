@@ -39,7 +39,7 @@ export const App = () => {
 	if (viewProps.kind === "CODEMOD") {
 		return (
 			<main className={styles.markdownContainer}>
-				<ReactMarkdown children={viewProps.description} />
+				<ReactMarkdown>{viewProps.description}</ReactMarkdown>
 			</main>
 		);
 	}

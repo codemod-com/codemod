@@ -54,7 +54,7 @@ export class WebviewResolver {
 			"build",
 			webviewName,
 			"assets",
-			`index.css`,
+			"index.css",
 		]);
 		const scriptUri = getUri(webview, this.__extensionPath, [
 			"webview",
@@ -78,10 +78,10 @@ export class WebviewResolver {
 
 		const imageSources = [
 			webview.cspSource,
-			`'self'`,
-			`data:`,
-			`vscode-resource:`,
-			`https:`,
+			"'self'",
+			"data:",
+			"vscode-resource:",
+			"https:",
 		];
 
 		const getWorkerUri = (name: string) =>

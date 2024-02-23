@@ -39,7 +39,10 @@ const responses = [
 	() => nock("https://test.com").get("/test").reply(200, "Test"),
 ];
 
-const setupResponses = (client: AxiosInstance, responses: Array<Function>) => {
+const setupResponses = (
+	client: AxiosInstance,
+	responses: Array<() => void>,
+) => {
 	const configureResponse = () => {
 		const response = responses.shift();
 		if (response) {
@@ -69,7 +72,7 @@ describe("DownloadService", () => {
 		setupResponses(axiosInstance, responses);
 
 		await downloadService.downloadFileIfNeeded(
-			`https://test.com/test`,
+			"https://test.com/test",
 			// @ts-expect-error passing a string instead of URI, because URI cannot be imported from vscode
 			"/",
 			"755",

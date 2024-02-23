@@ -346,7 +346,7 @@ export class EngineService {
 
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
-				throw new InvalidEngineResponseFormatError(report.join(`\n`));
+				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
 
 			return codemodListOrError.right.names;
@@ -795,7 +795,7 @@ export class EngineService {
 					hash: buildJobHash(hashlessJob, caseHashDigest),
 				};
 			} else {
-				throw new Error(`Unrecognized message`);
+				throw new Error("Unrecognized message");
 			}
 
 			if (job && !this.#execution.affectedAnyFile) {
