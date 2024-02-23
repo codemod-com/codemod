@@ -36,7 +36,7 @@ import {
 // the build script contains the version
 declare const __CODEMODCOM_CLI_VERSION__: string;
 
-const WAIT_INPUT_TIMEOUT = 1000;
+const WAIT_INPUT_TIMEOUT = 300;
 
 export const executeMainThread = async () => {
   const slicedArgv = hideBin(process.argv);
