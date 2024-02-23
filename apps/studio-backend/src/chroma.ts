@@ -72,7 +72,7 @@ const buildChromaService = async (environment: Environment) => {
 
 		abortController.abort();
 
-		return output !== null ? output["text"] : null;
+		return output !== null ? output.text : null;
 	};
 
 	return {
