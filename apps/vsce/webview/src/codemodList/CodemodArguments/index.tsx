@@ -1,15 +1,15 @@
-import { pipe } from 'fp-ts/lib/function';
-import * as O from 'fp-ts/Option';
-import * as T from 'fp-ts/These';
+import * as O from "fp-ts/Option";
+import * as T from "fp-ts/These";
+import { pipe } from "fp-ts/lib/function";
 import {
 	CodemodArgumentWithValue,
 	CodemodNodeHashDigest,
-} from '../../../../src/selectors/selectCodemodTree';
-import { CodemodHash } from '../../shared/types';
-import { vscode } from '../../shared/utilities/vscode';
-import { DirectorySelector } from '../components/DirectorySelector';
-import FormField from './FormField';
-import styles from './styles.module.css';
+} from "../../../../src/selectors/selectCodemodTree";
+import { CodemodHash } from "../../shared/types";
+import { vscode } from "../../shared/utilities/vscode";
+import { DirectorySelector } from "../components/DirectorySelector";
+import FormField from "./FormField";
+import styles from "./styles.module.css";
 
 type Props = Readonly<{
 	hashDigest: CodemodNodeHashDigest;
@@ -20,12 +20,12 @@ type Props = Readonly<{
 
 const updatePath = (value: string, codemodHash: CodemodHash) => {
 	vscode.postMessage({
-		kind: 'webview.codemodList.updatePathToExecute',
+		kind: "webview.codemodList.updatePathToExecute",
 		value: {
 			newPath: value,
 			codemodHash,
-			errorMessage: '',
-			warningMessage: '',
+			errorMessage: "",
+			warningMessage: "",
 			revertToPrevExecutionIfInvalid: false,
 		},
 	});
@@ -39,7 +39,7 @@ const CodemodArguments = ({
 }: Props) => {
 	const onChangeFormField = (fieldName: string) => (value: string) => {
 		vscode.postMessage({
-			kind: 'webview.global.setCodemodArgument',
+			kind: "webview.global.setCodemodArgument",
 			hashDigest,
 			name: fieldName,
 			value,
@@ -49,9 +49,9 @@ const CodemodArguments = ({
 	const path: string = pipe(
 		O.fromNullable(executionPath),
 		O.fold(
-			() => '',
+			() => "",
 			T.fold(
-				() => '',
+				() => "",
 				(p) => p,
 				(_, p) => p,
 			),
@@ -69,10 +69,7 @@ const CodemodArguments = ({
 					autocompleteItems={autocompleteItems}
 				/>
 				{args.map((props) => (
-					<FormField
-						{...props}
-						onChange={onChangeFormField(props.name)}
-					/>
+					<FormField {...props} onChange={onChangeFormField(props.name)} />
 				))}
 			</form>
 		</div>

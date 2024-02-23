@@ -1,9 +1,9 @@
-import { type Monaco } from '@monaco-editor/react';
-import { type monaco } from '~/customMonaco';
-import { applyExtraLibs } from './extraLibs';
+import { type Monaco } from "@monaco-editor/react";
+import { type monaco } from "~/customMonaco";
+import { applyExtraLibs } from "./extraLibs";
 import registerPromptLang, {
 	LANG_ID as PROMPT_LANG_ID,
-} from './lang/promptLang';
+} from "./lang/promptLang";
 
 const ignoreCodes = [
 	2304, // unresolved vars
@@ -21,7 +21,7 @@ const configure = (m: Monaco, e: monaco.editor.IStandaloneCodeEditor) => {
 	const path = model?.uri.path;
 	const lang = model?.getLanguageId();
 
-	if (lang === 'typescript' && path?.endsWith('.tsx')) {
+	if (lang === "typescript" && path?.endsWith(".tsx")) {
 		m.languages.typescript.typescriptDefaults.setCompilerOptions({
 			jsx: m.languages.typescript.JsxEmit.React,
 		});

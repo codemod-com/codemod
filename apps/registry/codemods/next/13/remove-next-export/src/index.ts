@@ -1,6 +1,6 @@
-import { basename, extname } from 'node:path';
-import type { Filemod } from '@codemod-com/filemod';
-import type tsmorph from 'ts-morph';
+import { basename, extname } from "node:path";
+import type { Filemod } from "@codemod-com/filemod";
+import type tsmorph from "ts-morph";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
@@ -8,13 +8,13 @@ type Dependencies = Readonly<{
 }>;
 
 export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
-	includePatterns: ['**/package.json', '**/next.config.js', '**/*.{md,sh}'],
-	excludePatterns: ['**/node_modules/**'],
+	includePatterns: ["**/package.json", "**/next.config.js", "**/*.{md,sh}"],
+	excludePatterns: ["**/node_modules/**"],
 	handleData: async (api, path, data) => {
 		const extension = extname(path);
 		const theBasename = basename(path);
 
-		if (theBasename === 'next.config.js') {
+		if (theBasename === "next.config.js") {
 			const { tsmorph } = api.getDependencies();
 
 			const project = new tsmorph.Project({
@@ -36,7 +36,7 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 			binaryExpressions.forEach((binaryExpression) => {
 				const left = binaryExpression.getLeft();
 
-				if (left.getText() !== 'module.exports') {
+				if (left.getText() !== "module.exports") {
 					return;
 				}
 
@@ -47,7 +47,7 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 				}
 
 				right.addPropertyAssignment({
-					name: 'output',
+					name: "output",
 					initializer: '"export"',
 				});
 
@@ -56,25 +56,25 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 
 			if (dirtyFlag) {
 				return {
-					kind: 'upsertData',
+					kind: "upsertData",
 					path,
 					data: sourceFile.getFullText(),
 				};
 			}
 		}
 
-		if (extension === '.json') {
+		if (extension === ".json") {
 			try {
 				const json = JSON.parse(data);
 				// follow a happy path, in the worse case it will throw an error
 				const entries = Object.entries(json.scripts);
 
 				for (const [key, value] of entries) {
-					if (typeof value !== 'string') {
+					if (typeof value !== "string") {
 						continue;
 					}
 
-					if (value.includes('next export')) {
+					if (value.includes("next export")) {
 						delete json.scripts[key];
 					}
 				}
@@ -82,38 +82,38 @@ export const repomod: Filemod<Dependencies, Record<string, unknown>> = {
 				const newData = JSON.stringify(json);
 
 				return {
-					kind: 'upsertData',
+					kind: "upsertData",
 					path,
 					data: newData,
 				};
 			} catch (error) {
 				return {
-					kind: 'noop',
+					kind: "noop",
 				};
 			}
 		}
 
-		if (extension === '.md' || extension === '.sh') {
+		if (extension === ".md" || extension === ".sh") {
 			const newData = data
-				.split('\n')
-				.filter((line) => !line.includes('next export'))
-				.join('\n');
+				.split("\n")
+				.filter((line) => !line.includes("next export"))
+				.join("\n");
 
 			if (newData === data) {
 				return {
-					kind: 'noop',
+					kind: "noop",
 				};
 			}
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				path,
 				data: newData,
 			};
 		}
 
 		return {
-			kind: 'noop',
+			kind: "noop",
 		};
 	},
 };

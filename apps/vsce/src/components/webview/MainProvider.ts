@@ -1,40 +1,40 @@
-import axios from 'axios';
-import areEqual from 'fast-deep-equal';
-import { glob } from 'fast-glob';
+import axios from "axios";
+import areEqual from "fast-deep-equal";
+import { glob } from "fast-glob";
 import {
-	commands,
 	ExtensionContext,
 	Uri,
 	WebviewView,
 	WebviewViewProvider,
+	commands,
 	window,
 	workspace,
-} from 'vscode';
-import { Store } from '../../data';
-import { actions } from '../../data/slice';
-import { SEARCH_PARAMS_KEYS } from '../../extension';
-import { createIssueResponseCodec } from '../../github/types';
+} from "vscode";
+import { Store } from "../../data";
+import { actions } from "../../data/slice";
+import { SEARCH_PARAMS_KEYS } from "../../extension";
+import { createIssueResponseCodec } from "../../github/types";
 import {
 	CodemodNodeHashDigest,
 	relativeToAbsolutePath,
 	selectCodemodArguments,
-} from '../../selectors/selectCodemodTree';
-import { selectMainWebviewViewProps } from '../../selectors/selectMainWebviewViewProps';
-import { buildGlobPattern, isNeitherNullNorUndefined } from '../../utilities';
-import { EngineService } from '../engineService';
-import { MessageBus, MessageKind } from '../messageBus';
-import { UserService } from '../userService';
-import { CodemodHash, WebviewMessage, WebviewResponse } from './webviewEvents';
-import { WebviewResolver } from './WebviewResolver';
+} from "../../selectors/selectCodemodTree";
+import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
+import { buildGlobPattern, isNeitherNullNorUndefined } from "../../utilities";
+import { EngineService } from "../engineService";
+import { MessageBus, MessageKind } from "../messageBus";
+import { UserService } from "../userService";
+import { WebviewResolver } from "./WebviewResolver";
+import { CodemodHash, WebviewMessage, WebviewResponse } from "./webviewEvents";
 
-const X_CODEMOD_ACCESS_TOKEN = 'X-Codemod-Access-Token'.toLocaleLowerCase();
+const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<boolean> => {
 	try {
 		const response = await axios.post(
-			'https://backend.codemod.com/validateAccessToken',
+			"https://backend.codemod.com/validateAccessToken",
 			{},
 			{
 				headers: {
@@ -62,11 +62,11 @@ export const createIssue = async (
 	onFail: () => Promise<void>,
 ): Promise<{ status: number; html_url: string | null }> => {
 	// call API to create Github Issue
-	const codemodRegistryRepo = 'https://github.com/codemod-com/codemod';
+	const codemodRegistryRepo = "https://github.com/codemod-com/codemod";
 
 	// TODO point to backend.codemod.com
 	const result = await axios.post(
-		'https://backend.codemod.com/sourceControl/github/issues',
+		"https://backend.codemod.com/sourceControl/github/issues",
 		{
 			title,
 			body,
@@ -87,21 +87,21 @@ export const createIssue = async (
 
 	const validation = createIssueResponseCodec.decode(data);
 
-	if (validation._tag === 'Left') {
+	if (validation._tag === "Left") {
 		await onFail();
-		window.showErrorMessage('Creating Github issue failed.');
+		window.showErrorMessage("Creating Github issue failed.");
 		return { status: 406, html_url: null };
 	}
 
 	onSuccess();
 
 	const decision = await window.showInformationMessage(
-		'Github issue is successfully created.',
-		'See issue in Github',
+		"Github issue is successfully created.",
+		"See issue in Github",
 	);
 	const { html_url } = validation.right;
-	if (decision === 'See issue in Github') {
-		commands.executeCommand('codemod.redirect', html_url);
+	if (decision === "See issue in Github") {
+		commands.executeCommand("codemod.redirect", html_url);
 	}
 	return {
 		status: 200,
@@ -111,23 +111,23 @@ export const createIssue = async (
 
 const routeUserToStudioToAuthenticate = async () => {
 	const result = await window.showInformationMessage(
-		'To report issues, sign in to Codemod.com.',
+		"To report issues, sign in to Codemod.com.",
 		{ modal: true },
-		'Sign in with Github',
+		"Sign in with Github",
 	);
 
-	if (result !== 'Sign in with Github') {
+	if (result !== "Sign in with Github") {
 		return;
 	}
 
 	const searchParams = new URLSearchParams();
 
-	searchParams.set(SEARCH_PARAMS_KEYS.COMMAND, 'accessTokenRequestedByVSCE');
+	searchParams.set(SEARCH_PARAMS_KEYS.COMMAND, "accessTokenRequestedByVSCE");
 
-	const url = new URL('https://codemod.studio');
+	const url = new URL("https://codemod.studio");
 	url.search = searchParams.toString();
 
-	commands.executeCommand('codemod.redirect', url);
+	commands.executeCommand("codemod.redirect", url);
 };
 
 export class MainViewProvider implements WebviewViewProvider {
@@ -136,7 +136,7 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __executionQueue: ReadonlyArray<CodemodHash> = [];
 	private __directoryPaths: ReadonlyArray<string> | null = null;
 	// true by default to prevent banner blinking on load
-	private __codemodEngineNodeLocated: boolean = true;
+	private __codemodEngineNodeLocated = true;
 
 	constructor(
 		context: ExtensionContext,
@@ -154,7 +154,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			}
 
 			this.__postMessage({
-				kind: 'webview.global.setCodemodExecutionProgress',
+				kind: "webview.global.setCodemodExecutionProgress",
 				codemodHash: message.codemodHash,
 				progressKind: message.progressKind,
 				totalFileNumber: message.totalFileNumber,
@@ -164,7 +164,7 @@ export class MainViewProvider implements WebviewViewProvider {
 
 		this.__messageBus.subscribe(MessageKind.codemodSetExecuted, () => {
 			this.__postMessage({
-				kind: 'webview.global.codemodExecutionHalted',
+				kind: "webview.global.codemodExecutionHalted",
 			});
 		});
 
@@ -173,25 +173,20 @@ export class MainViewProvider implements WebviewViewProvider {
 			this.__store.dispatch(actions.collapseChangeExplorerPanel(false));
 		});
 
-		this.__messageBus.subscribe(
-			MessageKind.executionQueueChange,
-			(message) => {
-				this.__executionQueue = message.queuedCodemodHashes;
-				const props = this.__buildProps();
+		this.__messageBus.subscribe(MessageKind.executionQueueChange, (message) => {
+			this.__executionQueue = message.queuedCodemodHashes;
+			const props = this.__buildProps();
 
-				this.__postMessage({
-					kind: 'webview.main.setProps',
-					props: props,
-				});
-			},
-		);
+			this.__postMessage({
+				kind: "webview.main.setProps",
+				props: props,
+			});
+		});
 
 		this.__messageBus.subscribe(
 			MessageKind.codemodEngineNodeLocated,
 			({ codemodEngineNodeLocated }) => {
-				if (
-					this.__codemodEngineNodeLocated === codemodEngineNodeLocated
-				) {
+				if (this.__codemodEngineNodeLocated === codemodEngineNodeLocated) {
 					return;
 				}
 
@@ -200,7 +195,7 @@ export class MainViewProvider implements WebviewViewProvider {
 				const props = this.__buildProps();
 
 				this.__postMessage({
-					kind: 'webview.main.setProps',
+					kind: "webview.main.setProps",
 					props,
 				});
 			},
@@ -221,7 +216,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			if (
 				nextProps !== null &&
 				prevProps?.activeTabId !== nextProps.activeTabId &&
-				nextProps.activeTabId === 'codemodRuns' &&
+				nextProps.activeTabId === "codemodRuns" &&
 				!nextProps.clearingInProgress
 			) {
 				this.__messageBus.publish({
@@ -232,7 +227,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			prevProps = nextProps;
 
 			this.__postMessage({
-				kind: 'webview.main.setProps',
+				kind: "webview.main.setProps",
 				props: nextProps,
 			});
 		});
@@ -269,22 +264,19 @@ export class MainViewProvider implements WebviewViewProvider {
 			return;
 		}
 
-		const globPattern = buildGlobPattern(this.__rootUri, '/**');
+		const globPattern = buildGlobPattern(this.__rootUri, "/**");
 
 		const directoryPaths = await glob(globPattern, {
 			// ignore node_modules and files, match only directories
 			onlyDirectories: true,
-			ignore: ['**/node_modules/**'],
+			ignore: ["**/node_modules/**"],
 			followSymbolicLinks: false,
 			deep: 10,
 		});
 
 		const MAX_NUMBER_OF_DIRECTORIES = 10000;
 
-		this.__directoryPaths = directoryPaths.slice(
-			0,
-			MAX_NUMBER_OF_DIRECTORIES,
-		);
+		this.__directoryPaths = directoryPaths.slice(0, MAX_NUMBER_OF_DIRECTORIES);
 	}
 
 	private __postMessage(message: WebviewMessage) {
@@ -294,9 +286,9 @@ export class MainViewProvider implements WebviewViewProvider {
 	private __resolveWebview(webviewView: WebviewView) {
 		this.__webviewResolver.resolveWebview(
 			webviewView.webview,
-			'main',
+			"main",
 			JSON.stringify(this.__buildProps()),
-			'mainWebviewViewProps',
+			"mainWebviewViewProps",
 		);
 	}
 
@@ -311,45 +303,37 @@ export class MainViewProvider implements WebviewViewProvider {
 	}
 
 	private __onDidReceiveMessage = async (message: WebviewResponse) => {
-		if (message.kind === 'webview.command') {
+		if (message.kind === "webview.command") {
 			commands.executeCommand(
 				message.value.command,
 				...(message.value.arguments ?? []),
 			);
 		}
 
-		if (message.kind === 'webview.campaignManager.setSelectedCaseHash') {
-			this.__store.dispatch(
-				actions.setSelectedCaseHash(message.caseHash),
-			);
+		if (message.kind === "webview.campaignManager.setSelectedCaseHash") {
+			this.__store.dispatch(actions.setSelectedCaseHash(message.caseHash));
 		}
 
-		if (message.kind === 'webview.global.discardSelected') {
-			commands.executeCommand(
-				'codemod.discardJobs',
-				message.caseHashDigest,
-			);
+		if (message.kind === "webview.global.discardSelected") {
+			commands.executeCommand("codemod.discardJobs", message.caseHashDigest);
 		}
 
-		if (message.kind === 'webview.global.showInformationMessage') {
+		if (message.kind === "webview.global.showInformationMessage") {
 			window.showInformationMessage(message.value);
 		}
 
-		if (message.kind === 'webview.global.applySelected') {
+		if (message.kind === "webview.global.applySelected") {
 			commands.executeCommand(
-				'codemod.sourceControl.saveStagedJobsToTheFileSystem',
+				"codemod.sourceControl.saveStagedJobsToTheFileSystem",
 				message.caseHashDigest,
 			);
 		}
 
-		if (message.kind === 'webview.main.setActiveTabId') {
+		if (message.kind === "webview.main.setActiveTabId") {
 			this.__store.dispatch(actions.setActiveTabId(message.activeTabId));
 		}
 
-		if (
-			message.kind ===
-			'webview.main.setCodemodDiscoveryPanelGroupSettings'
-		) {
+		if (message.kind === "webview.main.setCodemodDiscoveryPanelGroupSettings") {
 			this.__store.dispatch(
 				actions.setCodemodDiscoveryPanelGroupSettings(
 					message.panelGroupSettings,
@@ -357,30 +341,28 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.main.setCodemodRunsPanelGroupSettings') {
+		if (message.kind === "webview.main.setCodemodRunsPanelGroupSettings") {
 			this.__store.dispatch(
-				actions.setCodemodRunsPanelGroupSettings(
-					message.panelGroupSettings,
-				),
+				actions.setCodemodRunsPanelGroupSettings(message.panelGroupSettings),
 			);
 		}
 
-		if (message.kind === 'webview.main.setToaster') {
+		if (message.kind === "webview.main.setToaster") {
 			this.__store.dispatch(actions.setToaster(message.value));
 		}
 
-		if (message.kind === 'webview.main.signOut') {
-			commands.executeCommand('codemod.signOut');
+		if (message.kind === "webview.main.signOut") {
+			commands.executeCommand("codemod.signOut");
 		}
 
-		if (message.kind === 'webview.main.removePrivateCodemod') {
+		if (message.kind === "webview.main.removePrivateCodemod") {
 			commands.executeCommand(
-				'codemod.removePrivateCodemod',
+				"codemod.removePrivateCodemod",
 				message.hashDigest,
 			);
 		}
 
-		if (message.kind === 'webview.global.flipSelectedExplorerNode') {
+		if (message.kind === "webview.global.flipSelectedExplorerNode") {
 			this.__store.dispatch(
 				actions.flipSelectedExplorerNode([
 					message.caseHashDigest,
@@ -389,7 +371,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.global.flipCollapsibleExplorerNode') {
+		if (message.kind === "webview.global.flipCollapsibleExplorerNode") {
 			this.__store.dispatch(
 				actions.flipCollapsibleExplorerNode([
 					message.caseHashDigest,
@@ -398,7 +380,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.global.focusExplorerNode') {
+		if (message.kind === "webview.global.focusExplorerNode") {
 			this.__store.dispatch(
 				actions.focusExplorerNode([
 					message.caseHashDigest,
@@ -407,7 +389,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.global.setChangeExplorerSearchPhrase') {
+		if (message.kind === "webview.global.setChangeExplorerSearchPhrase") {
 			this.__store.dispatch(
 				actions.setChangeExplorerSearchPhrase([
 					message.caseHashDigest,
@@ -416,13 +398,13 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.codemodList.haltCodemodExecution') {
+		if (message.kind === "webview.codemodList.haltCodemodExecution") {
 			this.__engineService.shutdownEngines();
 		}
 
-		if (message.kind === 'webview.codemodList.dryRunCodemod') {
+		if (message.kind === "webview.codemodList.dryRunCodemod") {
 			if (this.__rootUri === null) {
-				window.showWarningMessage('No active workspace is found.');
+				window.showWarningMessage("No active workspace is found.");
 				return;
 			}
 
@@ -445,8 +427,7 @@ export class MainViewProvider implements WebviewViewProvider {
 				hashDigest as unknown as CodemodNodeHashDigest,
 			).every(
 				({ required, value }) =>
-					!required ||
-					(isNeitherNullNorUndefined(value) && value !== ''),
+					!required || (isNeitherNullNorUndefined(value) && value !== ""),
 			);
 
 			if (!argumentsSpecified) {
@@ -458,12 +439,12 @@ export class MainViewProvider implements WebviewViewProvider {
 				return;
 			}
 
-			commands.executeCommand('codemod.executeCodemod', uri, hashDigest);
+			commands.executeCommand("codemod.executeCodemod", uri, hashDigest);
 		}
 
-		if (message.kind === 'webview.codemodList.dryRunPrivateCodemod') {
+		if (message.kind === "webview.codemodList.dryRunPrivateCodemod") {
 			if (this.__rootUri === null) {
-				window.showWarningMessage('No active workspace is found.');
+				window.showWarningMessage("No active workspace is found.");
 				return;
 			}
 
@@ -481,33 +462,33 @@ export class MainViewProvider implements WebviewViewProvider {
 			const uri = Uri.file(executionPath);
 
 			commands.executeCommand(
-				'codemod.executePrivateCodemod',
+				"codemod.executePrivateCodemod",
 				uri,
 				hashDigest,
 				message.name,
 			);
 		}
 
-		if (message.kind === 'webview.codemodList.updatePathToExecute') {
+		if (message.kind === "webview.codemodList.updatePathToExecute") {
 			await this.updateExecutionPath(message.value);
 
 			this.__postMessage({
-				kind: 'webview.main.setProps',
+				kind: "webview.main.setProps",
 				props: this.__buildProps(),
 			});
 		}
 
-		if (message.kind === 'webview.global.showWarningMessage') {
+		if (message.kind === "webview.global.showWarningMessage") {
 			window.showWarningMessage(message.value);
 		}
 
-		if (message.kind === 'webview.global.flipCodemodHashDigest') {
+		if (message.kind === "webview.global.flipCodemodHashDigest") {
 			this.__store.dispatch(
 				actions.flipCodemodHashDigest(message.codemodNodeHashDigest),
 			);
 		}
 
-		if (message.kind === 'webview.global.selectCodemodNodeHashDigest') {
+		if (message.kind === "webview.global.selectCodemodNodeHashDigest") {
 			this.__store.dispatch(
 				actions.setFocusedCodemodHashDigest(
 					message.selectedCodemodNodeHashDigest,
@@ -515,37 +496,35 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === 'webview.global.setCodemodSearchPhrase') {
+		if (message.kind === "webview.global.setCodemodSearchPhrase") {
 			this.__store.dispatch(
 				actions.setCodemodSearchPhrase(message.searchPhrase),
 			);
 		}
 
-		if (message.kind === 'webview.global.collapseResultsPanel') {
-			this.__store.dispatch(
-				actions.collapseResultsPanel(message.collapsed),
-			);
+		if (message.kind === "webview.global.collapseResultsPanel") {
+			this.__store.dispatch(actions.collapseResultsPanel(message.collapsed));
 		}
 
-		if (message.kind === 'webview.global.collapseChangeExplorerPanel') {
+		if (message.kind === "webview.global.collapseChangeExplorerPanel") {
 			this.__store.dispatch(
 				actions.collapseChangeExplorerPanel(message.collapsed),
 			);
 		}
 
-		if (message.kind === 'webview.global.collapsePublicRegistryPanel') {
+		if (message.kind === "webview.global.collapsePublicRegistryPanel") {
 			this.__store.dispatch(
 				actions.collapsePublicRegistryPanel(message.collapsed),
 			);
 		}
 
-		if (message.kind === 'webview.global.collapsePrivateRegistryPanel') {
+		if (message.kind === "webview.global.collapsePrivateRegistryPanel") {
 			this.__store.dispatch(
 				actions.collapsePrivateRegistryPanel(message.collapsed),
 			);
 		}
 
-		if (message.kind === 'webview.sourceControl.createIssue') {
+		if (message.kind === "webview.sourceControl.createIssue") {
 			const accessToken = this.__userService.getLinkedToken();
 
 			const { title, body } = message.data;
@@ -553,7 +532,7 @@ export class MainViewProvider implements WebviewViewProvider {
 			if (accessToken === null) {
 				this.__store.dispatch(
 					actions.setSourceControlTabProps({
-						kind: 'ISSUE_CREATION_WAITING_FOR_AUTH',
+						kind: "ISSUE_CREATION_WAITING_FOR_AUTH",
 						title,
 						body,
 					}),
@@ -565,16 +544,16 @@ export class MainViewProvider implements WebviewViewProvider {
 			// call API to create Github Issue
 			const onSuccess = () => {
 				this.__store.dispatch(
-					actions.setSourceControlTabProps({ kind: 'IDLENESS' }),
+					actions.setSourceControlTabProps({ kind: "IDLENESS" }),
 				);
-				this.__store.dispatch(actions.setActiveTabId('codemodRuns'));
+				this.__store.dispatch(actions.setActiveTabId("codemodRuns"));
 			};
 
 			const onFail = async () => {
 				this.__userService.unlinkCodemodComUserAccount();
 				this.__store.dispatch(
 					actions.setSourceControlTabProps({
-						kind: 'ISSUE_CREATION_WAITING_FOR_AUTH',
+						kind: "ISSUE_CREATION_WAITING_FOR_AUTH",
 						title,
 						body,
 					}),
@@ -584,7 +563,7 @@ export class MainViewProvider implements WebviewViewProvider {
 
 			this.__store.dispatch(
 				actions.setSourceControlTabProps({
-					kind: 'WAITING_FOR_ISSUE_CREATION_API_RESPONSE',
+					kind: "WAITING_FOR_ISSUE_CREATION_API_RESPONSE",
 					title,
 					body,
 				}),
@@ -592,15 +571,13 @@ export class MainViewProvider implements WebviewViewProvider {
 			await createIssue(title, body, accessToken, onSuccess, onFail);
 		}
 
-		if (
-			message.kind === 'webview.global.setCodemodArgumentsPopupHashDigest'
-		) {
+		if (message.kind === "webview.global.setCodemodArgumentsPopupHashDigest") {
 			this.__store.dispatch(
 				actions.setCodemodArgumentsPopupHashDigest(message.hashDigest),
 			);
 		}
 
-		if (message.kind === 'webview.global.setCodemodArgument') {
+		if (message.kind === "webview.global.setCodemodArgument") {
 			this.__store.dispatch(
 				actions.setCodemodArgument({
 					hashDigest: message.hashDigest,
@@ -627,7 +604,7 @@ export class MainViewProvider implements WebviewViewProvider {
 		fromVSCodeCommand?: boolean;
 	}) => {
 		if (this.__rootUri === null) {
-			window.showWarningMessage('No active workspace is found.');
+			window.showWarningMessage("No active workspace is found.");
 			return;
 		}
 
@@ -651,7 +628,7 @@ export class MainViewProvider implements WebviewViewProvider {
 
 			if (!fromVSCodeCommand) {
 				window.showInformationMessage(
-					'Successfully updated the execution path.',
+					"Successfully updated the execution path.",
 				);
 			}
 		} catch (e) {

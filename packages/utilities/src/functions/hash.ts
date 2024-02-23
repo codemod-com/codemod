@@ -1,13 +1,10 @@
-import { createHash } from 'crypto';
+import { createHash } from "crypto";
 
 export const buildHash = (data: string) =>
-	createHash('ripemd160').update(data).digest('base64url');
+	createHash("ripemd160").update(data).digest("base64url");
 
 export const buildCodemodMetadataHash = (name: string) =>
-	createHash('ripemd160')
-		.update('README.md')
-		.update(name)
-		.digest('base64url');
+	createHash("ripemd160").update("README.md").update(name).digest("base64url");
 
 // taken from https://stackoverflow.com/a/63361543
 export const streamToString = async (stream: NodeJS.ReadableStream) => {
@@ -22,5 +19,5 @@ export const streamToString = async (stream: NodeJS.ReadableStream) => {
 		chunks.push(Buffer.from(chunk));
 	}
 
-	return Buffer.concat(chunks).toString('utf-8');
+	return Buffer.concat(chunks).toString("utf-8");
 };

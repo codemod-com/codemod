@@ -1,10 +1,10 @@
-import Editor, { type EditorProps, type Monaco } from '@monaco-editor/react';
-import { forwardRef, useRef, useState } from 'react';
-import { type monaco } from '~/customMonaco';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { useTheme } from '../../pageComponents/main/themeContext';
-import configure from './configure';
-import { useEditor } from './hook';
+import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
+import { forwardRef, useRef, useState } from "react";
+import { type monaco } from "~/customMonaco";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { useTheme } from "../../pageComponents/main/themeContext";
+import configure from "./configure";
+import { useEditor } from "./hook";
 
 type Link = {
 	regex: RegExp;
@@ -31,8 +31,8 @@ type CustomProps = {
 };
 
 const defaultOptions = {
-	wordWrap: 'on',
-	wrappingIndent: 'indent',
+	wordWrap: "on",
+	wrappingIndent: "indent",
 	minimap: {
 		enabled: false,
 	},
@@ -90,7 +90,7 @@ const MonacoEditor = forwardRef<
 						editorRef.current = editor;
 						monacoRef.current = m;
 
-						if (typeof ref === 'function') {
+						if (typeof ref === "function") {
 							ref(editor);
 						} else if (ref) {
 							// eslint-disable-next-line no-param-reassign
@@ -100,7 +100,7 @@ const MonacoEditor = forwardRef<
 						configure(m, editor);
 						setIsMounted(true);
 					}}
-					theme={isDark ? 'vs-dark' : 'vs'}
+					theme={isDark ? "vs-dark" : "vs"}
 					options={{
 						...defaultOptions,
 						...options,
@@ -111,6 +111,6 @@ const MonacoEditor = forwardRef<
 		);
 	},
 );
-MonacoEditor.displayName = 'MonacoEditor';
+MonacoEditor.displayName = "MonacoEditor";
 
 export default MonacoEditor;

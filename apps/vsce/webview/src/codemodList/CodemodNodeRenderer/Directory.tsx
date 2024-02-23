@@ -1,6 +1,6 @@
-import cn from 'classnames';
-import { memo } from 'react';
-import s from './style.module.css';
+import cn from "classnames";
+import { memo } from "react";
+import s from "./style.module.css";
 
 const Directory = (
 	props: Readonly<{
@@ -11,9 +11,9 @@ const Directory = (
 	return (
 		<>
 			<span
-				className={cn('codicon', {
-					'codicon-chevron-right': !props.expanded,
-					'codicon-chevron-down': props.expanded,
+				className={cn("codicon", {
+					"codicon-chevron-right": !props.expanded,
+					"codicon-chevron-down": props.expanded,
 				})}
 			/>
 			<div className="flex w-full flex-col">

@@ -1,9 +1,9 @@
-import { memo } from 'react';
-import TreeView from 'react-treeview';
-import IconButton from '../../../components/IconButton';
-import Text from '../../../components/Text';
-import { states, type TreeNodeSelectorState } from '../../../store/slices/CFS';
-import { type TreeNode } from '../../../types/tree';
+import { memo } from "react";
+import TreeView from "react-treeview";
+import IconButton from "../../../components/IconButton";
+import Text from "../../../components/Text";
+import { type TreeNodeSelectorState, states } from "../../../store/slices/CFS";
+import { type TreeNode } from "../../../types/tree";
 
 type Props = Readonly<{
 	node: TreeNode;
@@ -13,9 +13,9 @@ type Props = Readonly<{
 }>;
 
 const TOOLTIPS = {
-	Type: 'Match only the type of this node',
-	Value: 'Match the type and the value of this node',
-	Unselected: 'Do not match this node',
+	Type: "Match only the type of this node",
+	Value: "Match the type and the value of this node",
+	Unselected: "Do not match this node",
 };
 
 const NodeSelectorTree = ({

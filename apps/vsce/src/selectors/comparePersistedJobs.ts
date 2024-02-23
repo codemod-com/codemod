@@ -1,7 +1,7 @@
-import { Uri } from 'vscode';
-import { Job, JobKind, PersistedJob } from '../jobs/types';
+import { Uri } from "vscode";
+import { Job, JobKind, PersistedJob } from "../jobs/types";
 
-export const doesJobAddNewFile = (kind: Job['kind']): boolean => {
+export const doesJobAddNewFile = (kind: Job["kind"]): boolean => {
 	return [
 		JobKind.copyFile,
 		JobKind.createFile,

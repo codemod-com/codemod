@@ -1,5 +1,5 @@
-import { parse, sep } from 'node:path';
-import type { Filemod, HandleData, HandleFile } from '@codemod-com/filemod';
+import { parse, sep } from "node:path";
+import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
 
 export const buildData = (appPath: string) => `
 	import { expect } from "@playwright/test";
@@ -79,10 +79,10 @@ type State = {
 	testPath: string | null;
 };
 
-const initializeState: Filemod<Dependencies, State>['initializeState'] = async (
+const initializeState: Filemod<Dependencies, State>["initializeState"] = async (
 	options,
 ) => ({
-	testPath: typeof options.testPath === 'string' ? options.testPath : null,
+	testPath: typeof options.testPath === "string" ? options.testPath : null,
 });
 
 const handleFile: HandleFile<Dependencies, State> = async (
@@ -99,15 +99,15 @@ const handleFile: HandleFile<Dependencies, State> = async (
 	const directoryNames = parsedPath.dir.split(sep);
 	const endsWithPages =
 		directoryNames.length > 0 &&
-		directoryNames.lastIndexOf('pages') === directoryNames.length - 1;
+		directoryNames.lastIndexOf("pages") === directoryNames.length - 1;
 
-	const nameIsIndex = parsedPath.name === 'index';
+	const nameIsIndex = parsedPath.name === "index";
 
 	if (endsWithPages && nameIsIndex) {
 		return [];
 	}
 
-	const pagesIndex = directoryNames.lastIndexOf('pages');
+	const pagesIndex = directoryNames.lastIndexOf("pages");
 
 	const paths = directoryNames.slice(pagesIndex + 1);
 
@@ -117,13 +117,13 @@ const handleFile: HandleFile<Dependencies, State> = async (
 
 	const appPath = api.joinPaths(...paths);
 
-	paths[paths.length - 1] += '.e2e.ts';
+	paths[paths.length - 1] += ".e2e.ts";
 
 	const newPath = api.joinPaths(state.testPath, ...paths);
 
 	return [
 		{
-			kind: 'upsertFile',
+			kind: "upsertFile",
 			path: newPath,
 			options: {
 				...options,
@@ -139,23 +139,22 @@ const handleData: HandleData<Dependencies, State> = async (
 	__,
 	options,
 ) => {
-	const appPath =
-		typeof options.appPath === 'string' ? options.appPath : null;
+	const appPath = typeof options.appPath === "string" ? options.appPath : null;
 
 	if (appPath === null) {
-		return { kind: 'noop' };
+		return { kind: "noop" };
 	}
 
 	return {
-		kind: 'upsertData',
+		kind: "upsertData",
 		path,
 		data: buildData(appPath),
 	};
 };
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/pages/**/*.{js,jsx,ts,tsx}'],
-	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	includePatterns: ["**/pages/**/*.{js,jsx,ts,tsx}"],
+	excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
 	initializeState,
 	handleFile,
 	handleData,

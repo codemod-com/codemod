@@ -1,11 +1,11 @@
-import vm from 'node:vm';
-import * as S from '@effect/schema/Schema';
-import jscodeshift, { API, FileInfo } from 'jscodeshift';
-import { buildVmConsole } from './buildVmConsole.js';
-import { CONSOLE_OVERRIDE } from './consoleOverride.js';
-import type { FileCommand } from './fileCommands.js';
-import type { SafeArgumentRecord } from './safeArgumentRecord.js';
-import { ConsoleKind } from './schemata/consoleKindSchema.js';
+import vm from "node:vm";
+import * as S from "@effect/schema/Schema";
+import jscodeshift, { API, FileInfo } from "jscodeshift";
+import { buildVmConsole } from "./buildVmConsole.js";
+import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
+import type { FileCommand } from "./fileCommands.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
 export const buildApi = (parser: string): API => ({
 	j: jscodeshift.withParser(parser),
@@ -80,14 +80,14 @@ export const runJscodeshiftCodemod = (
 
 	const createFile = (newPath: string, newData: string): void => {
 		commands.push({
-			kind: 'createFile',
+			kind: "createFile",
 			newPath,
 			newData,
 			formatWithPrettier: !disablePrettier,
 		});
 	};
 
-	const api = buildApi('tsx');
+	const api = buildApi("tsx");
 
 	const newData = transform(
 		codemodSource,
@@ -103,7 +103,7 @@ export const runJscodeshiftCodemod = (
 		consoleCallback,
 	);
 
-	if (typeof newData !== 'string' || oldData === newData) {
+	if (typeof newData !== "string" || oldData === newData) {
 		return commands;
 	}
 
@@ -129,7 +129,7 @@ export const runJscodeshiftCodemod = (
 	}
 
 	commands.push({
-		kind: 'updateFile',
+		kind: "updateFile",
 		oldPath,
 		oldData: oldData,
 		newData,

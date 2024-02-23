@@ -1,4 +1,4 @@
-import { type ImportSpecifier, type SourceFile } from 'ts-morph';
+import { type ImportSpecifier, type SourceFile } from "ts-morph";
 
 function addNamedImportDeclaration(
 	sourceFile: SourceFile,
@@ -31,7 +31,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -43,12 +43,12 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 	sourceFile
 		.getImportDeclarations()
-		.filter((d) => d.getModuleSpecifierValue() === 'msw')
+		.filter((d) => d.getModuleSpecifierValue() === "msw")
 		.forEach((declaration) => {
 			// https://mswjs.io/docs/migrations/1.x-to-2.x/#worker-imports
 			const setupWorkerImport = declaration
 				.getNamedImports()
-				.find((specifier) => specifier.getName() === 'setupWorker');
+				.find((specifier) => specifier.getName() === "setupWorker");
 
 			if (setupWorkerImport) {
 				setupWorkerImport.remove();
@@ -56,11 +56,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 					declaration.remove();
 				}
 
-				addNamedImportDeclaration(
-					sourceFile,
-					'msw/browser',
-					'setupWorker',
-				);
+				addNamedImportDeclaration(sourceFile, "msw/browser", "setupWorker");
 			}
 
 			if (declaration.wasForgotten()) {
@@ -71,13 +67,13 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 			declaration
 				.getNamedImports()
 				.filter((specifier) =>
-					['rest', 'RestHandler'].includes(specifier.getName()),
+					["rest", "RestHandler"].includes(specifier.getName()),
 				)
 				.forEach((specifier) => {
 					const importName = specifier.getName();
 					aliasAwareRename(
 						specifier,
-						importName === 'rest' ? 'http' : 'HttpHandler',
+						importName === "rest" ? "http" : "HttpHandler",
 					);
 				});
 		});

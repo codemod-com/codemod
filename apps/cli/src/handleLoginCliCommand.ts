@@ -1,11 +1,11 @@
-import { mkdir, writeFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { validateAccessToken } from './apis.js';
-import type { PrinterBlueprint } from './printer.js';
-import { boldText, colorizeText, openURL } from './utils.js';
+import { mkdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { validateAccessToken } from "./apis.js";
+import type { PrinterBlueprint } from "./printer.js";
+import { boldText, colorizeText, openURL } from "./utils.js";
 
-const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = 'accessTokenRequestedByCLI';
+const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
 export const handleLoginCliCommand = async (
 	printer: PrinterBlueprint,
@@ -13,10 +13,10 @@ export const handleLoginCliCommand = async (
 ) => {
 	if (token === null) {
 		printer.printConsoleMessage(
-			'info',
+			"info",
 			colorizeText(
-				'Opening the Codemod Studio... Please Sign in with Github!\n',
-				'cyan',
+				"Opening the Codemod Studio... Please Sign in with Github!\n",
+				"cyan",
 			),
 		);
 		const success = openURL(
@@ -24,9 +24,8 @@ export const handleLoginCliCommand = async (
 		);
 		if (!success) {
 			printer.printOperationMessage({
-				kind: 'error',
-				message:
-					'Unexpected error occurred while opening the Codemod Studio.',
+				kind: "error",
+				message: "Unexpected error occurred while opening the Codemod Studio.",
 			});
 		}
 		return;
@@ -36,22 +35,22 @@ export const handleLoginCliCommand = async (
 
 	if (username === null) {
 		throw new Error(
-			'The username of the current user is not known. Aborting the operation.',
+			"The username of the current user is not known. Aborting the operation.",
 		);
 	}
 
 	// Ensure that `/.codemod.` folder exists
-	const codemodDirectoryPath = join(homedir(), '.codemod');
+	const codemodDirectoryPath = join(homedir(), ".codemod");
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
-	const tokenTxtPath = join(codemodDirectoryPath, 'token.txt');
-	await writeFile(tokenTxtPath, token, 'utf-8');
+	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
+	await writeFile(tokenTxtPath, token, "utf-8");
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		colorizeText(
-			boldText('You are successfully logged in with the Codemod CLI!'),
-			'cyan',
+			boldText("You are successfully logged in with the Codemod CLI!"),
+			"cyan",
 		),
 	);
 };

@@ -1,4 +1,4 @@
-import type { Event } from '~/schemata/eventSchemata';
+import type { Event } from "~/schemata/eventSchemata";
 
 export class EventManager {
 	private __events: Event[] = [];
@@ -6,7 +6,7 @@ export class EventManager {
 	public constructor() {}
 
 	public pushEvent<T>(
-		event: [T] extends [Omit<Event, 'hashDigest'>] ? T : never,
+		event: [T] extends [Omit<Event, "hashDigest">] ? T : never,
 	): number {
 		const hashDigest: string = crypto.randomUUID();
 
@@ -22,7 +22,7 @@ export class EventManager {
 	}
 
 	public updateEvent<T>(
-		event: [T] extends [Omit<Event, 'hashDigest'>] ? T : never,
+		event: [T] extends [Omit<Event, "hashDigest">] ? T : never,
 		index: number,
 	): void {
 		const hashDigest: string = crypto.randomUUID();

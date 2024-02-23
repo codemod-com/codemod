@@ -1,1 +1,1 @@
-export type UriHash = string & { __UriHash: '__UriHash' };
+export type UriHash = string & { __UriHash: "__UriHash" };

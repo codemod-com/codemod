@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -16,9 +16,9 @@ function transform(
 			if (
 				j.Property.check(firstProperty) &&
 				j.Identifier.check(firstProperty.key) &&
-				firstProperty.key.name === 'params'
+				firstProperty.key.name === "params"
 			) {
-				firstProperty.key.name = 'match';
+				firstProperty.key.name = "match";
 			}
 		}
 
@@ -29,11 +29,11 @@ function transform(
 
 				if (
 					j.Identifier.check(memberObject) &&
-					memberObject.name === 'params'
+					memberObject.name === "params"
 				) {
 					memberPath.node.object = j.memberExpression(
-						j.identifier('match'),
-						j.identifier('params'),
+						j.identifier("match"),
+						j.identifier("params"),
 					);
 				}
 			});

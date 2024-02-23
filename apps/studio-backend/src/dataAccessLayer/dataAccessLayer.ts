@@ -1,6 +1,6 @@
-import { Sequelize, Transaction } from 'sequelize';
-import { buildTokenMetadataRepository } from './buildTokenMetadataRepository.js';
-import { buildTokenRevocationRepository } from './buildTokenRevocationsRepository.js';
+import { Sequelize, Transaction } from "sequelize";
+import { buildTokenMetadataRepository } from "./buildTokenMetadataRepository.js";
+import { buildTokenRevocationRepository } from "./buildTokenRevocationsRepository.js";
 
 export const buildDataAccessLayer = async (uri: string) => {
 	const sequelize = new Sequelize(uri, { logging: false });

@@ -1,8 +1,8 @@
-import { deepStrictEqual } from 'node:assert';
-import { describe, it } from 'vitest';
-import { transpile } from '../src/getTransformer.js';
-import { runJscodeshiftCodemod } from '../src/runJscodeshiftCodemod.js';
-import type { ConsoleKind } from '../src/schemata/consoleKindSchema.js';
+import { deepStrictEqual } from "node:assert";
+import { describe, it } from "vitest";
+import { transpile } from "../src/getTransformer.js";
+import { runJscodeshiftCodemod } from "../src/runJscodeshiftCodemod.js";
+import type { ConsoleKind } from "../src/schemata/consoleKindSchema.js";
 
 const codemodSource = transpile(`
 import type { FileInfo, API, Options } from 'jscodeshift';
@@ -56,15 +56,15 @@ export default function transform(
 }
 `);
 
-describe('runJscodeshiftCodemod', () => {
-	it('should return transformed output', () => {
+describe("runJscodeshiftCodemod", () => {
+	it("should return transformed output", () => {
 		const messages: [ConsoleKind, string][] = [];
 
-		const oldData = `function mapStateToProps(state) {}`;
+		const oldData = "function mapStateToProps(state) {}";
 
 		const fileCommands = runJscodeshiftCodemod(
 			codemodSource,
-			'/index.ts',
+			"/index.ts",
 			oldData,
 			false,
 			[{}],
@@ -77,16 +77,16 @@ describe('runJscodeshiftCodemod', () => {
 
 		const [fileCommand] = fileCommands;
 
-		const newData = `function mapStateToProps(state: State) {}`;
+		const newData = "function mapStateToProps(state: State) {}";
 
 		deepStrictEqual(fileCommand, {
-			kind: 'updateFile',
-			oldPath: '/index.ts',
+			kind: "updateFile",
+			oldPath: "/index.ts",
 			oldData,
 			newData,
 			formatWithPrettier: true,
 		});
 
-		deepStrictEqual(messages, [['log', '/index.ts']]);
+		deepStrictEqual(messages, [["log", "/index.ts"]]);
 	});
 });

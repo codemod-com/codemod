@@ -1,11 +1,11 @@
-import { forwardRef, type ReactNode } from 'react';
+import { type ReactNode, forwardRef } from "react";
 import {
-	Panel as RResizablePanel,
 	type ImperativePanelHandle,
+	Panel as RResizablePanel,
 	type PanelProps,
-} from 'react-resizable-panels';
-import { cn } from '~/lib/utils';
-import { PanelHeader, PanelTab, PanelTitle } from './PanelHeader';
+} from "react-resizable-panels";
+import { cn } from "~/lib/utils";
+import { PanelHeader, PanelTab, PanelTitle } from "./PanelHeader";
 
 type Props = {
 	children?: ReactNode;
@@ -14,10 +14,7 @@ type Props = {
 
 const Panel = ({ children, className }: Props) => (
 	<div
-		className={cn(
-			'rounded bg-gray-lighter p-2 dark:bg-gray-dark',
-			className,
-		)}
+		className={cn("rounded bg-gray-lighter p-2 dark:bg-gray-dark", className)}
 	>
 		<div className="h-full rounded bg-gray-bg dark:bg-gray-light">
 			{children}
@@ -35,18 +32,12 @@ type ResizablePanelProps = {
 
 const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 	(props, ref) => {
-		const {
-			children,
-			defaultSize,
-			minSize,
-			collapsible,
-			className,
-			...rest
-		} = props;
+		const { children, defaultSize, minSize, collapsible, className, ...rest } =
+			props;
 		return (
 			<RResizablePanel
 				{...rest}
-				className={` min-h-0 rounded ${className ?? ''} `}
+				className={` min-h-0 rounded ${className ?? ""} `}
 				collapsible={collapsible}
 				defaultSize={defaultSize}
 				minSize={minSize}
@@ -57,7 +48,7 @@ const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 		);
 	},
 );
-ResizablePanel.displayName = 'ResizablePanel';
+ResizablePanel.displayName = "ResizablePanel";
 
 Panel.Header = PanelHeader;
 Panel.HeaderTab = PanelTab;

@@ -2,32 +2,32 @@ import {
 	Lightning as LightningIcon,
 	Sun as SunIcon,
 	Warning as WarningIcon,
-} from '@phosphor-icons/react';
-import { Label } from '~/components/ui/label';
-import EngineSelector from './ModelSelector';
+} from "@phosphor-icons/react";
+import { Label } from "~/components/ui/label";
+import EngineSelector from "./ModelSelector";
 
 const WELCOME_SCREEN_ITEMS = [
 	{
 		icon: <SunIcon className="mb-2" />,
-		heading: 'Examples',
+		heading: "Examples",
 		descriptions: [
 			`What's the node factory for the @HIGHLIGHTED_BEFORE`,
-			'Transform @BEFORE to @AFTER',
+			"Transform @BEFORE to @AFTER",
 		],
 	},
 	{
 		icon: <LightningIcon className="mb-2" />,
-		heading: 'Capabilities',
+		heading: "Capabilities",
 		descriptions: [
-			'Trained on numerous jscodeshift codemods',
-			'You can refer to all or some highlighted code snippets in the studio',
-			'Utilizes compiler error to recursively generate better codemods',
+			"Trained on numerous jscodeshift codemods",
+			"You can refer to all or some highlighted code snippets in the studio",
+			"Utilizes compiler error to recursively generate better codemods",
 		],
 	},
 	{
 		icon: <WarningIcon className="mb-2" />,
-		heading: 'Limitations',
-		descriptions: ['May occasionally generate incorrect codemod snippets'],
+		heading: "Limitations",
+		descriptions: ["May occasionally generate incorrect codemod snippets"],
 	},
 ];
 
@@ -56,6 +56,6 @@ const WelcomeScreen = () => (
 	</div>
 );
 
-WelcomeScreen.displayName = 'WelcomeScreen';
+WelcomeScreen.displayName = "WelcomeScreen";
 
 export default WelcomeScreen;

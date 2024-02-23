@@ -32,17 +32,18 @@ export default function transform(file, api) {
 	const j = api.jscodeshift;
 	const root = j(file.source);
 
-	root.find(j.NewExpression, {
-		callee: {
-			name: 'EmberObject',
-		},
-	})
+	root
+		.find(j.NewExpression, {
+			callee: {
+				name: "EmberObject",
+			},
+		})
 		//.forEach(p => console.log(p))
 		.replaceWith((path) => {
 			return j.callExpression(
 				j.memberExpression(
-					j.identifier('EmberObject'),
-					j.identifier('create'),
+					j.identifier("EmberObject"),
+					j.identifier("create"),
 					false,
 				),
 				path.value.arguments,

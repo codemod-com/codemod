@@ -8,25 +8,25 @@ import type {
 	JSCodeshift,
 	Options,
 	Transform,
-} from 'jscodeshift';
+} from "jscodeshift";
 
-type AtomicMod<T, D extends 'read' | 'write'> = (
+type AtomicMod<T, D extends "read" | "write"> = (
 	j: JSCodeshift,
 	root: Collection<T>,
 	settings: Partial<Record<string, string>>,
-) => [D extends 'write' ? boolean : false, ReadonlyArray<LazyAtomicMod>];
+) => [D extends "write" ? boolean : false, ReadonlyArray<LazyAtomicMod>];
 
 type LazyAtomicMod = [
-	AtomicMod<any, 'read' | 'write'>,
+	AtomicMod<any, "read" | "write">,
 	Collection<any>,
 	Partial<Record<string, string>>,
 ];
 
 export const upsertTypeAnnotationOnStateIdentifier: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
-	'write'
+	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&
@@ -38,7 +38,7 @@ export const upsertTypeAnnotationOnStateIdentifier: AtomicMod<
 	root.forEach((astPath) => {
 		const patternKind = astPath.value.params[0];
 
-		if (patternKind?.type !== 'Identifier') {
+		if (patternKind?.type !== "Identifier") {
 			return;
 		}
 
@@ -48,7 +48,7 @@ export const upsertTypeAnnotationOnStateIdentifier: AtomicMod<
 
 		const typeAnnotation = j.typeAnnotation(
 			j.genericTypeAnnotation(
-				j.identifier(settings.stateTypeIdentifierName ?? 'State'),
+				j.identifier(settings.stateTypeIdentifierName ?? "State"),
 				null,
 			),
 		);
@@ -80,9 +80,9 @@ export const upsertTypeAnnotationOnStateIdentifier: AtomicMod<
 
 export const upsertTypeAnnotationOnDispatchIdentifier: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
-	'write'
+	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&
@@ -94,7 +94,7 @@ export const upsertTypeAnnotationOnDispatchIdentifier: AtomicMod<
 	root.forEach((astPath) => {
 		const patternKind = astPath.value.params[0];
 
-		if (patternKind?.type !== 'Identifier') {
+		if (patternKind?.type !== "Identifier") {
 			return;
 		}
 
@@ -104,12 +104,10 @@ export const upsertTypeAnnotationOnDispatchIdentifier: AtomicMod<
 
 		const typeAnnotation = j.typeAnnotation(
 			j.genericTypeAnnotation(
-				j.identifier('ThunkDispatch'),
+				j.identifier("ThunkDispatch"),
 				j.typeParameterInstantiation([
 					j.genericTypeAnnotation(
-						j.identifier(
-							settings.stateTypeIdentifierName ?? 'State',
-						),
+						j.identifier(settings.stateTypeIdentifierName ?? "State"),
 						null,
 					),
 					j.anyTypeAnnotation(),
@@ -148,9 +146,9 @@ export const upsertTypeAnnotationOnDispatchIdentifier: AtomicMod<
 
 export const upsertTypeAnnotationOnStateObjectPattern: AtomicMod<
 	ArrowFunctionExpression | FunctionDeclaration,
-	'write'
+	"write"
 > = (j, root, settings) => {
-	let dirtyFlag: boolean = false;
+	let dirtyFlag = false;
 
 	if (
 		!root.isOfType(j.ArrowFunctionExpression) &&
@@ -162,7 +160,7 @@ export const upsertTypeAnnotationOnStateObjectPattern: AtomicMod<
 	root.forEach((astPath) => {
 		const patternKind = astPath.value.params[0];
 
-		if (patternKind?.type !== 'ObjectPattern') {
+		if (patternKind?.type !== "ObjectPattern") {
 			return;
 		}
 
@@ -170,7 +168,7 @@ export const upsertTypeAnnotationOnStateObjectPattern: AtomicMod<
 
 		const typeAnnotation = j.typeAnnotation(
 			j.genericTypeAnnotation(
-				j.identifier(settings.stateTypeIdentifierName ?? 'State'),
+				j.identifier(settings.stateTypeIdentifierName ?? "State"),
 				null,
 			),
 		);
@@ -197,229 +195,238 @@ export const upsertTypeAnnotationOnStateObjectPattern: AtomicMod<
 	return [dirtyFlag, [[findStateImportDeclarations, filePath, settings]]];
 };
 
-export const findMapStateToPropsArrowFunctions: AtomicMod<File, 'read'> = (
+export const findMapStateToPropsArrowFunctions: AtomicMod<File, "read"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.VariableDeclarator, {
-		id: {
-			type: 'Identifier',
-			name: 'mapStateToProps',
-		},
-		init: {
-			type: 'ArrowFunctionExpression',
-		},
-	}).forEach((variableDeclaratorPath) => {
-		const collection = j(variableDeclaratorPath)
-			.find(j.ArrowFunctionExpression)
-			.filter((arrowFunctionExpressionPath, i) => {
-				return (
-					i === 0 &&
-					arrowFunctionExpressionPath.value.params.length !== 0
-				);
-			});
+	root
+		.find(j.VariableDeclarator, {
+			id: {
+				type: "Identifier",
+				name: "mapStateToProps",
+			},
+			init: {
+				type: "ArrowFunctionExpression",
+			},
+		})
+		.forEach((variableDeclaratorPath) => {
+			const collection = j(variableDeclaratorPath)
+				.find(j.ArrowFunctionExpression)
+				.filter((arrowFunctionExpressionPath, i) => {
+					return (
+						i === 0 && arrowFunctionExpressionPath.value.params.length !== 0
+					);
+				});
 
-		lazyAtomicMods.push(
-			[upsertTypeAnnotationOnStateIdentifier, collection, settings],
-			[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
-		);
-	});
+			lazyAtomicMods.push(
+				[upsertTypeAnnotationOnStateIdentifier, collection, settings],
+				[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
+			);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findMapStateToPropsFunctions: AtomicMod<File, 'write'> = (
+export const findMapStateToPropsFunctions: AtomicMod<File, "write"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.FunctionDeclaration, {
-		id: {
-			type: 'Identifier',
-			name: 'mapStateToProps',
-		},
-	}).forEach((functionDeclarationPath) => {
-		if (functionDeclarationPath.value.params.length === 0) {
-			return;
-		}
+	root
+		.find(j.FunctionDeclaration, {
+			id: {
+				type: "Identifier",
+				name: "mapStateToProps",
+			},
+		})
+		.forEach((functionDeclarationPath) => {
+			if (functionDeclarationPath.value.params.length === 0) {
+				return;
+			}
 
-		const collection = j(functionDeclarationPath);
+			const collection = j(functionDeclarationPath);
 
-		lazyAtomicMods.push(
-			[upsertTypeAnnotationOnStateIdentifier, collection, settings],
-			[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
-		);
-	});
+			lazyAtomicMods.push(
+				[upsertTypeAnnotationOnStateIdentifier, collection, settings],
+				[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
+			);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findSelectFunctions: AtomicMod<File, 'write'> = (
+export const findSelectFunctions: AtomicMod<File, "write"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.FunctionDeclaration, {
-		id: {
-			type: 'Identifier',
-		},
-	}).forEach((functionDeclarationPath) => {
-		const functionDeclaration = functionDeclarationPath.value;
+	root
+		.find(j.FunctionDeclaration, {
+			id: {
+				type: "Identifier",
+			},
+		})
+		.forEach((functionDeclarationPath) => {
+			const functionDeclaration = functionDeclarationPath.value;
 
-		const identifierKind = functionDeclaration.id;
+			const identifierKind = functionDeclaration.id;
 
-		if (
-			identifierKind?.type !== 'Identifier' ||
-			!identifierKind.name.startsWith('select') ||
-			identifierKind.name.length === 6
-		) {
-			return;
-		}
+			if (
+				identifierKind?.type !== "Identifier" ||
+				!identifierKind.name.startsWith("select") ||
+				identifierKind.name.length === 6
+			) {
+				return;
+			}
 
-		if (functionDeclarationPath.value.params.length === 0) {
-			return;
-		}
+			if (functionDeclarationPath.value.params.length === 0) {
+				return;
+			}
 
-		const collection = j(functionDeclarationPath);
+			const collection = j(functionDeclarationPath);
 
-		lazyAtomicMods.push(
-			[upsertTypeAnnotationOnStateIdentifier, collection, settings],
-			[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
-		);
-	});
+			lazyAtomicMods.push(
+				[upsertTypeAnnotationOnStateIdentifier, collection, settings],
+				[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
+			);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findSelectArrowFunctions: AtomicMod<File, 'write'> = (
+export const findSelectArrowFunctions: AtomicMod<File, "write"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.VariableDeclarator, {
-		id: {
-			type: 'Identifier',
-		},
-		init: {
-			type: 'ArrowFunctionExpression',
-		},
-	}).forEach((variableDeclaratorPath) => {
-		const variableDeclarator = variableDeclaratorPath.value;
+	root
+		.find(j.VariableDeclarator, {
+			id: {
+				type: "Identifier",
+			},
+			init: {
+				type: "ArrowFunctionExpression",
+			},
+		})
+		.forEach((variableDeclaratorPath) => {
+			const variableDeclarator = variableDeclaratorPath.value;
 
-		const identifierKind = variableDeclarator.id;
+			const identifierKind = variableDeclarator.id;
 
-		if (
-			identifierKind?.type !== 'Identifier' ||
-			!identifierKind.name.startsWith('select') ||
-			identifierKind.name.length === 6
-		) {
-			return;
-		}
+			if (
+				identifierKind?.type !== "Identifier" ||
+				!identifierKind.name.startsWith("select") ||
+				identifierKind.name.length === 6
+			) {
+				return;
+			}
 
-		const collection = j(variableDeclaratorPath)
-			.find(j.ArrowFunctionExpression)
-			.filter((arrowFunctionExpressionPath, i) => {
-				return (
-					i === 0 &&
-					arrowFunctionExpressionPath.value.params.length !== 0
-				);
-			});
+			const collection = j(variableDeclaratorPath)
+				.find(j.ArrowFunctionExpression)
+				.filter((arrowFunctionExpressionPath, i) => {
+					return (
+						i === 0 && arrowFunctionExpressionPath.value.params.length !== 0
+					);
+				});
 
-		lazyAtomicMods.push(
-			[upsertTypeAnnotationOnStateIdentifier, collection, settings],
-			[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
-		);
-	});
+			lazyAtomicMods.push(
+				[upsertTypeAnnotationOnStateIdentifier, collection, settings],
+				[upsertTypeAnnotationOnStateObjectPattern, collection, settings],
+			);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findMapDispatchToPropsArrowFunctions: AtomicMod<File, 'read'> = (
+export const findMapDispatchToPropsArrowFunctions: AtomicMod<File, "read"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.VariableDeclarator, {
-		id: {
-			type: 'Identifier',
-			name: 'mapDispatchToProps',
-		},
-		init: {
-			type: 'ArrowFunctionExpression',
-		},
-	}).forEach((variableDeclaratorPath) => {
-		const collection = j(variableDeclaratorPath)
-			.find(j.ArrowFunctionExpression)
-			.filter((arrowFunctionExpressionPath, i) => {
-				return (
-					i === 0 &&
-					arrowFunctionExpressionPath.value.params.length !== 0
-				);
-			});
+	root
+		.find(j.VariableDeclarator, {
+			id: {
+				type: "Identifier",
+				name: "mapDispatchToProps",
+			},
+			init: {
+				type: "ArrowFunctionExpression",
+			},
+		})
+		.forEach((variableDeclaratorPath) => {
+			const collection = j(variableDeclaratorPath)
+				.find(j.ArrowFunctionExpression)
+				.filter((arrowFunctionExpressionPath, i) => {
+					return (
+						i === 0 && arrowFunctionExpressionPath.value.params.length !== 0
+					);
+				});
 
-		lazyAtomicMods.push([
-			upsertTypeAnnotationOnDispatchIdentifier,
-			collection,
-			settings,
-		]);
-	});
+			lazyAtomicMods.push([
+				upsertTypeAnnotationOnDispatchIdentifier,
+				collection,
+				settings,
+			]);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findMapDispatchToPropsFunctions: AtomicMod<File, 'read'> = (
+export const findMapDispatchToPropsFunctions: AtomicMod<File, "read"> = (
 	j,
 	root,
 	settings,
 ) => {
 	const lazyAtomicMods: LazyAtomicMod[] = [];
 
-	root.find(j.FunctionDeclaration, {
-		id: {
-			type: 'Identifier',
-			name: 'mapDispatchToProps',
-		},
-	}).forEach((functionDeclarationPath) => {
-		if (functionDeclarationPath.value.params.length === 0) {
-			return;
-		}
+	root
+		.find(j.FunctionDeclaration, {
+			id: {
+				type: "Identifier",
+				name: "mapDispatchToProps",
+			},
+		})
+		.forEach((functionDeclarationPath) => {
+			if (functionDeclarationPath.value.params.length === 0) {
+				return;
+			}
 
-		const collection = j(functionDeclarationPath);
+			const collection = j(functionDeclarationPath);
 
-		lazyAtomicMods.push([
-			upsertTypeAnnotationOnDispatchIdentifier,
-			collection,
-			settings,
-		]);
-	});
+			lazyAtomicMods.push([
+				upsertTypeAnnotationOnDispatchIdentifier,
+				collection,
+				settings,
+			]);
+		});
 
 	return [false, lazyAtomicMods];
 };
 
-export const findStateImportDeclarations: AtomicMod<File, 'read'> = (
+export const findStateImportDeclarations: AtomicMod<File, "read"> = (
 	j,
 	root,
 	settings,
 ) => {
-	const name = settings.stateTypeIdentifierName ?? 'State';
-	const value = settings.stateSourceLiteralValue ?? 'state';
+	const name = settings.stateTypeIdentifierName ?? "State";
+	const value = settings.stateSourceLiteralValue ?? "state";
 
 	const existingDeclarations = root.find(j.ImportDeclaration, {
 		specifiers: [
 			{
 				imported: {
-					type: 'Identifier',
+					type: "Identifier",
 					name,
 				},
 			},
@@ -436,24 +443,24 @@ export const findStateImportDeclarations: AtomicMod<File, 'read'> = (
 	return [false, [[addImportDeclaration, root, { name, value }]]];
 };
 
-export const findThunkDispatchImportDeclarations: AtomicMod<File, 'write'> = (
+export const findThunkDispatchImportDeclarations: AtomicMod<File, "write"> = (
 	j,
 	root,
 ) => {
-	const name = 'ThunkDispatch';
-	const value = 'redux-thunk';
+	const name = "ThunkDispatch";
+	const value = "redux-thunk";
 
 	const existingDeclarations = root.find(j.ImportDeclaration, {
 		specifiers: [
 			{
 				imported: {
-					type: 'Identifier',
-					name: 'ThunkDispatch',
+					type: "Identifier",
+					name: "ThunkDispatch",
 				},
 			},
 		],
 		source: {
-			value: 'redux-thunk',
+			value: "redux-thunk",
 		},
 	});
 
@@ -464,7 +471,7 @@ export const findThunkDispatchImportDeclarations: AtomicMod<File, 'write'> = (
 	return [false, [[addImportDeclaration, root, { name, value }]]];
 };
 
-export const addImportDeclaration: AtomicMod<File, 'write'> = (
+export const addImportDeclaration: AtomicMod<File, "write"> = (
 	j,
 	root,
 	settings,
@@ -499,13 +506,13 @@ export default function transform(file: FileInfo, api: API, jOptions: Options) {
 
 	const settings = {
 		stateTypeIdentifierName:
-			'stateTypeIdentifierName' in jOptions
+			"stateTypeIdentifierName" in jOptions
 				? String(jOptions.stateTypeIdentifierName)
-				: 'State',
+				: "State",
 		stateSourceLiteralValue:
-			'stateSourceLiteralValue' in jOptions
+			"stateSourceLiteralValue" in jOptions
 				? String(jOptions.stateSourceLiteralValue)
-				: 'state',
+				: "state",
 	};
 
 	const lazyAtomicMods: LazyAtomicMod[] = [

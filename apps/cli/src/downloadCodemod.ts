@@ -1,28 +1,28 @@
-import { createHash } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
-import * as S from '@effect/schema/Schema';
-import Axios from 'axios';
-import { Codemod } from './codemod.js';
-import { FileDownloadServiceBlueprint } from './fileDownloadService.js';
-import { handleListNamesCommand } from './handleListCliCommand.js';
-import { PrinterBlueprint } from './printer.js';
+import { createHash } from "node:crypto";
+import { mkdir, writeFile } from "node:fs/promises";
+import { join } from "node:path";
+import * as S from "@effect/schema/Schema";
+import Axios from "axios";
+import { Codemod } from "./codemod.js";
+import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
+import { handleListNamesCommand } from "./handleListCliCommand.js";
+import { PrinterBlueprint } from "./printer.js";
 import {
 	CodemodConfig,
 	codemodConfigSchema,
-} from './schemata/codemodConfigSchema.js';
-import { TarService } from './services/tarService.js';
-import { boldText, colorizeText } from './utils.js';
+} from "./schemata/codemodConfigSchema.js";
+import { TarService } from "./services/tarService.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const CODEMOD_REGISTRY_URL =
-	'https://codemod-public.s3.us-west-1.amazonaws.com/codemod-registry';
+	"https://codemod-public.s3.us-west-1.amazonaws.com/codemod-registry";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;
 	download(
 		name: string,
 		cache: boolean,
-	): Promise<Codemod & { source: 'registry' }>;
+	): Promise<Codemod & { source: "registry" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -36,12 +36,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async syncRegistry() {
 		this.__printer.printConsoleMessage(
-			'info',
+			"info",
 			colorizeText(
 				`Syncing the Codemod Registry into ${boldText(
 					this.__configurationDirectoryPath,
 				)}...\n`,
-				'cyan',
+				"cyan",
 			),
 		);
 
@@ -50,43 +50,35 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		const getResponse = await Axios.get(
 			`${CODEMOD_REGISTRY_URL}/registry.tar.gz`,
 			{
-				responseType: 'arraybuffer',
+				responseType: "arraybuffer",
 			},
 		);
 
 		const buffer = Buffer.from(getResponse.data);
 
-		await this._tarService.extract(
-			this.__configurationDirectoryPath,
-			buffer,
-		);
+		await this._tarService.extract(this.__configurationDirectoryPath, buffer);
 	}
 
 	public async download(
 		name: string,
-	): Promise<Codemod & { source: 'registry' }> {
+	): Promise<Codemod & { source: "registry" }> {
 		this.__printer.printConsoleMessage(
-			'info',
+			"info",
 
 			colorizeText(
 				`Downloading the ${boldText(`"${name}"`)} codemod${
-					this._cacheDisabled ? ', not using cache...' : '...'
+					this._cacheDisabled ? ", not using cache..." : "..."
 				}`,
-				'cyan',
+				"cyan",
 			),
 		);
 
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
 		// make the codemod directory
-		const hashDigest = createHash('ripemd160')
-			.update(name)
-			.digest('base64url');
+		const hashDigest = createHash("ripemd160").update(name).digest("base64url");
 
-		const directoryPath = join(
-			this.__configurationDirectoryPath,
-			hashDigest,
-		);
+		const directoryPath = join(this.__configurationDirectoryPath, hashDigest);
 
 		await mkdir(directoryPath, { recursive: true });
 
@@ -94,14 +86,14 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		try {
 			// download the config
-			const configPath = join(directoryPath, 'config.json');
+			const configPath = join(directoryPath, "config.json");
 
 			const buffer = await this._fileDownloadService.download(
 				`${CODEMOD_REGISTRY_URL}/${hashDigest}/config.json`,
 				configPath,
 			);
 
-			parsedConfig = JSON.parse(buffer.toString('utf8'));
+			parsedConfig = JSON.parse(buffer.toString("utf8"));
 		} catch (error) {
 			await handleListNamesCommand(this.__printer);
 
@@ -119,7 +111,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
 		}
 
-		const descriptionPath = join(directoryPath, 'description.md');
+		const descriptionPath = join(directoryPath, "description.md");
 
 		try {
 			await this._fileDownloadService.download(
@@ -130,8 +122,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			// do nothing, descriptions might not exist
 		}
 
-		if (config.engine === 'piranha') {
-			const rulesPath = join(directoryPath, 'rules.toml');
+		if (config.engine === "piranha") {
+			const rulesPath = join(directoryPath, "rules.toml");
 
 			await this._fileDownloadService.download(
 				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rules.toml`,
@@ -139,7 +131,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			);
 
 			return {
-				source: 'registry',
+				source: "registry",
 				name,
 				engine: config.engine,
 				directoryPath,
@@ -148,12 +140,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		}
 
 		if (
-			config.engine === 'jscodeshift' ||
-			config.engine === 'repomod-engine' ||
-			config.engine === 'filemod' ||
-			config.engine === 'ts-morph'
+			config.engine === "jscodeshift" ||
+			config.engine === "repomod-engine" ||
+			config.engine === "filemod" ||
+			config.engine === "ts-morph"
 		) {
-			const indexPath = join(directoryPath, 'index.cjs');
+			const indexPath = join(directoryPath, "index.cjs");
 
 			const data = await this._fileDownloadService.download(
 				`${CODEMOD_REGISTRY_URL}/${hashDigest}/index.cjs`,
@@ -163,7 +155,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			await writeFile(indexPath, data);
 
 			return {
-				source: 'registry',
+				source: "registry",
 				name,
 				engine: config.engine,
 				indexPath,
@@ -172,7 +164,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			};
 		}
 
-		if (config.engine === 'recipe') {
+		if (config.engine === "recipe") {
 			const codemods: Codemod[] = [];
 
 			for (const name of config.names) {
@@ -181,7 +173,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			}
 
 			return {
-				source: 'registry',
+				source: "registry",
 				name,
 				engine: config.engine,
 				codemods,
@@ -190,6 +182,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			};
 		}
 
-		throw new Error('Unsupported engine');
+		throw new Error("Unsupported engine");
 	}
 }

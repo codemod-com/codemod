@@ -1,8 +1,8 @@
-import { type Message } from 'ai';
-import { memo } from 'react';
-import { Separator } from '~/components/ui/separator';
-import { cn } from '~/lib/utils';
-import ChatMessage from './ChatMessage';
+import { type Message } from "ai";
+import { memo } from "react";
+import { Separator } from "~/components/ui/separator";
+import { cn } from "~/lib/utils";
+import ChatMessage from "./ChatMessage";
 
 interface Props {
 	messages: Message[];
@@ -13,14 +13,14 @@ const ChatList = ({ messages }: Props) => {
 		return null;
 	}
 
-	const chatPanel = document.getElementsByClassName('chatPanel')?.[0] ?? null;
+	const chatPanel = document.getElementsByClassName("chatPanel")?.[0] ?? null;
 
 	return (
 		<div
-			className={cn('relative mx-auto px-4 pb-[12rem]', {
+			className={cn("relative mx-auto px-4 pb-[12rem]", {
 				// The bottom patting of `ChatList` must match the height of `ChatPanel`.
 				// Otherwise, bottom parts of chat will be hidden by the chat panel.
-				height: chatPanel === null ? '12rem' : chatPanel.clientHeight,
+				height: chatPanel === null ? "12rem" : chatPanel.clientHeight,
 			})}
 		>
 			{messages.map((message, index) => (
@@ -35,6 +35,6 @@ const ChatList = ({ messages }: Props) => {
 	);
 };
 
-ChatList.displayName = 'ChatList';
+ChatList.displayName = "ChatList";
 
 export default memo(ChatList);

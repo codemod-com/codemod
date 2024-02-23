@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect, useRef, useState } from "react";
+import { useSelector } from "react-redux";
 
 const useDebounceSelector = <T extends (...args: any) => any>(
 	selector: T,

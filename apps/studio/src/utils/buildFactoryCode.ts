@@ -1,9 +1,9 @@
-import { File, isFile, isStatement, Node } from '@babel/types';
-import { buildAST } from 'ast-node-builder';
+import { File, Node, isFile, isStatement } from "@babel/types";
+import { buildAST } from "ast-node-builder";
 
 const stringifyNode = (node: Node): string => {
 	return JSON.stringify(node, (key, value) => {
-		if (['tokens', 'loc', 'start', 'end', 'extra'].includes(key)) {
+		if (["tokens", "loc", "start", "end", "extra"].includes(key)) {
 			return undefined;
 		}
 
@@ -16,24 +16,24 @@ export const buildFactoryCode = (node: Node): string => {
 		? node
 		: isStatement(node)
 		  ? {
-					type: 'File' as const,
+					type: "File" as const,
 					program: {
-						type: 'Program' as const,
+						type: "Program" as const,
 						body: [node],
 						directives: [],
-						sourceType: 'script',
-						sourceFile: 'afterSnippet.tsx',
+						sourceType: "script",
+						sourceFile: "afterSnippet.tsx",
 					},
-		    }
+			  }
 		  : null;
 
 	if (astNode === null) {
 		return stringifyNode(node);
 	}
 
-	const factoryCode = buildAST(astNode).join('');
+	const factoryCode = buildAST(astNode).join("");
 
-	if (factoryCode === '') {
+	if (factoryCode === "") {
 		return stringifyNode(node);
 	}
 

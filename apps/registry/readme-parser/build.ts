@@ -1,4 +1,4 @@
-import esbuild from 'esbuild';
+import esbuild from "esbuild";
 
 const getOptions = (fileName: string): Parameters<typeof esbuild.build>[0] => {
 	return {
@@ -13,17 +13,17 @@ const getOptions = (fileName: string): Parameters<typeof esbuild.build>[0] => {
       `,
 		},
 		bundle: true,
-		platform: 'node',
+		platform: "node",
 		minify: true,
 		minifyWhitespace: true,
-		format: 'esm',
+		format: "esm",
 		outfile: `./dist/${fileName}.js`,
 	};
 };
 
 const build = async () => {
-	await esbuild.build(getOptions('parse'));
-	await esbuild.build(getOptions('sync'));
+	await esbuild.build(getOptions("parse"));
+	await esbuild.build(getOptions("sync"));
 };
 
 build();

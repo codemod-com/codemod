@@ -1,4 +1,4 @@
-import type { Filemod, UnifiedFileSystem } from '@codemod-com/filemod';
+import type { Filemod, UnifiedFileSystem } from "@codemod-com/filemod";
 import type {
 	CallExpression,
 	ImportDeclaration,
@@ -7,8 +7,8 @@ import type {
 	JsxSelfClosingElement,
 	SourceFile,
 	TemplateExpression,
-} from 'ts-morph';
-import tsmorph, { Node, SyntaxKind } from 'ts-morph';
+} from "ts-morph";
+import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
@@ -21,10 +21,10 @@ const isNotSnakeCase = (str: string) => {
 };
 
 const TRANSLATION_FUNCTION_NAMES = [
-	't',
-	'language',
-	'translate',
-	'getTextBody',
+	"t",
+	"language",
+	"translate",
+	"getTextBody",
 ] as const;
 type TranslationFunctionNames = (typeof TRANSLATION_FUNCTION_NAMES)[number];
 
@@ -114,7 +114,7 @@ const handleCallExpression = (
 ) => {
 	const [arg1, arg2] = callExpression.getArguments();
 
-	const translationKeyArgs = name === 'getTextBody' ? [arg1, arg2] : [arg1];
+	const translationKeyArgs = name === "getTextBody" ? [arg1, arg2] : [arg1];
 
 	translationKeyArgs.forEach((translationKeyArg) => {
 		if (Node.isStringLiteral(translationKeyArg)) {
@@ -132,9 +132,7 @@ const handleCallExpression = (
 		) {
 			const keyLikeStringLiterals = translationKeyArg
 				.getDescendantsOfKind(SyntaxKind.StringLiteral)
-				.filter((s) =>
-					/^[a-z1-9]+(_[a-z1-9]+)*$/.test(s.getLiteralText()),
-				);
+				.filter((s) => /^[a-z1-9]+(_[a-z1-9]+)*$/.test(s.getLiteralText()));
 
 			keyLikeStringLiterals.forEach((literal) => {
 				state.translations.add(literal.getLiteralText());
@@ -210,10 +208,10 @@ const handleImportDeclaration = (
 		.getModuleSpecifier()
 		.getLiteralText();
 
-	if (moduleSpecifierText === 'next-i18next') {
+	if (moduleSpecifierText === "next-i18next") {
 		const transNamedImport = importDeclaration
 			.getNamedImports()
-			.find((namedImport) => namedImport.getName() === 'Trans');
+			.find((namedImport) => namedImport.getName() === "Trans");
 
 		if (transNamedImport) {
 			handleTransNamedImport(transNamedImport, state);
@@ -275,7 +273,7 @@ const handleSourceFile = (sourceFile: SourceFile, state: State) => {
 };
 
 const buildSourceFile = (
-	tsmorph: Dependencies['tsmorph'],
+	tsmorph: Dependencies["tsmorph"],
 	data: string,
 	path: string,
 ) => {
@@ -336,8 +334,8 @@ type State = {
 };
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/*.{js,jsx,ts,tsx,cjs,mjs,json}'],
-	excludePatterns: ['**/node_modules/**'],
+	includePatterns: ["**/*.{js,jsx,ts,tsx,cjs,mjs,json}"],
+	excludePatterns: ["**/node_modules/**"],
 	initializeState: async (_, previousState) => {
 		return (
 			previousState ?? {
@@ -350,23 +348,23 @@ export const repomod: Filemod<Dependencies, State> = {
 	},
 	handleFinish: async (_, state) => {
 		if (state === null || state.translationsCollected) {
-			return { kind: 'noop' };
+			return { kind: "noop" };
 		}
 
 		state.translationsCollected = true;
 
 		return {
-			kind: 'restart',
+			kind: "restart",
 		};
 	},
 	handleData: async (api, path, data, options, state) => {
 		if (state === null) {
 			return {
-				kind: 'noop',
+				kind: "noop",
 			};
 		}
 
-		if (!state.translationsCollected && !path.endsWith('.json')) {
+		if (!state.translationsCollected && !path.endsWith(".json")) {
 			const { tsmorph } = api.getDependencies();
 
 			handleSourceFile(buildSourceFile(tsmorph, data, path), state);
@@ -377,21 +375,21 @@ export const repomod: Filemod<Dependencies, State> = {
 			(state.translations.size !== 0 ||
 				state.keyHeads.size !== 0 ||
 				state.keyTails.size !== 0) &&
-			path.includes('public/static/locales')
+			path.includes("public/static/locales")
 		) {
 			const sourceFile = buildSourceFile(tsmorph, `(${data})`, path);
 			handleLocaleFile(sourceFile, state);
 			const fullText = sourceFile.getFullText();
 
 			return {
-				kind: 'upsertData',
+				kind: "upsertData",
 				path,
 				data: sourceFile.getFullText().slice(1, fullText.length - 1),
 			};
 		}
 
 		return {
-			kind: 'noop',
+			kind: "noop",
 		};
 	},
 };

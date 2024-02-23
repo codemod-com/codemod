@@ -1,15 +1,15 @@
-import { vscode } from '../shared/utilities/vscode';
-import styles from './style.module.css';
-import '../shared/util.css';
-import cn from 'classnames';
-import { CaseHash } from '../../../src/cases/types';
-import { CodemodRunsTree } from '../../../src/selectors/selectCodemodRunsTree';
-import { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
-import { ReactComponent as CaseIcon } from '../assets/case.svg';
-import { CustomTreeView } from '../customTreeView';
-import LoadingProgress from '../jobDiffView/Components/LoadingProgress';
-import CustomPopover from '../shared/CustomPopover';
-import TreeItem from '../shared/TreeItem';
+import cn from "classnames";
+import { CaseHash } from "../../../src/cases/types";
+import { CodemodRunsTree } from "../../../src/selectors/selectCodemodRunsTree";
+import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import { ReactComponent as CaseIcon } from "../assets/case.svg";
+import { CustomTreeView } from "../customTreeView";
+import LoadingProgress from "../jobDiffView/Components/LoadingProgress";
+import CustomPopover from "../shared/CustomPopover";
+import TreeItem from "../shared/TreeItem";
+import "../shared/util.css";
+import { vscode } from "../shared/utilities/vscode";
+import styles from "./style.module.css";
 
 type InfoIconProps = {
 	createdAt: number;
@@ -23,20 +23,20 @@ const InfoIcon = ({ createdAt, path }: InfoIconProps) => {
 				Number(createdAt),
 			).toLocaleTimeString()}`}
 		>
-			<span className={cn('codicon', 'codicon-info')} />
+			<span className={cn("codicon", "codicon-info")} />
 		</CustomPopover>
 	);
 };
 
 export const App = (
-	props: MainWebviewViewProps & { activeTabId: 'codemodRuns' },
+	props: MainWebviewViewProps & { activeTabId: "codemodRuns" },
 ) => {
 	if (props.codemodRunsTree === null) {
 		// no workspace is chosen
 		return (
 			<p className={styles.welcomeMessage}>
-				No change to review! Run some codemods via Codemod Discovery or
-				VSCode Command & check back later!
+				No change to review! Run some codemods via Codemod Discovery or VSCode
+				Command & check back later!
 			</p>
 		);
 	}
@@ -47,14 +47,14 @@ export const App = (
 			<LoadingProgress description="Executing codemod..." />
 		) : (
 			<p className={styles.welcomeMessage}>
-				No change to review! Run some codemods via Codemod Discovery or
-				VSCode Command & check back later!
+				No change to review! Run some codemods via Codemod Discovery or VSCode
+				Command & check back later!
 			</p>
 		);
 	}
 
 	return (
-		<CustomTreeView<CaseHash, CodemodRunsTree['nodeData'][0]['node']>
+		<CustomTreeView<CaseHash, CodemodRunsTree["nodeData"][0]["node"]>
 			focusedNodeHashDigest={props.codemodRunsTree.selectedNodeHashDigest}
 			collapsedNodeHashDigests={[]}
 			nodeData={props.codemodRunsTree.nodeData}
@@ -84,16 +84,16 @@ export const App = (
 						}
 						inlineStyles={{
 							root: {
-								paddingRight: '3px',
+								paddingRight: "3px",
 							},
 						}}
 					/>
 				);
 			}}
 			onFlip={() => {}}
-			onFocus={function (hashDigest: CaseHash): void {
+			onFocus={(hashDigest: CaseHash): void => {
 				vscode.postMessage({
-					kind: 'webview.campaignManager.setSelectedCaseHash',
+					kind: "webview.campaignManager.setSelectedCaseHash",
 					caseHash: hashDigest,
 				});
 			}}

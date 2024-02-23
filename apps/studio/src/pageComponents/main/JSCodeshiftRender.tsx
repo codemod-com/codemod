@@ -1,25 +1,25 @@
-import dynamic from 'next/dynamic';
-import { useCallback, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { useWebWorker } from '~/hooks/useWebWorker';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
-import { useAppDispatch } from '~/store';
-import { setRangeThunk } from '~/store/setRangeThunk';
+import dynamic from "next/dynamic";
+import { useCallback, useEffect } from "react";
+import { useSelector } from "react-redux";
+import { useWebWorker } from "~/hooks/useWebWorker";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { useAppDispatch } from "~/store";
+import { setRangeThunk } from "~/store/setRangeThunk";
 import {
 	codemodOutputSlice,
 	selectCodemodOutput,
-} from '~/store/slices/codemodOutput';
-import Text from '../../components/Text';
-import { Button } from '../../components/ui/button';
-import { setActiveEventThunk } from '../../store/setActiveEventThunk';
-import { selectLog, setEvents } from '../../store/slices/log';
-import { selectMod, setHasRuntimeErrors } from '../../store/slices/mod';
-import { selectSnippets } from '../../store/slices/snippets';
-import { TabNames, viewSlice } from '../../store/slices/view';
-import { useSnippet } from './SnippetUI';
+} from "~/store/slices/codemodOutput";
+import Text from "../../components/Text";
+import { Button } from "../../components/ui/button";
+import { setActiveEventThunk } from "../../store/setActiveEventThunk";
+import { selectLog, setEvents } from "../../store/slices/log";
+import { selectMod, setHasRuntimeErrors } from "../../store/slices/mod";
+import { selectSnippets } from "../../store/slices/snippets";
+import { TabNames, viewSlice } from "../../store/slices/view";
+import { useSnippet } from "./SnippetUI";
 
 const MonacoDiffEditor = dynamic(
-	() => import('../../components/Snippet/MonacoDiffEditor'),
+	() => import("../../components/Snippet/MonacoDiffEditor"),
 	{
 		loading: () => <p>Loading...</p>,
 		ssr: false,
@@ -37,24 +37,20 @@ const LiveCodemodResult = () => {
 	const codemodOutput = useSelector(selectCodemodOutput);
 	const dispatch = useAppDispatch();
 
-	const { value, handleSelectionChange, onSnippetChange } =
-		useSnippet('after');
+	const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
-	const content = internalContent ?? '';
+	const content = internalContent ?? "";
 
 	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
 	const firstCodemodExecutionErrorEvent = events.find(
-		(e) => e.kind === 'codemodExecutionError',
+		(e) => e.kind === "codemodExecutionError",
 	);
 
 	useEffect(() => {
-		if (
-			snippetBeforeHasOnlyWhitespaces ||
-			codemodSourceHasOnlyWhitespaces
-		) {
-			dispatch(codemodOutputSlice.actions.setContent(''));
+		if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
+			dispatch(codemodOutputSlice.actions.setContent(""));
 			dispatch(setHasRuntimeErrors(false));
 			dispatch(setEvents([]));
 
@@ -73,11 +69,9 @@ const LiveCodemodResult = () => {
 	]);
 
 	useEffect(() => {
-		if (webWorkerState.kind === 'LEFT') {
+		if (webWorkerState.kind === "LEFT") {
 			dispatch(
-				codemodOutputSlice.actions.setContent(
-					webWorkerState.error.message,
-				),
+				codemodOutputSlice.actions.setContent(webWorkerState.error.message),
 			);
 			dispatch(setHasRuntimeErrors(true));
 			dispatch(setEvents([]));
@@ -85,7 +79,7 @@ const LiveCodemodResult = () => {
 		}
 
 		dispatch(
-			codemodOutputSlice.actions.setContent(webWorkerState.output ?? ''),
+			codemodOutputSlice.actions.setContent(webWorkerState.output ?? ""),
 		);
 
 		dispatch(setHasRuntimeErrors(false));
@@ -96,7 +90,7 @@ const LiveCodemodResult = () => {
 		(range: OffsetRange) => {
 			dispatch(
 				setRangeThunk({
-					target: 'CODEMOD_OUTPUT',
+					target: "CODEMOD_OUTPUT",
 					ranges: [range],
 				}),
 			);
@@ -110,8 +104,8 @@ const LiveCodemodResult = () => {
 				<div className="text-center">
 					{snippetBeforeHasOnlyWhitespaces && (
 						<Text>
-							Please provide the snippet before the transformation
-							to execute the codemod.
+							Please provide the snippet before the transformation to execute
+							the codemod.
 						</Text>
 					)}
 					{codemodSourceHasOnlyWhitespaces && (
@@ -129,11 +123,7 @@ const LiveCodemodResult = () => {
 											firstCodemodExecutionErrorEvent.hashDigest,
 										),
 									);
-									dispatch(
-										viewSlice.actions.setActiveTab(
-											TabNames.DEBUG,
-										),
-									);
+									dispatch(viewSlice.actions.setActiveTab(TabNames.DEBUG));
 								}}
 							>
 								Debugger
@@ -158,7 +148,7 @@ const LiveCodemodResult = () => {
 					modifiedEditorProps={{
 						highlights: codemodOutput.ranges,
 						onSelectionChange,
-						value: codemodOutput.content ?? '',
+						value: codemodOutput.content ?? "",
 					}}
 				/>
 			</div>

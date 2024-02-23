@@ -1,8 +1,8 @@
-import { VSCodeButton } from '@vscode/webview-ui-toolkit/react';
-import cn from 'classnames';
-import { CSSProperties } from 'react';
-import CustomPopover from '../../shared/CustomPopover';
-import s from './style.module.css';
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
+import cn from "classnames";
+import { CSSProperties } from "react";
+import CustomPopover from "../../shared/CustomPopover";
+import s from "./style.module.css";
 
 type Props = {
 	id?: string;
@@ -38,9 +38,7 @@ const ActionButton = ({
 				disabled={disabled}
 				style={style}
 			>
-				{iconName ? (
-					<span className={cn('codicon', 'mr-2', iconName)} />
-				) : null}
+				{iconName ? <span className={cn("codicon", "mr-2", iconName)} /> : null}
 				{children}
 			</VSCodeButton>
 		</CustomPopover>

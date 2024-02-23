@@ -1,4 +1,4 @@
-import { UserProfile } from '@clerk/nextjs';
+import { UserProfile } from "@clerk/nextjs";
 
 const UserPage = () => (
 	<div className=" flex h-screen w-screen items-center justify-center">

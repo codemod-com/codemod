@@ -1,15 +1,15 @@
-import type { Contracts, TelemetryClient } from 'applicationinsights';
-import { APP_INSIGHTS_TAG } from './constants.js';
+import type { Contracts, TelemetryClient } from "applicationinsights";
+import { APP_INSIGHTS_TAG } from "./constants.js";
 
 export type Event =
 	| Readonly<{
-			kind: 'codemodExecuted';
+			kind: "codemodExecuted";
 			fileCount: number;
 			executionId: string;
 			codemodName: string;
 	  }>
 	| Readonly<{
-			kind: 'failedToExecuteCommand';
+			kind: "failedToExecuteCommand";
 			commandName: string;
 	  }>;
 
@@ -18,11 +18,11 @@ export type TelemetryBlueprint = {
 };
 
 const ALLOWED_ENVELOPE_TAGS = [
-	'ai.device.osVersion',
-	'ai.cloud.role',
-	'ai.device.osArchitecture',
-	'ai.device.osPlatform',
-	'ai.internal.sdkVersion',
+	"ai.device.osVersion",
+	"ai.cloud.role",
+	"ai.device.osArchitecture",
+	"ai.device.osPlatform",
+	"ai.internal.sdkVersion",
 ];
 
 export class AppInsightsTelemetryService implements TelemetryBlueprint {
@@ -38,7 +38,7 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 
 		envelope.tags = Object.fromEntries(
 			allowedTagEntries,
-		) as Contracts.EnvelopeTelemetry['tags'];
+		) as Contracts.EnvelopeTelemetry["tags"];
 		envelope.tags[this.__telemetryClient.context.keys.cloudRole] =
 			APP_INSIGHTS_TAG;
 
@@ -51,14 +51,13 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 		const measurements: Record<string, number> = {};
 
 		for (const [key, value] of Object.entries(event)) {
-			if (typeof value === 'string') {
+			if (typeof value === "string") {
 				properties[key] = value;
 				continue;
 			}
 
-			if (typeof value === 'number') {
+			if (typeof value === "number") {
 				measurements[key] = value;
-				continue;
 			}
 		}
 
@@ -70,9 +69,7 @@ export class AppInsightsTelemetryService implements TelemetryBlueprint {
 	}
 
 	public sendEvent(event: Event): void {
-		this.__telemetryClient.trackEvent(
-			this.__rawEventToTelemetryEvent(event),
-		);
+		this.__telemetryClient.trackEvent(this.__rawEventToTelemetryEvent(event));
 	}
 }
 

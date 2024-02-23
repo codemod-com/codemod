@@ -1,4 +1,4 @@
-import MonacoEditorPlugin from 'monaco-editor-webpack-plugin';
+import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -10,9 +10,9 @@ const nextConfig = {
 		if (!isServer) {
 			config.plugins.push(
 				new MonacoEditorPlugin({
-					languages: ['typescript', 'html', 'css', 'json'],
-					filename: 'static/[name].worker.js',
-					publicPath: '/_next',
+					languages: ["typescript", "html", "css", "json"],
+					filename: "static/[name].worker.js",
+					publicPath: "/_next",
 				}),
 			);
 		}
@@ -25,7 +25,7 @@ const nextConfig = {
 					...config.module.rules,
 					{
 						test: /\.txt$/i,
-						use: 'raw-loader',
+						use: "raw-loader",
 					},
 				],
 			},

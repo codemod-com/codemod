@@ -1,17 +1,17 @@
-import cn from 'classnames';
-import { useEffect, useRef } from 'react';
+import cn from "classnames";
+import { useEffect, useRef } from "react";
 import {
 	CodemodNodeHashDigest,
 	NodeDatum,
-} from '../../../../src/selectors/selectCodemodTree';
-import { CodemodHash } from '../../shared/types';
-import CodemodArguments from '../CodemodArguments';
-import { InfiniteProgress } from '../TreeView/InfiniteProgress';
-import ProgressBar from '../TreeView/ProgressBar';
-import { Progress } from '../useProgressBar';
-import Codemod from './Codemod';
-import Directory from './Directory';
-import styles from './style.module.css';
+} from "../../../../src/selectors/selectCodemodTree";
+import { CodemodHash } from "../../shared/types";
+import CodemodArguments from "../CodemodArguments";
+import { InfiniteProgress } from "../TreeView/InfiniteProgress";
+import ProgressBar from "../TreeView/ProgressBar";
+import { Progress } from "../useProgressBar";
+import Codemod from "./Codemod";
+import Directory from "./Directory";
+import styles from "./style.module.css";
 
 const EXPANDABLE_CONTENT_MAX_HEIGHT = 1000;
 
@@ -36,7 +36,7 @@ const renderProgressBar = (progress: Progress | null) => {
 		return null;
 	}
 
-	if (progress.progressKind === 'infinite') {
+	if (progress.progressKind === "infinite") {
 		return <InfiniteProgress />;
 	}
 
@@ -62,9 +62,9 @@ const getCodemodNodeRenderer =
 			}
 
 			ref.current?.scrollIntoView({
-				behavior: 'smooth',
-				block: 'center',
-				inline: 'center',
+				behavior: "smooth",
+				block: "center",
+				inline: "center",
 			});
 			ref.current?.focus();
 		}, [focused]);
@@ -83,7 +83,7 @@ const getCodemodNodeRenderer =
 						minWidth: `${getIndent(nodeDatum.depth)}px`,
 					}}
 				/>
-				{node.kind === 'CODEMOD' && (
+				{node.kind === "CODEMOD" && (
 					<div className="w-full">
 						<Codemod
 							hashDigest={hashDigest}
@@ -108,9 +108,7 @@ const getCodemodNodeRenderer =
 							<div
 								className={styles.expandableContent}
 								style={{
-									marginLeft: `-${getIndent(
-										nodeDatum.depth,
-									)}px`,
+									marginLeft: `-${getIndent(nodeDatum.depth)}px`,
 									maxHeight: `${EXPANDABLE_CONTENT_MAX_HEIGHT}px`,
 								}}
 							>
@@ -128,20 +126,14 @@ const getCodemodNodeRenderer =
 								<div
 									className={styles.expandableContent}
 									style={{
-										marginLeft: `-${getIndent(
-											nodeDatum.depth,
-										)}px`,
+										marginLeft: `-${getIndent(nodeDatum.depth)}px`,
 									}}
 								>
 									<div className={styles.progressContainer}>
-										<p
-											className={
-												styles.progressStatusLabel
-											}
-										>
-											{progress.progressKind === 'finite'
+										<p className={styles.progressStatusLabel}>
+											{progress.progressKind === "finite"
 												? `Processed ${progress.processedFileNumber} / ${progress.totalFileNumber} files`
-												: 'Processing all files...'}
+												: "Processing all files..."}
 										</p>
 
 										{renderProgressBar(progress)}
@@ -151,7 +143,7 @@ const getCodemodNodeRenderer =
 					</div>
 				)}
 
-				{['DIRECTORY', 'ROOT'].includes(node.kind) && (
+				{["DIRECTORY", "ROOT"].includes(node.kind) && (
 					<Directory expanded={expanded} label={label} />
 				)}
 			</div>

@@ -1,117 +1,111 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Codemod.com",
-  "logo": {
-    "dark": "/logo/codemod-logo-dark.svg",
-    "light": "/logo/codemod-logo-light.svg"
-  },
-  "favicon": "/favicon.svg",
-  "colors": {
-    "primary": "#0B151E",
-    "light": "#D6FF62",
-    "dark": "#0B151E",
-    "anchors": {
-      "from": "#91c500",
-      "to": "#91c500"
-    }
-  },
-  "topbarCtaButton": {
-    "type": "github",
-    "url": "https://github.com/codemod-com/codemod"
-  },
-  "tabs": [
-    {
-      "name": "Examples",
-      "url": "examples"
-    },
-    {
-      "name": "Blog",
-      "url": "https://docs.codemod.com/blog"
-    }
-  ],
-  "anchors": [
-    {
-      "name": "Join Community",
-      "icon": "slack",
-      "iconType": "regular",
-      "url": "https://codemod.com/community"
-    },
-    {
-      "name": "Codemod Studio",
-      "icon": "screwdriver-wrench",
-      "iconType": "regular",
-      "url": "https://codemod.studio"
-    },
-    {
-      "name": "Codemod Registry",
-      "icon": "grid-2-plus",
-      "iconType": "regular",
-      "url": "https://codemod.com/automations"
-    },
-    {
-      "name": "VS Code Extension",
-      "icon": "code",
-      "iconType": "regular",
-      "url": "https://codemod.com/extension"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Introduction",
-      "pages": [
-        "introduction"
-      ]
-    },
-    {
-      "group": "Building Codemods",
-      "pages": [
-        "codemod-studio/quickstart"
-      ]
-    },
-    {
-      "group": "Codemod Registry",
-      "pages": [
-        "codemod-registry/introduction",
-        "codemod-registry/publishing-codemods"
-      ]
-    },
-    {
-      "group": "Deploying Codemods",
-      "pages": [
-            "deploying-codemods/introduction",
-            "deploying-codemods/cli",
-            "deploying-codemods/vsce"
-      ]
-    },
-    {
-      "group": "Other Resources",
-      "pages": [
-        "more-resources/changelog",
-        {
-          "group": "Legal",
-          "pages": [
-            "more-resources/legal/telemetry-compliance",
-            "more-resources/legal/privacy-policy",
-            "more-resources/legal/terms-and-conditions"
-          ]
-      }
-      ]
-    },
-    {
-      "group": "Explore examples",
-      "pages": [
-        "examples/introduction"
-      ]
-    }
-  ],
-  "feedback": {
-    "thumbsRating": true,
-    "suggestEdit": true,
-    "raiseIssue": true
-  },
-  "footerSocials": {
-    "twitter": "https://twitter.com/codemod",
-    "github": "https://github.com/codemod-com",
-    "linkedin": "https://www.linkedin.com/company/codemod"
-  }
+	"$schema": "https://mintlify.com/schema.json",
+	"name": "Codemod.com",
+	"logo": {
+		"dark": "/logo/codemod-logo-dark.svg",
+		"light": "/logo/codemod-logo-light.svg"
+	},
+	"favicon": "/favicon.svg",
+	"colors": {
+		"primary": "#0B151E",
+		"light": "#D6FF62",
+		"dark": "#0B151E",
+		"anchors": {
+			"from": "#91c500",
+			"to": "#91c500"
+		}
+	},
+	"topbarCtaButton": {
+		"type": "github",
+		"url": "https://github.com/codemod-com/codemod"
+	},
+	"tabs": [
+		{
+			"name": "Examples",
+			"url": "examples"
+		},
+		{
+			"name": "Blog",
+			"url": "https://docs.codemod.com/blog"
+		}
+	],
+	"anchors": [
+		{
+			"name": "Join Community",
+			"icon": "slack",
+			"iconType": "regular",
+			"url": "https://codemod.com/community"
+		},
+		{
+			"name": "Codemod Studio",
+			"icon": "screwdriver-wrench",
+			"iconType": "regular",
+			"url": "https://codemod.studio"
+		},
+		{
+			"name": "Codemod Registry",
+			"icon": "grid-2-plus",
+			"iconType": "regular",
+			"url": "https://codemod.com/automations"
+		},
+		{
+			"name": "VS Code Extension",
+			"icon": "code",
+			"iconType": "regular",
+			"url": "https://codemod.com/extension"
+		}
+	],
+	"navigation": [
+		{
+			"group": "Introduction",
+			"pages": ["introduction"]
+		},
+		{
+			"group": "Building Codemods",
+			"pages": ["codemod-studio/quickstart"]
+		},
+		{
+			"group": "Codemod Registry",
+			"pages": [
+				"codemod-registry/introduction",
+				"codemod-registry/publishing-codemods"
+			]
+		},
+		{
+			"group": "Deploying Codemods",
+			"pages": [
+				"deploying-codemods/introduction",
+				"deploying-codemods/cli",
+				"deploying-codemods/vsce"
+			]
+		},
+		{
+			"group": "Other Resources",
+			"pages": [
+				"more-resources/changelog",
+				{
+					"group": "Legal",
+					"pages": [
+						"more-resources/legal/telemetry-compliance",
+						"more-resources/legal/privacy-policy",
+						"more-resources/legal/terms-and-conditions"
+					]
+				}
+			]
+		},
+		{
+			"group": "Explore examples",
+			"pages": ["examples/introduction"]
+		}
+	],
+	"feedback": {
+		"thumbsRating": true,
+		"suggestEdit": true,
+		"raiseIssue": true
+	},
+	"footerSocials": {
+		"twitter": "https://twitter.com/codemod",
+		"github": "https://github.com/codemod-com",
+		"linkedin": "https://www.linkedin.com/company/codemod"
+	}
 }

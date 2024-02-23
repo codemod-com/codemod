@@ -1,5 +1,5 @@
-import * as t from 'io-ts';
-import { buildTypeCodec } from '../utilities';
+import * as t from "io-ts";
+import { buildTypeCodec } from "../utilities";
 
 export const createIssueResponseCodec = buildTypeCodec({
 	html_url: t.string,

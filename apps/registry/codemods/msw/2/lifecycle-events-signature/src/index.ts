@@ -1,4 +1,4 @@
-import { SyntaxKind, type SourceFile } from 'ts-morph';
+import { type SourceFile, SyntaxKind } from "ts-morph";
 
 // The issue with that approach in this particular codemod is that caller of the .on method
 // should be imported from MSW. I believe there is a way to check if the caller is from 3rd party lib
@@ -9,7 +9,7 @@ function shouldProcessFile(sourceFile: SourceFile): boolean {
 		sourceFile
 			.getImportDeclarations()
 			.find((decl) =>
-				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+				decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
 			) !== undefined
 	);
 }
@@ -22,12 +22,11 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 
 	sourceFile
 		.getDescendantsOfKind(SyntaxKind.CallExpression)
-		.filter(
-			(ce) =>
-				ce
-					.getChildrenOfKind(SyntaxKind.PropertyAccessExpression)[0]
-					?.getText()
-					.endsWith('.on'),
+		.filter((ce) =>
+			ce
+				.getChildrenOfKind(SyntaxKind.PropertyAccessExpression)[0]
+				?.getText()
+				.endsWith(".on"),
 		)
 		.forEach((eventHandler) => {
 			const cbNode = eventHandler.getArguments().at(1);
@@ -50,20 +49,20 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 			const paramsToAdd: string[] = [];
 
 			if (requestParam) {
-				requestParam.rename('request');
+				requestParam.rename("request");
 				requestParam.remove();
-				paramsToAdd.push('request');
+				paramsToAdd.push("request");
 			}
 
 			if (requestIdParam) {
-				requestIdParam.rename('requestId');
+				requestIdParam.rename("requestId");
 				requestIdParam.remove();
-				paramsToAdd.push('requestId');
+				paramsToAdd.push("requestId");
 			}
 
 			if (paramsToAdd.length) {
 				callback.addParameter({
-					name: `{ ${paramsToAdd.join(', ')} }`,
+					name: `{ ${paramsToAdd.join(", ")} }`,
 				});
 			}
 		});

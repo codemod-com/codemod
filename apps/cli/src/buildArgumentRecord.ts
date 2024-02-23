@@ -1,5 +1,5 @@
-import * as S from '@effect/schema/Schema';
-import { ArgumentRecord } from './schemata/argumentRecordSchema.js';
+import * as S from "@effect/schema/Schema";
+import { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
 
 export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
 	argv: T,
@@ -9,7 +9,7 @@ export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
 	} = {};
 
 	Object.keys(argv)
-		.filter((arg) => arg.startsWith('arg:'))
+		.filter((arg) => arg.startsWith("arg:"))
 		.forEach((arg) => {
 			const key = arg.slice(4);
 			const value = argv[arg];
@@ -23,12 +23,12 @@ export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
 				return;
 			}
 
-			if (value === 'true') {
+			if (value === "true") {
 				argumentRecord[key] = true;
 				return;
 			}
 
-			if (value === 'false') {
+			if (value === "false") {
 				argumentRecord[key] = false;
 				return;
 			}

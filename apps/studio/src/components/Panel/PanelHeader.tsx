@@ -1,6 +1,6 @@
-import { type ReactNode } from 'react';
-import Text from '~/components/Text';
-import { cn } from '~/lib/utils';
+import { type ReactNode } from "react";
+import Text from "~/components/Text";
+import { cn } from "~/lib/utils";
 
 type PanelHeaderProps = {
 	children: ReactNode;
@@ -27,18 +27,14 @@ const PanelTab = ({
 	onClick: onTabClick,
 }: PanelTabProps) => {
 	const classNames = cn(
-		'panel_panel_tab',
-		inactive && 'panel_panel_tab_inactive',
-		active && 'panel_panel_tab_active',
-		(ondblclick || onTabClick) && 'panel_panel_tab_clicked',
+		"panel_panel_tab",
+		inactive && "panel_panel_tab_inactive",
+		active && "panel_panel_tab_active",
+		(ondblclick || onTabClick) && "panel_panel_tab_clicked",
 		className,
 	);
 	return (
-		<div
-			className={classNames}
-			onClick={onTabClick}
-			onDoubleClick={ondblclick}
-		>
+		<div className={classNames} onClick={onTabClick} onDoubleClick={ondblclick}>
 			{children}
 		</div>
 	);

@@ -1,4 +1,4 @@
-import * as S from '@effect/schema/Schema';
+import * as S from "@effect/schema/Schema";
 
 export class ClaudeService {
 	public constructor(
@@ -7,11 +7,11 @@ export class ClaudeService {
 	) {}
 
 	public async complete(
-		model: 'claude-2.0' | 'claude-instant-1.2',
+		model: "claude-2.0" | "claude-instant-1.2",
 		prompt: string,
 	): Promise<string | null> {
 		if (this.__apiKey === null) {
-			throw new Error('The Claude Service API key is required');
+			throw new Error("The Claude Service API key is required");
 		}
 
 		const abortController = new AbortController();
@@ -19,14 +19,14 @@ export class ClaudeService {
 		const timeout = 60_000;
 
 		const headers = new Headers({
-			accept: 'application/json',
-			'anthropic-version': '2023-06-01',
-			'content-type': 'application/json',
-			'x-api-key': this.__apiKey,
+			accept: "application/json",
+			"anthropic-version": "2023-06-01",
+			"content-type": "application/json",
+			"x-api-key": this.__apiKey,
 		});
 
-		const responsePromise = fetch('https://api.anthropic.com/v1/complete', {
-			method: 'POST',
+		const responsePromise = fetch("https://api.anthropic.com/v1/complete", {
+			method: "POST",
 			headers,
 			body: JSON.stringify({
 				model,

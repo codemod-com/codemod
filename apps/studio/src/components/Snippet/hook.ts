@@ -1,6 +1,6 @@
-import { useEffect, useRef } from 'react';
-import { monaco } from '~/customMonaco';
-import { type OffsetRange } from '~/schemata/offsetRangeSchemata';
+import { useEffect, useRef } from "react";
+import { monaco } from "~/customMonaco";
+import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 
 type Link = {
 	regex: RegExp;
@@ -71,7 +71,7 @@ const getLinkDecorations = (
 				range: monacoRange,
 				options: {
 					isWholeLine: false,
-					inlineClassName: 'monaco-link',
+					inlineClassName: "monaco-link",
 				},
 			};
 
@@ -117,7 +117,7 @@ export const useEditor = (
 
 		didChangeCursorSelectionRef.current = editor.onDidChangeCursorSelection(
 			({ source, selection }) => {
-				if (source !== 'mouse') {
+				if (source !== "mouse") {
 					return;
 				}
 				const startPos = selection.getStartPosition();
@@ -146,11 +146,9 @@ export const useEditor = (
 
 		didChangeModelContentRef.current?.dispose();
 
-		didChangeModelContentRef.current = editor.onDidChangeModelContent(
-			(e) => {
-				onChange(editor.getValue() ?? '', e);
-			},
-		);
+		didChangeModelContentRef.current = editor.onDidChangeModelContent((e) => {
+			onChange(editor.getValue() ?? "", e);
+		});
 	}, [onChange, mounted]);
 
 	/**
@@ -266,16 +264,13 @@ export const useEditor = (
 		highlights.forEach((highlight) => {
 			const startPosition = model.getPositionAt(highlight.start);
 			const endPosition = model.getPositionAt(highlight.end);
-			const range = monaco.Range.fromPositions(
-				startPosition,
-				endPosition,
-			);
+			const range = monaco.Range.fromPositions(startPosition, endPosition);
 
 			highlightDecorations.push({
 				range,
 				options: {
 					isWholeLine: false,
-					inlineClassName: 'highlight',
+					inlineClassName: "highlight",
 				},
 			});
 		});

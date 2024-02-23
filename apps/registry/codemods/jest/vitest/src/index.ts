@@ -22,23 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type { API, FileInfo } from 'jscodeshift';
-import { updateDefaultExportMocks } from './default-exports.js';
-import { addFactoryFunctionToMock } from './factory-func.js';
+import type { API, FileInfo } from "jscodeshift";
+import { updateDefaultExportMocks } from "./default-exports.js";
+import { addFactoryFunctionToMock } from "./factory-func.js";
 import {
 	getApisFromCallExpression,
 	getApisFromMemberExpression,
-} from './get-api-calls.js';
-import { addImport } from './import.js';
-import { replaceJestObjectWithVi } from './jest-vi.js';
-import { replaceTestApiFailing, replaceTestApiFit } from './replace-api.js';
+} from "./get-api-calls.js";
+import { addImport } from "./import.js";
+import { replaceJestObjectWithVi } from "./jest-vi.js";
+import { replaceTestApiFailing, replaceTestApiFit } from "./replace-api.js";
 
 export default function transform(
 	file: FileInfo,
 	api: API,
 ): string | undefined {
-	if (file.path.endsWith('.snap')) {
-		return file.source.replace('Array [', '[').replace('Object {', '{');
+	if (file.path.endsWith(".snap")) {
+		return file.source.replace("Array [", "[").replace("Object {", "{");
 	}
 
 	const j = api.jscodeshift;
@@ -57,7 +57,7 @@ export default function transform(
 		);
 		const importDeclaration = j.importDeclaration(
 			importSpecifiers,
-			j.stringLiteral('vitest'),
+			j.stringLiteral("vitest"),
 		);
 		addImport(root, j, importDeclaration);
 	}
@@ -69,9 +69,11 @@ export default function transform(
 	updateDefaultExportMocks(root, j, file.path);
 	replaceJestObjectWithVi(root, j);
 
-	root.find(j.ImportDeclaration, {
-		source: { value: '@jest/globals' },
-	}).remove();
+	root
+		.find(j.ImportDeclaration, {
+			source: { value: "@jest/globals" },
+		})
+		.remove();
 
 	return root.toSource();
 }

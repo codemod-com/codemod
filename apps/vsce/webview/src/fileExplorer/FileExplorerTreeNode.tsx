@@ -1,38 +1,38 @@
-import cn from 'classnames';
-import { memo } from 'react';
-import { _ExplorerNode } from '../../../src/persistedState/explorerNodeCodec';
-import { ReactComponent as CheckboxOutlineBlankMaterialIcon } from '../assets/material-icons/check_box_outline_blank.svg';
-import { ReactComponent as CheckboxMaterialIcon } from '../assets/material-icons/check_box.svg';
-import { ReactComponent as IndeterminateCheckboxMaterialIcon } from '../assets/material-icons/indeterminate_check_box.svg';
-import TreeItem, { Props as TreeItemProps } from '../shared/TreeItem';
-import styles from './style.module.css';
+import cn from "classnames";
+import { memo } from "react";
+import { _ExplorerNode } from "../../../src/persistedState/explorerNodeCodec";
+import { ReactComponent as CheckboxMaterialIcon } from "../assets/material-icons/check_box.svg";
+import { ReactComponent as CheckboxOutlineBlankMaterialIcon } from "../assets/material-icons/check_box_outline_blank.svg";
+import { ReactComponent as IndeterminateCheckboxMaterialIcon } from "../assets/material-icons/indeterminate_check_box.svg";
+import TreeItem, { Props as TreeItemProps } from "../shared/TreeItem";
+import styles from "./style.module.css";
 
 type Props = Omit<
 	TreeItemProps,
-	'icon' | 'startDecorator' | 'inlineStyles' | 'subLabel'
+	"icon" | "startDecorator" | "inlineStyles" | "subLabel"
 > & {
-	kind: _ExplorerNode['kind'];
+	kind: _ExplorerNode["kind"];
 	iconName: IconName | null;
-	checkboxState: 'checked' | 'blank' | 'indeterminate';
+	checkboxState: "checked" | "blank" | "indeterminate";
 	reviewed: boolean;
 	onCheckboxClick(e: React.MouseEvent): void;
 	searchPhrase: string;
 };
 
-export type IconName = 'file-add' | 'file';
+export type IconName = "file-add" | "file";
 
 const getIcon = (iconName: IconName | null) => {
-	if (iconName !== 'file-add' && iconName !== 'file') {
+	if (iconName !== "file-add" && iconName !== "file") {
 		return null;
 	}
 
-	return <span className={cn('codicon', `codicon-${iconName}`)} />;
+	return <span className={cn("codicon", `codicon-${iconName}`)} />;
 };
 
-const getIndent = (kind: _ExplorerNode['kind'], depth: number) => {
+const getIndent = (kind: _ExplorerNode["kind"], depth: number) => {
 	let offset = 17 * depth;
 
-	if (kind === 'FILE') {
+	if (kind === "FILE") {
 		offset += 17;
 	}
 
@@ -44,18 +44,18 @@ const Checkbox = memo(
 		checkboxState,
 		onClick,
 	}: {
-		checkboxState: 'checked' | 'blank' | 'indeterminate';
+		checkboxState: "checked" | "blank" | "indeterminate";
 		onClick(e: React.MouseEvent): void;
 	}) => {
 		return (
 			<span onClick={onClick} className={styles.checkbox}>
-				{checkboxState === 'checked' && (
+				{checkboxState === "checked" && (
 					<CheckboxMaterialIcon fill="var(--vscode-icon-foreground)" />
 				)}
-				{checkboxState === 'blank' && (
+				{checkboxState === "blank" && (
 					<CheckboxOutlineBlankMaterialIcon fill="var(--vscode-icon-foreground)" />
 				)}
-				{checkboxState === 'indeterminate' && (
+				{checkboxState === "indeterminate" && (
 					<IndeterminateCheckboxMaterialIcon fill="var(--vscode-icon-foreground)" />
 				)}
 			</span>
@@ -92,22 +92,19 @@ const FileExplorerTreeNode = ({
 			focused={focused}
 			onClick={onClick}
 			startDecorator={
-				<Checkbox
-					checkboxState={checkboxState}
-					onClick={onCheckboxClick}
-				/>
+				<Checkbox checkboxState={checkboxState} onClick={onCheckboxClick} />
 			}
 			onPressChevron={onPressChevron}
 			inlineStyles={{
 				root: {
 					...(!focused && {
-						backgroundColor: 'var(--vscode-list-hoverBackground)',
+						backgroundColor: "var(--vscode-list-hoverBackground)",
 					}),
 					paddingRight: 4,
 				},
 			}}
 			endDecorator={
-				reviewed && <span className={cn('codicon', 'codicon-eye')} />
+				reviewed && <span className={cn("codicon", "codicon-eye")} />
 			}
 		/>
 	);

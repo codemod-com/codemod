@@ -26,8 +26,8 @@ export const prettify = (text: string): string => {
 			semi: true,
 			singleQuote: true,
 			jsxSingleQuote: true,
-			trailingComma: 'all',
-			parser: 'typescript',
+			trailingComma: "all",
+			parser: "typescript",
 			tabWidth: 4,
 			plugins: [prettierParserTypeScript],
 		});

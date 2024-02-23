@@ -1,5 +1,5 @@
-import type core from 'jscodeshift';
-import type { Collection } from 'jscodeshift';
+import type core from "jscodeshift";
+import type { Collection } from "jscodeshift";
 
 export const getBullImportDeclaration = <T>(
 	root: Collection<T>,
@@ -9,8 +9,8 @@ export const getBullImportDeclaration = <T>(
 		.find(
 			j.ImportDeclaration,
 			(declaration) =>
-				declaration.source.value === 'bull' ||
-				declaration.source.value === 'bullmq',
+				declaration.source.value === "bull" ||
+				declaration.source.value === "bullmq",
 		)
 		.nodes()
 		.at(0);

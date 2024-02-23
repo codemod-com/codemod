@@ -1,55 +1,55 @@
 export type RewriteMessage = Readonly<{
-	kind: 'rewrite';
+	kind: "rewrite";
 	oldPath: string;
 	newDataPath: string;
 }>;
 
 export type FinishMessage = Readonly<{
-	kind: 'finish';
+	kind: "finish";
 }>;
 
 export type ProgressMessage = Readonly<{
-	kind: 'progress';
+	kind: "progress";
 	processedFileNumber: number;
 	totalFileNumber: number;
 }>;
 
 export type DeleteMessage = Readonly<{
-	kind: 'delete';
+	kind: "delete";
 	oldFilePath: string;
 }>;
 
 export type MoveMessage = Readonly<{
-	kind: 'move';
+	kind: "move";
 	oldFilePath: string;
 	newFilePath: string;
 }>;
 
 export type CreateMessage = Readonly<{
-	kind: 'create';
+	kind: "create";
 	newFilePath: string;
 	newContentPath: string;
 }>;
 
 export type CopyMessage = Readonly<{
-	kind: 'copy';
+	kind: "copy";
 	oldFilePath: string;
 	newFilePath: string;
 }>;
 
 export type MetadataPathMessage = Readonly<{
-	kind: 'metadataPath';
+	kind: "metadataPath";
 	path: string;
 }>;
 
 export type ErrorMessage = Readonly<{
-	kind: 'error';
+	kind: "error";
 	message: string;
 	path?: string;
 }>;
 
 export type StatusUpdateMessage = Readonly<{
-	kind: 'status';
+	kind: "status";
 	message: string;
 }>;
 

@@ -1,14 +1,14 @@
-import { Export as ExportIcon } from '@phosphor-icons/react';
-import { Loader2 } from 'lucide-react';
-import { useState, type MouseEvent } from 'react';
-import { useSelector } from 'react-redux';
-import Tooltip from '~/components/Tooltip/Tooltip';
-import { useShareLink } from '~/hooks/useShareLink';
-import { selectEngine } from '~/store/slices/snippets';
-import { selectMod } from '../../store/slices/mod';
-import { assertsNeitherNullNorUndefined } from '../../utils/assertsNeitherNullNorUndefined';
-import { openLink } from '../../utils/openLink';
-import { Button } from '../ui/button';
+import { Export as ExportIcon } from "@phosphor-icons/react";
+import { Loader2 } from "lucide-react";
+import { type MouseEvent, useState } from "react";
+import { useSelector } from "react-redux";
+import Tooltip from "~/components/Tooltip/Tooltip";
+import { useShareLink } from "~/hooks/useShareLink";
+import { selectEngine } from "~/store/slices/snippets";
+import { selectMod } from "../../store/slices/mod";
+import { assertsNeitherNullNorUndefined } from "../../utils/assertsNeitherNullNorUndefined";
+import { openLink } from "../../utils/openLink";
+import { Button } from "../ui/button";
 
 type Props = {
 	className?: string;
@@ -22,7 +22,7 @@ export const ExportButton = ({ className }: Props) => {
 
 	assertsNeitherNullNorUndefined(modContext);
 
-	if (engine === 'tsmorph') {
+	if (engine === "tsmorph") {
 		return null;
 	}
 
@@ -37,7 +37,7 @@ export const ExportButton = ({ className }: Props) => {
 			return;
 		}
 
-		const vscodeUrl = new URL('vscode://codemod.codemod-vscode-extension/');
+		const vscodeUrl = new URL("vscode://codemod.codemod-vscode-extension/");
 		vscodeUrl.search = url.search;
 
 		setIsCreating(false);
@@ -49,7 +49,7 @@ export const ExportButton = ({ className }: Props) => {
 			trigger={
 				<Button
 					className={className}
-					disabled={modContext.internalContent === '' || isCreating}
+					disabled={modContext.internalContent === "" || isCreating}
 					onClick={onClick}
 					id="export-button"
 					size="sm"

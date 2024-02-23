@@ -1,6 +1,6 @@
-import { dirname } from 'node:path';
-import { Uri, workspace } from 'vscode';
-import { Message, MessageBus, MessageKind } from './messageBus';
+import { dirname } from "node:path";
+import { Uri, workspace } from "vscode";
+import { Message, MessageBus, MessageKind } from "./messageBus";
 
 export class FileService {
 	readonly #messageBus: MessageBus;

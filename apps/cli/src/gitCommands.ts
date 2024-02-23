@@ -1,11 +1,11 @@
-import { execSync } from 'node:child_process';
-import { existsSync, lstatSync } from 'node:fs';
-import { stat } from 'node:fs/promises';
-import { join } from 'node:path';
-import { doubleQuotify } from './utils.js';
+import { execSync } from "node:child_process";
+import { existsSync, lstatSync } from "node:fs";
+import { stat } from "node:fs/promises";
+import { join } from "node:path";
+import { doubleQuotify } from "./utils.js";
 
 export const isGitDirectory = (directoryPath: string): boolean => {
-	const gitPath = join(directoryPath, '.git');
+	const gitPath = join(directoryPath, ".git");
 	return existsSync(gitPath) && lstatSync(gitPath).isDirectory();
 };
 
@@ -31,7 +31,7 @@ export const getGitDiffForFile = (
 		if (!(error instanceof Error)) {
 			return null;
 		}
-		console.error('Error while getting Git diff for file:', error.message);
+		console.error("Error while getting Git diff for file:", error.message);
 		return null;
 	}
 };
@@ -46,40 +46,40 @@ export const getLatestCommitHash = (directoryPath: string): string | null => {
 		if (!(error instanceof Error)) {
 			return null;
 		}
-		console.error('Error while getting latest commit hash:', error.message);
+		console.error("Error while getting latest commit hash:", error.message);
 		return null;
 	}
 };
 
 export const findModifiedFiles = (): string[] | null => {
 	try {
-		const modifiedFiles = execSync('git ls-files --modified', {
-			encoding: 'utf-8',
+		const modifiedFiles = execSync("git ls-files --modified", {
+			encoding: "utf-8",
 		});
-		return modifiedFiles.trim().split('\n');
+		return modifiedFiles.trim().split("\n");
 	} catch (error) {
-		console.error('Error finding the modified files:', error);
+		console.error("Error finding the modified files:", error);
 		return null;
 	}
 };
 
 export const findLastlyModifiedFile = async (): Promise<string | null> => {
 	try {
-		const modifiedAndDeletedFiles = execSync('git ls-files --modified', {
-			encoding: 'utf-8',
+		const modifiedAndDeletedFiles = execSync("git ls-files --modified", {
+			encoding: "utf-8",
 		})
 			.trim()
-			.split('\n');
+			.split("\n");
 
 		if (modifiedAndDeletedFiles.length === 0) {
 			return null;
 		}
 
-		const deletedFiles = execSync('git ls-files --deleted', {
-			encoding: 'utf-8',
+		const deletedFiles = execSync("git ls-files --deleted", {
+			encoding: "utf-8",
 		})
 			.trim()
-			.split('\n');
+			.split("\n");
 		const modifiedFiles = modifiedAndDeletedFiles.filter(
 			(file) => !deletedFiles.includes(file),
 		);
@@ -98,7 +98,7 @@ export const findLastlyModifiedFile = async (): Promise<string | null> => {
 		}
 		return lastlyModifiedFile;
 	} catch (error) {
-		console.error('Error finding the modified files:', error);
+		console.error("Error finding the modified files:", error);
 		return null;
 	}
 };

@@ -1,14 +1,14 @@
-import type { RootState } from '../..';
-import { type Event } from '../log';
+import type { RootState } from "../..";
+import { type Event } from "../log";
 
 type AliasName =
-	| '$CODEMOD'
-	| '$HIGHLIGHTED_IN_CODEMOD'
-	| '$BEFORE'
-	| '$AFTER'
-	| '$HIGHLIGHTED_IN_BEFORE'
-	| '$HIGHLIGHTED_IN_AFTER'
-	| '$EXECUTION_ERROR';
+	| "$CODEMOD"
+	| "$HIGHLIGHTED_IN_CODEMOD"
+	| "$BEFORE"
+	| "$AFTER"
+	| "$HIGHLIGHTED_IN_BEFORE"
+	| "$HIGHLIGHTED_IN_AFTER"
+	| "$EXECUTION_ERROR";
 
 type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
 
@@ -30,12 +30,12 @@ const getAliases = (state: RootState): Aliases => {
 
 	const codemodExecutionError =
 		state.log.events.find(
-			(e): e is Event & { kind: 'codemodExecutionError' } =>
-				e.kind === 'codemodExecutionError',
+			(e): e is Event & { kind: "codemodExecutionError" } =>
+				e.kind === "codemodExecutionError",
 		)?.message ?? null;
 
 	return {
-		$CODEMOD: { value: internalContent ?? '', updatedAt: -1 },
+		$CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
 		$HIGHLIGHTED_IN_CODEMOD:
 			codemodInputRanges[0] && internalContent !== null
 				? {
@@ -67,7 +67,7 @@ const getAliases = (state: RootState): Aliases => {
 			  }
 			: null,
 		$EXECUTION_ERROR: {
-			value: codemodExecutionError ?? '',
+			value: codemodExecutionError ?? "",
 			updatedAt: rangesUpdatedAt,
 		},
 	};
@@ -80,7 +80,7 @@ const applyAliases = (
 	const METAVARIABLE_REGEX = /\$\w+/g;
 
 	return message.replace(METAVARIABLE_REGEX, (metavar) => {
-		const metavarValue = variables[metavar]?.value ?? '';
+		const metavarValue = variables[metavar]?.value ?? "";
 
 		return `
 			\`\`\`

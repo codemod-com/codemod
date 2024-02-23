@@ -1,32 +1,32 @@
-import { useEffect, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { PanelGroup, type ImperativePanelHandle } from 'react-resizable-panels';
-import Pane from '~/components/Panel';
-import ResizeHandle from '~/components/ResizePanel/ResizeHandler';
-import { Button } from '~/components/ui/button';
-import { selectEngine } from '~/store/slices/snippets';
-import { selectASTViewCollapsed, viewSlice } from '~/store/slices/view';
-import { debounce } from '~/utils/debounce';
-import ASTViewer from './ASTViewer';
-import CodemodOutputHeader from './CodemodOutputHeader';
-import LiveCodemodResult from './JSCodeshiftRender';
-import Layout from './Layout';
-import SnippetUI from './SnippetUI';
+import { useEffect, useRef } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { type ImperativePanelHandle, PanelGroup } from "react-resizable-panels";
+import Pane from "~/components/Panel";
+import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
+import { Button } from "~/components/ui/button";
+import { selectEngine } from "~/store/slices/snippets";
+import { selectASTViewCollapsed, viewSlice } from "~/store/slices/view";
+import { debounce } from "~/utils/debounce";
+import ASTViewer from "./ASTViewer";
+import CodemodOutputHeader from "./CodemodOutputHeader";
+import LiveCodemodResult from "./JSCodeshiftRender";
+import Layout from "./Layout";
+import SnippetUI from "./SnippetUI";
 
 enum Panel {
-	BEFORE_AST,
-	BEFORE_SNIPPET,
-	BEFORE_SECTION,
-	AFTER_AST,
-	AFTER_SNIPPET,
-	AFTER_SECTION,
-	OUTPUT_AST,
-	OUTPUT_SNIPPET,
-	AST_SECTION,
-	SNIPPETS_SECTION,
+	BEFORE_AST = 0,
+	BEFORE_SNIPPET = 1,
+	BEFORE_SECTION = 2,
+	AFTER_AST = 3,
+	AFTER_SNIPPET = 4,
+	AFTER_SECTION = 5,
+	OUTPUT_AST = 6,
+	OUTPUT_SNIPPET = 7,
+	AST_SECTION = 8,
+	SNIPPETS_SECTION = 9,
 }
 
-const isServer = typeof window === 'undefined';
+const isServer = typeof window === "undefined";
 
 const PageBottomPane = () => {
 	const engine = useSelector(selectEngine);
@@ -65,7 +65,7 @@ const PageBottomPane = () => {
 			defaultSize={50}
 			minSize={0}
 			style={{
-				flexBasis: isServer ? '50%' : '0',
+				flexBasis: isServer ? "50%" : "0",
 			}}
 		>
 			<PanelGroup direction="vertical">
@@ -86,7 +86,7 @@ const PageBottomPane = () => {
 						panelRefs.current[Panel.AST_SECTION] = ref;
 					}}
 					style={{
-						maxHeight: isServer ? 0 : 'unset',
+						maxHeight: isServer ? 0 : "unset",
 					}}
 				>
 					<PanelGroup direction="horizontal">
@@ -99,8 +99,7 @@ const PageBottomPane = () => {
 								panelRefs.current[Panel.BEFORE_AST] = ref;
 							}}
 							onResize={debounce((size) => {
-								const panel =
-									panelRefs.current[Panel.BEFORE_SNIPPET];
+								const panel = panelRefs.current[Panel.BEFORE_SNIPPET];
 
 								if (panel === null || panel === undefined) {
 									return;
@@ -109,12 +108,12 @@ const PageBottomPane = () => {
 								panel.resize(size);
 							}, 5)}
 						>
-							{engine === 'jscodeshift' ? (
+							{engine === "jscodeshift" ? (
 								<>
 									<ASTViewer type="before" />
 								</>
 							) : (
-								'The AST View is not yet supported for tsmorph'
+								"The AST View is not yet supported for tsmorph"
 							)}
 						</Layout.ResizablePanel>
 
@@ -129,12 +128,12 @@ const PageBottomPane = () => {
 								panelRefs.current[Panel.AFTER_AST] = ref;
 							}}
 						>
-							{engine === 'jscodeshift' ? (
+							{engine === "jscodeshift" ? (
 								<>
 									<ASTViewer type="after" />
 								</>
 							) : (
-								'The AST View is not yet supported for tsmorph'
+								"The AST View is not yet supported for tsmorph"
 							)}
 						</Layout.ResizablePanel>
 
@@ -149,12 +148,12 @@ const PageBottomPane = () => {
 								panelRefs.current[Panel.OUTPUT_AST] = ref;
 							}}
 						>
-							{engine === 'jscodeshift' ? (
+							{engine === "jscodeshift" ? (
 								<>
 									<ASTViewer type="output" />
 								</>
 							) : (
-								'The AST View is not yet supported for tsmorph'
+								"The AST View is not yet supported for tsmorph"
 							)}
 						</Layout.ResizablePanel>
 					</PanelGroup>
@@ -181,8 +180,7 @@ const PageBottomPane = () => {
 								panelRefs.current[Panel.BEFORE_SNIPPET] = ref;
 							}}
 							onResize={debounce((size) => {
-								const panel =
-									panelRefs.current[Panel.BEFORE_AST];
+								const panel = panelRefs.current[Panel.BEFORE_AST];
 
 								if (panel === null || panel === undefined) {
 									return;

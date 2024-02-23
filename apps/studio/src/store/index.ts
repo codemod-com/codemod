@@ -1,14 +1,14 @@
 /* eslint-disable import/group-exports */
-import { configureStore } from '@reduxjs/toolkit';
-import { useDispatch, useStore } from 'react-redux';
-import CFSReducer, { SLICE_KEY as CFS_SLICE_KEY } from './slices/CFS';
-import { codemodOutputSlice } from './slices/codemodOutput';
-import logReducer, { SLICE_KEY as LOG_SLICE_KEY } from './slices/log';
-import modReducer, { SLICE_KEY as MOD_SLICE_KEY } from './slices/mod';
+import { configureStore } from "@reduxjs/toolkit";
+import { useDispatch, useStore } from "react-redux";
+import CFSReducer, { SLICE_KEY as CFS_SLICE_KEY } from "./slices/CFS";
+import { codemodOutputSlice } from "./slices/codemodOutput";
+import logReducer, { SLICE_KEY as LOG_SLICE_KEY } from "./slices/log";
+import modReducer, { SLICE_KEY as MOD_SLICE_KEY } from "./slices/mod";
 import snippetReducer, {
 	SLICE_KEY as SNIPPET_SLICE_KEY,
-} from './slices/snippets';
-import { viewSlice } from './slices/view';
+} from "./slices/snippets";
+import { viewSlice } from "./slices/view";
 
 const store = configureStore({
 	reducer: {

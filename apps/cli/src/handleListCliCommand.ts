@@ -1,16 +1,16 @@
-import * as fs from 'fs';
-import { mkdir, readFile } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { isNeitherNullNorUndefined } from '@codemod-com/utilities';
-import columnify from 'columnify';
-import { glob } from 'fast-glob';
-import * as v from 'valibot';
-import { syncRegistryOperation } from './executeMainThread.js';
-import { FileDownloadService } from './fileDownloadService.js';
-import type { Printer, PrinterBlueprint } from './printer.js';
-import { TarService } from './services/tarService.js';
-import { boldText, colorizeText } from './utils.js';
+import * as fs from "fs";
+import { mkdir, readFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import columnify from "columnify";
+import { glob } from "fast-glob";
+import * as v from "valibot";
+import { syncRegistryOperation } from "./executeMainThread.js";
+import { FileDownloadService } from "./fileDownloadService.js";
+import type { Printer, PrinterBlueprint } from "./printer.js";
+import { TarService } from "./services/tarService.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const configJsonSchema = v.object({
 	name: v.string(),
@@ -19,11 +19,11 @@ const configJsonSchema = v.object({
 });
 
 export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
-	const configurationDirectoryPath = join(homedir(), '.codemod');
+	const configurationDirectoryPath = join(homedir(), ".codemod");
 
 	await mkdir(configurationDirectoryPath, { recursive: true });
 
-	const configFiles = await glob('**/config.json', {
+	const configFiles = await glob("**/config.json", {
 		absolute: true,
 		cwd: configurationDirectoryPath,
 		fs,
@@ -32,7 +32,7 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 
 	const codemodObjects = await Promise.allSettled(
 		configFiles.map(async (cfg) => {
-			const configJson = await readFile(cfg, 'utf8');
+			const configJson = await readFile(cfg, "utf8");
 
 			const parsedConfig = v.safeParse(
 				configJsonSchema,
@@ -45,42 +45,39 @@ export const handleListNamesCommand = async (printer: PrinterBlueprint) => {
 
 			const { name, engine, owner } = parsedConfig.output;
 
-			if (owner?.toLocaleLowerCase() === 'codemod.com') {
+			if (owner?.toLocaleLowerCase() === "codemod.com") {
 				return {
-					name: boldText(colorizeText(name, 'cyan')),
-					engine: boldText(colorizeText(engine, 'cyan')),
-					owner: boldText(colorizeText(owner, 'cyan')),
+					name: boldText(colorizeText(name, "cyan")),
+					engine: boldText(colorizeText(engine, "cyan")),
+					owner: boldText(colorizeText(owner, "cyan")),
 				};
 			}
 
 			return {
 				name,
 				engine,
-				owner: owner ?? 'Community',
+				owner: owner ?? "Community",
 			};
 		}),
 	);
 
 	const onlyValid = codemodObjects
-		.map((x) => (x.status === 'fulfilled' ? x.value : null))
+		.map((x) => (x.status === "fulfilled" ? x.value : null))
 		.filter(isNeitherNullNorUndefined)
-		.sort((a, b) =>
-			a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
-		);
+		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
 	const parsedObjects = v.parse(v.array(configJsonSchema), onlyValid);
 
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		columnify(parsedObjects, {
-			headingTransform: (heading) =>
-				boldText(heading.toLocaleUpperCase()),
+			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
 		}),
 	);
 
 	printer.printConsoleMessage(
-		'info',
-		'\nColored codemods are verified by the Codemod.com engineering team',
+		"info",
+		"\nColored codemods are verified by the Codemod.com engineering team",
 	);
 };
 

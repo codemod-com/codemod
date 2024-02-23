@@ -1,7 +1,7 @@
-import { deepEqual } from 'assert';
-import { createHash } from 'crypto';
-import { afterEach, beforeEach, describe, it, vi } from 'vitest';
-import { convertToYaml, parse } from './parse.js';
+import { deepEqual } from "assert";
+import { createHash } from "crypto";
+import { afterEach, beforeEach, describe, it, vi } from "vitest";
+import { convertToYaml, parse } from "./parse.js";
 
 const DATA = `
 # Do the thing
@@ -91,57 +91,57 @@ Maybe more...
 - [Link2](https://example1.com/)
 `;
 
-describe('parse/yaml', function () {
+describe("parse/yaml", () => {
 	const parseResult = parse(DATA);
 
-	it('should parse correctly', async function () {
+	it("should parse correctly", async () => {
 		deepEqual(parseResult, {
-			name: 'Do the thing',
+			name: "Do the thing",
 			description:
-				'This is an amazing codemod which does `the thing`. Changes:\n\n\n### WARNING\n\nThis codemod does the thing\n' +
-				'Following the original msw [upgrade guide](https://mswjs.io/docs/migrations/1.x-to-2.x/#imports), ' +
-				'there are certain imports that changed their location and/or naming. This codemod will adjust your imports to the new location and naming.\n' +
-				'  -   `setupWorker` is now imported from `msw/browser`\n' +
-				'  -   `rest` from `msw` is now named `http`\n' +
-				'  -   `RestHandler` from `msw` is now named `HttpHandler`',
+				"This is an amazing codemod which does `the thing`. Changes:\n\n\n### WARNING\n\nThis codemod does the thing\n" +
+				"Following the original msw [upgrade guide](https://mswjs.io/docs/migrations/1.x-to-2.x/#imports), " +
+				"there are certain imports that changed their location and/or naming. This codemod will adjust your imports to the new location and naming.\n" +
+				"  -   `setupWorker` is now imported from `msw/browser`\n" +
+				"  -   `rest` from `msw` is now named `http`\n" +
+				"  -   `RestHandler` from `msw` is now named `HttpHandler`",
 			examples:
-				'\n### `tsconfig.json`\n\n' +
-				'### Before\n\n' +
-				'```ts\n\n' +
+				"\n### `tsconfig.json`\n\n" +
+				"### Before\n\n" +
+				"```ts\n\n" +
 				"http.get<ReqBodyType, PathParamsType>('/resource', (req, res, ctx) => {\n" +
 				"  return res(ctx.json({ firstName: 'John' }));\n" +
-				'});\n\n' +
-				'```\n\n' +
-				'### After\n\n' +
-				'```ts\n\n' +
+				"});\n\n" +
+				"```\n\n" +
+				"### After\n\n" +
+				"```ts\n\n" +
 				"http.get<PathParamsType, ReqBodyType>('/resource', (req, res, ctx) => {\n" +
 				"  return res(ctx.json({ firstName: 'John' }));\n" +
-				'});\n\n' +
-				'```\n\n' +
-				'### **engine.tsx**\n\n' +
-				'### Before\n\n' +
-				'```ts\n\n' +
+				"});\n\n" +
+				"```\n\n" +
+				"### **engine.tsx**\n\n" +
+				"### Before\n\n" +
+				"```ts\n\n" +
 				"http.get<ReqBodyType>('/resource', (req, res, ctx) => {\n" +
 				"  return res(ctx.json({ firstName: 'John' }));\n" +
-				'});\n\n' +
-				'```\n\n' +
-				'### After\n\n' +
-				'```ts\n\n' +
+				"});\n\n" +
+				"```\n\n" +
+				"### After\n\n" +
+				"```ts\n\n" +
 				"http.get<any, ReqBodyType>('/resource', (req, res, ctx) => {\n" +
 				"  return res(ctx.json({ firstName: 'John' }));\n" +
-				'});\n\n' +
-				'```',
-			applicability: '`MSW` >= 1.0.0',
-			version: '1.0.0',
-			changeMode: 'assistive',
-			engine: 'ts-morph',
-			timeSave: '5 minutes/occurrence\nMaybe more...',
-			owner: 'The Author',
-			links: 'https://example.com/,https://example1.com/',
+				"});\n\n" +
+				"```",
+			applicability: "`MSW` >= 1.0.0",
+			version: "1.0.0",
+			changeMode: "assistive",
+			engine: "ts-morph",
+			timeSave: "5 minutes/occurrence\nMaybe more...",
+			owner: "The Author",
+			links: "https://example.com/,https://example1.com/",
 		});
 	});
 
-	it('should output correct YAML', async function () {
+	it("should output correct YAML", async () => {
 		beforeEach(() => {
 			vi.useFakeTimers();
 		});
@@ -156,12 +156,12 @@ describe('parse/yaml', function () {
 
 		const yaml = convertToYaml(
 			parseResult,
-			'apps/registry/codemods/msw/2/imports/README.md',
+			"apps/registry/codemods/msw/2/imports/README.md",
 		);
 
-		const vscodeHashDigest = createHash('ripemd160')
-			.update('msw/2/imports')
-			.digest('base64url');
+		const vscodeHashDigest = createHash("ripemd160")
+			.update("msw/2/imports")
+			.digest("base64url");
 
 		deepEqual(
 			yaml,

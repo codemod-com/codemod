@@ -1,5 +1,5 @@
-import axios from 'axios';
-import axiosRetry from 'axios-retry';
+import axios from "axios";
+import axiosRetry from "axios-retry";
 
 const retryingClient = axios.create();
 axiosRetry(retryingClient);

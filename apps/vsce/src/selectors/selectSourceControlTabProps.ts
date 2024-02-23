@@ -1,8 +1,8 @@
-import { createBeforeAfterSnippets } from '../components/webview/CustomPanelProvider';
-import type { RootState } from '../data';
+import { createBeforeAfterSnippets } from "../components/webview/CustomPanelProvider";
+import type { RootState } from "../data";
 
 const sanitizeCodeBlock = (codeBlock: string) =>
-	codeBlock.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+	codeBlock.replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 const buildIssueTemplateInHTML = (
 	codemodName: string,
@@ -18,17 +18,13 @@ const buildIssueTemplateInHTML = (
 <hr>
 <h3>Codemod: ${codemodName}</h3>
 <p><strong>1. Code before transformation (Input for codemod)</strong></p>
-<pre><code>${
-		before !== null ? sanitizeCodeBlock(before) : '// paste code here'
-	}</code></pre>
+<pre><code>${before !== null ? sanitizeCodeBlock(before) : "// paste code here"}</code></pre>
 <p><strong>2. Expected code after transformation (Desired output of codemod)</strong></p>
 <pre><code>${
-		expected !== null ? sanitizeCodeBlock(expected) : '// paste code here'
+		expected !== null ? sanitizeCodeBlock(expected) : "// paste code here"
 	}</code></pre>
 <p><strong>3. Faulty code obtained after running the current version of the codemod (Actual output of codemod)</strong></p>
-<pre><code>${
-		after !== null ? sanitizeCodeBlock(after) : '// paste code here'
-	}</code></pre>
+<pre><code>${after !== null ? sanitizeCodeBlock(after) : "// paste code here"}</code></pre>
 <h3>Additional context</h3>
 You can provide any relevant context here.
 <hr>
@@ -46,11 +42,11 @@ export const selectSourceControlTabProps = (
 ): SourceControlTabProps | null => {
 	const sourceControlState = state.sourceControl;
 
-	if (sourceControlState.kind === 'IDLENESS') {
+	if (sourceControlState.kind === "IDLENESS") {
 		return null;
 	}
 
-	if (sourceControlState.kind === 'ISSUE_CREATION_WAITING_FOR_AUTH') {
+	if (sourceControlState.kind === "ISSUE_CREATION_WAITING_FOR_AUTH") {
 		return {
 			title: sourceControlState.title,
 			body: sourceControlState.body,
@@ -58,7 +54,7 @@ export const selectSourceControlTabProps = (
 		};
 	}
 
-	if (sourceControlState.kind === 'WAITING_FOR_ISSUE_CREATION_API_RESPONSE') {
+	if (sourceControlState.kind === "WAITING_FOR_ISSUE_CREATION_API_RESPONSE") {
 		return {
 			title: sourceControlState.title,
 			body: sourceControlState.body,

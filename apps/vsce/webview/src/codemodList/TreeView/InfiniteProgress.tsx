@@ -1,4 +1,4 @@
-import styles from './InfiniteProgress.module.css';
+import styles from "./InfiniteProgress.module.css";
 
 export const InfiniteProgress = () => (
 	<div className={styles.progressContainer}>

@@ -1,5 +1,5 @@
-import { CustomHandler, InternalServerError } from '../customHandler.js';
-import { ALL_CLAIMS } from '../services/tokenService.js';
+import { CustomHandler, InternalServerError } from "../customHandler.js";
+import { ALL_CLAIMS } from "../services/tokenService.js";
 
 export const validationHandler: CustomHandler<{
 	success: true;

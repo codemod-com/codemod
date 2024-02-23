@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef } from "react";
 
 interface ChatScrollAnchorProps {
 	trackVisibility?: boolean;
@@ -19,7 +19,7 @@ const ChatScrollAnchor = ({ trackVisibility }: ChatScrollAnchorProps) => {
 			entries.forEach((entry) => {
 				if (entry.target === ref.current) {
 					if (!entry.isIntersecting) {
-						refNode.scrollIntoView({ block: 'start' });
+						refNode.scrollIntoView({ block: "start" });
 					}
 				}
 			});
@@ -33,9 +33,9 @@ const ChatScrollAnchor = ({ trackVisibility }: ChatScrollAnchorProps) => {
 		};
 	}, [trackVisibility]);
 
-	return <div ref={ref} className={'h-px w-full'} />;
+	return <div ref={ref} className={"h-px w-full"} />;
 };
 
-ChatScrollAnchor.displayName = 'ChatScrollAnchor';
+ChatScrollAnchor.displayName = "ChatScrollAnchor";
 
 export default ChatScrollAnchor;

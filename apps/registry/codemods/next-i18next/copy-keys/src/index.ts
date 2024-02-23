@@ -1,4 +1,4 @@
-import type { Filemod } from '@codemod-com/filemod';
+import type { Filemod } from "@codemod-com/filemod";
 
 type Dependencies = Record<string, never>;
 type State = {
@@ -9,19 +9,17 @@ type State = {
 };
 
 export const repomod: Filemod<Dependencies, State> = {
-	includePatterns: ['**/locales/**/*.json'],
-	excludePatterns: ['**/node_modules/**'],
+	includePatterns: ["**/locales/**/*.json"],
+	excludePatterns: ["**/node_modules/**"],
 	initializeState: async (options) => {
-		const oldNamespace = options['oldNamespace'];
-		const newNamespace = options['newNamespace'];
-		const keys = options['keys'];
+		const oldNamespace = options["oldNamespace"];
+		const newNamespace = options["newNamespace"];
+		const keys = options["keys"];
 
 		return {
-			oldNamespace:
-				typeof oldNamespace === 'string' ? oldNamespace : 'common',
-			newNamespace:
-				typeof newNamespace === 'string' ? newNamespace : 'new',
-			keys: typeof keys === 'string' ? keys.split(',') : [],
+			oldNamespace: typeof oldNamespace === "string" ? oldNamespace : "common",
+			newNamespace: typeof newNamespace === "string" ? newNamespace : "new",
+			keys: typeof keys === "string" ? keys.split(",") : [],
 			map: new Map(),
 		};
 	},
@@ -38,10 +36,7 @@ export const repomod: Filemod<Dependencies, State> = {
 
 		try {
 			const dirname = api.getDirname(path);
-			const newPath = api.joinPaths(
-				dirname,
-				`${state.newNamespace}.json`,
-			);
+			const newPath = api.joinPaths(dirname, `${state.newNamespace}.json`);
 
 			const json = await api.readFile(path);
 			const data = JSON.parse(json);
@@ -49,7 +44,7 @@ export const repomod: Filemod<Dependencies, State> = {
 			for (const key of state.keys) {
 				const value = data[key];
 
-				if (typeof value !== 'string') {
+				if (typeof value !== "string") {
 					continue;
 				}
 
@@ -58,7 +53,7 @@ export const repomod: Filemod<Dependencies, State> = {
 
 			return [
 				{
-					kind: 'upsertFile',
+					kind: "upsertFile",
 					path: newPath,
 					options,
 				},
@@ -69,7 +64,7 @@ export const repomod: Filemod<Dependencies, State> = {
 	},
 	handleData: async (_, path, oldData, ___, state) => {
 		if (state === null) {
-			return { kind: 'noop' };
+			return { kind: "noop" };
 		}
 
 		const record: Record<string, string> = {};
@@ -98,13 +93,13 @@ export const repomod: Filemod<Dependencies, State> = {
 		}
 
 		if (i === 0) {
-			return { kind: 'noop' };
+			return { kind: "noop" };
 		}
 
 		const newData = JSON.stringify(record);
 
 		return {
-			kind: 'upsertData',
+			kind: "upsertData",
 			path,
 			data: newData,
 		};

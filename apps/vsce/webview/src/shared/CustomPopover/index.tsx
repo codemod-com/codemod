@@ -1,4 +1,4 @@
-import Tippy, { TippyProps } from '@tippyjs/react';
+import Tippy, { TippyProps } from "@tippyjs/react";
 
 type Props = TippyProps;
 

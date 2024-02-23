@@ -1,18 +1,18 @@
-import { readFile, unlink } from 'node:fs/promises';
-import { homedir } from 'node:os';
-import { join } from 'node:path';
-import { revokeCLIToken } from './apis.js';
-import type { PrinterBlueprint } from './printer.js';
+import { readFile, unlink } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { revokeCLIToken } from "./apis.js";
+import type { PrinterBlueprint } from "./printer.js";
 
 export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
-	const tokenTxtPath = join(homedir(), '.codemod', 'token.txt');
+	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
 
 	let token: string;
 
 	try {
-		token = await readFile(tokenTxtPath, 'utf-8');
+		token = await readFile(tokenTxtPath, "utf-8");
 	} catch (err) {
-		printer.printConsoleMessage('info', 'You are already logged out.');
+		printer.printConsoleMessage("info", "You are already logged out.");
 		return;
 	}
 
@@ -24,5 +24,5 @@ export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
 
 	await unlink(tokenTxtPath);
 
-	printer.printConsoleMessage('info', 'You have successfully logged out.');
+	printer.printConsoleMessage("info", "You have successfully logged out.");
 };

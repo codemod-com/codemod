@@ -1,31 +1,29 @@
 // eslint-disable-next-line import/extensions
-import type * as monaco from 'monaco-editor/esm/vs/editor/editor.api.d.ts';
-import dynamic from 'next/dynamic';
-import { useMemo, useRef, type MouseEventHandler } from 'react';
-import { toast } from 'react-hot-toast';
-import { useDispatch, useSelector } from 'react-redux';
-import ButtonWithOnClickTextChange from '~/components/button/ButtonWithOnClickTextChange';
-import Collapsable from '~/components/Collapsable';
-import Panel from '~/components/Panel';
-import Text from '~/components/Text';
-import { selectCFSOutput, setIsOpen } from '~/store/slices/CFS';
-import { selectMod, setContent } from '~/store/slices/mod';
-import { selectFirstTreeNode } from '~/store/slices/snippets';
-import { buildFactoryCode } from '~/utils/buildFactoryCode';
-import { injectCFSOutputToCodemod } from '~/utils/injectCFSOutputToCodemod';
-import prettifyDeprecated from '~/utils/prettify';
+import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
+import dynamic from "next/dynamic";
+import { type MouseEventHandler, useMemo, useRef } from "react";
+import { toast } from "react-hot-toast";
+import { useDispatch, useSelector } from "react-redux";
+import Collapsable from "~/components/Collapsable";
+import Panel from "~/components/Panel";
+import Text from "~/components/Text";
+import ButtonWithOnClickTextChange from "~/components/button/ButtonWithOnClickTextChange";
+import { selectCFSOutput, setIsOpen } from "~/store/slices/CFS";
+import { selectMod, setContent } from "~/store/slices/mod";
+import { selectFirstTreeNode } from "~/store/slices/snippets";
+import { buildFactoryCode } from "~/utils/buildFactoryCode";
+import { injectCFSOutputToCodemod } from "~/utils/injectCFSOutputToCodemod";
+import prettifyDeprecated from "~/utils/prettify";
 
-const CodeSnippet = dynamic(() => import('~/components/Snippet'), {
+const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
 	ssr: false,
 });
 
 const GeneratedOutput = () => {
-	const selectedBeforeInputNode = useSelector(selectFirstTreeNode('before'));
-	const selectedAfterInputNode = useSelector(selectFirstTreeNode('after'));
-	const generatedOutput = useSelector(
-		selectCFSOutput(selectedBeforeInputNode),
-	);
+	const selectedBeforeInputNode = useSelector(selectFirstTreeNode("before"));
+	const selectedAfterInputNode = useSelector(selectFirstTreeNode("after"));
+	const generatedOutput = useSelector(selectCFSOutput(selectedBeforeInputNode));
 	const codemod = useSelector(selectMod);
 	const dispatch = useDispatch();
 
@@ -34,16 +32,14 @@ const GeneratedOutput = () => {
 	const handleCopyGeneratedOutput = () => {
 		const text = ref.current?.getValue();
 		if (!text) {
-			throw new Error('No text to copy');
+			throw new Error("No text to copy");
 		}
 		navigator.clipboard.writeText(text);
 	};
 
 	const AfterSnippetAddedGeneratedOutput = useMemo(() => {
 		if (selectedAfterInputNode !== null) {
-			const factoryCode = buildFactoryCode(
-				selectedAfterInputNode.actualNode,
-			);
+			const factoryCode = buildFactoryCode(selectedAfterInputNode.actualNode);
 			if (factoryCode && generatedOutput) {
 				return prettifyDeprecated(
 					generatedOutput.concat(`.replaceWith(${factoryCode})`),
@@ -60,7 +56,7 @@ const GeneratedOutput = () => {
 				AfterSnippetAddedGeneratedOutput,
 			);
 			if (!newContent) {
-				throw new Error('No content to inject');
+				throw new Error("No content to inject");
 			}
 			dispatch(setContent(newContent));
 			dispatch(setIsOpen(false));
@@ -113,15 +109,9 @@ const GeneratedOutput = () => {
 							</div>
 						}
 						title={
-							<Text
-								className="mb-3"
-								fontWeight="semibold"
-								isTitle
-							>
+							<Text className="mb-3" fontWeight="semibold" isTitle>
 								Generated Find
-								{selectedAfterInputNode !== null
-									? ' & Replace '
-									: ' '}
+								{selectedAfterInputNode !== null ? " & Replace " : " "}
 								Statement
 							</Text>
 						}
@@ -130,9 +120,9 @@ const GeneratedOutput = () => {
 							<CodeSnippet
 								options={{
 									folding: false,
-									lineNumbers: 'off',
+									lineNumbers: "off",
 									readOnly: true,
-									renderLineHighlight: 'none',
+									renderLineHighlight: "none",
 								}}
 								highlights={[]}
 								language="typescript"

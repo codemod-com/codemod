@@ -1,5 +1,5 @@
-import type { Node } from '@babel/types';
-import { type TreeNode } from '../../components/Tree';
+import type { Node } from "@babel/types";
+import { type TreeNode } from "../../components/Tree";
 
 const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
 	const { type } = babelAstNode;
@@ -8,14 +8,14 @@ const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
 	const children: Node[] = [];
 
 	keys.forEach((key) => {
-		if (['tokens', 'loc'].includes(key)) {
+		if (["tokens", "loc"].includes(key)) {
 			return;
 		}
 		const child: Node | Node[] = (babelAstNode as any)[key];
 
 		if (Array.isArray(child)) {
 			children.push(...(child as Node[]));
-		} else if (typeof child === 'object' && child !== null) {
+		} else if (typeof child === "object" && child !== null) {
 			children.push(child);
 		}
 	});
@@ -27,10 +27,7 @@ const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
 		start: babelAstNode.start ?? 0,
 		end: babelAstNode.end ?? 0,
 		children: children
-			.filter(
-				(child) =>
-					'start' in child && 'end' in child && 'type' in child,
-			)
+			.filter((child) => "start" in child && "end" in child && "type" in child)
 			.map(mapBabelASTToRenderableTree),
 	};
 

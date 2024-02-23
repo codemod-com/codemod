@@ -1,7 +1,7 @@
-import { type Node } from '@babel/types';
-import { memo, useEffect, useState } from 'react';
-import TreeView from 'react-treeview';
-import Text from '../Text';
+import { type Node } from "@babel/types";
+import { memo, useEffect, useState } from "react";
+import TreeView from "react-treeview";
+import Text from "../Text";
 
 type Props = {
 	node: TreeNode;
@@ -42,7 +42,7 @@ const Tree = ({
 	const label = (
 		<Text
 			className="cursor-pointer"
-			color={isSelected ? 'text-cyan-500' : undefined}
+			color={isSelected ? "text-cyan-500" : undefined}
 			id={`${node.label}-${node.start}-${node.end}`}
 			onClick={() => {
 				setIsOpen(!open);

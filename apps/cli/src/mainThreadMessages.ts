@@ -1,20 +1,20 @@
-import * as S from '@effect/schema/Schema';
-import { argumentRecordSchema } from './schemata/argumentRecordSchema.js';
+import * as S from "@effect/schema/Schema";
+import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
 const mainThreadMessageSchema = S.union(
 	S.struct({
-		kind: S.literal('initialization'),
+		kind: S.literal("initialization"),
 		codemodPath: S.string,
 		codemodSource: S.string,
-		codemodEngine: S.union(S.literal('jscodeshift'), S.literal('ts-morph')),
+		codemodEngine: S.union(S.literal("jscodeshift"), S.literal("ts-morph")),
 		disablePrettier: S.boolean,
 		safeArgumentRecord: S.tuple(argumentRecordSchema),
 	}),
 	S.struct({
-		kind: S.literal('exit'),
+		kind: S.literal("exit"),
 	}),
 	S.struct({
-		kind: S.literal('runCodemod'),
+		kind: S.literal("runCodemod"),
 		path: S.string,
 		data: S.string,
 	}),

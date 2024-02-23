@@ -1,8 +1,8 @@
-import nodePath from 'node:path';
-import { Filemod } from '@codemod-com/filemod';
-import * as tsmorph from 'ts-morph';
-import ts from 'typescript';
-import { Dependencies } from './runRepomod.js';
+import nodePath from "node:path";
+import { Filemod } from "@codemod-com/filemod";
+import * as tsmorph from "ts-morph";
+import ts from "typescript";
+import { Dependencies } from "./runRepomod.js";
 
 export const transpile = (source: string): string => {
 	const { outputText } = ts.transpileModule(source, {
@@ -24,36 +24,34 @@ export const getTransformer = (source: string) => {
 				repomod?: Filemod<Dependencies, Record<string, unknown>>;
 				filemod?: Filemod<Dependencies, Record<string, unknown>>;
 		  }
-		// eslint-disable-next-line @typescript-eslint/ban-types
-		| Function;
+		| (() => void);
 
 	const module = { exports: {} as Exports };
 	const _require = (name: string) => {
-		if (name === 'ts-morph') {
+		if (name === "ts-morph") {
 			return tsmorph;
 		}
 
-		if (name === 'node:path') {
+		if (name === "node:path") {
 			return nodePath;
 		}
 	};
 
-	const keys = ['module', 'exports', 'require'];
+	const keys = ["module", "exports", "require"];
 	const values = [module, module.exports, _require];
 
 	// eslint-disable-next-line prefer-spread
 	new Function(...keys, source).apply(null, values);
 
-	return typeof module.exports === 'function'
+	return typeof module.exports === "function"
 		? module.exports
-		: module.exports.__esModule &&
-		    typeof module.exports.default === 'function'
+		: module.exports.__esModule && typeof module.exports.default === "function"
 		  ? module.exports.default
-		  : typeof module.exports.handleSourceFile === 'function'
-		    ? module.exports.handleSourceFile
-		    : module.exports.repomod !== undefined
-		      ? module.exports.repomod
-		      : module.exports.filemod !== undefined
-		        ? module.exports.filemod
-		        : null;
+		  : typeof module.exports.handleSourceFile === "function"
+			  ? module.exports.handleSourceFile
+			  : module.exports.repomod !== undefined
+				  ? module.exports.repomod
+				  : module.exports.filemod !== undefined
+					  ? module.exports.filemod
+					  : null;
 };

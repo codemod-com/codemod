@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
 	file: FileInfo,
@@ -10,8 +10,8 @@ function transform(
 	let dirtyFlag = false;
 
 	root.find(j.Identifier).forEach((path) => {
-		if (path.node.name === 'isIterable') {
-			path.node.name = 'isCollection';
+		if (path.node.name === "isIterable") {
+			path.node.name = "isCollection";
 			dirtyFlag = true;
 		}
 	});

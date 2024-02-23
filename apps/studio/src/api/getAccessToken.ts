@@ -1,9 +1,9 @@
-import { type AxiosError } from 'axios';
-import { BUILD_ACCESS_TOKEN } from '../constants';
-import { Either } from '../utils/Either';
-import apiClient from './client';
+import { type AxiosError } from "axios";
+import { BUILD_ACCESS_TOKEN } from "../constants";
+import { Either } from "../utils/Either";
+import apiClient from "./client";
 
-const X_CODEMODCOM_ACCESS_TOKEN = process.env.X_CODEMODCOM_ACCESS_TOKEN ?? '';
+const X_CODEMODCOM_ACCESS_TOKEN = process.env.X_CODEMODCOM_ACCESS_TOKEN ?? "";
 const getAccessToken = async ({
 	clerkToken,
 }: {
@@ -20,19 +20,16 @@ const getAccessToken = async ({
 			},
 		);
 		// Axios automatically converts header names to lowercase in the `headers` object.
-		const accessToken =
-			res.headers[X_CODEMODCOM_ACCESS_TOKEN.toLowerCase()];
+		const accessToken = res.headers[X_CODEMODCOM_ACCESS_TOKEN.toLowerCase()];
 
-		if (typeof accessToken !== 'string') {
-			throw new Error('`accessToken` is not a string.');
+		if (typeof accessToken !== "string") {
+			throw new Error("`accessToken` is not a string.");
 		}
 
 		return Either.right(accessToken);
 	} catch (e) {
 		const err = e as AxiosError<{ message?: string }>;
-		return Either.left(
-			new Error(err.response?.data.message ?? err.message),
-		);
+		return Either.left(new Error(err.response?.data.message ?? err.message));
 	}
 };
 

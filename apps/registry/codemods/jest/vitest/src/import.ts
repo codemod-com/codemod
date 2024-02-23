@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from 'jscodeshift';
-import type { Collection, ImportDeclaration } from 'jscodeshift';
+import type core from "jscodeshift";
+import type { Collection, ImportDeclaration } from "jscodeshift";
 
 export const addImport = <T>(
 	root: Collection<T>,
@@ -43,7 +43,7 @@ export const addImport = <T>(
 		return;
 	}
 
-	const firstNode = root.find(j.Program).get('body', 0).node;
+	const firstNode = root.find(j.Program).get("body", 0).node;
 	const { comments } = firstNode;
 	if (comments?.length) {
 		const comment = comments[0];
@@ -52,13 +52,13 @@ export const addImport = <T>(
 		// line-level and JSDoc-style comments because these probably belong
 		// to the first node, rather than the file.
 		if (
-			(comment.type === 'Block' || comment.type === 'CommentBlock') &&
-			!comment.value.startsWith('*')
+			(comment.type === "Block" || comment.type === "CommentBlock") &&
+			!comment.value.startsWith("*")
 		) {
 			declaration.comments = comments;
 			firstNode.comments = null;
 		}
 	}
 
-	root.get('program', 'body').unshift(declaration);
+	root.get("program", "body").unshift(declaration);
 };

@@ -1,6 +1,6 @@
-import { useCallback, useRef } from 'react';
-import { CodemodNodeHashDigest } from '../../src/selectors/selectCodemodTree';
-import { useKey } from './jobDiffView/hooks/useKey';
+import { useCallback, useRef } from "react";
+import { CodemodNodeHashDigest } from "../../src/selectors/selectCodemodTree";
+import { useKey } from "./jobDiffView/hooks/useKey";
 
 const getCodemodActionButtons = (
 	hashDigest: CodemodNodeHashDigest,
@@ -59,8 +59,7 @@ export const CustomTreeView = <
 		}
 
 		const index = props.nodeData.findIndex(
-			(nodeDatum) =>
-				nodeDatum.node.hashDigest === props.focusedNodeHashDigest,
+			(nodeDatum) => nodeDatum.node.hashDigest === props.focusedNodeHashDigest,
 		);
 
 		if (index === -1) {
@@ -84,8 +83,7 @@ export const CustomTreeView = <
 		}
 
 		const index = props.nodeData.findIndex(
-			(nodeDatum) =>
-				nodeDatum.node.hashDigest === props.focusedNodeHashDigest,
+			(nodeDatum) => nodeDatum.node.hashDigest === props.focusedNodeHashDigest,
 		);
 
 		if (index === -1) {
@@ -109,11 +107,7 @@ export const CustomTreeView = <
 		}
 
 		// applicable to directories
-		if (
-			!props.collapsedNodeHashDigests.includes(
-				props.focusedNodeHashDigest,
-			)
-		) {
+		if (!props.collapsedNodeHashDigests.includes(props.focusedNodeHashDigest)) {
 			props.onFlip(props.focusedNodeHashDigest);
 		}
 
@@ -141,9 +135,7 @@ export const CustomTreeView = <
 		}
 
 		// applicable to directories
-		if (
-			props.collapsedNodeHashDigests.includes(props.focusedNodeHashDigest)
-		) {
+		if (props.collapsedNodeHashDigests.includes(props.focusedNodeHashDigest)) {
 			props.onFlip(props.focusedNodeHashDigest);
 		}
 
@@ -175,8 +167,7 @@ export const CustomTreeView = <
 
 		const focusedActionButtonNode =
 			[pathButton, dryRunButton, shareButton].find(
-				(node) =>
-					node !== null && document.activeElement?.id === node.id,
+				(node) => node !== null && document.activeElement?.id === node.id,
 			) ?? null;
 
 		if (focusedActionButtonNode !== null) {
@@ -187,12 +178,12 @@ export const CustomTreeView = <
 		dryRunButton?.focus();
 	}, [props]);
 
-	useKey(ref.current, 'ArrowUp', arrowUpCallback);
-	useKey(ref.current, 'ArrowDown', arrowDownCallback);
-	useKey(ref.current, 'ArrowLeft', arrowLeftCallback);
-	useKey(ref.current, 'ArrowRight', arrowRightCallback);
-	useKey(ref.current, 'Enter', enterCallback);
-	useKey(ref.current, 'Space', enterCallback);
+	useKey(ref.current, "ArrowUp", arrowUpCallback);
+	useKey(ref.current, "ArrowDown", arrowDownCallback);
+	useKey(ref.current, "ArrowLeft", arrowLeftCallback);
+	useKey(ref.current, "ArrowRight", arrowRightCallback);
+	useKey(ref.current, "Enter", enterCallback);
+	useKey(ref.current, "Space", enterCallback);
 
 	return (
 		<div ref={ref}>

@@ -1,22 +1,22 @@
-import * as S from '@effect/schema/Schema';
-import { cosmiconfig } from 'cosmiconfig';
-import { argumentRecordSchema } from './schemata/argumentRecordSchema.js';
+import * as S from "@effect/schema/Schema";
+import { cosmiconfig } from "cosmiconfig";
+import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
 const preCommitCodemodSchema = S.union(
 	S.struct({
-		source: S.literal('fileSystem'),
+		source: S.literal("fileSystem"),
 		path: S.string,
 		arguments: S.optional(argumentRecordSchema).withDefault(() => ({})),
 	}),
 	S.struct({
-		source: S.literal('registry'),
+		source: S.literal("registry"),
 		name: S.string,
 		arguments: S.optional(argumentRecordSchema).withDefault(() => ({})),
 	}),
 );
 
 const repositoryConfigurationSchema = S.struct({
-	schemaVersion: S.optional(S.literal('1.0.0')).withDefault(() => '1.0.0'),
+	schemaVersion: S.optional(S.literal("1.0.0")).withDefault(() => "1.0.0"),
 	preCommitCodemods: S.optional(S.array(preCommitCodemodSchema)).withDefault(
 		() => [],
 	),
@@ -33,7 +33,7 @@ export const parseRepositoryConfiguration = (
 		return S.parseSync(repositoryConfigurationSchema)(i);
 	} catch (error) {
 		return {
-			schemaVersion: '1.0.0',
+			schemaVersion: "1.0.0",
 			preCommitCodemods: [],
 		};
 	}
@@ -41,7 +41,7 @@ export const parseRepositoryConfiguration = (
 
 export const loadRepositoryConfiguration =
 	async (): Promise<RepositoryConfiguration> => {
-		const publicExplorer = cosmiconfig('codemod');
+		const publicExplorer = cosmiconfig("codemod");
 
 		const result = await publicExplorer.search();
 
