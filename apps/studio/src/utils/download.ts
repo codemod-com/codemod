@@ -120,7 +120,11 @@ const configJson = ({
 	version,
 	name,
 	engine,
-}: Pick<ProjectDownloadInput, "framework" | "version" | "name" | "engine">) => {
+	user,
+}: Pick<
+	ProjectDownloadInput,
+	"framework" | "version" | "name" | "engine" | "user"
+>) => {
 	const configName = [
 		framework?.toLowerCase(),
 		version,
@@ -132,7 +136,7 @@ const configJson = ({
 	return beautify(`
       {
         "schemaVersion": "1.0.0",
-        "name": "${configName}",
+        "name": "${user?.username ? `@${user.username}/` : ""}${configName}",
         "engine": "${engine}"
       }
   `);
