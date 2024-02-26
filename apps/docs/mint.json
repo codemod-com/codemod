@@ -103,6 +103,7 @@
 		"suggestEdit": true,
 		"raiseIssue": true
 	},
+	"backgroundImage": "/images/background-green.png",
 	"footerSocials": {
 		"twitter": "https://twitter.com/codemod",
 		"github": "https://github.com/codemod-com",
