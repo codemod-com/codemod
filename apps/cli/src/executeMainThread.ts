@@ -78,7 +78,7 @@ export const executeMainThread = async () => {
 	process.stdin.unref();
 
 	const argvObject = yargs(slicedArgv)
-		.scriptName("codemod")
+		.usage("Usage: <command> [options]")
 		.command("*", "runs a codemod or recipe", (y) => buildOptions(y))
 		.command(
 			"runOnPreCommit [files...]",
