@@ -1,6 +1,6 @@
 import path from "node:path";
-import * as S from "@effect/schema/Schema";
 import { IFs } from "memfs";
+import { object, parse, string } from "valibot";
 import {
 	Codemod,
 	JavaScriptCodemodEngine,
@@ -17,11 +17,11 @@ const extractMainScriptRelativePath = async (
 			encoding: "utf-8",
 		});
 
-		const schema = S.struct({
-			main: S.string,
+		const schema = object({
+			main: string(),
 		});
 
-		const { main } = S.parseSync(schema)(JSON.parse(data.toString()));
+		const { main } = parse(schema, JSON.parse(data.toString()));
 
 		return main;
 	} catch {
@@ -38,11 +38,11 @@ const extractEngine = async (
 			encoding: "utf-8",
 		});
 
-		const schema = S.struct({
+		const schema = object({
 			engine: javaScriptCodemodEngineSchema,
 		});
 
-		const { engine } = S.parseSync(schema)(JSON.parse(data.toString()));
+		const { engine } = parse(schema, JSON.parse(data.toString()));
 
 		return engine;
 	} catch {

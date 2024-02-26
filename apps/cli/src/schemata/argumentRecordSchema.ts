@@ -1,8 +1,8 @@
-import * as S from "@effect/schema/Schema";
+import { Input, boolean, number, record, string, union } from "valibot";
 
-export const argumentRecordSchema = S.record(
-	S.string,
-	S.union(S.string, S.number, S.boolean),
+export const argumentRecordSchema = record(
+	string(),
+	union([string(), number(), boolean()]),
 );
 
-export type ArgumentRecord = S.To<typeof argumentRecordSchema>;
+export type ArgumentRecord = Input<typeof argumentRecordSchema>;

@@ -1,14 +1,15 @@
-import * as S from "@effect/schema/Schema";
+import { Input, literal, parse, union } from "valibot";
 
-export const consoleKindSchema = S.union(
-	S.literal("debug"),
-	S.literal("error"),
-	S.literal("log"),
-	S.literal("info"),
-	S.literal("trace"),
-	S.literal("warn"),
-);
+export const consoleKindSchema = union([
+	literal("debug"),
+	literal("error"),
+	literal("log"),
+	literal("info"),
+	literal("trace"),
+	literal("warn"),
+]);
 
-export const parseConsoleKind = S.parseSync(consoleKindSchema);
+export const parseConsoleKind = (input: unknown) =>
+	parse(consoleKindSchema, input);
 
-export type ConsoleKind = S.To<typeof consoleKindSchema>;
+export type ConsoleKind = Input<typeof consoleKindSchema>;

@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { join } from "node:path";
-import * as S from "@effect/schema/Schema";
 import Axios from "axios";
+import { parse } from "valibot";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
@@ -106,7 +106,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		let config: CodemodConfig;
 		try {
-			config = S.parseSync(codemodConfigSchema)(parsedConfig);
+			config = parse(codemodConfigSchema, parsedConfig);
 		} catch (err) {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
 		}

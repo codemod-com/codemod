@@ -1,25 +1,35 @@
-import * as S from "@effect/schema/Schema";
+import {
+	Input,
+	boolean,
+	literal,
+	object,
+	parse,
+	string,
+	tuple,
+	union,
+} from "valibot";
 import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
-const mainThreadMessageSchema = S.union(
-	S.struct({
-		kind: S.literal("initialization"),
-		codemodPath: S.string,
-		codemodSource: S.string,
-		codemodEngine: S.union(S.literal("jscodeshift"), S.literal("ts-morph")),
-		disablePrettier: S.boolean,
-		safeArgumentRecord: S.tuple(argumentRecordSchema),
+const mainThreadMessageSchema = union([
+	object({
+		kind: literal("initialization"),
+		codemodPath: string(),
+		codemodSource: string(),
+		codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
+		disablePrettier: boolean(),
+		safeArgumentRecord: argumentRecordSchema,
 	}),
-	S.struct({
-		kind: S.literal("exit"),
+	object({
+		kind: literal("exit"),
 	}),
-	S.struct({
-		kind: S.literal("runCodemod"),
-		path: S.string,
-		data: S.string,
+	object({
+		kind: literal("runCodemod"),
+		path: string(),
+		data: string(),
 	}),
-);
+]);
 
-export type MainThreadMessage = S.To<typeof mainThreadMessageSchema>;
+export type MainThreadMessage = Input<typeof mainThreadMessageSchema>;
 
-export const decodeMainThreadMessage = S.parseSync(mainThreadMessageSchema);
+export const decodeMainThreadMessage = (input: unknown) =>
+	parse(mainThreadMessageSchema, input);
