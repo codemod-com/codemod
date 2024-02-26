@@ -1,4 +1,4 @@
-name: build
+name: sync
 on:
     push:
         branches:
@@ -22,8 +22,8 @@ jobs:
                   run_install: |
                       - recursive: true
                         args: [--frozen-lockfile, --strict-peer-dependencies]
-            - name: Build projects
-              run: pnpm build
+            - name: Build readme parser
+              run: pnpm build --filter @codemod-com/readme-parser
               env:
                   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
                   NEXT_PUBLIC_API_URL: 'http://localhost:5173'
