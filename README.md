@@ -8,7 +8,7 @@
 
   <p align="center">
     <br />
-    <a href="https://codemod.com/migrations/">Migrations</a>
+    <a href="https://codemod.com/automations/">Registry</a>
     ·
     <a href="https://codemod.com/community">Community</a>
     ·
