@@ -68,7 +68,7 @@ export const publishHandler =
 					!/[a-zA-Z0-9_/-]+/.test(config.name)
 				) {
 					throw new Error(
-						"The package name must start with your username and contain allowed characters",
+						`The "name" field in package.json must start with your GitHub username with a slash (e.g., "@${user.username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -)`,
 					);
 				}
 
