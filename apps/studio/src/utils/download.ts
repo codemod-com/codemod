@@ -131,12 +131,16 @@ const configJson = ({
 		changeCase.kebabCase(name),
 	]
 		.filter(Boolean)
-		.join("/");
+		.join("-");
+
+	const finalName = user?.username
+		? `@${user.username}/${configName}`
+		: configName;
 
 	return beautify(`
       {
         "schemaVersion": "1.0.0",
-        "name": "${user?.username ? `@${user.username}/` : ""}${configName}",
+        "name": "${finalName}",
         "engine": "${engine}"
       }
   `);
