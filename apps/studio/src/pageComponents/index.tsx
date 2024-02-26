@@ -24,7 +24,7 @@ const MainPageContent = () => {
 				</Label>
 				<iframe
 					title="Codemod Studio Demo"
-					src="https://www.loom.com/embed/06ba23e8d91a4535943c0ce494e90820?sid=539fecab-cc75-4a33-bedf-48736cda7550"
+					src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-studio/codemod-studio-quickstart.mp4"
 					allowFullScreen
 					// width="100%"
 					height="40%"
