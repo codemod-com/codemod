@@ -26,7 +26,7 @@ We are making dream migrations a reality for all developers in the world, one fr
 
 ## Documentation
 
-For details on how to use the Codemod platform, check out our [documentation](https://docs.codemod.com).
+For details on how to use the Codemod platform, check out our [documentation](https://go.codemod.com/docs).
 
 ## Community
 
