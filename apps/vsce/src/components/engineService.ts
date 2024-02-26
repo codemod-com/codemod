@@ -293,7 +293,7 @@ export class EngineService {
 	}
 
 	public async syncRegistry(): Promise<void> {
-		const childProcess = spawn(CODEMOD_ENGINE_NODE_COMMAND, ["syncRegistry"], {
+		const childProcess = spawn(CODEMOD_ENGINE_NODE_COMMAND, ["sync"], {
 			stdio: "pipe",
 			shell: true,
 			detached: false,
