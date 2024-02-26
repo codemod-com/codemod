@@ -2,7 +2,7 @@
 
 ## Description
 
-Run this codemod to upgrade configuration files for eslint with corresponding biome.json for all the found rules replacements.
+Run this codemod to upgrade configuration files for ESLint with corresponding biome.json for all the found rules replacements. This codemod also replaces Prettier configuration.
 
 ### NOTE:
 
