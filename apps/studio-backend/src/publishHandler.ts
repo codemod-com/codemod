@@ -8,9 +8,9 @@ import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
 const configSchema = object({
-	schemaVersion: literal("1.0.0"),
+	schemaVersion: string(),
 	name: string(),
-	engine: literal("jscodeshift"),
+	engine: string(),
 });
 
 export const publishHandler =
