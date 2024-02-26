@@ -16,6 +16,7 @@ import { Dependencies, runRepomod } from "./runRepomod.js";
 import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
+import { boldText, colorizeText } from "./utils.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
 import { WorkerThreadMessage } from "./workerThreadMessages.js";
 
@@ -124,7 +125,12 @@ export const runCodemod = async (
 
 	printer.printConsoleMessage(
 		"info",
-		`Running the "${name}" codemod using "${codemod.engine}"`,
+		colorizeText(
+			`Running the "${boldText(name)}" codemod using "${boldText(
+				codemod.engine,
+			)}" engine`,
+			"cyan",
+		),
 	);
 
 	if (codemod.engine === "piranha") {
