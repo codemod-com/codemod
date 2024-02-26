@@ -10,6 +10,10 @@ export default function transform(
 	const hooksToRemove = ["useMemo", "useCallback", "memo"];
 
 	root.find(j.ImportDeclaration).forEach((path) => {
+		if (path.node.specifiers?.length === 0) {
+			return;
+		}
+
 		const specifiers =
 			path.node.specifiers?.filter((specifier) => {
 				if (specifier.type === "ImportSpecifier") {
