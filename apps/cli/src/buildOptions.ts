@@ -9,6 +9,45 @@ import {
 	DEFAULT_USE_JSON,
 } from "./constants.js";
 
+export type CommandArgsUncacheable = {
+	json: boolean;
+};
+
+export type CommandArgs = CommandArgsUncacheable & {
+	"no-cache": boolean;
+};
+
+export type CommandArgsWithOptions = CommandArgs & {
+	include: string;
+	exclude: string;
+	target?: string;
+	source?: string;
+	engine?: string;
+	limit: number;
+	prettier: boolean;
+	threads: number;
+	dry: boolean;
+	output?: string;
+	telemetryDisable: boolean;
+};
+
+export type PreCommitCommandArgs = CommandArgs;
+
+export type ListCommandArgs = CommandArgs;
+
+export type SyncCommandArgs = CommandArgsUncacheable;
+
+export type LearnCommandArgs = CommandArgsUncacheable & { target: string };
+
+export type LoginCommandArgs = CommandArgsUncacheable & { token: string };
+
+export type LogoutCommandArgs = CommandArgsUncacheable;
+
+export type PublishCommandArgs = CommandArgsUncacheable & {
+	sourcePath?: string;
+	source?: string;
+};
+
 export const buildUseJsonOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
