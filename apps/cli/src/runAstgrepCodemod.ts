@@ -1,21 +1,21 @@
-import fs from 'fs';
-import { execSync } from 'node:child_process';
-import { readFile } from 'node:fs/promises';
-import path from 'path';
-import * as yaml from 'js-yaml';
-import { PrinterBlueprint } from './printer.js';
+import fs from "fs";
+import { execSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
+import path from "path";
+import * as yaml from "js-yaml";
+import { PrinterBlueprint } from "./printer.js";
 
 export const runAstgrep = async (
 	printer: PrinterBlueprint,
 	rulePath: string,
 	targetDirectory: string,
 ): Promise<void> => {
-	const yamlString = await readFile(rulePath, { encoding: 'utf8' });
+	const yamlString = await readFile(rulePath, { encoding: "utf8" });
 	const yamlObject = yaml.load(yamlString);
 	const extension = languageToExtension(yamlObject.language);
 	installSgCommandIfNotAvailable(printer);
 	printer.printConsoleMessage(
-		'info',
+		"info",
 		`Executing ast-grep for language : ${extension}`,
 	);
 
@@ -38,8 +38,8 @@ export const runAstgrep = async (
 				if (fileExtension !== extension) {
 					continue;
 				}
-				const astCommand = `sg scan -r ${rulePath} ${entryPath} -U`;
-				if (process.platform == 'win32') {
+				const astCommand = "sg scan -r ${rulePath} ${entryPath} -U";
+				if (process.platform === "win32") {
 					execSync(`powershell -Command "${astCommand}"`);
 				} else {
 					execSync(astCommand);
@@ -53,12 +53,12 @@ export const runAstgrep = async (
 };
 
 function languageToExtension(language: string) {
-	language = language.toLocaleLowerCase();
-	switch (language) {
-		case 'python':
-			return 'py';
-		case 'javascript':
-			return 'js';
+	const lang = language.toLocaleLowerCase();
+	switch (lang) {
+		case "python":
+			return "py";
+		case "javascript":
+			return "js";
 		default:
 			throw new Error(
 				`Unsupported Language ${language} in codemod cli for ast-grep engine`,
@@ -70,16 +70,16 @@ function languageToExtension(language: string) {
 const installSgCommandIfNotAvailable = (printer: PrinterBlueprint): void => {
 	try {
 		// Use `which` command to check if the command is available
-		execSync(`which sg`);
+		execSync("which sg");
 	} catch (error) {
 		// If `which` command fails, the command is not available
 		printer.printConsoleMessage(
-			'info',
-			'ast-grep is not available, installing it globally',
+			"info",
+			"ast-grep is not available, installing it globally",
 		);
-		const astInstallCommand = `npm install -g @ast-grep/cli`;
-		if (process.platform == 'win32') {
-			execSync(`powershell -Command "${astInstallCommand}"`);
+		const astInstallCommand = "npm install -g @ast-grep/cli";
+		if (process.platform === "win32") {
+			execSync(`powershell -Command ${astInstallCommand}`);
 		} else {
 			execSync(astInstallCommand);
 		}

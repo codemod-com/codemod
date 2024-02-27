@@ -24,13 +24,13 @@ export type Codemod =
 	| Readonly<{
 			source: "registry";
 			name: string;
-			engine: 'ast-grep';
+			engine: "ast-grep";
 			directoryPath: string;
 			arguments: Arguments;
 			yamlPath: string;
 	  }>
 	| Readonly<{
-			source: 'registry';
+			source: "registry";
 			name: string;
 			engine: JavaScriptCodemodEngine;
 			directoryPath: string;

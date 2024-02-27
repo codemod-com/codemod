@@ -124,10 +124,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		if (config.engine === "ast-grep") {
 			try {
-				const yamlPath = join(directoryPath, 'rule.yaml');
+				const yamlPath = join(directoryPath, "rule.yaml");
 
 				return {
-					source: 'registry',
+					source: "registry",
 					name,
 					engine: config.engine,
 					yamlPath,
@@ -136,18 +136,18 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 				};
 			} catch (error) {
 				if (!(error instanceof Error)) {
-					throw new Error('Error while downloading ast-grep codemod');
+					throw new Error("Error while downloading ast-grep codemod");
 				}
 
 				this.__printer.printOperationMessage({
-					kind: 'error',
+					kind: "error",
 					message: error.message,
 				});
 			}
 		}
 
 		if (config.engine === "piranha") {
-			const rulesPath = join(directoryPath, 'rules.toml');
+			const rulesPath = join(directoryPath, "rules.toml");
 
 			await this._fileDownloadService.download(
 				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rules.toml`,

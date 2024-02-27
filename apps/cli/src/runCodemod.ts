@@ -12,6 +12,7 @@ import {
 import { getTransformer, transpile } from "./getTransformer.js";
 import { OperationMessage } from "./messages.js";
 import { PrinterBlueprint } from "./printer.js";
+import { runAstgrep } from "./runAstgrepCodemod.js";
 import { Dependencies, runRepomod } from "./runRepomod.js";
 import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { FlowSettings } from "./schemata/flowSettingsSchema.js";
@@ -261,7 +262,7 @@ export const runCodemod = async (
 		return;
 	}
 
-	if (codemod.engine === 'ast-grep') {
+	if (codemod.engine === "ast-grep") {
 		await runAstgrep(printer, codemod.yamlPath, flowSettings.target);
 		return;
 	}

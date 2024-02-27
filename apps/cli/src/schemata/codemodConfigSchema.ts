@@ -49,8 +49,8 @@ export const codemodConfigSchema = S.union(
 		arguments: optionalArgumentsSchema,
 	}),
 	S.struct({
-		schemaVersion: S.literal('1.0.0'),
-		engine: S.literal('ast-grep'),
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("ast-grep"),
 		arguments: optionalArgumentsSchema,
 	}),
 );
