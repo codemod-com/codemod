@@ -20,10 +20,10 @@ jobs:
             - name: Check out Git repository
               uses: actions/checkout@v2
 
-            - name: Use Node.js 18.x
+            - name: Use Node.js 20
               uses: actions/setup-node@v3
               with:
-                  node-version: 18
+                  node-version: 20
 
             - name: Install modules
               uses: pnpm/action-setup@v2
