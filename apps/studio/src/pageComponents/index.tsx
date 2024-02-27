@@ -22,14 +22,13 @@ const MainPageContent = () => {
 					Check out this brief demo video below to learn more about Codemod
 					Studio.
 				</Label>
-				<iframe
-					title="Codemod Studio Demo"
-					src="https://mintlify.s3-us-west-1.amazonaws.com/codemodcom/images/codemod-studio/codemod-studio-quickstart.mp4"
-					allowFullScreen
-					// width="100%"
-					height="40%"
-					style={{ borderRadius: "5%" }}
-				/>
+				<video className="rounded-sm" width="320" height="40%" autoPlay muted>
+					<source
+						src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-studio/codemod-studio-quickstart.mp4"
+						type="video/mp4"
+					/>
+					Your browser does not support the video tag.
+				</video>
 			</div>
 		);
 	}
