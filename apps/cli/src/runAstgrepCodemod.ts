@@ -75,7 +75,7 @@ const installSgCommandIfNotAvailable = (printer: PrinterBlueprint): void => {
 		// If `which` command fails, the command is not available
 		printer.printConsoleMessage(
 			'info',
-			'ast-grep is not avialable, installing it globally',
+			'ast-grep is not available, installing it globally',
 		);
 		const astInstallCommand = `npm install -g @ast-grep/cli`;
 		if (process.platform == 'win32') {
