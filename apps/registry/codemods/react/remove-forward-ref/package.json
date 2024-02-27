@@ -20,11 +20,6 @@
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
-	"files": [
-		"README.md",
-		"config.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["README.md", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }

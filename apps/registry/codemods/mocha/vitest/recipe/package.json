@@ -1,5 +1,5 @@
 {
 	"name": "@codemod-com/codemod-mocha-vitest-recipe",
-	"files": ["README.md", "config.json"],
+	"files": ["README.md"],
 	"type": "module"
 }

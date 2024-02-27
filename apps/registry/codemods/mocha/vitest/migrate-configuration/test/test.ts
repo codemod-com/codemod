@@ -43,7 +43,6 @@ describe("mocha config-files", () => {
       },
       "files": [
         "README.md",
-        "config.json",
         "./dist/index.cjs",
         "./index.d.ts"
       ],
@@ -147,7 +146,6 @@ describe("mocha config-files", () => {
                 },
                 "files": [
                   "README.md",
-                  "config.json",
                   "./dist/index.cjs",
                   "./index.d.ts"
                 ],

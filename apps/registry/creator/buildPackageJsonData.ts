@@ -54,7 +54,7 @@ export const buildPackageJsonData = (argv: ArgvSchema): string => {
 		  }
 		: undefined;
 
-	const files: string[] = ["README.md", "config.json"];
+	const files: string[] = ["README.md"];
 
 	if (jsEngineUsed) {
 		files.push("./dist/index.cjs", "./index.d.ts");

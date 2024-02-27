@@ -49,7 +49,6 @@ This codemod requires internet connection.
 	"files": [
 		"prettier-test-no-replace",
 		"README.md",
-		"config.json",
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],
@@ -83,7 +82,6 @@ This codemod requires internet connection.
 	"files": [
 		"prettier-test-no-replace",
 		"README.md",
-		"config.json",
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],
