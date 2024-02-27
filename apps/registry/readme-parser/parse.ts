@@ -7,12 +7,6 @@ import type { Heading, PhrasingContent, RootContent } from "mdast";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { is, object, optional, string } from "valibot";
 
-const configJsonSchema = object({
-	schemaVersion: optional(string()),
-	name: optional(string()),
-	engine: string(),
-});
-
 const UNESCAPED = ["inlineCode", "link"];
 
 const noFirstLetterLowerCase = (str: string) =>
@@ -385,23 +379,13 @@ export const convertToYaml = (
 
 		framework = splitPath.at(3) ?? null;
 		frameworkVersion = splitPath.at(4) ?? null;
-
-		try {
-			const config = readFileSync(`${pathToCodemod}/config.json`).toString();
-			const json = JSON.parse(config);
-			codemodName = json.name ?? cleanPath.split("/").slice(3).join("/");
-
-			if (is(configJsonSchema, json)) {
-				slug = codemodName!.replace(/\//g, "-");
-				cliCommand = `codemod ${codemodName}`;
-			}
-		} catch (e) {
-			/* empty */
-		}
+		codemodName = cleanPath.split("/").slice(3).join("/");
 	}
 
 	let vscodeHashDigest: string | null = null;
 	if (codemodName) {
+		slug = codemodName.replace(/\//g, "-");
+		cliCommand = `codemod ${codemodName}`;
 		vscodeHashDigest = createHash("ripemd160")
 			.update(codemodName)
 			.digest("base64url");
