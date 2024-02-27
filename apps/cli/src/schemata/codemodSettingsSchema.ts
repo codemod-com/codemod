@@ -1,5 +1,5 @@
 import {
-	Input,
+	type Output,
 	array,
 	literal,
 	object,
@@ -33,7 +33,7 @@ export type CodemodSettings =
 	| Readonly<{
 			kind: "runSourced";
 			source: string;
-			codemodEngine: Input<typeof codemodEngineSchema> | null;
+			codemodEngine: Output<typeof codemodEngineSchema> | null;
 	  }>;
 
 export const parseCodemodSettings = (input: unknown): CodemodSettings => {

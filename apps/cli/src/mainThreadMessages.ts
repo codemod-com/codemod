@@ -1,11 +1,10 @@
 import {
-	Input,
+	type Output,
 	boolean,
 	literal,
 	object,
 	parse,
 	string,
-	tuple,
 	union,
 } from "valibot";
 import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
@@ -29,7 +28,7 @@ const mainThreadMessageSchema = union([
 	}),
 ]);
 
-export type MainThreadMessage = Input<typeof mainThreadMessageSchema>;
+export type MainThreadMessage = Output<typeof mainThreadMessageSchema>;
 
 export const decodeMainThreadMessage = (input: unknown) =>
 	parse(mainThreadMessageSchema, input);

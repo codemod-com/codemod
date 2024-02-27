@@ -1,4 +1,4 @@
-import { Input, literal, parse, union } from "valibot";
+import { type Output, literal, parse, union } from "valibot";
 
 export const consoleKindSchema = union([
 	literal("debug"),
@@ -12,4 +12,4 @@ export const consoleKindSchema = union([
 export const parseConsoleKind = (input: unknown) =>
 	parse(consoleKindSchema, input);
 
-export type ConsoleKind = Input<typeof consoleKindSchema>;
+export type ConsoleKind = Output<typeof consoleKindSchema>;

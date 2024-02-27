@@ -1,4 +1,4 @@
-import { Input, literal, union } from "valibot";
+import { type Output, literal, union } from "valibot";
 import { Arguments } from "./schemata/argumentsSchema.js";
 
 export const javaScriptCodemodEngineSchema = union([
@@ -8,7 +8,7 @@ export const javaScriptCodemodEngineSchema = union([
 	literal("ts-morph"),
 ]);
 
-export type JavaScriptCodemodEngine = Input<
+export type JavaScriptCodemodEngine = Output<
 	typeof javaScriptCodemodEngineSchema
 >;
 

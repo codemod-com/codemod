@@ -1,5 +1,5 @@
 import {
-	Input,
+	type Output,
 	literal,
 	nullish,
 	object,
@@ -27,7 +27,7 @@ const workerThreadMessageSchema = union([
 	}),
 ]);
 
-export type WorkerThreadMessage = Input<typeof workerThreadMessageSchema>;
+export type WorkerThreadMessage = Output<typeof workerThreadMessageSchema>;
 
 export const decodeWorkerThreadMessage = (input: unknown) =>
 	parse(workerThreadMessageSchema, input);

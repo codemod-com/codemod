@@ -1,5 +1,5 @@
 import {
-	Input,
+	type Output,
 	array,
 	literal,
 	object,
@@ -61,4 +61,4 @@ export const codemodConfigSchema = union([
 	}),
 ]);
 
-export type CodemodConfig = Input<typeof codemodConfigSchema>;
+export type CodemodConfig = Output<typeof codemodConfigSchema>;

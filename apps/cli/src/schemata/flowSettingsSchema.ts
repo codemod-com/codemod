@@ -1,5 +1,5 @@
 import {
-	Input,
+	type Output,
 	array,
 	boolean,
 	integer,
@@ -34,7 +34,7 @@ export const flowSettingsSchema = object({
 	threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Omit<Input<typeof flowSettingsSchema>, "target"> & {
+export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
 	target: string;
 };
 

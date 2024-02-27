@@ -1,6 +1,6 @@
 import { cosmiconfig } from "cosmiconfig";
 import {
-	Input,
+	type Output,
 	array,
 	literal,
 	object,
@@ -29,9 +29,11 @@ const repositoryConfigurationSchema = object({
 	preCommitCodemods: optional(array(preCommitCodemodSchema), []),
 });
 
-export type RepositoryConfiguration = Input<
+export type RepositoryConfiguration = Output<
 	typeof repositoryConfigurationSchema
 >;
+
+type lol = RepositoryConfiguration["preCommitCodemods"];
 
 export const parseRepositoryConfiguration = (
 	i: unknown,

@@ -1,5 +1,5 @@
 import {
-	Input,
+	type Output,
 	array,
 	boolean,
 	literal,
@@ -30,4 +30,4 @@ export const argumentsSchema = array(
 	]),
 );
 
-export type Arguments = Input<typeof argumentsSchema>;
+export type Arguments = Output<typeof argumentsSchema>;

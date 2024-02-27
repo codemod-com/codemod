@@ -1,6 +1,6 @@
 import Axios from "axios";
 import type FormData from "form-data";
-import { type Input, nullable, object, parse, string } from "valibot";
+import { type Output, nullable, object, parse, string } from "valibot";
 
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
@@ -8,7 +8,7 @@ const dataSchema = object({
 	username: nullable(string()),
 });
 
-type Data = Input<typeof dataSchema>;
+type Data = Output<typeof dataSchema>;
 
 export const validateAccessToken = async (
 	accessToken: string,

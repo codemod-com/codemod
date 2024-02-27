@@ -1,8 +1,8 @@
-import { Input, boolean, number, record, string, union } from "valibot";
+import { type Output, boolean, number, record, string, union } from "valibot";
 
 export const argumentRecordSchema = record(
 	string(),
 	union([string(), number(), boolean()]),
 );
 
-export type ArgumentRecord = Input<typeof argumentRecordSchema>;
+export type ArgumentRecord = Output<typeof argumentRecordSchema>;
