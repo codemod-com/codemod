@@ -90,16 +90,8 @@ export const executeMainThread = async () => {
 			"lists all the codemods & recipes in the public registry",
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
-		.command("syncRegistry", "syncs all the codemods from the registry", (y) =>
+		.command("sync", "syncs all the codemods from the registry", (y) =>
 			buildUseJsonOption(y),
-		)
-		.command("sync [name]", "synchronize a codemod", (y) =>
-			buildUseJsonOption(
-				y.positional("name", {
-					type: "string",
-					description: "The name of the codemod",
-				}),
-			),
 		)
 		.command(
 			"learn",
@@ -213,40 +205,13 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	if (String(argv._) === "syncRegistry") {
+	if (String(argv._) === "sync") {
 		await syncRegistryOperation(
 			argv.noCache,
 			printer,
 			fileDownloadService,
 			tarService,
 		);
-		exit();
-
-		return;
-	}
-
-	if (argv._.at(0) === "sync" && argv.name !== undefined) {
-		const codemodDownloader = new CodemodDownloader(
-			printer,
-			join(homedir(), ".codemod"),
-			false,
-			fileDownloadService,
-			tarService,
-		);
-
-		try {
-			await codemodDownloader.download(argv.name);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
 		exit();
 
 		return;
