@@ -115,29 +115,6 @@ const vitestConfig = () => {
   `);
 };
 
-const configJson = ({
-	framework,
-	version,
-	name,
-	engine,
-}: Pick<ProjectDownloadInput, "framework" | "version" | "name" | "engine">) => {
-	const configName = [
-		framework?.toLowerCase(),
-		version,
-		changeCase.kebabCase(name),
-	]
-		.filter(Boolean)
-		.join("/");
-
-	return beautify(`
-      {
-        "schemaVersion": "1.0.0",
-        "name": "${configName}",
-        "engine": "${engine}"
-      }
-  `);
-};
-
 const tsconfigJson = () => {
 	return beautify(`
       {
@@ -482,7 +459,6 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 
 	zip.file("package.json", packageJson(input));
 	zip.file("tsconfig.json", tsconfigJson());
-	zip.file("config.json", configJson(input));
 
 	zip.file(".gitignore", "node_modules\ndist\nbuild.ts");
 

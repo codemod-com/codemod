@@ -3,7 +3,6 @@ import { join, sep } from "node:path";
 import jsYaml from "js-yaml";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
-import { buildConfigJsonData } from "./buildConfigJsonData.js";
 import { buildIndexDtsData } from "./buildIndexDtsData.js";
 import { buildMochaRcJsonData } from "./buildMochaRcJsonData.js";
 import { buildPackageJsonData } from "./buildPackageJsonData.js";
@@ -100,12 +99,6 @@ const main = async () => {
 
 			await writeFile(join(codemodDirectoryPath, "./test/test.ts"), data);
 		}
-	}
-
-	{
-		const data = buildConfigJsonData(argv);
-
-		await writeFile(join(codemodDirectoryPath, "./config.json"), data);
 	}
 
 	{
