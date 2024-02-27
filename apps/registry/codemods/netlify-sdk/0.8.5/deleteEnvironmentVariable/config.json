@@ -1,5 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "netlify/0.8.5/deleteEnvironmentVariable",
-	"engine": "jscodeshift"
-}

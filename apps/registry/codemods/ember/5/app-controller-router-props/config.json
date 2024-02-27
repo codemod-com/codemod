@@ -1,7 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "ember/5/app-controller-router-props",
-	"description": "",
-	"engine": "jscodeshift",
-	"dependencyVersionLowerThan": ["ember", "5.0.0"]
-}

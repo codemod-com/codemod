@@ -1,8 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "redwoodjs/core/4/auth-decoder",
-	"description": "",
-	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"dependencyVersionLowerThan": ["@redwoodjs/core", "4.0.0"]
-}
