@@ -14,7 +14,7 @@ npx eslint --print-config <path-to-a-file-that-eslint-checks> | codemod eslint/b
 
 It's important that you pass these rules to the codemod, because our codemods are limited in access for security purposes and have no access to most node features that could maliciously affect your system.
 
-This codemod requires internet connection to fetch the rules replacements.
+This codemod requires internet connection.
 
 ## Example
 
