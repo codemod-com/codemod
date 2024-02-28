@@ -30,4 +30,4 @@ jobs:
               run: pnpm install
 
             - name: Run Biome.js checks
-              run: pnpm biome check .
+              run: pnpm biome check . --diagnostic-level=error
