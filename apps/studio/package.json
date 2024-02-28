@@ -69,7 +69,7 @@
 		"remark-gfm": "^3.0.1",
 		"remark-math": "^5.1.1",
 		"tailwind-merge": "^1.10.0",
-		"ts-morph": "^18.0.0",
+		"ts-morph": "^19.0.0",
 		"tslib": "2.4.1",
 		"universal-base64url": "^1.1.0",
 		"web-vitals": "^2.1.4",
@@ -81,11 +81,7 @@
 		"build": "next build"
 	},
 	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
+		"production": [">0.2%", "not dead", "not op_mini all"],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",

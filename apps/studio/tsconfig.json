@@ -26,7 +26,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["src/*"],
-			"tslib": ["node_modules/tslib"]
+			"tslib": ["node_modules/tslib"],
+			"ts-morph": ["node_modules/ts-morph"]
 		},
 		"plugins": [{ "name": "next" }]
 	},
