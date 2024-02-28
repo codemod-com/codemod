@@ -8,7 +8,7 @@ import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
 import { selectActiveEvent } from "../../store/slices/log";
 import { selectMod, setContent } from "../../store/slices/mod";
-import prettifyDeprecated from "../../utils/prettify";
+import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -24,7 +24,7 @@ const Codemod = () => {
 	const content = internalContent ?? "";
 
 	const onBlur = useCallback(() => {
-		const prettified = prettifyDeprecated(content);
+		const prettified = prettify(content);
 		if (prettified !== content) {
 			dispatch(setContent(prettified));
 		}
