@@ -107,5 +107,12 @@
 		"twitter": "https://twitter.com/codemod",
 		"github": "https://github.com/codemod-com",
 		"linkedin": "https://www.linkedin.com/company/codemod"
-	}
+	},
+	"redirects": [
+		{
+		  "source": "https://codemodcom.mintlify.app/blog/eslint-to-biome",
+		  "destination": "https://docs.codemod.com/blog/eslint-to-biome"
+		}
+	  ]
+	  
 }
