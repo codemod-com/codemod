@@ -13,7 +13,7 @@ import { selectMod, setContent } from "~/store/slices/mod";
 import { selectFirstTreeNode } from "~/store/slices/snippets";
 import { buildFactoryCode } from "~/utils/buildFactoryCode";
 import { injectCFSOutputToCodemod } from "~/utils/injectCFSOutputToCodemod";
-import prettifyDeprecated from "~/utils/prettify";
+import { prettify } from "~/utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -41,12 +41,10 @@ const GeneratedOutput = () => {
 		if (selectedAfterInputNode !== null) {
 			const factoryCode = buildFactoryCode(selectedAfterInputNode.actualNode);
 			if (factoryCode && generatedOutput) {
-				return prettifyDeprecated(
-					generatedOutput.concat(`.replaceWith(${factoryCode})`),
-				);
+				return prettify(generatedOutput.concat(`.replaceWith(${factoryCode})`));
 			}
 		}
-		return prettifyDeprecated(generatedOutput);
+		return prettify(generatedOutput);
 	}, [generatedOutput, selectedAfterInputNode]);
 
 	const insertGeneratedOutputToCodemod = () => {
