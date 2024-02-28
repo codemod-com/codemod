@@ -107,5 +107,32 @@
 		"twitter": "https://twitter.com/codemod",
 		"github": "https://github.com/codemod-com",
 		"linkedin": "https://www.linkedin.com/company/codemod"
-	}
+	},
+	"redirects": [
+		{
+			"source": "/blog",
+			"destination": "https://blog.codemod.com/"
+		},
+		{
+		  "source": "/blog/eslint-to-biome",
+		  "destination": "https://blog.codemod.com/eslint-to-biome"
+		},
+		{
+			"source": "/blog/codemodable",
+			"destination": "https://blog.codemod.com/codemodable"
+		},
+		{
+		  "source": "/blog/cal-next-migration",
+		  "destination": "https://blog.codemod.com/cal-next-migration"
+		},
+		{
+		  "source": "/blog/mocha-to-vitest-migration",
+		  "destination": "https://blog.codemod.com/mocha-to-vitest-migration"
+		},
+		{
+		  "source": "/blog/dream-migration",
+		  "destination": "https://blog.codemod.com/dream-migration"
+		}
+	  ]
+	  
 }
