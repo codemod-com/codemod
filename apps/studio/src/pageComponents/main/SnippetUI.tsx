@@ -10,7 +10,7 @@ import {
 	setInput,
 	setOutput,
 } from "../../store/slices/snippets";
-import prettifyDeprecated from "../../utils/prettify";
+import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -40,7 +40,7 @@ export const useSnippet = (type: "before" | "after") => {
 	);
 
 	const onSnippetBlur = useCallback(() => {
-		onSnippetChange(prettifyDeprecated(value));
+		onSnippetChange(prettify(value));
 	}, [onSnippetChange, value]);
 
 	const handleSelectionChange = useCallback(
