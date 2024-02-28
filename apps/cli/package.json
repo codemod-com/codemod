@@ -5,7 +5,9 @@
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
-	"repository": { "type": "git" },
+	"repository": {
+		"type": "git"
+	},
 	"keywords": [
 		"codemod",
 		"jscodeshift",
@@ -30,6 +32,7 @@
 		"@babel/parser": "^7.22.10",
 		"@babel/preset-env": "^7.20.2",
 		"@babel/traverse": "7.23.2",
+		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@effect/schema": "0.27.0",
@@ -70,8 +73,7 @@
 		"unist-util-visit": "^5.0.0",
 		"valibot": "^0.24.1",
 		"vitest": "^1.0.1",
-		"yargs": "^17.6.2",
-		"@biomejs/biome": "1.5.3"
+		"yargs": "^17.6.2"
 	},
 	"packageManager": "pnpm@8.6.7",
 	"scripts": {
@@ -80,9 +82,22 @@
 		"test": "TEST=1 vitest run",
 		"coverage": "TEST=1 vitest run --coverage"
 	},
-	"engines": { "node": ">=18.5.0" },
-	"pkg": { "outputPath": "./package/" },
+	"engines": {
+		"node": ">=18.5.0"
+	},
+	"pkg": {
+		"outputPath": "./package/"
+	},
 	"license": "Apache License, Version 2.0",
-	"files": ["./dist/index.cjs", "LICENSE", "README.md"],
-	"publishConfig": { "access": "public" }
+	"files": [
+		"./dist/index.cjs",
+		"LICENSE",
+		"README.md"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"dependencies": {
+		"js-yaml": "4.1.0"
+	}
 }
