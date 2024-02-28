@@ -122,6 +122,30 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			// do nothing, descriptions might not exist
 		}
 
+		if (config.engine === "ast-grep") {
+			try {
+				const yamlPath = join(directoryPath, "rule.yaml");
+
+				return {
+					source: "registry",
+					name,
+					engine: config.engine,
+					yamlPath,
+					directoryPath,
+					arguments: config.arguments,
+				};
+			} catch (error) {
+				if (!(error instanceof Error)) {
+					throw new Error("Error while downloading ast-grep codemod");
+				}
+
+				this.__printer.printOperationMessage({
+					kind: "error",
+					message: error.message,
+				});
+			}
+		}
+
 		if (config.engine === "piranha") {
 			const rulesPath = join(directoryPath, "rules.toml");
 
