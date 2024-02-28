@@ -15,6 +15,12 @@ const packageJsonSchema = object({
 	license: optional(string()),
 });
 
+const configJsonSchema = object({
+	schemaVersion: string(),
+	name: string(),
+	engine: string(),
+});
+
 const getToken = (): Promise<string> => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
 	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
@@ -41,7 +47,12 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	printer.printConsoleMessage("info", `You are logged in as '${username}'.`);
+	printer.printConsoleMessage(
+		"info",
+		`You are logged in as '${boldText(
+			username,
+		)}' and able to publish a codemod to our public registry.`,
+	);
 
 	const packageJsonData = await fs.promises.readFile(
 		join(source, "package.json"),
@@ -63,7 +74,7 @@ export const handlePublishCliCommand = async (
 		!/[a-zA-Z0-9_/-]+/.test(pkg.name)
 	) {
 		throw new Error(
-			`The "name" field in package.json must start with your GitHub username and a slash ("@${username}/")and contain allowed characters (a-z, A-Z, 0-9, _, / or -)`,
+			`The "name" field in package.json must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -)`,
 		);
 	}
 
@@ -71,16 +82,19 @@ export const handlePublishCliCommand = async (
 		encoding: "utf-8",
 	});
 
-	// We currently support publishing jscodeshift codemods only
-	const configJsonData = JSON.stringify(
+	const configJsonData = await fs.promises.readFile(
+		join(source, "config.json"),
 		{
-			schemaVersion: "1.0.0",
-			name: pkg.name,
-			engine: "jscodeshift",
+			encoding: "utf-8",
 		},
-		null,
-		2,
 	);
+	const configJson = parse(configJsonSchema, JSON.parse(configJsonData));
+
+	if (configJson.name !== pkg.name) {
+		throw new Error(
+			`The "name" field in package.json must match with that in config.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
+		);
+	}
 
 	let descriptionMdData: string | null = null;
 

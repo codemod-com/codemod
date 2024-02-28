@@ -120,19 +120,27 @@ const configJson = ({
 	version,
 	name,
 	engine,
-}: Pick<ProjectDownloadInput, "framework" | "version" | "name" | "engine">) => {
+	user,
+}: Pick<
+	ProjectDownloadInput,
+	"framework" | "version" | "name" | "engine" | "user"
+>) => {
 	const configName = [
 		framework?.toLowerCase(),
 		version,
 		changeCase.kebabCase(name),
 	]
 		.filter(Boolean)
-		.join("/");
+		.join("-");
+
+	const finalName = user?.username
+		? `@${user.username}/${configName}`
+		: configName;
 
 	return beautify(`
       {
         "schemaVersion": "1.0.0",
-        "name": "${configName}",
+        "name": "${finalName}",
         "engine": "${engine}"
       }
   `);
