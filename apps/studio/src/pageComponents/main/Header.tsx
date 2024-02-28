@@ -17,7 +17,7 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
-import CustomLogoSVG from "../../assets/icons/intuita_logo.svg";
+import CompanyLogoSVG from "../../assets/icons/company_logo.svg";
 import type { AppDispatch } from "../../store";
 import { selectEngine, setEngine } from "../../store/slices/snippets";
 import { PublicLinkSharingButton } from "./PublicLinkSharingButton";
@@ -56,7 +56,11 @@ const Header = () => {
 		<>
 			<div className="flex h-full w-full flex-1 items-center justify-end">
 				<div className="flex flex-1 items-center">
-					<Image src={CustomLogoSVG} className="mr-2 w-14" alt="Codemod Logo" />
+					<Image
+						src={CompanyLogoSVG}
+						className="mr-2 w-14"
+						alt="Codemod.com Logo"
+					/>
 					<Label className="text-2xl font-semibold">Codemod Studio</Label>
 					<Button
 						variant="link"
