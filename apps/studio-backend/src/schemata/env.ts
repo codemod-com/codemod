@@ -1,7 +1,16 @@
-import { Output, literal, object, optional, parse, string } from "valibot";
+import {
+	Output,
+	coerce,
+	literal,
+	number,
+	object,
+	optional,
+	parse,
+	string,
+} from "valibot";
 
 export const environmentSchema = object({
-	PORT: string(),
+	PORT: coerce(number(), (input) => Number(input)),
 	DATA: optional(string()),
 	X_CODEMOD_ACCESS_TOKEN: optional(string()),
 	X_INTUITA_ACCESS_TOKEN: optional(string()),

@@ -2,10 +2,12 @@
 	"name": "studio-backend",
 	"version": "1.0.0",
 	"scripts": {
-		"start:ncc": "node ./build-ncc/index.js",
+		"start:ncc": "node ./build-ncc/server.js",
 		"test": "vitest --run",
-		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
-		"build:ncc": "ncc build ./src/index.ts -m -o ./build-ncc"
+		"db:push": "drizzle-kit push:pg",
+		"db:studio": "drizzle-kit studio",
+		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/server.ts",
+		"build:ncc": "ncc build ./src/server.ts -m -o ./build-ncc"
 	},
 	"author": "Codemod inc.",
 	"private": true,
@@ -37,6 +39,7 @@
 		"axios": "1.6.2",
 		"chatgpt": "5.2.5",
 		"chromadb": "1.7.2",
+		"dotenv": "^16.4.5",
 		"drizzle-orm": "^0.29.4",
 		"fastify": "4.25.1",
 		"langchain": "0.0.209",
