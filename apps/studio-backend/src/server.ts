@@ -17,7 +17,6 @@ import {
 	UnauthorizedError,
 } from "./customHandler.js";
 import { buildDataAccessLayer } from "./db/dataAccessLayer.js";
-import { buildDrizzle } from "./db/drizzle/db.js";
 import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
@@ -153,8 +152,6 @@ const initApp = async (toRegister: FastifyPluginCallback[]) => {
 };
 
 const dataAccessLayer = await buildDataAccessLayer(environment.DATABASE_URI);
-
-const drizzle = await buildDrizzle(environment.DATABASE_URI);
 
 const { ChatGPTAPI } = await import("chatgpt");
 
@@ -301,13 +298,12 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const query = parseGetCodemodsQuery(request.query);
 
 		reply.type("application/json").code(200);
-		return drizzle.query.codemods.findMany({
-			where: (codemods, { and, eq }) =>
-				and(
-					query.featured ? eq(codemods.featured, query.featured) : undefined,
-					query.verified ? eq(codemods.verified, query.verified) : undefined,
-					query.private ? eq(codemods.private, query.private) : undefined,
-				),
+		return prisma.codemod.findMany({
+			where: {
+				featured: query.featured,
+				verified: query.verified,
+				private: query.private,
+			},
 		});
 	});
 
@@ -315,8 +311,10 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const { slug } = parseGetCodemodBySlugParams(request.params);
 
 		reply.type("application/json").code(200);
-		return drizzle.query.codemods.findMany({
-			where: (codemods, { eq }) => eq(codemods.slug, slug),
+		return prisma.codemod.findFirst({
+			where: {
+				slug,
+			},
 		});
 	});
 

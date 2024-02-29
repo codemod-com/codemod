@@ -4,9 +4,12 @@
 	"scripts": {
 		"start:ncc": "node ./build-ncc/server.js",
 		"test": "vitest --run",
-		"db:push": "drizzle-kit push:pg",
-		"db:seed": "tsx ./seed.ts",
-		"db:studio": "drizzle-kit studio",
+		"db:push": "prisma db push",
+		"db:generate": "prisma generate",
+		"db:migrate:generate": "prisma migrate dev --name",
+		"db:migrate:apply": "prisma migrate deploy",
+		"db:seed": "tsx prisma/seed.ts",
+		"db:studio": "prisma studio",
 		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/server.ts",
 		"build:ncc": "ncc build ./src/server.ts -m -o ./build-ncc"
 	},
@@ -23,6 +26,7 @@
 		"nodemon": "3.0.2",
 		"sqlite3": "^5.1.7",
 		"ts-node": "10.9.2",
+		"tsx": "^4.7.1",
 		"typescript": "5.3.3",
 		"vitest": "1.1.0"
 	},
@@ -53,7 +57,9 @@
 		"replicate": "0.25.2",
 		"sequelize": "^6.36.0",
 		"tar": "^6.2.0",
-		"valibot": "^0.24.1"
+		"valibot": "^0.24.1",
+		"zod": "3.21.4",
+		"zod-prisma-types": "^3.1.6"
 	},
 	"type": "module",
 	"peerDependencies": {

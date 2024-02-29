@@ -2,27 +2,25 @@
 import "dotenv/config";
 
 import { faker } from "@faker-js/faker";
-import { drizzle } from "drizzle-orm/node-postgres";
-import { Client } from "pg";
-import { codemods, typeEnum } from "./src/db/drizzle/schemata.ts";
+import { CodemodType, PrismaClient } from "@prisma/client";
+import { z } from "zod";
+import { CodemodCreateInputSchema } from "./generated/zod";
 
 if (!("DATABASE_URI" in process.env)) {
 	throw new Error("DATABASE_URI not found in .env");
 }
 
-const main = async () => {
-	const client = new Client({
-		connectionString: process.env.DATABASE_URI,
-	});
-	const db = drizzle(client);
-	const data: (typeof codemods.$inferInsert)[] = [];
+const prisma = new PrismaClient();
+
+async function main() {
+	const data: z.infer<typeof CodemodCreateInputSchema>[] = [];
 
 	for (let i = 0; i < 10; i++) {
 		data.push({
-			slug: faker.string.alpha(),
+			slug: faker.string.alpha(10),
 			name: faker.lorem.words(2),
 			shortDescription: faker.lorem.words(10),
-			type: faker.helpers.arrayElement(typeEnum.enumValues),
+			type: faker.helpers.arrayElement(Object.values(CodemodType)),
 			featured: faker.datatype.boolean(),
 			verified: faker.datatype.boolean(),
 			framework: faker.lorem.word(),
@@ -43,9 +41,16 @@ const main = async () => {
 		});
 	}
 
-	console.log("Seed start");
-	await db.insert(codemods).values(data);
-	console.log("Seed done");
-};
+	await prisma.codemod.createMany({ data });
+	console.log({ data });
+}
 
-main();
+main()
+	.then(async () => {
+		await prisma.$disconnect();
+	})
+	.catch(async (e) => {
+		console.error(e);
+		await prisma.$disconnect();
+		process.exit(1);
+	});

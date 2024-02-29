@@ -9,7 +9,6 @@
 
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
-		"noEmit": true,
 		"esModuleInterop": true,
 		"isolatedModules": true,
 		"jsx": "react-jsx",
@@ -20,6 +19,7 @@
 		"noUnusedParameters": false,
 		"preserveWatchOutput": true,
 		"strict": true,
+		"strictNullChecks": true,
 		"module": "esnext",
 		"incremental": true,
 		"noUncheckedIndexedAccess": true,

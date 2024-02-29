@@ -2,39 +2,44 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+  provider                         = "zod-prisma-types"
+  createOptionalDefaultValuesTypes = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URI")
 }
 
-enum Type {
+enum CodemodType {
   recipe
   codemod
 }
 
 model Codemod {
-  id                       Int      @id @default(autoincrement())
-  slug                     String   @unique @db.VarChar(255)
-  name                     String   @db.VarChar(255)
-  shortDescription         String   @db.Text
-  type                     Type
+  id                       Int         @id @default(autoincrement())
+  slug                     String      @unique @db.VarChar(255)
+  name                     String      @db.VarChar(255)
+  shortDescription         String      @db.Text
+  type                     CodemodType
   private                  Boolean
-  featured                 Boolean  @default(false)
+  featured                 Boolean     @default(false)
   verified                 Boolean
-  author                   String   @db.VarChar(255)
-  engine                   String   @db.VarChar(255)
-  version                  String   @db.VarChar(255)
-  command                  String   @db.VarChar(255)
-  vsCodeLink               String   @db.VarChar(255)
-  codemodStudioExampleLink String   @db.VarChar(255)
-  testProjectCommand       String   @db.VarChar(255)
-  sourceRepo               String   @db.VarChar(255)
-  amountOfUses             Int      @default(0)
-  totalTimeSaved           Int      @default(0)
-  openedPrs                Int      @default(0)
-  labels                   String[] @default([])
-  readmeLink               String   @db.VarChar(255)
-  indexTsLink              String   @db.VarChar(255)
+  author                   String      @db.VarChar(255)
+  engine                   String      @db.VarChar(255)
+  version                  String      @db.VarChar(255)
+  command                  String      @db.VarChar(255)
+  vsCodeLink               String      @db.VarChar(255)
+  codemodStudioExampleLink String      @db.VarChar(255)
+  testProjectCommand       String      @db.VarChar(255)
+  sourceRepo               String      @db.VarChar(255)
+  amountOfUses             Int         @default(0)
+  totalTimeSaved           Int         @default(0)
+  openedPrs                Int         @default(0)
+  labels                   String[]    @default([])
+  readmeLink               String      @db.VarChar(255)
+  indexTsLink              String      @db.VarChar(255)
 
   framework        String? @db.VarChar(255)
   frameworkVersion String? @db.VarChar(255)
