@@ -17,8 +17,5 @@
 		"**/*.styl",
 		"**/*.json",
 	],
-	"editor.defaultFormatter": "biomejs.biome",
-	"cSpell.words": [
-		"codemod"
-	]
+	"editor.defaultFormatter": "biomejs.biome"
 }
