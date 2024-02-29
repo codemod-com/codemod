@@ -5,7 +5,7 @@ import { OpenAI } from "langchain/llms/openai";
 import { Chroma } from "langchain/vectorstores/chroma";
 import { findFunctionComponent } from "./chromaSnippets/findFunctionComponent.js";
 import { findPositionAfterImports } from "./chromaSnippets/findPositionAfterImports.js";
-import { Environment } from "./schema.js";
+import { Environment } from "./schemata/schema.js";
 
 const buildChromaService = async (environment: Environment) => {
 	if (environment.OPEN_AI_API_KEY === undefined) {

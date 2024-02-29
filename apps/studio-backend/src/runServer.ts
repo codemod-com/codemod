@@ -14,19 +14,20 @@ import {
 	ForbiddenError,
 	UnauthorizedError,
 } from "./customHandler.js";
-import { buildDataAccessLayer } from "./dataAccessLayer/dataAccessLayer.js";
+import { buildDataAccessLayer } from "./db/dataAccessLayer.js";
+import { buildDrizzle } from "./db/drizzle/db.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
+import { Environment } from "./schemata/env.js";
 import {
-	Environment,
 	parseCreateIssueBody,
 	parseCreateIssueParams,
 	parseSendChatBody,
 	parseSendMessageBody,
-} from "./schema.js";
+} from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
 import { SourceControl } from "./services/SourceControl.js";
@@ -66,9 +67,9 @@ export const runServer = async (environment: Environment) => {
 		throw new Error(`Invalid port ${environment.PORT}`);
 	}
 
-	const dataAccessLayer = await buildDataAccessLayer(
-		environment.DATABASE_URI ?? "sqlite::memory:",
-	);
+	const dataAccessLayer = await buildDataAccessLayer(environment.DATABASE_URI);
+
+	const drizzle = buildDrizzle(environment.DATABASE_URI);
 
 	const { ChatGPTAPI } = await import("chatgpt");
 

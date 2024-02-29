@@ -1,5 +1,5 @@
 import { runServer } from "./runServer.js";
-import { parseEnvironment } from "./schema.js";
+import { parseEnvironment } from "./schemata/env.js";
 
 let callback: (() => void) | undefined;
 

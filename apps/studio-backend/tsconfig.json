@@ -1,4 +1,9 @@
 {
+	"compilerOptions": {
+		"paths": {
+			"~/*": ["./src/*"]
+		}
+	},
 	"include": ["./src", "./test"],
 	"exclude": ["./dist", "./node_modules"],
 	"extends": "@codemod-com/tsconfig/base.json"

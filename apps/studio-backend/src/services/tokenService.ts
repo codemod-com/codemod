@@ -7,9 +7,9 @@ import {
 	sign,
 	verifyTokenMetadata,
 } from "../crypto/crypto.js";
-import { TokenMetadata } from "../dataAccessLayer/buildTokenMetadataRepository.js";
-import { TokenRevocation } from "../dataAccessLayer/buildTokenRevocationsRepository.js";
-import { DataAccessLayer } from "../dataAccessLayer/dataAccessLayer.js";
+import { TokenMetadata } from "../db/buildTokenMetadataRepository.js";
+import { TokenRevocation } from "../db/buildTokenRevocationsRepository.js";
+import { DataAccessLayer } from "../db/dataAccessLayer.js";
 
 export const CLAIM_PUBLISHING = 0x1;
 export const CLAIM_ISSUE_CREATION = 0x2;
