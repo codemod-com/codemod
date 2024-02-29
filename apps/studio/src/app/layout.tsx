@@ -62,19 +62,6 @@ export default async function RootLayout({
 						n&&j.setAttribute('nonce',n.nonce||n.getAttribute('nonce'));f.parentNode.insertBefore(j,f);
 						})(window,document,'script','dataLayer','GTM-K32HQ25J');`}
 				</Script>
-				<Script id="marker-config" nonce={nonce}>
-					{`  
-      window.markerConfig = {
-          project: '64de32c96b8fd94e18f7a00a', 
-          source: 'snippet'
-        };
-    `}
-				</Script>
-				<Script id="install-marker">
-					{`
-        !function(e,r,a){if(!e.__Marker){e.__Marker={};var t=[],n={__cs:t};["show","hide","isVisible","capture","cancelCapture","unload","reload","isExtensionInstalled","setReporter","setCustomData","on","off"].forEach(function(e){n[e]=function(){var r=Array.prototype.slice.call(arguments);r.unshift(e),t.push(r)}}),e.Marker=n;var s=r.createElement("script");s.async=1,s.src="https://edge.marker.io/latest/shim.js";var i=r.getElementsByTagName("script")[0];i.parentNode.insertBefore(s,i)}}(window,document);
-      `}
-				</Script>
 			</head>
 			<AuthProvider>
 				<ReduxProvider>
