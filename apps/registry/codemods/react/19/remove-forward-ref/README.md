@@ -1,4 +1,4 @@
-# Replace React FC Typescript
+# Replace forwardRef with ref prop
 
 ## Description
 
