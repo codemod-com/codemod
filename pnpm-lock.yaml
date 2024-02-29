@@ -4666,6 +4666,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.5.3
         version: 1.5.3
+      '@codemod-com/tsconfig':
+        specifier: workspace:*
+        version: link:../../packages/tsconfig
       '@faker-js/faker':
         specifier: ^8.4.1
         version: 8.4.1
