@@ -2,20 +2,22 @@
 	"name": "studio-backend",
 	"version": "1.0.0",
 	"scripts": {
-		"start:ncc": "node ./build-ncc/server.js",
+		"build:ncc": "ncc build ./src/server.ts -m -o ./build-ncc",
+		"start:ncc": "node ./build-ncc/index.js",
 		"test": "vitest --run",
+		"watch": "pnpm db:generate && nodemon --exec ./node_modules/.bin/ts-node --esm ./src/server.ts",
+
 		"db:push": "prisma db push",
 		"db:generate": "prisma generate",
 		"db:migrate:generate": "prisma migrate dev --name",
 		"db:migrate:apply": "prisma migrate deploy",
 		"db:seed": "tsx prisma/seed.ts",
-		"db:studio": "prisma studio",
-		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/server.ts",
-		"build:ncc": "ncc build ./src/server.ts -m -o ./build-ncc"
+		"db:studio": "prisma studio"
 	},
 	"author": "Codemod inc.",
 	"private": true,
 	"devDependencies": {
+		"@codemod-com/tsconfig": "workspace:*",
 		"@biomejs/biome": "1.5.3",
 		"@faker-js/faker": "^8.4.1",
 		"@types/node": "20.10.5",

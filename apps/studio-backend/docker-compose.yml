@@ -12,19 +12,18 @@ services:
             - 'codemod-local-network'
     studio-backend:
         build:
-            context: .
-            dockerfile: development.Dockerfile
+            context: ../..
+            dockerfile: apps/studio-backend/development.Dockerfile
         environment:
             PORT: '8081'
             CLERK_DISABLED: 'true'
-            DATABASE_URL: 'postgres://postgres:postgres@studio-database:5432/studio'
+            DATABASE_URI: 'postgres://postgres:postgres@studio-database:5432/studio'
         ports:
             - '8081:8081'
         networks:
             - 'codemod-local-network'
-        command: ['pnpm', 'watch']
         volumes:
-            - ./src:/opt/studio-backend/src
+            - ./src:/app/studio-backend/src
 
 networks:
     codemod-local-network:

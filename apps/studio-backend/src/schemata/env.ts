@@ -1,5 +1,6 @@
 import {
 	Output,
+	ValiError,
 	coerce,
 	literal,
 	number,
@@ -34,5 +35,15 @@ export const environmentSchema = object({
 
 export type Environment = Output<typeof environmentSchema>;
 
-export const parseEnvironment = (input: unknown) =>
-	parse(environmentSchema, input);
+export const parseEnvironment = (input: unknown) => {
+	try {
+		return parse(environmentSchema, input);
+	} catch (err) {
+		console.log((err as ValiError).issues[0].path);
+		throw new Error(
+			`Invalid environment: ${(err as ValiError).issues
+				.map((i) => i.path?.join("."))
+				.join(", ")}`,
+		);
+	}
+};

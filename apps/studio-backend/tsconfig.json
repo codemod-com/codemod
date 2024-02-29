@@ -1,12 +1,4 @@
 {
-	// "compilerOptions": {
-	// 	"paths": {
-	// 		"~/*": ["./src/*"]
-	// 	}
-	// },
-  "ts-node": {
-    "esm": true
-  },
 	"include": ["./src", "./test"],
 	"exclude": ["./dist", "./node_modules"],
 	"extends": "@codemod-com/tsconfig/base.json"

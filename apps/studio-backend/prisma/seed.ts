@@ -1,4 +1,3 @@
-// src/db/seed.ts
 import "dotenv/config";
 
 import { faker } from "@faker-js/faker";
