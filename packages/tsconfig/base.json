@@ -9,6 +9,7 @@
 
 		"resolveJsonModule": true,
 		"allowSyntheticDefaultImports": true,
+		"noEmit": true,
 		"esModuleInterop": true,
 		"isolatedModules": true,
 		"jsx": "react-jsx",

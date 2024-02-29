@@ -8,6 +8,7 @@ import {
 	serial,
 	text,
 	timestamp,
+	uniqueIndex,
 	varchar,
 } from "drizzle-orm/pg-core";
 
@@ -43,9 +44,9 @@ export const codemods = createTable(
 			length: 255,
 		}).notNull(),
 		sourceRepo: varchar("source_repo", { length: 255 }).notNull(),
-		amountOfUses: integer("amount_of_uses").notNull(),
-		totalTimeSaved: varchar("total_time_saved", { length: 255 }).notNull(),
-		openedPrs: varchar("opened_prs", { length: 255 }),
+		amountOfUses: integer("amount_of_uses").notNull().default(0),
+		totalTimeSaved: integer("total_time_saved").notNull().default(0),
+		openedPrs: integer("opened_prs").notNull().default(0),
 		labels: varchar("labels", { length: 255 })
 			.array()
 			.default(sql`ARRAY[]::varchar[]`),
@@ -53,11 +54,8 @@ export const codemods = createTable(
 		readmeLink: varchar("readme_link", { length: 255 }).notNull(),
 		indexTsLink: varchar("index_ts_link", { length: 255 }).notNull(),
 		private: boolean("private").notNull(),
-		conditionalVisibilityToggles: varchar("conditional_visibility_toggles", {
-			length: 255,
-		}).notNull(),
 	},
 	(codemod) => ({
-		slugIndex: index("slug_idx").on(codemod.slug),
+		slugIndex: uniqueIndex("slug_idx").on(codemod.slug),
 	}),
 );

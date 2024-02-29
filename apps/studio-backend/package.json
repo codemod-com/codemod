@@ -5,6 +5,7 @@
 		"start:ncc": "node ./build-ncc/server.js",
 		"test": "vitest --run",
 		"db:push": "drizzle-kit push:pg",
+		"db:seed": "tsx ./seed.ts",
 		"db:studio": "drizzle-kit studio",
 		"watch": "nodemon --exec ./node_modules/.bin/ts-node --esm ./src/server.ts",
 		"build:ncc": "ncc build ./src/server.ts -m -o ./build-ncc"
@@ -13,6 +14,7 @@
 	"private": true,
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
+		"@faker-js/faker": "^8.4.1",
 		"@types/node": "20.10.5",
 		"@types/parse-github-url": "1.0.3",
 		"@types/pg": "^8.11.2",
