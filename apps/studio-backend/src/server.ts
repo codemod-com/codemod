@@ -18,6 +18,7 @@ import {
 } from "./customHandler.js";
 import { buildDataAccessLayer } from "./db/dataAccessLayer.js";
 import { buildDrizzle } from "./db/drizzle/db.js";
+import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";

@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URI")
+}
+
+enum Type {
+  recipe
+  codemod
+}
+
+model Codemod {
+  id                       Int      @id @default(autoincrement())
+  slug                     String   @unique @db.VarChar(255)
+  name                     String   @db.VarChar(255)
+  shortDescription         String   @db.Text
+  type                     Type
+  private                  Boolean
+  featured                 Boolean  @default(false)
+  verified                 Boolean
+  author                   String   @db.VarChar(255)
+  engine                   String   @db.VarChar(255)
+  version                  String   @db.VarChar(255)
+  command                  String   @db.VarChar(255)
+  vsCodeLink               String   @db.VarChar(255)
+  codemodStudioExampleLink String   @db.VarChar(255)
+  testProjectCommand       String   @db.VarChar(255)
+  sourceRepo               String   @db.VarChar(255)
+  amountOfUses             Int      @default(0)
+  totalTimeSaved           Int      @default(0)
+  openedPrs                Int      @default(0)
+  labels                   String[] @default([])
+  readmeLink               String   @db.VarChar(255)
+  indexTsLink              String   @db.VarChar(255)
+
+  framework        String? @db.VarChar(255)
+  frameworkVersion String? @db.VarChar(255)
+  userStories      String? @db.VarChar(255)
+  requirements     String? @db.VarChar(255)
+
+  createdAt  DateTime @default(now())
+  lastUpdate DateTime @default(now()) @updatedAt
+}
