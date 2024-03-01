@@ -1,8 +1,14 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "immutable/4/map-to-array",
-	"description": "",
+	"deps": [],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencyVersionLowerThan": ["immutable", "4.0.0"]
+	"applicability": [["immutable", "<", "4.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

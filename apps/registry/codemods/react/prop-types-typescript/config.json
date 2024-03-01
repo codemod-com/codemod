@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "react/prop-types-typescript",
 	"description": "Codemod to convert React PropTypes to TypeScript types.",
 	"engine": "jscodeshift",
@@ -13,5 +14,10 @@
 			"default": "none",
 			"required": false
 		}
-	]
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

@@ -1,8 +1,14 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "react-redux/0/add-state-type",
-	"description": "",
+	"deps": [],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependency": "react-redux"
+	"dependency": "react-redux",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

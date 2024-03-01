@@ -1,5 +1,11 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "msw/2/req-passthrough",
-	"engine": "ts-morph"
+	"engine": "ts-morph",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "next/14/next-og-import",
 	"description": "This codemod moves transforms imports from next/server to next/og for usage of Dynamic OG Image Generation.",
 	"engine": "jscodeshift",
@@ -10,5 +11,10 @@
 			"range": "<14"
 		}
 	],
-	"owner": "vercel"
+	"owner": "vercel",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

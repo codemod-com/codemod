@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"engine": "recipe",
 	"names": [
 		"netlify/0.8.5/createEnvironmentVariable",
@@ -10,5 +11,10 @@
 		"netlify/0.8.5/getEnvironmentVariables",
 		"netlify/0.8.5/patchEnvironmentVariable",
 		"netlify/0.8.5/updateEnvironmentVariable"
-	]
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

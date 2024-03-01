@@ -1,8 +1,14 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "react-router/4/replace-location-query",
-	"description": "",
+	"deps": [],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencyVersionLowerThan": ["react-router", "4.0.0"]
+	"applicability": [["react-router", "<", "4.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

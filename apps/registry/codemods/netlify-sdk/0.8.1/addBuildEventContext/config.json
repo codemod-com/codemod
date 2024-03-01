@@ -1,5 +1,11 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "netlify/0.8.1/addBuildEventContext",
-	"engine": "jscodeshift"
+	"engine": "jscodeshift",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

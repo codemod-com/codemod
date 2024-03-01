@@ -1,4 +1,10 @@
 {
-	"schemaVersion": "1.0.0",
-	"engine": "filemod"
+	"version": "1.0.0",
+	"private": false,
+	"engine": "filemod",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

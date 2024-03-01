@@ -15,6 +15,11 @@
 	"main": "./dist/index.cjs",
 	"types": "/dist/index.d.ts",
 	"scripts": { "build:cjs": "cjs-builder ./src/index.ts" },
-	"files": ["README.md", "config.json", "./dist/index.cjs", "./index.d.ts"],
+	"files": [
+		"DESCRIPTION.md",
+		"config.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
 	"type": "module"
 }

@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"engine": "filemod",
 	"arguments": [
 		{
@@ -20,5 +21,10 @@
 			"default": "",
 			"required": true
 		}
-	]
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

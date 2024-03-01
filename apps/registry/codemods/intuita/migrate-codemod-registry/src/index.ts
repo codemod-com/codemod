@@ -325,7 +325,7 @@ const handleData: HandleData<Dependencies, State> = async (
 				scripts.test = "mocha";
 			}
 
-			const files: string[] = ["README.md", "config.json"];
+			const files: string[] = ["DESCRIPTION.md", "config.json"];
 
 			if (jsEngineUsed) {
 				files.push("./dist/index.cjs", "./index.d.ts");

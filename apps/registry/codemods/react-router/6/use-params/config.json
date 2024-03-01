@@ -1,8 +1,14 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "react-router/6/use-params",
-	"description": "",
+	"deps": [],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencyVersionLowerThan": ["react-router", "6.0.0"]
+	"applicability": [["react-router", "<", "6.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

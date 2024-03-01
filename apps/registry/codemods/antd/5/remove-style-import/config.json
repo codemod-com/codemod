@@ -1,1 +1,13 @@
-{ "schemaVersion": "1.0.0", "engine": "jscodeshift", "arguments": [] }
+{
+	"version": "1.0.0",
+	"private": false,
+	"engine": "jscodeshift",
+	"arguments": [],
+	"owner": "ant-design",
+	"applicability": [["antd", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"engine": "jscodeshift",
 	"arguments": [
 		{
@@ -13,5 +14,10 @@
 			"default": "featureFlag",
 			"required": true
 		}
-	]
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

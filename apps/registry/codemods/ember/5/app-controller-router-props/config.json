@@ -1,7 +1,13 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "ember/5/app-controller-router-props",
-	"description": "",
+	"deps": [],
 	"engine": "jscodeshift",
-	"dependencyVersionLowerThan": ["ember", "5.0.0"]
+	"applicability": [["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }

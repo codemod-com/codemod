@@ -1,5 +1,6 @@
 {
-	"schemaVersion": "1.0.0",
+	"version": "1.0.0",
+	"private": false,
 	"name": "next/13/remove-get-static-props",
 	"description": "The codemod removes getStaticProps data fetching method.",
 	"engine": "filemod",
@@ -18,5 +19,10 @@
 			"required": true
 		}
 	],
-	"owner": "codemod.com"
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
 }
