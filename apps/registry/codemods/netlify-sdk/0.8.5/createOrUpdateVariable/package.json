@@ -16,8 +16,8 @@
 	"types": "/dist/index.d.ts",
 	"scripts": { "build:cjs": "cjs-builder ./src/index.ts" },
 	"files": [
-		"DESCRIPTION.md",
-		"config.json",
+		"./.codemod/DESCRIPTION.md",
+		"./.codemod/config.json",
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],

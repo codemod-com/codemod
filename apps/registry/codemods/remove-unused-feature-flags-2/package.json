@@ -24,8 +24,8 @@
 		"coverage": "vitest run --coverage"
 	},
 	"files": [
-		"DESCRIPTION.md",
-		"config.json",
+		"./.codemod/DESCRIPTION.md",
+		"./.codemod/config.json",
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],

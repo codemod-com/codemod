@@ -1,5 +1,5 @@
 {
 	"name": "@codemod-com/codemod-msw-2-upgrade-recipe",
-	"files": ["DESCRIPTION.md", "config.json"],
+	"files": ["./.codemod/DESCRIPTION.md", "./.codemod/config.json"],
 	"type": "module"
 }
