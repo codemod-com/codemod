@@ -151,13 +151,13 @@ export const App = memo(
 							) : (
 								<div className={styles.privateCodemodWelcomeMessage}>
 									<p>
-										Make your own codemods in
+										Make your own codemods in{" "}
 										<a
 											rel="noopener noreferrer"
 											target="_blank"
 											href="https://codemod.studio/"
 										>
-											Codemod Studio
+											Codemod Studio{" "}
 										</a>
 										with the help of AI and specialized debuggers.
 									</p>
