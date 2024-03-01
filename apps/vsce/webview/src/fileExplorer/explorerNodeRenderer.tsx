@@ -67,7 +67,7 @@ export const explorerNodeRenderer =
 					explorerNodeHashDigest,
 				});
 			},
-			[explorerNodeHashDigest],
+			[explorerNodeHashDigest, explorerTree.caseHash],
 		);
 
 		const handleChevronClick = useCallback(
