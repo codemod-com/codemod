@@ -1,0 +1,17 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"engine": "filemod",
+	"arguments": [
+		{
+			"name": "testPath",
+			"kind": "string",
+			"required": true
+		}
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

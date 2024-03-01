@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "i18n/remove-unused-translations",
+	"description": "This codemod removes unused translation phrases from i18n resources",
+	"engine": "filemod",
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

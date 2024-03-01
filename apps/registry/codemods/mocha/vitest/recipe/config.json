@@ -1,0 +1,11 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"engine": "recipe",
+	"names": ["mocha/vitest/migrate-configuration", "mocha/vitest/migrate-tests"],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}
