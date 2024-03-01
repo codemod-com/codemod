@@ -3,9 +3,10 @@
 	"private": false,
 	"name": "jest/vitest",
 	"engine": "jscodeshift",
+	"applicability": [["jest", ">=", "26.0.0"]],
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
 	}
 }
