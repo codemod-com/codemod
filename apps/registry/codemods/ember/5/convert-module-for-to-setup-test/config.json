@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "ember/5/convert-module-for-to-setup-test",
+	"deps": [],
+	"engine": "jscodeshift",
+	"applicability": [["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

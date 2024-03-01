@@ -1,0 +1,11 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "msw/2/lifecycle-events-signature",
+	"engine": "ts-morph",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}
