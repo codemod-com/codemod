@@ -105,29 +105,3 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 ### After
 
 `Removed`
-
-## Applicability Criteria
-
-`mocha` >= 9.0.0
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-[filemod](https://github.com/codemod-com/filemod/)
-
-### Estimated Time Saving
-
-5+ minutes per file
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)

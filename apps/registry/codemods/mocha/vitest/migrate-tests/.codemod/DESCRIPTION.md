@@ -29,31 +29,3 @@ describe('Test Suite 1', () => {
 	});
 });
 ```
-
-## Applicability Criteria
-
-`mocha` >= 9.0.0
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-[jscodeshift](https://github.com/facebook/jscodeshift)
-
-### Estimated Time Saving
-
-5+ minutes per file
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
