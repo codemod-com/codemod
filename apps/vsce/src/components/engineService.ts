@@ -378,6 +378,10 @@ export class EngineService {
 					"config.json",
 				);
 
+				if (!existsSync(configPath)) {
+					continue;
+				}
+
 				const data = await readFile(configPath, "utf8");
 
 				const config = parseCodemodConfigSchema(JSON.parse(data));
