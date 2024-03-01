@@ -62,6 +62,9 @@ export enum SEARCH_PARAMS_KEYS {
 
 const messageBus = new MessageBus();
 
+let isMainViewRegistered = false;
+let isCodemodErrorViewRegistered = false;
+
 export async function activate(context: vscode.ExtensionContext) {
 	const rootUri = vscode.workspace.workspaceFolders?.[0]?.uri ?? null;
 
@@ -155,10 +158,14 @@ export async function activate(context: vscode.ExtensionContext) {
 		store,
 	);
 
-	const mainView = vscode.window.registerWebviewViewProvider(
-		"codemodMainView",
-		mainViewProvider,
-	);
+	if (!isMainViewRegistered) {
+		const mainView = vscode.window.registerWebviewViewProvider(
+			"codemodMainView",
+			mainViewProvider,
+		);
+		context.subscriptions.push(mainView);
+		isMainViewRegistered = true;
+	}
 
 	const codemodDescriptionProvider = new CodemodDescriptionProvider(
 		vscode.workspace.fs,
@@ -173,8 +180,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		rootUri?.fsPath ?? null,
 		jobManager,
 	);
-
-	context.subscriptions.push(mainView);
 
 	const errorWebviewProvider = new ErrorWebviewProvider(
 		context,
@@ -1178,12 +1183,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		}),
 	);
 
-	context.subscriptions.push(
-		vscode.window.registerWebviewViewProvider(
-			"codemodErrorViewId",
-			errorWebviewProvider,
-		),
-	);
+	if (!isCodemodErrorViewRegistered) {
+		context.subscriptions.push(
+			vscode.window.registerWebviewViewProvider(
+				"codemodErrorViewId",
+				errorWebviewProvider,
+			),
+		);
+		isCodemodErrorViewRegistered = true;
+	}
 
 	messageBus.publish({
 		kind: MessageKind.bootstrapEngine,
