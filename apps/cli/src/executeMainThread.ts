@@ -181,6 +181,8 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "list") {
+		const printer = new Printer(argv.json);
+
 		try {
 			await handleListNamesAfterSyncing(
 				argv.noCache,
