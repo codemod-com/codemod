@@ -34,33 +34,3 @@ module('Unit | Service | Flash', function (hooks) {
 	});
 });
 ```
-
-## Applicability Criteria
-
-Ember.js version higher or equal to 2.4.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Robert Jackson](https://github.com/rwjblue)
-
-### Links for more info
-
--   https://github.com/ember-codemods/ember-qunit-codemod/tree/master/transforms/convert-module-for-to-setup-test

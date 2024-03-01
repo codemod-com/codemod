@@ -49,33 +49,3 @@ controller.fullName;
 controller.get('foo.bar');
 controller['foo-bar'];
 ```
-
-## Applicability Criteria
-
-Ember.js version higher or equal to 3.1.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Multiple Contributors](https://github.com/ember-codemods/es5-getter-ember-codemod/graphs/contributors)
-
-### Links for more info
-
--   https://github.com/ember-codemods/es5-getter-ember-codemod/blob/master/transforms/es5-getter-ember-codemod

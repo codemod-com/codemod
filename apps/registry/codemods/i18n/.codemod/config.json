@@ -5,9 +5,10 @@
 	"description": "This codemod removes unused translation phrases from i18n resources",
 	"engine": "filemod",
 	"owner": "codemod.com",
+	"applicabillity": ["i18n", ">=", "0.0.0"],
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
-		"timeSave": "5m"
+		"timeSave": "3m"
 	}
 }

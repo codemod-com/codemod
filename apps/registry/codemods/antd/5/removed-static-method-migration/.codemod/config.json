@@ -7,7 +7,8 @@
 	"applicability": [["antd", "<", "5.0.0"]],
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"changeType": "assistive",
+		"timeSave": "1m",
+		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration"
 	}
 }

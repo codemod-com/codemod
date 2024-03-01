@@ -2,6 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "jscodeshift",
+	"applicability": [],
 	"arguments": [
 		{
 			"name": "functionName",
@@ -17,7 +18,7 @@
 	],
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
 	}
 }

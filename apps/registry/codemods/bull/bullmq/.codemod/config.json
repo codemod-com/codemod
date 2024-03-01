@@ -3,9 +3,10 @@
 	"private": false,
 	"name": "bull/bullmq",
 	"engine": "jscodeshift",
+	"applicability": [["bull", ">", "0.0.0"]],
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"changeType": "assistive",
+		"timeSave": "10m"
 	}
 }

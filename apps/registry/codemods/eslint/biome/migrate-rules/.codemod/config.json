@@ -2,9 +2,11 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
+	"applicability": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"timeSave": "4h"
+	},
+	"owner": "codemod.com"
 }

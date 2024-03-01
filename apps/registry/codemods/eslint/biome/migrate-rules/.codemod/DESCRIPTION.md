@@ -151,35 +151,3 @@ This codemod requires internet connection.
 	}
 }
 ```
-
-## Applicability Criteria
-
-`eslint` >= 0.0.0 || `prettier` >= 0.0.0
-
-## Other Metadata
-
-Command:
-
-```bash
-npx eslint --print-config <path-to-a-file-that-eslint-checks> | codemod eslint/biome/migrate-rules
-```
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-[filemod](https://github.com/codemod-com/filemod/)
-
-### Estimated Time Saving
-
-4 hours per project with configured eslint and/or prettier
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)

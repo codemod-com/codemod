@@ -105,29 +105,3 @@ const worker = new Worker("unknown-name", async function (job) {
   const event = job.data;
 });
 ```
-
-## Applicability Criteria
-
-`bullmq` >= 1.0.0
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-[jscodeshift](https://github.com/facebook/jscodeshift)
-
-### Estimated Time Saving
-
-~10 minutes per occurence
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
