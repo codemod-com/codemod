@@ -5,10 +5,11 @@
 	"deps": [],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependency": "immutable",
+	"applicability": [["immutable", ">=", "0.0.0"]],
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
 		"timeSave": "5m"
-	}
+	},
+	"owner": "codemod.com"
 }
