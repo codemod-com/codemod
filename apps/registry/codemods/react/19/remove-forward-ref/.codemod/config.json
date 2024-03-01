@@ -10,5 +10,6 @@
 		"type": "migration",
 		"changeType": "autonomous",
 		"timeSave": "5m"
-	}
+	},
+	"applicability": [["react", "<=", "18"]]
 }

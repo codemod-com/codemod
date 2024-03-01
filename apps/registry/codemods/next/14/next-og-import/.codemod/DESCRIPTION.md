@@ -17,33 +17,3 @@ import { ImageResponse } from 'next/server';
 ```jsx
 import { ImageResponse } from 'next/og';
 ```
-
-## Applicability Criteria
-
-Next.js version higher or equal to 14.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Vercel](https://github.com/vercel)
-
-### Links for more info
-
--   [Migrate `ImageResponse` imports](https://nextjs.org/docs/pages/building-your-application/upgrading/codemods#migrate-imageresponse-imports)

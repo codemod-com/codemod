@@ -35,33 +35,3 @@ module.exports = {
 	output: 'export',
 };
 ```
-
-## Applicability Criteria
-
-Next.js version higher or equal to 13.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-Codemod.com File Transformation Engine
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
-
--   https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration

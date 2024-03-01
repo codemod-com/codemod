@@ -43,31 +43,3 @@ export function MyComponent(props: MyComponentProps) {
 	return <span />;
 }
 ```
-
-## Applicability Criteria
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~30 minutes per occurrence
-
-### Owner
-
-[Mark Skelton](https://github.com/mskelton/ratchet)
-
-### Links for more info
-
--   [Ratchet Codemod](https://github.com/mskelton/ratchet)

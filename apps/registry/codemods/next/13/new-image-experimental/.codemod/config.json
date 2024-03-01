@@ -5,13 +5,8 @@
 	"description": "The codemod performs migration from next/legacy/image to the latest next/image by including inline styles and removing unnecessary properties.",
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencies": [
-		{
-			"name": "next",
-			"range": "<13"
-		}
-	],
-	"owner": "codemod.com",
+	"applicability": [["next", "<", "13.0.0"]],
+	"owner": "vercel",
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",

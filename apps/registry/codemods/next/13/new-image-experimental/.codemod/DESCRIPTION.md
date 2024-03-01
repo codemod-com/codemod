@@ -107,33 +107,3 @@ function Page() {
 	return <Image src={img} />;
 }
 ```
-
-## Applicability Criteria
-
-Next.js version higher or equal to 13.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Vercel](https://github.com/vercel)
-
-### Links for more info
-
--   https://nextjs.org/docs/pages/building-your-application/upgrading/codemods#next-image-experimental

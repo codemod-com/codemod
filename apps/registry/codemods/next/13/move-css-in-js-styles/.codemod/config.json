@@ -6,16 +6,11 @@
 	"engine": "jscodeshift",
 	"options": ["createFile"],
 	"extensions": ["js*", "ts*"],
-	"dependencies": [
-		{
-			"name": "next",
-			"range": "<13"
-		}
-	],
+	"applicability": [["next", "<", "13.0.0"]],
 	"owner": "codemod.com",
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
 	}
 }

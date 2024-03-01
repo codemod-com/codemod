@@ -12,5 +12,6 @@
 		"type": "migration",
 		"changeType": "autonomous",
 		"timeSave": "5m"
-	}
+	},
+	"applicability": [["next", "<", "13.0.0"]]
 }

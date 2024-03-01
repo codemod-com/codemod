@@ -5,12 +5,7 @@
 	"description": "The codemod replaces getSearchParams with compatGetSearchParams",
 	"engine": "filemod",
 	"extensions": ["js*", "ts*"],
-	"dependencies": [
-		{
-			"name": "next",
-			"range": "<13"
-		}
-	],
+	"applicability": [["next", "<", "13.0.0"]],
 	"arguments": [
 		{
 			"name": "useCompatSearchParamsHookAbsolutePath",

@@ -52,29 +52,3 @@ You need to pass these arguments using the [Codemod Arguments' settings](https:/
 	"copyKey": "copyKeyEnglish"
 }
 ```
-
-## Applicability Criteria
-
-`next-i18next > 14.x`
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-Filemod
-
-### Estimated Time Saving
-
-~1 minute per each key within each language file
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)

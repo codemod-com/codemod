@@ -2,6 +2,8 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
+	"applicability": [["next-i18next", ">", "14.0.0"]],
+	"owner": "codemod.com",
 	"arguments": [
 		{
 			"name": "oldNamespace",
@@ -25,6 +27,6 @@
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
-		"timeSave": "5m"
+		"timeSave": "1m"
 	}
 }

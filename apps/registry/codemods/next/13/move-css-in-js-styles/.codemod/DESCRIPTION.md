@@ -49,33 +49,3 @@ body {
 	padding: 0;
 }
 ```
-
-## Applicability Criteria
-
-Next.js version higher or equal to 13.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~5 minutes per occurrence.
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
-
--   https://nextjs.org/docs/pages/building-your-application/styling/css-in-js

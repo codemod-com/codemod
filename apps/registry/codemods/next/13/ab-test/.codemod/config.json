@@ -6,7 +6,8 @@
 	"owner": "codemod.com",
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"changeType": "assistive",
+		"timeSave": "2h"
+	},
+	"applicability": [["next", "<", "13.0.0"]]
 }

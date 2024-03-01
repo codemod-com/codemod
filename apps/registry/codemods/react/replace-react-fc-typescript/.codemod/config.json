@@ -5,10 +5,11 @@
 	"description": "Codemod to replace React.FC when using React with Typescript.",
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"owner": "Gonzalo D'Elia",
+	"owner": "gndelia",
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
-	}
+	},
+	"applicability": [["react", ">=", "15.0.0"]]
 }

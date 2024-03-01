@@ -2,7 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"name": "immutable/4/isterable-to-iscollection",
-	"deps": [],
+	"deps": ["vitest@latest"],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
 	"applicability": [["immutable", "<", "4.0.0"]],

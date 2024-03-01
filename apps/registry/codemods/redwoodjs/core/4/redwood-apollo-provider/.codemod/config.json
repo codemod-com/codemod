@@ -2,10 +2,11 @@
 	"version": "1.0.0",
 	"private": false,
 	"name": "redwoodjs/core/4/redwood-apollo-provider",
-	"deps": [],
+	"deps": ["vitest@latest"],
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
 	"applicability": [["@redwoodjs/core", "<", "4.0.0"]],
+	"owner": "rajasegar",
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",

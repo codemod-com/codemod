@@ -5,7 +5,8 @@
 	"description": "Codemod to convert React PropTypes to TypeScript types.",
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"owner": "Mark Skelton",
+	"owner": "mskelton",
+	"applicability": [["react", ">=", "15.0.0"]],
 	"arguments": [
 		{
 			"name": "preserve-prop-types",
@@ -18,6 +19,6 @@
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
-		"timeSave": "5m"
+		"timeSave": "30m"
 	}
 }

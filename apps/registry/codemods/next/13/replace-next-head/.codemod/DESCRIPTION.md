@@ -55,33 +55,3 @@ export default function Page() {
 	return <Meta />;
 }
 ```
-
-## Applicability Criteria
-
-Next.js version higher or equal to 13.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-Codemod.com File Transformation Engine
-
-### Estimated Time Saving
-
-~5 minutes per occurrence
-
-### Owner
-
-[Vercel](https://github.com/vercel)
-
-### Links for more info
-
--   https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#step-3-migrating-nexthead

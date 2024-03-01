@@ -33,29 +33,3 @@ class MyClass {
     }
 }
 ```
-
-## Applicability Criteria
-
-TypeScript version higher or equal to 1.4.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~1 minute per occurrence
-
-### Owner
-
-[Codemod.com](https://codemod.com)

@@ -52,29 +52,3 @@ export const handler = createGraphQLHandler({
 	},
 });
 ```
-
-## Applicability Criteria
-
-RedwoodJS < v4.0.0
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-[jscodeshift](https://github.com/facebook/jscodeshift)
-
-### Estimated Time Saving
-
-~6 minutes per occurrence
-
-### Owner
-
-[Rajasegar Chandran](https://github.com/rajasegar)

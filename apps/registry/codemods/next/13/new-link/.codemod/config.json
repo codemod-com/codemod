@@ -5,12 +5,7 @@
 	"description": "The codemod safely removes <a> from next/link or includes the legacyBehavior property",
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencies": [
-		{
-			"name": "next",
-			"range": "<13"
-		}
-	],
+	"applicability": [["next", "<", "13.0.0"]],
 	"owner": "codemod.com",
 	"meta": {
 		"type": "migration",

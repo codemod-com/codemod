@@ -5,16 +5,11 @@
 	"description": "The codemod marks files that can be deleted with a comment.",
 	"engine": "jscodeshift",
 	"extensions": ["js*", "ts*"],
-	"dependencies": [
-		{
-			"name": "next",
-			"range": "<13"
-		}
-	],
+	"applicability": [["next", "<", "13.0.0"]],
 	"owner": "codemod.com",
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
 	}
 }

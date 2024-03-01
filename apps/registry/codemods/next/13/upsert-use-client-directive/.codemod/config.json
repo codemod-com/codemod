@@ -2,6 +2,8 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "ts-morph",
+	"owner": "codemod.com",
+	"applicability": [["next", "<", "13.0.0"]],
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
