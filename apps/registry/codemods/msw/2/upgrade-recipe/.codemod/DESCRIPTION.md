@@ -36,31 +36,3 @@ const handlers = [
 ```
 
 Also, if you were using req.body in your interceptors, this codemod will blindly assume you want `await request.json()` instead of any other type. You will have to correct that manually.
-
-## Applicability Criteria
-
-MSW version >= 1.0.0
-
-## Other Metadata
-
-TODO: [config changes](https://mswjs.io/docs/migrations/1.x-to-2.x/#frequent-issues)
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### Estimated Time Saving
-
-Depending on the size of the project, this recipe can save up to 6 hours of dedicated work and more.
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
-
--   https://mswjs.io/docs/migrations/1.x-to-2.x/

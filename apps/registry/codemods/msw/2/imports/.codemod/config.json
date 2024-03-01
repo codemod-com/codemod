@@ -6,6 +6,8 @@
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"timeSave": "10m"
+	},
+	"applicability": [["msw", ">=", "1.0.0"]],
+	"owner": "codemod.com"
 }

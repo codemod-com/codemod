@@ -7,5 +7,7 @@
 		"type": "migration",
 		"changeType": "autonomous",
 		"timeSave": "5m"
-	}
+	},
+	"applicability": [["@material-ui/core", ">=", "4.0.0"]],
+	"owner": "mui"
 }

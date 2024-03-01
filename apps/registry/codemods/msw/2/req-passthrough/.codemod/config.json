@@ -5,7 +5,9 @@
 	"engine": "ts-morph",
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
+		"changeType": "assistive",
 		"timeSave": "5m"
-	}
+	},
+	"applicability": [["msw", ">=", "1.0.0"]],
+	"owner": "codemod.com"
 }

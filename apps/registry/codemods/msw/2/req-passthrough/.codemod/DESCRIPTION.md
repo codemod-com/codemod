@@ -23,33 +23,3 @@ rest.get('/resource', (req, res, ctx) => {
 	return passthrough();
 });
 ```
-
-## Applicability Criteria
-
-MSW version >= 1.0.0
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-[ts-morph](https://github.com/dsherret/ts-morph)
-
-### Estimated Time Saving
-
-5 minutes per occurence
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
-
--   https://mswjs.io/docs/migrations/1.x-to-2.x/#reqpassthrough
