@@ -1,19 +1,17 @@
-FROM node:19-alpine3.16
-
-WORKDIR /app/
-
+FROM node:19-alpine3.16 as builder
+WORKDIR /app
+COPY . .
 RUN npm install -g pnpm
-
-COPY ./apps/studio-backend/package.json ./apps/studio-backend/pnpm-lock.yaml /app/apps/studio-backend/
-COPY ./pnpm-workspace.yaml /app/
-COPY ./packages /app/packages/
 RUN pnpm install
+RUN pnpm -r --filter=studio-backend run build
+RUN pnpm -r --filter=studio-backend run db:generate
 
-COPY ./apps/studio-backend/prisma /app/apps/studio-backend/prisma/
-COPY ./apps/studio-backend/tsconfig.json /app/apps/studio-backend/
-COPY ./apps/studio-backend/src /app/apps/studio-backend/src/
+FROM node:19-alpine3.16
+WORKDIR /app
 
-WORKDIR /app/apps/studio-backend
-RUN pnpm build:ncc
+COPY --from=builder /app/apps/studio-backend/build/server.js .
+COPY --from=builder /app/apps/studio-backend/node_modules/@prisma/client ./node_modules/@prisma/client
+COPY --from=builder /app/apps/studio-backend/prisma/schema.prisma ./prisma/
+
 EXPOSE 8081
-CMD node ./build-ncc/index.js
+CMD ["node", "./server.js"]
