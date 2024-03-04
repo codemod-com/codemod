@@ -2,6 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
+	"name": "remove-unused-feature-flags-2",
 	"applicability": [],
 	"owner": "codemod.com",
 	"arguments": [

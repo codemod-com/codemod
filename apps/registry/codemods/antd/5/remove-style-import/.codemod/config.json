@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "antd/remove-style-import",
 	"private": false,
 	"engine": "jscodeshift",
 	"arguments": [],

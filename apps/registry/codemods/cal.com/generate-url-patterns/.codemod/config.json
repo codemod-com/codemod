@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "@calcom/generate-url-patterns",
 	"private": false,
 	"engine": "filemod",
 	"arguments": [

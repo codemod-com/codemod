@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "next-i18next/copy-keys",
 	"private": false,
 	"engine": "filemod",
 	"applicability": [["next-i18next", ">", "14.0.0"]],

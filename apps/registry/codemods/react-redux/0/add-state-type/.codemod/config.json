@@ -11,6 +11,6 @@
 		"changeType": "autonomous",
 		"timeSave": "5m"
 	},
-	"applicability": ["react-redux", ">=", "0.0.0"],
+	"applicability": [["react-redux", ">=", "0.0.0"]],
 	"owner": "codemod.com"
 }

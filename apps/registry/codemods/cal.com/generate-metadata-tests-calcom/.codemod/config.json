@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "@calcom/generate-metadata-tests",
 	"private": false,
 	"engine": "filemod",
 	"applicability": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]],

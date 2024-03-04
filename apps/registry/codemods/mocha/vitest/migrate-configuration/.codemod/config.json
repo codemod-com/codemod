@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "mocha/vitest/migrate-config",
 	"private": false,
 	"engine": "filemod",
 	"meta": {

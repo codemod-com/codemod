@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "biome/migrate-rules",
 	"private": false,
 	"engine": "filemod",
 	"applicability": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],

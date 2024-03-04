@@ -2,7 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
-	"names": ["mocha/vitest/migrate-configuration", "mocha/vitest/migrate-tests"],
+	"names": ["mocha/vitest/migrate-config", "mocha/vitest/migrate-test"],
 	"meta": {
 		"type": "migration",
 		"changeType": "autonomous",

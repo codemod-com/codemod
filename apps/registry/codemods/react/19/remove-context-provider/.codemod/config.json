@@ -1,5 +1,6 @@
 {
 	"version": "1.0.0",
+	"name": "react/19/remove-context-provider",
 	"private": false,
 	"engine": "jscodeshift",
 	"owner": "codemod.com",

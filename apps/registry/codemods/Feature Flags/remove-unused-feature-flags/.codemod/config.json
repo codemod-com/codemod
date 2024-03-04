@@ -1,6 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
+	"name": "remove-unused-feature-flags",
 	"engine": "jscodeshift",
 	"applicability": [],
 	"arguments": [
