@@ -3,11 +3,11 @@ import {
 	literal,
 	nullish,
 	object,
+	optional,
 	parse,
 	string,
 	union,
 	unknown,
-	optional,
 } from "valibot";
 import { consoleKindSchema } from "./schemata/consoleKindSchema.js";
 

@@ -1,12 +1,12 @@
 import {
 	type Output,
+	array,
 	boolean,
 	literal,
 	object,
 	parse,
 	string,
 	union,
-	array,
 } from "valibot";
 import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 

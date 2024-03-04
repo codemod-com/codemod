@@ -110,6 +110,6 @@
 		]
 	},
 	"organizeImports": {
-		"ignore": ["node_modules", "dist", "build", ".next", ".vscode"]
+		"ignore": ["node_modules", "dist", "build", ".next", ".vscode", "build-ncc"]
 	}
 }
