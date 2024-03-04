@@ -57,9 +57,7 @@ export const buildPaths = async (
 			dot: true,
 		});
 
-		return filemodPaths
-			.filter((path) => flowPaths.includes(path))
-			.slice(0, flowSettings.limit);
+		return filemodPaths.filter((path) => flowPaths.includes(path));
 	}
 
 	const paths = await glob(patterns.slice(), {
@@ -71,7 +69,7 @@ export const buildPaths = async (
 		dot: true,
 	});
 
-	return paths.slice(0, flowSettings.limit);
+	return paths;
 };
 
 async function* buildPathGenerator(
@@ -93,16 +91,8 @@ async function* buildPathGenerator(
 		dot: true,
 	});
 
-	let fileCount = 0;
-
 	for await (const chunk of stream) {
-		if (fileCount >= flowSettings.limit) {
-			break;
-		}
-
 		yield chunk.toString();
-
-		++fileCount;
 	}
 
 	stream.emit("close");

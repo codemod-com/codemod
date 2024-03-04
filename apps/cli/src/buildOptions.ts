@@ -68,12 +68,6 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 					description:
 						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
 				})
-				.option("limit", {
-					alias: "f",
-					type: "number",
-					description: "File limit for processing",
-					default: 1000,
-				})
 				.option("raw", {
 					alias: "r",
 					type: "boolean",

@@ -98,7 +98,6 @@ describe("Runner", () => {
 			exclude: [],
 			target: "/code",
 			files: ["/code/a.ts", "/code/b.ts", "/code/c.ts"],
-			limit: 3,
 			raw: true,
 			"no-cache": false,
 			noCache: false,
