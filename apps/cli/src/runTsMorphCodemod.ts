@@ -1,6 +1,6 @@
 import vm from "node:vm";
-import * as S from "@effect/schema/Schema";
 import tsmorph from "ts-morph";
+import { nullish, parse, string } from "valibot";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
@@ -69,7 +69,7 @@ const transform = (
 
 	const value = vm.runInContext(codeToExecute, context, { timeout: 30000 });
 
-	return S.parseSync(S.union(S.string, S.undefined, S.null))(value);
+	return parse(nullish(string()), value);
 };
 
 export const runTsMorphCodemod = (

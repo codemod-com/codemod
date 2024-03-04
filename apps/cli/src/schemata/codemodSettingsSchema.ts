@@ -1,19 +1,26 @@
-import * as S from "@effect/schema/Schema";
+import {
+	type Output,
+	array,
+	literal,
+	object,
+	optional,
+	parse,
+	string,
+	union,
+} from "valibot";
 
-const codemodEngineSchema = S.union(
-	S.literal("jscodeshift"),
-	S.literal("repomod-engine"),
-	S.literal("filemod"),
-	S.literal("ts-morph"),
-);
+const codemodEngineSchema = union([
+	literal("jscodeshift"),
+	literal("repomod-engine"),
+	literal("filemod"),
+	literal("ts-morph"),
+]);
 
-export const codemodSettingsSchema = S.union(
-	S.struct({
-		_: S.array(S.string),
-		source: S.optional(S.string),
-		codemodEngine: S.optional(codemodEngineSchema),
-	}),
-);
+export const codemodSettingsSchema = object({
+	_: array(string()),
+	source: optional(string()),
+	codemodEngine: optional(codemodEngineSchema),
+});
 
 export type CodemodSettings =
 	| Readonly<{
@@ -26,11 +33,11 @@ export type CodemodSettings =
 	| Readonly<{
 			kind: "runSourced";
 			source: string;
-			codemodEngine: S.To<typeof codemodEngineSchema> | null;
+			codemodEngine: Output<typeof codemodEngineSchema> | null;
 	  }>;
 
 export const parseCodemodSettings = (input: unknown): CodemodSettings => {
-	const codemodSettings = S.parseSync(codemodSettingsSchema)(input);
+	const codemodSettings = parse(codemodSettingsSchema, input);
 
 	if (codemodSettings._.includes("runOnPreCommit")) {
 		return {

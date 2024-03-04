@@ -1,23 +1,34 @@
-import * as S from "@effect/schema/Schema";
+import {
+	type Output,
+	literal,
+	nullish,
+	object,
+	optional,
+	parse,
+	string,
+	union,
+	unknown,
+} from "valibot";
 import { consoleKindSchema } from "./schemata/consoleKindSchema.js";
 
-const workerThreadMessageSchema = S.union(
-	S.struct({
-		kind: S.literal("commands"),
-		commands: S.unknown,
+const workerThreadMessageSchema = union([
+	object({
+		kind: literal("commands"),
+		commands: unknown(),
 	}),
-	S.struct({
-		kind: S.literal("error"),
-		message: S.string,
-		path: S.union(S.string, S.undefined),
+	object({
+		kind: literal("error"),
+		message: string(),
+		path: optional(string()),
 	}),
-	S.struct({
-		kind: S.literal("console"),
+	object({
+		kind: literal("console"),
 		consoleKind: consoleKindSchema,
-		message: S.string,
+		message: string(),
 	}),
-);
+]);
 
-export type WorkerThreadMessage = S.To<typeof workerThreadMessageSchema>;
+export type WorkerThreadMessage = Output<typeof workerThreadMessageSchema>;
 
-export const decodeWorkerThreadMessage = S.parseSync(workerThreadMessageSchema);
+export const decodeWorkerThreadMessage = (input: unknown) =>
+	parse(workerThreadMessageSchema, input);

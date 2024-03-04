@@ -1,14 +1,14 @@
-import * as S from "@effect/schema/Schema";
+import { type Output, literal, union } from "valibot";
 import { Arguments } from "./schemata/argumentsSchema.js";
 
-export const javaScriptCodemodEngineSchema = S.union(
-	S.literal("jscodeshift"),
-	S.literal("repomod-engine"),
-	S.literal("filemod"),
-	S.literal("ts-morph"),
-);
+export const javaScriptCodemodEngineSchema = union([
+	literal("jscodeshift"),
+	literal("repomod-engine"),
+	literal("filemod"),
+	literal("ts-morph"),
+]);
 
-export type JavaScriptCodemodEngine = S.To<
+export type JavaScriptCodemodEngine = Output<
 	typeof javaScriptCodemodEngineSchema
 >;
 

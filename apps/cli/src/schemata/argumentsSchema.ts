@@ -1,23 +1,33 @@
-import * as S from "@effect/schema/Schema";
+import {
+	type Output,
+	array,
+	boolean,
+	literal,
+	number,
+	object,
+	optional,
+	string,
+	union,
+} from "valibot";
 
-export const argumentsSchema = S.array(
-	S.union(
-		S.struct({
-			name: S.string,
-			kind: S.literal("string"),
-			default: S.optional(S.string),
+export const argumentsSchema = array(
+	union([
+		object({
+			name: string(),
+			kind: literal("string"),
+			default: optional(string()),
 		}),
-		S.struct({
-			name: S.string,
-			kind: S.literal("number"),
-			default: S.optional(S.number),
+		object({
+			name: string(),
+			kind: literal("number"),
+			default: optional(number()),
 		}),
-		S.struct({
-			name: S.string,
-			kind: S.literal("boolean"),
-			default: S.optional(S.boolean),
+		object({
+			name: string(),
+			kind: literal("boolean"),
+			default: optional(boolean()),
 		}),
-	),
+	]),
 );
 
-export type Arguments = S.To<typeof argumentsSchema>;
+export type Arguments = Output<typeof argumentsSchema>;

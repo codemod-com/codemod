@@ -1,9 +1,15 @@
-import * as S from "@effect/schema/Schema";
+import {
+	type Output,
+	array,
+	literal,
+	object,
+	optional,
+	string,
+	union,
+} from "valibot";
 import { argumentsSchema } from "./argumentsSchema.js";
 
-const optionalArgumentsSchema = S.optional(argumentsSchema).withDefault(
-	() => [],
-);
+const optionalArgumentsSchema = optional(argumentsSchema, []);
 
 const PIRANHA_LANGUAGES = [
 	"java",
@@ -16,43 +22,43 @@ const PIRANHA_LANGUAGES = [
 	"scala",
 ] as const;
 
-const piranhaLanguageSchema = S.union(
-	...PIRANHA_LANGUAGES.map((language) => S.literal(language)),
+const piranhaLanguageSchema = union(
+	PIRANHA_LANGUAGES.map((language) => literal(language)),
 );
 
-export const codemodConfigSchema = S.union(
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.literal("piranha"),
+export const codemodConfigSchema = union([
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: literal("piranha"),
 		language: piranhaLanguageSchema,
 		arguments: optionalArgumentsSchema,
 	}),
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.literal("jscodeshift"),
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: literal("jscodeshift"),
 		arguments: optionalArgumentsSchema,
 	}),
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.literal("ts-morph"),
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: literal("ts-morph"),
 		arguments: optionalArgumentsSchema,
 	}),
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.union(S.literal("repomod-engine"), S.literal("filemod")),
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: union([literal("repomod-engine"), literal("filemod")]),
 		arguments: optionalArgumentsSchema,
 	}),
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.literal("recipe"),
-		names: S.array(S.string),
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: literal("recipe"),
+		names: array(string()),
 		arguments: optionalArgumentsSchema,
 	}),
-	S.struct({
-		schemaVersion: S.literal("1.0.0"),
-		engine: S.literal("ast-grep"),
+	object({
+		schemaVersion: literal("1.0.0"),
+		engine: literal("ast-grep"),
 		arguments: optionalArgumentsSchema,
 	}),
-);
+]);
 
-export type CodemodConfig = S.To<typeof codemodConfigSchema>;
+export type CodemodConfig = Output<typeof codemodConfigSchema>;

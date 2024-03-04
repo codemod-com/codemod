@@ -1,28 +1,35 @@
-import * as S from "@effect/schema/Schema";
 import { cosmiconfig } from "cosmiconfig";
+import {
+	type Output,
+	array,
+	literal,
+	object,
+	optional,
+	parse,
+	string,
+	union,
+} from "valibot";
 import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
-const preCommitCodemodSchema = S.union(
-	S.struct({
-		source: S.literal("fileSystem"),
-		path: S.string,
-		arguments: S.optional(argumentRecordSchema).withDefault(() => ({})),
+const preCommitCodemodSchema = union([
+	object({
+		source: literal("fileSystem"),
+		path: string(),
+		arguments: optional(argumentRecordSchema, {}),
 	}),
-	S.struct({
-		source: S.literal("registry"),
-		name: S.string,
-		arguments: S.optional(argumentRecordSchema).withDefault(() => ({})),
+	object({
+		source: literal("registry"),
+		name: string(),
+		arguments: optional(argumentRecordSchema, {}),
 	}),
-);
+]);
 
-const repositoryConfigurationSchema = S.struct({
-	schemaVersion: S.optional(S.literal("1.0.0")).withDefault(() => "1.0.0"),
-	preCommitCodemods: S.optional(S.array(preCommitCodemodSchema)).withDefault(
-		() => [],
-	),
+const repositoryConfigurationSchema = object({
+	schemaVersion: optional(literal("1.0.0"), "1.0.0"),
+	preCommitCodemods: optional(array(preCommitCodemodSchema), []),
 });
 
-export type RepositoryConfiguration = S.To<
+export type RepositoryConfiguration = Output<
 	typeof repositoryConfigurationSchema
 >;
 
@@ -30,7 +37,7 @@ export const parseRepositoryConfiguration = (
 	i: unknown,
 ): RepositoryConfiguration => {
 	try {
-		return S.parseSync(repositoryConfigurationSchema)(i);
+		return parse(repositoryConfigurationSchema, i);
 	} catch (error) {
 		return {
 			schemaVersion: "1.0.0",

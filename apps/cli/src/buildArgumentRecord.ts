@@ -1,4 +1,4 @@
-import * as S from "@effect/schema/Schema";
+import { is, number, string } from "valibot";
 import { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
 
 export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
@@ -14,12 +14,12 @@ export const buildArgumentRecord = <T extends { [s: string]: unknown }>(
 			const key = arg.slice(4);
 			const value = argv[arg];
 
-			if (S.is(S.number)(value)) {
+			if (is(number(), value)) {
 				argumentRecord[key] = value;
 				return;
 			}
 
-			if (!S.is(S.string)(value)) {
+			if (!is(string(), value)) {
 				return;
 			}
 

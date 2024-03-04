@@ -1,16 +1,16 @@
 import { randomBytes } from "node:crypto";
 import { join } from "node:path";
-import * as S from "@effect/schema/Schema";
+import { literal, object, optional, parse, string, union } from "valibot";
 
-const runArgvSettingsSchema = S.union(
-	S.struct({
-		dry: S.optional(S.literal(false)).withDefault(() => false),
+const runArgvSettingsSchema = union([
+	object({
+		dry: optional(literal(false), false),
 	}),
-	S.struct({
-		dry: S.literal(true),
-		output: S.optional(S.string),
+	object({
+		dry: literal(true),
+		output: optional(string()),
 	}),
-);
+]);
 
 export type RunSettings =
 	| Readonly<{
@@ -30,7 +30,7 @@ export const parseRunSettings = (
 ): RunSettings => {
 	const caseHashDigest = randomBytes(20);
 
-	const flowSettings = S.parseSync(runArgvSettingsSchema)(input);
+	const flowSettings = parse(runArgvSettingsSchema, input);
 
 	if (flowSettings.dry === false) {
 		return {

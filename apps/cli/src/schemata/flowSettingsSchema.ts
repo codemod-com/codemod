@@ -1,4 +1,15 @@
-import * as S from "@effect/schema/Schema";
+import {
+	type Output,
+	array,
+	boolean,
+	integer,
+	minValue,
+	number,
+	object,
+	optional,
+	parse,
+	string,
+} from "valibot";
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_EXCLUDE_PATTERNS,
@@ -10,31 +21,25 @@ import {
 	DEFAULT_USE_JSON,
 } from "../constants.js";
 
-export const flowSettingsSchema = S.struct({
-	include: S.optional(S.array(S.string)).withDefault(
-		() => DEFAULT_INCLUDE_PATTERNS,
-	),
-	exclude: S.optional(S.array(S.string)).withDefault(
-		() => DEFAULT_EXCLUDE_PATTERNS,
-	),
-	target: S.optional(S.string),
-	files: S.optional(S.array(S.string)),
-	limit: S.optional(S.number.pipe(S.int()).pipe(S.positive())).withDefault(
-		() => DEFAULT_FILE_LIMIT,
-	),
-	raw: S.optional(S.boolean).withDefault(() => DEFAULT_DISABLE_PRETTIER),
-	"no-cache": S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
-	noCache: S.optional(S.boolean).withDefault(() => DEFAULT_NO_CACHE),
-	json: S.optional(S.boolean).withDefault(() => DEFAULT_USE_JSON),
-	threads: S.optional(S.number).withDefault(() => DEFAULT_THREAD_COUNT),
+export const flowSettingsSchema = object({
+	include: optional(array(string()), DEFAULT_INCLUDE_PATTERNS),
+	exclude: optional(array(string()), DEFAULT_EXCLUDE_PATTERNS),
+	target: optional(string()),
+	files: optional(array(string())),
+	limit: optional(number([minValue(0), integer()]), DEFAULT_FILE_LIMIT),
+	raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
+	"no-cache": optional(boolean(), DEFAULT_NO_CACHE),
+	noCache: optional(boolean(), DEFAULT_NO_CACHE),
+	json: optional(boolean(), DEFAULT_USE_JSON),
+	threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Omit<S.To<typeof flowSettingsSchema>, "target"> & {
+export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
 	target: string;
 };
 
 export const parseFlowSettings = (input: unknown): FlowSettings => {
-	const flowSettings = S.parseSync(flowSettingsSchema)(input);
+	const flowSettings = parse(flowSettingsSchema, input);
 
 	return {
 		...flowSettings,
