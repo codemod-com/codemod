@@ -33,8 +33,6 @@ export type RepositoryConfiguration = Output<
 	typeof repositoryConfigurationSchema
 >;
 
-type lol = RepositoryConfiguration["preCommitCodemods"];
-
 export const parseRepositoryConfiguration = (
 	i: unknown,
 ): RepositoryConfiguration => {
