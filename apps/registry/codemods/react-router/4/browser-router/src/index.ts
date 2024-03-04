@@ -12,11 +12,11 @@ function transform(file: FileInfo, api: API): string | undefined {
 		.forEach((path) => {
 			const attrs = path.value.openingElement.attributes;
 
-			const hasHistoryAttr =
+			const historyAttr =
 				attrs?.filter((a) => ("name" in a ? a.name.name === "history" : false))
 					.length ?? false;
 
-			if (attrs && hasHistoryAttr) {
+			if (attrs && historyAttr) {
 				if ("name" in path.value.openingElement.name) {
 					path.value.openingElement.name.name = "BrowserRouter";
 				}
