@@ -2,4 +2,4 @@
 
 ## Description
 
-Replace `IndexRoute` with `Route` having `exact` prop set to `true`
+Replace `IndexRoute` with `Route` having `exact` prop set to `true`.
