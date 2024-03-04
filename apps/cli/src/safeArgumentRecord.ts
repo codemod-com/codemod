@@ -2,7 +2,7 @@ import { Codemod } from "./codemod.js";
 import { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
 import { Arguments } from "./schemata/argumentsSchema.js";
 
-export type SafeArgumentRecord = readonly [ArgumentRecord];
+export type SafeArgumentRecord = ArgumentRecord[];
 
 export const buildSafeArgumentRecord = (
 	codemod: Codemod,

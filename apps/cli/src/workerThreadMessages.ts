@@ -7,6 +7,7 @@ import {
 	string,
 	union,
 	unknown,
+	optional,
 } from "valibot";
 import { consoleKindSchema } from "./schemata/consoleKindSchema.js";
 
@@ -18,7 +19,7 @@ const workerThreadMessageSchema = union([
 	object({
 		kind: literal("error"),
 		message: string(),
-		path: nullish(string()),
+		path: optional(string()),
 	}),
 	object({
 		kind: literal("console"),

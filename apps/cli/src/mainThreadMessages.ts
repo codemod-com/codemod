@@ -6,6 +6,7 @@ import {
 	parse,
 	string,
 	union,
+	array,
 } from "valibot";
 import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
@@ -16,7 +17,7 @@ const mainThreadMessageSchema = union([
 		codemodSource: string(),
 		codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
 		disablePrettier: boolean(),
-		safeArgumentRecord: argumentRecordSchema,
+		safeArgumentRecord: array(argumentRecordSchema),
 	}),
 	object({
 		kind: literal("exit"),
