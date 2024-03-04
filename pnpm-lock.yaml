@@ -4272,43 +4272,6 @@ importers:
         specifier: ^5.2.2
         version: 5.3.3
 
-  apps/registry/readme-parser:
-    dependencies:
-      js-yaml:
-        specifier: 4.1.0
-        version: 4.1.0
-      mdast-util-from-markdown:
-        specifier: 2.0.0
-        version: 2.0.0
-      simple-git:
-        specifier: ^3.21.0
-        version: 3.22.0
-      valibot:
-        specifier: ^0.24.1
-        version: 0.24.1
-    devDependencies:
-      '@types/js-yaml':
-        specifier: 4.0.9
-        version: 4.0.9
-      '@types/mdast':
-        specifier: 4.0.3
-        version: 4.0.3
-      '@types/node':
-        specifier: 20.10.4
-        version: 20.10.4
-      esbuild:
-        specifier: ^0.19.7
-        version: 0.19.12
-      tsx:
-        specifier: ^4.7.0
-        version: 4.7.0
-      typescript:
-        specifier: 5.3.3
-        version: 5.3.3
-      vitest:
-        specifier: 1.0.4
-        version: 1.0.4(@types/node@20.10.4)
-
   apps/studio:
     dependencies:
       '@babel/parser':
@@ -9224,18 +9187,6 @@ packages:
     resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
     dev: true
 
-  /@kwsites/file-exists@1.1.1:
-    resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
-    dependencies:
-      debug: 4.3.4(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
-
-  /@kwsites/promise-deferred@1.1.1:
-    resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
-    dev: false
-
   /@langchain/community@0.0.29(@aws-sdk/credential-provider-node@3.515.0)(chromadb@1.7.2)(pg@8.11.3)(replicate@0.25.2):
     resolution: {integrity: sha512-7KCr6JjmWfX26eNGYoDcsSx2PqFcrCt7g3Zy3YwFrjaCIob9ivsx59IXiOd4TgvKJmTiP3RjMTz55cDj7Es63g==}
     engines: {node: '>=18'}
@@ -13152,7 +13103,7 @@ packages:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.0.4(@types/node@18.11.9)
+      vitest: 1.0.4(@types/node@20.10.4)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -24908,16 +24859,6 @@ packages:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
-
-  /simple-git@3.22.0:
-    resolution: {integrity: sha512-6JujwSs0ac82jkGjMHiCnTifvf1crOiY/+tfs/Pqih6iow7VrpNKRRNdWm6RtaXpvvv/JGNYhlUtLhGFqHF+Yw==}
-    dependencies:
-      '@kwsites/file-exists': 1.1.1
-      '@kwsites/promise-deferred': 1.1.1
-      debug: 4.3.4(supports-color@5.5.0)
-    transitivePeerDependencies:
-      - supports-color
-    dev: false
 
   /simple-html-tokenizer@0.5.11:
     resolution: {integrity: sha512-C2WEK/Z3HoSFbYq8tI7ni3eOo/NneSPRoPpcM7WdLjFOArFuyXEjAoCdOC3DgMfRyziZQ1hCNR4mrNdWEvD0og==}

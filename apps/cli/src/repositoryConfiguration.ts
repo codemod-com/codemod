@@ -25,7 +25,6 @@ const preCommitCodemodSchema = union([
 ]);
 
 const repositoryConfigurationSchema = object({
-	schemaVersion: optional(literal("1.0.0"), "1.0.0"),
 	preCommitCodemods: optional(array(preCommitCodemodSchema), []),
 });
 
@@ -40,7 +39,6 @@ export const parseRepositoryConfiguration = (
 		return parse(repositoryConfigurationSchema, i);
 	} catch (error) {
 		return {
-			schemaVersion: "1.0.0",
 			preCommitCodemods: [],
 		};
 	}

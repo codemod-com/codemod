@@ -8,17 +8,12 @@ import { object, optional, parse, string } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
+import { codemodConfigSchema } from "./schemata/codemodConfigSchema.js";
 
 const packageJsonSchema = object({
 	main: string(),
 	name: string(),
 	license: optional(string()),
-});
-
-const configJsonSchema = object({
-	schemaVersion: string(),
-	name: string(),
-	engine: string(),
 });
 
 const getToken = (): Promise<string> => {
@@ -88,9 +83,9 @@ export const handlePublishCliCommand = async (
 			encoding: "utf-8",
 		},
 	);
-	const configJson = parse(configJsonSchema, JSON.parse(configJsonData));
+	const configJson = parse(codemodConfigSchema, JSON.parse(configJsonData));
 
-	if (configJson.name !== pkg.name) {
+	if (!("name" in configJson) || configJson.name !== pkg.name) {
 		throw new Error(
 			`The "name" field in package.json must match with that in .codemodrc.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
 		);
