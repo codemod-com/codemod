@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "ember/5/fpe-computed",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"applicability": [["ember", ">=", "3.11.0"], ["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m",
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/fpe-computed"
+	},
+	"owner": "rajasegar"
+}

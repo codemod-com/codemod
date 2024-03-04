@@ -1,0 +1,33 @@
+{
+	"version": "1.0.0",
+	"name": "next-i18next/copy-keys",
+	"private": false,
+	"engine": "filemod",
+	"applicability": [["next-i18next", ">", "14.0.0"]],
+	"owner": "codemod.com",
+	"arguments": [
+		{
+			"name": "oldNamespace",
+			"kind": "string",
+			"required": true,
+			"default": "common"
+		},
+		{
+			"name": "newNamespace",
+			"kind": "string",
+			"default": "new",
+			"required": true
+		},
+		{
+			"name": "keys",
+			"kind": "string",
+			"default": "",
+			"required": true
+		}
+	],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "1m"
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "typescript/remove-public-modifier",
+	"description": "This codemod removes public modifier in interface declarations as it is implicit.",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	},
+	"applicability": [["typescript", ">=", "1.4.0"]]
+}

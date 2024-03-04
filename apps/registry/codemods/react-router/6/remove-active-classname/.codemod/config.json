@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "react-router/6/remove-active-classname",
+	"deps": ["vitest@latest"],
+	"owner": "codemod.com",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"applicability": [["react-router", "<", "6.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

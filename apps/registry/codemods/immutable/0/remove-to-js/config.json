@@ -1,8 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "immutable/0/remove-to-js",
-	"description": "",
-	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"dependency": "immutable"
-}

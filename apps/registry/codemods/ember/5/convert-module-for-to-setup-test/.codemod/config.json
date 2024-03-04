@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "ember/5/convert-module-for-to-setup-test",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"applicability": [["ember", ">=", "2.4.0"], ["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m",
+		"git": "https://github.com/ember-codemods/ember-qunit-codemod/tree/master/transforms/convert-module-for-to-setup-test"
+	},
+	"owner": "rajasegar"
+}

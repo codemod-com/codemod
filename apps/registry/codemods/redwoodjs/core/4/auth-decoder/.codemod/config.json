@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "redwoodjs/core/4/auth-decoder",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"applicability": [["@redwoodjs/core", "<", "4.0.0"]],
+	"owner": "rajasegar",
+	"meta": {
+		"type": "migration",
+		"changeType": "assistive",
+		"timeSave": "5m"
+	}
+}

@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "ember/5/app-controller-router-props",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"applicability": [["ember", ">=", "3.10.0"], ["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m",
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/blob/master/transforms/app-controller-router-props"
+	},
+	"owner": "rajasegar"
+}

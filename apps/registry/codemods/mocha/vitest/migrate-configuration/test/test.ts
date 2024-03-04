@@ -42,7 +42,7 @@ describe("mocha config-files", () => {
         "config-key": "config-value"
       },
       "files": [
-        "README.md",
+        "DESCRIPTION.md",
         "config.json",
         "./dist/index.cjs",
         "./index.d.ts"
@@ -146,7 +146,7 @@ describe("mocha config-files", () => {
                   "coverage": "vitest run --coverage"
                 },
                 "files": [
-                  "README.md",
+                  "DESCRIPTION.md",
                   "config.json",
                   "./dist/index.cjs",
                   "./index.d.ts"

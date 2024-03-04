@@ -1,8 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "react-router/4/rename-imports",
-	"description": "",
-	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"dependencyVersionLowerThan": ["react-router", "4.0.0"]
-}

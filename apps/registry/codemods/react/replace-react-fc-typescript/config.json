@@ -1,8 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "react/replace-react-fc-typescript",
-	"description": "Codemod to replace React.FC when using React with Typescript.",
-	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"owner": "Gonzalo D'Elia"
-}

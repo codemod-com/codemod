@@ -1,5 +1,0 @@
-{
-	"schemaVersion": "1.0.0",
-	"name": "mocha/vitest/migrate",
-	"engine": "jscodeshift"
-}

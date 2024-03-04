@@ -1,0 +1,33 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"engine": "filemod",
+	"name": "remove-unused-feature-flags-2",
+	"applicability": [],
+	"owner": "codemod.com",
+	"arguments": [
+		{
+			"name": "fileMarker",
+			"kind": "string",
+			"required": true,
+			"default": ""
+		},
+		{
+			"name": "functionName",
+			"kind": "string",
+			"default": "",
+			"required": true
+		},
+		{
+			"name": "featureFlagName",
+			"kind": "string",
+			"default": "",
+			"required": true
+		}
+	],
+	"meta": {
+		"type": "cleanup",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}

@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "netlify/0.8.5/createEnvironmentVariable",
+	"engine": "jscodeshift",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "1m"
+	},
+	"applicability": [["@netlify/sdk", ">=", "0.8.5"]],
+	"owner": "codemod.com"
+}

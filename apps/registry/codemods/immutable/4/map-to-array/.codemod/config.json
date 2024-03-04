@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "immutable/4/map-to-array",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"applicability": [["immutable", "<", "4.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	},
+	"owner": "codemod.com"
+}

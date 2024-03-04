@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "ember/5/ember-jquery-legacy",
+	"deps": ["vitest@latest"],
+	"engine": "jscodeshift",
+	"applicability": [["ember", ">=", "3.3.0"], ["ember", "<", "5.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m",
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/ember-jquery-legacy"
+	},
+	"owner": "rajasegar"
+}

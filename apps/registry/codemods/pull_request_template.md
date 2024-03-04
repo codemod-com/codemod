@@ -14,7 +14,7 @@ For your codemod pull request to be compatible with the Codemod.com platform, it
 ├── index.d.ts
 ├── package.json
 ├── tsconfig.json
-└── README.md # must follow the structure described below
+└── DESCRIPTION.md # must follow the structure described below
 ```
 
 ---

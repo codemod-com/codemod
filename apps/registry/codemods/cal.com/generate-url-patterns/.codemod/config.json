@@ -1,0 +1,34 @@
+{
+	"version": "1.0.0",
+	"name": "@calcom/generate-url-patterns",
+	"private": false,
+	"engine": "filemod",
+	"arguments": [
+		{
+			"name": "turboPath",
+			"kind": "string",
+			"required": true
+		},
+		{
+			"name": "middlewarePath",
+			"kind": "string",
+			"required": true
+		},
+		{
+			"name": "abTestMiddlewarePath",
+			"kind": "string",
+			"required": true
+		},
+		{
+			"name": "generateAsPageGroup",
+			"kind": "boolean",
+			"required": false
+		}
+	],
+	"applicability": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "assistive",
+		"timeSave": "5m"
+	}
+}

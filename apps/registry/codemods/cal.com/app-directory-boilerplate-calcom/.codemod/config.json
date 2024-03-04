@@ -1,0 +1,14 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "cal.com/app-directory-boilerplate-calcom",
+	"description": "This codemod provides boilerplate for the app directory.",
+	"engine": "filemod",
+	"applicability": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]],
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "assistive",
+		"timeSave": "3m"
+	}
+}

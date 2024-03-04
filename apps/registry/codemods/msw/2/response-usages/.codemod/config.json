@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "msw/2/response-usages",
+	"engine": "ts-morph",
+	"meta": {
+		"type": "migration",
+		"changeType": "assistive",
+		"timeSave": "10m"
+	},
+	"applicability": [["msw", ">=", "1.0.0"]],
+	"owner": "codemod.com"
+}

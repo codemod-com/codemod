@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "react/19/remove-forward-ref",
+	"description": "Codemod to remove React.forwardRef function that will be deprecated in next major React release",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	},
+	"applicability": [["react", "<=", "18"]]
+}

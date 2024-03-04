@@ -1,0 +1,13 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"engine": "filemod",
+	"arguments": [],
+	"owner": "codemod.com",
+	"meta": {
+		"type": "migration",
+		"changeType": "assistive",
+		"timeSave": "2h"
+	},
+	"applicability": [["next", "<", "13.0.0"]]
+}

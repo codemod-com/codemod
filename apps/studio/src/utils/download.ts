@@ -18,7 +18,7 @@ interface ProjectDownloadInput {
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
 	js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const readme = ({
+const description = ({
 	name,
 	before,
 	after,
@@ -230,7 +230,7 @@ const packageJson = ({
         },
         "license": "MIT",
         "files": [
-          "README.md",
+          "DESCRIPTION.md",
           "config.json",
           "./dist/index.cjs",
           "./index.d.ts"
@@ -482,7 +482,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 		`/*! @license\n${licenseContent}\n*/\n${compiled}`,
 	);
 
-	zip.file("README.md", readme(input));
+	zip.file("DESCRIPTION.md", description(input));
 	zip.file("build.ts", buildScript());
 
 	zip.file("vitest.config.ts", vitestConfig());
