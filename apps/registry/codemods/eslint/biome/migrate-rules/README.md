@@ -82,8 +82,16 @@ This codemod requires internet connection.
 	},
 	"files": [
 		"prettier-test-no-replace",
+<<<<<<< HEAD
 		"README.md",
 		".codemodrc.json",
+||||||| parent of 7dfbc06 (wip)
+		"DESCRIPTION.md",
+		"config.json",
+=======
+		"DESCRIPTION.md",
+		".codemodrc.json",
+>>>>>>> 7dfbc06 (wip)
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],
