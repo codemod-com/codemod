@@ -63,16 +63,15 @@ export const publishHandler =
 
 				const config = parse(configSchema, configJson);
 
-				if (
-					!config.name.startsWith(`@${user.username}/`) ||
-					!/[a-zA-Z0-9_/-]+/.test(config.name)
-				) {
+				if (!/[a-zA-Z0-9_/@-]+/.test(config.name)) {
 					throw new Error(
-						`The "name" field in package.json must start with your GitHub username with a slash (e.g., "@${user.username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -)`,
+						`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 					);
 				}
 
 				name = config.name;
+
+				// TODO: add check for organization
 			}
 
 			if (multipartFile.fieldname === "index.cjs") {
@@ -104,7 +103,7 @@ export const publishHandler =
 
 		await client.send(
 			new PutObjectCommand({
-				Bucket: "codemod-public",
+				Bucket: "codemod-public-v2",
 				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
 				Body: configJsonBuffer,
 			}),
@@ -115,7 +114,7 @@ export const publishHandler =
 
 		await client.send(
 			new PutObjectCommand({
-				Bucket: "codemod-public",
+				Bucket: "codemod-public-v2",
 				Key: `codemod-registry/${hashDigest}/index.cjs`,
 				Body: indexCjsBuffer,
 			}),
@@ -127,7 +126,7 @@ export const publishHandler =
 		if (descriptionMdBuffer !== null) {
 			await client.send(
 				new PutObjectCommand({
-					Bucket: "codemod-public",
+					Bucket: "codemod-public-v2",
 					Key: `codemod-registry/${hashDigest}/description.md`,
 					Body: descriptionMdBuffer,
 				}),

@@ -19,6 +19,8 @@ export const validationHandler: CustomHandler<{
 
 	const user = await clerkClient.users.getUser(userId);
 
+	// TODO: return orgs
+
 	return {
 		success: true,
 		username: user.username,

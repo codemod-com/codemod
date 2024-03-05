@@ -7,15 +7,12 @@ import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { PrinterBlueprint } from "./printer.js";
-import {
-	CodemodConfig,
-	codemodConfigSchema,
-} from "./schemata/codemodConfigSchema.js";
+import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
 import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const CODEMOD_REGISTRY_URL =
-	"https://codemod-public.s3.us-west-1.amazonaws.com/codemod-registry";
+	"https://codemod-public-v2.s3.us-west-1.amazonaws.com/codemod-registry";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;

@@ -15,7 +15,31 @@ import {
 	tuple,
 	union,
 } from "valibot";
-import { argumentsSchema } from "./argumentsSchema.js";
+
+export const argumentsSchema = array(
+	union([
+		object({
+			name: string(),
+			kind: literal("string"),
+			required: optional(boolean(), false),
+			default: optional(string()),
+		}),
+		object({
+			name: string(),
+			kind: literal("number"),
+			required: optional(boolean(), false),
+			default: optional(number()),
+		}),
+		object({
+			name: string(),
+			kind: literal("boolean"),
+			required: optional(boolean(), false),
+			default: optional(boolean()),
+		}),
+	]),
+);
+
+export type Arguments = Output<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [
 	"java",

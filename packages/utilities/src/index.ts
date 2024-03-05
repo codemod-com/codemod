@@ -2,6 +2,12 @@ export { CaseReadingService } from "./caseReadingService.js";
 export { CaseWritingService } from "./caseWritingService.js";
 export { FileWatcher } from "./fileWatcher.js";
 export {
+	argumentsSchema,
+	codemodConfigSchema,
+	type Arguments,
+	type CodemodConfig,
+} from "./schemata/codemodConfigSchema.js";
+export {
 	JOB_KIND,
 	parseSurfaceAgnosticJob,
 	type SurfaceAgnosticJob,
