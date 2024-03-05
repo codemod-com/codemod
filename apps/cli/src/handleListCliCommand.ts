@@ -21,7 +21,7 @@ const configJsonSchema = v.object({
 export const getConfigFiles = async () => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
 
-	const configFiles = await glob("**/config.json", {
+	const configFiles = await glob("**/.codemodrc.json", {
 		absolute: true,
 		cwd: configurationDirectoryPath,
 		fs,
@@ -55,7 +55,7 @@ export const getConfigFiles = async () => {
 
 export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,
-	short: boolean,
+	short?: boolean,
 ) => {
 	const configObjects = await getConfigFiles();
 

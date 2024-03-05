@@ -960,7 +960,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					const codemodDirectoryPath = join(globalStoragePath, codemodHash);
 					await mkdir(codemodDirectoryPath, { recursive: true });
 
-					const buildConfigPath = join(codemodDirectoryPath, "config.json");
+					const buildConfigPath = join(codemodDirectoryPath, ".codemodrc.json");
 
 					await writeFile(
 						buildConfigPath,

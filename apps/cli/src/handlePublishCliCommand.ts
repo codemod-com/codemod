@@ -7,18 +7,13 @@ import { mkdir, writeFile } from "fs/promises";
 import { object, optional, parse, string } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
+import { codemodConfigSchema } from "./schemata/codemodConfigSchema.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const packageJsonSchema = object({
 	main: string(),
 	name: string(),
 	license: optional(string()),
-});
-
-const configJsonSchema = object({
-	schemaVersion: string(),
-	name: string(),
-	engine: string(),
 });
 
 const getToken = (): Promise<string> => {
@@ -83,16 +78,16 @@ export const handlePublishCliCommand = async (
 	});
 
 	const configJsonData = await fs.promises.readFile(
-		join(source, "config.json"),
+		join(source, ".codemodrc.json"),
 		{
 			encoding: "utf-8",
 		},
 	);
-	const configJson = parse(configJsonSchema, JSON.parse(configJsonData));
+	const configJson = parse(codemodConfigSchema, JSON.parse(configJsonData));
 
-	if (configJson.name !== pkg.name) {
+	if (!("name" in configJson) || configJson.name !== pkg.name) {
 		throw new Error(
-			`The "name" field in package.json must match with that in config.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
+			`The "name" field in package.json must match with that in .codemodrc.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
 		);
 	}
 
@@ -113,7 +108,7 @@ export const handlePublishCliCommand = async (
 
 	const formData = new FormData();
 	formData.append("index.cjs", Buffer.from(indexCjsData));
-	formData.append("config.json", Buffer.from(configJsonData));
+	formData.append(".codemodrc.json", Buffer.from(configJsonData));
 
 	if (descriptionMdData) {
 		formData.append("description.md", descriptionMdData);
@@ -144,7 +139,10 @@ export const handlePublishCliCommand = async (
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
 	try {
-		await writeFile(join(codemodDirectoryPath, "config.json"), configJsonData);
+		await writeFile(
+			join(codemodDirectoryPath, ".codemodrc.json"),
+			configJsonData,
+		);
 		await writeFile(join(codemodDirectoryPath, "index.cjs"), indexCjsData);
 		if (descriptionMdData) {
 			await writeFile(

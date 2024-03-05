@@ -32,7 +32,7 @@ const SCRIPT_SH_C = `
 npx next export
 `;
 
-const DESCRIPTION_MD = `
+const README_MD = `
 # Header
 next export -o public
 `;
@@ -43,8 +43,8 @@ const transform = async () => {
 		"/opt/project/pages/script_a.sh": SCRIPT_SH_A,
 		"/opt/project/pages/script_b.sh": SCRIPT_SH_B,
 		"/opt/project/pages/script_c.sh": SCRIPT_SH_C,
-		"/opt/project/pages/DESCRIPTION.md": DESCRIPTION_MD,
-		"/opt/project/pages/DESCRIPTION.notmd": DESCRIPTION_MD,
+		"/opt/project/pages/README.md": README_MD,
+		"/opt/project/pages/README.notmd": README_MD,
 		"/opt/project/pages/next.config.js": NEXT_CONFIG_JSON,
 	});
 
@@ -78,7 +78,7 @@ describe("next 13 remove-next-export", () => {
 			},
 			{
 				kind: "upsertFile",
-				path: "/opt/project/pages/DESCRIPTION.md",
+				path: "/opt/project/pages/README.md",
 				data: "\n# Header\n",
 			},
 			{

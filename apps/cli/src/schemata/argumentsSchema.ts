@@ -15,16 +15,19 @@ export const argumentsSchema = array(
 		object({
 			name: string(),
 			kind: literal("string"),
+			required: optional(boolean(), false),
 			default: optional(string()),
 		}),
 		object({
 			name: string(),
 			kind: literal("number"),
+			required: optional(boolean(), false),
 			default: optional(number()),
 		}),
 		object({
 			name: string(),
 			kind: literal("boolean"),
+			required: optional(boolean(), false),
 			default: optional(boolean()),
 		}),
 	]),

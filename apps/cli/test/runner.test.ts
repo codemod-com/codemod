@@ -56,10 +56,12 @@ describe("Runner", () => {
 						{
 							name: "argA",
 							kind: "number",
+							required: false,
 						},
 						{
 							name: "argB",
 							kind: "number",
+							required: false,
 						},
 					],
 				};
@@ -68,7 +70,6 @@ describe("Runner", () => {
 
 		const loadRepositoryConfiguration = () =>
 			Promise.resolve<RepositoryConfiguration>({
-				schemaVersion: "1.0.0",
 				preCommitCodemods: [
 					{
 						source: "registry",

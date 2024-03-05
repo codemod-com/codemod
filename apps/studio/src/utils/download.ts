@@ -230,8 +230,8 @@ const packageJson = ({
         },
         "license": "MIT",
         "files": [
-          "DESCRIPTION.md",
-          "config.json",
+          "README.md",
+          ".codemodrc.json",
           "./dist/index.cjs",
           "./index.d.ts"
         ],
@@ -482,7 +482,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 		`/*! @license\n${licenseContent}\n*/\n${compiled}`,
 	);
 
-	zip.file("DESCRIPTION.md", description(input));
+	zip.file("README.md", description(input));
 	zip.file("build.ts", buildScript());
 
 	zip.file("vitest.config.ts", vitestConfig());
@@ -490,7 +490,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 
 	zip.file("package.json", packageJson(input));
 	zip.file("tsconfig.json", tsconfigJson());
-	zip.file("config.json", configJson(input));
+	zip.file(".codemodrc.json", configJson(input));
 
 	zip.file(".gitignore", "node_modules\ndist\nbuild.ts");
 

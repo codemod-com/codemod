@@ -105,7 +105,7 @@ const main = async () => {
 	{
 		const data = buildConfigJsonData(argv);
 
-		await writeFile(join(codemodDirectoryPath, "./config.json"), data);
+		await writeFile(join(codemodDirectoryPath, "./.codemodrc.json"), data);
 	}
 
 	{

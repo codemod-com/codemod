@@ -86,10 +86,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		try {
 			// download the config
-			const configPath = join(directoryPath, "config.json");
+			const configPath = join(directoryPath, ".codemodrc.json");
 
 			const buffer = await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/config.json`,
+				`${CODEMOD_REGISTRY_URL}/${hashDigest}/.codemodrc.json`,
 				configPath,
 			);
 

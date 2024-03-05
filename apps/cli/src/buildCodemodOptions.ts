@@ -71,7 +71,7 @@ export const buildSourcedCodemodOptions = async (
 	}
 
 	if (
-		!["config.json", "package.json"]
+		![".codemodrc.json", "package.json"]
 			.map((lookedupFilePath) =>
 				path.join(codemodOptions.source, lookedupFilePath),
 			)
@@ -100,12 +100,12 @@ export const buildSourcedCodemodOptions = async (
 
 	const engine = await extractEngine(
 		fs,
-		path.join(codemodOptions.source, "config.json"),
+		path.join(codemodOptions.source, ".codemodrc.json"),
 	);
 
 	if (engine === null) {
 		throw new Error(
-			`Engine specified in config.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
+			`Engine specified in .codemodrc.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
 		);
 	}
 
