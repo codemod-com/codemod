@@ -61,4 +61,25 @@ describe("useContext -> use", () => {
 
 		assert.deepEqual(actualOutput, output);
 	});
+
+	it("should not replace any.useContext() with use", async () => {
+		const input = `
+		const theme = trpc.useContext();
+		`;
+
+		const output = `
+		const theme = trpc.useContext();
+		`;
+
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: input,
+		};
+
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
+		});
+
+		assert.deepEqual(actualOutput, output);
+	});
 });
