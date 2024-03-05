@@ -92,7 +92,7 @@ export const handlePublishCliCommand = async (
 
 	if (configJson.name !== pkg.name) {
 		throw new Error(
-			`The "name" field in package.json must match with that in config.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
+			`The "name" field in package.json must match with that in .codemodrc.json.\nIt must must start with your GitHub username with a slash ("@${username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -).`,
 		);
 	}
 

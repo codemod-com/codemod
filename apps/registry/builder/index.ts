@@ -128,7 +128,7 @@ const build = async () => {
 
 	const codemodsDirectoryPath = join(cwd, "./codemods");
 
-	const configFilePaths = await glob("./**/config.json", {
+	const configFilePaths = await glob("./**/.codemodrc.json", {
 		cwd: codemodsDirectoryPath,
 		dot: false,
 		ignore: ["**/node_modules/**", "**/build/**"],

@@ -29,7 +29,7 @@ describe("TarService", () => {
 
 		{
 			const stats = await ifs.promises.stat(
-				"/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/config.json",
+				"/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/.codemodrc.json",
 			);
 
 			equal(stats.size.toString(), 45);

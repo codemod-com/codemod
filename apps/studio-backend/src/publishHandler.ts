@@ -86,7 +86,7 @@ export const publishHandler =
 
 		if (configJsonBuffer === null || indexCjsBuffer === null || name === null) {
 			throw new Error(
-				"Could not find either the config.json or the index.cjs file",
+				"Could not find either the .codemodrc.json or the index.cjs file",
 			);
 		}
 
@@ -105,7 +105,7 @@ export const publishHandler =
 		await client.send(
 			new PutObjectCommand({
 				Bucket: "codemod-public",
-				Key: `codemod-registry/${hashDigest}/config.json`,
+				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
 				Body: configJsonBuffer,
 			}),
 			{

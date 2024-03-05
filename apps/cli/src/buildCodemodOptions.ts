@@ -105,7 +105,7 @@ export const buildSourcedCodemodOptions = async (
 
 	if (engine === null) {
 		throw new Error(
-			`Engine specified in config.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
+			`Engine specified in .codemodrc.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
 		);
 	}
 
