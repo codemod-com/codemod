@@ -4614,6 +4614,9 @@ importers:
       '@clerk/fastify':
         specifier: 0.6.27
         version: 0.6.27(fastify-plugin@4.5.1)(fastify@4.25.1)(react@18.2.0)
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@effect/schema':
         specifier: 0.54.0
         version: 0.54.0(effect@2.0.0-next.61)(fast-check@3.15.1)
@@ -13222,7 +13225,7 @@ packages:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.0.4(@types/node@20.10.3)
+      vitest: 1.0.4(@types/node@20.10.4)
     transitivePeerDependencies:
       - supports-color
     dev: true

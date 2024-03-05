@@ -15,15 +15,15 @@ const packageJsonSchema = object({
 	license: optional(string()),
 });
 
-const getToken = (): Promise<string> => {
+const getToken = async (): Promise<string> => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
 	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
 
 	try {
-		return fs.promises.readFile(tokenTxtPath, "utf-8");
+		return await fs.promises.readFile(tokenTxtPath, "utf-8");
 	} catch (error) {
 		throw new Error(
-			`Log in first using the 'codemod login' command to publish codemods.`,
+			`Log in first using the "codemod login" command to publish codemods.`,
 		);
 	}
 };

@@ -28,6 +28,7 @@
 		"noImplicitOverride": true,
 		"noPropertyAccessFromIndexSignature": true,
 		"skipLibCheck": true,
-		"isolatedModules": true
+		"isolatedModules": true,
+		"sourceMap": true
 	}
 }
