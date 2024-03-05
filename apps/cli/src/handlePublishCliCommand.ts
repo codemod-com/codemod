@@ -16,7 +16,7 @@ const packageJsonSchema = object({
 	license: optional(string()),
 });
 
-const getToken = (): Promise<string> => {
+const getToken = async (): Promise<string> => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
 	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
 

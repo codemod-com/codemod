@@ -11,6 +11,7 @@ import { parse } from "valibot";
 import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
+import { codemodConfigSchema } from "@codemod-com/utilities";
 
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
@@ -67,9 +68,9 @@ export const publishHandler =
 
 					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-					const codemodRc = parse(codemodConfigSchema, codemodRcData);
+				const config = parse(codemodConfigSchema, configJson);
 
-				if (!/[a-zA-Z0-9_/@-]+/.test(config.name)) {
+				if (!("name" in config) || !/[a-zA-Z0-9_/@-]+/.test(config.name)) {
 					throw new Error(
 						`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 					);
