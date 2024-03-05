@@ -7,8 +7,8 @@ import { mkdir, writeFile } from "fs/promises";
 import { object, optional, parse, string } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText } from "./utils.js";
 import { codemodConfigSchema } from "./schemata/codemodConfigSchema.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const packageJsonSchema = object({
 	main: string(),

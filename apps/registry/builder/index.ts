@@ -17,7 +17,6 @@ import {
 	union,
 } from "valibot";
 
-import glob from "fast-glob";
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import {
@@ -36,6 +35,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { deflate } from "node:zlib";
+import glob from "fast-glob";
 import * as tar from "tar";
 
 const promisifiedDeflate = promisify(deflate);
