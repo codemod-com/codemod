@@ -8,9 +8,15 @@ import { mkdir, writeFile } from "fs/promises";
 import { parse } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
+import { codemodConfigSchema } from "@codemod-com/utilities";
 import { boldText, colorizeText } from "./utils.js";
 
-const getToken = async (): Promise<string> => {
+const packageJsonSchema = object({
+	main: string(),
+	license: optional(string()),
+});
+
+const getToken = (): Promise<string> => {
 	const configurationDirectoryPath = join(homedir(), ".codemod");
 	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
 
@@ -43,6 +49,42 @@ export const handlePublishCliCommand = async (
 		)}' and able to publish a codemod to our public registry.`,
 	);
 
+	let packageJsonData: string;
+	try {
+		packageJsonData = await fs.promises.readFile(join(source, "package.json"), {
+			encoding: "utf-8",
+		});
+	} catch (error) {
+		throw new Error(
+			`Could not find the package.json file in the codemod directory: ${error}.`,
+		);
+	}
+
+	const pkg = parse(packageJsonSchema, JSON.parse(packageJsonData));
+
+	if (!pkg.main) {
+		throw new Error(
+			`Please provide a "main" field in your package.json which links to the bundled .cjs file to publish your codemod.`,
+		);
+	}
+
+	if (pkg.license !== "MIT" && pkg.license !== "Apache-2.0") {
+		throw new Error(
+			"Could not find the .codemodrc.json file in the codemod directory. Please configure your codemod first.",
+		);
+	}
+
+	let indexCjsData: string;
+	try {
+		indexCjsData = await fs.promises.readFile(join(source, pkg.main), {
+			encoding: "utf-8",
+		});
+	} catch (err) {
+		throw new Error(
+			`Could not find the main file of the codemod in ${pkg.main}. Did you forget to run "codemod build"?`,
+		);
+	}
+
 	let codemodRcData: string;
 	try {
 		codemodRcData = await fs.promises.readFile(
@@ -59,29 +101,9 @@ export const handlePublishCliCommand = async (
 
 	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
 
-	if (!("name" in codemodRc) || !/[a-zA-Z0-9_/-]+/.test(codemodRc.name)) {
+	if (!("name" in codemodRc) || !/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)) {
 		throw new Error(
-			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, -)`,
-		);
-	}
-
-	if (codemodRc.private) {
-		if (!/^@[a-zA-Z0-9_/-]+\//.test(codemodRc.name)) {
-			throw new Error(
-				`The "name" field in .codemodrc.json must start with user or organization name (e.g. @codemod-com/your-codemod-name) if publishing a private codemod.`,
-			);
-		}
-	}
-
-	const indexCjsPath = join(source, "./dist/index.cjs");
-	let indexCjsData: string;
-	try {
-		indexCjsData = await fs.promises.readFile(indexCjsPath, {
-			encoding: "utf-8",
-		});
-	} catch (err) {
-		throw new Error(
-			`Could not find the main file of the codemod in ${indexCjsPath}.`,
+			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 		);
 	}
 
@@ -113,6 +135,7 @@ export const handlePublishCliCommand = async (
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		const errorMessage = `Could not publish the "${codemodRc.name}" codemod: ${message}`;
+		printer.printConsoleMessage("error", errorMessage);
 		throw new Error(errorMessage);
 	}
 

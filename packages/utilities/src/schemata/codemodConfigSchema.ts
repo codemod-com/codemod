@@ -39,7 +39,6 @@ export const argumentsSchema = array(
 	]),
 );
 
-export type ArgumentsInput = Input<typeof argumentsSchema>;
 export type Arguments = Output<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [

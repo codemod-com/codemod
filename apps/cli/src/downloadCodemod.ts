@@ -8,6 +8,7 @@ import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { PrinterBlueprint } from "./printer.js";
+import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
 import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 

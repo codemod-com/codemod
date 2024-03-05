@@ -69,31 +69,15 @@ export const publishHandler =
 
 					const codemodRc = parse(codemodConfigSchema, codemodRcData);
 
-					if (
-						!("name" in codemodRc) ||
-						!/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)
-					) {
-						throw new Error(
-							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-						);
-					}
-
-					name = codemodRc.name;
-					version = codemodRc.version;
-					if (codemodRc.private) {
-						isPrivate = true;
-					}
-
-					// TODO: add check for organization
+				if (!/[a-zA-Z0-9_/@-]+/.test(config.name)) {
+					throw new Error(
+						`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+					);
 				}
 
-				if (multipartFile.fieldname === "index.cjs") {
-					indexCjsBuffer = buffer;
-				}
+				name = config.name;
 
-				if (multipartFile.fieldname === "description.md") {
-					descriptionMdBuffer = buffer;
-				}
+				// TODO: add check for organization
 			}
 
 			if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
@@ -143,28 +127,33 @@ export const publishHandler =
 				},
 			];
 
-			if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
-				buffers.push({
-					name: "description.md",
-					data: descriptionMdBuffer,
-				});
-			}
+		await client.send(
+			new PutObjectCommand({
+				Bucket: "codemod-public-v2",
+				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
+				Body: configJsonBuffer,
+			}),
+			{
+				requestTimeout: REQUEST_TIMEOUT,
+			},
+		);
 
-			const archive = await tarPack(buffers);
-
-			const hashDigest = createHash("ripemd160")
-				.update(name)
-				.digest("base64url");
-
-			const REQUEST_TIMEOUT = 5000;
-
-			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
+		await client.send(
+			new PutObjectCommand({
+				Bucket: "codemod-public-v2",
+				Key: `codemod-registry/${hashDigest}/index.cjs`,
+				Body: indexCjsBuffer,
+			}),
+			{
+				requestTimeout: REQUEST_TIMEOUT,
+			},
+		);
 
 			await client.send(
 				new PutObjectCommand({
-					Bucket: bucket,
-					Key: `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`,
-					Body: archive,
+					Bucket: "codemod-public-v2",
+					Key: `codemod-registry/${hashDigest}/description.md`,
+					Body: descriptionMdBuffer,
 				}),
 				{
 					requestTimeout: REQUEST_TIMEOUT,
