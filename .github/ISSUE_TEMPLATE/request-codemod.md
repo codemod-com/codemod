@@ -14,11 +14,12 @@ assignees: ''
 
 Add a clear description of what should the codemod do.
 
-### Applicability Criteria
-
--   Framework/library: [e.g. Next.js]
--   Version: [e.g. v12 -> v13]
-    > Add details about the type of project this codemod should target. If this codemod is a general refactor, include the target language and other relevant information.
+### Applicability criteria
+Applicability criteria could be used by the codemod engine to only process required projects or files, which improves performance and reduces false positives.
+Codemods without applicability criteria still work, but they won't be as efficient as they could be, and you are probably in the best position to provide this info :) 
+-   Language/framework/library: [e.g. Next.js]
+-   Version range containing the code pattern to detect: [e.g. v12.0.0 - v12.3.2]  
+-   File extensions: [e.g. js, ts, jsx, tsx]
 
 ### Code before transformation
 
@@ -32,9 +33,24 @@ Add a clear description of what should the codemod do.
 //insert the expected **correct** output here
 ```
 
-### Estimated time saving
+### Sample repo to test the codemod
+A good sample repository is something that is popular, big enough to be meaningful, and contains different patterns to be detected and transformed, not so huge that it requires a lot of manual work due to custom business logic or intermediary layers.
 
-Add an expected time saving this codemod can provide. [e.g. 20 minutes per occurrence]
+### Codemod package path
+Where should the codemod code reside? Which GitHub repo and folder should we open up a PR against? (e.g. https://github.com/reactjs/react-codemod)
+
+The PR will include a folder that contains the codemod package (codemod script, test fixtures, license, metadata and config, and package.json). 
+
+If no path is provided, we will find a catch-all repo to store the codemod package.
+
+### Codemod maintainer
+
+If someone in the community builds the codemod, who (which organization) is going to continue to maintain the codemod?
+
+- [ ] Link to your GitHub org (e.g. https://github.com/vercel)
+- [ ] Codemod team (chat with us first)
+- [ ] Community (no specific maintainer, might discourage others to use)
+
 
 ### Additional context
 
