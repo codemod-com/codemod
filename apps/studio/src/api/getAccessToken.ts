@@ -1,9 +1,11 @@
 import { type AxiosError } from "axios";
+import { env } from "~/env";
 import { BUILD_ACCESS_TOKEN } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";
 
-const X_CODEMODCOM_ACCESS_TOKEN = process.env.X_CODEMODCOM_ACCESS_TOKEN ?? "";
+const X_CODEMODCOM_ACCESS_TOKEN =
+	env.NEXT_PUBLIC_X_CODEMODCOM_ACCESS_TOKEN ?? "";
 const getAccessToken = async ({
 	clerkToken,
 }: {
