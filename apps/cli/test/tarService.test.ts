@@ -24,7 +24,7 @@ describe("TarService", () => {
 		{
 			const stats = await ifs.promises.stat("/home/user/.codemod/names.json");
 
-			equal(stats.size.toString(), 1814);
+			equal(stats.size.toString(), 4258);
 		}
 
 		{
@@ -32,7 +32,7 @@ describe("TarService", () => {
 				"/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/.codemodrc.json",
 			);
 
-			equal(stats.size.toString(), 45);
+			equal(stats.size.toString(), 337);
 		}
 
 		{
@@ -40,7 +40,7 @@ describe("TarService", () => {
 				"/home/user/.codemod/-wqkAQr7ILgYeTRozWTEgiUvmSY/index.cjs",
 			);
 
-			equal(stats.size.toString(), 18020);
+			equal(stats.size.toString(), 15810);
 		}
 
 		// do it again to simulate another command invocation
@@ -49,7 +49,7 @@ describe("TarService", () => {
 		{
 			const stats = await ifs.promises.stat("/home/user/.codemod/names.json");
 
-			equal(stats.size.toString(), 1814);
+			equal(stats.size.toString(), 4258);
 		}
 	});
 });
