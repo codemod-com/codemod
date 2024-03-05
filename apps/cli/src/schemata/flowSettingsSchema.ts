@@ -13,7 +13,6 @@ import {
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_EXCLUDE_PATTERNS,
-	DEFAULT_FILE_LIMIT,
 	DEFAULT_INCLUDE_PATTERNS,
 	DEFAULT_INPUT_DIRECTORY_PATH,
 	DEFAULT_NO_CACHE,
@@ -26,7 +25,6 @@ export const flowSettingsSchema = object({
 	exclude: optional(array(string()), DEFAULT_EXCLUDE_PATTERNS),
 	target: optional(string()),
 	files: optional(array(string())),
-	limit: optional(number([minValue(0), integer()]), DEFAULT_FILE_LIMIT),
 	raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
 	"no-cache": optional(boolean(), DEFAULT_NO_CACHE),
 	noCache: optional(boolean(), DEFAULT_NO_CACHE),

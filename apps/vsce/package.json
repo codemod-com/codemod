@@ -84,12 +84,6 @@
 		"configuration": {
 			"title": "Codemod VSCode Extension Configuration",
 			"properties": {
-				"codemod.fileLimit": {
-					"order": 1,
-					"type": "number",
-					"default": 2000,
-					"description": "The maximum number of files to execute any codemod over"
-				},
 				"codemod.workerThreadCount": {
 					"order": 2,
 					"type": "number",
