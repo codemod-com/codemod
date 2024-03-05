@@ -308,7 +308,7 @@ export const executeMainThread = async () => {
 	if (String(argv._) === "build") {
 		const printer = new Printer(argv.json);
 
-		// Allow node to look for modules in global paths (currently used for `codemod build`)
+		// Allow node to look for modules in global paths
 		const execPromise = promisify(exec);
 		const globalPaths = await Promise.allSettled([
 			execPromise("npm root -g"),
