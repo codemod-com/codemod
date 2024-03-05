@@ -67,7 +67,7 @@ describe("eslint and prettier to biome migration", () => {
       "eslintIgnore": ["ignore-key"],
       "files": [
         "prettier-test-no-replace",
-        "DESCRIPTION.md",
+        "README.md",
         ".codemodrc.json",
         "./dist/index.cjs",
         "./index.d.ts"
@@ -163,7 +163,7 @@ describe("eslint and prettier to biome migration", () => {
                 },
                 "files": [
                   "prettier-test-no-replace",
-                  "DESCRIPTION.md",
+                  "README.md",
                   ".codemodrc.json",
                   "./dist/index.cjs",
                   "./index.d.ts"

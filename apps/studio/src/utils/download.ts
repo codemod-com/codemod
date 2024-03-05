@@ -230,7 +230,7 @@ const packageJson = ({
         },
         "license": "MIT",
         "files": [
-          "DESCRIPTION.md",
+          "README.md",
           ".codemodrc.json",
           "./dist/index.cjs",
           "./index.d.ts"
@@ -482,7 +482,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 		`/*! @license\n${licenseContent}\n*/\n${compiled}`,
 	);
 
-	zip.file("DESCRIPTION.md", description(input));
+	zip.file("README.md", description(input));
 	zip.file("build.ts", buildScript());
 
 	zip.file("vitest.config.ts", vitestConfig());

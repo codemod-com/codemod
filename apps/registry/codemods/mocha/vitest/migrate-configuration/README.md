@@ -30,7 +30,7 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 	"mocha": {
 		"config-key": "config-value"
 	},
-	"files": ["DESCRIPTION.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
+	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }
 ```
@@ -52,7 +52,7 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 		"test": "vitest run",
 		"coverage": "vitest run --coverage"
 	},
-	"files": ["DESCRIPTION.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
+	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
 	"type": "module"
 }
 ```
