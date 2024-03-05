@@ -71,7 +71,7 @@ export const buildSourcedCodemodOptions = async (
 	}
 
 	if (
-		!["config.json", "package.json"]
+		![".codemodrc.json", "package.json"]
 			.map((lookedupFilePath) =>
 				path.join(codemodOptions.source, lookedupFilePath),
 			)
@@ -100,7 +100,7 @@ export const buildSourcedCodemodOptions = async (
 
 	const engine = await extractEngine(
 		fs,
-		path.join(codemodOptions.source, "config.json"),
+		path.join(codemodOptions.source, ".codemodrc.json"),
 	);
 
 	if (engine === null) {

@@ -56,7 +56,7 @@ export const publishHandler =
 		for await (const multipartFile of request.files()) {
 			const buffer = await multipartFile.toBuffer();
 
-			if (multipartFile.fieldname === "config.json") {
+			if (multipartFile.fieldname === ".codemodrc.json") {
 				configJsonBuffer = buffer;
 
 				const configJson = JSON.parse(configJsonBuffer.toString("utf8"));

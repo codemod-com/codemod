@@ -231,7 +231,7 @@ const packageJson = ({
         "license": "MIT",
         "files": [
           "DESCRIPTION.md",
-          "config.json",
+          ".codemodrc.json",
           "./dist/index.cjs",
           "./index.d.ts"
         ],
@@ -490,7 +490,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 
 	zip.file("package.json", packageJson(input));
 	zip.file("tsconfig.json", tsconfigJson());
-	zip.file("config.json", configJson(input));
+	zip.file(".codemodrc.json", configJson(input));
 
 	zip.file(".gitignore", "node_modules\ndist\nbuild.ts");
 

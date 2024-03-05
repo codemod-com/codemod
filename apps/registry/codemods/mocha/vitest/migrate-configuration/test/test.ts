@@ -43,7 +43,7 @@ describe("mocha config-files", () => {
       },
       "files": [
         "DESCRIPTION.md",
-        "config.json",
+        ".codemodrc.json",
         "./dist/index.cjs",
         "./index.d.ts"
       ],
@@ -147,7 +147,7 @@ describe("mocha config-files", () => {
                 },
                 "files": [
                   "DESCRIPTION.md",
-                  "config.json",
+                  ".codemodrc.json",
                   "./dist/index.cjs",
                   "./index.d.ts"
                 ],

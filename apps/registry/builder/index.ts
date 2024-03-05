@@ -160,7 +160,7 @@ const build = async () => {
 
 		await mkdir(codemodDirectoryPath, { recursive: true });
 
-		const configPath = join(codemodsDirectoryPath, name, "config.json");
+		const configPath = join(codemodsDirectoryPath, name, ".codemodrc.json");
 
 		const data = await readFile(configPath, { encoding: "utf8" });
 
@@ -174,7 +174,7 @@ const build = async () => {
 				name,
 			};
 
-			const buildConfigPath = join(codemodDirectoryPath, "config.json");
+			const buildConfigPath = join(codemodDirectoryPath, ".codemodrc.json");
 
 			writeFile(buildConfigPath, JSON.stringify(configWithName));
 		}

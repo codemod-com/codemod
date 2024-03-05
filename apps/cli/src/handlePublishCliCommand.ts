@@ -83,7 +83,7 @@ export const handlePublishCliCommand = async (
 	});
 
 	const configJsonData = await fs.promises.readFile(
-		join(source, "config.json"),
+		join(source, ".codemodrc.json"),
 		{
 			encoding: "utf-8",
 		},
@@ -113,7 +113,7 @@ export const handlePublishCliCommand = async (
 
 	const formData = new FormData();
 	formData.append("index.cjs", Buffer.from(indexCjsData));
-	formData.append("config.json", Buffer.from(configJsonData));
+	formData.append(".codemodrc.json", Buffer.from(configJsonData));
 
 	if (descriptionMdData) {
 		formData.append("description.md", descriptionMdData);
@@ -144,7 +144,10 @@ export const handlePublishCliCommand = async (
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
 	try {
-		await writeFile(join(codemodDirectoryPath, "config.json"), configJsonData);
+		await writeFile(
+			join(codemodDirectoryPath, ".codemodrc.json"),
+			configJsonData,
+		);
 		await writeFile(join(codemodDirectoryPath, "index.cjs"), indexCjsData);
 		if (descriptionMdData) {
 			await writeFile(

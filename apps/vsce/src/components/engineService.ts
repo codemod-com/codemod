@@ -375,7 +375,7 @@ export class EngineService {
 					homedir(),
 					".codemod",
 					hashDigest,
-					"config.json",
+					".codemodrc.json",
 				);
 
 				if (!existsSync(configPath)) {
@@ -443,7 +443,7 @@ export class EngineService {
 			const { names } = parsePrivateCodemodsEnvelope(json);
 
 			for (const hash of names) {
-				const configPath = join(globalStoragePath, hash, "config.json");
+				const configPath = join(globalStoragePath, hash, ".codemodrc.json");
 
 				if (!existsSync(configPath)) {
 					continue;

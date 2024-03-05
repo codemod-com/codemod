@@ -1,5 +1,5 @@
 {
 	"name": "@codemod-com/codemod-go-remove-unnecessary-nested-block",
-	"files": ["./.codemod/DESCRIPTION.md", "./.codemod/config.json"],
+	"files": ["./README.md", "./.codemodrc.json"],
 	"type": "module"
 }

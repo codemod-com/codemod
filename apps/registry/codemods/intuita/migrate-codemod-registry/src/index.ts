@@ -108,7 +108,7 @@ const handleFile: HandleFile<Dependencies, State> = async (
 		},
 	];
 
-	if (parsedPath.base === "config.json") {
+	if (parsedPath.base === ".codemodrc.json") {
 		const parsedData = JSON.parse(data);
 
 		const { engine } = parsedData;
@@ -325,7 +325,7 @@ const handleData: HandleData<Dependencies, State> = async (
 				scripts.test = "mocha";
 			}
 
-			const files: string[] = ["DESCRIPTION.md", "config.json"];
+			const files: string[] = ["DESCRIPTION.md", ".codemodrc.json"];
 
 			if (jsEngineUsed) {
 				files.push("./dist/index.cjs", "./index.d.ts");
