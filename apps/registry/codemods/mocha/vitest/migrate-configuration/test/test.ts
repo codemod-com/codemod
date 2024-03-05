@@ -42,8 +42,16 @@ describe("mocha config-files", () => {
         "config-key": "config-value"
       },
       "files": [
+<<<<<<< HEAD
         "README.md",
         ".codemodrc.json",
+||||||| parent of 7dfbc06 (wip)
+        "DESCRIPTION.md",
+        "config.json",
+=======
+        "DESCRIPTION.md",
+        ".codemodrc.json",
+>>>>>>> 7dfbc06 (wip)
         "./dist/index.cjs",
         "./index.d.ts"
       ],

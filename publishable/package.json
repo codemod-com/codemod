@@ -1,0 +1,29 @@
+{
+  "name": "@razenization/",
+  "dependencies": {},
+  "devDependencies": {
+    "esbuild": "0.19.5",
+    "vitest": "^1.0.1",
+    "@types/node": "20.9.0",
+    "typescript": "5.2.2",
+    "prettier": "^3.1.0",
+    "ts-node": "^10.9.1",
+    "jscodeshift": "^0.15.1",
+    "@types/jscodeshift": "^0.11.10"
+  },
+  "main": "./dist/index.cjs",
+  "types": "/dist/index.d.ts",
+  "scripts": {
+    "build": "ts-node-esm build.ts ./src/index.ts",
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
+  "license": "MIT",
+  "files": [
+    "README.md",
+    "config.json",
+    "./dist/index.cjs",
+    "./index.d.ts"
+  ],
+  "type": "module"
+}
