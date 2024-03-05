@@ -1,4 +1,0 @@
-# Create Hash History
-
-## Description
-

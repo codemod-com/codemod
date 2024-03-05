@@ -1,4 +1,0 @@
-# Remove Active Style
-
-## Description
-
