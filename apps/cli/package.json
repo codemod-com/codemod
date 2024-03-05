@@ -40,6 +40,7 @@
 		"@types/columnify": "^1.5.4",
 		"@types/js-yaml": "4.0.9",
 		"@types/jscodeshift": "^0.11.5",
+		"@types/ms": "^0.7.34",
 		"@types/node": "18.11.9",
 		"@types/sinon": "^10.0.20",
 		"@types/tar": "^6.1.5",
@@ -97,6 +98,7 @@
 		"access": "public"
 	},
 	"dependencies": {
-		"js-yaml": "4.1.0"
+		"js-yaml": "4.1.0",
+		"ms": "^2.1.3"
 	}
 }

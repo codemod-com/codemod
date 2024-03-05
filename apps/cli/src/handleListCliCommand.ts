@@ -55,7 +55,7 @@ export const getConfigFiles = async () => {
 
 export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,
-	short: boolean,
+	short?: boolean,
 ) => {
 	const configObjects = await getConfigFiles();
 
