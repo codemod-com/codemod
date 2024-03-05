@@ -1,8 +1,10 @@
+import { exec, execSync } from "child_process";
 import * as fs from "fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import * as readline from "node:readline";
+import { promisify } from "util";
 import Axios from "axios";
 import { IFs } from "memfs";
 import yargs from "yargs";
@@ -287,6 +289,59 @@ export const executeMainThread = async () => {
 
 		try {
 			await handlePublishCliCommand(printer, argv.source ?? process.cwd());
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
+
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
+			});
+		}
+
+		exit();
+
+		return;
+	}
+
+	if (String(argv._) === "build") {
+		const printer = new Printer(argv.json);
+
+		// Allow node to look for modules in global paths (currently used for `codemod build`)
+		const execPromise = promisify(exec);
+		const globalPaths = await Promise.allSettled([
+			execPromise("npm root -g"),
+			execPromise("pnpm root -g"),
+			execPromise("yarn global dir"),
+			execPromise("echo $BUN_INSTALL/install/global/node_modules"),
+		]);
+		process.env.NODE_PATH = globalPaths
+			.map((res) =>
+				res.status === "fulfilled" ? res.value.stdout.trim() : null,
+			)
+			.filter(Boolean)
+			.join(":");
+		require("module").Module._initPaths();
+
+		try {
+			await execPromise("esbuild --version");
+		} catch (error) {
+			printer.printOperationMessage({
+				kind: "error",
+				message:
+					"To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run `npm i -g esbuild`",
+			});
+
+			exit();
+		}
+
+		const { handleBuildCliCommand } = await import(
+			"./handleBuildCliCommand.js"
+		);
+
+		try {
+			await handleBuildCliCommand(printer, argv.source ?? process.cwd());
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;

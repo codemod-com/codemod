@@ -115,6 +115,12 @@ const configJsonBaseSchema = object({
 		]),
 		git: optional(string()),
 	}),
+	build: optional(
+		object({
+			input: optional(string()),
+			output: optional(string()),
+		}),
+	),
 });
 
 export const codemodConfigSchema = union([
