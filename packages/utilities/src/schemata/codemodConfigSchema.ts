@@ -3,7 +3,6 @@ import {
 	Output,
 	array,
 	boolean,
-	coerce,
 	custom,
 	literal,
 	merge,
@@ -68,7 +67,7 @@ const versionValidator = union([
 	// react < 18.0.2 (preferred)
 	string([regex(semVerRegex)]),
 	// react < 18 (for example, when no latest version of a given major is out yet)
-	coerce(number(), (input) => Number(input)),
+	string([regex(/^\d+$/)]),
 ]);
 
 const configJsonBaseSchema = object({

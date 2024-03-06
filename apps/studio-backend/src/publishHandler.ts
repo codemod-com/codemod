@@ -6,7 +6,10 @@ import { literal, object, parse, string } from "valibot";
 import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
-import { codemodConfigSchema } from "@codemod-com/utilities";
+import {
+	codemodConfigSchema,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
@@ -37,14 +40,16 @@ export const publishHandler =
 			jwtKey: environment.CLERK_JWT_KEY,
 		});
 
-		const user = await clerkClient.users.getUser(userId);
+		const { username } = await clerkClient.users.getUser(userId);
 
-		if (user.username === null) {
+		if (username === null) {
 			throw new Error("The username of the current user does not exist");
 		}
 
-		let configJsonBuffer: Buffer | null = null;
+		let codemodRcBuffer: Buffer | null = null;
 		let name: string | null = null;
+		let version: string | null = null;
+		let isPrivate = false;
 		let indexCjsBuffer: Buffer | null = null;
 		let descriptionMdBuffer: Buffer | null = null;
 
@@ -52,19 +57,26 @@ export const publishHandler =
 			const buffer = await multipartFile.toBuffer();
 
 			if (multipartFile.fieldname === ".codemodrc.json") {
-				configJsonBuffer = buffer;
+				codemodRcBuffer = buffer;
 
-				const configJson = JSON.parse(configJsonBuffer.toString("utf8"));
+				const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-				const config = parse(codemodConfigSchema, configJson);
+				const codemodRc = parse(codemodConfigSchema, codemodRcData);
 
-				if (!("name" in config) || !/[a-zA-Z0-9_/@-]+/.test(config.name)) {
+				if (
+					!("name" in codemodRc) ||
+					!/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)
+				) {
 					throw new Error(
 						`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 					);
 				}
 
-				name = config.name;
+				name = codemodRc.name;
+				version = codemodRc.version;
+				if (codemodRc.private) {
+					isPrivate = true;
+				}
 
 				// TODO: add check for organization
 			}
@@ -78,10 +90,20 @@ export const publishHandler =
 			}
 		}
 
-		if (configJsonBuffer === null || indexCjsBuffer === null || name === null) {
-			throw new Error(
-				"Could not find either the .codemodrc.json or the index.cjs file",
-			);
+		if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
+			throw new Error("Could not find .codemodrc.json file");
+		}
+
+		if (!isNeitherNullNorUndefined(indexCjsBuffer)) {
+			throw new Error("Could not find index.cjs file");
+		}
+
+		if (!isNeitherNullNorUndefined(name)) {
+			throw new Error("Codemod name was not provided");
+		}
+
+		if (!isNeitherNullNorUndefined(version)) {
+			throw new Error("Codemod version was not provided");
 		}
 
 		const client = new S3Client({
@@ -96,11 +118,13 @@ export const publishHandler =
 
 		const REQUEST_TIMEOUT = 5000;
 
+		const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
+
 		await client.send(
 			new PutObjectCommand({
-				Bucket: "codemod-public-v2",
-				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
-				Body: configJsonBuffer,
+				Bucket: bucket,
+				Key: `codemod-registry/${hashDigest}/${version}/.codemodrc.json`,
+				Body: codemodRcBuffer,
 			}),
 			{
 				requestTimeout: REQUEST_TIMEOUT,
@@ -109,8 +133,8 @@ export const publishHandler =
 
 		await client.send(
 			new PutObjectCommand({
-				Bucket: "codemod-public-v2",
-				Key: `codemod-registry/${hashDigest}/index.cjs`,
+				Bucket: bucket,
+				Key: `codemod-registry/${hashDigest}/${version}/index.cjs`,
 				Body: indexCjsBuffer,
 			}),
 			{
@@ -118,11 +142,11 @@ export const publishHandler =
 			},
 		);
 
-		if (descriptionMdBuffer !== null) {
+		if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
 			await client.send(
 				new PutObjectCommand({
-					Bucket: "codemod-public-v2",
-					Key: `codemod-registry/${hashDigest}/description.md`,
+					Bucket: bucket,
+					Key: `codemod-registry/${hashDigest}/${version}/description.md`,
 					Body: descriptionMdBuffer,
 				}),
 				{
