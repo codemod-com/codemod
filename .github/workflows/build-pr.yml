@@ -1,40 +1,40 @@
-# name: build
-# on:
-#     pull_request:
-#         branches:
-#             - main
-# jobs:
-#     Build:
-#         runs-on: ubuntu-latest
-#         steps:
-#             - name: Setup Node.js
-#               uses: actions/setup-node@v3
-#               with:
-#                   node-version: 20
-#             - name: Checkout Repository
-#               uses: actions/checkout@v3
-#               with:
-#                   token: ${{ secrets.GH_TOKEN }}
-#             - name: Install modules
-#               uses: pnpm/action-setup@v2
-#               with:
-#                   version: 8
-#               #     run_install: |
-#               #         - recursive: true
-#               #           args: [--frozen-lockfile, --strict-peer-dependencies]
-#             - name: Build projects
-#               run: pnpm build
-#               env:
-#                   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
-#                   NEXT_PUBLIC_API_URL: 'http://localhost:5173'
-#             - name: Upload to S3
-#               uses: jakejarvis/s3-sync-action@master
-#               with:
-#                   args: --acl public-read --follow-symlinks
-#               env:
-#                   AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-#                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-#                   AWS_REGION: 'us-west-1'
-#                   DEST_DIR: 'codemod-registry'
-#                   SOURCE_DIR: 'apps/registry/builder/dist'
+name: build-in-pr
+on:
+    pull_request:
+        branches:
+            - main
+jobs:
+    Build:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Setup Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+            - name: Checkout Repository
+              uses: actions/checkout@v3
+              with:
+                  token: ${{ secrets.GH_TOKEN }}
+            - name: Install modules
+              uses: pnpm/action-setup@v2
+              with:
+                  version: 8
+              #     run_install: |
+              #         - recursive: true
+              #           args: [--frozen-lockfile, --strict-peer-dependencies]
+            - name: Build projects
+              run: pnpm build
+              env:
+                  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
+                  NEXT_PUBLIC_API_URL: 'http://localhost:5173'
+            - name: Upload to S3
+              uses: jakejarvis/s3-sync-action@master
+              with:
+                  args: --acl public-read --follow-symlinks
+              env:
+                  AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+                  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+                  AWS_REGION: 'us-west-1'
+                  DEST_DIR: 'codemod-registry'
+                  SOURCE_DIR: 'apps/registry/builder/dist'
