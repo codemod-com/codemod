@@ -1,6 +1,5 @@
 import ms from "ms";
 import {
-	Output,
 	array,
 	boolean,
 	custom,
@@ -13,6 +12,8 @@ import {
 	string,
 	tuple,
 	union,
+	type Input,
+	type Output,
 } from "valibot";
 
 export const argumentsSchema = array(
@@ -38,6 +39,7 @@ export const argumentsSchema = array(
 	]),
 );
 
+export type ArgumentsInput = Input<typeof argumentsSchema>;
 export type Arguments = Output<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [

@@ -1,5 +1,5 @@
 import { type Output, literal, union } from "valibot";
-import { Arguments } from "./schemata/argumentsSchema.js";
+import { type Arguments } from "@codemod-com/utilities";
 
 export const javaScriptCodemodEngineSchema = union([
 	literal("jscodeshift"),

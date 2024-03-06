@@ -5,6 +5,7 @@ export {
 	argumentsSchema,
 	codemodConfigSchema,
 	type Arguments,
+	type ArgumentsInput,
 	type CodemodConfig,
 } from "./schemata/codemodConfigSchema.js";
 export {
