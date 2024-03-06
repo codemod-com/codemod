@@ -1,22 +1,3 @@
-import ms from "ms";
-import {
-	Output,
-	array,
-	boolean,
-	coerce,
-	custom,
-	literal,
-	merge,
-	number,
-	object,
-	optional,
-	parse,
-	regex,
-	string,
-	tuple,
-	union,
-} from "valibot";
-
 import { createHash } from "node:crypto";
 import { constants } from "node:fs";
 import {
@@ -35,35 +16,41 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
 import { deflate } from "node:zlib";
+import * as S from "@effect/schema/Schema";
 import glob from "fast-glob";
 import * as tar from "tar";
 
 const promisifiedDeflate = promisify(deflate);
 
-export const argumentsSchema = array(
-	union([
-		object({
-			name: string(),
-			kind: literal("string"),
-			required: optional(boolean(), false),
-			default: optional(string()),
+const argumentsSchema = S.array(
+	S.union(
+		S.struct({
+			name: S.string,
+			kind: S.literal("string"),
+			default: S.optional(S.string),
+			description: S.optional(S.string).withDefault(() => ""),
+			required: S.optional(S.boolean).withDefault(() => false),
 		}),
-		object({
-			name: string(),
-			kind: literal("number"),
-			required: optional(boolean(), false),
-			default: optional(number()),
+		S.struct({
+			name: S.string,
+			kind: S.literal("number"),
+			default: S.optional(S.number),
+			description: S.optional(S.string).withDefault(() => ""),
+			required: S.optional(S.boolean).withDefault(() => false),
 		}),
-		object({
-			name: string(),
-			kind: literal("boolean"),
-			required: optional(boolean(), false),
-			default: optional(boolean()),
+		S.struct({
+			name: S.string,
+			kind: S.literal("boolean"),
+			default: S.optional(S.boolean),
+			description: S.optional(S.string).withDefault(() => ""),
+			required: S.optional(S.boolean).withDefault(() => false),
 		}),
-	]),
+	),
 );
 
-export type Arguments = Output<typeof argumentsSchema>;
+const optionalArgumentsSchema = S.optional(argumentsSchema).withDefault(
+	() => [],
+);
 
 export const PIRANHA_LANGUAGES = [
 	"java",
@@ -76,101 +63,46 @@ export const PIRANHA_LANGUAGES = [
 	"scala",
 ] as const;
 
-// Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const semVerRegex =
-	/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
+const piranhaLanguageSchema = S.union(
+	...PIRANHA_LANGUAGES.map((language) => S.literal(language)),
+);
 
-const knownEngines = [
-	literal("jscodeshift"),
-	literal("repomod-engine"),
-	literal("filemod"),
-	literal("ts-morph"),
-	literal("ast-grep"),
-];
-
-const versionValidator = union([
-	// react < 18.0.2 (preferred)
-	string([regex(semVerRegex)]),
-	// react < 18 (for example, when no latest version of a given major is out yet)
-	coerce(number(), (input) => Number(input)),
-]);
-
-const configJsonBaseSchema = object({
-	description: optional(string()),
-	version: versionValidator,
-	// We should detect the owner when user publishes. This is for backwards compatibility.
-	owner: optional(string()),
-	// We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
-	// just as npm does.
-	private: optional(boolean()),
-	// Array of tuples: [libName, versionOperator, version]
-	applicability: optional(
-		array(
-			tuple([
-				string(),
-				union([
-					literal("<"),
-					literal(">"),
-					literal("="),
-					literal("<="),
-					literal(">="),
-				]),
-				versionValidator,
-			]),
-		),
-		[],
-	),
-	deps: optional(array(string())),
-	engine: union([...knownEngines, literal("recipe"), literal("piranha")]),
-	arguments: optional(argumentsSchema, []),
-	meta: object({
-		type: union([
-			literal("migration"),
-			literal("best practices"),
-			literal("cleanup"),
-			literal("code mining"),
-			literal("other"),
-		]),
-		changeType: union([literal("assistive"), literal("autonomous")]),
-		timeSave: string([
-			custom(
-				// Returns undefined if input is not valid. We will use the same lib to get the time later in the code.
-				(input) => !!ms(input),
-				"The timeSave field does not match the expected format. See https://www.npmjs.com/package/ms for format reference.",
-			),
-		]),
-		git: optional(string()),
+const codemodConfigSchema = S.union(
+	S.struct({
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("piranha"),
+		language: piranhaLanguageSchema,
+		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
 	}),
-});
+	S.struct({
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("jscodeshift"),
+		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
+	}),
+	S.struct({
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("ts-morph"),
+		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
+	}),
+	S.struct({
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("filemod"),
+		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
+	}),
+	S.struct({
+		schemaVersion: S.literal("1.0.0"),
+		engine: S.literal("recipe"),
+		names: S.array(S.string),
+		arguments: optionalArgumentsSchema,
+		owner: S.optional(S.string),
+	}),
+);
 
-export const codemodConfigSchema = union([
-	merge([
-		configJsonBaseSchema,
-		object({
-			engine: union(knownEngines),
-			name: string(),
-		}),
-	]),
-	merge([
-		configJsonBaseSchema,
-		object({
-			engine: literal("recipe"),
-			names: array(string()),
-		}),
-	]),
-	merge([
-		configJsonBaseSchema,
-		object({
-			engine: literal("piranha"),
-			name: string(),
-			language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
-		}),
-	]),
-]);
-
-export type CodemodConfig = Output<typeof codemodConfigSchema>;
-
-const parseCodemodConfigSchema = (i: unknown) => parse(codemodConfigSchema, i);
+const parseCodemodConfigSchema = S.parseSync(codemodConfigSchema);
 
 const removeDirectoryContents = async (directoryPath: string) => {
 	const paths = await readdir(directoryPath);
@@ -201,7 +133,7 @@ const build = async () => {
 
 	const codemodsDirectoryPath = join(cwd, "./codemods");
 
-	const configFilePaths = await glob("./**/.codemodrc.json", {
+	const configFilePaths = await glob("./**/config.json", {
 		cwd: codemodsDirectoryPath,
 		dot: false,
 		ignore: ["**/node_modules/**", "**/build/**"],
@@ -233,16 +165,13 @@ const build = async () => {
 
 		await mkdir(codemodDirectoryPath, { recursive: true });
 
-		const configPath = join(codemodsDirectoryPath, name, ".codemodrc.json");
+		const configPath = join(codemodsDirectoryPath, name, "config.json");
 
 		const data = await readFile(configPath, { encoding: "utf8" });
 
-		let config: CodemodConfig;
-		try {
-			config = parseCodemodConfigSchema(JSON.parse(data));
-		} catch (err) {
-			continue;
-		}
+		const config = parseCodemodConfigSchema(JSON.parse(data), {
+			onExcessProperty: "ignore",
+		});
 
 		{
 			const configWithName = {
@@ -250,7 +179,7 @@ const build = async () => {
 				name,
 			};
 
-			const buildConfigPath = join(codemodDirectoryPath, ".codemodrc.json");
+			const buildConfigPath = join(codemodDirectoryPath, "config.json");
 
 			writeFile(buildConfigPath, JSON.stringify(configWithName));
 		}
