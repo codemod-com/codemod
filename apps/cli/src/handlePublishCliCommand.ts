@@ -113,7 +113,6 @@ export const handlePublishCliCommand = async (
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		const errorMessage = `Could not publish the "${codemodRc.name}" codemod: ${message}`;
-		printer.printConsoleMessage("error", errorMessage);
 		throw new Error(errorMessage);
 	}
 
