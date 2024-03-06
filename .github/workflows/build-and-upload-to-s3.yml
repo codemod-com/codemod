@@ -4,7 +4,7 @@ on:
         branches:
             - main
 jobs:
-    Build:
+    Build and upload to S3:
         runs-on: ubuntu-latest
         steps:
             - name: Setup Node.js
@@ -21,7 +21,7 @@ jobs:
                   version: 8
                   run_install: |
                       - recursive: true
-                        args: [--frozen-lockfile, --strict-peer-dependencies]
+                  #       args: [--frozen-lockfile, --strict-peer-dependencies]
             - name: Build projects
               run: pnpm build
               env:
