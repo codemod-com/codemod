@@ -26,6 +26,13 @@ ${codemod}
 \`\`\`
 `;
 
+const errorPrompt = `
+	Here is codemode with runtime error: 
+	$CODEMOD
+	
+	Here is execution error text: 
+	$EXECUTION_ERROR
+`;
 const autoGenerateCodemodPrompt = `
   Below, you are provided with "Before" and "After" code snippets.
 	The code snippets are written in JavaScript or TypeScript language.
@@ -161,6 +168,7 @@ const promptStrategies: Readonly<
 
 export type { PromptPreset };
 export {
+	errorPrompt,
 	promptStrategies,
 	generateCodemodNamePrompt,
 	generateCodemodHumanNamePrompt,
