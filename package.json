@@ -39,7 +39,6 @@
 		"prepare": "husky install"
 	},
 	"devDependencies": {
-		"@effect/schema": "^0.48.4",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
