@@ -10,7 +10,13 @@ type AliasName =
 	| "$HIGHLIGHTED_IN_AFTER"
 	| "$EXECUTION_ERROR";
 
-type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
+type AliasValue = { value: string; updatedAt: number } | null;
+
+type OptionalAliasName = Extract<AliasName, "$EXECUTION_ERROR">;
+type RequiredAliasName = Exclude<AliasName, OptionalAliasName>;
+
+type Aliases = Record<RequiredAliasName, AliasValue> &
+	Partial<Record<OptionalAliasName, AliasValue>>;
 
 const getAliases = (state: RootState): Aliases => {
 	const {
@@ -66,10 +72,12 @@ const getAliases = (state: RootState): Aliases => {
 					updatedAt: afterRangeUpdatedAt,
 			  }
 			: null,
-		$EXECUTION_ERROR: {
-			value: codemodExecutionError ?? "",
-			updatedAt: rangesUpdatedAt,
-		},
+		...(codemodExecutionError && {
+			$EXECUTION_ERROR: {
+				value: codemodExecutionError,
+				updatedAt: rangesUpdatedAt,
+			},
+		}),
 	};
 };
 
