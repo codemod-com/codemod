@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { buildDataAccessLayer } from "../dataAccessLayer/dataAccessLayer.js";
+import { buildDataAccessLayer } from "../db/dataAccessLayer.js";
 import {
 	TokenNotFoundError,
 	TokenRevokedError,

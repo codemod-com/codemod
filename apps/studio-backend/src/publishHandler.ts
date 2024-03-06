@@ -3,7 +3,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
 import { RouteHandlerMethod } from "fastify";
 import { literal, object, parse, string } from "valibot";
-import { Environment } from "./schema.js";
+import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 

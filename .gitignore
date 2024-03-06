@@ -31,4 +31,4 @@ yarn-debug.log*
 .vercel
 
 # Backend
-build-ncc
+build

@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from "node:http";
-import { Environment } from "./schema.js";
+import { Environment } from "./schemata/env.js";
 
 export const areClerkKeysSet = (
 	environment: Environment,
