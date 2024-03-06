@@ -43,3 +43,5 @@ export {
 	getUnifiedEntry,
 	trimLicense,
 } from "./registry.js";
+
+export { tarPack } from "./tarPack.js";

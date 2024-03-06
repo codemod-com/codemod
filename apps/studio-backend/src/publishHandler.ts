@@ -1,15 +1,16 @@
-import { createHash } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
-import { RouteHandlerMethod } from "fastify";
-import { literal, object, parse, string } from "valibot";
-import { Environment } from "./schemata/env.js";
-import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
-import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 import {
 	codemodConfigSchema,
 	isNeitherNullNorUndefined,
+	tarPack,
 } from "@codemod-com/utilities";
+import { RouteHandlerMethod } from "fastify";
+import { createHash } from "node:crypto";
+import { parse } from "valibot";
+import { Environment } from "./schemata/env.js";
+import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
+import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
@@ -114,6 +115,26 @@ export const publishHandler =
 			region: "us-west-1",
 		});
 
+		const buffers = [
+			{
+				name: ".codemodrc.json",
+				data: codemodRcBuffer,
+			},
+			{
+				name: "index.cjs",
+				data: indexCjsBuffer,
+			},
+		];
+
+		if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
+			buffers.push({
+				name: "description.md",
+				data: descriptionMdBuffer,
+			});
+		}
+
+		const archive = await tarPack(buffers);
+
 		const hashDigest = createHash("ripemd160").update(name).digest("base64url");
 
 		const REQUEST_TIMEOUT = 5000;
@@ -123,35 +144,11 @@ export const publishHandler =
 		await client.send(
 			new PutObjectCommand({
 				Bucket: bucket,
-				Key: `codemod-registry/${hashDigest}/${version}/.codemodrc.json`,
-				Body: codemodRcBuffer,
+				Key: `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`,
+				Body: archive,
 			}),
 			{
 				requestTimeout: REQUEST_TIMEOUT,
 			},
 		);
-
-		await client.send(
-			new PutObjectCommand({
-				Bucket: bucket,
-				Key: `codemod-registry/${hashDigest}/${version}/index.cjs`,
-				Body: indexCjsBuffer,
-			}),
-			{
-				requestTimeout: REQUEST_TIMEOUT,
-			},
-		);
-
-		if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
-			await client.send(
-				new PutObjectCommand({
-					Bucket: bucket,
-					Key: `codemod-registry/${hashDigest}/${version}/description.md`,
-					Body: descriptionMdBuffer,
-				}),
-				{
-					requestTimeout: REQUEST_TIMEOUT,
-				},
-			);
-		}
 	};
