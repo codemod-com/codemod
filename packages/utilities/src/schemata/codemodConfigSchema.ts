@@ -63,16 +63,9 @@ const knownEngines = [
 	literal("ast-grep"),
 ];
 
-const versionValidator = union([
-	// react < 18.0.2 (preferred)
-	string([regex(semVerRegex)]),
-	// react < 18 (for example, when no latest version of a given major is out yet)
-	string([regex(/^\d+$/)]),
-]);
-
 const configJsonBaseSchema = object({
 	description: optional(string()),
-	version: versionValidator,
+	version: string([regex(semVerRegex)]),
 	// We should detect the owner when user publishes. This is for backwards compatibility.
 	owner: optional(string()),
 	// We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
@@ -90,7 +83,12 @@ const configJsonBaseSchema = object({
 					literal("<="),
 					literal(">="),
 				]),
-				versionValidator,
+				union([
+					// react < 18.0.2 (preferred)
+					string([regex(semVerRegex)]),
+					// react < 18 (for example, when no latest version of a given major is out yet)
+					string([regex(/^\d+$/)]),
+				]),
 			]),
 		),
 		[],
