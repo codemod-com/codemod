@@ -4340,7 +4340,7 @@ importers:
         version: 0.19.12
       tsx:
         specifier: ^4.7.0
-        version: 4.7.1
+        version: 4.7.0
       typescript:
         specifier: 5.3.3
         version: 5.3.3
@@ -12588,7 +12588,7 @@ packages:
     resolution: {integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==}
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.10.5
+      '@types/node': 20.10.4
     dev: true
 
   /@types/graceful-fs@4.1.9:
