@@ -22,7 +22,15 @@ const MainPageContent = () => {
 					Check out this brief demo video below to learn more about Codemod
 					Studio.
 				</Label>
-				<video className="rounded-sm" width="320" height="40%" autoPlay muted>
+				<video
+					className="rounded-sm"
+					width="320"
+					height="40%"
+					autoPlay
+					muted
+					loop
+					playsInline
+				>
 					<source
 						src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-studio/codemod-studio-quickstart.mp4"
 						type="video/mp4"
