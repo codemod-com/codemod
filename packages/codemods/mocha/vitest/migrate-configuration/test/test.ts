@@ -35,8 +35,7 @@ describe("mocha config-files", () => {
       "main": "./dist/index.cjs",
       "types": "/dist/index.d.ts",
       "scripts": {
-        "build:cjs": "cjs-builder ./src/index.ts",
-        "test": "mocha"
+                "test": "mocha"
       },
       "mocha": {
         "config-key": "config-value"
@@ -140,8 +139,7 @@ describe("mocha config-files", () => {
                 "main": "./dist/index.cjs",
                 "types": "/dist/index.d.ts",
                 "scripts": {
-                  "build:cjs": "cjs-builder ./src/index.ts",
-                  "test": "vitest run",
+                                    "test": "vitest run",
                   "test:watch": "vitest watch",
                   "coverage": "vitest run --coverage"
                 },

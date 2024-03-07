@@ -41,8 +41,7 @@ This codemod requires internet connection.
 	"types": "/dist/index.d.ts",
 	"scripts": {
 		"start": "pnpm run build:cjs && node ./dist/index.cjs",
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"lint:eslint": "eslint . --fix",
+				"lint:eslint": "eslint . --fix",
 		"lint:prettier": "prettier --write ."
 	},
 	"eslintIgnore": ["ignore-key"],
@@ -74,8 +73,7 @@ This codemod requires internet connection.
 	"types": "/dist/index.d.ts",
 	"scripts": {
 		"start": "pnpm run build:cjs && node ./dist/index.cjs",
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
+				"lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
 		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
 		"NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
 		"NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"

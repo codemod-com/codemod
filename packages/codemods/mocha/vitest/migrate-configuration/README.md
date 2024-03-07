@@ -24,8 +24,7 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 	"main": "./dist/index.cjs",
 	"types": "/dist/index.d.ts",
 	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"test": "mocha"
+				"test": "mocha"
 	},
 	"mocha": {
 		"config-key": "config-value"
@@ -48,8 +47,7 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 	"main": "./dist/index.cjs",
 	"types": "/dist/index.d.ts",
 	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
-		"test": "vitest run",
+				"test": "vitest run",
 		"coverage": "vitest run --coverage"
 	},
 	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],

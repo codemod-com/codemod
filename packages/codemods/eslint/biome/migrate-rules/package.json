@@ -6,7 +6,6 @@
 		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@vitest/coverage-v8": "^1.0.1",
-		"esbuild": "0.19.5",
 		"json-schema-to-typescript": "^13.1.2",
 		"memfs": "^4.6.0",
 		"ts-node": "^10.9.1",
@@ -17,7 +16,6 @@
 	"main": "./dist/index.cjs",
 	"types": "/dist/index.d.ts",
 	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
 		"generate": "tsx generate-latest-dts.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
