@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/codemod-react-router-5-browser-router",
+	"name": "@codemod-com/codemod-react-router-4-browser-router",
 	"dependencies": {},
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",

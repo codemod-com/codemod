@@ -4,7 +4,7 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("react-router v5 browser-router", () => {
+describe("react-router v4 browser-router", () => {
 	it("should replace Router component with BrowserRouter, add BrowserRouter import", async () => {
 		const input = `
 		import { Router, browserHistory } from 'react-router';
