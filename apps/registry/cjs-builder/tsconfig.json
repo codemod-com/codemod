@@ -1,7 +1,0 @@
-{
-	"extends": "@codemod-com/tsconfig/base.json",
-	"include": ["./*.ts"],
-	"compilerOptions": {
-		"outDir": "./dist"
-	}
-}
