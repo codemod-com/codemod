@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "react-router/5/browser-router",
+	"name": "react-router/4/browser-router",
 	"deps": ["vitest@latest"],
 	"owner": "codemod.com",
 	"engine": "jscodeshift",
