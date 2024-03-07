@@ -3,7 +3,6 @@
 	"dependencies": { "@codemod-com/antd5-utils": "workspace:*" },
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",
-		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"typescript": "^5.2.2",
 		"jscodeshift": "^0.15.1",
 		"@types/jscodeshift": "^0.11.10"

@@ -2,7 +2,6 @@
 	"name": "@codemod-com/codemod-mocha-vitest-migrate-configuration",
 	"dependencies": { "valibot": "^0.24.1" },
 	"devDependencies": {
-		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@codemod-com/filemod": "workspace:*",
 		"@types/jscodeshift": "^0.11.10",

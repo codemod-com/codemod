@@ -261,7 +261,6 @@ const handleData: HandleData<Dependencies, State> = async (
 				? {
 						"@codemod-com/tsconfig": "workspace:*",
 						"@codemod-com/utilities": "workspace:*",
-						"@codemod-com/registry-cjs-builder": "workspace:*",
 						typescript: "^5.2.2",
 						esbuild: "0.19.5",
 						mocha: "^10.2.0",

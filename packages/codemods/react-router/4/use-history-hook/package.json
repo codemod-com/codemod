@@ -3,7 +3,6 @@
 	"dependencies": {},
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",
-		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"typescript": "^5.2.2",
 		"esbuild": "0.19.5",
 		"ts-node": "^10.9.1",

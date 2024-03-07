@@ -3,7 +3,6 @@
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
-		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@vitest/coverage-v8": "^1.0.1",
 		"json-schema-to-typescript": "^13.1.2",
