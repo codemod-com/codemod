@@ -1,9 +1,6 @@
-import "dotenv/config";
-
 import { faker } from "@faker-js/faker";
 import { CodemodType, PrismaClient } from "@prisma/client";
-import { z } from "zod";
-import { CodemodCreateInputSchema } from "./generated/zod";
+import "dotenv/config";
 
 if (!("DATABASE_URI" in process.env)) {
 	throw new Error("DATABASE_URI not found in .env");
@@ -12,36 +9,42 @@ if (!("DATABASE_URI" in process.env)) {
 const prisma = new PrismaClient();
 
 async function main() {
-	const data: z.infer<typeof CodemodCreateInputSchema>[] = [];
-
 	for (let i = 0; i < 10; i++) {
-		data.push({
-			slug: faker.string.alpha(10),
-			name: faker.lorem.words(2),
-			shortDescription: faker.lorem.words(10),
-			type: faker.helpers.arrayElement(Object.values(CodemodType)),
-			featured: faker.datatype.boolean(),
-			verified: faker.datatype.boolean(),
-			framework: faker.lorem.word(),
-			frameworkVersion: faker.system.semver(),
-			author: faker.lorem.word(),
-			engine: faker.helpers.arrayElement(["jscodeshift", "ts-morph"]),
-			requirements: faker.lorem.words(3),
-			version: faker.system.semver(),
-			lastUpdate: faker.date.recent(),
-			command: faker.lorem.words(2),
-			vsCodeLink: faker.internet.url(),
-			codemodStudioExampleLink: faker.internet.url(),
-			testProjectCommand: faker.lorem.words(2),
-			sourceRepo: faker.internet.url(),
-			readmeLink: faker.internet.url(),
-			indexTsLink: faker.internet.url(),
-			private: faker.datatype.boolean(),
+		const codemod = await prisma.codemod.create({
+			data: {
+				slug: faker.datatype.uuid(),
+				name: faker.lorem.words(2),
+				type: faker.helpers.arrayElement(Object.values(CodemodType)),
+				featured: faker.datatype.boolean(),
+				verified: faker.datatype.boolean(),
+				private: faker.datatype.boolean(),
+				author: faker.person.fullName(),
+				amountOfUses: faker.datatype.number(),
+				totalTimeSaved: faker.datatype.number(100),
+				openedPrs: faker.datatype.number(10),
+				labels: faker.lorem.words(3).split(" "),
+				from: faker.system.semver(),
+				to: faker.system.semver(),
+			},
+		});
+
+		await prisma.codemodVersion.create({
+			data: {
+				version: faker.system.semver(),
+				shortDescription: faker.lorem.sentence(),
+				engine: faker.helpers.arrayElement(["jscodeshift", "ts-morph"]),
+				requirements: faker.lorem.words(3),
+				vsCodeLink: faker.internet.url(),
+				codemodStudioExampleLink: faker.internet.url(),
+				testProjectCommand: faker.lorem.words(2),
+				sourceRepo: faker.internet.url(),
+				bucketLink: faker.internet.url(),
+				codemodId: codemod.id,
+			},
 		});
 	}
 
-	await prisma.codemod.createMany({ data });
-	console.log({ data });
+	console.log("Data seeding completed.");
 }
 
 main()
