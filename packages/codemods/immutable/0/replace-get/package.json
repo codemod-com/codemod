@@ -1,0 +1,23 @@
+{
+	"name": "@codemod-com/codemod-immutable-0-replace-get",
+	"dependencies": {},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"typescript": "^5.2.2",
+		"ts-node": "^10.9.1",
+		"jscodeshift": "^0.15.1",
+		"@types/jscodeshift": "^0.11.10",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {},
+	"files": [
+		"./README.md",
+		"./.codemodrc.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"type": "module"
+}

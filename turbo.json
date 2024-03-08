@@ -21,12 +21,6 @@
 			"dependsOn": ["^build"],
 			"outputs": ["build/**", "dist/**"]
 		},
-		"build:cjs": {
-			"dependsOn": ["^build"],
-			"outputMode": "full",
-			"inputs": ["src/**/*.ts", "src/**/*.js"],
-			"outputs": ["dist/index.cjs"]
-		},
 		"create": {
 			"dependsOn": ["^create"],
 			"cache": false

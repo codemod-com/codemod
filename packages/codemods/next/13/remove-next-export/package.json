@@ -1,0 +1,30 @@
+{
+	"name": "@codemod-com/codemod-next-13-remove-next-export",
+	"dependencies": {},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"typescript": "^5.2.2",
+		"ts-node": "^10.9.1",
+		"@codemod-com/filemod": "workspace:*",
+		"memfs": "^4.6.0",
+		"ts-morph": "^19.0.0",
+		"jscodeshift": "^0.15.1",
+		"@types/jscodeshift": "^0.11.10",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"coverage": "vitest run --coverage"
+	},
+	"files": [
+		"./README.md",
+		"./.codemodrc.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"type": "module"
+}

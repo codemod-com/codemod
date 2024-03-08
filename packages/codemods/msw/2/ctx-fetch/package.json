@@ -1,0 +1,22 @@
+{
+	"name": "@codemod-com/codemod-msw-2-ctx-fetch",
+	"dependencies": {},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"typescript": "^5.2.2",
+		"ts-node": "^10.9.1",
+		"ts-morph": "^19.0.0",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"types": "/dist/index.d.ts",
+	"scripts": {},
+	"files": [
+		"./README.md",
+		"./.codemodrc.json",
+		"./dist/index.cjs",
+		"./index.d.ts"
+	],
+	"type": "module"
+}
