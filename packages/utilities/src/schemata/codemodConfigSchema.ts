@@ -144,3 +144,4 @@ export const codemodConfigSchema = union([
 ]);
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
+export type CodemodConfigInput = Input<typeof codemodConfigSchema>;

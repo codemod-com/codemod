@@ -7,6 +7,7 @@ export {
 	type Arguments,
 	type ArgumentsInput,
 	type CodemodConfig,
+	type CodemodConfigInput,
 } from "./schemata/codemodConfigSchema.js";
 export {
 	JOB_KIND,

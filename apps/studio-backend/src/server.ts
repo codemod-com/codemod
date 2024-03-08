@@ -60,7 +60,7 @@ const getSourceControlProvider = (
 	}
 };
 
-const environment = parseEnvironment(process.env);
+export const environment = parseEnvironment(process.env);
 
 const X_CODEMOD_ACCESS_TOKEN = (
 	environment.X_CODEMOD_ACCESS_TOKEN ?? ""
@@ -69,7 +69,7 @@ const X_INTUITA_ACCESS_TOKEN = (
 	environment.X_INTUITA_ACCESS_TOKEN ?? ""
 ).toLocaleLowerCase();
 
-const initApp = async (toRegister: FastifyPluginCallback[]) => {
+export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	const { PORT: port } = environment;
 	if (Number.isNaN(port)) {
 		throw new Error(`Invalid port ${port}`);
@@ -149,6 +149,8 @@ const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	}
 
 	await fastify.listen({ port, host: "0.0.0.0" });
+
+	return fastify;
 };
 
 const dataAccessLayer = await buildDataAccessLayer(environment.DATABASE_URI);
@@ -538,4 +540,5 @@ protectedRoutes[Symbol.for("fastify.display-name")] = "protectedRoutes";
 // @ts-expect-error setup a display name not to trigger require.cache down the line
 publicRoutes[Symbol.for("fastify.display-name")] = "publicRoutes";
 
-await initApp([publicRoutes, protectedRoutes]);
+export const runServer = async () =>
+	await initApp([publicRoutes, protectedRoutes]);

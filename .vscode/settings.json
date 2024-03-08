@@ -1,7 +1,9 @@
 {
+  "editor.defaultFormatter": "biomejs.biome",
 	"editor.formatOnSave": true,
 	"editor.codeActionsOnSave": {
-		"source.fixAll.eslint": "explicit"
+		"source.organizeImports.biome": "explicit",
+    "source.fixAll.biome": "explicit"
 	},
 	"colorize.colorized_colors": [
 		"BROWSERS_COLORS",
@@ -17,5 +19,4 @@
 		"**/*.styl",
 		"**/*.json",
 	],
-	"editor.defaultFormatter": "biomejs.biome"
 }
