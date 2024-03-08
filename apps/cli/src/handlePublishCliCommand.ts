@@ -43,6 +43,17 @@ export const handlePublishCliCommand = async (
 		)}' and able to publish a codemod to our public registry.`,
 	);
 
+	let packageJsonData: string;
+	try {
+		packageJsonData = await fs.promises.readFile(join(source, "package.json"), {
+			encoding: "utf-8",
+		});
+	} catch (error) {
+		throw new Error(
+			`Could not find the package.json file in the codemod directory: ${error}.`,
+		);
+	}
+
 	let codemodRcData: string;
 	try {
 		codemodRcData = await fs.promises.readFile(
@@ -59,21 +70,16 @@ export const handlePublishCliCommand = async (
 
 	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
 
-	if (!("name" in codemodRc) || !/[a-zA-Z0-9_/-]+/.test(codemodRc.name)) {
+	if (!("name" in codemodRc) || !/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)) {
 		throw new Error(
-			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, -)`,
+			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 		);
 	}
 
-	if (codemodRc.private) {
-		if (!/^@[a-zA-Z0-9_/-]+\//.test(codemodRc.name)) {
-			throw new Error(
-				`The "name" field in .codemodrc.json must start with user or organization name (e.g. @codemod-com/your-codemod-name) if publishing a private codemod.`,
-			);
-		}
-	}
-
-	const indexCjsPath = join(source, "./dist/index.cjs");
+	const indexCjsPath = join(
+		source,
+		codemodRc.build?.output ?? "./dist/index.cjs",
+	);
 	let indexCjsData: string;
 	try {
 		indexCjsData = await fs.promises.readFile(indexCjsPath, {
@@ -81,7 +87,7 @@ export const handlePublishCliCommand = async (
 		});
 	} catch (err) {
 		throw new Error(
-			`Could not find the main file of the codemod in ${indexCjsPath}.`,
+			`Could not find the main file of the codemod in ${indexCjsPath}. Did you forget to run "codemod build"?`,
 		);
 	}
 
@@ -113,6 +119,7 @@ export const handlePublishCliCommand = async (
 	} catch (error) {
 		const message = error instanceof Error ? error.message : String(error);
 		const errorMessage = `Could not publish the "${codemodRc.name}" codemod: ${message}`;
+		printer.printConsoleMessage("error", errorMessage);
 		throw new Error(errorMessage);
 	}
 

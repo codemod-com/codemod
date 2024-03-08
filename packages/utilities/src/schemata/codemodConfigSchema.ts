@@ -39,8 +39,8 @@ export const argumentsSchema = array(
 	]),
 );
 
-export type ArgumentsInput = Input<typeof argumentsSchema>;
 export type Arguments = Output<typeof argumentsSchema>;
+export type ArgumentsInput = Input<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [
 	"java",
@@ -116,6 +116,12 @@ const configJsonBaseSchema = object({
 		]),
 		git: optional(string()),
 	}),
+	build: optional(
+		object({
+			input: optional(string()),
+			output: optional(string()),
+		}),
+	),
 });
 
 export const codemodConfigSchema = union([
