@@ -57,6 +57,25 @@ const PIRANHA_LANGUAGES = [
 const semVerRegex =
 	/^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
+const versionUnion = union([
+	literal("<"),
+	literal(">"),
+	literal("="),
+	literal("<="),
+	literal(">="),
+]);
+
+const libraryVersionTuple = tuple([
+	string(),
+	versionUnion,
+	union([
+		// react < 18.0.2 (preferred)
+		string([regex(semVerRegex)]),
+		// react < 18 (for example, when no latest version of a given major is out yet)
+		string([regex(/^\d+$/)]),
+	]),
+]);
+
 const knownEngines = [
 	literal("jscodeshift"),
 	literal("repomod-engine"),
@@ -76,27 +95,7 @@ const configJsonBaseSchema = object({
 	// To overwrite default include patterns
 	include: optional(array(string())),
 	// Array of tuples: [libName, versionOperator, version]
-	applicability: optional(
-		array(
-			tuple([
-				string(),
-				union([
-					literal("<"),
-					literal(">"),
-					literal("="),
-					literal("<="),
-					literal(">="),
-				]),
-				union([
-					// react < 18.0.2 (preferred)
-					string([regex(semVerRegex)]),
-					// react < 18 (for example, when no latest version of a given major is out yet)
-					string([regex(/^\d+$/)]),
-				]),
-			]),
-		),
-		[],
-	),
+	applicability: optional(array(libraryVersionTuple), []),
 	deps: optional(array(string())),
 	engine: union([...knownEngines, literal("recipe"), literal("piranha")]),
 	arguments: optional(argumentsSchema, []),
@@ -116,6 +115,8 @@ const configJsonBaseSchema = object({
 				"The timeSave field does not match the expected format. See https://www.npmjs.com/package/ms for format reference.",
 			),
 		]),
+		from: optional(libraryVersionTuple),
+		to: optional(libraryVersionTuple),
 		git: optional(string()),
 	}),
 	build: optional(

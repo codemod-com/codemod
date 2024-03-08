@@ -1,8 +1,7 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink } from "node:fs/promises";
 import { join } from "node:path";
 import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
-import Axios from "axios";
 import { parse } from "valibot";
 import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
@@ -11,9 +10,6 @@ import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { PrinterBlueprint } from "./printer.js";
 import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
-
-const CODEMOD_REGISTRY_URL =
-	"https://codemod-public-v2.s3.us-west-1.amazonaws.com/codemod-registry";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	syncRegistry: () => Promise<void>;
@@ -32,30 +28,32 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		protected readonly _tarService: TarService,
 	) {}
 
-	public async syncRegistry() {
-		this.__printer.printConsoleMessage(
-			"info",
-			colorizeText(
-				`Syncing the Codemod Registry into ${boldText(
-					this.__configurationDirectoryPath,
-				)}...\n`,
-				"cyan",
-			),
-		);
+	public async syncRegistry() {}
 
-		await mkdir(this.__configurationDirectoryPath, { recursive: true });
+	// public async syncRegistry() {
+	// 	this.__printer.printConsoleMessage(
+	// 		"info",
+	// 		colorizeText(
+	// 			`Syncing the Codemod Registry into ${boldText(
+	// 				this.__configurationDirectoryPath,
+	// 			)}...\n`,
+	// 			"cyan",
+	// 		),
+	// 	);
 
-		const getResponse = await Axios.get(
-			`${CODEMOD_REGISTRY_URL}/registry.tar.gz`,
-			{
-				responseType: "arraybuffer",
-			},
-		);
+	// 	await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
-		const buffer = Buffer.from(getResponse.data);
+	// 	const getResponse = await Axios.get(
+	// 		`${CODEMOD_REGISTRY_URL}/registry.tar.gz`,
+	// 		{
+	// 			responseType: "arraybuffer",
+	// 		},
+	// 	);
 
-		await this._tarService.extract(this.__configurationDirectoryPath, buffer);
-	}
+	// 	const buffer = Buffer.from(getResponse.data);
+
+	// 	await this._tarService.extract(this.__configurationDirectoryPath, buffer);
+	// }
 
 	public async download(
 		name: string,
@@ -141,11 +139,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		if (config.engine === "piranha") {
 			const rulesPath = join(directoryPath, "rules.toml");
 
-			await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/rules.toml`,
-				rulesPath,
-			);
-
 			return {
 				source: "registry",
 				name,
@@ -163,13 +156,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			config.engine === "ts-morph"
 		) {
 			const indexPath = join(directoryPath, "index.cjs");
-
-			const data = await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/index.cjs`,
-				indexPath,
-			);
-
-			await writeFile(indexPath, data);
 
 			return {
 				source: "registry",
