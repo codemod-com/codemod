@@ -93,9 +93,9 @@
 			},
 			"performance": { "noDelete": "off" },
 			"security": { "noDangerouslySetInnerHtml": "warn" },
-      "nursery": {
-        "noUnusedImports": "error"
-      }
+			"nursery": {
+				"noUnusedImports": "error"
+			}
 		}
 	},
 	"formatter": {

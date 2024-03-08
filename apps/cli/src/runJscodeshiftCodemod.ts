@@ -1,6 +1,6 @@
 import vm from "node:vm";
 import jscodeshift, { API, FileInfo } from "jscodeshift";
-import { nullish, parse, string, union } from "valibot";
+import { nullish, parse, string } from "valibot";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";

@@ -1,5 +1,7 @@
 import ms from "ms";
 import {
+	type Input,
+	type Output,
 	array,
 	boolean,
 	custom,
@@ -12,8 +14,6 @@ import {
 	string,
 	tuple,
 	union,
-	type Input,
-	type Output,
 } from "valibot";
 
 export const argumentsSchema = array(

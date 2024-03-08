@@ -1,5 +1,4 @@
 import { type AxiosError } from "axios";
-import { env } from "~/env";
 import { BUILD_ACCESS_TOKEN } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";

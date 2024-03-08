@@ -1,6 +1,6 @@
-import * as tarStream from "tar-stream";
-import bl from "bl";
 import zlib from "zlib";
+import bl from "bl";
+import * as tarStream from "tar-stream";
 
 export async function tarPack(buffers: { name: string; data: Buffer }[]) {
 	// Create a pack object, which is a writable stream
