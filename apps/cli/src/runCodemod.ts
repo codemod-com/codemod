@@ -31,36 +31,31 @@ export const buildPaths = async (
 	codemod: Codemod,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): Promise<ReadonlyArray<string>> => {
-	const patterns = flowSettings.files ?? flowSettings.include ?? [];
+	let patterns = flowSettings.files ?? flowSettings.include ?? codemod.include;
 
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	if (
-		(codemod.engine === "repomod-engine" || codemod.engine === "filemod") &&
-		filemod !== null
-	) {
-		const filemodPaths = await glob(filemod.includePatterns?.slice() ?? [], {
-			absolute: true,
-			cwd: flowSettings.target,
-			ignore: filemod.excludePatterns?.slice(),
-			onlyFiles: true,
-			fs: fileSystemAdapter,
-			dot: true,
-		});
+	if (!patterns) {
+		if (
+			(codemod.engine === "repomod-engine" || codemod.engine === "filemod") &&
+			filemod !== null
+		) {
+			patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
+		} else if (codemod.engine === "jscodeshift") {
+			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+		} else if (codemod.engine === "ts-morph") {
+			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+		}
 
-		const flowPaths = await glob(patterns.slice(), {
-			absolute: true,
-			cwd: flowSettings.target,
-			ignore: flowSettings.exclude.slice(),
-			onlyFiles: true,
-			fs: fileSystemAdapter,
-			dot: true,
-		});
-
-		return filemodPaths.filter((path) => flowPaths.includes(path));
+		patterns = ["**/*"];
 	}
 
-	const paths = await glob(patterns.slice(), {
+	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
+	patterns = patterns.map((pattern) =>
+		pattern.startsWith("**/") ? pattern : `**/${pattern}`,
+	);
+
+	return glob(patterns, {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
@@ -68,8 +63,6 @@ export const buildPaths = async (
 		onlyFiles: true,
 		dot: true,
 	});
-
-	return paths;
 };
 
 async function* buildPathGenerator(

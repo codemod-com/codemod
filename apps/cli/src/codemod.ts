@@ -16,6 +16,7 @@ export type Codemod =
 	| Readonly<{
 			source: "registry";
 			name: string;
+			include?: string[];
 			engine: "recipe";
 			directoryPath: string;
 			codemods: ReadonlyArray<Codemod>;
@@ -24,6 +25,7 @@ export type Codemod =
 	| Readonly<{
 			source: "registry";
 			name: string;
+			include?: string[];
 			engine: "ast-grep";
 			directoryPath: string;
 			arguments: Arguments;
@@ -32,6 +34,7 @@ export type Codemod =
 	| Readonly<{
 			source: "registry";
 			name: string;
+			include?: string[];
 			engine: JavaScriptCodemodEngine;
 			directoryPath: string;
 			indexPath: string;
@@ -40,12 +43,14 @@ export type Codemod =
 	| Readonly<{
 			source: "registry";
 			name: string;
+			include?: string[];
 			engine: "piranha";
 			directoryPath: string;
 			arguments: Arguments;
 	  }>
 	| Readonly<{
 			source: "fileSystem";
+			include?: string[];
 			engine: JavaScriptCodemodEngine;
 			indexPath: string;
 	  }>;

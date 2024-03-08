@@ -73,6 +73,8 @@ const configJsonBaseSchema = object({
 	// We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
 	// just as npm does.
 	private: optional(boolean()),
+	// To overwrite default include patterns
+	include: optional(array(string())),
 	// Array of tuples: [libName, versionOperator, version]
 	applicability: optional(
 		array(

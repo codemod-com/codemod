@@ -12,7 +12,6 @@ import {
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_EXCLUDE_PATTERNS,
-	DEFAULT_INCLUDE_PATTERNS,
 	DEFAULT_INPUT_DIRECTORY_PATH,
 	DEFAULT_NO_CACHE,
 	DEFAULT_THREAD_COUNT,
@@ -20,7 +19,7 @@ import {
 } from "../constants.js";
 
 export const flowSettingsSchema = object({
-	include: optional(array(string()), DEFAULT_INCLUDE_PATTERNS),
+	include: optional(array(string())),
 	exclude: optional(array(string()), DEFAULT_EXCLUDE_PATTERNS),
 	target: optional(string()),
 	files: optional(array(string())),
