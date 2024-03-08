@@ -1,4 +1,4 @@
-import { exec, execSync } from "child_process";
+import { exec } from "child_process";
 import * as fs from "fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";

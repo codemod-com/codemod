@@ -99,6 +99,7 @@
 		}
 	},
 	"formatter": {
+		"formatWithErrors": true,
 		"ignore": [
 			"*.d.ts",
 			"input.js",

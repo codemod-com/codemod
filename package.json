@@ -54,6 +54,8 @@
 		"@biomejs/biome": "1.5.3"
 	},
 	"lint-staged": {
-		"**/*.{js,ts,jsx,tsx}": "biome check --apply"
+		"*": [
+			"biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true"
+		]
 	}
 }
