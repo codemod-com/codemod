@@ -2,6 +2,7 @@ import {
 	Output,
 	boolean,
 	coerce,
+	number,
 	object,
 	optional,
 	parse,
