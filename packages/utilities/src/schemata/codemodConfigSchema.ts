@@ -40,6 +40,7 @@ export const argumentsSchema = array(
 );
 
 export type Arguments = Output<typeof argumentsSchema>;
+export type ArgumentsInput = Input<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [
 	"java",

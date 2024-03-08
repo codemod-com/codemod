@@ -1,12 +1,13 @@
 export { CaseReadingService } from "./caseReadingService.js";
 export { CaseWritingService } from "./caseWritingService.js";
 export { FileWatcher } from "./fileWatcher.js";
-export { packageJsonSchema } from "./schemata/packageJsonSchema.js";
 export {
 	argumentsSchema,
 	codemodConfigSchema,
 	type Arguments,
+	type ArgumentsInput,
 	type CodemodConfig,
+	type CodemodConfigInput,
 } from "./schemata/codemodConfigSchema.js";
 export {
 	JOB_KIND,
