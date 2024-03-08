@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import * as s3sdk from "@aws-sdk/client-s3";
 import * as codemodComUtils from "@codemod-com/utilities";
 import supertest from "supertest";
@@ -5,7 +6,32 @@ import { afterAll, afterEach, describe, expect, test, vi } from "vitest";
 import { runServer } from "./server.js";
 import * as utils from "./util.js";
 
-import { createHash } from "node:crypto";
+vi.mock("./schemata/env.js", async () => {
+	const actual = await vi.importActual("./schemata/env.js");
+
+	return {
+		...actual,
+		parseEnvironment: vi.fn().mockImplementation(() => {
+			return {
+				PORT: "8081",
+				DATABASE_URI: "sqlite://:memory:",
+				CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
+				CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
+				CLERK_JWT_KEY: "CLERK_JWT_KEY",
+			};
+		}),
+	};
+});
+
+vi.mock("./util.js", async () => {
+	const actual = await vi.importActual("./util.js");
+
+	return {
+		...actual,
+		areClerkKeysSet: vi.fn().mockImplementation(() => true),
+		getCustomAccessToken: () => vi.fn().mockImplementation(() => "accessToken"),
+	};
+});
 
 vi.mock("./util.js", async () => {
 	const actual = await vi.importActual("./util.js");
