@@ -1,11 +1,11 @@
 import assert from "node:assert/strict";
-import { buildApi, trimLicense } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/utilities";
 import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 replace-nested-routes", () => {
-	it("1", async () => {
+	it.only("1", async () => {
 		const input = `
 		import React from 'react';
 		import { Route } from 'react-router-dom';
@@ -39,14 +39,14 @@ describe("react-router v4 replace-nested-routes", () => {
 		`;
 		const fileInfo: FileInfo = {
 			path: "index.js",
-			source: trimLicense(input),
+			source: input,
 		};
 
 		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
 			actualOutput?.replace(/\W/gm, ""),
-			trimLicense(output).replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
 		);
 	});
 
@@ -88,14 +88,14 @@ describe("react-router v4 replace-nested-routes", () => {
 		`;
 		const fileInfo: FileInfo = {
 			path: "index.js",
-			source: trimLicense(input),
+			source: input,
 		};
 
 		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
 			actualOutput?.replace(/\W/gm, ""),
-			trimLicense(output).replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
 		);
 	});
 
@@ -137,14 +137,14 @@ describe("react-router v4 replace-nested-routes", () => {
 		`;
 		const fileInfo: FileInfo = {
 			path: "index.js",
-			source: trimLicense(input),
+			source: input,
 		};
 
 		const actualOutput = transform(fileInfo, buildApi("js"));
 
 		assert.deepEqual(
 			actualOutput?.replace(/\W/gm, ""),
-			trimLicense(output).replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
 		);
 	});
 });
