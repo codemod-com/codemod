@@ -34,7 +34,7 @@ jobs:
               run: pnpm install
 
             - name: Build prisma
-              run: pnpm --filter studio-backend db:generate
+              run: pnpm --filter @codemod-com/backend db:generate
 
             - name: Build engine
               run: pnpm build --filter codemod

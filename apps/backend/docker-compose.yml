@@ -10,10 +10,10 @@ services:
             - '5432:5432'
         networks:
             - 'codemod-local-network'
-    studio-backend:
+    backend:
         build:
             context: ../..
-            dockerfile: apps/studio-backend/development.Dockerfile
+            dockerfile: apps/backend/development.Dockerfile
         environment:
             PORT: '8081'
             CLERK_DISABLED: 'true'
@@ -23,7 +23,7 @@ services:
         networks:
             - 'codemod-local-network'
         volumes:
-            - ./src:/app/studio-backend/src
+            - ./src:/app/backend/src
 
 networks:
     codemod-local-network:
