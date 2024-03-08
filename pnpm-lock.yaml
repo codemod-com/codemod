@@ -59,6 +59,9 @@ importers:
       '@clerk/fastify':
         specifier: 0.6.27
         version: 0.6.27(fastify-plugin@4.5.1)(fastify@4.25.1)(react@18.2.0)
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@effect/schema':
         specifier: 0.54.0
         version: 0.54.0(effect@2.0.0-next.61)(fast-check@3.15.1)
@@ -156,6 +159,9 @@ importers:
       '@types/pg':
         specifier: ^8.11.2
         version: 8.11.2
+      '@types/supertest':
+        specifier: ^6.0.2
+        version: 6.0.2
       esbuild:
         specifier: ^0.19.12
         version: 0.19.12
@@ -168,6 +174,9 @@ importers:
       sqlite3:
         specifier: ^5.1.7
         version: 5.1.7
+      supertest:
+        specifier: ^6.3.4
+        version: 6.3.4
       ts-node:
         specifier: 10.9.2
         version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
@@ -4766,285 +4775,6 @@ importers:
         specifier: ^5.75.0
         version: 5.89.0
 
-<<<<<<< HEAD
-  apps/studio-backend:
-    dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.525.0
-      '@clerk/backend':
-        specifier: 0.36.0
-        version: 0.36.0(react@18.2.0)
-      '@clerk/fastify':
-        specifier: 0.6.27
-        version: 0.6.27(fastify-plugin@4.5.1)(fastify@4.25.1)(react@18.2.0)
-      '@codemod-com/utilities':
-        specifier: workspace:*
-        version: link:../../packages/utilities
-      '@effect/schema':
-        specifier: 0.54.0
-        version: 0.54.0(effect@2.0.0-next.61)(fast-check@3.15.1)
-      '@fastify/busboy':
-        specifier: ^2.1.1
-        version: 2.1.1
-      '@fastify/cors':
-        specifier: 8.5.0
-        version: 8.5.0
-      '@fastify/multipart':
-        specifier: ^8.1.0
-        version: 8.1.0
-      '@fastify/rate-limit':
-        specifier: 9.0.1
-        version: 9.0.1
-      '@prisma/client':
-        specifier: 5.10.2
-        version: 5.10.2(prisma@5.10.2)
-      '@types/tar':
-        specifier: ^6.1.11
-        version: 6.1.11
-      ai:
-        specifier: 2.2.29
-        version: 2.2.29(react@18.2.0)(solid-js@1.8.14)(svelte@4.2.10)(vue@3.4.19)
-      axios:
-        specifier: 1.6.2
-        version: 1.6.2
-      chatgpt:
-        specifier: 5.2.5
-        version: 5.2.5
-      chromadb:
-        specifier: 1.7.2
-        version: 1.7.2(openai@4.23.0)
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
-      fastify:
-        specifier: 4.25.1
-        version: 4.25.1
-      langchain:
-        specifier: 0.0.209
-        version: 0.0.209(@aws-sdk/client-s3@3.525.0)(@aws-sdk/credential-provider-node@3.525.0)(axios@1.6.2)(chromadb@1.7.2)(pg@8.11.3)(replicate@0.25.2)
-      lru-cache:
-        specifier: 10.1.0
-        version: 10.1.0
-      openai:
-        specifier: 4.23.0
-        version: 4.23.0
-      openai-edge:
-        specifier: 1.2.2
-        version: 1.2.2
-      parse-github-url:
-        specifier: 1.0.2
-        version: 1.0.2
-      pg:
-        specifier: ^8.11.3
-        version: 8.11.3
-      prisma:
-        specifier: ^5.10.2
-        version: 5.10.2
-      replicate:
-        specifier: 0.25.2
-        version: 0.25.2
-      sequelize:
-        specifier: ^6.37.1
-        version: 6.37.1(pg@8.11.3)(sqlite3@5.1.7)
-      tar:
-        specifier: ^6.2.0
-        version: 6.2.0
-      valibot:
-        specifier: ^0.24.1
-        version: 0.24.1
-      zod:
-        specifier: 3.21.4
-        version: 3.21.4
-      zod-prisma-types:
-        specifier: ^3.1.6
-        version: 3.1.6
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
-      '@codemod-com/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      '@faker-js/faker':
-        specifier: ^8.4.1
-        version: 8.4.1
-      '@types/node':
-        specifier: 20.10.5
-        version: 20.10.5
-      '@types/parse-github-url':
-        specifier: 1.0.3
-        version: 1.0.3
-      '@types/pg':
-        specifier: ^8.11.2
-        version: 8.11.2
-      '@types/supertest':
-        specifier: ^6.0.2
-        version: 6.0.2
-      esbuild:
-        specifier: ^0.19.12
-        version: 0.19.12
-      fastify-plugin:
-        specifier: 4.5.1
-        version: 4.5.1
-      nodemon:
-        specifier: 3.0.2
-        version: 3.0.2
-      sqlite3:
-        specifier: ^5.1.7
-        version: 5.1.7
-      supertest:
-        specifier: ^6.3.4
-        version: 6.3.4
-      ts-node:
-        specifier: 10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.3.3
-        version: 5.3.3
-      vitest:
-        specifier: 1.1.0
-        version: 1.1.0(@types/node@20.10.5)
-
-||||||| parent of e3b6dc7 (chore: rename studio-backend to backend)
-  apps/studio-backend:
-    dependencies:
-      '@aws-sdk/client-s3':
-        specifier: ^3.525.0
-        version: 3.525.0
-      '@clerk/backend':
-        specifier: 0.36.0
-        version: 0.36.0(react@18.2.0)
-      '@clerk/fastify':
-        specifier: 0.6.27
-        version: 0.6.27(fastify-plugin@4.5.1)(fastify@4.25.1)(react@18.2.0)
-      '@effect/schema':
-        specifier: 0.54.0
-        version: 0.54.0(effect@2.0.0-next.61)(fast-check@3.15.1)
-      '@fastify/busboy':
-        specifier: ^2.1.1
-        version: 2.1.1
-      '@fastify/cors':
-        specifier: 8.5.0
-        version: 8.5.0
-      '@fastify/multipart':
-        specifier: ^8.1.0
-        version: 8.1.0
-      '@fastify/rate-limit':
-        specifier: 9.0.1
-        version: 9.0.1
-      '@prisma/client':
-        specifier: 5.10.2
-        version: 5.10.2(prisma@5.10.2)
-      '@types/tar':
-        specifier: ^6.1.11
-        version: 6.1.11
-      ai:
-        specifier: 2.2.29
-        version: 2.2.29(react@18.2.0)(solid-js@1.8.14)(svelte@4.2.10)(vue@3.4.19)
-      axios:
-        specifier: 1.6.2
-        version: 1.6.2
-      chatgpt:
-        specifier: 5.2.5
-        version: 5.2.5
-      chromadb:
-        specifier: 1.7.2
-        version: 1.7.2(openai@4.23.0)
-      dotenv:
-        specifier: ^16.4.5
-        version: 16.4.5
-      fastify:
-        specifier: 4.25.1
-        version: 4.25.1
-      langchain:
-        specifier: 0.0.209
-        version: 0.0.209(@aws-sdk/client-s3@3.525.0)(@aws-sdk/credential-provider-node@3.525.0)(axios@1.6.2)(chromadb@1.7.2)(pg@8.11.3)(replicate@0.25.2)
-      lru-cache:
-        specifier: 10.1.0
-        version: 10.1.0
-      openai:
-        specifier: 4.23.0
-        version: 4.23.0
-      openai-edge:
-        specifier: 1.2.2
-        version: 1.2.2
-      parse-github-url:
-        specifier: 1.0.2
-        version: 1.0.2
-      pg:
-        specifier: ^8.11.3
-        version: 8.11.3
-      prisma:
-        specifier: ^5.10.2
-        version: 5.10.2
-      replicate:
-        specifier: 0.25.2
-        version: 0.25.2
-      sequelize:
-        specifier: ^6.37.1
-        version: 6.37.1(pg@8.11.3)(sqlite3@5.1.7)
-      tar:
-        specifier: ^6.2.0
-        version: 6.2.0
-      valibot:
-        specifier: ^0.24.1
-        version: 0.24.1
-      zod:
-        specifier: 3.21.4
-        version: 3.21.4
-      zod-prisma-types:
-        specifier: ^3.1.6
-        version: 3.1.6
-    devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
-      '@codemod-com/tsconfig':
-        specifier: workspace:*
-        version: link:../../packages/tsconfig
-      '@faker-js/faker':
-        specifier: ^8.4.1
-        version: 8.4.1
-      '@types/node':
-        specifier: 20.10.5
-        version: 20.10.5
-      '@types/parse-github-url':
-        specifier: 1.0.3
-        version: 1.0.3
-      '@types/pg':
-        specifier: ^8.11.2
-        version: 8.11.2
-      esbuild:
-        specifier: ^0.19.12
-        version: 0.19.12
-      fastify-plugin:
-        specifier: 4.5.1
-        version: 4.5.1
-      nodemon:
-        specifier: 3.0.2
-        version: 3.0.2
-      sqlite3:
-        specifier: ^5.1.7
-        version: 5.1.7
-      ts-node:
-        specifier: 10.9.2
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
-      tsx:
-        specifier: ^4.7.1
-        version: 4.7.1
-      typescript:
-        specifier: 5.3.3
-        version: 5.3.3
-      vitest:
-        specifier: 1.1.0
-        version: 1.1.0(@types/node@20.10.5)
-
-=======
->>>>>>> e3b6dc7 (chore: rename studio-backend to backend)
   apps/vsce:
     dependencies:
       '@effect/schema':
