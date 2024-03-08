@@ -299,25 +299,42 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	instance.get("/codemods", async (request, reply) => {
 		const query = parseGetCodemodsQuery(request.query);
 
-		reply.type("application/json").code(200);
-		return prisma.codemod.findMany({
+		const page = query.page || 1;
+		const size = query.size || 10;
+
+		const codemods = await prisma.codemod.findMany({
 			where: {
 				featured: query.featured,
 				verified: query.verified,
 				private: query.private,
 			},
+			skip: (page - 1) * size,
+			take: size,
 		});
+
+		reply.type("application/json").code(200);
+		return codemods;
 	});
 
 	instance.get("/codemods/:slug", async (request, reply) => {
 		const { slug } = parseGetCodemodBySlugParams(request.params);
 
-		reply.type("application/json").code(200);
-		return prisma.codemod.findFirst({
+		const codemod = await prisma.codemod.findFirst({
 			where: {
 				slug,
 			},
+			include: {
+				versions: true,
+			},
 		});
+
+		if (!codemod) {
+			reply.status(404).send({ message: "Codemod not found" });
+			return;
+		}
+
+		reply.type("application/json").code(200);
+		return codemod;
 	});
 
 	instance.post(
