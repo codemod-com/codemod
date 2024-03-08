@@ -50,7 +50,12 @@ export const buildPaths = async (
 		patterns = ["**/*"];
 	}
 
-	return glob(patterns.slice(), {
+	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
+	patterns = patterns.map((pattern) =>
+		pattern.startsWith("**/") ? pattern : `**/${pattern}`,
+	);
+
+	return glob(patterns, {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
