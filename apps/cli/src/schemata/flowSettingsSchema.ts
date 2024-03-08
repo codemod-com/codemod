@@ -2,7 +2,6 @@ import {
 	type Output,
 	array,
 	boolean,
-	integer,
 	minValue,
 	number,
 	object,

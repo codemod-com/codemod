@@ -2,6 +2,14 @@ export { CaseReadingService } from "./caseReadingService.js";
 export { CaseWritingService } from "./caseWritingService.js";
 export { FileWatcher } from "./fileWatcher.js";
 export {
+	argumentsSchema,
+	codemodConfigSchema,
+	type Arguments,
+	type ArgumentsInput,
+	type CodemodConfig,
+	type CodemodConfigInput,
+} from "./schemata/codemodConfigSchema.js";
+export {
 	JOB_KIND,
 	parseSurfaceAgnosticJob,
 	type SurfaceAgnosticJob,
@@ -37,3 +45,5 @@ export {
 	getUnifiedEntry,
 	trimLicense,
 } from "./registry.js";
+
+export { tarPack } from "./tarPack.js";

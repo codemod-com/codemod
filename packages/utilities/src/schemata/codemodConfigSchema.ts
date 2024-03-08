@@ -1,9 +1,9 @@
 import ms from "ms";
 import {
-	Output,
+	type Input,
+	type Output,
 	array,
 	boolean,
-	coerce,
 	custom,
 	literal,
 	merge,
@@ -15,7 +15,32 @@ import {
 	tuple,
 	union,
 } from "valibot";
-import { argumentsSchema } from "./argumentsSchema.js";
+
+export const argumentsSchema = array(
+	union([
+		object({
+			name: string(),
+			kind: literal("string"),
+			required: optional(boolean(), false),
+			default: optional(string()),
+		}),
+		object({
+			name: string(),
+			kind: literal("number"),
+			required: optional(boolean(), false),
+			default: optional(number()),
+		}),
+		object({
+			name: string(),
+			kind: literal("boolean"),
+			required: optional(boolean(), false),
+			default: optional(boolean()),
+		}),
+	]),
+);
+
+export type ArgumentsInput = Input<typeof argumentsSchema>;
+export type Arguments = Output<typeof argumentsSchema>;
 
 const PIRANHA_LANGUAGES = [
 	"java",
@@ -40,16 +65,9 @@ const knownEngines = [
 	literal("ast-grep"),
 ];
 
-const versionValidator = union([
-	// react < 18.0.2 (preferred)
-	string([regex(semVerRegex)]),
-	// react < 18 (for example, when no latest version of a given major is out yet)
-	coerce(number(), (input) => Number(input)),
-]);
-
 const configJsonBaseSchema = object({
 	description: optional(string()),
-	version: versionValidator,
+	version: string([regex(semVerRegex)]),
 	// We should detect the owner when user publishes. This is for backwards compatibility.
 	owner: optional(string()),
 	// We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
@@ -67,7 +85,12 @@ const configJsonBaseSchema = object({
 					literal("<="),
 					literal(">="),
 				]),
-				versionValidator,
+				union([
+					// react < 18.0.2 (preferred)
+					string([regex(semVerRegex)]),
+					// react < 18 (for example, when no latest version of a given major is out yet)
+					string([regex(/^\d+$/)]),
+				]),
 			]),
 		),
 		[],
@@ -121,3 +144,4 @@ export const codemodConfigSchema = union([
 ]);
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
+export type CodemodConfigInput = Input<typeof codemodConfigSchema>;

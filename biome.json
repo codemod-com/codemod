@@ -92,7 +92,10 @@
 				"noNoninteractiveTabindex": "warn"
 			},
 			"performance": { "noDelete": "off" },
-			"security": { "noDangerouslySetInnerHtml": "warn" }
+			"security": { "noDangerouslySetInnerHtml": "warn" },
+			"nursery": {
+				"noUnusedImports": "error"
+			}
 		}
 	},
 	"formatter": {

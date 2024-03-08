@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options } from "jscodeshift";
+import type { API, FileInfo } from "jscodeshift";
 
 export default function transform(
 	file: FileInfo,

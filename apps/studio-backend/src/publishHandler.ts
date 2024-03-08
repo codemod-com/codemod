@@ -1,139 +1,181 @@
 import { createHash } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
+import {
+	codemodConfigSchema,
+	isNeitherNullNorUndefined,
+	tarPack,
+} from "@codemod-com/utilities";
 import { RouteHandlerMethod } from "fastify";
-import { literal, object, parse, string } from "valibot";
+import { parse } from "valibot";
 import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
-const configSchema = object({
-	schemaVersion: string(),
-	name: string(),
-	engine: string(),
-});
-
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
 	async (request, reply) => {
-		if (!areClerkKeysSet(environment)) {
-			throw new Error("This endpoint requires auth configuration.");
-		}
+		try {
+			if (!areClerkKeysSet(environment)) {
+				throw new Error("This endpoint requires auth configuration.");
+			}
 
-		const accessToken = getCustomAccessToken(environment, request.headers);
+			const accessToken = getCustomAccessToken(environment, request.headers);
 
-		if (accessToken === null) {
-			return reply.code(401).send();
-		}
+			if (accessToken === null) {
+				return reply
+					.code(401)
+					.send({ error: "Access token is not present", success: false });
+			}
 
-		const userId = await tokenService.findUserIdMetadataFromToken(
-			accessToken,
-			Date.now(),
-			CLAIM_PUBLISHING,
-		);
+			const userId = await tokenService.findUserIdMetadataFromToken(
+				accessToken,
+				Date.now(),
+				CLAIM_PUBLISHING,
+			);
 
-		if (userId === null) {
-			return reply.code(401).send();
-		}
+			if (userId === null) {
+				return reply
+					.code(401)
+					.send({ error: "User id was not found", success: false });
+			}
 
-		const clerkClient = createClerkClient({
-			publishableKey: environment.CLERK_PUBLISH_KEY,
-			secretKey: environment.CLERK_SECRET_KEY,
-			jwtKey: environment.CLERK_JWT_KEY,
-		});
+			const clerkClient = createClerkClient({
+				publishableKey: environment.CLERK_PUBLISH_KEY,
+				secretKey: environment.CLERK_SECRET_KEY,
+				jwtKey: environment.CLERK_JWT_KEY,
+			});
 
-		const user = await clerkClient.users.getUser(userId);
+			const { username } = await clerkClient.users.getUser(userId);
 
-		if (user.username === null) {
-			throw new Error("The username of the current user does not exist");
-		}
+			if (username === null) {
+				throw new Error("The username of the current user does not exist");
+			}
 
-		let configJsonBuffer: Buffer | null = null;
-		let name: string | null = null;
-		let indexCjsBuffer: Buffer | null = null;
-		let descriptionMdBuffer: Buffer | null = null;
+			let codemodRcBuffer: Buffer | null = null;
+			let name: string | null = null;
+			let version: string | null = null;
+			let isPrivate = false;
+			let indexCjsBuffer: Buffer | null = null;
+			let descriptionMdBuffer: Buffer | null = null;
 
-		for await (const multipartFile of request.files()) {
-			const buffer = await multipartFile.toBuffer();
+			for await (const multipartFile of request.files()) {
+				const buffer = await multipartFile.toBuffer();
 
-			if (multipartFile.fieldname === ".codemodrc.json") {
-				configJsonBuffer = buffer;
+				if (multipartFile.fieldname === ".codemodrc.json") {
+					codemodRcBuffer = buffer;
 
-				const configJson = JSON.parse(configJsonBuffer.toString("utf8"));
+					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-				const config = parse(configSchema, configJson);
+					const codemodRc = parse(codemodConfigSchema, codemodRcData);
 
-				if (
-					!config.name.startsWith(`@${user.username}/`) ||
-					!/[a-zA-Z0-9_/-]+/.test(config.name)
-				) {
-					throw new Error(
-						`The "name" field in package.json must start with your GitHub username with a slash (e.g., "@${user.username}/") and contain allowed characters (a-z, A-Z, 0-9, _, / or -)`,
-					);
+					if (
+						!("name" in codemodRc) ||
+						!/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)
+					) {
+						throw new Error(
+							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+						);
+					}
+
+					name = codemodRc.name;
+					version = codemodRc.version;
+					if (codemodRc.private) {
+						isPrivate = true;
+					}
+
+					// TODO: add check for organization
 				}
 
-				name = config.name;
+				if (multipartFile.fieldname === "index.cjs") {
+					indexCjsBuffer = buffer;
+				}
+
+				if (multipartFile.fieldname === "description.md") {
+					descriptionMdBuffer = buffer;
+				}
 			}
 
-			if (multipartFile.fieldname === "index.cjs") {
-				indexCjsBuffer = buffer;
+			if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
+				return reply.code(400).send({
+					error: "No .codemodrc.json file was provided",
+					success: false,
+				});
 			}
 
-			if (multipartFile.fieldname === "description.md") {
-				descriptionMdBuffer = buffer;
+			if (!isNeitherNullNorUndefined(indexCjsBuffer)) {
+				return reply.code(400).send({
+					error: "No index.cjs file was provided",
+					success: false,
+				});
 			}
-		}
 
-		if (configJsonBuffer === null || indexCjsBuffer === null || name === null) {
-			throw new Error(
-				"Could not find either the .codemodrc.json or the index.cjs file",
-			);
-		}
+			if (!isNeitherNullNorUndefined(name)) {
+				return reply.code(400).send({
+					error: "Codemod name was not provided in codemodrc",
+					success: false,
+				});
+			}
 
-		const client = new S3Client({
-			credentials: {
-				accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
-				secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
-			},
-			region: "us-west-1",
-		});
+			if (!isNeitherNullNorUndefined(version)) {
+				return reply.code(400).send({
+					error: "Codemod version was not provided in codemodrc",
+					success: false,
+				});
+			}
 
-		const hashDigest = createHash("ripemd160").update(name).digest("base64url");
+			const client = new S3Client({
+				credentials: {
+					accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
+					secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
+				},
+				region: "us-west-1",
+			});
 
-		const REQUEST_TIMEOUT = 5000;
+			const buffers = [
+				{
+					name: ".codemodrc.json",
+					data: codemodRcBuffer,
+				},
+				{
+					name: "index.cjs",
+					data: indexCjsBuffer,
+				},
+			];
 
-		await client.send(
-			new PutObjectCommand({
-				Bucket: "codemod-public",
-				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
-				Body: configJsonBuffer,
-			}),
-			{
-				requestTimeout: REQUEST_TIMEOUT,
-			},
-		);
+			if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
+				buffers.push({
+					name: "description.md",
+					data: descriptionMdBuffer,
+				});
+			}
 
-		await client.send(
-			new PutObjectCommand({
-				Bucket: "codemod-public",
-				Key: `codemod-registry/${hashDigest}/index.cjs`,
-				Body: indexCjsBuffer,
-			}),
-			{
-				requestTimeout: REQUEST_TIMEOUT,
-			},
-		);
+			const archive = await tarPack(buffers);
 
-		if (descriptionMdBuffer !== null) {
+			const hashDigest = createHash("ripemd160")
+				.update(name)
+				.digest("base64url");
+
+			const REQUEST_TIMEOUT = 5000;
+
+			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
+
 			await client.send(
 				new PutObjectCommand({
-					Bucket: "codemod-public",
-					Key: `codemod-registry/${hashDigest}/description.md`,
-					Body: descriptionMdBuffer,
+					Bucket: bucket,
+					Key: `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`,
+					Body: archive,
 				}),
 				{
 					requestTimeout: REQUEST_TIMEOUT,
 				},
 			);
+
+			return reply.code(200).send({ success: true });
+		} catch (err) {
+			console.error(err);
+			return reply
+				.code(500)
+				.send({ error: (err as Error).message, success: false });
 		}
 	};

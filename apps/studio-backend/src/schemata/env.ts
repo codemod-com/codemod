@@ -39,10 +39,9 @@ export const parseEnvironment = (input: unknown) => {
 	try {
 		return parse(environmentSchema, input);
 	} catch (err) {
-		console.log((err as ValiError).issues[0].path);
 		throw new Error(
 			`Invalid environment: ${(err as ValiError).issues
-				.map((i) => i.path?.join("."))
+				.map((i) => i.path?.map((p) => p.key).join("."))
 				.join(", ")}`,
 		);
 	}

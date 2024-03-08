@@ -1,6 +1,6 @@
+import { type ArgumentsInput } from "@codemod-com/utilities";
 import { Codemod } from "./codemod.js";
 import { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
-import { Arguments } from "./schemata/argumentsSchema.js";
 
 export type SafeArgumentRecord = ArgumentRecord[];
 
@@ -16,7 +16,7 @@ export const buildSafeArgumentRecord = (
 
 	const safeArgumentRecord: [{ [x: string]: string | number | boolean }] = [{}];
 
-	const codemodArgs: Arguments = [
+	const codemodArgs: ArgumentsInput = [
 		...codemod.arguments,
 		{ name: "input", kind: "string", default: "" },
 	];
@@ -28,7 +28,7 @@ export const buildSafeArgumentRecord = (
 
 		const unsafeValue = argumentRecord[descriptor.name];
 
-		if (typeof unsafeValue === descriptor.kind) {
+		if (unsafeValue !== undefined && typeof unsafeValue === descriptor.kind) {
 			safeArgumentRecord[0][descriptor.name] = unsafeValue;
 		} else if (descriptor.default !== undefined) {
 			safeArgumentRecord[0][descriptor.name] = descriptor.default;

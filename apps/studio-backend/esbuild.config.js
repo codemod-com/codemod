@@ -2,11 +2,11 @@ import esbuild from "esbuild";
 
 esbuild
 	.build({
-		entryPoints: ["src/server.ts"],
+		entryPoints: ["src/index.ts"],
 		bundle: true,
 		minify: true,
 		platform: "node",
-		outfile: "build/server.js",
+		outfile: "build/index.js",
 		external: ["@prisma/client", "pg-hstore"],
 		banner: {
 			js: `import { createRequire } from 'module';\nconst require = createRequire(import.meta.url);`,

@@ -59,7 +59,7 @@ export class BootstrapExecutablesService {
 
 		try {
 			await this.__downloadService.downloadFileIfNeeded(
-				`https://codemod-public.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
+				`https://codemod-public-v2.s3.us-west-1.amazonaws.com/codemod-engine-rust/${executableBaseName}`,
 				executableUri,
 				"755",
 			);
