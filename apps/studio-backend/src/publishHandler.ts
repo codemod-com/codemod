@@ -11,7 +11,6 @@ import { parse } from "valibot";
 import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
-import { codemodConfigSchema } from "@codemod-com/utilities";
 
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
@@ -68,17 +67,33 @@ export const publishHandler =
 
 					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-				const config = parse(codemodConfigSchema, configJson);
+					const codemodRc = parse(codemodConfigSchema, codemodRcData);
 
-				if (!("name" in config) || !/[a-zA-Z0-9_/@-]+/.test(config.name)) {
-					throw new Error(
-						`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-					);
+					if (
+						!("name" in codemodRc) ||
+						!/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)
+					) {
+						throw new Error(
+							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+						);
+					}
+
+					name = codemodRc.name;
+					version = codemodRc.version;
+					if (codemodRc.private) {
+						isPrivate = true;
+					}
+
+					// TODO: add check for organization
 				}
 
-				name = config.name;
+				if (multipartFile.fieldname === "index.cjs") {
+					indexCjsBuffer = buffer;
+				}
 
-				// TODO: add check for organization
+				if (multipartFile.fieldname === "description.md") {
+					descriptionMdBuffer = buffer;
+				}
 			}
 
 			if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
@@ -128,33 +143,28 @@ export const publishHandler =
 				},
 			];
 
-		await client.send(
-			new PutObjectCommand({
-				Bucket: "codemod-public-v2",
-				Key: `codemod-registry/${hashDigest}/.codemodrc.json`,
-				Body: configJsonBuffer,
-			}),
-			{
-				requestTimeout: REQUEST_TIMEOUT,
-			},
-		);
+			if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
+				buffers.push({
+					name: "description.md",
+					data: descriptionMdBuffer,
+				});
+			}
 
-		await client.send(
-			new PutObjectCommand({
-				Bucket: "codemod-public-v2",
-				Key: `codemod-registry/${hashDigest}/index.cjs`,
-				Body: indexCjsBuffer,
-			}),
-			{
-				requestTimeout: REQUEST_TIMEOUT,
-			},
-		);
+			const archive = await tarPack(buffers);
+
+			const hashDigest = createHash("ripemd160")
+				.update(name)
+				.digest("base64url");
+
+			const REQUEST_TIMEOUT = 5000;
+
+			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
 
 			await client.send(
 				new PutObjectCommand({
-					Bucket: "codemod-public-v2",
-					Key: `codemod-registry/${hashDigest}/description.md`,
-					Body: descriptionMdBuffer,
+					Bucket: bucket,
+					Key: `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`,
+					Body: archive,
 				}),
 				{
 					requestTimeout: REQUEST_TIMEOUT,

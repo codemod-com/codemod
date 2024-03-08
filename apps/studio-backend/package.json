@@ -37,6 +37,7 @@
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.525.0",
 		"@clerk/backend": "0.36.0",
+		"@clerk/fastify": "0.6.27",
 		"@codemod-com/utilities": "workspace:*",
 		"@effect/schema": "0.54.0",
 		"@fastify/busboy": "^2.1.1",
