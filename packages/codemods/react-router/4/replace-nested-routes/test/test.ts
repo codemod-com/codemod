@@ -13,13 +13,11 @@ describe("react-router v4 replace-nested-routes", () => {
 		const App = () => {
 		  return (
 			<Router>
-			  <div>
 				<Route path="/parent" component={Parent}>
 				  <Route path="/parent/child1" component={Child1} />
 				  <Route path="/parent/child2" component={Child2} />
 				  <Route path="/parent/child3" component={Child3} />
 				</Route>
-			  </div>
 			</Router>
 		  );
 		};		
@@ -32,15 +30,13 @@ describe("react-router v4 replace-nested-routes", () => {
 		const App = () => {
 		  return (
 			<Router>
-			  <div>
 				<Route path="/parent" render={(props) => (
 				  <Parent {...props}>
 					<Route path="/parent/child1" component={Child1} />
 					<Route path="/parent/child2" component={Child2} />
 					<Route path="/parent/child3" component={Child3} />
 				  </Parent>
-				)} />
-			  </div>
+				)}></Route>
 			</Router>
 		  );
 		};			
