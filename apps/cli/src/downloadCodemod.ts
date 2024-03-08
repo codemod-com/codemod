@@ -1,9 +1,10 @@
 import { createHash } from "node:crypto";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { join } from "node:path";
 import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
 import Axios from "axios";
 import { parse } from "valibot";
+import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
@@ -79,18 +80,18 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		let parsedConfig: unknown;
+		const s3DownloadLink = await getCodemodDownloadURI(name);
 
+		// download codemod
 		try {
-			// download the config
-			const configPath = join(directoryPath, ".codemodrc.json");
-
 			const buffer = await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/.codemodrc.json`,
-				configPath,
+				s3DownloadLink,
+				directoryPath,
 			);
 
-			parsedConfig = JSON.parse(buffer.toString("utf8"));
+			this._tarService.extract(directoryPath, buffer);
+
+			await unlink(join(directoryPath, "codemod.tar.gz"));
 		} catch (error) {
 			await handleListNamesCommand(this.__printer);
 
@@ -103,20 +104,11 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		let config: CodemodConfig;
 		try {
+			const configBuf = await readFile(join(directoryPath, ".codemodrc.json"));
+			const parsedConfig = JSON.parse(configBuf.toString("utf8"));
 			config = parse(codemodConfigSchema, parsedConfig);
 		} catch (err) {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
-		}
-
-		const descriptionPath = join(directoryPath, "description.md");
-
-		try {
-			await this._fileDownloadService.download(
-				`${CODEMOD_REGISTRY_URL}/${hashDigest}/description.md`,
-				descriptionPath,
-			);
-		} catch {
-			// do nothing, descriptions might not exist
 		}
 
 		if (config.engine === "ast-grep") {

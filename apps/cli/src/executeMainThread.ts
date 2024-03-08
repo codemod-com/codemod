@@ -19,7 +19,7 @@ import { APP_INSIGHTS_INSTRUMENTATION_STRING } from "./constants.js";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
 import { handleLearnCliCommand } from "./handleLearnCliCommand.js";
-import { handleListNamesAfterSyncing } from "./handleListCliCommand.js";
+import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { handleLoginCliCommand } from "./handleLoginCliCommand.js";
 import { handleLogoutCliCommand } from "./handleLogoutCliCommand.js";
 import { handlePublishCliCommand } from "./handlePublishCliCommand.js";
@@ -182,15 +182,24 @@ export const executeMainThread = async () => {
 		telemetryService = new NoTelemetryService();
 	}
 
+	const configurationDirectoryPath = join(
+		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);
+
+	const codemodDownloader = new CodemodDownloader(
+		printer,
+		configurationDirectoryPath,
+		argv.noCache,
+		fileDownloadService,
+		tarService,
+	);
+
 	if (String(argv._) === "list") {
 		try {
-			await handleListNamesAfterSyncing(
-				argv.noCache,
-				argv.short,
-				printer,
-				fileDownloadService,
-				tarService,
-			);
+			await codemodDownloader.syncRegistry();
+
+			await handleListNamesCommand(printer, false);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
@@ -208,12 +217,19 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "sync") {
-		await syncRegistryOperation(
-			argv.noCache,
-			printer,
-			fileDownloadService,
-			tarService,
-		);
+		try {
+			await codemodDownloader.syncRegistry();
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
+
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
+			});
+		}
+
 		exit();
 
 		return;
@@ -358,11 +374,6 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
-
 	const lastArgument = argv._[argv._.length - 1];
 	const nameOrPath = typeof lastArgument === "string" ? lastArgument : null;
 
@@ -374,14 +385,6 @@ export const executeMainThread = async () => {
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = parseRunSettings(homedir(), argv);
 	const argumentRecord = buildArgumentRecord(argv);
-
-	const codemodDownloader = new CodemodDownloader(
-		printer,
-		configurationDirectoryPath,
-		argv.noCache,
-		fileDownloadService,
-		tarService,
-	);
 
 	const getCodemodSource = (path: string) =>
 		readFile(path, { encoding: "utf8" });
@@ -405,31 +408,3 @@ export const executeMainThread = async () => {
 
 	exit();
 };
-
-export async function syncRegistryOperation(
-	disableCache: boolean,
-	printer: Printer,
-	fileDownloadService: FileDownloadService,
-	tarService: TarService,
-) {
-	const codemodDownloader = new CodemodDownloader(
-		printer,
-		join(homedir(), ".codemod"),
-		disableCache,
-		fileDownloadService,
-		tarService,
-	);
-
-	try {
-		await codemodDownloader.syncRegistry();
-	} catch (error) {
-		if (!(error instanceof Error)) {
-			return;
-		}
-
-		printer.printOperationMessage({
-			kind: "error",
-			message: error.message,
-		});
-	}
-}
