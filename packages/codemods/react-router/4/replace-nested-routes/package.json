@@ -3,9 +3,7 @@
 	"dependencies": {},
 	"devDependencies": {
 		"@codemod-com/utilities": "workspace:*",
-		"@codemod-com/registry-cjs-builder": "workspace:*",
 		"typescript": "^5.2.2",
-		"esbuild": "0.19.5",
 		"ts-node": "^10.9.1",
 		"jscodeshift": "^0.15.1",
 		"@types/jscodeshift": "^0.11.10",
@@ -15,14 +13,13 @@
 	"main": "./dist/index.cjs",
 	"types": "/dist/index.d.ts",
 	"scripts": {
-		"build:cjs": "cjs-builder ./src/index.ts",
 		"test": "vitest run",
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
 	"files": [
-		"./.codemod/DESCRIPTION.md",
-		"./.codemod/config.json",
+		"./README.md",
+		"./.codemodrc.json",
 		"./dist/index.cjs",
 		"./index.d.ts"
 	],
