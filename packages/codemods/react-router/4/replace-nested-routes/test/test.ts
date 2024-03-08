@@ -5,135 +5,45 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 replace-nested-routes", () => {
-	it.only("1", async () => {
+	it("should deprecate nested routes and use `render` prop of parent component instead", async () => {
 		const input = `
 		import React from 'react';
-		import { Route } from 'react-router-dom';
+		import { BrowserRouter as Router, Route } from 'react-router-dom';
 		
 		const App = () => {
 		  return (
-			<div>
-			  <Route path="/home" component={Home}>
-				<Route path="/about" component={About} />
-				<Route path="/contact" component={Contact} />
-			  </Route>
-			</div>
-		  );
-		};
-		`;
-
-		const output = `
-		import React from 'react';
-		import { Route } from 'react-router-dom';
-		
-		const App = () => {
-		  return (
-			<div>
-			  <Route path="/home" render={() => (
-				<Route path="/about" component={About} />
-				<Route path="/contact" component={Contact} />
-			  )}/>
-			</div>
+			<Router>
+			  <div>
+				<Route path="/parent" component={Parent}>
+				  <Route path="/parent/child1" component={Child1} />
+				  <Route path="/parent/child2" component={Child2} />
+				  <Route path="/parent/child3" component={Child3} />
+				</Route>
+			  </div>
+			</Router>
 		  );
 		};		
 		`;
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
-
-		const actualOutput = transform(fileInfo, buildApi("js"));
-
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
-
-	it("2", async () => {
-		const input = `
-		import React from 'react';
-		import { Route, Switch } from 'react-router-dom';
-		
-		const App = () => {
-		  return (
-			<div>
-			  <Switch>
-				<Route path="/home" component={Home} />
-				<Route path="/about" component={About}>
-				  <Route path="/team" component={Team} />
-				</Route>
-			  </Switch>
-			</div>
-		  );
-		};
-		`;
 
 		const output = `
 		import React from 'react';
-		import { Route, Switch } from 'react-router-dom';
+		import { BrowserRouter as Router, Route } from 'react-router-dom';
 		
 		const App = () => {
 		  return (
-			<div>
-			  <Switch>
-				<Route path="/home" component={Home} />
-				<Route path="/about" render={() => (
-				  <Route path="/team" component={Team} />
+			<Router>
+			  <div>
+				<Route path="/parent" render={(props) => (
+				  <Parent {...props}>
+					<Route path="/parent/child1" component={Child1} />
+					<Route path="/parent/child2" component={Child2} />
+					<Route path="/parent/child3" component={Child3} />
+				  </Parent>
 				)} />
-			  </Switch>
-			</div>
+			  </div>
+			</Router>
 		  );
 		};			
-		`;
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
-
-		const actualOutput = transform(fileInfo, buildApi("js"));
-
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
-
-	it("3", async () => {
-		const input = `
-		import React from 'react';
-		import { Route, BrowserRouter as Router } from 'react-router-dom';
-		
-		const App = () => {
-		  return (
-			<Router>
-			  <div>
-				<Route path="/home" component={Home}>
-				  <Route path="/about" component={About} />
-				  <Route path="/contact" component={Contact} />
-				</Route>
-			  </div>
-			</Router>
-		  );
-		};		
-		`;
-
-		const output = `
-		import React from 'react';
-		import { Route, BrowserRouter as Router } from 'react-router-dom';
-		
-		const App = () => {
-		  return (
-			<Router>
-			  <div>
-				<Route path="/home" render={() => (
-				  <Route path="/about" component={About} />
-				  <Route path="/contact" component={Contact} />
-				)} />
-			  </div>
-			</Router>
-		  );
-		};					
 		`;
 		const fileInfo: FileInfo = {
 			path: "index.js",
