@@ -63,9 +63,6 @@ export const publishHandler =
 
 			let codemodRcBuffer: Buffer | null = null;
 			let codemodRc: CodemodConfig | null = null;
-			let name: string | null = null;
-			let version: string | null = null;
-			let isPrivate = false;
 			let indexCjsBuffer: Buffer | null = null;
 			let descriptionMdBuffer: Buffer | null = null;
 
@@ -88,12 +85,6 @@ export const publishHandler =
 						);
 					}
 
-					name = codemodRc.name;
-					version = codemodRc.version;
-					if (codemodRc.private) {
-						isPrivate = true;
-					}
-
 					// TODO: add check for organization
 				}
 
@@ -106,7 +97,7 @@ export const publishHandler =
 				}
 			}
 
-			if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
+			if (!isNeitherNullNorUndefined(codemodRcBuffer) || !codemodRc) {
 				return reply.code(400).send({
 					error: "No .codemodrc.json file was provided",
 					success: false,
@@ -119,6 +110,12 @@ export const publishHandler =
 					success: false,
 				});
 			}
+
+			const name = codemodRc.name;
+			const version = codemodRc.version;
+
+			// TODO: should default to public if publishing not under org, and should default to private if under org
+			const isPrivate = codemodRc.private ?? false;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -133,14 +130,6 @@ export const publishHandler =
 					success: false,
 				});
 			}
-
-			const client = new S3Client({
-				credentials: {
-					accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
-					secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
-				},
-				region: "us-west-1",
-			});
 
 			const buffers = [
 				{
@@ -179,12 +168,12 @@ export const publishHandler =
 			> = {
 				version,
 				bucketLink: `${registryUrl}/${uploadKey}`,
-				engine: codemodRc?.engine ?? "unknown",
-				sourceRepo: codemodRc?.meta.git ?? "",
+				engine: codemodRc.engine ?? "unknown",
+				sourceRepo: codemodRc.meta.git ?? "",
 				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				requirements:
-					codemodRc?.applicability.map((a) => a.join(" ")).join(", ") ?? null,
+					codemodRc.applicability.map((a) => a.join(" ")).join(", ") ?? null,
 			};
 
 			try {
@@ -202,8 +191,8 @@ export const publishHandler =
 						type: "codemod",
 						private: isPrivate,
 						verified: username === "codemod.com",
-						from: codemodRc?.meta.from?.join(" "),
-						to: codemodRc?.meta.to?.join(" "),
+						from: codemodRc.meta.from?.join(" "),
+						to: codemodRc.meta.to?.join(" "),
 						author: username,
 						versions: {
 							create: codemodVersionEntry,
@@ -223,6 +212,14 @@ export const publishHandler =
 			}
 
 			try {
+				const client = new S3Client({
+					credentials: {
+						accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
+						secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
+					},
+					region: "us-west-1",
+				});
+
 				await client.send(
 					new PutObjectCommand({
 						Bucket: bucket,
@@ -244,7 +241,7 @@ export const publishHandler =
 					},
 				});
 
-				const moreVersionsExist = await prisma.codemodVersion.findMany({
+				const otherVersions = await prisma.codemodVersion.findMany({
 					where: {
 						codemod: {
 							name,
@@ -252,7 +249,7 @@ export const publishHandler =
 					},
 				});
 
-				if (!moreVersionsExist) {
+				if (otherVersions.length === 0) {
 					await prisma.codemod.delete({
 						where: {
 							name,

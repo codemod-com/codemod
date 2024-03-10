@@ -1,10 +1,45 @@
 import { createHash } from "node:crypto";
-import * as s3sdk from "@aws-sdk/client-s3";
 import * as codemodComUtils from "@codemod-com/utilities";
 import supertest from "supertest";
-import { afterAll, afterEach, describe, expect, test, vi } from "vitest";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { runServer } from "./server.js";
 import * as utils from "./util.js";
+
+const mocks = vi.hoisted(() => {
+	const S3Client = vi.fn();
+	S3Client.prototype.send = vi.fn();
+
+	const PutObjectCommand = vi.fn();
+
+	return {
+		prisma: {
+			codemodVersion: {
+				deleteMany: vi.fn(),
+				findMany: vi.fn(),
+			},
+			codemod: {
+				upsert: vi.fn(),
+				delete: vi.fn(),
+			},
+		},
+		S3Client,
+		PutObjectCommand,
+	};
+});
+
+vi.mock("./db/prisma.js", async () => {
+	return { prisma: mocks.prisma };
+});
+
+vi.mock("@aws-sdk/client-s3", async () => {
+	const actual = await vi.importActual("@aws-sdk/client-s3");
+
+	return {
+		...actual,
+		S3Client: mocks.S3Client,
+		PutObjectCommand: mocks.PutObjectCommand,
+	};
+});
 
 vi.mock("./schemata/env.js", async () => {
 	const actual = await vi.importActual("./schemata/env.js");
@@ -82,19 +117,6 @@ vi.mock("./services/tokenService.js", async () => {
 	return { ...actual, TokenService };
 });
 
-vi.mock("@aws-sdk/client-s3", async () => {
-	const actual = await vi.importActual("@aws-sdk/client-s3");
-
-	const S3Client = vi.fn();
-	S3Client.prototype.send = vi.fn().mockImplementation(() => {
-		return { success: true };
-	});
-
-	const PutObjectCommand = vi.fn();
-
-	return { ...actual, S3Client, PutObjectCommand };
-});
-
 describe("/publish route", async () => {
 	const fastify = await runServer();
 
@@ -103,35 +125,36 @@ describe("/publish route", async () => {
 	});
 
 	afterEach(async () => {
-		vi.resetAllMocks();
+		vi.clearAllMocks();
 	});
 
 	await fastify.ready();
 
-	test("publishHandler", async () => {
-		const areClerkKeysSpy = vi.spyOn(utils, "areClerkKeysSet");
-		const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
+	const areClerkKeysSpy = vi.spyOn(utils, "areClerkKeysSet");
+	const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
 
-		const tarPackSpy = vi.spyOn(codemodComUtils, "tarPack");
+	const tarPackSpy = vi.spyOn(codemodComUtils, "tarPack");
 
-		const codemodRcContents: codemodComUtils.CodemodConfigInput = {
-			name: "mycodemod",
-			version: "1.0.0",
-			private: false,
-			applicability: [["eslint", ">=", "12.0.0"]],
-			// Can be deprecated?
-			// description: "description",
-			engine: "jscodeshift",
-			meta: {
-				changeType: "assistive",
-				timeSave: "5m",
-				type: "migration",
-			},
-		};
+	const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+		name: "mycodemod",
+		version: "1.0.0",
+		private: false,
+		applicability: [["eslint", ">=", "12.0.0"]],
+		// Can be deprecated?
+		// description: "description",
+		engine: "jscodeshift",
+		meta: {
+			changeType: "assistive",
+			timeSave: "5m",
+			type: "migration",
+		},
+	};
 
-		const codemodRcBuf = Buffer.from(JSON.stringify(codemodRcContents), "utf8");
-		const indexCjsBuf = Buffer.from("Code...", "utf8");
-		const readmeBuf = Buffer.from("README", "utf8");
+	const codemodRcBuf = Buffer.from(JSON.stringify(codemodRcContents), "utf8");
+	const indexCjsBuf = Buffer.from("Code...", "utf8");
+	const readmeBuf = Buffer.from("README", "utf8");
+
+	it("should go through the happy path with expected result and calling expected stubs", async () => {
 		const expectedCode = 200;
 
 		const response = await supertest(fastify.server)
@@ -180,9 +203,8 @@ describe("/publish route", async () => {
 			.update(codemodRcContents.name)
 			.digest("base64url");
 
-		const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
-		const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
-			.instances[0];
+		const clientInstance = mocks.S3Client.mock.instances[0];
+		const putObjectCommandInstance = mocks.PutObjectCommand.mock.instances[0];
 
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
@@ -197,237 +219,173 @@ describe("/publish route", async () => {
 		});
 
 		expect(response.body).toEqual({ success: true });
+	});
 
-		// it("when db write fails", async () => {
-		// 	// vi.mock("./db/prisma.js", async () => {
-		// 	// 	return {
-		// 	// 		prisma: {
-		// 	// 			codemodVersion: {
-		// 	// 				deleteMany: vi.fn().mockImplementation(() => {
-		// 	// 					return null;
-		// 	// 				}),
-		// 	// 				findMany: vi.fn().mockImplementation(() => {
-		// 	// 					return null;
-		// 	// 				}),
-		// 	// 			},
-		// 	// 			codemod: {
-		// 	// 				upsert: vi.fn().mockImplementation(() => {
-		// 	// 					throw new Error("Error");
-		// 	// 				}),
-		// 	// 				delete: vi.fn().mockImplementation(() => {
-		// 	// 					return null;
-		// 	// 				}),
-		// 	// 			},
-		// 	// 		},
-		// 	// 	};
-		// 	// });
+	it("when db write fails, it should fail with 500 and return the error message", async () => {
+		const errorMsg = "Test error";
+		mocks.prisma.codemod.upsert.mockImplementation(() => {
+			throw new Error(errorMsg);
+		});
 
-		// 	const response = await supertest(fastify.server)
-		// 		.post("/publish")
-		// 		.attach(".codemodrc.json", codemodRcBuf, {
-		// 			contentType: "multipart/form-data",
-		// 			filename: ".codemodrc.json",
-		// 		})
-		// 		.attach("index.cjs", indexCjsBuf, {
-		// 			contentType: "multipart/form-data",
-		// 			filename: ".codemodrc.json",
-		// 		})
-		// 		.attach("description.md", readmeBuf, {
-		// 			contentType: "multipart/form-data",
-		// 			filename: ".codemodrc.json",
-		// 		})
-		// 		.expect((res) => {
-		// 			if (res.status !== expectedCode) {
-		// 				console.log(JSON.stringify(res.body, null, 2));
-		// 			}
-		// 		})
-		// 		.expect("Content-Type", "application/json; charset=utf-8")
-		// 		.expect(expectedCode);
+		const expectedCode = 500;
 
-		// 	expect(areClerkKeysSpy).toHaveBeenCalledOnce();
-		// 	expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+		const response = await supertest(fastify.server)
+			.post("/publish")
+			.attach(".codemodrc.json", codemodRcBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("index.cjs", indexCjsBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("description.md", readmeBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.expect((res) => {
+				if (res.status !== expectedCode) {
+					console.log(JSON.stringify(res.body, null, 2));
+				}
+			})
+			.expect("Content-Type", "application/json; charset=utf-8")
+			.expect(expectedCode);
 
-		// 	expect(tarPackSpy).toHaveBeenCalledOnce();
-		// 	expect(tarPackSpy).toHaveBeenCalledWith([
-		// 		{
-		// 			name: ".codemodrc.json",
-		// 			data: codemodRcBuf,
-		// 		},
-		// 		{
-		// 			name: "index.cjs",
-		// 			data: indexCjsBuf,
-		// 		},
-		// 		{
-		// 			name: "description.md",
-		// 			data: readmeBuf,
-		// 		},
-		// 	]);
-		// 	expect(tarPackSpy).toReturnWith("archive");
+		expect(mocks.prisma.codemod.upsert).toHaveBeenCalledOnce();
 
-		// 	const hashDigest = createHash("ripemd160")
-		// 		.update(codemodRcContents.name)
-		// 		.digest("base64url");
+		// anything related to s3 should not happen
+		expect(mocks.S3Client.mock.instances.length).toEqual(0);
+		expect(mocks.PutObjectCommand.mock.instances.length).toEqual(0);
 
-		// 	const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
-		// 	const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
-		// 		.instances[0];
+		expect(response.body).toEqual({ error: errorMsg, success: false });
+	});
 
-		// 	expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
-		// 	expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-		// 		Bucket: "codemod-public-v2",
-		// 		Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-		// 		Body: "archive",
-		// 	});
+	describe("when s3 upload fails", async () => {
+		it("should delete the appropriate version from the database if other versions exist", async () => {
+			mocks.prisma.codemod.upsert.mockImplementation(() => {
+				return { id: "id" };
+			});
 
-		// 	expect(clientInstance.send).toHaveBeenCalledOnce();
-		// 	expect(clientInstance.send).toHaveBeenCalledWith(
-		// 		putObjectCommandInstance,
-		// 		{
-		// 			requestTimeout: 5000,
-		// 		},
-		// 	);
+			const errorMsg = "Test error";
+			mocks.S3Client.prototype.send = vi.fn().mockImplementation(() => {
+				throw new Error(errorMsg);
+			});
 
-		// 	expect(response.body).toEqual({ success: true });
-		// });
+			mocks.prisma.codemodVersion.findMany = vi.fn().mockImplementation(() => {
+				return [{ version: "1.0.0" }, { version: "1.0.1" }];
+			});
 
-		// it("when s3 upload fails", async () => {
-		// 	it("should delete the appropriate version from the database if other versions exist", async () => {
-		// 		const response = await supertest(fastify.server)
-		// 			.post("/publish")
-		// 			.attach(".codemodrc.json", codemodRcBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.attach("index.cjs", indexCjsBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.attach("description.md", readmeBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.expect((res) => {
-		// 				if (res.status !== expectedCode) {
-		// 					console.log(JSON.stringify(res.body, null, 2));
-		// 				}
-		// 			})
-		// 			.expect("Content-Type", "application/json; charset=utf-8")
-		// 			.expect(expectedCode);
+			const expectedCode = 500;
 
-		// 		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
-		// 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+			const response = await supertest(fastify.server)
+				.post("/publish")
+				.attach(".codemodrc.json", codemodRcBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("index.cjs", indexCjsBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("description.md", readmeBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.expect((res) => {
+					if (res.status !== expectedCode) {
+						console.log(JSON.stringify(res.body, null, 2));
+					}
+				})
+				.expect("Content-Type", "application/json; charset=utf-8")
+				.expect(expectedCode);
 
-		// 		expect(tarPackSpy).toHaveBeenCalledOnce();
-		// 		expect(tarPackSpy).toHaveBeenCalledWith([
-		// 			{
-		// 				name: ".codemodrc.json",
-		// 				data: codemodRcBuf,
-		// 			},
-		// 			{
-		// 				name: "index.cjs",
-		// 				data: indexCjsBuf,
-		// 			},
-		// 			{
-		// 				name: "description.md",
-		// 				data: readmeBuf,
-		// 			},
-		// 		]);
-		// 		expect(tarPackSpy).toReturnWith("archive");
+			const hashDigest = createHash("ripemd160")
+				.update(codemodRcContents.name)
+				.digest("base64url");
 
-		// 		const hashDigest = createHash("ripemd160")
-		// 			.update(codemodRcContents.name)
-		// 			.digest("base64url");
+			const clientInstance = mocks.S3Client.mock.instances[0];
 
-		// 		const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
-		// 		const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
-		// 			.instances[0];
+			expect(clientInstance.send).toHaveBeenCalledOnce();
+			expect(clientInstance.send).toThrowError(errorMsg);
 
-		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
-		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-		// 			Bucket: "codemod-public-v2",
-		// 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-		// 			Body: "archive",
-		// 		});
+			expect(mocks.prisma.codemodVersion.deleteMany).toHaveBeenCalledOnce();
+			expect(mocks.prisma.codemodVersion.deleteMany).toHaveBeenCalledWith({
+				where: {
+					codemod: {
+						name: codemodRcContents.name,
+					},
+					version: codemodRcContents.version,
+				},
+			});
 
-		// 		expect(clientInstance.send).toHaveBeenCalledOnce();
-		// 		expect(clientInstance.send).toHaveBeenCalledWith(
-		// 			putObjectCommandInstance,
-		// 			{
-		// 				requestTimeout: 5000,
-		// 			},
-		// 		);
+			expect(response.body).toEqual({ error: errorMsg, success: false });
+		});
 
-		// 		expect(response.body).toEqual({ success: true });
-		// 	});
+		it("should delete the appropriate version from the database AND the codemod itself if no other versions exist", async () => {
+			mocks.prisma.codemod.upsert.mockImplementation(() => {
+				return { id: "id" };
+			});
 
-		// 	it("should delete the appropriate version from the database AND the codemod itself if no other versions exist", async () => {
-		// 		const response = await supertest(fastify.server)
-		// 			.post("/publish")
-		// 			.attach(".codemodrc.json", codemodRcBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.attach("index.cjs", indexCjsBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.attach("description.md", readmeBuf, {
-		// 				contentType: "multipart/form-data",
-		// 				filename: ".codemodrc.json",
-		// 			})
-		// 			.expect((res) => {
-		// 				if (res.status !== expectedCode) {
-		// 					console.log(JSON.stringify(res.body, null, 2));
-		// 				}
-		// 			})
-		// 			.expect("Content-Type", "application/json; charset=utf-8")
-		// 			.expect(expectedCode);
+			const errorMsg = "Test error";
+			mocks.S3Client.prototype.send = vi.fn().mockImplementation(() => {
+				throw new Error(errorMsg);
+			});
 
-		// 		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
-		// 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+			mocks.prisma.codemodVersion.findMany = vi.fn().mockImplementation(() => {
+				return [];
+			});
 
-		// 		expect(tarPackSpy).toHaveBeenCalledOnce();
-		// 		expect(tarPackSpy).toHaveBeenCalledWith([
-		// 			{
-		// 				name: ".codemodrc.json",
-		// 				data: codemodRcBuf,
-		// 			},
-		// 			{
-		// 				name: "index.cjs",
-		// 				data: indexCjsBuf,
-		// 			},
-		// 			{
-		// 				name: "description.md",
-		// 				data: readmeBuf,
-		// 			},
-		// 		]);
-		// 		expect(tarPackSpy).toReturnWith("archive");
+			const expectedCode = 500;
 
-		// 		const hashDigest = createHash("ripemd160")
-		// 			.update(codemodRcContents.name)
-		// 			.digest("base64url");
+			const response = await supertest(fastify.server)
+				.post("/publish")
+				.attach(".codemodrc.json", codemodRcBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("index.cjs", indexCjsBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("description.md", readmeBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.expect((res) => {
+					if (res.status !== expectedCode) {
+						console.log(JSON.stringify(res.body, null, 2));
+					}
+				})
+				.expect("Content-Type", "application/json; charset=utf-8")
+				.expect(expectedCode);
 
-		// 		const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
-		// 		const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
-		// 			.instances[0];
+			const hashDigest = createHash("ripemd160")
+				.update(codemodRcContents.name)
+				.digest("base64url");
 
-		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
-		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-		// 			Bucket: "codemod-public-v2",
-		// 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-		// 			Body: "archive",
-		// 		});
+			const clientInstance = mocks.S3Client.mock.instances[0];
 
-		// 		expect(clientInstance.send).toHaveBeenCalledOnce();
-		// 		expect(clientInstance.send).toHaveBeenCalledWith(
-		// 			putObjectCommandInstance,
-		// 			{
-		// 				requestTimeout: 5000,
-		// 			},
-		// 		);
+			expect(clientInstance.send).toHaveBeenCalledOnce();
+			expect(clientInstance.send).toThrowError(errorMsg);
 
-		// 		expect(response.body).toEqual({ success: true });
-		// 	});
-		// });
+			expect(mocks.prisma.codemodVersion.deleteMany).toHaveBeenCalledOnce();
+			expect(mocks.prisma.codemodVersion.deleteMany).toHaveBeenCalledWith({
+				where: {
+					codemod: {
+						name: codemodRcContents.name,
+					},
+					version: codemodRcContents.version,
+				},
+			});
+
+			expect(mocks.prisma.codemod.delete).toHaveBeenCalledOnce();
+			expect(mocks.prisma.codemod.delete).toHaveBeenCalledWith({
+				where: {
+					name: codemodRcContents.name,
+				},
+			});
+
+			expect(response.body).toEqual({ error: errorMsg, success: false });
+		});
 	});
 });
