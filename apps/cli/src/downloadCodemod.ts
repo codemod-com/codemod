@@ -105,8 +105,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		let config: CodemodConfig;
 		try {
 			const configBuf = await readFile(join(directoryPath, ".codemodrc.json"));
-			const parsedConfig = JSON.parse(configBuf.toString("utf8"));
-			config = parse(codemodConfigSchema, parsedConfig);
+			config = parse(
+				codemodConfigSchema,
+				JSON.parse(configBuf.toString("utf8")),
+			);
 		} catch (err) {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
 		}

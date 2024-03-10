@@ -338,7 +338,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return codemod;
 	});
 
-	instance.get("codemods/:name/downloadLink", async (request, reply) => {
+	instance.get("/codemods/:name/downloadLink", async (request, reply) => {
 		const { name } = parseGetCodemodLatestVersionParams(request.params);
 
 		const codemod = await prisma.codemod.findFirst({
