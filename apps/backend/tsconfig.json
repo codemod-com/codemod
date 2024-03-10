@@ -1,5 +1,5 @@
 {
-	"include": ["./src", "./test"],
+	"include": ["reset.d.ts", "./src", "./test"],
 	"exclude": ["./dist", "./node_modules"],
 	"extends": "@codemod-com/tsconfig/base.json"
 }

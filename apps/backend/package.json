@@ -20,6 +20,7 @@
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@faker-js/faker": "^8.4.1",
+		"@total-typescript/ts-reset": "^0.5.1",
 		"@types/node": "20.10.5",
 		"@types/parse-github-url": "1.0.3",
 		"@types/pg": "^8.11.2",

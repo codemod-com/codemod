@@ -92,9 +92,6 @@ export const executeMainThread = async () => {
 			"lists all the codemods & recipes in the public registry",
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
-		.command("sync", "syncs all the codemods from the registry", (y) =>
-			buildUseJsonOption(y),
-		)
 		.command(
 			"learn",
 			"exports the current `git diff` in a file to before/after panels in the Codemod Studio",
@@ -197,28 +194,7 @@ export const executeMainThread = async () => {
 
 	if (String(argv._) === "list") {
 		try {
-			await codemodDownloader.syncRegistry();
-
 			await handleListNamesCommand(printer, false);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
-	}
-
-	if (String(argv._) === "sync") {
-		try {
-			await codemodDownloader.syncRegistry();
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;

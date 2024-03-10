@@ -2,9 +2,11 @@ import "dotenv/config";
 
 import { OutgoingHttpHeaders } from "node:http";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
+import { Codemod, CodemodVersion } from "@prisma/client";
 import { OpenAIStream } from "ai";
 import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
 import * as openAiEdge from "openai-edge";
@@ -365,6 +367,84 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		reply.type("application/json").code(200);
 		return { link: downloadLink };
 	});
+
+	type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
+		Pick<CodemodVersion, "engine">;
+
+	instance.get(
+		"/codemods/list",
+		async (request, reply): Promise<ShortCodemodInfo[]> => {
+			const accessToken = getCustomAccessToken(environment, request.headers);
+
+			let codemodData: ShortCodemodInfo[];
+
+			if (isNeitherNullNorUndefined(accessToken)) {
+				const _userId = await tokenService.findUserIdMetadataFromToken(
+					accessToken,
+					Date.now(),
+					CLAIM_ISSUE_CREATION,
+				);
+
+				// TODO: custom logic based on user auth
+				const dbCodemods = await prisma.codemod.findMany();
+
+				const codemods = await Promise.all(
+					dbCodemods.map(async (codemod) => {
+						const latestVersion = await prisma.codemodVersion.findFirst({
+							where: {
+								codemodId: codemod.id,
+							},
+							orderBy: {
+								createdAt: "desc",
+							},
+						});
+
+						if (!latestVersion) {
+							return null;
+						}
+
+						return {
+							name: codemod.name,
+							engine: latestVersion?.engine,
+							author: codemod.author,
+						};
+					}),
+				);
+
+				codemodData = codemods.filter(Boolean);
+			} else {
+				const dbCodemods = await prisma.codemod.findMany();
+
+				const codemods = await Promise.all(
+					dbCodemods.map(async (codemod) => {
+						const latestVersion = await prisma.codemodVersion.findFirst({
+							where: {
+								codemodId: codemod.id,
+							},
+							orderBy: {
+								createdAt: "desc",
+							},
+						});
+
+						if (!latestVersion) {
+							return null;
+						}
+
+						return {
+							name: codemod.name,
+							engine: latestVersion?.engine,
+							author: codemod.author,
+						};
+					}),
+				);
+
+				codemodData = codemods.filter(Boolean);
+			}
+
+			reply.type("application/json").code(200);
+			return codemodData;
+		},
+	);
 
 	instance.post(
 		"/validateAccessToken",

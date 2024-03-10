@@ -1,60 +1,13 @@
-import * as fs from "fs";
-import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import columnify from "columnify";
-import { glob } from "fast-glob";
-import * as v from "valibot";
+import { getCodemodList } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
-
-const configJsonSchema = v.object({
-	name: v.string(),
-	engine: v.string(),
-	owner: v.optional(v.string()),
-});
-
-export const getConfigFiles = async () => {
-	const configurationDirectoryPath = join(homedir(), ".codemod");
-
-	const configFiles = await glob("**/.codemodrc.json", {
-		absolute: true,
-		cwd: configurationDirectoryPath,
-		fs,
-		onlyFiles: true,
-	});
-
-	const codemodObjects = await Promise.all(
-		configFiles.map(async (cfg) => {
-			let configJson: string | null = null;
-			try {
-				configJson = await readFile(cfg, "utf8");
-			} catch (e) {
-				return null;
-			}
-
-			const parsedConfig = v.safeParse(
-				configJsonSchema,
-				JSON.parse(configJson),
-			);
-
-			if (!parsedConfig.success) {
-				return null;
-			}
-
-			return parsedConfig.output;
-		}),
-	);
-
-	return codemodObjects.filter(isNeitherNullNorUndefined);
-};
 
 export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,
 	short?: boolean,
 ) => {
-	const configObjects = await getConfigFiles();
+	const configObjects = await getCodemodList();
 
 	// required for vsce
 	if (short) {
@@ -64,19 +17,19 @@ export const handleListNamesCommand = async (
 	}
 
 	const prettified = configObjects
-		.map(({ name, engine, owner }) => {
-			if (owner?.toLocaleLowerCase() === "codemod.com") {
+		.map(({ name, engine, author }) => {
+			if (author?.toLocaleLowerCase() === "codemod.com") {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
-					owner: boldText(colorizeText(owner, "cyan")),
+					author: boldText(colorizeText(author, "cyan")),
 				};
 			}
 
 			return {
 				name,
 				engine,
-				owner: owner ?? "Community",
+				author: author ?? "Community",
 			};
 		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));

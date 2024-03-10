@@ -1,3 +1,4 @@
+import type { AllEngines } from "@codemod-com/utilities";
 import Axios from "axios";
 import type FormData from "form-data";
 import { type Output, nullable, object, parse, string } from "valibot";
@@ -65,4 +66,25 @@ export const getCodemodDownloadURI = async (
 	);
 
 	return res.data.link;
+};
+
+export type CodemodListReturn = {
+	name: string;
+	author: string;
+	engine: AllEngines;
+}[];
+export const getCodemodList = async (
+	accessToken?: string,
+): Promise<CodemodListReturn> => {
+	const res = await Axios.get<CodemodListReturn>(
+		"https://backend.codemod.com/codemods/list",
+		{
+			headers: {
+				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
+			},
+			timeout: 10000,
+		},
+	);
+
+	return res.data;
 };
