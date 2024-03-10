@@ -197,5 +197,237 @@ describe("/publish route", async () => {
 		});
 
 		expect(response.body).toEqual({ success: true });
+
+		// it("when db write fails", async () => {
+		// 	// vi.mock("./db/prisma.js", async () => {
+		// 	// 	return {
+		// 	// 		prisma: {
+		// 	// 			codemodVersion: {
+		// 	// 				deleteMany: vi.fn().mockImplementation(() => {
+		// 	// 					return null;
+		// 	// 				}),
+		// 	// 				findMany: vi.fn().mockImplementation(() => {
+		// 	// 					return null;
+		// 	// 				}),
+		// 	// 			},
+		// 	// 			codemod: {
+		// 	// 				upsert: vi.fn().mockImplementation(() => {
+		// 	// 					throw new Error("Error");
+		// 	// 				}),
+		// 	// 				delete: vi.fn().mockImplementation(() => {
+		// 	// 					return null;
+		// 	// 				}),
+		// 	// 			},
+		// 	// 		},
+		// 	// 	};
+		// 	// });
+
+		// 	const response = await supertest(fastify.server)
+		// 		.post("/publish")
+		// 		.attach(".codemodrc.json", codemodRcBuf, {
+		// 			contentType: "multipart/form-data",
+		// 			filename: ".codemodrc.json",
+		// 		})
+		// 		.attach("index.cjs", indexCjsBuf, {
+		// 			contentType: "multipart/form-data",
+		// 			filename: ".codemodrc.json",
+		// 		})
+		// 		.attach("description.md", readmeBuf, {
+		// 			contentType: "multipart/form-data",
+		// 			filename: ".codemodrc.json",
+		// 		})
+		// 		.expect((res) => {
+		// 			if (res.status !== expectedCode) {
+		// 				console.log(JSON.stringify(res.body, null, 2));
+		// 			}
+		// 		})
+		// 		.expect("Content-Type", "application/json; charset=utf-8")
+		// 		.expect(expectedCode);
+
+		// 	expect(areClerkKeysSpy).toHaveBeenCalledOnce();
+		// 	expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+
+		// 	expect(tarPackSpy).toHaveBeenCalledOnce();
+		// 	expect(tarPackSpy).toHaveBeenCalledWith([
+		// 		{
+		// 			name: ".codemodrc.json",
+		// 			data: codemodRcBuf,
+		// 		},
+		// 		{
+		// 			name: "index.cjs",
+		// 			data: indexCjsBuf,
+		// 		},
+		// 		{
+		// 			name: "description.md",
+		// 			data: readmeBuf,
+		// 		},
+		// 	]);
+		// 	expect(tarPackSpy).toReturnWith("archive");
+
+		// 	const hashDigest = createHash("ripemd160")
+		// 		.update(codemodRcContents.name)
+		// 		.digest("base64url");
+
+		// 	const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
+		// 	const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
+		// 		.instances[0];
+
+		// 	expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
+		// 	expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
+		// 		Bucket: "codemod-public-v2",
+		// 		Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
+		// 		Body: "archive",
+		// 	});
+
+		// 	expect(clientInstance.send).toHaveBeenCalledOnce();
+		// 	expect(clientInstance.send).toHaveBeenCalledWith(
+		// 		putObjectCommandInstance,
+		// 		{
+		// 			requestTimeout: 5000,
+		// 		},
+		// 	);
+
+		// 	expect(response.body).toEqual({ success: true });
+		// });
+
+		// it("when s3 upload fails", async () => {
+		// 	it("should delete the appropriate version from the database if other versions exist", async () => {
+		// 		const response = await supertest(fastify.server)
+		// 			.post("/publish")
+		// 			.attach(".codemodrc.json", codemodRcBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.attach("index.cjs", indexCjsBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.attach("description.md", readmeBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.expect((res) => {
+		// 				if (res.status !== expectedCode) {
+		// 					console.log(JSON.stringify(res.body, null, 2));
+		// 				}
+		// 			})
+		// 			.expect("Content-Type", "application/json; charset=utf-8")
+		// 			.expect(expectedCode);
+
+		// 		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
+		// 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+
+		// 		expect(tarPackSpy).toHaveBeenCalledOnce();
+		// 		expect(tarPackSpy).toHaveBeenCalledWith([
+		// 			{
+		// 				name: ".codemodrc.json",
+		// 				data: codemodRcBuf,
+		// 			},
+		// 			{
+		// 				name: "index.cjs",
+		// 				data: indexCjsBuf,
+		// 			},
+		// 			{
+		// 				name: "description.md",
+		// 				data: readmeBuf,
+		// 			},
+		// 		]);
+		// 		expect(tarPackSpy).toReturnWith("archive");
+
+		// 		const hashDigest = createHash("ripemd160")
+		// 			.update(codemodRcContents.name)
+		// 			.digest("base64url");
+
+		// 		const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
+		// 		const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
+		// 			.instances[0];
+
+		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
+		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
+		// 			Bucket: "codemod-public-v2",
+		// 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
+		// 			Body: "archive",
+		// 		});
+
+		// 		expect(clientInstance.send).toHaveBeenCalledOnce();
+		// 		expect(clientInstance.send).toHaveBeenCalledWith(
+		// 			putObjectCommandInstance,
+		// 			{
+		// 				requestTimeout: 5000,
+		// 			},
+		// 		);
+
+		// 		expect(response.body).toEqual({ success: true });
+		// 	});
+
+		// 	it("should delete the appropriate version from the database AND the codemod itself if no other versions exist", async () => {
+		// 		const response = await supertest(fastify.server)
+		// 			.post("/publish")
+		// 			.attach(".codemodrc.json", codemodRcBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.attach("index.cjs", indexCjsBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.attach("description.md", readmeBuf, {
+		// 				contentType: "multipart/form-data",
+		// 				filename: ".codemodrc.json",
+		// 			})
+		// 			.expect((res) => {
+		// 				if (res.status !== expectedCode) {
+		// 					console.log(JSON.stringify(res.body, null, 2));
+		// 				}
+		// 			})
+		// 			.expect("Content-Type", "application/json; charset=utf-8")
+		// 			.expect(expectedCode);
+
+		// 		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
+		// 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+
+		// 		expect(tarPackSpy).toHaveBeenCalledOnce();
+		// 		expect(tarPackSpy).toHaveBeenCalledWith([
+		// 			{
+		// 				name: ".codemodrc.json",
+		// 				data: codemodRcBuf,
+		// 			},
+		// 			{
+		// 				name: "index.cjs",
+		// 				data: indexCjsBuf,
+		// 			},
+		// 			{
+		// 				name: "description.md",
+		// 				data: readmeBuf,
+		// 			},
+		// 		]);
+		// 		expect(tarPackSpy).toReturnWith("archive");
+
+		// 		const hashDigest = createHash("ripemd160")
+		// 			.update(codemodRcContents.name)
+		// 			.digest("base64url");
+
+		// 		const clientInstance = (s3sdk.S3Client as any).mock.instances[0];
+		// 		const putObjectCommandInstance = (s3sdk.PutObjectCommand as any).mock
+		// 			.instances[0];
+
+		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
+		// 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
+		// 			Bucket: "codemod-public-v2",
+		// 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
+		// 			Body: "archive",
+		// 		});
+
+		// 		expect(clientInstance.send).toHaveBeenCalledOnce();
+		// 		expect(clientInstance.send).toHaveBeenCalledWith(
+		// 			putObjectCommandInstance,
+		// 			{
+		// 				requestTimeout: 5000,
+		// 			},
+		// 		);
+
+		// 		expect(response.body).toEqual({ success: true });
+		// 	});
+		// });
 	});
 });

@@ -235,7 +235,7 @@ export const publishHandler =
 				);
 			} catch (err) {
 				console.error("Failed uploading codemod to S3:", err);
-				await prisma.codemodVersion.delete({
+				await prisma.codemodVersion.deleteMany({
 					where: {
 						codemod: {
 							name,
@@ -243,6 +243,23 @@ export const publishHandler =
 						version,
 					},
 				});
+
+				const moreVersionsExist = await prisma.codemodVersion.findMany({
+					where: {
+						codemod: {
+							name,
+						},
+					},
+				});
+
+				if (!moreVersionsExist) {
+					await prisma.codemod.delete({
+						where: {
+							name,
+						},
+					});
+				}
+
 				return reply
 					.code(500)
 					.send({ error: (err as Error).message, success: false });
