@@ -111,9 +111,7 @@ export const publishHandler =
 				});
 			}
 
-			const name = codemodRc.name;
-			const version = codemodRc.version;
-
+			const { name, version } = codemodRc;
 			// TODO: should default to public if publishing not under org, and should default to private if under org
 			const isPrivate = codemodRc.private ?? false;
 
