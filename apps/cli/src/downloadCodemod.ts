@@ -12,7 +12,6 @@ import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	syncRegistry: () => Promise<void>;
 	download(
 		name: string,
 		cache: boolean,
@@ -27,33 +26,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		protected readonly _fileDownloadService: FileDownloadServiceBlueprint,
 		protected readonly _tarService: TarService,
 	) {}
-
-	public async syncRegistry() {}
-
-	// public async syncRegistry() {
-	// 	this.__printer.printConsoleMessage(
-	// 		"info",
-	// 		colorizeText(
-	// 			`Syncing the Codemod Registry into ${boldText(
-	// 				this.__configurationDirectoryPath,
-	// 			)}...\n`,
-	// 			"cyan",
-	// 		),
-	// 	);
-
-	// 	await mkdir(this.__configurationDirectoryPath, { recursive: true });
-
-	// 	const getResponse = await Axios.get(
-	// 		`${CODEMOD_REGISTRY_URL}/registry.tar.gz`,
-	// 		{
-	// 			responseType: "arraybuffer",
-	// 		},
-	// 	);
-
-	// 	const buffer = Buffer.from(getResponse.data);
-
-	// 	await this._tarService.extract(this.__configurationDirectoryPath, buffer);
-	// }
 
 	public async download(
 		name: string,

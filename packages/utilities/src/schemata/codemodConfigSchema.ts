@@ -83,6 +83,12 @@ const knownEngines = [
 	literal("ts-morph"),
 	literal("ast-grep"),
 ];
+export const knownEnginesSchema = union(knownEngines);
+export type KnownEngines = Output<typeof knownEnginesSchema>;
+
+const allEngines = [...knownEngines, literal("recipe"), literal("piranha")];
+export const allEnginesSchema = union(allEngines);
+export type AllEngines = Output<typeof allEnginesSchema>;
 
 const configJsonBaseSchema = object({
 	description: optional(string()),
@@ -97,7 +103,7 @@ const configJsonBaseSchema = object({
 	// Array of tuples: [libName, versionOperator, version]
 	applicability: optional(array(libraryVersionTuple), []),
 	deps: optional(array(string())),
-	engine: union([...knownEngines, literal("recipe"), literal("piranha")]),
+	engine: allEnginesSchema,
 	arguments: optional(argumentsSchema, []),
 	meta: object({
 		type: union([
@@ -131,7 +137,7 @@ export const codemodConfigSchema = union([
 	merge([
 		configJsonBaseSchema,
 		object({
-			engine: union(knownEngines),
+			engine: knownEnginesSchema,
 			name: string(),
 		}),
 	]),

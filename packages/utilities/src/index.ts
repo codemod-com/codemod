@@ -4,10 +4,14 @@ export { FileWatcher } from "./fileWatcher.js";
 export {
 	argumentsSchema,
 	codemodConfigSchema,
+	allEnginesSchema,
+	knownEnginesSchema,
 	type Arguments,
 	type ArgumentsInput,
 	type CodemodConfig,
 	type CodemodConfigInput,
+	type AllEngines,
+	type KnownEngines,
 } from "./schemata/codemodConfigSchema.js";
 export {
 	JOB_KIND,
