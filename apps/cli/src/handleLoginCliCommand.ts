@@ -11,10 +11,7 @@ const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			"Opening the Codemod Studio... Please Sign in there!\n",
-			"cyan",
-		),
+		colorizeText("Redirecting to Codemod sign-in page...\n", "cyan"),
 	);
 	const success = openURL(
 		`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}`,
@@ -22,7 +19,8 @@ const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
 	if (!success) {
 		printer.printOperationMessage({
 			kind: "error",
-			message: "Unexpected error occurred while opening the Codemod Studio.",
+			message:
+				"An unexpected error occurred while redirecting to the sign-in page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
 		});
 	}
 };
@@ -51,10 +49,7 @@ export const handleLoginCliCommand = async (
 
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				boldText("You are already logged in with the Codemod CLI!"),
-				"cyan",
-			),
+			colorizeText(boldText("You're already logged in."), "cyan"),
 		);
 		return;
 	}
@@ -75,9 +70,6 @@ export const handleLoginCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			boldText("You are successfully logged in with the Codemod CLI!"),
-			"cyan",
-		),
+		colorizeText(boldText("You are successfully logged in."), "cyan"),
 	);
 };
