@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { validateAccessToken } from "./apis.js";
@@ -11,7 +12,26 @@ export const handleLoginCliCommand = async (
 	printer: PrinterBlueprint,
 	token: string | null,
 ) => {
+	const codemodDirectoryPath = join(homedir(), ".codemod");
+
 	if (token === null) {
+		const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
+		if (
+			existsSync(tokenTxtPath) &&
+			(await readFile(tokenTxtPath, {
+				encoding: "utf-8",
+			}))
+		) {
+			printer.printConsoleMessage(
+				"info",
+				colorizeText(
+					boldText("You are already logged in with the Codemod CLI!"),
+					"cyan",
+				),
+			);
+			return;
+		}
+
 		printer.printConsoleMessage(
 			"info",
 			colorizeText(
@@ -40,7 +60,6 @@ export const handleLoginCliCommand = async (
 	}
 
 	// Ensure that `/.codemod.` folder exists
-	const codemodDirectoryPath = join(homedir(), ".codemod");
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
 	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
