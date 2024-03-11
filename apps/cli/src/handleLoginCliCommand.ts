@@ -12,7 +12,7 @@ const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
 	printer.printConsoleMessage(
 		"info",
 		colorizeText(
-			"Opening the Codemod Studio... Please Sign in with Github!\n",
+			"Opening the Codemod Studio... Please Sign in there!\n",
 			"cyan",
 		),
 	);
