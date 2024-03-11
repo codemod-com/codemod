@@ -54,7 +54,7 @@ export const getCodemodDownloadURI = async (
 	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
-	const res = await Axios.get<{ version: string }>(
+	const res = await Axios.get<{ link: string }>(
 		`https://backend.codemod.com/codemods/${codemodName}/downloadLink`,
 		{
 			headers: {
@@ -64,5 +64,5 @@ export const getCodemodDownloadURI = async (
 		},
 	);
 
-	return res.data.version;
+	return res.data.link;
 };
