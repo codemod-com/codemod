@@ -1,4 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { validateAccessToken } from "./apis.js";
@@ -7,27 +8,49 @@ import { boldText, colorizeText, openURL } from "./utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
+const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
+	printer.printConsoleMessage(
+		"info",
+		colorizeText("Redirecting to Codemod sign-in page...\n", "cyan"),
+	);
+	const success = openURL(
+		`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}`,
+	);
+	if (!success) {
+		printer.printOperationMessage({
+			kind: "error",
+			message:
+				"An unexpected error occurred while redirecting to the sign-in page. Please submit a GitHub issue (github.com/codemod-com/codemod/issues/new) or report it to us (codemod.com/community).",
+		});
+	}
+};
 export const handleLoginCliCommand = async (
 	printer: PrinterBlueprint,
 	token: string | null,
 ) => {
+	const codemodDirectoryPath = join(homedir(), ".codemod");
+
 	if (token === null) {
+		const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
+		if (!existsSync(tokenTxtPath)) {
+			routeUserToStudioForLogin(printer);
+			return;
+		}
+
+		const content = await readFile(tokenTxtPath, {
+			encoding: "utf-8",
+		});
+		const { username } = await validateAccessToken(content);
+
+		if (username === null) {
+			routeUserToStudioForLogin(printer);
+			return;
+		}
+
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				"Opening the Codemod Studio... Please Sign in with Github!\n",
-				"cyan",
-			),
+			colorizeText(boldText("You're already logged in."), "cyan"),
 		);
-		const success = openURL(
-			`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}`,
-		);
-		if (!success) {
-			printer.printOperationMessage({
-				kind: "error",
-				message: "Unexpected error occurred while opening the Codemod Studio.",
-			});
-		}
 		return;
 	}
 
@@ -40,7 +63,6 @@ export const handleLoginCliCommand = async (
 	}
 
 	// Ensure that `/.codemod.` folder exists
-	const codemodDirectoryPath = join(homedir(), ".codemod");
 	await mkdir(codemodDirectoryPath, { recursive: true });
 
 	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
@@ -48,9 +70,6 @@ export const handleLoginCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			boldText("You are successfully logged in with the Codemod CLI!"),
-			"cyan",
-		),
+		colorizeText(boldText("You are successfully logged in."), "cyan"),
 	);
 };
