@@ -22,9 +22,9 @@ model Codemod {
   id             Int              @id @default(autoincrement())
   slug           String           @unique @db.VarChar(255)
   type           CodemodType
-  name           String           @db.VarChar(255)
+  name           String           @unique @db.VarChar(255)
   featured       Boolean          @default(false)
-  verified       Boolean
+  verified       Boolean          @default(false)
   private        Boolean
   author         String           @db.VarChar(255)
   versions       CodemodVersion[]
@@ -32,8 +32,8 @@ model Codemod {
   totalTimeSaved Int              @default(0)
   openedPrs      Int              @default(0)
   labels         String[]         @default([])
-  from           String           @db.VarChar(255)
-  to             String           @db.VarChar(255)
+  from           String?          @db.VarChar(255)
+  to             String?          @db.VarChar(255)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
 }
@@ -45,8 +45,8 @@ model CodemodVersion {
   engine                   String   @db.VarChar(255)
   requirements             String?  @db.VarChar(255)
   vsCodeLink               String   @db.VarChar(255)
-  codemodStudioExampleLink String   @db.VarChar(255)
-  testProjectCommand       String   @db.VarChar(255)
+  codemodStudioExampleLink String?  @db.VarChar(255)
+  testProjectCommand       String?  @db.VarChar(255)
   sourceRepo               String   @db.VarChar(255)
   amountOfUses             Int      @default(0)
   totalTimeSaved           Int      @default(0)

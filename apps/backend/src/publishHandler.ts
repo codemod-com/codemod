@@ -2,15 +2,24 @@ import { createHash } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
 import {
+	CodemodConfig,
 	codemodConfigSchema,
 	isNeitherNullNorUndefined,
 	tarPack,
 } from "@codemod-com/utilities";
 import { RouteHandlerMethod } from "fastify";
 import { parse } from "valibot";
+import { z } from "zod";
+import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
+import { prisma } from "./db/prisma.js";
 import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
+
+// TODO: move
+const getS3Url = (bucket: string, region: string) => {
+	return `https://${bucket}.s3.${region}.amazonaws.com`;
+};
 
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
@@ -53,9 +62,7 @@ export const publishHandler =
 			}
 
 			let codemodRcBuffer: Buffer | null = null;
-			let name: string | null = null;
-			let version: string | null = null;
-			let isPrivate = false;
+			let codemodRc: CodemodConfig | null = null;
 			let indexCjsBuffer: Buffer | null = null;
 			let descriptionMdBuffer: Buffer | null = null;
 
@@ -67,7 +74,7 @@ export const publishHandler =
 
 					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-					const codemodRc = parse(codemodConfigSchema, codemodRcData);
+					codemodRc = parse(codemodConfigSchema, codemodRcData);
 
 					if (
 						!("name" in codemodRc) ||
@@ -76,12 +83,6 @@ export const publishHandler =
 						throw new Error(
 							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 						);
-					}
-
-					name = codemodRc.name;
-					version = codemodRc.version;
-					if (codemodRc.private) {
-						isPrivate = true;
 					}
 
 					// TODO: add check for organization
@@ -96,7 +97,7 @@ export const publishHandler =
 				}
 			}
 
-			if (!isNeitherNullNorUndefined(codemodRcBuffer)) {
+			if (!isNeitherNullNorUndefined(codemodRcBuffer) || !codemodRc) {
 				return reply.code(400).send({
 					error: "No .codemodrc.json file was provided",
 					success: false,
@@ -109,6 +110,10 @@ export const publishHandler =
 					success: false,
 				});
 			}
+
+			const { name, version } = codemodRc;
+			// TODO: should default to public if publishing not under org, and should default to private if under org
+			const isPrivate = codemodRc.private ?? false;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -123,14 +128,6 @@ export const publishHandler =
 					success: false,
 				});
 			}
-
-			const client = new S3Client({
-				credentials: {
-					accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
-					secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
-				},
-				region: "us-west-1",
-			});
 
 			const buffers = [
 				{
@@ -160,16 +157,108 @@ export const publishHandler =
 
 			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
 
-			await client.send(
-				new PutObjectCommand({
-					Bucket: bucket,
-					Key: `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`,
-					Body: archive,
-				}),
-				{
-					requestTimeout: REQUEST_TIMEOUT,
-				},
-			);
+			const registryUrl = getS3Url(bucket, "us-west-1");
+			const uploadKey = `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`;
+
+			const codemodVersionEntry: Omit<
+				z.infer<typeof CodemodVersionCreateInputSchema>,
+				"codemod"
+			> = {
+				version,
+				bucketLink: `${registryUrl}/${uploadKey}`,
+				engine: codemodRc.engine ?? "unknown",
+				sourceRepo: codemodRc.meta.git ?? "",
+				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
+				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
+				requirements:
+					codemodRc.applicability.map((a) => a.join(" ")).join(", ") ?? null,
+			};
+
+			try {
+				await prisma.codemod.upsert({
+					where: {
+						name,
+					},
+					create: {
+						slug: name
+							.replaceAll("@", "")
+							.split(/[\/ ,.-]/)
+							.join("-"),
+						name,
+						// Do we even need this field? We can have a function which determines the type based on other fields
+						type: "codemod",
+						private: isPrivate,
+						verified: username === "codemod.com",
+						from: codemodRc.meta.from?.join(" "),
+						to: codemodRc.meta.to?.join(" "),
+						author: username,
+						versions: {
+							create: codemodVersionEntry,
+						},
+					},
+					update: {
+						versions: {
+							create: codemodVersionEntry,
+						},
+					},
+				});
+			} catch (err) {
+				console.error("Failed writing codemod to the database:", err);
+				return reply
+					.code(500)
+					.send({ error: (err as Error).message, success: false });
+			}
+
+			try {
+				const client = new S3Client({
+					credentials: {
+						accessKeyId: environment.AWS_ACCESS_KEY_ID ?? "",
+						secretAccessKey: environment.AWS_SECRET_ACCESS_KEY ?? "",
+					},
+					region: "us-west-1",
+				});
+
+				await client.send(
+					new PutObjectCommand({
+						Bucket: bucket,
+						Key: uploadKey,
+						Body: archive,
+					}),
+					{
+						requestTimeout: REQUEST_TIMEOUT,
+					},
+				);
+			} catch (err) {
+				console.error("Failed uploading codemod to S3:", err);
+				await prisma.codemodVersion.deleteMany({
+					where: {
+						codemod: {
+							name,
+						},
+						version,
+					},
+				});
+
+				const otherVersions = await prisma.codemodVersion.findMany({
+					where: {
+						codemod: {
+							name,
+						},
+					},
+				});
+
+				if (otherVersions.length === 0) {
+					await prisma.codemod.delete({
+						where: {
+							name,
+						},
+					});
+				}
+
+				return reply
+					.code(500)
+					.send({ error: (err as Error).message, success: false });
+			}
 
 			return reply.code(200).send({ success: true });
 		} catch (err) {
