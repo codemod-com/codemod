@@ -26,6 +26,7 @@ import { ReplicateService } from "./replicateService.js";
 import { parseEnvironment } from "./schemata/env.js";
 import {
 	parseGetCodemodBySlugParams,
+	parseGetCodemodLatestVersionParams,
 	parseGetCodemodsQuery,
 } from "./schemata/query.js";
 import {
@@ -335,6 +336,34 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 		reply.type("application/json").code(200);
 		return codemod;
+	});
+
+	instance.get("/codemods/:name/downloadLink", async (request, reply) => {
+		const { name } = parseGetCodemodLatestVersionParams(request.params);
+
+		const codemod = await prisma.codemod.findFirst({
+			where: {
+				name,
+			},
+			include: {
+				versions: {
+					orderBy: {
+						createdAt: "desc",
+					},
+					take: 1,
+				},
+			},
+		});
+
+		const downloadLink = codemod?.versions[0]?.bucketLink;
+
+		if (!downloadLink) {
+			reply.status(404).send({ message: "Codemod not found" });
+			return;
+		}
+
+		reply.type("application/json").code(200);
+		return { link: downloadLink };
 	});
 
 	instance.post(

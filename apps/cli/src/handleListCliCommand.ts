@@ -6,10 +6,7 @@ import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import columnify from "columnify";
 import { glob } from "fast-glob";
 import * as v from "valibot";
-import { syncRegistryOperation } from "./executeMainThread.js";
-import { FileDownloadService } from "./fileDownloadService.js";
-import type { Printer, PrinterBlueprint } from "./printer.js";
-import { TarService } from "./services/tarService.js";
+import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const configJsonSchema = v.object({
@@ -95,21 +92,4 @@ export const handleListNamesCommand = async (
 		"info",
 		"\nColored codemods are verified by the Codemod.com engineering team",
 	);
-};
-
-export const handleListNamesAfterSyncing = async (
-	disableCache: boolean,
-	short: boolean,
-	printer: Printer,
-	fileDownloadService: FileDownloadService,
-	tarService: TarService,
-) => {
-	await syncRegistryOperation(
-		disableCache,
-		printer,
-		fileDownloadService,
-		tarService,
-	);
-
-	await handleListNamesCommand(printer, short);
 };
