@@ -7,10 +7,7 @@ import {
 } from "./tokenService.js";
 
 describe("TokenService", async () => {
-	const dataAccessLayer = await buildDataAccessLayer(
-		"sqlite::memory:",
-		// 'postgres://postgres:postgres@localhost:5432/studio',
-	);
+	const dataAccessLayer = await buildDataAccessLayer();
 
 	const encryptionKey = Buffer.from(
 		Array.from({ length: 32 }).map((_, i) => i),
@@ -39,9 +36,9 @@ describe("TokenService", async () => {
 			.map(() => "A")
 			.join("");
 
-		const claims = 2;
-		const createdAt = Date.now();
-		const expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 30;
+		const claims = BigInt(2);
+		const createdAt = BigInt(Date.now());
+		const expiresAt = BigInt(Date.now() + 1000 * 60 * 60 * 24 * 30);
 
 		const token = await tokenService.createTokenFromUserId(
 			userId,
@@ -51,20 +48,24 @@ describe("TokenService", async () => {
 		);
 
 		expect(
-			await tokenService.findUserIdMetadataFromToken(token, createdAt, 0b11),
+			await tokenService.findUserIdMetadataFromToken(
+				token,
+				createdAt,
+				BigInt(0b11),
+			),
 		).toEqual(userId);
 
-		await tokenService.revokeToken(token, Date.now());
+		await tokenService.revokeToken(token, BigInt(Date.now()));
 
 		await expect(
-			tokenService.findUserIdMetadataFromToken(token, createdAt, 0b11),
+			tokenService.findUserIdMetadataFromToken(token, createdAt, BigInt(0b11)),
 		).rejects.toThrow(TokenRevokedError);
 	});
 
 	test("revoking an unexisting token", async () => {
-		await expect(tokenService.revokeToken("ABCD", Date.now())).rejects.toThrow(
-			TokenNotFoundError,
-		);
+		await expect(
+			tokenService.revokeToken("ABCD", BigInt(Date.now())),
+		).rejects.toThrow(TokenNotFoundError);
 	});
 
 	test("revoking a revoked token", async () => {
@@ -73,9 +74,9 @@ describe("TokenService", async () => {
 			.map(() => "A")
 			.join("");
 
-		const claims = 2;
-		const createdAt = Date.now();
-		const expiresAt = Date.now() + 1000 * 60 * 60 * 24 * 30;
+		const claims = BigInt(2);
+		const createdAt = BigInt(Date.now());
+		const expiresAt = BigInt(Date.now() + 1000 * 60 * 60 * 24 * 30);
 
 		const token = await tokenService.createTokenFromUserId(
 			userId,
@@ -84,10 +85,10 @@ describe("TokenService", async () => {
 			expiresAt,
 		);
 
-		await tokenService.revokeToken(token, Date.now());
+		await tokenService.revokeToken(token, BigInt(Date.now()));
 
-		await expect(tokenService.revokeToken(token, Date.now())).rejects.toThrow(
-			TokenRevokedError,
-		);
+		await expect(
+			tokenService.revokeToken(token, BigInt(Date.now())),
+		).rejects.toThrow(TokenRevokedError);
 	});
 });

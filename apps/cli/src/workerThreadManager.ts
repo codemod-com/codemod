@@ -62,11 +62,13 @@ export class WorkerThreadManager {
 			this.__workers.push(worker);
 		}
 
-		this.__onPrinterMessage({
-			kind: "progress",
-			processedFileNumber: 0,
-			totalFileNumber: this.__currentFileCount,
-		});
+		if (this.__currentFileCount > 0) {
+			this.__onPrinterMessage({
+				kind: "progress",
+				processedFileNumber: 0,
+				totalFileNumber: this.__currentFileCount,
+			});
+		}
 
 		this.__interval = setInterval(() => {
 			const now = Date.now();

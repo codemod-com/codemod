@@ -5,7 +5,7 @@ import type { IFs } from "memfs";
 export const buildFileMap = async (
 	sourceFileSystem: IFs,
 	targetFileSystem: IFs,
-	paths: ReadonlyArray<string>,
+	paths: string[],
 ): Promise<Map<string, string>> => {
 	const fileMap = new Map<string, string>();
 

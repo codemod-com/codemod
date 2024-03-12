@@ -147,7 +147,7 @@ export class TokenService {
 
 	public async findUserIdMetadataFromToken(
 		accessToken: string,
-		now: number,
+		now: bigint,
 		claims: bigint,
 	) {
 		const userKeyIvPair = getKeyIvPair(accessToken);

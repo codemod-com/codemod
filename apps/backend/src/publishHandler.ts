@@ -8,6 +8,7 @@ import {
 	tarPack,
 } from "@codemod-com/utilities";
 import { RouteHandlerMethod } from "fastify";
+import * as semver from "semver";
 import { parse } from "valibot";
 import { z } from "zod";
 import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
@@ -39,7 +40,7 @@ export const publishHandler =
 
 			const userId = await tokenService.findUserIdMetadataFromToken(
 				accessToken,
-				Date.now(),
+				BigInt(Date.now()),
 				CLAIM_PUBLISHING,
 			);
 
@@ -144,6 +145,28 @@ export const publishHandler =
 				buffers.push({
 					name: "description.md",
 					data: descriptionMdBuffer,
+				});
+			}
+
+			const latestVersion = await prisma.codemodVersion.findFirst({
+				where: {
+					codemod: {
+						name,
+					},
+				},
+				orderBy: {
+					version: "desc",
+				},
+				take: 1,
+			});
+
+			if (
+				latestVersion !== null &&
+				!semver.gt(version, latestVersion.version)
+			) {
+				return reply.code(400).send({
+					error: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,
+					success: false,
 				});
 			}
 

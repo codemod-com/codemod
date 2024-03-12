@@ -172,7 +172,7 @@ export class Runner {
 							`"${this._name}"`,
 						)} codemod against ${boldText(
 							`"${this._flowSettings.target}"`,
-						)}...\n`,
+						)} using ${boldText(`"${codemod.engine}"`)} engine...\n`,
 						"cyan",
 					),
 				);
