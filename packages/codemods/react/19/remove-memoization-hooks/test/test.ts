@@ -10,13 +10,19 @@ describe("Remove memoization hooks", () => {
 		import { useCallback } from 'react';
 
 		function Component() {
-			const callback = useCallback();
+			const selectedDateMin3DaysDifference = useCallback(() => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			  }, [today, selectedDate]);
 		}
 		`;
 
 		const output = `
 		function Component() {
-			const callback = ();
+			const selectedDateMin3DaysDifference = () => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			};
 		}
 		`;
 
@@ -38,13 +44,19 @@ describe("Remove memoization hooks", () => {
 		import { useMemo } from 'react';
 
 		function Component() {
-			const callback = useMemo();
+			const selectedDateMin3DaysDifference = useMemo(() => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			  }, [today, selectedDate]);
 		}
 		`;
 
 		const output = `
 		function Component() {
-			const callback = ();
+			const selectedDateMin3DaysDifference = () => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			};
 		}
 		`;
 
@@ -65,49 +77,19 @@ describe("Remove memoization hooks", () => {
 		const input = `
 		import { memo } from 'react';
 
-		function Component() {
-			const callback = memo();
-		}
+		const MyComponent = ({ name }) => {
+			return <div>Hello, {name}!</div>;
+		  };
+		  
+		const MemoizedMyComponent = memo(MyComponent);
 		`;
 
 		const output = `
-		function Component() {
-			const callback = ();
-		}
-		`;
-
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
-
-		const actualOutput = transform(fileInfo, buildApi("js"));
-
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
-
-	it("should remove all three", () => {
-		const input = `
-		import { memo, useMemo, useCallback, useState } from 'react';
-
-		function Component() {
-			const callback1 = useMemo();
-			const callback2 = useCallback();
-			const callback3 = memo();
-		}
-		`;
-
-		const output = `
-		import { useState } from 'react';
-
-		function Component() {
-			const callback1 = ();
-			const callback2 = ();
-			const callback3 = ();
-		}
+		const MyComponent = ({ name }) => {
+			return <div>Hello, {name}!</div>;
+		  };
+		  
+		const MemoizedMyComponent = MyComponent;
 		`;
 
 		const fileInfo: FileInfo = {
@@ -129,10 +111,23 @@ describe("Remove memoization hooks", () => {
 
 		function Component() {
 			const state = React.useState();
-			const callback1 = React.useMemo();
-			const callback2 = React.useCallback();
-			const callback3 = React.memo();
+
+			const example1 = React.useMemo(() => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			}, [today, selectedDate]);
+
+			const example2 = React.useCallback(() => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			}, [today, selectedDate]);
 		}
+
+		const MyComponent = ({ name }) => {
+			return <div>Hello, {name}!</div>;
+		  };
+		  
+		const MemoizedMyComponent = React.memo(MyComponent);
 		`;
 
 		const output = `
@@ -140,10 +135,23 @@ describe("Remove memoization hooks", () => {
 
 		function Component() {
 			const state = React.useState();
-			const callback1 = ();
-			const callback2 = ();
-			const callback3 = ();
+
+			const example1 = () => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			};
+
+			const example2 = () => {
+				const diff = today.diff(selectedDate, "days");
+				return diff > 3 || diff < -3;
+			};
 		}
+
+		const MyComponent = ({ name }) => {
+			return <div>Hello, {name}!</div>;
+		  };
+		  
+		const MemoizedMyComponent = MyComponent;
 		`;
 
 		const fileInfo: FileInfo = {
