@@ -10,8 +10,8 @@ import {
 } from "../crypto/crypto.js";
 import { DataAccessLayer } from "../db/dataAccessLayer.js";
 
-export const CLAIM_PUBLISHING = 0x1;
-export const CLAIM_ISSUE_CREATION = 0x2;
+export const CLAIM_PUBLISHING = BigInt(0x1);
+export const CLAIM_ISSUE_CREATION = BigInt(0x2);
 export const ALL_CLAIMS = CLAIM_PUBLISHING | CLAIM_ISSUE_CREATION;
 
 const getKeyIvPair = (token: string): KeyIvPair => {
@@ -33,9 +33,9 @@ const buildPepperedAccessTokenHashDigest = (
 		.update(keyIvPair.iv)
 		.digest();
 
-const buildBufferFromNumber = (value: bigint): Buffer => {
+const buildBufferFromNumber = (value: number | bigint): Buffer => {
 	const buffer = Buffer.alloc(8);
-	buffer.writeBigUint64BE(value);
+	buffer.writeBigUint64BE(typeof value === "bigint" ? value : BigInt(value));
 
 	return buffer;
 };

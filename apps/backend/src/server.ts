@@ -156,7 +156,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	return fastify;
 };
 
-const dataAccessLayer = await buildDataAccessLayer(environment.DATABASE_URI);
+const dataAccessLayer = await buildDataAccessLayer();
 
 const { ChatGPTAPI } = await import("chatgpt");
 
@@ -206,8 +206,6 @@ const wrapRequestHandlerMethod =
 	async (request, reply) => {
 		const getAccessTokenOrThrow = () => {
 			const accessToken = getCustomAccessToken(environment, request.headers);
-
-			console.log("accessToken", accessToken);
 
 			if (accessToken === null) {
 				throw new UnauthorizedError();

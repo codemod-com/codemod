@@ -5,8 +5,8 @@ export const buildAccessTokenHandler: CustomHandler<Record<string, never>> =
 	async (dependencies) => {
 		const userId = await dependencies.getClerkUserId();
 
-		const createdAt = dependencies.now();
-		const expiresAt = createdAt + 1000 * 60 * 60 * 24 * 14;
+		const createdAt = BigInt(dependencies.now());
+		const expiresAt = createdAt + BigInt(1000 * 60 * 60 * 24 * 14);
 
 		const token = await dependencies.tokenService.createTokenFromUserId(
 			userId,
