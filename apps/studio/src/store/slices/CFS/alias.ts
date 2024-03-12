@@ -10,7 +10,24 @@ type AliasName =
 	| "$HIGHLIGHTED_IN_AFTER"
 	| "$EXECUTION_ERROR";
 
-type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
+type AliasObj = { value: string; updatedAt: number };
+type Aliases = Record<AliasName, AliasObj | null>;
+
+const generateCodemodExecutionObject = (
+	codemodExecutionError: string | null,
+	rangesUpdatedAt: number,
+): null | AliasObj => {
+	let codemodExecutionObj = null;
+
+	if (codemodExecutionError !== null) {
+		codemodExecutionObj = {
+			value: codemodExecutionError ?? "",
+			updatedAt: rangesUpdatedAt,
+		};
+	}
+
+	return codemodExecutionObj;
+};
 
 const getAliases = (state: RootState): Aliases => {
 	const {
@@ -66,10 +83,10 @@ const getAliases = (state: RootState): Aliases => {
 					updatedAt: afterRangeUpdatedAt,
 			  }
 			: null,
-		$EXECUTION_ERROR: {
-			value: codemodExecutionError ?? "",
-			updatedAt: rangesUpdatedAt,
-		},
+		$EXECUTION_ERROR: generateCodemodExecutionObject(
+			codemodExecutionError,
+			rangesUpdatedAt,
+		),
 	};
 };
 
