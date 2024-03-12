@@ -31,19 +31,25 @@ export default function transform(
 
 	hooksToRemove.forEach((hook) => {
 		root
-			.find(j.MemberExpression, {
-				object: { name: "React" },
-				property: { name: hook },
+			.find(j.CallExpression, {
+				callee: {
+					type: "Identifier",
+					name: hook,
+				},
 			})
-			.forEach((path) => {
-				j(path).remove();
-			});
+			.replaceWith((path) => path.value.arguments[0]);
 	});
 
 	hooksToRemove.forEach((hook) => {
-		root.find(j.Identifier, { name: hook }).forEach((path) => {
-			j(path).remove();
-		});
+		root
+			.find(j.CallExpression, {
+				callee: {
+					type: "MemberExpression",
+					object: { name: "React" },
+					property: { name: hook },
+				},
+			})
+			.replaceWith((path) => path.value.arguments[0]);
 	});
 
 	return root.toSource();
