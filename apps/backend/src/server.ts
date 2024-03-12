@@ -207,6 +207,8 @@ const wrapRequestHandlerMethod =
 		const getAccessTokenOrThrow = () => {
 			const accessToken = getCustomAccessToken(environment, request.headers);
 
+			console.log("accessToken", accessToken);
+
 			if (accessToken === null) {
 				throw new UnauthorizedError();
 			}

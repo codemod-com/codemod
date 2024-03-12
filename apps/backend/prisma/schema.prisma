@@ -57,3 +57,19 @@ model CodemodVersion {
   createdAt                DateTime @default(now())
   updatedAt                DateTime @default(now()) @updatedAt
 }
+
+model TokenMetadata {
+  pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
+  backendInitializationVector   String @map("biv") @db.VarChar(22)
+  encryptedUserId               String @map("euid") @db.VarChar(64)
+  createdAt                     BigInt @map("ca")
+  expiresAt                     BigInt @map("ea")
+  claims                        BigInt @map("c")
+  signature                     String @map("s") @db.VarChar(43)
+}
+
+model TokenRevocation {
+  pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
+  revokedAt                     BigInt @map("r")
+  signature                     String @map("s") @db.VarChar(43)
+}

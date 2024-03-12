@@ -1,4 +1,5 @@
 import { createHash, randomBytes } from "crypto";
+import { Prisma, TokenMetadata, TokenRevocation } from "@prisma/client";
 import {
 	EncryptedTokenMetadata,
 	KeyIvPair,
@@ -7,8 +8,6 @@ import {
 	sign,
 	verifyTokenMetadata,
 } from "../crypto/crypto.js";
-import { TokenMetadata } from "../db/buildTokenMetadataRepository.js";
-import { TokenRevocation } from "../db/buildTokenRevocationsRepository.js";
 import { DataAccessLayer } from "../db/dataAccessLayer.js";
 
 export const CLAIM_PUBLISHING = 0x1;
@@ -34,9 +33,9 @@ const buildPepperedAccessTokenHashDigest = (
 		.update(keyIvPair.iv)
 		.digest();
 
-const buildBufferFromNumber = (value: number): Buffer => {
+const buildBufferFromNumber = (value: bigint): Buffer => {
 	const buffer = Buffer.alloc(8);
-	buffer.writeBigUint64BE(BigInt(value));
+	buffer.writeBigUint64BE(value);
 
 	return buffer;
 };
@@ -90,9 +89,9 @@ export class TokenService {
 
 	public async createTokenFromUserId(
 		userId: string,
-		claims: number,
-		createdAt: number,
-		expiresAt: number,
+		claims: bigint,
+		createdAt: bigint,
+		expiresAt: bigint,
 	): Promise<string> {
 		const userKeyIvPair: KeyIvPair = {
 			key: randomBytes(32),
@@ -130,11 +129,15 @@ export class TokenService {
 			signature: encryptedTokenMetadata.signature.toString("base64url"),
 		};
 
-		await this._dataAccessLayer.withSerializableTransaction((transaction) =>
-			this._dataAccessLayer.tokenMetadataRepository.create(
-				tokenMetadata,
-				transaction,
-			),
+		await this._dataAccessLayer.prisma.$transaction(
+			[
+				this._dataAccessLayer.prisma.tokenMetadata.create({
+					data: tokenMetadata,
+				}),
+			],
+			{
+				isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
+			},
 		);
 
 		return Buffer.concat([userKeyIvPair.key, userKeyIvPair.iv]).toString(
@@ -145,7 +148,7 @@ export class TokenService {
 	public async findUserIdMetadataFromToken(
 		accessToken: string,
 		now: number,
-		claims: number,
+		claims: bigint,
 	) {
 		const userKeyIvPair = getKeyIvPair(accessToken);
 
@@ -154,38 +157,30 @@ export class TokenService {
 			this._PEPPER,
 		).toString("base64url");
 
-		const instances = await this._dataAccessLayer.withReadCommittedTransaction(
-			async (transaction) => {
-				const tokenMetadata =
-					await this._dataAccessLayer.tokenMetadataRepository.findOne(
-						pepperedAccessTokenHashDigest,
-						transaction,
-					);
+		const [tokenMetadata, tokenRevocation] =
+			await this._dataAccessLayer.prisma.$transaction(
+				[
+					this._dataAccessLayer.prisma.tokenMetadata.findUnique({
+						where: { pepperedAccessTokenHashDigest },
+					}),
+					this._dataAccessLayer.prisma.tokenRevocation.findUnique({
+						where: { pepperedAccessTokenHashDigest },
+					}),
+				],
+				{
+					isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
+				},
+			);
 
-				const tokenRevocation =
-					await this._dataAccessLayer.tokenRevocationRepository.findOne(
-						pepperedAccessTokenHashDigest,
-						transaction,
-					);
-
-				return {
-					tokenMetadata,
-					tokenRevocation,
-				};
-			},
-		);
-
-		if (instances.tokenMetadata === null) {
+		if (tokenMetadata === null) {
 			throw new TokenNotFoundError();
 		}
 
-		if (instances.tokenRevocation !== null) {
+		if (tokenRevocation !== null) {
 			throw new TokenRevokedError();
 		}
 
-		const encryptedTokenMetadata = buildEncryptedTokenMetadata(
-			instances.tokenMetadata,
-		);
+		const encryptedTokenMetadata = buildEncryptedTokenMetadata(tokenMetadata);
 
 		const verified = verifyTokenMetadata(
 			userKeyIvPair,
@@ -203,7 +198,7 @@ export class TokenService {
 			throw new TokenExpiredError();
 		}
 
-		if (!(claims & instances.tokenMetadata.claims)) {
+		if (!(claims & tokenMetadata.claims)) {
 			throw new TokenInsufficientClaimsError();
 		}
 
@@ -221,7 +216,7 @@ export class TokenService {
 
 	public async revokeToken(
 		accessToken: string,
-		revokedAt: number,
+		revokedAt: bigint,
 	): Promise<TokenRevocation> {
 		const userKeyIvPair = getKeyIvPair(accessToken);
 
@@ -245,27 +240,29 @@ export class TokenService {
 			signature,
 		};
 
-		return this._dataAccessLayer.withSerializableTransaction(
-			async (transaction) => {
-				const count = await this._dataAccessLayer.tokenMetadataRepository.count(
-					pepperedAccessTokenHashDigest.toString("base64url"),
-					transaction,
-				);
+		return this._dataAccessLayer.prisma.$transaction(
+			async (tx) => {
+				const count = await tx.tokenMetadata.count({
+					where: {
+						pepperedAccessTokenHashDigest:
+							pepperedAccessTokenHashDigest.toString("base64url"),
+					},
+				});
 
 				if (count === 0) {
 					throw new TokenNotFoundError();
 				}
 
-				// it will fail if another token revocation exists
 				try {
-					return await this._dataAccessLayer.tokenRevocationRepository.create(
-						tokenRevocation,
-						transaction,
-					);
+					return await this._dataAccessLayer.prisma.tokenRevocation.create({
+						data: tokenRevocation,
+					});
 				} catch {
-					// from this point, the transaction itself is rolled back!
 					throw new TokenRevokedError();
 				}
+			},
+			{
+				isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
 			},
 		);
 	}
