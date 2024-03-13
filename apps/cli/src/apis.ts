@@ -15,7 +15,7 @@ export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<Data> => {
 	const response = await Axios.post(
-		"http://localhost:8081/validateAccessToken",
+		"https://backend.codemod.com/validateAccessToken",
 		{},
 		{
 			headers: {
@@ -32,7 +32,7 @@ export const publish = async (
 	accessToken: string,
 	formData: FormData,
 ): Promise<void> => {
-	await Axios.post("http://localhost:8081/publish", formData, {
+	await Axios.post("https://backend.codemod.com/publish", formData, {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			"Content-Type": "multipart/form-data",
@@ -42,7 +42,7 @@ export const publish = async (
 };
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-	await Axios.delete("http://localhost:8081/revokeToken", {
+	await Axios.delete("https://backend.codemod.com/revokeToken", {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 		},
@@ -56,7 +56,7 @@ export const getCodemodDownloadURI = async (
 	accessToken?: string,
 ): Promise<string> => {
 	const res = await Axios.get<{ link: string }>(
-		`http://localhost:8081/codemods/${codemodName}/downloadLink`,
+		`https://backend.codemod.com/codemods/${codemodName}/downloadLink`,
 		{
 			headers: {
 				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
@@ -77,7 +77,7 @@ export const getCodemodList = async (
 	accessToken?: string,
 ): Promise<CodemodListReturn> => {
 	const res = await Axios.get<CodemodListReturn>(
-		"http://localhost:8081/codemods/list",
+		"https://backend.codemod.com/codemods/list",
 		{
 			headers: {
 				[X_CODEMOD_ACCESS_TOKEN]: accessToken,

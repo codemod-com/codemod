@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { Input, object, parse, regex, string } from "valibot";
 import { coercedNumberSchema } from "./coercedNumberSchema.js";
+import { prisma } from "./prisma.js";
 
 export type TokenRevocation = Readonly<Input<typeof tokenRevocationSchema>>;
 
@@ -19,12 +19,12 @@ export const tokenRevocationSchema = object({
 });
 
 export class TokenRevocationRepository {
-	public constructor(protected readonly _prismaClient: PrismaClient) {}
+	public constructor() {}
 
 	public async create(
 		tokenRevocation: TokenRevocation,
 	): Promise<TokenRevocation> {
-		const instance = await this._prismaClient.tokenRevocation.create({
+		const instance = await prisma.tokenRevocation.create({
 			data: tokenRevocation,
 		});
 
@@ -34,7 +34,7 @@ export class TokenRevocationRepository {
 	public async findOne(
 		pepperedAccessTokenHashDigest: string,
 	): Promise<TokenRevocation | null> {
-		const instance = await this._prismaClient.tokenRevocation.findUnique({
+		const instance = await prisma.tokenRevocation.findUnique({
 			where: { pepperedAccessTokenHashDigest },
 		});
 

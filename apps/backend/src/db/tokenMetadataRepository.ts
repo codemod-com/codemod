@@ -1,6 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { Input, object, parse, regex, string } from "valibot";
 import { coercedNumberSchema } from "./coercedNumberSchema.js";
+import { prisma } from "./prisma.js";
 
 export const tokenMetadataSchema = object({
 	// a RIPEMD-160 hash digest has 160 bits = 20 bytes
@@ -24,12 +24,10 @@ export const tokenMetadataSchema = object({
 	signature: string([regex(/^[A-Za-z0-9_-]{43}$/)]),
 });
 
-const prisma = new PrismaClient();
-
 export type TokenMetadata = Readonly<Input<typeof tokenMetadataSchema>>;
 
 export class TokenMetadataRepository {
-	public constructor(protected readonly _prismaClient: PrismaClient) {}
+	public constructor() {}
 
 	public async create(tokenMetadata: TokenMetadata): Promise<TokenMetadata> {
 		const instance = await prisma.tokenMetadata.create({
@@ -40,7 +38,7 @@ export class TokenMetadataRepository {
 	}
 
 	public async count(pepperedAccessTokenHashDigest: string): Promise<number> {
-		const count = await this._prismaClient.tokenMetadata.count({
+		const count = await prisma.tokenMetadata.count({
 			where: { pepperedAccessTokenHashDigest },
 		});
 
@@ -50,7 +48,7 @@ export class TokenMetadataRepository {
 	public async findOne(
 		pepperedAccessTokenHashDigest: string,
 	): Promise<TokenMetadata | null> {
-		const instance = await this._prismaClient.tokenMetadata.findUnique({
+		const instance = await prisma.tokenMetadata.findUnique({
 			where: { pepperedAccessTokenHashDigest },
 		});
 

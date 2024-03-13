@@ -3,8 +3,8 @@ import { TokenMetadataRepository } from "./tokenMetadataRepository";
 import { TokenRevocationRepository } from "./tokenRevocationsRepository";
 
 export const buildDataAccessLayer = async () => {
-	const tokenMetadataRepository = new TokenMetadataRepository(prisma);
-	const tokenRevocationRepository = new TokenRevocationRepository(prisma);
+	const tokenMetadataRepository = new TokenMetadataRepository();
+	const tokenRevocationRepository = new TokenRevocationRepository();
 
 	return {
 		prisma,
