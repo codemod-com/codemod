@@ -65,6 +65,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Nuurek"><img src="https://avatars.githubusercontent.com/u/12049357?v=4?s=100" width="100px;" alt="Nuurek"/><br /><sub><b>Nuurek</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Nuurek" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3ANuurek" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Baghdasarov"><img src="https://avatars.githubusercontent.com/u/16937233?v=4?s=100" width="100px;" alt="Norayr Baghdasarov"/><br /><sub><b>Norayr Baghdasarov</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Baghdasarov" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3ABaghdasarov" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/grzim"><img src="https://avatars.githubusercontent.com/u/8398557?v=4?s=100" width="100px;" alt="Grzegorz"/><br /><sub><b>Grzegorz</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/issues?q=author%3Agrzim" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
