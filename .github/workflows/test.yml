@@ -39,7 +39,7 @@ jobs:
             - name: Build engine
               run: pnpm build --filter codemod
 
-            - name: Run codemod unit tests
+            - name: Run unit tests
               run: |
                   if [[ ${{ matrix.os }} == "windows-latest" ]]; then
                     pnpm test:win
