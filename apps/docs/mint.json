@@ -54,6 +54,14 @@
 			]
 		},
 		{
+			"group": "Quick Links",
+			"pages": [
+				"external-links/codemod-registry",
+				"external-links/codemod-studio",
+				"external-links/vsce"
+			]
+		},
+		{
 			"group": "Other Resources",
 			"pages": [
 				"more-resources/changelog",
@@ -65,14 +73,6 @@
 						"more-resources/legal/terms-and-conditions"
 					]
 				}
-			]
-		},
-		{
-			"group": "Quick Links",
-			"pages": [
-				"external-links/codemod-registry",
-				"external-links/codemod-studio",
-				"external-links/vsce"
 			]
 		},
 		{
