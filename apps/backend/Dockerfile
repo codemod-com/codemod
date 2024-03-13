@@ -4,14 +4,13 @@ WORKDIR /app/
 
 RUN npm install -g pnpm
 
-COPY ./apps/backend/package.json ./apps/backend/pnpm-lock.yaml /app/apps/backend/
-COPY ./pnpm-workspace.yaml /app/
+COPY ./apps/backend/package.json /app/apps/backend/
+COPY ./pnpm-workspace.yaml ./pnpm-lock.yaml /app/
 COPY ./packages /app/packages/
 
 RUN pnpm install
 
 COPY ./apps/backend/prisma /app/apps/backend/prisma/
-COPY ./apps/backend/.env /app/apps/backend/
 COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
