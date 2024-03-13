@@ -49,9 +49,9 @@ jobs:
               if: matrix.os != 'windows-latest'
               run: |
                   if [[ ${{ matrix.os }} == "macos-latest" ]]; then
-                    curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-darwin-x86_64 -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+                    sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-darwin-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
                   else
-                    curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && chmod +x /usr/local/bin/docker-compose
+                    sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
                   fi
 
             - name: Build prisma
