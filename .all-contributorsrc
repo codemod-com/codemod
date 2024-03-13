@@ -152,6 +152,16 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "Baghdasarov",
+      "name": "Norayr Baghdasarov",
+      "avatar_url": "https://avatars.githubusercontent.com/u/16937233?v=4",
+      "profile": "https://github.com/Baghdasarov",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
