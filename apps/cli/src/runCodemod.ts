@@ -29,7 +29,13 @@ export const buildPatterns = async (
 	codemod: Codemod,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 ): Promise<string[]> => {
-	let patterns = flowSettings.files ?? flowSettings.include ?? codemod.include;
+	const files = flowSettings.files;
+
+	if (files) {
+		return files;
+	}
+
+	let patterns = flowSettings.include ?? codemod.include;
 
 	if (!patterns) {
 		if (
@@ -48,7 +54,18 @@ export const buildPatterns = async (
 		}
 	}
 
-	return patterns;
+	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
+	return patterns.map((pattern) => {
+		if (pattern.startsWith("**")) {
+			return pattern;
+		}
+
+		if (pattern.startsWith("/")) {
+			return `/**${pattern}`;
+		}
+
+		return `/**/${pattern}`;
+	});
 };
 
 export const buildPathsGlob = async (
@@ -58,12 +75,7 @@ export const buildPathsGlob = async (
 ) => {
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-	const patternsFormatted = patterns.map((pattern) =>
-		pattern.startsWith("**/") ? pattern : `**/${pattern}`,
-	);
-
-	return glob(patternsFormatted, {
+	return glob(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
@@ -80,12 +92,7 @@ async function* buildPathGlobGenerator(
 ): AsyncGenerator<string, void, unknown> {
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-	const patternsFormatted = patterns.map((pattern) =>
-		pattern.startsWith("**/") ? pattern : `**/${pattern}`,
-	);
-
-	const stream = globStream(patternsFormatted, {
+	const stream = globStream(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,

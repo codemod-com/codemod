@@ -44,7 +44,6 @@ describe("Runner", () => {
 		};
 
 		const codemodDownloader: CodemodDownloaderBlueprint = {
-			syncRegistry: async () => {},
 			download: async (name: string) => {
 				return {
 					source: "registry",
