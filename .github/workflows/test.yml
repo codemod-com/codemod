@@ -33,22 +33,17 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-              # Not needed on Windows
             - name: Start Docker Compose
-              run: |
-                if [[ ${{ matrix.os }} != "windows-latest" ]]; then
-                  docker-compose -f apps/backend/docker-compose.yml up -d db-test
-                fi
+              if: matrix.os != 'windows-latest'
+              run: docker-compose -f apps/backend/docker-compose.yml up -d db-test
 
-              # Not needed on Windows
             - name: Wait for DB to be ready
+              if: matrix.os != 'windows-latest'
               run: |
-                if [[ ${{ matrix.os }} != "windows-latest" ]]; then
-                  until docker-compose -f apps/backend/docker-compose.yml exec -T db-test pg_isready -U user; do
-                    echo "Waiting for DB..."
-                    sleep 1
-                  done
-                fi
+                until docker-compose -f apps/backend/docker-compose.yml exec -T db-test pg_isready -U user; do
+                  echo "Waiting for DB..."
+                  sleep 1
+                done
 
             - name: Build prisma
               run: pnpm --filter @codemod-com/backend db:generate
