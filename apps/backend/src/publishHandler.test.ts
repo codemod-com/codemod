@@ -16,6 +16,7 @@ const mocks = vi.hoisted(() => {
 			codemodVersion: {
 				deleteMany: vi.fn(),
 				findMany: vi.fn(),
+				findFirst: vi.fn(),
 			},
 			codemod: {
 				upsert: vi.fn(),
@@ -155,6 +156,8 @@ describe("/publish route", async () => {
 	const readmeBuf = Buffer.from("README", "utf8");
 
 	it("should go through the happy path with expected result and calling expected stubs", async () => {
+		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+
 		const expectedCode = 200;
 
 		const response = await supertest(fastify.server)
@@ -222,6 +225,8 @@ describe("/publish route", async () => {
 	});
 
 	it("when db write fails, it should fail with 500 and return the error message", async () => {
+		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+
 		const errorMsg = "Test error";
 		mocks.prisma.codemod.upsert.mockImplementation(() => {
 			throw new Error(errorMsg);
@@ -260,8 +265,47 @@ describe("/publish route", async () => {
 		expect(response.body).toEqual({ error: errorMsg, success: false });
 	});
 
+	it("should fail to publish if a codemod with provided version already exists", async () => {
+		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => ({
+			version: "1.0.0",
+		}));
+
+		const expectedCode = 400;
+
+		const response = await supertest(fastify.server)
+			.post("/publish")
+			.attach(".codemodrc.json", codemodRcBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("index.cjs", indexCjsBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("description.md", readmeBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.expect((res) => {
+				if (res.status !== expectedCode) {
+					console.log(JSON.stringify(res.body, null, 2));
+				}
+			})
+			.expect("Content-Type", "application/json; charset=utf-8")
+			.expect(expectedCode);
+
+		expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
+
+		expect(response.body).toEqual({
+			error: `Codemod ${codemodRcContents.name} version ${codemodRcContents.version} is lower than the latest published or the same as the latest published version: 1.0.0`,
+			success: false,
+		});
+	});
+
 	describe("when s3 upload fails", async () => {
 		it("should delete the appropriate version from the database if other versions exist", async () => {
+			mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+
 			mocks.prisma.codemod.upsert.mockImplementation(() => {
 				return { id: "id" };
 			});

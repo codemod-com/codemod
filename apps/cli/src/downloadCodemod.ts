@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile, unlink } from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
 import { parse } from "valibot";
@@ -32,7 +32,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	): Promise<Codemod & { source: "registry" }> {
 		this.__printer.printConsoleMessage(
 			"info",
-
 			colorizeText(
 				`Downloading the ${boldText(`"${name}"`)} codemod${
 					this._cacheDisabled ? ", not using cache..." : "..."
@@ -51,17 +50,16 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		await mkdir(directoryPath, { recursive: true });
 
 		const s3DownloadLink = await getCodemodDownloadURI(name);
+		const localCodemodPath = join(directoryPath, "codemod.tar.gz");
 
 		// download codemod
 		try {
 			const buffer = await this._fileDownloadService.download(
 				s3DownloadLink,
-				directoryPath,
+				localCodemodPath,
 			);
 
-			this._tarService.extract(directoryPath, buffer);
-
-			await unlink(join(directoryPath, "codemod.tar.gz"));
+			await this._tarService.extract(directoryPath, buffer);
 		} catch (error) {
 			await handleListNamesCommand(this.__printer);
 

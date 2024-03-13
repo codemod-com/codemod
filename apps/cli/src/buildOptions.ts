@@ -43,7 +43,6 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 					type: "string",
 					array: true,
 					description: "Glob pattern(s) for files to include",
-					default: DEFAULT_INCLUDE_PATTERNS,
 				})
 				.option("exclude", {
 					alias: "e",

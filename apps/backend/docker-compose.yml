@@ -10,6 +10,16 @@ services:
             - '5432:5432'
         networks:
             - 'codemod-local-network'
+    db-test:
+        image: 'postgres:16'
+        environment:
+            POSTGRES_USER: 'postgres'
+            POSTGRES_PASSWORD: 'postgres'
+            POSTGRES_DB: 'test'
+        ports:
+            - '5432:5432'
+        networks:
+            - 'codemod-local-network'
     backend:
         build:
             context: ../..

@@ -33,7 +33,7 @@
 		"lint:apply": "biome check --apply .",
 		"lint:linter": "biome lint --apply .",
 		"lint:formatter": "biome format --write .",
-		"test": "vitest run test.ts",
+		"test": "turbo run test --concurrency=10",
 		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage",
 		"prepare": "husky install"

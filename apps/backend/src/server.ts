@@ -156,7 +156,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	return fastify;
 };
 
-const dataAccessLayer = await buildDataAccessLayer(environment.DATABASE_URI);
+const dataAccessLayer = await buildDataAccessLayer();
 
 const { ChatGPTAPI } = await import("chatgpt");
 
@@ -313,6 +313,14 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			},
 			skip: (page - 1) * size,
 			take: size,
+			include: {
+				versions: {
+					orderBy: {
+						createdAt: "desc",
+					},
+					take: 1,
+				},
+			},
 		});
 
 		reply.type("application/json").code(200);
@@ -381,7 +389,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			if (isNeitherNullNorUndefined(accessToken)) {
 				const _userId = await tokenService.findUserIdMetadataFromToken(
 					accessToken,
-					Date.now(),
+					BigInt(Date.now()),
 					CLAIM_ISSUE_CREATION,
 				);
 
@@ -470,7 +478,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 		const userId = await tokenService.findUserIdMetadataFromToken(
 			accessToken,
-			Date.now(),
+			BigInt(Date.now()),
 			CLAIM_ISSUE_CREATION,
 		);
 

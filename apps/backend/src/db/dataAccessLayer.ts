@@ -1,42 +1,15 @@
-import { Sequelize, Transaction } from "sequelize";
-import { buildTokenMetadataRepository } from "./buildTokenMetadataRepository.js";
-import { buildTokenRevocationRepository } from "./buildTokenRevocationsRepository.js";
+import { prisma } from "./prisma";
+import { TokenMetadataRepository } from "./tokenMetadataRepository";
+import { TokenRevocationRepository } from "./tokenRevocationsRepository";
 
-export const buildDataAccessLayer = async (uri: string) => {
-	const sequelize = new Sequelize(uri, { logging: false });
-
-	const tokenMetadataRepository = buildTokenMetadataRepository(sequelize);
-	const tokenRevocationRepository = buildTokenRevocationRepository(sequelize);
-
-	await sequelize.authenticate();
-
-	await sequelize.sync();
-
-	const buildWithTransaction =
-		(isolationLevel: Transaction.ISOLATION_LEVELS) =>
-		<T>(callback: (transaction: Transaction) => Promise<T>) => {
-			return sequelize.transaction(
-				{
-					autocommit: true,
-					isolationLevel,
-				},
-				callback,
-			);
-		};
-
-	const withReadCommittedTransaction = buildWithTransaction(
-		Transaction.ISOLATION_LEVELS.READ_COMMITTED,
-	);
-
-	const withSerializableTransaction = buildWithTransaction(
-		Transaction.ISOLATION_LEVELS.SERIALIZABLE,
-	);
+export const buildDataAccessLayer = async () => {
+	const tokenMetadataRepository = new TokenMetadataRepository();
+	const tokenRevocationRepository = new TokenRevocationRepository();
 
 	return {
+		prisma,
 		tokenMetadataRepository,
 		tokenRevocationRepository,
-		withReadCommittedTransaction,
-		withSerializableTransaction,
 	};
 };
 

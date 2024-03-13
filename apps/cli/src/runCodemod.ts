@@ -17,7 +17,6 @@ import { Dependencies, runRepomod } from "./runRepomod.js";
 import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
-import { boldText, colorizeText } from "./utils.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
 import { WorkerThreadMessage } from "./workerThreadMessages.js";
 
@@ -25,15 +24,18 @@ export { escape } from "minimatch";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
-export const buildPaths = async (
-	fileSystem: IFs,
+export const buildPatterns = async (
 	flowSettings: FlowSettings,
 	codemod: Codemod,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
-): Promise<ReadonlyArray<string>> => {
-	let patterns = flowSettings.files ?? flowSettings.include ?? codemod.include;
+): Promise<string[]> => {
+	const files = flowSettings.files;
 
-	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
+	if (files) {
+		return files;
+	}
+
+	let patterns = flowSettings.include ?? codemod.include;
 
 	if (!patterns) {
 		if (
@@ -47,15 +49,33 @@ export const buildPaths = async (
 			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
 		}
 
-		patterns = ["**/*"];
+		if (!patterns) {
+			patterns = ["**/*"];
+		}
 	}
 
 	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-	patterns = patterns.map((pattern) =>
-		pattern.startsWith("**/") ? pattern : `**/${pattern}`,
-	);
+	return patterns.map((pattern) => {
+		if (pattern.startsWith("**")) {
+			return pattern;
+		}
 
-	return glob(patterns, {
+		if (pattern.startsWith("/")) {
+			return `/**${pattern}`;
+		}
+
+		return `/**/${pattern}`;
+	});
+};
+
+export const buildPathsGlob = async (
+	fileSystem: IFs,
+	flowSettings: FlowSettings,
+	patterns: string[],
+) => {
+	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
+
+	return glob(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
@@ -65,21 +85,18 @@ export const buildPaths = async (
 	});
 };
 
-async function* buildPathGenerator(
+async function* buildPathGlobGenerator(
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
+	patterns: string[],
 ): AsyncGenerator<string, void, unknown> {
-	const patterns = flowSettings.files ?? flowSettings.include ?? [];
-	const ignore =
-		flowSettings.files === undefined ? flowSettings.exclude.slice() : undefined;
-
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
 	const stream = globStream(patterns.slice(), {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
-		ignore,
+		ignore: flowSettings.exclude.slice(),
 		onlyFiles: true,
 		dot: true,
 	});
@@ -105,18 +122,6 @@ export const runCodemod = async (
 	currentWorkingDirectory: string,
 	getCodemodSource: (path: string) => Promise<string>,
 ): Promise<void> => {
-	const name = "name" in codemod ? codemod.name : codemod.indexPath;
-
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(
-			`Running the "${boldText(name)}" codemod using "${boldText(
-				codemod.engine,
-			)}" engine`,
-			"cyan",
-		),
-	);
-
 	if (codemod.engine === "piranha") {
 		throw new Error("Piranha not supported");
 	}
@@ -157,7 +162,7 @@ export const runCodemod = async (
 
 		const mfs = createFsFromVolume(Volume.fromJSON({}));
 
-		const paths = await buildPaths(fileSystem, flowSettings, codemod, null);
+		const paths = await buildPatterns(flowSettings, codemod, null);
 
 		const fileMap = await buildFileMap(fileSystem, mfs, paths);
 
@@ -265,16 +270,17 @@ export const runCodemod = async (
 	}
 
 	if (codemod.engine === "repomod-engine" || codemod.engine === "filemod") {
-		const paths = await buildPaths(
-			fileSystem,
+		const patterns = await buildPatterns(
 			flowSettings,
 			codemod,
 			transformer as Filemod<Dependencies, Record<string, unknown>>,
 		);
 
+		const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
+
 		const fileCommands = await runRepomod(
 			fileSystem,
-			{ ...transformer, includePatterns: paths, excludePatterns: [] },
+			{ ...transformer, includePatterns: globPaths, excludePatterns: [] },
 			flowSettings.target,
 			flowSettings.raw,
 			safeArgumentRecord,
@@ -292,7 +298,12 @@ export const runCodemod = async (
 	}
 
 	// jscodeshift or ts-morph
-	const pathGenerator = buildPathGenerator(fileSystem, flowSettings);
+	const patterns = await buildPatterns(flowSettings, codemod, null);
+	const pathGenerator = buildPathGlobGenerator(
+		fileSystem,
+		flowSettings,
+		patterns,
+	);
 
 	const { engine } = codemod;
 
