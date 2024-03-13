@@ -34,6 +34,7 @@
 		"lint:linter": "biome lint --apply .",
 		"lint:formatter": "biome format --write .",
 		"test": "turbo run test --concurrency=80%",
+		"test:ci": "turbo run test:ci",
 		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage",
 		"prepare": "husky install"
