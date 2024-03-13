@@ -1,11 +1,8 @@
-import { PrismaClient } from "@prisma/client";
-
+import { prisma } from "./prisma";
 import { TokenMetadataRepository } from "./tokenMetadataRepository";
 import { TokenRevocationRepository } from "./tokenRevocationsRepository";
 
 export const buildDataAccessLayer = async () => {
-	const prisma = new PrismaClient();
-
 	const tokenMetadataRepository = new TokenMetadataRepository(prisma);
 	const tokenRevocationRepository = new TokenRevocationRepository(prisma);
 

@@ -1,11 +1,10 @@
-import { afterAll, beforeAll, describe, expect, test, vi } from "vitest";
+import { describe, expect, test } from "vitest";
 import { buildDataAccessLayer } from "../db/dataAccessLayer.js";
 import {
 	TokenNotFoundError,
 	TokenRevokedError,
 	TokenService,
 } from "./tokenService.js";
-vi.unstubAllEnvs();
 
 describe("TokenService", async () => {
 	const dataAccessLayer = await buildDataAccessLayer();
@@ -28,14 +27,6 @@ describe("TokenService", async () => {
 		signatureKey,
 		pepper,
 	);
-
-	beforeAll(() => {
-		vi.stubEnv("DATABASE_URI", "sqlite://:memory:");
-	});
-
-	afterAll(() => {
-		vi.unstubAllEnvs();
-	});
 
 	test("tokenService", async () => {
 		// TODO invariant tests
