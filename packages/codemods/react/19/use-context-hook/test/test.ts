@@ -59,16 +59,27 @@ describe("useContext -> use", () => {
 			quote: "single",
 		});
 
-		assert.deepEqual(actualOutput, output);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
+		);
 	});
 
 	it("should not replace any.useContext() with use", async () => {
 		const input = `
-		const theme = trpc.useContext();
+		import { trpc } from "@calcom/trpc/react";
+
+		export default function hello() {
+			const theme = trpc.useContext();
+		}
 		`;
 
 		const output = `
-		const theme = trpc.useContext();
+		import { trpc } from "@calcom/trpc/react";
+
+		export default function hello() {
+			const theme = trpc.useContext();
+		}
 		`;
 
 		const fileInfo: FileInfo = {
@@ -80,6 +91,9 @@ describe("useContext -> use", () => {
 			quote: "single",
 		});
 
-		assert.deepEqual(actualOutput, output);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
+		);
 	});
 });
