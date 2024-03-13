@@ -162,6 +162,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "grzim",
+      "name": "Grzegorz",
+      "avatar_url": "https://avatars.githubusercontent.com/u/8398557?v=4",
+      "profile": "https://github.com/grzim",
+      "contributions": [
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
