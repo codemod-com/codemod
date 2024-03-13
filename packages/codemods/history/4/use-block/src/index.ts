@@ -6,9 +6,12 @@ function transform(file: FileInfo, api: API): string | undefined {
 	const root = j(file.source);
 
 	root
-		.find(j.MemberExpression, {
-			object: { name: "history" },
-			property: { name: "listenBefore" },
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				object: { name: "history" },
+				property: { name: "listenBefore" },
+			},
 		})
 		.forEach((path) => {
 			const identifierPath = j(path)
