@@ -1,10 +1,27 @@
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 import { buildDataAccessLayer } from "../db/dataAccessLayer.js";
 import {
 	TokenNotFoundError,
 	TokenRevokedError,
 	TokenService,
 } from "./tokenService.js";
+
+vi.mock("./schemata/env.js", async () => {
+	const actual = await vi.importActual("./schemata/env.js");
+
+	return {
+		...actual,
+		parseEnvironment: vi.fn().mockImplementation(() => {
+			return {
+				PORT: "8081",
+				DATABASE_URI: "sqlite://:memory:",
+				CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
+				CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
+				CLERK_JWT_KEY: "CLERK_JWT_KEY",
+			};
+		}),
+	};
+});
 
 describe("TokenService", async () => {
 	const dataAccessLayer = await buildDataAccessLayer();
