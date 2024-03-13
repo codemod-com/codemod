@@ -1,0 +1,15 @@
+{
+	"version": "1.0.0",
+	"private": false,
+	"name": "history/4/use-back",
+	"deps": ["vitest@latest"],
+	"owner": "codemod.com",
+	"engine": "jscodeshift",
+	"extensions": ["js*", "ts*"],
+	"applicability": [["history", "<", "4.0.0"], ["history", ">=", "3.0.0"]],
+	"meta": {
+		"type": "migration",
+		"changeType": "autonomous",
+		"timeSave": "5m"
+	}
+}
