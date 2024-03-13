@@ -11,6 +11,9 @@
 		"clean": {
 			"cache": false
 		},
+		"test:ci": {
+			"cache": false
+		},
 		"test": {
 			"cache": false
 		},
