@@ -54,6 +54,7 @@
 		"chromadb": "1.7.2",
 		"dotenv": "^16.4.5",
 		"fastify": "4.25.1",
+		"fuse.js": "^7.0.0",
 		"langchain": "0.0.209",
 		"lru-cache": "10.1.0",
 		"openai": "4.23.0",

@@ -3,11 +3,14 @@ import { getCodemodList } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
 
-export const handleListNamesCommand = async (
-	printer: PrinterBlueprint,
-	short?: boolean,
-) => {
-	const configObjects = await getCodemodList();
+export const handleListNamesCommand = async (options: {
+	printer: PrinterBlueprint;
+	name?: string;
+	short?: boolean;
+}) => {
+	const { printer, name, short } = options;
+
+	const configObjects = await getCodemodList({ name });
 
 	// required for vsce
 	if (short) {
@@ -41,8 +44,10 @@ export const handleListNamesCommand = async (
 		}),
 	);
 
-	printer.printConsoleMessage(
-		"info",
-		"\nColored codemods are verified by the Codemod.com engineering team",
-	);
+	if (configObjects.length > 0) {
+		printer.printConsoleMessage(
+			"info",
+			"\nColored codemods are verified by the Codemod.com engineering team",
+		);
+	}
 };

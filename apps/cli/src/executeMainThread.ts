@@ -89,8 +89,13 @@ export const executeMainThread = async () => {
 		)
 		.command(
 			"list",
-			"lists all the codemods & recipes in the public registry",
+			"lists all the codemods & recipes in the public registry. can be used similar to search to filter by name",
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
+		)
+		.command(
+			"search",
+			"searches codemods that resemble given string from user input using fuzzy search",
+			(y) => buildUseJsonOption(y),
 		)
 		.command(
 			"learn",
@@ -192,9 +197,27 @@ export const executeMainThread = async () => {
 		tarService,
 	);
 
-	if (String(argv._) === "list") {
+	if (argv._.at(0) === "list" || argv._.at(0) === "search") {
 		try {
-			await handleListNamesCommand(printer, false);
+			const lastArgument = argv._.length > 1 ? String(argv._.at(-1)) : null;
+
+			let searchTerm: string | null = null;
+			if (lastArgument) {
+				if (lastArgument.length < 2) {
+					printer.printOperationMessage({
+						kind: "error",
+						message:
+							"Search term must be at least 2 characters long. Aborting...",
+					});
+					return;
+				}
+				searchTerm = lastArgument;
+			}
+
+			await handleListNamesCommand({
+				printer,
+				name: searchTerm ?? undefined,
+			});
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
