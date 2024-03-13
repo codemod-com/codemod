@@ -29,32 +29,6 @@
 			"url": "https://docs.codemod.com/blog"
 		}
 	],
-	"anchors": [
-		{
-			"name": "Join Community",
-			"icon": "slack",
-			"iconType": "regular",
-			"url": "https://codemod.com/community"
-		},
-		{
-			"name": "Codemod Studio",
-			"icon": "screwdriver-wrench",
-			"iconType": "regular",
-			"url": "https://codemod.studio"
-		},
-		{
-			"name": "Codemod Registry",
-			"icon": "grid-2-plus",
-			"iconType": "regular",
-			"url": "https://codemod.com/automations"
-		},
-		{
-			"name": "VS Code Extension",
-			"icon": "code",
-			"iconType": "regular",
-			"url": "https://codemod.com/extension"
-		}
-	],
 	"navigation": [
 		{
 			"group": "Introduction",
@@ -91,6 +65,14 @@
 						"more-resources/legal/terms-and-conditions"
 					]
 				}
+			]
+		},
+		{
+			"group": "Quick Links",
+			"pages": [
+				"external-links/codemod-registry",
+				"external-links/codemod-studio",
+				"external-links/vsce"
 			]
 		},
 		{
