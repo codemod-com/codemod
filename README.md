@@ -62,6 +62,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/mohebifar"><img src="https://avatars.githubusercontent.com/u/6104558?v=4?s=100" width="100px;" alt="Mohamad Mohebifar"/><br /><sub><b>Mohamad Mohebifar</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=mohebifar" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3Amohebifar" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://demidoff.dev"><img src="https://avatars.githubusercontent.com/u/12803556?v=4?s=100" width="100px;" alt="Mikhail Demidoff"/><br /><sub><b>Mikhail Demidoff</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=mirai2k" title="Code">💻</a></td>
     </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/Nuurek"><img src="https://avatars.githubusercontent.com/u/12049357?v=4?s=100" width="100px;" alt="Nuurek"/><br /><sub><b>Nuurek</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Nuurek" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3ANuurek" title="Bug reports">🐛</a></td>
+    </tr>
   </tbody>
 </table>
 
