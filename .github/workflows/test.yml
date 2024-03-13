@@ -38,10 +38,11 @@ jobs:
 
             - name: Wait for DB to be ready
               run: |
-                until docker-compose -f apps/backend/docker-compose.yml exec db-test pg_isready -U user; do
+                until docker-compose -f apps/backend/docker-compose.yml exec -T db-test pg_isready -U user; do
                   echo "Waiting for DB..."
                   sleep 1
                 done
+
 
             - name: Build prisma
               run: pnpm --filter @codemod-com/backend db:generate
