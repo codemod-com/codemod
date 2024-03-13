@@ -65,6 +65,6 @@ jobs:
                   if [[ ${{ matrix.os }} == "windows-latest" ]]; then
                     pnpm test:win
                   else
-                    pnpm test:ci && pnpm test --filter=!@codemod-com/backend
+                    pnpm test
                   fi
               shell: bash
