@@ -12,7 +12,7 @@
 		"@babel/types": "7.21.2",
 		"@clerk/clerk-react": "4.30.3",
 		"@clerk/nextjs": "4.29.3",
-		"@clerk/themes": "1.7.9",
+		"@clerk/themes": "1.7.10",
 		"@effect/schema": "^0.33.0",
 		"@hookform/resolvers": "^3.3.2",
 		"@monaco-editor/react": "^4.4.6",
@@ -81,7 +81,11 @@
 		"build": "next build"
 	},
 	"browserslist": {
-		"production": [">0.2%", "not dead", "not op_mini all"],
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
