@@ -37,7 +37,8 @@ jobs:
               if: matrix.os != 'windows-latest'
               run: |
                   if [[ ${{ matrix.os }} == "macos-latest" ]]; then
-                    brew install docker
+                    brew install docker colima
+                    colima start
                     sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-darwin-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
                   else
                     sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
