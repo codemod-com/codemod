@@ -133,6 +133,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "mirai2k",
+      "name": "Mikhail Demidoff",
+      "avatar_url": "https://avatars.githubusercontent.com/u/12803556?v=4",
+      "profile": "http://demidoff.dev",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
