@@ -23,4 +23,4 @@ RUN pnpm build
 
 EXPOSE 8081
 
-CMD ["node", "./build/server.js"]
+CMD ["node", "./build/index.js"]
