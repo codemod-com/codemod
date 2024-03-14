@@ -227,9 +227,12 @@ export const publishHandler =
 				});
 			} catch (err) {
 				console.error("Failed writing codemod to the database:", err);
-				return reply
-					.code(500)
-					.send({ error: (err as Error).message, success: false });
+				return reply.code(500).send({
+					error: `Failed writing codemod to the database: ${
+						(err as Error).message
+					}`,
+					success: false,
+				});
 			}
 
 			try {
@@ -278,16 +281,18 @@ export const publishHandler =
 					});
 				}
 
-				return reply
-					.code(500)
-					.send({ error: (err as Error).message, success: false });
+				return reply.code(500).send({
+					error: `Failed publishing to S3: ${(err as Error).message}`,
+					success: false,
+				});
 			}
 
 			return reply.code(200).send({ success: true });
 		} catch (err) {
 			console.error(err);
-			return reply
-				.code(500)
-				.send({ error: (err as Error).message, success: false });
+			return reply.code(500).send({
+				error: `Failed calling publish endpoint: ${(err as Error).message}`,
+				success: false,
+			});
 		}
 	};
