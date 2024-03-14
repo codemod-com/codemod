@@ -262,7 +262,10 @@ describe("/publish route", async () => {
 		expect(mocks.S3Client.mock.instances.length).toEqual(0);
 		expect(mocks.PutObjectCommand.mock.instances.length).toEqual(0);
 
-		expect(response.body).toEqual({ error: errorMsg, success: false });
+		expect(response.body).toEqual({
+			error: `Failed writing codemod to the database: ${errorMsg}`,
+			success: false,
+		});
 	});
 
 	it("should fail to publish if a codemod with provided version already exists", async () => {
@@ -362,7 +365,10 @@ describe("/publish route", async () => {
 				},
 			});
 
-			expect(response.body).toEqual({ error: errorMsg, success: false });
+			expect(response.body).toEqual({
+				error: `Failed publishing to S3: ${errorMsg}`,
+				success: false,
+			});
 		});
 
 		it("should delete the appropriate version from the database AND the codemod itself if no other versions exist", async () => {
@@ -429,7 +435,10 @@ describe("/publish route", async () => {
 				},
 			});
 
-			expect(response.body).toEqual({ error: errorMsg, success: false });
+			expect(response.body).toEqual({
+				error: `Failed publishing to S3: ${errorMsg}`,
+				success: false,
+			});
 		});
 	});
 });
