@@ -1,4 +1,4 @@
-FROM node:19-alpine3.16
+FROM --platform=linux/amd64 node:19-alpine3.16
 
 WORKDIR /app/
 
@@ -23,4 +23,4 @@ RUN pnpm build
 
 EXPOSE 8081
 
-CMD ["node", "./build/index.js"]
+CMD ["pnpm", "run", "start"]
