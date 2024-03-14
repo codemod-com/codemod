@@ -4,6 +4,7 @@ import { createClerkClient } from "@clerk/fastify";
 import {
 	CodemodConfig,
 	codemodConfigSchema,
+	codemodNameRegex,
 	isNeitherNullNorUndefined,
 	tarPack,
 } from "@codemod-com/utilities";
@@ -78,10 +79,15 @@ export const publishHandler =
 
 					codemodRc = parse(codemodConfigSchema, codemodRcData);
 
-					if (
-						!("name" in codemodRc) ||
-						!/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)
-					) {
+					if (codemodRc.engine === "recipe") {
+						for (const name of codemodRc.names) {
+							if (!codemodNameRegex.test(name)) {
+								throw new Error(
+									`Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+								);
+							}
+						}
+					} else if (!codemodNameRegex.test(codemodRc.name)) {
 						throw new Error(
 							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 						);
@@ -112,8 +118,9 @@ export const publishHandler =
 			}
 
 			if (
-				!isNeitherNullNorUndefined(mainFileBuffer) ||
-				!isNeitherNullNorUndefined(mainFileName)
+				codemodRc.engine !== "recipe" &&
+				(!isNeitherNullNorUndefined(mainFileBuffer) ||
+					!isNeitherNullNorUndefined(mainFileName))
 			) {
 				return reply.code(400).send({
 					error: "No main file was provided",
@@ -144,11 +151,14 @@ export const publishHandler =
 					name: ".codemodrc.json",
 					data: codemodRcBuffer,
 				},
-				{
+			];
+
+			if (mainFileBuffer && mainFileName) {
+				buffers.push({
 					name: mainFileName,
 					data: mainFileBuffer,
-				},
-			];
+				});
+			}
 
 			if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
 				buffers.push({

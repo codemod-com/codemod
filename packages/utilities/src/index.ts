@@ -6,6 +6,7 @@ export {
 	codemodConfigSchema,
 	allEnginesSchema,
 	knownEnginesSchema,
+	codemodNameRegex,
 	type Arguments,
 	type ArgumentsInput,
 	type CodemodConfig,
