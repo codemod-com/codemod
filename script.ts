@@ -16,7 +16,7 @@ const walkDirectory = async (dir, accumulator) => {
 			await walkDirectory(fullPath, accumulator);
 		} else if (entry.name === ".codemodrc.json") {
 			// If the entry is a .codemodrc.json file, accumulate the directory path
-			accumulator.push(dir);
+			accumulator.push(dir.replace(/(\s+)/g, "\\$1"));
 		}
 	}
 };
@@ -30,6 +30,20 @@ const walkDirectory = async (dir, accumulator) => {
 	// );
 	for (const dir of accumulator) {
 		// Run publish on the directory
+		const { stderr: buildErr, stdout: buildOut } = await execPromise(
+			`./apps/cli/dist/index.cjs build --source ${dir}`,
+		);
+
+		if (buildErr.trim().length) {
+			console.error(`Failed to build ${dir}`);
+			console.error(buildErr);
+			break;
+		}
+
+		if (buildOut.trim().length) {
+			console.log(buildOut);
+		}
+
 		const { stderr, stdout } = await execPromise(
 			`./apps/cli/dist/index.cjs publish --source ${dir}`,
 		);
