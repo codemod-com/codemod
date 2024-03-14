@@ -25,7 +25,7 @@ const walkDirectory = async (dir, accumulator) => {
 	const accumulator = [];
 	await walkDirectory("./packages/codemods", accumulator);
 
-	for (let i = 9; i < accumulator.length; i++) {
+	for (let i = 0; i < accumulator.length; i++) {
 		const dir = accumulator[i];
 		// Run publish on the directory
 		const { stderr: buildErr, stdout: buildOut } = await execPromise(
