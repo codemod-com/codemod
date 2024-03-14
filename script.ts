@@ -25,8 +25,11 @@ const walkDirectory = async (dir, accumulator) => {
 	const accumulator = [];
 	await walkDirectory("./packages/codemods", accumulator);
 
-	for (const dir of accumulator) {
-		// Run publish on the directory
-		await execPromise(`./apps/cli/dist/index.cjs --source ${dir}`);
-	}
+	await execPromise(
+		`./apps/cli/dist/index.cjs publish --source ${accumulator[0]}`,
+	);
+	// for (const dir of accumulator) {
+	// 	// Run publish on the directory
+	// 	await execPromise(`./apps/cli/dist/index.cjs publish --source ${dir}`);
+	// }
 })();
