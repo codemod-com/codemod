@@ -4,6 +4,7 @@
 	"scripts": {
 		"build": "node esbuild.config.js",
 		"start": "prisma -v && pnpm run db:migrate:apply && node build/index.js",
+		"start:local": "node build/index.js",
 		"test": "docker-compose up -d db-test --wait && dotenv -e .env.test -- pnpm prisma migrate deploy && dotenv -e .env.test -- vitest --run",
 		"watch": "pnpm db:generate && nodemon --exec ./node_modules/.bin/ts-node --esm ./src/index.ts",
 		"db:push": "prisma db push",
