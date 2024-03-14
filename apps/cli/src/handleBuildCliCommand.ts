@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { codemodConfigSchema } from "@codemod-com/utilities";
@@ -27,22 +28,36 @@ export const handleBuildCliCommand = async (
 	}
 
 	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcContent));
-	const entryPoint = join(
-		absoluteSource,
-		codemodRc.build?.input ?? "src/index.ts",
-	);
+
+	let entryPoint: string;
+	if (codemodRc.build?.input) {
+		entryPoint = join(absoluteSource, codemodRc.build.input);
+	} else {
+		const indexTsPath = join(absoluteSource, "./src/index.ts");
+		const indexJsPath = join(absoluteSource, "./src/index.js");
+
+		if (existsSync(indexTsPath)) {
+			entryPoint = indexTsPath;
+		} else if (existsSync(indexJsPath)) {
+			entryPoint = indexJsPath;
+		} else {
+			throw new Error(
+				`Could not find entry point file in ${indexTsPath} or ${indexJsPath}. Please make sure it's located under "src/index.ts" or "src/index.js" or provide a custom input path in .codemodrc.json under "build.input" flag.`,
+			);
+		}
+	}
 
 	try {
 		await readFile(entryPoint, "utf-8");
 	} catch (error) {
 		if (codemodRc.build?.input) {
 			throw new Error(
-				`Could not find entry point file in ${entryPoint}. Please make sure custom build input path in .codemodrc.json under "build.input" flag is correct.`,
+				`Could not find entry point file in ${entryPoint}. Please make sure custom build input path in .codemodrc.json under "build.input" flag is correct and file has the correct permissions.`,
 			);
 		}
 
 		throw new Error(
-			`Could not find entry point file in ${entryPoint}. Please make sure it's located under "src/index.ts" or provide a custom input path in .codemodrc.json under "build.input" flag.`,
+			`Could not read entry point file in ${entryPoint}. Please make sure it has the correct permissions.`,
 		);
 	}
 

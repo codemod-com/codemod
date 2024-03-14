@@ -145,7 +145,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	} satisfies FastifyCorsOptions);
 
 	await fastify.register(fastifyRateLimit, {
-		max: 20,
+		max: 100,
 		timeWindow: 60 * 1000, // 1 minute
 	});
 
