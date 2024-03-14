@@ -168,11 +168,11 @@ describe("/publish route", async () => {
 			})
 			.attach("index.cjs", indexCjsBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "index.cjs",
 			})
 			.attach("description.md", readmeBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "description.md",
 			})
 			.expect((res) => {
 				if (res.status !== expectedCode) {
@@ -224,6 +224,107 @@ describe("/publish route", async () => {
 		expect(response.body).toEqual({ success: true });
 	});
 
+	it("should publish piranha codemods", async () => {
+		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+
+		const expectedCode = 200;
+
+		const response = await supertest(fastify.server)
+			.post("/publish")
+			.attach(".codemodrc.json", codemodRcBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("rules.toml", indexCjsBuf, {
+				contentType: "multipart/form-data",
+				filename: "rules.toml",
+			})
+			.attach("description.md", readmeBuf, {
+				contentType: "multipart/form-data",
+				filename: "description.md",
+			})
+			.expect((res) => {
+				if (res.status !== expectedCode) {
+					console.log(JSON.stringify(res.body, null, 2));
+				}
+			})
+			.expect("Content-Type", "application/json; charset=utf-8")
+			.expect(expectedCode);
+
+		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
+		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+
+		expect(tarPackSpy).toHaveBeenCalledOnce();
+		expect(tarPackSpy).toHaveBeenCalledWith([
+			{
+				name: ".codemodrc.json",
+				data: codemodRcBuf,
+			},
+			{
+				name: "rules.toml",
+				data: indexCjsBuf,
+			},
+			{
+				name: "description.md",
+				data: readmeBuf,
+			},
+		]);
+		expect(tarPackSpy).toReturnWith("archive");
+
+		const hashDigest = createHash("ripemd160")
+			.update(codemodRcContents.name)
+			.digest("base64url");
+
+		const clientInstance = mocks.S3Client.mock.instances[0];
+		const putObjectCommandInstance = mocks.PutObjectCommand.mock.instances[0];
+
+		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
+		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
+			Bucket: "codemod-public-v2",
+			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
+			Body: "archive",
+		});
+
+		expect(clientInstance.send).toHaveBeenCalledOnce();
+		expect(clientInstance.send).toHaveBeenCalledWith(putObjectCommandInstance, {
+			requestTimeout: 5000,
+		});
+
+		expect(response.body).toEqual({ success: true });
+	});
+
+	it("should not allow further execution if required files were not provided", async () => {
+		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+
+		const expectedCode = 400;
+
+		const response = await supertest(fastify.server)
+			.post("/publish")
+			.attach(".codemodrc.json", codemodRcBuf, {
+				contentType: "multipart/form-data",
+				filename: ".codemodrc.json",
+			})
+			.attach("description.md", readmeBuf, {
+				contentType: "multipart/form-data",
+				filename: "description.md",
+			})
+			.expect((res) => {
+				if (res.status !== expectedCode) {
+					console.log(JSON.stringify(res.body, null, 2));
+				}
+			})
+			.expect("Content-Type", "application/json; charset=utf-8")
+			.expect(expectedCode);
+
+		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
+		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
+
+		expect(response.body).toEqual({
+			error: "No main file was provided",
+			success: false,
+		});
+	});
+
 	it("when db write fails, it should fail with 500 and return the error message", async () => {
 		mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
 
@@ -242,11 +343,11 @@ describe("/publish route", async () => {
 			})
 			.attach("index.cjs", indexCjsBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "index.cjs",
 			})
 			.attach("description.md", readmeBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "description.md",
 			})
 			.expect((res) => {
 				if (res.status !== expectedCode) {
@@ -283,11 +384,11 @@ describe("/publish route", async () => {
 			})
 			.attach("index.cjs", indexCjsBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "index.cjs",
 			})
 			.attach("description.md", readmeBuf, {
 				contentType: "multipart/form-data",
-				filename: ".codemodrc.json",
+				filename: "description.md",
 			})
 			.expect((res) => {
 				if (res.status !== expectedCode) {
@@ -332,11 +433,11 @@ describe("/publish route", async () => {
 				})
 				.attach("index.cjs", indexCjsBuf, {
 					contentType: "multipart/form-data",
-					filename: ".codemodrc.json",
+					filename: "index.cjs",
 				})
 				.attach("description.md", readmeBuf, {
 					contentType: "multipart/form-data",
-					filename: ".codemodrc.json",
+					filename: "description.md",
 				})
 				.expect((res) => {
 					if (res.status !== expectedCode) {
@@ -395,11 +496,11 @@ describe("/publish route", async () => {
 				})
 				.attach("index.cjs", indexCjsBuf, {
 					contentType: "multipart/form-data",
-					filename: ".codemodrc.json",
+					filename: "index.cjs",
 				})
 				.attach("description.md", readmeBuf, {
 					contentType: "multipart/form-data",
-					filename: ".codemodrc.json",
+					filename: "description.md",
 				})
 				.expect((res) => {
 					if (res.status !== expectedCode) {
