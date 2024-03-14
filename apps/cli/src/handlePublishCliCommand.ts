@@ -3,6 +3,7 @@ import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { codemodConfigSchema } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import FormData from "form-data";
 import { mkdir, writeFile } from "fs/promises";
 import { parse } from "valibot";
@@ -104,8 +105,11 @@ export const handlePublishCliCommand = async (
 	try {
 		await publish(token, formData);
 	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-		const errorMessage = `Could not publish the "${codemodRc.name}" codemod: ${message}`;
+		const message =
+			error instanceof AxiosError ? error.response?.data.error : String(error);
+		const errorMessage = `${boldText(
+			`Could not publish the "${codemodRc.name}" codemod`,
+		)}:\n${message}`;
 		printer.printOperationMessage({ kind: "error", message: errorMessage });
 		return;
 	}
