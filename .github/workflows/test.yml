@@ -1,4 +1,4 @@
-name: Codemod Unit Tests
+name: Unit Tests
 
 on:
     push:
@@ -10,7 +10,7 @@ on:
 
 jobs:
     test:
-        name: Run codemod unit tests
+        name: Run unit tests
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
