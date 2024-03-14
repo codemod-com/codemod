@@ -1,7 +1,7 @@
 import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { codemodConfigSchema } from "@codemod-com/utilities";
+import { codemodConfigSchema, codemodNameRegex } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import FormData from "form-data";
 import { parse } from "valibot";
@@ -45,9 +45,7 @@ export const handlePublishCliCommand = async (
 	try {
 		codemodRcData = await fs.promises.readFile(
 			join(source, ".codemodrc.json"),
-			{
-				encoding: "utf-8",
-			},
+			{ encoding: "utf-8" },
 		);
 	} catch (err) {
 		throw new Error(
@@ -57,52 +55,18 @@ export const handlePublishCliCommand = async (
 
 	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
 
-	if (!("name" in codemodRc) || !/[a-zA-Z0-9_/@-]+/.test(codemodRc.name)) {
+	if (codemodRc.engine === "recipe") {
+		for (const name of codemodRc.names) {
+			if (!codemodNameRegex.test(name)) {
+				throw new Error(
+					`Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+				);
+			}
+		}
+	} else if (!codemodNameRegex.test(codemodRc.name)) {
 		throw new Error(
 			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 		);
-	}
-
-	let actualMainFileName: string;
-	let ruleOrExecutablePath: string;
-	let errorOnMissing: string;
-
-	switch (codemodRc.engine) {
-		case "ast-grep":
-			ruleOrExecutablePath = "rule.yaml";
-			actualMainFileName = "rule.yaml";
-			errorOnMissing = `Please create the main "rule.yaml" file first.`;
-			break;
-		case "piranha":
-			ruleOrExecutablePath = "rules.toml";
-			actualMainFileName = "rules.toml";
-			errorOnMissing = `Please create the main "rules.toml" file first.`;
-			break;
-		default:
-			ruleOrExecutablePath = codemodRc.build?.output ?? "dist/index.cjs";
-			actualMainFileName = "index.cjs";
-			errorOnMissing = `Did you forget to run "codemod build"?`;
-	}
-
-	let mainFileData: string;
-	try {
-		mainFileData = await fs.promises.readFile(
-			join(source, ruleOrExecutablePath),
-			{ encoding: "utf-8" },
-		);
-	} catch (err) {
-		throw new Error(
-			`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
-		);
-	}
-
-	let descriptionMdData: string | null = null;
-	try {
-		descriptionMdData = await fs.promises.readFile(join(source, "README.md"), {
-			encoding: "utf-8",
-		});
-	} catch {
-		//
 	}
 
 	printer.printConsoleMessage(
@@ -111,11 +75,52 @@ export const handlePublishCliCommand = async (
 	);
 
 	const formData = new FormData();
-	formData.append(actualMainFileName, Buffer.from(mainFileData));
+
 	formData.append(".codemodrc.json", Buffer.from(codemodRcData));
 
-	if (descriptionMdData) {
+	if (codemodRc.engine !== "recipe") {
+		let actualMainFileName: string;
+		let ruleOrExecutablePath: string | null;
+		let errorOnMissing: string;
+
+		switch (codemodRc.engine) {
+			case "ast-grep":
+				ruleOrExecutablePath = "rule.yaml";
+				actualMainFileName = "rule.yaml";
+				errorOnMissing = `Please create the main "rule.yaml" file first.`;
+				break;
+			case "piranha":
+				ruleOrExecutablePath = "rules.toml";
+				actualMainFileName = "rules.toml";
+				errorOnMissing = `Please create the main "rules.toml" file first.`;
+				break;
+			default:
+				ruleOrExecutablePath = codemodRc.build?.output ?? "dist/index.cjs";
+				actualMainFileName = "index.cjs";
+				errorOnMissing = `Did you forget to run "codemod build"?`;
+		}
+
+		try {
+			const mainFileData = await fs.promises.readFile(
+				join(source, ruleOrExecutablePath),
+				{ encoding: "utf-8" },
+			);
+			formData.append(actualMainFileName, Buffer.from(mainFileData));
+		} catch (err) {
+			throw new Error(
+				`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
+			);
+		}
+	}
+
+	try {
+		const descriptionMdData = await fs.promises.readFile(
+			join(source, "README.md"),
+			{ encoding: "utf-8" },
+		);
 		formData.append("description.md", descriptionMdData);
+	} catch {
+		//
 	}
 
 	try {

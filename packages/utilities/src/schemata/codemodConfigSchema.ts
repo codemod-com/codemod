@@ -16,6 +16,8 @@ import {
 	union,
 } from "valibot";
 
+export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
+
 export const argumentsSchema = array(
 	union([
 		object({
@@ -91,6 +93,7 @@ export const allEnginesSchema = union(allEngines);
 export type AllEngines = Output<typeof allEnginesSchema>;
 
 const configJsonBaseSchema = object({
+	name: string(),
 	description: optional(string()),
 	version: string([regex(semVerRegex)]),
 	// We should detect the owner when user publishes. This is for backwards compatibility.
@@ -138,7 +141,6 @@ export const codemodConfigSchema = union([
 		configJsonBaseSchema,
 		object({
 			engine: knownEnginesSchema,
-			name: string(),
 		}),
 	]),
 	merge([
@@ -152,7 +154,6 @@ export const codemodConfigSchema = union([
 		configJsonBaseSchema,
 		object({
 			engine: literal("piranha"),
-			name: string(),
 			language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
 		}),
 	]),
