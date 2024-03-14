@@ -57,11 +57,10 @@ const buildRefArgVariableDeclaration = (
 const getRefTypeFromRefArg = (j: JSCodeshift, refArg: Identifier) => {
 	const typeReference = refArg.typeAnnotation?.typeAnnotation;
 
-	if (!j.TSTypeReference.check(typeReference)) {
-		return null;
-	}
-
-	if (!j.TSQualifiedName.check(typeReference.typeName)) {
+	if (
+		!j.TSTypeReference.check(typeReference) ||
+		!j.TSQualifiedName.check(typeReference.typeName)
+	) {
 		return null;
 	}
 
