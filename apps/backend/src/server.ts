@@ -11,6 +11,8 @@ import { OpenAIStream } from "ai";
 import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
 import Fuse from "fuse.js";
 import * as openAiEdge from "openai-edge";
+import { z } from "zod";
+import { CodemodWhereInputSchema } from "../prisma/generated/zod";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
@@ -307,12 +309,14 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const page = query.page || 1;
 		const size = query.size || 10;
 
+		const whereClause: z.infer<typeof CodemodWhereInputSchema> = {
+			featured: query.featured,
+			verified: query.verified,
+			private: query.private,
+		};
+
 		const codemods = await prisma.codemod.findMany({
-			where: {
-				featured: query.featured,
-				verified: query.verified,
-				private: query.private,
-			},
+			where: whereClause,
 			skip: (page - 1) * size,
 			take: size,
 			include: {
@@ -325,8 +329,12 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			},
 		});
 
+		const total = await prisma.codemod.count({
+			where: whereClause,
+		});
+
 		reply.type("application/json").code(200);
-		return codemods;
+		return { total, data: codemods, page, size };
 	});
 
 	instance.get("/codemods/:slug", async (request, reply) => {
