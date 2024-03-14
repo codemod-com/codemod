@@ -1,8 +1,11 @@
-import { existsSync } from "node:fs";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
-import { codemodConfigSchema } from "@codemod-com/utilities";
+import {
+	codemodConfigSchema,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import esbuild from "esbuild";
+import { glob } from "fast-glob";
 import { parse } from "valibot";
 import type { PrinterBlueprint } from "./printer.js";
 
@@ -29,33 +32,38 @@ export const handleBuildCliCommand = async (
 
 	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcContent));
 
-	let entryPoint: string;
+	let entryPointGlob: string[];
 	if (codemodRc.build?.input) {
-		entryPoint = join(absoluteSource, codemodRc.build.input);
+		entryPointGlob = await glob(codemodRc.build.input, {
+			absolute: true,
+			cwd: absoluteSource,
+			onlyFiles: true,
+		});
 	} else {
-		const indexTsPath = join(absoluteSource, "./src/index.ts");
-		const indexJsPath = join(absoluteSource, "./src/index.js");
+		entryPointGlob = await glob("./src/index.*", {
+			absolute: true,
+			cwd: absoluteSource,
+			onlyFiles: true,
+		});
+	}
 
-		if (existsSync(indexTsPath)) {
-			entryPoint = indexTsPath;
-		} else if (existsSync(indexJsPath)) {
-			entryPoint = indexJsPath;
-		} else {
+	const entryPoint = entryPointGlob.at(0);
+	if (!isNeitherNullNorUndefined(entryPoint)) {
+		if (codemodRc.build?.input) {
 			throw new Error(
-				`Could not find entry point file in ${indexTsPath} or ${indexJsPath}. Please make sure it's located under "src/index.ts" or "src/index.js" or provide a custom input path in .codemodrc.json under "build.input" flag.`,
+				`Could not find entry point file in ${join(
+					absoluteSource,
+					codemodRc.build.input,
+				)}.\nPlease make sure custom build input path in .codemodrc.json under "build.input" flag is correct and file has the correct permissions.`,
 			);
 		}
+
+		throw new Error(`Could not find entry point file in ${absoluteSource}.`);
 	}
 
 	try {
 		await readFile(entryPoint, "utf-8");
 	} catch (error) {
-		if (codemodRc.build?.input) {
-			throw new Error(
-				`Could not find entry point file in ${entryPoint}. Please make sure custom build input path in .codemodrc.json under "build.input" flag is correct and file has the correct permissions.`,
-			);
-		}
-
 		throw new Error(
 			`Could not read entry point file in ${entryPoint}. Please make sure it has the correct permissions.`,
 		);
