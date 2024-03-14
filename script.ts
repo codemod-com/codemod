@@ -25,20 +25,12 @@ const walkDirectory = async (dir, accumulator) => {
 	const accumulator = [];
 	await walkDirectory("./packages/codemods", accumulator);
 
-	// await execPromise(
-	// 	`./apps/cli/dist/index.cjs publish --source ${accumulator[0]}`,
-	// );
-	for (const dir of accumulator) {
+	for (let i = 9; i < accumulator.length; i++) {
+		const dir = accumulator[i];
 		// Run publish on the directory
 		const { stderr: buildErr, stdout: buildOut } = await execPromise(
 			`./apps/cli/dist/index.cjs build --source ${dir}`,
 		);
-
-		if (buildErr.trim().length) {
-			console.error(`Failed to build ${dir}`);
-			console.error(buildErr);
-			break;
-		}
 
 		if (buildOut.trim().length) {
 			console.log(buildOut);
@@ -56,6 +48,8 @@ const walkDirectory = async (dir, accumulator) => {
 		const errors = stderr.trim();
 		if (!errors.length) {
 			console.log(`Successfully published ${dir}`);
+			console.log(`Published index: ${i} of ${accumulator.length} directories`);
+			console.log("=====================================");
 			continue;
 		}
 
