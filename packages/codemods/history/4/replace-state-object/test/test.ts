@@ -4,7 +4,7 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("history v4 use-back", () => {
+describe("history v4 replace-state-object", () => {
 	it("should extract `state` object into the second argument", async () => {
 		const input = `
 		import createHistory from 'history/createBrowserHistory';
