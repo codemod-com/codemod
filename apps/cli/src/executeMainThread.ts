@@ -199,7 +199,8 @@ export const executeMainThread = async () => {
 
 	if (argv._.at(0) === "list" || argv._.at(0) === "search") {
 		try {
-			const lastArgument = argv._.length > 1 ? String(argv._.at(-1)) : null;
+			const lastArgument =
+				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
 
 			let searchTerm: string | null = null;
 			if (lastArgument) {
