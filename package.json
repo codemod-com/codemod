@@ -1,6 +1,6 @@
 {
 	"name": "@codemod-com/codemod",
-	"version": "1.0.0",
+	"version": "0.0.35",
 	"author": "Codemod, Inc.",
 	"license": "Apache License, Version 2.0",
 	"description": "A monorepo for all the interconnected tools of codemod.com",

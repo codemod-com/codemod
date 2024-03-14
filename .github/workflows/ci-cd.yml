@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'apps/backend/**'
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install AWS CLI
+        uses: aws-actions/setup-aws-cli@v2
+
+      - name: Login to Amazon ECR
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+        run: |
+          aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+      - name: Build, tag, and push Docker image to Amazon ECR
+        run: |
+          VERSION=$(cat apps/backend/package.json | jq -r '.version')
+          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t studio-backend .
+          docker tag studio-backend:latest $ECR_REGISTRY/studio-backend:$VERSION
+          docker push $ECR_REGISTRY/studio-backend:$VERSION
