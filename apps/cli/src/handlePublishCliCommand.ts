@@ -11,8 +11,7 @@ import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const getToken = async (): Promise<string> => {
-	const configurationDirectoryPath = join(homedir(), ".codemod");
-	const tokenTxtPath = join(configurationDirectoryPath, "token.txt");
+	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
 
 	try {
 		return await fs.promises.readFile(tokenTxtPath, "utf-8");
@@ -42,17 +41,6 @@ export const handlePublishCliCommand = async (
 			username,
 		)}' and able to publish a codemod to our public registry.`,
 	);
-
-	let packageJsonData: string;
-	try {
-		packageJsonData = await fs.promises.readFile(join(source, "package.json"), {
-			encoding: "utf-8",
-		});
-	} catch (error) {
-		throw new Error(
-			`Could not find the package.json file in the codemod directory: ${error}.`,
-		);
-	}
 
 	let codemodRcData: string;
 	try {
@@ -92,7 +80,6 @@ export const handlePublishCliCommand = async (
 	}
 
 	let descriptionMdData: string | null = null;
-
 	try {
 		descriptionMdData = await fs.promises.readFile(join(source, "README.md"), {
 			encoding: "utf-8",
@@ -120,7 +107,7 @@ export const handlePublishCliCommand = async (
 		const message = error instanceof Error ? error.message : String(error);
 		const errorMessage = `Could not publish the "${codemodRc.name}" codemod: ${message}`;
 		printer.printConsoleMessage("error", errorMessage);
-		throw new Error(errorMessage);
+		return;
 	}
 
 	printer.printConsoleMessage(
