@@ -84,8 +84,7 @@ export const getCodemodList = async (options?: {
 		headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
 	}
 
-	// const url = new URL("https://backend.codemod.com/codemods/list");
-	const url = new URL("http://localhost:8081/codemods/list");
+	const url = new URL("https://backend.codemod.com/codemods/list");
 	if (name) {
 		url.searchParams.set("name", name);
 	}
