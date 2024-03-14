@@ -61,7 +61,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 			await this._tarService.extract(directoryPath, buffer);
 		} catch (error) {
-			await handleListNamesCommand(this.__printer);
+			await handleListNamesCommand({ printer: this.__printer });
 
 			throw new Error(
 				`Could not find codemod ${boldText(

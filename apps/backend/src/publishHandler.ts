@@ -64,7 +64,8 @@ export const publishHandler =
 
 			let codemodRcBuffer: Buffer | null = null;
 			let codemodRc: CodemodConfig | null = null;
-			let indexCjsBuffer: Buffer | null = null;
+			let mainFileBuffer: Buffer | null = null;
+			let mainFileName: string | null = null;
 			let descriptionMdBuffer: Buffer | null = null;
 
 			for await (const multipartFile of request.files()) {
@@ -89,8 +90,13 @@ export const publishHandler =
 					// TODO: add check for organization
 				}
 
-				if (multipartFile.fieldname === "index.cjs") {
-					indexCjsBuffer = buffer;
+				if (
+					["index.cjs", "rules.toml", "rule.yaml"].includes(
+						multipartFile.fieldname,
+					)
+				) {
+					mainFileName = multipartFile.fieldname;
+					mainFileBuffer = buffer;
 				}
 
 				if (multipartFile.fieldname === "description.md") {
@@ -105,9 +111,12 @@ export const publishHandler =
 				});
 			}
 
-			if (!isNeitherNullNorUndefined(indexCjsBuffer)) {
+			if (
+				!isNeitherNullNorUndefined(mainFileBuffer) ||
+				!isNeitherNullNorUndefined(mainFileName)
+			) {
 				return reply.code(400).send({
-					error: "No index.cjs file was provided",
+					error: "No main file was provided",
 					success: false,
 				});
 			}
@@ -136,8 +145,8 @@ export const publishHandler =
 					data: codemodRcBuffer,
 				},
 				{
-					name: "index.cjs",
-					data: indexCjsBuffer,
+					name: mainFileName,
+					data: mainFileBuffer,
 				},
 			];
 
