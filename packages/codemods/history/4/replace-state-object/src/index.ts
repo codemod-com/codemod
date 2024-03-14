@@ -10,18 +10,18 @@ function transform(file: FileInfo, api: API): string | undefined {
 				object: { name: "history" },
 				property: { name: "push" },
 			},
-			// @ts-ignore Type '{ length: number; 1: { type: "ObjectExpression"; }; }' is not assignable to type 'undefined'.
+			// @ts-ignore Type '{ length: number; 0: { type: "ObjectExpression"; }; }' is not assignable to type 'undefined'.
 			arguments: {
-				length: 2,
-				1: { type: "ObjectExpression" },
+				length: 1,
+				0: { type: "ObjectExpression" },
 			},
 		})
 		.forEach((path) => {
-			const secondArg = path.value.arguments[1];
-			if (!j.ObjectExpression.check(secondArg)) {
+			const arg = path.value.arguments[0];
+			if (!j.ObjectExpression.check(arg)) {
 				return;
 			}
-			const state = secondArg.properties.find(
+			const state = arg.properties.find(
 				(property) =>
 					j.Property.check(property) &&
 					j.Identifier.check(property.key) &&
@@ -32,8 +32,19 @@ function transform(file: FileInfo, api: API): string | undefined {
 				return;
 			}
 
+			arg.properties = arg.properties.filter((property) => {
+				if (
+					j.Property.check(property) &&
+					j.Identifier.check(property.key) &&
+					property.key.name === "state"
+				) {
+					return false;
+				}
+				return true;
+			});
+
 			// @ts-ignore Property 'value' does not exist on type 'SpreadElement'.
-			path.value.arguments[1] = state.value;
+			path.value.arguments.push(state.value);
 		})
 		.toSource();
 }
