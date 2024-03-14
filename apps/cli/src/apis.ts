@@ -73,18 +73,26 @@ export type CodemodListReturn = {
 	author: string;
 	engine: AllEngines;
 }[];
-export const getCodemodList = async (
-	accessToken?: string,
-): Promise<CodemodListReturn> => {
-	const res = await Axios.get<CodemodListReturn>(
-		"https://backend.codemod.com/codemods/list",
-		{
-			headers: {
-				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
-			},
-			timeout: 10000,
-		},
-	);
+export const getCodemodList = async (options?: {
+	accessToken?: string;
+	name?: string;
+}): Promise<CodemodListReturn> => {
+	const { accessToken, name } = options ?? {};
+
+	const headers: { [key: string]: string } = {};
+	if (accessToken) {
+		headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
+	}
+
+	const url = new URL("https://backend.codemod.com/codemods/list");
+	if (name) {
+		url.searchParams.set("name", name);
+	}
+
+	const res = await Axios.get<CodemodListReturn>(url.toString(), {
+		headers,
+		timeout: 10000,
+	});
 
 	return res.data;
 };

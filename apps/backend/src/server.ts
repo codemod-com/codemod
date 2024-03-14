@@ -9,6 +9,7 @@ import fastifyRateLimit from "@fastify/rate-limit";
 import { Codemod, CodemodVersion } from "@prisma/client";
 import { OpenAIStream } from "ai";
 import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
+import Fuse from "fuse.js";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -30,6 +31,7 @@ import {
 	parseGetCodemodBySlugParams,
 	parseGetCodemodLatestVersionParams,
 	parseGetCodemodsQuery,
+	parseListCodemodsQuery,
 } from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
@@ -447,6 +449,17 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 				);
 
 				codemodData = codemods.filter(Boolean);
+			}
+
+			const query = parseListCodemodsQuery(request.query);
+
+			if (query.name) {
+				const fuse = new Fuse(codemodData, {
+					keys: ["name"],
+					isCaseSensitive: false,
+				});
+
+				codemodData = fuse.search(query.name).map((res) => res.item);
 			}
 
 			reply.type("application/json").code(200);
