@@ -24,11 +24,11 @@ export const getCodemodBySlugParamsSchema = object({
 export const parseGetCodemodBySlugParams = (input: unknown) =>
 	parse(getCodemodBySlugParamsSchema, input);
 
-export const getCodemodLatestVersionParamsSchema = object({
+export const getCodemodLatestVersionQuerySchema = object({
 	name: string(),
 });
-export const parseGetCodemodLatestVersionParams = (input: unknown) =>
-	parse(getCodemodLatestVersionParamsSchema, input);
+export const parseGetCodemodLatestVersionQuery = (input: unknown) =>
+	parse(getCodemodLatestVersionQuerySchema, input);
 
 export const listCodemodsQuerySchema = object({
 	name: optional(string()),

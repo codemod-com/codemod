@@ -31,7 +31,7 @@ import { ReplicateService } from "./replicateService.js";
 import { parseEnvironment } from "./schemata/env.js";
 import {
 	parseGetCodemodBySlugParams,
-	parseGetCodemodLatestVersionParams,
+	parseGetCodemodLatestVersionQuery,
 	parseGetCodemodsQuery,
 	parseListCodemodsQuery,
 } from "./schemata/query.js";
@@ -358,8 +358,8 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return codemod;
 	});
 
-	instance.get("/codemods/:name/downloadLink", async (request, reply) => {
-		const { name } = parseGetCodemodLatestVersionParams(request.params);
+	instance.get("/codemods/downloadLink", async (request, reply) => {
+		const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
 		const codemod = await prisma.codemod.findFirst({
 			where: {

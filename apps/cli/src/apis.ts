@@ -51,19 +51,23 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 };
 
 export const getCodemodDownloadURI = async (
-	codemodName: string,
+	name: string,
 	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
-	const res = await Axios.get<{ link: string }>(
-		`https://backend.codemod.com/codemods/${codemodName}/downloadLink`,
-		{
-			headers: {
-				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
-			},
-			timeout: 10000,
-		},
-	);
+	const url = new URL("https://backend.codemod.com/codemods/downloadLink");
+	if (name) {
+		url.searchParams.set("name", name);
+	}
+
+	const headers: { [key: string]: string } = {};
+	if (accessToken) {
+		headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
+	}
+
+	const res = await Axios.get<{ link: string }>(url.toString(), {
+		timeout: 10000,
+	});
 
 	return res.data.link;
 };

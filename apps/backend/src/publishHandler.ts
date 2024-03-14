@@ -80,6 +80,12 @@ export const publishHandler =
 					codemodRc = parse(codemodConfigSchema, codemodRcData);
 
 					if (codemodRc.engine === "recipe") {
+						if (codemodRc.names.length < 2) {
+							throw new Error(
+								`The "names" field in .codemodrc.json must contain at least two names for a recipe codemod.`,
+							);
+						}
+
 						for (const name of codemodRc.names) {
 							if (!codemodNameRegex.test(name)) {
 								throw new Error(
