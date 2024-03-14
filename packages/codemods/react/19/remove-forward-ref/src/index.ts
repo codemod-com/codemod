@@ -1,4 +1,84 @@
-import type { API, BlockStatement, FileInfo, Transform } from "jscodeshift";
+import type {
+	API,
+	BlockStatement,
+	FileInfo,
+	Identifier,
+	JSCodeshift,
+	TSTypeReference,
+	Transform,
+} from "jscodeshift";
+
+// Props & { ref: React.RefObject<Ref>}
+const buildPropsAndRefIntersectionTypeAnnotation = (
+	j: JSCodeshift,
+	propType: TSTypeReference,
+	refType: TSTypeReference,
+) =>
+	j.tsTypeAnnotation(
+		j.tsIntersectionType([
+			propType,
+			j.tsTypeLiteral([
+				j.tsPropertySignature.from({
+					key: j.identifier("ref"),
+					typeAnnotation: j.tsTypeAnnotation(
+						j.tsTypeReference.from({
+							typeName: j.tsQualifiedName(
+								j.identifier("React"),
+								j.identifier("RefObject"),
+							),
+							typeParameters: j.tsTypeParameterInstantiation([refType]),
+						}),
+					),
+				}),
+			]),
+		]),
+	);
+
+// const { ref } = props;
+const buildRefArgVariableDeclaration = (
+	j: JSCodeshift,
+	refArgName: string,
+	propArgName: string,
+) =>
+	j.variableDeclaration("const", [
+		j.variableDeclarator(
+			j.objectPattern([
+				j.objectProperty.from({
+					shorthand: true,
+					key: j.identifier("ref"),
+					value: j.identifier(refArgName),
+				}),
+			]),
+			j.identifier(propArgName),
+		),
+	]);
+
+// React.ForwardedRef<HTMLButtonElement> => HTMLButtonElement
+const getRefTypeFromRefArg = (j: JSCodeshift, refArg: Identifier) => {
+	const typeReference = refArg.typeAnnotation?.typeAnnotation;
+
+	if (!j.TSTypeReference.check(typeReference)) {
+		return null;
+	}
+
+	if (!j.TSQualifiedName.check(typeReference.typeName)) {
+		return null;
+	}
+
+	const { right } = typeReference.typeName;
+
+	if (!j.Identifier.check(right) || right.name === "forwardedRef") {
+		return null;
+	}
+
+	const [firstTypeParameter] = typeReference.typeParameters?.params ?? [];
+
+	if (!j.TSTypeReference.check(firstTypeParameter)) {
+		return null;
+	}
+
+	return firstTypeParameter;
+};
 
 export default function transform(file: FileInfo, api: API) {
 	const { j } = api;
@@ -26,9 +106,11 @@ export default function transform(file: FileInfo, api: API) {
 
 			const [propsArg, refArg] = renderFunctionArg.params;
 
-			if (!j.Identifier.check(refArg)) {
+			if (!j.Identifier.check(refArg) || propsArg === undefined) {
 				return null;
 			}
+
+			const refArgTypeReference = getRefTypeFromRefArg(j, refArg);
 
 			// remove refArg
 			renderFunctionArg.params.splice(1, 1);
@@ -44,9 +126,23 @@ export default function transform(file: FileInfo, api: API) {
 						value: j.identifier(refArgName),
 					}),
 				);
+
+				// update prop arg type
+				const propsArgTypeReference = propsArg.typeAnnotation?.typeAnnotation;
+
+				if (
+					j.TSTypeReference.check(propsArgTypeReference) &&
+					j.TSTypeReference.check(refArgTypeReference)
+				) {
+					propsArg.typeAnnotation = buildPropsAndRefIntersectionTypeAnnotation(
+						j,
+						propsArgTypeReference,
+						refArgTypeReference,
+					);
+				}
 			}
 
-			// if props are Identifier, push ref variable declaration to the function body
+			// if props arg is Identifier, push ref variable declaration to the function body
 			if (j.Identifier.check(propsArg)) {
 				// if we have arrow function with implicit return, we want to wrap it with BlockStatement
 				if (
@@ -58,21 +154,31 @@ export default function transform(file: FileInfo, api: API) {
 					});
 				}
 
-				const newDeclaration = j.variableDeclaration("const", [
-					j.variableDeclarator(
-						j.objectPattern([
-							j.objectProperty.from({
-								shorthand: true,
-								key: j.identifier("ref"),
-								value: j.identifier("ref"),
-							}),
-						]),
-						j.identifier("props"),
-					),
-				]);
+				const newDeclaration = buildRefArgVariableDeclaration(
+					j,
+					refArg.name,
+					propsArg.name,
+				);
 
 				(renderFunctionArg.body as BlockStatement).body.unshift(newDeclaration);
+
+				const propsArgTypeReference = propsArg.typeAnnotation?.typeAnnotation;
+
+				if (
+					j.TSTypeReference.check(propsArgTypeReference) &&
+					j.TSTypeReference.check(refArgTypeReference)
+				) {
+					propsArg.typeAnnotation = buildPropsAndRefIntersectionTypeAnnotation(
+						j,
+						propsArgTypeReference,
+						refArgTypeReference,
+					);
+				}
 			}
+
+			/**
+			 * Transform ts types: forwardRef type arguments are used
+			 */
 
 			// @ts-expect-error Property 'typeParameters' does not exist on type 'CallExpression'.
 			const typeParameters = callExpressionPath.node.typeParameters;
@@ -87,28 +193,14 @@ export default function transform(file: FileInfo, api: API) {
 				const [refType, propType] = typeParameters.params;
 
 				if (
-					j.TSTypeReference.check(propType) &&
-					j.TSTypeReference.check(refType)
+					j.TSTypeReference.check(refType) &&
+					j.TSTypeReference.check(propType)
 				) {
-					const typeIntersection = j.tsIntersectionType([
+					propsArg.typeAnnotation = buildPropsAndRefIntersectionTypeAnnotation(
+						j,
 						propType,
-						j.tsTypeLiteral([
-							j.tsPropertySignature.from({
-								key: j.identifier("ref"),
-								typeAnnotation: j.tsTypeAnnotation(
-									j.tsTypeReference.from({
-										typeName: j.tsQualifiedName(
-											j.identifier("React"),
-											j.identifier("RefObject"),
-										),
-										typeParameters: j.tsTypeParameterInstantiation([refType]),
-									}),
-								),
-							}),
-						]),
-					]);
-
-					propsArg.typeAnnotation = j.tsTypeAnnotation(typeIntersection);
+						refType,
+					);
 				}
 			}
 
@@ -116,6 +208,9 @@ export default function transform(file: FileInfo, api: API) {
 			return renderFunctionArg;
 		});
 
+	/**
+	 * handle import
+	 */
 	if (dirtyFlag) {
 		root
 			.find(j.ImportDeclaration, {
@@ -124,7 +219,11 @@ export default function transform(file: FileInfo, api: API) {
 				},
 			})
 			.forEach((importDeclarationPath) => {
-				const { specifiers } = importDeclarationPath.node;
+				const { specifiers, importKind } = importDeclarationPath.node;
+
+				if (importKind !== "value") {
+					return;
+				}
 
 				if (specifiers === undefined) {
 					return;
@@ -138,7 +237,6 @@ export default function transform(file: FileInfo, api: API) {
 			})
 			.filter((importDeclarationPath) => {
 				const { specifiers } = importDeclarationPath.node;
-
 				// remove the import if there are no more specifiers left after removing forwardRef
 				return specifiers === undefined || specifiers.length === 0;
 			})

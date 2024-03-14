@@ -91,6 +91,38 @@ describe("react/remove-forward-ref", () => {
 		);
 	});
 
+	it("forwardRef import: should not remove type imports", () => {
+		const INPUT = `
+			import type { X } from "react";
+			import { forwardRef, type Y } from 'react';
+
+			const MyInput = forwardRef(function MyInput(props, ref) {
+					return null;
+			});
+		`;
+
+		const OUTPUT = `
+			import type { X } from "react";
+			import { type Y } from 'react';
+			const MyInput = function MyInput(props) {
+				const { ref } = props;
+				return null;
+			};
+		`;
+
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
+
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
+
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
+
 	it("forwardRef import: removes forwardRef specifier", () => {
 		const INPUT = `
 			import { forwardRef, useState } from 'react';
@@ -192,6 +224,39 @@ describe("react/remove-forward-ref", () => {
 			type Props = { a: 1 };
 			const MyInput = (props: Props & { ref: React.RefObject<HTMLInputElement>; }) => {
 				const { ref } = props;
+				return null;
+			};
+		`;
+
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
+
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
+
+	it("Typescript: reuses wrapped function type arguments", () => {
+		const INPUT = `
+			import { forwardRef } from 'react';
+			const MyComponent = forwardRef(function Component(
+				myProps: Props,
+				myRef: React.ForwardedRef<HTMLButtonElement>
+			  ) {
+
+				return null;
+			  });
+		`;
+
+		const OUTPUT = `
+			const MyComponent = function Component(
+				myProps: Props & { ref: React.RefObject<HTMLButtonElement>; }
+			) {
+        const { ref: myRef } = myProps;
 				return null;
 			};
 		`;
