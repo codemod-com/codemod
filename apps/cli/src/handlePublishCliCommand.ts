@@ -1,11 +1,9 @@
-import { createHash } from "crypto";
 import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { codemodConfigSchema } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import FormData from "form-data";
-import { mkdir, writeFile } from "fs/promises";
 import { parse } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
@@ -65,18 +63,36 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	const indexCjsPath = join(
-		source,
-		codemodRc.build?.output ?? "./dist/index.cjs",
-	);
-	let indexCjsData: string;
+	let actualMainFileName: string;
+	let ruleOrExecutablePath: string;
+	let errorOnMissing: string;
+
+	switch (codemodRc.engine) {
+		case "ast-grep":
+			ruleOrExecutablePath = "rule.yaml";
+			actualMainFileName = "rule.yaml";
+			errorOnMissing = `Please create the main "rule.yaml" file first.`;
+			break;
+		case "piranha":
+			ruleOrExecutablePath = "rules.toml";
+			actualMainFileName = "rules.toml";
+			errorOnMissing = `Please create the main "rules.toml" file first.`;
+			break;
+		default:
+			ruleOrExecutablePath = codemodRc.build?.output ?? "dist/index.cjs";
+			actualMainFileName = "index.cjs";
+			errorOnMissing = `Did you forget to run "codemod build"?`;
+	}
+
+	let mainFileData: string;
 	try {
-		indexCjsData = await fs.promises.readFile(indexCjsPath, {
-			encoding: "utf-8",
-		});
+		mainFileData = await fs.promises.readFile(
+			join(source, ruleOrExecutablePath),
+			{ encoding: "utf-8" },
+		);
 	} catch (err) {
 		throw new Error(
-			`Could not find the main file of the codemod in ${indexCjsPath}. Did you forget to run "codemod build"?`,
+			`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
 		);
 	}
 
@@ -95,7 +111,7 @@ export const handlePublishCliCommand = async (
 	);
 
 	const formData = new FormData();
-	formData.append("index.cjs", Buffer.from(indexCjsData));
+	formData.append(actualMainFileName, Buffer.from(mainFileData));
 	formData.append(".codemodrc.json", Buffer.from(codemodRcData));
 
 	if (descriptionMdData) {
@@ -124,38 +140,10 @@ export const handlePublishCliCommand = async (
 		),
 	);
 
-	const codemodHashDigest = createHash("ripemd160")
-		.update(codemodRc.name)
-		.digest("base64url");
-
-	const codemodDirectoryPath = join(homedir(), ".codemod", codemodHashDigest);
-
-	await mkdir(codemodDirectoryPath, { recursive: true });
-
-	try {
-		await writeFile(
-			join(codemodDirectoryPath, ".codemodrc.json"),
-			codemodRcData,
-		);
-		await writeFile(join(codemodDirectoryPath, "index.cjs"), indexCjsData);
-		if (descriptionMdData) {
-			await writeFile(
-				join(codemodDirectoryPath, "description.md"),
-				descriptionMdData,
-			);
-		}
-
-		printer.printConsoleMessage(
-			"info",
-			`\nNow, you can run the codemod anywhere:\n${boldText(
-				`$ codemod ${codemodRc.name}`,
-			)}`,
-		);
-	} catch (error) {
-		const message = error instanceof Error ? error.message : String(error);
-
-		throw new Error(
-			`Failed to write the codemod files into the local codemod registry: ${message}.`,
-		);
-	}
+	printer.printConsoleMessage(
+		"info",
+		`\nNow, you can run the codemod anywhere:\n${boldText(
+			`$ codemod ${codemodRc.name}`,
+		)}`,
+	);
 };
