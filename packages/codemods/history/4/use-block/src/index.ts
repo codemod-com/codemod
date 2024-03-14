@@ -23,11 +23,9 @@ function transform(file: FileInfo, api: API): string | undefined {
 				return;
 			}
 
-			// Rename `listenBefore` to `block`
-			identifierPath.replace(j.identifier.from({ name: "block" }));
-
+			identifierPath.value.name = "block";
 			const arg = path.value.arguments[0];
-			if (!arg || !j.ArrowFunctionExpression.check(arg)) {
+			if (!j.ArrowFunctionExpression.check(arg)) {
 				return;
 			}
 
