@@ -9,6 +9,7 @@ import Axios from "axios";
 import { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
+import { version } from "../package.json";
 import { buildArgumentRecord } from "./buildArgumentRecord.js";
 import {
 	buildOptions,
@@ -34,9 +35,6 @@ import {
 	AppInsightsTelemetryService,
 	NoTelemetryService,
 } from "./telemetryService.js";
-
-// the build script contains the version
-declare const __CODEMODCOM_CLI_VERSION__: string;
 
 const WAIT_INPUT_TIMEOUT = 300;
 
@@ -80,6 +78,7 @@ export const executeMainThread = async () => {
 	process.stdin.unref();
 
 	const argvObject = yargs(slicedArgv)
+		.scriptName("codemod")
 		.usage("Usage: <command> [options]")
 		.command("*", "runs a codemod or recipe", (y) => buildOptions(y))
 		.command(
@@ -120,7 +119,7 @@ export const executeMainThread = async () => {
 			buildUseJsonOption(y),
 		)
 		.help()
-		.version(__CODEMODCOM_CLI_VERSION__);
+		.version(version);
 
 	if (slicedArgv.length === 0) {
 		argvObject.showHelp();
