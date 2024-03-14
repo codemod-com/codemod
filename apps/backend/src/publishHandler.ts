@@ -112,7 +112,7 @@ export const publishHandler =
 				});
 			}
 
-			const { name, version } = codemodRc;
+			const { name, version, owner } = codemodRc;
 			// TODO: should default to public if publishing not under org, and should default to private if under org
 			const isPrivate = codemodRc.private ?? false;
 
@@ -211,10 +211,10 @@ export const publishHandler =
 						// Do we even need this field? We can have a function which determines the type based on other fields
 						type: "codemod",
 						private: isPrivate,
-						verified: username === "codemod.com",
+						verified: owner === "codemod.com" || username === "codemod.com",
 						from: codemodRc.meta.from?.join(" "),
 						to: codemodRc.meta.to?.join(" "),
-						author: username,
+						author: owner ?? username,
 						versions: {
 							create: codemodVersionEntry,
 						},
