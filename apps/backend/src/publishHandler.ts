@@ -98,8 +98,6 @@ export const publishHandler =
 							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 						);
 					}
-
-					// TODO: add check for organization
 				}
 
 				if (
@@ -134,9 +132,32 @@ export const publishHandler =
 				});
 			}
 
-			const { name, version, owner } = codemodRc;
-			// TODO: should default to public if publishing not under org, and should default to private if under org
-			const isPrivate = codemodRc.private ?? false;
+			const { name, version } = codemodRc;
+
+			let namespace: string | null = null;
+			if (name.startsWith("@") && name.includes("/")) {
+				namespace = name.split("/").at(0)?.slice(1)!;
+
+				// TODO:
+				// 1. create orgs table and relations
+				// 2. check if user is eligible to publish under given org
+
+				// const org = await prisma.organization.findFirst({
+				// 	where: {
+				// 		name: namespace,
+				// 	},
+				// });
+
+				// if (org === null) {
+				// 	return reply.code(400).send({
+				// 		error: `Organization ${namespace} does not exist`,
+				// 		success: false,
+				// 	});
+				// }
+			}
+
+			// if publishing under a namespace, then private as a fallback
+			const isPrivate = codemodRc.private ?? !!namespace;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -206,7 +227,12 @@ export const publishHandler =
 			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
 
 			const registryUrl = getS3Url(bucket, "us-west-1");
-			const uploadKey = `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`;
+			const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
+			if (namespace) {
+				uploadKeyParts.unshift(namespace);
+			}
+			uploadKeyParts.unshift("codemod-registry");
+			const uploadKey = uploadKeyParts.join("/");
 
 			const codemodVersionEntry: Omit<
 				z.infer<typeof CodemodVersionCreateInputSchema>,
@@ -214,12 +240,11 @@ export const publishHandler =
 			> = {
 				version,
 				bucketLink: `${registryUrl}/${uploadKey}`,
-				engine: codemodRc.engine ?? "unknown",
-				sourceRepo: codemodRc.meta.git ?? "",
+				engine: codemodRc.engine,
+				sourceRepo: codemodRc.meta?.git,
 				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
-				requirements:
-					codemodRc.applicability.map((a) => a.join(" ")).join(", ") ?? null,
+				applicability: codemodRc.applicability,
 			};
 
 			try {
@@ -233,13 +258,8 @@ export const publishHandler =
 							.split(/[\/ ,.-]/)
 							.join("-"),
 						name,
-						// Do we even need this field? We can have a function which determines the type based on other fields
-						type: "codemod",
 						private: isPrivate,
-						verified: owner === "codemod.com" || username === "codemod.com",
-						from: codemodRc.meta.from?.join(" "),
-						to: codemodRc.meta.to?.join(" "),
-						author: owner ?? username,
+						author: namespace ?? username,
 						versions: {
 							create: codemodVersionEntry,
 						},
