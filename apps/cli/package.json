@@ -1,7 +1,7 @@
 {
 	"name": "codemod",
 	"author": "Codemod, Inc.",
-	"version": "0.8.6",
+	"version": "0.8.7",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
@@ -80,7 +80,8 @@
 		"build": "esbuild ./src/index.ts --bundle --platform=node --target=node18 --minify --format=cjs --legal-comments=inline --outfile=./dist/index.cjs --external:esbuild",
 		"package": "pkg --compress GZip .",
 		"test": "TEST=1 vitest run",
-		"coverage": "TEST=1 vitest run --coverage"
+		"coverage": "TEST=1 vitest run --coverage",
+		"prepublishOnly": "pnpm run build"
 	},
 	"engines": {
 		"node": ">=18.5.0"
