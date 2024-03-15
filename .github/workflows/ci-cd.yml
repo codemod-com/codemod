@@ -25,9 +25,39 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
-      - name: Build, tag, and push Docker image to Amazon ECR
+      - name: Build Docker image
+        run: |
+          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t studio-backend .
+
+      - name: Tag Docker image
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
         run: |
           VERSION=$(cat apps/backend/package.json | jq -r '.version')
-          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t studio-backend .
           docker tag studio-backend:latest $ECR_REGISTRY/studio-backend:$VERSION
+
+      - name: Push Docker image to Amazon ECR
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+        run: |
+          VERSION=$(cat apps/backend/package.json | jq -r '.version')
           docker push $ECR_REGISTRY/studio-backend:$VERSION
+
+      - name: Deploy to EC2
+        env:
+          AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
+          AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
+          AWS_EC2_USER_NAME: ${{ secrets.AWS_EC2_USER_NAME }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+        run: |
+          echo "$AWS_SSH_KEY" > private_key.pem
+          chmod 600 private_key.pem
+          ssh -o StrictHostKeyChecking=no -i private_key.pem $AWS_EC2_USER_NAME@$AWS_EC2_HOST '
+            cd nginx/
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+            sudo docker compose down
+            sudo docker compose pull
+            sudo docker compose up -d
+          '
