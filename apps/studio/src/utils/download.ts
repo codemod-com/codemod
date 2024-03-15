@@ -7,8 +7,7 @@ import JSZip from "jszip";
 interface ProjectDownloadInput {
 	modBody: string;
 	name: string;
-	before: string;
-	after: string;
+	cases: { before: string; after: string }[];
 	engine: "jscodeshift" | "tsmorph";
 	framework?: string;
 	version?: string;
@@ -18,40 +17,15 @@ interface ProjectDownloadInput {
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
 	js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const description = ({
-	name,
-	before,
-	after,
-	engine,
-	framework,
-	version,
-	user,
-}: ProjectDownloadInput) => {
-	const engineLink =
-		engine === "jscodeshift"
-			? "https://github.com/facebook/jscodeshift"
-			: "https://github.com/dsherret/ts-morph";
-
-	const applicabilityText =
-		framework && version
-			? beautify(`
-
-        ${framework} ${version}
-
-      `)
-			: "";
-
-	const userText = user?.username
-		? beautify(`
-          [${user.username}](https://github.com/${user.username})
-        `)
-		: "[Anonymous](https://github.com/)";
-
+const readme = ({ name, cases }: ProjectDownloadInput) => {
 	return `
 # ${changeCase.sentenceCase(name)}
 
-## Examples
+## Description
 
+## Examples
+${cases.map(({ before, after }, i) => {
+	return `
 ### Before
 
 \`\`\`ts
@@ -63,29 +37,8 @@ ${beautify(before)}
 \`\`\`ts
 ${beautify(after)}
 \`\`\`
-
-## Applicability Criteria
-${applicabilityText}
-## Other Metadata
-
-### Codemod Version
-
-v0.1.0
-
-### Change Mode (CHOOSE ONE)
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-[${engine}](${engineLink})
-
-### Estimated Time Saving
-
-### Owner
-
-${userText}
+`;
+})}
 `;
 };
 
@@ -105,19 +58,17 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 const vitestConfig = () => {
 	return beautify(`
-      import { configDefaults, defineConfig } from 'vitest/config';
+	import { configDefaults, defineConfig } from 'vitest/config';
 
-      export default defineConfig({
-        test: {
-          include: [...configDefaults.include, '**/test/*.ts'],
-        },
-      });
-  `);
+	export default defineConfig({
+    test: {
+      include: [...configDefaults.include, '**/test/*.ts'],
+    },
+  });
+	`);
 };
 
-const configJson = ({
-	framework,
-	version,
+const codemodRc = ({
 	name,
 	engine,
 	user,
@@ -125,53 +76,45 @@ const configJson = ({
 	ProjectDownloadInput,
 	"framework" | "version" | "name" | "engine" | "user"
 >) => {
-	const configName = [
-		framework?.toLowerCase(),
-		version,
-		changeCase.kebabCase(name),
-	]
-		.filter(Boolean)
-		.join("-");
-
-	const finalName = user?.username
-		? `@${user.username}/${configName}`
-		: configName;
+	const finalName = changeCase.kebabCase(name);
 
 	return beautify(`
-      {
-        "schemaVersion": "1.0.0",
-        "name": "${finalName}",
-        "engine": "${engine}"
-      }
-  `);
+    {
+      "version": "1.0.0",
+      "private": false,
+      "name": "${finalName}",
+      "engine": "${engine}",
+      "meta": {}
+    }
+	`);
 };
 
 const tsconfigJson = () => {
 	return beautify(`
-      {
-        "compilerOptions": {
-          "outDir": "./dist",
-          "esModuleInterop": true,
-          "forceConsistentCasingInFileNames": true,
-          "isolatedModules": true,
-          "module": "NodeNext",
-          "skipLibCheck": true,
-          "strict": true,
-          "target": "ES6",
-          "allowJs": true
-        },
-        "include": [
-          "./src/**/*.ts",
-          "./src/**/*.js",
-          "./test/**/*.ts",
-          "./test/**/*.js"
-        ],
-        "exclude": ["node_modules", "./dist/**/*"],
-        "ts-node": {
-          "transpileOnly": true
-        }
+    {
+      "compilerOptions": {
+        "outDir": "./dist",
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "module": "NodeNext",
+        "skipLibCheck": true,
+        "strict": true,
+        "target": "ES6",
+        "allowJs": true
+      },
+      "include": [
+        "./src/**/*.ts",
+        "./src/**/*.js",
+        "./test/**/*.ts",
+        "./test/**/*.js"
+      ],
+      "exclude": ["node_modules", "./dist/**/*"],
+      "ts-node": {
+        "transpileOnly": true
       }
-  `);
+    }
+	`);
 };
 
 const packageJson = ({
@@ -184,28 +127,18 @@ const packageJson = ({
 	ProjectDownloadInput,
 	"framework" | "version" | "name" | "engine" | "user"
 >) => {
-	const packageName = [
-		framework?.toLowerCase(),
-		version,
-		changeCase.kebabCase(name),
-	]
-		.filter(Boolean)
-		.join("-");
-
-	const finalName = user?.username
-		? `@${user.username}/${packageName}`
-		: packageName;
+	const finalName = changeCase.kebabCase(name);
 
 	let packages = "";
 	if (engine === "jscodeshift") {
 		packages = `
-        "jscodeshift": "^0.15.1",
-        "@types/jscodeshift": "^0.11.10"
-      `;
+	    "jscodeshift": "^0.15.1",
+      "@types/jscodeshift": "^0.11.10"
+    `;
 	} else if (engine === "tsmorph") {
 		packages = `
-        "ts-morph": "^20.0.0"
-      `;
+      "ts-morph": "^20.0.0"
+    `;
 	}
 
 	return beautify(`
@@ -213,7 +146,6 @@ const packageJson = ({
         "name": "${finalName}",
         "dependencies": {},
         "devDependencies": {
-          "esbuild": "0.19.5",
           "vitest": "^1.0.1",
           "@types/node": "20.9.0",
           "typescript": "5.2.2",
@@ -224,7 +156,6 @@ const packageJson = ({
         "main": "./dist/index.cjs",
         "types": "/dist/index.d.ts",
         "scripts": {
-          "build": "ts-node-esm build.ts ./src/index.ts",
           "test": "vitest run",
           "test:watch": "vitest watch"
         },
@@ -262,18 +193,19 @@ const definition = (engine: ProjectDownloadInput["engine"]) => {
 
 const testBody = ({
 	name,
-	before,
-	after,
+	cases,
 	engine,
-}: Pick<ProjectDownloadInput, "name" | "before" | "after" | "engine">) => {
-	const body = "";
+}: Pick<ProjectDownloadInput, "name" | "engine" | "cases">) => {
+	let body = "";
 
 	if (engine === "jscodeshift") {
-		return beautify(`
+		body = beautify(`
         import { describe, it } from 'vitest';
         import jscodeshift, { API } from 'jscodeshift';
         import transform from '../src/index.js';
         import assert from 'node:assert';
+        import { readFile } from 'node:fs/promises';
+        import { join } from 'node:path';
 
         const buildApi = (parser: string | undefined): API => ({
           j: parser ? jscodeshift.withParser(parser) : jscodeshift,
@@ -290,35 +222,40 @@ const testBody = ({
           },
         });
 
-        describe('${name}', function () {
-          it('should do the thing', function () {
-            const INPUT = \`
-${beautify(before, { indent_level: 4 })}
-              \`;
+        describe('${name}', () => {
+          ${cases.map((_, i) => {
+						return beautify(
+							`it('test #${i + 1}', async () => {
+                const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
+									i + 1
+								}.input.ts'), 'utf-8');
+                const OUTPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
+									i + 1
+								}.output.ts'), 'utf-8');
 
-            const OUTPUT = \`
-${beautify(after, { indent_level: 4 })}
-              \`;
+                const actualOutput = transform(
+                  {
+                    path: 'index.js',
+                    source: INPUT,
+                  },
+                  buildApi('tsx'),
+                );
 
-            const actualOutput = transform(
-              {
-                path: 'index.js',
-                source: INPUT,
-              },
-              buildApi('tsx'),
-            );
-
-            assert.deepEqual(
-              actualOutput?.replace(/\W/gm, ''),
-              OUTPUT.replace(/\W/gm, ''),
-            );
-          });
+                assert.deepEqual(
+                  actualOutput?.replace(/\W/gm, ''),
+                  OUTPUT.replace(/\W/gm, ''),
+                );
+              });
+            `,
+							{ indent_level: 4 },
+						);
+					})}
         });
     `);
 	}
 
 	if (engine === "tsmorph") {
-		return beautify(`
+		body = beautify(`
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
@@ -348,112 +285,38 @@ ${beautify(after, { indent_level: 4 })}
           };
         };
 
-        describe('${name}', function () {
-          it('should do the thing', function () {
-            const INPUT = \`
-${beautify(before, { indent_level: 4 })}
-              \`;
+        describe('${name}', () => {
+          ${cases.map((_, i) => {
+						return beautify(
+							`
+              it('test #${i + 1}', () => {
+                const INPUT = await readFile('../__testfixtures__/fixture${
+									i + 1
+								}.input.ts', 'utf-8');
+                const OUTPUT = await readFile('../__testfixtures__/fixture${
+									i + 1
+								}.output.ts', 'utf-8');
 
-            const OUTPUT = \`
-${beautify(after, { indent_level: 4 })}
-              \`;
+                const { actual, expected } = transform(
+                  beforeText,
+                  afterText,
+                  'index.tsx',
+                );
 
-            const { actual, expected } = transform(
-              beforeText,
-              afterText,
-              'index.tsx',
-            );
-
-            assert.deepEqual(
-              actualOutput,
-              OUTPUT,
-            );
-          });
+                assert.deepEqual(
+                  actualOutput,
+                  OUTPUT,
+                );
+              });
+            `,
+							{ indent_level: 4 },
+						);
+					})}
         });
     `);
 	}
 
 	return body;
-};
-
-const buildScript = () => {
-	return `#!/usr/bin/env node
-import esbuild from "esbuild";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
-
-  const buildCjs = async () => {
-  const relativeInputFilePath = process.argv.at(2);
-
-  if (relativeInputFilePath === undefined) {
-    throw new Error(
-      "You must provide the relativeInputFileName to build the CJS bundle file"
-    );
-  }
-
-  const relativeOutputFilePath = "./dist/index.cjs";
-  const absoluteOutputFilePath = join(process.cwd(), relativeOutputFilePath);
-
-  let licenseBuffer: string;
-
-  try {
-    licenseBuffer = (await readFile("./LICENSE", "utf8"))
-      .replace(/\\/\\*/gm, "\\\/*")
-      .replace(/\\*\\//gm, "*\\\/");
-  } catch {
-    licenseBuffer = "";
-  }
-
-  const options: Parameters<typeof esbuild.build>[0] = {
-    entryPoints: [relativeInputFilePath],
-    bundle: true,
-    packages: "external",
-    platform: "node",
-    minify: true,
-    minifyWhitespace: true,
-    format: "cjs",
-    legalComments: "inline",
-    outfile: relativeOutputFilePath,
-    write: false, // to the in-memory file system
-  };
-
-  const { outputFiles } = await esbuild.build(options);
-
-  const contents =
-    outputFiles?.find((file) => file.path === absoluteOutputFilePath)
-      ?.contents ?? null;
-
-  if (contents === null) {
-    throw new Error(\`Could not find \${absoluteOutputFilePath} in output files\`);
-  }
-
-  const buffer = Buffer.concat([
-    Buffer.from("/*! @license\\n"),
-    Buffer.from(licenseBuffer),
-    Buffer.from("*/\\n"),
-    contents,
-  ]);
-
-  await mkdir(dirname(absoluteOutputFilePath), { recursive: true });
-
-  await writeFile(absoluteOutputFilePath, buffer);
-
-  return {
-    absoluteOutputFilePath,
-  };
-};
-
-buildCjs()
-  .then(({ absoluteOutputFilePath }) => {
-    console.log(
-      "The bundled CommonJS contents have been written into %s",
-      absoluteOutputFilePath
-    );
-  })
-  .catch((error) => {
-    console.error(error);
-  });
-  `;
 };
 
 export const downloadProject = async (input: ProjectDownloadInput) => {
@@ -463,6 +326,13 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 	const licenseContent = license(input);
 
 	zip.file("src/index.ts", code);
+	for (let i = 0; i < input.cases.length; i++) {
+		const { before, after } = input.cases[i]!;
+
+		zip.file(`__testfixtures__/fixture${i + 1}.input.ts`, beautify(before));
+		zip.file(`__testfixtures__/fixture${i + 1}.output.ts`, beautify(after));
+	}
+
 	zip.file("test/test.ts", testBody(input));
 	zip.file("LICENSE", licenseContent);
 
@@ -482,24 +352,23 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 		`/*! @license\n${licenseContent}\n*/\n${compiled}`,
 	);
 
-	zip.file("README.md", description(input));
-	zip.file("build.ts", buildScript());
+	zip.file("README.md", readme(input));
 
 	zip.file("vitest.config.ts", vitestConfig());
 	zip.file("index.d.ts", definition(input.engine));
 
 	zip.file("package.json", packageJson(input));
 	zip.file("tsconfig.json", tsconfigJson());
-	zip.file(".codemodrc.json", configJson(input));
+	zip.file(".codemodrc.json", codemodRc(input));
 
-	zip.file(".gitignore", "node_modules\ndist\nbuild.ts");
+	zip.file(".gitignore", "node_modules\ndist");
 
 	const blob = await zip.generateAsync({ type: "blob" });
 
 	// download hack
 	const link = document.createElement("a");
 	link.href = window.URL.createObjectURL(blob);
-	link.download = `${input.name ?? "codemod"}.zip`;
+	link.download = `${input.name}.zip`;
 	link.click();
 	window.URL.revokeObjectURL(link.href);
 };

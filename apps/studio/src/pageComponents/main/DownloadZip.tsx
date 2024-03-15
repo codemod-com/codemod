@@ -44,8 +44,12 @@ export const DownloadZip = () => {
 			framework: humanCodemodName?.framework,
 			version: humanCodemodName?.version,
 			modBody: modContext.internalContent,
-			before: snippetsContext.inputSnippet,
-			after: snippetsContext.outputSnippet,
+			cases: [
+				{
+					before: snippetsContext.inputSnippet,
+					after: snippetsContext.outputSnippet,
+				},
+			],
 			engine,
 			user: session?.user,
 		});
