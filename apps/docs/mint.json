@@ -27,6 +27,10 @@
 		{
 			"name": "Blog",
 			"url": "https://docs.codemod.com/blog"
+		},
+		{
+			"name": "Join Community",
+			"url": "https://codemod.com/community"
 		}
 	],
 	"navigation": [
