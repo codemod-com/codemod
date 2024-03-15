@@ -4,82 +4,218 @@ import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-describe("useContext -> use", () => {
-	it("should replace useContext with use", async () => {
-		const input = `
-    import { useContext } from "react";
-    import ThemeContext from "./ThemeContext";
+describe("react/19/use-context-hook: useContext -> use", () => {
+	describe("javascript code", () => {
+		it("should replace useContext with use", async () => {
+			const input = `
+    	import { useContext } from "react";
+    	import ThemeContext from "./ThemeContext";
 
 		const theme = useContext(ThemeContext);
 		`;
 
-		const output = `
-    import { use } from "react";
-    import ThemeContext from "./ThemeContext";
+			const output = `
+    	import { use } from "react";
+    	import ThemeContext from "./ThemeContext";
 
 		const theme = use(ThemeContext);
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
+			const actualOutput = transform(fileInfo, buildApi("js"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
 		});
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
-
-	it("should replace React.useContext with use", async () => {
-		const input = `
-    import React from "react";
-    import ThemeContext from "./ThemeContext";
+		it("should replace React.useContext with use", async () => {
+			const input = `
+    	import React from "react";
+    	import ThemeContext from "./ThemeContext";
 
 		const theme = React.useContext(ThemeContext);
 		`;
 
-		const output = `
-    import React from "react";
-    import ThemeContext from "./ThemeContext";
+			const output = `
+    	import React from "react";
+    	import ThemeContext from "./ThemeContext";
 
 		const theme = React.use(ThemeContext);
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
+			const actualOutput = transform(fileInfo, buildApi("js"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
 		});
 
-		assert.deepEqual(actualOutput, output);
+		it("should not replace any.useContext() with use", async () => {
+			const input = `
+		const theme = trpc.useContext();
+		`;
+
+			const output = `
+		const theme = trpc.useContext();
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("js"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
 	});
 
-	it("should not replace any.useContext() with use", async () => {
-		const input = `
-		const theme = trpc.useContext();
-		`;
+	describe("typescript code", () => {
+		it("should replace useContext with use", async () => {
+			const input = `
+    	import { useContext } from "react";
+    	import ThemeContext from "./ThemeContext";
 
-		const output = `
-		const theme = trpc.useContext();
-		`;
-
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
+		function Component({
+			appUrl,
+		  }: {
+			appUrl: string;
+		  }) {
+			const theme = useContext(ThemeContext);
+			return <div />;
 		};
+		`;
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
+			const output = `
+    	import { use } from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		function Component({
+			appUrl,
+		  }: {
+			appUrl: string;
+		  }) {
+			const theme = use(ThemeContext);
+			return <div />;
+		};
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
 		});
 
-		assert.deepEqual(actualOutput, output);
+		it("should replace React.useContext with use", async () => {
+			const input = `
+			import React from "react";
+			import ThemeContext from "./ThemeContext";
+	
+			function Component({
+				appUrl,
+			  }: {
+				appUrl: string;
+			  }) {
+				const theme = React.useContext(ThemeContext);
+				return <div />;
+			};
+			`;
+
+			const output = `
+    	import React from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		function Component({
+			appUrl,
+		  }: {
+			appUrl: string;
+		  }) {
+			const theme = React.use(ThemeContext);
+			return <div />;
+		};
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
+
+		it("should not replace any.useContext() with use", async () => {
+			const input = `
+			function Component({
+				appUrl,
+			  }: {
+				appUrl: string;
+			  }) {
+				const theme = trpc.useContext();
+				return <div />;
+			};
+		`;
+
+			const output = `
+			function Component({
+				appUrl,
+			  }: {
+				appUrl: string;
+			  }) {
+				const theme = trpc.useContext();
+				return <div />;
+			};
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"), {
+				quote: "single",
+			});
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
 	});
 });
