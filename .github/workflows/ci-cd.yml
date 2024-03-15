@@ -25,26 +25,50 @@ jobs:
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
-      - name: Build Docker image
-        run: |
-          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t studio-backend .
-
-      - name: Tag Docker image
-        env:
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-        run: |
-          VERSION=$(cat apps/backend/package.json | jq -r '.version')
-          docker tag studio-backend:latest $ECR_REGISTRY/studio-backend:$VERSION
-
-      - name: Push Docker image to Amazon ECR
+      - name: Check latest image version in ECR
+        id: check_version
         env:
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_BACKEND_NAME }}
         run: |
           VERSION=$(cat apps/backend/package.json | jq -r '.version')
-          docker push $ECR_REGISTRY/studio-backend:$VERSION
+          LATEST_ECR_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_BACKEND_NAME --region $AWS_REGION --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          if [ "$VERSION" == "$LATEST_ECR_VERSION" ]; then
+            echo "::set-output name=should_deploy::false"
+            exit 0
+          else
+            echo "::set-output name=should_deploy::true"
+          fi
+
+      - name: Build Docker image
+        if: steps.check_version.outputs.should_deploy == 'true'
+        env:
+          ECR_REPOSITORY_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_BACKEND_NAME }}
+        run: |
+          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t $ECR_REPOSITORY_BACKEND_NAME .
+
+      - name: Tag Docker image
+        if: steps.check_version.outputs.should_deploy == 'true'
+        env:
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_BACKEND_NAME }}
+        run: |
+          VERSION=$(cat apps/backend/package.json | jq -r '.version')
+          docker tag $ECR_REPOSITORY_BACKEND_NAME:latest $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND_NAME:$VERSION
+
+      - name: Push Docker image to Amazon ECR
+        if: steps.check_version.outputs.should_deploy == 'true'
+        env:
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_BACKEND_NAME }}
+        run: |
+          VERSION=$(cat apps/backend/package.json | jq -r '.version')
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY_BACKEND_NAME:$VERSION
 
       - name: Deploy to EC2
+        if: steps.check_version.outputs.should_deploy == 'true'
         env:
           AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
           AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
