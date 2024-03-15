@@ -3,6 +3,10 @@ generator client {
   engineType = "binary"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 generator zod {
   provider                         = "zod-prisma-types"
   createOptionalDefaultValuesTypes = true
@@ -13,15 +17,9 @@ datasource db {
   url      = env("DATABASE_URI")
 }
 
-enum CodemodType {
-  recipe
-  codemod
-}
-
 model Codemod {
   id             Int              @id @default(autoincrement())
   slug           String           @unique @db.VarChar(255)
-  type           CodemodType
   name           String           @unique @db.VarChar(255)
   featured       Boolean          @default(false)
   verified       Boolean          @default(false)
@@ -32,8 +30,6 @@ model Codemod {
   totalTimeSaved Int              @default(0)
   openedPrs      Int              @default(0)
   labels         String[]         @default([])
-  from           String?          @db.VarChar(255)
-  to             String?          @db.VarChar(255)
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
 }
@@ -43,11 +39,12 @@ model CodemodVersion {
   version                  String   @db.VarChar(255)
   shortDescription         String   @db.Text
   engine                   String   @db.VarChar(255)
-  requirements             String?  @db.VarChar(255)
+  /// [ApplicabilityCriteria]
+  applicability            Json?
   vsCodeLink               String   @db.VarChar(255)
   codemodStudioExampleLink String?  @db.VarChar(255)
   testProjectCommand       String?  @db.VarChar(255)
-  sourceRepo               String   @db.VarChar(255)
+  sourceRepo               String?  @db.VarChar(255)
   amountOfUses             Int      @default(0)
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
