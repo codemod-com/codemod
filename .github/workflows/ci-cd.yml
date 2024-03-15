@@ -75,13 +75,21 @@ jobs:
           AWS_EC2_USER_NAME: ${{ secrets.AWS_EC2_USER_NAME }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
+          ECR_REPOSITORY_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_BACKEND_NAME }}
         run: |
           echo "$AWS_SSH_KEY" > private_key.pem
           chmod 600 private_key.pem
           ssh -o StrictHostKeyChecking=no -i private_key.pem $AWS_EC2_USER_NAME@$AWS_EC2_HOST '
-            cd nginx/
+            export AWS_REGION='"$AWS_REGION"'
+            export ECR_REGISTRY='"$ECR_REGISTRY"'
+            export ECR_REPOSITORY_BACKEND_NAME='"$ECR_REPOSITORY_BACKEND_NAME"'
             aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+            IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
+            echo "Latest image version: $IMAGE_VERSION"
+
+            cd nginx/
             sudo docker compose down
             sudo docker compose pull
-            sudo docker compose up -d
+            sudo IMAGE_VERSION="$IMAGE_VERSION" docker-compose up -d
           '
