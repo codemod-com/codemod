@@ -55,6 +55,15 @@ model CodemodVersion {
   updatedAt                DateTime @default(now()) @updatedAt
 }
 
+model Tag {
+  id             Int      @id @default(autoincrement())
+  title          String   @unique @db.VarChar(255)
+  aliases        String[]
+  classification String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now()) @updatedAt
+}
+
 model TokenMetadata {
   pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
   backendInitializationVector   String @map("biv") @db.VarChar(22)
