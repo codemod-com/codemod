@@ -5,8 +5,9 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("Context.Provider -> Context", () => {
-	it("should replace ThemeContext.Provider with ThemeContext", async () => {
-		const input = `
+	describe("javascript code", () => {
+		it("should replace ThemeContext.Provider with ThemeContext", async () => {
+			const input = `
 		function App() {
 			const [theme, setTheme] = useState('light');
 
@@ -18,7 +19,7 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const output = `
+			const output = `
 		function App() {
 			const [theme, setTheme] = useState('light');
 
@@ -30,21 +31,21 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+			const actualOutput = transform(fileInfo, buildApi("js"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
 
-	it("should replace Context.Provider with Context", async () => {
-		const input = `
+		it("should replace Context.Provider with Context", async () => {
+			const input = `
 		function App() {
 			const [theme, setTheme] = useState('light');
 
@@ -56,7 +57,7 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const output = `
+			const output = `
 		function App() {
 			const [theme, setTheme] = useState('light');
 
@@ -68,23 +69,113 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+			const actualOutput = transform(fileInfo, buildApi("js"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
+
+		it("should do nothing if .Provider does not exist", async () => {
+			const input = `
+		function App() {
+			const [theme, setTheme] = useState('light');
+
+			return (
+			  <Context value={theme}>
+				<Page />
+			  </Context>
+			);
+		  }
+		`;
+
+			const output = `
+		function App() {
+			const [theme, setTheme] = useState('light');
+
+			return (
+			  <Context value={theme}>
+				<Page />
+			  </Context>
+			);
+		  }
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("js"));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
 	});
 
-	it("should do nothing if .Provider does not exist", async () => {
-		const input = `
-		function App() {
-			const [theme, setTheme] = useState('light');
+	describe("typescript code", () => {
+		it("should replace ThemeContext.Provider with ThemeContext", async () => {
+			const input = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+			return (
+			  <ThemeContext.Provider value={theme}>
+				<Page />
+			  </ThemeContext.Provider>
+			);
+		  }
+		`;
+
+			const output = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+			return (
+			  <ThemeContext value={theme}>
+				<Page />
+			  </ThemeContext>
+			);
+		  }
+		`;
+
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
+
+		it("should replace Context.Provider with Context", async () => {
+			const input = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+			return (
+			  <Context.Provider value={theme}>
+				<Page />
+			  </Context.Provider>
+			);
+		  }
+		`;
+
+			const output = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
 			return (
 			  <Context value={theme}>
@@ -94,9 +185,23 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const output = `
-		function App() {
-			const [theme, setTheme] = useState('light');
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
+
+		it("should do nothing if .Provider does not exist", async () => {
+			const input = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
 			return (
 			  <Context value={theme}>
@@ -106,16 +211,29 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+			const output = `
+		function App({ url }: { url: string }) {
+			const [theme, setTheme] = useState<'light' | 'dark'>('light');
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+			return (
+			  <Context value={theme}>
+				<Page />
+			  </Context>
+			);
+		  }
+		`;
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
+			const fileInfo: FileInfo = {
+				path: "index.ts",
+				source: input,
+			};
+
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
+
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				output.replace(/\W/gm, ""),
+			);
+		});
 	});
 });
