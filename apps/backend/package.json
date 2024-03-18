@@ -68,7 +68,7 @@
 		"sequelize": "^6.37.1",
 		"tar": "^6.2.0",
 		"valibot": "^0.24.1",
-		"zod": "3.21.4",
+		"zod": "3.22.3",
 		"zod-prisma-types": "^3.1.6"
 	},
 	"type": "module",

@@ -141,8 +141,8 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
       zod:
-        specifier: 3.21.4
-        version: 3.21.4
+        specifier: 3.22.3
+        version: 3.22.3
       zod-prisma-types:
         specifier: ^3.1.6
         version: 3.1.6
@@ -435,7 +435,7 @@ importers:
         version: 1.4.1
       '@t3-oss/env-nextjs':
         specifier: ^0.7.1
-        version: 0.7.3(typescript@5.3.3)(zod@3.21.4)
+        version: 0.7.3(typescript@5.3.3)(zod@3.22.3)
       '@types/jscodeshift':
         specifier: ^0.11.6
         version: 0.11.11
@@ -560,8 +560,8 @@ importers:
         specifier: ^2.1.4
         version: 2.1.4
       zod:
-        specifier: 3.21.4
-        version: 3.21.4
+        specifier: 3.22.3
+        version: 3.22.3
     devDependencies:
       '@babel/core':
         specifier: ^7.21.0
@@ -1582,30 +1582,6 @@ importers:
         specifier: ^1.0.1
         version: 1.1.0(@types/node@20.10.5)
 
-  packages/codemods/history/4/use-block:
-    devDependencies:
-      '@codemod-com/utilities':
-        specifier: workspace:*
-        version: link:../../../../utilities
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@vitest/coverage-v8':
-        specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0)
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.1(@babel/preset-env@7.23.9)
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
-      typescript:
-        specifier: ^5.2.2
-        version: 5.3.3
-      vitest:
-        specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.10.5)
-
   packages/codemods/history/4/replace-state-object:
     devDependencies:
       '@codemod-com/utilities':
@@ -1631,6 +1607,30 @@ importers:
         version: 1.1.0(@types/node@20.10.5)
 
   packages/codemods/history/4/use-back:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.1.0)
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.1(@babel/preset-env@7.23.9)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.10.5)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.10.5)
+
+  packages/codemods/history/4/use-block:
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*
@@ -8869,7 +8869,7 @@ packages:
       pg: 8.11.3
       replicate: 0.25.2
       uuid: 9.0.1
-      zod: 3.22.4
+      zod: 3.22.3
     transitivePeerDependencies:
       - encoding
     dev: false
@@ -11321,7 +11321,7 @@ packages:
     resolution: {integrity: sha512-Bdrdipbl7QSFoCMnWAcye5xesyTagkW2bNRYJsG/S5IyyUZoX8imzKNa3EOqcqiZYZGcAtlttZ5vB4eQSGbUvw==}
     dev: false
 
-  /@t3-oss/env-core@0.7.3(typescript@5.3.3)(zod@3.21.4):
+  /@t3-oss/env-core@0.7.3(typescript@5.3.3)(zod@3.22.3):
     resolution: {integrity: sha512-hhtj59TKC6TKVdwJ0CcbKsvkr9R8Pc/SNKd4IgGUIC9T9X6moB8EZZ3FTJdABA/h9UABCK4J+KsF8gzmvMvHPg==}
     peerDependencies:
       typescript: '>=4.7.2'
@@ -11331,10 +11331,10 @@ packages:
         optional: true
     dependencies:
       typescript: 5.3.3
-      zod: 3.21.4
+      zod: 3.22.3
     dev: false
 
-  /@t3-oss/env-nextjs@0.7.3(typescript@5.3.3)(zod@3.21.4):
+  /@t3-oss/env-nextjs@0.7.3(typescript@5.3.3)(zod@3.22.3):
     resolution: {integrity: sha512-90TNffS17vjkQwfYyMUb4Zw9yqHwFV40f78qFug4JiQa5+N6DydTdlLOpzOcj8Cna/qpAVDwMSypofF/TVQDuA==}
     peerDependencies:
       typescript: '>=4.7.2'
@@ -11343,9 +11343,9 @@ packages:
       typescript:
         optional: true
     dependencies:
-      '@t3-oss/env-core': 0.7.3(typescript@5.3.3)(zod@3.21.4)
+      '@t3-oss/env-core': 0.7.3(typescript@5.3.3)(zod@3.22.3)
       typescript: 5.3.3
-      zod: 3.21.4
+      zod: 3.22.3
     dev: false
 
   /@testing-library/dom@8.20.1:
@@ -19212,8 +19212,8 @@ packages:
       p-retry: 4.6.2
       uuid: 9.0.1
       yaml: 2.3.4
-      zod: 3.22.4
-      zod-to-json-schema: 3.20.3(zod@3.22.4)
+      zod: 3.22.3
+      zod-to-json-schema: 3.20.3(zod@3.22.3)
     transitivePeerDependencies:
       - '@aws-crypto/sha256-js'
       - '@aws-sdk/client-bedrock-agent-runtime'
@@ -24764,6 +24764,9 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
+    peerDependenciesMeta:
+      node-gyp:
+        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0
@@ -27894,12 +27897,12 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /zod-to-json-schema@3.20.3(zod@3.22.4):
+  /zod-to-json-schema@3.20.3(zod@3.22.3):
     resolution: {integrity: sha512-/Q3wnyxAfCt94ZcrGiXXoiAfRqasxl9CX64LZ9fj+4dKH68zulUtU0uk1WMxQPfAxQ0ZI70dKzcoW7hHj+DwSQ==}
     peerDependencies:
       zod: ^3.20.0
     dependencies:
-      zod: 3.22.4
+      zod: 3.22.3
     dev: false
 
   /zod-to-json-schema@3.22.4(zod@3.22.4):
@@ -27910,8 +27913,8 @@ packages:
       zod: 3.22.4
     dev: false
 
-  /zod@3.21.4:
-    resolution: {integrity: sha512-m46AKbrzKVzOzs/DZgVnG5H55N1sv1M8qZU3A8RIKbs3mrACDNeIOeilDymVb2HdmP8uwshOCF4uJ8uM9rCqJw==}
+  /zod@3.22.3:
+    resolution: {integrity: sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug==}
     dev: false
 
   /zod@3.22.4:
