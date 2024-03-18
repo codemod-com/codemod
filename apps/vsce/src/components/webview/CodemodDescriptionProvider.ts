@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { EventEmitter, FileSystem, Uri } from "vscode";
@@ -18,20 +19,24 @@ export class CodemodDescriptionProvider {
 
 		const path = join(homedir(), ".codemod", hashDigest, "description.md");
 
-		const data = this.__descriptions.get(hash) ?? null;
-
-		if (data === null) {
-			this.__fileSystem.readFile(Uri.file(path)).then((uint8array) => {
-				const data = uint8array.toString();
-
-				this.__descriptions.set(hash, data);
-
-				this.onDidChangeEmitter.fire(null);
-			});
-
+		if (!existsSync(path)) {
 			return "No description or metadata found.";
 		}
 
-		return data;
+		const data = this.__descriptions.get(hash) ?? null;
+
+		if (data !== null) {
+			return data;
+		}
+
+		this.__fileSystem.readFile(Uri.file(path)).then((uint8array) => {
+			const data = uint8array.toString();
+
+			this.__descriptions.set(hash, data);
+
+			this.onDidChangeEmitter.fire(null);
+		});
+
+		return "No description or metadata found.";
 	}
 }
