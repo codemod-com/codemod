@@ -621,7 +621,7 @@ export class EngineService {
 
 				executionErrors.push(validation.right);
 			} catch (error) {
-				console.error("YAY", error);
+				console.error(error);
 			}
 		});
 
@@ -683,7 +683,6 @@ export class EngineService {
 			}
 
 			if (message.kind === "progress") {
-				console.log(this.#execution);
 				this.#messageBus.publish({
 					kind: MessageKind.showProgress,
 					codemodHash: this.#execution.codemodHash ?? null,
