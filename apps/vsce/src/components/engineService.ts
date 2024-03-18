@@ -341,7 +341,7 @@ export class EngineService {
 		const codemodListString = await streamToString(childProcess.stdout);
 		const codemodListObj = {
 			kind: "names",
-			names: codemodListString.split("\n"),
+			names: codemodListString.split("\n").filter((name) => name.length > 0),
 		};
 
 		try {
