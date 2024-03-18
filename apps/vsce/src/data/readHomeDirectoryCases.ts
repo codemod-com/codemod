@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import { existsSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
 import {
@@ -238,6 +239,10 @@ export const readHomeDirectoryCases = async (
 
 	eventEmitter.once("start", async () => {
 		const casesDirectoryPath = join(homedir(), ".codemod", "cases");
+		if (!existsSync(casesDirectoryPath)) {
+			eventEmitter.emit("end");
+			return;
+		}
 
 		const casesDirectoryUri = Uri.file(casesDirectoryPath);
 
