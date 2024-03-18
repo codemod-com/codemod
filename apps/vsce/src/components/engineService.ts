@@ -338,11 +338,14 @@ export class EngineService {
 			},
 		);
 
-		const codemodListJSON = await streamToString(childProcess.stdout);
+		const codemodListString = await streamToString(childProcess.stdout);
+		const codemodListObj = {
+			kind: "names",
+			names: codemodListString.split("\n").filter((name) => name.length > 0),
+		};
+
 		try {
-			const codemodListOrError = codemodNamesCodec.decode(
-				JSON.parse(codemodListJSON),
-			);
+			const codemodListOrError = codemodNamesCodec.decode(codemodListObj);
 
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
