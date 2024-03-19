@@ -124,7 +124,7 @@ export const handlePublishCliCommand = async (
 			join(source, "README.md"),
 			{ encoding: "utf-8" },
 		);
-		formData.append("description.md", descriptionMdData);
+		formData.append("description.md", Buffer.from(descriptionMdData));
 	} catch {
 		//
 	}
