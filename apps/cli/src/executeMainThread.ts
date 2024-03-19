@@ -202,21 +202,25 @@ export const executeMainThread = async () => {
 				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
 
 			let searchTerm: string | null = null;
+			let tagSearchTerm: string | null = null;
 			if (lastArgument) {
 				if (lastArgument.length < 2) {
-					printer.printOperationMessage({
-						kind: "error",
-						message:
-							"Search term must be at least 2 characters long. Aborting...",
-					});
-					return;
+					throw new Error(
+						"Search term must be at least 2 characters long. Aborting...",
+					);
 				}
-				searchTerm = lastArgument;
+
+				if (argv.tag) {
+					tagSearchTerm = lastArgument;
+				} else {
+					searchTerm = lastArgument;
+				}
 			}
 
 			await handleListNamesCommand({
 				printer,
 				name: searchTerm ?? undefined,
+				tag: tagSearchTerm ?? undefined,
 			});
 		} catch (error) {
 			if (!(error instanceof Error)) {

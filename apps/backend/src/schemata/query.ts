@@ -32,6 +32,7 @@ export const parseGetCodemodLatestVersionQuery = (input: unknown) =>
 
 export const listCodemodsQuerySchema = object({
 	name: optional(string()),
+	tag: optional(string()),
 });
 export const parseListCodemodsQuery = (input: unknown) =>
 	parse(listCodemodsQuerySchema, input);

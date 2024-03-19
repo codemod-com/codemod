@@ -49,6 +49,7 @@ model CodemodVersion {
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
   bucketLink               String   @db.VarChar(255)
+  tags                     String[] @default([])
   codemodId                Int
   codemod                  Codemod  @relation(fields: [codemodId], references: [id])
   createdAt                DateTime @default(now())
@@ -57,9 +58,12 @@ model CodemodVersion {
 
 model Tag {
   id             Int      @id @default(autoincrement())
-  title          String   @unique @db.VarChar(255)
+  title          String   @db.VarChar(255)
   aliases        String[]
-  classification String
+  classification String   @db.VarChar(255)
+  displayName    String   @db.VarChar(255)
+  // TODO: enterprise feature
+  // owners         User[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
 }

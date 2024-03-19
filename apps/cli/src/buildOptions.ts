@@ -87,6 +87,10 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 				.option("telemetryDisable", {
 					type: "boolean",
 					description: "Disable telemetry",
+				})
+				.option("tag", {
+					type: "string",
+					description: "Tag to search for",
 				}),
 		),
 	);

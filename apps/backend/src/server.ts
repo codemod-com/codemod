@@ -425,6 +425,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							name: codemod.name,
 							engine: latestVersion?.engine,
 							author: codemod.author,
+							tags: latestVersion.tags,
 						};
 					}),
 				);
@@ -461,13 +462,15 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 			const query = parseListCodemodsQuery(request.query);
 
-			if (query.name) {
+			if (query.name || query.tag) {
 				const fuse = new Fuse(codemodData, {
-					keys: ["name"],
+					keys: query.name ? ["name"] : ["tags"],
 					isCaseSensitive: false,
 				});
 
-				codemodData = fuse.search(query.name).map((res) => res.item);
+				codemodData = fuse
+					.search((query.name ?? query.tag)!)
+					.map((res) => res.item);
 			}
 
 			reply.type("application/json").code(200);
