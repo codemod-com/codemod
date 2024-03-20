@@ -5,12 +5,16 @@ import { boldText, colorizeText } from "./utils.js";
 
 export const handleListNamesCommand = async (options: {
 	printer: PrinterBlueprint;
-	name?: string;
+	search?: string;
 	short?: boolean;
 }) => {
-	const { printer, name, short } = options;
+	const { printer, search, short } = options;
 
-	const configObjects = await getCodemodList({ name });
+	if (search && !short) {
+		printer.printConsoleMessage("info", boldText(`Searching for ${search}...`));
+	}
+
+	const configObjects = await getCodemodList(options);
 
 	// required for vsce
 	if (short) {
@@ -19,9 +23,18 @@ export const handleListNamesCommand = async (options: {
 		return;
 	}
 
-	const prettified = configObjects
-		.map(({ name, engine, author }) => {
-			if (author?.toLocaleLowerCase() === "codemod.com") {
+	let prettified = configObjects
+		.map(({ name, tags, engine, author }) => {
+			if (search && name === search) {
+				return {
+					name: boldText(name),
+					engine: boldText(engine),
+					author: boldText(author),
+				};
+			}
+
+			// Only highlight codemod.com codemods if no search is performed
+			if (!search && author?.toLocaleLowerCase() === "codemod.com") {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
@@ -32,19 +45,36 @@ export const handleListNamesCommand = async (options: {
 			return {
 				name,
 				engine,
-				author: author ?? "Community",
+				author,
 			};
 		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+	if (search && !short) {
+		prettified = prettified.slice(0, 10);
+		printer.printConsoleMessage(
+			"info",
+			boldText("Here are the top search results:"),
+		);
+	}
 
 	printer.printConsoleMessage(
 		"info",
 		columnify(prettified, {
 			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
+			dataTransform: (data) => {
+				const lowerCaseData = data.toLocaleLowerCase();
+
+				if (lowerCaseData.includes("codemod.com")) {
+					return boldText(colorizeText(data, "cyan"));
+				}
+
+				return data;
+			},
 		}),
 	);
 
-	if (configObjects.length > 0) {
+	if (configObjects.length > 0 && !search) {
 		printer.printConsoleMessage(
 			"info",
 			"\nColored codemods are verified by the Codemod.com engineering team",

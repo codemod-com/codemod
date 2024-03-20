@@ -157,7 +157,9 @@ export const publishHandler =
 			}
 
 			// if publishing under a namespace, then private as a fallback
-			const isPrivate = codemodRc.private ?? !!namespace;
+			// TODO: uncomment when our private bucket and strategy is ready
+			// const isPrivate = codemodRc.private ?? !!namespace;
+			const isPrivate = false;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -228,9 +230,10 @@ export const publishHandler =
 
 			const registryUrl = getS3Url(bucket, "us-west-1");
 			const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
-			if (namespace) {
-				uploadKeyParts.unshift(namespace);
-			}
+			// TODO: uncomment when our private bucket and strategy is ready
+			// if (namespace) {
+			// 	uploadKeyParts.unshift(namespace);
+			// }
 			uploadKeyParts.unshift("codemod-registry");
 			const uploadKey = uploadKeyParts.join("/");
 
@@ -245,6 +248,8 @@ export const publishHandler =
 				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				applicability: codemodRc.applicability,
+				tags: codemodRc.meta?.tags,
+				useCaseCategory: codemodRc.meta?.useCaseCategory,
 			};
 
 			try {
