@@ -204,19 +204,17 @@ export const executeMainThread = async () => {
 			let searchTerm: string | null = null;
 			if (lastArgument) {
 				if (lastArgument.length < 2) {
-					printer.printOperationMessage({
-						kind: "error",
-						message:
-							"Search term must be at least 2 characters long. Aborting...",
-					});
-					return;
+					throw new Error(
+						"Search term must be at least 2 characters long. Aborting...",
+					);
 				}
+
 				searchTerm = lastArgument;
 			}
 
 			await handleListNamesCommand({
 				printer,
-				name: searchTerm ?? undefined,
+				search: searchTerm ?? undefined,
 			});
 		} catch (error) {
 			if (!(error instanceof Error)) {

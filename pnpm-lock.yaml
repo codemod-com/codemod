@@ -125,6 +125,9 @@ importers:
       prisma:
         specifier: ^5.10.2
         version: 5.10.2
+      prisma-json-types-generator:
+        specifier: ^3.0.4
+        version: 3.0.4(prisma@5.10.2)(typescript@5.3.3)
       replicate:
         specifier: 0.25.2
         version: 0.25.2
@@ -9405,6 +9408,10 @@ packages:
     resolution: {integrity: sha512-bkBOmH9dpEBbMKFJj8V+Zp8IZHIBjy3fSyhLhxj4FmKGb/UBSt9doyfA6k1UeUREsMJft7xgPYBbHSOYBr8XCA==}
     dev: false
 
+  /@prisma/debug@5.9.1:
+    resolution: {integrity: sha512-yAHFSFCg8KVoL0oRUno3m60GAjsUKYUDkQ+9BA2X2JfVR3kRVSJFc/GpQ2fSORi4pSHZR9orfM4UC9OVXIFFTA==}
+    dev: false
+
   /@prisma/engines-version@5.10.0-34.5a9203d0590c951969e85a7d07215503f4672eb9:
     resolution: {integrity: sha512-uCy/++3Jx/O3ufM+qv2H1L4tOemTNqcP/gyEVOlZqTpBvYJUe0tWtW0y3o2Ueq04mll4aM5X3f6ugQftOSLdFQ==}
     dev: false
@@ -9431,6 +9438,12 @@ packages:
     resolution: {integrity: sha512-U1W5fBJubLMKbcfwKZHACTIw38JEl8t92BZTzSDeDvhgWPpHRtzRcCVAAqFqjpaqmrXJZ7KeFCaAfsyllliVvA==}
     dependencies:
       '@prisma/debug': 5.10.2
+    dev: false
+
+  /@prisma/generator-helper@5.9.1:
+    resolution: {integrity: sha512-WMdEUPpPYxUGruRQM6e6IVTWXFjt1hHdF/m2TO7pWxhPo7/ZeoTOF9fH8JsvVSV78DYLOQkx9osjFLXZu447Kw==}
+    dependencies:
+      '@prisma/debug': 5.9.1
     dev: false
 
   /@prisma/get-platform@5.10.2:
@@ -12607,7 +12620,7 @@ packages:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.0.4(@types/node@18.11.9)
+      vitest: 1.0.4(@types/node@20.10.4)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -22621,6 +22634,20 @@ packages:
 
   /pretty-format@3.8.0:
     resolution: {integrity: sha512-WuxUnVtlWL1OfZFQFuqvnvs6MiAGk9UNsBostyBOB0Is9wb5uRESevA6rnl/rkksXaGX3GzZhPup5d6Vp1nFew==}
+    dev: false
+
+  /prisma-json-types-generator@3.0.4(prisma@5.10.2)(typescript@5.3.3):
+    resolution: {integrity: sha512-W53OpjBdGZxCsYv7MlUX69d7TPA9lEsQbDf9ddF0J93FX5EvaIRDMexdFPe0KTxiuquGvZTDJgeNXb3gIqEhJw==}
+    engines: {node: '>=14.0'}
+    hasBin: true
+    peerDependencies:
+      prisma: ^5.1
+      typescript: ^5.1
+    dependencies:
+      '@prisma/generator-helper': 5.9.1
+      prisma: 5.10.2
+      tslib: 2.6.2
+      typescript: 5.3.3
     dev: false
 
   /prisma@5.10.2:
