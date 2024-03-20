@@ -4,7 +4,8 @@
 	"private": false,
 	"engine": "jscodeshift",
 	"meta": {
-		"type": "migration"
+		"type": "migration",
+		"tags": ["react"]
 	},
 	"applicability": {
 		"from": [["react", "<=", "18"]]
