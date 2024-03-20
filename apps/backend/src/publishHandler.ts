@@ -254,8 +254,8 @@ export const publishHandler =
 
 			let isVerified =
 				namespace === "codemod.com" || namespace === "codemod-com";
-			let author = codemodRc.owner ?? namespace;
-			if (!author && environment.VERIFIED_PUBLISHERS.includes(username)) {
+			let author = namespace;
+			if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
 				isVerified = true;
 				author = "codemod.com";
 			}

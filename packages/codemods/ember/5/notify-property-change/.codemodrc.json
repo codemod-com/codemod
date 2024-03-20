@@ -9,6 +9,5 @@
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/notify-property-change",
 		"useCaseCategory": "migration"
-	},
-	"owner": "rajasegar"
+	}
 }

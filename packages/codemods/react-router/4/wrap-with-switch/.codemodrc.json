@@ -9,6 +9,5 @@
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"],
-	"owner": "rajasegar"
+	"include": ["**/*.js", "**/*.ts"]
 }

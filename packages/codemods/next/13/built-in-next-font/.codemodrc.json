@@ -11,6 +11,5 @@
 		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"],
-	"owner": "vercel"
+	"include": ["**/*.js", "**/*.ts"]
 }
