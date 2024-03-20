@@ -303,6 +303,15 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return { data: {} };
 	});
 
+	instance.get("/version", async (_, reply) => {
+		const packageJson = await import(
+			new URL("../package.json", import.meta.url).href,
+			{ assert: { type: "json" } }
+		);
+		reply.type("application/json").code(200);
+		return { version: packageJson.default.version };
+	});
+
 	instance.get("/codemods", async (request, reply) => {
 		const query = parseGetCodemodsQuery(request.query);
 
