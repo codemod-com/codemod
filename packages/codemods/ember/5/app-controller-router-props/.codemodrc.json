@@ -7,7 +7,7 @@
 		"from": [["ember", ">=", "3.10.0"], ["ember", "<", "5.0.0"]]
 	},
 	"meta": {
-		"type": "migration",
-		"git": "https://github.com/ember-codemods/ember-3x-codemods/blob/master/transforms/app-controller-router-props"
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/blob/master/transforms/app-controller-router-props",
+		"useCaseCategory": "migration"
 	}
 }

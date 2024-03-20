@@ -8,8 +8,8 @@
 		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
 	},
 	"meta": {
-		"type": "migration",
-		"tags": ["next.js"]
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
 	},
 	"include": ["**/*.js", "**/*.ts"]
 }

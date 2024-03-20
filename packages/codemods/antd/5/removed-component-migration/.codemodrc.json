@@ -8,7 +8,7 @@
 		"from": [["antd", "<", "5.0.0"]]
 	},
 	"meta": {
-		"type": "migration",
-		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration"
+		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration",
+		"useCaseCategory": "migration"
 	}
 }

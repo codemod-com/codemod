@@ -7,7 +7,7 @@
 		"from": [["ember", ">=", "3.9.0"], ["ember", "<", "5.0.0"]]
 	},
 	"meta": {
-		"type": "migration",
-		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/cp-volatile"
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/cp-volatile",
+		"useCaseCategory": "migration"
 	}
 }

@@ -5,7 +5,7 @@
 	"engine": "recipe",
 	"names": ["mocha/vitest/migrate-config", "mocha/vitest/migrate-test"],
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["mocha", ">=", "9.0.0"]]

@@ -5,6 +5,6 @@
 	"engine": "piranha",
 	"language": "java",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

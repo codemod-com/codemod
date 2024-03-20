@@ -29,6 +29,6 @@
 		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
 	},
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

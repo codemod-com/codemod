@@ -7,7 +7,7 @@
 		"from": [["ember", ">=", "3.3.0"], ["ember", "<", "5.0.0"]]
 	},
 	"meta": {
-		"type": "migration",
-		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/ember-jquery-legacy"
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/ember-jquery-legacy",
+		"useCaseCategory": "migration"
 	}
 }

@@ -5,7 +5,7 @@
 	"engine": "jscodeshift",
 	"dependency": "react-redux",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["react-redux", ">=", "0.0.0"]]

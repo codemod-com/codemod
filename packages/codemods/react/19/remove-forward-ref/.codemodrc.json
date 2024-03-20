@@ -5,8 +5,8 @@
 	"description": "Codemod to remove React.forwardRef function that will be deprecated in next major React release",
 	"engine": "jscodeshift",
 	"meta": {
-		"type": "migration",
-		"tags": ["react"]
+		"tags": ["react"],
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["react", "<=", "18"]]

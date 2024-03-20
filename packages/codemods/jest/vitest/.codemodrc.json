@@ -7,6 +7,6 @@
 		"from": [["jest", ">=", "26.0.0"]]
 	},
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

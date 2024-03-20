@@ -4,6 +4,6 @@
 	"private": false,
 	"engine": "filemod",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

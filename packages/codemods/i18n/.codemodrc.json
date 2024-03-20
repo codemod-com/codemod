@@ -6,6 +6,6 @@
 	"engine": "filemod",
 	"applicabillity": ["i18n", ">=", "0.0.0"],
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

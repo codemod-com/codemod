@@ -4,7 +4,7 @@
 	"name": "@codemod.com/netlify/0.8.5/deleteEnvironmentVariables",
 	"engine": "jscodeshift",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["@netlify/sdk", ">=", "0.8.5"]]

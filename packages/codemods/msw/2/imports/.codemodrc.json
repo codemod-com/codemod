@@ -4,7 +4,7 @@
 	"name": "@codemod.com/msw/2/imports",
 	"engine": "ts-morph",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["msw", ">=", "1.0.0"]]

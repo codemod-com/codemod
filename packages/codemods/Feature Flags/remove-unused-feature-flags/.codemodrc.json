@@ -17,6 +17,6 @@
 		}
 	],
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

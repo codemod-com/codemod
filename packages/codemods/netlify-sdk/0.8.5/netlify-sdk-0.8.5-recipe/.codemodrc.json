@@ -14,7 +14,7 @@
 		"netlify/0.8.5/updateEnvironmentVariable"
 	],
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["@netlify/sdk", ">=", "0.8.5"]]

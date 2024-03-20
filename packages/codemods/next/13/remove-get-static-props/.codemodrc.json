@@ -16,8 +16,8 @@
 		}
 	],
 	"meta": {
-		"type": "migration",
-		"tags": ["next.js"]
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
 	},
 	"include": ["**/*.js", "**/*.ts"]
 }

@@ -24,6 +24,6 @@
 		}
 	],
 	"meta": {
-		"type": "cleanup"
+		"useCaseCategory": "cleanup"
 	}
 }

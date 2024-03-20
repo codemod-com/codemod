@@ -5,6 +5,6 @@
 	"engine": "piranha",
 	"language": "go",
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	}
 }

@@ -7,7 +7,7 @@
 		"from": [["react-router", "<", "4.0.0"]]
 	},
 	"meta": {
-		"type": "migration"
+		"useCaseCategory": "migration"
 	},
 	"include": ["**/*.js", "**/*.ts"]
 }

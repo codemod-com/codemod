@@ -17,8 +17,8 @@
 		}
 	],
 	"meta": {
-		"type": "migration",
-		"tags": ["react"]
+		"tags": ["react"],
+		"useCaseCategory": "migration"
 	},
 	"include": ["**/*.js", "**/*.ts"]
 }
