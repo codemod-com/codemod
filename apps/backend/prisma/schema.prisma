@@ -60,7 +60,7 @@ model CodemodVersion {
 
 model Tag {
   id             Int      @id @default(autoincrement())
-  title          String   @db.VarChar(255)
+  title          String   @unique @db.VarChar(255)
   aliases        String[]
   classification String   @db.VarChar(255)
   displayName    String   @db.VarChar(255)
