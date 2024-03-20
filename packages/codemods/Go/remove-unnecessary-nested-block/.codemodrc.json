@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/remove-unnecessary-nested-block",
+	"name": "remove-unnecessary-nested-block",
 	"engine": "piranha",
 	"language": "go",
 	"meta": {

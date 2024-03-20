@@ -1,12 +1,18 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/mocha/vitest/migrate-test",
+	"name": "mocha/vitest/migrate-test",
 	"engine": "jscodeshift",
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["mocha", ">=", "9.0.0"]]
+		"from": [
+			[
+				"mocha",
+				">=",
+				"9.0.0"
+			]
+		]
 	}
 }

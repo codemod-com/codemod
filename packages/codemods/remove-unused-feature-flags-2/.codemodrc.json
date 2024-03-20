@@ -2,7 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
-	"name": "@codemod.com/remove-unused-feature-flags-2",
+	"name": "remove-unused-feature-flags-2",
 	"arguments": [
 		{
 			"name": "fileMarker",

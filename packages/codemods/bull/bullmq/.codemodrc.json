@@ -1,10 +1,16 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/bull/bullmq",
+	"name": "bull/bullmq",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [["bull", ">", "0.0.0"]]
+		"from": [
+			[
+				"bull",
+				">",
+				"0.0.0"
+			]
+		]
 	},
 	"meta": {
 		"useCaseCategory": "migration"

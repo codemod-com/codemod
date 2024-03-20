@@ -1,12 +1,18 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/msw/2/ctx-fetch",
+	"name": "msw/2/ctx-fetch",
 	"engine": "ts-morph",
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["msw", ">=", "1.0.0"]]
+		"from": [
+			[
+				"msw",
+				">=",
+				"1.0.0"
+			]
+		]
 	}
 }

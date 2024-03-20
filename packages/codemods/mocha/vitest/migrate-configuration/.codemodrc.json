@@ -1,12 +1,18 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/mocha/vitest/migrate-config",
+	"name": "mocha/vitest/migrate-config",
 	"private": false,
 	"engine": "filemod",
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["mocha", ">=", "9.0.0"]]
+		"from": [
+			[
+				"mocha",
+				">=",
+				"9.0.0"
+			]
+		]
 	}
 }

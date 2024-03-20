@@ -1,13 +1,21 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/next/13/upsert-use-client-directive",
+	"name": "next/13/upsert-use-client-directive",
 	"private": false,
 	"engine": "ts-morph",
 	"applicability": {
-		"from": [["next", "<", "13.0.0"]]
+		"from": [
+			[
+				"next",
+				"<",
+				"13.0.0"
+			]
+		]
 	},
 	"meta": {
-		"tags": ["next.js"],
+		"tags": [
+			"next.js"
+		],
 		"useCaseCategory": "migration"
 	}
 }

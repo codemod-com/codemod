@@ -1,10 +1,21 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/@calcom/generate-metadata-tests",
+	"name": "generate-metadata-tests",
 	"private": false,
 	"engine": "filemod",
 	"applicability": {
-		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
+		"from": [
+			[
+				"next",
+				">=",
+				"13.4.0"
+			],
+			[
+				"next",
+				"<",
+				"14.0.0"
+			]
+		]
 	},
 	"arguments": [
 		{
@@ -15,5 +26,6 @@
 	],
 	"meta": {
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "calcom"
 }

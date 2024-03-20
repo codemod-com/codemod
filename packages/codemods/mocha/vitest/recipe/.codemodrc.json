@@ -1,13 +1,22 @@
 {
-	"name": "@codemod.com/mocha/vitest/recipe",
+	"name": "mocha/vitest/recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
-	"names": ["mocha/vitest/migrate-config", "mocha/vitest/migrate-test"],
+	"names": [
+		"mocha/vitest/migrate-config",
+		"mocha/vitest/migrate-test"
+	],
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["mocha", ">=", "9.0.0"]]
+		"from": [
+			[
+				"mocha",
+				">=",
+				"9.0.0"
+			]
+		]
 	}
 }

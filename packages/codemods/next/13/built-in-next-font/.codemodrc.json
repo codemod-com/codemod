@@ -1,15 +1,27 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@vercel/next/13/built-in-next-font",
+	"name": "next/13/built-in-next-font",
 	"description": "The codemod removes @next/font and changes @next/font imports to use the built-in next/font instead.",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [["next", "<", "13.2.0"]]
+		"from": [
+			[
+				"next",
+				"<",
+				"13.2.0"
+			]
+		]
 	},
 	"meta": {
-		"tags": ["next.js"],
+		"tags": [
+			"next.js"
+		],
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"]
+	"include": [
+		"**/*.js",
+		"**/*.ts"
+	],
+	"owner": "vercel"
 }

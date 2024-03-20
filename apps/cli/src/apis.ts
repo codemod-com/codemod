@@ -77,6 +77,7 @@ export type CodemodListReturn = {
 	author: string;
 	engine: AllEngines;
 	tags: string[];
+	verified: boolean;
 }[];
 export const getCodemodList = async (options?: {
 	accessToken?: string;

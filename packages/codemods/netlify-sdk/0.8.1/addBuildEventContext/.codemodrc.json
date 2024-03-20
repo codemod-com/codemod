@@ -1,12 +1,18 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/netlify/0.8.1/addBuildEventContext",
+	"name": "netlify/0.8.1/addBuildEventContext",
 	"engine": "jscodeshift",
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["@netlify/sdk", ">=", "0.8.1"]]
+		"from": [
+			[
+				"@netlify/sdk",
+				">=",
+				"0.8.1"
+			]
+		]
 	}
 }

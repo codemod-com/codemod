@@ -1,14 +1,21 @@
 {
 	"version": "1.0.0",
-	"name": "@ant-design/antd/remove-style-import",
+	"name": "antd/remove-style-import",
 	"private": false,
 	"engine": "jscodeshift",
 	"arguments": [],
 	"applicability": {
-		"from": [["antd", "<", "5.0.0"]]
+		"from": [
+			[
+				"antd",
+				"<",
+				"5.0.0"
+			]
+		]
 	},
 	"meta": {
 		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-remove-style-import",
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "ant-design"
 }

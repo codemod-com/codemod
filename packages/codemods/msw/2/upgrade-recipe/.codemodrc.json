@@ -1,5 +1,5 @@
 {
-	"name": "@codemod.com/msw/2/upgrade-recipe",
+	"name": "msw/2/upgrade-recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
@@ -18,6 +18,12 @@
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["msw", ">=", "1.0.0"]]
+		"from": [
+			[
+				"msw",
+				">=",
+				"1.0.0"
+			]
+		]
 	}
 }

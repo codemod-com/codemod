@@ -41,12 +41,15 @@ export const handlePublishCliCommand = async (
 		)}' and able to publish a codemod to our public registry.`,
 	);
 
+	const formData = new FormData();
+
 	let codemodRcData: string;
 	try {
-		codemodRcData = await fs.promises.readFile(
+		const codemodRcBuf = await fs.promises.readFile(
 			join(source, ".codemodrc.json"),
-			{ encoding: "utf-8" },
 		);
+		formData.append(".codemodrc.json", codemodRcBuf);
+		codemodRcData = codemodRcBuf.toString("utf-8");
 	} catch (err) {
 		throw new Error(
 			"Could not find the .codemodrc.json file in the codemod directory. Please configure your codemod first.",
@@ -80,10 +83,6 @@ export const handlePublishCliCommand = async (
 		`Publishing the "${codemodRc.name}" codemod to the Codemod Registry.`,
 	);
 
-	const formData = new FormData();
-
-	formData.append(".codemodrc.json", Buffer.from(codemodRcData));
-
 	if (codemodRc.engine !== "recipe") {
 		let actualMainFileName: string;
 		let ruleOrExecutablePath: string | null;
@@ -107,11 +106,10 @@ export const handlePublishCliCommand = async (
 		}
 
 		try {
-			const mainFileData = await fs.promises.readFile(
+			const mainFileBuf = await fs.promises.readFile(
 				join(source, ruleOrExecutablePath),
-				{ encoding: "utf-8" },
 			);
-			formData.append(actualMainFileName, Buffer.from(mainFileData));
+			formData.append(actualMainFileName, mainFileBuf);
 		} catch (err) {
 			throw new Error(
 				`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
@@ -120,11 +118,10 @@ export const handlePublishCliCommand = async (
 	}
 
 	try {
-		const descriptionMdData = await fs.promises.readFile(
+		const descriptionMdBuf = await fs.promises.readFile(
 			join(source, "README.md"),
-			{ encoding: "utf-8" },
 		);
-		formData.append("description.md", descriptionMdData);
+		formData.append("description.md", descriptionMdBuf);
 	} catch {
 		//
 	}

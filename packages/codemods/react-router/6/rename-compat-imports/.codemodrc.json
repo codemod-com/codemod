@@ -1,13 +1,22 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/6/rename-compat-imports",
+	"name": "react-router/6/rename-compat-imports",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [["react-router", "<", "6.0.0"]]
+		"from": [
+			[
+				"react-router",
+				"<",
+				"6.0.0"
+			]
+		]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"]
+	"include": [
+		"**/*.js",
+		"**/*.ts"
+	]
 }

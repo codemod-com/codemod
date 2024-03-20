@@ -24,8 +24,8 @@ export const handleListNamesCommand = async (options: {
 	}
 
 	let prettified = configObjects
-		.map(({ name, tags, engine, author }) => {
-			if (search && name === search) {
+		.map(({ name, verified, tags, engine, author }) => {
+			if (search && (name === search || tags.includes(search))) {
 				return {
 					name: boldText(name),
 					engine: boldText(engine),
@@ -33,8 +33,8 @@ export const handleListNamesCommand = async (options: {
 				};
 			}
 
-			// Only highlight codemod.com codemods if no search is performed
-			if (!search && author?.toLocaleLowerCase() === "codemod.com") {
+			// Only highlight verified codemods if no search is performed
+			if (!search && verified) {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
@@ -62,15 +62,6 @@ export const handleListNamesCommand = async (options: {
 		"info",
 		columnify(prettified, {
 			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
-			dataTransform: (data) => {
-				const lowerCaseData = data.toLocaleLowerCase();
-
-				if (lowerCaseData.includes("codemod.com")) {
-					return boldText(colorizeText(data, "cyan"));
-				}
-
-				return data;
-			},
 		}),
 	);
 

@@ -1,13 +1,21 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/react/19/remove-context-provider",
+	"name": "react/19/remove-context-provider",
 	"private": false,
 	"engine": "jscodeshift",
 	"meta": {
-		"tags": ["react"],
+		"tags": [
+			"react"
+		],
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [["react", "<=", "18"]]
+		"from": [
+			[
+				"react",
+				"<=",
+				"18"
+			]
+		]
 	}
 }
