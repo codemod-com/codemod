@@ -20,6 +20,5 @@
 		"tags": ["react"],
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"],
-	"owner": "mskelton"
+	"include": ["**/*.js", "**/*.ts"]
 }

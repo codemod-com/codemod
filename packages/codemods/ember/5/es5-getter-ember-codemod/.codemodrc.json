@@ -9,6 +9,5 @@
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/es5-getter-ember-codemod",
 		"useCaseCategory": "migration"
-	},
-	"owner": "rajasegar"
+	}
 }

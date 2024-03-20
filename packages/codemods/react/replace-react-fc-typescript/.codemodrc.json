@@ -11,6 +11,5 @@
 	"applicability": {
 		"from": [["react", ">=", "15.0.0"]]
 	},
-	"include": ["**/*.js", "**/*.ts"],
-	"owner": "gndelia"
+	"include": ["**/*.js", "**/*.ts"]
 }

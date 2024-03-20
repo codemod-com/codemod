@@ -8,6 +8,5 @@
 	},
 	"applicability": {
 		"from": [["@material-ui/core", ">=", "4.0.0"]]
-	},
-	"owner": "mui"
+	}
 }

@@ -10,6 +10,5 @@
 	"meta": {
 		"tags": ["next.js"],
 		"useCaseCategory": "migration"
-	},
-	"owner": "vercel"
+	}
 }

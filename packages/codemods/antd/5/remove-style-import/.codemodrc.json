@@ -10,6 +10,5 @@
 	"meta": {
 		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-remove-style-import",
 		"useCaseCategory": "migration"
-	},
-	"owner": "ant-design"
+	}
 }

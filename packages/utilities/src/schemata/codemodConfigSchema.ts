@@ -104,7 +104,6 @@ export type AllEngines = Output<typeof allEnginesSchema>;
 const configJsonBaseSchema = object({
 	name: string(`"name" of the codemod has to be a string.`),
 	description: optional(string(`"description" has to be a string.`)),
-	owner: optional(string()),
 	version: string([regex(semVerRegex, `"version" has to be a valid semver.`)]),
 	engine: allEnginesSchema,
 	// We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
