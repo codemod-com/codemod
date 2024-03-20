@@ -91,5 +91,6 @@ jobs:
             cd nginx/
             sudo docker compose down
             sudo docker compose pull
-            sudo IMAGE_VERSION="$IMAGE_VERSION" docker compose up -d
+            export IMAGE_VERSION="$IMAGE_VERSION"
+            sudo -E docker compose up -d
           '
