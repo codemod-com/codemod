@@ -31,10 +31,10 @@ export const handleListNamesCommand = async (options: {
 					engine: boldText(engine),
 					author: boldText(author),
 				};
-				// Only highlight codemod.com codemods if no search is performed
 			}
 
-			if (author?.toLocaleLowerCase() === "codemod.com") {
+			// Only highlight codemod.com codemods if no search is performed
+			if (!search && author?.toLocaleLowerCase() === "codemod.com") {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
