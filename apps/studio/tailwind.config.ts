@@ -16,6 +16,7 @@ export default {
 			"1/3": "33.3%",
 		},
 		zIndex: {
+			1: "1",
 			// add 10,000 to avoid conflicts with other libraries
 			10000: "10000",
 		},
