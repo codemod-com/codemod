@@ -85,12 +85,19 @@ jobs:
             export ECR_REPOSITORY_BACKEND_NAME='"$ECR_REPOSITORY_BACKEND_NAME"'
             aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
 
-            IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
-            echo "Latest image version: $IMAGE_VERSION"
+            LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
+            echo "Latest image version: $LATEST_IMAGE_VERSION"
 
             cd nginx/
+            sed -i "s|studio-backend:[^[:space:]]*|studio-backend:$LATEST_IMAGE_VERSION|g" docker-compose.yml
+            if [ $? -eq 0 ]; then
+                echo "Image version updated successfully in docker-compose.yml."
+            else
+                echo "Failed to update image version in docker-compose.yml."
+                exit 1
+            fi
+
             sudo docker compose down
             sudo docker compose pull
-            export IMAGE_VERSION="$IMAGE_VERSION"
-            sudo -E docker compose up -d
+            sudo docker compose up -d
           '
