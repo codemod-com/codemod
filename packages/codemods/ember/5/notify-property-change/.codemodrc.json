@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "ember/5/notify-property-change",
-	"deps": ["vitest@latest"],
+	"name": "@rajasegar/ember/5/notify-property-change",
 	"engine": "jscodeshift",
-	"applicability": [["ember", ">=", "3.1.0"], ["ember", "<", "5.0.0"]],
-	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m",
-		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/notify-property-change"
+	"applicability": {
+		"from": [["ember", ">=", "3.1.0"], ["ember", "<", "5.0.0"]]
 	},
-	"owner": "rajasegar"
+	"meta": {
+		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/notify-property-change",
+		"useCaseCategory": "migration"
+	}
 }

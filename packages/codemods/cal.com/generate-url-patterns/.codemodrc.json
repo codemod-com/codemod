@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@calcom/generate-url-patterns",
+	"name": "@codemod.com/@calcom/generate-url-patterns",
 	"private": false,
 	"engine": "filemod",
 	"arguments": [
@@ -25,10 +25,10 @@
 			"required": false
 		}
 	],
-	"applicability": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]],
+	"applicability": {
+		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "5m"
+		"useCaseCategory": "migration"
 	}
 }

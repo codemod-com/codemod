@@ -1,5 +1,5 @@
 {
-	"name": "msw/2/upgrade-recipe",
+	"name": "@codemod.com/msw/2/upgrade-recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
@@ -15,10 +15,9 @@
 		"msw/2/print-handler"
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "10m"
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["msw", ">=", "1.0.0"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["msw", ">=", "1.0.0"]]
+	}
 }

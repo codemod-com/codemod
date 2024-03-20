@@ -1,5 +1,5 @@
 {
-	"name": "netlify/0.8.5/recipe",
+	"name": "@codemod.com/netlify/0.8.5/recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
@@ -14,10 +14,9 @@
 		"netlify/0.8.5/updateEnvironmentVariable"
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "3m"
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["@netlify/sdk", ">=", "0.8.5"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["@netlify/sdk", ">=", "0.8.5"]]
+	}
 }

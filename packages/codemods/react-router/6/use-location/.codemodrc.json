@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "react-router/6/use-location",
-	"deps": ["vitest@latest"],
-	"owner": "codemod.com",
+	"name": "@codemod.com/react-router/6/use-location",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["react-router", "<", "6.0.0"]],
+	"applicability": {
+		"from": [["react-router", "<", "6.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"useCaseCategory": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

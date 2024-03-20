@@ -1,14 +1,14 @@
 {
-	"name": "next/13/ab-test",
+	"name": "@codemod.com/next/13/ab-test",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
 	"arguments": [],
-	"owner": "codemod.com",
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "2h"
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["next", "<", "13.0.0"]]
+	"applicability": {
+		"from": [["next", "<", "13.0.0"]]
+	}
 }

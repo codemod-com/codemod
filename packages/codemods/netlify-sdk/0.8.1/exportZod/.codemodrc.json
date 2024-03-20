@@ -1,13 +1,12 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "netlify/0.8.1/exportZod",
+	"name": "@codemod.com/netlify/0.8.1/exportZod",
 	"engine": "jscodeshift",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "1m"
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["@netlify/sdk", ">=", "0.8.1"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["@netlify/sdk", ">=", "0.8.1"]]
+	}
 }

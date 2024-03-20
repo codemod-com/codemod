@@ -1,11 +1,9 @@
 {
 	"version": "1.0.0",
-	"name": "migrate-codemod-registry",
+	"name": "@codemod.com/migrate-codemod-registry",
 	"private": false,
 	"engine": "filemod",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"useCaseCategory": "migration"
 	}
 }

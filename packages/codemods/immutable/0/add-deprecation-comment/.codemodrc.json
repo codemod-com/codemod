@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "immutable/0/add-deprecation-comment",
-	"deps": ["vitest@latest"],
+	"name": "@codemod.com/immutable/0/add-deprecation-comment",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["immutable", ">=", "0.0.0"]],
-	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+	"applicability": {
+		"from": [["immutable", ">=", "0.0.0"]]
 	},
-	"owner": "codemod.com"
+	"meta": {
+		"useCaseCategory": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

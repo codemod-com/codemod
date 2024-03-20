@@ -1,13 +1,10 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "Delete Unused Fields",
+	"name": "@codemod.com/Delete Unused Fields",
 	"engine": "piranha",
 	"language": "java",
-	"owner": "codemod.com",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"useCaseCategory": "migration"
 	}
 }

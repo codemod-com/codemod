@@ -1,13 +1,12 @@
 {
 	"version": "1.0.0",
-	"name": "biome/migrate-rules",
+	"name": "@codemod.com/biome/migrate-rules",
 	"private": false,
 	"engine": "filemod",
-	"applicability": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
-	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "4h"
+	"applicability": {
+		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]]
 	},
-	"owner": "codemod.com"
+	"meta": {
+		"useCaseCategory": "migration"
+	}
 }

@@ -1,5 +1,5 @@
 {
-	"name": "next/13/app-router-recipe",
+	"name": "@codemod.com/next/13/app-router-recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",
@@ -10,9 +10,10 @@
 		"next/13/app-directory-boilerplate"
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["next", "<", "13.0.0"]]
+	"applicability": {
+		"from": [["next", "<", "13.0.0"]]
+	}
 }

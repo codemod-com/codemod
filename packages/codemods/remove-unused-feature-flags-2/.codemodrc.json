@@ -2,9 +2,7 @@
 	"version": "1.0.0",
 	"private": false,
 	"engine": "filemod",
-	"name": "remove-unused-feature-flags-2",
-	"applicability": [],
-	"owner": "codemod.com",
+	"name": "@codemod.com/remove-unused-feature-flags-2",
 	"arguments": [
 		{
 			"name": "fileMarker",
@@ -26,8 +24,6 @@
 		}
 	],
 	"meta": {
-		"type": "cleanup",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"useCaseCategory": "cleanup"
 	}
 }

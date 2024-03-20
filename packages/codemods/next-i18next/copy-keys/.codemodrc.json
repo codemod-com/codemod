@@ -1,10 +1,11 @@
 {
 	"version": "1.0.0",
-	"name": "next-i18next/copy-keys",
+	"name": "@codemod.com/next-i18next/copy-keys",
 	"private": false,
 	"engine": "filemod",
-	"applicability": [["next-i18next", ">", "14.0.0"]],
-	"owner": "codemod.com",
+	"applicability": {
+		"from": [["next-i18next", ">", "14.0.0"]]
+	},
 	"arguments": [
 		{
 			"name": "oldNamespace",
@@ -26,8 +27,6 @@
 		}
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "1m"
+		"useCaseCategory": "migration"
 	}
 }

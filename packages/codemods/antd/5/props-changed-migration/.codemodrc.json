@@ -1,15 +1,14 @@
 {
 	"version": "1.0.0",
-	"name": "antd/props-changed",
+	"name": "@ant-design/antd/props-changed",
 	"private": false,
 	"engine": "jscodeshift",
 	"arguments": [],
-	"owner": "ant-design",
-	"applicability": [["antd", "<", "5.0.0"]],
+	"applicability": {
+		"from": [["antd", "<", "5.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "1m",
-		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-props-changed-migration"
+		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-props-changed-migration",
+		"useCaseCategory": "migration"
 	}
 }

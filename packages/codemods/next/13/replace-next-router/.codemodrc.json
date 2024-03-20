@@ -1,15 +1,15 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "next/13/replace-next-router",
+	"name": "@codemod.com/next/13/replace-next-router",
 	"description": "Replaces all usages of the useRouter() calls with useSearchParams and usePathname",
 	"engine": "ts-morph",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["next", "<", "13.0.0"]],
-	"owner": "codemod.com",
+	"applicability": {
+		"from": [["next", "<", "13.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

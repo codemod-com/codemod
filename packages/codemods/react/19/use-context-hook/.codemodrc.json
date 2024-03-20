@@ -1,13 +1,13 @@
 {
 	"version": "1.0.0",
-	"name": "react/19/use-context-hook",
+	"name": "@codemod.com/react/19/use-context-hook",
 	"private": false,
 	"engine": "jscodeshift",
-	"owner": "codemod.com",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"tags": ["react"],
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["react", "<=", "18"]]
+	"applicability": {
+		"from": [["react", "<=", "18"]]
+	}
 }
