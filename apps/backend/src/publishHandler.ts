@@ -248,6 +248,8 @@ export const publishHandler =
 				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				applicability: codemodRc.applicability,
+				tags: codemodRc.meta?.tags,
+				useCaseCategory: codemodRc.meta?.useCaseCategory,
 			};
 
 			try {

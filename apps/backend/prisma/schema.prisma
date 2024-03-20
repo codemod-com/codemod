@@ -29,6 +29,7 @@ model Codemod {
   amountOfUses   Int              @default(0)
   totalTimeSaved Int              @default(0)
   openedPrs      Int              @default(0)
+  // Synced from Sanity
   labels         String[]         @default([])
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @default(now()) @updatedAt
@@ -49,6 +50,7 @@ model CodemodVersion {
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
   bucketLink               String   @db.VarChar(255)
+  useCaseCategory          String?  @db.VarChar(255)
   tags                     String[] @default([])
   codemodId                Int
   codemod                  Codemod  @relation(fields: [codemodId], references: [id])
