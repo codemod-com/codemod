@@ -202,7 +202,6 @@ export const executeMainThread = async () => {
 				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
 
 			let searchTerm: string | null = null;
-			let tagSearchTerm: string | null = null;
 			if (lastArgument) {
 				if (lastArgument.length < 2) {
 					throw new Error(
@@ -210,17 +209,12 @@ export const executeMainThread = async () => {
 					);
 				}
 
-				if (argv.tag) {
-					tagSearchTerm = lastArgument;
-				} else {
-					searchTerm = lastArgument;
-				}
+				searchTerm = lastArgument;
 			}
 
 			await handleListNamesCommand({
 				printer,
-				name: searchTerm ?? undefined,
-				tag: tagSearchTerm ?? undefined,
+				search: searchTerm ?? undefined,
 			});
 		} catch (error) {
 			if (!(error instanceof Error)) {

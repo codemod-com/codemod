@@ -5,17 +5,13 @@ import { boldText, colorizeText } from "./utils.js";
 
 export const handleListNamesCommand = async (options: {
 	printer: PrinterBlueprint;
-	name?: string;
-	tag?: string;
+	search?: string;
 	short?: boolean;
 }) => {
-	const { printer, name: searchName, tag: searchTag, short } = options;
+	const { printer, search, short } = options;
 
-	if ((searchName || searchTag) && !short) {
-		printer.printConsoleMessage(
-			"info",
-			boldText(`Searching for ${searchName ?? searchTag}...`),
-		);
+	if (search && !short) {
+		printer.printConsoleMessage("info", boldText(`Searching for ${search}...`));
 	}
 
 	const configObjects = await getCodemodList(options);
@@ -29,19 +25,16 @@ export const handleListNamesCommand = async (options: {
 
 	let prettified = configObjects
 		.map(({ name, tags, engine, author }) => {
-			if (searchName || searchTag) {
-				if (
-					(searchName && name === searchName) ||
-					(searchTag && tags.includes(searchTag))
-				) {
-					return {
-						name: boldText(name),
-						engine: boldText(engine),
-						author: boldText(author),
-					};
-				}
+			if (search && name === search) {
+				return {
+					name: boldText(name),
+					engine: boldText(engine),
+					author: boldText(author),
+				};
 				// Only highlight codemod.com codemods if no search is performed
-			} else if (author?.toLocaleLowerCase() === "codemod.com") {
+			}
+
+			if (author?.toLocaleLowerCase() === "codemod.com") {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
@@ -52,12 +45,12 @@ export const handleListNamesCommand = async (options: {
 			return {
 				name,
 				engine,
-				author: author ?? "Community",
+				author,
 			};
 		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
-	if ((searchName || searchTag) && !short) {
+	if (search && !short) {
 		prettified = prettified.slice(0, 10);
 		printer.printConsoleMessage(
 			"info",
@@ -81,7 +74,7 @@ export const handleListNamesCommand = async (options: {
 		}),
 	);
 
-	if (configObjects.length > 0 && !searchName && !searchTag) {
+	if (configObjects.length > 0 && !search) {
 		printer.printConsoleMessage(
 			"info",
 			"\nColored codemods are verified by the Codemod.com engineering team",

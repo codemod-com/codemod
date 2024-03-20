@@ -80,10 +80,9 @@ export type CodemodListReturn = {
 }[];
 export const getCodemodList = async (options?: {
 	accessToken?: string;
-	name?: string;
-	tag?: string;
+	search?: string;
 }): Promise<CodemodListReturn> => {
-	const { accessToken, name, tag } = options ?? {};
+	const { accessToken, search } = options ?? {};
 
 	const headers: { [key: string]: string } = {};
 	if (accessToken) {
@@ -91,10 +90,8 @@ export const getCodemodList = async (options?: {
 	}
 
 	const url = new URL("https://backend.codemod.com/codemods/list");
-	if (name) {
-		url.searchParams.set("name", name);
-	} else if (tag) {
-		url.searchParams.set("tag", tag);
+	if (search) {
+		url.searchParams.set("search", search);
 	}
 
 	const res = await Axios.get<CodemodListReturn>(url.toString(), {
