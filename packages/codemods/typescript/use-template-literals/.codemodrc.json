@@ -1,15 +1,14 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "typescript/use-template-literals",
+	"name": "@codemod.com/typescript/use-template-literals",
 	"description": "This codemod replaces string concatenations with template literals.",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"owner": "codemod.com",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"type": "migration"
 	},
-	"applicability": [["typescript", ">=", "1.4.0"]]
+	"applicability": {
+		"from": [["typescript", ">=", "1.4.0"]]
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

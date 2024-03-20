@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "ember/5/fpe-on",
-	"deps": ["vitest@latest"],
+	"name": "@rajasegar/ember/5/fpe-on",
 	"engine": "jscodeshift",
-	"applicability": [["ember", ">=", "3.11.0"], ["ember", "<", "5.0.0"]],
+	"applicability": {
+		"from": [["ember", ">=", "3.11.0"], ["ember", "<", "5.0.0"]]
+	},
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m",
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/fpe-on"
-	},
-	"owner": "rajasegar"
+	}
 }

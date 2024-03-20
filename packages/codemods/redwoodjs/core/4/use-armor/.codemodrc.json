@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "redwoodjs/core/4/use-armor",
-	"deps": ["vitest@latest"],
+	"name": "@rajasegar/redwoodjs/core/4/use-armor",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["@redwoodjs/core", "<", "4.0.0"]],
-	"owner": "rajasegar",
+	"applicability": {
+		"from": [["@redwoodjs/core", "<", "4.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"type": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

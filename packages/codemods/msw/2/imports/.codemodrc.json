@@ -1,13 +1,12 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "msw/2/imports",
+	"name": "@codemod.com/msw/2/imports",
 	"engine": "ts-morph",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "10m"
+		"type": "migration"
 	},
-	"applicability": [["msw", ">=", "1.0.0"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["msw", ">=", "1.0.0"]]
+	}
 }

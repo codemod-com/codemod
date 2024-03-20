@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "ember/5/cp-property-map",
-	"deps": ["vitest@latest"],
+	"name": "@rajasegar/ember/5/cp-property-map",
 	"engine": "jscodeshift",
-	"applicability": [["ember", ">=", "3.9.0"], ["ember", "<", "5.0.0"]],
+	"applicability": {
+		"from": [["ember", ">=", "3.9.0"], ["ember", "<", "5.0.0"]]
+	},
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m",
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/cp-property-map"
-	},
-	"owner": "rajasegar"
+	}
 }

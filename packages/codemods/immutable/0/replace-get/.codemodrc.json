@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "immutable/0/replace-get",
-	"deps": ["vitest@latest"],
+	"name": "@codemod.com/immutable/0/replace-get",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["immutable", ">=", "0.0.0"]],
-	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+	"applicability": {
+		"from": [["immutable", ">=", "0.0.0"]]
 	},
-	"owner": "codemod.com"
+	"meta": {
+		"type": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

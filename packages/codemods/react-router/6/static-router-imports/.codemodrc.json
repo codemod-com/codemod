@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "react-router/6/static-router-imports",
-	"deps": ["vitest@latest"],
-	"owner": "codemod.com",
+	"name": "@codemod.com/react-router/6/static-router-imports",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["react-router", "<", "6.0.0"]],
+	"applicability": {
+		"from": [["react-router", "<", "6.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"type": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

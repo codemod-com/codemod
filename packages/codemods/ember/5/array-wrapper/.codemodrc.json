@@ -1,15 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "ember/5/array-wrapper",
-	"deps": ["vitest@latest"],
+	"name": "@rajasegar/ember/5/array-wrapper",
 	"engine": "jscodeshift",
-	"applicability": [["ember", ">=", "3.6.0"], ["ember", "<", "5.0.0"]],
+	"applicability": {
+		"from": [["ember", ">=", "3.6.0"], ["ember", "<", "5.0.0"]]
+	},
 	"meta": {
 		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m",
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/array-wrapper"
-	},
-	"owner": "rajasegar"
+	}
 }

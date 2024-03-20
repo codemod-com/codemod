@@ -1,13 +1,12 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "netlify/0.8.5/createOrUpdateVariables",
+	"name": "@codemod.com/netlify/0.8.5/createOrUpdateVariables",
 	"engine": "jscodeshift",
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "3m"
+		"type": "migration"
 	},
-	"applicability": [["@netlify/sdk", ">=", "0.8.5"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["@netlify/sdk", ">=", "0.8.5"]]
+	}
 }
