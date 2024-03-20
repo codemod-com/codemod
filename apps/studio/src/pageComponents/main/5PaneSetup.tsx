@@ -289,7 +289,7 @@ const AssistantTab = () => {
 			}}
 		>
 			<TabsList
-				className={cn("absolute h-[2.5rem] w-full rounded-none", {
+				className={cn("absolute h-[2.5rem] w-full rounded-none z-1", {
 					"z-[100]": isSignedIn,
 				})}
 			>
@@ -321,7 +321,10 @@ const AssistantTab = () => {
 			>
 				<CFSContent />
 			</TabsContent>
-			<TabsContent className="mt-0 h-full pt-[2.5rem]" value={TabNames.DEBUG}>
+			<TabsContent
+				className="mt-0 h-full pt-[2.5rem] overflow-auto"
+				value={TabNames.DEBUG}
+			>
 				<Table />
 			</TabsContent>
 		</Tabs>
