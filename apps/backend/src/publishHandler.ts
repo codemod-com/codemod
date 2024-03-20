@@ -258,6 +258,8 @@ export const publishHandler =
 							.split(/[\/ ,.-]/)
 							.join("-"),
 						name,
+						verified:
+							namespace === "codemod.com" || namespace === "codemod-com",
 						private: isPrivate,
 						author: namespace ?? username,
 						versions: {

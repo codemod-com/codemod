@@ -122,18 +122,18 @@ const configJsonBaseSchema = object({
 			from: optional(
 				array(
 					getLibraryVersionTupleValidator(
-						`Invalid library version specified in "from" field`,
+						`Invalid library version specified in "from" field. It has to be of the following format: [["libname", ">=", "1.0.0"]].`,
 					),
-					`"from" has to be an array of tuples.`,
+					`"from" has to be an array of tuples of the following format: [["libname", ">=", "1.0.0"]].`,
 				),
 			),
 			// Array of tuples: [libName, versionOperator, version]
 			to: optional(
 				array(
 					getLibraryVersionTupleValidator(
-						`Invalid library version specified in "to" field`,
+						`Invalid library version specified in "to" field. It has to be of the following format: [["libname", ">=", "1.0.0"]].`,
 					),
-					`"to" has to be an array of tuples.`,
+					`"to" has to be an array of tuples of the following format: [["libname", ">=", "1.0.0"]].`,
 				),
 			),
 		}),
