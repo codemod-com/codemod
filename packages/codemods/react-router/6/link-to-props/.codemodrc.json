@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/6/link-to-props",
+	"name": "react-router/6/link-to-props",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["react-router", "<", "6.0.0"]]

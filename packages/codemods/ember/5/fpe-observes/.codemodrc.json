@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@rajasegar/ember/5/fpe-observes",
+	"name": "ember/5/fpe-observes",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["ember", ">=", "3.11.0"], ["ember", "<", "5.0.0"]]
@@ -9,5 +9,6 @@
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/fpe-observes",
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "rajasegar"
 }

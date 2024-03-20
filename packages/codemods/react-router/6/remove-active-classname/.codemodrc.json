@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/6/remove-active-classname",
+	"name": "react-router/6/remove-active-classname",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["react-router", "<", "6.0.0"]]

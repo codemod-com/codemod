@@ -435,6 +435,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							engine: latestVersion?.engine,
 							author: codemod.author,
 							tags: latestVersion.tags,
+							verified: codemod.verified,
 						};
 					}),
 				);

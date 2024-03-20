@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/msw/2/req-passthrough",
+	"name": "msw/2/req-passthrough",
 	"engine": "ts-morph",
 	"meta": {
 		"useCaseCategory": "migration"

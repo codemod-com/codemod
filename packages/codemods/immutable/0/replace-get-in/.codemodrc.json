@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/immutable/0/replace-get-in",
+	"name": "immutable/0/replace-get-in",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["immutable", ">=", "0.0.0"]]

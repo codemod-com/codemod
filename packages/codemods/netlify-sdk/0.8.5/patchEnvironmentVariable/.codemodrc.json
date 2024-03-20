@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/netlify/0.8.5/patchEnvironmentVariable",
+	"name": "netlify/0.8.5/patchEnvironmentVariable",
 	"engine": "jscodeshift",
 	"meta": {
 		"useCaseCategory": "migration"

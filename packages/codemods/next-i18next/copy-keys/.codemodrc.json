@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/next-i18next/copy-keys",
+	"name": "next-i18next/copy-keys",
 	"private": false,
 	"engine": "filemod",
 	"applicability": {

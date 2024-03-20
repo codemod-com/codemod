@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/@calcom/generate-url-patterns",
+	"name": "generate-url-patterns",
 	"private": false,
 	"engine": "filemod",
 	"arguments": [
@@ -30,5 +30,6 @@
 	},
 	"meta": {
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "calcom"
 }

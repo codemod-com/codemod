@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/next/13/upsert-use-client-directive",
+	"name": "next/13/upsert-use-client-directive",
 	"private": false,
 	"engine": "ts-morph",
 	"applicability": {

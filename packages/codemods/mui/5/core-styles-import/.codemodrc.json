@@ -1,12 +1,13 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@mui/mui/5/core-styles-import",
+	"name": "mui/5/core-styles-import",
 	"engine": "jscodeshift",
 	"meta": {
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
 		"from": [["@material-ui/core", ">=", "4.0.0"]]
-	}
+	},
+	"owner": "mui"
 }

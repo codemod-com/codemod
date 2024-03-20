@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/jest/vitest",
+	"name": "jest/vitest",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["jest", ">=", "26.0.0"]]

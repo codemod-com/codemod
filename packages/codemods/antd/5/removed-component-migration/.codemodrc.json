@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@ant-design/antd/remove-component",
+	"name": "antd/remove-component",
 	"private": false,
 	"engine": "jscodeshift",
 	"arguments": [],
@@ -10,5 +10,6 @@
 	"meta": {
 		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration",
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "ant-design"
 }

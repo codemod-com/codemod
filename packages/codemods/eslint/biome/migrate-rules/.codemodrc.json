@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/biome/migrate-rules",
+	"name": "biome/migrate-rules",
 	"private": false,
 	"engine": "filemod",
 	"applicability": {

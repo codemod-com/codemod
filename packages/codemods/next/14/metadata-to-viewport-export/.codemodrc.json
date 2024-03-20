@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@vercel/next/14/metadata-to-viewport-export",
+	"name": "next/14/metadata-to-viewport-export",
 	"description": "This codemod migrates certain viewport metadata to viewport export.",
 	"engine": "jscodeshift",
 	"applicability": {
@@ -11,5 +11,6 @@
 		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"]
+	"include": ["**/*.js", "**/*.ts"],
+	"owner": "vercel"
 }

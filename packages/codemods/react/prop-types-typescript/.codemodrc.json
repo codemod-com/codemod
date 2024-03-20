@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@mskelton/react/prop-types-typescript",
+	"name": "react/prop-types-typescript",
 	"description": "Codemod to convert React PropTypes to TypeScript types.",
 	"engine": "jscodeshift",
 	"applicability": {
@@ -20,5 +20,6 @@
 		"tags": ["react"],
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"]
+	"include": ["**/*.js", "**/*.ts"],
+	"owner": "mskelton"
 }

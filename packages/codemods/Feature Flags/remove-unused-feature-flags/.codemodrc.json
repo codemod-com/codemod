@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/remove-unused-feature-flags",
+	"name": "remove-unused-feature-flags",
 	"engine": "jscodeshift",
 	"arguments": [
 		{

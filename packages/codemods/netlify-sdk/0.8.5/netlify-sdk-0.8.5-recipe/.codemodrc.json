@@ -1,5 +1,5 @@
 {
-	"name": "@codemod.com/netlify/0.8.5/recipe",
+	"name": "netlify/0.8.5/recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",

@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/msw/2/callback-signature",
+	"name": "msw/2/callback-signature",
 	"engine": "ts-morph",
 	"meta": {
 		"useCaseCategory": "migration"

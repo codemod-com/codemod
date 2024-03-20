@@ -245,12 +245,24 @@ export const publishHandler =
 				bucketLink: `${registryUrl}/${uploadKey}`,
 				engine: codemodRc.engine,
 				sourceRepo: codemodRc.meta?.git,
-				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
+				shortDescription: descriptionMdBuffer?.toString("utf-8"),
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				applicability: codemodRc.applicability,
 				tags: codemodRc.meta?.tags,
 				useCaseCategory: codemodRc.meta?.useCaseCategory,
 			};
+
+			let isVerified =
+				namespace === "codemod.com" || namespace === "codemod-com";
+			let author = codemodRc.owner ?? namespace;
+			if (!author && environment.VERIFIED_PUBLISHERS.includes(username)) {
+				isVerified = true;
+				author = "codemod.com";
+			}
+
+			if (!author) {
+				author = username;
+			}
 
 			try {
 				await prisma.codemod.upsert({
@@ -263,10 +275,9 @@ export const publishHandler =
 							.split(/[\/ ,.-]/)
 							.join("-"),
 						name,
-						verified:
-							namespace === "codemod.com" || namespace === "codemod-com",
+						verified: isVerified,
 						private: isPrivate,
-						author: namespace ?? username,
+						author,
 						versions: {
 							create: codemodVersionEntry,
 						},

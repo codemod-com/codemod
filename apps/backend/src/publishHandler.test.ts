@@ -51,6 +51,7 @@ vi.mock("./schemata/env.js", async () => {
 			return {
 				PORT: "8081",
 				DATABASE_URI: "sqlite://:memory:",
+				VERIFIED_PUBLISHERS: [],
 				CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
 				CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
 				CLERK_JWT_KEY: "CLERK_JWT_KEY",
@@ -140,14 +141,12 @@ describe("/publish route", async () => {
 		name: "mycodemod",
 		version: "1.0.0",
 		private: false,
-		applicability: [["eslint", ">=", "12.0.0"]],
-		// Can be deprecated?
-		// description: "description",
+		applicability: {
+			from: [["eslint", ">=", "12.0.0"]],
+		},
 		engine: "jscodeshift",
 		meta: {
-			changeType: "assistive",
-			timeSave: "5m",
-			type: "migration",
+			useCaseCategory: "migration",
 		},
 	};
 

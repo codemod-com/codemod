@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/migrate-codemod-registry",
+	"name": "migrate-codemod-registry",
 	"private": false,
 	"engine": "filemod",
 	"meta": {

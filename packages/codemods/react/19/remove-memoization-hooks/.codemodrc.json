@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/react/19/remove-memoization",
+	"name": "react/19/remove-memoization",
 	"private": false,
 	"engine": "jscodeshift",
 	"meta": {

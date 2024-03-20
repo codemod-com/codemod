@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/6/compat-router",
+	"name": "react-router/6/compat-router",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["react-router", "<", "6.0.0"]]

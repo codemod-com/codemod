@@ -1,6 +1,6 @@
 {
 	"version": "1.0.0",
-	"name": "@codemod.com/@calcom/generate-metadata-tests",
+	"name": "generate-metadata-tests",
 	"private": false,
 	"engine": "filemod",
 	"applicability": {
@@ -15,5 +15,6 @@
 	],
 	"meta": {
 		"useCaseCategory": "migration"
-	}
+	},
+	"owner": "calcom"
 }

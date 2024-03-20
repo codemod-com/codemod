@@ -1,5 +1,5 @@
 {
-	"name": "@codemod.com/mocha/vitest/recipe",
+	"name": "mocha/vitest/recipe",
 	"version": "1.0.0",
 	"private": false,
 	"engine": "recipe",

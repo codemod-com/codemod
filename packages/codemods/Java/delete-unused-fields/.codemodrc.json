@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/Delete Unused Fields",
+	"name": "Delete Unused Fields",
 	"engine": "piranha",
 	"language": "java",
 	"meta": {

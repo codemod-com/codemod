@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/4/use-history-hook",
+	"name": "react-router/4/use-history-hook",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["react-router", "<", "4.0.0"]]

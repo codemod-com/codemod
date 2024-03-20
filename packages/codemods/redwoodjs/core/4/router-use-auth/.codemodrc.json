@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@rajasegar/redwoodjs/core/4/router-use-auth",
+	"name": "redwoodjs/core/4/router-use-auth",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["@redwoodjs/core", "<", "4.0.0"]]
@@ -9,5 +9,6 @@
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": ["**/*.js", "**/*.ts"]
+	"include": ["**/*.js", "**/*.ts"],
+	"owner": "rajasegar"
 }
