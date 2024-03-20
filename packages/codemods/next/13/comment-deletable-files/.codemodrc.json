@@ -5,22 +5,11 @@
 	"description": "The codemod marks files that can be deleted with a comment.",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				"<",
-				"13.0.0"
-			]
-		]
+		"from": [["next", "<", "13.0.0"]]
 	},
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

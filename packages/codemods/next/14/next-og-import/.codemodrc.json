@@ -5,28 +5,12 @@
 	"description": "This codemod moves transforms imports from next/server to next/og for usage of Dynamic OG Image Generation.",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				">=",
-				"13.4.0"
-			],
-			[
-				"next",
-				"<",
-				"14.0.0"
-			]
-		]
+		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
 	},
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	],
+	"include": ["**/*.js", "**/*.ts"],
 	"owner": "vercel"
 }

@@ -5,13 +5,7 @@
 	"description": "The codemod removes getStaticProps data fetching method.",
 	"engine": "filemod",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				"<",
-				"13.0.0"
-			]
-		]
+		"from": [["next", "<", "13.0.0"]]
 	},
 	"arguments": [
 		{
@@ -22,13 +16,8 @@
 		}
 	],
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

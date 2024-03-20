@@ -8,16 +8,7 @@
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [
-			[
-				"react-redux",
-				">=",
-				"0.0.0"
-			]
-		]
+		"from": [["react-redux", ">=", "0.0.0"]]
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

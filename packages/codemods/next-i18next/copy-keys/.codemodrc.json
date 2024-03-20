@@ -4,13 +4,7 @@
 	"private": false,
 	"engine": "filemod",
 	"applicability": {
-		"from": [
-			[
-				"next-i18next",
-				">",
-				"14.0.0"
-			]
-		]
+		"from": [["next-i18next", ">", "14.0.0"]]
 	},
 	"arguments": [
 		{

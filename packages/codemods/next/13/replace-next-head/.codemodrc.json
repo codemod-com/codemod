@@ -5,18 +5,10 @@
 	"description": "This codemod generates Next 13 metadata object",
 	"engine": "filemod",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				"<",
-				"13.0.0"
-			]
-		]
+		"from": [["next", "<", "13.0.0"]]
 	},
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
 	"owner": "vercel"

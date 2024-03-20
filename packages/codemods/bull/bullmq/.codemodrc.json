@@ -4,13 +4,7 @@
 	"name": "bull/bullmq",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"bull",
-				">",
-				"0.0.0"
-			]
-		]
+		"from": [["bull", ">", "0.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"

@@ -4,13 +4,7 @@
 	"name": "jest/vitest",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"jest",
-				">=",
-				"26.0.0"
-			]
-		]
+		"from": [["jest", ">=", "26.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"

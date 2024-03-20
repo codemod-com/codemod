@@ -4,24 +4,10 @@
 	"name": "history/4/use-location",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"history",
-				"<",
-				"4.0.0"
-			],
-			[
-				"history",
-				">=",
-				"3.0.0"
-			]
-		]
+		"from": [["history", "<", "4.0.0"], ["history", ">=", "3.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

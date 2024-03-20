@@ -4,18 +4,7 @@
 	"name": "ember/5/es5-getter-ember-codemod",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"ember",
-				">=",
-				"3.1.0"
-			],
-			[
-				"ember",
-				"<",
-				"5.0.0"
-			]
-		]
+		"from": [["ember", ">=", "3.1.0"], ["ember", "<", "5.0.0"]]
 	},
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/es5-getter-ember-codemod",

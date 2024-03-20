@@ -4,20 +4,11 @@
 	"name": "redwoodjs/core/4/use-armor",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"@redwoodjs/core",
-				"<",
-				"4.0.0"
-			]
-		]
+		"from": [["@redwoodjs/core", "<", "4.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	],
+	"include": ["**/*.js", "**/*.ts"],
 	"owner": "rajasegar"
 }

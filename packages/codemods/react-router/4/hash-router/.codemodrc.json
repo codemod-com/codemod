@@ -4,20 +4,11 @@
 	"name": "react-router/4/hash-router",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"react-router",
-				"<",
-				"4.0.0"
-			]
-		]
+		"from": [["react-router", "<", "4.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	],
+	"include": ["**/*.js", "**/*.ts"],
 	"owner": "rajasegar"
 }

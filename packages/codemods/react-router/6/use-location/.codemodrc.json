@@ -4,19 +4,10 @@
 	"name": "react-router/6/use-location",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"react-router",
-				"<",
-				"6.0.0"
-			]
-		]
+		"from": [["react-router", "<", "6.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

@@ -4,19 +4,10 @@
 	"name": "immutable/4/rename-to-seq",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"immutable",
-				"<",
-				"4.0.0"
-			]
-		]
+		"from": [["immutable", "<", "4.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

@@ -18,12 +18,6 @@
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [
-			[
-				"msw",
-				">=",
-				"1.0.0"
-			]
-		]
+		"from": [["msw", ">=", "1.0.0"]]
 	}
 }

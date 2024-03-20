@@ -4,18 +4,7 @@
 	"name": "ember/5/convert-module-for-to-setup-test",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"ember",
-				">=",
-				"2.4.0"
-			],
-			[
-				"ember",
-				"<",
-				"5.0.0"
-			]
-		]
+		"from": [["ember", ">=", "2.4.0"], ["ember", "<", "5.0.0"]]
 	},
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-qunit-codemod/tree/master/transforms/convert-module-for-to-setup-test",

@@ -17,12 +17,6 @@
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [
-			[
-				"@netlify/sdk",
-				">=",
-				"0.8.5"
-			]
-		]
+		"from": [["@netlify/sdk", ">=", "0.8.5"]]
 	}
 }

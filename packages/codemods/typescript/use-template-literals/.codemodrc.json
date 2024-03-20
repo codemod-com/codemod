@@ -8,16 +8,7 @@
 		"useCaseCategory": "migration"
 	},
 	"applicability": {
-		"from": [
-			[
-				"typescript",
-				">=",
-				"1.4.0"
-			]
-		]
+		"from": [["typescript", ">=", "1.4.0"]]
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

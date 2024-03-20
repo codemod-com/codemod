@@ -4,18 +4,7 @@
 	"private": false,
 	"engine": "filemod",
 	"applicability": {
-		"from": [
-			[
-				"eslint",
-				">=",
-				"0.0.0"
-			],
-			[
-				"prettier",
-				">=",
-				"0.0.0"
-			]
-		]
+		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"

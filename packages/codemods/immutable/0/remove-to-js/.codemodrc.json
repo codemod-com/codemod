@@ -4,19 +4,10 @@
 	"name": "immutable/0/remove-to-js",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"immutable",
-				">=",
-				"0.0.0"
-			]
-		]
+		"from": [["immutable", ">=", "0.0.0"]]
 	},
 	"meta": {
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

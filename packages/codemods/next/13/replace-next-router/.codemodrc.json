@@ -5,22 +5,11 @@
 	"description": "Replaces all usages of the useRouter() calls with useSearchParams and usePathname",
 	"engine": "ts-morph",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				"<",
-				"13.0.0"
-			]
-		]
+		"from": [["next", "<", "13.0.0"]]
 	},
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }

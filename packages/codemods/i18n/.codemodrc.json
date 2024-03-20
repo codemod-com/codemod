@@ -4,11 +4,7 @@
 	"name": "i18n/remove-unused-translations",
 	"description": "This codemod removes unused translation phrases from i18n resources",
 	"engine": "filemod",
-	"applicabillity": [
-		"i18n",
-		">=",
-		"0.0.0"
-	],
+	"applicabillity": ["i18n", ">=", "0.0.0"],
 	"meta": {
 		"useCaseCategory": "migration"
 	}

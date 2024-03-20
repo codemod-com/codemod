@@ -5,13 +5,7 @@
 	"description": "Codemod to convert React PropTypes to TypeScript types.",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"react",
-				">=",
-				"15.0.0"
-			]
-		]
+		"from": [["react", ">=", "15.0.0"]]
 	},
 	"arguments": [
 		{
@@ -23,14 +17,9 @@
 		}
 	],
 	"meta": {
-		"tags": [
-			"react"
-		],
+		"tags": ["react"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	],
+	"include": ["**/*.js", "**/*.ts"],
 	"owner": "mskelton"
 }

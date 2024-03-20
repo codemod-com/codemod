@@ -5,22 +5,11 @@
 	"description": "The codemod safely migrates Next.js 10, 11, and 12 applications that use the next/image import to the renamed next/legacy/image import in Next.js 13.",
 	"engine": "jscodeshift",
 	"applicability": {
-		"from": [
-			[
-				"next",
-				"<",
-				"13.0.0"
-			]
-		]
+		"from": [["next", "<", "13.0.0"]]
 	},
 	"meta": {
-		"tags": [
-			"next.js"
-		],
+		"tags": ["next.js"],
 		"useCaseCategory": "migration"
 	},
-	"include": [
-		"**/*.js",
-		"**/*.ts"
-	]
+	"include": ["**/*.js", "**/*.ts"]
 }
