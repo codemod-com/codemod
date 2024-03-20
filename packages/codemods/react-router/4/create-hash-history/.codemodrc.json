@@ -1,7 +1,7 @@
 {
 	"version": "1.0.0",
 	"private": false,
-	"name": "@codemod.com/react-router/4/create-hash-history",
+	"name": "@rajasegar/react-router/4/create-hash-history",
 	"engine": "jscodeshift",
 	"applicability": {
 		"from": [["react-router", "<", "4.0.0"]]
