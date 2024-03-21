@@ -163,7 +163,10 @@ export const handleInstallDependencies = async (options: {
 		const toInstall: string[] = [];
 		const toDelete: string[] = [];
 		for (const dep of deps) {
-			const [name, version] = dep.split("@");
+			const parts = dep.split("@");
+			const version = parts.pop();
+			const name = parts.join("@");
+
 			if (name?.startsWith("-")) {
 				toDelete.push(name.slice(1));
 			} else {

@@ -142,7 +142,9 @@ const configJsonBaseSchema = object({
 		array(
 			string([
 				custom((val) => {
-					const [libName, version] = val.split("@");
+					const parts = val.split("@");
+					const version = parts.pop();
+					const libName = parts.join("@");
 					// e.g. -jest
 					if (libName?.startsWith("-")) {
 						return true;
