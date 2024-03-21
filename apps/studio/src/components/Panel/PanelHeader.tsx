@@ -1,13 +1,15 @@
-import { type ReactNode } from "react";
+import { PropsWithChildren, type ReactNode } from "react";
 import Text from "~/components/Text";
 import { cn } from "~/lib/utils";
 
-type PanelHeaderProps = {
-	children: ReactNode;
-};
+type PanelHeaderProps = PropsWithChildren<{
+	className?: string;
+}>;
 
-const PanelHeader = ({ children }: PanelHeaderProps) => (
-	<div className=" panel_panel_header h-[2.5rem]">{children}</div>
+const PanelHeader = ({ children, className }: PanelHeaderProps) => (
+	<div className={cn("panel_panel_header h-[2.5rem]", className)}>
+		{children}
+	</div>
 );
 
 type PanelTabProps = {
@@ -17,6 +19,7 @@ type PanelTabProps = {
 	inactive?: boolean;
 	onClick?: () => void;
 	ondblclick?: () => void;
+	borderBottom?: boolean;
 };
 const PanelTab = ({
 	children,
@@ -24,10 +27,12 @@ const PanelTab = ({
 	active,
 	inactive,
 	ondblclick,
+	borderBottom = true,
 	onClick: onTabClick,
 }: PanelTabProps) => {
 	const classNames = cn(
 		"panel_panel_tab",
+		borderBottom && "border-b",
 		inactive && "panel_panel_tab_inactive",
 		active && "panel_panel_tab_active",
 		(ondblclick || onTabClick) && "panel_panel_tab_clicked",
