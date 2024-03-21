@@ -18,21 +18,26 @@ datasource db {
 }
 
 model Codemod {
-  id             Int              @id @default(autoincrement())
-  slug           String           @unique @db.VarChar(255)
-  name           String           @unique @db.VarChar(255)
-  featured       Boolean          @default(false)
-  verified       Boolean          @default(false)
-  private        Boolean
-  author         String           @db.VarChar(255)
-  versions       CodemodVersion[]
-  amountOfUses   Int              @default(0)
-  totalTimeSaved Int              @default(0)
-  openedPrs      Int              @default(0)
+  id               Int              @id @default(autoincrement())
+  slug             String           @unique @db.VarChar(255)
+  shortDescription String?          @db.Text
+  useCaseCategory  String?          @db.VarChar(255)
+  tags             String[]         @default([])
+  engine           String           @db.VarChar(255)
+  applicability    Json?
+  name             String           @unique @db.VarChar(255)
+  featured         Boolean          @default(false)
+  verified         Boolean          @default(false)
+  private          Boolean
+  author           String           @db.VarChar(255)
+  versions         CodemodVersion[]
+  amountOfUses     Int              @default(0)
+  totalTimeSaved   Int              @default(0)
+  openedPrs        Int              @default(0)
   // Synced from Sanity
-  labels         String[]         @default([])
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @default(now()) @updatedAt
+  labels           String[]         @default([])
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
 }
 
 model CodemodVersion {
