@@ -6,6 +6,7 @@ import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { INITIAL_STATE } from "~/store/getInitialState";
+import { JSEngine } from "~/types/Engine";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
@@ -16,7 +17,7 @@ import { selectCodemodOutput } from "./codemodOutput";
 const SLICE_KEY = "snippets";
 
 type SnippetState = Readonly<{
-	engine: "jscodeshift" | "tsmorph";
+	engine: JSEngine;
 
 	// beforeInput
 	inputSnippet: string;

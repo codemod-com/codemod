@@ -1,11 +1,11 @@
-export const debounce = <T, R>(callback: (arg1: T) => R, ms: number) => {
+export const debounce = <T, R>(callback: (...args: T[]) => R, ms: number) => {
 	let timeout: ReturnType<typeof setTimeout> | null = null;
 
-	return (arg1: T) => {
+	return (...args: T[]) => {
 		if (timeout !== null) {
 			clearTimeout(timeout);
 		}
 
-		timeout = setTimeout(() => callback(arg1), ms);
+		timeout = setTimeout(() => callback(...args), ms);
 	};
 };
