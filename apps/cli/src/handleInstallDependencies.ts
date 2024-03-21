@@ -2,11 +2,14 @@ import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { promisify } from "node:util";
-import { CodemodConfig } from "@codemod-com/utilities";
+import {
+	CodemodConfig,
+	extractLibNameAndVersion,
+} from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import inquirer from "inquirer";
 import { PrinterBlueprint } from "./printer";
-import { colorizeText } from "./utils";
+import { boldText, colorizeText } from "./utils";
 
 const execPromise = promisify(exec);
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
@@ -63,7 +66,7 @@ export const handleInstallDependencies = async (options: {
 			return;
 		}
 
-		let packageManager: PackageManager | null = null;
+		let detectedPackageManager: PackageManager | null = null;
 
 		let rootPath: string | null = null;
 		try {
@@ -104,7 +107,7 @@ export const handleInstallDependencies = async (options: {
 		while (true) {
 			for (const lockFile of Object.keys(lockFilesToPmMap)) {
 				if (existsSync(join(currentDir, lockFile))) {
-					packageManager = lockFilesToPmMap[lockFile]!;
+					detectedPackageManager = lockFilesToPmMap[lockFile]!;
 					if (rootPath === null) {
 						rootPath = currentDir;
 					}
@@ -135,19 +138,19 @@ export const handleInstallDependencies = async (options: {
 			absolute: true,
 		});
 
-		if (packageManager === null) {
+		if (detectedPackageManager === null) {
 			for (const packageJsonPath of packageJsons) {
 				const packageJson = await import(packageJsonPath);
 				if (packageJson.packageManager) {
-					packageManager = packageJson.packageManager.split("@").at(0);
+					detectedPackageManager = packageJson.packageManager.split("@").at(0);
 					break;
 				}
 			}
 		}
 
 		// if still no pm, default to npm
-		if (packageManager === null) {
-			packageManager = "npm";
+		if (detectedPackageManager === null) {
+			detectedPackageManager = "npm";
 		}
 
 		// Determine package.json files that were affected by the codemod run
@@ -155,20 +158,13 @@ export const handleInstallDependencies = async (options: {
 			affectedFiles.some((f) => f.startsWith(dirname(p))),
 		);
 
-		printer.printConsoleMessage(
-			"info",
-			`Using package manager: ${packageManager}`,
-		);
-
 		const toInstall: string[] = [];
 		const toDelete: string[] = [];
 		for (const dep of deps) {
-			const parts = dep.split("@");
-			const version = parts.pop();
-			const name = parts.join("@");
+			const { libName, version } = extractLibNameAndVersion(dep);
 
-			if (name?.startsWith("-")) {
-				toDelete.push(name.slice(1));
+			if (libName?.startsWith("-")) {
+				toDelete.push(libName.slice(1));
 			} else {
 				toInstall.push(dep);
 			}
@@ -189,73 +185,101 @@ export const handleInstallDependencies = async (options: {
 			`- ${toDelete.join("\n- ")}`,
 			"red",
 		);
-		const affectedString = colorizeText(
+		const affectedString = boldText(
 			affectedProjectsPackageJsons.map((p) => relative(target, p)).join("\n"),
-			"cyan",
 		);
 
 		let installationType: InstallationChoice = "none";
 		if (affectedProjectsPackageJsons.length > 0) {
 			printer.printConsoleMessage(
 				"info",
-				`Affected package.jsons:\n${affectedString}`,
+				colorizeText(`\nAffected package.jsons:\n${affectedString}`, "cyan"),
 			);
 
 			printer.printConsoleMessage(
 				"info",
-				`This codemod expects the following dependency changes:\n${installedDepsString}\n\n${unInstalledDepsString}`,
+				colorizeText(
+					`\nDetected package manager: ${boldText(detectedPackageManager)}`,
+					"cyan",
+				),
+			);
+
+			printer.printConsoleMessage(
+				"info",
+				`\n${colorizeText(
+					"This codemod expects the following dependency changes:",
+					"cyan",
+				)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
 			);
 
 			if (
 				existsSync(rootPackageJsonPath) &&
 				affectedProjectsPackageJsons.length > 1
 			) {
-				printer.printConsoleMessage(
-					"info",
-					"A root package.json was detected in your project. Select how you want to proceed:",
-				);
-
 				const answers = await inquirer.prompt<{
 					install: InstallationChoiceShort;
-				}>([
-					{
-						type: "input",
-						name: "install",
-						message:
-							"On which files or directory should the codemods be applied?",
-						default: "none",
-						pageSize: INSTALL_INQUIRER_CHOICES_SHORT.length,
-						choices: INSTALL_INQUIRER_CHOICES_SHORT,
-					},
-				]);
+				}>({
+					type: "list",
+					name: "install",
+					message:
+						"A root package.json was detected in your project. Select how you want to proceed:",
+					default: "root",
+					pageSize: INSTALL_INQUIRER_CHOICES_SHORT.length,
+					choices: INSTALL_INQUIRER_CHOICES_SHORT,
+				});
 				installationType = answers.install;
 			} else {
-				printer.printConsoleMessage(
-					"info",
-					"Do you want to make the dependency changes in the affected package.jsons?",
-				);
-
-				const answers = await inquirer.prompt<{ install: InstallationChoice }>([
-					{
-						type: "input",
-						name: "install",
-						message:
-							"On which files or directory should the codemods be applied?",
-						default: "none",
-						pageSize: INSTALL_INQUIRER_CHOICES.length,
-						choices: INSTALL_INQUIRER_CHOICES,
-					},
-				]);
+				const answers = await inquirer.prompt<{ install: InstallationChoice }>({
+					type: "list",
+					name: "install",
+					message:
+						"Do you want to make the dependency changes in the affected package.jsons?",
+					default: "affected",
+					pageSize: INSTALL_INQUIRER_CHOICES.length,
+					choices: INSTALL_INQUIRER_CHOICES,
+				});
 				installationType = answers.install;
 			}
+
+			const PM_INQUIRER_CHOICES: { name: string; value: PackageManager }[] = [
+				{
+					name: detectedPackageManager,
+					value: detectedPackageManager,
+				},
+				...Object.values(lockFilesToPmMap)
+					.filter((pm) => pm !== detectedPackageManager)
+					.map((pm) => ({
+						name: pm,
+						value: pm,
+					})),
+			];
+
+			const answers = await inquirer.prompt<{ pm: PackageManager }>({
+				type: "list",
+				name: "pm",
+				message: "Do you want to override the detected package manager?",
+				default: detectedPackageManager,
+				pageSize: PM_INQUIRER_CHOICES.length,
+				choices: PM_INQUIRER_CHOICES,
+			});
+
+			detectedPackageManager = answers.pm;
 		}
 
 		if (installationType === "none") {
 			return;
 		}
 
-		const removeCmd = packageManager === "npm" ? "uninstall" : "remove";
-		const addCmd = packageManager === "npm" ? "install" : "add";
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(
+				`Using package manager: ${boldText(detectedPackageManager)}`,
+				"cyan",
+			),
+		);
+
+		const removeCmd = detectedPackageManager === "npm" ? "uninstall" : "remove";
+		const addCmd = detectedPackageManager === "npm" ? "install" : "add";
 
 		if (installationType === "root") {
 			printer.printConsoleMessage(
@@ -263,7 +287,7 @@ export const handleInstallDependencies = async (options: {
 				`Removing: ${toDelete.join(", ")}...`,
 			);
 			await execPromise(
-				`${packageManager} ${removeCmd} ${toDelete.join(" ")}`,
+				`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
 				{ cwd: rootPath },
 			);
 
@@ -271,9 +295,12 @@ export const handleInstallDependencies = async (options: {
 				"info",
 				`Installing: ${toInstall.join(", ")}...`,
 			);
-			await execPromise(`${packageManager} ${addCmd} ${toInstall.join(" ")}`, {
-				cwd: rootPath,
-			});
+			await execPromise(
+				`${detectedPackageManager} ${addCmd} ${toInstall.join(" ")}`,
+				{
+					cwd: rootPath,
+				},
+			);
 		} else {
 			printer.printConsoleMessage(
 				"info",
@@ -292,7 +319,7 @@ export const handleInstallDependencies = async (options: {
 				}
 
 				await execPromise(
-					`${packageManager} ${removeCmd} ${toDelete.join(" ")}`,
+					`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
 					{ cwd: dirname(packageJsonPath) },
 				);
 			}
@@ -303,7 +330,7 @@ export const handleInstallDependencies = async (options: {
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				await execPromise(
-					`${packageManager} ${addCmd} ${toInstall.join(" ")}`,
+					`${detectedPackageManager} ${addCmd} ${toInstall.join(" ")}`,
 					{ cwd: dirname(packageJsonPath) },
 				);
 			}

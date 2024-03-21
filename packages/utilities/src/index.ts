@@ -5,6 +5,7 @@ export {
 	allEnginesSchema,
 	argumentsSchema,
 	codemodConfigSchema,
+	extractLibNameAndVersion,
 	codemodNameRegex,
 	knownEnginesSchema,
 	parseCodemodConfig,

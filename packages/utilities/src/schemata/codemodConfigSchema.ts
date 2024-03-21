@@ -1,5 +1,7 @@
+import { isNeitherNullNorUndefined } from "src/index.js";
 import {
 	type Input,
+	Issues,
 	type Output,
 	ValiError,
 	array,
@@ -16,6 +18,43 @@ import {
 	tuple,
 	union,
 } from "valibot";
+
+const getFirstValibotIssue = (issues: Issues) => {
+	let reasonableError: string | undefined;
+
+	for (const issue of issues) {
+		if (issue.issues) {
+			reasonableError = getFirstValibotIssue(issue.issues);
+		}
+
+		const firstIssueWithPath = issues.find((issue) =>
+			isNeitherNullNorUndefined(issue.path),
+		);
+
+		if (isNeitherNullNorUndefined(firstIssueWithPath)) {
+			reasonableError = `${firstIssueWithPath.message} at \`${firstIssueWithPath
+				.path!.map((p) => p.key)
+				.join(".")}\``;
+			break;
+		}
+	}
+
+	return reasonableError;
+};
+
+export const extractLibNameAndVersion = (val: string) => {
+	const parts = val.split("@");
+	let version: string | undefined;
+	let libName: string;
+	if (parts.length > 1) {
+		version = parts.pop();
+		libName = parts.join("@");
+	} else {
+		libName = val;
+	}
+
+	return { libName, version };
+};
 
 export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
 
@@ -144,9 +183,7 @@ const configJsonBaseSchema = object({
 		array(
 			string([
 				custom((val) => {
-					const parts = val.split("@");
-					const version = parts.pop();
-					const libName = parts.join("@");
+					const { libName, version } = extractLibNameAndVersion(val);
 					// e.g. -jest
 					if (libName?.startsWith("-")) {
 						return true;
@@ -227,12 +264,14 @@ export const codemodConfigSchema = union([
 
 export const parseCodemodConfig = (config: unknown) => {
 	try {
-		return parse(codemodConfigSchema, config);
+		return parse(codemodConfigSchema, config, { abortEarly: true });
 	} catch (err) {
+		if (!(err instanceof ValiError)) {
+			throw new Error("Error parsing config file");
+		}
+
 		throw new Error(
-			`Error parsing config file: ${(err as ValiError).issues
-				.map((i) => i.path?.map((p) => p.key).join("."))
-				.join(", ")}`,
+			`Error parsing config file: ${getFirstValibotIssue(err.issues)}`,
 		);
 	}
 };
