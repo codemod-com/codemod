@@ -11,9 +11,7 @@ export const useToggleVisibility = (
 		show: () => setIsVisible(true),
 		hide: () => setIsVisible(false),
 		toggleVisibility: () => {
-			setIsVisible((prev) => {
-				return !prev;
-			});
+			setIsVisible((prev) => !prev);
 		},
 	};
 };
