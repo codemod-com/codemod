@@ -15,7 +15,7 @@ import {
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_INPUT_DIRECTORY_PATH,
 	DEFAULT_NO_CACHE,
-	DEFAULT_NO_INSTALL,
+	DEFAULT_SKIP_INSTALL,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
 } from "../constants.js";
@@ -28,8 +28,8 @@ export const flowSettingsSchema = object({
 	raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
 	"no-cache": optional(boolean(), DEFAULT_NO_CACHE),
 	noCache: optional(boolean(), DEFAULT_NO_CACHE),
-	"no-install": optional(boolean(), DEFAULT_NO_INSTALL),
-	noInstall: optional(boolean(), DEFAULT_NO_INSTALL),
+	"skip-install": optional(boolean(), DEFAULT_SKIP_INSTALL),
+	skipInstall: optional(boolean(), DEFAULT_SKIP_INSTALL),
 	json: optional(boolean(), DEFAULT_USE_JSON),
 	threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });

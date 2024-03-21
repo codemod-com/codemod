@@ -4,7 +4,7 @@ import {
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_NO_CACHE,
-	DEFAULT_NO_INSTALL,
+	DEFAULT_SKIP_INSTALL,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
 } from "./constants.js";
@@ -89,11 +89,11 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 					type: "boolean",
 					description: "Disable telemetry",
 				})
-				.option("no-install", {
+				.option("skip-install", {
 					type: "boolean",
 					description:
 						"Disable packages installation for the codemod run if there is `deps` field declared in its configuration.",
-					default: DEFAULT_NO_INSTALL,
+					default: DEFAULT_SKIP_INSTALL,
 				}),
 		),
 	);

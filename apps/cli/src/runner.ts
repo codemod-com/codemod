@@ -121,6 +121,10 @@ export class Runner {
 					return;
 				}
 
+				if (this._flowSettings.skipInstall) {
+					return;
+				}
+
 				const rcFileString = await readFile(
 					join(this._codemodSettings.source, ".codemodrc.json"),
 					{ encoding: "utf8" },
@@ -240,6 +244,10 @@ export class Runner {
 
 				if (this._runSettings.dryRun) {
 					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
+					return;
+				}
+
+				if (this._flowSettings.skipInstall) {
 					return;
 				}
 
