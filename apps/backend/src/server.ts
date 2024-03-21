@@ -6,13 +6,11 @@ import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { Codemod, CodemodVersion } from "@prisma/client";
+import { Codemod, CodemodVersion, Prisma } from "@prisma/client";
 import { OpenAIStream } from "ai";
 import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
 import Fuse from "fuse.js";
 import * as openAiEdge from "openai-edge";
-import { z } from "zod";
-import { CodemodWhereInputSchema } from "../prisma/generated/zod";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
@@ -315,32 +313,55 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	instance.get("/codemods", async (request, reply) => {
 		const query = parseGetCodemodsQuery(request.query);
 
+		const search = query.search;
+		const category = query.category;
+		const author = query.author;
+		const verified = query.verified;
+
 		const page = query.page || 1;
 		const size = query.size || 10;
+		const skip = (page - 1) * size;
 
-		const whereClause: z.infer<typeof CodemodWhereInputSchema> = {
-			featured: query.featured,
-			verified: query.verified,
-			private: query.private,
+		const whereClause: Prisma.CodemodWhereInput = {
+			AND: [
+				search
+					? {
+							OR: [
+								{
+									name: {
+										contains: search,
+										mode: "insensitive" as Prisma.QueryMode,
+									},
+								},
+								{
+									shortDescription: {
+										contains: search,
+										mode: "insensitive" as Prisma.QueryMode,
+									},
+								},
+								{ tags: { has: search } },
+							],
+					  }
+					: {},
+				isNeitherNullNorUndefined(category)
+					? { useCaseCategory: category }
+					: {},
+				isNeitherNullNorUndefined(author) ? { author } : {},
+				isNeitherNullNorUndefined(verified) ? { verified } : {},
+			].filter((clause) => Object.keys(clause).length > 0),
 		};
 
-		const codemods = await prisma.codemod.findMany({
-			where: whereClause,
-			skip: (page - 1) * size,
-			take: size,
-			include: {
-				versions: {
-					orderBy: {
-						createdAt: "desc",
-					},
-					take: 1,
+		const [codemods, total] = await Promise.all([
+			prisma.codemod.findMany({
+				where: whereClause,
+				orderBy: {
+					updatedAt: "desc",
 				},
-			},
-		});
-
-		const total = await prisma.codemod.count({
-			where: whereClause,
-		});
+				skip: skip,
+				take: size,
+			}),
+			prisma.codemod.count({ where: whereClause }),
+		]);
 
 		reply.type("application/json").code(200);
 		return { total, data: codemods, page, size };

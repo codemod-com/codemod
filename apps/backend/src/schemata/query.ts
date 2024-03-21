@@ -9,9 +9,10 @@ import {
 } from "valibot";
 
 export const getCodemodsQuerySchema = object({
-	featured: optional(coerce(boolean(), (input) => input === "true")),
-	verified: optional(coerce(boolean(), (input) => input === "true")),
-	private: optional(coerce(boolean(), (input) => input === "true")),
+	search: optional(coerce(string(), String)),
+	category: optional(coerce(string(), String)),
+	author: optional(coerce(string(), String)),
+	verified: optional(coerce(boolean(), Boolean)),
 	page: optional(coerce(number(), Number)),
 	size: optional(coerce(number(), Number)),
 });
