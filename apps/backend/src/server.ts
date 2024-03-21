@@ -322,33 +322,42 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const size = query.size || 10;
 		const skip = (page - 1) * size;
 
+		const filterClauses: Prisma.CodemodWhereInput["AND"] = [];
+
+		if (search) {
+			filterClauses.push({
+				OR: [
+					{
+						name: {
+							contains: search,
+							mode: "insensitive" as Prisma.QueryMode,
+						},
+					},
+					{
+						shortDescription: {
+							contains: search,
+							mode: "insensitive" as Prisma.QueryMode,
+						},
+					},
+					{ tags: { has: search } },
+				],
+			});
+		}
+
+		if (isNeitherNullNorUndefined(category)) {
+			filterClauses.push({ useCaseCategory: category });
+		}
+
+		if (isNeitherNullNorUndefined(author)) {
+			filterClauses.push({ author });
+		}
+
+		if (isNeitherNullNorUndefined(verified)) {
+			filterClauses.push({ verified });
+		}
+
 		const whereClause: Prisma.CodemodWhereInput = {
-			AND: [
-				search
-					? {
-							OR: [
-								{
-									name: {
-										contains: search,
-										mode: "insensitive" as Prisma.QueryMode,
-									},
-								},
-								{
-									shortDescription: {
-										contains: search,
-										mode: "insensitive" as Prisma.QueryMode,
-									},
-								},
-								{ tags: { has: search } },
-							],
-					  }
-					: {},
-				isNeitherNullNorUndefined(category)
-					? { useCaseCategory: category }
-					: {},
-				isNeitherNullNorUndefined(author) ? { author } : {},
-				isNeitherNullNorUndefined(verified) ? { verified } : {},
-			].filter((clause) => Object.keys(clause).length > 0),
+			AND: filterClauses,
 		};
 
 		const [codemods, total] = await Promise.all([
