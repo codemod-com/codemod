@@ -397,7 +397,7 @@ export const executeMainThread = async () => {
 		runSettings,
 		argumentRecord,
 		nameOrPath,
-		process.cwd(),
+		flowSettings.target,
 		getCodemodSource,
 	);
 
