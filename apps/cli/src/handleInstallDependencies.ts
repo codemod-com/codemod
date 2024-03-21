@@ -175,7 +175,7 @@ export const handleInstallDependencies = async (options: {
 		"red",
 	);
 	const modifiedPackageJsonsString = modifiedPackageJsons
-		.map((p) => relative(process.cwd(), p))
+		.map((p) => relative(source, p))
 		.join("\n");
 	printer.printConsoleMessage(
 		"info",
