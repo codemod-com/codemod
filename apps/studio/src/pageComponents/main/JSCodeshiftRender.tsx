@@ -9,6 +9,7 @@ import {
 	codemodOutputSlice,
 	selectCodemodOutput,
 } from "~/store/slices/codemodOutput";
+import { VisibilityOptions } from "~/types/options";
 import Text from "../../components/Text";
 import { Button } from "../../components/ui/button";
 import { setActiveEventThunk } from "../../store/setActiveEventThunk";
@@ -26,7 +27,9 @@ const MonacoDiffEditor = dynamic(
 	},
 );
 
-const LiveCodemodResult = () => {
+const LiveCodemodResult = ({
+	leftPaneVisibilityOptions,
+}: { leftPaneVisibilityOptions: VisibilityOptions }) => {
 	const { engine, inputSnippet, afterInputRanges } =
 		useSelector(selectSnippets);
 
@@ -133,6 +136,7 @@ const LiveCodemodResult = () => {
 					) : null}
 				</div>
 				<MonacoDiffEditor
+					leftPaneVisibilityOptions={leftPaneVisibilityOptions}
 					originalModelPath="original.tsx"
 					modifiedModelPath="modified.tsx"
 					options={{
