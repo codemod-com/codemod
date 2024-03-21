@@ -4,10 +4,8 @@ import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "util";
-import { codemodConfigSchema } from "@codemod-com/utilities";
 import Axios from "axios";
 import { IFs } from "memfs";
-import { parse } from "valibot";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -358,61 +356,6 @@ export const executeMainThread = async () => {
 	);
 
 	await runner.run();
-
-	// Install deps if not in CI and not dry run
-	if (
-		codemodSettings.kind !== "runOnPreCommit" &&
-		runSettings.dryRun === false
-	) {
-		const { handleInstallDependencies } = await import(
-			"./handleInstallDependencies.js"
-		);
-
-		try {
-			if (codemodSettings.kind === "runSourced") {
-				const rcFileString = await readFile(
-					join(codemodSettings.source, ".codemodrc.json"),
-					{ encoding: "utf8" },
-				);
-				const rcFile = parse(codemodConfigSchema, JSON.parse(rcFileString));
-				if (rcFile.deps) {
-					await handleInstallDependencies({
-						printer,
-						source: codemodSettings.source,
-						deps: rcFile.deps,
-					});
-				}
-
-				return;
-			}
-
-			const { directoryPath } = await codemodDownloader.download(
-				codemodSettings.name,
-			);
-			const rcFile = parse(
-				codemodConfigSchema,
-				JSON.parse(join(directoryPath, ".codemodrc.json")),
-			);
-			if (rcFile.deps) {
-				await handleInstallDependencies({
-					printer,
-					source: process.cwd(),
-					deps: rcFile.deps,
-				});
-			}
-
-			return;
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-	}
 
 	exit();
 };

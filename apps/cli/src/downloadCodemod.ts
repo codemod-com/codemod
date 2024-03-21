@@ -12,10 +12,7 @@ import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	download(
-		name: string,
-		cache: boolean,
-	): Promise<Codemod & { source: "registry" }>;
+	download(name: string): Promise<Codemod & { source: "registry" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {

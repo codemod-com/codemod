@@ -1,6 +1,10 @@
 import { createHash } from "crypto";
+import { join } from "path";
+import { codemodConfigSchema } from "@codemod-com/utilities";
+import { readFile } from "fs/promises";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
+import { parse } from "valibot";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import {
@@ -8,6 +12,7 @@ import {
 	buildPrinterMessageUponCommand,
 	modifyFileSystemUponCommand,
 } from "./fileCommands.js";
+import { handleInstallDependencies } from "./handleInstallDependencies.js";
 import type { PrinterBlueprint } from "./printer.js";
 import type { RepositoryConfiguration } from "./repositoryConfiguration.js";
 import { runCodemod } from "./runCodemod.js";
@@ -113,6 +118,20 @@ export class Runner {
 
 				if (this._runSettings.dryRun) {
 					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
+					return;
+				}
+
+				const rcFileString = await readFile(
+					join(this._codemodSettings.source, ".codemodrc.json"),
+					{ encoding: "utf8" },
+				);
+				const rcFile = parse(codemodConfigSchema, JSON.parse(rcFileString));
+				if (rcFile.deps) {
+					await handleInstallDependencies({
+						printer: this._printer,
+						source: this._codemodSettings.source,
+						deps: rcFile.deps,
+					});
 				}
 
 				return;
@@ -125,7 +144,6 @@ export class Runner {
 					if (preCommitCodemod.source === "registry") {
 						const codemod = await this._codemodDownloader.download(
 							preCommitCodemod.name,
-							this._flowSettings.noCache,
 						);
 
 						const safeArgumentRecord = buildSafeArgumentRecord(
@@ -160,10 +178,7 @@ export class Runner {
 			}
 
 			if (this._name !== null) {
-				const codemod = await this._codemodDownloader.download(
-					this._name,
-					this._flowSettings.noCache,
-				);
+				const codemod = await this._codemodDownloader.download(this._name);
 
 				this._printer.printConsoleMessage(
 					"info",
@@ -225,6 +240,22 @@ export class Runner {
 
 				if (this._runSettings.dryRun) {
 					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
+					return;
+				}
+
+				const { directoryPath } = await this._codemodDownloader.download(
+					this._codemodSettings.name,
+				);
+				const rcFile = parse(
+					codemodConfigSchema,
+					JSON.parse(join(directoryPath, ".codemodrc.json")),
+				);
+				if (rcFile.deps) {
+					await handleInstallDependencies({
+						printer: this._printer,
+						source: process.cwd(),
+						deps: rcFile.deps,
+					});
 				}
 			}
 		} catch (error) {
@@ -232,14 +263,12 @@ export class Runner {
 				return;
 			}
 
-			this._printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
 			this._telemetry.sendEvent({
 				kind: "failedToExecuteCommand",
 				commandName: "codemod.executeCodemod",
 			});
+
+			throw error;
 		}
 	}
 
