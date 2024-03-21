@@ -6,7 +6,11 @@
 */
 -- AlterTable
 ALTER TABLE "Codemod" ADD COLUMN     "applicability" JSONB,
-ADD COLUMN     "engine" VARCHAR(255) NOT NULL,
+ADD COLUMN     "engine" VARCHAR(255),
 ADD COLUMN     "shortDescription" TEXT,
 ADD COLUMN     "tags" TEXT[] DEFAULT ARRAY[]::TEXT[],
 ADD COLUMN     "useCaseCategory" VARCHAR(255);
+
+UPDATE "Codemod" SET "engine" = 'default_engine' WHERE "engine" IS NULL;
+
+ALTER TABLE "Codemod" ALTER COLUMN "engine" SET NOT NULL;
