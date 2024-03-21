@@ -12,7 +12,7 @@ export const getCodemodsQuerySchema = object({
 	search: optional(coerce(string(), String)),
 	category: optional(coerce(string(), String)),
 	author: optional(coerce(string(), String)),
-	verified: optional(coerce(boolean(), Boolean)),
+	verified: optional(coerce(boolean(), (input) => input === "true")),
 	page: optional(coerce(number(), Number)),
 	size: optional(coerce(number(), Number)),
 });

@@ -366,7 +366,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 				orderBy: {
 					updatedAt: "desc",
 				},
-				skip: skip,
+				skip,
 				take: size,
 			}),
 			prisma.codemod.count({ where: whereClause }),
