@@ -9,9 +9,11 @@ import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import * as readline from "node:readline";
+import { codemodConfigSchema } from "@codemod-com/utilities";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
+import { parse } from "valibot";
 import { FileSystem, Uri, commands, window, workspace } from "vscode";
 import { Case } from "../cases/types";
 import {
@@ -22,7 +24,6 @@ import {
 import { Configuration } from "../configuration";
 import { Container } from "../container";
 import { Store } from "../data";
-import { parseCodemodConfigSchema } from "../data/codemodConfigSchema";
 import { parsePrivateCodemodsEnvelope } from "../data/privateCodemodsEnvelopeSchema";
 import { actions } from "../data/slice";
 import { parseUrlParamsEnvelope } from "../data/urlParamsEnvelopeSchema";
@@ -368,7 +369,7 @@ export class EngineService {
 
 				const data = await readFile(configPath, "utf8");
 
-				const config = parseCodemodConfigSchema(JSON.parse(data));
+				const config = parse(codemodConfigSchema, JSON.parse(data));
 
 				if (config.engine === "piranha") {
 					codemodEntries.push({
@@ -442,7 +443,7 @@ export class EngineService {
 				const data = await readFile(configPath, { encoding: "utf8" });
 
 				try {
-					const configSchema = parseCodemodConfigSchema(JSON.parse(data));
+					const configSchema = parse(codemodConfigSchema, JSON.parse(data));
 
 					const urlParamsData = existsSync(urlParamsPath)
 						? await readFile(urlParamsPath, {

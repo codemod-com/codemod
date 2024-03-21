@@ -2,6 +2,7 @@ import { createHash, randomBytes } from "crypto";
 import { existsSync, rmSync } from "fs";
 import { homedir } from "os";
 import { join } from "path";
+import { CodemodConfig } from "@codemod-com/utilities";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
 import { mkdir, readFile, writeFile } from "fs/promises";
@@ -31,7 +32,6 @@ import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
 import {
-	CodemodConfig,
 	PIRANHA_LANGUAGES,
 	parsePiranhaLanguage,
 } from "./data/codemodConfigSchema";
@@ -946,8 +946,11 @@ export async function activate(context: vscode.ExtensionContext) {
 					await writeFile(
 						buildConfigPath,
 						JSON.stringify({
-							schemaVersion: "1.0.0",
-							engine: "jscodeshift",
+							version: "1.0.0",
+							private: false,
+							name: codemodHash,
+							engine: "jscodeshift", // only jscodeshift codemod can be exported to VSCode from Studio at the moment
+							meta: {},
 						} satisfies CodemodConfig),
 					);
 
