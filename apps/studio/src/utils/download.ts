@@ -80,6 +80,7 @@ const codemodRc = ({
 
 	return beautify(`
     {
+      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
       "version": "1.0.0",
       "private": false,
       "name": "${finalName}",
