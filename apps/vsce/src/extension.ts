@@ -183,25 +183,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		mainViewProvider,
 	);
 
-	let syncRegistryIntervalId: NodeJS.Timer | null = null;
-
-	vscode.window.onDidChangeWindowState((event) => {
-		if (syncRegistryIntervalId) {
-			clearInterval(syncRegistryIntervalId);
-			syncRegistryIntervalId = null;
-		}
-
-		if (!event.focused) {
-			return;
-		}
-
-		syncRegistryIntervalId = setInterval(
-			async () => {
-				await engineService.syncRegistry();
-			},
-			15 * 60 * 1000,
-		);
-	});
 	// this is only used by the codemod panel's webview
 	context.subscriptions.push(
 		vscode.commands.registerCommand("codemod.redirect", (arg0) => {
