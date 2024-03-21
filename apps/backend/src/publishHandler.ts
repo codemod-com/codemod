@@ -279,6 +279,7 @@ export const publishHandler =
 						useCaseCategory: codemodRc.meta?.useCaseCategory,
 						tags: codemodRc.meta?.tags,
 						engine: codemodRc.engine,
+						applicability: codemodRc.applicability,
 						verified: isVerified,
 						private: isPrivate,
 						author,

@@ -31,6 +31,7 @@ async function main() {
 				useCaseCategory,
 				tags,
 				engine,
+				applicability,
 				featured: faker.datatype.boolean(),
 				verified: faker.datatype.boolean(),
 				private: faker.datatype.boolean(),

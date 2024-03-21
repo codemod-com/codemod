@@ -24,6 +24,7 @@ model Codemod {
   useCaseCategory  String?          @db.VarChar(255)
   tags             String[]         @default([])
   engine           String           @db.VarChar(255)
+  applicability    Json?
   name             String           @unique @db.VarChar(255)
   featured         Boolean          @default(false)
   verified         Boolean          @default(false)
