@@ -1,6 +1,7 @@
 import {
 	type Input,
 	type Output,
+	ValiError,
 	array,
 	boolean,
 	custom,
@@ -9,6 +10,7 @@ import {
 	number,
 	object,
 	optional,
+	parse,
 	regex,
 	string,
 	tuple,
@@ -200,31 +202,40 @@ const configJsonBaseSchema = object({
 	),
 });
 
-export const codemodConfigSchema = union(
-	[
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: knownEnginesSchema,
-			}),
-		]),
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: literal("recipe"),
-				names: array(string()),
-			}),
-		]),
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: literal("piranha"),
-				language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
-			}),
-		]),
-	],
-	"Invalid codemod configuration.",
-);
+export const codemodConfigSchema = union([
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: knownEnginesSchema,
+		}),
+	]),
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: literal("recipe"),
+			names: array(string()),
+		}),
+	]),
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: literal("piranha"),
+			language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
+		}),
+	]),
+]);
+
+export const parseCodemodConfig = (config: unknown) => {
+	try {
+		return parse(codemodConfigSchema, config);
+	} catch (err) {
+		throw new Error(
+			`Error parsing config file: ${(err as ValiError).issues
+				.map((i) => i.path?.map((p) => p.key).join("."))
+				.join(", ")}`,
+		);
+	}
+};
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
 export type CodemodConfigInput = Input<typeof codemodConfigSchema>;

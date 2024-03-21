@@ -1,10 +1,9 @@
 import { createHash } from "crypto";
 import { join } from "path";
-import { codemodConfigSchema } from "@codemod-com/utilities";
+import { parseCodemodConfig } from "@codemod-com/utilities";
 import { readFile } from "fs/promises";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
-import { parse } from "valibot";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import {
@@ -129,7 +128,7 @@ export class Runner {
 					join(this._codemodSettings.source, ".codemodrc.json"),
 					{ encoding: "utf8" },
 				);
-				const rcFile = parse(codemodConfigSchema, JSON.parse(rcFileString));
+				const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
 				if (rcFile.deps) {
 					await handleInstallDependencies({
 						printer: this._printer,
@@ -256,7 +255,7 @@ export class Runner {
 					join(codemod.directoryPath, ".codemodrc.json"),
 					{ encoding: "utf8" },
 				);
-				const rcFile = parse(codemodConfigSchema, JSON.parse(rcFileString));
+				const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
 				if (rcFile.deps) {
 					await handleInstallDependencies({
 						printer: this._printer,

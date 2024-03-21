@@ -1,8 +1,7 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
-import { parse } from "valibot";
+import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
 import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
@@ -70,10 +69,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		let config: CodemodConfig;
 		try {
 			const configBuf = await readFile(join(directoryPath, ".codemodrc.json"));
-			config = parse(
-				codemodConfigSchema,
-				JSON.parse(configBuf.toString("utf8")),
-			);
+			config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
 		} catch (err) {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
 		}

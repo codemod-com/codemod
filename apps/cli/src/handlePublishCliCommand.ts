@@ -1,10 +1,9 @@
 import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { codemodConfigSchema, codemodNameRegex } from "@codemod-com/utilities";
+import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import FormData from "form-data";
-import { parse } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
@@ -56,7 +55,7 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
+	const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
 	if (codemodRc.engine === "recipe") {
 		if (codemodRc.names.length < 2) {
