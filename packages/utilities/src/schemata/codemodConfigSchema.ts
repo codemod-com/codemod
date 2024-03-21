@@ -157,7 +157,6 @@ const configJsonBaseSchema = object({
 					return semVerRegex.test(version);
 				}, `"deps" has to be an array of valid strings. E.g. libraryToAdd@2.0.0, libraryToAdd or -libraryToRemove`),
 			]),
-			// string([custom((val) => val.split('@'))]),
 			`"deps" has to be an array of strings.`,
 		),
 	),

@@ -25,7 +25,7 @@ import type { TelemetryBlueprint } from "./telemetryService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export class Runner {
-	private __modifiedFileCount: number;
+	private __modifiedFilePaths: string[];
 
 	public constructor(
 		protected readonly _fs: IFs,
@@ -42,7 +42,7 @@ export class Runner {
 		protected readonly _currentWorkingDirectory: string,
 		protected readonly _getCodemodSource: (path: string) => Promise<string>,
 	) {
-		this.__modifiedFileCount = 0;
+		this.__modifiedFilePaths = [];
 	}
 
 	public async run() {
@@ -113,7 +113,7 @@ export class Runner {
 					kind: "codemodExecuted",
 					codemodName: "Codemod from FS",
 					executionId: this._runSettings.caseHashDigest.toString("base64url"),
-					fileCount: this.__modifiedFileCount,
+					fileCount: this.__modifiedFilePaths.length,
 				});
 
 				if (this._runSettings.dryRun) {
@@ -133,7 +133,8 @@ export class Runner {
 				if (rcFile.deps) {
 					await handleInstallDependencies({
 						printer: this._printer,
-						source: this._codemodSettings.source,
+						affectedFiles: this.__modifiedFilePaths,
+						target: this._flowSettings.target,
 						deps: rcFile.deps,
 					});
 				}
@@ -173,7 +174,7 @@ export class Runner {
 							codemodName: codemod.name,
 							executionId:
 								this._runSettings.caseHashDigest.toString("base64url"),
-							fileCount: this.__modifiedFileCount,
+							fileCount: this.__modifiedFilePaths.length,
 						});
 					}
 				}
@@ -239,7 +240,7 @@ export class Runner {
 					kind: "codemodExecuted",
 					codemodName: codemod.name,
 					executionId: this._runSettings.caseHashDigest.toString("base64url"),
-					fileCount: this.__modifiedFileCount,
+					fileCount: this.__modifiedFilePaths.length,
 				});
 
 				if (this._runSettings.dryRun) {
@@ -251,17 +252,16 @@ export class Runner {
 					return;
 				}
 
-				const { directoryPath } = await this._codemodDownloader.download(
-					this._codemodSettings.name,
+				const rcFileString = await readFile(
+					join(codemod.directoryPath, ".codemodrc.json"),
+					{ encoding: "utf8" },
 				);
-				const rcFile = parse(
-					codemodConfigSchema,
-					JSON.parse(join(directoryPath, ".codemodrc.json")),
-				);
+				const rcFile = parse(codemodConfigSchema, JSON.parse(rcFileString));
 				if (rcFile.deps) {
 					await handleInstallDependencies({
 						printer: this._printer,
-						source: process.cwd(),
+						affectedFiles: this.__modifiedFilePaths,
+						target: this._flowSettings.target,
 						deps: rcFile.deps,
 					});
 				}
@@ -271,12 +271,14 @@ export class Runner {
 				return;
 			}
 
+			this._printer.printOperationMessage({
+				kind: "error",
+				message: `Error while running the codemod:\n${error.message}`,
+			});
 			this._telemetry.sendEvent({
 				kind: "failedToExecuteCommand",
 				commandName: "codemod.executeCodemod",
 			});
-
-			throw error;
 		}
 	}
 
@@ -284,7 +286,11 @@ export class Runner {
 		await modifyFileSystemUponCommand(this._fs, this._runSettings, command);
 
 		if (!this._runSettings.dryRun) {
-			++this.__modifiedFileCount;
+			if (command.kind === "createFile") {
+				this.__modifiedFilePaths.push(command.newPath);
+			} else {
+				this.__modifiedFilePaths.push(command.oldPath);
+			}
 		}
 
 		const printerMessage = buildPrinterMessageUponCommand(
