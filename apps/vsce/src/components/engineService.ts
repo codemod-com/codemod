@@ -272,7 +272,6 @@ export class EngineService {
 	}
 
 	private async __onCodemodEngineNodeLocated() {
-		await this.syncRegistry();
 		await this.__fetchCodemods();
 		await this.fetchPrivateCodemods();
 	}
@@ -290,24 +289,6 @@ export class EngineService {
 		}
 
 		return buildCrossplatformArg(this.__codemodEngineRustExecutableUri.fsPath);
-	}
-
-	public async syncRegistry(): Promise<void> {
-		const childProcess = spawn(CODEMOD_ENGINE_NODE_COMMAND, ["sync"], {
-			stdio: "pipe",
-			shell: true,
-			detached: false,
-		});
-
-		return new Promise<void>((resolve, reject) => {
-			childProcess.once("exit", () => {
-				resolve();
-			});
-
-			childProcess.once("error", (error) => {
-				reject(error);
-			});
-		});
 	}
 
 	public async isCodemodEngineNodeLocated(): Promise<boolean> {
