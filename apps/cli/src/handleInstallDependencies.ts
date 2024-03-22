@@ -1,6 +1,7 @@
 import { exec } from "node:child_process";
 import { existsSync } from "node:fs";
-import { dirname, join, relative } from "node:path";
+import { readFile } from "node:fs/promises";
+import { dirname, join, relative, resolve } from "node:path";
 import { promisify } from "node:util";
 import {
 	CodemodConfig,
@@ -22,36 +23,6 @@ const lockFilesToPmMap: Record<string, PackageManager> = {
 };
 
 type InstallationChoice = "root" | "affected" | "none";
-const INSTALL_INQUIRER_CHOICES: { name: string; value: InstallationChoice }[] =
-	[
-		{
-			name: "Modify dependencies in the affected package.jsons",
-			value: "affected",
-		},
-		{
-			name: "Modify dependencies in the root package.json",
-			value: "root",
-		},
-		{
-			name: "Skip dependency installation",
-			value: "none",
-		},
-	];
-
-type InstallationChoiceShort = "root" | "none";
-const INSTALL_INQUIRER_CHOICES_SHORT: {
-	name: string;
-	value: InstallationChoice;
-}[] = [
-	{
-		name: "Install dependencies",
-		value: "root",
-	},
-	{
-		name: "Skip dependency installation",
-		value: "none",
-	},
-];
 
 export const handleInstallDependencies = async (options: {
 	printer: PrinterBlueprint;
@@ -186,149 +157,218 @@ export const handleInstallDependencies = async (options: {
 			"red",
 		);
 		const affectedString = boldText(
-			affectedProjectsPackageJsons.map((p) => relative(target, p)).join("\n"),
+			affectedProjectsPackageJsons
+				.map((p) => {
+					const relativePath = relative(target, p);
+
+					if (p === rootPackageJsonPath) {
+						return `${colorizeText("ROOT:", "orange")} ${relativePath}`;
+					}
+
+					return relativePath;
+				})
+				.join("\n"),
 		);
 
-		let installationType: InstallationChoice = "none";
-		if (affectedProjectsPackageJsons.length > 0) {
-			printer.printConsoleMessage(
-				"info",
-				colorizeText(`\nAffected package.jsons:\n${affectedString}`, "cyan"),
-			);
-
-			printer.printConsoleMessage(
-				"info",
-				colorizeText(
-					`\nDetected package manager: ${boldText(detectedPackageManager)}`,
-					"cyan",
-				),
-			);
-
-			printer.printConsoleMessage(
-				"info",
-				`\n${colorizeText(
-					"This codemod expects the following dependency changes:",
-					"cyan",
-				)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
-			);
-
-			if (
-				existsSync(rootPackageJsonPath) &&
-				affectedProjectsPackageJsons.length > 1
-			) {
-				const answers = await inquirer.prompt<{
-					install: InstallationChoiceShort;
-				}>({
-					type: "list",
-					name: "install",
-					message:
-						"A root package.json was detected in your project. Select how you want to proceed:",
-					default: "root",
-					pageSize: INSTALL_INQUIRER_CHOICES_SHORT.length,
-					choices: INSTALL_INQUIRER_CHOICES_SHORT,
-				});
-				installationType = answers.install;
-			} else {
-				const answers = await inquirer.prompt<{ install: InstallationChoice }>({
-					type: "list",
-					name: "install",
-					message:
-						"Do you want to make the dependency changes in the affected package.jsons?",
-					default: "affected",
-					pageSize: INSTALL_INQUIRER_CHOICES.length,
-					choices: INSTALL_INQUIRER_CHOICES,
-				});
-				installationType = answers.install;
-			}
-
-			const PM_INQUIRER_CHOICES: { name: string; value: PackageManager }[] = [
-				{
-					name: detectedPackageManager,
-					value: detectedPackageManager,
-				},
-				...Object.values(lockFilesToPmMap)
-					.filter((pm) => pm !== detectedPackageManager)
-					.map((pm) => ({
-						name: pm,
-						value: pm,
-					})),
-			];
-
-			const answers = await inquirer.prompt<{ pm: PackageManager }>({
-				type: "list",
-				name: "pm",
-				message: "Do you want to override the detected package manager?",
-				default: detectedPackageManager,
-				pageSize: PM_INQUIRER_CHOICES.length,
-				choices: PM_INQUIRER_CHOICES,
-			});
-
-			detectedPackageManager = answers.pm;
+		if (affectedProjectsPackageJsons.length === 0) {
+			return;
 		}
 
-		if (installationType === "none") {
-			return;
+		const INSTALL_INQUIRER_CHOICES: {
+			name: string;
+			value: InstallationChoice;
+		}[] = [
+			{
+				name: "Modify dependencies in the affected package.jsons",
+				value: "affected",
+			},
+			{
+				name: "Skip dependency installation",
+				value: "none",
+			},
+		];
+
+		let inquirerMessage =
+			"Do you want to make the dependency changes in the affected package.jsons?";
+
+		if (existsSync(rootPackageJsonPath)) {
+			inquirerMessage =
+				"A root package.json was detected in your project. Select how you want to proceed:";
+			INSTALL_INQUIRER_CHOICES.splice(1, 0, {
+				name: "Modify dependencies in the root package.json",
+				value: "root",
+			});
 		}
 
 		printer.printConsoleMessage(
 			"info",
+			colorizeText(`\nAffected package.jsons:\n${affectedString}`, "cyan"),
+		);
+
+		printer.printConsoleMessage(
+			"info",
 			colorizeText(
-				`Using package manager: ${boldText(detectedPackageManager)}`,
+				`\nDetected package manager: ${boldText(detectedPackageManager)}`,
+				"cyan",
+			),
+		);
+
+		printer.printConsoleMessage(
+			"info",
+			`\n${colorizeText(
+				"This codemod expects the following dependency changes:",
+				"cyan",
+			)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
+		);
+
+		const { install } = await inquirer.prompt<{
+			install: InstallationChoice;
+		}>({
+			type: "list",
+			name: "install",
+			message: inquirerMessage,
+			default: "affected",
+			pageSize: INSTALL_INQUIRER_CHOICES.length,
+			choices: INSTALL_INQUIRER_CHOICES,
+		});
+
+		if (install === "none") {
+			printer.printConsoleMessage(
+				"info",
+				colorizeText("Skipping dependency installation...", "cyan"),
+			);
+			return;
+		}
+
+		const PM_INQUIRER_CHOICES: { name: string; value: PackageManager }[] = [
+			{
+				name: detectedPackageManager,
+				value: detectedPackageManager,
+			},
+			...Object.values(lockFilesToPmMap)
+				.filter((pm) => pm !== detectedPackageManager)
+				.map((pm) => ({
+					name: pm,
+					value: pm,
+				})),
+		];
+
+		const { pm } = await inquirer.prompt<{ pm: PackageManager }>({
+			type: "list",
+			name: "pm",
+			message: `Do you want to override the detected package manager? (${detectedPackageManager})`,
+			default: detectedPackageManager,
+			pageSize: PM_INQUIRER_CHOICES.length,
+			choices: PM_INQUIRER_CHOICES,
+		});
+
+		detectedPackageManager = pm;
+
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(
+				`Using package manager: ${boldText(detectedPackageManager)}\n`,
 				"cyan",
 			),
 		);
 
 		const removeCmd = detectedPackageManager === "npm" ? "uninstall" : "remove";
 		const addCmd = detectedPackageManager === "npm" ? "install" : "add";
+		let addRootCmd: string;
+		switch (detectedPackageManager) {
+			case "yarn":
+				addRootCmd = "add -W";
+				break;
+			case "pnpm":
+				addRootCmd = "add -w";
+				break;
+			case "bun":
+				addRootCmd = "add";
+				break;
+			default:
+				addRootCmd = "install";
+				break;
+		}
 
-		if (installationType === "root") {
+		if (install === "root") {
 			printer.printConsoleMessage(
 				"info",
-				`Removing: ${toDelete.join(", ")}...`,
+				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
+			);
+			try {
+				await execPromise(
+					`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
+					{ cwd: rootPath },
+				);
+			} catch (err) {
+				// Fails when no dep
+			}
+
+			printer.printConsoleMessage(
+				"info",
+				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
 			);
 			await execPromise(
-				`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
+				`${detectedPackageManager} ${addRootCmd} ${toInstall.join(" ")}`,
 				{ cwd: rootPath },
-			);
-
-			printer.printConsoleMessage(
-				"info",
-				`Installing: ${toInstall.join(", ")}...`,
-			);
-			await execPromise(
-				`${detectedPackageManager} ${addCmd} ${toInstall.join(" ")}`,
-				{
-					cwd: rootPath,
-				},
 			);
 		} else {
 			printer.printConsoleMessage(
 				"info",
-				`Removing: ${toDelete.join(", ")}...`,
+				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
-				const packageJson = await import(packageJsonPath);
+				const packageJsonContent = await readFile(packageJsonPath, {
+					encoding: "utf-8",
+				});
+
+				let packageJson: {
+					dependencies?: Record<string, string>;
+					devDependencies?: Record<string, string>;
+				} = {};
+				try {
+					packageJson = JSON.parse(packageJsonContent);
+				} catch (err) {
+					printer.printConsoleMessage(
+						"error",
+						`Failed to remove dependencies from ${packageJsonPath}. package.json is of invalid format.`,
+					);
+				}
+
 				if (
 					!toDelete.some(
 						(dep) =>
-							dep in packageJson.dependencies ||
-							dep in packageJson.devDependencies,
+							(packageJson.dependencies && dep in packageJson.dependencies) ||
+							(packageJson.devDependencies &&
+								dep in packageJson.devDependencies),
 					)
 				) {
 					continue;
 				}
 
-				await execPromise(
-					`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
-					{ cwd: dirname(packageJsonPath) },
-				);
+				try {
+					await execPromise(
+						`${detectedPackageManager} ${removeCmd} ${toDelete.join(" ")}`,
+						{ cwd: dirname(packageJsonPath) },
+					);
+				} catch (err) {
+					// Fails when no dep
+				}
 			}
 
 			printer.printConsoleMessage(
 				"info",
-				`Installing: ${toInstall.join(", ")}...`,
+				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
+				if (packageJsonPath === rootPackageJsonPath) {
+					await execPromise(
+						`${detectedPackageManager} ${addRootCmd} ${toInstall.join(" ")}`,
+						{ cwd: dirname(packageJsonPath) },
+					);
+					continue;
+				}
+
 				await execPromise(
 					`${detectedPackageManager} ${addCmd} ${toInstall.join(" ")}`,
 					{ cwd: dirname(packageJsonPath) },
@@ -336,9 +376,25 @@ export const handleInstallDependencies = async (options: {
 			}
 		}
 
+		let installedInString: string;
+		if (install === "affected") {
+			installedInString = colorizeText(
+				affectedProjectsPackageJsons.join("\n"),
+				"cyan",
+			);
+		} else {
+			installedInString = colorizeText(
+				resolve(target, rootPackageJsonPath),
+				"cyan",
+			);
+		}
+
 		printer.printConsoleMessage(
 			"info",
-			`Successfully installed dependencies: \n${installedDepsString}\n\n${unInstalledDepsString}\n\nin:\n${affectedString}`,
+			colorizeText(
+				`Successfully installed dependencies:\n\n${installedDepsString}\n${unInstalledDepsString}\n\nin:\n${installedInString}`,
+				"green",
+			),
 		);
 	} catch (error) {
 		if (!(error instanceof Error)) {

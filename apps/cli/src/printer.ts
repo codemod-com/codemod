@@ -62,6 +62,11 @@ export class Printer implements PrinterBlueprint {
 			return;
 		}
 
+		if (kind === "error") {
+			console.error(colorizeText(message, "red"));
+			return;
+		}
+
 		console[kind](message);
 	}
 }
