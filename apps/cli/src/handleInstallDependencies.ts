@@ -148,14 +148,12 @@ export const handleInstallDependencies = async (options: {
 		// Options 1 and 2 become just "Install dependencies" if root package json is the only one that is in the affected list
 		const rootPackageJsonPath = join(rootPath, "package.json");
 
-		const installedDepsString = colorizeText(
-			`+ ${toInstall.join("\n+ ")}`,
-			"green",
-		);
-		const unInstalledDepsString = colorizeText(
-			`- ${toDelete.join("\n- ")}`,
-			"red",
-		);
+		const installedDepsString = toInstall.length
+			? colorizeText(`+ ${toInstall.join("\n+ ")}`, "green")
+			: "";
+		const unInstalledDepsString = toDelete.length
+			? colorizeText(`- ${toDelete.join("\n- ")}`, "red")
+			: "";
 		const affectedString = boldText(
 			affectedProjectsPackageJsons
 				.map((p) => {
