@@ -205,7 +205,8 @@ type ExecuteCodemodMessage = Message &
 		kind: MessageKind.executeCodemodSet;
 	}>;
 
-const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+// npx ensures that the local codemod CLI (latest version) is used
+const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
 const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
 const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
