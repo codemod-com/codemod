@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useWebWorker } from "~/hooks/useWebWorker";
+import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
@@ -10,6 +11,7 @@ import {
 	selectCodemodOutput,
 } from "~/store/slices/codemodOutput";
 import { VisibilityOptions } from "~/types/options";
+import { isVisible } from "~/utils/visibility";
 import Text from "../../components/Text";
 import { Button } from "../../components/ui/button";
 import { setActiveEventThunk } from "../../store/setActiveEventThunk";
@@ -102,7 +104,12 @@ const LiveCodemodResult = ({
 	);
 
 	return (
-		<div className="relative flex h-full w-full flex-col">
+		<div
+			className={cn(
+				"relative flex h-full w-full flex-col",
+				!isVisible(leftPaneVisibilityOptions) && "after-hidden",
+			)}
+		>
 			<div className="relative flex h-full w-full flex-col">
 				<div className="text-center">
 					{snippetBeforeHasOnlyWhitespaces && (

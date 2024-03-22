@@ -62,6 +62,13 @@ html {
 	color: blue;
 	cursor: pointer;
 }
+.after-hidden .editor.original , .after-hidden .original-in-monaco-diff-editor {
+	display: none;
+}
+
+.after-hidden .editor.modified {
+	left: 0 !important;
+}
 
 .monaco-placeholder {
 	position: absolute;
@@ -247,6 +254,7 @@ html {
 		--ring: hsl(212.7, 26.8%, 83.9);
 	}
 }
+
 
 @layer base {
 	* {
