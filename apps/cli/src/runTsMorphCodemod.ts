@@ -57,7 +57,7 @@ const transform = (
 		exports,
 		__CODEMODCOM__oldPath: oldPath,
 		__CODEMODCOM__oldData: oldData,
-		__CODEMODCOM__argumentRecord: { ...safeArgumentRecord[0] },
+		__CODEMODCOM__argumentRecord: safeArgumentRecord,
 		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
 		__CODEMOD_SOURCE__: codemodSource,
 		require: (name: string) => {

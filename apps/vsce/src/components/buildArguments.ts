@@ -17,7 +17,7 @@ export const buildArguments = (
 	const codemodArguments =
 		command.kind !== "executeLocalCodemod"
 			? (command.arguments ?? []).flatMap(({ name, value }) => [
-					`--arg:${name}`,
+					name,
 					String(value),
 			  ])
 			: [];

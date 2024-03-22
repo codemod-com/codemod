@@ -97,7 +97,7 @@ export const runJscodeshiftCodemod = (
 		},
 		api,
 		{
-			...safeArgumentRecord[0],
+			...safeArgumentRecord,
 			createFile,
 		},
 		consoleCallback,

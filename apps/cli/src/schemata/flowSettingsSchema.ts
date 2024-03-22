@@ -36,8 +36,7 @@ export type FlowSettings = Output<typeof flowSettingsSchema>;
 export const parseFlowSettings = (input: unknown): FlowSettings => {
 	const flowSettings = parse(flowSettingsSchema, input);
 
-	return {
-		...flowSettings,
-		target: resolve(flowSettings.target),
-	};
+	flowSettings.target = resolve(flowSettings.target);
+
+	return flowSettings;
 };
