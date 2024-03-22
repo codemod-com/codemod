@@ -380,7 +380,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const [frameworks, groupedUseCases, groupedOwners] = await Promise.all([
 			prisma.tag.findMany({
 				where: {
-					classification: "frameworkOrLanguage",
+					classification: "framework",
 				},
 			}),
 			prisma.codemod.groupBy({
