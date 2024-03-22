@@ -674,6 +674,9 @@ importers:
       axios-retry:
         specifier: ^4.0.0
         version: 4.0.0(axios@1.6.7)
+      codemod:
+        specifier: latest
+        version: link:../cli
       diff:
         specifier: ^5.1.0
         version: 5.1.0
@@ -24791,9 +24794,6 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
-    peerDependenciesMeta:
-      node-gyp:
-        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0
