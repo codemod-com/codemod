@@ -4,6 +4,7 @@ import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { Button } from "~/components/ui/button";
 import { isServer } from "~/config";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";
+import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
 import CodemodOutputHeader from "~/pageComponents/main/CodemodOutputHeader";
 import SnippetUI from "~/pageComponents/main/SnippetUI";
@@ -30,10 +31,11 @@ export const BoundResizePanel = ({
 	children,
 	boundedIndex,
 	hasBoundResize = false,
+	className,
 }: PanelComponentProps) => {
 	return (
 		<Layout.ResizablePanel
-			className="relative dark:bg-gray-light"
+			className={cn("relative dark:bg-gray-light", className)}
 			collapsible
 			defaultSize={defaultSize}
 			minSize={minSize}
@@ -145,7 +147,7 @@ export const AfterAndOutputHeaders = ({
 	<div
 		className={
 			isVisible(afterPanel)
-				? "grid grid-cols-2 gap-1"
+				? "grid grid-cols-2"
 				: "flex items-center bg-white border-b"
 		}
 	>

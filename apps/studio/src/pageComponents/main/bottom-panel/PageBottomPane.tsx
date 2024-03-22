@@ -53,6 +53,7 @@ const PageBottomPane = () => {
 						/>
 						<ResizeHandle direction="horizontal" />
 						<BoundResizePanel
+							className="after_panel"
 							defaultSize={66}
 							panelRefIndex={afterPanel.snippedIndex}
 							panelRefs={panelRefs}
