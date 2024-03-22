@@ -238,38 +238,6 @@ export const handleInstallDependencies = async (options: {
 			return;
 		}
 
-		const PM_INQUIRER_CHOICES: { name: string; value: PackageManager }[] = [
-			{
-				name: detectedPackageManager,
-				value: detectedPackageManager,
-			},
-			...Object.values(lockFilesToPmMap)
-				.filter((pm) => pm !== detectedPackageManager)
-				.map((pm) => ({
-					name: pm,
-					value: pm,
-				})),
-		];
-
-		const { pm } = await inquirer.prompt<{ pm: PackageManager }>({
-			type: "list",
-			name: "pm",
-			message: `Do you want to override the detected package manager? (${detectedPackageManager})`,
-			default: detectedPackageManager,
-			pageSize: PM_INQUIRER_CHOICES.length,
-			choices: PM_INQUIRER_CHOICES,
-		});
-
-		detectedPackageManager = pm;
-
-		printer.printConsoleMessage(
-			"info",
-			colorizeText(
-				`Using package manager: ${boldText(detectedPackageManager)}\n`,
-				"cyan",
-			),
-		);
-
 		const removeCmd = detectedPackageManager === "npm" ? "uninstall" : "remove";
 		const addCmd = detectedPackageManager === "npm" ? "install" : "add";
 		let addRootCmd: string;
