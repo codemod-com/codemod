@@ -22,18 +22,11 @@ export const buildUseJsonOption = <T extends Record<string, unknown>>(
 export const buildUseCacheOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y
-		.option("no-cache", {
-			type: "boolean",
-			description: "Disable cache for HTTP(S) requests",
-			default: DEFAULT_NO_CACHE,
-		})
-		// prints only names consumed by VSCE
-		.option("short", {
-			type: "boolean",
-			description: "",
-			default: false,
-		});
+	y.option("no-cache", {
+		type: "boolean",
+		description: "Disable cache for HTTP(S) requests",
+		default: DEFAULT_NO_CACHE,
+	});
 
 export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 	return buildUseCacheOption(
