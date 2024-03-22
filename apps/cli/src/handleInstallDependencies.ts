@@ -119,8 +119,10 @@ export const handleInstallDependencies = async (options: {
 			}
 		}
 
+		let defaultedToNpm = false;
 		// if still no pm, default to npm
 		if (detectedPackageManager === null) {
+			defaultedToNpm = true;
 			detectedPackageManager = "npm";
 		}
 
@@ -205,14 +207,6 @@ export const handleInstallDependencies = async (options: {
 
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				`\nDetected package manager: ${boldText(detectedPackageManager)}`,
-				"cyan",
-			),
-		);
-
-		printer.printConsoleMessage(
-			"info",
 			`\n${colorizeText(
 				"This codemod expects the following dependency changes:",
 				"cyan",
@@ -237,6 +231,32 @@ export const handleInstallDependencies = async (options: {
 			);
 			return;
 		}
+
+		if (defaultedToNpm) {
+			const PM_INQUIRER_CHOICES = Object.values(lockFilesToPmMap).map((pm) => ({
+				name: pm,
+				value: pm,
+			}));
+
+			const { pm } = await inquirer.prompt<{ pm: PackageManager }>({
+				type: "list",
+				name: "pm",
+				message: "Do you want to override the detected package manager? (npm)",
+				default: detectedPackageManager,
+				pageSize: PM_INQUIRER_CHOICES.length,
+				choices: PM_INQUIRER_CHOICES,
+			});
+
+			detectedPackageManager = pm;
+		}
+
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(
+				`Using package manager: ${boldText(detectedPackageManager)}\n`,
+				"cyan",
+			),
+		);
 
 		const removeCmd = detectedPackageManager === "npm" ? "uninstall" : "remove";
 		const addCmd = detectedPackageManager === "npm" ? "install" : "add";
