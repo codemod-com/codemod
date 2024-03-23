@@ -10,6 +10,7 @@ import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useSelector } from "react-redux";
 import { Button } from "~/components/ui/button";
+import { useExecutionError } from "~/hooks/useExecutionError";
 import { cn } from "~/lib/utils";
 import {
 	type Aliases,
@@ -18,6 +19,7 @@ import {
 } from "~/store/slices/CFS/alias";
 import {
 	autoGenerateCodemodPrompt,
+	errorPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
 } from "../../store/slices/CFS/prompts";
 import { capitalizeWord } from "../../utils/string";
@@ -41,20 +43,26 @@ export interface ChatPanelProps
 }
 
 const getPrompts = (aliases: Aliases) => {
+	const firstCodemodExecutionErrorEvent = useExecutionError();
 	const prompts = [
 		["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
 	];
 
+	const propmptsWithConditionals = [
+		...prompts,
+		firstCodemodExecutionErrorEvent && ["Try fix execution error", errorPrompt],
+	].filter(Boolean);
+
 	const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 
 	if (codemodHighlightedValue !== "") {
-		prompts.unshift([
+		propmptsWithConditionals.unshift([
 			"Regenerate specified code block",
 			fixCodemodBlockNoDebugInfoPrompt,
 		]);
 	}
 
-	return prompts;
+	return propmptsWithConditionals;
 };
 
 // make sure the most recent highlighted alias goes to the left.

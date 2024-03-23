@@ -7,10 +7,12 @@ type AliasName =
 	| "$BEFORE"
 	| "$AFTER"
 	| "$HIGHLIGHTED_IN_BEFORE"
-	| "$HIGHLIGHTED_IN_AFTER"
-	| "$EXECUTION_ERROR";
+	| "$HIGHLIGHTED_IN_AFTER";
 
-type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
+type OptionalAliasName = "$EXECUTION_ERROR";
+type AliasObject = { value: string; updatedAt: number };
+type Aliases = Record<AliasName, AliasObject | null> &
+	Partial<Record<OptionalAliasName, AliasObject>>;
 
 const getAliases = (state: RootState): Aliases => {
 	const {
@@ -34,7 +36,7 @@ const getAliases = (state: RootState): Aliases => {
 				e.kind === "codemodExecutionError",
 		)?.message ?? null;
 
-	return {
+	const allAliases = {
 		$CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
 		$HIGHLIGHTED_IN_CODEMOD:
 			codemodInputRanges[0] && internalContent !== null
@@ -66,10 +68,19 @@ const getAliases = (state: RootState): Aliases => {
 					updatedAt: afterRangeUpdatedAt,
 			  }
 			: null,
-		$EXECUTION_ERROR: {
-			value: codemodExecutionError ?? "",
+	};
+	const conditionalAliasesEntries = Object.entries({
+		$EXECUTION_ERROR: codemodExecutionError !== null && {
+			value: codemodExecutionError,
 			updatedAt: rangesUpdatedAt,
 		},
+	});
+	const conditionalAliases = Object.fromEntries(
+		conditionalAliasesEntries.filter(([, v]) => !!v),
+	);
+	return {
+		...allAliases,
+		...conditionalAliases,
 	};
 };
 
