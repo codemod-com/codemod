@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
+import { useFirstCodemodExecutionErrorEvent } from "~/hooks/useFirstCodemodExecutionErrorEvent";
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
@@ -34,7 +35,6 @@ const LiveCodemodResult = ({
 		useSelector(selectSnippets);
 
 	const { internalContent } = useSelector(selectMod);
-	const { events } = useSelector(selectLog);
 	const [webWorkerState, postMessage] = useWebWorker();
 
 	const codemodOutput = useSelector(selectCodemodOutput);
@@ -47,9 +47,7 @@ const LiveCodemodResult = ({
 	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
-	const firstCodemodExecutionErrorEvent = events.find(
-		(e) => e.kind === "codemodExecutionError",
-	);
+	const firstCodemodExecutionErrorEvent = useFirstCodemodExecutionErrorEvent();
 
 	useEffect(() => {
 		if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
@@ -114,7 +112,7 @@ const LiveCodemodResult = ({
 					{codemodSourceHasOnlyWhitespaces && (
 						<Text>Please provide the codemod to execute it.</Text>
 					)}
-					{firstCodemodExecutionErrorEvent !== undefined ? (
+					{firstCodemodExecutionErrorEvent !== null ? (
 						<Text>
 							Codemod has execution error(s). Please, check the
 							<Button

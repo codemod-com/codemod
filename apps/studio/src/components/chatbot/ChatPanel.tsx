@@ -10,6 +10,7 @@ import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { useSelector } from "react-redux";
 import { Button } from "~/components/ui/button";
+import { useFirstCodemodExecutionErrorEvent } from "~/hooks/useFirstCodemodExecutionErrorEvent";
 import { cn } from "~/lib/utils";
 import {
 	type Aliases,
@@ -41,6 +42,8 @@ export interface ChatPanelProps
 }
 
 const getPrompts = (aliases: Aliases) => {
+	const firstCodemodExecutionErrorEvent = useFirstCodemodExecutionErrorEvent();
+
 	const prompts = [
 		["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
 	];
@@ -51,6 +54,13 @@ const getPrompts = (aliases: Aliases) => {
 		prompts.unshift([
 			"Regenerate specified code block",
 			fixCodemodBlockNoDebugInfoPrompt,
+		]);
+	}
+
+	if (firstCodemodExecutionErrorEvent !== null) {
+		prompts.unshift([
+			"Fix execution error",
+			"Here is codemod: $CODEMOD. Please fix it: $EXECUTION_ERROR",
 		]);
 	}
 
