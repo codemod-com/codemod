@@ -1,8 +1,14 @@
 import dynamic from "next/dynamic";
-import { useCallback, useEffect } from "react";
+import { PropsWithChildren, useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
+import {
+	BoundResizePanel,
+	PanelData,
+	PanelRefs,
+	SnippetHeader,
+} from "~/pageComponents/main/bottom-panel";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
@@ -10,8 +16,6 @@ import {
 	codemodOutputSlice,
 	selectCodemodOutput,
 } from "~/store/slices/codemodOutput";
-import { VisibilityOptions } from "~/types/options";
-import { isVisible } from "~/utils/visibility";
 import Text from "../../components/Text";
 import { Button } from "../../components/ui/button";
 import { setActiveEventThunk } from "../../store/setActiveEventThunk";
@@ -29,9 +33,7 @@ const MonacoDiffEditor = dynamic(
 	},
 );
 
-const LiveCodemodResult = ({
-	leftPaneVisibilityOptions,
-}: { leftPaneVisibilityOptions: VisibilityOptions }) => {
+export const useCodeDiff = () => {
 	const { engine, inputSnippet, afterInputRanges } =
 		useSelector(selectSnippets);
 
@@ -103,68 +105,126 @@ const LiveCodemodResult = ({
 		[dispatch],
 	);
 
+	const onDebug = () => {
+		firstCodemodExecutionErrorEvent?.hashDigest &&
+			dispatch(setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest));
+		dispatch(viewSlice.actions.setActiveTab(TabNames.DEBUG));
+	};
+
+	const originalEditorProps = {
+		highlights: afterInputRanges,
+		onSelectionChange: handleSelectionChange,
+		onChange: onSnippetChange,
+		value,
+	};
+
+	const modifiedEditorProps = {
+		highlights: codemodOutput.ranges,
+		onSelectionChange,
+		value: codemodOutput.content ?? "",
+	};
+
+	return {
+		codemodSourceHasOnlyWhitespaces,
+		snippetBeforeHasOnlyWhitespaces,
+		firstCodemodExecutionErrorEvent,
+		onDebug,
+		originalEditorProps,
+		modifiedEditorProps,
+	};
+};
+
+export type WarningTextsProps = Pick<
+	ReturnType<typeof useCodeDiff>,
+	| "snippetBeforeHasOnlyWhitespaces"
+	| "firstCodemodExecutionErrorEvent"
+	| "onDebug"
+	| "codemodSourceHasOnlyWhitespaces"
+>;
+
+export type LiveCodemodResultProps = Pick<
+	ReturnType<typeof useCodeDiff>,
+	"originalEditorProps" | "modifiedEditorProps"
+>;
+export const WarningTexts = ({
+	snippetBeforeHasOnlyWhitespaces,
+	firstCodemodExecutionErrorEvent,
+	onDebug,
+	codemodSourceHasOnlyWhitespaces,
+}: WarningTextsProps) => {
 	return (
-		<div
-			className={cn(
-				"relative flex h-full w-full flex-col",
-				!isVisible(leftPaneVisibilityOptions) && "after-hidden",
+		<div className="text-center">
+			{snippetBeforeHasOnlyWhitespaces && (
+				<Text>
+					Please provide the snippet before the transformation to execute the
+					codemod.
+				</Text>
 			)}
-		>
-			<div className="relative flex h-full w-full flex-col">
-				<div className="text-center">
-					{snippetBeforeHasOnlyWhitespaces && (
-						<Text>
-							Please provide the snippet before the transformation to execute
-							the codemod.
-						</Text>
-					)}
-					{codemodSourceHasOnlyWhitespaces && (
-						<Text>Please provide the codemod to execute it.</Text>
-					)}
-					{firstCodemodExecutionErrorEvent !== undefined ? (
-						<Text>
-							Codemod has execution error(s). Please, check the
-							<Button
-								variant="link"
-								className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
-								onClick={() => {
-									dispatch(
-										setActiveEventThunk(
-											firstCodemodExecutionErrorEvent.hashDigest,
-										),
-									);
-									dispatch(viewSlice.actions.setActiveTab(TabNames.DEBUG));
-								}}
-							>
-								Debugger
-							</Button>
-							to get more info.
-						</Text>
-					) : null}
-				</div>
-				<MonacoDiffEditor
-					leftPaneVisibilityOptions={leftPaneVisibilityOptions}
-					originalModelPath="original.tsx"
-					modifiedModelPath="modified.tsx"
-					options={{
-						readOnly: true,
-						originalEditable: true,
-					}}
-					originalEditorProps={{
-						highlights: afterInputRanges,
-						onSelectionChange: handleSelectionChange,
-						onChange: onSnippetChange,
-						value,
-					}}
-					modifiedEditorProps={{
-						highlights: codemodOutput.ranges,
-						onSelectionChange,
-						value: codemodOutput.content ?? "",
-					}}
-				/>
-			</div>
+			{codemodSourceHasOnlyWhitespaces && (
+				<Text>Please provide the codemod to execute it.</Text>
+			)}
+			{firstCodemodExecutionErrorEvent !== undefined ? (
+				<Text>
+					Codemod has execution error(s). Please, check the
+					<Button
+						variant="link"
+						className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
+						onClick={onDebug}
+					>
+						Debugger
+					</Button>
+					to get more info.
+				</Text>
+			) : null}
 		</div>
 	);
 };
 
-export default LiveCodemodResult;
+const LiveCodemodSnipped = ({
+	originalEditorProps,
+	modifiedEditorProps,
+	children,
+	type,
+	header,
+	panelData,
+	panelRefs,
+}: PropsWithChildren<LiveCodemodResultProps> & {
+	header: string;
+	type: "after" | "output";
+	panelRefs: PanelRefs;
+	panelData: PanelData;
+}) => {
+	return (
+		<BoundResizePanel
+			defaultSize={33}
+			panelRefIndex={panelData.snippedIndex}
+			panelRefs={panelRefs}
+		>
+			<SnippetHeader title={header} />
+			<div
+				className={cn(
+					"relative flex h-full flex-col",
+					type === "after" ? " w-[200%]" : "w-full",
+					`${type}-shown`,
+				)}
+			>
+				<div className="relative flex h-full w-full flex-col">
+					{children}
+					<MonacoDiffEditor
+						renderSideBySide={type === "after"}
+						originalModelPath="original.tsx"
+						modifiedModelPath="modified.tsx"
+						options={{
+							readOnly: true,
+							originalEditable: true,
+						}}
+						originalEditorProps={originalEditorProps}
+						modifiedEditorProps={modifiedEditorProps}
+					/>
+				</div>
+			</div>
+		</BoundResizePanel>
+	);
+};
+
+export default LiveCodemodSnipped;

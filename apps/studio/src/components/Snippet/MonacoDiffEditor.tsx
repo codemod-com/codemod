@@ -1,8 +1,7 @@
 import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { type monaco } from "~/customMonaco";
 import { VisibilityOptions } from "~/types/options";
-import { alwaysVisible } from "~/utils/visibility";
 import { useTheme } from "../../pageComponents/main/themeContext";
 import { type EditorProps, useEditor } from "./hook";
 
@@ -12,6 +11,7 @@ type CustomProps = {
 	originalEditorProps: EditorProps;
 	modifiedEditorProps: EditorProps;
 	leftPaneVisibilityOptions?: VisibilityOptions;
+	renderSideBySide: boolean;
 };
 
 const defaultOptions = {
@@ -28,10 +28,10 @@ const defaultOptions = {
 } as const;
 
 const MonacoDiffEditor = ({
-	leftPaneVisibilityOptions = alwaysVisible,
 	originalEditorProps,
 	modifiedEditorProps,
 	options,
+	renderSideBySide = true,
 	...restProps
 }: DiffEditorProps & CustomProps) => {
 	const [mounted, setMounted] = useState(false);
@@ -44,11 +44,10 @@ const MonacoDiffEditor = ({
 	useEditor(originalEditor, originalEditorProps, mounted);
 	useEditor(modifiedEditor, modifiedEditorProps, mounted);
 
-	useEffect(() => {
-		editorRef.current?.updateOptions({
-			renderSideBySide: leftPaneVisibilityOptions.isVisible,
-		});
-	}, [leftPaneVisibilityOptions?.isVisible]);
+	editorRef.current?.updateOptions({
+		enableSplitViewResizing: false,
+		renderSideBySide,
+	});
 
 	return (
 		<DiffEditor

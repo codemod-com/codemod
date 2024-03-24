@@ -1,9 +1,11 @@
 import { Suspense } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import LiveCodemodResult from "~/pageComponents/main/JSCodeshiftRender";
+import LiveCodemodSnipped, {
+	useCodeDiff,
+	WarningTexts,
+} from "~/pageComponents/main/JSCodeshiftRender";
 import {
-	AfterAndOutputHeaders,
 	AstSection,
 	BeforeCodeSnippedPanel,
 	BottomPanel,
@@ -25,6 +27,8 @@ const PageBottomPane = () => {
 
 	const panels = [beforePanel, afterPanel, outputPanel];
 	const { visibilityOptions: afterPanelVisibility } = afterPanel;
+	const codeDiff = useCodeDiff();
+	const warningTexts = <WarningTexts {...codeDiff} />;
 
 	return (
 		<BottomPanel>
@@ -52,19 +56,36 @@ const PageBottomPane = () => {
 							panelRefs={panelRefs}
 						/>
 						<ResizeHandle direction="horizontal" />
-						<BoundResizePanel
-							defaultSize={66}
-							panelRefIndex={afterPanel.snippedIndex}
+						{/*<BoundResizePanel*/}
+						{/*	defaultSize={66}*/}
+						{/*	panelRefIndex={afterPanel.snippedIndex}*/}
+						{/*	panelRefs={panelRefs}*/}
+						{/*>*/}
+						{/*	<AfterAndOutputHeaders*/}
+						{/*		afterPanel={afterPanel}*/}
+						{/*		afterPanelVisibility={afterPanelVisibility}*/}
+						{/*	/>*/}
+						<LiveCodemodSnipped
+							{...codeDiff}
+							type="after"
+							header="After (Expected)"
+							panelData={afterPanel}
 							panelRefs={panelRefs}
 						>
-							<AfterAndOutputHeaders
-								afterPanel={afterPanel}
-								afterPanelVisibility={afterPanelVisibility}
-							/>
-							<LiveCodemodResult
-								leftPaneVisibilityOptions={afterPanelVisibility}
-							/>
-						</BoundResizePanel>
+							{warningTexts}
+						</LiveCodemodSnipped>
+
+						<ResizeHandle direction="horizontal" />
+						<LiveCodemodSnipped
+							{...codeDiff}
+							type="output"
+							header="Output"
+							panelData={afterPanel}
+							panelRefs={panelRefs}
+						>
+							{warningTexts}
+						</LiveCodemodSnipped>
+						{/*</BoundResizePanel>*/}
 					</PanelGroup>
 				</BoundResizePanel>
 			</Suspense>
