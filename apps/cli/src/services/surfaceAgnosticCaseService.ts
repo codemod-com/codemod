@@ -3,7 +3,7 @@ import { CaseWritingService } from "@codemod-com/utilities";
 import { IFs } from "memfs";
 import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
 import { FormattedFileCommand } from "../fileCommands.js";
-import { ArgumentRecord } from "../schemata/argumentRecordSchema.js";
+import { SafeArgumentRecord } from "../safeArgumentRecord.js";
 import { FlowSettings } from "../schemata/flowSettingsSchema.js";
 import { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
@@ -14,7 +14,7 @@ export class SurfaceAgnosticCaseService {
 		private readonly _fs: IFs,
 		private readonly _runSettings: RunSettings,
 		private readonly _flowSettings: FlowSettings,
-		private readonly _argumentRecord: ArgumentRecord,
+		private readonly _argumentRecord: SafeArgumentRecord,
 		private readonly _codemodHashDigest: Buffer,
 	) {}
 

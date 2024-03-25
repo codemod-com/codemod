@@ -12,7 +12,6 @@ import type { PrinterBlueprint } from "./printer.js";
 import type { RepositoryConfiguration } from "./repositoryConfiguration.js";
 import { runCodemod } from "./runCodemod.js";
 import { buildSafeArgumentRecord } from "./safeArgumentRecord.js";
-import type { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
 import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
@@ -32,7 +31,8 @@ export class Runner {
 		protected readonly _codemodSettings: CodemodSettings,
 		protected readonly _flowSettings: FlowSettings,
 		protected readonly _runSettings: RunSettings,
-		protected readonly _argumentRecord: ArgumentRecord,
+		// TODO: fix types
+		protected readonly _argv: Record<string, string | number | boolean>,
 		protected readonly _name: string | null,
 		protected readonly _currentWorkingDirectory: string,
 		protected readonly _getCodemodSource: (path: string) => Promise<string>,
@@ -64,7 +64,7 @@ export class Runner {
 
 				const safeArgumentRecord = buildSafeArgumentRecord(
 					codemodOptions,
-					this._argumentRecord,
+					this._argv,
 				);
 
 				const codemodHashDigest = createHash("ripemd160")
@@ -75,7 +75,7 @@ export class Runner {
 					this._fs,
 					this._runSettings,
 					this._flowSettings,
-					this._argumentRecord,
+					safeArgumentRecord,
 					codemodHashDigest,
 				);
 
@@ -185,16 +185,13 @@ export class Runner {
 					.update(codemod.name)
 					.digest();
 
-				const safeArgumentRecord = buildSafeArgumentRecord(
-					codemod,
-					this._argumentRecord,
-				);
+				const safeArgumentRecord = buildSafeArgumentRecord(codemod, this._argv);
 
 				const surfaceAgnosticCaseService = new SurfaceAgnosticCaseService(
 					this._fs,
 					this._runSettings,
 					this._flowSettings,
-					this._argumentRecord,
+					safeArgumentRecord,
 					codemodHashDigest,
 				);
 

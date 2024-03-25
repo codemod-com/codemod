@@ -1,11 +1,20 @@
 {
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"name": "biome/migrate-rules",
 	"private": false,
 	"engine": "filemod",
 	"applicability": {
-		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]]
+		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
+		"to": [["biome", "=", "1.5.3"]]
 	},
+	"arguments": [
+		{
+			"name": "rules",
+			"kind": "string",
+			"required": false
+		}
+	],
+	"deps": ["-eslint", "-prettier", "@biomejs/biome@1.5.3"],
 	"meta": {
 		"useCaseCategory": "migration"
 	}

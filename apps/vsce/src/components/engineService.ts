@@ -205,7 +205,8 @@ type ExecuteCodemodMessage = Message &
 		kind: MessageKind.executeCodemodSet;
 	}>;
 
-const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+// npx ensures that the local codemod CLI (latest version) is used
+const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
 const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
 const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
@@ -272,7 +273,6 @@ export class EngineService {
 	}
 
 	private async __onCodemodEngineNodeLocated() {
-		await this.syncRegistry();
 		await this.__fetchCodemods();
 		await this.fetchPrivateCodemods();
 	}
@@ -290,24 +290,6 @@ export class EngineService {
 		}
 
 		return buildCrossplatformArg(this.__codemodEngineRustExecutableUri.fsPath);
-	}
-
-	public async syncRegistry(): Promise<void> {
-		const childProcess = spawn(CODEMOD_ENGINE_NODE_COMMAND, ["sync"], {
-			stdio: "pipe",
-			shell: true,
-			detached: false,
-		});
-
-		return new Promise<void>((resolve, reject) => {
-			childProcess.once("exit", () => {
-				resolve();
-			});
-
-			childProcess.once("error", (error) => {
-				reject(error);
-			});
-		});
 	}
 
 	public async isCodemodEngineNodeLocated(): Promise<boolean> {
@@ -529,7 +511,7 @@ export class EngineService {
 		}
 
 		this.#execution.halted = true;
-		this.#execution.childProcess.stdin.write("shutdown\n");
+		this.#execution.childProcess.kill("SIGINT");
 	}
 
 	private __getQueuedCodemodHashes(): ReadonlyArray<CodemodHash> {

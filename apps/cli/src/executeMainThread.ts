@@ -3,14 +3,12 @@ import * as fs from "fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import * as readline from "node:readline";
 import { promisify } from "util";
 import Axios from "axios";
 import { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
-import { buildArgumentRecord } from "./buildArgumentRecord.js";
 import {
 	buildOptions,
 	buildUseCacheOption,
@@ -36,46 +34,8 @@ import {
 	NoTelemetryService,
 } from "./telemetryService.js";
 
-const WAIT_INPUT_TIMEOUT = 300;
-
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
-
-	const interfaze = readline.createInterface({
-		input: process.stdin,
-		output: process.stdout,
-	});
-
-	const lineHandler = (line: string): void => {
-		if (line === "shutdown") {
-			interfaze.off("line", lineHandler);
-			interfaze.close();
-			process.exit(0);
-		}
-
-		userInput += `${line}\n`;
-	};
-
-	interfaze.on("line", lineHandler);
-
-	let userInput = "";
-
-	if (!process.stdin.isTTY) {
-		await new Promise((resolve) => {
-			setTimeout(() => {
-				if (userInput.trim() === "") {
-					// skip if no input in 1000 ms
-					resolve(null);
-				}
-			}, WAIT_INPUT_TIMEOUT);
-
-			interfaze.on("close", () => {
-				resolve(null);
-			});
-		});
-	}
-
-	process.stdin.unref();
 
 	const argvObject = yargs(slicedArgv)
 		.scriptName("codemod")
@@ -126,10 +86,7 @@ export const executeMainThread = async () => {
 		return;
 	}
 
-	const argv = {
-		...(await Promise.resolve(argvObject.argv)),
-		"arg:input": userInput,
-	};
+	const argv = await Promise.resolve(argvObject.argv);
 
 	const fetchBuffer = async (url: string) => {
 		const { data } = await Axios.get(url, {
@@ -150,7 +107,9 @@ export const executeMainThread = async () => {
 	);
 
 	let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
-	let exit = () => {};
+	let exit: () => void = () => {
+		process.exit(0);
+	};
 	const tarService = new TarService(fs as unknown as IFs);
 
 	if (!argv.telemetryDisable) {
@@ -182,6 +141,8 @@ export const executeMainThread = async () => {
 	} else {
 		telemetryService = new NoTelemetryService();
 	}
+
+	process.on("SIGINT", exit);
 
 	const configurationDirectoryPath = join(
 		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
@@ -215,6 +176,7 @@ export const executeMainThread = async () => {
 			await handleListNamesCommand({
 				printer,
 				search: searchTerm ?? undefined,
+				short: argv.short,
 			});
 		} catch (error) {
 			if (!(error instanceof Error)) {
@@ -233,8 +195,7 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "learn") {
-		const printer = new Printer(argv.json);
-		const target = argv.target ?? argv.target ?? null;
+		const target = argv.target ?? null;
 
 		try {
 			await handleLearnCliCommand(printer, target);
@@ -255,7 +216,6 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "login") {
-		const printer = new Printer(argv.json);
 		const token = argv.token ?? null;
 
 		try {
@@ -277,8 +237,6 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "logout") {
-		const printer = new Printer(argv.json);
-
 		try {
 			await handleLogoutCliCommand(printer);
 		} catch (error) {
@@ -298,8 +256,6 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "publish") {
-		const printer = new Printer(argv.json);
-
 		try {
 			await handlePublishCliCommand(printer, argv.source ?? process.cwd());
 		} catch (error) {
@@ -319,8 +275,6 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "build") {
-		const printer = new Printer(argv.json);
-
 		// Allow node to look for modules in global paths
 		const execPromise = promisify(exec);
 		const globalPaths = await Promise.allSettled([
@@ -381,7 +335,6 @@ export const executeMainThread = async () => {
 	const codemodSettings = parseCodemodSettings(argv);
 	const flowSettings = parseFlowSettings(argv);
 	const runSettings = parseRunSettings(homedir(), argv);
-	const argumentRecord = buildArgumentRecord(argv);
 
 	const getCodemodSource = (path: string) =>
 		readFile(path, { encoding: "utf8" });
@@ -395,9 +348,10 @@ export const executeMainThread = async () => {
 		codemodSettings,
 		flowSettings,
 		runSettings,
-		argumentRecord,
+		// TODO: fix type
+		argv as Record<string, string | number | boolean>,
 		nameOrPath,
-		process.cwd(),
+		flowSettings.target,
 		getCodemodSource,
 	);
 

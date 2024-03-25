@@ -1,12 +1,12 @@
 import { deepEqual, ok } from "node:assert";
-import { buildApi, executeFilemod } from "@codemod-com/filemod";
+import { API, buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
-const transform = async (json: DirectoryJSON) => {
+const buildInternalAPI = async (json: DirectoryJSON) => {
 	const volume = Volume.fromJSON(json);
 
 	const fs = createFsFromVolume(volume);
@@ -14,8 +14,10 @@ const transform = async (json: DirectoryJSON) => {
 	const unifiedFileSystem = buildUnifiedFileSystem(fs);
 	const pathApi = buildPathAPI("/");
 
-	const api = buildApi(unifiedFileSystem, () => ({ fetch }), pathApi);
+	return buildApi(unifiedFileSystem, () => ({ fetch }), pathApi);
+};
 
+const transform = async (api: API<any>) => {
 	return executeFilemod(
 		api,
 		repomod,
@@ -39,7 +41,7 @@ const transform = async (json: DirectoryJSON) => {
 	);
 };
 
-describe("eslint and prettier to biome migration", () => {
+describe("eslint and prettier to biome migration", async () => {
 	const packageJsonPath = "/opt/project/package.json";
 	const packageJsonConfig = `
     {
@@ -100,16 +102,20 @@ describe("eslint and prettier to biome migration", () => {
   `;
 	const prettierIgnorePath = "/opt/project/.prettierignore";
 
-	const biomeJsonPath = "biome.json";
-
 	it("should contain correct file commands", async () => {
-		const externalFileCommands = await transform({
+		const api = await buildInternalAPI({
 			[packageJsonPath]: packageJsonConfig,
 			[eslintRcPath]: "",
 			[eslintIgnorePath]: eslintIgnoreContent,
 			[prettierRcPath]: prettierRcContent,
 			[prettierIgnorePath]: "",
 		});
+		const biomeJsonPath = api.fileAPI.joinPaths(
+			api.fileAPI.currentWorkingDirectory,
+			"biome.json",
+		);
+
+		const externalFileCommands = await transform(api);
 
 		deepEqual(externalFileCommands.length, 6);
 
@@ -129,51 +135,59 @@ describe("eslint and prettier to biome migration", () => {
 	});
 
 	it("should correctly modify package.json and create proper biome.json", async () => {
-		const externalFileCommands = await transform({
+		const api = await buildInternalAPI({
 			[packageJsonPath]: packageJsonConfig,
 			[eslintRcPath]: "",
 			[eslintIgnorePath]: eslintIgnoreContent,
 			[prettierRcPath]: prettierRcContent,
 			[prettierIgnorePath]: "",
 		});
+		const biomeJsonPath = api.fileAPI.joinPaths(
+			api.fileAPI.currentWorkingDirectory,
+			"biome.json",
+		);
 
-		ok(
-			externalFileCommands.some(
-				(command) =>
-					command.kind === "upsertFile" &&
-					command.path === packageJsonPath &&
-					command.data.replace(/\W/gm, "") ===
-						`
-              {
-                "name": "package-name",
-                "dependencies": {},
-                "devDependencies": {
-                  "@biomejs/biome": "1.5.3"
-                },
-                "main": "./dist/index.cjs",
-                "types": "/dist/index.d.ts",
-                "scripts": {
-                  "start": "pnpm run build:cjs && node ./dist/index.cjs",
-                                    "lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
-                  "lint:prettier": "pnpm dlx @biomejs/biome format --write .",
-                  "NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
-                  "NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"
-                },
-                "files": [
-                  "prettier-test-no-replace",
-                  "README.md",
-                  ".codemodrc.json",
-                  "./dist/index.cjs",
-                  "./index.d.ts"
-                ],
-                "lint-staged": {
-                  "*.js": "pnpm dlx @biomejs/biome lint --apply",
-                  "*.ts": "pnpm dlx @biomejs/biome lint --apply"
-                },
-                "type": "module"
-              }
-	          `.replace(/\W/gm, ""),
-			),
+		const externalFileCommands = await transform(api);
+
+		const packageJsonCommand = externalFileCommands.find(
+			(command) =>
+				command.kind === "upsertFile" && command.path === packageJsonPath,
+		);
+
+		ok(packageJsonCommand);
+		ok(packageJsonCommand.kind === "upsertFile");
+		deepEqual(
+			packageJsonCommand.data.replace(/\W/gm, ""),
+			`
+        {
+          "name": "package-name",
+          "dependencies": {},
+          "devDependencies": {
+            "@biomejs/biome": "1.5.3"
+          },
+          "main": "./dist/index.cjs",
+          "types": "/dist/index.d.ts",
+          "scripts": {
+            "start": "pnpm run build:cjs && node ./dist/index.cjs",
+            "lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
+            "lint:prettier": "pnpm dlx @biomejs/biome format --write .",
+            "NOTE": "You can apply both linter, formatter and import ordering by using https://biomejs.dev/reference/cli/#biome-check",
+            "NOTE2": "There is an ongoing work to release prettier-tailwind-plugin alternative: https://biomejs.dev/linter/rules/use-sorted-classes/, https://github.com/biomejs/biome/issues/1274"
+          },
+          "files": [
+            "prettier-test-no-replace",
+            "README.md",
+            ".codemodrc.json",
+            "./dist/index.cjs",
+            "./index.d.ts"
+          ],
+          "lint-staged": {
+            "*.js": "pnpm dlx @biomejs/biome lint --apply",
+            "*.ts": "pnpm dlx @biomejs/biome lint --apply"
+          },
+          "type": "module"
+        }
+      `.replace(/\W/gm, ""),
 		);
 
 		ok(
