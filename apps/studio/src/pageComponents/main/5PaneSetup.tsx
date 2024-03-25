@@ -8,7 +8,6 @@ import Panel from "~/components/Panel";
 import AuthenticatedAccess from "~/components/authenticatedAccess";
 import ClearInputButton from "~/components/button/ClearInputButton";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
-import { ExportButton } from "~/components/button/exportButton";
 import Chat from "~/components/chatbot/Chat";
 import {
 	AlertDialog,
@@ -188,7 +187,6 @@ const Main = () => {
 												Codemod
 												<div className="flex items-center gap-1">
 													<DownloadZip />
-													<ExportButton />
 													<ClearInputButton />
 													<InsertExampleButton />
 												</div>
