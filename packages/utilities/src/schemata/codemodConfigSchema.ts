@@ -1,6 +1,8 @@
 import {
 	type Input,
+	Issues,
 	type Output,
+	ValiError,
 	array,
 	boolean,
 	custom,
@@ -9,11 +11,50 @@ import {
 	number,
 	object,
 	optional,
+	parse,
 	regex,
 	string,
 	tuple,
 	union,
 } from "valibot";
+import { isNeitherNullNorUndefined } from "../functions/validationMethods.js";
+
+const getFirstValibotIssue = (issues: Issues) => {
+	let reasonableError: string | undefined;
+
+	for (const issue of issues) {
+		if (issue.issues) {
+			reasonableError = getFirstValibotIssue(issue.issues);
+		}
+
+		const firstIssueWithPath = issues.find((issue) =>
+			isNeitherNullNorUndefined(issue.path),
+		);
+
+		if (isNeitherNullNorUndefined(firstIssueWithPath)) {
+			reasonableError = `${firstIssueWithPath.message} at \`${firstIssueWithPath
+				.path!.map((p) => p.key)
+				.join(".")}\``;
+			break;
+		}
+	}
+
+	return reasonableError;
+};
+
+export const extractLibNameAndVersion = (val: string) => {
+	const parts = val.split("@");
+	let version: string | undefined;
+	let libName: string;
+	if (parts.length > 1) {
+		version = parts.pop();
+		libName = parts.join("@");
+	} else {
+		libName = val;
+	}
+
+	return { libName, version };
+};
 
 export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
 
@@ -142,7 +183,7 @@ const configJsonBaseSchema = object({
 		array(
 			string([
 				custom((val) => {
-					const [libName, version] = val.split("@");
+					const { libName, version } = extractLibNameAndVersion(val);
 					// e.g. -jest
 					if (libName?.startsWith("-")) {
 						return true;
@@ -157,7 +198,6 @@ const configJsonBaseSchema = object({
 					return semVerRegex.test(version);
 				}, `"deps" has to be an array of valid strings. E.g. libraryToAdd@2.0.0, libraryToAdd or -libraryToRemove`),
 			]),
-			// string([custom((val) => val.split('@'))]),
 			`"deps" has to be an array of strings.`,
 		),
 	),
@@ -199,31 +239,42 @@ const configJsonBaseSchema = object({
 	),
 });
 
-export const codemodConfigSchema = union(
-	[
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: knownEnginesSchema,
-			}),
-		]),
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: literal("recipe"),
-				names: array(string()),
-			}),
-		]),
-		merge([
-			configJsonBaseSchema,
-			object({
-				engine: literal("piranha"),
-				language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
-			}),
-		]),
-	],
-	"Invalid codemod configuration.",
-);
+export const codemodConfigSchema = union([
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: knownEnginesSchema,
+		}),
+	]),
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: literal("recipe"),
+			names: array(string()),
+		}),
+	]),
+	merge([
+		configJsonBaseSchema,
+		object({
+			engine: literal("piranha"),
+			language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
+		}),
+	]),
+]);
+
+export const parseCodemodConfig = (config: unknown) => {
+	try {
+		return parse(codemodConfigSchema, config, { abortEarly: true });
+	} catch (err) {
+		if (!(err instanceof ValiError)) {
+			throw new Error("Error parsing config file");
+		}
+
+		throw new Error(
+			`Error parsing config file: ${getFirstValibotIssue(err.issues)}`,
+		);
+	}
+};
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
 export type CodemodConfigInput = Input<typeof codemodConfigSchema>;

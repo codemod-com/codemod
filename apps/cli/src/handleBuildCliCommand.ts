@@ -1,12 +1,11 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import {
-	codemodConfigSchema,
 	isNeitherNullNorUndefined,
+	parseCodemodConfig,
 } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "fast-glob";
-import { parse } from "valibot";
 import type { PrinterBlueprint } from "./printer.js";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
@@ -30,7 +29,7 @@ export const handleBuildCliCommand = async (
 		);
 	}
 
-	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcContent));
+	const codemodRc = parseCodemodConfig(JSON.parse(codemodRcContent));
 
 	let entryPointGlob: string[];
 	if (codemodRc.build?.input) {

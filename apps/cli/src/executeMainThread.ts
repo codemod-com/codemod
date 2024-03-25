@@ -47,23 +47,21 @@ export const executeMainThread = async () => {
 			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
 		.command(
-			"list",
-			"lists all the codemods & recipes in the public registry. can be used similar to search to filter by name",
-			(y) => buildUseJsonOption(buildUseCacheOption(y)),
-		)
-		.command(
-			"search",
-			"searches codemods that resemble given string from user input using fuzzy search",
-			(y) => buildUseJsonOption(y),
+			["list", "ls", "search"],
+			"lists all the codemods & recipes in the public registry. can be used to search by name and tags",
+			(y) =>
+				buildUseJsonOption(buildUseCacheOption(y))
+					// prints only names consumed by VSCE
+					.option("short", {
+						type: "boolean",
+						description: "",
+						default: false,
+					}),
 		)
 		.command(
 			"learn",
 			"exports the current `git diff` in a file to before/after panels in the Codemod Studio",
-			(y) =>
-				buildUseJsonOption(y).option("target", {
-					type: "string",
-					description: "Input file path",
-				}),
+			(y) => buildUseJsonOption(y),
 		)
 		.command(
 			"login",
@@ -157,7 +155,7 @@ export const executeMainThread = async () => {
 		tarService,
 	);
 
-	if (argv._.at(0) === "list" || argv._.at(0) === "search") {
+	if (["list", "ls", "search"].includes(argv._.at(0) as string)) {
 		try {
 			const lastArgument =
 				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
