@@ -11,7 +11,10 @@ export const handleListNamesCommand = async (options: {
 	const { printer, search, short } = options;
 
 	if (search && !short) {
-		printer.printConsoleMessage("info", boldText(`Searching for ${search}...`));
+		printer.printConsoleMessage(
+			"info",
+			boldText(colorizeText(`Searching for ${search}...`, "cyan")),
+		);
 	}
 
 	const configObjects = await getCodemodList(options);
@@ -24,19 +27,13 @@ export const handleListNamesCommand = async (options: {
 	}
 
 	let prettified = configObjects
-		.map(({ name, verified, tags, engine, author }) => {
+		.map(({ name, verified: _, tags: tagsArray, engine, author }) => {
+			const tags = tagsArray.join(", ");
+
 			if (search && (name === search || tags.includes(search))) {
 				return {
-					name: boldText(name),
-					engine: boldText(engine),
-					author: boldText(author),
-				};
-			}
-
-			// Only highlight verified codemods if no search is performed
-			if (!search && verified) {
-				return {
 					name: boldText(colorizeText(name, "cyan")),
+					tags: boldText(colorizeText(tags, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
 					author: boldText(colorizeText(author, "cyan")),
 				};
@@ -44,17 +41,18 @@ export const handleListNamesCommand = async (options: {
 
 			return {
 				name,
+				tags,
 				engine,
 				author,
 			};
 		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
 
-	if (search && !short) {
+	if (search) {
 		prettified = prettified.slice(0, 10);
 		printer.printConsoleMessage(
 			"info",
-			boldText("Here are the top search results:"),
+			boldText(colorizeText("Here are the top search results:\n", "cyan")),
 		);
 	}
 
@@ -64,11 +62,4 @@ export const handleListNamesCommand = async (options: {
 			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
 		}),
 	);
-
-	if (configObjects.length > 0 && !search) {
-		printer.printConsoleMessage(
-			"info",
-			"\nColored codemods are verified by the Codemod.com engineering team",
-		);
-	}
 };

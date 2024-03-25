@@ -275,6 +275,11 @@ export const publishHandler =
 							.split(/[\/ ,.-]/)
 							.join("-"),
 						name,
+						shortDescription: descriptionMdBuffer?.toString("utf-8"),
+						useCaseCategory: codemodRc.meta?.useCaseCategory,
+						tags: codemodRc.meta?.tags,
+						engine: codemodRc.engine,
+						applicability: codemodRc.applicability,
 						verified: isVerified,
 						private: isPrivate,
 						author,

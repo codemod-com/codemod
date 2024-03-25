@@ -10,7 +10,7 @@
 		"type": "git",
 		"url": "https://github.com/codemod-com/codemod/tree/main/apps/vsce"
 	},
-	"engines": { "vscode": "^1.74.0" },
+	"engines": { "vscode": "^1.74.0", "node": "^20.0.0" },
 	"categories": ["Programming Languages", "Formatters", "Linters"],
 	"keywords": [
 		"codemod",
@@ -235,6 +235,7 @@
 		"webpack-cli": "5.1.4"
 	},
 	"dependencies": {
+		"codemod": "latest",
 		"@effect/schema": "^0.52.0",
 		"@intuita-inc/utilities": "^1.0.2",
 		"@reduxjs/toolkit": "^1.9.5",

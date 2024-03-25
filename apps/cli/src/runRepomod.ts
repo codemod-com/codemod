@@ -208,9 +208,7 @@ export const runRepomod = async (
 		api,
 		filemod,
 		target,
-		{
-			...safeArgumentRecord[0],
-		},
+		safeArgumentRecord,
 		callbackService,
 	);
 
