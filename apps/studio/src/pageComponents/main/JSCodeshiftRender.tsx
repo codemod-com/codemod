@@ -204,7 +204,7 @@ const LiveCodemodSnipped = ({
 			<div
 				className={cn(
 					"relative flex h-full flex-col",
-					type === "after" ? " w-[200%]" : "w-full",
+					type === "after" ? " w-[200%] mr-[-50%]" : "w-full",
 					`${type}-shown`,
 				)}
 			>
@@ -218,6 +218,7 @@ const LiveCodemodSnipped = ({
 							readOnly: true,
 							originalEditable: true,
 						}}
+						loading={false}
 						originalEditorProps={originalEditorProps}
 						modifiedEditorProps={modifiedEditorProps}
 					/>
