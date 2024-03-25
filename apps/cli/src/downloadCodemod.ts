@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
@@ -45,11 +46,11 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		const s3DownloadLink = await getCodemodDownloadURI(name);
-		const localCodemodPath = join(directoryPath, "codemod.tar.gz");
-
 		// download codemod
 		try {
+			const s3DownloadLink = await getCodemodDownloadURI(name);
+			const localCodemodPath = join(directoryPath, "codemod.tar.gz");
+
 			const buffer = await this._fileDownloadService.download(
 				s3DownloadLink,
 				localCodemodPath,
@@ -57,13 +58,17 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 			await this._tarService.extract(directoryPath, buffer);
 		} catch (error) {
-			await handleListNamesCommand({ printer: this.__printer });
+			if (error instanceof AxiosError && error.response?.status === 404) {
+				await handleListNamesCommand({ printer: this.__printer });
 
-			throw new Error(
-				`Could not find codemod ${boldText(
-					name,
-				)} in the registry. Verify the name to be in the list above and try again.`,
-			);
+				throw new Error(
+					`Could not find codemod ${boldText(
+						name,
+					)} in the registry. Verify the name to be in the list above and try again.`,
+				);
+			}
+
+			throw new Error(`Error while downloading codemod ${name}: ${error}`);
 		}
 
 		let config: CodemodConfig;
