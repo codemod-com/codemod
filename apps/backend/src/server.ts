@@ -560,6 +560,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 				const fuse = new Fuse(codemodData, {
 					keys: ["name", "tags"],
 					isCaseSensitive: false,
+					threshold: 0.35,
 				});
 
 				codemodData = fuse.search(query.search).map((res) => res.item);
