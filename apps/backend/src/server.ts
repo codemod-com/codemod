@@ -376,6 +376,59 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return { total, data: codemods, page, size };
 	});
 
+	instance.get("/codemods/filters", async (_, reply) => {
+		const [frameworks, groupedUseCases, groupedOwners] = await Promise.all([
+			prisma.tag.findMany({
+				where: {
+					classification: "framework",
+				},
+			}),
+			prisma.codemod.groupBy({
+				by: ["useCaseCategory"],
+				_count: {
+					_all: true,
+				},
+			}),
+			prisma.codemod.groupBy({
+				by: ["author"],
+				_count: {
+					_all: true,
+				},
+			}),
+		]);
+
+		const useCaseFilters = groupedUseCases.map(
+			({ useCaseCategory, _count }) => ({
+				name: useCaseCategory,
+				count: _count._all,
+			}),
+		);
+
+		const ownerFilters = groupedOwners.map(({ author, _count }) => ({
+			name: author,
+			count: _count._all,
+		}));
+
+		const frameworkFilters = await Promise.all(
+			frameworks.map(async (framework) => {
+				const count = await prisma.codemod.count({
+					where: {
+						tags: {
+							hasSome: framework.aliases,
+						},
+					},
+				});
+				return {
+					name: framework.displayName,
+					count,
+				};
+			}),
+		);
+
+		reply.type("application/json").code(200);
+		return { useCaseFilters, ownerFilters, frameworkFilters };
+	});
+
 	instance.get("/codemods/:slug", async (request, reply) => {
 		const { slug } = parseGetCodemodBySlugParams(request.params);
 
