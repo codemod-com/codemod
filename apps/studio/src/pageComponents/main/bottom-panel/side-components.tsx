@@ -3,17 +3,13 @@ import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { Button } from "~/components/ui/button";
 import { isServer } from "~/config";
-import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
-import CodemodOutputHeader from "~/pageComponents/main/CodemodOutputHeader";
 import SnippetUI from "~/pageComponents/main/SnippetUI";
 import { SnippetHeader } from "~/pageComponents/main/bottom-panel/SnippedHeader";
 import { JSEngine } from "~/types/Engine";
-import { VisibilityOptions } from "~/types/options";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
-import { isVisible } from "~/utils/visibility";
 import Layout from "../Layout";
 import {
 	ContentViewerProps,
@@ -47,7 +43,7 @@ export const BoundResizePanel = ({
 				hasBoundResize && !isNil(boundedIndex)
 					? debounce((size) => {
 							const panel = panelRefs.current[boundedIndex];
-							if (!isNil(panel)) panel.resize(size);
+							if (!isNil(panel) && !isNil(size)) panel.resize(size);
 					  }, 5)
 					: undefined
 			}
@@ -135,30 +131,4 @@ export const BeforeCodeSnippedPanel = ({
 		<SnippetHeader title="Before" />
 		<SnippetUI type="before" />
 	</BoundResizePanel>
-);
-
-export const AfterAndOutputHeaders = ({
-	afterPanel,
-	afterPanelVisibility,
-}: {
-	afterPanel: PanelData;
-	afterPanelVisibility: VisibilityOptions;
-}) => (
-	<div
-		className={
-			isVisible(afterPanel)
-				? "grid grid-cols-2"
-				: "flex items-center bg-white border-b"
-		}
-	>
-		{isVisible(afterPanel) ? (
-			<SnippetHeader
-				visibilityOptions={afterPanelVisibility}
-				title="After (Expected)"
-			/>
-		) : (
-			<VisibilityIcon visibilityOptions={afterPanelVisibility} />
-		)}
-		<CodemodOutputHeader isAfterHidden={!isVisible(afterPanel)} />
-	</div>
 );

@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { PropsWithChildren, useCallback, useEffect } from "react";
+import { PropsWithChildren, ReactNode, useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
@@ -180,23 +180,55 @@ export const WarningTexts = ({
 	);
 };
 
-const LiveCodemodSnipped = ({
+export const DiffEditorWrapper = ({
 	originalEditorProps,
 	modifiedEditorProps,
 	children,
+	warnings,
 	type,
+}: Pick<LiveCodemodResultProps, "originalEditorProps" | "modifiedEditorProps"> &
+	PropsWithChildren<{
+		warnings?: ReactNode;
+		type: "after" | "output";
+	}>) => (
+	<div
+		className={cn(
+			"relative flex h-full flex-col",
+			type === "after" ? "w-[200%] mr-[-50%]" : "w-full",
+			`${type}-shown`,
+		)}
+	>
+		<div className="relative flex h-full w-full flex-col">
+			{warnings}
+			<MonacoDiffEditor
+				renderSideBySide={type === "after"}
+				originalModelPath="original.tsx"
+				modifiedModelPath="modified.tsx"
+				options={{
+					readOnly: true,
+					originalEditable: true,
+				}}
+				loading={false}
+				originalEditorProps={originalEditorProps}
+				modifiedEditorProps={modifiedEditorProps}
+			/>
+		</div>
+	</div>
+);
+
+const CodeSnippedPanel = ({
+	children,
 	header,
 	panelData,
 	panelRefs,
-}: PropsWithChildren<LiveCodemodResultProps> & {
+}: PropsWithChildren<{
 	header: string;
-	type: "after" | "output";
 	panelRefs: PanelRefs;
 	panelData: PanelData;
-}) => {
+}>) => {
 	return (
 		<BoundResizePanel
-			className="collapsable_panel"
+			className={cn("visibilityOptions" in panelData && "collapsable_panel")}
 			defaultSize={33}
 			panelRefIndex={panelData.snippedIndex}
 			panelRefs={panelRefs}
@@ -205,31 +237,9 @@ const LiveCodemodSnipped = ({
 				visibilityOptions={panelData.visibilityOptions}
 				title={header}
 			/>
-			<div
-				className={cn(
-					"relative flex h-full flex-col",
-					type === "after" ? "w-[200%] mr-[-50%]" : "w-full",
-					`${type}-shown`,
-				)}
-			>
-				<div className="relative flex h-full w-full flex-col">
-					{children}
-					<MonacoDiffEditor
-						renderSideBySide={type === "after"}
-						originalModelPath="original.tsx"
-						modifiedModelPath="modified.tsx"
-						options={{
-							readOnly: true,
-							originalEditable: true,
-						}}
-						loading={false}
-						originalEditorProps={originalEditorProps}
-						modifiedEditorProps={modifiedEditorProps}
-					/>
-				</div>
-			</div>
+			{children}
 		</BoundResizePanel>
 	);
 };
 
-export default LiveCodemodSnipped;
+export default CodeSnippedPanel;

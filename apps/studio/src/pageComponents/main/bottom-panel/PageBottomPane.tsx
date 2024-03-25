@@ -1,13 +1,14 @@
 import { Suspense } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import LiveCodemodSnipped, {
+import CodeSnippedPanel, {
+	DiffEditorWrapper,
 	useCodeDiff,
 	WarningTexts,
 } from "~/pageComponents/main/JSCodeshiftRender";
+import SnippetUI from "~/pageComponents/main/SnippetUI";
 import {
 	AstSection,
-	BeforeCodeSnippedPanel,
 	BottomPanel,
 	BoundResizePanel,
 	ToggleASTButton,
@@ -51,32 +52,37 @@ const PageBottomPane = () => {
 					panelRefIndex={Panel.SNIPPETS_SECTION}
 				>
 					<PanelGroup direction="horizontal">
-						<BeforeCodeSnippedPanel
-							beforePanel={beforePanel}
+						<CodeSnippedPanel
+							header="Before"
+							panelData={beforePanel}
 							panelRefs={panelRefs}
-						/>
+						>
+							<SnippetUI type="before" />
+						</CodeSnippedPanel>
 						<ResizeHandle direction="horizontal" />
-						<LiveCodemodSnipped
+
+						<CodeSnippedPanel
 							{...codeDiff}
-							type="after"
 							header="After (Expected)"
 							panelData={afterPanel}
 							panelRefs={panelRefs}
 						>
-							{warningTexts}
-						</LiveCodemodSnipped>
+							<DiffEditorWrapper
+								type="after"
+								warnings={warningTexts}
+								{...codeDiff}
+							/>
+						</CodeSnippedPanel>
 
 						<ResizeHandle direction="horizontal" />
-						<LiveCodemodSnipped
+						<CodeSnippedPanel
 							{...codeDiff}
-							type="output"
 							header="Output"
-							panelData={afterPanel}
+							panelData={outputPanel}
 							panelRefs={panelRefs}
 						>
-							{warningTexts}
-						</LiveCodemodSnipped>
-						{/*</BoundResizePanel>*/}
+							<DiffEditorWrapper type="output" {...codeDiff} />
+						</CodeSnippedPanel>
 					</PanelGroup>
 				</BoundResizePanel>
 			</Suspense>
