@@ -88,7 +88,7 @@ const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
 				minSize={minSize}
 				ref={ref}
 			>
-				<div className="flex h-full w-full flex-col ">{children}</div>
+				<div className="flex h-full w-full flex-col bg-white">{children}</div>
 			</Panel>
 		);
 	},

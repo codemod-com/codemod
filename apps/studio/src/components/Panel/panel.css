@@ -44,3 +44,12 @@
 	@apply gap-x-1;
 	@apply justify-between;
 }
+
+.panel_show_hide_icon {
+	@apply mr-[6px];
+	@apply invisible;
+	@apply hover:bg-gray-lighter;
+}
+.collapsable_panel:hover .panel_show_hide_icon {
+	@apply visible;
+}

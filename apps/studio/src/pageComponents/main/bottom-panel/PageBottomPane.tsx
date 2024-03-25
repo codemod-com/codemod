@@ -56,15 +56,6 @@ const PageBottomPane = () => {
 							panelRefs={panelRefs}
 						/>
 						<ResizeHandle direction="horizontal" />
-						{/*<BoundResizePanel*/}
-						{/*	defaultSize={66}*/}
-						{/*	panelRefIndex={afterPanel.snippedIndex}*/}
-						{/*	panelRefs={panelRefs}*/}
-						{/*>*/}
-						{/*	<AfterAndOutputHeaders*/}
-						{/*		afterPanel={afterPanel}*/}
-						{/*		afterPanelVisibility={afterPanelVisibility}*/}
-						{/*	/>*/}
 						<LiveCodemodSnipped
 							{...codeDiff}
 							type="after"

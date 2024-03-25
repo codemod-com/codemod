@@ -6,7 +6,10 @@ export const VisibilityIcon = ({
 	visibilityOptions = alwaysVisible,
 	className,
 }: { visibilityOptions?: VisibilityOptions; className?: string }) => (
-	<span onClick={visibilityOptions.toggleVisibility}>
+	<span
+		onClick={visibilityOptions.toggleVisibility}
+		className="panel_show_hide_icon"
+	>
 		{
 			<Chevrons
 				className={className}

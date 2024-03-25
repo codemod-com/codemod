@@ -196,15 +196,19 @@ const LiveCodemodSnipped = ({
 }) => {
 	return (
 		<BoundResizePanel
+			className="collapsable_panel"
 			defaultSize={33}
 			panelRefIndex={panelData.snippedIndex}
 			panelRefs={panelRefs}
 		>
-			<SnippetHeader title={header} />
+			<SnippetHeader
+				visibilityOptions={panelData.visibilityOptions}
+				title={header}
+			/>
 			<div
 				className={cn(
 					"relative flex h-full flex-col",
-					type === "after" ? " w-[200%] mr-[-50%]" : "w-full",
+					type === "after" ? "w-[200%] mr-[-50%]" : "w-full",
 					`${type}-shown`,
 				)}
 			>
