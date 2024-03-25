@@ -1,4 +1,3 @@
-import { isNeitherNullNorUndefined } from "src/index.js";
 import {
 	type Input,
 	Issues,
@@ -18,6 +17,7 @@ import {
 	tuple,
 	union,
 } from "valibot";
+import { isNeitherNullNorUndefined } from "../functions/validationMethods.js";
 
 const getFirstValibotIssue = (issues: Issues) => {
 	let reasonableError: string | undefined;
