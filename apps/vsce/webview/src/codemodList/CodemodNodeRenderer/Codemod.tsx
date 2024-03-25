@@ -22,7 +22,6 @@ type Props = Omit<CodemodItemNode, "name" | "kind"> &
 
 const renderActionButtons = (
 	hashDigest: CodemodItemNode["hashDigest"],
-	isPrivate: CodemodItemNode["isPrivate"],
 	permalink: CodemodItemNode["permalink"],
 	codemodInProgress: boolean,
 	queued: boolean,
@@ -34,9 +33,7 @@ const renderActionButtons = (
 			e.stopPropagation();
 
 			vscode.postMessage({
-				kind: isPrivate
-					? "webview.codemodList.dryRunPrivateCodemod"
-					: "webview.codemodList.dryRunCodemod",
+				kind: "webview.codemodList.dryRunCodemod",
 				value: hashDigest as unknown as CodemodHash,
 				name: label,
 			});
@@ -44,43 +41,20 @@ const renderActionButtons = (
 		const handleCodemodLinkCopy = (e: React.MouseEvent) => {
 			e.stopPropagation();
 
-			if (!isPrivate) {
-				navigator.clipboard.writeText(
-					`vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
-				);
-				vscode.postMessage({
-					kind: "webview.global.showInformationMessage",
-					value: "Codemod link copied to clipboard",
-				});
-				return;
-			}
-			if (permalink === null) {
-				vscode.postMessage({
-					kind: "webview.global.showWarningMessage",
-					value:
-						"Permalink for this codemod is missing. Re-export it from Codemod studio.",
-				});
-				return;
-			}
-
-			navigator.clipboard.writeText(permalink);
+			navigator.clipboard.writeText(
+				`vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
+			);
 			vscode.postMessage({
 				kind: "webview.global.showInformationMessage",
-				value: "Permalink in codemod studio copied to clipboard",
+				value: "Codemod link copied to clipboard",
 			});
+			return;
 		};
 
 		const handleCodemodArgumentsClick = () => {
 			vscode.postMessage({
 				kind: "webview.global.setCodemodArgumentsPopupHashDigest",
 				hashDigest: argumentsExpanded ? null : hashDigest,
-			});
-		};
-
-		const handleRemovePrivateCodemod = () => {
-			vscode.postMessage({
-				kind: "webview.main.removePrivateCodemod",
-				hashDigest,
 			});
 		};
 
@@ -103,24 +77,11 @@ const renderActionButtons = (
 				</ActionButton>
 				<ActionButton
 					id={`${hashDigest}-shareButton`}
-					content={
-						isPrivate
-							? "Copy to clipboard the permalink in codemod studio."
-							: "Copy to clipboard the link to this codemod."
-					}
+					content={"Copy to clipboard the link to this codemod."}
 					onClick={handleCodemodLinkCopy}
 				>
 					<span className={cn("codicon", "codicon-link")} />
 				</ActionButton>
-				{isPrivate && (
-					<ActionButton
-						id={`${hashDigest}-deleteButton`}
-						content={"Remove from Private Registry"}
-						onClick={handleRemovePrivateCodemod}
-					>
-						<span className={cn("codicon", "codicon-trash")} />
-					</ActionButton>
-				)}
 			</>
 		);
 	}
@@ -204,7 +165,6 @@ const Codemod = ({
 	icon,
 	screenWidth,
 	focused,
-	isPrivate,
 	permalink,
 	argumentsExpanded,
 }: Props) => {
@@ -212,11 +172,9 @@ const Codemod = ({
 	const areButtonsVisible = focused || hovering;
 
 	const popoverText =
-		icon === "private"
-			? "Private codemod"
-			: icon === "certified"
-			  ? "Codemod maintained by Codemod.com"
-			  : "Codemod maintained by the community";
+		icon === "certified"
+			? "Codemod maintained by Codemod.com"
+			: "Codemod maintained by the community";
 
 	return (
 		<>
@@ -231,9 +189,7 @@ const Codemod = ({
 				}}
 			>
 				<CustomPopover content={popoverText}>
-					{icon === "private" ? (
-						<span className={cn("codicon", "codicon-star")} />
-					) : icon === "certified" ? (
+					{icon === "certified" ? (
 						<span
 							className={cn("codicon", "codicon-verified")}
 							style={{
@@ -259,7 +215,6 @@ const Codemod = ({
 					>
 						{renderActionButtons(
 							hashDigest,
-							isPrivate,
 							permalink,
 							progress !== null,
 							queued,

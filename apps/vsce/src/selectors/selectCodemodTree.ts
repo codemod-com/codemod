@@ -1,7 +1,7 @@
 import { join, relative, sep } from "node:path";
 import * as T from "fp-ts/These";
 import * as t from "io-ts";
-import { CodemodEntry, PrivateCodemodEntry } from "../codemods/types";
+import { CodemodEntry } from "../codemods/types";
 import { RootState } from "../data";
 import { CodemodHash } from "../packageJsonAnalyzer/types";
 import { buildHash, capitalize } from "../utilities";
@@ -68,23 +68,21 @@ export const relativeToAbsolutePath = (
 };
 
 export const buildCodemodNode = (
-	codemod: CodemodEntry | PrivateCodemodEntry,
+	codemod: CodemodEntry,
 	name: string,
 	executionPath: string,
 	queued: boolean,
-	isPrivate: boolean,
 	args: ReadonlyArray<CodemodArgumentWithValue>,
 ) => {
 	return {
 		kind: "CODEMOD" as const,
 		name: codemod.name,
-		isPrivate,
 		hashDigest: codemod.hashDigest as CodemodNodeHashDigest,
 		label: buildCodemodTitle(name),
 		executionPath: T.right(executionPath),
 		queued: queued,
-		icon: isPrivate ? "private" : "certified",
-		permalink: isPrivate ? (codemod as PrivateCodemodEntry).permalink : null,
+		icon: "certified",
+		permalink: null,
 		args,
 	} as const;
 };
@@ -93,62 +91,6 @@ export type CodemodNode =
 	| ReturnType<typeof buildRootNode>
 	| ReturnType<typeof buildDirectoryNode>
 	| ReturnType<typeof buildCodemodNode>;
-
-export const selectPrivateCodemods = (
-	state: RootState,
-	rootPath: string | null,
-	executionQueue: ReadonlyArray<CodemodHash>,
-) => {
-	const codemods = Object.values(
-		state.privateCodemods.entities,
-	) as PrivateCodemodEntry[];
-
-	const nodeData: NodeDatum[] = codemods.map((codemod) => {
-		const { name, hashDigest } = codemod;
-		const { executionPaths } = state.codemodDiscoveryView;
-
-		const executionPath = executionPaths[codemod.hashDigest] ?? rootPath ?? "";
-
-		const executionRelativePath = absoluteToRelativePath(
-			executionPath,
-			rootPath ?? "",
-		);
-
-		const args = selectCodemodArguments(
-			state,
-			codemod.hashDigest as CodemodNodeHashDigest,
-		);
-
-		const node = buildCodemodNode(
-			codemod,
-			name,
-			executionRelativePath,
-			executionQueue.includes(codemod.hashDigest as CodemodHash),
-			true,
-			args,
-		);
-
-		const argumentsExpanded =
-			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest === hashDigest;
-
-		return {
-			node,
-			depth: 0,
-			expanded: false,
-			focused:
-				state.codemodDiscoveryView.focusedCodemodHashDigest === hashDigest,
-			collapsable: false,
-			reviewed: false,
-			argumentsExpanded,
-		};
-	});
-
-	return {
-		nodeData,
-		focusedNodeHashDigest: state.codemodDiscoveryView.focusedCodemodHashDigest,
-		collapsedNodeHashDigests: [],
-	};
-};
 
 export const selectCodemodTree = (
 	state: RootState,
@@ -218,7 +160,6 @@ export const selectCodemodTree = (
 					part,
 					executionRelativePath,
 					executionQueue.includes(codemod.hashDigest as CodemodHash),
-					false,
 					args,
 				);
 			} else {

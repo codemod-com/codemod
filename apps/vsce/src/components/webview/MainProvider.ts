@@ -355,13 +355,6 @@ export class MainViewProvider implements WebviewViewProvider {
 			commands.executeCommand("codemod.signOut");
 		}
 
-		if (message.kind === "webview.main.removePrivateCodemod") {
-			commands.executeCommand(
-				"codemod.removePrivateCodemod",
-				message.hashDigest,
-			);
-		}
-
 		if (message.kind === "webview.global.flipSelectedExplorerNode") {
 			this.__store.dispatch(
 				actions.flipSelectedExplorerNode([
@@ -442,33 +435,6 @@ export class MainViewProvider implements WebviewViewProvider {
 			commands.executeCommand("codemod.executeCodemod", uri, hashDigest);
 		}
 
-		if (message.kind === "webview.codemodList.dryRunPrivateCodemod") {
-			if (this.__rootUri === null) {
-				window.showWarningMessage("No active workspace is found.");
-				return;
-			}
-
-			const hashDigest = message.value;
-			this.__store.dispatch(actions.setRecentCodemodHashes(hashDigest));
-
-			const state = this.__store.getState().codemodDiscoveryView;
-			const executionPath =
-				state.executionPaths[hashDigest] ?? this.__rootUri.fsPath;
-
-			if (executionPath === null) {
-				return;
-			}
-
-			const uri = Uri.file(executionPath);
-
-			commands.executeCommand(
-				"codemod.executePrivateCodemod",
-				uri,
-				hashDigest,
-				message.name,
-			);
-		}
-
 		if (message.kind === "webview.codemodList.updatePathToExecute") {
 			await this.updateExecutionPath(message.value);
 
@@ -515,12 +481,6 @@ export class MainViewProvider implements WebviewViewProvider {
 		if (message.kind === "webview.global.collapsePublicRegistryPanel") {
 			this.__store.dispatch(
 				actions.collapsePublicRegistryPanel(message.collapsed),
-			);
-		}
-
-		if (message.kind === "webview.global.collapsePrivateRegistryPanel") {
-			this.__store.dispatch(
-				actions.collapsePrivateRegistryPanel(message.collapsed),
 			);
 		}
 
