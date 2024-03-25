@@ -1,4 +1,5 @@
 import { VisibilityOptions } from "~/types/options";
+import { isNil } from "~/utils/isNil";
 
 export const isVisible = (
 	visibility:
@@ -7,8 +8,8 @@ export const isVisible = (
 		  }
 		| { isVisible: boolean },
 ) =>
-	"visibilityOptions" in visibility
-		? visibility?.visibilityOptions?.isVisible
+	"visibilityOptions" in visibility && !isNil(visibility?.visibilityOptions)
+		? visibility.visibilityOptions.isVisible
 		: "isVisible" in visibility
 		  ? visibility.isVisible
 		  : true;
