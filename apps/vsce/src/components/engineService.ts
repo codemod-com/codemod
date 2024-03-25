@@ -511,7 +511,7 @@ export class EngineService {
 		}
 
 		this.#execution.halted = true;
-		this.#execution.childProcess.stdin.write("shutdown\n");
+		this.#execution.childProcess.kill("SIGINT");
 	}
 
 	private __getQueuedCodemodHashes(): ReadonlyArray<CodemodHash> {

@@ -45,6 +45,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 	},
 	handleFile: async (api, path, options) => {
 		const fileName = path.split(sep).at(-1);
+		const biomePath = api.joinPaths(api.currentWorkingDirectory, "biome.json");
 
 		if (fileName === "package.json") {
 			return [
@@ -53,7 +54,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 					kind: "upsertFile",
 					path,
 					options: {
-						biomeJsonStringContent: await api.readFile("biome.json"),
+						biomeJsonStringContent: await api.readFile(biomePath),
 					},
 				},
 				// Then, update package.json and remove all eslint-related keys
@@ -70,7 +71,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 				kind: "upsertFile",
 				path,
 				options: {
-					biomeJsonStringContent: await api.readFile("biome.json"),
+					biomeJsonStringContent: await api.readFile(biomePath),
 				},
 			},
 			{
@@ -89,6 +90,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 		state,
 	) => {
 		const fileName = path.split(sep).at(-1)!;
+		const biomePath = api.joinPaths(api.currentWorkingDirectory, "biome.json");
 
 		let biomeJsonContent: BiomeConfig;
 		try {
@@ -112,7 +114,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 			return {
 				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: "biome.json",
+				path: biomePath,
 			};
 		}
 
@@ -130,7 +132,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 			return {
 				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: "biome.json",
+				path: biomePath,
 			};
 		}
 
@@ -150,7 +152,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 			return {
 				kind: "upsertData",
 				data: JSON.stringify(biomeJsonContent),
-				path: "biome.json",
+				path: biomePath,
 			};
 		}
 
@@ -186,7 +188,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 				return {
 					kind: "upsertData",
 					data: JSON.stringify(biomeJsonContent),
-					path: "biome.json",
+					path: biomePath,
 				};
 			}
 
