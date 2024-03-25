@@ -368,6 +368,14 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 				},
 				skip,
 				take: size,
+				include: {
+					versions: {
+						orderBy: {
+							createdAt: "desc",
+						},
+						take: 1,
+					},
+				},
 			}),
 			prisma.codemod.count({ where: whereClause }),
 		]);
