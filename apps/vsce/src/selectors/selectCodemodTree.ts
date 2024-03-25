@@ -6,26 +6,6 @@ import { RootState } from "../data";
 import { CodemodHash } from "../packageJsonAnalyzer/types";
 import { buildHash, capitalize } from "../utilities";
 
-const codemodComCertifiedCodemods = [
-	"next/13/app-directory-boilerplate",
-	"next/13/built-in-next-font",
-	"next/13/comment-deletable-files",
-	"next/13/move-css-in-js-styles",
-	"next/13/new-image-experimental",
-	"next/13/new-link",
-	"next/13/next-image-to-legacy-image",
-	"next/13/remove-get-static-props",
-	"next/13/remove-next-export",
-	"next/13/replace-next-head",
-	"next/13/replace-next-head-v2",
-	"next/13/replace-next-router",
-	"next/13/upsert-use-client-directive",
-	"next/13/replace-next-head-repomod",
-	"next/13/app-router",
-	"next/13/app-router-recipe",
-	"next/13/replace-api-routes",
-];
-
 interface CodemodNodeHashDigestBrand {
 	readonly __CodemodNodeHashDigest: unique symbol;
 }
@@ -103,11 +83,7 @@ export const buildCodemodNode = (
 		label: buildCodemodTitle(name),
 		executionPath: T.right(executionPath),
 		queued: queued,
-		icon: isPrivate
-			? "private"
-			: codemodComCertifiedCodemods.includes(codemod.name)
-			  ? "certified"
-			  : "community",
+		icon: isPrivate ? "private" : "certified",
 		permalink: isPrivate ? (codemod as PrivateCodemodEntry).permalink : null,
 		args,
 	} as const;
