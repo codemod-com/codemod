@@ -251,7 +251,7 @@ export const runCodemod = async (
 	}
 
 	if (codemod.engine === "ast-grep") {
-		await runAstgrep(printer, codemod.yamlPath, flowSettings.target);
+		await runAstgrep(printer, codemod.indexPath, flowSettings.target);
 		return;
 	}
 

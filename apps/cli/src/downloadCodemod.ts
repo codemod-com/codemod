@@ -88,7 +88,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 					name,
 					engine: config.engine,
 					include: config.include,
-					yamlPath,
+					indexPath: yamlPath,
 					directoryPath,
 					arguments: config.arguments,
 				};

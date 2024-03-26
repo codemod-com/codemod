@@ -39,6 +39,10 @@ const getFirstValibotIssue = (issues: Issues) => {
 		}
 	}
 
+	if (!reasonableError) {
+		reasonableError = issues.at(0)?.message;
+	}
+
 	return reasonableError;
 };
 

@@ -38,7 +38,7 @@ export const runAstgrep = async (
 				if (fileExtension !== extension) {
 					continue;
 				}
-				const astCommand = "sg scan -r ${rulePath} ${entryPath} -U";
+				const astCommand = `sg scan -r ${rulePath} ${entryPath} -U`;
 				if (process.platform === "win32") {
 					execSync(`powershell -Command "${astCommand}"`);
 				} else {
