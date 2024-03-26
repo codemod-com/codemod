@@ -60,14 +60,14 @@ const renderActionButtons = (
 
 		return (
 			<>
-				<ActionButton
+				{/* <ActionButton
 					id={`${hashDigest}-dryRunButton`}
 					content="Set codemod arguments"
 					onClick={handleCodemodArgumentsClick}
 					active={argumentsExpanded}
 				>
 					<span className={cn("codicon", "codicon-settings-gear")} />
-				</ActionButton>
+				</ActionButton> */}
 				<ActionButton
 					id={`${hashDigest}-dryRunButton`}
 					content="Dry-run this codemod (without making change to file system)."
