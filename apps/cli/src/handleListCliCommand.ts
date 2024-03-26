@@ -50,6 +50,15 @@ export const handleListNamesCommand = async (options: {
 
 	if (search) {
 		prettified = prettified.slice(0, 10);
+
+		if (prettified.length === 0) {
+			printer.printConsoleMessage(
+				"info",
+				boldText(colorizeText("No results matched your search.", "red")),
+			);
+			return;
+		}
+
 		printer.printConsoleMessage(
 			"info",
 			boldText(colorizeText("Here are the top search results:\n", "cyan")),
