@@ -1,10 +1,7 @@
 import cn from "classnames";
 import areEqual from "fast-deep-equal";
-import { memo, useEffect, useMemo, useRef } from "react";
-import {
-	ImperativePanelHandle,
-	PanelGroupStorage,
-} from "react-resizable-panels";
+import { memo, useMemo } from "react";
+import { PanelGroupStorage } from "react-resizable-panels";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { PanelGroup } from "../shared/Panel";
 import SearchBar from "../shared/SearchBar";
@@ -25,16 +22,6 @@ export const App = memo(
 			screenWidth: number | null;
 		},
 	) => {
-		const publicRegistryRef = useRef<ImperativePanelHandle | null>(null);
-
-		useEffect(() => {
-			if (props.publicRegistryCollapsed) {
-				publicRegistryRef.current?.collapse();
-			} else {
-				publicRegistryRef.current?.expand();
-			}
-		}, [props.publicRegistryCollapsed]);
-
 		const storage = useMemo(
 			(): PanelGroupStorage => ({
 				getItem: () => JSON.stringify(props.panelGroupSettings),

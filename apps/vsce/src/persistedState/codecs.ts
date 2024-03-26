@@ -68,7 +68,6 @@ export const persistedStateCodecNew = buildTypeCodec({
 			focusedCodemodHashDigest: t.union([codemodNodeHashDigestCodec, t.null]),
 			expandedNodeHashDigests: t.readonlyArray(codemodNodeHashDigestCodec),
 			searchPhrase: t.string,
-			publicRegistryCollapsed: withFallback(t.boolean, false),
 			panelGroupSettings: panelGroupSettingsCodec,
 			codemodArgumentsPopupHashDigest: t.union([
 				codemodNodeHashDigestCodec,
@@ -81,7 +80,6 @@ export const persistedStateCodecNew = buildTypeCodec({
 			focusedCodemodHashDigest: null,
 			expandedNodeHashDigests: [],
 			searchPhrase: "",
-			publicRegistryCollapsed: false,
 			panelGroupSettings: {
 				"0,0": [50, 50],
 			},

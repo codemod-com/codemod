@@ -55,7 +55,6 @@ export const getInitialState = (): RootState => {
 			},
 		},
 		codemodDiscoveryView: {
-			publicRegistryCollapsed: false,
 			panelGroupSettings: {
 				"0,0": [50, 50],
 			},
