@@ -84,25 +84,29 @@ export const handlePublishCliCommand = async (
 	);
 
 	if (codemodRc.engine !== "recipe") {
+		let globSearchPattern: string;
 		let actualMainFileName: string;
 		let errorOnMissing: string;
 
 		switch (codemodRc.engine) {
 			case "ast-grep":
+				globSearchPattern = "**/rule.yaml";
 				actualMainFileName = "rule.yaml";
 				errorOnMissing = `Please create the main "rule.yaml" file first.`;
 				break;
 			case "piranha":
+				globSearchPattern = "**/rules.toml";
 				actualMainFileName = "rules.toml";
 				errorOnMissing = `Please create the main "rules.toml" file first.`;
 				break;
 			default:
+				globSearchPattern = "dist/index.cjs";
 				actualMainFileName = "index.cjs";
 				errorOnMissing = `Did you forget to run "codemod build"?`;
 		}
 
 		const mainFiles = await glob(
-			join(source, codemodRc.build?.output ?? `**/${actualMainFileName}`),
+			join(source, codemodRc.build?.output ?? globSearchPattern),
 			{ absolute: true },
 		);
 
@@ -111,6 +115,7 @@ export const handlePublishCliCommand = async (
 				`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
 			);
 		}
+
 		formData.append(actualMainFileName, mainFiles.at(0));
 	}
 

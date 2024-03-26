@@ -1,5 +1,7 @@
+import { readFile } from "node:fs/promises";
 import { Filemod } from "@codemod-com/filemod";
 import { FileSystemAdapter, glob, globStream } from "fast-glob";
+import * as yaml from "js-yaml";
 import { IFs, Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
@@ -23,6 +25,21 @@ export { escape } from "minimatch";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
+const astGrepLanguageToPatterns: Record<string, string[]> = {
+	js: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
+	jsx: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
+	javascript: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
+
+	ts: ["**/*.ts", "**/*.cts", "**/*.mts"],
+	typescript: ["**/*.ts", "**/*.cts", "**/*.mts"],
+
+	tsx: ["**/*.tsx"],
+
+	py: ["**/*.py", "**/*.py3", "**/*.pyi", "**/*.bzl"],
+
+	java: ["**/*.java"],
+};
+
 export const buildPatterns = async (
 	flowSettings: FlowSettings,
 	codemod: Codemod,
@@ -42,10 +59,20 @@ export const buildPatterns = async (
 			filemod !== null
 		) {
 			patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
-		} else if (codemod.engine === "jscodeshift") {
+		} else if (
+			codemod.engine === "jscodeshift" ||
+			codemod.engine === "ts-morph"
+		) {
 			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-		} else if (codemod.engine === "ts-morph") {
-			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+		} else if (codemod.engine === "ast-grep") {
+			try {
+				const config = yaml.load(
+					await readFile(codemod.indexPath, { encoding: "utf8" }),
+				) as { language: string };
+				patterns = astGrepLanguageToPatterns[config.language];
+			} catch (error) {
+				//
+			}
 		}
 
 		if (!patterns) {
@@ -255,15 +282,15 @@ export const runCodemod = async (
 		? transpile(codemodSource.toString())
 		: codemodSource.toString();
 
-	const transformer = getTransformer(transpiledSource);
-
-	if (transformer === null) {
-		throw new Error(
-			`The transformer cannot be null: ${codemod.indexPath} ${codemod.engine}`,
-		);
-	}
-
 	if (codemod.engine === "repomod-engine" || codemod.engine === "filemod") {
+		const transformer = getTransformer(transpiledSource);
+
+		if (transformer === null) {
+			throw new Error(
+				`The transformer cannot be null: ${codemod.indexPath} ${codemod.engine}`,
+			);
+		}
+
 		const patterns = await buildPatterns(
 			flowSettings,
 			codemod,
@@ -291,7 +318,7 @@ export const runCodemod = async (
 		return;
 	}
 
-	// jscodeshift or ts-morph
+	// jscodeshift or ts-morph or ast-grep
 	const patterns = await buildPatterns(flowSettings, codemod, null);
 	const pathGenerator = buildPathGlobGenerator(
 		fileSystem,
