@@ -437,6 +437,11 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 				_count: {
 					_all: true,
 				},
+				where: {
+					useCaseCategory: {
+						not: null,
+					},
+				},
 			}),
 			prisma.codemod.groupBy({
 				by: ["author"],
