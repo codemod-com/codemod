@@ -1,6 +1,6 @@
 {
 	"name": "@codemod-com/backend",
-	"version": "0.0.49",
+	"version": "0.0.50",
 	"scripts": {
 		"build": "node esbuild.config.js",
 		"start": "prisma -v && pnpm run db:migrate:apply && node build/index.js",
