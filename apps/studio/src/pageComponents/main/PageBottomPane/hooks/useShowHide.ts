@@ -1,5 +1,8 @@
 import { useEffect } from "react";
-import { Panel, PanelsRefs } from "~/pageComponents/main/bottom-panel/types";
+import {
+	Panel,
+	PanelsRefs,
+} from "~/pageComponents/main/PageBottomPane/utils/types";
 
 export const useShowHide = ({
 	isAfterPanelVisible,

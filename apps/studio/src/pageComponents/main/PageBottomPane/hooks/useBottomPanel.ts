@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { type ImperativePanelHandle } from "react-resizable-panels";
-import { collapseOnNextTick } from "~/pageComponents/main/bottom-panel/collapce-on-next-tick";
-import { Panel } from "~/pageComponents/main/bottom-panel/types";
-import { usePanels } from "~/pageComponents/main/bottom-panel/usePanels";
-import { useShowHide } from "~/pageComponents/main/bottom-panel/useShowHide";
+import { usePanels } from "~/pageComponents/main/PageBottomPane/hooks/usePanels";
+import { useShowHide } from "~/pageComponents/main/PageBottomPane/hooks/useShowHide";
+import { collapseOnNextTick } from "~/pageComponents/main/PageBottomPane/utils/collapce-on-next-tick";
+import { Panel } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { selectEngine } from "~/store/slices/snippets";
 import { selectASTViewCollapsed, viewSlice } from "~/store/slices/view";
 import { isVisible } from "~/utils/visibility";

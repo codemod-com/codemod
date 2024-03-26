@@ -4,7 +4,7 @@ import {
 	ContentViewerVariant,
 	Panel,
 	PanelData,
-} from "~/pageComponents/main/bottom-panel/types";
+} from "~/pageComponents/main/PageBottomPane/utils/types";
 import { JSEngine } from "~/types/Engine";
 
 export const getContent = (type: ContentViewerVariant) => (engine: JSEngine) =>

@@ -3,21 +3,20 @@ import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { Button } from "~/components/ui/button";
 import { isServer } from "~/config";
+import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
-import SnippetUI from "~/pageComponents/main/SnippetUI";
-import { SnippetHeader } from "~/pageComponents/main/bottom-panel/SnippedHeader";
 import { JSEngine } from "~/types/Engine";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
-import Layout from "../Layout";
+import Layout from "../../Layout";
 import {
 	ContentViewerProps,
 	PanelComponentProps,
 	PanelData,
 	PanelRefs,
 	ToggleButtonProps,
-} from "./types";
+} from "../utils/types";
 
 export const BoundResizePanel = ({
 	defaultSize = 33,
@@ -114,21 +113,12 @@ export const AstSection = ({
 		</>
 	));
 
-export const BeforeCodeSnippedPanel = ({
-	beforePanel,
-	panelRefs,
-}: {
-	beforePanel: PanelData;
-	panelRefs: PanelRefs;
-}) => (
-	<BoundResizePanel
-		panelRefs={panelRefs}
-		panelRefIndex={beforePanel.snippedIndex}
-		boundedIndex={beforePanel.astIndex}
-		defaultSize={33}
-		{...beforePanel}
-	>
-		<SnippetHeader title="Before" />
-		<SnippetUI type="before" />
-	</BoundResizePanel>
+export const ShowPanelTile = ({
+	panel,
+	header,
+}: { panel: PanelData; header: string }) => (
+	<div className="hidden_panel_indicator">
+		<VisibilityIcon visibilityOptions={panel.visibilityOptions} />
+		<span className="hidden_panel_indicator_text">{header}</span>
+	</div>
 );

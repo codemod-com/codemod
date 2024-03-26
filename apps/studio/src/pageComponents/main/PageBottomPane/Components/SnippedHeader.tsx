@@ -1,4 +1,4 @@
-import { HeaderProps } from "./types";
+import { HeaderProps } from "../utils/types";
 
 import Pane from "~/components/Panel";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";

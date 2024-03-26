@@ -1,14 +1,15 @@
 import dynamic from "next/dynamic";
 import { PropsWithChildren, ReactNode, useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
-import { useWebWorker } from "~/hooks/useWebWorker";
-import { cn } from "~/lib/utils";
 import {
 	BoundResizePanel,
 	PanelData,
 	PanelRefs,
 	SnippetHeader,
-} from "~/pageComponents/main/bottom-panel";
+	SnippetType,
+} from "src/pageComponents/main/PageBottomPane";
+import { useWebWorker } from "~/hooks/useWebWorker";
+import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
@@ -183,13 +184,12 @@ export const WarningTexts = ({
 export const DiffEditorWrapper = ({
 	originalEditorProps,
 	modifiedEditorProps,
-	children,
 	warnings,
 	type,
 }: Pick<LiveCodemodResultProps, "originalEditorProps" | "modifiedEditorProps"> &
 	PropsWithChildren<{
 		warnings?: ReactNode;
-		type: "after" | "output";
+		type: SnippetType;
 	}>) => (
 	<div
 		className={cn(
@@ -219,16 +219,21 @@ export const DiffEditorWrapper = ({
 const CodeSnippedPanel = ({
 	children,
 	header,
+	className,
 	panelData,
 	panelRefs,
 }: PropsWithChildren<{
+	className?: string;
 	header: string;
 	panelRefs: PanelRefs;
 	panelData: PanelData;
 }>) => {
 	return (
 		<BoundResizePanel
-			className={cn("visibilityOptions" in panelData && "collapsable_panel")}
+			className={cn(
+				"visibilityOptions" in panelData && "collapsable_panel",
+				className,
+			)}
 			defaultSize={33}
 			panelRefIndex={panelData.snippedIndex}
 			panelRefs={panelRefs}

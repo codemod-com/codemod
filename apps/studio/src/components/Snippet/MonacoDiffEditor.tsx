@@ -44,11 +44,6 @@ const MonacoDiffEditor = ({
 	useEditor(originalEditor, originalEditorProps, mounted);
 	useEditor(modifiedEditor, modifiedEditorProps, mounted);
 
-	editorRef.current?.updateOptions({
-		enableSplitViewResizing: false,
-		renderSideBySide,
-	});
-
 	return (
 		<DiffEditor
 			onMount={(editor) => {
@@ -56,7 +51,12 @@ const MonacoDiffEditor = ({
 				setMounted(true);
 			}}
 			theme={isDark ? "vs-dark" : "vs"}
-			options={{ ...(options ?? {}), ...defaultOptions }}
+			options={{
+				...(options ?? {}),
+				...defaultOptions,
+				enableSplitViewResizing: false,
+				renderSideBySide,
+			}}
 			{...restProps}
 		/>
 	);

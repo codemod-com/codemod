@@ -1,6 +1,6 @@
-import { ToVoid } from "~/types/transformations";
+import { Void } from "~/types/transformations";
 
 export type VisibilityOptions = {
-	toggleVisibility: ToVoid;
+	toggleVisibility: Void;
 	isVisible: boolean;
 };
