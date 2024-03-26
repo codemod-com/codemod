@@ -173,7 +173,7 @@ function App() {
 					Community
 				</VSCodePanelTab>
 				<VSCodePanelTab className="vscode-tab" id={"sourceControl"}>
-					Github Issue
+					Report Issue
 				</VSCodePanelTab>
 
 				<VSCodePanelView
