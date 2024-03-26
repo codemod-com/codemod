@@ -573,6 +573,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							author: codemod.author,
 							tags: latestVersion.tags,
 							verified: codemod.verified,
+							arguments: codemod.arguments,
 						};
 					}),
 				);
@@ -601,6 +602,8 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							engine: latestVersion?.engine,
 							author: codemod.author,
 							tags: latestVersion.tags,
+							verified: codemod.verified,
+							arguments: codemod.arguments,
 						};
 					}),
 				);

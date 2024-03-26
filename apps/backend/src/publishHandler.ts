@@ -249,6 +249,7 @@ export const publishHandler =
 				applicability: codemodRc.applicability,
 				tags: codemodRc.meta?.tags,
 				useCaseCategory: codemodRc.meta?.useCaseCategory,
+				arguments: codemodRc.arguments,
 			};
 
 			let isVerified =
@@ -285,6 +286,7 @@ export const publishHandler =
 						versions: {
 							create: codemodVersionEntry,
 						},
+						arguments: codemodRc.arguments,
 					},
 					update: {
 						versions: {
