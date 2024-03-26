@@ -333,6 +333,15 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			authors.push(...query.author.filter(isNeitherNullNorUndefined));
 		}
 
+		const frameworks = [];
+		if (!Array.isArray(query.framework)) {
+			if (isNeitherNullNorUndefined(query.framework)) {
+				frameworks.push(query.framework);
+			}
+		} else {
+			frameworks.push(...query.framework.filter(isNeitherNullNorUndefined));
+		}
+
 		const verified = query.verified;
 		const page = query.page || 1;
 		const size = query.size || 10;
@@ -360,12 +369,28 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			});
 		}
 
-		if (categories.length > 0) {
+		if (categories.length) {
 			filterClauses.push({ useCaseCategory: { in: categories } });
 		}
 
-		if (authors.length > 0) {
+		if (authors.length) {
 			filterClauses.push({ author: { in: authors } });
+		}
+
+		if (frameworks.length) {
+			const frameworkTags = await prisma.tag.findMany({
+				where: {
+					classification: "framework",
+					aliases: { hasSome: frameworks },
+				},
+			});
+
+			const frameworkAliases = frameworkTags.reduce((acc: string[], curr) => {
+				acc.push(...curr.aliases);
+				return acc;
+			}, []);
+
+			filterClauses.push({ tags: { hasSome: frameworkAliases } });
 		}
 
 		if (isNeitherNullNorUndefined(verified)) {
