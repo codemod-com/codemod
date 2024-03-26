@@ -57,56 +57,30 @@ export const runAstGrepCodemod = async (
 	// Sort in reverse order to not mess up replacement offsets
 	matches.sort((a, b) => b.range.byteOffset.start - a.range.byteOffset.start);
 
-	let newContent = oldData;
+	let newData = oldData;
 	for (const result of matches) {
 		const { replacementOffsets, replacement } = result;
 		if (!replacementOffsets) {
 			continue;
 		}
 
-		newContent =
-			newContent.slice(0, replacementOffsets.start) +
+		newData =
+			newData.slice(0, replacementOffsets.start) +
 			replacement +
-			newContent.slice(replacementOffsets.end);
+			newData.slice(replacementOffsets.end);
 	}
 
-	console.log(newContent);
+	if (typeof newData !== "string" || oldData === newData) {
+		return commands;
+	}
 
-	// console.dir(output, { depth: 10 });
-
-	// if (output.replacement) {
-	// 	if (!output.range.start || !output.range.end) {
-	// 		throw new Error("Range not found in ast-grep output");
-	// 	}
-
-	// 	// commands.push({
-	// 	// 	kind: "updateFile",
-	// 	// 	oldPath,
-	// 	// 	oldData,
-	// 	// 	newData:
-	// 	// 		oldData.slice(0, output.range.start) +
-	// 	// 		output.replacement +
-	// 	// 		oldData.slice(output.range.end),
-	// 	// 	formatWithPrettier: !disablePrettier,
-	// 	// });
-	// 	console.log(
-	// 		oldData.slice(0, output.range.start) +
-	// 			output.replacement +
-	// 			oldData.slice(output.range.end),
-	// 	);
-	// }
-
-	// if (typeof newData !== "string" || oldData === newData) {
-	// 	return commands;
-	// }
-
-	// commands.push({
-	// 	kind: "updateFile",
-	// 	oldPath,
-	// 	oldData: oldData,
-	// 	newData: oldData,
-	// 	formatWithPrettier: !disablePrettier,
-	// });
+	commands.push({
+		kind: "updateFile",
+		oldPath,
+		oldData,
+		newData,
+		formatWithPrettier: !disablePrettier,
+	});
 
 	return commands;
 };
