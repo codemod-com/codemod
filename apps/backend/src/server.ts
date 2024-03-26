@@ -314,10 +314,26 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		const query = parseGetCodemodsQuery(request.query);
 
 		const search = query.search;
-		const category = query.category;
-		const author = query.author;
-		const verified = query.verified;
 
+		const categories = [];
+		if (!Array.isArray(query.category)) {
+			if (isNeitherNullNorUndefined(query.category)) {
+				categories.push(query.category);
+			}
+		} else {
+			categories.push(...query.category.filter(isNeitherNullNorUndefined));
+		}
+
+		const authors = [];
+		if (!Array.isArray(query.author)) {
+			if (isNeitherNullNorUndefined(query.author)) {
+				authors.push(query.author);
+			}
+		} else {
+			authors.push(...query.author.filter(isNeitherNullNorUndefined));
+		}
+
+		const verified = query.verified;
 		const page = query.page || 1;
 		const size = query.size || 10;
 		const skip = (page - 1) * size;
@@ -344,12 +360,12 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			});
 		}
 
-		if (isNeitherNullNorUndefined(category)) {
-			filterClauses.push({ useCaseCategory: category });
+		if (categories.length > 0) {
+			filterClauses.push({ useCaseCategory: { in: categories } });
 		}
 
-		if (isNeitherNullNorUndefined(author)) {
-			filterClauses.push({ author });
+		if (authors.length > 0) {
+			filterClauses.push({ author: { in: authors } });
 		}
 
 		if (isNeitherNullNorUndefined(verified)) {
