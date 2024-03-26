@@ -7,5 +7,6 @@ export const prisma = new PrismaClient();
 declare global {
 	namespace PrismaJson {
 		type ApplicabilityCriteria = CodemodConfig["applicability"];
+		type Arguments = CodemodConfig["arguments"];
 	}
 }
