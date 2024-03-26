@@ -1,4 +1,4 @@
-import type { AllEngines } from "@codemod-com/utilities";
+import type { CodemodListReturn } from "@codemod-com/utilities";
 import Axios from "axios";
 import type FormData from "form-data";
 import { type Output, nullable, object, parse, string } from "valibot";
@@ -72,13 +72,6 @@ export const getCodemodDownloadURI = async (
 	return res.data.link;
 };
 
-export type CodemodListReturn = {
-	name: string;
-	author: string;
-	engine: AllEngines;
-	tags: string[];
-	verified: boolean;
-}[];
 export const getCodemodList = async (options?: {
 	accessToken?: string;
 	search?: string;

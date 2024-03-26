@@ -49,14 +49,7 @@ export const executeMainThread = async () => {
 		.command(
 			["list", "ls", "search"],
 			"lists all the codemods & recipes in the public registry. can be used to search by name and tags",
-			(y) =>
-				buildUseJsonOption(buildUseCacheOption(y))
-					// prints only names consumed by VSCE
-					.option("short", {
-						type: "boolean",
-						description: "",
-						default: false,
-					}),
+			(y) => buildUseJsonOption(buildUseCacheOption(y)),
 		)
 		.command(
 			"learn",
@@ -174,7 +167,6 @@ export const executeMainThread = async () => {
 			await handleListNamesCommand({
 				printer,
 				search: searchTerm ?? undefined,
-				short: argv.short,
 			});
 		} catch (error) {
 			if (!(error instanceof Error)) {
