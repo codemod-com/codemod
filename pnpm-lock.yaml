@@ -831,9 +831,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      react-markdown:
-        specifier: ^8.0.7
-        version: 8.0.7(@types/react@18.2.55)(react@18.2.0)
       react-resizable-panels:
         specifier: ^0.0.51
         version: 0.0.51(react-dom@18.2.0)(react@18.2.0)
@@ -12649,7 +12646,7 @@ packages:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.0.4(@types/node@18.11.9)
+      vitest: 1.0.4(@types/node@20.10.4)
     transitivePeerDependencies:
       - supports-color
     dev: true

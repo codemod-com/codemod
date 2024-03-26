@@ -17,7 +17,6 @@ import { JobManager } from "./components/jobManager";
 import { Command, MessageBus, MessageKind } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
 import { GlobalStateTokenStorage, UserService } from "./components/userService";
-import { CodemodDescriptionProvider } from "./components/webview/CodemodDescriptionProvider";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
 import {
@@ -156,16 +155,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		mainViewProvider,
 	);
 
-	const codemodDescriptionProvider = new CodemodDescriptionProvider(
-		vscode.workspace.fs,
-	);
-
 	new CustomPanelProvider(
 		context.extensionUri,
 		store,
 		mainViewProvider,
 		messageBus,
-		codemodDescriptionProvider,
 		rootUri?.fsPath ?? null,
 		jobManager,
 	);
