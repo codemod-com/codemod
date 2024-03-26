@@ -111,7 +111,11 @@ export const handleInstallDependencies = async (options: {
 
 		if (detectedPackageManager === null) {
 			for (const packageJsonPath of packageJsons) {
-				const packageJson = await import(packageJsonPath);
+				const packageJsonContent = await readFile(packageJsonPath, {
+					encoding: "utf-8",
+				});
+				const packageJson = JSON.parse(packageJsonContent);
+
 				if (packageJson.packageManager) {
 					detectedPackageManager = packageJson.packageManager.split("@").at(0);
 					break;

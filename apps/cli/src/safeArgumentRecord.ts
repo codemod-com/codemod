@@ -5,7 +5,7 @@ export type SafeArgumentRecord = ArgumentRecord;
 
 export const buildSafeArgumentRecord = (
 	codemod: Codemod,
-	argumentRecord: Record<string, string | number | boolean>,
+	argumentRecord: SafeArgumentRecord,
 ): SafeArgumentRecord => {
 	if (codemod.source === "fileSystem") {
 		// no checks performed for local codemods
@@ -13,7 +13,7 @@ export const buildSafeArgumentRecord = (
 		return argumentRecord;
 	}
 
-	const safeArgumentRecord: { [x: string]: string | number | boolean } = {};
+	const safeArgumentRecord: SafeArgumentRecord = {};
 
 	codemod.arguments.forEach((descriptor) => {
 		if (!argumentRecord[descriptor.name]) {

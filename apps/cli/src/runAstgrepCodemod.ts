@@ -1,87 +1,112 @@
-import fs from "fs";
-import { execSync } from "node:child_process";
-import { readFile } from "node:fs/promises";
-import path from "path";
-import * as yaml from "js-yaml";
-import { PrinterBlueprint } from "./printer.js";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+import type { FileCommand } from "./fileCommands.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
-export const runAstgrep = async (
-	printer: PrinterBlueprint,
-	rulePath: string,
-	targetDirectory: string,
-): Promise<void> => {
-	const yamlString = await readFile(rulePath, { encoding: "utf8" });
-	const yamlObject = yaml.load(yamlString);
-	const extension = languageToExtension(yamlObject.language);
-	installSgCommandIfNotAvailable(printer);
-	printer.printConsoleMessage(
-		"info",
-		`Executing ast-grep for language : ${extension}`,
-	);
+const execPromise = promisify(exec);
 
-	// Function to recursively iterate over files in the directory
-	const iterateFiles = async (dirPath: string) => {
-		const entries = await fs.promises.readdir(dirPath, {
-			withFileTypes: true,
-		});
-
-		// Iterate over each entry in the directory
-		for (const entry of entries) {
-			const entryPath = path.join(dirPath, entry.name);
-			// Check if the entry is a directory
-			if (entry.isDirectory()) {
-				// Recursively call the function for subdirectories
-				await iterateFiles(entryPath);
-			} else if (entry.isFile()) {
-				// If the entry is a file, log its path
-				const fileExtension = path.extname(entryPath).slice(1);
-				if (fileExtension !== extension) {
-					continue;
-				}
-				const astCommand = "sg scan -r ${rulePath} ${entryPath} -U";
-				if (process.platform === "win32") {
-					execSync(`powershell -Command "${astCommand}"`);
-				} else {
-					execSync(astCommand);
-				}
-			}
-		}
+type AstGrepCompactOutput = {
+	text: string;
+	range: {
+		byteOffset: { start: number; end: number };
+		start: { line: number; column: number };
+		end: { line: number; column: number };
 	};
-
-	await iterateFiles(targetDirectory);
-	return;
+	file: string;
+	lines: string;
+	replacement?: string;
+	replacementOffsets?: { start: number; end: number };
+	language: string;
+	ruleId: string;
+	severity: string;
+	note: string | null;
+	message: string;
 };
 
-function languageToExtension(language: string) {
-	const lang = language.toLocaleLowerCase();
-	switch (lang) {
-		case "python":
-			return "py";
-		case "javascript":
-			return "js";
-		default:
-			throw new Error(
-				`Unsupported Language ${language} in codemod cli for ast-grep engine`,
-			);
-	}
-}
-
-// Function to check if ast-grep is available or not
-const installSgCommandIfNotAvailable = (printer: PrinterBlueprint): void => {
+export const runAstGrepCodemod = async (
+	codemodSource: string,
+	oldPath: string,
+	oldData: string,
+	disablePrettier: boolean,
+	safeArgumentRecord: SafeArgumentRecord,
+	consoleCallback: (kind: ConsoleKind, message: string) => void,
+): Promise<readonly FileCommand[]> => {
 	try {
 		// Use `which` command to check if the command is available
-		execSync("which sg");
+		await execPromise("which sg");
 	} catch (error) {
-		// If `which` command fails, the command is not available
-		printer.printConsoleMessage(
-			"info",
-			"ast-grep is not available, installing it globally",
-		);
 		const astInstallCommand = "npm install -g @ast-grep/cli";
 		if (process.platform === "win32") {
-			execSync(`powershell -Command ${astInstallCommand}`);
+			await execPromise(`powershell -Command ${astInstallCommand}`);
 		} else {
-			execSync(astInstallCommand);
+			await execPromise(astInstallCommand);
 		}
 	}
+
+	const commands: FileCommand[] = [];
+
+	const astCommandBase = `sg scan --inline-rules '\n${codemodSource}\n' ${oldPath} --json=compact`;
+	const astCommand =
+		process.platform === "win32"
+			? `powershell -Command "${astCommandBase}"`
+			: astCommandBase;
+
+	const { stdout } = await execPromise(astCommand);
+	const matches = JSON.parse(stdout.trim()) as AstGrepCompactOutput[];
+	// Sort in reverse order to not mess up replacement offsets
+	matches.sort((a, b) => b.range.byteOffset.start - a.range.byteOffset.start);
+
+	let newContent = oldData;
+	for (const result of matches) {
+		const { replacementOffsets, replacement } = result;
+		if (!replacementOffsets) {
+			continue;
+		}
+
+		newContent =
+			newContent.slice(0, replacementOffsets.start) +
+			replacement +
+			newContent.slice(replacementOffsets.end);
+	}
+
+	console.log(newContent);
+
+	// console.dir(output, { depth: 10 });
+
+	// if (output.replacement) {
+	// 	if (!output.range.start || !output.range.end) {
+	// 		throw new Error("Range not found in ast-grep output");
+	// 	}
+
+	// 	// commands.push({
+	// 	// 	kind: "updateFile",
+	// 	// 	oldPath,
+	// 	// 	oldData,
+	// 	// 	newData:
+	// 	// 		oldData.slice(0, output.range.start) +
+	// 	// 		output.replacement +
+	// 	// 		oldData.slice(output.range.end),
+	// 	// 	formatWithPrettier: !disablePrettier,
+	// 	// });
+	// 	console.log(
+	// 		oldData.slice(0, output.range.start) +
+	// 			output.replacement +
+	// 			oldData.slice(output.range.end),
+	// 	);
+	// }
+
+	// if (typeof newData !== "string" || oldData === newData) {
+	// 	return commands;
+	// }
+
+	// commands.push({
+	// 	kind: "updateFile",
+	// 	oldPath,
+	// 	oldData: oldData,
+	// 	newData: oldData,
+	// 	formatWithPrettier: !disablePrettier,
+	// });
+
+	return commands;
 };
