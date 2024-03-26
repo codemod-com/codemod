@@ -4,11 +4,11 @@ import CodeSnippedPanel, {
 } from "~/pageComponents/main/JSCodeshiftRender";
 import { getSnippetsData } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/get-snippets-data";
 import {
-	BottomPanel,
+	BottomPanelData,
 	PanelRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
 
-type CodeSnippetsProps = BottomPanel & {
+type CodeSnippetsProps = BottomPanelData & {
 	onlyAfterHidden: boolean;
 	panelRefs: PanelRefs;
 };

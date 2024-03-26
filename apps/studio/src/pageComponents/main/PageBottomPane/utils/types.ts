@@ -13,13 +13,14 @@ export type PanelComponentProps = {
 	hasBoundResize?: boolean;
 	defaultSize?: number;
 	minSize?: number;
-	panelRefIndex: Panel;
-	boundedIndex?: Panel;
+	panelRefIndex: ResizablePanelsIndices;
+	boundedIndex?: ResizablePanelsIndices;
 	direction?: "horizontal" | "vertical";
 	children: React.ReactNode;
 	visibilityOptions?: VisibilityOptions;
 	panelRefs: PanelsRefs;
 	className?: string;
+	style?: Record<string, string | number>;
 };
 
 export type ToggleButtonProps = {
@@ -33,7 +34,7 @@ export type ContentViewerProps = {
 	engine: JSEngine;
 };
 
-export enum Panel {
+export enum ResizablePanelsIndices {
 	BEFORE_AST = 0,
 	BEFORE_SNIPPET = 1,
 	BEFORE_SECTION = 2,
@@ -44,6 +45,8 @@ export enum Panel {
 	OUTPUT_SNIPPET = 7,
 	AST_SECTION = 8,
 	SNIPPETS_SECTION = 9,
+	CODE_SECTION = 10,
+	TAB_CONTENT = 11,
 }
 
 export type PanelContentRenderer = (engine: JSEngine) => React.ReactNode;
@@ -52,10 +55,11 @@ export type PanelData = Pick<
 	PanelComponentProps,
 	"visibilityOptions" | "hasBoundResize"
 > & {
-	astIndex: Panel;
-	snippedIndex: Panel;
+	boundIndex: ResizablePanelsIndices;
+	snippedIndex: ResizablePanelsIndices;
 	type: ContentViewerVariant;
 	content: PanelContentRenderer;
+	relatedAST: ResizablePanelsIndices;
 };
 
 export type HeaderProps = {
@@ -87,4 +91,4 @@ export type BottomPanelName = ValueOf<{
 	[x in SnippetType]: `${x}Panel`;
 }>;
 
-export type BottomPanel = Record<BottomPanelName, PanelData>;
+export type BottomPanelData = Record<BottomPanelName, PanelData>;

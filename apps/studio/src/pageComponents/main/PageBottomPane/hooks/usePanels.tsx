@@ -2,10 +2,11 @@ import { useToggleVisibility } from "~/hooks/useToggleVisibility";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
 import {
 	ContentViewerVariant,
-	Panel,
 	PanelData,
+	ResizablePanelsIndices,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { JSEngine } from "~/types/Engine";
+import { Repeat } from "~/types/transformations";
 
 export const getContent = (type: ContentViewerVariant) => (engine: JSEngine) =>
 	engine === "jscodeshift" ? (
@@ -16,19 +17,19 @@ export const getContent = (type: ContentViewerVariant) => (engine: JSEngine) =>
 
 export const usePanels = () => {
 	const beforePanel: PanelData = {
-		astIndex: Panel.BEFORE_AST,
-		snippedIndex: Panel.BEFORE_SNIPPET,
+		relatedAST: ResizablePanelsIndices.BEFORE_AST,
+		boundIndex: ResizablePanelsIndices.BEFORE_AST,
+		snippedIndex: ResizablePanelsIndices.BEFORE_SNIPPET,
 		type: "before",
 		hasBoundResize: true,
-		// there is a bug with resizing After panel when hiding and showing Before panel
-		// needs to be fixed in the library itself or to find a workaround
 		// visibilityOptions: useToggleVisibility(),
 		content: getContent("before"),
 	};
 
 	const afterPanel: Required<PanelData> = {
-		astIndex: Panel.AFTER_AST,
-		snippedIndex: Panel.AFTER_SNIPPET,
+		relatedAST: ResizablePanelsIndices.AFTER_AST,
+		boundIndex: ResizablePanelsIndices.CODE_SECTION,
+		snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
 		type: "after",
 		hasBoundResize: false,
 		content: getContent("after"),
@@ -36,13 +37,17 @@ export const usePanels = () => {
 	};
 
 	const outputPanel: PanelData = {
-		astIndex: Panel.OUTPUT_AST,
-		snippedIndex: Panel.OUTPUT_SNIPPET,
+		relatedAST: ResizablePanelsIndices.OUTPUT_AST,
+		boundIndex: ResizablePanelsIndices.OUTPUT_AST,
+		snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
 		type: "output",
 		content: getContent("output"),
 	};
 
+	const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
+
 	return {
+		panels,
 		beforePanel,
 		afterPanel,
 		outputPanel,

@@ -6,6 +6,7 @@ export enum TabNames {
 	MODGPT = "MODGPT",
 	GUIBuilder = "FIND_AND_REPLACE",
 	DEBUG = "DEBUG_CONSOLE",
+	AST = "AST",
 }
 
 type ViewState = Readonly<{

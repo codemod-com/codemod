@@ -1,7 +1,6 @@
-import React, { PropsWithChildren } from "react";
+import React, { PropsWithChildren, useEffect } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import { Button } from "~/components/ui/button";
 import { isServer } from "~/config";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
@@ -9,13 +8,14 @@ import ASTViewer from "~/pageComponents/main/ASTViewer";
 import { JSEngine } from "~/types/Engine";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
+import { isVisible } from "~/utils/visibility";
 import Layout from "../../Layout";
 import {
 	ContentViewerProps,
 	PanelComponentProps,
 	PanelData,
 	PanelRefs,
-	ToggleButtonProps,
+	SnippetType,
 } from "../utils/types";
 
 export const BoundResizePanel = ({
@@ -27,6 +27,7 @@ export const BoundResizePanel = ({
 	boundedIndex,
 	hasBoundResize = false,
 	className,
+	style = { maxHeight: isServer ? 0 : "unset" },
 }: PanelComponentProps) => {
 	return (
 		<Layout.ResizablePanel
@@ -37,7 +38,7 @@ export const BoundResizePanel = ({
 			ref={(ref) => {
 				panelRefs.current[panelRefIndex] = ref;
 			}}
-			style={{ maxHeight: isServer ? 0 : "unset" }}
+			style={style}
 			onResize={
 				hasBoundResize && !isNil(boundedIndex)
 					? debounce((size) => {
@@ -51,16 +52,6 @@ export const BoundResizePanel = ({
 		</Layout.ResizablePanel>
 	);
 };
-
-export const ToggleASTButton: React.FC<ToggleButtonProps> = ({ onClick }) => (
-	<Button
-		className="flex cursor-pointer items-center justify-center rounded-none px-2 py-1"
-		onClick={onClick}
-		variant="ghost"
-	>
-		AST
-	</Button>
-);
 
 export const ContentViewer: React.FC<ContentViewerProps> = ({
 	type,
@@ -89,29 +80,40 @@ export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
 );
 
 export const AstSection = ({
+	sectionsToShow,
 	panels,
 	panelRefs,
 	engine,
 }: {
+	sectionsToShow: SnippetType[];
 	panels: PanelData[];
 	panelRefs: PanelRefs;
 	engine: JSEngine;
-}) =>
-	panels.map((panel, i, { length }) => (
-		<>
-			<BoundResizePanel
-				panelRefs={panelRefs}
-				key={panel.astIndex}
-				defaultSize={33}
-				panelRefIndex={panel.astIndex}
-				boundedIndex={panel.snippedIndex}
-				{...panel}
-			>
-				<ContentViewer type={panel.type} engine={engine} />
-			</BoundResizePanel>
-			{i !== length - 1 && <ResizeHandle direction="horizontal" />}
-		</>
-	));
+}) => {
+	useEffect(() => {
+		// console.log('ResizablePanelsIndices.CODE_SECTION', panelRefs.current[ResizablePanelsIndices.CODE_SECTION]),
+		// panelRefs.current[ResizablePanelsIndices.CODE_SECTION]?.collapse()
+	}, []);
+	return panels
+		.filter(({ type }) => sectionsToShow.includes(type))
+		.filter(isVisible)
+		.map((panel, i, { length }) => (
+			<>
+				<BoundResizePanel
+					className="h-full"
+					panelRefs={panelRefs}
+					key={panel.relatedAST}
+					defaultSize={33}
+					panelRefIndex={panel.relatedAST}
+					// boundedIndex={ panel.snippedIndex }
+					{...panel}
+				>
+					<ContentViewer type={panel.type} engine={engine} />
+				</BoundResizePanel>
+				{i !== length - 1 && <ResizeHandle direction="horizontal" />}
+			</>
+		));
+};
 
 export const ShowPanelTile = ({
 	panel,

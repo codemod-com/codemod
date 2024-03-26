@@ -3,30 +3,20 @@ import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/CodeSnippets";
 import {
-	AstSection,
 	BottomPanel,
 	BoundResizePanel,
-	ToggleASTButton,
 } from "~/pageComponents/main/PageBottomPane/Components/side-components";
 import { inferVisibilities } from "~/pageComponents/main/PageBottomPane/utils/infer-visibilites";
-import {
-	Panel,
-	PanelData,
-} from "~/pageComponents/main/PageBottomPane/utils/types";
-import { Repeat } from "~/types/transformations";
+import { ResizablePanelsIndices } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { useBottomPanel } from "./hooks/useBottomPanel";
 
-const PageBottomPane = () => {
-	const {
-		panelRefs,
-		engine,
-		togglePanel,
-		beforePanel,
-		afterPanel,
-		outputPanel,
-	} = useBottomPanel();
-
-	const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
+const PageBottomPane = ({
+	panels,
+	panelRefs,
+	beforePanel,
+	afterPanel,
+	outputPanel,
+}: ReturnType<typeof useBottomPanel>) => {
 	const { onlyAfterHidden } = inferVisibilities(panels);
 
 	useEffect(() => {
@@ -42,22 +32,12 @@ const PageBottomPane = () => {
 	return (
 		<BottomPanel>
 			<Suspense>
-				<ToggleASTButton onClick={togglePanel} />
-				<BoundResizePanel
-					panelRefIndex={Panel.AST_SECTION}
-					defaultSize={50}
-					panelRefs={panelRefs}
-				>
-					<PanelGroup direction="horizontal">
-						<AstSection panels={panels} engine={engine} panelRefs={panelRefs} />
-					</PanelGroup>
-				</BoundResizePanel>
 				<ResizeHandle direction="vertical" />
 				<BoundResizePanel
 					defaultSize={50}
 					minSize={20}
 					panelRefs={panelRefs}
-					panelRefIndex={Panel.SNIPPETS_SECTION}
+					panelRefIndex={ResizablePanelsIndices.SNIPPETS_SECTION}
 				>
 					<PanelGroup direction="horizontal">
 						<CodeSnippets

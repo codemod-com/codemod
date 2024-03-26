@@ -23,6 +23,13 @@ import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
+import {
+	AstSection,
+	BoundResizePanel,
+	PanelsRefs,
+	ResizablePanelsIndices,
+	useBottomPanel,
+} from "~/pageComponents/main/PageBottomPane";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
@@ -74,7 +81,9 @@ const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
 	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
+	const panelRefs: PanelsRefs = useRef({});
 
+	console.log({ panelRefs });
 	useEffect(() => {
 		if (!isSignedIn) {
 			return;
@@ -135,6 +144,8 @@ const Main = () => {
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
 
+	const bottomPanelData = useBottomPanel(panelRefs);
+
 	return (
 		<>
 			<CFSModal />
@@ -159,23 +170,26 @@ const Main = () => {
 							}}
 						>
 							<PanelGroup direction="horizontal">
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
+								<BoundResizePanel
+									boundedIndex={ResizablePanelsIndices.AFTER_SNIPPET}
+									panelRefIndex={ResizablePanelsIndices.TAB_CONTENT}
+									panelRefs={bottomPanelData.panelRefs}
+									className="bg-gray-bg"
 									defaultSize={50}
 									minSize={0}
 									style={{
 										flexBasis: isServer ? "50%" : "0",
 									}}
 								>
-									<AssistantTab />
-								</Layout.ResizablePanel>
+									<AssistantTab bottomPanelData={bottomPanelData} />
+								</BoundResizePanel>
 
 								<ResizeHandle direction="horizontal" />
 
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
+								<BoundResizePanel
+									panelRefs={panelRefs}
+									panelRefIndex={ResizablePanelsIndices.CODE_SECTION}
+									className="bg-gray-bg"
 									defaultSize={50}
 									minSize={0}
 									style={{
@@ -196,11 +210,11 @@ const Main = () => {
 										</Panel.HeaderTab>
 									</Panel.Header>
 									<Codemod />
-								</Layout.ResizablePanel>
+								</BoundResizePanel>
 							</PanelGroup>
 						</Layout.ResizablePanel>
 						<ResizeHandle direction="vertical" />
-						<PageBottomPane />
+						<PageBottomPane {...bottomPanelData} />
 					</PanelGroup>
 				</Layout.Content>
 			</Layout>
@@ -244,7 +258,9 @@ const LoginWarningModal = () => {
 	);
 };
 
-const AssistantTab = () => {
+const AssistantTab = ({
+	bottomPanelData,
+}: { bottomPanelData: ReturnType<typeof useBottomPanel> }) => {
 	const activeTab = useSelector(selectActiveTab);
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
@@ -296,6 +312,9 @@ const AssistantTab = () => {
 				<TabsTrigger className="flex-1" value={TabNames.MODGPT}>
 					ModGPT
 				</TabsTrigger>
+				<TabsTrigger className="flex-1" value={TabNames.AST}>
+					AST
+				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.GUIBuilder}>
 					GUI Builder
 				</TabsTrigger>
@@ -304,6 +323,31 @@ const AssistantTab = () => {
 					Debug
 				</TabsTrigger>
 			</TabsList>
+
+			<TabsContent
+				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
+				value={TabNames.AST}
+				onScroll={handleScroll}
+				ref={scrollContainerRef}
+			>
+				<Layout.ResizablePanel
+					className="relative dark:bg-gray-light h-full"
+					defaultSize={50}
+					minSize={0}
+					style={{
+						flexBasis: isServer ? "50%" : "0",
+					}}
+				>
+					<PanelGroup direction="horizontal">
+						<AstSection
+							sectionsToShow={["before", "after"]}
+							panels={bottomPanelData.panels}
+							engine={engine}
+							panelRefs={bottomPanelData.panelRefs}
+						/>
+					</PanelGroup>
+				</Layout.ResizablePanel>
+			</TabsContent>
 
 			<TabsContent
 				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"

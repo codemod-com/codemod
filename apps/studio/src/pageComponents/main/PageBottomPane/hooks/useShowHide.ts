@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import {
-	Panel,
 	PanelsRefs,
+	ResizablePanelsIndices,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
 
 export const useShowHide = ({
@@ -13,13 +13,15 @@ export const useShowHide = ({
 }) => {
 	useEffect(() => {
 		if (isAfterPanelVisible) {
-			[Panel.BEFORE_SNIPPET, Panel.AFTER_AST, Panel.OUTPUT_AST].map(
-				(panelIndex) => panelRefs.current[panelIndex]?.resize(33),
-			);
+			[
+				ResizablePanelsIndices.BEFORE_SNIPPET,
+				ResizablePanelsIndices.AFTER_AST,
+				ResizablePanelsIndices.OUTPUT_AST,
+			].map((panelIndex) => panelRefs.current[panelIndex]?.resize(33));
 		} else {
-			panelRefs.current[Panel.BEFORE_SNIPPET]?.resize(50);
-			panelRefs.current[Panel.OUTPUT_AST]?.collapse();
-			panelRefs.current[Panel.AFTER_AST]?.collapse();
+			panelRefs.current[ResizablePanelsIndices.BEFORE_SNIPPET]?.resize(50);
+			panelRefs.current[ResizablePanelsIndices.OUTPUT_AST]?.collapse();
+			panelRefs.current[ResizablePanelsIndices.AFTER_AST]?.collapse();
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [isAfterPanelVisible]);
