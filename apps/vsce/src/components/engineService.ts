@@ -304,7 +304,7 @@ export class EngineService {
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
 		const childProcess = spawn(
 			CODEMOD_ENGINE_NODE_COMMAND,
-			["list", "--json", "--short"],
+			["list", "--short"],
 			{
 				stdio: "pipe",
 				shell: true,
@@ -312,21 +312,19 @@ export class EngineService {
 			},
 		);
 
-		const codemodListString = await streamToString(childProcess.stdout);
-		const codemodListObj = {
-			kind: "names",
-			names: codemodListString.split("\n").filter((name) => name.length > 0),
-		};
-
 		try {
-			const codemodListOrError = codemodNamesCodec.decode(codemodListObj);
+			const codemodListString = await streamToString(childProcess.stdout);
+			const codemods = codemodListString
+				.split("\n")
+				.filter((name) => name.trim().length > 0);
+
+			const codemodListOrError = codemodNamesCodec.decode(codemods);
 
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
 				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
-
-			return codemodListOrError.right.names;
+			return codemodListOrError.right;
 		} catch (e) {
 			if (e instanceof InvalidEngineResponseFormatError) {
 				throw e;
