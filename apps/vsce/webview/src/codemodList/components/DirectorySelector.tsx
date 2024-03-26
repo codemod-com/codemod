@@ -125,7 +125,7 @@ export const DirectorySelector = ({
 					onInput={handleChange}
 					onFocus={handleFocus}
 				>
-					Target path
+					--target
 				</VSCodeTextField>
 				<div className={styles.autocompleteItems}>
 					{showOptions &&
