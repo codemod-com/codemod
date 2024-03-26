@@ -11,6 +11,5 @@
 	},
 	"applicability": {
 		"from": [["react", "<=", "18"]]
-	},
-	"include": ["**/*.js", "**/*.ts"]
+	}
 }
