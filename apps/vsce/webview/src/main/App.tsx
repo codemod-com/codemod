@@ -164,7 +164,7 @@ function App() {
 				className="h-full w-full vscode-panels"
 			>
 				<VSCodePanelTab className="vscode-tab" id={"codemods"}>
-					Codemod Discovery
+					Codemods
 				</VSCodePanelTab>
 				<VSCodePanelTab className="vscode-tab" id={"codemodRuns"}>
 					Codemod Runs
