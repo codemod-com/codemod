@@ -14,9 +14,7 @@ import { Store } from "../../data";
 import { actions } from "../../data/slice";
 import { SEARCH_PARAMS_KEYS } from "../../extension";
 import { createIssueResponseCodec } from "../../github/types";
-import {
-	relativeToAbsolutePath,
-} from "../../selectors/selectCodemodTree";
+import { relativeToAbsolutePath } from "../../selectors/selectCodemodTree";
 import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
 import { buildGlobPattern } from "../../utilities";
 import { EngineService } from "../engineService";

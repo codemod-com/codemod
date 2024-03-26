@@ -35,9 +35,7 @@ import {
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import { CodemodHash } from "./packageJsonAnalyzer/types";
-import {
-	CodemodNodeHashDigest,
-} from "./selectors/selectCodemodTree";
+import { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { buildCaseHash } from "./telemetry/hashes";
 import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
@@ -672,7 +670,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					const targetUriIsDirectory = Boolean(
 						fileStat.type & vscode.FileType.Directory,
 					);
-					
+
 					// TODO: support codemod arguments
 					// const args = selectCodemodArguments(
 					// 	store.getState(),
