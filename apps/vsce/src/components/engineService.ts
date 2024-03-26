@@ -365,6 +365,7 @@ export class EngineService {
 
 				if (config.engine === "piranha") {
 					codemodEntries.push({
+						// @ts-ignore TODO: Remove this logic in the next PR
 						kind: "piranhaRule",
 						hashDigest,
 						name,
@@ -386,6 +387,7 @@ export class EngineService {
 						kind: "codemod",
 						hashDigest,
 						name,
+						// @ts-ignore TODO: Remove this logic in the next PR
 						engine: config.engine,
 						arguments: config.arguments,
 					});

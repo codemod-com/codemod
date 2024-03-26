@@ -296,12 +296,13 @@ export const selectCodemodArguments = (
 	const argumentsSchema =
 		Object.values(state.codemod.entities).find(
 			(codemodEntry) => codemodEntry?.hashDigest === hashDigest,
+			// @ts-ignore TODO: Remove supporting arguments in the next PR
 		)?.arguments ?? [];
 
 	const codemodArgumentsValues =
 		state.codemodDiscoveryView.codemodArguments[hashDigest] ?? null;
 
-	return argumentsSchema.map((arg) => {
+	return argumentsSchema.map((arg: any) => {
 		const value = codemodArgumentsValues?.[arg.name] ?? arg.default ?? "";
 
 		switch (arg.kind) {

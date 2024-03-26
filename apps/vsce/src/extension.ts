@@ -519,6 +519,7 @@ export async function activate(context: vscode.ExtensionContext) {
 						codemodHash as unknown as CodemodNodeHashDigest,
 					);
 					const command: Command =
+						// @ts-ignore TODO: Remove this logic in the next PR
 						codemod.kind === "piranhaRule"
 							? {
 									kind: "executePiranhaRule",
@@ -531,6 +532,7 @@ export async function activate(context: vscode.ExtensionContext) {
 												.digest("base64url"),
 										),
 									),
+									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemod.language,
 									name: codemod.name,
 									arguments: args,
@@ -677,6 +679,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					);
 
 					const command: Command =
+						// @ts-ignore TODO: Remove this logic in the next PR
 						codemodEntry.kind === "piranhaRule"
 							? {
 									kind: "executePiranhaRule",
@@ -689,6 +692,7 @@ export async function activate(context: vscode.ExtensionContext) {
 												.digest("base64url"),
 										),
 									),
+									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemodEntry.language,
 									name: codemodEntry.name,
 									arguments: args,
