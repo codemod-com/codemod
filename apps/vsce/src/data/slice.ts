@@ -625,9 +625,6 @@ const rootSlice = createSlice({
 		collapseChangeExplorerPanel(state, action: PayloadAction<boolean>) {
 			state.codemodRunsTab.changeExplorerCollapsed = action.payload;
 		},
-		collapsePublicRegistryPanel(state, action: PayloadAction<boolean>) {
-			state.codemodDiscoveryView.publicRegistryCollapsed = action.payload;
-		},
 		setCodemodArgumentsPopupHashDigest(
 			state,
 			action: PayloadAction<CodemodNodeHashDigest | null>,

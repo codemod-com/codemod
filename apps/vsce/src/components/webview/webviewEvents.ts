@@ -180,8 +180,7 @@ export type WebviewResponse =
 	| Readonly<{
 			kind:
 				| "webview.global.collapseResultsPanel"
-				| "webview.global.collapseChangeExplorerPanel"
-				| "webview.global.collapsePublicRegistryPanel";
+				| "webview.global.collapseChangeExplorerPanel";
 			collapsed: boolean;
 	  }>
 	| Readonly<{
