@@ -6,11 +6,10 @@ import { boldText, colorizeText } from "./utils.js";
 export const handleListNamesCommand = async (options: {
 	printer: PrinterBlueprint;
 	search?: string;
-	short?: boolean;
 }) => {
-	const { printer, search, short } = options;
+	const { printer, search } = options;
 
-	if (search && !short) {
+	if (search && printer.__jsonOutput) {
 		printer.printConsoleMessage(
 			"info",
 			boldText(colorizeText(`Searching for ${search}...`, "cyan")),
@@ -19,10 +18,11 @@ export const handleListNamesCommand = async (options: {
 
 	const configObjects = await getCodemodList(options);
 
-	// required for vsce
-	if (short) {
-		const names = configObjects.map(({ name }) => name);
-		printer.printOperationMessage({ kind: "names", names });
+	if (printer.__jsonOutput) {
+		printer.printOperationMessage({
+			kind: "codemodList",
+			codemods: configObjects,
+		});
 		return;
 	}
 

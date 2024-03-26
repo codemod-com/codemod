@@ -1,3 +1,5 @@
+import { CodemodListReturn } from "./apis";
+
 export type RewriteMessage = Readonly<{
 	kind: "rewrite";
 	oldPath: string;
@@ -54,8 +56,8 @@ export type StatusUpdateMessage = Readonly<{
 }>;
 
 export type NamesMessage = Readonly<{
-	kind: "names";
-	names: ReadonlyArray<string>;
+	kind: "codemodList";
+	codemods: CodemodListReturn;
 }>;
 
 export type OperationMessage =
