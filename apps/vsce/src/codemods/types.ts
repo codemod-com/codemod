@@ -9,6 +9,9 @@ export const codemodEntryCodec = buildTypeCodec({
 
 export type CodemodEntry = t.TypeOf<typeof codemodEntryCodec>;
 
-export const codemodNamesCodec = t.readonlyArray(t.string);
+export const codemodNamesCodec = buildTypeCodec({
+	kind: t.literal("names"),
+	names: t.readonlyArray(t.string),
+});
 
 export type CodemodNames = t.TypeOf<typeof codemodNamesCodec>;

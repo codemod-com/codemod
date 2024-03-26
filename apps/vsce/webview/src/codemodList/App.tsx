@@ -42,6 +42,7 @@ export const App = memo(
 						direction="vertical"
 						storage={storage}
 						autoSaveId="codemodListPanelGroup"
+						style={{ overflow: "auto" }}
 					>
 						<SearchBar
 							searchPhrase={props.searchPhrase}

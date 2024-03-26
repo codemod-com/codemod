@@ -9,7 +9,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ActiveTabId } from "../../../src/persistedState/codecs";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
-import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
 import CreateIssue from "../CreateIssue";
 import { App as CodemodList } from "../codemodList/App";
 import { CommunityTab } from "../communityTab/CommunityTab";
@@ -139,10 +138,6 @@ function App() {
 				</p>
 			</main>
 		);
-	}
-
-	if (!mainWebviewViewProps.codemodEngineNodeLocated) {
-		return <CodemodEngineNodeNotFound />;
 	}
 
 	return (
