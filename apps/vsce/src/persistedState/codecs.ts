@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { withFallback } from "io-ts-types";
 import { caseCodec, caseHashCodec } from "../cases/types";
-import { codemodEntryCodec, privateCodemodEntryCodec } from "../codemods/types";
+import { codemodEntryCodec } from "../codemods/types";
 import { executionErrorCodec } from "../errors/types";
 import { persistedJobCodec } from "../jobs/types";
 import { codemodNodeHashDigestCodec } from "../selectors/selectCodemodTree";
@@ -56,7 +56,6 @@ export const persistedStateCodecNew = buildTypeCodec({
 	clearingInProgress: withFallback(t.boolean, false),
 	case: buildCollectionCodec(caseCodec),
 	codemod: buildCollectionCodec(codemodEntryCodec),
-	privateCodemods: buildCollectionCodec(privateCodemodEntryCodec),
 	job: buildCollectionCodec(persistedJobCodec),
 	lastCodemodHashDigests: withFallback(t.readonlyArray(t.string), []),
 	executionErrors: withFallback(
@@ -70,7 +69,6 @@ export const persistedStateCodecNew = buildTypeCodec({
 			expandedNodeHashDigests: t.readonlyArray(codemodNodeHashDigestCodec),
 			searchPhrase: t.string,
 			publicRegistryCollapsed: withFallback(t.boolean, false),
-			privateRegistryCollapsed: withFallback(t.boolean, false),
 			panelGroupSettings: panelGroupSettingsCodec,
 			codemodArgumentsPopupHashDigest: t.union([
 				codemodNodeHashDigestCodec,
@@ -84,7 +82,6 @@ export const persistedStateCodecNew = buildTypeCodec({
 			expandedNodeHashDigests: [],
 			searchPhrase: "",
 			publicRegistryCollapsed: false,
-			privateRegistryCollapsed: false,
 			panelGroupSettings: {
 				"0,0": [50, 50],
 			},

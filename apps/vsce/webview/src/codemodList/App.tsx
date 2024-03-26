@@ -4,7 +4,6 @@ import { memo, useEffect, useMemo, useRef } from "react";
 import {
 	ImperativePanelHandle,
 	PanelGroupStorage,
-	PanelResizeHandle,
 } from "react-resizable-panels";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { PanelGroup, ResizablePanel } from "../shared/Panel";
@@ -12,7 +11,6 @@ import SearchBar from "../shared/SearchBar";
 import { SectionHeader } from "../shared/SectionHeader";
 import { vscode } from "../shared/utilities/vscode";
 import TreeView from "./TreeView";
-import styles from "./style.module.css";
 
 const setSearchPhrase = (searchPhrase: string) => {
 	vscode.postMessage({
@@ -29,7 +27,6 @@ export const App = memo(
 		},
 	) => {
 		const publicRegistryRef = useRef<ImperativePanelHandle | null>(null);
-		const privateRegistryRef = useRef<ImperativePanelHandle | null>(null);
 
 		useEffect(() => {
 			if (props.publicRegistryCollapsed) {
@@ -37,13 +34,7 @@ export const App = memo(
 			} else {
 				publicRegistryRef.current?.expand();
 			}
-
-			if (props.privateRegistryCollapsed) {
-				privateRegistryRef.current?.collapse();
-			} else {
-				privateRegistryRef.current?.expand();
-			}
-		}, [props.publicRegistryCollapsed, props.privateRegistryCollapsed]);
+		}, [props.publicRegistryCollapsed]);
 
 		const storage = useMemo(
 			(): PanelGroupStorage => ({
@@ -106,68 +97,6 @@ export const App = memo(
 								rootPath={props.rootPath}
 								autocompleteItems={props.autocompleteItems}
 							/>
-						</ResizablePanel>
-						<PanelResizeHandle className="resize-handle" />
-						<SectionHeader
-							title="Private Registry"
-							commands={[]}
-							collapsed={props.privateRegistryCollapsed}
-							onClick={(event) => {
-								event.preventDefault();
-
-								vscode.postMessage({
-									kind: "webview.global.collapsePrivateRegistryPanel",
-									collapsed: !props.privateRegistryCollapsed,
-								});
-							}}
-							style={{
-								backgroundColor: "var(--vscode-tab-inactiveBackground)",
-							}}
-						/>
-						<ResizablePanel
-							collapsible
-							minSize={0}
-							defaultSize={props.panelGroupSettings["0,0"]?.[1] ?? 50}
-							style={{
-								overflowY: "auto",
-								overflowX: "hidden",
-								backgroundColor: "var(--vscode-tab-inactiveBackground)",
-							}}
-							ref={privateRegistryRef}
-							onCollapse={(collapsed) => {
-								vscode.postMessage({
-									kind: "webview.global.collapsePrivateRegistryPanel",
-									collapsed,
-								});
-							}}
-						>
-							{props.privateCodemods.nodeData.length > 0 ? (
-								<TreeView
-									screenWidth={props.screenWidth}
-									tree={props.privateCodemods}
-									rootPath={props.rootPath}
-									autocompleteItems={props.autocompleteItems}
-								/>
-							) : (
-								<div className={styles.privateCodemodWelcomeMessage}>
-									<p>
-										Make your own codemods in{" "}
-										<a
-											rel="noopener noreferrer"
-											target="_blank"
-											href="https://codemod.studio/"
-										>
-											Codemod Studio{" "}
-										</a>
-										with the help of AI and specialized debuggers.
-									</p>
-									<p>
-										You can also kick off your codemod creation by creating a
-										diff and running this CLI command:{" "}
-										<code>codemod learn</code>.
-									</p>
-								</div>
-							)}
 						</ResizablePanel>
 					</PanelGroup>
 				</main>
