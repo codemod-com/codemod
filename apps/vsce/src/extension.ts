@@ -37,7 +37,6 @@ import { actions } from "./data/slice";
 import { CodemodHash } from "./packageJsonAnalyzer/types";
 import {
 	CodemodNodeHashDigest,
-	selectCodemodArguments,
 } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { buildCaseHash } from "./telemetry/hashes";
@@ -514,10 +513,11 @@ export async function activate(context: vscode.ExtensionContext) {
 						);
 					}
 
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodHash as unknown as CodemodNodeHashDigest,
-					);
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodHash as unknown as CodemodNodeHashDigest,
+					// );
 					const command: Command =
 						// @ts-ignore TODO: Remove this logic in the next PR
 						codemod.kind === "piranhaRule"
@@ -535,13 +535,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemod.language,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					store.dispatch(
@@ -672,11 +672,12 @@ export async function activate(context: vscode.ExtensionContext) {
 					const targetUriIsDirectory = Boolean(
 						fileStat.type & vscode.FileType.Directory,
 					);
-
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-					);
+					
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
+					// );
 
 					const command: Command =
 						// @ts-ignore TODO: Remove this logic in the next PR
@@ -695,13 +696,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemodEntry.language,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash: codemodEntry.hashDigest as CodemodHash,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					messageBus.publish({

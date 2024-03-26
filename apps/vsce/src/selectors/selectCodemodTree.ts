@@ -150,17 +150,18 @@ export const selectCodemodTree = (
 					rootPath ?? "",
 				);
 
-				const args = selectCodemodArguments(
-					state,
-					codemod.hashDigest as CodemodNodeHashDigest,
-				);
+				// TODO: support codemod arguments
+				// const args = selectCodemodArguments(
+				// 	state,
+				// 	codemod.hashDigest as CodemodNodeHashDigest,
+				// );
 
 				currNode = buildCodemodNode(
 					codemod,
 					part,
 					executionRelativePath,
 					executionQueue.includes(codemod.hashDigest as CodemodHash),
-					args,
+					[],
 				);
 			} else {
 				currNode = buildDirectoryNode(part, codemodDirName);
