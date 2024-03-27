@@ -25,7 +25,6 @@ export const BoundResizePanel = ({
 	panelRefIndex,
 	children,
 	boundedIndex,
-	hasBoundResize = false,
 	className,
 	style = { maxHeight: isServer ? 0 : "unset" },
 }: PanelComponentProps) => {
@@ -40,7 +39,7 @@ export const BoundResizePanel = ({
 			}}
 			style={style}
 			onResize={
-				hasBoundResize && !isNil(boundedIndex)
+				!isNil(boundedIndex)
 					? debounce((size) => {
 							const panel = panelRefs.current[boundedIndex];
 							if (!isNil(panel) && !isNil(size)) panel.resize(size);
@@ -103,9 +102,9 @@ export const AstSection = ({
 					className="h-full"
 					panelRefs={panelRefs}
 					key={panel.relatedAST}
-					defaultSize={33}
+					defaultSize={100 / panels.length}
 					panelRefIndex={panel.relatedAST}
-					// boundedIndex={ panel.snippedIndex }
+					boundedIndex={panel.boundIndex}
 					{...panel}
 				>
 					<ContentViewer type={panel.type} engine={engine} />

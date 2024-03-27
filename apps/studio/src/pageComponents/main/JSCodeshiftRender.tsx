@@ -234,7 +234,7 @@ const CodeSnippedPanel = ({
 				"visibilityOptions" in panelData && "collapsable_panel",
 				className,
 			)}
-			defaultSize={33}
+			defaultSize={panelData.defaultSize || 33}
 			panelRefIndex={panelData.snippedIndex}
 			panelRefs={panelRefs}
 		>

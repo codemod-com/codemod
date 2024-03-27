@@ -9,6 +9,7 @@ import {
 	PanelRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { isVisible } from "~/utils/visibility";
+import Layout from "../../../Layout";
 
 type CodeSnippetsProps = BottomPanelData & {
 	onlyAfterHidden: boolean;
@@ -46,5 +47,18 @@ export const CodeSnippets = ({
 			{extras}
 		</>
 	));
+	const devidedToPanels = (
+		<>
+			<Layout.ResizablePanel minSize={0} defaultSize={50}>
+				<>
+					{snippetPanels[0]}
+					{snippetPanels[1]}
+				</>
+			</Layout.ResizablePanel>
+			<Layout.ResizablePanel minSize={0} defaultSize={50}>
+				{snippetPanels[2]}
+			</Layout.ResizablePanel>
+		</>
+	);
 	return <> {snippetPanels} </>;
 };

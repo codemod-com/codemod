@@ -55,11 +55,12 @@ export type PanelData = Pick<
 	PanelComponentProps,
 	"visibilityOptions" | "hasBoundResize"
 > & {
-	boundIndex: ResizablePanelsIndices;
+	boundIndex?: ResizablePanelsIndices;
 	snippedIndex: ResizablePanelsIndices;
 	type: ContentViewerVariant;
 	content: PanelContentRenderer;
 	relatedAST: ResizablePanelsIndices;
+	defaultSize?: number;
 };
 
 export type HeaderProps = {

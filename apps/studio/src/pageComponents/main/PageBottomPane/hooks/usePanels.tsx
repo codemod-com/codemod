@@ -24,24 +24,27 @@ export const usePanels = () => {
 		hasBoundResize: true,
 		// visibilityOptions: useToggleVisibility(),
 		content: getContent("before"),
+		defaultSize: 25,
 	};
 
 	const afterPanel: Required<PanelData> = {
 		relatedAST: ResizablePanelsIndices.AFTER_AST,
-		boundIndex: ResizablePanelsIndices.CODE_SECTION,
+		boundIndex: ResizablePanelsIndices.AST_SECTION,
 		snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
 		type: "after",
 		hasBoundResize: false,
 		content: getContent("after"),
 		visibilityOptions: useToggleVisibility(),
+		defaultSize: 25,
 	};
 
 	const outputPanel: PanelData = {
 		relatedAST: ResizablePanelsIndices.OUTPUT_AST,
-		boundIndex: ResizablePanelsIndices.OUTPUT_AST,
+		// boundIndex: ResizablePanelsIndices.CODE_SECTION,
 		snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
 		type: "output",
 		content: getContent("output"),
+		defaultSize: 50,
 	};
 
 	const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
