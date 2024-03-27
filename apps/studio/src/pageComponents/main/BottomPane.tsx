@@ -1,3 +1,3 @@
-import PageBottomPane from "./bottom-panel/PageBottomPane";
+import PageBottomPane from "~/pageComponents/main/PageBottomPane/PageBottomPane";
 
 export default PageBottomPane;

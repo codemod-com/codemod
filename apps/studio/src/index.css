@@ -70,6 +70,35 @@ html {
 	left: 0 !important;
 }
 
+.output-shown .editor.original , .output-shown .original-in-monaco-diff-editor {
+	display: none;
+}
+
+.output-shown .editor.modified {
+	width: 100%;
+}
+
+.after-shown .editor.modified {
+	display: none;
+}
+
+.after-shown .editor.original {
+	display: block;
+	width: 100%;
+}
+
+.after-shown .editor.original * {
+	width: 100%;
+}
+
+.after-shown .editor.original {
+	left: 0 !important;
+}
+
+
+
+
+
 .monaco-placeholder {
 	position: absolute;
 	display: block;

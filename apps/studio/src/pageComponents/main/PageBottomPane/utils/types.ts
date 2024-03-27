@@ -1,5 +1,8 @@
-import React, { MutableRefObject } from "react";
+import { ValueOf } from "next/constants";
+import React, { MutableRefObject, ReactNode } from "react";
 import { ImperativePanelHandle } from "react-resizable-panels";
+import { DiffEditorWrapper } from "~/pageComponents/main/JSCodeshiftRender";
+import SnippetUI from "~/pageComponents/main/SnippetUI";
 import { JSEngine } from "~/types/Engine";
 import { VisibilityOptions } from "~/types/options";
 
@@ -66,3 +69,22 @@ export type HeaderProps = {
 export type PanelRefs = React.MutableRefObject<
 	Record<string, ImperativePanelHandle | null>
 >;
+
+export type SnippetType = "before" | "after" | "output";
+
+export type SnippetData = {
+	header: string;
+	panelData: PanelData;
+	diffEditorWrapper: {
+		type: SnippetType;
+		warnings?: ReactNode;
+	};
+	Snipped: typeof SnippetUI | typeof DiffEditorWrapper;
+	extras?: ReactNode;
+};
+
+export type BottomPanelName = ValueOf<{
+	[x in SnippetType]: `${x}Panel`;
+}>;
+
+export type BottomPanelData = Record<BottomPanelName, PanelData>;

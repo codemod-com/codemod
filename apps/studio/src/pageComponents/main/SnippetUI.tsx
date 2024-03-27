@@ -1,6 +1,7 @@
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { useSelector } from "react-redux";
+import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
@@ -18,10 +19,10 @@ const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 });
 
 type Props = {
-	type: "before" | "after";
+	type: SnippetType;
 };
 
-export const useSnippet = (type: "before" | "after") => {
+export const useSnippet = (type: SnippetType) => {
 	const state = useSelector(selectSnippets);
 
 	const dispatch = useAppDispatch();

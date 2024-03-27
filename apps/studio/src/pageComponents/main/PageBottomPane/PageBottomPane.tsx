@@ -1,17 +1,20 @@
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import LiveCodemodResult from "~/pageComponents/main/JSCodeshiftRender";
+import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/CodeSnippets";
 import {
-	AfterAndOutputHeaders,
 	AstSection,
-	BeforeCodeSnippedPanel,
 	BottomPanel,
 	BoundResizePanel,
 	ToggleASTButton,
-} from "~/pageComponents/main/bottom-panel/side-components";
-import { Panel } from "~/pageComponents/main/bottom-panel/types";
-import { useBottomPanel } from "./useBottomPanel";
+} from "~/pageComponents/main/PageBottomPane/Components/side-components";
+import { inferVisibilities } from "~/pageComponents/main/PageBottomPane/utils/infer-visibilites";
+import {
+	Panel,
+	PanelData,
+} from "~/pageComponents/main/PageBottomPane/utils/types";
+import { Repeat } from "~/types/transformations";
+import { useBottomPanel } from "./hooks/useBottomPanel";
 
 const PageBottomPane = () => {
 	const {
@@ -23,8 +26,18 @@ const PageBottomPane = () => {
 		outputPanel,
 	} = useBottomPanel();
 
-	const panels = [beforePanel, afterPanel, outputPanel];
-	const { visibilityOptions: afterPanelVisibility } = afterPanel;
+	const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
+	const { onlyAfterHidden } = inferVisibilities(panels);
+
+	useEffect(() => {
+		if (onlyAfterHidden) {
+			panelRefs.current[afterPanel.snippedIndex]?.collapse();
+		} else {
+			panels.forEach(({ snippedIndex }) =>
+				panelRefs.current[snippedIndex]?.resize(33),
+			);
+		}
+	}, [onlyAfterHidden]);
 
 	return (
 		<BottomPanel>
@@ -47,25 +60,13 @@ const PageBottomPane = () => {
 					panelRefIndex={Panel.SNIPPETS_SECTION}
 				>
 					<PanelGroup direction="horizontal">
-						<BeforeCodeSnippedPanel
+						<CodeSnippets
+							panelRefs={panelRefs}
+							onlyAfterHidden={onlyAfterHidden}
+							afterPanel={afterPanel}
 							beforePanel={beforePanel}
-							panelRefs={panelRefs}
+							outputPanel={outputPanel}
 						/>
-						<ResizeHandle direction="horizontal" />
-						<BoundResizePanel
-							className="after_panel"
-							defaultSize={66}
-							panelRefIndex={afterPanel.snippedIndex}
-							panelRefs={panelRefs}
-						>
-							<AfterAndOutputHeaders
-								afterPanel={afterPanel}
-								afterPanelVisibility={afterPanelVisibility}
-							/>
-							<LiveCodemodResult
-								leftPaneVisibilityOptions={afterPanelVisibility}
-							/>
-						</BoundResizePanel>
 					</PanelGroup>
 				</BoundResizePanel>
 			</Suspense>

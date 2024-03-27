@@ -45,11 +45,27 @@
 	@apply justify-between;
 }
 
-.panel_show_hide_icon {
-	@apply mr-[6px];
+.collapsable_panel .panel_show_hide_icon {
 	@apply invisible;
+}
+
+.hidden_panel_indicator {
+	@apply flex relative hover:bg-gray-lighter cursor-pointer border-r w-[20px];
+}
+
+.hidden_panel_indicator_text {
+	@apply rotate-[90deg] absolute top-[48px] left-[-7px];
+}
+
+.hidden_panel_indicator .panel_show_hide_icon {
+	@apply mt-2;
+}
+
+.collapsable_panel .panel_show_hide_icon {
+	@apply mr-[6px];
 	@apply hover:bg-gray-lighter;
 }
-.after_panel:hover .panel_show_hide_icon {
+
+.collapsable_panel:hover .panel_show_hide_icon {
 	@apply visible;
 }

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { monaco } from "~/customMonaco";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 
@@ -98,6 +98,7 @@ export const useEditor = (
 	}: EditorProps,
 	mounted: boolean,
 ) => {
+	const [renderFinished, setRenderFinished] = useState(false);
 	const decorationsIdRef = useRef<string[]>();
 	const didChangeCursorSelectionRef = useRef<monaco.IDisposable>();
 	const didChangeModelContentRef = useRef<monaco.IDisposable>();
@@ -320,7 +321,10 @@ export const useEditor = (
 		editor.pushUndoStop();
 		preventTriggerChangeEvent.current = false;
 		editor.setPosition(prevCursorPosition);
+		setRenderFinished(true);
 	}, [value, mounted]);
+
+	return renderFinished;
 };
 
 export type { Link, EditorProps };
