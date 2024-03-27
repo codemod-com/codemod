@@ -87,4 +87,4 @@ export type BottomPanelName = ValueOf<{
 	[x in SnippetType]: `${x}Panel`;
 }>;
 
-export type BottomPanel = Record<BottomPanelName, PanelData>;
+export type BottomPanelData = Record<BottomPanelName, PanelData>;

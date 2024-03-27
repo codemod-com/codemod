@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { DiffEditorWrapper } from "~/pageComponents/main/JSCodeshiftRender";
 import {
-	BottomPanel,
+	BottomPanelData,
 	ShowPanelTile,
 	SnippetData,
 } from "~/pageComponents/main/PageBottomPane";
@@ -14,7 +14,7 @@ export const getSnippetsData = ({
 	outputPanel,
 	onlyAfterHidden,
 	warnings,
-}: BottomPanel & {
+}: BottomPanelData & {
 	onlyAfterHidden: boolean;
 	warnings: ReactNode;
 }): SnippetData[] => [
