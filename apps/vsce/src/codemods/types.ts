@@ -9,9 +9,18 @@ export const codemodEntryCodec = buildTypeCodec({
 
 export type CodemodEntry = t.TypeOf<typeof codemodEntryCodec>;
 
+const codemodCodec = buildTypeCodec({
+	name: t.string,
+	author: t.string,
+	engine: t.array(t.string),
+	tags: t.array(t.string),
+	verified: t.boolean,
+	arguments: t.array(t.any), // TODO: Create a type for arguments
+});
+
 export const codemodNamesCodec = buildTypeCodec({
-	kind: t.literal("names"),
-	names: t.readonlyArray(t.string),
+	kind: t.literal("codemodList"),
+	codemods: t.array(codemodCodec),
 });
 
 export type CodemodNames = t.TypeOf<typeof codemodNamesCodec>;

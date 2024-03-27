@@ -318,7 +318,7 @@ export class EngineService {
 				const report = prettyReporter.report(codemodListOrError);
 				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
-			return codemodListOrError.right.names;
+			return codemodListOrError.right.codemods.map((codemod) => codemod.name);
 		} catch (e) {
 			if (e instanceof InvalidEngineResponseFormatError) {
 				throw e;
