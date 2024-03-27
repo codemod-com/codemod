@@ -80,7 +80,7 @@ const messageHandler = async (m: unknown) => {
 					break;
 				case "ast-grep":
 					fileCommands = await runAstGrepCodemod(
-						initializationMessage.codemodSource,
+						initializationMessage.codemodPath,
 						message.path,
 						message.data,
 						initializationMessage.disablePrettier,

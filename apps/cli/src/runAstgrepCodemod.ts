@@ -25,7 +25,7 @@ type AstGrepCompactOutput = {
 };
 
 export const runAstGrepCodemod = async (
-	codemodSource: string,
+	rulesPath: string,
 	oldPath: string,
 	oldData: string,
 	disablePrettier: boolean,
@@ -46,7 +46,11 @@ export const runAstGrepCodemod = async (
 
 	const commands: FileCommand[] = [];
 
-	const astCommandBase = `sg scan --inline-rules '\n${codemodSource}\n' ${oldPath} --json=compact`;
+	const rulesPathEscaped = rulesPath.replace(/(\s+)/g, "\\$1");
+	const oldPathEscaped = oldPath.replace(/(\s+)/g, "\\$1");
+
+	const astCommandBase = `sg scan --rule ${rulesPathEscaped} ${oldPathEscaped} --json=compact`;
+
 	const astCommand =
 		process.platform === "win32"
 			? `powershell -Command "${astCommandBase}"`
