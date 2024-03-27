@@ -313,7 +313,7 @@ export class EngineService {
 			const codemodListOrError = codemodNamesCodec.decode(
 				JSON.parse(codemodListString),
 			);
-			console.log(codemodListOrError);
+
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
 				throw new InvalidEngineResponseFormatError(report.join("\n"));
