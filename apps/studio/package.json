@@ -76,7 +76,8 @@
 	"scripts": {
 		"dev": "next dev",
 		"start": "next start",
-		"build": "next build"
+		"build": "next build",
+		"test": "vitest run"
 	},
 	"browserslist": {
 		"production": [">0.2%", "not dead", "not op_mini all"],
@@ -105,7 +106,6 @@
 		"@types/react-syntax-highlighter": "^15.5.6",
 		"@types/react-treeview": "^0.4.3",
 		"@types/react-virtualized-auto-sizer": "^1.0.1",
-		"@types/sinon": "^10.0.13",
 		"@types/testing-library__jest-dom": "^5.14.5",
 		"assert": "^2.0.0",
 		"autoprefixer": "^10.4.14",
@@ -113,7 +113,6 @@
 		"monaco-editor-webpack-plugin": "^7.0.1",
 		"postcss": "^8.4.21",
 		"raw-loader": "^4.0.2",
-		"sinon": "^15.0.2",
 		"tailwindcss": "^3.3.3",
 		"tailwindcss-animate": "^1.0.7"
 	},
