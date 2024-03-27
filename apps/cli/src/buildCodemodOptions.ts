@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import path, { join } from "node:path";
+import path from "node:path";
 import {
 	CodemodConfig,
 	KnownEngines,
@@ -58,10 +58,11 @@ const extractMainScriptPath = async (
 			errorOnMissing = `Did you forget to run "codemod build"?`;
 	}
 
-	const mainFiles = await glob(
-		join(source, codemodRc.build?.output ?? globSearchPattern),
-		{ absolute: true },
-	);
+	const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
+		absolute: true,
+		cwd: source,
+		onlyFiles: true,
+	});
 
 	if (mainFiles.length === 0) {
 		throw new Error(
