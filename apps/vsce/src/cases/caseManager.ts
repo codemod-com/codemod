@@ -29,6 +29,9 @@ export class CaseManager {
 	}
 
 	#onUpsertCasesMessage(message: Message & { kind: MessageKind.upsertCase }) {
+		if (message.jobs.length === 0) {
+			return;
+		}
 		const caseHashJobHashes = message.jobs.map(
 			({ hash }) => `${message.kase.hash}${hash}`,
 		);
