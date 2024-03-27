@@ -1,7 +1,5 @@
-import assert from "assert";
 import jscodeshift from "jscodeshift";
-import sinon from "sinon";
-import { describe, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { Event } from "../schemata/eventSchemata";
 import { EventManager } from "./eventManager";
 import { proxifyJSCodeshift } from "./proxy";
@@ -11,8 +9,8 @@ describe("proxy", () => {
 		const eventManager = new EventManager();
 		const proxyEvents: Event[] = [];
 
-		const onProxifiedCollectionSpy = sinon.spy();
-		const onProxifiedPathSpy = sinon.spy();
+		const onProxifiedCollectionSpy = vi.fn();
+		const onProxifiedPathSpy = vi.fn();
 
 		const j = proxifyJSCodeshift(
 			jscodeshift.withParser("tsx"),
@@ -35,9 +33,9 @@ describe("proxy", () => {
 
 		const source = fileCollection.toSource();
 
-		assert.equal(source, "");
-		assert.equal(proxyEvents.length, 0);
-		assert.equal(onProxifiedCollectionSpy.calledOnce, true);
-		assert.equal(onProxifiedPathSpy.calledOnce, false);
+		expect(source).toBe("");
+		expect(proxyEvents.length).toBe(0);
+		expect(onProxifiedCollectionSpy).toBeCalledTimes(1);
+		expect(onProxifiedPathSpy).not.toBeCalled();
 	});
 });
