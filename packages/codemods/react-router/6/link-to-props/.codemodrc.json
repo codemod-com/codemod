@@ -1,15 +1,14 @@
 {
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"version": "1.0.0",
 	"private": false,
 	"name": "react-router/6/link-to-props",
-	"deps": ["vitest@latest"],
-	"owner": "codemod.com",
 	"engine": "jscodeshift",
-	"extensions": ["js*", "ts*"],
-	"applicability": [["react-router", "<", "6.0.0"]],
+	"applicability": {
+		"from": [["react-router", "<", "6.0.0"]]
+	},
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
-	}
+		"useCaseCategory": "migration"
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

@@ -10,10 +10,9 @@
 	@apply items-center;
 	@apply flex;
 	@apply py-1;
-	@apply bg-gray-bg;
+	@apply bg-white;
 	@apply dark:bg-gray-darker;
 	@apply text-gray-text-title;
-	@apply font-semibold;
 	@apply cursor-pointer;
 }
 .panel_panel_tab_clicked {

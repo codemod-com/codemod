@@ -6,13 +6,11 @@ import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { Codemod, CodemodVersion } from "@prisma/client";
+import { Codemod, CodemodVersion, Prisma } from "@prisma/client";
 import { OpenAIStream } from "ai";
 import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
 import Fuse from "fuse.js";
 import * as openAiEdge from "openai-edge";
-import { z } from "zod";
-import { CodemodWhereInputSchema } from "../prisma/generated/zod";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
@@ -303,38 +301,186 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return { data: {} };
 	});
 
+	instance.get("/version", async (_, reply) => {
+		const packageJson = await import(
+			new URL("../package.json", import.meta.url).href,
+			{ assert: { type: "json" } }
+		);
+		reply.type("application/json").code(200);
+		return { version: packageJson.default.version };
+	});
+
 	instance.get("/codemods", async (request, reply) => {
 		const query = parseGetCodemodsQuery(request.query);
 
+		const search = query.search;
+
+		const categories = [];
+		if (!Array.isArray(query.category)) {
+			if (isNeitherNullNorUndefined(query.category)) {
+				categories.push(query.category);
+			}
+		} else {
+			categories.push(...query.category.filter(isNeitherNullNorUndefined));
+		}
+
+		const authors = [];
+		if (!Array.isArray(query.author)) {
+			if (isNeitherNullNorUndefined(query.author)) {
+				authors.push(query.author);
+			}
+		} else {
+			authors.push(...query.author.filter(isNeitherNullNorUndefined));
+		}
+
+		const frameworks = [];
+		if (!Array.isArray(query.framework)) {
+			if (isNeitherNullNorUndefined(query.framework)) {
+				frameworks.push(query.framework);
+			}
+		} else {
+			frameworks.push(...query.framework.filter(isNeitherNullNorUndefined));
+		}
+
+		const verified = query.verified;
 		const page = query.page || 1;
 		const size = query.size || 10;
+		const skip = (page - 1) * size;
 
-		const whereClause: z.infer<typeof CodemodWhereInputSchema> = {
-			featured: query.featured,
-			verified: query.verified,
-			private: query.private,
+		const filterClauses: Prisma.CodemodWhereInput["AND"] = [];
+
+		if (search) {
+			filterClauses.push({
+				OR: [
+					{
+						name: {
+							contains: search,
+							mode: "insensitive" as Prisma.QueryMode,
+						},
+					},
+					{
+						shortDescription: {
+							contains: search,
+							mode: "insensitive" as Prisma.QueryMode,
+						},
+					},
+					{ tags: { has: search } },
+				],
+			});
+		}
+
+		if (categories.length) {
+			filterClauses.push({ useCaseCategory: { in: categories } });
+		}
+
+		if (authors.length) {
+			filterClauses.push({ author: { in: authors } });
+		}
+
+		if (frameworks.length) {
+			const frameworkTags = await prisma.tag.findMany({
+				where: {
+					classification: "framework",
+					aliases: { hasSome: frameworks },
+				},
+			});
+
+			const frameworkAliases = frameworkTags.reduce((acc: string[], curr) => {
+				acc.push(...curr.aliases);
+				return acc;
+			}, []);
+
+			filterClauses.push({ tags: { hasSome: frameworkAliases } });
+		}
+
+		if (isNeitherNullNorUndefined(verified)) {
+			filterClauses.push({ verified });
+		}
+
+		const whereClause: Prisma.CodemodWhereInput = {
+			AND: filterClauses,
 		};
 
-		const codemods = await prisma.codemod.findMany({
-			where: whereClause,
-			skip: (page - 1) * size,
-			take: size,
-			include: {
-				versions: {
-					orderBy: {
-						createdAt: "desc",
-					},
-					take: 1,
+		const [codemods, total] = await Promise.all([
+			prisma.codemod.findMany({
+				where: whereClause,
+				orderBy: {
+					updatedAt: "desc",
 				},
-			},
-		});
-
-		const total = await prisma.codemod.count({
-			where: whereClause,
-		});
+				skip,
+				take: size,
+				include: {
+					versions: {
+						orderBy: {
+							createdAt: "desc",
+						},
+						take: 1,
+					},
+				},
+			}),
+			prisma.codemod.count({ where: whereClause }),
+		]);
 
 		reply.type("application/json").code(200);
 		return { total, data: codemods, page, size };
+	});
+
+	instance.get("/codemods/filters", async (_, reply) => {
+		const [frameworks, groupedUseCases, groupedOwners] = await Promise.all([
+			prisma.tag.findMany({
+				where: {
+					classification: "framework",
+				},
+			}),
+			prisma.codemod.groupBy({
+				by: ["useCaseCategory"],
+				_count: {
+					_all: true,
+				},
+				where: {
+					useCaseCategory: {
+						not: null,
+					},
+				},
+			}),
+			prisma.codemod.groupBy({
+				by: ["author"],
+				_count: {
+					_all: true,
+				},
+			}),
+		]);
+
+		const useCaseFilters = groupedUseCases.map(
+			({ useCaseCategory, _count }) => ({
+				name: useCaseCategory,
+				count: _count._all,
+			}),
+		);
+
+		const ownerFilters = groupedOwners.map(({ author, _count }) => ({
+			name: author,
+			count: _count._all,
+		}));
+
+		const frameworkFilters = await Promise.all(
+			frameworks.map(async (framework) => {
+				const count = await prisma.codemod.count({
+					where: {
+						tags: {
+							hasSome: framework.aliases,
+						},
+					},
+				});
+				return {
+					name: framework.displayName,
+					count,
+				};
+			}),
+		);
+
+		reply.type("application/json").code(200);
+		return { useCaseFilters, ownerFilters, frameworkFilters };
 	});
 
 	instance.get("/codemods/:slug", async (request, reply) => {
@@ -425,6 +571,9 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							name: codemod.name,
 							engine: latestVersion?.engine,
 							author: codemod.author,
+							tags: latestVersion.tags,
+							verified: codemod.verified,
+							arguments: codemod.arguments,
 						};
 					}),
 				);
@@ -452,6 +601,9 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 							name: codemod.name,
 							engine: latestVersion?.engine,
 							author: codemod.author,
+							tags: latestVersion.tags,
+							verified: codemod.verified,
+							arguments: codemod.arguments,
 						};
 					}),
 				);
@@ -461,13 +613,14 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 			const query = parseListCodemodsQuery(request.query);
 
-			if (query.name) {
+			if (query.search) {
 				const fuse = new Fuse(codemodData, {
-					keys: ["name"],
+					keys: ["name", "tags"],
 					isCaseSensitive: false,
+					threshold: 0.35,
 				});
 
-				codemodData = fuse.search(query.name).map((res) => res.item);
+				codemodData = fuse.search(query.search).map((res) => res.item);
 			}
 
 			reply.type("application/json").code(200);

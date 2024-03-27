@@ -1,6 +1,5 @@
 import {
 	type Output,
-	array,
 	boolean,
 	literal,
 	object,
@@ -15,9 +14,13 @@ const mainThreadMessageSchema = union([
 		kind: literal("initialization"),
 		codemodPath: string(),
 		codemodSource: string(),
-		codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
+		codemodEngine: union([
+			literal("jscodeshift"),
+			literal("ts-morph"),
+			literal("ast-grep"),
+		]),
 		disablePrettier: boolean(),
-		safeArgumentRecord: array(argumentRecordSchema),
+		safeArgumentRecord: argumentRecordSchema,
 	}),
 	object({
 		kind: literal("exit"),

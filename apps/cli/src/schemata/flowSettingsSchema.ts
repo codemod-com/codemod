@@ -1,3 +1,4 @@
+import { resolve } from "node:path";
 import {
 	type Output,
 	array,
@@ -14,6 +15,7 @@ import {
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_INPUT_DIRECTORY_PATH,
 	DEFAULT_NO_CACHE,
+	DEFAULT_SKIP_INSTALL,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
 } from "../constants.js";
@@ -21,24 +23,23 @@ import {
 export const flowSettingsSchema = object({
 	include: optional(array(string())),
 	exclude: optional(array(string()), DEFAULT_EXCLUDE_PATTERNS),
-	target: optional(string()),
+	target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
 	files: optional(array(string())),
 	raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
 	"no-cache": optional(boolean(), DEFAULT_NO_CACHE),
 	noCache: optional(boolean(), DEFAULT_NO_CACHE),
+	"skip-install": optional(boolean(), DEFAULT_SKIP_INSTALL),
+	skipInstall: optional(boolean(), DEFAULT_SKIP_INSTALL),
 	json: optional(boolean(), DEFAULT_USE_JSON),
 	threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
-	target: string;
-};
+export type FlowSettings = Output<typeof flowSettingsSchema>;
 
 export const parseFlowSettings = (input: unknown): FlowSettings => {
 	const flowSettings = parse(flowSettingsSchema, input);
 
-	return {
-		...flowSettings,
-		target: flowSettings.target ?? DEFAULT_INPUT_DIRECTORY_PATH,
-	};
+	flowSettings.target = resolve(flowSettings.target);
+
+	return flowSettings;
 };

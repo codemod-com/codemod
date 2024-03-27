@@ -1,10 +1,8 @@
-import { createHash, randomBytes } from "crypto";
-import { existsSync, rmSync } from "fs";
+import { createHash } from "crypto";
 import { homedir } from "os";
 import { join } from "path";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
-import { mkdir, readFile, writeFile } from "fs/promises";
 import prettyReporter from "io-ts-reporters";
 import * as vscode from "vscode";
 import { CaseManager } from "./cases/caseManager";
@@ -19,7 +17,6 @@ import { JobManager } from "./components/jobManager";
 import { Command, MessageBus, MessageKind } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
 import { GlobalStateTokenStorage, UserService } from "./components/userService";
-import { CodemodDescriptionProvider } from "./components/webview/CodemodDescriptionProvider";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
 import {
@@ -31,18 +28,13 @@ import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
 import {
-	CodemodConfig,
 	PIRANHA_LANGUAGES,
 	parsePiranhaLanguage,
 } from "./data/codemodConfigSchema";
-import { parsePrivateCodemodsEnvelope } from "./data/privateCodemodsEnvelopeSchema";
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import { CodemodHash } from "./packageJsonAnalyzer/types";
-import {
-	CodemodNodeHashDigest,
-	selectCodemodArguments,
-} from "./selectors/selectCodemodTree";
+import { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { buildCaseHash } from "./telemetry/hashes";
 import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
@@ -160,16 +152,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		mainViewProvider,
 	);
 
-	const codemodDescriptionProvider = new CodemodDescriptionProvider(
-		vscode.workspace.fs,
-	);
-
 	new CustomPanelProvider(
 		context.extensionUri,
 		store,
 		mainViewProvider,
 		messageBus,
-		codemodDescriptionProvider,
 		rootUri?.fsPath ?? null,
 		jobManager,
 	);
@@ -183,25 +170,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		mainViewProvider,
 	);
 
-	let syncRegistryIntervalId: NodeJS.Timer | null = null;
-
-	vscode.window.onDidChangeWindowState((event) => {
-		if (syncRegistryIntervalId) {
-			clearInterval(syncRegistryIntervalId);
-			syncRegistryIntervalId = null;
-		}
-
-		if (!event.focused) {
-			return;
-		}
-
-		syncRegistryIntervalId = setInterval(
-			async () => {
-				await engineService.syncRegistry();
-			},
-			15 * 60 * 1000,
-		);
-	});
 	// this is only used by the codemod panel's webview
 	context.subscriptions.push(
 		vscode.commands.registerCommand("codemod.redirect", (arg0) => {
@@ -537,11 +505,13 @@ export async function activate(context: vscode.ExtensionContext) {
 						);
 					}
 
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodHash as unknown as CodemodNodeHashDigest,
-					);
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodHash as unknown as CodemodNodeHashDigest,
+					// );
 					const command: Command =
+						// @ts-ignore TODO: Remove this logic in the next PR
 						codemod.kind === "piranhaRule"
 							? {
 									kind: "executePiranhaRule",
@@ -554,15 +524,16 @@ export async function activate(context: vscode.ExtensionContext) {
 												.digest("base64url"),
 										),
 									),
+									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemod.language,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					store.dispatch(
@@ -694,12 +665,14 @@ export async function activate(context: vscode.ExtensionContext) {
 						fileStat.type & vscode.FileType.Directory,
 					);
 
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-					);
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
+					// );
 
 					const command: Command =
+						// @ts-ignore TODO: Remove this logic in the next PR
 						codemodEntry.kind === "piranhaRule"
 							? {
 									kind: "executePiranhaRule",
@@ -712,15 +685,16 @@ export async function activate(context: vscode.ExtensionContext) {
 												.digest("base64url"),
 										),
 									),
+									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemodEntry.language,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash: codemodEntry.hashDigest as CodemodHash,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					messageBus.publish({
@@ -747,67 +721,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 	context.subscriptions.push(
 		vscode.commands.registerCommand(
-			"codemod.executePrivateCodemod",
-			async (
-				targetUri: vscode.Uri,
-				codemodHash: CodemodHash,
-				codemodName: string,
-			) => {
-				try {
-					const { storageUri } = context;
-
-					if (!storageUri) {
-						throw new Error("No storage URI, aborting the command.");
-					}
-
-					const fileStat = await vscode.workspace.fs.stat(targetUri);
-					const targetUriIsDirectory = Boolean(
-						fileStat.type & vscode.FileType.Directory,
-					);
-
-					store.dispatch(
-						actions.setFocusedCodemodHashDigest(
-							codemodHash as unknown as CodemodNodeHashDigest,
-						),
-					);
-
-					const codemodUri = vscode.Uri.file(
-						join(homedir(), ".codemod", codemodHash, "index.ts"),
-					);
-
-					messageBus.publish({
-						kind: MessageKind.executeCodemodSet,
-						command: {
-							kind: "executeLocalCodemod",
-							codemodUri,
-							name: codemodName,
-							codemodHash,
-						},
-						happenedAt: String(Date.now()),
-						caseHashDigest: buildCaseHash(),
-						storageUri,
-						targetUri,
-						targetUriIsDirectory,
-					});
-
-					vscode.commands.executeCommand(
-						"workbench.view.extension.codemodViewId",
-					);
-				} catch (e) {
-					const message = e instanceof Error ? e.message : String(e);
-					vscode.window.showErrorMessage(message);
-
-					vscodeTelemetry.sendError({
-						kind: "failedToExecuteCommand",
-						commandName: "codemod.executeImportedModOnPath",
-					});
-				}
-			},
-		),
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
 			"codemod.clearState",
 			createClearStateCommand({ fileService, store }),
 		),
@@ -817,47 +730,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.commands.registerCommand("codemod.stopStateClearing", () => {
 			store.dispatch(actions.onStateCleared());
 		}),
-	);
-
-	context.subscriptions.push(
-		vscode.commands.registerCommand(
-			"codemod.removePrivateCodemod",
-			(arg0: unknown) => {
-				try {
-					const hashDigest: string | null =
-						typeof arg0 === "string" ? arg0 : null;
-
-					if (hashDigest === null) {
-						throw new Error("Did not pass the hashDigest into the command.");
-					}
-					const codemodPath = join(homedir(), ".codemod", hashDigest);
-					if (existsSync(codemodPath)) {
-						rmSync(codemodPath, { recursive: true, force: true });
-					}
-
-					const codemodNamesPath = join(
-						homedir(),
-						".codemod",
-						"privateCodemodNames.json",
-					);
-					if (existsSync(codemodNamesPath)) {
-						rmSync(codemodNamesPath);
-					}
-
-					store.dispatch(
-						actions.removePrivateCodemods([hashDigest as CodemodHash]),
-					);
-				} catch (e) {
-					const message = e instanceof Error ? e.message : String(e);
-					vscode.window.showErrorMessage(message);
-
-					vscodeTelemetry.sendError({
-						kind: "failedToExecuteCommand",
-						commandName: "codemod.removePrivateCodemod",
-					});
-				}
-			},
-		),
 	);
 
 	context.subscriptions.push(
@@ -919,7 +791,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.window.registerUriHandler({
 			handleUri: async (uri) => {
 				const urlParams = new URLSearchParams(uri.query);
-				const codemodSource = urlParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE);
 
 				const codemodHashDigest = urlParams.get(
 					SEARCH_PARAMS_KEYS.CODEMOD_HASH_DIGEST,
@@ -948,74 +819,6 @@ export async function activate(context: vscode.ExtensionContext) {
 					});
 				}
 
-				// user is exporting codemod from studio into extension
-				if (codemodSource !== null) {
-					vscode.commands.executeCommand(
-						"workbench.view.extension.codemodViewId",
-					);
-					const codemodSourceBuffer = Buffer.from(codemodSource, "base64url");
-
-					const globalStoragePath = join(homedir(), ".codemod");
-					const codemodHash = randomBytes(27).toString("base64url");
-					const codemodDirectoryPath = join(globalStoragePath, codemodHash);
-					await mkdir(codemodDirectoryPath, { recursive: true });
-
-					const buildConfigPath = join(codemodDirectoryPath, ".codemodrc.json");
-
-					await writeFile(
-						buildConfigPath,
-						JSON.stringify({
-							schemaVersion: "1.0.0",
-							engine: "jscodeshift",
-						} satisfies CodemodConfig),
-					);
-
-					const buildIndexPath = join(codemodDirectoryPath, "index.ts");
-
-					await writeFile(buildIndexPath, codemodSourceBuffer);
-
-					const newPrivateCodemodNames = [];
-					const privateCodemodNamesPath = join(
-						globalStoragePath,
-						"privateCodemodNames.json",
-					);
-					if (existsSync(privateCodemodNamesPath)) {
-						const privateCodemodNamesJSON = await readFile(
-							privateCodemodNamesPath,
-							{
-								encoding: "utf8",
-							},
-						);
-						const privateCodemodNames = JSON.parse(privateCodemodNamesJSON);
-
-						const { names } = parsePrivateCodemodsEnvelope(privateCodemodNames);
-
-						newPrivateCodemodNames.push(...names);
-					}
-					newPrivateCodemodNames.push(codemodHash);
-					await Promise.all([
-						writeFile(
-							privateCodemodNamesPath,
-							JSON.stringify({
-								names: newPrivateCodemodNames,
-							}),
-						),
-						writeFile(
-							join(codemodDirectoryPath, "urlParams.json"),
-							JSON.stringify({
-								urlParams: uri.query,
-							}),
-						),
-					]);
-
-					await engineService.fetchPrivateCodemods();
-
-					store.dispatch(
-						actions.setFocusedCodemodHashDigest(
-							codemodHash as unknown as CodemodNodeHashDigest,
-						),
-					);
-				}
 				// user is opening a deep link to a specific codemod
 				else if (codemodHashDigest !== null) {
 					vscode.commands.executeCommand(
@@ -1024,18 +827,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					// Expand collapsed parent directories of the relevant codemod
 					if (codemodHashDigest !== null) {
-						const privateCodemod =
-							state.privateCodemods.entities[codemodHashDigest] ?? null;
-
-						if (privateCodemod !== null) {
-							store.dispatch(
-								actions.setFocusedCodemodHashDigest(
-									codemodHashDigest as unknown as CodemodNodeHashDigest,
-								),
-							);
-							return;
-						}
-
 						const codemod = state.codemod.entities[codemodHashDigest] ?? null;
 						if (codemod === null) {
 							return;

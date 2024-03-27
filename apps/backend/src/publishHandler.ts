@@ -3,14 +3,13 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
 import {
 	CodemodConfig,
-	codemodConfigSchema,
 	codemodNameRegex,
 	isNeitherNullNorUndefined,
+	parseCodemodConfig,
 	tarPack,
 } from "@codemod-com/utilities";
 import { RouteHandlerMethod } from "fastify";
 import * as semver from "semver";
-import { parse } from "valibot";
 import { z } from "zod";
 import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import { prisma } from "./db/prisma.js";
@@ -77,7 +76,7 @@ export const publishHandler =
 
 					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-					codemodRc = parse(codemodConfigSchema, codemodRcData);
+					codemodRc = parseCodemodConfig(codemodRcData);
 
 					if (codemodRc.engine === "recipe") {
 						if (codemodRc.names.length < 2) {
@@ -98,8 +97,6 @@ export const publishHandler =
 							`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 						);
 					}
-
-					// TODO: add check for organization
 				}
 
 				if (
@@ -134,9 +131,34 @@ export const publishHandler =
 				});
 			}
 
-			const { name, version, owner } = codemodRc;
-			// TODO: should default to public if publishing not under org, and should default to private if under org
-			const isPrivate = codemodRc.private ?? false;
+			const { name, version } = codemodRc;
+
+			let namespace: string | null = null;
+			if (name.startsWith("@") && name.includes("/")) {
+				namespace = name.split("/").at(0)?.slice(1)!;
+
+				// TODO:
+				// 1. create orgs table and relations
+				// 2. check if user is eligible to publish under given org
+
+				// const org = await prisma.organization.findFirst({
+				// 	where: {
+				// 		name: namespace,
+				// 	},
+				// });
+
+				// if (org === null) {
+				// 	return reply.code(400).send({
+				// 		error: `Organization ${namespace} does not exist`,
+				// 		success: false,
+				// 	});
+				// }
+			}
+
+			// if publishing under a namespace, then private as a fallback
+			// TODO: uncomment when our private bucket and strategy is ready
+			// const isPrivate = codemodRc.private ?? !!namespace;
+			const isPrivate = false;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -206,7 +228,13 @@ export const publishHandler =
 			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
 
 			const registryUrl = getS3Url(bucket, "us-west-1");
-			const uploadKey = `codemod-registry/${hashDigest}/${version}/codemod.tar.gz`;
+			const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
+			// TODO: uncomment when our private bucket and strategy is ready
+			// if (namespace) {
+			// 	uploadKeyParts.unshift(namespace);
+			// }
+			uploadKeyParts.unshift("codemod-registry");
+			const uploadKey = uploadKeyParts.join("/");
 
 			const codemodVersionEntry: Omit<
 				z.infer<typeof CodemodVersionCreateInputSchema>,
@@ -214,13 +242,27 @@ export const publishHandler =
 			> = {
 				version,
 				bucketLink: `${registryUrl}/${uploadKey}`,
-				engine: codemodRc.engine ?? "unknown",
-				sourceRepo: codemodRc.meta.git ?? "",
-				shortDescription: descriptionMdBuffer?.toString("utf8") ?? "",
+				engine: codemodRc.engine,
+				sourceRepo: codemodRc.meta?.git,
+				shortDescription: descriptionMdBuffer?.toString("utf-8"),
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
-				requirements:
-					codemodRc.applicability.map((a) => a.join(" ")).join(", ") ?? null,
+				applicability: codemodRc.applicability,
+				tags: codemodRc.meta?.tags,
+				useCaseCategory: codemodRc.meta?.useCaseCategory,
+				arguments: codemodRc.arguments,
 			};
+
+			let isVerified =
+				namespace === "codemod.com" || namespace === "codemod-com";
+			let author = namespace;
+			if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
+				isVerified = true;
+				author = "codemod.com";
+			}
+
+			if (!author) {
+				author = username;
+			}
 
 			try {
 				await prisma.codemod.upsert({
@@ -233,16 +275,18 @@ export const publishHandler =
 							.split(/[\/ ,.-]/)
 							.join("-"),
 						name,
-						// Do we even need this field? We can have a function which determines the type based on other fields
-						type: "codemod",
+						shortDescription: descriptionMdBuffer?.toString("utf-8"),
+						useCaseCategory: codemodRc.meta?.useCaseCategory,
+						tags: codemodRc.meta?.tags,
+						engine: codemodRc.engine,
+						applicability: codemodRc.applicability,
+						verified: isVerified,
 						private: isPrivate,
-						verified: owner === "codemod.com" || username === "codemod.com",
-						from: codemodRc.meta.from?.join(" "),
-						to: codemodRc.meta.to?.join(" "),
-						author: owner ?? username,
+						author,
 						versions: {
 							create: codemodVersionEntry,
 						},
+						arguments: codemodRc.arguments,
 					},
 					update: {
 						versions: {

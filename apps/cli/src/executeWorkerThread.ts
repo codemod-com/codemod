@@ -1,9 +1,10 @@
 import { parentPort } from "node:worker_threads";
-import { buildFormattedFileCommands } from "./fileCommands.js";
+import { FileCommand, buildFormattedFileCommands } from "./fileCommands.js";
 import {
 	type MainThreadMessage,
 	decodeMainThreadMessage,
 } from "./mainThreadMessages.js";
+import { runAstGrepCodemod } from "./runAstgrepCodemod.js";
 import { runJscodeshiftCodemod } from "./runJscodeshiftCodemod.js";
 import { runTsMorphCodemod } from "./runTsMorphCodemod.js";
 import { ConsoleKind } from "./schemata/consoleKindSchema.js";
@@ -32,7 +33,13 @@ let initializationMessage:
 
 const messageHandler = async (m: unknown) => {
 	try {
-		const message = decodeMainThreadMessage(m);
+		let message: MainThreadMessage;
+		try {
+			message = decodeMainThreadMessage(m);
+		} catch (err) {
+			console.dir(err, { depth: 10 });
+			throw new Error(`Failed to decode message: ${String(err)}`);
+		}
 
 		if (message.kind === "initialization") {
 			initializationMessage = message;
@@ -49,24 +56,43 @@ const messageHandler = async (m: unknown) => {
 		}
 
 		try {
-			const fileCommands =
-				initializationMessage.codemodEngine === "jscodeshift"
-					? runJscodeshiftCodemod(
-							initializationMessage.codemodSource,
-							message.path,
-							message.data,
-							initializationMessage.disablePrettier,
-							initializationMessage.safeArgumentRecord,
-							consoleCallback,
-					  )
-					: runTsMorphCodemod(
-							initializationMessage.codemodSource,
-							message.path,
-							message.data,
-							initializationMessage.disablePrettier,
-							initializationMessage.safeArgumentRecord,
-							consoleCallback,
-					  );
+			let fileCommands: readonly FileCommand[] = [];
+			switch (initializationMessage.codemodEngine) {
+				case "jscodeshift":
+					fileCommands = runJscodeshiftCodemod(
+						initializationMessage.codemodSource,
+						message.path,
+						message.data,
+						initializationMessage.disablePrettier,
+						initializationMessage.safeArgumentRecord,
+						consoleCallback,
+					);
+					break;
+				case "ts-morph":
+					fileCommands = runTsMorphCodemod(
+						initializationMessage.codemodSource,
+						message.path,
+						message.data,
+						initializationMessage.disablePrettier,
+						initializationMessage.safeArgumentRecord,
+						consoleCallback,
+					);
+					break;
+				case "ast-grep":
+					fileCommands = await runAstGrepCodemod(
+						initializationMessage.codemodPath,
+						message.path,
+						message.data,
+						initializationMessage.disablePrettier,
+						initializationMessage.safeArgumentRecord,
+						consoleCallback,
+					);
+					break;
+				default:
+					throw new Error(
+						`Unknown codemod engine: ${initializationMessage.codemodEngine}`,
+					);
+			}
 
 			const commands = await buildFormattedFileCommands(fileCommands);
 

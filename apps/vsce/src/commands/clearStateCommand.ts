@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { FileType, Uri, workspace } from "vscode";
@@ -40,7 +41,12 @@ export const createClearStateCommand =
 		}
 
 		try {
-			const casesDirectoryUri = Uri.parse(join(homedir(), ".codemod", "cases"));
+			const casePath = join(homedir(), ".codemod", "cases");
+			if (!existsSync(casePath)) {
+				store.dispatch(actions.onStateCleared());
+				return;
+			}
+			const casesDirectoryUri = Uri.parse(casePath);
 
 			const files = await workspace.fs.readDirectory(casesDirectoryUri);
 

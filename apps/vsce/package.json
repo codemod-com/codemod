@@ -3,14 +3,14 @@
 	"author": "Codemod, Inc.",
 	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
-	"version": "0.38.16",
+	"version": "0.38.17",
 	"publisher": "codemod",
 	"icon": "img/codemod_square128.png",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/codemod-com/codemod/tree/main/apps/vsce"
 	},
-	"engines": { "vscode": "^1.74.0" },
+	"engines": { "vscode": "^1.74.0", "node": "^20.0.0" },
 	"categories": ["Programming Languages", "Formatters", "Linters"],
 	"keywords": [
 		"codemod",
@@ -231,10 +231,11 @@
 		"ts-node": "^10.9.1",
 		"typescript": "5.1.6",
 		"umd-compat-loader": "^2.1.2",
-		"webpack": "5.89.0",
+		"webpack": "5.91.0",
 		"webpack-cli": "5.1.4"
 	},
 	"dependencies": {
+		"codemod": "latest",
 		"@effect/schema": "^0.52.0",
 		"@intuita-inc/utilities": "^1.0.2",
 		"@reduxjs/toolkit": "^1.9.5",

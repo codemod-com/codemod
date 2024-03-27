@@ -27,84 +27,90 @@ ${codemod}
 `;
 
 const autoGenerateCodemodPrompt = `
-  Below, you are provided with "Before" and "After" code snippets.
-	The code snippets are written in JavaScript or TypeScript language.
-	
-	Before: 
-	$BEFORE
-	
-	After: 
-	$AFTER
-	
-	Consider the following jscodeshift codemod Template:
-	
-	\`\`\`
-	import type { FileInfo, API, Options } from 'jscodeshift';
-	export default function transform(
-				file: FileInfo,
-				api: API,
-				options?: Options,
-		): string | undefined {
-				const j = api.jscodeshift;
-				const root = j(file.source);
-				
-				//jscodeshift codemod implementation
+Below, you are provided with "Before" and "After" code snippets.
+The code snippets are written in JavaScript or TypeScript language.
 
-				return root.toSource();
-			} 
-	\`\`\`
+Before:
+$BEFORE
+
+After:
+$AFTER
+
+Consider the following jscodeshift codemod Template:
 	
-	Write a jscodeshift codemod that transforms the "Before" code snippet into the "After" 
-	while adhering to the Template above and replace the "//jscodeshift codemod implementation" comment with  
-	actual codemod implementation.
-
-	Preserve the leading comments by using a helper function like this
-
-	\`\`\`
-  	function replaceWithComments(path, newNode) {
-    	// If the original node had comments, add them to the new node
-    	if (path.node.comments) {
-      		newNode.comments = path.node.comments;
-    	}
-
-    	// Replace the node
-    	j(path).replaceWith(newNode);
-  	}
-	\`\`\`
- 
- 
-	You are only allowed to use jscodeshift library and TypeScript language. 
-	Do not use any other libraries other than jscodeshift.
-  Do not add any other imports other than the imports that already exist in the Template.
+\`\`\`
+import type { FileInfo, API, Options } from 'jscodeshift';
+export default function transform(
+	file: FileInfo,
+	api: API,
+	options?: Options,
+): string | undefined {
+	const j = api.jscodeshift;
+	const root = j(file.source);
 	
-	Your codemod should not contain any typescript errors and bugs.
-
-	Only provide the code. Do not share extra explanations.
-
-	Before accessing jscodeshift node properties, try to narrow node's type.
+	//jscodeshift codemod implementation
 	
-	You can narrow node type by checking "type" property. Example: 
+	return root.toSource();
+}
+\`\`\`
 	
-	\`\`\`
-	// ensures that node is Identifier
-	if(node.type === "Identifier") {
-		// safely access properties of Identifier
+Write a jscodeshift codemod that transforms the "Before" code snippet into the "After" while adhering to the Template above and replace the "//jscodeshift codemod implementation" comment with actual codemod implementation.
+
+Preserve the leading comments by using a helper function like this:
+
+\`\`\`
+function replaceWithComments(path, newNode) {
+	// If the original node had comments, add them to the new node
+	if (path.node.comments) {
+		newNode.comments = path.node.comments;
 	}
-	\`\`\`
-	
-	When generating a node, prefer using "from" method. Example: 
-	
-	\`\`\`
-	const arrowFunctionExpressionNode = j.arrowFunctionExpression.from({
-		params,
-		body,
-		async, 
-	);
-	\`\`\`
-	
-	Try making your codemod modular. 
 
-	Write comments with best practices in mind.
+	// Replace the node
+	j(path).replaceWith(newNode);
+}
+\`\`\`
+ 
+ 
+You are only allowed to use jscodeshift library and TypeScript language.
+
+Do not use any other libraries other than jscodeshift.
+
+Your codemod should not contain any typescript errors and bugs.
+
+Only provide the code. Do not share extra explanations.
+
+Before accessing jscodeshift node properties, try to narrow node's type.
+
+You can narrow node type by checking "type" property. Example:
+	
+\`\`\`
+// ensures that node is Identifier
+if(node.type === "Identifier") {
+	// safely access properties of Identifier
+}
+\`\`\`
+
+Try making your codemod modular.
+
+Write comments with best practices in mind.
+
+Never import namedTypes or builders from jscodeshift.
+Only import jscodeshift in the codemod.
+
+"VariableDeclarator" does not have a property "id".
+"VariableDeclarator" does not have a property "init".
+"Identifier" does not have a property "init".
+"ExpressionKind" does not have a property "params".
+"Identifier" does not have a property "params".
+"PatternKind" does not have a property "name".
+"RestElement" does not have a property "name".
+"PatternKind" does not have a property "typeAnnotation".
+"SpreadElementPattern" does not have a property "typeAnnotation".
+
+Make sure the codemod you generate, FULLY and EXACTLY transforms the "Before" code snippet to the "After" code snippet.
+- If the "After" code has additional import statements, make sure the codemod adds them.
+- If the "After" code has fewer import statements, make sure the codemod removes them.
+- If the "After" code has type annotations, make sure the codemod adds them.
 `;
 
 // fixBlock V1

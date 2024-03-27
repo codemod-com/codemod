@@ -1,4 +1,5 @@
 {
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"name": "next/13/app-router-recipe",
 	"version": "1.0.0",
 	"private": false,
@@ -10,9 +11,10 @@
 		"next/13/app-directory-boilerplate"
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "5m"
+		"tags": ["next.js"],
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["next", "<", "13.0.0"]]
+	"applicability": {
+		"from": [["next", "<", "13.0.0"]]
+	}
 }

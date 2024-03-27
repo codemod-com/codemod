@@ -9,7 +9,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ActiveTabId } from "../../../src/persistedState/codecs";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
-import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
 import CreateIssue from "../CreateIssue";
 import { App as CodemodList } from "../codemodList/App";
 import { CommunityTab } from "../communityTab/CommunityTab";
@@ -141,10 +140,6 @@ function App() {
 		);
 	}
 
-	if (!mainWebviewViewProps.codemodEngineNodeLocated) {
-		return <CodemodEngineNodeNotFound />;
-	}
-
 	return (
 		<main className="App" ref={ref}>
 			<VSCodePanels
@@ -164,7 +159,7 @@ function App() {
 				className="h-full w-full vscode-panels"
 			>
 				<VSCodePanelTab className="vscode-tab" id={"codemods"}>
-					Codemod Discovery
+					Codemods
 				</VSCodePanelTab>
 				<VSCodePanelTab className="vscode-tab" id={"codemodRuns"}>
 					Codemod Runs
@@ -173,7 +168,7 @@ function App() {
 					Community
 				</VSCodePanelTab>
 				<VSCodePanelTab className="vscode-tab" id={"sourceControl"}>
-					Github Issue
+					Report Issue
 				</VSCodePanelTab>
 
 				<VSCodePanelView

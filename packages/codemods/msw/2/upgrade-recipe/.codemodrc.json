@@ -1,4 +1,5 @@
 {
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"name": "msw/2/upgrade-recipe",
 	"version": "1.0.0",
 	"private": false,
@@ -15,10 +16,9 @@
 		"msw/2/print-handler"
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "10m"
+		"useCaseCategory": "migration"
 	},
-	"applicability": [["msw", ">=", "1.0.0"]],
-	"owner": "codemod.com"
+	"applicability": {
+		"from": [["msw", ">=", "1.0.0"]]
+	}
 }

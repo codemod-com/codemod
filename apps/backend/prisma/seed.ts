@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { CodemodType, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import "dotenv/config";
 
 if (!("DATABASE_URI" in process.env)) {
@@ -10,30 +10,45 @@ const prisma = new PrismaClient();
 
 async function main() {
 	for (let i = 0; i < 10; i++) {
+		const shortDescription = faker.lorem.sentence();
+		const useCaseCategory = faker.helpers.arrayElement([
+			"migration",
+			"best practices",
+			"refactoring",
+			"cleanup",
+		]);
+		const tags = faker.lorem.words(3).split(" ");
+		const engine = faker.helpers.arrayElement(["jscodeshift", "ts-morph"]);
+		const applicability = JSON.stringify({
+			exampleField: faker.lorem.words(3),
+		});
+
 		const codemod = await prisma.codemod.create({
 			data: {
 				slug: faker.datatype.uuid(),
 				name: faker.lorem.words(2),
-				type: faker.helpers.arrayElement(Object.values(CodemodType)),
+				shortDescription,
+				useCaseCategory,
+				tags,
+				engine,
+				applicability,
 				featured: faker.datatype.boolean(),
 				verified: faker.datatype.boolean(),
 				private: faker.datatype.boolean(),
-				author: faker.person.fullName(),
+				author: faker.name.fullName(),
 				amountOfUses: faker.datatype.number(),
 				totalTimeSaved: faker.datatype.number(100),
 				openedPrs: faker.datatype.number(10),
 				labels: faker.lorem.words(3).split(" "),
-				from: faker.system.semver(),
-				to: faker.system.semver(),
 			},
 		});
 
 		await prisma.codemodVersion.create({
 			data: {
 				version: faker.system.semver(),
-				shortDescription: faker.lorem.sentence(),
-				engine: faker.helpers.arrayElement(["jscodeshift", "ts-morph"]),
-				requirements: faker.lorem.words(3),
+				shortDescription,
+				engine,
+				applicability,
 				vsCodeLink: faker.internet.url(),
 				codemodStudioExampleLink: faker.internet.url(),
 				testProjectCommand: faker.lorem.words(2),

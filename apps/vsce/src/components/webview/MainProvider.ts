@@ -14,13 +14,9 @@ import { Store } from "../../data";
 import { actions } from "../../data/slice";
 import { SEARCH_PARAMS_KEYS } from "../../extension";
 import { createIssueResponseCodec } from "../../github/types";
-import {
-	CodemodNodeHashDigest,
-	relativeToAbsolutePath,
-	selectCodemodArguments,
-} from "../../selectors/selectCodemodTree";
+import { relativeToAbsolutePath } from "../../selectors/selectCodemodTree";
 import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
-import { buildGlobPattern, isNeitherNullNorUndefined } from "../../utilities";
+import { buildGlobPattern } from "../../utilities";
 import { EngineService } from "../engineService";
 import { MessageBus, MessageKind } from "../messageBus";
 import { UserService } from "../userService";
@@ -355,13 +351,6 @@ export class MainViewProvider implements WebviewViewProvider {
 			commands.executeCommand("codemod.signOut");
 		}
 
-		if (message.kind === "webview.main.removePrivateCodemod") {
-			commands.executeCommand(
-				"codemod.removePrivateCodemod",
-				message.hashDigest,
-			);
-		}
-
 		if (message.kind === "webview.global.flipSelectedExplorerNode") {
 			this.__store.dispatch(
 				actions.flipSelectedExplorerNode([
@@ -422,51 +411,25 @@ export class MainViewProvider implements WebviewViewProvider {
 			const uri = Uri.file(executionPath);
 
 			// if missing some required arguments, open arguments popup
-			const argumentsSpecified = selectCodemodArguments(
-				this.__store.getState(),
-				hashDigest as unknown as CodemodNodeHashDigest,
-			).every(
-				({ required, value }) =>
-					!required || (isNeitherNullNorUndefined(value) && value !== ""),
-			);
+			// TODO: support codemod arguments
+			// const argumentsSpecified = selectCodemodArguments(
+			// 	this.__store.getState(),
+			// 	hashDigest as unknown as CodemodNodeHashDigest,
+			// ).every(
+			// 	({ required, value }) =>
+			// 		!required || (isNeitherNullNorUndefined(value) && value !== ""),
+			// );
 
-			if (!argumentsSpecified) {
-				this.__store.dispatch(
-					actions.setCodemodArgumentsPopupHashDigest(
-						hashDigest as unknown as CodemodNodeHashDigest,
-					),
-				);
-				return;
-			}
+			// if (!argumentsSpecified) {
+			// 	this.__store.dispatch(
+			// 		actions.setCodemodArgumentsPopupHashDigest(
+			// 			hashDigest as unknown as CodemodNodeHashDigest,
+			// 		),
+			// 	);
+			// 	return;
+			// }
 
 			commands.executeCommand("codemod.executeCodemod", uri, hashDigest);
-		}
-
-		if (message.kind === "webview.codemodList.dryRunPrivateCodemod") {
-			if (this.__rootUri === null) {
-				window.showWarningMessage("No active workspace is found.");
-				return;
-			}
-
-			const hashDigest = message.value;
-			this.__store.dispatch(actions.setRecentCodemodHashes(hashDigest));
-
-			const state = this.__store.getState().codemodDiscoveryView;
-			const executionPath =
-				state.executionPaths[hashDigest] ?? this.__rootUri.fsPath;
-
-			if (executionPath === null) {
-				return;
-			}
-
-			const uri = Uri.file(executionPath);
-
-			commands.executeCommand(
-				"codemod.executePrivateCodemod",
-				uri,
-				hashDigest,
-				message.name,
-			);
 		}
 
 		if (message.kind === "webview.codemodList.updatePathToExecute") {
@@ -509,18 +472,6 @@ export class MainViewProvider implements WebviewViewProvider {
 		if (message.kind === "webview.global.collapseChangeExplorerPanel") {
 			this.__store.dispatch(
 				actions.collapseChangeExplorerPanel(message.collapsed),
-			);
-		}
-
-		if (message.kind === "webview.global.collapsePublicRegistryPanel") {
-			this.__store.dispatch(
-				actions.collapsePublicRegistryPanel(message.collapsed),
-			);
-		}
-
-		if (message.kind === "webview.global.collapsePrivateRegistryPanel") {
-			this.__store.dispatch(
-				actions.collapsePrivateRegistryPanel(message.collapsed),
 			);
 		}
 

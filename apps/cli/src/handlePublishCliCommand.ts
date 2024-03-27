@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { codemodConfigSchema, codemodNameRegex } from "@codemod-com/utilities";
+import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import { glob } from "fast-glob";
 import FormData from "form-data";
-import { parse } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
@@ -41,19 +41,22 @@ export const handlePublishCliCommand = async (
 		)}' and able to publish a codemod to our public registry.`,
 	);
 
+	const formData = new FormData();
+
 	let codemodRcData: string;
 	try {
-		codemodRcData = await fs.promises.readFile(
+		const codemodRcBuf = await fs.promises.readFile(
 			join(source, ".codemodrc.json"),
-			{ encoding: "utf-8" },
 		);
+		formData.append(".codemodrc.json", codemodRcBuf);
+		codemodRcData = codemodRcBuf.toString("utf-8");
 	} catch (err) {
 		throw new Error(
 			"Could not find the .codemodrc.json file in the codemod directory. Please configure your codemod first.",
 		);
 	}
 
-	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
+	const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
 	if (codemodRc.engine === "recipe") {
 		if (codemodRc.names.length < 2) {
@@ -80,51 +83,52 @@ export const handlePublishCliCommand = async (
 		`Publishing the "${codemodRc.name}" codemod to the Codemod Registry.`,
 	);
 
-	const formData = new FormData();
-
-	formData.append(".codemodrc.json", Buffer.from(codemodRcData));
-
 	if (codemodRc.engine !== "recipe") {
+		let globSearchPattern: string;
 		let actualMainFileName: string;
-		let ruleOrExecutablePath: string | null;
 		let errorOnMissing: string;
 
 		switch (codemodRc.engine) {
 			case "ast-grep":
-				ruleOrExecutablePath = "rule.yaml";
+				globSearchPattern = "**/rule.yaml";
 				actualMainFileName = "rule.yaml";
 				errorOnMissing = `Please create the main "rule.yaml" file first.`;
 				break;
 			case "piranha":
-				ruleOrExecutablePath = "rules.toml";
+				globSearchPattern = "**/rules.toml";
 				actualMainFileName = "rules.toml";
 				errorOnMissing = `Please create the main "rules.toml" file first.`;
 				break;
 			default:
-				ruleOrExecutablePath = codemodRc.build?.output ?? "dist/index.cjs";
+				globSearchPattern = "dist/index.cjs";
 				actualMainFileName = "index.cjs";
 				errorOnMissing = `Did you forget to run "codemod build"?`;
 		}
 
-		try {
-			const mainFileData = await fs.promises.readFile(
-				join(source, ruleOrExecutablePath),
-				{ encoding: "utf-8" },
-			);
-			formData.append(actualMainFileName, Buffer.from(mainFileData));
-		} catch (err) {
+		const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
+			absolute: true,
+			cwd: source,
+			onlyFiles: true,
+		});
+
+		const mainFilePath = mainFiles.at(0);
+
+		if (mainFilePath === undefined) {
 			throw new Error(
-				`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
+				`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
 			);
 		}
+
+		const mainFileBuf = await fs.promises.readFile(mainFilePath);
+
+		formData.append(actualMainFileName, mainFileBuf);
 	}
 
 	try {
-		const descriptionMdData = await fs.promises.readFile(
+		const descriptionMdBuf = await fs.promises.readFile(
 			join(source, "README.md"),
-			{ encoding: "utf-8" },
 		);
-		formData.append("description.md", descriptionMdData);
+		formData.append("description.md", descriptionMdBuf);
 	} catch {
 		//
 	}

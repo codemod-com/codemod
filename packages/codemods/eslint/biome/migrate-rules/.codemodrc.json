@@ -1,13 +1,22 @@
 {
-	"version": "1.0.0",
+	"version": "1.0.1",
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"name": "biome/migrate-rules",
 	"private": false,
 	"engine": "filemod",
-	"applicability": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
-	"meta": {
-		"type": "migration",
-		"changeType": "autonomous",
-		"timeSave": "4h"
+	"applicability": {
+		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
+		"to": [["biome", "=", "1.5.3"]]
 	},
-	"owner": "codemod.com"
+	"arguments": [
+		{
+			"name": "rules",
+			"kind": "string",
+			"required": false
+		}
+	],
+	"deps": ["-eslint", "-prettier", "@biomejs/biome@1.5.3"],
+	"meta": {
+		"useCaseCategory": "migration"
+	}
 }

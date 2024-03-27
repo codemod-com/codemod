@@ -5,25 +5,35 @@ import { boldText, colorizeText } from "./utils.js";
 
 export const handleListNamesCommand = async (options: {
 	printer: PrinterBlueprint;
-	name?: string;
-	short?: boolean;
+	search?: string;
 }) => {
-	const { printer, name, short } = options;
+	const { printer, search } = options;
 
-	const configObjects = await getCodemodList({ name });
+	if (search && printer.__jsonOutput) {
+		printer.printConsoleMessage(
+			"info",
+			boldText(colorizeText(`Searching for ${search}...`, "cyan")),
+		);
+	}
 
-	// required for vsce
-	if (short) {
-		const names = configObjects.map(({ name }) => name);
-		printer.printOperationMessage({ kind: "names", names });
+	const configObjects = await getCodemodList(options);
+
+	if (printer.__jsonOutput) {
+		printer.printOperationMessage({
+			kind: "codemodList",
+			codemods: configObjects,
+		});
 		return;
 	}
 
-	const prettified = configObjects
-		.map(({ name, engine, author }) => {
-			if (author?.toLocaleLowerCase() === "codemod.com") {
+	let prettified = configObjects
+		.map(({ name, verified: _, tags: tagsArray, engine, author }) => {
+			const tags = tagsArray.join(", ");
+
+			if (search && (name === search || tags.includes(search))) {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
+					tags: boldText(colorizeText(tags, "cyan")),
 					engine: boldText(colorizeText(engine, "cyan")),
 					author: boldText(colorizeText(author, "cyan")),
 				};
@@ -31,11 +41,29 @@ export const handleListNamesCommand = async (options: {
 
 			return {
 				name,
+				tags,
 				engine,
-				author: author ?? "Community",
+				author,
 			};
 		})
 		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+
+	if (search) {
+		prettified = prettified.slice(0, 10);
+
+		if (prettified.length === 0) {
+			printer.printConsoleMessage(
+				"info",
+				boldText(colorizeText("No results matched your search.", "red")),
+			);
+			return;
+		}
+
+		printer.printConsoleMessage(
+			"info",
+			boldText(colorizeText("Here are the top search results:\n", "cyan")),
+		);
+	}
 
 	printer.printConsoleMessage(
 		"info",
@@ -43,11 +71,4 @@ export const handleListNamesCommand = async (options: {
 			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
 		}),
 	);
-
-	if (configObjects.length > 0) {
-		printer.printConsoleMessage(
-			"info",
-			"\nColored codemods are verified by the Codemod.com engineering team",
-		);
-	}
 };

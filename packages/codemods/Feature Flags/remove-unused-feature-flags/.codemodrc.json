@@ -1,9 +1,9 @@
 {
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"version": "1.0.0",
 	"private": false,
 	"name": "remove-unused-feature-flags",
 	"engine": "jscodeshift",
-	"applicability": [],
 	"arguments": [
 		{
 			"name": "functionName",
@@ -18,8 +18,6 @@
 		}
 	],
 	"meta": {
-		"type": "migration",
-		"changeType": "assistive",
-		"timeSave": "5m"
+		"useCaseCategory": "migration"
 	}
 }

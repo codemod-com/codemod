@@ -35,8 +35,7 @@ export const App = (
 		// no workspace is chosen
 		return (
 			<p className={styles.welcomeMessage}>
-				No change to review! Run some codemods via Codemod Discovery or VSCode
-				Command & check back later!
+				No change to review! Run some codemod from "Codemods" tab!
 			</p>
 		);
 	}
@@ -47,8 +46,7 @@ export const App = (
 			<LoadingProgress description="Executing codemod..." />
 		) : (
 			<p className={styles.welcomeMessage}>
-				No change to review! Run some codemods via Codemod Discovery or VSCode
-				Command & check back later!
+				No change to review! Run some codemod from "Codemods" tab!
 			</p>
 		);
 	}
