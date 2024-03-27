@@ -1,10 +1,10 @@
 import * as fs from "fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { codemodConfigSchema, codemodNameRegex } from "@codemod-com/utilities";
+import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import { glob } from "fast-glob";
 import FormData from "form-data";
-import { parse } from "valibot";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
@@ -56,7 +56,7 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	const codemodRc = parse(codemodConfigSchema, JSON.parse(codemodRcData));
+	const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
 	if (codemodRc.engine === "recipe") {
 		if (codemodRc.names.length < 2) {
@@ -84,37 +84,39 @@ export const handlePublishCliCommand = async (
 	);
 
 	if (codemodRc.engine !== "recipe") {
+		let globSearchPattern: string;
 		let actualMainFileName: string;
-		let ruleOrExecutablePath: string | null;
 		let errorOnMissing: string;
 
 		switch (codemodRc.engine) {
 			case "ast-grep":
-				ruleOrExecutablePath = "rule.yaml";
+				globSearchPattern = "**/rule.yaml";
 				actualMainFileName = "rule.yaml";
 				errorOnMissing = `Please create the main "rule.yaml" file first.`;
 				break;
 			case "piranha":
-				ruleOrExecutablePath = "rules.toml";
+				globSearchPattern = "**/rules.toml";
 				actualMainFileName = "rules.toml";
 				errorOnMissing = `Please create the main "rules.toml" file first.`;
 				break;
 			default:
-				ruleOrExecutablePath = codemodRc.build?.output ?? "dist/index.cjs";
+				globSearchPattern = "dist/index.cjs";
 				actualMainFileName = "index.cjs";
 				errorOnMissing = `Did you forget to run "codemod build"?`;
 		}
 
-		try {
-			const mainFileBuf = await fs.promises.readFile(
-				join(source, ruleOrExecutablePath),
-			);
-			formData.append(actualMainFileName, mainFileBuf);
-		} catch (err) {
+		const mainFiles = await glob(
+			join(source, codemodRc.build?.output ?? globSearchPattern),
+			{ absolute: true },
+		);
+
+		if (mainFiles.length === 0) {
 			throw new Error(
-				`Could not find the main file of the codemod in ${ruleOrExecutablePath}. ${errorOnMissing}`,
+				`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
 			);
 		}
+
+		formData.append(actualMainFileName, mainFiles.at(0));
 	}
 
 	try {

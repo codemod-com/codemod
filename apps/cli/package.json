@@ -1,7 +1,7 @@
 {
 	"name": "codemod",
 	"author": "Codemod, Inc.",
-	"version": "0.8.8",
+	"version": "0.9.1",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
@@ -38,6 +38,7 @@
 		"@svgr/hast-util-to-babel-ast": "^7.0.0",
 		"@types/babel__traverse": "^7.20.1",
 		"@types/columnify": "^1.5.4",
+		"@types/inquirer": "^9.0.7",
 		"@types/js-yaml": "4.0.9",
 		"@types/jscodeshift": "^0.11.5",
 		"@types/ms": "^0.7.34",
@@ -95,6 +96,7 @@
 		"access": "public"
 	},
 	"dependencies": {
+		"inquirer": "^9.2.16",
 		"js-yaml": "4.1.0",
 		"ms": "^2.1.3"
 	}

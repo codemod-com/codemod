@@ -83,12 +83,12 @@ const parserMappers = new Map<string, Options["parser"]>([
 export const getConfig = async (path: string): Promise<Options> => {
 	const { resolveConfig } = await import("prettier");
 
-	const config = await resolveConfig(path, {
+	let config = await resolveConfig(path, {
 		editorconfig: false,
 	});
 
 	if (config === null || Object.keys(config).length === 0) {
-		throw new Error("Unable to resolve config");
+		config = DEFAULT_PRETTIER_OPTIONS;
 	}
 
 	const parser: Options["parser"] =

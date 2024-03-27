@@ -3,14 +3,13 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
 import {
 	CodemodConfig,
-	codemodConfigSchema,
 	codemodNameRegex,
 	isNeitherNullNorUndefined,
+	parseCodemodConfig,
 	tarPack,
 } from "@codemod-com/utilities";
 import { RouteHandlerMethod } from "fastify";
 import * as semver from "semver";
-import { parse } from "valibot";
 import { z } from "zod";
 import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import { prisma } from "./db/prisma.js";
@@ -77,7 +76,7 @@ export const publishHandler =
 
 					const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
 
-					codemodRc = parse(codemodConfigSchema, codemodRcData);
+					codemodRc = parseCodemodConfig(codemodRcData);
 
 					if (codemodRc.engine === "recipe") {
 						if (codemodRc.names.length < 2) {
@@ -250,6 +249,7 @@ export const publishHandler =
 				applicability: codemodRc.applicability,
 				tags: codemodRc.meta?.tags,
 				useCaseCategory: codemodRc.meta?.useCaseCategory,
+				arguments: codemodRc.arguments,
 			};
 
 			let isVerified =
@@ -286,6 +286,7 @@ export const publishHandler =
 						versions: {
 							create: codemodVersionEntry,
 						},
+						arguments: codemodRc.arguments,
 					},
 					update: {
 						versions: {

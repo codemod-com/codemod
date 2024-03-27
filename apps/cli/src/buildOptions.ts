@@ -4,6 +4,7 @@ import {
 	DEFAULT_DRY_RUN,
 	DEFAULT_EXCLUDE_PATTERNS,
 	DEFAULT_NO_CACHE,
+	DEFAULT_SKIP_INSTALL,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
 } from "./constants.js";
@@ -21,18 +22,11 @@ export const buildUseJsonOption = <T extends Record<string, unknown>>(
 export const buildUseCacheOption = <T extends Record<string, unknown>>(
 	y: Argv<T>,
 ) =>
-	y
-		.option("no-cache", {
-			type: "boolean",
-			description: "Disable cache for HTTP(S) requests",
-			default: DEFAULT_NO_CACHE,
-		})
-		// prints only names consumed by VSCE
-		.option("short", {
-			type: "boolean",
-			description: "",
-			default: false,
-		});
+	y.option("no-cache", {
+		type: "boolean",
+		description: "Disable cache for HTTP(S) requests",
+		default: DEFAULT_NO_CACHE,
+	});
 
 export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 	return buildUseCacheOption(
@@ -87,6 +81,12 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 				.option("telemetryDisable", {
 					type: "boolean",
 					description: "Disable telemetry",
+				})
+				.option("skip-install", {
+					type: "boolean",
+					description:
+						"Disable packages installation for the codemod run if there is `deps` field declared in its configuration.",
+					default: DEFAULT_SKIP_INSTALL,
 				}),
 		),
 	);

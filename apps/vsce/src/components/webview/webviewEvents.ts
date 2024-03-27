@@ -20,9 +20,7 @@ export type IssueFormData = Readonly<{
 }>;
 
 export type RunCodemodsCommand = Readonly<{
-	kind:
-		| "webview.codemodList.dryRunCodemod"
-		| "webview.codemodList.dryRunPrivateCodemod";
+	kind: "webview.codemodList.dryRunCodemod";
 	value: CodemodHash;
 	name: string;
 }>;
@@ -113,9 +111,7 @@ export type WebviewResponse =
 			searchPhrase: string;
 	  }>
 	| Readonly<{
-			kind:
-				| "webview.global.setCodemodSearchPhrase"
-				| "webview.global.setPrivateRegistrySearchPhrase";
+			kind: "webview.global.setCodemodSearchPhrase";
 			searchPhrase: string;
 	  }>
 	| Readonly<{
@@ -137,10 +133,6 @@ export type WebviewResponse =
 				content: string;
 				autoClose: number;
 			} | null;
-	  }>
-	| Readonly<{
-			kind: "webview.main.removePrivateCodemod";
-			hashDigest: CodemodNodeHashDigest;
 	  }>
 	| Readonly<{
 			kind: "webview.main.signOut";
@@ -189,8 +181,7 @@ export type WebviewResponse =
 			kind:
 				| "webview.global.collapseResultsPanel"
 				| "webview.global.collapseChangeExplorerPanel"
-				| "webview.global.collapsePublicRegistryPanel"
-				| "webview.global.collapsePrivateRegistryPanel";
+				| "webview.global.collapsePublicRegistryPanel";
 			collapsed: boolean;
 	  }>
 	| Readonly<{

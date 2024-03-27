@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CodemodConfig, codemodConfigSchema } from "@codemod-com/utilities";
-import { parse } from "valibot";
+import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
@@ -12,10 +12,7 @@ import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	download(
-		name: string,
-		cache: boolean,
-	): Promise<Codemod & { source: "registry" }>;
+	download(name: string): Promise<Codemod & { source: "registry" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -49,11 +46,11 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		const s3DownloadLink = await getCodemodDownloadURI(name);
-		const localCodemodPath = join(directoryPath, "codemod.tar.gz");
-
 		// download codemod
 		try {
+			const s3DownloadLink = await getCodemodDownloadURI(name);
+			const localCodemodPath = join(directoryPath, "codemod.tar.gz");
+
 			const buffer = await this._fileDownloadService.download(
 				s3DownloadLink,
 				localCodemodPath,
@@ -61,22 +58,23 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 			await this._tarService.extract(directoryPath, buffer);
 		} catch (error) {
-			await handleListNamesCommand({ printer: this.__printer });
+			if (error instanceof AxiosError && error.response?.status === 404) {
+				await handleListNamesCommand({ printer: this.__printer });
 
-			throw new Error(
-				`Could not find codemod ${boldText(
-					name,
-				)} in the registry. Verify the name to be in the list above and try again.`,
-			);
+				throw new Error(
+					`Could not find codemod ${boldText(
+						name,
+					)} in the registry. Verify the name to be in the list above and try again.`,
+				);
+			}
+
+			throw new Error(`Error while downloading codemod ${name}: ${error}`);
 		}
 
 		let config: CodemodConfig;
 		try {
 			const configBuf = await readFile(join(directoryPath, ".codemodrc.json"));
-			config = parse(
-				codemodConfigSchema,
-				JSON.parse(configBuf.toString("utf8")),
-			);
+			config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
 		} catch (err) {
 			throw new Error(`Error parsing config for codemod ${name}: ${err}`);
 		}
@@ -90,7 +88,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 					name,
 					engine: config.engine,
 					include: config.include,
-					yamlPath,
+					indexPath: yamlPath,
 					directoryPath,
 					arguments: config.arguments,
 				};

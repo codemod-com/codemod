@@ -4,6 +4,7 @@ import { boldText, colorizeText } from "./utils.js";
 import { WorkerThreadMessage } from "./workerThreadMessages.js";
 
 export type PrinterBlueprint = Readonly<{
+	__jsonOutput: boolean;
 	printMessage(
 		message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
 	): void;
@@ -12,7 +13,7 @@ export type PrinterBlueprint = Readonly<{
 }>;
 
 export class Printer implements PrinterBlueprint {
-	public constructor(private readonly __jsonOutput: boolean) {}
+	public constructor(public readonly __jsonOutput: boolean) {}
 
 	public printMessage(
 		message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
@@ -59,6 +60,11 @@ export class Printer implements PrinterBlueprint {
 
 	public printConsoleMessage(kind: ConsoleKind, message: string) {
 		if (this.__jsonOutput) {
+			return;
+		}
+
+		if (kind === "error") {
+			console.error(colorizeText(message, "red"));
 			return;
 		}
 
