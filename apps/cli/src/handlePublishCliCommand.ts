@@ -105,18 +105,23 @@ export const handlePublishCliCommand = async (
 				errorOnMissing = `Did you forget to run "codemod build"?`;
 		}
 
-		const mainFiles = await glob(
-			join(source, codemodRc.build?.output ?? globSearchPattern),
-			{ absolute: true },
-		);
+		const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
+			absolute: true,
+			cwd: source,
+			onlyFiles: true,
+		});
 
-		if (mainFiles.length === 0) {
+		const mainFilePath = mainFiles.at(0);
+
+		if (mainFilePath === undefined) {
 			throw new Error(
 				`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
 			);
 		}
 
-		formData.append(actualMainFileName, mainFiles.at(0));
+		const mainFileBuf = await fs.promises.readFile(mainFilePath);
+
+		formData.append(actualMainFileName, mainFileBuf);
 	}
 
 	try {

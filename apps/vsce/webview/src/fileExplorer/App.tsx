@@ -90,7 +90,7 @@ export const App = (
 			/>
 		) : (
 			<p className={styles.welcomeMessage}>
-				Choose a Codemod from Codemod Runs to explore its changes!
+				Choose a Codemod from "Results" to explore its changes!
 			</p>
 		);
 	}

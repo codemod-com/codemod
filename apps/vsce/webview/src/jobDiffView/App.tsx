@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
 import type { PanelViewProps } from "../../../src/components/webview/panelViewProps";
 import { WebviewMessage } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
@@ -35,14 +34,6 @@ export const App = () => {
 			window.removeEventListener("message", eventHandler);
 		};
 	}, []);
-
-	if (viewProps.kind === "CODEMOD") {
-		return (
-			<main className={styles.markdownContainer}>
-				<ReactMarkdown>{viewProps.description}</ReactMarkdown>
-			</main>
-		);
-	}
 
 	return (
 		<main className={styles.app}>

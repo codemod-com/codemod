@@ -35,7 +35,7 @@ const EXTERNAL_LINKS = [
 	},
 	{
 		id: "slack",
-		text: "Chat with us on Slack",
+		text: "Join our Slack community",
 		url: "https://join.slack.com/t/codemod-community/shared_invite/zt-2bqtla38k-QbWDh9Kwa2GFVtuGoqRwPw",
 		icon: (
 			<SlackIcon

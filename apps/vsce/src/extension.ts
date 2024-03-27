@@ -17,7 +17,6 @@ import { JobManager } from "./components/jobManager";
 import { Command, MessageBus, MessageKind } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
 import { GlobalStateTokenStorage, UserService } from "./components/userService";
-import { CodemodDescriptionProvider } from "./components/webview/CodemodDescriptionProvider";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
 import {
@@ -35,10 +34,7 @@ import {
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import { CodemodHash } from "./packageJsonAnalyzer/types";
-import {
-	CodemodNodeHashDigest,
-	selectCodemodArguments,
-} from "./selectors/selectCodemodTree";
+import { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { buildCaseHash } from "./telemetry/hashes";
 import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
@@ -156,16 +152,11 @@ export async function activate(context: vscode.ExtensionContext) {
 		mainViewProvider,
 	);
 
-	const codemodDescriptionProvider = new CodemodDescriptionProvider(
-		vscode.workspace.fs,
-	);
-
 	new CustomPanelProvider(
 		context.extensionUri,
 		store,
 		mainViewProvider,
 		messageBus,
-		codemodDescriptionProvider,
 		rootUri?.fsPath ?? null,
 		jobManager,
 	);
@@ -514,10 +505,11 @@ export async function activate(context: vscode.ExtensionContext) {
 						);
 					}
 
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodHash as unknown as CodemodNodeHashDigest,
-					);
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodHash as unknown as CodemodNodeHashDigest,
+					// );
 					const command: Command =
 						// @ts-ignore TODO: Remove this logic in the next PR
 						codemod.kind === "piranhaRule"
@@ -535,13 +527,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemod.language,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash,
 									name: codemod.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					store.dispatch(
@@ -673,10 +665,11 @@ export async function activate(context: vscode.ExtensionContext) {
 						fileStat.type & vscode.FileType.Directory,
 					);
 
-					const args = selectCodemodArguments(
-						store.getState(),
-						codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-					);
+					// TODO: support codemod arguments
+					// const args = selectCodemodArguments(
+					// 	store.getState(),
+					// 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
+					// );
 
 					const command: Command =
 						// @ts-ignore TODO: Remove this logic in the next PR
@@ -695,13 +688,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									// @ts-ignore TODO: Remove this logic in the next PR
 									language: codemodEntry.language,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  }
 							: {
 									kind: "executeCodemod",
 									codemodHash: codemodEntry.hashDigest as CodemodHash,
 									name: codemodEntry.name,
-									arguments: args,
+									arguments: [],
 							  };
 
 					messageBus.publish({

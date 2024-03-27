@@ -834,9 +834,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      react-markdown:
-        specifier: ^8.0.7
-        version: 8.0.7(@types/react@18.2.55)(react@18.2.0)
       react-resizable-panels:
         specifier: ^0.0.51
         version: 0.0.51(react-dom@18.2.0)(react@18.2.0)

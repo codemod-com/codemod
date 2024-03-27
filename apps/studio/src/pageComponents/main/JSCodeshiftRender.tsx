@@ -193,8 +193,8 @@ export const DiffEditorWrapper = ({
 	}>) => (
 	<div
 		className={cn(
-			"relative flex h-full flex-col",
-			type === "after" ? "w-[200%] mr-[-50%]" : "w-full",
+			"relative flex h-full flex-col w-[200%]",
+			type === "after" ? "mr-[-50%]" : "ml-[-100%]",
 			`${type}-shown`,
 		)}
 	>

@@ -16,7 +16,6 @@ import {
 } from "../../utilities";
 import { JobManager } from "../jobManager";
 import { MessageBus, MessageKind } from "../messageBus";
-import { CodemodDescriptionProvider } from "./CodemodDescriptionProvider";
 import { MainViewProvider } from "./MainProvider";
 import { WebviewResolver } from "./WebviewResolver";
 import { PanelViewProps } from "./panelViewProps";
@@ -97,7 +96,6 @@ export const createBeforeAfterSnippets = (
 
 const selectPanelViewProps = (
 	mainWebviewViewProvider: MainViewProvider,
-	codemodDescriptionProvider: CodemodDescriptionProvider,
 	state: RootState,
 	rootPath: string | null,
 ): PanelViewProps | null => {
@@ -112,27 +110,7 @@ const selectPanelViewProps = (
 	const { activeTabId } = state;
 
 	if (activeTabId === "codemods") {
-		const { focusedCodemodHashDigest } = state.codemodDiscoveryView;
-
-		if (focusedCodemodHashDigest === null) {
-			return null;
-		}
-
-		const codemod = state.codemod.entities[focusedCodemodHashDigest] ?? null;
-
-		if (codemod === null) {
-			return null;
-		}
-
-		const description = codemodDescriptionProvider.getCodemodDescription(
-			codemod.name,
-		);
-
-		return {
-			kind: "CODEMOD",
-			title: codemod.name,
-			description: description,
-		};
+		return null;
 	}
 
 	if (rootPath === null || activeTabId === "community") {
@@ -230,13 +208,11 @@ export class CustomPanelProvider {
 		private readonly __store: Store,
 		private readonly __mainWebviewViewProvider: MainViewProvider,
 		messageBus: MessageBus,
-		private readonly __codemodDescriptionProvider: CodemodDescriptionProvider,
 		private readonly __rootPath: string | null,
 		private readonly __jobManager: JobManager,
 	) {
 		let prevViewProps = selectPanelViewProps(
 			__mainWebviewViewProvider,
-			__codemodDescriptionProvider,
 			__store.getState(),
 			__rootPath,
 		);
@@ -244,7 +220,6 @@ export class CustomPanelProvider {
 		const listener = async () => {
 			const nextViewProps = selectPanelViewProps(
 				__mainWebviewViewProvider,
-				__codemodDescriptionProvider,
 				__store.getState(),
 				__rootPath,
 			);
@@ -262,7 +237,6 @@ export class CustomPanelProvider {
 
 		__store.subscribe(listener);
 
-		__codemodDescriptionProvider.onDidChange(listener);
 		messageBus.subscribe(MessageKind.mainWebviewViewVisibilityChange, listener);
 	}
 
@@ -379,7 +353,6 @@ export class CustomPanelProvider {
 					if (message.kind === "webview.jobDiffView.webviewMounted") {
 						const nextViewProps = selectPanelViewProps(
 							this.__mainWebviewViewProvider,
-							this.__codemodDescriptionProvider,
 							this.__store.getState(),
 							this.__rootPath,
 						);
@@ -408,7 +381,6 @@ export class CustomPanelProvider {
 
 						const nextViewProps = selectPanelViewProps(
 							this.__mainWebviewViewProvider,
-							this.__codemodDescriptionProvider,
 							this.__store.getState(),
 							this.__rootPath,
 						);
