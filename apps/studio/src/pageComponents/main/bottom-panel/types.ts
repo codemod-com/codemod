@@ -16,6 +16,7 @@ export type PanelComponentProps = {
 	children: React.ReactNode;
 	visibilityOptions?: VisibilityOptions;
 	panelRefs: PanelsRefs;
+	className?: string;
 };
 
 export type ToggleButtonProps = {

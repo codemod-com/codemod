@@ -7,9 +7,7 @@ type PanelHeaderProps = PropsWithChildren<{
 }>;
 
 const PanelHeader = ({ children, className }: PanelHeaderProps) => (
-	<div className={cn("panel_panel_header h-[2.5rem]", className)}>
-		{children}
-	</div>
+	<div className={cn("panel_panel_header", className)}>{children}</div>
 );
 
 type PanelTabProps = {
