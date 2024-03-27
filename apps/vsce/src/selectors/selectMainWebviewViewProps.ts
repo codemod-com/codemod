@@ -31,8 +31,6 @@ export const selectMainWebviewViewProps = (
 				executionQueue,
 			),
 			rootPath: rootUri?.fsPath ?? null,
-			publicRegistryCollapsed:
-				state.codemodDiscoveryView.publicRegistryCollapsed,
 			panelGroupSettings: state.codemodDiscoveryView.panelGroupSettings,
 			codemodEngineNodeLocated,
 		};

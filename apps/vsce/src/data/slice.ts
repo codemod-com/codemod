@@ -55,7 +55,6 @@ export const getInitialState = (): RootState => {
 			},
 		},
 		codemodDiscoveryView: {
-			publicRegistryCollapsed: false,
 			panelGroupSettings: {
 				"0,0": [50, 50],
 			},
@@ -624,9 +623,6 @@ const rootSlice = createSlice({
 		},
 		collapseChangeExplorerPanel(state, action: PayloadAction<boolean>) {
 			state.codemodRunsTab.changeExplorerCollapsed = action.payload;
-		},
-		collapsePublicRegistryPanel(state, action: PayloadAction<boolean>) {
-			state.codemodDiscoveryView.publicRegistryCollapsed = action.payload;
 		},
 		setCodemodArgumentsPopupHashDigest(
 			state,

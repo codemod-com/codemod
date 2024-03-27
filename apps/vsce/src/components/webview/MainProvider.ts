@@ -475,12 +475,6 @@ export class MainViewProvider implements WebviewViewProvider {
 			);
 		}
 
-		if (message.kind === "webview.global.collapsePublicRegistryPanel") {
-			this.__store.dispatch(
-				actions.collapsePublicRegistryPanel(message.collapsed),
-			);
-		}
-
 		if (message.kind === "webview.sourceControl.createIssue") {
 			const accessToken = this.__userService.getLinkedToken();
 

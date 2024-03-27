@@ -1,14 +1,10 @@
 import cn from "classnames";
 import areEqual from "fast-deep-equal";
-import { memo, useEffect, useMemo, useRef } from "react";
-import {
-	ImperativePanelHandle,
-	PanelGroupStorage,
-} from "react-resizable-panels";
+import { memo, useMemo } from "react";
+import { PanelGroupStorage } from "react-resizable-panels";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
-import { PanelGroup, ResizablePanel } from "../shared/Panel";
+import { PanelGroup } from "../shared/Panel";
 import SearchBar from "../shared/SearchBar";
-import { SectionHeader } from "../shared/SectionHeader";
 import { vscode } from "../shared/utilities/vscode";
 import TreeView from "./TreeView";
 
@@ -26,16 +22,6 @@ export const App = memo(
 			screenWidth: number | null;
 		},
 	) => {
-		const publicRegistryRef = useRef<ImperativePanelHandle | null>(null);
-
-		useEffect(() => {
-			if (props.publicRegistryCollapsed) {
-				publicRegistryRef.current?.collapse();
-			} else {
-				publicRegistryRef.current?.expand();
-			}
-		}, [props.publicRegistryCollapsed]);
-
 		const storage = useMemo(
 			(): PanelGroupStorage => ({
 				getItem: () => JSON.stringify(props.panelGroupSettings),
@@ -56,48 +42,19 @@ export const App = memo(
 						direction="vertical"
 						storage={storage}
 						autoSaveId="codemodListPanelGroup"
+						style={{ overflow: "auto" }}
 					>
-						<SectionHeader
-							title={"Public Registry"}
-							commands={[]}
-							collapsed={props.publicRegistryCollapsed}
-							onClick={(event) => {
-								event.preventDefault();
-
-								vscode.postMessage({
-									kind: "webview.global.collapsePublicRegistryPanel",
-									collapsed: !props.publicRegistryCollapsed,
-								});
-							}}
+						<SearchBar
+							searchPhrase={props.searchPhrase}
+							setSearchPhrase={setSearchPhrase}
+							placeholder="Search codemods..."
 						/>
-						<ResizablePanel
-							collapsible
-							minSize={0}
-							defaultSize={props.panelGroupSettings["0,0"]?.[0] ?? 50}
-							style={{
-								overflowY: "auto",
-								overflowX: "hidden",
-							}}
-							ref={publicRegistryRef}
-							onCollapse={(collapsed) => {
-								vscode.postMessage({
-									kind: "webview.global.collapsePublicRegistryPanel",
-									collapsed,
-								});
-							}}
-						>
-							<SearchBar
-								searchPhrase={props.searchPhrase}
-								setSearchPhrase={setSearchPhrase}
-								placeholder="Search public codemods..."
-							/>
-							<TreeView
-								screenWidth={props.screenWidth}
-								tree={props.codemodTree}
-								rootPath={props.rootPath}
-								autocompleteItems={props.autocompleteItems}
-							/>
-						</ResizablePanel>
+						<TreeView
+							screenWidth={props.screenWidth}
+							tree={props.codemodTree}
+							rootPath={props.rootPath}
+							autocompleteItems={props.autocompleteItems}
+						/>
 					</PanelGroup>
 				</main>
 			</>

@@ -4,10 +4,7 @@ import {
 	spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import * as readline from "node:readline";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
@@ -18,7 +15,6 @@ import { CodemodEntry, codemodNamesCodec } from "../codemods/types";
 import { Configuration } from "../configuration";
 import { Container } from "../container";
 import { Store } from "../data";
-import { parseCodemodConfigSchema } from "../data/codemodConfigSchema";
 import { actions } from "../data/slice";
 import { ExecutionError, executionErrorCodec } from "../errors/types";
 import { buildJobHash } from "../jobs/buildJobHash";
@@ -199,9 +195,9 @@ type ExecuteCodemodMessage = Message &
 	}>;
 
 // npx ensures that the local codemod CLI (latest version) is used
-const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
-const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
-const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
+const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+// const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
+// const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export class EngineService {
 	readonly #configurationContainer: Container<Configuration>;
@@ -230,40 +226,40 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__pollCodemodEngineNode();
+		this.__onCodemodEngineNodeLocated();
 	}
 
-	private async __pollCodemodEngineNode() {
-		let iterations = 0;
+	// private async __pollCodemodEngineNode() {
+	// 	let iterations = 0;
 
-		const checkCodemodEngineNode = async () => {
-			if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
-				clearInterval(codemodEnginePollingIntervalId);
-			}
+	// 	const checkCodemodEngineNode = async () => {
+	// 		if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
+	// 			clearInterval(codemodEnginePollingIntervalId);
+	// 		}
 
-			const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
+	// 		const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
 
-			this.#messageBus.publish({
-				kind: MessageKind.codemodEngineNodeLocated,
-				codemodEngineNodeLocated,
-			});
+	// 		this.#messageBus.publish({
+	// 			kind: MessageKind.codemodEngineNodeLocated,
+	// 			codemodEngineNodeLocated,
+	// 		});
 
-			if (codemodEngineNodeLocated) {
-				this.__onCodemodEngineNodeLocated();
-				clearInterval(codemodEnginePollingIntervalId);
-			}
+	// 		if (codemodEngineNodeLocated) {
+	// 			this.__onCodemodEngineNodeLocated();
+	// 			clearInterval(codemodEnginePollingIntervalId);
+	// 		}
 
-			iterations++;
-		};
+	// 		iterations++;
+	// 	};
 
-		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
-		const codemodEnginePollingIntervalId = setInterval(
-			checkCodemodEngineNode,
-			CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
-		);
+	// 	// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
+	// 	const codemodEnginePollingIntervalId = setInterval(
+	// 		checkCodemodEngineNode,
+	// 		CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
+	// 	);
 
-		checkCodemodEngineNode();
-	}
+	// 	checkCodemodEngineNode();
+	// }
 
 	private async __onCodemodEngineNodeLocated() {
 		await this.__fetchCodemods();
@@ -312,20 +308,16 @@ export class EngineService {
 			},
 		);
 
-		const codemodListString = await streamToString(childProcess.stdout);
-		const codemodListObj = {
-			kind: "names",
-			names: codemodListString.split("\n").filter((name) => name.length > 0),
-		};
-
 		try {
-			const codemodListOrError = codemodNamesCodec.decode(codemodListObj);
+			const codemodListString = await streamToString(childProcess.stdout);
+			const codemodListOrError = codemodNamesCodec.decode(
+				JSON.parse(codemodListString),
+			);
 
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
 				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
-
 			return codemodListOrError.right.names;
 		} catch (e) {
 			if (e instanceof InvalidEngineResponseFormatError) {
@@ -347,51 +339,11 @@ export class EngineService {
 				const hashDigest = createHash("ripemd160")
 					.update(name)
 					.digest("base64url");
-
-				const configPath = join(
-					homedir(),
-					".codemod",
+				codemodEntries.push({
+					kind: "codemod",
 					hashDigest,
-					".codemodrc.json",
-				);
-
-				if (!existsSync(configPath)) {
-					continue;
-				}
-
-				const data = await readFile(configPath, "utf8");
-
-				const config = parseCodemodConfigSchema(JSON.parse(data));
-
-				if (config.engine === "piranha") {
-					codemodEntries.push({
-						// @ts-ignore TODO: Remove this logic in the next PR
-						kind: "piranhaRule",
-						hashDigest,
-						name,
-						language: config.language,
-						arguments: config.arguments,
-					});
-
-					continue;
-				}
-
-				if (
-					config.engine === "jscodeshift" ||
-					config.engine === "ts-morph" ||
-					config.engine === "filemod" ||
-					config.engine === "repomod-engine" ||
-					config.engine === "recipe"
-				) {
-					codemodEntries.push({
-						kind: "codemod",
-						hashDigest,
-						name,
-						// @ts-ignore TODO: Remove this logic in the next PR
-						engine: config.engine,
-						arguments: config.arguments,
-					});
-				}
+					name,
+				});
 			}
 
 			this.__store.dispatch(actions.setCodemods(codemodEntries));
