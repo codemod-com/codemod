@@ -1,45 +1,28 @@
+import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { IFs } from "memfs";
-import { object, parse, string } from "valibot";
 import {
-	Codemod,
-	JavaScriptCodemodEngine,
-	javaScriptCodemodEngineSchema,
-} from "./codemod.js";
+	CodemodConfig,
+	KnownEngines,
+	knownEnginesSchema,
+	parseCodemodConfig,
+} from "@codemod-com/utilities";
+import { glob } from "fast-glob";
+import { IFs } from "memfs";
+import { object, parse } from "valibot";
+import { Codemod } from "./codemod.js";
 import { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
-
-const extractMainScriptRelativePath = async (
-	fs: IFs,
-	filePath: string,
-): Promise<string | null> => {
-	try {
-		const data = await fs.promises.readFile(filePath, {
-			encoding: "utf-8",
-		});
-
-		const schema = object({
-			main: string(),
-		});
-
-		const { main } = parse(schema, JSON.parse(data.toString()));
-
-		return main;
-	} catch {
-		return null;
-	}
-};
 
 const extractEngine = async (
 	fs: IFs,
 	filePath: string,
-): Promise<JavaScriptCodemodEngine | null> => {
+): Promise<KnownEngines | null> => {
 	try {
 		const data = await fs.promises.readFile(filePath, {
 			encoding: "utf-8",
 		});
 
 		const schema = object({
-			engine: javaScriptCodemodEngineSchema,
+			engine: knownEnginesSchema,
 		});
 
 		const { engine } = parse(schema, JSON.parse(data.toString()));
@@ -48,6 +31,46 @@ const extractEngine = async (
 	} catch {
 		return null;
 	}
+};
+
+const extractMainScriptPath = async (
+	codemodRc: CodemodConfig,
+	source: string,
+) => {
+	let globSearchPattern: string;
+	let actualMainFileName: string;
+	let errorOnMissing: string;
+
+	switch (codemodRc.engine) {
+		case "ast-grep":
+			globSearchPattern = "**/rule.yaml";
+			actualMainFileName = "rule.yaml";
+			errorOnMissing = `Please create the main "rule.yaml" file first.`;
+			break;
+		case "piranha":
+			globSearchPattern = "**/rules.toml";
+			actualMainFileName = "rules.toml";
+			errorOnMissing = `Please create the main "rules.toml" file first.`;
+			break;
+		default:
+			globSearchPattern = "dist/index.cjs";
+			actualMainFileName = "index.cjs";
+			errorOnMissing = `Did you forget to run "codemod build"?`;
+	}
+
+	const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
+		absolute: true,
+		cwd: source,
+		onlyFiles: true,
+	});
+
+	if (mainFiles.length === 0) {
+		throw new Error(
+			`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
+		);
+	}
+
+	return mainFiles.at(0)!;
 };
 
 export const buildSourcedCodemodOptions = async (
@@ -70,32 +93,23 @@ export const buildSourcedCodemodOptions = async (
 		};
 	}
 
-	if (
-		![".codemodrc.json", "package.json"]
-			.map((lookedupFilePath) =>
-				path.join(codemodOptions.source, lookedupFilePath),
-			)
-			.every(fs.existsSync)
-	) {
+	let codemodRcContent: string;
+	try {
+		codemodRcContent = await readFile(
+			path.join(codemodOptions.source, ".codemodrc.json"),
+			{ encoding: "utf-8" },
+		);
+	} catch (err) {
 		throw new Error(
 			`Codemod directory is of incorrect structure at ${codemodOptions.source}`,
 		);
 	}
 
-	const mainScriptRelativePath = await extractMainScriptRelativePath(
-		fs,
-		path.join(codemodOptions.source, "package.json"),
-	);
+	const codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
 
-	if (!mainScriptRelativePath) {
-		throw new Error(
-			`No main script specified for codemod at ${codemodOptions.source}`,
-		);
-	}
-
-	const mainScriptPath = path.join(
+	const mainScriptPath = await extractMainScriptPath(
+		codemodConfig,
 		codemodOptions.source,
-		mainScriptRelativePath,
 	);
 
 	const engine = await extractEngine(

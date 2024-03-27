@@ -12,8 +12,7 @@ export const selectCodemodRunsTree = (state: RootState, rootPath: string) => {
 		.map((kase) => {
 			const label =
 				kase.codemodHashDigest !== undefined
-					? state.privateCodemods.entities[kase.codemodHashDigest]?.name ??
-					  state.codemod.entities[kase.codemodHashDigest]?.name ??
+					? state.codemod.entities[kase.codemodHashDigest]?.name ??
 					  kase.codemodName
 					: kase.codemodName;
 

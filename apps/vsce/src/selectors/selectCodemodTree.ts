@@ -1,30 +1,10 @@
 import { join, relative, sep } from "node:path";
 import * as T from "fp-ts/These";
 import * as t from "io-ts";
-import { CodemodEntry, PrivateCodemodEntry } from "../codemods/types";
+import { CodemodEntry } from "../codemods/types";
 import { RootState } from "../data";
 import { CodemodHash } from "../packageJsonAnalyzer/types";
 import { buildHash, capitalize } from "../utilities";
-
-const codemodComCertifiedCodemods = [
-	"next/13/app-directory-boilerplate",
-	"next/13/built-in-next-font",
-	"next/13/comment-deletable-files",
-	"next/13/move-css-in-js-styles",
-	"next/13/new-image-experimental",
-	"next/13/new-link",
-	"next/13/next-image-to-legacy-image",
-	"next/13/remove-get-static-props",
-	"next/13/remove-next-export",
-	"next/13/replace-next-head",
-	"next/13/replace-next-head-v2",
-	"next/13/replace-next-router",
-	"next/13/upsert-use-client-directive",
-	"next/13/replace-next-head-repomod",
-	"next/13/app-router",
-	"next/13/app-router-recipe",
-	"next/13/replace-api-routes",
-];
 
 interface CodemodNodeHashDigestBrand {
 	readonly __CodemodNodeHashDigest: unique symbol;
@@ -88,27 +68,21 @@ export const relativeToAbsolutePath = (
 };
 
 export const buildCodemodNode = (
-	codemod: CodemodEntry | PrivateCodemodEntry,
+	codemod: CodemodEntry,
 	name: string,
 	executionPath: string,
 	queued: boolean,
-	isPrivate: boolean,
 	args: ReadonlyArray<CodemodArgumentWithValue>,
 ) => {
 	return {
 		kind: "CODEMOD" as const,
 		name: codemod.name,
-		isPrivate,
 		hashDigest: codemod.hashDigest as CodemodNodeHashDigest,
 		label: buildCodemodTitle(name),
 		executionPath: T.right(executionPath),
 		queued: queued,
-		icon: isPrivate
-			? "private"
-			: codemodComCertifiedCodemods.includes(codemod.name)
-			  ? "certified"
-			  : "community",
-		permalink: isPrivate ? (codemod as PrivateCodemodEntry).permalink : null,
+		icon: "certified",
+		permalink: null,
 		args,
 	} as const;
 };
@@ -117,62 +91,6 @@ export type CodemodNode =
 	| ReturnType<typeof buildRootNode>
 	| ReturnType<typeof buildDirectoryNode>
 	| ReturnType<typeof buildCodemodNode>;
-
-export const selectPrivateCodemods = (
-	state: RootState,
-	rootPath: string | null,
-	executionQueue: ReadonlyArray<CodemodHash>,
-) => {
-	const codemods = Object.values(
-		state.privateCodemods.entities,
-	) as PrivateCodemodEntry[];
-
-	const nodeData: NodeDatum[] = codemods.map((codemod) => {
-		const { name, hashDigest } = codemod;
-		const { executionPaths } = state.codemodDiscoveryView;
-
-		const executionPath = executionPaths[codemod.hashDigest] ?? rootPath ?? "";
-
-		const executionRelativePath = absoluteToRelativePath(
-			executionPath,
-			rootPath ?? "",
-		);
-
-		const args = selectCodemodArguments(
-			state,
-			codemod.hashDigest as CodemodNodeHashDigest,
-		);
-
-		const node = buildCodemodNode(
-			codemod,
-			name,
-			executionRelativePath,
-			executionQueue.includes(codemod.hashDigest as CodemodHash),
-			true,
-			args,
-		);
-
-		const argumentsExpanded =
-			state.codemodDiscoveryView.codemodArgumentsPopupHashDigest === hashDigest;
-
-		return {
-			node,
-			depth: 0,
-			expanded: false,
-			focused:
-				state.codemodDiscoveryView.focusedCodemodHashDigest === hashDigest,
-			collapsable: false,
-			reviewed: false,
-			argumentsExpanded,
-		};
-	});
-
-	return {
-		nodeData,
-		focusedNodeHashDigest: state.codemodDiscoveryView.focusedCodemodHashDigest,
-		collapsedNodeHashDigests: [],
-	};
-};
 
 export const selectCodemodTree = (
 	state: RootState,
@@ -232,18 +150,18 @@ export const selectCodemodTree = (
 					rootPath ?? "",
 				);
 
-				const args = selectCodemodArguments(
-					state,
-					codemod.hashDigest as CodemodNodeHashDigest,
-				);
+				// TODO: support codemod arguments
+				// const args = selectCodemodArguments(
+				// 	state,
+				// 	codemod.hashDigest as CodemodNodeHashDigest,
+				// );
 
 				currNode = buildCodemodNode(
 					codemod,
 					part,
 					executionRelativePath,
 					executionQueue.includes(codemod.hashDigest as CodemodHash),
-					false,
-					args,
+					[],
 				);
 			} else {
 				currNode = buildDirectoryNode(part, codemodDirName);
@@ -379,12 +297,13 @@ export const selectCodemodArguments = (
 	const argumentsSchema =
 		Object.values(state.codemod.entities).find(
 			(codemodEntry) => codemodEntry?.hashDigest === hashDigest,
+			// @ts-ignore TODO: Remove supporting arguments in the next PR
 		)?.arguments ?? [];
 
 	const codemodArgumentsValues =
 		state.codemodDiscoveryView.codemodArguments[hashDigest] ?? null;
 
-	return argumentsSchema.map((arg) => {
+	return argumentsSchema.map((arg: any) => {
 		const value = codemodArgumentsValues?.[arg.name] ?? arg.default ?? "";
 
 		switch (arg.kind) {

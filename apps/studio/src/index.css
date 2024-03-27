@@ -62,13 +62,20 @@ html {
 	color: blue;
 	cursor: pointer;
 }
+.after-hidden .editor.original , .after-hidden .original-in-monaco-diff-editor {
+	display: none;
+}
+
+.after-hidden .editor.modified {
+	left: 0 !important;
+}
 
 .output-shown .editor.original , .output-shown .original-in-monaco-diff-editor {
 	display: none;
 }
 
 .output-shown .editor.modified {
-	left: 0 !important;
+	width: 100%;
 }
 
 .after-shown .editor.modified {

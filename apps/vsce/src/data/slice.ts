@@ -6,8 +6,8 @@ import {
 } from "@reduxjs/toolkit";
 import * as vscode from "vscode";
 import { Case, CaseHash } from "../cases/types";
-import { CodemodEntry, PrivateCodemodEntry } from "../codemods/types";
-import { CodemodHash, JobHash } from "../components/webview/webviewEvents";
+import { CodemodEntry } from "../codemods/types";
+import { JobHash } from "../components/webview/webviewEvents";
 import { ExecutionError } from "../errors/types";
 import { PersistedJob } from "../jobs/types";
 import {
@@ -29,10 +29,6 @@ export const codemodAdapter = createEntityAdapter<CodemodEntry>({
 	selectId: (codemod) => codemod.hashDigest,
 });
 
-export const privateCodemodAdapter = createEntityAdapter<PrivateCodemodEntry>({
-	selectId: (codemod) => codemod.hashDigest,
-});
-
 export const caseAdapter = createEntityAdapter<Case>({
 	selectId: (kase) => kase.hash,
 });
@@ -45,7 +41,6 @@ export const getInitialState = (): RootState => {
 	return {
 		clearingInProgress: false,
 		codemod: codemodAdapter.getInitialState(),
-		privateCodemods: privateCodemodAdapter.getInitialState(),
 		case: caseAdapter.getInitialState(),
 		job: jobAdapter.getInitialState(),
 		lastCodemodHashDigests: [],
@@ -60,8 +55,6 @@ export const getInitialState = (): RootState => {
 			},
 		},
 		codemodDiscoveryView: {
-			publicRegistryCollapsed: false,
-			privateRegistryCollapsed: false,
 			panelGroupSettings: {
 				"0,0": [50, 50],
 			},
@@ -157,18 +150,6 @@ const rootSlice = createSlice({
 		},
 		setCodemods(state, action: PayloadAction<ReadonlyArray<CodemodEntry>>) {
 			codemodAdapter.setAll(state.codemod, action.payload);
-		},
-		upsertPrivateCodemods(
-			state,
-			action: PayloadAction<ReadonlyArray<PrivateCodemodEntry>>,
-		) {
-			privateCodemodAdapter.upsertMany(state.privateCodemods, action.payload);
-		},
-		removePrivateCodemods(
-			state,
-			action: PayloadAction<ReadonlyArray<CodemodHash>>,
-		) {
-			privateCodemodAdapter.removeMany(state.privateCodemods, action.payload);
 		},
 		/**
 		 * Codemod runs
@@ -642,12 +623,6 @@ const rootSlice = createSlice({
 		},
 		collapseChangeExplorerPanel(state, action: PayloadAction<boolean>) {
 			state.codemodRunsTab.changeExplorerCollapsed = action.payload;
-		},
-		collapsePublicRegistryPanel(state, action: PayloadAction<boolean>) {
-			state.codemodDiscoveryView.publicRegistryCollapsed = action.payload;
-		},
-		collapsePrivateRegistryPanel(state, action: PayloadAction<boolean>) {
-			state.codemodDiscoveryView.privateRegistryCollapsed = action.payload;
 		},
 		setCodemodArgumentsPopupHashDigest(
 			state,

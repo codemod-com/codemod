@@ -1,3 +1,4 @@
+import { cn } from "~/lib/utils";
 import CodeSnippedPanel, {
 	useCodeDiff,
 	WarningTexts,
@@ -7,6 +8,7 @@ import {
 	BottomPanelData,
 	PanelRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
+import { isVisible } from "~/utils/visibility";
 
 type CodeSnippetsProps = BottomPanelData & {
 	onlyAfterHidden: boolean;
@@ -29,7 +31,11 @@ export const CodeSnippets = ({
 		onlyAfterHidden,
 	}).map(({ Snipped, extras, diffEditorWrapper, ...codeSnippedPanel }) => (
 		<>
-			<CodeSnippedPanel panelRefs={panelRefs} {...codeSnippedPanel}>
+			<CodeSnippedPanel
+				className={cn(!isVisible(codeSnippedPanel.panelData) && "hidden")}
+				panelRefs={panelRefs}
+				{...codeSnippedPanel}
+			>
 				<Snipped
 					{...{
 						...diffEditorWrapper,

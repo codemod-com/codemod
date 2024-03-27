@@ -33,7 +33,7 @@ export class WorkerThreadManager {
 		) => Promise<void>,
 		private readonly __pathGenerator: AsyncGenerator<string, void, void>,
 		codemodPath: string,
-		codemodEngine: "ts-morph" | "jscodeshift",
+		codemodEngine: "ts-morph" | "jscodeshift" | "ast-grep",
 		codemodSource: string,
 		disablePrettier: boolean,
 		safeArgumentRecord: SafeArgumentRecord,

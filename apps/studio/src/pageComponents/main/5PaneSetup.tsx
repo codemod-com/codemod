@@ -8,7 +8,6 @@ import Panel from "~/components/Panel";
 import AuthenticatedAccess from "~/components/authenticatedAccess";
 import ClearInputButton from "~/components/button/ClearInputButton";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
-import { ExportButton } from "~/components/button/exportButton";
 import Chat from "~/components/chatbot/Chat";
 import {
 	AlertDialog,
@@ -37,8 +36,6 @@ import { openLink } from "~/utils/openLink";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import PageBottomPane from "./BottomPane";
-import CFSContent from "./CFS/CFSContent";
-import CFSModal from "./CFS/CFSModal";
 import Codemod from "./Codemod";
 import { DialogWithLoginToken } from "./DialogWithLoginToken";
 import Header from "./Header";
@@ -83,7 +80,6 @@ const Main = () => {
 	const router = useRouter();
 	const panelRefs: PanelsRefs = useRef({});
 
-	console.log({ panelRefs });
 	useEffect(() => {
 		if (!isSignedIn) {
 			return;
@@ -148,7 +144,6 @@ const Main = () => {
 
 	return (
 		<>
-			<CFSModal />
 			<LoginWarningModal />
 			<DialogWithLoginToken
 				isOpen={CLICommandDialogVisible}
@@ -202,7 +197,6 @@ const Main = () => {
 												Codemod
 												<div className="flex items-center gap-1">
 													<DownloadZip />
-													<ExportButton />
 													<ClearInputButton />
 													<InsertExampleButton />
 												</div>
@@ -358,12 +352,6 @@ const AssistantTab = ({
 				<AuthenticatedAccess>
 					<Chat />
 				</AuthenticatedAccess>
-			</TabsContent>
-			<TabsContent
-				className="mt-0 h-full pt-[3rem]"
-				value={TabNames.GUIBuilder}
-			>
-				<CFSContent />
 			</TabsContent>
 			<TabsContent
 				className="mt-0 h-full pt-[2.5rem] overflow-auto"

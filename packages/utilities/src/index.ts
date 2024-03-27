@@ -2,18 +2,21 @@ export { CaseReadingService } from "./caseReadingService.js";
 export { CaseWritingService } from "./caseWritingService.js";
 export { FileWatcher } from "./fileWatcher.js";
 export {
+	allEnginesSchema,
 	argumentsSchema,
 	codemodConfigSchema,
-	allEnginesSchema,
-	knownEnginesSchema,
+	extractLibNameAndVersion,
 	codemodNameRegex,
+	knownEnginesSchema,
+	parseCodemodConfig,
+	type AllEngines,
 	type Arguments,
 	type ArgumentsInput,
 	type CodemodConfig,
 	type CodemodConfigInput,
-	type AllEngines,
 	type KnownEngines,
 } from "./schemata/codemodConfigSchema.js";
+export { type CodemodListReturn } from "./schemata/codemodListResponse.js";
 export {
 	JOB_KIND,
 	parseSurfaceAgnosticJob,

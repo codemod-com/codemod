@@ -31,7 +31,6 @@ const MonacoDiffEditor = ({
 	originalEditorProps,
 	modifiedEditorProps,
 	options,
-	renderSideBySide = true,
 	...restProps
 }: DiffEditorProps & CustomProps) => {
 	const [mounted, setMounted] = useState(false);
@@ -55,7 +54,6 @@ const MonacoDiffEditor = ({
 				...(options ?? {}),
 				...defaultOptions,
 				enableSplitViewResizing: false,
-				renderSideBySide,
 			}}
 			{...restProps}
 		/>

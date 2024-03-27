@@ -73,7 +73,6 @@ const getCodemodNodeRenderer =
 			<div
 				key={hashDigest}
 				id={hashDigest}
-				tabIndex={0}
 				ref={ref}
 				className={cn(styles.root, focused && styles.focused)}
 				onClick={() => onFlip(hashDigest)}
@@ -94,7 +93,6 @@ const getCodemodNodeRenderer =
 									? progress
 									: null
 							}
-							isPrivate={node.isPrivate}
 							focused={focused}
 							queued={node.queued}
 							icon={node.icon}

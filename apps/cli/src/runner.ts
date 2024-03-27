@@ -1,4 +1,7 @@
 import { createHash } from "crypto";
+import { join } from "path";
+import { parseCodemodConfig } from "@codemod-com/utilities";
+import { readFile } from "fs/promises";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
@@ -8,6 +11,7 @@ import {
 	buildPrinterMessageUponCommand,
 	modifyFileSystemUponCommand,
 } from "./fileCommands.js";
+import { handleInstallDependencies } from "./handleInstallDependencies.js";
 import type { PrinterBlueprint } from "./printer.js";
 import type { RepositoryConfiguration } from "./repositoryConfiguration.js";
 import { runCodemod } from "./runCodemod.js";
@@ -20,7 +24,7 @@ import type { TelemetryBlueprint } from "./telemetryService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export class Runner {
-	private __modifiedFileCount: number;
+	private __modifiedFilePaths: string[];
 
 	public constructor(
 		protected readonly _fs: IFs,
@@ -37,7 +41,7 @@ export class Runner {
 		protected readonly _currentWorkingDirectory: string,
 		protected readonly _getCodemodSource: (path: string) => Promise<string>,
 	) {
-		this.__modifiedFileCount = 0;
+		this.__modifiedFilePaths = [];
 	}
 
 	public async run() {
@@ -108,11 +112,30 @@ export class Runner {
 					kind: "codemodExecuted",
 					codemodName: "Codemod from FS",
 					executionId: this._runSettings.caseHashDigest.toString("base64url"),
-					fileCount: this.__modifiedFileCount,
+					fileCount: this.__modifiedFilePaths.length,
 				});
 
 				if (this._runSettings.dryRun) {
 					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
+					return;
+				}
+
+				if (this._flowSettings.skipInstall) {
+					return;
+				}
+
+				const rcFileString = await readFile(
+					join(this._codemodSettings.source, ".codemodrc.json"),
+					{ encoding: "utf8" },
+				);
+				const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
+				if (rcFile.deps) {
+					await handleInstallDependencies({
+						printer: this._printer,
+						affectedFiles: this.__modifiedFilePaths,
+						target: this._flowSettings.target,
+						deps: rcFile.deps,
+					});
 				}
 
 				return;
@@ -125,7 +148,6 @@ export class Runner {
 					if (preCommitCodemod.source === "registry") {
 						const codemod = await this._codemodDownloader.download(
 							preCommitCodemod.name,
-							this._flowSettings.noCache,
 						);
 
 						const safeArgumentRecord = buildSafeArgumentRecord(
@@ -151,7 +173,7 @@ export class Runner {
 							codemodName: codemod.name,
 							executionId:
 								this._runSettings.caseHashDigest.toString("base64url"),
-							fileCount: this.__modifiedFileCount,
+							fileCount: this.__modifiedFilePaths.length,
 						});
 					}
 				}
@@ -160,10 +182,7 @@ export class Runner {
 			}
 
 			if (this._name !== null) {
-				const codemod = await this._codemodDownloader.download(
-					this._name,
-					this._flowSettings.noCache,
-				);
+				const codemod = await this._codemodDownloader.download(this._name);
 
 				this._printer.printConsoleMessage(
 					"info",
@@ -220,11 +239,30 @@ export class Runner {
 					kind: "codemodExecuted",
 					codemodName: codemod.name,
 					executionId: this._runSettings.caseHashDigest.toString("base64url"),
-					fileCount: this.__modifiedFileCount,
+					fileCount: this.__modifiedFilePaths.length,
 				});
 
 				if (this._runSettings.dryRun) {
 					this._printer.printConsoleMessage("log", EXTENSION_LINK_END);
+					return;
+				}
+
+				if (this._flowSettings.skipInstall) {
+					return;
+				}
+
+				const rcFileString = await readFile(
+					join(codemod.directoryPath, ".codemodrc.json"),
+					{ encoding: "utf8" },
+				);
+				const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
+				if (rcFile.deps) {
+					await handleInstallDependencies({
+						printer: this._printer,
+						affectedFiles: this.__modifiedFilePaths,
+						target: this._flowSettings.target,
+						deps: rcFile.deps,
+					});
 				}
 			}
 		} catch (error) {
@@ -234,7 +272,7 @@ export class Runner {
 
 			this._printer.printOperationMessage({
 				kind: "error",
-				message: error.message,
+				message: `Error while running the codemod:\n${error.message}`,
 			});
 			this._telemetry.sendEvent({
 				kind: "failedToExecuteCommand",
@@ -247,7 +285,11 @@ export class Runner {
 		await modifyFileSystemUponCommand(this._fs, this._runSettings, command);
 
 		if (!this._runSettings.dryRun) {
-			++this.__modifiedFileCount;
+			if (command.kind === "createFile") {
+				this.__modifiedFilePaths.push(command.newPath);
+			} else {
+				this.__modifiedFilePaths.push(command.oldPath);
+			}
 		}
 
 		const printerMessage = buildPrinterMessageUponCommand(

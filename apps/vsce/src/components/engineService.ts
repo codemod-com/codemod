@@ -4,30 +4,19 @@ import {
 	spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import { readFileSync } from "node:fs";
 import * as readline from "node:readline";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
 import { FileSystem, Uri, commands, window, workspace } from "vscode";
 import { Case } from "../cases/types";
-import {
-	CodemodEntry,
-	PrivateCodemodEntry,
-	codemodNamesCodec,
-} from "../codemods/types";
+import { CodemodEntry, codemodNamesCodec } from "../codemods/types";
 import { Configuration } from "../configuration";
 import { Container } from "../container";
 import { Store } from "../data";
-import { parseCodemodConfigSchema } from "../data/codemodConfigSchema";
-import { parsePrivateCodemodsEnvelope } from "../data/privateCodemodsEnvelopeSchema";
 import { actions } from "../data/slice";
-import { parseUrlParamsEnvelope } from "../data/urlParamsEnvelopeSchema";
 import { ExecutionError, executionErrorCodec } from "../errors/types";
-import { SEARCH_PARAMS_KEYS } from "../extension";
 import { buildJobHash } from "../jobs/buildJobHash";
 import { Job, JobKind } from "../jobs/types";
 import { CodemodHash } from "../packageJsonAnalyzer/types";
@@ -206,9 +195,9 @@ type ExecuteCodemodMessage = Message &
 	}>;
 
 // npx ensures that the local codemod CLI (latest version) is used
-const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
-const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
-const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
+const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+// const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
+// const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export class EngineService {
 	readonly #configurationContainer: Container<Configuration>;
@@ -237,44 +226,43 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__pollCodemodEngineNode();
+		this.__onCodemodEngineNodeLocated();
 	}
 
-	private async __pollCodemodEngineNode() {
-		let iterations = 0;
+	// private async __pollCodemodEngineNode() {
+	// 	let iterations = 0;
 
-		const checkCodemodEngineNode = async () => {
-			if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
-				clearInterval(codemodEnginePollingIntervalId);
-			}
+	// 	const checkCodemodEngineNode = async () => {
+	// 		if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
+	// 			clearInterval(codemodEnginePollingIntervalId);
+	// 		}
 
-			const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
+	// 		const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
 
-			this.#messageBus.publish({
-				kind: MessageKind.codemodEngineNodeLocated,
-				codemodEngineNodeLocated,
-			});
+	// 		this.#messageBus.publish({
+	// 			kind: MessageKind.codemodEngineNodeLocated,
+	// 			codemodEngineNodeLocated,
+	// 		});
 
-			if (codemodEngineNodeLocated) {
-				this.__onCodemodEngineNodeLocated();
-				clearInterval(codemodEnginePollingIntervalId);
-			}
+	// 		if (codemodEngineNodeLocated) {
+	// 			this.__onCodemodEngineNodeLocated();
+	// 			clearInterval(codemodEnginePollingIntervalId);
+	// 		}
 
-			iterations++;
-		};
+	// 		iterations++;
+	// 	};
 
-		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
-		const codemodEnginePollingIntervalId = setInterval(
-			checkCodemodEngineNode,
-			CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
-		);
+	// 	// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
+	// 	const codemodEnginePollingIntervalId = setInterval(
+	// 		checkCodemodEngineNode,
+	// 		CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
+	// 	);
 
-		checkCodemodEngineNode();
-	}
+	// 	checkCodemodEngineNode();
+	// }
 
 	private async __onCodemodEngineNodeLocated() {
 		await this.__fetchCodemods();
-		await this.fetchPrivateCodemods();
 	}
 
 	async #onEnginesBootstrappedMessage(
@@ -312,7 +300,7 @@ export class EngineService {
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
 		const childProcess = spawn(
 			CODEMOD_ENGINE_NODE_COMMAND,
-			["list", "--json", "--short"],
+			["list", "--json"],
 			{
 				stdio: "pipe",
 				shell: true,
@@ -320,21 +308,17 @@ export class EngineService {
 			},
 		);
 
-		const codemodListString = await streamToString(childProcess.stdout);
-		const codemodListObj = {
-			kind: "names",
-			names: codemodListString.split("\n").filter((name) => name.length > 0),
-		};
-
 		try {
-			const codemodListOrError = codemodNamesCodec.decode(codemodListObj);
+			const codemodListString = await streamToString(childProcess.stdout);
+			const codemodListOrError = codemodNamesCodec.decode(
+				JSON.parse(codemodListString),
+			);
 
 			if (codemodListOrError._tag === "Left") {
 				const report = prettyReporter.report(codemodListOrError);
 				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
-
-			return codemodListOrError.right.names;
+			return codemodListOrError.right.codemods.map((codemod) => codemod.name);
 		} catch (e) {
 			if (e instanceof InvalidEngineResponseFormatError) {
 				throw e;
@@ -355,147 +339,14 @@ export class EngineService {
 				const hashDigest = createHash("ripemd160")
 					.update(name)
 					.digest("base64url");
-
-				const configPath = join(
-					homedir(),
-					".codemod",
+				codemodEntries.push({
+					kind: "codemod",
 					hashDigest,
-					".codemodrc.json",
-				);
-
-				if (!existsSync(configPath)) {
-					continue;
-				}
-
-				const data = await readFile(configPath, "utf8");
-
-				const config = parseCodemodConfigSchema(JSON.parse(data));
-
-				if (config.engine === "piranha") {
-					codemodEntries.push({
-						kind: "piranhaRule",
-						hashDigest,
-						name,
-						language: config.language,
-						arguments: config.arguments,
-					});
-
-					continue;
-				}
-
-				if (
-					config.engine === "jscodeshift" ||
-					config.engine === "ts-morph" ||
-					config.engine === "filemod" ||
-					config.engine === "repomod-engine" ||
-					config.engine === "recipe"
-				) {
-					codemodEntries.push({
-						kind: "codemod",
-						hashDigest,
-						name,
-						engine: config.engine,
-						arguments: config.arguments,
-					});
-				}
+					name,
+				});
 			}
 
 			this.__store.dispatch(actions.setCodemods(codemodEntries));
-		} catch (e) {
-			console.error(e);
-		}
-	}
-
-	public async fetchPrivateCodemods(): Promise<void> {
-		try {
-			const privateCodemods: PrivateCodemodEntry[] = [];
-			const globalStoragePath = join(homedir(), ".codemod");
-			const privateCodemodNamesPath = join(
-				homedir(),
-				".codemod",
-				"privateCodemodNames.json",
-			);
-			if (!existsSync(privateCodemodNamesPath)) {
-				return;
-			}
-
-			const privateCodemodNamesJSON = await readFile(privateCodemodNamesPath, {
-				encoding: "utf8",
-			});
-
-			const json = JSON.parse(privateCodemodNamesJSON);
-
-			const { names } = parsePrivateCodemodsEnvelope(json);
-
-			for (const hash of names) {
-				const configPath = join(globalStoragePath, hash, ".codemodrc.json");
-
-				if (!existsSync(configPath)) {
-					continue;
-				}
-
-				const urlParamsPath = join(globalStoragePath, hash, "urlParams.json");
-
-				if (!existsSync(urlParamsPath)) {
-					continue;
-				}
-
-				const data = await readFile(configPath, { encoding: "utf8" });
-
-				try {
-					const configSchema = parseCodemodConfigSchema(JSON.parse(data));
-
-					const urlParamsData = existsSync(urlParamsPath)
-						? await readFile(urlParamsPath, {
-								encoding: "utf8",
-						  })
-						: null;
-
-					const permalink =
-						urlParamsData !== null ? new URL("https://codemod.studio/") : null;
-
-					if (permalink !== null && urlParamsData !== null) {
-						const { urlParams } = parseUrlParamsEnvelope(
-							JSON.parse(urlParamsData),
-						);
-
-						permalink.search = urlParams;
-					}
-
-					let name = hash;
-
-					if (urlParamsData !== null) {
-						// find codemod name from the stored url parameters
-						const envelope = parseUrlParamsEnvelope(JSON.parse(urlParamsData));
-
-						const urlParams = new URLSearchParams(envelope.urlParams);
-
-						const codemodName = urlParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME);
-
-						if (codemodName !== null) {
-							const decodedCodemodName = Buffer.from(
-								codemodName,
-								"base64url",
-							).toString("utf8");
-							name = decodedCodemodName;
-						}
-					}
-
-					if (configSchema.engine === "jscodeshift") {
-						privateCodemods.push({
-							kind: "codemod",
-							engine: "jscodeshift",
-							hashDigest: hash,
-							name,
-							permalink: permalink?.toString() ?? null,
-						});
-					}
-				} catch (error) {
-					console.error(error);
-				}
-			}
-
-			this.__store.dispatch(actions.upsertPrivateCodemods(privateCodemods));
 		} catch (e) {
 			console.error(e);
 		}

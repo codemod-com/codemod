@@ -24,7 +24,10 @@ model Codemod {
   useCaseCategory  String?          @db.VarChar(255)
   tags             String[]         @default([])
   engine           String?          @db.VarChar(255)
+  /// [ApplicabilityCriteria]
   applicability    Json?
+  /// [Arguments]
+  arguments        Json?
   name             String           @unique @db.VarChar(255)
   featured         Boolean          @default(false)
   verified         Boolean          @default(false)
@@ -47,6 +50,8 @@ model CodemodVersion {
   engine                   String   @db.VarChar(255)
   /// [ApplicabilityCriteria]
   applicability            Json?
+  /// [Arguments]
+  arguments                Json?
   vsCodeLink               String   @db.VarChar(255)
   codemodStudioExampleLink String?  @db.VarChar(255)
   testProjectCommand       String?  @db.VarChar(255)
