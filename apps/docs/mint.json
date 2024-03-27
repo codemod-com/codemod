@@ -45,8 +45,8 @@
 		{
 			"group": "Codemod Registry",
 			"pages": [
-				"codemod-registry/introduction",
-				"codemod-registry/publishing-codemods"
+				"codemod-registry/publishing-codemods",
+				"codemod-registry/introduction"
 			]
 		},
 		{
