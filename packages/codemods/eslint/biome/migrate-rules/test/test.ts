@@ -59,7 +59,6 @@ describe("eslint and prettier to biome migration", async () => {
         "eslint-config-prettier": "^10.2.0"
       },
       "main": "./dist/index.cjs",
-      "types": "/dist/index.d.ts",
       "scripts": {
         "start": "pnpm run build:cjs && node ./dist/index.cjs",
                 "lint:eslint": "eslint . --fix",
@@ -70,8 +69,7 @@ describe("eslint and prettier to biome migration", async () => {
         "prettier-test-no-replace",
         "README.md",
         ".codemodrc.json",
-        "./dist/index.cjs",
-        "./index.d.ts"
+        "./dist/index.cjs"
       ],
       "lint-staged": {
         "*.js": "eslint --fix",
@@ -166,7 +164,6 @@ describe("eslint and prettier to biome migration", async () => {
             "@biomejs/biome": "1.5.3"
           },
           "main": "./dist/index.cjs",
-          "types": "/dist/index.d.ts",
           "scripts": {
             "start": "pnpm run build:cjs && node ./dist/index.cjs",
             "lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
@@ -178,8 +175,7 @@ describe("eslint and prettier to biome migration", async () => {
             "prettier-test-no-replace",
             "README.md",
             ".codemodrc.json",
-            "./dist/index.cjs",
-            "./index.d.ts"
+            "./dist/index.cjs"
           ],
           "lint-staged": {
             "*.js": "pnpm dlx @biomejs/biome lint --apply",

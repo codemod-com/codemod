@@ -11,13 +11,7 @@
 		"@vitest/coverage-v8": "^1.0.1"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
 	"scripts": {},
-	"files": [
-		"./README.md",
-		"./.codemodrc.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
 	"type": "module"
 }
