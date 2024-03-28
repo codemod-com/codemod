@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import {
 	BoundResizePanel,
 	PanelData,
-	PanelRefs,
+	PanelsRefs,
 	SnippetHeader,
 	SnippetType,
 } from "src/pageComponents/main/PageBottomPane";
@@ -221,11 +221,13 @@ const CodeSnippedPanel = ({
 	header,
 	className,
 	panelData,
+	defaultSize,
 	panelRefs,
 }: PropsWithChildren<{
 	className?: string;
 	header: string;
-	panelRefs: PanelRefs;
+	defaultSize: number;
+	panelRefs: PanelsRefs;
 	panelData: PanelData;
 }>) => {
 	return (
@@ -234,7 +236,7 @@ const CodeSnippedPanel = ({
 				"visibilityOptions" in panelData && "collapsable_panel",
 				className,
 			)}
-			defaultSize={panelData.defaultSize || 33}
+			defaultSize={defaultSize}
 			panelRefIndex={panelData.snippedIndex}
 			panelRefs={panelRefs}
 		>

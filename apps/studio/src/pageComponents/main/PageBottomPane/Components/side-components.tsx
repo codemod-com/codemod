@@ -6,6 +6,7 @@ import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
 import { JSEngine } from "~/types/Engine";
+import { Void } from "~/types/transformations";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
 import { isVisible } from "~/utils/visibility";
@@ -14,19 +15,21 @@ import {
 	ContentViewerProps,
 	PanelComponentProps,
 	PanelData,
-	PanelRefs,
-	SnippetType,
+	PanelsRefs,
 } from "../utils/types";
 
 export const BoundResizePanel = ({
-	defaultSize = 33,
+	defaultSize = 50,
 	minSize = 0,
 	panelRefs,
 	panelRefIndex,
 	children,
 	boundedIndex,
 	className,
-	style = { maxHeight: isServer ? 0 : "unset" },
+	style = {
+		maxHeight: isServer ? 0 : "unset",
+		flexBasis: isServer ? "50%" : "0",
+	},
 }: PanelComponentProps) => {
 	return (
 		<Layout.ResizablePanel
@@ -79,46 +82,42 @@ export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
 );
 
 export const AstSection = ({
-	sectionsToShow,
 	panels,
 	panelRefs,
 	engine,
 }: {
-	sectionsToShow: SnippetType[];
 	panels: PanelData[];
-	panelRefs: PanelRefs;
+	panelRefs: PanelsRefs;
 	engine: JSEngine;
 }) => {
 	useEffect(() => {
 		// console.log('ResizablePanelsIndices.CODE_SECTION', panelRefs.current[ResizablePanelsIndices.CODE_SECTION]),
 		// panelRefs.current[ResizablePanelsIndices.CODE_SECTION]?.collapse()
 	}, []);
-	return panels
-		.filter(({ type }) => sectionsToShow.includes(type))
-		.filter(isVisible)
-		.map((panel, i, { length }) => (
-			<>
-				<BoundResizePanel
-					className="h-full"
-					panelRefs={panelRefs}
-					key={panel.relatedAST}
-					defaultSize={100 / panels.length}
-					panelRefIndex={panel.relatedAST}
-					boundedIndex={panel.boundIndex}
-					{...panel}
-				>
-					<ContentViewer type={panel.type} engine={engine} />
-				</BoundResizePanel>
-				{i !== length - 1 && <ResizeHandle direction="horizontal" />}
-			</>
-		));
+	return panels.filter(isVisible).map((panel, i, { length }) => (
+		<>
+			<BoundResizePanel
+				className="h-full"
+				panelRefs={panelRefs}
+				key={panel.relatedAST}
+				defaultSize={100 / panels.length}
+				panelRefIndex={panel.relatedAST}
+				boundedIndex={panel.boundIndex}
+				{...panel}
+			>
+				<ContentViewer type={panel.type} engine={engine} />
+			</BoundResizePanel>
+			{i !== length - 1 && <ResizeHandle direction="horizontal" />}
+		</>
+	));
 };
 
 export const ShowPanelTile = ({
+	onClick,
 	panel,
 	header,
-}: { panel: PanelData; header: string }) => (
-	<div className="hidden_panel_indicator">
+}: { panel: PanelData; header: string; onClick: Void }) => (
+	<div className="hidden_panel_indicator" onClick={onClick}>
 		<VisibilityIcon visibilityOptions={panel.visibilityOptions} />
 		<span className="hidden_panel_indicator_text">{header}</span>
 	</div>

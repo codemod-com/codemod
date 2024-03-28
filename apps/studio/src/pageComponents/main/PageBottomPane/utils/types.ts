@@ -43,10 +43,11 @@ export enum ResizablePanelsIndices {
 	AFTER_SECTION = 5,
 	OUTPUT_AST = 6,
 	OUTPUT_SNIPPET = 7,
-	AST_SECTION = 8,
+	TAB_SECTION = 8,
 	SNIPPETS_SECTION = 9,
-	CODE_SECTION = 10,
+	CODEMOD_SECTION = 10,
 	TAB_CONTENT = 11,
+	BEFORE_AFTER_COMBINED = 11,
 }
 
 export type PanelContentRenderer = (engine: JSEngine) => React.ReactNode;
@@ -55,12 +56,14 @@ export type PanelData = Pick<
 	PanelComponentProps,
 	"visibilityOptions" | "hasBoundResize"
 > & {
+	hasVisibilityOptions?: boolean;
 	boundIndex?: ResizablePanelsIndices;
 	snippedIndex: ResizablePanelsIndices;
 	type: ContentViewerVariant;
 	content: PanelContentRenderer;
 	relatedAST: ResizablePanelsIndices;
 	defaultSize?: number;
+	snippetData: SnippetData;
 };
 
 export type HeaderProps = {
@@ -71,21 +74,17 @@ export type HeaderProps = {
 	visibilityOptions?: VisibilityOptions;
 };
 
-export type PanelRefs = React.MutableRefObject<
-	Record<string, ImperativePanelHandle | null>
->;
-
 export type SnippetType = "before" | "after" | "output";
 
 export type SnippetData = {
 	header: string;
-	panelData: PanelData;
 	diffEditorWrapper: {
 		type: SnippetType;
 		warnings?: ReactNode;
 	};
 	Snipped: typeof SnippetUI | typeof DiffEditorWrapper;
-	extras?: ReactNode;
+	// @ts-ignore
+	getExtras?: (x: boolean) => ReactNode;
 };
 
 export type BottomPanelName = ValueOf<{

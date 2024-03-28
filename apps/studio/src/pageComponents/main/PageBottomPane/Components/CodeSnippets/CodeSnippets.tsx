@@ -1,64 +1,63 @@
+import { PropsWithChildren } from "react";
+import { PanelGroup } from "react-resizable-panels";
+import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { cn } from "~/lib/utils";
 import CodeSnippedPanel, {
 	useCodeDiff,
-	WarningTexts,
 } from "~/pageComponents/main/JSCodeshiftRender";
-import { getSnippetsData } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/get-snippets-data";
 import {
-	BottomPanelData,
-	PanelRefs,
+	PanelData,
+	PanelsRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { isVisible } from "~/utils/visibility";
-import Layout from "../../../Layout";
 
-type CodeSnippetsProps = BottomPanelData & {
+type CodeSnippetsProps = {
+	panels: PanelData[];
+	panelRefs: PanelsRefs;
 	onlyAfterHidden: boolean;
-	panelRefs: PanelRefs;
+	codeDiff: ReturnType<typeof useCodeDiff>;
 };
 export const CodeSnippets = ({
-	beforePanel,
-	afterPanel,
-	outputPanel,
-	onlyAfterHidden,
+	panels,
+	children,
+	codeDiff,
 	panelRefs,
-}: CodeSnippetsProps) => {
-	const codeDiff = useCodeDiff();
-	const warnings = <WarningTexts {...codeDiff} />;
-	const snippetPanels = getSnippetsData({
-		warnings,
-		beforePanel,
-		afterPanel,
-		outputPanel,
-		onlyAfterHidden,
-	}).map(({ Snipped, extras, diffEditorWrapper, ...codeSnippedPanel }) => (
-		<>
-			<CodeSnippedPanel
-				className={cn(!isVisible(codeSnippedPanel.panelData) && "hidden")}
-				panelRefs={panelRefs}
-				{...codeSnippedPanel}
-			>
-				<Snipped
-					{...{
-						...diffEditorWrapper,
-						...codeDiff,
-					}}
-				/>
-			</CodeSnippedPanel>
-			{extras}
-		</>
-	));
-	const devidedToPanels = (
-		<>
-			<Layout.ResizablePanel minSize={0} defaultSize={50}>
-				<>
-					{snippetPanels[0]}
-					{snippetPanels[1]}
-				</>
-			</Layout.ResizablePanel>
-			<Layout.ResizablePanel minSize={0} defaultSize={50}>
-				{snippetPanels[2]}
-			</Layout.ResizablePanel>
-		</>
+}: PropsWithChildren<CodeSnippetsProps>) => {
+	const snippetPanels = panels.map((panelData, index, arr) => {
+		const {
+			snippetData: {
+				Snipped,
+				getExtras,
+				diffEditorWrapper,
+				...codeSnippedPanel
+			},
+		} = panelData;
+		return (
+			<>
+				<CodeSnippedPanel
+					defaultSize={100 / arr.length}
+					panelData={panelData}
+					className={cn(!isVisible(panelData) && "hidden")}
+					panelRefs={panelRefs}
+					{...codeSnippedPanel}
+				>
+					<Snipped
+						{...{
+							...diffEditorWrapper,
+							...codeDiff,
+						}}
+					/>
+				</CodeSnippedPanel>
+				{arr.length !== 1 &&
+					index < arr.length - 1 &&
+					isVisible(arr[index + 1]) && <ResizeHandle direction="horizontal" />}
+			</>
+		);
+	});
+	return (
+		<PanelGroup direction="horizontal">
+			{snippetPanels}
+			{children}
+		</PanelGroup>
 	);
-	return <> {snippetPanels} </>;
 };

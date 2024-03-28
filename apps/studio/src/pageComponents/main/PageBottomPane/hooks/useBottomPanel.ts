@@ -1,18 +1,17 @@
-import { usePanels } from "~/pageComponents/main/PageBottomPane/hooks/usePanels";
-import { useShowHide } from "~/pageComponents/main/PageBottomPane/hooks/useShowHide";
-import { PanelsRefs } from "~/pageComponents/main/PageBottomPane/utils/types";
-import { isVisible } from "~/utils/visibility";
+import {
+	PanelData,
+	PanelsRefs,
+} from "~/pageComponents/main/PageBottomPane/utils/types";
 
-export const useBottomPanel = (panelRefs: PanelsRefs) => {
-	const { beforePanel, afterPanel, outputPanel, panels } = usePanels();
-
-	useShowHide({ isAfterPanelVisible: isVisible(afterPanel), panelRefs });
-
-	return {
-		panels,
-		panelRefs,
-		beforePanel,
-		afterPanel,
-		outputPanel,
-	};
+export const useBottomPanel = (panelRefs: PanelsRefs, panels: PanelData[]) => {
+	// const { beforePanel, afterPanel, outputPanel, panels } = panelsData;
+	//  useShowHide({ isAfterPanelVisible: isVisible(afterPanel), panelRefs });
+	//
+	// return {
+	// 	panels,
+	// 	panelRefs,
+	// 	beforePanel,
+	// 	afterPanel,
+	// 	outputPanel,
+	// };
 };

@@ -20,28 +20,36 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { useToggleVisibility } from "~/hooks/useToggleVisibility";
 import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
 import {
+	WarningTexts,
+	useCodeDiff,
+} from "~/pageComponents/main/JSCodeshiftRender";
+import {
 	AstSection,
 	BoundResizePanel,
+	PanelData,
 	PanelsRefs,
 	ResizablePanelsIndices,
-	useBottomPanel,
+	ShowPanelTile,
+	panelsData,
 } from "~/pageComponents/main/PageBottomPane";
+import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/CodeSnippets";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
 import { openLink } from "~/utils/openLink";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
-import PageBottomPane from "./BottomPane";
 import Codemod from "./Codemod";
 import { DialogWithLoginToken } from "./DialogWithLoginToken";
 import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
+import { inferVisibilities } from "./PageBottomPane/utils/infer-visibilites";
 
 const isServer = typeof window === "undefined";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
@@ -74,11 +82,40 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 	openLink(vscodeUrl.toString());
 };
 
+const useAddVisibleOptions = (panel: PanelData) => {
+	return {
+		...panel,
+		visibilityOptions: useToggleVisibility(),
+	};
+};
+
 const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
 	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
 	const panelRefs: PanelsRefs = useRef({});
+	const { beforePanel, afterPanel, outputPanel } = panelsData;
+	const codeDiff = useCodeDiff();
+	const warnings = <WarningTexts {...codeDiff} />;
+	const afterWithMessages = {
+		...afterPanel,
+		snippetData: {
+			...afterPanel.snippetData,
+			warnings,
+		},
+	};
+	const afterWithVisibilityOptions = useAddVisibleOptions(afterWithMessages);
+	const { onlyAfterHidden } = inferVisibilities({
+		beforePanel,
+		afterPanel: afterWithVisibilityOptions,
+		outputPanel,
+	});
+
+	useEffect(() => {
+		if (onlyAfterHidden) {
+			panelRefs.current[afterPanel.snippedIndex]?.collapse();
+		}
+	}, [onlyAfterHidden]);
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -140,7 +177,53 @@ const Main = () => {
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
 
-	const bottomPanelData = useBottomPanel(panelRefs);
+	const codemodHeader = (
+		<Panel.Header>
+			<Panel.HeaderTab>
+				<Panel.HeaderTitle>
+					Codemod
+					<div className="flex items-center gap-1">
+						<DownloadZip />
+						<ClearInputButton />
+						<InsertExampleButton />
+					</div>
+				</Panel.HeaderTitle>
+			</Panel.HeaderTab>
+		</Panel.Header>
+	);
+
+	const beforeAfterBottomPanels = (
+		<>
+			<CodeSnippets
+				codeDiff={codeDiff}
+				onlyAfterHidden={onlyAfterHidden}
+				panelRefs={panelRefs}
+				panels={[beforePanel, afterWithVisibilityOptions]}
+			>
+				{onlyAfterHidden && (
+					<ShowPanelTile
+						header="After"
+						panel={afterWithVisibilityOptions}
+						onClick={() => {
+							afterWithVisibilityOptions.visibilityOptions?.show();
+							panelRefs.current[ResizablePanelsIndices.AFTER_SNIPPET]?.resize(
+								50,
+							);
+						}}
+					/>
+				)}
+			</CodeSnippets>
+		</>
+	);
+
+	const outputBottomPanel = (
+		<CodeSnippets
+			codeDiff={codeDiff}
+			onlyAfterHidden={onlyAfterHidden}
+			panelRefs={panelRefs}
+			panels={[outputPanel]}
+		/>
+	);
 
 	return (
 		<>
@@ -155,60 +238,69 @@ const Main = () => {
 					<Header />
 				</Layout.Header>
 				<Layout.Content gap="gap-2">
-					<PanelGroup autoSaveId="main-layout" direction="vertical">
-						<Layout.ResizablePanel
-							collapsible
+					<PanelGroup autoSaveId="main-layout" direction="horizontal">
+						<BoundResizePanel
+							panelRefIndex={ResizablePanelsIndices.TAB_CONTENT}
+							panelRefs={panelRefs}
+							className="bg-gray-bg"
 							defaultSize={50}
 							minSize={0}
 							style={{
 								flexBasis: isServer ? "50%" : "0",
 							}}
 						>
-							<PanelGroup direction="horizontal">
+							<PanelGroup direction="vertical">
 								<BoundResizePanel
-									boundedIndex={ResizablePanelsIndices.AFTER_SNIPPET}
-									panelRefIndex={ResizablePanelsIndices.TAB_CONTENT}
-									panelRefs={bottomPanelData.panelRefs}
-									className="bg-gray-bg"
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
-								>
-									<AssistantTab bottomPanelData={bottomPanelData} />
-								</BoundResizePanel>
-
-								<ResizeHandle direction="horizontal" />
-
-								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
 									panelRefs={panelRefs}
-									panelRefIndex={ResizablePanelsIndices.CODE_SECTION}
 									className="bg-gray-bg"
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
 								>
-									<Panel.Header>
-										<Panel.HeaderTab>
-											<Panel.HeaderTitle>
-												Codemod
-												<div className="flex items-center gap-1">
-													<DownloadZip />
-													<ClearInputButton />
-													<InsertExampleButton />
-												</div>
-											</Panel.HeaderTitle>
-										</Panel.HeaderTab>
-									</Panel.Header>
-									<Codemod />
+									<AssistantTab
+										panelRefs={panelRefs}
+										beforePanel={beforePanel}
+										afterPanel={afterWithVisibilityOptions}
+									/>
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{beforeAfterBottomPanels}
 								</BoundResizePanel>
 							</PanelGroup>
-						</Layout.ResizablePanel>
-						<ResizeHandle direction="vertical" />
-						<PageBottomPane {...bottomPanelData} />
+						</BoundResizePanel>
+
+						<ResizeHandle direction="horizontal" />
+						<BoundResizePanel
+							panelRefs={panelRefs}
+							panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+						>
+							<PanelGroup direction="vertical">
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{codemodHeader}
+									<Codemod />
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+									defaultSize={50}
+									minSize={0}
+									style={{
+										flexBasis: isServer ? "50%" : "0",
+									}}
+								>
+									{outputBottomPanel}
+								</BoundResizePanel>
+							</PanelGroup>
+						</BoundResizePanel>
 					</PanelGroup>
 				</Layout.Content>
 			</Layout>
@@ -253,8 +345,14 @@ const LoginWarningModal = () => {
 };
 
 const AssistantTab = ({
-	bottomPanelData,
-}: { bottomPanelData: ReturnType<typeof useBottomPanel> }) => {
+	panelRefs,
+	beforePanel,
+	afterPanel,
+}: {
+	panelRefs: PanelsRefs;
+	beforePanel: PanelData;
+	afterPanel: PanelData;
+}) => {
 	const activeTab = useSelector(selectActiveTab);
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
@@ -334,10 +432,9 @@ const AssistantTab = ({
 				>
 					<PanelGroup direction="horizontal">
 						<AstSection
-							sectionsToShow={["before", "after"]}
-							panels={bottomPanelData.panels}
+							panels={[beforePanel, afterPanel]}
 							engine={engine}
-							panelRefs={bottomPanelData.panelRefs}
+							panelRefs={panelRefs}
 						/>
 					</PanelGroup>
 				</Layout.ResizablePanel>
