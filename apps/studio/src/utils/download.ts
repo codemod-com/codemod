@@ -155,8 +155,7 @@ const packageJson = ({
           ${packages.trim()}
         },
         "main": "./dist/index.cjs",
-        "types": "/dist/index.d.ts",
-        "scripts": {
+                "scripts": {
           "test": "vitest run",
           "test:watch": "vitest watch"
         },
@@ -165,31 +164,10 @@ const packageJson = ({
           "README.md",
           ".codemodrc.json",
           "./dist/index.cjs",
-          "./index.d.ts"
         ],
         "type": "module"
       }
   `);
-};
-
-const definition = (engine: ProjectDownloadInput["engine"]) => {
-	const def = "";
-
-	if (engine === "jscodeshift") {
-		return beautify(`
-      import type { API, FileInfo } from 'jscodeshift';
-      export default function transform(file: FileInfo, api: API): string;
-    `);
-	}
-
-	if (engine === "tsmorph") {
-		return beautify(`
-      import type { SourceFile } from 'ts-morph';
-      export function handleSourceFile(sourceFile: SourceFile): string | undefined;
-    `);
-	}
-
-	return def;
 };
 
 const testBody = ({
@@ -356,7 +334,6 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 	zip.file("README.md", readme(input));
 
 	zip.file("vitest.config.ts", vitestConfig());
-	zip.file("index.d.ts", definition(input.engine));
 
 	zip.file("package.json", packageJson(input));
 	zip.file("tsconfig.json", tsconfigJson());

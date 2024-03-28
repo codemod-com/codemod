@@ -11,7 +11,6 @@ For your codemod pull request to be compatible with the Codemod.com platform, it
 ├── test
 │   ├── test.ts # containts tests
 ├── .codemodrc.json # contains the codemod's metadata; refer to existing codemods for the config file structure.
-├── index.d.ts
 ├── package.json
 ├── tsconfig.json
 └── README.md # must follow the structure described below

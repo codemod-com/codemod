@@ -20,18 +20,12 @@
 		"@vitest/coverage-v8": "^1.0.1"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
 	"scripts": {
 		"test": "vitest run test.ts",
 		"test:win": "vitest run test.win.ts",
 		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
-	"files": [
-		"./README.md",
-		"./.codemodrc.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+	"files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
 	"type": "module"
 }
