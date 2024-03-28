@@ -1,11 +1,11 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import Panel from "~/components/Panel";
-import AuthenticatedAccess from "~/components/authenticatedAccess";
 import ClearInputButton from "~/components/button/ClearInputButton";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
 import Chat from "~/components/chatbot/Chat";
@@ -20,12 +20,15 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
 import { openLink } from "~/utils/openLink";
+import themeConfig from "../../../tailwind.config";
+import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import PageBottomPane from "./BottomPane";
@@ -35,6 +38,7 @@ import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
+import { useTheme } from "./themeContext";
 
 const isServer = typeof window === "undefined";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
@@ -203,6 +207,47 @@ const Main = () => {
 	);
 };
 
+function SignInRequired() {
+	const theme = useTheme();
+	const router = useRouter();
+	const signUserIn = () => {
+		router.push("/auth/sign-in");
+	};
+
+	return (
+		<div className="grid h-full absolute top-0 bottom-0 w-full">
+			<div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />
+			<section
+				className={
+					"flex items-center flex-col gap-3 p-4 w-60 text-lg relative rounded-lg place-self-center border border-solid bg-background border-gray-200 dark:border-gray-700"
+				}
+				style={{
+					backgroundImage:
+						"linear-gradient(0deg, rgba(187, 252, 3, 0.3) 0, rgb(83 35 130 / 0%) 70%)",
+				}}
+			>
+				<UserIcon
+					stroke={
+						theme.isDark
+							? themeConfig.theme.extend.colors["gray-bg-light"]
+							: themeConfig.theme.extend.colors["gray-dark"]
+					}
+				/>
+				<p className="font-bold text-lg">Sign in required</p>
+				<p className="font-normal text-sm text-center">
+					Sign in to use AI assistant to build codemod
+				</p>
+				<Button
+					onClick={signUserIn}
+					className="flex w-full text-white gap-2 items-center"
+				>
+					Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />
+				</Button>
+			</section>
+		</div>
+	);
+}
+
 const LoginWarningModal = () => {
 	const { isSignedIn, isLoaded } = useAuth();
 	const isFromCLI = useSearchParams().get("command") === "learn";
@@ -303,9 +348,8 @@ const AssistantTab = () => {
 				onScroll={handleScroll}
 				ref={scrollContainerRef}
 			>
-				<AuthenticatedAccess>
-					<Chat />
-				</AuthenticatedAccess>
+				<Chat />
+				{!isSignedIn && <SignInRequired />}
 			</TabsContent>
 			<TabsContent
 				className="mt-0 h-full pt-[2.5rem] overflow-auto"
