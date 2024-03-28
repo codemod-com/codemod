@@ -1,4 +1,4 @@
-import { CodemodListReturn } from "./apis";
+import { CodemodListReturn } from "@codemod-com/utilities";
 
 export type RewriteMessage = Readonly<{
 	kind: "rewrite";
@@ -13,6 +13,7 @@ export type FinishMessage = Readonly<{
 export type ProgressMessage = Readonly<{
 	kind: "progress";
 	processedFileNumber: number;
+	processedFileName: string;
 	totalFileNumber: number;
 }>;
 

@@ -51,9 +51,10 @@ export class Printer implements PrinterBlueprint {
 
 		if (message.kind === "progress") {
 			console.log(
-				"Processed %d files out of %d",
+				`Processed %d files out of %d: ${boldText("%s")}`,
 				message.processedFileNumber,
 				message.totalFileNumber,
+				message.processedFileName,
 			);
 		}
 	}
