@@ -1,5 +1,5 @@
 import { IncomingHttpHeaders } from "node:http";
-import { Environment } from "./schemata/env.js";
+import { Environment, parseEnvironment } from "./schemata/env.js";
 
 export const areClerkKeysSet = (
 	environment: Environment,
@@ -47,3 +47,5 @@ export const buildTimeoutPromise = (ms: number) =>
 			resolve();
 		}, ms);
 	});
+
+export const environment = parseEnvironment(process.env);

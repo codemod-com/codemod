@@ -19,6 +19,7 @@ export const getCodemodsQuerySchema = object({
 	page: optional(coerce(number(), Number)),
 	size: optional(coerce(number(), Number)),
 });
+
 export const parseGetCodemodsQuery = (input: unknown) =>
 	parse(getCodemodsQuerySchema, input);
 
