@@ -50,7 +50,7 @@
 		"@prisma/client": "5.10.2",
 		"@types/tar": "^6.1.11",
 		"ai": "2.2.29",
-		"axios": "1.6.2",
+		"axios": "^1.6.8",
 		"chatgpt": "5.2.5",
 		"chromadb": "1.7.2",
 		"dotenv": "^16.4.5",
