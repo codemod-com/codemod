@@ -193,6 +193,7 @@ export const runRepomod = async (
 				kind: "progress",
 				processedFileNumber: processedPathHashDigests.size,
 				totalFileNumber: totalPathHashDigests.size,
+				processedFileName: command.path,
 			});
 		},
 		onError: (path, message) => {

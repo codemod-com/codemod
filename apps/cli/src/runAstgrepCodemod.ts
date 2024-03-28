@@ -4,6 +4,67 @@ import type { FileCommand } from "./fileCommands.js";
 import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
+const javaScriptPatterns = ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"];
+const typeScriptPatterns = ["**/*.ts", "**/*.cts", "**/*.mts"];
+const tsxPatterns = ["**/*.tsx"];
+const pythonPatterns = ["**/*.py", "**/*.py3", "**/*.pyi", "**/*.bzl"];
+const javaPatterns = ["**/*.java"];
+const bashPatterns = [
+	"**/*.bash",
+	"**/*.bats",
+	"**/*.cgi",
+	"**/*.command",
+	"**/*.env",
+	"**/*.fcgi",
+	"**/*.ksh",
+	"**/*.sh",
+	"**/*.sh.in",
+	"**/*.tmux",
+	"**/*.tool",
+	"**/*.zsh",
+];
+const cPatterns = ["**/*.c", "**/*.h"];
+const cppPatterns = [
+	"**/*.cc",
+	"**/*.hpp",
+	"**/*.cpp",
+	"**/*.c++",
+	"**/*.hh",
+	"**/*.cxx",
+	"**/*.cu",
+	"**/*.ino",
+];
+const jsonPatterns = ["**/*.json"];
+const htmlPatterns = ["**/*.html", "**/*.htm", "**/*.xhtml"];
+export const astGrepLanguageToPatterns: Record<string, string[]> = {
+	js: javaScriptPatterns,
+	jsx: javaScriptPatterns,
+	javascript: javaScriptPatterns,
+
+	ts: typeScriptPatterns,
+	typescript: typeScriptPatterns,
+
+	tsx: tsxPatterns,
+
+	py: pythonPatterns,
+	python: pythonPatterns,
+
+	java: javaPatterns,
+
+	"bash-exp": bashPatterns,
+
+	c: cPatterns,
+
+	cc: cppPatterns,
+	"c++": cppPatterns,
+	cpp: cppPatterns,
+	cxx: cppPatterns,
+
+	json: jsonPatterns,
+
+	html: htmlPatterns,
+};
+
 const execPromise = promisify(exec);
 
 type AstGrepCompactOutput = {
