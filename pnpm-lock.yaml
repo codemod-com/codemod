@@ -617,9 +617,6 @@ importers:
       '@types/react-virtualized-auto-sizer':
         specifier: ^1.0.1
         version: 1.0.4
-      '@types/sinon':
-        specifier: ^10.0.13
-        version: 10.0.20
       '@types/testing-library__jest-dom':
         specifier: ^5.14.5
         version: 5.14.9
@@ -641,9 +638,6 @@ importers:
       raw-loader:
         specifier: ^4.0.2
         version: 4.0.2(webpack@5.91.0)
-      sinon:
-        specifier: ^15.0.2
-        version: 15.2.0
       tailwindcss:
         specifier: ^3.3.3
         version: 3.4.1
@@ -10686,6 +10680,7 @@ packages:
     resolution: {integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA==}
     dependencies:
       '@sinonjs/commons': 3.0.1
+    dev: false
 
   /@sinonjs/fake-timers@11.2.2:
     resolution: {integrity: sha512-G2piCSxQ7oWOxwGSAyFHfPIsyeJGXYtc6mFbnFA+kRXkiEnTl8c/8jul2S329iFBnDI9HGoeWWAZvuvOkZccgw==}
@@ -24908,6 +24903,7 @@ packages:
       diff: 5.1.0
       nise: 5.1.9
       supports-color: 7.2.0
+    dev: false
 
   /sinon@17.0.1:
     resolution: {integrity: sha512-wmwE19Lie0MLT+ZYNpDymasPHUKTaZHUH/pKEubRXIzySv9Atnlw+BUMGCzWgV7b7wO+Hw6f1TEOr0IUnmU8/g==}
