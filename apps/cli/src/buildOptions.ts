@@ -58,7 +58,7 @@ export const buildOptions = <T extends Record<string, unknown>>(y: Argv<T>) => {
 				.option("engine", {
 					type: "string",
 					description:
-						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod"',
+						'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod", "ast-grep"',
 				})
 				.option("raw", {
 					alias: "r",

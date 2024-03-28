@@ -214,7 +214,7 @@ const Main = () => {
 							<PanelGroup direction="vertical">
 								<BoundResizePanel
 									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
-									// boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
 									panelRefs={panelRefs}
 									className="bg-gray-bg"
 								>
@@ -243,7 +243,7 @@ const Main = () => {
 							<PanelGroup direction="vertical">
 								<BoundResizePanel
 									panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
-									// boundedIndex={ResizablePanelsIndices.TAB_SECTION}
+									boundedIndex={ResizablePanelsIndices.TAB_SECTION}
 									panelRefs={panelRefs}
 									className="bg-gray-bg"
 								>
@@ -381,22 +381,13 @@ const AssistantTab = ({
 				onScroll={handleScroll}
 				ref={scrollContainerRef}
 			>
-				<Layout.ResizablePanel
-					className="relative dark:bg-gray-light h-full"
-					defaultSize={50}
-					minSize={0}
-					style={{
-						flexBasis: isServer ? "50%" : "0",
-					}}
-				>
-					<PanelGroup direction="horizontal">
-						<AstSection
-							panels={[beforePanel, afterPanel]}
-							engine={engine}
-							panelRefs={panelRefs}
-						/>
-					</PanelGroup>
-				</Layout.ResizablePanel>
+				<PanelGroup direction="horizontal">
+					<AstSection
+						panels={[beforePanel, afterPanel]}
+						engine={engine}
+						panelRefs={panelRefs}
+					/>
+				</PanelGroup>
 			</TabsContent>
 
 			<TabsContent

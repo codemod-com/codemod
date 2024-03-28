@@ -1,4 +1,4 @@
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { Worker } from "node:worker_threads";
 import { FormattedFileCommand } from "./fileCommands.js";
 import { MainThreadMessage } from "./mainThreadMessages.js";
@@ -18,6 +18,7 @@ export class WorkerThreadManager {
 	private __workerTimestamps: number[] = [];
 	private __filePaths: string[] = [];
 	private __currentFileCount = 0;
+	private __currentFilePath: string | null = null;
 	private __totalFileCount: number | null = null;
 	private __processedFileNumber = 0;
 	private readonly __interval: NodeJS.Timeout;
@@ -60,14 +61,6 @@ export class WorkerThreadManager {
 			} satisfies MainThreadMessage);
 
 			this.__workers.push(worker);
-		}
-
-		if (this.__currentFileCount > 0) {
-			this.__onPrinterMessage({
-				kind: "progress",
-				processedFileNumber: 0,
-				totalFileNumber: this.__currentFileCount,
-			});
 		}
 
 		this.__interval = setInterval(() => {
@@ -135,6 +128,7 @@ export class WorkerThreadManager {
 		}
 
 		const filePath = this.__filePaths.pop();
+		this.__currentFilePath = filePath ?? null;
 
 		if (filePath === undefined) {
 			if (
@@ -207,11 +201,14 @@ export class WorkerThreadManager {
 
 			++this.__processedFileNumber;
 
-			this.__onPrinterMessage({
-				kind: "progress",
-				processedFileNumber: this.__processedFileNumber,
-				totalFileNumber: this.__currentFileCount,
-			});
+			if (this.__currentFilePath) {
+				this.__onPrinterMessage({
+					kind: "progress",
+					processedFileNumber: this.__processedFileNumber,
+					totalFileNumber: this.__currentFileCount,
+					processedFileName: resolve(this.__currentFilePath),
+				});
+			}
 
 			this.__idleWorkerIds.push(i);
 			await this.__work();

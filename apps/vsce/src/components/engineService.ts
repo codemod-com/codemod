@@ -6,12 +6,13 @@ import {
 import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import * as readline from "node:readline";
+import axios from "axios";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
 import { FileSystem, Uri, commands, window, workspace } from "vscode";
 import { Case } from "../cases/types";
-import { CodemodEntry, codemodNamesCodec } from "../codemods/types";
+import { CodemodEntry, CodemodNames } from "../codemods/types";
 import { Configuration } from "../configuration";
 import { Container } from "../container";
 import { Store } from "../data";
@@ -199,6 +200,16 @@ const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
 // const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
 // const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
+export const getCodemodList = async (): Promise<CodemodNames["codemods"]> => {
+	const url = new URL("https://backend.codemod.com/codemods/list");
+
+	const res = await axios.get<CodemodNames["codemods"]>(url.toString(), {
+		timeout: 10000,
+	});
+
+	return res.data;
+};
+
 export class EngineService {
 	readonly #configurationContainer: Container<Configuration>;
 	readonly #fileSystem: FileSystem;
@@ -298,27 +309,30 @@ export class EngineService {
 	}
 
 	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
-		const childProcess = spawn(
-			CODEMOD_ENGINE_NODE_COMMAND,
-			["list", "--json"],
-			{
-				stdio: "pipe",
-				shell: true,
-				detached: false,
-			},
-		);
+		// const childProcess = exec(
+		// 	`${CODEMOD_ENGINE_NODE_COMMAND} list --json`,
+		// );
+
+		// if(childProcess.stdout === null) {
+		// 	return [];
+		// }
 
 		try {
-			const codemodListString = await streamToString(childProcess.stdout);
-			const codemodListOrError = codemodNamesCodec.decode(
-				JSON.parse(codemodListString),
-			);
+			// const codemodListString = await streamToString(childProcess.stdout);
+			// console.log(codemodListString)
+			// const codemodListOrError = codemodNamesCodec.decode(
+			// 	JSON.parse(codemodListString),
+			// );
 
-			if (codemodListOrError._tag === "Left") {
-				const report = prettyReporter.report(codemodListOrError);
-				throw new InvalidEngineResponseFormatError(report.join("\n"));
-			}
-			return codemodListOrError.right.codemods.map((codemod) => codemod.name);
+			// console.log(codemodListOrError)
+
+			// if (codemodListOrError._tag === "Left") {
+			// 	const report = prettyReporter.report(codemodListOrError);
+			// 	console.log(report, '????')
+			// 	throw new InvalidEngineResponseFormatError(report.join("\n"));
+			// }
+			const codemods = await getCodemodList();
+			return codemods.map((codemod) => codemod.name);
 		} catch (e) {
 			if (e instanceof InvalidEngineResponseFormatError) {
 				throw e;

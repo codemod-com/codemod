@@ -66,8 +66,20 @@ export const executeMainThread = async () => {
 				}),
 		)
 		.command("logout", "logs out", (y) => buildUseJsonOption(y))
+		.command(
+			"build",
+			"build the JavaScript engine codemod (requires global esbuild installation)",
+			(y) =>
+				buildUseJsonOption(y).option("source", {
+					type: "string",
+					description: "path to the codemod to be built",
+				}),
+		)
 		.command("publish", "publish the codemod to Codemod Registry", (y) =>
-			buildUseJsonOption(y),
+			buildUseJsonOption(y).option("source", {
+				type: "string",
+				description: "path to the codemod to be published",
+			}),
 		)
 		.help()
 		.version(version);

@@ -21,7 +21,7 @@ const transform = async (json: DirectoryJSON) => {
 
 describe("mocha config-files", () => {
 	const packageJsonPath = "/opt/project/package.json";
-	const packageJsonConfig = `
+	const packageJsonContent = `
     {
       "name": "package-name",
       "dependencies": {
@@ -33,7 +33,6 @@ describe("mocha config-files", () => {
         "@types/mocha": "^10.0.4"
       },
       "main": "./dist/index.cjs",
-      "types": "/dist/index.d.ts",
       "scripts": {
                 "test": "mocha"
       },
@@ -43,8 +42,7 @@ describe("mocha config-files", () => {
       "files": [
         "README.md",
         ".codemodrc.json",
-        "./dist/index.cjs",
-        "./index.d.ts"
+        "./dist/index.cjs"
       ],
       "type": "module"
     }
@@ -88,7 +86,7 @@ describe("mocha config-files", () => {
 
 	it("should contain correct file commands", async () => {
 		const externalFileCommands = await transform({
-			[packageJsonPath]: packageJsonConfig,
+			[packageJsonPath]: packageJsonContent,
 			[tsconfigPath]: tsconfigContent,
 			[mochaRcPath]: mochaRcContent,
 			[mochaRcCjsPath]: mochaRcContent,
@@ -96,6 +94,8 @@ describe("mocha config-files", () => {
 			[gitIgnorePath]: gitIgnoreContent,
 			[vitestConfigPath]: "",
 		});
+
+		console.log(externalFileCommands);
 
 		deepEqual(externalFileCommands.length, 7);
 
@@ -115,7 +115,7 @@ describe("mocha config-files", () => {
 
 	it("should correctly modify package and tsconfig jsons", async () => {
 		const externalFileCommands = await transform({
-			[packageJsonPath]: packageJsonConfig,
+			[packageJsonPath]: packageJsonContent,
 			[tsconfigPath]: tsconfigContent,
 			[mochaRcPath]: mochaRcContent,
 			[mochaRcCjsPath]: mochaRcContent,
@@ -137,17 +137,15 @@ describe("mocha config-files", () => {
                   "@vitest/coverage-v8": "^1.0.1"
                 },
                 "main": "./dist/index.cjs",
-                "types": "/dist/index.d.ts",
                 "scripts": {
-                                    "test": "vitest run",
+                  "test": "vitest run",
                   "test:watch": "vitest watch",
                   "coverage": "vitest run --coverage"
                 },
                 "files": [
                   "README.md",
                   ".codemodrc.json",
-                  "./dist/index.cjs",
-                  "./index.d.ts"
+                  "./dist/index.cjs"
                 ],
                 "type": "module"
               }

@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { relative } from "node:path";
 import { Filemod } from "@codemod-com/filemod";
 import { FileSystemAdapter, glob, globStream } from "fast-glob";
 import * as yaml from "js-yaml";
@@ -14,6 +15,7 @@ import {
 import { getTransformer, transpile } from "./getTransformer.js";
 import { OperationMessage } from "./messages.js";
 import { PrinterBlueprint } from "./printer.js";
+import { astGrepLanguageToPatterns } from "./runAstgrepCodemod.js";
 import { Dependencies, runRepomod } from "./runRepomod.js";
 import { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { FlowSettings } from "./schemata/flowSettingsSchema.js";
@@ -25,25 +27,11 @@ export { escape } from "minimatch";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 
-const astGrepLanguageToPatterns: Record<string, string[]> = {
-	js: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
-	jsx: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
-	javascript: ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"],
-
-	ts: ["**/*.ts", "**/*.cts", "**/*.mts"],
-	typescript: ["**/*.ts", "**/*.cts", "**/*.mts"],
-
-	tsx: ["**/*.tsx"],
-
-	py: ["**/*.py", "**/*.py3", "**/*.pyi", "**/*.bzl"],
-
-	java: ["**/*.java"],
-};
-
 export const buildPatterns = async (
 	flowSettings: FlowSettings,
 	codemod: Codemod,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
+	printer: PrinterBlueprint,
 ): Promise<string[]> => {
 	const files = flowSettings.files;
 
@@ -52,6 +40,26 @@ export const buildPatterns = async (
 	}
 
 	let patterns = flowSettings.include ?? codemod.include;
+
+	// ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
+	if (codemod.engine === "ast-grep") {
+		if (patterns) {
+			printer.printConsoleMessage(
+				"info",
+				"Ignoring include/exclude patterns for ast-grep codemod",
+			);
+			patterns = undefined;
+		}
+
+		try {
+			const config = yaml.load(
+				await readFile(codemod.indexPath, { encoding: "utf8" }),
+			) as { language: string };
+			patterns = astGrepLanguageToPatterns[config.language];
+		} catch (error) {
+			//
+		}
+	}
 
 	if (!patterns) {
 		if (
@@ -64,15 +72,6 @@ export const buildPatterns = async (
 			codemod.engine === "ts-morph"
 		) {
 			patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-		} else if (codemod.engine === "ast-grep") {
-			try {
-				const config = yaml.load(
-					await readFile(codemod.indexPath, { encoding: "utf8" }),
-				) as { language: string };
-				patterns = astGrepLanguageToPatterns[config.language];
-			} catch (error) {
-				//
-			}
 		}
 
 		if (!patterns) {
@@ -80,18 +79,27 @@ export const buildPatterns = async (
 		}
 	}
 
-	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-	return patterns.map((pattern) => {
+	const formatFunc = (pattern: string) => {
 		if (pattern.startsWith("**")) {
 			return pattern;
 		}
 
 		if (pattern.startsWith("/")) {
-			return `/**${pattern}`;
+			return `**${pattern}`;
 		}
 
-		return `/**/${pattern}`;
-	});
+		return `**/${pattern}`;
+	};
+
+	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
+	const formattedInclude = patterns.map(formatFunc);
+
+	const excludePatterns = flowSettings.exclude ?? [];
+	const formattedExclude = excludePatterns.map(formatFunc);
+
+	return formattedInclude.filter(
+		(pattern) => !formattedExclude.includes(pattern),
+	);
 };
 
 export const buildPathsGlob = async (
@@ -188,7 +196,7 @@ export const runCodemod = async (
 
 		const mfs = createFsFromVolume(Volume.fromJSON({}));
 
-		const paths = await buildPatterns(flowSettings, codemod, null);
+		const paths = await buildPatterns(flowSettings, codemod, null, printer);
 
 		const fileMap = await buildFileMap(fileSystem, mfs, paths);
 
@@ -223,6 +231,7 @@ export const runCodemod = async (
 								message.totalFileNumber * i + message.processedFileNumber,
 							totalFileNumber:
 								message.totalFileNumber * codemod.codemods.length,
+							processedFileName: message.processedFileName,
 						});
 					}
 
@@ -295,6 +304,7 @@ export const runCodemod = async (
 			flowSettings,
 			codemod,
 			transformer as Filemod<Dependencies, Record<string, unknown>>,
+			printer,
 		);
 
 		const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
@@ -319,7 +329,7 @@ export const runCodemod = async (
 	}
 
 	// jscodeshift or ts-morph or ast-grep
-	const patterns = await buildPatterns(flowSettings, codemod, null);
+	const patterns = await buildPatterns(flowSettings, codemod, null, printer);
 	const pathGenerator = buildPathGlobGenerator(
 		fileSystem,
 		flowSettings,
@@ -341,7 +351,19 @@ export const runCodemod = async (
 				return data as string;
 			},
 			(message) => {
-				onPrinterMessage(message);
+				if (message.kind === "progress") {
+					onPrinterMessage({
+						kind: "progress",
+						processedFileNumber: message.processedFileNumber,
+						totalFileNumber: message.totalFileNumber,
+						processedFileName: relative(
+							flowSettings.target,
+							message.processedFileName,
+						),
+					});
+				} else {
+					onPrinterMessage(message);
+				}
 
 				if (timeout) {
 					clearTimeout(timeout);

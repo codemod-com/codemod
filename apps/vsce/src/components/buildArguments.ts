@@ -42,21 +42,11 @@ export const buildArguments = (
 
 	if (message.targetUriIsDirectory) {
 		configuration.includePatterns.forEach((includePattern) => {
-			args.push(
-				"--include",
-				buildCrossplatformArg(
-					buildGlobPattern(message.targetUri, includePattern),
-				),
-			);
+			args.push("--include", buildCrossplatformArg(includePattern));
 		});
 
 		configuration.excludePatterns.forEach((excludePattern) => {
-			args.push(
-				"--exclude",
-				buildCrossplatformArg(
-					buildGlobPattern(message.targetUri, excludePattern),
-				),
-			);
+			args.push("--exclude", buildCrossplatformArg(excludePattern));
 		});
 	} else {
 		args.push(

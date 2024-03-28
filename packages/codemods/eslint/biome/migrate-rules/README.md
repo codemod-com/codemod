@@ -38,8 +38,7 @@ This codemod requires internet connection.
 		"eslint-config-prettier": "^10.2.0"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
+		"scripts": {
 		"start": "pnpm run build:cjs && node ./dist/index.cjs",
 				"lint:eslint": "eslint . --fix",
 		"lint:prettier": "prettier --write ."
@@ -49,9 +48,7 @@ This codemod requires internet connection.
 		"prettier-test-no-replace",
 		"README.md",
 		".codemodrc.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+		"./dist/index.cjs"	],
 	"lint-staged": {
 		"*.js": "eslint --fix",
 		"*.ts": "eslint --fix"
@@ -70,8 +67,7 @@ This codemod requires internet connection.
 		"@biomejs/biome": "1.5.3"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
+		"scripts": {
 		"start": "pnpm run build:cjs && node ./dist/index.cjs",
 				"lint:eslint": "pnpm dlx @biomejs/biome lint . --apply",
 		"lint:prettier": "pnpm dlx @biomejs/biome format --write .",
@@ -82,9 +78,7 @@ This codemod requires internet connection.
 		"prettier-test-no-replace",
 		"README.md",
 		".codemodrc.json",
-		"./dist/index.cjs",
-		"./index.d.ts"
-	],
+		"./dist/index.cjs"	],
 	"lint-staged": {
 		"*.js": "pnpm dlx @biomejs/biome lint --apply",
 		"*.ts": "pnpm dlx @biomejs/biome lint --apply"

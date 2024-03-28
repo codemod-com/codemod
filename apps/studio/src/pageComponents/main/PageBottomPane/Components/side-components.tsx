@@ -1,4 +1,4 @@
-import React, { PropsWithChildren, useEffect } from "react";
+import React, { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { isServer } from "~/config";
@@ -90,10 +90,6 @@ export const AstSection = ({
 	panelRefs: PanelsRefs;
 	engine: JSEngine;
 }) => {
-	useEffect(() => {
-		// console.log('ResizablePanelsIndices.CODE_SECTION', panelRefs.current[ResizablePanelsIndices.CODE_SECTION]),
-		// panelRefs.current[ResizablePanelsIndices.CODE_SECTION]?.collapse()
-	}, []);
 	return panels.filter(isVisible).map((panel, i, { length }) => (
 		<>
 			<BoundResizePanel
@@ -102,12 +98,16 @@ export const AstSection = ({
 				key={panel.relatedAST}
 				defaultSize={100 / panels.length}
 				panelRefIndex={panel.relatedAST}
-				boundedIndex={panel.snippedIndex}
+				boundedIndex={
+					panel.boundIndex === panel.relatedAST ? panel.snippedIndex : undefined
+				}
 				{...panel}
 			>
 				<ContentViewer type={panel.type} engine={engine} />
 			</BoundResizePanel>
-			{i !== length - 1 && <ResizeHandle direction="horizontal" />}
+			{i !== length - 1 && isVisible(panels[i + 1]) && (
+				<ResizeHandle direction="horizontal" />
+			)}
 		</>
 	));
 };
