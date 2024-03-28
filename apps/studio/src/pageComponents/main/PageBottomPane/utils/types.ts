@@ -1,14 +1,14 @@
 import { ValueOf } from "next/constants";
 import React, { MutableRefObject, ReactNode } from "react";
 import { ImperativePanelHandle } from "react-resizable-panels";
-import { DiffEditorWrapper } from "~/pageComponents/main/JSCodeshiftRender";
-import SnippetUI from "~/pageComponents/main/SnippetUI";
+import { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
 import { JSEngine } from "~/types/Engine";
 import { VisibilityOptions } from "~/types/options";
 
 export type PanelsRefs = MutableRefObject<
 	Record<string, ImperativePanelHandle | null>
 >;
+
 export type PanelComponentProps = {
 	hasBoundResize?: boolean;
 	defaultSize?: number;
@@ -48,6 +48,8 @@ export enum ResizablePanelsIndices {
 	CODEMOD_SECTION = 10,
 	TAB_CONTENT = 11,
 	BEFORE_AFTER_COMBINED = 11,
+	LEFT = 12,
+	RIGHT = 13,
 }
 
 export type PanelContentRenderer = (engine: JSEngine) => React.ReactNode;
@@ -82,7 +84,7 @@ export type SnippetData = {
 		type: SnippetType;
 		warnings?: ReactNode;
 	};
-	Snipped: typeof SnippetUI | typeof DiffEditorWrapper;
+	snippet: "regular" | "diff";
 	// @ts-ignore
 	getExtras?: (x: boolean) => ReactNode;
 };
@@ -92,3 +94,11 @@ export type BottomPanelName = ValueOf<{
 }>;
 
 export type BottomPanelData = Record<BottomPanelName, PanelData>;
+
+export type WarningTextsProps = Pick<
+	ReturnType<typeof useCodeDiff>,
+	| "snippetBeforeHasOnlyWhitespaces"
+	| "firstCodemodExecutionErrorEvent"
+	| "onDebug"
+	| "codemodSourceHasOnlyWhitespaces"
+>;

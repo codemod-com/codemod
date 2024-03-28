@@ -20,13 +20,8 @@ import {
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useToggleVisibility } from "~/hooks/useToggleVisibility";
 import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
-import {
-	WarningTexts,
-	useCodeDiff,
-} from "~/pageComponents/main/JSCodeshiftRender";
 import {
 	AstSection,
 	BoundResizePanel,
@@ -34,9 +29,9 @@ import {
 	PanelsRefs,
 	ResizablePanelsIndices,
 	ShowPanelTile,
-	panelsData,
 } from "~/pageComponents/main/PageBottomPane";
-import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets/CodeSnippets";
+import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
+import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
@@ -49,7 +44,6 @@ import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
-import { inferVisibilities } from "./PageBottomPane/utils/infer-visibilites";
 
 const isServer = typeof window === "undefined";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
@@ -82,40 +76,13 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 	openLink(vscodeUrl.toString());
 };
 
-const useAddVisibleOptions = (panel: PanelData) => {
-	return {
-		...panel,
-		visibilityOptions: useToggleVisibility(),
-	};
-};
-
 const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
 	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
 	const panelRefs: PanelsRefs = useRef({});
-	const { beforePanel, afterPanel, outputPanel } = panelsData;
-	const codeDiff = useCodeDiff();
-	const warnings = <WarningTexts {...codeDiff} />;
-	const afterWithMessages = {
-		...afterPanel,
-		snippetData: {
-			...afterPanel.snippetData,
-			warnings,
-		},
-	};
-	const afterWithVisibilityOptions = useAddVisibleOptions(afterWithMessages);
-	const { onlyAfterHidden } = inferVisibilities({
-		beforePanel,
-		afterPanel: afterWithVisibilityOptions,
-		outputPanel,
-	});
-
-	useEffect(() => {
-		if (onlyAfterHidden) {
-			panelRefs.current[afterPanel.snippedIndex]?.collapse();
-		}
-	}, [onlyAfterHidden]);
+	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
+		useSnippetsPanels({ panelRefs });
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -198,14 +165,14 @@ const Main = () => {
 				codeDiff={codeDiff}
 				onlyAfterHidden={onlyAfterHidden}
 				panelRefs={panelRefs}
-				panels={[beforePanel, afterWithVisibilityOptions]}
+				panels={[beforePanel, afterPanel]}
 			>
 				{onlyAfterHidden && (
 					<ShowPanelTile
 						header="After"
-						panel={afterWithVisibilityOptions}
+						panel={afterPanel}
 						onClick={() => {
-							afterWithVisibilityOptions.visibilityOptions?.show();
+							afterPanel.visibilityOptions?.show();
 							panelRefs.current[ResizablePanelsIndices.AFTER_SNIPPET]?.resize(
 								50,
 							);
@@ -240,25 +207,21 @@ const Main = () => {
 				<Layout.Content gap="gap-2">
 					<PanelGroup autoSaveId="main-layout" direction="horizontal">
 						<BoundResizePanel
-							panelRefIndex={ResizablePanelsIndices.TAB_CONTENT}
+							panelRefIndex={ResizablePanelsIndices.LEFT}
 							panelRefs={panelRefs}
 							className="bg-gray-bg"
-							defaultSize={50}
-							minSize={0}
-							style={{
-								flexBasis: isServer ? "50%" : "0",
-							}}
 						>
 							<PanelGroup direction="vertical">
 								<BoundResizePanel
 									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									// boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
 									panelRefs={panelRefs}
 									className="bg-gray-bg"
 								>
 									<AssistantTab
 										panelRefs={panelRefs}
 										beforePanel={beforePanel}
-										afterPanel={afterWithVisibilityOptions}
+										afterPanel={afterPanel}
 									/>
 								</BoundResizePanel>
 								<ResizeHandle direction="vertical" />
@@ -275,11 +238,12 @@ const Main = () => {
 						<ResizeHandle direction="horizontal" />
 						<BoundResizePanel
 							panelRefs={panelRefs}
-							panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+							panelRefIndex={ResizablePanelsIndices.RIGHT}
 						>
 							<PanelGroup direction="vertical">
 								<BoundResizePanel
-									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									// boundedIndex={ResizablePanelsIndices.TAB_SECTION}
 									panelRefs={panelRefs}
 									className="bg-gray-bg"
 								>
@@ -288,14 +252,9 @@ const Main = () => {
 								</BoundResizePanel>
 								<ResizeHandle direction="vertical" />
 								<BoundResizePanel
-									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefIndex={ResizablePanelsIndices.OUTPUT_AST}
 									panelRefs={panelRefs}
 									className="bg-gray-bg"
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
 								>
 									{outputBottomPanel}
 								</BoundResizePanel>

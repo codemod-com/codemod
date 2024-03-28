@@ -1,11 +1,9 @@
 import ASTViewer from "~/pageComponents/main/ASTViewer";
-import { DiffEditorWrapper } from "~/pageComponents/main/JSCodeshiftRender";
 import {
 	ContentViewerVariant,
 	PanelData,
 	ResizablePanelsIndices,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
-import SnippetUI from "~/pageComponents/main/SnippetUI";
 import { JSEngine } from "~/types/Engine";
 import { Repeat } from "~/types/transformations";
 
@@ -28,7 +26,7 @@ const beforePanel: PanelData = {
 		diffEditorWrapper: {
 			type: "before",
 		},
-		Snipped: SnippetUI,
+		snippet: "regular",
 	},
 };
 
@@ -43,7 +41,7 @@ const afterPanel: PanelData = {
 		diffEditorWrapper: {
 			type: "after",
 		},
-		Snipped: DiffEditorWrapper,
+		snippet: "diff",
 	},
 };
 
@@ -54,7 +52,7 @@ const outputPanel: PanelData = {
 	content: getContent("output"),
 	snippetData: {
 		header: "Output",
-		Snipped: DiffEditorWrapper,
+		snippet: "diff",
 		diffEditorWrapper: {
 			type: "output",
 		},

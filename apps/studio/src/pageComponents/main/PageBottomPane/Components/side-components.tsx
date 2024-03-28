@@ -102,7 +102,7 @@ export const AstSection = ({
 				key={panel.relatedAST}
 				defaultSize={100 / panels.length}
 				panelRefIndex={panel.relatedAST}
-				boundedIndex={panel.boundIndex}
+				boundedIndex={panel.snippedIndex}
 				{...panel}
 			>
 				<ContentViewer type={panel.type} engine={engine} />

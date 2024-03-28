@@ -3,12 +3,14 @@ import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { cn } from "~/lib/utils";
 import CodeSnippedPanel, {
+	DiffEditorWrapper,
 	useCodeDiff,
 } from "~/pageComponents/main/JSCodeshiftRender";
 import {
 	PanelData,
 	PanelsRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";
+import SnippetUI from "~/pageComponents/main/SnippetUI";
 import { isVisible } from "~/utils/visibility";
 
 type CodeSnippetsProps = {
@@ -26,12 +28,13 @@ export const CodeSnippets = ({
 	const snippetPanels = panels.map((panelData, index, arr) => {
 		const {
 			snippetData: {
-				Snipped,
+				snippet,
 				getExtras,
 				diffEditorWrapper,
 				...codeSnippedPanel
 			},
 		} = panelData;
+		const Snippet = snippet == "regular" ? SnippetUI : DiffEditorWrapper;
 		return (
 			<>
 				<CodeSnippedPanel
@@ -41,7 +44,7 @@ export const CodeSnippets = ({
 					panelRefs={panelRefs}
 					{...codeSnippedPanel}
 				>
-					<Snipped
+					<Snippet
 						{...{
 							...diffEditorWrapper,
 							...codeDiff,
