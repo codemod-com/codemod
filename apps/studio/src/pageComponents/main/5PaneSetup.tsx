@@ -1,5 +1,4 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
-import clsx from "clsx";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -219,10 +218,9 @@ function SignInRequired() {
 		<div className="grid h-full absolute top-0 bottom-0 w-full">
 			<div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />
 			<section
-				className={clsx(
-					"flex items-center flex-col gap-3 p-4 w-60 text-lg relative rounded-lg place-self-center border border-solid bg-background",
-					theme.isDark ? "border-gray-700" : "border-gray-200",
-				)}
+				className={
+					"flex items-center flex-col gap-3 p-4 w-60 text-lg relative rounded-lg place-self-center border border-solid bg-background border-gray-200 dark:border-gray-700"
+				}
 				style={{
 					backgroundImage:
 						"linear-gradient(0deg, rgba(187, 252, 3, 0.3) 0, rgb(83 35 130 / 0%) 70%)",
@@ -237,7 +235,7 @@ function SignInRequired() {
 				/>
 				<p className="font-bold text-lg">Sign in required</p>
 				<p className="font-normal text-sm text-center">
-					Sign in to use AI assistant to build codemods
+					Sign in to use AI assistant to build codemod
 				</p>
 				<Button
 					onClick={signUserIn}
