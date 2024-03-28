@@ -40,17 +40,21 @@
 		},
 		{
 			"group": "Building Codemods",
-			"pages": ["codemod-studio/quickstart"]
+			"pages": [
+				"building-codemods/getting-started",
+				"building-codemods/configuration",
+				"building-codemods/codemod-studio"
+			]
 		},
 		{
 			"group": "Codemod Registry",
 			"pages": [
-				"codemod-registry/publishing-codemods",
-				"codemod-registry/introduction"
+				"codemod-registry/introduction",
+				"codemod-registry/publishing-codemods"
 			]
 		},
 		{
-			"group": "Deploying Codemods",
+			"group": "Running codemods",
 			"pages": [
 				"deploying-codemods/introduction",
 				"deploying-codemods/cli",

@@ -26,15 +26,9 @@ Publishing codemods to the registry is especially useful for framework/library b
 
 ---
 
-<Tip>
-Before publishing your codemod, make sure that your codemod conforms to [the structure required by the Codemod platform](https://github.com/codemod-com/codemod/blob/main/packages/codemods/pull_request_template.md).
-
-The easiest way to do this is by placing your codemod in [Codemod Studio](https://codemod.studio) and then clicking "Export Locally" to download a registry-compatible local codemod.
-</Tip>
-
 ## Publish with Codemod CLI
 
-You can use Codemod CLI to publish a local codemod to the codemod registry.
+Once you have your [codemod-compatible package](/building-codemods/introduction) ready, you can use Codemod CLI to publish a local codemod to the codemod registry.
 
 <Steps>
   <Step title="Login to the Codemod platform">
@@ -48,15 +42,19 @@ You can use Codemod CLI to publish a local codemod to the codemod registry.
   </Step>
 
   <Step title="Build your local project">
-  If you local project is not already built, you can build it using codemod CLI:
+  If your local project is not already built, you can build it using codemod CLI:
 
   ```bash
   codemod build
   ```
 
-  <Tip>
-  To build the codemod using codemod CLI, global installation of `esbuild` package is required. You can install it using package manager of choice. For example, using `npm`:
+  <Note>
+  This will build a JavaScript project using `esbuild` and create a `dist` directory in your project root. If your codemod is not using a JavaScript engine, you can skip this step.
+  </Note>
 
+  <Tip>
+  To build the codemod using codemod CLI, global installation of `esbuild` package is required.
+  You can install it using package manager of choice. For example, using `npm`:
   ```bash
   npm install -g esbuild
   ```

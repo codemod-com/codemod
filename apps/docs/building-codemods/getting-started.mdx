@@ -1,0 +1,54 @@
+---
+title: 'Getting started'
+description: 'Start building codemods using the Codemod platform.'
+icon: 'book-open-cover'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/deploying-codemods/hero-light.svg"
+  alt="Deploying Codemods hero banner"
+/>
+
+<img
+  className="hidden dark:block"
+  src="/images/deploying-codemods/hero-dark.svg"
+  alt="Deploying codemods hero banner"
+/>
+
+Codemod platform allows users to build codemods of various complexity and make them all available in a single place.
+To execute this idea properly, we must introduce a solid structure for compatible codemod packages and a way to share them with the community.
+
+First, one must understand [the structure of a codemod package](/building-codemods/configuration) and how to build one.
+To make this process easier, we provide two easy ways of scaffolding a new codemod package and start developing right away.
+
+### 1. Initialize using CLI
+
+You can quickly create a codemod package using the Codemod CLI and start developing with tools already known by the community.
+
+To do so, run the following command:
+
+```bash
+codemod init
+```
+
+You'll be prompted to answer a few questions about your codemod package, and the CLI will scaffold the project for you.
+
+<Tip>
+You can use the `-y` flag to skip the questions and use the default values.
+</Tip>
+
+### 2. Use Codemod Studio
+
+[Codemod Studio](/building-codemods/codemod-studio) is a web-based tool that allows you to create a new codemod package with the power of AI.
+You can describe your before and after code examples, and Codemod Studio will generate the codemod for you.
+
+You can then download the codemod package using `Export locally` button and start developing right away.
+
+<Tip>
+If you're using Codemod Visual Studio Code extension, you can import the studio-generated codemod package directly into your workspace.
+</Tip>
+
+<Card title="Learn about configuring codemods ->" icon="rectangle-history" href="/building-codemods/configuration">
+  Configure your codemods now.
+</Card>

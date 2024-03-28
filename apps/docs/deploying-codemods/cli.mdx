@@ -30,23 +30,19 @@ npm i -g codemod
 
 ## List available codemods
 
-The `list` command can be used to list all codemods available in the Codemod Registry. This command uses the following format:
+The `list` command can be used to list the codemods available in the Codemod Registry and optionally search for a specific codemod by its name or tags.
 
 ```bash
-codemod list
+codemod ls [search query]
 ```
 
-## Search for codemods
-
-The `search` command can be used to search for a codemods available in the Codemod Registry. This command uses the following format:
-
-```bash
-codemod search
-```
+<Note>
+  The `list` command has aliases `ls`, and `search` which can be used similarly.
+</Note>
 
 ## Running codemods
 
-You can use the `codemod` command to run codemods. The `codemod` command uses the following format:
+By default, when specifying a codemod name (any name that is not reserved by a command, such as `search`), the CLI will attempt to run this codemod.
 
 ```bash
 codemod [codemod name]
@@ -80,93 +76,107 @@ codemod [codemod name]
 
 The following options can be used to change the default behavior of the Codemod CLI.
 
-<ResponseField name="--include" type="glob pattern" default="**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx}">
-  Can be used to specify the files to be targeted by the codemod.
+<ResponseField name="--include (-i)" type="glob pattern" default="Defined by the codemod engine">
+  Can be used to override the files to be targeted by the codemod.
 
 ```bash
-codemod [codemod name] --include "[glob pattern]"
+codemod [codemod name] -i "[glob pattern]"
 ```
 
 </ResponseField>
 
-<ResponseField name="--exclude" type="glob pattern" default="**/node_modules/**/*.*">
+<ResponseField name="--exclude (-e)" type="glob pattern" default="**/node_modules/**/*.*">
   While running a codemod, you may want to prevent changes from occurring to specific parts of your project. The `--exclude` option can be used to specify a glob pattern of the files to be ignored by the codemod.
 
 ```bash
-codemod [codemod name] --exclude "[glob pattern]"
+codemod [codemod name] -e "[glob pattern]"
 ```
 
 </ResponseField>
 
-<ResponseField name="--target" type="string">
+<ResponseField name="--target (-t)" type="string">
   Can be used to specify the directory of your project that the CLI should target while running codemods. This option is set as the current directory by default.
 
 ```bash
-codemod [codemod name] --target [path]
+codemod [codemod name] -t [path]
 ```
 
 </ResponseField>
 
-<ResponseField name="--source" type="string">
+<ResponseField name="--source (-s)" type="string">
   Can be used to specify the path to the codemod package folder stored locally that you want to run using the Codemod CLI.
 
 ```bash
-codemod --source [path] --engine [codemod engine]
+codemod -s [path]
 ```
 
-  <Note> Running local codemods requires specifying the codemod engine your codemod uses. You can do this by using the `--engine` option.</Note>
+  <Note>
+  By default, codemod engine gets that was used to build a codemod is defined using `.codemodrc.json`
+  file in a codemod package directory. However, if you attempt to run a local codemod using just a file
+  with exported transform function, you would need to specify the codemod engine your codemod uses.
+  You can do so by using the `--engine` option.
+  See example below:
+
+  ```bash
+    codemod --source [path] --engine jscodeshift
+  ```
+  </Note>
 </ResponseField>
 
-<ResponseField name="--engine" type="string">
-  Can be used to specify the codemod engine that will be used while running the codemod.
-  
-  Can be one of: `jscodeshift`, `ts-morph`, and `filemod`.
-
-  <Note>This option is used when running a local codemod using the `--source` option.</Note>
-</ResponseField>
-
-<ResponseField name="--raw" type="boolean" default="false">
+<ResponseField name="--raw (-r)" type="boolean" default="false">
   Can be used to disable prettier formatting to the files affected by the codemod.
 
 ```bash
-codemod [codemod name] --raw [true/false]
+codemod [codemod name] --raw
 ```
 
 </ResponseField>
 
 <ResponseField name="--no-cache" type="boolean" default="false">
-  Can be used to enable/disable caching downloaded codemod files.
+  Can be used to disable caching downloaded codemod files.
 
 ```bash
-codemod [codemod name] --no-cache [true/false]
+codemod [codemod name] --no-cache
 ```
 
   <Tip>Disabling cache can ensure you are getting the freshest results. While keeping the cache enabled can help you save bandwidth and time for repetitive use of the same codemods.</Tip>
 </ResponseField>
 
-<ResponseField name="--json" type="boolean" default="false">
+<ResponseField name="--skip-install" type="boolean" default="false">
+  Can be used to disable dependencies installation after codemod run.
+
+```bash
+codemod [codemod name] --skip-install
+```
+
+  <Tip>Some codemods can have optional `deps` configuration field in `.codemodrc.json`.
+  This field might include dependencies that this codemod suggests to remove/add.
+  This option is provided so that codemod users can disable that behavior and handle dependency upgrades manually.</Tip>
+</ResponseField>
+
+<ResponseField name="--json (-j)" type="boolean" default="false">
   Can be used to switch the CLI responses to JSON format.
 
 ```bash
-codemod [codemod name] --json [true/false]
+codemod [codemod name] --json
 ```
 
 </ResponseField>
 
-<ResponseField name="--threads" type="number" default="4">
+<ResponseField name="--threads (-n)" type="number" default="4">
   Can be used to specify the number of worker threads the CLI uses while running codemods.
 
 ```bash
-codemod [codemod name] --threads [number of threads]
+codemod [codemod name] -n [number of threads]
 ```
 
 </ResponseField>
 
-<ResponseField name="--dry" type="boolean" default="false">
+<ResponseField name="--dry (-d)" type="boolean" default="false">
   Can be used to switch to dry run mode. Dry running codemods helps you see the changes the codemod will make without affecting the project files.
 
 ```bash
-codemod [codemod name] --dry [true/false]
+codemod [codemod name] --dry
 ```
 
 </ResponseField>
@@ -198,19 +208,11 @@ codemod --version
 
 </ResponseField>
 
-## Syncing regisry
-
-The `sync` command can be used to sync local codemods with the [Codemod Registry](/codemod-registry/introduction). This command uses the following format:
-
-```bash
-codemod sync
-```
-
 ## Generate codemod from file diff
 
 The `learn` command can be used to send the diff of the latest edited file to Codemod Studio and have it automatically build an explainable and debuggable codemod.
 
-After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in [Codemod Studio](/codemod-studio/quickstart). This command uses the following format:
+After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in [Codemod Studio](/codemod-studio/quickstart).
 
 ```bash
 codemod learn
@@ -228,7 +230,7 @@ codemod learn
 
 ## Login to Codemod platform
 
-The `login` command can be used to login to the Codemod platform. This command uses the following format:
+The `login` command can be used to login to the Codemod platform.
 
 ```bash
 codemod login
@@ -236,18 +238,34 @@ codemod login
 
 ## Logout from Codemod platform
 
-The `logout` command can be used to logout from the Codemod platform. This command uses the following format:
+The `logout` command can be used to logout from the Codemod platform.
 
 ```bash
 codemod logout
 ```
 
-## Publishing codemods
+## Creating a codemod package
 
-The `publish` command can be used to publish a codemod to the Codemod Registry. Publishing codemods requires [logging in](#login-to-codemod-platform) to the Codemod platform. This command uses the following format:
+The `init` command can be used to scaffold a new codemod package.
 
 ```bash
-codemod list
+codemod init
+```
+
+## Building a codemod package
+
+The `build` command can be used to build a JavaScript codemod package. If you are using any of the supported JavaScript codemod engines, you can use the CLI to build the main executable file.
+
+```bash
+codemod build
+```
+
+## Publishing codemods
+
+The `publish` command can be used to publish a codemod to the Codemod Registry. Publishing codemods requires [logging in](#login-to-codemod-platform) to the Codemod platform.
+
+```bash
+codemod publish
 ```
 
 More on publishing codemods [here ->](/codemod-registry/publishing-codemods)
