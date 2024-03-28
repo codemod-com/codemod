@@ -12,7 +12,11 @@ import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
 import { FileSystem, Uri, commands, window, workspace } from "vscode";
 import { Case } from "../cases/types";
-import { CodemodEntry, CodemodNames } from "../codemods/types";
+import {
+	CodemodEntry,
+	CodemodListResponse,
+	codemodListResponseCodec,
+} from "../codemods/types";
 import { Configuration } from "../configuration";
 import { Container } from "../container";
 import { Store } from "../data";
@@ -200,14 +204,28 @@ const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
 // const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
 // const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
-export const getCodemodList = async (): Promise<CodemodNames["codemods"]> => {
+export const getCodemodList = async (): Promise<CodemodListResponse> => {
 	const url = new URL("https://backend.codemod.com/codemods/list");
 
-	const res = await axios.get<CodemodNames["codemods"]>(url.toString(), {
+	const res = await axios.get<CodemodListResponse>(url.toString(), {
 		timeout: 10000,
 	});
 
 	return res.data;
+};
+
+const buildCodemodEntry = (
+	codemod: CodemodListResponse[number],
+): CodemodEntry => {
+	const hashDigest = createHash("ripemd160")
+		.update(codemod.name)
+		.digest("base64url");
+
+	return {
+		...codemod,
+		kind: "codemod" as const,
+		hashDigest,
+	};
 };
 
 export class EngineService {
@@ -308,57 +326,18 @@ export class EngineService {
 		return result.length !== 0;
 	}
 
-	public async __getCodemodNames(): Promise<ReadonlyArray<string>> {
-		// const childProcess = exec(
-		// 	`${CODEMOD_ENGINE_NODE_COMMAND} list --json`,
-		// );
-
-		// if(childProcess.stdout === null) {
-		// 	return [];
-		// }
-
-		try {
-			// const codemodListString = await streamToString(childProcess.stdout);
-			// console.log(codemodListString)
-			// const codemodListOrError = codemodNamesCodec.decode(
-			// 	JSON.parse(codemodListString),
-			// );
-
-			// console.log(codemodListOrError)
-
-			// if (codemodListOrError._tag === "Left") {
-			// 	const report = prettyReporter.report(codemodListOrError);
-			// 	console.log(report, '????')
-			// 	throw new InvalidEngineResponseFormatError(report.join("\n"));
-			// }
-			const codemods = await getCodemodList();
-			return codemods.map((codemod) => codemod.name);
-		} catch (e) {
-			if (e instanceof InvalidEngineResponseFormatError) {
-				throw e;
-			}
-
-			throw new UnableToParseEngineResponseError(
-				"Unable to parse engine output",
-			);
-		}
-	}
-
 	private async __fetchCodemods(): Promise<void> {
 		try {
-			const names = await this.__getCodemodNames();
+			const codemods = await getCodemodList();
 
-			const codemodEntries: CodemodEntry[] = [];
-			for (const name of names) {
-				const hashDigest = createHash("ripemd160")
-					.update(name)
-					.digest("base64url");
-				codemodEntries.push({
-					kind: "codemod",
-					hashDigest,
-					name,
-				});
+			const codemodListOrError = codemodListResponseCodec.decode(codemods);
+
+			if (codemodListOrError._tag === "Left") {
+				const report = prettyReporter.report(codemodListOrError);
+				throw new InvalidEngineResponseFormatError(report.join("\n"));
 			}
+
+			const codemodEntries = codemodListOrError.right.map(buildCodemodEntry);
 
 			this.__store.dispatch(actions.setCodemods(codemodEntries));
 		} catch (e) {
