@@ -156,7 +156,7 @@ export const DiffEditorWrapper = ({
 		)}
 	>
 		<div className="relative flex h-full w-full flex-col">
-			{warnings}
+			<div className="w-[50%]">{warnings}</div>
 			<MonacoDiffEditor
 				renderSideBySide={type === "after"}
 				originalModelPath="original.tsx"
