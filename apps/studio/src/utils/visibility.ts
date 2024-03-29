@@ -17,5 +17,7 @@ export const isVisible = (
 			  : true;
 export const alwaysVisible: VisibilityOptions = {
 	isVisible: true,
+	show: () => {},
+	hide: () => {},
 	toggleVisibility: () => true,
 };
