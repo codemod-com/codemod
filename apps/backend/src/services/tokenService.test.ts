@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { buildDataAccessLayer } from "../db/dataAccessLayer.js";
+import { prisma } from "../db/prisma.js";
 import {
 	TokenNotFoundError,
 	TokenRevokedError,
@@ -7,8 +7,6 @@ import {
 } from "./tokenService.js";
 
 describe("TokenService", async () => {
-	const dataAccessLayer = await buildDataAccessLayer();
-
 	const encryptionKey = Buffer.from(
 		Array.from({ length: 32 }).map((_, i) => i),
 	).toString("base64url");
@@ -22,7 +20,7 @@ describe("TokenService", async () => {
 	).toString("base64url");
 
 	const tokenService = new TokenService(
-		dataAccessLayer,
+		prisma,
 		encryptionKey,
 		signatureKey,
 		pepper,

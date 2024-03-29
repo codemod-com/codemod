@@ -13,7 +13,7 @@ export const validationHandler: CustomHandler<{
 
 	const userId = await tokenService.findUserIdMetadataFromToken(
 		accessToken,
-		Date.now(),
+		BigInt(Date.now()),
 		ALL_CLAIMS,
 	);
 

@@ -2,14 +2,15 @@ import "dotenv/config";
 
 import { OutgoingHttpHeaders } from "node:http";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { Codemod, CodemodVersion, Prisma } from "@prisma/client";
 import { OpenAIStream } from "ai";
-import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
-import Fuse from "fuse.js";
+import Fastify, {
+	FastifyPluginCallback,
+	FastifyRequest,
+	RouteHandlerMethod,
+} from "fastify";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -19,20 +20,18 @@ import {
 	ForbiddenError,
 	UnauthorizedError,
 } from "./customHandler.js";
-import { buildDataAccessLayer } from "./db/dataAccessLayer.js";
 import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
+import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
+import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
+import { getCodemodsFiltersHandler } from "./handlers/getCodemodsFiltersHandler.js";
+import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
-import { parseEnvironment } from "./schemata/env.js";
-import {
-	parseGetCodemodBySlugParams,
-	parseGetCodemodLatestVersionQuery,
-	parseGetCodemodsQuery,
-	parseListCodemodsQuery,
-} from "./schemata/query.js";
+
+import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
@@ -43,6 +42,10 @@ import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
 import { SourceControl } from "./services/SourceControl.js";
 import {
+	CodemodNotFoundError,
+	CodemodService,
+} from "./services/codemodService.js";
+import {
 	CLAIM_ISSUE_CREATION,
 	TokenExpiredError,
 	TokenInsufficientClaimsError,
@@ -51,7 +54,7 @@ import {
 	TokenRevokedError,
 	TokenService,
 } from "./services/tokenService.js";
-import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
+import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
 
 const getSourceControlProvider = (
 	provider: "github",
@@ -65,11 +68,10 @@ const getSourceControlProvider = (
 	}
 };
 
-export const environment = parseEnvironment(process.env);
-
 const X_CODEMOD_ACCESS_TOKEN = (
 	environment.X_CODEMOD_ACCESS_TOKEN ?? ""
 ).toLocaleLowerCase();
+
 const X_INTUITA_ACCESS_TOKEN = (
 	environment.X_INTUITA_ACCESS_TOKEN ?? ""
 ).toLocaleLowerCase();
@@ -96,14 +98,17 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 		console.error(error);
 		handleProcessExit(1);
 	});
+
 	process.on("unhandledRejection", (reason) => {
 		console.error(reason);
 		handleProcessExit(1);
 	});
+
 	process.on("SIGTERM", (signal) => {
 		console.log(signal);
 		handleProcessExit(0);
 	});
+
 	process.on("SIGINT", (signal) => {
 		console.log(signal);
 		handleProcessExit(0);
@@ -158,8 +163,6 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	return fastify;
 };
 
-const dataAccessLayer = await buildDataAccessLayer();
-
 const { ChatGPTAPI } = await import("chatgpt");
 
 const chromaService = await buildSafeChromaService(environment);
@@ -189,11 +192,13 @@ const openAiEdgeApi =
 		: null;
 
 const tokenService = new TokenService(
-	dataAccessLayer,
+	prisma,
 	environment.ENCRYPTION_KEY ?? "",
 	environment.SIGNATURE_PRIVATE_KEY ?? "",
 	environment.PEPPER ?? "",
 );
+
+const codemodService = new CodemodService(prisma);
 
 const clerkClient = areClerkKeysSet(environment)
 	? createClerkClient({
@@ -233,14 +238,18 @@ const wrapRequestHandlerMethod =
 
 		const now = () => Date.now();
 
+		const getRequest = (): FastifyRequest => request;
+
 		try {
 			const data = await handler({
 				tokenService,
+				codemodService,
 				getAccessTokenOrThrow,
 				setAccessToken,
 				clerkClient,
 				getClerkUserId,
 				now,
+				getRequest,
 			});
 
 			reply.type("application/json").code(200);
@@ -261,22 +270,32 @@ const wrapRequestHandlerMethod =
 					error: "Token revoked",
 				};
 			}
+
 			if (error instanceof TokenNotFoundError) {
 				reply.type("application/json").code(400);
 				return {
 					error: "Token not found",
 				};
 			}
+
 			if (error instanceof TokenInsufficientClaimsError) {
 				reply.type("application/json").code(400);
 				return {
 					error: "Token has insufficient claims",
 				};
 			}
+
 			if (error instanceof TokenNotVerifiedError) {
 				reply.type("application/json").code(400);
 				return {
 					error: "Token not verified",
+				};
+			}
+
+			if (error instanceof CodemodNotFoundError) {
+				reply.type("application/json").code(400);
+				return {
+					error: "Codemod not found",
 				};
 			}
 
@@ -310,322 +329,25 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return { version: packageJson.default.version };
 	});
 
-	instance.get("/codemods", async (request, reply) => {
-		const query = parseGetCodemodsQuery(request.query);
-
-		const search = query.search;
-
-		const categories = [];
-		if (!Array.isArray(query.category)) {
-			if (isNeitherNullNorUndefined(query.category)) {
-				categories.push(query.category);
-			}
-		} else {
-			categories.push(...query.category.filter(isNeitherNullNorUndefined));
-		}
-
-		const authors = [];
-		if (!Array.isArray(query.author)) {
-			if (isNeitherNullNorUndefined(query.author)) {
-				authors.push(query.author);
-			}
-		} else {
-			authors.push(...query.author.filter(isNeitherNullNorUndefined));
-		}
-
-		const frameworks = [];
-		if (!Array.isArray(query.framework)) {
-			if (isNeitherNullNorUndefined(query.framework)) {
-				frameworks.push(query.framework);
-			}
-		} else {
-			frameworks.push(...query.framework.filter(isNeitherNullNorUndefined));
-		}
-
-		const verified = query.verified;
-		const page = query.page || 1;
-		const size = query.size || 10;
-		const skip = (page - 1) * size;
-
-		const filterClauses: Prisma.CodemodWhereInput["AND"] = [];
-
-		if (search) {
-			filterClauses.push({
-				OR: [
-					{
-						name: {
-							contains: search,
-							mode: "insensitive" as Prisma.QueryMode,
-						},
-					},
-					{
-						shortDescription: {
-							contains: search,
-							mode: "insensitive" as Prisma.QueryMode,
-						},
-					},
-					{ tags: { has: search } },
-				],
-			});
-		}
-
-		if (categories.length) {
-			filterClauses.push({ useCaseCategory: { in: categories } });
-		}
-
-		if (authors.length) {
-			filterClauses.push({ author: { in: authors } });
-		}
-
-		if (frameworks.length) {
-			const frameworkTags = await prisma.tag.findMany({
-				where: {
-					classification: "framework",
-					aliases: { hasSome: frameworks },
-				},
-			});
-
-			const frameworkAliases = frameworkTags.reduce((acc: string[], curr) => {
-				acc.push(...curr.aliases);
-				return acc;
-			}, []);
-
-			filterClauses.push({ tags: { hasSome: frameworkAliases } });
-		}
-
-		if (isNeitherNullNorUndefined(verified)) {
-			filterClauses.push({ verified });
-		}
-
-		const whereClause: Prisma.CodemodWhereInput = {
-			AND: filterClauses,
-		};
-
-		const [codemods, total] = await Promise.all([
-			prisma.codemod.findMany({
-				where: whereClause,
-				orderBy: {
-					updatedAt: "desc",
-				},
-				skip,
-				take: size,
-				include: {
-					versions: {
-						orderBy: {
-							createdAt: "desc",
-						},
-						take: 1,
-					},
-				},
-			}),
-			prisma.codemod.count({ where: whereClause }),
-		]);
-
-		reply.type("application/json").code(200);
-		return { total, data: codemods, page, size };
-	});
-
-	instance.get("/codemods/filters", async (_, reply) => {
-		const [frameworks, groupedUseCases, groupedOwners] = await Promise.all([
-			prisma.tag.findMany({
-				where: {
-					classification: "framework",
-				},
-			}),
-			prisma.codemod.groupBy({
-				by: ["useCaseCategory"],
-				_count: {
-					_all: true,
-				},
-				where: {
-					useCaseCategory: {
-						not: null,
-					},
-				},
-			}),
-			prisma.codemod.groupBy({
-				by: ["author"],
-				_count: {
-					_all: true,
-				},
-			}),
-		]);
-
-		const useCaseFilters = groupedUseCases.map(
-			({ useCaseCategory, _count }) => ({
-				name: useCaseCategory,
-				count: _count._all,
-			}),
-		);
-
-		const ownerFilters = groupedOwners.map(({ author, _count }) => ({
-			name: author,
-			count: _count._all,
-		}));
-
-		const frameworkFilters = await Promise.all(
-			frameworks.map(async (framework) => {
-				const count = await prisma.codemod.count({
-					where: {
-						tags: {
-							hasSome: framework.aliases,
-						},
-					},
-				});
-				return {
-					name: framework.displayName,
-					count,
-				};
-			}),
-		);
-
-		reply.type("application/json").code(200);
-		return { useCaseFilters, ownerFilters, frameworkFilters };
-	});
-
-	instance.get("/codemods/:slug", async (request, reply) => {
-		const { slug } = parseGetCodemodBySlugParams(request.params);
-
-		const codemod = await prisma.codemod.findFirst({
-			where: {
-				slug,
-			},
-			include: {
-				versions: true,
-			},
-		});
-
-		if (!codemod) {
-			reply.status(404).send({ message: "Codemod not found" });
-			return;
-		}
-
-		reply.type("application/json").code(200);
-		return codemod;
-	});
-
-	instance.get("/codemods/downloadLink", async (request, reply) => {
-		const { name } = parseGetCodemodLatestVersionQuery(request.query);
-
-		const codemod = await prisma.codemod.findFirst({
-			where: {
-				name,
-			},
-			include: {
-				versions: {
-					orderBy: {
-						createdAt: "desc",
-					},
-					take: 1,
-				},
-			},
-		});
-
-		const downloadLink = codemod?.versions[0]?.bucketLink;
-
-		if (!downloadLink) {
-			reply.status(404).send({ message: "Codemod not found" });
-			return;
-		}
-
-		reply.type("application/json").code(200);
-		return { link: downloadLink };
-	});
-
-	type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
-		Pick<CodemodVersion, "engine">;
+	instance.get("/codemods", wrapRequestHandlerMethod(getCodemodsHandler));
 
 	instance.get(
+		"/codemods/filters",
+		wrapRequestHandlerMethod(getCodemodsFiltersHandler),
+	);
+
+	instance.get(
+		"/codemods/:slug",
+		wrapRequestHandlerMethod(getCodemodBySlugHandler),
+	);
+
+	instance.get(
+		"/codemods/downloadLink",
+		wrapRequestHandlerMethod(getCodemodDownloadLink),
+	);
+	instance.get(
 		"/codemods/list",
-		async (request, reply): Promise<ShortCodemodInfo[]> => {
-			const accessToken = getCustomAccessToken(environment, request.headers);
-
-			let codemodData: ShortCodemodInfo[];
-
-			if (isNeitherNullNorUndefined(accessToken)) {
-				const _userId = await tokenService.findUserIdMetadataFromToken(
-					accessToken,
-					BigInt(Date.now()),
-					CLAIM_ISSUE_CREATION,
-				);
-
-				// TODO: custom logic based on user auth
-				const dbCodemods = await prisma.codemod.findMany();
-
-				const codemods = await Promise.all(
-					dbCodemods.map(async (codemod) => {
-						const latestVersion = await prisma.codemodVersion.findFirst({
-							where: {
-								codemodId: codemod.id,
-							},
-							orderBy: {
-								createdAt: "desc",
-							},
-						});
-
-						if (!latestVersion) {
-							return null;
-						}
-
-						return {
-							name: codemod.name,
-							engine: latestVersion?.engine,
-							author: codemod.author,
-							tags: latestVersion.tags,
-							verified: codemod.verified,
-							arguments: codemod.arguments,
-						};
-					}),
-				);
-
-				codemodData = codemods.filter(Boolean);
-			} else {
-				const dbCodemods = await prisma.codemod.findMany();
-
-				const codemods = await Promise.all(
-					dbCodemods.map(async (codemod) => {
-						const latestVersion = await prisma.codemodVersion.findFirst({
-							where: {
-								codemodId: codemod.id,
-							},
-							orderBy: {
-								createdAt: "desc",
-							},
-						});
-
-						if (!latestVersion) {
-							return null;
-						}
-
-						return {
-							name: codemod.name,
-							engine: latestVersion?.engine,
-							author: codemod.author,
-							tags: latestVersion.tags,
-							verified: codemod.verified,
-							arguments: codemod.arguments,
-						};
-					}),
-				);
-
-				codemodData = codemods.filter(Boolean);
-			}
-
-			const query = parseListCodemodsQuery(request.query);
-
-			if (query.search) {
-				const fuse = new Fuse(codemodData, {
-					keys: ["name", "tags"],
-					isCaseSensitive: false,
-					threshold: 0.35,
-				});
-
-				codemodData = fuse.search(query.search).map((res) => res.item);
-			}
-
-			reply.type("application/json").code(200);
-			return codemodData;
-		},
+		wrapRequestHandlerMethod(getCodemodsListHandler),
 	);
 
 	instance.post(
