@@ -1,4 +1,9 @@
 import { spawnSync } from "node:child_process";
+import { existsSync } from "node:fs";
+import { readFile, unlink } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
 	str.startsWith('"') && str.endsWith('"') ? str : `"${str}"`;
@@ -34,4 +39,26 @@ export const COLOR_MAP = {
 	red: "\x1b[31m",
 	green: "\x1b[32m",
 	orange: "\x1b[33m",
+};
+
+export const getCurrentUser = async (): Promise<string | null> => {
+	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
+	if (!existsSync(tokenTxtPath)) {
+		return null;
+	}
+
+	const content = await readFile(tokenTxtPath, {
+		encoding: "utf-8",
+	});
+
+	let username: string | null = null;
+	try {
+		const response = await validateAccessToken(content);
+		username = response.username;
+	} catch (error) {
+		await unlink(tokenTxtPath);
+		return null;
+	}
+
+	return username;
 };

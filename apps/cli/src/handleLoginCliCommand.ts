@@ -1,10 +1,8 @@
-import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, openURL } from "./utils.js";
+import { boldText, colorizeText, getCurrentUser, openURL } from "./utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
@@ -30,18 +28,9 @@ export const handleLoginCliCommand = async (
 ) => {
 	const codemodDirectoryPath = join(homedir(), ".codemod");
 
+	const username = await getCurrentUser();
+
 	if (token === null) {
-		const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
-		if (!existsSync(tokenTxtPath)) {
-			routeUserToStudioForLogin(printer);
-			return;
-		}
-
-		const content = await readFile(tokenTxtPath, {
-			encoding: "utf-8",
-		});
-		const { username } = await validateAccessToken(content);
-
 		if (username === null) {
 			routeUserToStudioForLogin(printer);
 			return;
@@ -53,8 +42,6 @@ export const handleLoginCliCommand = async (
 		);
 		return;
 	}
-
-	const { username } = await validateAccessToken(token);
 
 	if (username === null) {
 		throw new Error(

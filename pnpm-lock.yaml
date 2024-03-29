@@ -391,6 +391,9 @@ importers:
       '@clerk/themes':
         specifier: 1.7.10
         version: 1.7.10(react@18.2.0)
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@effect/schema':
         specifier: ^0.33.0
         version: 0.33.2(@effect/data@0.17.6)(@effect/io@0.38.2)
@@ -4365,9 +4368,15 @@ importers:
       bl:
         specifier: ^6.0.11
         version: 6.0.11
+      change-case:
+        specifier: ^5.2.0
+        version: 5.4.3
       fast-glob:
         specifier: 3.3.2
         version: 3.3.2
+      js-beautify:
+        specifier: ^1.14.11
+        version: 1.14.11
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.23.9)
@@ -4384,6 +4393,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.5.3
         version: 1.5.3
+      '@types/js-beautify':
+        specifier: ^1.14.3
+        version: 1.14.3
       '@types/jscodeshift':
         specifier: ^0.11.11
         version: 0.11.11

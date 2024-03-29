@@ -119,7 +119,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		if (
 			config.engine === "jscodeshift" ||
-			config.engine === "repomod-engine" ||
 			config.engine === "filemod" ||
 			config.engine === "ts-morph"
 		) {

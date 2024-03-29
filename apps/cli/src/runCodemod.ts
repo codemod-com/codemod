@@ -62,10 +62,7 @@ export const buildPatterns = async (
 	}
 
 	if (!patterns) {
-		if (
-			(codemod.engine === "repomod-engine" || codemod.engine === "filemod") &&
-			filemod !== null
-		) {
+		if (codemod.engine === "filemod" && filemod !== null) {
 			patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
 		} else if (
 			codemod.engine === "jscodeshift" ||

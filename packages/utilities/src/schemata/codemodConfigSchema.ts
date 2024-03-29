@@ -128,7 +128,6 @@ const getLibraryVersionTupleValidator = (msg: string) =>
 
 const knownEngines = [
 	literal("jscodeshift"),
-	literal("repomod-engine"),
 	literal("filemod"),
 	literal("ts-morph"),
 	literal("ast-grep"),
