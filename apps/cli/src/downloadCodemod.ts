@@ -12,7 +12,7 @@ import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	download(name: string): Promise<Codemod & { source: "registry" }>;
+	download(name: string): Promise<Codemod & { source: "package" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -26,7 +26,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async download(
 		name: string,
-	): Promise<Codemod & { source: "registry" }> {
+	): Promise<Codemod & { source: "package" }> {
 		this.__printer.printConsoleMessage(
 			"info",
 			colorizeText(
@@ -84,7 +84,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 				const yamlPath = join(directoryPath, "rule.yaml");
 
 				return {
-					source: "registry",
+					source: "package",
 					name,
 					engine: config.engine,
 					include: config.include,
@@ -108,7 +108,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			const rulesPath = join(directoryPath, "rules.toml");
 
 			return {
-				source: "registry",
+				source: "package",
 				name,
 				engine: config.engine,
 				include: config.include,
@@ -126,7 +126,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			const indexPath = join(directoryPath, "index.cjs");
 
 			return {
-				source: "registry",
+				source: "package",
 				name,
 				engine: config.engine,
 				include: config.include,
@@ -145,7 +145,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			}
 
 			return {
-				source: "registry",
+				source: "package",
 				name,
 				engine: config.engine,
 				include: config.include,

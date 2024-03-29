@@ -38,6 +38,7 @@ describe("Runner", () => {
 
 		const ifs = createFsFromVolume(volume);
 		const printer: PrinterBlueprint = {
+			__jsonOutput: false,
 			printMessage: () => {},
 			printOperationMessage: () => {},
 			printConsoleMessage: () => {},
@@ -46,7 +47,7 @@ describe("Runner", () => {
 		const codemodDownloader: CodemodDownloaderBlueprint = {
 			download: async (name: string) => {
 				return {
-					source: "registry",
+					source: "package",
 					name,
 					engine: "jscodeshift",
 					indexPath: `/codemods/${name}/index.ts`,
@@ -71,7 +72,7 @@ describe("Runner", () => {
 			Promise.resolve<RepositoryConfiguration>({
 				preCommitCodemods: [
 					{
-						source: "registry",
+						source: "package",
 						name: "d",
 						arguments: {
 							argA: 1,
@@ -79,7 +80,7 @@ describe("Runner", () => {
 						},
 					},
 					{
-						source: "registry",
+						source: "package",
 						name: "e",
 						arguments: {
 							argA: 3,
@@ -103,6 +104,8 @@ describe("Runner", () => {
 			noCache: false,
 			json: true,
 			threads: 1,
+			skipInstall: false,
+			"skip-install": false,
 		};
 
 		const currentWorkingDirectory = "/";

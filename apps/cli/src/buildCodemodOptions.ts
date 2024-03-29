@@ -76,7 +76,7 @@ const extractMainScriptPath = async (
 export const buildSourcedCodemodOptions = async (
 	fs: IFs,
 	codemodOptions: CodemodSettings & { kind: "runSourced" },
-): Promise<Codemod & { source: "fileSystem" }> => {
+): Promise<Codemod> => {
 	const isDirectorySource = await fs.promises
 		.lstat(codemodOptions.source)
 		.then((pathStat) => pathStat.isDirectory());
@@ -87,7 +87,7 @@ export const buildSourcedCodemodOptions = async (
 		}
 
 		return {
-			source: "fileSystem" as const,
+			source: "standalone",
 			engine: codemodOptions.codemodEngine,
 			indexPath: codemodOptions.source,
 		};
@@ -124,8 +124,11 @@ export const buildSourcedCodemodOptions = async (
 	}
 
 	return {
-		source: "fileSystem" as const,
+		source: "package",
 		engine,
+		name: codemodConfig.name,
 		indexPath: mainScriptPath,
+		arguments: codemodConfig.arguments,
+		directoryPath: codemodOptions.source,
 	};
 };
