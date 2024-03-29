@@ -23,6 +23,7 @@ import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { handleLoginCliCommand } from "./handleLoginCliCommand.js";
 import { handleLogoutCliCommand } from "./handleLogoutCliCommand.js";
 import { handlePublishCliCommand } from "./handlePublishCliCommand.js";
+import { handleWhoAmICommand } from "./handleWhoAmICommand";
 import { Printer } from "./printer.js";
 import { loadRepositoryConfiguration } from "./repositoryConfiguration.js";
 import { Runner } from "./runner.js";
@@ -60,13 +61,14 @@ export const executeMainThread = async () => {
 		.command(
 			"login",
 			"logs in through authentication in the Codemod Studio",
-			(y) =>
-				buildUseJsonOption(y).option("token", {
-					type: "string",
-					description: "token required to sign in to the Codemod CLI",
-				}),
+			(y) => buildUseJsonOption(y),
 		)
 		.command("logout", "logs out", (y) => buildUseJsonOption(y))
+		.command(
+			"whoami",
+			"prints the user data of currently logged in user",
+			(y) => buildUseJsonOption(y),
+		)
 		.command(
 			"build",
 			"build the JavaScript engine codemod (requires global esbuild installation)",
@@ -209,6 +211,25 @@ export const executeMainThread = async () => {
 
 		try {
 			await handleLearnCliCommand(printer, target);
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
+
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
+			});
+		}
+
+		exit();
+
+		return;
+	}
+
+	if (String(argv._) === "whoami") {
+		try {
+			await handleWhoAmICommand(printer);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;

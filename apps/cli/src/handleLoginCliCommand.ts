@@ -1,6 +1,9 @@
-import { mkdir, writeFile } from "node:fs/promises";
+import { existsSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { backOff } from "exponential-backoff";
+import { validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText, getCurrentUser, openURL } from "./utils.js";
 
@@ -28,35 +31,50 @@ export const handleLoginCliCommand = async (
 ) => {
 	const codemodDirectoryPath = join(homedir(), ".codemod");
 
-	const username = await getCurrentUser();
-
-	if (token === null) {
-		if (username === null) {
-			routeUserToStudioForLogin(printer);
-			return;
-		}
-
-		printer.printConsoleMessage(
-			"info",
-			colorizeText(boldText("You're already logged in."), "cyan"),
-		);
-		return;
-	}
-
-	if (username === null) {
-		throw new Error(
-			"The username of the current user is not known. Aborting the operation.",
-		);
-	}
-
-	// Ensure that `/.codemod.` folder exists
-	await mkdir(codemodDirectoryPath, { recursive: true });
-
 	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
-	await writeFile(tokenTxtPath, token, "utf-8");
+	if (existsSync(tokenTxtPath)) {
+		const content = await readFile(tokenTxtPath, {
+			encoding: "utf-8",
+		});
+		const { username } = await validateAccessToken(content);
 
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(boldText("You are successfully logged in."), "cyan"),
-	);
+		if (username !== null) {
+			printer.printConsoleMessage(
+				"info",
+				colorizeText(boldText("You're already logged in."), "cyan"),
+			);
+		}
+	}
+
+	routeUserToStudioForLogin(printer);
+	try {
+		const response = await backOff(() => confirmUserLoggedIn());
+
+		if (response.username === null) {
+			throw new Error(
+				"The username of the current user is not known. Aborting the operation.",
+			);
+		}
+	} catch (e) {
+		throw new Error("Could not validate access token. Please try again.");
+	}
+
+	// const { username } = await validateAccessToken(token);
+
+	// if (username === null) {
+	// 	throw new Error(
+	// 		"The username of the current user is not known. Aborting the operation.",
+	// 	);
+	// }
+
+	// // Ensure that `/.codemod.` folder exists
+	// await mkdir(codemodDirectoryPath, { recursive: true });
+
+	// const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
+	// await writeFile(tokenTxtPath, token, "utf-8");
+
+	// printer.printConsoleMessage(
+	// 	"info",
+	// 	colorizeText(boldText("You are successfully logged in."), "cyan"),
+	// );
 };
