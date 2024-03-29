@@ -1,14 +1,13 @@
 import { useAuth, useSession } from "@clerk/nextjs";
-import { Export } from "@phosphor-icons/react";
-import { Check, Copy, Loader2 } from "lucide-react";
+import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSelector } from "react-redux";
 import sendMessage from "~/api/sendMessage";
-import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
+import { DownloadIcon } from "~/icons/Download";
 import { cn } from "~/lib/utils";
 import { generateCodemodHumanNamePrompt } from "~/store/slices/CFS/prompts";
 import { selectMod } from "~/store/slices/mod";
@@ -65,29 +64,23 @@ export const DownloadZip = () => {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
-				<Tooltip
-					trigger={
-						<Button
-							disabled={!modContext.internalContent || isDownloading}
-							onClick={handleClick}
-							id="download-zip-button"
-							size="sm"
-							variant="outline"
-						>
-							{isDownloading ? (
-								<Loader2 className="mr-2 h-4 w-4 animate-spin" />
-							) : (
-								<Export className="mr-2 h-4 w-4" />
-							)}
-							Export locally
-						</Button>
-					}
-					content={
+				<Button
+					size="xs"
+					variant="default"
+					className="text-white flex gap-1"
+					hint={
 						<p className="font-normal">
 							Download a ZIP archive to use this codemod locally
 						</p>
 					}
-				/>
+					isLoading={isDownloading}
+					disabled={!modContext.internalContent || isDownloading}
+					onClick={handleClick}
+					id="download-zip-button"
+				>
+					<DownloadIcon />
+					Run locally via CLI
+				</Button>
 			</DialogTrigger>
 
 			<DialogContent className="max-w-2xl">
