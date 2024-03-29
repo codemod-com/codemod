@@ -13,12 +13,12 @@ import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
 const preCommitCodemodSchema = union([
 	object({
-		source: literal("fileSystem"),
+		source: literal("standalone"),
 		path: string(),
 		arguments: optional(argumentRecordSchema, {}),
 	}),
 	object({
-		source: literal("registry"),
+		source: literal("package"),
 		name: string(),
 		arguments: optional(argumentRecordSchema, {}),
 	}),
