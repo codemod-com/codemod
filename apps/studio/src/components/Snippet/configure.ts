@@ -21,9 +21,12 @@ const configure = (m: Monaco, e: monaco.editor.IStandaloneCodeEditor) => {
 	const path = model?.uri.path;
 	const lang = model?.getLanguageId();
 
-	if (lang === "typescript" && path?.endsWith(".tsx")) {
+	if (lang === "typescript") {
 		m.languages.typescript.typescriptDefaults.setCompilerOptions({
-			jsx: m.languages.typescript.JsxEmit.React,
+			target: m.languages.typescript.ScriptTarget.ES2020,
+			...(path?.endsWith(".tsx") && {
+				jsx: m.languages.typescript.JsxEmit.React,
+			}),
 		});
 	}
 
