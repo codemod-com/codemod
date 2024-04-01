@@ -1,4 +1,4 @@
 export * from "./types";
 export * from "./panelsData";
-export * from "./infer-visibilites";
-export * from "./collapce-on-next-tick";
+export * from "./inferVisibilites";
+export * from "./collapceOnNextTick";

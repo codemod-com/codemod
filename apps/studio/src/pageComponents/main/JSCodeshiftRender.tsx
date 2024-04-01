@@ -147,31 +147,32 @@ export const DiffEditorWrapper = ({
 	PropsWithChildren<{
 		warnings?: ReactNode;
 		type: SnippetType;
-	}>) => (
-	<div
-		className={cn(
-			"relative flex h-full flex-col w-[200%]",
-			type === "after" ? "mr-[-50%]" : "ml-[-100%]",
-			`${type}-shown`,
-		)}
-	>
-		<div className="relative flex h-full w-full flex-col">
-			<div className="w-[50%]">{warnings}</div>
-			<MonacoDiffEditor
-				renderSideBySide={type === "after"}
-				originalModelPath="original.tsx"
-				modifiedModelPath="modified.tsx"
-				options={{
-					readOnly: true,
-					originalEditable: true,
-				}}
-				loading={false}
-				originalEditorProps={originalEditorProps}
-				modifiedEditorProps={modifiedEditorProps}
-			/>
+	}>) => {
+	return (
+		<div
+			className={cn(
+				"relative flex h-full flex-col w-[200%]",
+				type === "after" ? "mr-[-50%]" : "ml-[-100%]",
+				`${type}-shown`,
+			)}
+		>
+			<div className="relative flex h-full w-full flex-col">
+				<MonacoDiffEditor
+					renderSideBySide={type === "after"}
+					originalModelPath="original.tsx"
+					modifiedModelPath="modified.tsx"
+					options={{
+						readOnly: true,
+						originalEditable: true,
+					}}
+					loading={false}
+					originalEditorProps={originalEditorProps}
+					modifiedEditorProps={modifiedEditorProps}
+				/>
+			</div>
 		</div>
-	</div>
-);
+	);
+};
 
 const CodeSnippedPanel = ({
 	children,
@@ -180,12 +181,14 @@ const CodeSnippedPanel = ({
 	panelData,
 	defaultSize,
 	panelRefs,
+	warnings,
 }: PropsWithChildren<{
 	className?: string;
 	header: string;
 	defaultSize: number;
 	panelRefs: PanelsRefs;
 	panelData: PanelData;
+	warnings?: ReactNode;
 }>) => {
 	return (
 		<BoundResizePanel
@@ -202,6 +205,7 @@ const CodeSnippedPanel = ({
 				visibilityOptions={panelData.visibilityOptions}
 				title={header}
 			/>
+			{warnings}
 			{children}
 		</BoundResizePanel>
 	);
