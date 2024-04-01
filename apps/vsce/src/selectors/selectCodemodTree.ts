@@ -81,7 +81,7 @@ export const buildCodemodNode = (
 		label: buildCodemodTitle(name),
 		executionPath: T.right(executionPath),
 		queued: queued,
-		icon: "certified",
+		icon: codemod.verified ? "certified" : "community",
 		permalink: null,
 		args,
 	} as const;
@@ -150,18 +150,17 @@ export const selectCodemodTree = (
 					rootPath ?? "",
 				);
 
-				// TODO: support codemod arguments
-				// const args = selectCodemodArguments(
-				// 	state,
-				// 	codemod.hashDigest as CodemodNodeHashDigest,
-				// );
+				const args = selectCodemodArguments(
+					state,
+					codemod.hashDigest as CodemodNodeHashDigest,
+				);
 
 				currNode = buildCodemodNode(
 					codemod,
 					part,
 					executionRelativePath,
 					executionQueue.includes(codemod.hashDigest as CodemodHash),
-					[],
+					args,
 				);
 			} else {
 				currNode = buildDirectoryNode(part, codemodDirName);
@@ -251,40 +250,11 @@ export const selectExecutionPaths = (state: RootState) => {
 	return state.codemodDiscoveryView.executionPaths;
 };
 
+type Arguments = CodemodEntry["arguments"][number];
 export type CodemodArgumentWithValue =
-	| {
-			kind: "string";
-			name: string;
-			description: string;
-			required: boolean;
-			default?: string;
-			value: string;
-	  }
-	| {
-			kind: "number";
-			name: string;
-			description: string;
-			required: boolean;
-			default?: number;
-			value: number;
-	  }
-	| {
-			kind: "boolean";
-			name: string;
-			description: string;
-			required: boolean;
-			default?: boolean;
-			value: boolean;
-	  }
-	| {
-			kind: "options";
-			name: string;
-			description: string;
-			required: boolean;
-			default?: string;
-			options: ReadonlyArray<string>;
-			value: string;
-	  };
+	| (Extract<Arguments, { kind: "string" }> & { value: string })
+	| (Extract<Arguments, { kind: "number" }> & { value: number })
+	| (Extract<Arguments, { kind: "boolean" }> & { value: boolean });
 
 export const selectCodemodArguments = (
 	state: RootState,
@@ -297,13 +267,12 @@ export const selectCodemodArguments = (
 	const argumentsSchema =
 		Object.values(state.codemod.entities).find(
 			(codemodEntry) => codemodEntry?.hashDigest === hashDigest,
-			// @ts-ignore TODO: Remove supporting arguments in the next PR
 		)?.arguments ?? [];
 
 	const codemodArgumentsValues =
 		state.codemodDiscoveryView.codemodArguments[hashDigest] ?? null;
 
-	return argumentsSchema.map((arg: any) => {
+	return argumentsSchema.map((arg) => {
 		const value = codemodArgumentsValues?.[arg.name] ?? arg.default ?? "";
 
 		switch (arg.kind) {
