@@ -17,6 +17,7 @@ import {
 import { APP_INSIGHTS_INSTRUMENTATION_STRING } from "./constants.js";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
+import { handleInitCliCommand } from "./handleInitCliCommand";
 import { handleLearnCliCommand } from "./handleLearnCliCommand.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { handleLoginCliCommand } from "./handleLoginCliCommand.js";
@@ -79,6 +80,13 @@ export const executeMainThread = async () => {
 			buildUseJsonOption(y).option("source", {
 				type: "string",
 				description: "path to the codemod to be published",
+			}),
+		)
+		.command("init", "initialize a codemod package", (y) =>
+			buildUseJsonOption(y).option("no-prompt", {
+				alias: "y",
+				type: "boolean",
+				description: "skip all prompts and use default values",
 			}),
 		)
 		.help()
@@ -311,6 +319,25 @@ export const executeMainThread = async () => {
 
 		try {
 			await handleBuildCliCommand(printer, argv.source ?? process.cwd());
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
+
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
+			});
+		}
+
+		exit();
+
+		return;
+	}
+
+	if (String(argv._) === "init") {
+		try {
+			await handleInitCliCommand(printer, argv.noPrompt ?? false);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
