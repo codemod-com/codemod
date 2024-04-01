@@ -55,7 +55,7 @@
 		"esbuild": "^0.17.14",
 		"fast-glob": "3.3.2",
 		"form-data": "^4.0.0",
-		"jscodeshift": "^0.14.0",
+		"jscodeshift": "^0.15.2",
 		"mdast-util-from-markdown": "^2.0.0",
 		"mdast-util-mdx": "^3.0.0",
 		"mdast-util-to-markdown": "^2.1.0",
