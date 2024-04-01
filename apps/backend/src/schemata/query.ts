@@ -43,3 +43,24 @@ export const listCodemodsQuerySchema = object({
 
 export const parseListCodemodsQuery = (input: unknown) =>
 	parse(listCodemodsQuerySchema, input);
+
+export const validateIntentParamsSchema = object({
+	id: string(),
+});
+
+export const parseValidateIntentParams = (input: unknown) =>
+	parse(validateIntentParamsSchema, input);
+
+export const buildAccessTokenQuerySchema = object({
+	sessionId: optional(string()),
+	iv: optional(string()),
+});
+
+export const parseBuildAccessTokenQuery = (input: unknown) =>
+	parse(buildAccessTokenQuerySchema, input);
+
+export const ivObjectSchema = object({
+	iv: string(),
+});
+
+export const parseIv = (input: unknown) => parse(ivObjectSchema, input);

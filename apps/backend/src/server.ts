@@ -1,5 +1,6 @@
 import "dotenv/config";
 
+import { randomBytes } from "node:crypto";
 import { OutgoingHttpHeaders } from "node:http";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
@@ -15,6 +16,7 @@ import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
+import { decrypt, encrypt } from "./crypto/crypto.js";
 import {
 	CustomHandler,
 	ForbiddenError,
@@ -30,8 +32,15 @@ import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
-
-import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
+import { parseEnvironment } from "./schemata/env.js";
+import {
+	parseGetCodemodBySlugParams,
+	parseGetCodemodLatestVersionQuery,
+	parseGetCodemodsQuery,
+	parseIv,
+	parseListCodemodsQuery,
+	parseValidateIntentParams,
+} from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
@@ -249,7 +258,9 @@ const wrapRequestHandlerMethod =
 				clerkClient,
 				getClerkUserId,
 				now,
-				getRequest,
+				request,
+				reply,
+				environment,
 			});
 
 			reply.type("application/json").code(200);
@@ -356,6 +367,72 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	);
 
 	instance.delete("/revokeToken", wrapRequestHandlerMethod(revokeTokenHandler));
+
+	instance.get("/intents/:id", async (request, reply) => {
+		if (!auth) {
+			throw new Error("This endpoint requires auth configuration.");
+		}
+
+		const { id } = parseValidateIntentParams(request.params);
+		const { iv: ivStr } = parseIv(request.query);
+
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+		const iv = Buffer.from(ivStr, "base64url");
+
+		const result = await prisma.userLoginIntent.findFirst({
+			where: {
+				id: decrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(id, "base64url"),
+				).toString(),
+			},
+		});
+
+		if (result === null) {
+			reply.code(400).send();
+			return;
+		}
+
+		if (result.token === null) {
+			reply.code(400).send();
+			return;
+		}
+
+		const decryptedToken = decrypt(
+			"aes-256-cbc",
+			{ key, iv },
+			Buffer.from(result.token, "base64url"),
+		).toString();
+
+		await prisma.userLoginIntent.delete({
+			where: { id: result.id },
+		});
+
+		// TODO: Create cron to clean up intents
+
+		reply.type("application/json").code(200);
+		return { token: decryptedToken };
+	});
+
+	instance.post("/intents", async (_request, reply) => {
+		if (!auth) {
+			throw new Error("This endpoint requires auth configuration.");
+		}
+
+		const result = await prisma.userLoginIntent.create({});
+
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+		const iv = randomBytes(16);
+		const encryptedSessionId = encrypt(
+			"aes-256-cbc",
+			{ key, iv },
+			Buffer.from(result.id),
+		).toString("base64url");
+
+		reply.type("application/json").code(200);
+		return { id: encryptedSessionId, iv: iv.toString("base64url") };
+	});
 
 	instance.post("/sourceControl/:provider/issues", async (request, reply) => {
 		if (!auth) {

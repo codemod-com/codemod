@@ -19,8 +19,8 @@ export const environmentSchema = object({
 	X_INTUITA_ACCESS_TOKEN: optional(string()),
 	CLERK_DISABLED: optional(literal("true")),
 	// unused start
-	ENCRYPTION_KEY: optional(string()),
-	SIGNATURE_PRIVATE_KEY: optional(string()),
+	ENCRYPTION_KEY: string(),
+	SIGNATURE_PRIVATE_KEY: string(),
 	PEPPER: optional(string()),
 	AWS_ACCESS_KEY_ID: optional(string()),
 	AWS_SECRET_ACCESS_KEY: optional(string()),

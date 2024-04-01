@@ -15,7 +15,7 @@ export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<Data> => {
 	const response = await Axios.post(
-		"https://backend.codemod.com/validateAccessToken",
+		"http://0.0.0.0:8081/validateAccessToken",
 		{},
 		{
 			headers: {
@@ -32,7 +32,7 @@ export const publish = async (
 	accessToken: string,
 	formData: FormData,
 ): Promise<void> => {
-	await Axios.post("https://backend.codemod.com/publish", formData, {
+	await Axios.post("http://0.0.0.0:8081/publish", formData, {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			"Content-Type": "multipart/form-data",
@@ -42,7 +42,7 @@ export const publish = async (
 };
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-	await Axios.delete("https://backend.codemod.com/revokeToken", {
+	await Axios.delete("http://0.0.0.0:8081/revokeToken", {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 		},
@@ -55,7 +55,7 @@ export const getCodemodDownloadURI = async (
 	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
-	const url = new URL("https://backend.codemod.com/codemods/downloadLink");
+	const url = new URL("http://0.0.0.0:8081/codemods/downloadLink");
 	if (name) {
 		url.searchParams.set("name", name);
 	}
@@ -83,7 +83,7 @@ export const getCodemodList = async (options?: {
 		headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
 	}
 
-	const url = new URL("https://backend.codemod.com/codemods/list");
+	const url = new URL("http://0.0.0.0:8081/codemods/list");
 	if (search) {
 		url.searchParams.set("search", search);
 	}
@@ -94,4 +94,32 @@ export const getCodemodList = async (options?: {
 	});
 
 	return res.data;
+};
+
+type UserLoginIntentResponse = {
+	id: string;
+	iv: string;
+};
+export const generateUserLoginIntent =
+	async (): Promise<UserLoginIntentResponse> => {
+		const res = await Axios.post<UserLoginIntentResponse>(
+			"http://0.0.0.0:8081/intents",
+			{},
+		);
+
+		return res.data;
+	};
+
+type ConfirmUserLoggedInResponse = {
+	token: string;
+};
+export const confirmUserLoggedIn = async (
+	sessionId: string,
+	iv: string,
+): Promise<string> => {
+	const res = await Axios.get<ConfirmUserLoggedInResponse>(
+		`http://0.0.0.0:8081/intents/${sessionId}?iv=${iv}`,
+	);
+
+	return res.data.token;
 };

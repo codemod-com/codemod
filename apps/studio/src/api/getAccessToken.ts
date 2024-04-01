@@ -1,4 +1,5 @@
 import { type AxiosError } from "axios";
+import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { BUILD_ACCESS_TOKEN } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";
@@ -6,12 +7,26 @@ import apiClient from "./client";
 const X_CODEMODCOM_ACCESS_TOKEN = "x-codemod-access-token";
 const getAccessToken = async ({
 	clerkToken,
+	sessionId,
+	iv,
 }: {
 	clerkToken: string;
+	sessionId?: string | null;
+	iv?: string | null;
 }): Promise<Either<Error, string>> => {
+	const searchParams = new URLSearchParams();
+	if (isNeitherNullNorUndefined(sessionId)) {
+		searchParams.set("sessionId", sessionId);
+	}
+	if (isNeitherNullNorUndefined(iv)) {
+		searchParams.set("iv", iv);
+	}
+
 	try {
 		const res = await apiClient.post(
-			BUILD_ACCESS_TOKEN,
+			`${BUILD_ACCESS_TOKEN}${
+				searchParams.size > 0 ? `?${searchParams.toString()}` : ""
+			}`,
 			{},
 			{
 				headers: {

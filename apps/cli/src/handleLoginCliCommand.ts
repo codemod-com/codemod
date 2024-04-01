@@ -1,21 +1,29 @@
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { backOff } from "exponential-backoff";
-import { validateAccessToken } from "./apis.js";
+import {
+	confirmUserLoggedIn,
+	generateUserLoginIntent,
+	validateAccessToken,
+} from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText, getCurrentUser, openURL } from "./utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
-const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
+const routeUserToStudioForLogin = (
+	printer: PrinterBlueprint,
+	sessionId: string,
+	iv: string,
+) => {
 	printer.printConsoleMessage(
 		"info",
 		colorizeText("Redirecting to Codemod sign-in page...\n", "cyan"),
 	);
 	const success = openURL(
-		`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}`,
+		`https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
 	);
 	if (!success) {
 		printer.printOperationMessage({
@@ -25,10 +33,7 @@ const routeUserToStudioForLogin = (printer: PrinterBlueprint) => {
 		});
 	}
 };
-export const handleLoginCliCommand = async (
-	printer: PrinterBlueprint,
-	token: string | null,
-) => {
+export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 	const codemodDirectoryPath = join(homedir(), ".codemod");
 
 	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
@@ -46,35 +51,28 @@ export const handleLoginCliCommand = async (
 		}
 	}
 
-	routeUserToStudioForLogin(printer);
+	const { id: sessionId, iv: initVector } = await generateUserLoginIntent();
+	routeUserToStudioForLogin(printer, sessionId, initVector);
 	try {
-		const response = await backOff(() => confirmUserLoggedIn());
+		const token = await backOff(
+			() => confirmUserLoggedIn(sessionId, initVector),
+			{
+				numOfAttempts: 60, // 1 minute to login
+				startingDelay: 1000, // ms
+				timeMultiple: 1, // * 1
+			},
+		);
 
-		if (response.username === null) {
-			throw new Error(
-				"The username of the current user is not known. Aborting the operation.",
-			);
-		}
+		// Ensure that `/.codemod.` folder exists
+		await mkdir(codemodDirectoryPath, { recursive: true });
+
+		await writeFile(tokenTxtPath, token, "utf-8");
+
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(boldText("You are successfully logged in."), "cyan"),
+		);
 	} catch (e) {
 		throw new Error("Could not validate access token. Please try again.");
 	}
-
-	// const { username } = await validateAccessToken(token);
-
-	// if (username === null) {
-	// 	throw new Error(
-	// 		"The username of the current user is not known. Aborting the operation.",
-	// 	);
-	// }
-
-	// // Ensure that `/.codemod.` folder exists
-	// await mkdir(codemodDirectoryPath, { recursive: true });
-
-	// const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
-	// await writeFile(tokenTxtPath, token, "utf-8");
-
-	// printer.printConsoleMessage(
-	// 	"info",
-	// 	colorizeText(boldText("You are successfully logged in."), "cyan"),
-	// );
 };
