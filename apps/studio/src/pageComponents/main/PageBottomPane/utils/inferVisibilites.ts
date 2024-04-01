@@ -1,12 +1,11 @@
-import { PanelData } from "~/pageComponents/main/PageBottomPane/utils/types";
-import { Repeat } from "~/types/transformations";
+import { BottomPanelData } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { isVisible } from "~/utils/visibility";
 
-export const inferVisibilities = ([
+export const inferVisibilities = ({
 	beforePanel,
 	afterPanel,
 	outputPanel,
-]: Repeat<PanelData, 3>) => ({
+}: BottomPanelData) => ({
 	onlyAfterHidden:
 		!isVisible(afterPanel) && isVisible(beforePanel) && isVisible(outputPanel),
 	onlyBeforeHidden:

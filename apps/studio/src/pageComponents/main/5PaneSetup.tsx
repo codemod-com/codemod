@@ -23,6 +23,16 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import { DownloadZip } from "~/pageComponents/main/DownloadZip";
+import {
+	AstSection,
+	BoundResizePanel,
+	PanelData,
+	PanelsRefs,
+	ResizablePanelsIndices,
+	ShowPanelTile,
+} from "~/pageComponents/main/PageBottomPane";
+import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
+import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
@@ -31,7 +41,6 @@ import themeConfig from "../../../tailwind.config";
 import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
-import PageBottomPane from "./BottomPane";
 import Codemod from "./Codemod";
 import { DialogWithLoginToken } from "./DialogWithLoginToken";
 import Header from "./Header";
@@ -75,6 +84,9 @@ const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
 	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
+	const panelRefs: PanelsRefs = useRef({});
+	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
+		useSnippetsPanels({ panelRefs });
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -136,6 +148,54 @@ const Main = () => {
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
 
+	const codemodHeader = (
+		<Panel.Header>
+			<Panel.HeaderTab>
+				<Panel.HeaderTitle>
+					Codemod
+					<div className="flex items-center gap-1">
+						<DownloadZip />
+						<ClearInputButton />
+						<InsertExampleButton />
+					</div>
+				</Panel.HeaderTitle>
+			</Panel.HeaderTab>
+		</Panel.Header>
+	);
+
+	const beforeAfterBottomPanels = (
+		<>
+			<CodeSnippets
+				codeDiff={codeDiff}
+				onlyAfterHidden={onlyAfterHidden}
+				panelRefs={panelRefs}
+				panels={[beforePanel, afterPanel]}
+			>
+				{onlyAfterHidden && (
+					<ShowPanelTile
+						header="After"
+						panel={afterPanel}
+						onClick={() => {
+							afterPanel.visibilityOptions?.show();
+							panelRefs.current[ResizablePanelsIndices.AFTER_SNIPPET]?.resize(
+								50,
+							);
+						}}
+					/>
+				)}
+			</CodeSnippets>
+		</>
+	);
+
+	const outputBottomPanel = (
+		<CodeSnippets
+			codeDiff={codeDiff}
+			onlyAfterHidden={onlyAfterHidden}
+			panelRefs={panelRefs}
+			panels={[outputPanel]}
+		/>
+	);
+
 	return (
 		<>
 			<LoginWarningModal />
@@ -149,57 +209,61 @@ const Main = () => {
 					<Header />
 				</Layout.Header>
 				<Layout.Content gap="gap-2">
-					<PanelGroup autoSaveId="main-layout" direction="vertical">
-						<Layout.ResizablePanel
-							collapsible
-							defaultSize={50}
-							minSize={0}
-							style={{
-								flexBasis: isServer ? "50%" : "0",
-							}}
+					<PanelGroup autoSaveId="main-layout" direction="horizontal">
+						<BoundResizePanel
+							panelRefIndex={ResizablePanelsIndices.LEFT}
+							panelRefs={panelRefs}
+							className="bg-gray-bg"
 						>
-							<PanelGroup direction="horizontal">
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
+							<PanelGroup direction="vertical">
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
 								>
-									<AssistantTab />
-								</Layout.ResizablePanel>
-
-								<ResizeHandle direction="horizontal" />
-
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
+									<AssistantTab
+										panelRefs={panelRefs}
+										beforePanel={beforePanel}
+										afterPanel={afterPanel}
+									/>
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
 								>
-									<Panel.Header>
-										<Panel.HeaderTab>
-											<Panel.HeaderTitle>
-												Codemod
-												<div className="flex items-center gap-1">
-													<DownloadZip />
-													<ClearInputButton />
-													<InsertExampleButton />
-												</div>
-											</Panel.HeaderTitle>
-										</Panel.HeaderTab>
-									</Panel.Header>
-									<Codemod />
-								</Layout.ResizablePanel>
+									{beforeAfterBottomPanels}
+								</BoundResizePanel>
 							</PanelGroup>
-						</Layout.ResizablePanel>
-						<ResizeHandle direction="vertical" />
-						<PageBottomPane />
+						</BoundResizePanel>
+
+						<ResizeHandle direction="horizontal" />
+						<BoundResizePanel
+							panelRefs={panelRefs}
+							panelRefIndex={ResizablePanelsIndices.RIGHT}
+						>
+							<PanelGroup direction="vertical">
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									boundedIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{codemodHeader}
+									<Codemod />
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.OUTPUT_AST}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{outputBottomPanel}
+								</BoundResizePanel>
+							</PanelGroup>
+						</BoundResizePanel>
 					</PanelGroup>
 				</Layout.Content>
 			</Layout>
@@ -284,7 +348,15 @@ const LoginWarningModal = () => {
 	);
 };
 
-const AssistantTab = () => {
+const AssistantTab = ({
+	panelRefs,
+	beforePanel,
+	afterPanel,
+}: {
+	panelRefs: PanelsRefs;
+	beforePanel: PanelData;
+	afterPanel: PanelData;
+}) => {
 	const activeTab = useSelector(selectActiveTab);
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
@@ -336,11 +408,32 @@ const AssistantTab = () => {
 				<TabsTrigger className="flex-1" value={TabNames.MODGPT}>
 					ModGPT
 				</TabsTrigger>
+				<TabsTrigger className="flex-1" value={TabNames.AST}>
+					AST
+				</TabsTrigger>
+				<TabsTrigger className="flex-1" value={TabNames.GUIBuilder}>
+					GUI Builder
+				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.DEBUG}>
 					<LiveIcon />
 					Debug
 				</TabsTrigger>
 			</TabsList>
+
+			<TabsContent
+				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
+				value={TabNames.AST}
+				onScroll={handleScroll}
+				ref={scrollContainerRef}
+			>
+				<PanelGroup direction="horizontal">
+					<AstSection
+						panels={[beforePanel, afterPanel]}
+						engine={engine}
+						panelRefs={panelRefs}
+					/>
+				</PanelGroup>
+			</TabsContent>
 
 			<TabsContent
 				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"

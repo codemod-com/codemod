@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { VisibilityOptions } from "~/types/options";
-import { ToVoid } from "~/types/transformations";
 
-export const useToggleVisibility = (
-	initialValue = true,
-): VisibilityOptions & Record<"show" | "hide", ToVoid> => {
+export const useToggleVisibility = (initialValue = true): VisibilityOptions => {
 	const [isVisible, setIsVisible] = useState(initialValue);
 	return {
 		isVisible,

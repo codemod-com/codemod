@@ -1,32 +1,35 @@
 import React, { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import { Button } from "~/components/ui/button";
 import { isServer } from "~/config";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
 import { JSEngine } from "~/types/Engine";
+import { Void } from "~/types/transformations";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
+import { isVisible } from "~/utils/visibility";
 import Layout from "../../Layout";
 import {
 	ContentViewerProps,
 	PanelComponentProps,
 	PanelData,
-	PanelRefs,
-	ToggleButtonProps,
+	PanelsRefs,
 } from "../utils/types";
 
 export const BoundResizePanel = ({
-	defaultSize = 33,
+	defaultSize = 50,
 	minSize = 0,
 	panelRefs,
 	panelRefIndex,
 	children,
 	boundedIndex,
-	hasBoundResize = false,
 	className,
+	style = {
+		maxHeight: isServer ? 0 : "unset",
+		flexBasis: isServer ? "50%" : "0",
+	},
 }: PanelComponentProps) => {
 	return (
 		<Layout.ResizablePanel
@@ -37,9 +40,9 @@ export const BoundResizePanel = ({
 			ref={(ref) => {
 				panelRefs.current[panelRefIndex] = ref;
 			}}
-			style={{ maxHeight: isServer ? 0 : "unset" }}
+			style={style}
 			onResize={
-				hasBoundResize && !isNil(boundedIndex)
+				!isNil(boundedIndex)
 					? debounce((size) => {
 							const panel = panelRefs.current[boundedIndex];
 							if (!isNil(panel) && !isNil(size)) panel.resize(size);
@@ -51,16 +54,6 @@ export const BoundResizePanel = ({
 		</Layout.ResizablePanel>
 	);
 };
-
-export const ToggleASTButton: React.FC<ToggleButtonProps> = ({ onClick }) => (
-	<Button
-		className="flex cursor-pointer items-center justify-center rounded-none px-2 py-1"
-		onClick={onClick}
-		variant="ghost"
-	>
-		AST
-	</Button>
-);
 
 export const ContentViewer: React.FC<ContentViewerProps> = ({
 	type,
@@ -94,30 +87,37 @@ export const AstSection = ({
 	engine,
 }: {
 	panels: PanelData[];
-	panelRefs: PanelRefs;
+	panelRefs: PanelsRefs;
 	engine: JSEngine;
-}) =>
-	panels.map((panel, i, { length }) => (
+}) => {
+	return panels.filter(isVisible).map((panel, i, { length }) => (
 		<>
 			<BoundResizePanel
+				className="h-full"
 				panelRefs={panelRefs}
-				key={panel.astIndex}
-				defaultSize={33}
-				panelRefIndex={panel.astIndex}
-				boundedIndex={panel.snippedIndex}
+				key={panel.relatedAST}
+				defaultSize={100 / panels.length}
+				panelRefIndex={panel.relatedAST}
+				boundedIndex={
+					panel.boundIndex === panel.relatedAST ? panel.snippedIndex : undefined
+				}
 				{...panel}
 			>
 				<ContentViewer type={panel.type} engine={engine} />
 			</BoundResizePanel>
-			{i !== length - 1 && <ResizeHandle direction="horizontal" />}
+			{i !== length - 1 && isVisible(panels[i + 1]) && (
+				<ResizeHandle direction="horizontal" />
+			)}
 		</>
 	));
+};
 
 export const ShowPanelTile = ({
+	onClick,
 	panel,
 	header,
-}: { panel: PanelData; header: string }) => (
-	<div className="hidden_panel_indicator">
+}: { panel: PanelData; header: string; onClick: Void }) => (
+	<div className="hidden_panel_indicator" onClick={onClick}>
 		<VisibilityIcon visibilityOptions={panel.visibilityOptions} />
 		<span className="hidden_panel_indicator_text">{header}</span>
 	</div>

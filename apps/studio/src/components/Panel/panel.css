@@ -54,6 +54,7 @@
 }
 
 .hidden_panel_indicator_text {
+	pointer-events: none;
 	@apply rotate-[90deg] absolute top-[48px] left-[-7px];
 }
 
