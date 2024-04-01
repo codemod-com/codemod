@@ -10,8 +10,7 @@ import remarkMath from "remark-math";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import { useTheme } from "~/pageComponents/main/themeContext";
-import CustomBlackLogoSVG from "../../assets/icons/intuita_black_logo.svg";
-import CustomWhiteLogoSVG from "../../assets/icons/intuita_white_logo.svg";
+import CompanyLogoSVG from "../../assets/icons/company_logo.svg";
 import CodeBlock from "./CodeBlock";
 
 const MemoizedReactMarkdown: FC<Options> = memo(
@@ -38,10 +37,7 @@ const ChatMessage = ({ message }: Props) => {
 				{message.role === "user" ? (
 					<UserIcon />
 				) : (
-					<Image
-						src={isDark ? CustomWhiteLogoSVG : CustomBlackLogoSVG}
-						alt="Codemod Logo"
-					/>
+					<Image src={CompanyLogoSVG} alt="Codemod Logo" />
 				)}
 			</div>
 			{collapsed ? (

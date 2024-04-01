@@ -141,7 +141,6 @@ export type LiveCodemodResultProps = Pick<
 export const DiffEditorWrapper = ({
 	originalEditorProps,
 	modifiedEditorProps,
-	warnings,
 	type,
 }: Pick<LiveCodemodResultProps, "originalEditorProps" | "modifiedEditorProps"> &
 	PropsWithChildren<{
