@@ -15,7 +15,7 @@ export const validateAccessToken = async (
 	accessToken: string,
 ): Promise<Data> => {
 	const response = await Axios.post(
-		"http://0.0.0.0:8081/validateAccessToken",
+		"https://backend.codemod.com/validateAccessToken",
 		{},
 		{
 			headers: {
@@ -32,7 +32,7 @@ export const publish = async (
 	accessToken: string,
 	formData: FormData,
 ): Promise<void> => {
-	await Axios.post("http://0.0.0.0:8081/publish", formData, {
+	await Axios.post("https://backend.codemod.com/publish", formData, {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 			"Content-Type": "multipart/form-data",
@@ -42,7 +42,7 @@ export const publish = async (
 };
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-	await Axios.delete("http://0.0.0.0:8081/revokeToken", {
+	await Axios.delete("https://backend.codemod.com/revokeToken", {
 		headers: {
 			[X_CODEMOD_ACCESS_TOKEN]: accessToken,
 		},
@@ -55,7 +55,7 @@ export const getCodemodDownloadURI = async (
 	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
-	const url = new URL("http://0.0.0.0:8081/codemods/downloadLink");
+	const url = new URL("https://backend.codemod.com/codemods/downloadLink");
 	if (name) {
 		url.searchParams.set("name", name);
 	}
@@ -83,7 +83,7 @@ export const getCodemodList = async (options?: {
 		headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
 	}
 
-	const url = new URL("http://0.0.0.0:8081/codemods/list");
+	const url = new URL("https://backend.codemod.com/codemods/list");
 	if (search) {
 		url.searchParams.set("search", search);
 	}
@@ -103,7 +103,7 @@ type UserLoginIntentResponse = {
 export const generateUserLoginIntent =
 	async (): Promise<UserLoginIntentResponse> => {
 		const res = await Axios.post<UserLoginIntentResponse>(
-			"http://0.0.0.0:8081/intents",
+			"https://backend.codemod.com/intents",
 			{},
 		);
 
@@ -118,7 +118,7 @@ export const confirmUserLoggedIn = async (
 	iv: string,
 ): Promise<string> => {
 	const res = await Axios.get<ConfirmUserLoggedInResponse>(
-		`http://0.0.0.0:8081/intents/${sessionId}?iv=${iv}`,
+		`https://backend.codemod.com/intents/${sessionId}?iv=${iv}`,
 	);
 
 	return res.data.token;

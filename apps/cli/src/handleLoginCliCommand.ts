@@ -1,13 +1,8 @@
-import { existsSync } from "node:fs";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { backOff } from "exponential-backoff";
-import {
-	confirmUserLoggedIn,
-	generateUserLoginIntent,
-	validateAccessToken,
-} from "./apis.js";
+import { confirmUserLoggedIn, generateUserLoginIntent } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText, getCurrentUser, openURL } from "./utils.js";
 
@@ -34,21 +29,13 @@ const routeUserToStudioForLogin = (
 	}
 };
 export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
-	const codemodDirectoryPath = join(homedir(), ".codemod");
-
-	const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
-	if (existsSync(tokenTxtPath)) {
-		const content = await readFile(tokenTxtPath, {
-			encoding: "utf-8",
-		});
-		const { username } = await validateAccessToken(content);
-
-		if (username !== null) {
-			printer.printConsoleMessage(
-				"info",
-				colorizeText(boldText("You're already logged in."), "cyan"),
-			);
-		}
+	const username = await getCurrentUser();
+	if (username !== null) {
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(boldText("You're already logged in."), "cyan"),
+		);
+		return;
 	}
 
 	const { id: sessionId, iv: initVector } = await generateUserLoginIntent();
@@ -63,6 +50,8 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 			},
 		);
 
+		const codemodDirectoryPath = join(homedir(), ".codemod");
+		const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
 		// Ensure that `/.codemod.` folder exists
 		await mkdir(codemodDirectoryPath, { recursive: true });
 
