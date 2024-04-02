@@ -14,6 +14,7 @@ import {
 } from "~/schemata/chatSchemata";
 import { type RootState } from "~/store";
 import { applyAliases, getAliases } from "~/store/slices/CFS/alias";
+import { useCodemodExecutionError } from "~/store/zustand/log";
 import { selectEngine } from "../../store/slices/CFS";
 import { autoGenerateCodemodPrompt } from "../../store/slices/CFS/prompts";
 import {
@@ -132,8 +133,11 @@ const Chat = ({ id, className }: Props) => {
 		},
 	});
 	const { getToken, isSignedIn } = useAuth();
+	const codemodExecutionError = useCodemodExecutionError();
 
-	const aliases = useSelector((state: RootState) => getAliases(state));
+	const aliases = useSelector((state: RootState) =>
+		getAliases(codemodExecutionError)(state),
+	);
 
 	const handleSelectPrompt = async (value: string) => {
 		const t = await getToken();

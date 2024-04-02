@@ -35,7 +35,7 @@ import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/Co
 import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine } from "~/store/slices/snippets";
-import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
+import { TabNames, useViewStore } from "~/store/zustand/view";
 import { openLink } from "~/utils/openLink";
 import themeConfig from "../../../tailwind.config";
 import ChevronRightSVG from "../../assets/icons/chevronright.svg";
@@ -357,7 +357,7 @@ const AssistantTab = ({
 	beforePanel: PanelData;
 	afterPanel: PanelData;
 }) => {
-	const activeTab = useSelector(selectActiveTab);
+	const { activeTab } = useViewStore();
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
 
@@ -365,9 +365,11 @@ const AssistantTab = ({
 	const savedScrollPositionRef = useRef<number>(0);
 	const { isSignedIn } = useAuth();
 
+	const { setActiveTab } = useViewStore();
+
 	const handleOnClick = useCallback(
 		(newActiveTab: TabNames) => {
-			dispatch(viewSlice.actions.setActiveTab(newActiveTab));
+			setActiveTab(newActiveTab);
 		},
 		[dispatch],
 	);
@@ -410,9 +412,6 @@ const AssistantTab = ({
 				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.AST}>
 					AST
-				</TabsTrigger>
-				<TabsTrigger className="flex-1" value={TabNames.GUIBuilder}>
-					GUI Builder
 				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.DEBUG}>
 					<LiveIcon />

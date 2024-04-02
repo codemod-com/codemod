@@ -1,10 +1,10 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import type { AppDispatch, RootState } from "~/store";
+import { useLogStore } from "~/store/zustand/log";
 import { type RangeCommand } from "~/utils/tree";
 import { executeRangeCommandOnBeforeInputThunk } from "./executeRangeCommandOnBeforeInputThunk";
 import { codemodOutputSlice } from "./slices/codemodOutput";
-import { setActiveEventHashDigest } from "./slices/log";
 import { setCodemodSelection } from "./slices/mod";
 import { setOutputSelection } from "./slices/snippets";
 
@@ -22,8 +22,9 @@ export const setRangeThunk = createAsyncThunk<
 	}
 >("thunks/setRangeThunk", async (argument, thunkAPI) => {
 	const { dispatch } = thunkAPI;
+	const { setActiveEventHashDigest, events } = useLogStore();
 
-	dispatch(setActiveEventHashDigest(null));
+	setActiveEventHashDigest(null);
 
 	const rangeCommand: RangeCommand = {
 		kind: "FIND_CLOSEST_PARENT",

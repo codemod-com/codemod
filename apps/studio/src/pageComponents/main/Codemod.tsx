@@ -6,7 +6,7 @@ import { useSelector } from "react-redux";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
 import { setRangeThunk } from "~/store/setRangeThunk";
-import { selectActiveEvent } from "../../store/slices/log";
+import { useSelectActiveEvent } from "~/store/zustand/log";
 import { selectMod, setContent } from "../../store/slices/mod";
 import { prettify } from "../../utils/prettify";
 
@@ -19,7 +19,7 @@ const Codemod = () => {
 	const editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
 	const { internalContent, ranges } = useSelector(selectMod);
 	const dispatch = useAppDispatch();
-	const activeEvent = useSelector(selectActiveEvent);
+	const activeEvent = useSelectActiveEvent();
 
 	const content = internalContent ?? "";
 

@@ -2,12 +2,12 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import jscodeshift from "jscodeshift";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { type AppDispatch, type RootState } from "~/store";
+import { useLogStore } from "~/store/zustand/log";
 import { parseSnippet } from "~/utils/babelParser";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { type RangeCommand } from "~/utils/tree";
 import { executeRangeCommandOnBeforeInputThunk } from "./executeRangeCommandOnBeforeInputThunk";
 import { codemodOutputSlice } from "./slices/codemodOutput";
-import { setActiveEventHashDigest } from "./slices/log";
 import { setCodemodSelection } from "./slices/mod";
 import { setOutputSelection } from "./slices/snippets";
 
@@ -141,10 +141,9 @@ export const setActiveEventThunk = createAsyncThunk<
 	}
 >("thunks/setActiveEventThunk", async (eventHashDigest, thunkAPI) => {
 	const { getState, dispatch } = thunkAPI;
+	const { setActiveEventHashDigest, events } = useLogStore();
 
 	if (eventHashDigest === null) {
-		dispatch(setActiveEventHashDigest(null));
-
 		const rangeCommand: RangeCommand = {
 			kind: "PASS_THROUGH",
 			ranges: [],
@@ -161,14 +160,13 @@ export const setActiveEventThunk = createAsyncThunk<
 	const state = getState();
 
 	const event =
-		state.log.events.find(({ hashDigest }) => hashDigest === eventHashDigest) ??
-		null;
+		events.find(({ hashDigest }) => hashDigest === eventHashDigest) ?? null;
 
 	if (event === null) {
 		return;
 	}
 
-	dispatch(setActiveEventHashDigest(eventHashDigest));
+	setActiveEventHashDigest(eventHashDigest);
 
 	dispatch(
 		setCodemodSelection({

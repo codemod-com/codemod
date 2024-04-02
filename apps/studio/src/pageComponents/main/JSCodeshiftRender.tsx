@@ -17,11 +17,11 @@ import {
 	codemodOutputSlice,
 	selectCodemodOutput,
 } from "~/store/slices/codemodOutput";
+import { useLogStore } from "~/store/zustand/log";
+import { TabNames, useViewStore } from "~/store/zustand/view";
 import { setActiveEventThunk } from "../../store/setActiveEventThunk";
-import { selectLog, setEvents } from "../../store/slices/log";
 import { selectMod, setHasRuntimeErrors } from "../../store/slices/mod";
 import { selectSnippets } from "../../store/slices/snippets";
-import { TabNames, viewSlice } from "../../store/slices/view";
 import { useSnippet } from "./SnippetUI";
 
 const MonacoDiffEditor = dynamic(
@@ -33,11 +33,11 @@ const MonacoDiffEditor = dynamic(
 );
 
 export const useCodeDiff = () => {
+	const { setEvents, events } = useLogStore();
 	const { engine, inputSnippet, afterInputRanges } =
 		useSelector(selectSnippets);
 
 	const { internalContent } = useSelector(selectMod);
-	const { events } = useSelector(selectLog);
 	const [webWorkerState, postMessage] = useWebWorker();
 
 	const codemodOutput = useSelector(selectCodemodOutput);
@@ -46,6 +46,8 @@ export const useCodeDiff = () => {
 	const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
 	const content = internalContent ?? "";
+
+	const { setActiveTab } = useViewStore();
 
 	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
@@ -58,7 +60,7 @@ export const useCodeDiff = () => {
 		if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
 			dispatch(codemodOutputSlice.actions.setContent(""));
 			dispatch(setHasRuntimeErrors(false));
-			dispatch(setEvents([]));
+			setEvents([]);
 
 			return;
 		}
@@ -80,7 +82,7 @@ export const useCodeDiff = () => {
 				codemodOutputSlice.actions.setContent(webWorkerState.error.message),
 			);
 			dispatch(setHasRuntimeErrors(true));
-			dispatch(setEvents([]));
+			setEvents([]);
 			return;
 		}
 
@@ -89,7 +91,7 @@ export const useCodeDiff = () => {
 		);
 
 		dispatch(setHasRuntimeErrors(false));
-		dispatch(setEvents(webWorkerState.events));
+		setEvents(webWorkerState.events);
 	}, [dispatch, webWorkerState]);
 
 	const onSelectionChange = useCallback(
@@ -107,7 +109,7 @@ export const useCodeDiff = () => {
 	const onDebug = () => {
 		firstCodemodExecutionErrorEvent?.hashDigest &&
 			dispatch(setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest));
-		dispatch(viewSlice.actions.setActiveTab(TabNames.DEBUG));
+		setActiveTab(TabNames.DEBUG);
 	};
 
 	const originalEditorProps = {

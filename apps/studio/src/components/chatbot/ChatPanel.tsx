@@ -16,6 +16,7 @@ import {
 	applyAliases,
 	getAliases,
 } from "~/store/slices/CFS/alias";
+import { useCodemodExecutionError } from "~/store/zustand/log";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
@@ -80,7 +81,9 @@ export function ChatPanel({
 
 	const { getToken, isSignedIn } = useAuth();
 
-	const aliases = useSelector(getAliases);
+	const codemodExecutionError = useCodemodExecutionError();
+
+	const aliases = useSelector(getAliases(codemodExecutionError));
 	const promptsList = getPrompts(aliases);
 	const aliasList = getOrderedAliasList(aliases);
 
