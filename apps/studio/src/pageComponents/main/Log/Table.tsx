@@ -5,7 +5,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { useSelector } from "react-redux";
 import { Label } from "~/components/ui/label";
 import {
 	Table as ShadCNTable,
@@ -16,13 +15,14 @@ import {
 	TableRow as ShadCNTableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
+import type { Event } from "~/schemata/eventSchemata";
 import { type RootState, useAppDispatch, useAppStore } from "~/store";
 import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
 import { setActiveEventThunk } from "~/store/setActiveEventThunk";
 import { codemodOutputSlice } from "~/store/slices/codemodOutput";
 import { setCodemodSelection } from "~/store/slices/mod";
 import { setOutputSelection } from "~/store/slices/snippets";
-import { type Event, selectLog } from "../../../store/slices/log";
+import { useLogStore } from "~/store/zustand/log";
 
 type TableRow = Readonly<{
 	index: number;
@@ -104,13 +104,14 @@ type Ranges = ReturnType<typeof getRanges>;
 
 const Table = () => {
 	const store = useAppStore();
-	const { activeEventHashDigest, events } = useSelector(selectLog);
 	const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
 		null,
 	);
 	const [oldRanges, setOldRanges] = useState<Ranges | null>(null);
 
 	const dispatch = useAppDispatch();
+
+	const { activeEventHashDigest, events } = useLogStore();
 
 	const buildOnMouseOver = useCallback(
 		(hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
