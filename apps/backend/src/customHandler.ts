@@ -1,6 +1,6 @@
 import { type Clerk } from "@clerk/backend";
-import { type FastifyRequest } from "fastify";
-import { type CodemodService } from "./services/codemodService.js";
+import { FastifyReply, FastifyRequest } from "fastify";
+import { Environment } from "./schemata/env.js";
 import { type TokenService } from "./services/tokenService.js";
 
 export type CustomHandler<T> = (args: {
@@ -11,7 +11,9 @@ export type CustomHandler<T> = (args: {
 	clerkClient: ReturnType<typeof Clerk> | null;
 	getClerkUserId: () => Promise<string>;
 	now: () => number;
-	getRequest: () => FastifyRequest;
+	environment: Environment;
+	request: FastifyRequest;
+	reply: FastifyReply;
 }) => Promise<T>;
 
 export class InternalServerError extends Error {}
