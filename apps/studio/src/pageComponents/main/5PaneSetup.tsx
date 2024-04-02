@@ -42,7 +42,6 @@ import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import Codemod from "./Codemod";
-import { DialogWithLoginToken } from "./DialogWithLoginToken";
 import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
@@ -82,7 +81,6 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 
 const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
-	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
 	const panelRefs: PanelsRefs = useRef({});
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
@@ -110,7 +108,16 @@ const Main = () => {
 			}
 
 			if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-				setCLICommandDialogVisible(true);
+				const [sessionId, iv] = localStorage
+					.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)!
+					.split(",");
+
+				// Polling should pick it up
+				await getAccessToken({
+					clerkToken,
+					sessionId,
+					iv,
+				});
 			} else {
 				await routeUserToVSCodeWithAccessToken(clerkToken);
 			}
@@ -135,7 +142,15 @@ const Main = () => {
 					return;
 				}
 				if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-					setCLICommandDialogVisible(true);
+					const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+					const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+					// Polling should pick it up
+					await getAccessToken({
+						clerkToken,
+						sessionId,
+						iv,
+					});
 					return;
 				}
 				await routeUserToVSCodeWithAccessToken(clerkToken);
@@ -143,7 +158,14 @@ const Main = () => {
 			return;
 		}
 
-		localStorage.setItem(command, new Date().getTime().toString());
+		if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
+			const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+			const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+			localStorage.setItem(command, [sessionId, iv].join(","));
+		} else {
+			localStorage.setItem(command, new Date().getTime().toString());
+		}
 
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
@@ -199,10 +221,6 @@ const Main = () => {
 	return (
 		<>
 			<LoginWarningModal />
-			<DialogWithLoginToken
-				isOpen={CLICommandDialogVisible}
-				setIsOpen={setCLICommandDialogVisible}
-			/>
 
 			<Layout>
 				<Layout.Header>

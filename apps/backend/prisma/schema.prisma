@@ -90,6 +90,14 @@ model TokenMetadata {
   signature                     String @map("s") @db.VarChar(43)
 }
 
+model UserLoginIntent {
+  id    String  @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token String? @db.VarChar(255)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
 model TokenRevocation {
   pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
   revokedAt                     BigInt @map("r")

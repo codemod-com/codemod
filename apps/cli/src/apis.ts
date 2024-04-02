@@ -95,3 +95,31 @@ export const getCodemodList = async (options?: {
 
 	return res.data;
 };
+
+type UserLoginIntentResponse = {
+	id: string;
+	iv: string;
+};
+export const generateUserLoginIntent =
+	async (): Promise<UserLoginIntentResponse> => {
+		const res = await Axios.post<UserLoginIntentResponse>(
+			"https://backend.codemod.com/intents",
+			{},
+		);
+
+		return res.data;
+	};
+
+type ConfirmUserLoggedInResponse = {
+	token: string;
+};
+export const confirmUserLoggedIn = async (
+	sessionId: string,
+	iv: string,
+): Promise<string> => {
+	const res = await Axios.get<ConfirmUserLoggedInResponse>(
+		`https://backend.codemod.com/intents/${sessionId}?iv=${iv}`,
+	);
+
+	return res.data.token;
+};

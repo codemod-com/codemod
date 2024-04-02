@@ -115,6 +115,8 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
 	COMMAND: "command" as const,
 	COMPRESSED_SHAREABLE_CODEMOD: "c" as const,
 	ACCESS_TOKEN: "accessToken" as const,
+	SESSION_ID: "sessionId" as const,
+	IV: "iv" as const,
 });
 
 type InitialState = Readonly<{
