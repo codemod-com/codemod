@@ -136,7 +136,7 @@ const Chat = ({ id, className }: Props) => {
 	const codemodExecutionError = useCodemodExecutionError();
 
 	const aliases = useSelector((state: RootState) =>
-		getAliases(codemodExecutionError)(state),
+		getAliases(state),
 	);
 
 	const handleSelectPrompt = async (value: string) => {

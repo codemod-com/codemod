@@ -143,6 +143,7 @@ export const setActiveEventThunk = createAsyncThunk<
 	const { getState, dispatch } = thunkAPI;
 	const { setActiveEventHashDigest, events } = useLogStore();
 
+	console.log({eventHashDigest})
 	if (eventHashDigest === null) {
 		const rangeCommand: RangeCommand = {
 			kind: "PASS_THROUGH",
@@ -161,11 +162,12 @@ export const setActiveEventThunk = createAsyncThunk<
 
 	const event =
 		events.find(({ hashDigest }) => hashDigest === eventHashDigest) ?? null;
-
+	console.log({event})
 	if (event === null) {
 		return;
 	}
 
+	console.log({eventHashDigest})
 	setActiveEventHashDigest(eventHashDigest);
 
 	dispatch(
@@ -198,3 +200,5 @@ export const setActiveEventThunk = createAsyncThunk<
 		}),
 	);
 });
+
+

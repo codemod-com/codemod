@@ -12,7 +12,7 @@ import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/setRangeThunk";
+import { setRangeThunk } from "~/store/useRangeStore";
 import {
 	codemodOutputSlice,
 	selectCodemodOutput,

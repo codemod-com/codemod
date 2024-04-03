@@ -4,7 +4,7 @@ import { useSelector } from "react-redux";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/setRangeThunk";
+import { setRangeThunk } from "~/store/useRangeStore";
 import {
 	selectSnippets,
 	selectSnippetsFor,

@@ -81,9 +81,7 @@ export function ChatPanel({
 
 	const { getToken, isSignedIn } = useAuth();
 
-	const codemodExecutionError = useCodemodExecutionError();
-
-	const aliases = useSelector(getAliases(codemodExecutionError));
+	const aliases = useSelector(getAliases);
 	const promptsList = getPrompts(aliases);
 	const aliasList = getOrderedAliasList(aliases);
 

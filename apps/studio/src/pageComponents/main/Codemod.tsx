@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/setRangeThunk";
+import { setRangeThunk } from "~/store/useRangeStore";
 import { useSelectActiveEvent } from "~/store/zustand/log";
 import { selectMod, setContent } from "../../store/slices/mod";
 import { prettify } from "../../utils/prettify";

@@ -17,7 +17,7 @@ import {
 import { cn } from "~/lib/utils";
 import type { Event } from "~/schemata/eventSchemata";
 import { type RootState, useAppDispatch, useAppStore } from "~/store";
-import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
+import { executeRangeCommandOnBeforeInputThunk } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import { setActiveEventThunk } from "~/store/setActiveEventThunk";
 import { codemodOutputSlice } from "~/store/slices/codemodOutput";
 import { setCodemodSelection } from "~/store/slices/mod";

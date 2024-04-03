@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "~/store";
-import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
+import { executeRangeCommandOnBeforeInputThunk } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import Text from "../../components/Text";
 import Tree, { type TreeNode } from "../../components/Tree";
 import useScrollNodeIntoView from "../../hooks/useScrollNodeIntoView";
