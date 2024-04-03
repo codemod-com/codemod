@@ -1,10 +1,18 @@
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import {
+	SignOutButton,
+	SignedIn,
+	SignedOut,
+	UserButton,
+	useUser,
+} from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
 import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { LogoutIcon } from "~/icons/LogoutIcon";
 
 const AuthButtons = () => {
 	const router = useRouter();
+	const { user } = useUser();
 
 	const signUserIn = () => {
 		router.push("/auth/sign-in");
@@ -19,8 +27,18 @@ const AuthButtons = () => {
 				</Button>
 			</SignedOut>
 			<SignedIn>
-				<div className=" flex items-center gap-2 ">
+				<div className=" flex items-center gap-2">
 					<UserButton afterSignOutUrl="/" />
+					{user?.firstName}
+					<SignOutButton>
+						<Button
+							variant="ghost"
+							className="pl-0 hover:bg-transparent"
+							hint={<p className="font-normal">Log out</p>}
+						>
+							<LogoutIcon />
+						</Button>
+					</SignOutButton>
 				</div>
 			</SignedIn>
 		</>

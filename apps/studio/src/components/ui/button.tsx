@@ -2,6 +2,7 @@ import { Slot } from "@radix-ui/react-slot";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
+import Tooltip from "~/components/Tooltip/Tooltip";
 import { cn } from "~/lib/utils";
 
 const buttonVariants = cva(
@@ -24,6 +25,7 @@ const buttonVariants = cva(
 				unstyled: "h-auto w-auto",
 				default: "h-10 px-4 py-2",
 				sm: "h-9 rounded-md px-3",
+				xs: "h-7 rounded-md px-2",
 				lg: "h-11 rounded-md px-8",
 				icon: "h-10 w-10",
 			},
@@ -40,11 +42,15 @@ export interface ButtonProps
 		VariantProps<typeof buttonVariants> {
 	isLoading?: boolean;
 	asChild?: boolean;
+	hint?: React.ReactNode;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-	({ className, variant, size, isLoading, asChild = false, ...props }, ref) => {
-		const Comp = asChild ? Slot : "button";
+	(
+		{ className, variant, size, isLoading, hint, asChild = false, ...props },
+		ref,
+	) => {
+		const RenderElement = asChild ? Slot : "button";
 		if (isLoading) {
 			// eslint-disable-next-line no-param-reassign
 			props.children = [
@@ -56,14 +62,20 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			];
 		}
 
-		return (
-			<Comp
+		const Comp = (
+			<RenderElement
 				className={cn(buttonVariants({ variant, size, className }))}
 				ref={ref}
 				disabled={isLoading}
 				{...props}
 			/>
 		);
+
+		if (hint) {
+			return <Tooltip trigger={Comp} content={hint} />;
+		}
+
+		return Comp;
 	},
 );
 Button.displayName = "Button";

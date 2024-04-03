@@ -1,7 +1,7 @@
-import { Keyboard as KeyboardIcon } from "@phosphor-icons/react";
 import { useDispatch, useSelector } from "react-redux";
 import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
+import { ExampleIcon } from "~/icons/Example";
 import {
 	AFTER_SNIPPET_DEFAULT_CODE,
 	BEFORE_SNIPPET_DEFAULT_CODE,
@@ -17,16 +17,17 @@ const InsertExampleButton = () => {
 		<Tooltip
 			trigger={
 				<Button
-					className="flex items-center justify-center"
+					className="flex items-center justify-center px-0"
 					onClick={() => {
 						dispatch(setInput(BEFORE_SNIPPET_DEFAULT_CODE));
 						dispatch(setOutput(AFTER_SNIPPET_DEFAULT_CODE));
 						dispatch(setContent(buildDefaultCodemodSource(engine)));
 					}}
-					size="sm"
-					variant="outline"
+					size="xs"
+					variant="ghost"
 				>
-					<KeyboardIcon className="h-4 w-4" />
+					{/* <KeyboardIcon className="h-4 w-4" /> */}
+					<ExampleIcon />
 					<span className="sr-only">Insert Example</span>
 				</Button>
 			}
