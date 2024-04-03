@@ -69,6 +69,36 @@ function findClosestParentWithinRange(
 	return res;
 }
 
+const extractIdsAndTypes = ({
+	id,
+	children = [],
+	actualNode,
+}: TreeNode): ReadonlyArray<
+	[TreeNode["id"], TreeNode["actualNode"]["type"]]
+> => [
+	[id, actualNode.type],
+	...children.flatMap((child) => extractIdsAndTypes(child)),
+];
+
+const getNodeById = (node: TreeNode, id: string): TreeNode | null => {
+	if (node.id === id) {
+		return node;
+	}
+
+	const children = node.children ?? [];
+
+	// eslint-disable-next-line no-plusplus
+	for (let i = 0; i < children.length; i++) {
+		const child = children[i]!;
+		const found = getNodeById(child, id);
+		if (found) {
+			return found;
+		}
+	}
+
+	return null;
+};
+
 export const isNode = (node: unknown): node is Node => {
 	return (
 		typeof node === "object" &&
@@ -81,4 +111,9 @@ export const isNode = (node: unknown): node is Node => {
 const getNodeHash = ({ type, start, end }: Node): string =>
 	`${type}_${start}_${end}`;
 
-export { findClosestParentWithinRange, getNodeHash };
+export {
+	findClosestParentWithinRange,
+	extractIdsAndTypes,
+	getNodeById,
+	getNodeHash,
+};

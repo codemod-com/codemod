@@ -3,6 +3,7 @@
 /* eslint-disable no-param-reassign */
 import { isFile } from "@babel/types";
 import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
+import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { INITIAL_STATE } from "~/store/getInitialState";
 import { JSEngine } from "~/types/Engine";
@@ -12,12 +13,6 @@ import { type RangeCommand, buildRanges } from "~/utils/tree";
 import { parseSnippet } from "../../utils/babelParser";
 import type { RootState } from "../index";
 import { selectCodemodOutput } from "./codemodOutput";
-
-type Token = Readonly<{
-	start: number;
-	end: number;
-	value?: string;
-}>;
 
 const SLICE_KEY = "snippets";
 
