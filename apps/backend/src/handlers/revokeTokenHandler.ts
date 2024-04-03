@@ -5,7 +5,10 @@ export const revokeTokenHandler: CustomHandler<{
 }> = async (dependencies) => {
 	const accessToken = dependencies.getAccessTokenOrThrow();
 
-	await dependencies.tokenService.revokeToken(accessToken, dependencies.now());
+	await dependencies.tokenService.revokeToken(
+		accessToken,
+		BigInt(dependencies.now()),
+	);
 
 	return { success: true };
 };

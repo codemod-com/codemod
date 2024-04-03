@@ -1,5 +1,10 @@
 import { createHash, randomBytes } from "crypto";
-import { Prisma, TokenMetadata, TokenRevocation } from "@prisma/client";
+import {
+	Prisma,
+	PrismaClient,
+	TokenMetadata,
+	TokenRevocation,
+} from "@prisma/client";
 import {
 	EncryptedTokenMetadata,
 	KeyIvPair,
@@ -8,7 +13,6 @@ import {
 	sign,
 	verifyTokenMetadata,
 } from "../crypto/crypto.js";
-import { DataAccessLayer } from "../db/dataAccessLayer.js";
 
 export const CLAIM_PUBLISHING = BigInt(0x1);
 export const CLAIM_ISSUE_CREATION = BigInt(0x2);
@@ -74,7 +78,7 @@ export class TokenService {
 	protected _PEPPER: Buffer;
 
 	public constructor(
-		protected _dataAccessLayer: DataAccessLayer,
+		protected prisma: PrismaClient,
 		ENCRYPTION_KEY: string,
 		SIGNATURE_PRIVATE_KEY: string,
 		PEPPER: string,
@@ -129,9 +133,9 @@ export class TokenService {
 			signature: encryptedTokenMetadata.signature.toString("base64url"),
 		};
 
-		await this._dataAccessLayer.prisma.$transaction(
+		await this.prisma.$transaction(
 			[
-				this._dataAccessLayer.prisma.tokenMetadata.create({
+				this.prisma.tokenMetadata.create({
 					data: tokenMetadata,
 				}),
 			],
@@ -157,20 +161,19 @@ export class TokenService {
 			this._PEPPER,
 		).toString("base64url");
 
-		const [tokenMetadata, tokenRevocation] =
-			await this._dataAccessLayer.prisma.$transaction(
-				[
-					this._dataAccessLayer.prisma.tokenMetadata.findUnique({
-						where: { pepperedAccessTokenHashDigest },
-					}),
-					this._dataAccessLayer.prisma.tokenRevocation.findUnique({
-						where: { pepperedAccessTokenHashDigest },
-					}),
-				],
-				{
-					isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
-				},
-			);
+		const [tokenMetadata, tokenRevocation] = await this.prisma.$transaction(
+			[
+				this.prisma.tokenMetadata.findUnique({
+					where: { pepperedAccessTokenHashDigest },
+				}),
+				this.prisma.tokenRevocation.findUnique({
+					where: { pepperedAccessTokenHashDigest },
+				}),
+			],
+			{
+				isolationLevel: Prisma.TransactionIsolationLevel.ReadCommitted,
+			},
+		);
 
 		if (tokenMetadata === null) {
 			throw new TokenNotFoundError();
@@ -240,7 +243,7 @@ export class TokenService {
 			signature,
 		};
 
-		return this._dataAccessLayer.prisma.$transaction(
+		return this.prisma.$transaction(
 			async (tx) => {
 				const count = await tx.tokenMetadata.count({
 					where: {
@@ -254,7 +257,7 @@ export class TokenService {
 				}
 
 				try {
-					return await this._dataAccessLayer.prisma.tokenRevocation.create({
+					return await this.prisma.tokenRevocation.create({
 						data: tokenRevocation,
 					});
 				} catch {

@@ -1,11 +1,11 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
+import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import Panel from "~/components/Panel";
-import AuthenticatedAccess from "~/components/authenticatedAccess";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
 import Chat from "~/components/chatbot/Chat";
 import {
@@ -26,17 +26,28 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
+import {
+	AstSection,
+	BoundResizePanel,
+	PanelData,
+	PanelsRefs,
+	ResizablePanelsIndices,
+	ShowPanelTile,
+} from "~/pageComponents/main/PageBottomPane";
+import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
+import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { AppDispatch } from "~/store";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { selectEngine, setEngine } from "~/store/slices/snippets";
 import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
 import { openLink } from "~/utils/openLink";
+import themeConfig from "../../../tailwind.config";
+import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
-import PageBottomPane from "./BottomPane";
 import Codemod from "./Codemod";
-import { DialogWithLoginToken } from "./DialogWithLoginToken";
 import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
@@ -94,8 +105,20 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 
 const Main = () => {
 	const { isSignedIn, getToken } = useAuth();
-	const [CLICommandDialogVisible, setCLICommandDialogVisible] = useState(false);
 	const router = useRouter();
+	const panelRefs: PanelsRefs = useRef({});
+	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
+		useSnippetsPanels({ panelRefs });
+
+	const engine = useSelector(selectEngine);
+	const dispatch = useDispatch<AppDispatch>();
+	const { toggleTheme, isDark } = useTheme();
+
+	const onEngineChange = (value: string) => {
+		if (value === "jscodeshift" || value === "tsmorph") {
+			dispatch(setEngine(value));
+		}
+	};
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -119,7 +142,16 @@ const Main = () => {
 			}
 
 			if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-				setCLICommandDialogVisible(true);
+				const [sessionId, iv] = localStorage
+					.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)!
+					.split(",");
+
+				// Polling should pick it up
+				await getAccessToken({
+					clerkToken,
+					sessionId,
+					iv,
+				});
 			} else {
 				await routeUserToVSCodeWithAccessToken(clerkToken);
 			}
@@ -144,7 +176,15 @@ const Main = () => {
 					return;
 				}
 				if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-					setCLICommandDialogVisible(true);
+					const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+					const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+					// Polling should pick it up
+					await getAccessToken({
+						clerkToken,
+						sessionId,
+						iv,
+					});
 					return;
 				}
 				await routeUserToVSCodeWithAccessToken(clerkToken);
@@ -152,119 +192,206 @@ const Main = () => {
 			return;
 		}
 
-		localStorage.setItem(command, new Date().getTime().toString());
+		if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
+			const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+			const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+			localStorage.setItem(command, [sessionId, iv].join(","));
+		} else {
+			localStorage.setItem(command, new Date().getTime().toString());
+		}
 
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
 
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch<AppDispatch>();
-	const { toggleTheme, isDark } = useTheme();
+	const codemodHeader = (
+		<Panel.Header className="h-[30px]">
+			<Panel.HeaderTab>
+				<Panel.HeaderTitle className="h-full">
+					Codemod
+					<div className="flex items-center gap-1">
+						{/* <DownloadZip />
+						<ClearInputButton /> */}
+						<Select onValueChange={onEngineChange} value={engine}>
+							<SelectTrigger className="flex flex-1 h-full select-none items-center font-semibold">
+								<span
+									className={cn(
+										"mr-[0.75rem] text-xs font-light text-slate-500",
+										{
+											"text-slate-200": isDark,
+										},
+									)}
+								>
+									Engine:
+								</span>
+								<SelectValue placeholder={engine} />
+							</SelectTrigger>
+							<SelectContent>
+								{enginesConfig.map((engineConfig, i) => (
+									<SelectItem
+										disabled={engineConfig.disabled}
+										key={i}
+										value={engineConfig.value}
+										className={cn({
+											"font-semibold": engine === engineConfig.value,
+										})}
+									>
+										{engineConfig.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+						<InsertExampleButton />
+					</div>
+				</Panel.HeaderTitle>
+			</Panel.HeaderTab>
+		</Panel.Header>
+	);
 
-	const onEngineChange = (value: string) => {
-		if (value === "jscodeshift" || value === "tsmorph") {
-			dispatch(setEngine(value));
-		}
-	};
+	const beforeAfterBottomPanels = (
+		<>
+			<CodeSnippets
+				codeDiff={codeDiff}
+				onlyAfterHidden={onlyAfterHidden}
+				panelRefs={panelRefs}
+				panels={[beforePanel, afterPanel]}
+			>
+				{onlyAfterHidden && (
+					<ShowPanelTile
+						header="After"
+						panel={afterPanel}
+						onClick={() => {
+							afterPanel.visibilityOptions?.show();
+							panelRefs.current[ResizablePanelsIndices.AFTER_SNIPPET]?.resize(
+								50,
+							);
+						}}
+					/>
+				)}
+			</CodeSnippets>
+		</>
+	);
+
+	const outputBottomPanel = (
+		<CodeSnippets
+			codeDiff={codeDiff}
+			onlyAfterHidden={onlyAfterHidden}
+			panelRefs={panelRefs}
+			panels={[outputPanel]}
+		/>
+	);
 
 	return (
 		<>
 			<LoginWarningModal />
-			<DialogWithLoginToken
-				isOpen={CLICommandDialogVisible}
-				setIsOpen={setCLICommandDialogVisible}
-			/>
 
 			<Layout>
 				<Layout.Header>
 					<Header />
 				</Layout.Header>
 				<Layout.Content gap="gap-2">
-					<PanelGroup autoSaveId="main-layout" direction="vertical">
-						<Layout.ResizablePanel
-							collapsible
-							defaultSize={50}
-							minSize={0}
-							style={{
-								flexBasis: isServer ? "50%" : "0",
-							}}
+					<PanelGroup autoSaveId="main-layout" direction="horizontal">
+						<BoundResizePanel
+							panelRefIndex={ResizablePanelsIndices.LEFT}
+							panelRefs={panelRefs}
+							className="bg-gray-bg"
 						>
-							<PanelGroup direction="horizontal">
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
+							<PanelGroup direction="vertical">
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+									boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
 								>
-									<AssistantTab />
-								</Layout.ResizablePanel>
-
-								<ResizeHandle direction="horizontal" />
-
-								<Layout.ResizablePanel
-									className="relative bg-gray-bg dark:bg-gray-light"
-									collapsible
-									defaultSize={50}
-									minSize={0}
-									style={{
-										flexBasis: isServer ? "50%" : "0",
-									}}
+									<AssistantTab
+										panelRefs={panelRefs}
+										beforePanel={beforePanel}
+										afterPanel={afterPanel}
+									/>
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
 								>
-									<Panel.Header className="h-[30px]">
-										<Panel.HeaderTab>
-											<Panel.HeaderTitle>
-												Codemod
-												<div className="flex items-center gap-1">
-													<Select onValueChange={onEngineChange} value={engine}>
-														<SelectTrigger className="flex flex-1 h-full select-none items-center font-semibold">
-															<span
-																className={cn(
-																	"mr-[0.75rem] text-xs font-light text-slate-500",
-																	{
-																		"text-slate-200": isDark,
-																	},
-																)}
-															>
-																Engine:
-															</span>
-															<SelectValue placeholder={engine} />
-														</SelectTrigger>
-														<SelectContent>
-															{enginesConfig.map((engineConfig, i) => (
-																<SelectItem
-																	disabled={engineConfig.disabled}
-																	key={i}
-																	value={engineConfig.value}
-																	className={cn({
-																		"font-semibold":
-																			engine === engineConfig.value,
-																	})}
-																>
-																	{engineConfig.label}
-																</SelectItem>
-															))}
-														</SelectContent>
-													</Select>
-													<InsertExampleButton />
-												</div>
-											</Panel.HeaderTitle>
-										</Panel.HeaderTab>
-									</Panel.Header>
-									<Codemod />
-								</Layout.ResizablePanel>
+									{beforeAfterBottomPanels}
+								</BoundResizePanel>
 							</PanelGroup>
-						</Layout.ResizablePanel>
-						<ResizeHandle direction="vertical" />
-						<PageBottomPane />
+						</BoundResizePanel>
+
+						<ResizeHandle direction="horizontal" />
+						<BoundResizePanel
+							panelRefs={panelRefs}
+							panelRefIndex={ResizablePanelsIndices.RIGHT}
+						>
+							<PanelGroup direction="vertical">
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+									boundedIndex={ResizablePanelsIndices.TAB_SECTION}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{codemodHeader}
+									<Codemod />
+								</BoundResizePanel>
+								<ResizeHandle direction="vertical" />
+								<BoundResizePanel
+									panelRefIndex={ResizablePanelsIndices.OUTPUT_AST}
+									panelRefs={panelRefs}
+									className="bg-gray-bg"
+								>
+									{outputBottomPanel}
+								</BoundResizePanel>
+							</PanelGroup>
+						</BoundResizePanel>
 					</PanelGroup>
 				</Layout.Content>
 			</Layout>
 		</>
 	);
 };
+
+function SignInRequired() {
+	const theme = useTheme();
+	const router = useRouter();
+	const signUserIn = () => {
+		router.push("/auth/sign-in");
+	};
+
+	return (
+		<div className="grid h-full absolute top-0 bottom-0 w-full">
+			<div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />
+			<section
+				className={
+					"flex items-center flex-col gap-3 p-4 w-60 text-lg relative rounded-lg place-self-center border border-solid bg-background border-gray-200 dark:border-gray-700"
+				}
+				style={{
+					backgroundImage:
+						"linear-gradient(0deg, rgba(187, 252, 3, 0.3) 0, rgb(83 35 130 / 0%) 70%)",
+				}}
+			>
+				<UserIcon
+					stroke={
+						theme.isDark
+							? themeConfig.theme.extend.colors["gray-bg-light"]
+							: themeConfig.theme.extend.colors["gray-dark"]
+					}
+				/>
+				<p className="font-bold text-lg">Sign in required</p>
+				<p className="font-normal text-sm text-center">
+					Sign in to use AI assistant to build codemod
+				</p>
+				<Button
+					onClick={signUserIn}
+					className="flex w-full text-white gap-2 items-center"
+				>
+					Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />
+				</Button>
+			</section>
+		</div>
+	);
+}
 
 const LoginWarningModal = () => {
 	const { isSignedIn, isLoaded } = useAuth();
@@ -302,7 +429,15 @@ const LoginWarningModal = () => {
 	);
 };
 
-const AssistantTab = () => {
+const AssistantTab = ({
+	panelRefs,
+	beforePanel,
+	afterPanel,
+}: {
+	panelRefs: PanelsRefs;
+	beforePanel: PanelData;
+	afterPanel: PanelData;
+}) => {
 	const activeTab = useSelector(selectActiveTab);
 	const engine = useSelector(selectEngine);
 	const dispatch = useDispatch();
@@ -354,6 +489,12 @@ const AssistantTab = () => {
 				<TabsTrigger className="flex-1" value={TabNames.MODGPT}>
 					ModGPT
 				</TabsTrigger>
+				<TabsTrigger className="flex-1" value={TabNames.AST}>
+					AST
+				</TabsTrigger>
+				<TabsTrigger className="flex-1" value={TabNames.GUIBuilder}>
+					GUI Builder
+				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.DEBUG}>
 					<LiveIcon />
 					Debug
@@ -362,13 +503,27 @@ const AssistantTab = () => {
 
 			<TabsContent
 				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
+				value={TabNames.AST}
+				onScroll={handleScroll}
+				ref={scrollContainerRef}
+			>
+				<PanelGroup direction="horizontal">
+					<AstSection
+						panels={[beforePanel, afterPanel]}
+						engine={engine}
+						panelRefs={panelRefs}
+					/>
+				</PanelGroup>
+			</TabsContent>
+
+			<TabsContent
+				className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
 				value={TabNames.MODGPT}
 				onScroll={handleScroll}
 				ref={scrollContainerRef}
 			>
-				<AuthenticatedAccess>
-					<Chat />
-				</AuthenticatedAccess>
+				<Chat />
+				{!isSignedIn && <SignInRequired />}
 			</TabsContent>
 			<TabsContent
 				className="mt-0 h-full pt-[2.5rem] overflow-auto"

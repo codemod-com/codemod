@@ -22,14 +22,13 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 		"@types/mocha": "^10.0.4"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
+		"scripts": {
 				"test": "mocha"
 	},
 	"mocha": {
 		"config-key": "config-value"
 	},
-	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
+	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs"],
 	"type": "module"
 }
 ```
@@ -45,12 +44,11 @@ Run this codemod to upgrade configuration files that need to be changed after mi
 		"@vitest/coverage-v8": "^1.0.1"
 	},
 	"main": "./dist/index.cjs",
-	"types": "/dist/index.d.ts",
-	"scripts": {
+		"scripts": {
 				"test": "vitest run",
 		"coverage": "vitest run --coverage"
 	},
-	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs", "./index.d.ts"],
+	"files": ["README.md", ".codemodrc.json", "./dist/index.cjs"],
 	"type": "module"
 }
 ```

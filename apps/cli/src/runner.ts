@@ -145,7 +145,7 @@ export class Runner {
 				const { preCommitCodemods } = await this._loadRepositoryConfiguration();
 
 				for (const preCommitCodemod of preCommitCodemods) {
-					if (preCommitCodemod.source === "registry") {
+					if (preCommitCodemod.source === "package") {
 						const codemod = await this._codemodDownloader.download(
 							preCommitCodemod.name,
 						);

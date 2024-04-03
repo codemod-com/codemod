@@ -11,9 +11,9 @@ import {
 
 const codemodEngineSchema = union([
 	literal("jscodeshift"),
-	literal("repomod-engine"),
 	literal("filemod"),
 	literal("ts-morph"),
+	literal("ast-grep"),
 ]);
 
 export const codemodSettingsSchema = object({

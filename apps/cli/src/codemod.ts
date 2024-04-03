@@ -2,7 +2,7 @@ import { type Arguments, type KnownEngines } from "@codemod-com/utilities";
 
 export type Codemod =
 	| Readonly<{
-			source: "registry";
+			source: "package";
 			name: string;
 			include?: string[];
 			engine: "recipe";
@@ -11,7 +11,7 @@ export type Codemod =
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: "registry";
+			source: "package";
 			name: string;
 			include?: string[];
 			engine: KnownEngines;
@@ -20,7 +20,7 @@ export type Codemod =
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: "registry";
+			source: "package";
 			name: string;
 			include?: string[];
 			engine: "piranha";
@@ -28,7 +28,7 @@ export type Codemod =
 			arguments: Arguments;
 	  }>
 	| Readonly<{
-			source: "fileSystem";
+			source: "standalone";
 			include?: string[];
 			engine: KnownEngines;
 			indexPath: string;
