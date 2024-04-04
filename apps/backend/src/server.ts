@@ -8,11 +8,7 @@ import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
-import Fastify, {
-	FastifyPluginCallback,
-	FastifyRequest,
-	RouteHandlerMethod,
-} from "fastify";
+import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -240,8 +236,6 @@ const wrapRequestHandlerMethod =
 		};
 
 		const now = () => Date.now();
-
-		const getRequest = (): FastifyRequest => request;
 
 		try {
 			const data = await handler({

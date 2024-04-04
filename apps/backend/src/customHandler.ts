@@ -1,6 +1,7 @@
 import { type Clerk } from "@clerk/backend";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Environment } from "./schemata/env.js";
+import { CodemodService } from "./services/codemodService.js";
 import { type TokenService } from "./services/tokenService.js";
 
 export type CustomHandler<T> = (args: {
