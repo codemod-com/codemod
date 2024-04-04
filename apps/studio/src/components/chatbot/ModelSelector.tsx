@@ -1,4 +1,3 @@
-import { useDispatch, useSelector } from "react-redux";
 import {
 	Select,
 	SelectContent,
@@ -7,20 +6,18 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
+import { useCFSStore } from "~/store/zustand/CFS";
 import { useTheme } from "../../pageComponents/main/themeContext";
-import {
-	ENGINES,
-	type Engine,
-	selectEngine,
-	setEngine,
-} from "../../store/slices/CFS";
+import { type Engine, LLM_ENGINES } from "../../store/zustand/CFS";
 
 const EngineSelector = () => {
-	const dispatch = useDispatch();
-	const engine = useSelector(selectEngine);
+	const {
+		AIAssistant: { engine },
+		setEngine,
+	} = useCFSStore();
 
 	const handleEngineChange = (e: Engine) => {
-		dispatch(setEngine(e));
+		setEngine(e);
 	};
 
 	const { isDark } = useTheme();
@@ -37,7 +34,7 @@ const EngineSelector = () => {
 				<SelectValue placeholder={engine} />
 			</SelectTrigger>
 			<SelectContent>
-				{ENGINES.map((e) => (
+				{LLM_ENGINES.map((e) => (
 					<SelectItem
 						key={e}
 						value={e}

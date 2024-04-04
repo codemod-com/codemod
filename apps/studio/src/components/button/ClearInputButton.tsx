@@ -1,24 +1,25 @@
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
-import { useDispatch } from "react-redux";
 import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import { setContent } from "~/store/slices/mod";
-import { setInput, setOutput } from "~/store/slices/snippets";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 type Props = { className?: string };
 
 const ClearInputButton = ({ className }: Props) => {
-	const dispatch = useDispatch();
+	const { setContent } = useModStore();
+	const { setInput, setOutput } = useSnippetStore();
+
 	return (
 		<Tooltip
 			trigger={
 				<Button
 					className={cn("flex items-center justify-center", className)}
 					onClick={() => {
-						dispatch(setInput(""));
-						dispatch(setOutput(""));
-						dispatch(setContent(""));
+						setInput("");
+						setOutput("");
+						setContent("");
 					}}
 					size="sm"
 					variant="outline"

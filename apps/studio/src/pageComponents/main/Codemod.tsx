@@ -2,14 +2,11 @@
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/useRangesOnTarget";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useSelectActiveEvent } from "~/store/zustand/log";
-import { selectMod, setContent } from "../../store/slices/mod";
-import { prettify } from "../../utils/prettify";
 import { useModStore } from "~/store/zustand/mod";
+import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -18,18 +15,18 @@ const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 
 const Codemod = () => {
 	const editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
-	const { internalContent, ranges } = useModStore();
-	const dispatch = useAppDispatch();
+	const { internalContent, ranges, setContent } = useModStore();
 	const activeEvent = useSelectActiveEvent();
+	const setRangeThunk = useRangesOnTarget();
 
 	const content = internalContent ?? "";
 
 	const onBlur = useCallback(() => {
 		const prettified = prettify(content);
 		if (prettified !== content) {
-			dispatch(setContent(prettified));
+			setContent(prettified);
 		}
-	}, [content, dispatch]);
+	}, [content]);
 
 	const onKeyUp = useCallback(
 		(event: monaco.IKeyboardEvent) => {
@@ -37,26 +34,22 @@ const Codemod = () => {
 				return;
 			}
 
-			dispatch(
-				setRangeThunk({
-					target: "CODEMOD_INPUT",
-					ranges: [],
-				}),
-			);
+			setRangeThunk({
+				target: "CODEMOD_INPUT",
+				ranges: [],
+			});
 		},
-		[dispatch],
+		[setRangeThunk],
 	);
 
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
-			dispatch(
-				setRangeThunk({
-					target: "CODEMOD_INPUT",
-					ranges: [range],
-				}),
-			);
+			setRangeThunk({
+				target: "CODEMOD_INPUT",
+				ranges: [range],
+			});
 		},
-		[dispatch],
+		[setRangeThunk],
 	);
 
 	useEffect(() => {
@@ -75,7 +68,7 @@ const Codemod = () => {
 		);
 
 		editor.current.revealPositionInCenter(startPosition);
-	}, [dispatch, activeEvent]);
+	}, [activeEvent]);
 
 	return (
 		<CodeSnippet
@@ -83,7 +76,7 @@ const Codemod = () => {
 			highlights={ranges}
 			language="typescript"
 			onBlur={onBlur}
-			onChange={(value) => dispatch(setContent(value ?? ""))}
+			onChange={(value) => setContent(value ?? "")}
 			onKeyUp={({ event }) => onKeyUp(event)}
 			path="codemod.ts"
 			value={content}

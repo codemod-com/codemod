@@ -1,16 +1,21 @@
-import create from 'zustand';
-import { INITIAL_STATE } from '~/store/getInitialState';
-import { isFile } from '@babel/types';
+import { isFile } from "@babel/types";
+import create from "zustand";
+import { INITIAL_STATE } from "~/store/getInitialState";
 
-import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";
+import { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { JSEngine } from "~/types/Engine";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
 import { parseSnippet } from "../../utils/babelParser";
-import { SnippetType } from "~/pageComponents/main/PageBottomPane";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+
+export type Token = Readonly<{
+	start: number;
+	end: number;
+	value?: string;
+}>;
 
 type SnippetStateValues = {
 	engine: JSEngine;
@@ -32,9 +37,9 @@ type SnippetStateSetters = {
 	setOutput: (output: string) => void;
 	setInputSelection: (command: RangeCommand) => void;
 	setOutputSelection: (command: RangeCommand) => void;
-}
+};
 
-export type SnippetState = SnippetStateValues & SnippetStateSetters
+export type SnippetState = SnippetStateValues & SnippetStateSetters;
 export const getInitialState = (): SnippetStateValues => {
 	const { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
 
@@ -48,10 +53,10 @@ export const getInitialState = (): SnippetStateValues => {
 	const beforeInputTokens = isFile(beforeInputParsed)
 		? Array.isArray(beforeInputParsed.tokens)
 			? (beforeInputParsed.tokens as any[]).map(({ start, end, value }) => ({
-				start,
-				end,
-				value: value ?? beforeSnippet.slice(start, end),
-			}))
+					start,
+					end,
+					value: value ?? beforeSnippet.slice(start, end),
+			  }))
 			: []
 		: [];
 
@@ -65,10 +70,10 @@ export const getInitialState = (): SnippetStateValues => {
 	const afterInputTokens = isFile(afterInputParsed)
 		? Array.isArray(afterInputParsed.tokens)
 			? (afterInputParsed.tokens as any[]).map(({ start, end, value }) => ({
-				start,
-				end,
-				value: value ?? afterSnippet.slice(start, end),
-			}))
+					start,
+					end,
+					value: value ?? afterSnippet.slice(start, end),
+			  }))
 			: []
 		: [];
 
@@ -92,12 +97,16 @@ export const useSnippetStore = create<SnippetState>((set, get) => ({
 	setEngine: (engine) => set({ engine }),
 	setInput: (input) => {
 		const parsed = parseSnippet(input);
-		const rootNode = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
+		const rootNode = isFile(parsed)
+			? mapBabelASTToRenderableTree(parsed)
+			: null;
 		set({ inputSnippet: input, beforeInputRootNode: rootNode });
 	},
 	setOutput: (output) => {
 		const parsed = parseSnippet(output);
-		const rootNode = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
+		const rootNode = isFile(parsed)
+			? mapBabelASTToRenderableTree(parsed)
+			: null;
 		set({ outputSnippet: output, afterInputRootNode: rootNode });
 	},
 	setInputSelection: (command) => {
@@ -118,7 +127,7 @@ export const useSnippetStore = create<SnippetState>((set, get) => ({
 
 export const useSelectFirstTreeNode = (type: SnippetType): TreeNode | null => {
 	const state = useSnippetStore.getState();
-	const {ranges} = useCodemodOutputStore();
+	const { ranges } = useCodemodOutputStore();
 
 	let firstRange: TreeNode | OffsetRange | undefined;
 
@@ -130,11 +139,56 @@ export const useSelectFirstTreeNode = (type: SnippetType): TreeNode | null => {
 			firstRange = state.afterInputRanges[0];
 			break;
 		case "output":
-			firstRange = ranges[0]
+			firstRange = ranges[0];
 			break;
 		default:
 			return null;
 	}
 
 	return firstRange && "id" in firstRange ? firstRange : null;
+};
+
+export const useSelectSnippetsFor = (type: SnippetType) => {
+	// @TODO make reusable reducer for the code snippet
+	// that will include snippet, rootNode, ranges,
+
+	const {
+		inputSnippet,
+		outputSnippet,
+		beforeInputRootNode,
+		afterInputRootNode,
+		beforeInputRanges,
+		afterInputRanges,
+	} = useSnippetStore();
+
+	const { ranges, content, rootNode } = useCodemodOutputStore();
+
+	switch (type) {
+		case "before":
+			return {
+				snippet: inputSnippet,
+				rootNode: beforeInputRootNode,
+				ranges: beforeInputRanges,
+			};
+		case "after":
+			return {
+				snippet: outputSnippet,
+				rootNode: afterInputRootNode,
+				ranges: afterInputRanges,
+			};
+
+		case "output":
+			return {
+				snippet: content,
+				rootNode,
+				ranges,
+			};
+
+		default:
+			return {
+				snippet: "",
+				rootNode: null,
+				ranges: [],
+			};
+	}
 };

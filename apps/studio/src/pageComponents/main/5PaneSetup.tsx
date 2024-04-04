@@ -2,7 +2,6 @@ import { SignInButton, useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import Panel from "~/components/Panel";
@@ -109,13 +108,12 @@ const Main = () => {
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
 
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch<AppDispatch>();
+	const { engine, setEngine } = useSnippetStore();
 	const { toggleTheme, isDark } = useTheme();
 
 	const onEngineChange = (value: string) => {
 		if (value === "jscodeshift" || value === "tsmorph") {
-			dispatch(setEngine(value));
+			setEngine(value);
 		}
 	};
 
@@ -439,7 +437,6 @@ const AssistantTab = ({
 }) => {
 	const { activeTab } = useViewStore();
 	const { engine } = useSnippetStore();
-	const dispatch = useDispatch();
 
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const savedScrollPositionRef = useRef<number>(0);
@@ -451,7 +448,7 @@ const AssistantTab = ({
 		(newActiveTab: TabNames) => {
 			setActiveTab(newActiveTab);
 		},
-		[dispatch],
+		[setActiveTab],
 	);
 
 	useEffect(() => {

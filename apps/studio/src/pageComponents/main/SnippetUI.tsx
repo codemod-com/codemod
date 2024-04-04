@@ -1,19 +1,11 @@
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import {
-	selectSnippets,
-	selectSnippetsFor,
-	setInput,
-	setOutput,
-} from "../../store/slices/snippets";
-import { prettify } from "../../utils/prettify";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { useRanges } from "~/store/useRanges";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
+import { useSnippetStore } from "~/store/zustand/snippets";
+import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -25,39 +17,37 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-	const state = useSelector(selectSnippets);
+	const { setInput, setOutput, inputSnippet, outputSnippet } =
+		useSnippetStore();
 
-	const {setInput, setOutput} = useSnippetStore()
+	const snippetValue = type === "before" ? inputSnippet : outputSnippet;
 
-	const valueKey = type === "before" ? "inputSnippet" : "outputSnippet";
-
-	const setRangesOnTarget = useRangesOnTarget()
-	const value = state[valueKey];
+	const setRangesOnTarget = useRangesOnTarget();
 
 	const onSnippetChange = useCallback(
 		(text?: string) => {
 			const val = text ?? "";
-			type === "before" ? setInput(val) : setOutput(val)
+			type === "before" ? setInput(val) : setOutput(val);
 		},
 
 		[setInput, setOutput, type],
 	);
 
 	const onSnippetBlur = useCallback(() => {
-		onSnippetChange(prettify(value));
-	}, [onSnippetChange, value]);
+		onSnippetChange(prettify(snippetValue));
+	}, [onSnippetChange]);
 
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
 			setRangesOnTarget({
-					target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
-					ranges: [range],
-				})
+				target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
+				ranges: [range],
+			});
 		},
 		[type, setRangesOnTarget],
 	);
 	return {
-		value,
+		value: snippetValue,
 		onSnippetBlur,
 		onSnippetChange,
 		handleSelectionChange,
@@ -66,7 +56,6 @@ export const useSnippet = (type: SnippetType) => {
 const SnippetUI = ({ type }: Props) => {
 	const { value, onSnippetBlur, onSnippetChange, handleSelectionChange } =
 		useSnippet(type);
-
 
 	const ranges = useRanges(type);
 

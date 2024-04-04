@@ -5,7 +5,7 @@ import {
 	type WebWorkerIncomingMessage,
 	parseWebWorkerOutgoingMessage,
 } from "~/schemata/webWorkersSchemata";
-import type { Engine } from "~/store/slices/snippets";
+import { JSEngine } from "~/types/Engine";
 
 type State =
 	| {
@@ -72,7 +72,7 @@ export const useWebWorker = () => {
 	}, []);
 
 	const postMessage = useCallback(
-		(engine: Engine, content: string, input: string) => {
+		(engine: JSEngine, content: string, input: string) => {
 			ref.current?.postMessage({
 				engine: String(engine),
 				content: String(content),
