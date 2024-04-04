@@ -125,27 +125,32 @@ export const useSnippetStore = create<SnippetState>((set, get) => ({
 	},
 }));
 
-export const useSelectFirstTreeNode = (type: SnippetType): TreeNode | null => {
-	const state = useSnippetStore.getState();
+export const useSelectFirstTreeNode = () => {
+	const state = useSnippetStore();
 	const { ranges } = useCodemodOutputStore();
 
-	let firstRange: TreeNode | OffsetRange | undefined;
+	return (type: SnippetType): TreeNode | null => {
+		let firstRange: TreeNode | OffsetRange | undefined;
 
-	switch (type) {
-		case "before":
-			firstRange = state.beforeInputRanges[0];
-			break;
-		case "after":
-			firstRange = state.afterInputRanges[0];
-			break;
-		case "output":
-			firstRange = ranges[0];
-			break;
-		default:
-			return null;
-	}
+		// console.log(' state.beforeInputRanges[0]',  state.beforeInputRanges[0])
+		// console.log(' state.afterInputRanges[0]',  state.afterInputRanges[0])
+		// console.log(' state.ranges[0]',  ranges[0])
+		switch (type) {
+			case "before":
+				firstRange = state.beforeInputRanges[0];
+				break;
+			case "after":
+				firstRange = state.afterInputRanges[0];
+				break;
+			case "output":
+				firstRange = ranges[0];
+				break;
+			default:
+				return null;
+		}
 
-	return firstRange && "id" in firstRange ? firstRange : null;
+		return firstRange && "id" in firstRange ? firstRange : null;
+	};
 };
 
 export const useSelectSnippetsFor = (type: SnippetType) => {

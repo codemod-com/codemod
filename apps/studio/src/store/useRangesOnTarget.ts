@@ -48,49 +48,46 @@
 // 	}
 // });
 
-
-import { create } from 'zustand';
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { type RangeCommand } from "~/utils/tree";
-import { useLogStore } from "~/store/zustand/log";
+import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useLogStore } from "~/store/zustand/log";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
+import { type RangeCommand } from "~/utils/tree";
 
 type UseRange = Readonly<{
 	ranges: ReadonlyArray<OffsetRange>;
 	target: "CODEMOD_INPUT" | "CODEMOD_OUTPUT" | "BEFORE_INPUT" | "AFTER_INPUT";
 }>;
 
-
 export const useRangesOnTarget = () => {
-		const { setActiveEventHashDigest } = useLogStore.getState();
-		const { setCodemodSelection } = useModStore.getState();
-		const { setSelections } = useCodemodOutputStore.getState();
-		const setRanges = useExecuteRangeCommandOnBeforeInput();
-		return ({ranges, target}: UseRange) => {
-			setActiveEventHashDigest(null);
+	const { setActiveEventHashDigest } = useLogStore.getState();
+	const { setCodemodSelection } = useModStore.getState();
+	const { setSelections } = useCodemodOutputStore.getState();
+	const setRanges = useExecuteRangeCommandOnBeforeInput();
+	const { setOutputSelection } = useSnippetStore.getState();
+	return ({ ranges, target }: UseRange) => {
+		setActiveEventHashDigest(null);
 
-			const rangeCommand: RangeCommand = {
-				kind: "FIND_CLOSEST_PARENT",
-				ranges,
-			};
+		const rangeCommand: RangeCommand = {
+			kind: "FIND_CLOSEST_PARENT",
+			ranges,
+		};
 
-			switch (target) {
-				case "CODEMOD_INPUT":
-					setCodemodSelection(rangeCommand);
-					break;
-				case "CODEMOD_OUTPUT":
-					setSelections(rangeCommand);
-					break;
-				case "BEFORE_INPUT":
-					setRanges(rangeCommand)
-					break;
-				case "AFTER_INPUT":
-					const { setOutputSelection } = useSnippetStore.getState();
-					setOutputSelection(rangeCommand);
-					break;
-			}
+		switch (target) {
+			case "CODEMOD_INPUT":
+				setCodemodSelection(rangeCommand);
+				break;
+			case "CODEMOD_OUTPUT":
+				setSelections(rangeCommand);
+				break;
+			case "BEFORE_INPUT":
+				setRanges(rangeCommand);
+				break;
+			case "AFTER_INPUT":
+				setOutputSelection(rangeCommand);
+				break;
 		}
-	}
+	};
+};

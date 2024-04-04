@@ -25,7 +25,7 @@ const ASTViewer = ({ type }: Props) => {
 	const executeRangeCommandOnBeforeInputThunk =
 		useExecuteRangeCommandOnBeforeInput();
 	const { rootNode } = useSelectSnippetsFor(type);
-	const firstTreeNode = useSelectFirstTreeNode(type);
+	const getFirstTreeNode = useSelectFirstTreeNode();
 	const { setSelections } = useCodemodOutputStore();
 	const { setOutputSelection } = useSnippetStore();
 
@@ -46,14 +46,14 @@ const ASTViewer = ({ type }: Props) => {
 			}),
 				scrollNodeIntoView(node, ASTTreeRef);
 		},
-		[scrollNodeIntoView, setRange],
+		[scrollNodeIntoView],
 	);
 
 	useEffect(() => {
-		if (firstTreeNode !== null) {
-			scrollNodeIntoView(firstTreeNode, ASTTreeRef);
+		if (getFirstTreeNode(type) !== null) {
+			scrollNodeIntoView(getFirstTreeNode(type), ASTTreeRef);
 		}
-	}, [scrollNodeIntoView, firstTreeNode]);
+	}, [scrollNodeIntoView, getFirstTreeNode(type)]);
 
 	return (
 		<>
@@ -63,9 +63,10 @@ const ASTViewer = ({ type }: Props) => {
 			>
 				{rootNode ? (
 					<Tree
+						initialCollapseState="open"
 						node={rootNode}
 						onClick={handleNodeClick}
-						selectedNode={firstTreeNode ?? undefined}
+						selectedNode={getFirstTreeNode(type) ?? undefined}
 					/>
 				) : (
 					<Text>

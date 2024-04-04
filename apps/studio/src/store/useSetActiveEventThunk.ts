@@ -154,6 +154,7 @@ export const useSetActiveEventThunk = () => {
 
 		const event =
 			events.find(({ hashDigest }) => hashDigest === eventHashDigest) ?? null;
+
 		if (event === null) {
 			return;
 		}
