@@ -58,37 +58,39 @@ import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
 
-type SetRangeActionArgument = Readonly<{
+type UseRange = Readonly<{
 	ranges: ReadonlyArray<OffsetRange>;
 	target: "CODEMOD_INPUT" | "CODEMOD_OUTPUT" | "BEFORE_INPUT" | "AFTER_INPUT";
 }>;
 
-export const useRangeStore = create((set, get) => ({
-	setRange: async (argument: SetRangeActionArgument) => {
+
+export const useRangesOnTarget = () => {
 		const { setActiveEventHashDigest } = useLogStore.getState();
-		setActiveEventHashDigest(null);
+		const { setCodemodSelection } = useModStore.getState();
+		const { setSelections } = useCodemodOutputStore.getState();
+		const setRanges = useExecuteRangeCommandOnBeforeInput();
+		return ({ranges, target}: UseRange) => {
+			setActiveEventHashDigest(null);
 
-		const rangeCommand: RangeCommand = {
-			kind: "FIND_CLOSEST_PARENT",
-			ranges: argument.ranges,
-		};
+			const rangeCommand: RangeCommand = {
+				kind: "FIND_CLOSEST_PARENT",
+				ranges,
+			};
 
-		switch (argument.target) {
-			case "CODEMOD_INPUT":
-				const { setCodemodSelection } = useModStore.getState();
-				setCodemodSelection(rangeCommand);
-				break;
-			case "CODEMOD_OUTPUT":
-				const { setSelections } = useCodemodOutputStore.getState();
-				setSelections(rangeCommand);
-				break;
-			case "BEFORE_INPUT":
-				useExecuteRangeCommandOnBeforeInput(rangeCommand);
-				break;
-			case "AFTER_INPUT":
-				const { setOutputSelection } = useSnippetStore.getState();
-				setOutputSelection(rangeCommand);
-				break;
+			switch (target) {
+				case "CODEMOD_INPUT":
+					setCodemodSelection(rangeCommand);
+					break;
+				case "CODEMOD_OUTPUT":
+					setSelections(rangeCommand);
+					break;
+				case "BEFORE_INPUT":
+					setRanges(rangeCommand)
+					break;
+				case "AFTER_INPUT":
+					const { setOutputSelection } = useSnippetStore.getState();
+					setOutputSelection(rangeCommand);
+					break;
+			}
 		}
-	},
-}));
+	}

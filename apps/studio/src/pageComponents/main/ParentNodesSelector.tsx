@@ -6,10 +6,11 @@ import Panel from "~/components/Panel";
 import Text from "~/components/Text";
 import { selectCFS, toggleSelectedNodeId } from "~/store/slices/CFS";
 import { selectSnippets } from "~/store/slices/snippets";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 const ParentNodesSelector = () => {
 	const { selectedNodeIds, parentNodes } = useSelector(selectCFS);
-	const { inputSnippet } = useSelector(selectSnippets);
+	const { inputSnippet } = useSnippetStore();
 
 	const dispatch = useDispatch();
 

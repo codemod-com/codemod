@@ -5,10 +5,11 @@ import { useCallback, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/useRangeStore";
+import { setRangeThunk } from "~/store/useRangesOnTarget";
 import { useSelectActiveEvent } from "~/store/zustand/log";
 import { selectMod, setContent } from "../../store/slices/mod";
 import { prettify } from "../../utils/prettify";
+import { useModStore } from "~/store/zustand/mod";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -17,7 +18,7 @@ const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 
 const Codemod = () => {
 	const editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
-	const { internalContent, ranges } = useSelector(selectMod);
+	const { internalContent, ranges } = useModStore();
 	const dispatch = useAppDispatch();
 	const activeEvent = useSelectActiveEvent();
 

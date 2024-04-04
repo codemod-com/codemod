@@ -54,29 +54,29 @@ import { extractIdsAndTypes, RangeCommand } from "~/utils/tree";
 import { useSelectFirstTreeNode, useSnippetStore } from "~/store/zustand/snippets";
 import { nodeHasValues, TreeNodeSelectorState, useCFSStore } from "~/store/zustand/CFS";
 
-export const useExecuteRangeCommandOnBeforeInput = (ranges:  RangeCommand) => {
+export const useExecuteRangeCommandOnBeforeInput = () => {
 		const { setInputSelection } = useSnippetStore.getState();
 		const { setNodeSelectorTreeState } = useCFSStore.getState();
 
-		const firstTreeNode = useSelectFirstTreeNode("before")
-		setInputSelection(ranges);
+		return (ranges:  RangeCommand) => {
+			const firstTreeNode = useSelectFirstTreeNode("before")
 
-
-		if (firstTreeNode === null) {
-			return;
-		}
-
-		const ids = extractIdsAndTypes(firstTreeNode);
-		const map: Record<string, TreeNodeSelectorState> = {};
-
-		ids.forEach(([id, type]) => {
-			if (nodeHasValues(type)) {
-				map[id] = states.VALUE;
+			if (firstTreeNode === null) {
 				return;
 			}
+			const ids = extractIdsAndTypes(firstTreeNode);
+			const map: Record<string, TreeNodeSelectorState> = {};
 
-			map[id] = states.TYPE;
-		});
+			ids.forEach(([id, type]) => {
+				if (nodeHasValues(type)) {
+					map[id] = states.VALUE;
+					return;
+				}
 
-		setNodeSelectorTreeState(map);
+				map[id] = states.TYPE;
+			});
+
+			setInputSelection(ranges);
+			setNodeSelectorTreeState(map);
+		}
 }

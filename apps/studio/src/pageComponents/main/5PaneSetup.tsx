@@ -34,7 +34,6 @@ import {
 import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
 import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { selectEngine } from "~/store/slices/snippets";
 import { TabNames, useViewStore } from "~/store/zustand/view";
 import { openLink } from "~/utils/openLink";
 import themeConfig from "../../../tailwind.config";
@@ -47,6 +46,7 @@ import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
 import { useTheme } from "./themeContext";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 const isServer = typeof window === "undefined";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
@@ -376,7 +376,7 @@ const AssistantTab = ({
 	afterPanel: PanelData;
 }) => {
 	const { activeTab } = useViewStore();
-	const engine = useSelector(selectEngine);
+	const { engine } = useSnippetStore();
 	const dispatch = useDispatch();
 
 	const scrollContainerRef = useRef<HTMLDivElement>(null);

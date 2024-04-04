@@ -18,10 +18,9 @@ import {
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
 import CompanyLogoSVG from "../../assets/icons/company_logo.svg";
-import type { AppDispatch } from "../../store";
-import { selectEngine, setEngine } from "../../store/slices/snippets";
 import { PublicLinkSharingButton } from "./PublicLinkSharingButton";
 import { useTheme } from "./themeContext";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 const enginesConfig = [
 	{
@@ -42,13 +41,12 @@ const enginesConfig = [
 ];
 
 const Header = () => {
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch<AppDispatch>();
+	const { engine, setEngine } = useSnippetStore();
 	const { toggleTheme, isDark } = useTheme();
 
 	const onEngineChange = (value: string) => {
 		if (value === "jscodeshift" || value === "tsmorph") {
-			dispatch(setEngine(value));
+			setEngine(value)
 		}
 	};
 

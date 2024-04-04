@@ -11,18 +11,14 @@ import {
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/useRangeStore";
-import {
-	codemodOutputSlice,
-	selectCodemodOutput,
-} from "~/store/slices/codemodOutput";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useLogStore } from "~/store/zustand/log";
 import { TabNames, useViewStore } from "~/store/zustand/view";
 import { setActiveEventThunk } from "../../store/setActiveEventThunk";
-import { selectMod, setHasRuntimeErrors } from "../../store/slices/mod";
-import { selectSnippets } from "../../store/slices/snippets";
 import { useSnippet } from "./SnippetUI";
+import { useSnippetStore } from "~/store/zustand/snippets";
+import { useModStore } from "~/store/zustand/mod";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 
 const MonacoDiffEditor = dynamic(
 	() => import("../../components/Snippet/MonacoDiffEditor"),
@@ -35,13 +31,15 @@ const MonacoDiffEditor = dynamic(
 export const useCodeDiff = () => {
 	const { setEvents, events } = useLogStore();
 	const { engine, inputSnippet, afterInputRanges } =
-		useSelector(selectSnippets);
+		useSnippetStore();
 
-	const { internalContent } = useSelector(selectMod);
+	const {setHasRuntimeErrors} = useModStore()
+
+	const setRangeThunk = useRangesOnTarget()
+	const { internalContent } = useModStore();
 	const [webWorkerState, postMessage] = useWebWorker();
 
-	const codemodOutput = useSelector(selectCodemodOutput);
-	const dispatch = useAppDispatch();
+	const codemodOutput = useCodemodOutputStore();
 
 	const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
@@ -58,8 +56,8 @@ export const useCodeDiff = () => {
 
 	useEffect(() => {
 		if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
-			dispatch(codemodOutputSlice.actions.setContent(""));
-			dispatch(setHasRuntimeErrors(false));
+			codemodOutput.setContent("");
+			setHasRuntimeErrors(false);
 			setEvents([]);
 
 			return;
@@ -70,7 +68,6 @@ export const useCodeDiff = () => {
 		engine,
 		inputSnippet,
 		content,
-		dispatch,
 		snippetBeforeHasOnlyWhitespaces,
 		codemodSourceHasOnlyWhitespaces,
 		postMessage,
@@ -78,37 +75,29 @@ export const useCodeDiff = () => {
 
 	useEffect(() => {
 		if (webWorkerState.kind === "LEFT") {
-			dispatch(
-				codemodOutputSlice.actions.setContent(webWorkerState.error.message),
-			);
-			dispatch(setHasRuntimeErrors(true));
+			codemodOutput.setContent(webWorkerState.error.message);
+			setHasRuntimeErrors(true)
 			setEvents([]);
 			return;
 		}
-
-		dispatch(
-			codemodOutputSlice.actions.setContent(webWorkerState.output ?? ""),
-		);
-
-		dispatch(setHasRuntimeErrors(false));
+		codemodOutput.setContent(webWorkerState.output ?? "");
+		setHasRuntimeErrors(false)
 		setEvents(webWorkerState.events);
-	}, [dispatch, webWorkerState]);
+	}, [webWorkerState]);
 
 	const onSelectionChange = useCallback(
 		(range: OffsetRange) => {
-			dispatch(
 				setRangeThunk({
 					target: "CODEMOD_OUTPUT",
 					ranges: [range],
-				}),
-			);
+				})
 		},
-		[dispatch],
+		[setRangeThunk],
 	);
 
 	const onDebug = () => {
 		firstCodemodExecutionErrorEvent?.hashDigest &&
-			dispatch(setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest));
+			setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest)
 		setActiveTab(TabNames.DEBUG);
 	};
 

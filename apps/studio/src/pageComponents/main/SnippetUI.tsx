@@ -3,8 +3,7 @@ import { useCallback } from "react";
 import { useSelector } from "react-redux";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/useRangeStore";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import {
 	selectSnippets,
 	selectSnippetsFor,
@@ -12,6 +11,9 @@ import {
 	setOutput,
 } from "../../store/slices/snippets";
 import { prettify } from "../../utils/prettify";
+import { useSnippetStore } from "~/store/zustand/snippets";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useRanges } from "~/store/useRanges";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
@@ -25,19 +27,20 @@ type Props = {
 export const useSnippet = (type: SnippetType) => {
 	const state = useSelector(selectSnippets);
 
-	const dispatch = useAppDispatch();
+	const {setInput, setOutput} = useSnippetStore()
 
 	const valueKey = type === "before" ? "inputSnippet" : "outputSnippet";
 
+	const setRangesOnTarget = useRangesOnTarget()
 	const value = state[valueKey];
 
 	const onSnippetChange = useCallback(
 		(text?: string) => {
 			const val = text ?? "";
-			dispatch(type === "before" ? setInput(val) : setOutput(val));
+			type === "before" ? setInput(val) : setOutput(val)
 		},
 
-		[dispatch, type],
+		[setInput, setOutput, type],
 	);
 
 	const onSnippetBlur = useCallback(() => {
@@ -46,16 +49,13 @@ export const useSnippet = (type: SnippetType) => {
 
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
-			dispatch(
-				setRangeThunk({
+			setRangesOnTarget({
 					target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
 					ranges: [range],
-				}),
-			);
+				})
 		},
-		[dispatch, type],
+		[type, setRangesOnTarget],
 	);
-
 	return {
 		value,
 		onSnippetBlur,
@@ -67,7 +67,8 @@ const SnippetUI = ({ type }: Props) => {
 	const { value, onSnippetBlur, onSnippetChange, handleSelectionChange } =
 		useSnippet(type);
 
-	const { ranges } = useSelector(selectSnippetsFor(type));
+
+	const ranges = useRanges(type);
 
 	return (
 		<div className="h-full overflow-hidden">
