@@ -10,16 +10,10 @@ export const selectCodemodRunsTree = (state: RootState, rootPath: string) => {
 		.filter(isNeitherNullNorUndefined)
 		.sort((a, b) => a.createdAt - b.createdAt)
 		.map((kase) => {
-			const label =
-				kase.codemodHashDigest !== undefined
-					? state.codemod.entities[kase.codemodHashDigest]?.name ??
-					  kase.codemodName
-					: kase.codemodName;
-
 			return {
 				node: {
 					hashDigest: kase.hash,
-					label,
+					label: kase.codemodName,
 					createdAt: kase.createdAt,
 					path: kase.path.replace(rootPath, dirName),
 				} as const,
