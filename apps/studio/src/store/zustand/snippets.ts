@@ -132,9 +132,6 @@ export const useSelectFirstTreeNode = () => {
 	return (type: SnippetType): TreeNode | null => {
 		let firstRange: TreeNode | OffsetRange | undefined;
 
-		// console.log(' state.beforeInputRanges[0]',  state.beforeInputRanges[0])
-		// console.log(' state.afterInputRanges[0]',  state.afterInputRanges[0])
-		// console.log(' state.ranges[0]',  ranges[0])
 		switch (type) {
 			case "before":
 				firstRange = state.beforeInputRanges[0];

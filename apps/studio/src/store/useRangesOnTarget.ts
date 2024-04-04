@@ -62,11 +62,11 @@ type UseRange = Readonly<{
 }>;
 
 export const useRangesOnTarget = () => {
-	const { setActiveEventHashDigest } = useLogStore.getState();
-	const { setCodemodSelection } = useModStore.getState();
-	const { setSelections } = useCodemodOutputStore.getState();
+	const { setActiveEventHashDigest } = useLogStore();
+	const { setCodemodSelection } = useModStore();
+	const { setSelections } = useCodemodOutputStore();
 	const setRanges = useExecuteRangeCommandOnBeforeInput();
-	const { setOutputSelection } = useSnippetStore.getState();
+	const { setOutputSelection } = useSnippetStore();
 	return ({ ranges, target }: UseRange) => {
 		setActiveEventHashDigest(null);
 

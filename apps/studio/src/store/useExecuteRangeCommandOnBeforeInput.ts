@@ -60,12 +60,14 @@ import {
 import { RangeCommand, extractIdsAndTypes } from "~/utils/tree";
 
 export const useExecuteRangeCommandOnBeforeInput = () => {
-	const { setInputSelection } = useSnippetStore.getState();
-	const { setNodeSelectorTreeState } = useCFSStore.getState();
+	const { setInputSelection } = useSnippetStore();
+	const { setNodeSelectorTreeState } = useCFSStore();
 	const getFirstTreeNode = useSelectFirstTreeNode();
 
 	return (ranges: RangeCommand) => {
 		const firstNode = getFirstTreeNode("before");
+
+		setInputSelection(ranges);
 
 		if (firstNode === null) {
 			return;
@@ -82,7 +84,6 @@ export const useExecuteRangeCommandOnBeforeInput = () => {
 			map[id] = states.TYPE;
 		});
 
-		setInputSelection(ranges);
 		setNodeSelectorTreeState(map);
 	};
 };
