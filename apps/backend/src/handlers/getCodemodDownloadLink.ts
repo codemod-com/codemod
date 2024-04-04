@@ -5,7 +5,7 @@ export const getCodemodDownloadLink: CustomHandler<{
 	link: string;
 }> = async (dependencies) => {
 	const { name } = parseGetCodemodLatestVersionQuery(
-		dependencies.getRequest()?.query,
+		dependencies.request.query,
 	);
 
 	return dependencies.codemodService.getCodemodDownloadLink(name);

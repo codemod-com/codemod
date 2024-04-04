@@ -18,7 +18,6 @@ export class WorkerThreadManager {
 	private __workerTimestamps: number[] = [];
 	private __filePaths: string[] = [];
 	private __currentFileCount = 0;
-	private __currentFilePath: string | null = null;
 	private __totalFileCount: number | null = null;
 	private __processedFileNumber = 0;
 	private readonly __interval: NodeJS.Timeout;
@@ -128,7 +127,6 @@ export class WorkerThreadManager {
 		}
 
 		const filePath = this.__filePaths.pop();
-		this.__currentFilePath = filePath ?? null;
 
 		if (filePath === undefined) {
 			if (
@@ -201,12 +199,12 @@ export class WorkerThreadManager {
 
 			++this.__processedFileNumber;
 
-			if (this.__currentFilePath) {
+			if (workerThreadMessage.path) {
 				this.__onPrinterMessage({
 					kind: "progress",
 					processedFileNumber: this.__processedFileNumber,
-					totalFileNumber: this.__currentFileCount,
-					processedFileName: resolve(this.__currentFilePath),
+					totalFileNumber: this.__currentFileCount - 1,
+					processedFileName: resolve(workerThreadMessage.path),
 				});
 			}
 

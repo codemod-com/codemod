@@ -58,6 +58,7 @@ export const DEFAULT_PRETTIER_OPTIONS: Options = {
 	arrowParens: "always",
 	endOfLine: "lf",
 	parser: "typescript",
+	plugins: ["importAttributes"],
 };
 
 const parserMappers = new Map<string, Options["parser"]>([

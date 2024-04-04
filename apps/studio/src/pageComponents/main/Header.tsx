@@ -1,44 +1,12 @@
-import {
-	MoonStars as MoonStarsIcon,
-	SlackLogo as SlackLogoIcon,
-	Sun as SunIcon,
-} from "@phosphor-icons/react";
-import Image from "next/image";
-import { useDispatch, useSelector } from "react-redux";
 import AuthButtons from "~/auth/AuthButtons";
-import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
-import { Label } from "~/components/ui/label";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "~/components/ui/select";
-import { cn } from "~/lib/utils";
-import CompanyLogoSVG from "../../assets/icons/company_logo.svg";
-import { PublicLinkSharingButton } from "./PublicLinkSharingButton";
-import { useTheme } from "./themeContext";
+import { CodemodLogo } from "~/icons/CodemodLogo";
+import { setContent } from "~/store/slices/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
-
-const enginesConfig = [
-	{
-		label: "jscodeshift",
-		value: "jscodeshift",
-		disabled: false,
-	},
-	{
-		label: "ts-morph [beta]",
-		value: "tsmorph",
-		disabled: false,
-	},
-	{
-		label: "piranha (alpha)",
-		value: "piranha",
-		disabled: true,
-	},
-];
+import { setInput, setOutput } from "../../store/slices/snippets";
+import { DownloadZip } from "./DownloadZip";
+import { useTheme } from "./themeContext";
+import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
 const Header = () => {
 	const { engine, setEngine } = useSnippetStore();
@@ -46,33 +14,72 @@ const Header = () => {
 
 	const onEngineChange = (value: string) => {
 		if (value === "jscodeshift" || value === "tsmorph") {
-			setEngine(value)
+			setEngine(value);
 		}
 	};
 
+	const { getShareLink, isCreating: isShareURLBeingCreated } =
+		usePublicLinkSharing();
+
 	return (
 		<>
-			<div className="flex h-full w-full flex-1 items-center justify-end">
-				<div className="flex flex-1 items-center">
-					<Image
-						src={CompanyLogoSVG}
-						className="mr-2 w-14"
-						alt="Codemod.com Logo"
-					/>
-					<Label className="text-2xl font-semibold">Codemod Studio</Label>
+			<div className="flex justify-between h-[50px] w-full flex-1 bg-white p-1">
+				<Button
+					variant="link"
+					className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
+				>
+					<a href="/">
+						<CodemodLogo />
+					</a>
+				</Button>
+				<AuthButtons />
+			</div>
+			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
+				<div />
+				<div className="flex gap-2">
+					{/* FIXME: remove text-white and specific classNames once buttons are moved to the new design */}
 					<Button
-						variant="link"
-						className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
+						size="xs"
+						variant="outline"
+						className="flex gap-1"
+						hint={<p className="font-normal">Clear all inputs</p>}
+						onClick={() => {
+							dispatch(setInput(""));
+							dispatch(setOutput(""));
+							dispatch(setContent(""));
+						}}
 					>
-						<a
-							rel="noopener noreferrer"
-							target="_blank"
-							href="https://docs.codemod.com/docs/intro"
-						>
-							by Codemod.com
-						</a>
+						<BackspaceIcon className="h-4 w-4" />
+						Clear all inputs
 					</Button>
+					<Button
+						size="xs"
+						variant="outline"
+						className="flex gap-1"
+						onClick={getShareLink}
+						isLoading={isShareURLBeingCreated}
+					>
+						{/* FIXME: refactor button component to replace loading icon with the button's icon */}
+						{!isShareURLBeingCreated && <LinkIcon className="h-4 w-4" />}
+						Share
+					</Button>
+					{/* <Button
+						size="xs"
+						variant="outline"
+						className="flex gap-1 pl-1"
+						hint={
+							<p className="font-normal">
+								Download a ZIP archive to use this codemod in VS Code
+							</p>
+						}
+					>
+						<VSCodeIcon />
+						Run in VS Code
+					</Button> */}
+					<DownloadZip />
 				</div>
+			</div>
+			{/* <div className="flex h-[30px] w-full flex-1 items-center justify-end">
 				<div className="flex items-center gap-3">
 					<PublicLinkSharingButton />
 					<Select onValueChange={onEngineChange} value={engine}>
@@ -142,10 +149,8 @@ const Header = () => {
 							</Button>
 						}
 					/>
-
-					<AuthButtons />
 				</div>
-			</div>
+			</div> */}
 		</>
 	);
 };

@@ -16,6 +16,7 @@ export const getCodemodsQuerySchema = object({
 	author: optional(union([string(), array(string())])),
 	framework: optional(union([string(), array(string())])),
 	verified: optional(coerce(boolean(), (input) => input === "true")),
+	featured: optional(coerce(boolean(), (input) => input === "true")),
 	page: optional(coerce(number(), Number)),
 	size: optional(coerce(number(), Number)),
 });

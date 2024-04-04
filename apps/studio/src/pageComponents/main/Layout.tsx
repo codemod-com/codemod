@@ -30,7 +30,7 @@ Layout.Content = (({ children, gap }) => (
 Layout.Content.displayName = "LayoutContent";
 
 Layout.Header = (({ children }) => (
-	<div className="flex h-[80px] w-full bg-gray-lighter p-2 dark:bg-gray-darker">
+	<div className="flex h-[90px] flex-col w-full bg-gray-lighter dark:bg-gray-darker">
 		{children}
 	</div>
 )) as FC<Props>;

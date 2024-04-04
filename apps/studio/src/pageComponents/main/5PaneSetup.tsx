@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import Panel from "~/components/Panel";
-import ClearInputButton from "~/components/button/ClearInputButton";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
 import Chat from "~/components/chatbot/Chat";
 import {
@@ -19,10 +18,16 @@ import {
 	AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
-import { DownloadZip } from "~/pageComponents/main/DownloadZip";
 import {
 	AstSection,
 	BoundResizePanel,
@@ -34,6 +39,7 @@ import {
 import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
 import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { TabNames, useViewStore } from "~/store/zustand/view";
 import { openLink } from "~/utils/openLink";
 import themeConfig from "../../../tailwind.config";
@@ -46,7 +52,24 @@ import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
 import { useTheme } from "./themeContext";
-import { useSnippetStore } from "~/store/zustand/snippets";
+
+const enginesConfig = [
+	{
+		label: "jscodeshift",
+		value: "jscodeshift",
+		disabled: false,
+	},
+	{
+		label: "ts-morph [beta]",
+		value: "tsmorph",
+		disabled: false,
+	},
+	{
+		label: "piranha (alpha)",
+		value: "piranha",
+		disabled: true,
+	},
+];
 
 const isServer = typeof window === "undefined";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
@@ -85,6 +108,16 @@ const Main = () => {
 	const panelRefs: PanelsRefs = useRef({});
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
+
+	const engine = useSelector(selectEngine);
+	const dispatch = useDispatch<AppDispatch>();
+	const { toggleTheme, isDark } = useTheme();
+
+	const onEngineChange = (value: string) => {
+		if (value === "jscodeshift" || value === "tsmorph") {
+			dispatch(setEngine(value));
+		}
+	};
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -171,13 +204,42 @@ const Main = () => {
 	}, [getToken, isSignedIn, router]);
 
 	const codemodHeader = (
-		<Panel.Header>
+		<Panel.Header className="h-[30px]">
 			<Panel.HeaderTab>
-				<Panel.HeaderTitle>
+				<Panel.HeaderTitle className="h-full">
 					Codemod
 					<div className="flex items-center gap-1">
-						<DownloadZip />
-						<ClearInputButton />
+						{/* <DownloadZip />
+						<ClearInputButton /> */}
+						<Select onValueChange={onEngineChange} value={engine}>
+							<SelectTrigger className="flex flex-1 h-full select-none items-center font-semibold">
+								<span
+									className={cn(
+										"mr-[0.75rem] text-xs font-light text-slate-500",
+										{
+											"text-slate-200": isDark,
+										},
+									)}
+								>
+									Engine:
+								</span>
+								<SelectValue placeholder={engine} />
+							</SelectTrigger>
+							<SelectContent>
+								{enginesConfig.map((engineConfig, i) => (
+									<SelectItem
+										disabled={engineConfig.disabled}
+										key={i}
+										value={engineConfig.value}
+										className={cn({
+											"font-semibold": engine === engineConfig.value,
+										})}
+									>
+										{engineConfig.label}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
 						<InsertExampleButton />
 					</div>
 				</Panel.HeaderTitle>

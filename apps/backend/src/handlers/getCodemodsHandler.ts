@@ -8,9 +8,9 @@ export const getCodemodsHandler: CustomHandler<{
 	page: number;
 	size: number;
 }> = async (dependencies) => {
-	const query = parseGetCodemodsQuery(dependencies.getRequest()?.query);
+	const query = parseGetCodemodsQuery(dependencies.request.query);
 
-	const { search, verified, category, author, framework } = query;
+	const { search, verified, category, author, framework, featured } = query;
 
 	const page = query.page || 1;
 	const size = query.size || 10;
@@ -21,6 +21,7 @@ export const getCodemodsHandler: CustomHandler<{
 		author,
 		framework,
 		verified,
+		featured,
 		page,
 		size,
 	);
