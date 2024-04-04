@@ -209,17 +209,6 @@ export class MainViewProvider implements WebviewViewProvider {
 				return;
 			}
 
-			if (
-				nextProps !== null &&
-				prevProps?.activeTabId !== nextProps.activeTabId &&
-				nextProps.activeTabId === "codemodRuns" &&
-				!nextProps.clearingInProgress
-			) {
-				this.__messageBus.publish({
-					kind: MessageKind.loadHomeDirectoryData,
-				});
-			}
-
 			prevProps = nextProps;
 
 			this.__postMessage({
