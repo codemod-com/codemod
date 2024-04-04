@@ -30,6 +30,7 @@ export class CodemodService {
 		author: string | string[] | undefined,
 		framework: string | string[] | undefined,
 		verified: boolean | undefined,
+		featured: boolean | undefined,
 		page: number,
 		size: number,
 	): Promise<{
@@ -97,6 +98,10 @@ export class CodemodService {
 
 		if (isNeitherNullNorUndefined(verified)) {
 			searchAndFilterClauses.push({ verified });
+		}
+
+		if (isNeitherNullNorUndefined(featured)) {
+			searchAndFilterClauses.push({ featured });
 		}
 
 		const [codemods, total] = await Promise.all([
