@@ -357,6 +357,10 @@ const packageJson = ({
 		packages = `
       "ts-morph": "^20.0.0"
     `;
+	} else if (engine === "filemod") {
+		packages = `
+      "@codemod-com/filemod": "^2.0.0"
+    `;
 	}
 
 	return beautify(`
@@ -365,14 +369,11 @@ const packageJson = ({
         "author": "${username ?? ""}",
         "dependencies": {},
         "devDependencies": {
-          "vitest": "^1.0.1",
           "@types/node": "20.9.0",
           "typescript": "5.2.2",
-          "prettier": "^3.1.0",
-          "ts-node": "^10.9.1",
+          "vitest": "^1.0.1",
           ${packages.trim()}
         },
-        "main": "./dist/index.cjs",
         "scripts": {
           "test": "vitest run",
           "test:watch": "vitest watch"

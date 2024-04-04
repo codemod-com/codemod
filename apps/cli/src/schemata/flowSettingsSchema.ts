@@ -22,7 +22,7 @@ import {
 
 export const flowSettingsSchema = object({
 	include: optional(array(string())),
-	exclude: optional(array(string()), DEFAULT_EXCLUDE_PATTERNS),
+	exclude: optional(array(string())),
 	target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
 	files: optional(array(string())),
 	raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
@@ -34,12 +34,19 @@ export const flowSettingsSchema = object({
 	threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Output<typeof flowSettingsSchema>;
+export type FlowSettings = Omit<
+	Output<typeof flowSettingsSchema>,
+	"exclude"
+> & {
+	exclude: string[];
+};
 
 export const parseFlowSettings = (input: unknown): FlowSettings => {
 	const flowSettings = parse(flowSettingsSchema, input);
 
-	flowSettings.target = resolve(flowSettings.target);
-
-	return flowSettings;
+	return {
+		...flowSettings,
+		target: resolve(flowSettings.target),
+		exclude: (flowSettings.exclude ?? []).concat(DEFAULT_EXCLUDE_PATTERNS),
+	};
 };
