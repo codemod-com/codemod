@@ -288,7 +288,7 @@ export const runCodemod = async (
 		? transpile(codemodSource.toString())
 		: codemodSource.toString();
 
-	if (codemod.engine === "repomod-engine" || codemod.engine === "filemod") {
+	if (codemod.engine === "filemod") {
 		const transformer = getTransformer(transpiledSource);
 
 		if (transformer === null) {

@@ -5,9 +5,7 @@ import { parseGetCodemodBySlugParams } from "../schemata/query.js";
 export const getCodemodBySlugHandler: CustomHandler<Codemod> = async (
 	dependencies,
 ) => {
-	const { slug } = parseGetCodemodBySlugParams(
-		dependencies.getRequest()?.params,
-	);
+	const { slug } = parseGetCodemodBySlugParams(dependencies.request.params);
 
 	return dependencies.codemodService.getCodemodBySlug(slug);
 };

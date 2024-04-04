@@ -8,11 +8,11 @@ import { environment, getCustomAccessToken } from "../util.js";
 export const getCodemodsListHandler: CustomHandler<ShortCodemodInfo[]> = async (
 	dependencies,
 ) => {
-	const { search } = parseListCodemodsQuery(dependencies.getRequest()?.query);
+	const { search } = parseListCodemodsQuery(dependencies.request.query);
 
 	const accessToken = getCustomAccessToken(
 		environment,
-		dependencies.getRequest()?.headers,
+		dependencies.request.headers,
 	);
 
 	let userId: string | null = null;

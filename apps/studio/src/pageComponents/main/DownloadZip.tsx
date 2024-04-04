@@ -42,7 +42,7 @@ export const DownloadZip = () => {
 			name: humanCodemodName?.name ?? "codemod",
 			framework: humanCodemodName?.framework,
 			version: humanCodemodName?.version,
-			modBody: modContext.internalContent,
+			codemodBody: modContext.internalContent,
 			cases: [
 				{
 					before: snippetsContext.inputSnippet,
