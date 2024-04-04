@@ -28,10 +28,11 @@
 	"main": "./dist/index.cjs",
 	"bin": "./dist/index.cjs",
 	"devDependencies": {
-		"@babel/core": "^7.20.2",
-		"@babel/parser": "^7.22.10",
-		"@babel/preset-env": "^7.20.2",
-		"@babel/traverse": "7.23.2",
+		"@babel/core": "^7.24.4",
+		"@babel/parser": "^7.24.4",
+		"@babel/preset-env": "^7.24.1",
+		"@babel/preset-typescript": "^7.24.1",
+		"@babel/traverse": "7.24.1",
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
@@ -91,11 +92,7 @@
 		"outputPath": "./package/"
 	},
 	"license": "Apache License, Version 2.0",
-	"files": [
-		"./dist/index.cjs",
-		"LICENSE",
-		"README.md"
-	],
+	"files": ["./dist/index.cjs", "LICENSE", "README.md"],
 	"publishConfig": {
 		"access": "public"
 	},
