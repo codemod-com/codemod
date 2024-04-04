@@ -14,6 +14,7 @@ const workerThreadMessageSchema = union([
 	object({
 		kind: literal("commands"),
 		commands: unknown(),
+		path: optional(string()),
 	}),
 	object({
 		kind: literal("error"),

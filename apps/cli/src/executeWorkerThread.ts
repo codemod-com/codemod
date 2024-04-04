@@ -99,6 +99,7 @@ const messageHandler = async (m: unknown) => {
 			parentPort?.postMessage({
 				kind: "commands",
 				commands,
+				path: message.path,
 			} satisfies WorkerThreadMessage);
 		} catch (error) {
 			throw new PathAwareError(
