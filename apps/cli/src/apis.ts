@@ -48,7 +48,6 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 
 export const getCodemodDownloadURI = async (
 	name: string,
-	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
 	const url = new URL("https://backend.codemod.com/codemods/downloadLink");

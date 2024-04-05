@@ -55,7 +55,10 @@ async function main() {
 				codemodStudioExampleLink: faker.internet.url(),
 				testProjectCommand: faker.lorem.words(2),
 				sourceRepo: faker.internet.url(),
-				bucketLink: faker.internet.url(),
+				s3Bucket: faker.lorem.word(),
+				s3UploadKey:
+					new URL(faker.internet.url()).pathname ??
+					`/${faker.lorem.word()}/${faker.lorem.word()}`,
 				codemodId: codemod.id,
 			},
 		});
