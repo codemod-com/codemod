@@ -152,8 +152,9 @@ const Chat = ({ id, className }: Props) => {
 		if (
 			isSignedIn &&
 			command === "learn" &&
-			aliases.$BEFORE !== null &&
-			aliases.$AFTER !== null &&
+			// @TODO aliases
+			// aliases.$BEFORE !== null &&
+			// aliases.$AFTER !== null &&
 			!isLoading &&
 			// ensure this block called once
 			!executedCommand.current
@@ -163,7 +164,14 @@ const Chat = ({ id, className }: Props) => {
 			handleSelectPrompt(autoGenerateCodemodPrompt);
 		}
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [command, aliases.$BEFORE, aliases.$AFTER, isLoading, isSignedIn]);
+	}, [
+		command,
+		// @TODO aliases
+		//  aliases.$BEFORE,
+		//   aliases.$AFTER,
+		isLoading,
+		isSignedIn,
+	]);
 
 	useEffect(() => {
 		if (isLoading) {

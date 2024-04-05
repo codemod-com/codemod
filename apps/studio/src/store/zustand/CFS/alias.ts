@@ -5,10 +5,10 @@ import { useSnippetStore } from "~/store/zustand/snippets";
 export type AliasName =
 	| "$CODEMOD"
 	| "$HIGHLIGHTED_IN_CODEMOD"
-	| "$BEFORE"
-	| "$AFTER"
-	| "$HIGHLIGHTED_IN_BEFORE"
-	| "$HIGHLIGHTED_IN_AFTER"
+	// | "$BEFORE"
+	// | "$AFTER"
+	// | "$HIGHLIGHTED_IN_BEFORE"
+	// | "$HIGHLIGHTED_IN_AFTER"
 	| "$EXECUTION_ERROR";
 
 export type Aliases = Record<
