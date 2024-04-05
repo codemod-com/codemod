@@ -42,7 +42,6 @@ const Codemod = () => {
 		[setRangeThunk],
 	);
 
-
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
 			setRangeThunk({

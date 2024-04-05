@@ -1,10 +1,10 @@
-import create from 'zustand';
-import { parseSnippet } from "~/utils/babelParser";
-import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { isFile } from "@babel/types";
-import { buildRanges } from "~/utils/tree";
+import create from "zustand";
 import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import type { TreeNode } from "~/types/tree";
+import { parseSnippet } from "~/utils/babelParser";
+import mapBabelASTToRenderableTree from "~/utils/mappers";
+import { buildRanges } from "~/utils/tree";
 import type { RangeCommand } from "~/utils/tree";
 
 type CodemodOutputState = {
@@ -21,7 +21,9 @@ export const useCodemodOutputStore = create<CodemodOutputState>((set) => ({
 	ranges: [],
 	setContent: (content) => {
 		const parsed = parseSnippet(content);
-		const rootNode = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
+		const rootNode = isFile(parsed)
+			? mapBabelASTToRenderableTree(parsed)
+			: null;
 		set({ content, rootNode });
 	},
 	setSelections: (command) => {

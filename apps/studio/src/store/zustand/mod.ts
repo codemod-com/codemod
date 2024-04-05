@@ -1,11 +1,11 @@
-import create from 'zustand';
-import { parseSnippet } from "../../utils/babelParser";
 import { isFile } from "@babel/types";
-import mapBabelASTToRenderableTree from "../../utils/mappers";
-import { buildRanges, RangeCommand } from "../../utils/tree";
-import { INITIAL_STATE } from '../getInitialState';
-import { TreeNode } from "~/types/tree";
+import create from "zustand";
 import { OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { TreeNode } from "~/types/tree";
+import { parseSnippet } from "../../utils/babelParser";
+import mapBabelASTToRenderableTree from "../../utils/mappers";
+import { RangeCommand, buildRanges } from "../../utils/tree";
+import { INITIAL_STATE } from "../getInitialState";
 
 type ModStateValues = {
 	internalContent: string | null;
@@ -14,7 +14,6 @@ type ModStateValues = {
 	ranges: ReadonlyArray<OffsetRange>;
 	rangesUpdatedAt: number;
 	command: string | null;
-
 };
 
 type ModStateSetters = {
@@ -23,9 +22,9 @@ type ModStateSetters = {
 	setHasRuntimeErrors: (hasError: boolean) => void;
 	setCodemodSelection: (command: RangeCommand) => void;
 	setCurrentCommand: (command: ModState["command"]) => void;
-}
+};
 
-export type ModState = ModStateSetters & ModStateValues
+export type ModState = ModStateSetters & ModStateValues;
 const getInitialState = (): ModStateValues => {
 	const parsed = parseSnippet(INITIAL_STATE.codemodSource);
 
@@ -43,13 +42,14 @@ const getInitialState = (): ModStateValues => {
 	};
 };
 
-
 export const useModStore = create<ModState>((set, get) => ({
 	...getInitialState(),
 	setState: (newState) => set((state) => ({ ...state, ...newState })),
 	setContent: (content) => {
 		const parsed = parseSnippet(content);
-		const parsedContent = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
+		const parsedContent = isFile(parsed)
+			? mapBabelASTToRenderableTree(parsed)
+			: null;
 		set({ internalContent: content, parsedContent });
 	},
 	setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),

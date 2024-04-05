@@ -1,7 +1,6 @@
-import { useSnippetStore } from "~/store/zustand/snippets";
 import { useCodemodExecutionError } from "~/store/zustand/log";
 import { useModStore } from "~/store/zustand/mod";
-
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 export type AliasName =
 	| "$CODEMOD"
@@ -12,64 +11,66 @@ export type AliasName =
 	| "$HIGHLIGHTED_IN_AFTER"
 	| "$EXECUTION_ERROR";
 
-export type Aliases = Record<AliasName, { value: string; updatedAt: number } | null>;
+export type Aliases = Record<
+	AliasName,
+	{ value: string; updatedAt: number } | null
+>;
 
-export const useGetAliases = ()  => {
+export const useGetAliases = () => {
+	const codemodExecutionError = useCodemodExecutionError();
+	const {
+		internalContent,
+		ranges: codemodInputRanges,
+		rangesUpdatedAt,
+	} = useModStore.getState();
 
-	  const codemodExecutionError = useCodemodExecutionError();
-		const {
-			internalContent,
-			ranges: codemodInputRanges,
-			rangesUpdatedAt,
-		} = useModStore.getState();
+	const {
+		inputSnippet,
+		outputSnippet,
+		afterInputRanges,
+		afterRangeUpdatedAt,
+		beforeInputRanges,
+		beforeRangeUpdatedAt,
+	} = useSnippetStore.getState();
 
-		const {
-			inputSnippet,
-			outputSnippet,
-			afterInputRanges,
-			afterRangeUpdatedAt,
-			beforeInputRanges,
-			beforeRangeUpdatedAt,
-		} = useSnippetStore.getState();
-
-		return {
-			$CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
-			$HIGHLIGHTED_IN_CODEMOD:
-				codemodInputRanges[0] && internalContent !== null
-					? {
-							value: internalContent.slice(
-								codemodInputRanges[0].start,
-								codemodInputRanges[0].end,
-							),
-							updatedAt: rangesUpdatedAt,
-					  }
-					: null,
-			$BEFORE: { value: inputSnippet, updatedAt: -1 },
-			$AFTER: { value: outputSnippet, updatedAt: -1 },
-			$HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
+	return {
+		$CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
+		$HIGHLIGHTED_IN_CODEMOD:
+			codemodInputRanges[0] && internalContent !== null
 				? {
-						value: inputSnippet.slice(
-							beforeInputRanges[0].start,
-							beforeInputRanges[0].end,
+						value: internalContent.slice(
+							codemodInputRanges[0].start,
+							codemodInputRanges[0].end,
 						),
-						updatedAt: beforeRangeUpdatedAt,
+						updatedAt: rangesUpdatedAt,
 				  }
 				: null,
-			$HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
-				? {
-						value: outputSnippet.slice(
-							afterInputRanges[0].start,
-							afterInputRanges[0].end,
-						),
-						updatedAt: afterRangeUpdatedAt,
-				  }
-				: null,
-			$EXECUTION_ERROR: {
-				value: codemodExecutionError ?? "",
-				updatedAt: rangesUpdatedAt,
-			},
-		};
+		$BEFORE: { value: inputSnippet, updatedAt: -1 },
+		$AFTER: { value: outputSnippet, updatedAt: -1 },
+		$HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
+			? {
+					value: inputSnippet.slice(
+						beforeInputRanges[0].start,
+						beforeInputRanges[0].end,
+					),
+					updatedAt: beforeRangeUpdatedAt,
+			  }
+			: null,
+		$HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
+			? {
+					value: outputSnippet.slice(
+						afterInputRanges[0].start,
+						afterInputRanges[0].end,
+					),
+					updatedAt: afterRangeUpdatedAt,
+			  }
+			: null,
+		$EXECUTION_ERROR: {
+			value: codemodExecutionError ?? "",
+			updatedAt: rangesUpdatedAt,
+		},
 	};
+};
 
 export const applyAliases = (
 	message: string,
