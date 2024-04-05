@@ -62,8 +62,7 @@ export const DirectorySelector = ({
 
 		if (e.key === "Enter") {
 			setShowOptions(false);
-
-			if (focusedOptionIdx === null) {
+			if (focusedOptionIdx === null || focusedOptionIdx < 0) {
 				return;
 			}
 
