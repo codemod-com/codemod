@@ -1,11 +1,10 @@
 import { Export as ExportIcon } from "@phosphor-icons/react";
 import { Loader2 } from "lucide-react";
 import { type MouseEvent, useState } from "react";
-import { useSelector } from "react-redux";
 import Tooltip from "~/components/Tooltip/Tooltip";
 import { useShareLink } from "~/hooks/useShareLink";
-import { selectEngine } from "~/store/slices/snippets";
-import { selectMod } from "../../store/slices/mod";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { assertsNeitherNullNorUndefined } from "../../utils/assertsNeitherNullNorUndefined";
 import { openLink } from "../../utils/openLink";
 import { Button } from "../ui/button";
@@ -16,11 +15,11 @@ type Props = {
 
 export const ExportButton = ({ className }: Props) => {
 	const [isCreating, setIsCreating] = useState(false);
-	const modContext = useSelector(selectMod);
-	const engine = useSelector(selectEngine);
+	const modStore = useModStore();
+	const { engine } = useSnippetStore();
 	const { getExtensionUrl } = useShareLink();
 
-	assertsNeitherNullNorUndefined(modContext);
+	assertsNeitherNullNorUndefined(modStore);
 
 	if (engine === "tsmorph") {
 		return null;
@@ -49,7 +48,7 @@ export const ExportButton = ({ className }: Props) => {
 			trigger={
 				<Button
 					className={className}
-					disabled={modContext.internalContent === "" || isCreating}
+					disabled={modStore.internalContent === "" || isCreating}
 					onClick={onClick}
 					id="export-button"
 					size="sm"

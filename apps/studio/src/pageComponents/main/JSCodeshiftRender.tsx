@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
 import { PropsWithChildren, ReactNode, useCallback, useEffect } from "react";
-import { useSelector } from "react-redux";
 import {
 	BoundResizePanel,
 	PanelData,
@@ -11,17 +10,13 @@ import {
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/setRangeThunk";
-import {
-	codemodOutputSlice,
-	selectCodemodOutput,
-} from "~/store/slices/codemodOutput";
-import { setActiveEventThunk } from "../../store/setActiveEventThunk";
-import { selectLog, setEvents } from "../../store/slices/log";
-import { selectMod, setHasRuntimeErrors } from "../../store/slices/mod";
-import { selectSnippets } from "../../store/slices/snippets";
-import { TabNames, viewSlice } from "../../store/slices/view";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useLogStore } from "~/store/zustand/log";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
+import { TabNames, useViewStore } from "~/store/zustand/view";
+import { useSetActiveEventThunk } from "../../store/useSetActiveEventThunk";
 import { useSnippet } from "./SnippetUI";
 
 const MonacoDiffEditor = dynamic(
@@ -33,19 +28,23 @@ const MonacoDiffEditor = dynamic(
 );
 
 export const useCodeDiff = () => {
-	const { engine, inputSnippet, afterInputRanges } =
-		useSelector(selectSnippets);
+	const { setEvents, events } = useLogStore();
+	const { engine, inputSnippet, afterInputRanges } = useSnippetStore();
 
-	const { internalContent } = useSelector(selectMod);
-	const { events } = useSelector(selectLog);
+	const { setHasRuntimeErrors } = useModStore();
+
+	const setRangeThunk = useRangesOnTarget();
+	const { internalContent } = useModStore();
 	const [webWorkerState, postMessage] = useWebWorker();
 
-	const codemodOutput = useSelector(selectCodemodOutput);
-	const dispatch = useAppDispatch();
+	const codemodOutput = useCodemodOutputStore();
+	const setActiveEventThunk = useSetActiveEventThunk();
 
 	const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
 	const content = internalContent ?? "";
+
+	const { setActiveTab } = useViewStore();
 
 	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
@@ -56,9 +55,9 @@ export const useCodeDiff = () => {
 
 	useEffect(() => {
 		if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
-			dispatch(codemodOutputSlice.actions.setContent(""));
-			dispatch(setHasRuntimeErrors(false));
-			dispatch(setEvents([]));
+			codemodOutput.setContent("");
+			setHasRuntimeErrors(false);
+			setEvents([]);
 
 			return;
 		}
@@ -68,7 +67,6 @@ export const useCodeDiff = () => {
 		engine,
 		inputSnippet,
 		content,
-		dispatch,
 		snippetBeforeHasOnlyWhitespaces,
 		codemodSourceHasOnlyWhitespaces,
 		postMessage,
@@ -76,38 +74,30 @@ export const useCodeDiff = () => {
 
 	useEffect(() => {
 		if (webWorkerState.kind === "LEFT") {
-			dispatch(
-				codemodOutputSlice.actions.setContent(webWorkerState.error.message),
-			);
-			dispatch(setHasRuntimeErrors(true));
-			dispatch(setEvents([]));
+			codemodOutput.setContent(webWorkerState.error.message);
+			setHasRuntimeErrors(true);
+			setEvents([]);
 			return;
 		}
-
-		dispatch(
-			codemodOutputSlice.actions.setContent(webWorkerState.output ?? ""),
-		);
-
-		dispatch(setHasRuntimeErrors(false));
-		dispatch(setEvents(webWorkerState.events));
-	}, [dispatch, webWorkerState]);
+		codemodOutput.setContent(webWorkerState.output ?? "");
+		setHasRuntimeErrors(false);
+		setEvents(webWorkerState.events);
+	}, [webWorkerState]);
 
 	const onSelectionChange = useCallback(
 		(range: OffsetRange) => {
-			dispatch(
-				setRangeThunk({
-					target: "CODEMOD_OUTPUT",
-					ranges: [range],
-				}),
-			);
+			setRangeThunk({
+				target: "CODEMOD_OUTPUT",
+				ranges: [range],
+			});
 		},
-		[dispatch],
+		[setRangeThunk],
 	);
 
 	const onDebug = () => {
 		firstCodemodExecutionErrorEvent?.hashDigest &&
-			dispatch(setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest));
-		dispatch(viewSlice.actions.setActiveTab(TabNames.DEBUG));
+			setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest);
+		setActiveTab(TabNames.DEBUG);
 	};
 
 	const originalEditorProps = {
@@ -141,7 +131,6 @@ export type LiveCodemodResultProps = Pick<
 export const DiffEditorWrapper = ({
 	originalEditorProps,
 	modifiedEditorProps,
-	warnings,
 	type,
 }: Pick<LiveCodemodResultProps, "originalEditorProps" | "modifiedEditorProps"> &
 	PropsWithChildren<{

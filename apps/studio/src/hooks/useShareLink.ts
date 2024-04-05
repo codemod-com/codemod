@@ -1,17 +1,16 @@
 import { useAuth } from "@clerk/nextjs";
 import { deflate } from "pako";
-import { useSelector } from "react-redux";
 import { encode } from "universal-base64url";
 import sendMessage from "~/api/sendMessage";
 import { type ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { generateCodemodNamePrompt } from "~/store/slices/CFS/prompts";
-import { selectMod } from "~/store/slices/mod";
-import { selectSnippets } from "~/store/slices/snippets";
+import { generateCodemodNamePrompt } from "~/store/zustand/CFS/prompts";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 export const useShareLink = () => {
-	const { engine, inputSnippet, outputSnippet } = useSelector(selectSnippets);
-	const { internalContent } = useSelector(selectMod);
+	const { engine, inputSnippet, outputSnippet } = useSnippetStore();
+	const { internalContent } = useModStore();
 	const { getToken } = useAuth();
 
 	const getExtensionUrl = async (): Promise<URL | null> => {

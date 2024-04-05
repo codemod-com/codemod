@@ -6,20 +6,19 @@ import {
 	Stop as StopIcon,
 } from "@phosphor-icons/react";
 import { type UseChatHelpers } from "ai/react";
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { useSelector } from "react-redux";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
 import {
 	type Aliases,
 	applyAliases,
-	getAliases,
-} from "~/store/slices/CFS/alias";
+	useGetAliases,
+} from "~/store/zustand/CFS/alias";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
-} from "../../store/slices/CFS/prompts";
+} from "../../store/zustand/CFS/prompts";
 import { capitalizeWord } from "../../utils/string";
 import PromptForm from "./PromptForm";
 import ScrollToBottomButton from "./ScrollToBottomButton";
@@ -80,7 +79,7 @@ export function ChatPanel({
 
 	const { getToken, isSignedIn } = useAuth();
 
-	const aliases = useSelector(getAliases);
+	const aliases = useGetAliases();
 	const promptsList = getPrompts(aliases);
 	const aliasList = getOrderedAliasList(aliases);
 

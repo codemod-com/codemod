@@ -2,7 +2,6 @@ import { SignInButton, useAuth } from "@clerk/nextjs";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import Panel from "~/components/Panel";
@@ -38,10 +37,9 @@ import {
 } from "~/pageComponents/main/PageBottomPane";
 import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
 import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
-import { AppDispatch } from "~/store";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { selectEngine, setEngine } from "~/store/slices/snippets";
-import { TabNames, selectActiveTab, viewSlice } from "~/store/slices/view";
+import { useSnippetStore } from "~/store/zustand/snippets";
+import { TabNames, useViewStore } from "~/store/zustand/view";
 import { openLink } from "~/utils/openLink";
 import themeConfig from "../../../tailwind.config";
 import ChevronRightSVG from "../../assets/icons/chevronright.svg";
@@ -110,13 +108,12 @@ const Main = () => {
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
 
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch<AppDispatch>();
+	const { engine, setEngine } = useSnippetStore();
 	const { toggleTheme, isDark } = useTheme();
 
 	const onEngineChange = (value: string) => {
 		if (value === "jscodeshift" || value === "tsmorph") {
-			dispatch(setEngine(value));
+			setEngine(value);
 		}
 	};
 
@@ -438,19 +435,20 @@ const AssistantTab = ({
 	beforePanel: PanelData;
 	afterPanel: PanelData;
 }) => {
-	const activeTab = useSelector(selectActiveTab);
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch();
+	const { activeTab } = useViewStore();
+	const { engine } = useSnippetStore();
 
 	const scrollContainerRef = useRef<HTMLDivElement>(null);
 	const savedScrollPositionRef = useRef<number>(0);
 	const { isSignedIn } = useAuth();
 
+	const { setActiveTab } = useViewStore();
+
 	const handleOnClick = useCallback(
 		(newActiveTab: TabNames) => {
-			dispatch(viewSlice.actions.setActiveTab(newActiveTab));
+			setActiveTab(newActiveTab);
 		},
-		[dispatch],
+		[setActiveTab],
 	);
 
 	useEffect(() => {
@@ -491,9 +489,6 @@ const AssistantTab = ({
 				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.AST}>
 					AST
-				</TabsTrigger>
-				<TabsTrigger className="flex-1" value={TabNames.GUIBuilder}>
-					GUI Builder
 				</TabsTrigger>
 				<TabsTrigger className="flex-1" value={TabNames.DEBUG}>
 					<LiveIcon />

@@ -2,7 +2,6 @@ import { Analytics } from "@vercel/analytics/react";
 import { type Metadata, type Viewport } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
-import { ReduxProvider } from "~/lib/context/state";
 import { ThemeProvider } from "~/pageComponents/main/themeContext";
 import AuthProvider from "../auth/AuthProvider";
 import "../index.css";
@@ -64,17 +63,15 @@ export default async function RootLayout({
 				</Script>
 			</head>
 			<AuthProvider>
-				<ReduxProvider>
-					<ThemeProvider>
-						<body className="h-full w-full">
-							<div id="root" className="h-full w-full">
-								{children}
-							</div>
+				<ThemeProvider>
+					<body className="h-full w-full">
+						<div id="root" className="h-full w-full">
+							{children}
+						</div>
 
-							<Analytics />
-						</body>
-					</ThemeProvider>
-				</ReduxProvider>
+						<Analytics />
+					</body>
+				</ThemeProvider>
 			</AuthProvider>
 		</html>
 	);

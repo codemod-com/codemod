@@ -1,4 +1,4 @@
-import type { Event } from "../store/slices/log";
+import type { Event } from "~/schemata/eventSchemata";
 
 export const executeWebWorker = async (content: string, input: string) => {
 	return new Promise<[Event[], string | null | undefined]>(

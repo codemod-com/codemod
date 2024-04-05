@@ -1,16 +1,10 @@
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import { useSelector } from "react-redux";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useAppDispatch } from "~/store";
-import { setRangeThunk } from "~/store/setRangeThunk";
-import {
-	selectSnippets,
-	selectSnippetsFor,
-	setInput,
-	setOutput,
-} from "../../store/slices/snippets";
+import { useRanges } from "~/store/useRanges";
+import { useRangesOnTarget } from "~/store/useRangesOnTarget";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
@@ -23,41 +17,37 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-	const state = useSelector(selectSnippets);
+	const { setInput, setOutput, inputSnippet, outputSnippet } =
+		useSnippetStore();
 
-	const dispatch = useAppDispatch();
+	const snippetValue = type === "before" ? inputSnippet : outputSnippet;
 
-	const valueKey = type === "before" ? "inputSnippet" : "outputSnippet";
-
-	const value = state[valueKey];
+	const setRangesOnTarget = useRangesOnTarget();
 
 	const onSnippetChange = useCallback(
 		(text?: string) => {
 			const val = text ?? "";
-			dispatch(type === "before" ? setInput(val) : setOutput(val));
+			type === "before" ? setInput(val) : setOutput(val);
 		},
 
-		[dispatch, type],
+		[setInput, setOutput, type],
 	);
 
 	const onSnippetBlur = useCallback(() => {
-		onSnippetChange(prettify(value));
-	}, [onSnippetChange, value]);
+		onSnippetChange(prettify(snippetValue));
+	}, [onSnippetChange]);
 
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
-			dispatch(
-				setRangeThunk({
-					target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
-					ranges: [range],
-				}),
-			);
+			setRangesOnTarget({
+				target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
+				ranges: [range],
+			});
 		},
-		[dispatch, type],
+		[type, setRangesOnTarget],
 	);
-
 	return {
-		value,
+		value: snippetValue,
 		onSnippetBlur,
 		onSnippetChange,
 		handleSelectionChange,
@@ -67,7 +57,7 @@ const SnippetUI = ({ type }: Props) => {
 	const { value, onSnippetBlur, onSnippetChange, handleSelectionChange } =
 		useSnippet(type);
 
-	const { ranges } = useSelector(selectSnippetsFor(type));
+	const ranges = useRanges(type);
 
 	return (
 		<div className="h-full overflow-hidden">

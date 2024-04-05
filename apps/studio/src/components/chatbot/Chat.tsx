@@ -3,7 +3,6 @@ import { useChat } from "ai/react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import toast from "react-hot-toast";
-import { useDispatch, useSelector } from "react-redux";
 import { SEND_CHAT } from "~/constants/apiEndpoints";
 import { env } from "~/env";
 import { cn } from "~/lib/utils";
@@ -12,15 +11,12 @@ import {
 	parseFrozenMessages,
 	unfreezeMessage,
 } from "~/schemata/chatSchemata";
-import { type RootState } from "~/store";
-import { applyAliases, getAliases } from "~/store/slices/CFS/alias";
-import { selectEngine } from "../../store/slices/CFS";
-import { autoGenerateCodemodPrompt } from "../../store/slices/CFS/prompts";
-import {
-	selectMod,
-	setContent,
-	setCurrentCommand,
-} from "../../store/slices/mod";
+import { useCodemodExecutionError } from "~/store/zustand/log";
+
+import { applyAliases, useGetAliases } from "~/store/zustand/CFS/alias";
+import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import ChatList from "./ChatList";
 import { ChatPanel } from "./ChatPanel";
 import ChatScrollAnchor from "./ChatScrollAnchor";
@@ -43,9 +39,8 @@ const buildCodemodFromLLMResponse = (LLMResponse: string): string | null => {
 };
 
 const Chat = ({ id, className }: Props) => {
-	const dispatch = useDispatch();
-	const { command } = useSelector(selectMod);
-	const engine = useSelector(selectEngine);
+	const { command, setCurrentCommand, setContent } = useModStore();
+	const { engine } = useSnippetStore();
 
 	const executedCommand = useRef(false);
 
@@ -90,12 +85,12 @@ const Chat = ({ id, className }: Props) => {
 				return;
 			}
 
-			dispatch(setCurrentCommand(null));
+			setCurrentCommand(null);
 
 			const codemodSourceCode = buildCodemodFromLLMResponse(content);
 
 			if (codemodSourceCode !== null) {
-				dispatch(setContent(codemodSourceCode));
+				setContent(codemodSourceCode);
 
 				toast.success("Auto-updated codemod based on AI response.");
 			}
@@ -132,8 +127,9 @@ const Chat = ({ id, className }: Props) => {
 		},
 	});
 	const { getToken, isSignedIn } = useAuth();
+	const codemodExecutionError = useCodemodExecutionError();
 
-	const aliases = useSelector((state: RootState) => getAliases(state));
+	const aliases = useGetAliases();
 
 	const handleSelectPrompt = async (value: string) => {
 		const t = await getToken();
@@ -182,10 +178,10 @@ const Chat = ({ id, className }: Props) => {
 	}, [messages, isLoading]);
 
 	const handleStop = useCallback(() => {
-		dispatch(setCurrentCommand(null));
+		setCurrentCommand(null);
 
 		stop();
-	}, [dispatch, stop]);
+	}, [setCurrentCommand, stop]);
 
 	return (
 		<>

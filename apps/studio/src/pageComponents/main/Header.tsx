@@ -1,29 +1,22 @@
-import { Link as LinkIcon } from "@phosphor-icons/react";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
-import { useDispatch, useSelector } from "react-redux";
+import { Link as LinkIcon } from "@phosphor-icons/react";
 import AuthButtons from "~/auth/AuthButtons";
 import { Button } from "~/components/ui/button";
 import { CodemodLogo } from "~/icons/CodemodLogo";
-import { setContent } from "~/store/slices/mod";
-import type { AppDispatch } from "../../store";
-import {
-	selectEngine,
-	setEngine,
-	setInput,
-	setOutput,
-} from "../../store/slices/snippets";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { DownloadZip } from "./DownloadZip";
 import { useTheme } from "./themeContext";
 import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
 const Header = () => {
-	const engine = useSelector(selectEngine);
-	const dispatch = useDispatch<AppDispatch>();
+	const { engine, setEngine, setInput, setOutput } = useSnippetStore();
+	const { setContent } = useModStore();
 	const { toggleTheme, isDark } = useTheme();
 
 	const onEngineChange = (value: string) => {
 		if (value === "jscodeshift" || value === "tsmorph") {
-			dispatch(setEngine(value));
+			setEngine(value);
 		}
 	};
 
@@ -53,9 +46,9 @@ const Header = () => {
 						className="flex gap-1"
 						hint={<p className="font-normal">Clear all inputs</p>}
 						onClick={() => {
-							dispatch(setInput(""));
-							dispatch(setOutput(""));
-							dispatch(setContent(""));
+							setInput("");
+							setOutput("");
+							setContent("");
 						}}
 					>
 						<BackspaceIcon className="h-4 w-4" />

@@ -9,6 +9,7 @@ type Props = {
 	selectedNode?: TreeNode;
 	selectionStart?: number;
 	selectionEnd?: number;
+	initialCollapseState?: "collapsed" | "open";
 };
 
 type TreeNode = {
@@ -25,9 +26,10 @@ const Tree = ({
 	selectedNode,
 	selectionStart = 0,
 	selectionEnd = 0,
+	initialCollapseState = "collapsed",
 	onClick,
 }: Props) => {
-	const [open, setIsOpen] = useState(false);
+	const [open, setIsOpen] = useState(initialCollapseState === "open");
 
 	const containsSelectedNode =
 		!!selectedNode &&
@@ -37,6 +39,10 @@ const Tree = ({
 	useEffect(() => {
 		setIsOpen(containsSelectedNode);
 	}, [containsSelectedNode]);
+
+	useEffect(() => {
+		setIsOpen(initialCollapseState === "open");
+	}, [initialCollapseState]);
 
 	const isSelected = selectedNode?.id === node.id;
 	const label = (
@@ -62,6 +68,7 @@ const Tree = ({
 			{open
 				? node.children.map((child, index) => (
 						<Tree
+							initialCollapseState={initialCollapseState}
 							key={index}
 							node={child}
 							onClick={onClick}

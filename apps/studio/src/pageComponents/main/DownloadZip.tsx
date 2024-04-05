@@ -1,7 +1,6 @@
 import { useAuth, useSession } from "@clerk/nextjs";
 import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
 import sendMessage from "~/api/sendMessage";
 import { Button } from "~/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
@@ -9,25 +8,38 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
 import { DownloadIcon } from "~/icons/Download";
 import { cn } from "~/lib/utils";
-import { generateCodemodHumanNamePrompt } from "~/store/slices/CFS/prompts";
-import { selectMod } from "~/store/slices/mod";
-import { selectEngine, selectSnippets } from "~/store/slices/snippets";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { downloadProject } from "~/utils/download";
+
+export const generateCodemodHumanNamePrompt = (codemod: string) => `
+You are a jscodeshift codemod and javascript expert. 
+Come up with a precise name to be used for the following jscodeshift codemod below.
+If the codemod is aimed at making any changes to a particular framework or library, the format
+should be "framework/version/name", where framework is the name of the framework or library,
+version is a major version (meaning one or two digits), and name is a short name for the codemod
+written in kebab-case. If you can't determine which framework this is for, you can just return the name
+written in kebab-case.
+Do not return any text other than the codemod name.
+\`\`\`
+${codemod}
+\`\`\`
+`;
 
 export const DownloadZip = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
 
-	const modContext = useSelector(selectMod);
-	const snippetsContext = useSelector(selectSnippets);
-	const engine = useSelector(selectEngine);
+	const modStore = useModStore();
+	const snippetStore = useSnippetStore();
+	const engine = snippetStore.engine;
 
 	const { session } = useSession();
 	const { getToken } = useAuth();
 
 	const handleClick = async () => {
 		setIsDownloading(true);
-		if (!modContext.internalContent) {
+		if (!modStore.internalContent) {
 			return;
 		}
 
@@ -35,18 +47,18 @@ export const DownloadZip = () => {
 
 		const humanCodemodName =
 			token !== null
-				? await getHumanCodemodName(modContext.internalContent, token)
+				? await getHumanCodemodName(modStore.internalContent, token)
 				: null;
 
 		await downloadProject({
 			name: humanCodemodName?.name ?? "codemod",
 			framework: humanCodemodName?.framework,
 			version: humanCodemodName?.version,
-			codemodBody: modContext.internalContent,
+			codemodBody: modStore.internalContent,
 			cases: [
 				{
-					before: snippetsContext.inputSnippet,
-					after: snippetsContext.outputSnippet,
+					before: snippetStore.inputSnippet,
+					after: snippetStore.outputSnippet,
 				},
 			],
 			engine,
@@ -74,7 +86,7 @@ export const DownloadZip = () => {
 						</p>
 					}
 					isLoading={isDownloading}
-					disabled={!modContext.internalContent || isDownloading}
+					disabled={!modStore.internalContent || isDownloading}
 					onClick={handleClick}
 					id="download-zip-button"
 				>

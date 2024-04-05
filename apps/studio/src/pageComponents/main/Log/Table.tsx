@@ -5,7 +5,6 @@ import {
 	useMemo,
 	useState,
 } from "react";
-import { useSelector } from "react-redux";
 import { Label } from "~/components/ui/label";
 import {
 	Table as ShadCNTable,
@@ -16,13 +15,13 @@ import {
 	TableRow as ShadCNTableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
-import { type RootState, useAppDispatch, useAppStore } from "~/store";
-import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
-import { setActiveEventThunk } from "~/store/setActiveEventThunk";
-import { codemodOutputSlice } from "~/store/slices/codemodOutput";
-import { setCodemodSelection } from "~/store/slices/mod";
-import { setOutputSelection } from "~/store/slices/snippets";
-import { type Event, selectLog } from "../../../store/slices/log";
+import type { Event } from "~/schemata/eventSchemata";
+import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
+import { useSetActiveEventThunk } from "~/store/useSetActiveEventThunk";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useLogStore } from "~/store/zustand/log";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 type TableRow = Readonly<{
 	index: number;
@@ -93,33 +92,38 @@ const buildTableRow = (
 	details: getTableRowDetails(event),
 });
 
-const getRanges = (state: RootState) => ({
-	codemodInputRanges: state.mod.ranges,
-	codemodOutputRanges: state.codemodOutput.ranges,
-	beforeInputRanges: state.snippets.beforeInputRanges,
-	afterInputRanges: state.snippets.afterInputRanges,
+const useRanges = () => ({
+	codemodInputRanges: useModStore().ranges,
+	codemodOutputRanges: useCodemodOutputStore().ranges,
+	beforeInputRanges: useSnippetStore().beforeInputRanges,
+	afterInputRanges: useSnippetStore().afterInputRanges,
 });
 
-type Ranges = ReturnType<typeof getRanges>;
+type Ranges = ReturnType<typeof useRanges>;
 
 const Table = () => {
-	const store = useAppStore();
-	const { activeEventHashDigest, events } = useSelector(selectLog);
+	const executeRangeCommandOnBeforeInputThunk =
+		useExecuteRangeCommandOnBeforeInput();
 	const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
 		null,
 	);
+	const ranges = useRanges();
 	const [oldRanges, setOldRanges] = useState<Ranges | null>(null);
 
-	const dispatch = useAppDispatch();
+	const setActiveThunk = useSetActiveEventThunk();
+	const { setCodemodSelection } = useModStore();
+	const { setSelections } = useCodemodOutputStore();
+	const { setOutputSelection } = useSnippetStore();
+
+	const { activeEventHashDigest, events } = useLogStore();
 
 	const buildOnMouseOver = useCallback(
 		(hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
 			(event) => {
 				event.preventDefault();
-
-				dispatch(setActiveEventThunk(hashDigest));
+				setActiveThunk(hashDigest);
 			},
-		[dispatch],
+		[setActiveThunk],
 	);
 
 	const buildOnClick = useCallback(
@@ -127,60 +131,65 @@ const Table = () => {
 			async (event) => {
 				event.preventDefault();
 
-				await dispatch(setActiveEventThunk(hashDigest));
+				setActiveThunk(hashDigest);
 
-				setOldRanges(getRanges(store.getState()));
+				setOldRanges(ranges);
 				setOldEventHashDigest(hashDigest);
 			},
-		[dispatch, store],
+		[setActiveThunk, ranges],
 	);
 
 	const onMouseEnter: MouseEventHandler<HTMLTableElement> = useCallback(
 		(event) => {
 			event.preventDefault();
 
-			setOldRanges(getRanges(store.getState()));
+			setOldRanges(ranges);
 			setOldEventHashDigest(activeEventHashDigest);
 		},
-		[activeEventHashDigest, store],
+		[activeEventHashDigest, ranges],
 	);
 
 	const onMouseLeave: MouseEventHandler<HTMLTableElement> = useCallback(
 		(event) => {
 			event.preventDefault();
 
-			dispatch(setActiveEventThunk(oldEventHashDigest));
+			if (oldEventHashDigest) {
+				setActiveThunk(oldEventHashDigest);
+			}
 
 			if (oldRanges === null) {
 				return;
 			}
 
-			dispatch(
-				setCodemodSelection({
-					kind: "PASS_THROUGH",
-					ranges: oldRanges.codemodInputRanges,
-				}),
-			);
-			dispatch(
-				codemodOutputSlice.actions.setSelections({
-					kind: "PASS_THROUGH",
-					ranges: oldRanges.codemodOutputRanges,
-				}),
-			);
-			dispatch(
-				executeRangeCommandOnBeforeInputThunk({
-					kind: "PASS_THROUGH",
-					ranges: oldRanges.beforeInputRanges,
-				}),
-			);
-			dispatch(
-				setOutputSelection({
-					kind: "PASS_THROUGH",
-					ranges: oldRanges.afterInputRanges,
-				}),
-			);
+			setCodemodSelection({
+				kind: "PASS_THROUGH",
+				ranges: oldRanges.codemodInputRanges,
+			});
+
+			setSelections({
+				kind: "PASS_THROUGH",
+				ranges: oldRanges.codemodOutputRanges,
+			});
+
+			executeRangeCommandOnBeforeInputThunk({
+				kind: "PASS_THROUGH",
+				ranges: oldRanges.beforeInputRanges,
+			});
+
+			setOutputSelection({
+				kind: "PASS_THROUGH",
+				ranges: oldRanges.afterInputRanges,
+			});
 		},
-		[dispatch, oldEventHashDigest, oldRanges],
+		[
+			oldEventHashDigest,
+			oldRanges,
+			setActiveThunk,
+			setCodemodSelection,
+			setSelections,
+			executeRangeCommandOnBeforeInputThunk,
+			setOutputSelection,
+		],
 	);
 
 	const tableRows = useMemo(

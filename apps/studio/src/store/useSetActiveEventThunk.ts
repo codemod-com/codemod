@@ -1,15 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
 import jscodeshift from "jscodeshift";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { type AppDispatch, type RootState } from "~/store";
+import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useLogStore } from "~/store/zustand/log";
+import { useModStore } from "~/store/zustand/mod";
+import { useSnippetStore } from "~/store/zustand/snippets";
 import { parseSnippet } from "~/utils/babelParser";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { type RangeCommand } from "~/utils/tree";
-import { executeRangeCommandOnBeforeInputThunk } from "./executeRangeCommandOnBeforeInputThunk";
-import { codemodOutputSlice } from "./slices/codemodOutput";
-import { setActiveEventHashDigest } from "./slices/log";
-import { setCodemodSelection } from "./slices/mod";
-import { setOutputSelection } from "./slices/snippets";
 
 const alphanumerizeString = (input: string): string => {
 	let output = "";
@@ -29,6 +27,8 @@ const alphanumerizeString = (input: string): string => {
 
 const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 	const parseResult = parseSnippet(snippet);
+	const executeRangeCommandOnBeforeInputThunk =
+		useExecuteRangeCommandOnBeforeInput();
 
 	const tokens =
 		parseResult !== null && "tokens" in parseResult
@@ -104,10 +104,9 @@ const calculateReplacementRanges = (
 
 			if (phrases.length === 0) {
 				phrases = buildPhrasesUsingIdentifiers(snippet);
-			}
-
-			if (phrases.length === 0) {
-				return;
+				if (phrases.length === 0) {
+					return;
+				}
 			}
 
 			const regex = new RegExp(phrases.join(".*?"), "gs");
@@ -132,71 +131,57 @@ const calculateReplacementRanges = (
 	}
 };
 
-export const setActiveEventThunk = createAsyncThunk<
-	void,
-	string | null,
-	{
-		dispatch: AppDispatch;
-		state: RootState;
-	}
->("thunks/setActiveEventThunk", async (eventHashDigest, thunkAPI) => {
-	const { getState, dispatch } = thunkAPI;
+export const useSetActiveEventThunk = () => {
+	const { setActiveEventHashDigest, events } = useLogStore();
+	const { setOutputSelection } = useSnippetStore();
+	const { setCodemodSelection } = useModStore();
+	const { content, setSelections } = useCodemodOutputStore();
+	const executeRangeCommandOnBeforeInputThunk =
+		useExecuteRangeCommandOnBeforeInput();
+	return (eventHashDigest: string) => {
+		if (eventHashDigest === null) {
+			const rangeCommand: RangeCommand = {
+				kind: "PASS_THROUGH",
+				ranges: [],
+			};
 
-	if (eventHashDigest === null) {
-		dispatch(setActiveEventHashDigest(null));
+			executeRangeCommandOnBeforeInputThunk(rangeCommand);
+			setOutputSelection(rangeCommand);
+			setSelections(rangeCommand);
 
-		const rangeCommand: RangeCommand = {
-			kind: "PASS_THROUGH",
-			ranges: [],
-		};
+			return;
+		}
 
-		dispatch(setCodemodSelection(rangeCommand));
-		dispatch(executeRangeCommandOnBeforeInputThunk(rangeCommand));
-		dispatch(setOutputSelection(rangeCommand));
-		dispatch(codemodOutputSlice.actions.setSelections(rangeCommand));
+		const event =
+			events.find(({ hashDigest }) => hashDigest === eventHashDigest) ?? null;
 
-		return;
-	}
+		if (event === null) {
+			return;
+		}
 
-	const state = getState();
+		setActiveEventHashDigest(eventHashDigest);
 
-	const event =
-		state.log.events.find(({ hashDigest }) => hashDigest === eventHashDigest) ??
-		null;
-
-	if (event === null) {
-		return;
-	}
-
-	dispatch(setActiveEventHashDigest(eventHashDigest));
-
-	dispatch(
 		setCodemodSelection({
 			kind: "PASS_THROUGH",
 			ranges: [event.codemodSourceRange],
-		}),
-	);
+		});
 
-	dispatch(
 		executeRangeCommandOnBeforeInputThunk({
 			// the selection from the evens will thus be reflected in the Find & Replace panel
 			kind: "FIND_CLOSEST_PARENT",
 			ranges: "snippetBeforeRanges" in event ? event.snippetBeforeRanges : [],
-		}),
-	);
-	dispatch(
+		});
 		setOutputSelection({
 			kind: "PASS_THROUGH",
 			ranges: [],
-		}),
-	);
-	dispatch(
-		codemodOutputSlice.actions.setSelections({
+		});
+
+		setSelections({
 			kind: "PASS_THROUGH",
 			ranges: calculateReplacementRanges(
-				state.codemodOutput.content ?? "",
+				content ?? "",
 				"codes" in event ? event.codes : [],
 			),
-		}),
-	);
-});
+		});
+	};
+};

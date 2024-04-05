@@ -1,55 +1,59 @@
 /* eslint-disable no-nested-ternary */
 import { useCallback, useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { useAppDispatch } from "~/store";
-import { executeRangeCommandOnBeforeInputThunk } from "~/store/executeRangeCommandOnBeforeInputThunk";
 import Text from "../../components/Text";
 import Tree, { type TreeNode } from "../../components/Tree";
 import useScrollNodeIntoView from "../../hooks/useScrollNodeIntoView";
-import { codemodOutputSlice } from "../../store/slices/codemodOutput";
+
+import { SnippetType } from "~/pageComponents/main/PageBottomPane";
+import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
+import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import {
-	selectFirstTreeNode,
-	selectSnippetsFor,
-	setOutputSelection,
-} from "../../store/slices/snippets";
+	useSelectFirstTreeNode,
+	useSelectSnippetsFor,
+	useSnippetStore,
+} from "~/store/zustand/snippets";
 
 type Props = {
 	type: "before" | "after" | "output";
 };
 
+export const useSnippetRootNode = (type: SnippetType) => {
+	const { rootNode } = useCodemodOutputStore();
+};
 const ASTViewer = ({ type }: Props) => {
 	const ASTTreeRef = useRef<HTMLDivElement>(null);
-	const { rootNode } = useSelector(selectSnippetsFor(type));
-	const firstTreeNode = useSelector(selectFirstTreeNode(type));
+	const executeRangeCommandOnBeforeInputThunk =
+		useExecuteRangeCommandOnBeforeInput();
+	const { rootNode } = useSelectSnippetsFor(type);
+	const getFirstTreeNode = useSelectFirstTreeNode();
+	const { setSelections } = useCodemodOutputStore();
+	const { setOutputSelection } = useSnippetStore();
 
 	const setRange =
 		type === "before"
 			? executeRangeCommandOnBeforeInputThunk
 			: type === "after"
 			  ? setOutputSelection
-			  : codemodOutputSlice.actions.setSelections;
+			  : setSelections;
 
 	const scrollNodeIntoView = useScrollNodeIntoView();
-	const dispatch = useAppDispatch();
 
 	const handleNodeClick = useCallback(
 		(node: TreeNode) => {
-			dispatch(
-				setRange({
-					kind: "FIND_CLOSEST_PARENT",
-					ranges: [node],
-				}),
-			);
-			scrollNodeIntoView(node, ASTTreeRef);
+			setRange({
+				kind: "FIND_CLOSEST_PARENT",
+				ranges: [node],
+			}),
+				scrollNodeIntoView(node, ASTTreeRef);
 		},
-		[scrollNodeIntoView, setRange, dispatch],
+		[scrollNodeIntoView],
 	);
 
 	useEffect(() => {
-		if (firstTreeNode !== null) {
-			scrollNodeIntoView(firstTreeNode, ASTTreeRef);
+		if (getFirstTreeNode(type) !== null) {
+			scrollNodeIntoView(getFirstTreeNode(type), ASTTreeRef);
 		}
-	}, [scrollNodeIntoView, firstTreeNode]);
+	}, [scrollNodeIntoView, getFirstTreeNode(type)]);
 
 	return (
 		<>
@@ -59,9 +63,10 @@ const ASTViewer = ({ type }: Props) => {
 			>
 				{rootNode ? (
 					<Tree
+						initialCollapseState="open"
 						node={rootNode}
 						onClick={handleNodeClick}
-						selectedNode={firstTreeNode ?? undefined}
+						selectedNode={getFirstTreeNode(type) ?? undefined}
 					/>
 				) : (
 					<Text>
