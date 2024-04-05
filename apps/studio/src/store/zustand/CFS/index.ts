@@ -1,4 +1,3 @@
-import { type Node } from "@babel/types";
 import create from "zustand";
 import type { SendMessageResponse } from "~/api/sendMessage";
 import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
@@ -38,9 +37,6 @@ const AIAssistantInitialState = {
 	open: false,
 	engine: "gpt-4" as const,
 };
-
-export const nodeHasValues = (type: Node["type"]): boolean =>
-	type === "Identifier" || type === "StringLiteral" || type === "NumberLiteral";
 
 export type CFSStateValues = {
 	AIAssistant: AIAssistantState;
