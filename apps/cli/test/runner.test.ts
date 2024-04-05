@@ -25,24 +25,6 @@ export default function transform(file, api, options) {
 }
 `;
 
-const CODEMOD_F_INDEX_JS = `
-export default function transform(file, api, options) {
-	return "123";
-}`;
-
-const CODE_F_MDX = `
-import { Chart } from './snowfall.js';
-export const year = 2023;
-
-# Last year’s snowfall
-
-In {year}, the snowfall was above average.
-It was followed by a warm spring which caused
-flood conditions in many of the nearby rivers.
-
-<Chart a={year} color="#fcb32c" />
-`;
-
 const printer: PrinterBlueprint = {
 	__jsonOutput: false,
 	printMessage: () => {},
@@ -184,7 +166,6 @@ describe("Runner", () => {
 		);
 	});
 
-	// 	const volume = Volume.fromJSON({
 	// 		"/code/f.mdx": CODE_F_MDX,
 	// 		"/codemods/f/index.js": CODEMOD_F_INDEX_JS,
 	// 	});
