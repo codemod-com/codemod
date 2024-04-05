@@ -1,14 +1,14 @@
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
-import { useSnippetStore } from "~/store/zustand/snippets";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useSnippetStore } from "~/store/zustand/snippets";
 
 export const useRanges = (type: SnippetType) => {
-	const {beforeInputRanges, afterInputRanges} = useSnippetStore();
-	const { ranges } = useCodemodOutputStore()
+	const { beforeInputRanges, afterInputRanges } = useSnippetStore();
+	const { ranges } = useCodemodOutputStore();
 
-	return ({
-		'before': beforeInputRanges,
-		'after': afterInputRanges,
-		'output': ranges
-	})[type]
-}
+	return {
+		before: beforeInputRanges,
+		after: afterInputRanges,
+		output: ranges,
+	}[type];
+};

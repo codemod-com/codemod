@@ -1,12 +1,10 @@
-import create from 'zustand';
-import { devtools } from 'zustand/middleware';
-import { type Node } from '@babel/types';
+import { type Node } from "@babel/types";
+import create from "zustand";
 import type { SendMessageResponse } from "~/api/sendMessage";
-import { getNodeById, getNodeHash, isNode } from "~/utils/tree";
-import { TreeNode } from '~/types/tree';
-import { PromptPreset } from './prompts';
 import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
-
+import { TreeNode } from "~/types/tree";
+import { getNodeById, getNodeHash, isNode } from "~/utils/tree";
+import { PromptPreset } from "./prompts";
 
 export const states = {
 	VALUE: "Value",
@@ -48,7 +46,6 @@ export type AIAssistantState = Readonly<{
 	engine: Engine;
 }>;
 
-
 const AIAssistantInitialState = {
 	loading: false,
 	error: null,
@@ -60,8 +57,6 @@ const AIAssistantInitialState = {
 	open: false,
 	engine: "gpt-4" as const,
 };
-
-
 
 const ignoredKeys = ["tokens", "loc", "start", "end", "extra"];
 
@@ -125,7 +120,7 @@ const generateFindExpression = (
 	selectedNode: TreeNode | null,
 	nodeSelectorTreeState: Record<string, TreeNodeSelectorState>,
 ): string => {
-	if(!selectedNode) return '';
+	if (!selectedNode) return "";
 	let generatedOutput = parentNodes.reduce(
 		(acc, node) => `${acc}.find(j.${node.label}) \n`,
 		"root \n",
@@ -139,7 +134,6 @@ const generateFindExpression = (
 
 	return generatedOutput;
 };
-
 
 export const nodeHasValues = (type: Node["type"]): boolean =>
 	type === "Identifier" || type === "StringLiteral" || type === "NumberLiteral";
@@ -175,24 +169,29 @@ export type CFSStateValues = {
 	nodeSelectorTreeState: Record<string, TreeNodeSelectorState>;
 	hoveredNode: TreeNode | null;
 	AIAssistant: AIAssistantState;
-}
+};
 export type CFSStateSetters = {
 	transitionNodeState: (selectedNode: TreeNode, node: TreeNode) => void;
 	toggleSelectedNodeId: (nodeId: string) => void;
 	setParentNodes: (nodes: TreeNode[]) => void;
-	setNodeSelectorTreeState: (state: Record<string, TreeNodeSelectorState>) => void;
+	setNodeSelectorTreeState: (
+		state: Record<string, TreeNodeSelectorState>,
+	) => void;
 	setNodeState: (node: TreeNode, state: TreeNodeSelectorState) => void;
 	setHoveredNode: (node: TreeNode | null) => void;
 	setEngine: (engine: Engine) => void;
 	setIsOpen: (isOpen: boolean) => void;
-}
+};
 export type CFSStateSelectors = {
 	getSelectedCFS: () => TreeNode[];
 	selectCFSOutput: (selectedNode: TreeNode | null) => string;
-	selectNodesByState: (selectedNode: TreeNode | null, nodeState: TreeNodeSelectorState) => TreeNode[];
-}
+	selectNodesByState: (
+		selectedNode: TreeNode | null,
+		nodeState: TreeNodeSelectorState,
+	) => TreeNode[];
+};
 
-export type CFSState = CFSStateValues & CFSStateSetters & CFSStateSelectors
+export type CFSState = CFSStateValues & CFSStateSetters & CFSStateSelectors;
 
 export const defaultState: CFSStateValues = {
 	isOpen: false,
@@ -207,39 +206,63 @@ export const defaultState: CFSStateValues = {
 export const useCFSStore = create<CFSState>((set, get) => ({
 	...defaultState,
 	setIsOpen: (isOpen: boolean) => set({ isOpen }),
-	toggleSelectedNodeId: (nodeId: string) => set(state => {
-		const idx = state.selectedNodeIds.indexOf(nodeId);
-		const newSelectedNodeIds = idx === -1
-			? [...state.selectedNodeIds, nodeId]
-			: state.selectedNodeIds.filter(id => id !== nodeId);
-		return { selectedNodeIds: newSelectedNodeIds };
-	}),
+	toggleSelectedNodeId: (nodeId: string) =>
+		set((state) => {
+			const idx = state.selectedNodeIds.indexOf(nodeId);
+			const newSelectedNodeIds =
+				idx === -1
+					? [...state.selectedNodeIds, nodeId]
+					: state.selectedNodeIds.filter((id) => id !== nodeId);
+			return { selectedNodeIds: newSelectedNodeIds };
+		}),
 	setParentNodes: (nodes: TreeNode[]) => set({ parentNodes: nodes }),
-	setNodeSelectorTreeState: (state: Record<string, TreeNodeSelectorState>) => set({ nodeSelectorTreeState: state }),
-	setNodeState: (node: TreeNode, state: TreeNodeSelectorState) => set(s => ({ nodeSelectorTreeState: { ...s.nodeSelectorTreeState, [node.id]: state } })),
-	transitionNodeState: (selectedNode: TreeNode, node: TreeNode) => set(s => {
-		const availableStates = getAvailableState(node, selectedNode);
-		const currState = s.nodeSelectorTreeState[node.id];
-		const idx = availableStates.findIndex(s => currState === s);
-		const nextState = availableStates[(idx + 1) % availableStates.length] || 'Unselected';
-		return { nodeSelectorTreeState: { ...s.nodeSelectorTreeState, [node.id]: nextState } };
-	}),
+	setNodeSelectorTreeState: (state: Record<string, TreeNodeSelectorState>) =>
+		set({ nodeSelectorTreeState: state }),
+	setNodeState: (node: TreeNode, state: TreeNodeSelectorState) =>
+		set((s) => ({
+			nodeSelectorTreeState: { ...s.nodeSelectorTreeState, [node.id]: state },
+		})),
+	transitionNodeState: (selectedNode: TreeNode, node: TreeNode) =>
+		set((s) => {
+			const availableStates = getAvailableState(node, selectedNode);
+			const currState = s.nodeSelectorTreeState[node.id];
+			const idx = availableStates.findIndex((s) => currState === s);
+			const nextState =
+				availableStates[(idx + 1) % availableStates.length] || "Unselected";
+			return {
+				nodeSelectorTreeState: {
+					...s.nodeSelectorTreeState,
+					[node.id]: nextState,
+				},
+			};
+		}),
 	setHoveredNode: (node: TreeNode | null) => set({ hoveredNode: node }),
-	setEngine: (engine: Engine) => set(state => ({ AIAssistant: { ...state.AIAssistant, engine } })),
-	getSelectedCFS: () => get().parentNodes.filter((node) =>
-		get().selectedNodeIds.includes(node.id),
-	),
+	setEngine: (engine: Engine) =>
+		set((state) => ({ AIAssistant: { ...state.AIAssistant, engine } })),
+	getSelectedCFS: () =>
+		get().parentNodes.filter((node) => get().selectedNodeIds.includes(node.id)),
 	selectCFSOutput: (selectedNode: TreeNode | null) => {
 		const { getSelectedCFS, nodeSelectorTreeState } = get();
-		return generateFindExpression(getSelectedCFS(), selectedNode, nodeSelectorTreeState);
+		return generateFindExpression(
+			getSelectedCFS(),
+			selectedNode,
+			nodeSelectorTreeState,
+		);
 	},
-	selectNodesByState: (selectedNode: TreeNode | null, nodeState: TreeNodeSelectorState) => {
+	selectNodesByState: (
+		selectedNode: TreeNode | null,
+		nodeState: TreeNodeSelectorState,
+	) => {
 		const { nodeSelectorTreeState } = get();
 		return selectedNode
 			? Object.keys(nodeSelectorTreeState)
-				.filter(nodeId => nodeSelectorTreeState[nodeId] === nodeState && nodeId !== selectedNode.id)
-				.map(nodeId => getNodeById(selectedNode, nodeId))
-				.filter(isNeitherNullNorUndefined)
+					.filter(
+						(nodeId) =>
+							nodeSelectorTreeState[nodeId] === nodeState &&
+							nodeId !== selectedNode.id,
+					)
+					.map((nodeId) => getNodeById(selectedNode, nodeId))
+					.filter(isNeitherNullNorUndefined)
 			: [];
 	},
 }));
