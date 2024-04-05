@@ -13,10 +13,10 @@ import {
 } from "~/schemata/chatSchemata";
 import { useCodemodExecutionError } from "~/store/zustand/log";
 
+import { useCFSStore } from "~/store/zustand/CFS";
 import { applyAliases, useGetAliases } from "~/store/zustand/CFS/alias";
 import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
 import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
 import ChatList from "./ChatList";
 import { ChatPanel } from "./ChatPanel";
 import ChatScrollAnchor from "./ChatScrollAnchor";
@@ -40,7 +40,9 @@ const buildCodemodFromLLMResponse = (LLMResponse: string): string | null => {
 
 const Chat = ({ id, className }: Props) => {
 	const { command, setCurrentCommand, setContent } = useModStore();
-	const { engine } = useSnippetStore();
+	const {
+		AIAssistant: { engine },
+	} = useCFSStore();
 
 	const executedCommand = useRef(false);
 
