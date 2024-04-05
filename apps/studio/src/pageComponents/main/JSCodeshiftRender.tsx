@@ -33,12 +33,13 @@ export const useCodeDiff = () => {
 	const { setEvents, events } = useLogStore();
 	const { engine, afterInputRanges } = useSnippetStore();
 
-	const { selectAll } = useFilesStore();
+	const { selectFirst } = useFilesStore();
 
 	const inputSnippet =
-		selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).find(
-			(file) => file.name === "before.tsx",
-		)?.content ?? "";
+		selectFirst({
+			parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+			name: "before.tsx",
+		})?.content ?? "";
 
 	const { setHasRuntimeErrors } = useModStore();
 

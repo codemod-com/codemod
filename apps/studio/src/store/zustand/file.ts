@@ -13,9 +13,30 @@ type FileState = {
 	upsertOne: (hashDigest: string, newFile: File) => void;
 	upsertMany: (files: File[]) => void;
 	setAll: (files: File[]) => void;
-	selectAll: (parentHashDigest?: string) => File[];
+	selectAll: (filter?: Partial<File>) => File[];
 	selectById: (hashDigest: string) => File | null;
+	selectFirst: (filter: Partial<File>) => File | null;
 };
+
+function shallowMatch(
+	obj1: { [key: string]: any },
+	obj2: { [key: string]: any },
+): boolean {
+	const keys1 = Object.keys(obj1);
+	const keys2 = Object.keys(obj2);
+
+	if (keys1.length !== keys2.length) {
+		return false;
+	}
+
+	for (const key of keys1) {
+		if (!Object.hasOwn(obj2, key) || obj1[key] !== obj2[key]) {
+			return false;
+		}
+	}
+
+	return true;
+}
 
 const buildCollection = (files: ReadonlyArray<File>): Record<string, File> =>
 	files.reduce<FileState["files"]>((files, file) => {
@@ -51,11 +72,16 @@ export const useFilesStore = create<FileState>((set, get) => ({
 	selectById(hashDigest: string) {
 		return get().files[hashDigest] ?? null;
 	},
-	selectAll(parentHashDigest?: string) {
+	selectAll(filter?: Partial<File>) {
 		const allFiles = Object.values(get().files);
 
-		return parentHashDigest
-			? allFiles.filter((file) => file.parent === parentHashDigest)
+		return filter
+			? allFiles.filter((file) => shallowMatch(file, filter))
 			: allFiles;
+	},
+	selectFirst(filter: Partial<File>) {
+		const allFiles = Object.values(get().files);
+
+		return allFiles.find((file) => shallowMatch(file, filter)) ?? null;
 	},
 }));

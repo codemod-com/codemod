@@ -39,6 +39,9 @@ type SnippetStateSetters = {
 };
 
 export type SnippetState = SnippetStateValues & SnippetStateSetters;
+
+// Metadata exists only for currently visible files -  before/after in current test fixture, and for codemod.
+
 export const getInitialState = (): SnippetStateValues => {
 	const { engine, files } = INITIAL_STATE;
 
@@ -48,10 +51,11 @@ export const getInitialState = (): SnippetStateValues => {
 
 	// compatibility
 	const beforeSnippet =
-		currentTestFixtureFiles.find((file) => file.name.includes("before"))
+		currentTestFixtureFiles.find((file) => file.name === "before.tsx")
 			?.content ?? "";
+
 	const afterSnippet =
-		currentTestFixtureFiles.find((file) => file.name.includes("after"))
+		currentTestFixtureFiles.find((file) => file.name === "after.tsx")
 			?.content ?? "";
 
 	// before input

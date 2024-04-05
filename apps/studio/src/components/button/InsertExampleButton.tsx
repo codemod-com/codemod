@@ -18,7 +18,7 @@ const InsertExampleButton = () => {
 	const { selectAll, upsertMany } = useFilesStore();
 
 	const setDefaultFixtureFiles = (directoryHashDigest: string) => {
-		const files = selectAll(directoryHashDigest).map((file) => {
+		const files = selectAll({ parent: directoryHashDigest }).map((file) => {
 			const newContent =
 				file.name === "after.tsx"
 					? AFTER_SNIPPET_DEFAULT_CODE

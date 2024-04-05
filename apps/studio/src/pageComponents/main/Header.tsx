@@ -28,9 +28,9 @@ const Header = () => {
 	const { selectAll, setAll } = useFilesStore();
 
 	const clearFiles = () => {
-		const emptyFiles = selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).map(
-			(file) => ({ ...file, content: "" }),
-		);
+		const emptyFiles = selectAll({
+			parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+		}).map((file) => ({ ...file, content: "" }));
 
 		setAll(emptyFiles);
 	};

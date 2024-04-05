@@ -2,6 +2,7 @@ import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
 import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
+import { DEFAULT_TEST_FIXTURE_DIR } from "~/store/getInitialState";
 import { useFilesStore } from "~/store/zustand/file";
 import { useModStore } from "~/store/zustand/mod";
 
@@ -12,9 +13,12 @@ const ClearInputButton = ({ className }: Props) => {
 
 	const { selectAll, setAll } = useFilesStore();
 
-	// set all file content to empty
+	// set all files content to empty for current test fixture
 	const clearFiles = () => {
-		const emptyFiles = selectAll().map((file) => ({ ...file, content: "" }));
+		const emptyFiles = selectAll({
+			// for now test fixture (directory) is hardcoded
+			parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+		}).map((file) => ({ ...file, content: "" }));
 
 		setAll(emptyFiles);
 	};

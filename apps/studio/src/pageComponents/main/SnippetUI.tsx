@@ -18,11 +18,12 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-	const { selectAll, upsertOne } = useFilesStore();
+	const { selectFirst, upsertOne } = useFilesStore();
 
-	const file = selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).find((file) =>
-		file.name.includes(type),
-	);
+	const file = selectFirst({
+		parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+		name: `${type}.tsx`,
+	});
 
 	const snippetValue = file?.content ?? "";
 
