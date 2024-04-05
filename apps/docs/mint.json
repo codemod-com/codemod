@@ -42,7 +42,6 @@
 			"group": "Building Codemods",
 			"pages": [
 				"building-codemods/getting-started",
-				"building-codemods/configuration",
 				"building-codemods/codemod-studio"
 			]
 		},

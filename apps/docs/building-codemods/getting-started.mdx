@@ -1,6 +1,6 @@
 ---
 title: 'Getting started'
-description: 'Start building codemods using the Codemod platform.'
+description: 'Start building codemods using Codemod platform.'
 icon: 'book-open-cover'
 ---
 
@@ -16,15 +16,15 @@ icon: 'book-open-cover'
   alt="Deploying codemods hero banner"
 />
 
-Codemod platform allows users to build codemods of various complexity and make them all available in a single place.
-To execute this idea properly, we must introduce a solid structure for compatible codemod packages and a way to share them with the community.
+Codemod platform allows you to build a wide variety of codemods and easily distribute them to different parts of the platform, such as the [Codemod Registry](/codemod-registry/), [CLI](/deploying-codemods/cli), and [VS Code extension](/deploying-codemods/vsce). This allows them to be discovered, shared, and used by the community.
 
-First, one must understand [the structure of a codemod package](/building-codemods/configuration) and how to build one.
-To make this process easier, we provide two easy ways of scaffolding a new codemod package and start developing right away.
+To do so, codemods must follow the [required codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure).
 
-### 1. Initialize using CLI
+There are two ways of scaffolding a new codemod package that follow the required package structure:
 
-You can quickly create a codemod package using the Codemod CLI and start developing with tools already known by the community.
+## Option 1: Initialize using CLI
+
+You can quickly create a codemod package using the Codemod CLI and start developing with supported codemod engines such as: `ast-grep`, `filemod`, `jscodeshift`, `ts-morph`, or `piranha`.
 
 To do so, run the following command:
 
@@ -32,23 +32,10 @@ To do so, run the following command:
 codemod init
 ```
 
-You'll be prompted to answer a few questions about your codemod package, and the CLI will scaffold the project for you.
-
 <Tip>
-You can use the `-y` flag to skip the questions and use the default values.
+To easily scaffold the codemod package, Codemod CLI prompt you to answer a few questions about your codemod. You can use the `-y` flag to skip the questions and use the default values.
 </Tip>
 
-### 2. Use Codemod Studio
+## Option 2: Use Codemod Studio
 
-[Codemod Studio](/building-codemods/codemod-studio) is a web-based tool that allows you to create a new codemod package with the power of AI.
-You can describe your before and after code examples, and Codemod Studio will generate the codemod for you.
-
-You can then download the codemod package using `Export locally` button and start developing right away.
-
-<Tip>
-If you're using Codemod Visual Studio Code extension, you can import the studio-generated codemod package directly into your workspace.
-</Tip>
-
-<Card title="Learn about configuring codemods ->" icon="rectangle-history" href="/building-codemods/configuration">
-  Configure your codemods now.
-</Card>
+[Codemod Studio](/building-codemods/codemod-studio) allows you to easily create codemods with the power of AI. All codemods built and/or exported by Codemod Studio will automatically conform to the package structure required by Codemod platform.
