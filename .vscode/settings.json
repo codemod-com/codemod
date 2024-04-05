@@ -5,18 +5,4 @@
 		"source.organizeImports.biome": "explicit",
     "source.fixAll.biome": "explicit"
 	},
-	"colorize.colorized_colors": [
-		"BROWSERS_COLORS",
-		"HEXA",
-		"RGB",
-		"HSL"
-	],
-	"colorize.include": [
-		"**/*.css",
-		"**/*.scss",
-		"**/*.sass",
-		"**/*.less",
-		"**/*.styl",
-		"**/*.json",
-	],
 }
