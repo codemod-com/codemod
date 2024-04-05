@@ -16,7 +16,8 @@ export {
 	type CodemodConfigInput,
 	type KnownEngines,
 } from "./schemata/codemodConfigSchema.js";
-export { type CodemodListReturn } from "./schemata/codemodListResponse.js";
+export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
+export { type ValidateTokenResponse } from "./schemata/validateTokenResponse.js";
 export {
 	JOB_KIND,
 	parseSurfaceAgnosticJob,

@@ -1,4 +1,8 @@
-import { CustomHandler, InternalServerError } from "../customHandler.js";
+import {
+	CustomHandler,
+	InternalServerError,
+	UnauthorizedError,
+} from "../customHandler.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 
 export const validationHandler: CustomHandler<{
@@ -19,10 +23,18 @@ export const validationHandler: CustomHandler<{
 
 	const user = await clerkClient.users.getUser(userId);
 
-	// TODO: return orgs
+	if (user.username === null) {
+		throw new UnauthorizedError();
+	}
+
+	const userOrgs = await clerkClient.users.getOrganizationMembershipList({
+		userId,
+		limit: 100,
+	});
 
 	return {
 		success: true,
 		username: user.username,
+		organizations: userOrgs.map((orgObj) => orgObj.organization),
 	};
 };

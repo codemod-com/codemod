@@ -8,7 +8,7 @@ import {
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, getCurrentUser } from "./utils.js";
+import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
 
 const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
 	"jscodeshift",
@@ -89,14 +89,14 @@ export const handleInitCliCommand = async (
 		]);
 	}
 
-	const username = await getCurrentUser();
+	const userData = await getCurrentUserData();
 
 	const downloadInput: ProjectDownloadInput = answers
 		? {
 				engine: answers.engine,
 				name: answers.name,
 				license: answers.license,
-				username,
+				username: userData?.user.username ?? null,
 				// TODO:
 				// tags
 		  }
@@ -104,7 +104,7 @@ export const handleInitCliCommand = async (
 				engine: "jscodeshift",
 				name: "my-awesome-codemod",
 				license: "MIT",
-				username,
+				username: userData?.user.username ?? null,
 				// TODO:
 				// tags
 		  };

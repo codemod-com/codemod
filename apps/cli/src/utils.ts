@@ -4,6 +4,7 @@ import { readFile, unlink } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
+import { ValidateTokenResponse } from "@codemod-com/utilities";
 import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
@@ -42,26 +43,52 @@ export const COLOR_MAP = {
 	orange: "\x1b[33m",
 };
 
-export const getCurrentUser = async (): Promise<string | null> => {
+export type TokenData = {
+	value: string;
+	path: string;
+};
+
+export const getTokenData = async (): Promise<TokenData | null> => {
 	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
+
 	if (!existsSync(tokenTxtPath)) {
 		return null;
 	}
 
-	const content = await readFile(tokenTxtPath, {
-		encoding: "utf-8",
-	});
-
-	let username: string | null = null;
 	try {
-		const response = await validateAccessToken(content);
-		username = response.username;
+		const token = await readFile(tokenTxtPath, "utf-8");
+
+		return { value: token, path: tokenTxtPath };
 	} catch (error) {
-		await unlink(tokenTxtPath);
+		return null;
+	}
+};
+
+export const getCurrentUserData = async (): Promise<{
+	user: ValidateTokenResponse;
+	token: TokenData;
+} | null> => {
+	const tokenData = await getTokenData();
+
+	if (tokenData === null) {
 		return null;
 	}
 
-	return username;
+	const { value: token, path } = tokenData;
+	let responseData: ValidateTokenResponse;
+	try {
+		responseData = await validateAccessToken(token);
+	} catch (error) {
+		try {
+			await unlink(path);
+		} catch (err) {
+			//
+		}
+
+		return null;
+	}
+
+	return { user: responseData, token: tokenData };
 };
 
 export const execPromise = promisify(exec);
