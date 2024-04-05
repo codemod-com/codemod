@@ -8,7 +8,7 @@
 		"from": [["immutable", "<", "4.0.0"]]
 	},
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"include": ["**/*.js", "**/*.ts"]
 }

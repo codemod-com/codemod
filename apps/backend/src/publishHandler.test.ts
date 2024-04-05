@@ -146,7 +146,7 @@ describe("/publish route", async () => {
 		},
 		engine: "jscodeshift",
 		meta: {
-			useCaseCategory: "migration",
+			tags: ["migration"],
 		},
 	};
 

@@ -69,7 +69,7 @@ export class CodemodService {
 		}
 
 		if (categories.length) {
-			searchAndFilterClauses.push({ useCaseCategory: { in: categories } });
+			searchAndFilterClauses.push({ tags: { hasSome: categories } });
 		}
 
 		if (authors.length) {
@@ -141,21 +141,10 @@ export class CodemodService {
 			count: number;
 		}[];
 	}> {
-		const [frameworks, groupedUseCases, groupedOwners] = await Promise.all([
+		const [frameworks, groupedOwners] = await Promise.all([
 			this.prisma.tag.findMany({
 				where: {
 					classification: "framework",
-				},
-			}),
-			this.prisma.codemod.groupBy({
-				by: ["useCaseCategory"],
-				_count: {
-					_all: true,
-				},
-				where: {
-					useCaseCategory: {
-						not: null,
-					},
 				},
 			}),
 			this.prisma.codemod.groupBy({
@@ -166,10 +155,25 @@ export class CodemodService {
 			}),
 		]);
 
-		const useCaseFilters = groupedUseCases.map(
-			({ useCaseCategory, _count }) => ({
-				name: useCaseCategory,
-				count: _count._all,
+		const useCaseTags = await this.prisma.tag.findMany({
+			where: {
+				classification: "useCaseCategory",
+			},
+		});
+
+		const useCaseFilters: { name: string; count: number }[] = [];
+		await Promise.all(
+			useCaseTags.map(async (tag) => {
+				useCaseFilters.push({
+					name: tag.displayName,
+					count: await this.prisma.codemod.count({
+						where: {
+							tags: {
+								hasSome: tag.aliases,
+							},
+						},
+					}),
+				});
 			}),
 		);
 

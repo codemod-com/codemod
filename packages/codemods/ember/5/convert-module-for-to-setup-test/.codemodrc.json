@@ -9,6 +9,6 @@
 	},
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-qunit-codemod/tree/master/transforms/convert-module-for-to-setup-test",
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

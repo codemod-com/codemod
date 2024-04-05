@@ -5,8 +5,7 @@
 	"private": false,
 	"engine": "jscodeshift",
 	"meta": {
-		"tags": ["react"],
-		"useCaseCategory": "migration"
+		"tags": ["react", "migration"]
 	},
 	"applicability": {
 		"from": [["react", "<=", "18"]]

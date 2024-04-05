@@ -207,20 +207,6 @@ const configJsonBaseSchema = object({
 	arguments: optional(argumentsSchema, []),
 	meta: optional(
 		object({
-			useCaseCategory: optional(
-				union(
-					[
-						literal("migration"),
-						literal("best practices"),
-						literal("refactoring"),
-						literal("cleanup"),
-						literal("mining"),
-						literal("security"),
-						literal("other"),
-					],
-					"Invalid use case category. Use one of the predefined values.",
-				),
-			),
 			tags: optional(
 				array(
 					string("Tags has to be an array of strings."),

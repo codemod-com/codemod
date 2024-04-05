@@ -5,6 +5,6 @@
 	"private": false,
 	"engine": "filemod",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

@@ -9,6 +9,6 @@
 	},
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/fpe-computed",
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

@@ -21,7 +21,6 @@ model Codemod {
   id               Int              @id @default(autoincrement())
   slug             String           @unique @db.VarChar(255)
   shortDescription String?          @db.Text
-  useCaseCategory  String?          @db.VarChar(255)
   tags             String[]         @default([])
   engine           String?          @db.VarChar(255)
   /// [ApplicabilityCriteria]
@@ -60,7 +59,6 @@ model CodemodVersion {
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
   bucketLink               String   @db.VarChar(255)
-  useCaseCategory          String?  @db.VarChar(255)
   tags                     String[] @default([])
   codemodId                Int
   codemod                  Codemod  @relation(fields: [codemodId], references: [id])

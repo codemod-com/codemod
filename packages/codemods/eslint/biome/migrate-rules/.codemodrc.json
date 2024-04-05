@@ -17,6 +17,6 @@
 	],
 	"deps": ["-eslint", "-prettier", "@biomejs/biome@1.5.3"],
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

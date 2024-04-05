@@ -16,7 +16,7 @@
 		"msw/2/print-handler"
 	],
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["msw", ">=", "1.0.0"]]

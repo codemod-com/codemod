@@ -5,7 +5,7 @@
 	"private": false,
 	"engine": "filemod",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["mocha", ">=", "9.0.0"]]

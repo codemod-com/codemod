@@ -5,7 +5,7 @@
 	"name": "mocha/vitest/migrate-test",
 	"engine": "jscodeshift",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["mocha", ">=", "9.0.0"]]
