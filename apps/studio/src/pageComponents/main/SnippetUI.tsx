@@ -2,9 +2,10 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { DEFAULT_TEST_FIXTURE_DIR } from "~/store/getInitialState";
 import { useRanges } from "~/store/useRanges";
 import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useFilesStore } from "~/store/zustand/file";
 import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
@@ -17,20 +18,27 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-	const { setInput, setOutput, inputSnippet, outputSnippet } =
-		useSnippetStore();
+	const { selectAll, upsertOne } = useFilesStore();
 
-	const snippetValue = type === "before" ? inputSnippet : outputSnippet;
+	const file = selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).find((file) =>
+		file.name.includes(type),
+	);
+
+	const snippetValue = file?.content ?? "";
 
 	const setRangesOnTarget = useRangesOnTarget();
 
 	const onSnippetChange = useCallback(
 		(text?: string) => {
+			if (!file) {
+				return;
+			}
+
 			const val = text ?? "";
-			type === "before" ? setInput(val) : setOutput(val);
+			upsertOne(file?.hashDigest, { ...file, content: val });
 		},
 
-		[setInput, setOutput, type],
+		[upsertOne, file?.hashDigest],
 	);
 
 	const onSnippetBlur = useCallback(() => {

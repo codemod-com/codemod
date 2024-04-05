@@ -55,12 +55,13 @@ export const DownloadZip = () => {
 			framework: humanCodemodName?.framework,
 			version: humanCodemodName?.version,
 			codemodBody: modStore.internalContent,
-			cases: [
-				{
-					before: snippetStore.inputSnippet,
-					after: snippetStore.outputSnippet,
-				},
-			],
+			// @TODO ability to download zip
+			// cases: [
+			// 	{
+			// 		before: snippetStore.inputSnippet,
+			// 		after: snippetStore.outputSnippet,
+			// 	},
+			// ],
 			engine,
 			user: session?.user,
 		});

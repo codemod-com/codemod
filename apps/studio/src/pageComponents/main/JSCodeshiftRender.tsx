@@ -10,8 +10,10 @@ import {
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import { DEFAULT_TEST_FIXTURE_DIR } from "~/store/getInitialState";
 import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useFilesStore } from "~/store/zustand/file";
 import { useLogStore } from "~/store/zustand/log";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
@@ -29,7 +31,14 @@ const MonacoDiffEditor = dynamic(
 
 export const useCodeDiff = () => {
 	const { setEvents, events } = useLogStore();
-	const { engine, inputSnippet, afterInputRanges } = useSnippetStore();
+	const { engine, afterInputRanges } = useSnippetStore();
+
+	const { selectAll } = useFilesStore();
+
+	const inputSnippet =
+		selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).find(
+			(file) => file.name === "before.tsx",
+		)?.content ?? "";
 
 	const { setHasRuntimeErrors } = useModStore();
 

@@ -3,6 +3,8 @@ import { Link as LinkIcon } from "@phosphor-icons/react";
 import AuthButtons from "~/auth/AuthButtons";
 import { Button } from "~/components/ui/button";
 import { CodemodLogo } from "~/icons/CodemodLogo";
+import { DEFAULT_TEST_FIXTURE_DIR } from "~/store/getInitialState";
+import { useFilesStore } from "~/store/zustand/file";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 import { DownloadZip } from "./DownloadZip";
@@ -10,7 +12,7 @@ import { useTheme } from "./themeContext";
 import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
 const Header = () => {
-	const { engine, setEngine, setInput, setOutput } = useSnippetStore();
+	const { engine, setEngine } = useSnippetStore();
 	const { setContent } = useModStore();
 	const { toggleTheme, isDark } = useTheme();
 
@@ -22,6 +24,16 @@ const Header = () => {
 
 	const { getShareLink, isCreating: isShareURLBeingCreated } =
 		usePublicLinkSharing();
+
+	const { selectAll, setAll } = useFilesStore();
+
+	const clearFiles = () => {
+		const emptyFiles = selectAll(DEFAULT_TEST_FIXTURE_DIR.hashDigest).map(
+			(file) => ({ ...file, content: "" }),
+		);
+
+		setAll(emptyFiles);
+	};
 
 	return (
 		<>
@@ -46,8 +58,7 @@ const Header = () => {
 						className="flex gap-1"
 						hint={<p className="font-normal">Clear all inputs</p>}
 						onClick={() => {
-							setInput("");
-							setOutput("");
+							clearFiles();
 							setContent("");
 						}}
 					>

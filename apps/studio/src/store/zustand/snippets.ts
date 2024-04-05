@@ -1,6 +1,9 @@
 import { isFile } from "@babel/types";
 import create from "zustand";
-import { INITIAL_STATE } from "~/store/getInitialState";
+import {
+	DEFAULT_TEST_FIXTURE_DIR,
+	INITIAL_STATE,
+} from "~/store/getInitialState";
 
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
@@ -19,8 +22,8 @@ export type Token = Readonly<{
 
 type SnippetStateValues = {
 	engine: JSEngine;
-	inputSnippet: string;
-	outputSnippet: string;
+	//   inputSnippet: string;
+	//   outputSnippet: string;
 	beforeInputRootNode: TreeNode | null;
 	afterInputRootNode: TreeNode | null;
 	beforeInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
@@ -33,15 +36,27 @@ type SnippetStateValues = {
 
 type SnippetStateSetters = {
 	setEngine: (engine: JSEngine) => void;
-	setInput: (input: string) => void;
-	setOutput: (output: string) => void;
+	//   setInput: (input: string) => void;
+	//   setOutput: (output: string) => void;
 	setInputSelection: (command: RangeCommand) => void;
 	setOutputSelection: (command: RangeCommand) => void;
 };
 
 export type SnippetState = SnippetStateValues & SnippetStateSetters;
 export const getInitialState = (): SnippetStateValues => {
-	const { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
+	const { engine, files } = INITIAL_STATE;
+
+	const currentTestFixtureFiles = files.filter(
+		(file) => file.parent === DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+	);
+
+	// compatibility
+	const beforeSnippet =
+		currentTestFixtureFiles.find((file) => file.name.includes("before"))
+			?.content ?? "";
+	const afterSnippet =
+		currentTestFixtureFiles.find((file) => file.name.includes("after"))
+			?.content ?? "";
 
 	// before input
 	const beforeInputParsed = parseSnippet(beforeSnippet);
@@ -81,8 +96,8 @@ export const getInitialState = (): SnippetStateValues => {
 		engine,
 		beforeInputRootNode,
 		afterInputRootNode,
-		outputSnippet: afterSnippet,
-		inputSnippet: beforeSnippet,
+		// outputSnippet: afterSnippet,
+		// inputSnippet: beforeSnippet,
 		beforeInputRanges: [],
 		beforeRangeUpdatedAt: Date.now(),
 		afterInputRanges: [],
@@ -95,20 +110,20 @@ export const getInitialState = (): SnippetStateValues => {
 export const useSnippetStore = create<SnippetState>((set, get) => ({
 	...getInitialState(),
 	setEngine: (engine) => set({ engine }),
-	setInput: (input) => {
-		const parsed = parseSnippet(input);
-		const rootNode = isFile(parsed)
-			? mapBabelASTToRenderableTree(parsed)
-			: null;
-		set({ inputSnippet: input, beforeInputRootNode: rootNode });
-	},
-	setOutput: (output) => {
-		const parsed = parseSnippet(output);
-		const rootNode = isFile(parsed)
-			? mapBabelASTToRenderableTree(parsed)
-			: null;
-		set({ outputSnippet: output, afterInputRootNode: rootNode });
-	},
+	//   setInput: (input) => {
+	//     const parsed = parseSnippet(input);
+	//     const rootNode = isFile(parsed)
+	//       ? mapBabelASTToRenderableTree(parsed)
+	//       : null;
+	//     set({ inputSnippet: input, beforeInputRootNode: rootNode });
+	//   },
+	//   setOutput: (output) => {
+	//     const parsed = parseSnippet(output);
+	//     const rootNode = isFile(parsed)
+	//       ? mapBabelASTToRenderableTree(parsed)
+	//       : null;
+	//     set({ outputSnippet: output, afterInputRootNode: rootNode });
+	//   },
 	setInputSelection: (command) => {
 		const rootNode = get().beforeInputRootNode;
 		if (rootNode) {
@@ -155,8 +170,8 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
 	// that will include snippet, rootNode, ranges,
 
 	const {
-		inputSnippet,
-		outputSnippet,
+		// inputSnippet,
+		// outputSnippet,
 		beforeInputRootNode,
 		afterInputRootNode,
 		beforeInputRanges,
@@ -168,13 +183,11 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
 	switch (type) {
 		case "before":
 			return {
-				snippet: inputSnippet,
 				rootNode: beforeInputRootNode,
 				ranges: beforeInputRanges,
 			};
 		case "after":
 			return {
-				snippet: outputSnippet,
 				rootNode: afterInputRootNode,
 				ranges: afterInputRanges,
 			};

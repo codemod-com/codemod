@@ -9,7 +9,7 @@ import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 
 export const useShareLink = () => {
-	const { engine, inputSnippet, outputSnippet } = useSnippetStore();
+	const { engine } = useSnippetStore();
 	const { internalContent } = useModStore();
 	const { getToken } = useAuth();
 
@@ -38,8 +38,9 @@ export const useShareLink = () => {
 
 			const searchParams = new URLSearchParams();
 			searchParams.set(SEARCH_PARAMS_KEYS.ENGINE, encode(engine));
-			searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
-			searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
+			// @TODO ability to share files
+			// searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
+			// searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
 			searchParams.set(
 				SEARCH_PARAMS_KEYS.CODEMOD_SOURCE,
 				encode(internalContent ?? ""),
@@ -85,8 +86,8 @@ export const useShareLink = () => {
 				v: 1, // version
 				e: engine,
 				n: codemodName,
-				b: inputSnippet,
-				a: outputSnippet,
+				// b: inputSnippet,
+				// a: outputSnippet,
 				c: internalContent ?? "",
 			} satisfies ShareableCodemod);
 

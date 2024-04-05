@@ -1,5 +1,6 @@
 /* eslint-disable import/group-exports */
 import * as S from "@effect/schema/Schema";
+import { fileSchema } from "./stateSchemata";
 
 export const shareableCodemodSchemata = S.struct({
 	v: S.optional(S.number), // version
@@ -9,6 +10,7 @@ export const shareableCodemodSchemata = S.struct({
 	a: S.optional(S.string), // after snippet
 	c: S.optional(S.string), // codemod content
 	m: S.optional(S.union(S.literal("learn"), S.literal("accessTokenRequested"))), // command
+	f: S.optional(S.array(fileSchema)),
 });
 
 export const parseShareableCodemod = S.parseSync(shareableCodemodSchemata);

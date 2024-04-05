@@ -4,22 +4,42 @@ import { ExampleIcon } from "~/icons/Example";
 import {
 	AFTER_SNIPPET_DEFAULT_CODE,
 	BEFORE_SNIPPET_DEFAULT_CODE,
+	DEFAULT_TEST_FIXTURE_DIR,
 	buildDefaultCodemodSource,
 } from "~/store/getInitialState";
+import { useFilesStore } from "~/store/zustand/file";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 
 const InsertExampleButton = () => {
-	const { engine, setInput, setOutput } = useSnippetStore();
+	const { engine } = useSnippetStore();
 	const { setContent } = useModStore();
+
+	const { selectAll, upsertMany } = useFilesStore();
+
+	const setDefaultFixtureFiles = (directoryHashDigest: string) => {
+		const files = selectAll(directoryHashDigest).map((file) => {
+			const newContent =
+				file.name === "after.tsx"
+					? AFTER_SNIPPET_DEFAULT_CODE
+					: BEFORE_SNIPPET_DEFAULT_CODE;
+
+			return {
+				...file,
+				content: newContent,
+			};
+		});
+
+		upsertMany(files);
+	};
+
 	return (
 		<Tooltip
 			trigger={
 				<Button
 					className="flex items-center justify-center px-0"
 					onClick={() => {
-						setInput(BEFORE_SNIPPET_DEFAULT_CODE);
-						setOutput(AFTER_SNIPPET_DEFAULT_CODE);
+						setDefaultFixtureFiles(DEFAULT_TEST_FIXTURE_DIR.hashDigest);
 						setContent(buildDefaultCodemodSource(engine));
 					}}
 					size="xs"

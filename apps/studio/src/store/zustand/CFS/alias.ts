@@ -25,8 +25,8 @@ export const useGetAliases = () => {
 	} = useModStore.getState();
 
 	const {
-		inputSnippet,
-		outputSnippet,
+		// inputSnippet,
+		// outputSnippet,
 		afterInputRanges,
 		afterRangeUpdatedAt,
 		beforeInputRanges,
@@ -45,26 +45,27 @@ export const useGetAliases = () => {
 						updatedAt: rangesUpdatedAt,
 				  }
 				: null,
-		$BEFORE: { value: inputSnippet, updatedAt: -1 },
-		$AFTER: { value: outputSnippet, updatedAt: -1 },
-		$HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
-			? {
-					value: inputSnippet.slice(
-						beforeInputRanges[0].start,
-						beforeInputRanges[0].end,
-					),
-					updatedAt: beforeRangeUpdatedAt,
-			  }
-			: null,
-		$HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
-			? {
-					value: outputSnippet.slice(
-						afterInputRanges[0].start,
-						afterInputRanges[0].end,
-					),
-					updatedAt: afterRangeUpdatedAt,
-			  }
-			: null,
+		// @TODO aliases
+		// $BEFORE: { value: inputSnippet, updatedAt: -1 },
+		// $AFTER: { value: outputSnippet, updatedAt: -1 },
+		// $HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
+		//   ? {
+		//       value: inputSnippet.slice(
+		//         beforeInputRanges[0].start,
+		//         beforeInputRanges[0].end
+		//       ),
+		//       updatedAt: beforeRangeUpdatedAt,
+		//     }
+		//   : null,
+		// $HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
+		//   ? {
+		//       value: outputSnippet.slice(
+		//         afterInputRanges[0].start,
+		//         afterInputRanges[0].end
+		//       ),
+		//       updatedAt: afterRangeUpdatedAt,
+		//     }
+		//   : null,
 		$EXECUTION_ERROR: {
 			value: codemodExecutionError ?? "",
 			updatedAt: rangesUpdatedAt,

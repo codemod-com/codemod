@@ -5,6 +5,7 @@ import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";
 import { parseState } from "~/schemata/stateSchemata";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { prettify } from "~/utils/prettify";
+import { File } from "./zustand/file";
 
 export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
     const { data } = state;
@@ -121,8 +122,6 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
 
 type InitialState = Readonly<{
 	engine: "jscodeshift" | "tsmorph";
-	beforeSnippet: string;
-	afterSnippet: string;
 	codemodSource: string;
 	codemodName: string | null;
 	command:
@@ -131,18 +130,68 @@ type InitialState = Readonly<{
 		| "accessTokenRequestedByCLI"
 		| "accessTokenRequestedByVSCE"
 		| null;
+	files: ReadonlyArray<File>;
 }>;
+
+/**
+ * Default project structure
+ *  - root
+ * |__ __testfixtures__
+ *    |__ Test 1
+ *        |__ before.tsx
+ *        |__ after.tsx
+ * |__ index.ts
+ */
+
+const PROJECT_ROOT_DIR = {
+	hashDigest: crypto.randomUUID(),
+	name: "Project root",
+	parent: null,
+};
+
+const TEST_FIXTURES_DIR = {
+	hashDigest: crypto.randomUUID(),
+	name: "__testfixtures__",
+	parent: PROJECT_ROOT_DIR.hashDigest,
+};
+
+export const DEFAULT_TEST_FIXTURE_DIR = {
+	// @TEMP
+	hashDigest: "1",
+	// hashDigest: crypto.randomUUID(),
+	name: "Test 1",
+	parent: TEST_FIXTURES_DIR.hashDigest,
+};
+
+export const buildDefaultFiles = (): File[] => {
+	const before = {
+		hashDigest: crypto.randomUUID(),
+		// the name is static, cannot be renamed, and is not displayed anywhere
+		name: "before.tsx",
+		content: BEFORE_SNIPPET_DEFAULT_CODE,
+		// For now we have only 1 default folder
+		parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+	};
+
+	const after = {
+		hashDigest: crypto.randomUUID(),
+		name: "after.tsx",
+		content: AFTER_SNIPPET_DEFAULT_CODE,
+		parent: DEFAULT_TEST_FIXTURE_DIR.hashDigest,
+	};
+
+	return [before, after];
+};
 
 export const getInitialState = (): InitialState => {
 	{
 		if (typeof window === "undefined") {
 			return {
 				engine: "jscodeshift",
-				beforeSnippet: "",
-				afterSnippet: "",
 				codemodSource: "",
 				codemodName: "",
 				command: null,
+				files: [],
 			};
 		}
 
@@ -178,13 +227,15 @@ export const getInitialState = (): InitialState => {
 					JSON.parse(decryptedString),
 				);
 
+				const hasSharedFiles =
+					shareableCodemod.f && shareableCodemod.f.length !== 0;
+
 				return {
 					engine: shareableCodemod.e ?? "jscodeshift",
-					beforeSnippet: shareableCodemod.b ?? "",
-					afterSnippet: shareableCodemod.a ?? "",
 					codemodSource: shareableCodemod.c ?? "",
 					codemodName: shareableCodemod.n ?? null,
 					command: null,
+					files: hasSharedFiles ? shareableCodemod.f : buildDefaultFiles(),
 				};
 			} catch (error) {
 				console.error(error);
@@ -224,14 +275,14 @@ export const getInitialState = (): InitialState => {
 
 			return {
 				engine: parsedEngine,
-				beforeSnippet: beforeSnippet ?? "",
-				afterSnippet: afterSnippet ?? "",
 				codemodSource: codemodSource ?? "",
 				codemodName: codemodName ?? "",
 				command:
 					command === "learn" || command === "accessTokenRequested"
 						? command
 						: null,
+				// @TODO
+				files: buildDefaultFiles(),
 			};
 		}
 	}
@@ -242,31 +293,19 @@ export const getInitialState = (): InitialState => {
 		try {
 			const state = parseState(JSON.parse(stringifiedState));
 
-			const everyValueIsEmpty = [
-				state.afterSnippet,
-				state.beforeSnippet,
-				state.codemodSource,
-			].every((s) => s === "");
-
-			const beforeSnippet = everyValueIsEmpty
-				? BEFORE_SNIPPET_DEFAULT_CODE
-				: state.beforeSnippet;
-
-			const afterSnippet = everyValueIsEmpty
-				? AFTER_SNIPPET_DEFAULT_CODE
-				: state.afterSnippet;
+			const everyValueIsEmpty = [state.codemodSource].every((s) => s === "");
 
 			const codemodSource = everyValueIsEmpty
 				? buildDefaultCodemodSource(state.engine)
 				: state.codemodSource;
 
+			const hasFiles = state.files && state.files.length !== 0;
 			return {
 				engine: state.engine,
-				beforeSnippet,
-				afterSnippet,
 				codemodSource,
 				codemodName: null,
 				command: null,
+				files: hasFiles ? state.files : buildDefaultFiles(),
 			};
 		} catch (error) {
 			// eslint-disable-next-line no-console
@@ -276,11 +315,10 @@ export const getInitialState = (): InitialState => {
 
 	return {
 		engine: "jscodeshift" as const,
-		beforeSnippet: BEFORE_SNIPPET_DEFAULT_CODE,
-		afterSnippet: AFTER_SNIPPET_DEFAULT_CODE,
 		codemodSource: buildDefaultCodemodSource("jscodeshift"),
 		codemodName: null,
 		command: null,
+		files: buildDefaultFiles(),
 	};
 };
 
