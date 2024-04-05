@@ -3,13 +3,13 @@ import { deflate } from "pako";
 import { encode } from "universal-base64url";
 import sendMessage from "~/api/sendMessage";
 import { type ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { generateCodemodNamePrompt } from "~/store/zustand/CFS/prompts";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { generateCodemodNamePrompt } from "~/zustand/CFS/prompts";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { SEARCH_PARAMS_KEYS } from "~/zustand/utils/getInitialState";
 
 export const useShareLink = () => {
-	const { engine, inputSnippet, outputSnippet } = useSnippetStore();
+	const { engine, beforeSnippetText, afterSnippetText } = useSnippetStore();
 	const { internalContent } = useModStore();
 	const { getToken } = useAuth();
 
@@ -38,8 +38,14 @@ export const useShareLink = () => {
 
 			const searchParams = new URLSearchParams();
 			searchParams.set(SEARCH_PARAMS_KEYS.ENGINE, encode(engine));
-			searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
-			searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
+			searchParams.set(
+				SEARCH_PARAMS_KEYS.BEFORE_SNIPPET,
+				encode(beforeSnippetText),
+			);
+			searchParams.set(
+				SEARCH_PARAMS_KEYS.AFTER_SNIPPET,
+				encode(afterSnippetText),
+			);
 			searchParams.set(
 				SEARCH_PARAMS_KEYS.CODEMOD_SOURCE,
 				encode(internalContent ?? ""),
@@ -85,8 +91,8 @@ export const useShareLink = () => {
 				v: 1, // version
 				e: engine,
 				n: codemodName,
-				b: inputSnippet,
-				a: outputSnippet,
+				b: beforeSnippetText,
+				a: afterSnippetText,
 				c: internalContent ?? "",
 			} satisfies ShareableCodemod);
 

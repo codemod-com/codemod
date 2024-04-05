@@ -1,6 +1,6 @@
 import create from "zustand";
 import type { SendMessageResponse } from "~/api/sendMessage";
-import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
+import { autoGenerateCodemodPrompt } from "~/zustand/CFS/prompts";
 import { PromptPreset } from "./prompts";
 
 export const LLM_ENGINES = [

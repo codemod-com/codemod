@@ -8,9 +8,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
 import { DownloadIcon } from "~/icons/Download";
 import { cn } from "~/lib/utils";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
 import { downloadProject } from "~/utils/download";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
@@ -57,8 +57,8 @@ export const DownloadZip = () => {
 			codemodBody: modStore.internalContent,
 			cases: [
 				{
-					before: snippetStore.inputSnippet,
-					after: snippetStore.outputSnippet,
+					before: snippetStore.beforeSnippetText,
+					after: snippetStore.afterSnippetText,
 				},
 			],
 			engine,

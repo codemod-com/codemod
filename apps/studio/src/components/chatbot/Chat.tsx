@@ -11,12 +11,12 @@ import {
 	parseFrozenMessages,
 	unfreezeMessage,
 } from "~/schemata/chatSchemata";
-import { useCodemodExecutionError } from "~/store/zustand/log";
+import { useCodemodExecutionError } from "~/zustand/stores/log";
 
-import { useCFSStore } from "~/store/zustand/CFS";
-import { applyAliases, useGetAliases } from "~/store/zustand/CFS/alias";
-import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
-import { useModStore } from "~/store/zustand/mod";
+import { useCFSStore } from "~/zustand/CFS";
+import { applyAliases, useGetAliases } from "~/zustand/CFS/alias";
+import { autoGenerateCodemodPrompt } from "~/zustand/CFS/prompts";
+import { useModStore } from "~/zustand/stores/mod";
 import ChatList from "./ChatList";
 import { ChatPanel } from "./ChatPanel";
 import ChatScrollAnchor from "./ChatScrollAnchor";

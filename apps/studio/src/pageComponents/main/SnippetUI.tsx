@@ -2,9 +2,9 @@ import dynamic from "next/dynamic";
 import { useCallback } from "react";
 import { SnippetType } from "src/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRanges } from "~/store/useRanges";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { useRanges } from "~/zustand/utils/useRanges";
+import { useRangesOnTarget } from "~/zustand/utils/useRangesOnTarget";
 import { prettify } from "../../utils/prettify";
 
 const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
@@ -17,20 +17,24 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-	const { setInput, setOutput, inputSnippet, outputSnippet } =
-		useSnippetStore();
+	const {
+		setBeforeSnippetText,
+		setAfterSnippetText,
+		beforeSnippetText,
+		afterSnippetText,
+	} = useSnippetStore();
 
-	const snippetValue = type === "before" ? inputSnippet : outputSnippet;
+	const snippetValue = type === "before" ? beforeSnippetText : afterSnippetText;
 
 	const setRangesOnTarget = useRangesOnTarget();
 
 	const onSnippetChange = useCallback(
 		(text?: string) => {
 			const val = text ?? "";
-			type === "before" ? setInput(val) : setOutput(val);
+			type === "before" ? setBeforeSnippetText(val) : setAfterSnippetText(val);
 		},
 
-		[setInput, setOutput, type],
+		[setBeforeSnippetText, setAfterSnippetText, type],
 	);
 
 	const onSnippetBlur = useCallback(() => {

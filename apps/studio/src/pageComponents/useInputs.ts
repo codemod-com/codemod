@@ -1,18 +1,18 @@
 import { useEffect } from "react";
 import { type State } from "~/schemata/stateSchemata";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
+import { SEARCH_PARAMS_KEYS } from "~/zustand/utils/getInitialState";
 
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
 
 export const useInputs = () => {
 	const {
 		engine,
 		setEngine,
-		setInput,
-		setOutput,
-		inputSnippet,
-		outputSnippet,
+		setBeforeSnippetText,
+		setAfterSnippetText,
+		beforeSnippetText,
+		afterSnippetText,
 	} = useSnippetStore();
 	const { internalContent, setContent } = useModStore();
 
@@ -21,12 +21,12 @@ export const useInputs = () => {
 			"state",
 			JSON.stringify({
 				engine,
-				beforeSnippet: inputSnippet,
-				afterSnippet: outputSnippet,
+				beforeSnippet: beforeSnippetText,
+				afterSnippet: afterSnippetText,
 				codemodSource: internalContent ?? "",
 			} satisfies State),
 		);
-	}, [engine, inputSnippet, outputSnippet, internalContent]);
+	}, [engine, beforeSnippetText, afterSnippetText, internalContent]);
 
 	useEffect(() => {
 		const storageEventListener = (storageEvent: StorageEvent) => {
@@ -43,11 +43,11 @@ export const useInputs = () => {
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.AFTER_SNIPPET) {
-				setInput(storageEvent.newValue ?? "");
+				setBeforeSnippetText(storageEvent.newValue ?? "");
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.BEFORE_SNIPPET) {
-				setOutput(storageEvent.newValue ?? "");
+				setAfterSnippetText(storageEvent.newValue ?? "");
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.CODEMOD_SOURCE) {

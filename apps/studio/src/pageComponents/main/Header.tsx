@@ -3,14 +3,15 @@ import { Link as LinkIcon } from "@phosphor-icons/react";
 import AuthButtons from "~/auth/AuthButtons";
 import { Button } from "~/components/ui/button";
 import { CodemodLogo } from "~/icons/CodemodLogo";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
 import { DownloadZip } from "./DownloadZip";
 import { useTheme } from "./themeContext";
 import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
 const Header = () => {
-	const { engine, setEngine, setInput, setOutput } = useSnippetStore();
+	const { engine, setEngine, setAfterSnippetText, setBeforeSnippetText } =
+		useSnippetStore();
 	const { setContent } = useModStore();
 	const { toggleTheme, isDark } = useTheme();
 
@@ -46,8 +47,8 @@ const Header = () => {
 						className="flex gap-1"
 						hint={<p className="font-normal">Clear all inputs</p>}
 						onClick={() => {
-							setInput("");
-							setOutput("");
+							setBeforeSnippetText("");
+							setAfterSnippetText("");
 							setContent("");
 						}}
 					>

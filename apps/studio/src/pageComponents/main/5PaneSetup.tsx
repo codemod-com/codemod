@@ -37,10 +37,10 @@ import {
 } from "~/pageComponents/main/PageBottomPane";
 import { CodeSnippets } from "~/pageComponents/main/PageBottomPane/Components/CodeSnippets";
 import { useSnippetsPanels } from "~/pageComponents/main/PageBottomPane/hooks/useSnippetsPanels";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { TabNames, useViewStore } from "~/store/zustand/view";
 import { openLink } from "~/utils/openLink";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { TabNames, useViewStore } from "~/zustand/stores/view";
+import { SEARCH_PARAMS_KEYS } from "~/zustand/utils/getInitialState";
 import themeConfig from "../../../tailwind.config";
 import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";

@@ -6,9 +6,9 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { cn } from "~/lib/utils";
-import { useCFSStore } from "~/store/zustand/CFS";
+import { useCFSStore } from "~/zustand/CFS";
+import { type Engine, LLM_ENGINES } from "~/zustand/CFS";
 import { useTheme } from "../../pageComponents/main/themeContext";
-import { type Engine, LLM_ENGINES } from "../../store/zustand/CFS";
 
 const EngineSelector = () => {
 	const {

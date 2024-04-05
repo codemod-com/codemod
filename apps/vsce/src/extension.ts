@@ -507,7 +507,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					// TODO: support codemod arguments
 					// const args = selectCodemodArguments(
-					// 	store.getState(),
+					// 	zustand.getState(),
 					// 	codemodHash as unknown as CodemodNodeHashDigest,
 					// );
 					const command: Command =
@@ -667,7 +667,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					// TODO: support codemod arguments
 					// const args = selectCodemodArguments(
-					// 	store.getState(),
+					// 	zustand.getState(),
 					// 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
 					// );
 

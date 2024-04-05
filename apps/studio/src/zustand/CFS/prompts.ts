@@ -1,5 +1,5 @@
-import { STARTER_SNIPPET } from "~/store/getInitialState";
-import { injectCFSOutputToCodemod } from "../../../utils/injectCFSOutputToCodemod";
+import { STARTER_SNIPPET } from "~/zustand/utils/getInitialState";
+import { injectCFSOutputToCodemod } from "../../utils/injectCFSOutputToCodemod";
 
 const generateCodemodNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 

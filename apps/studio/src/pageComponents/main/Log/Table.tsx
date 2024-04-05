@@ -16,12 +16,12 @@ import {
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
 import type { Event } from "~/schemata/eventSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useSetActiveEventThunk } from "~/store/useSetActiveEventThunk";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
+import { useLogStore } from "~/zustand/stores/log";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { useExecuteRangeCommandOnBeforeInput } from "~/zustand/utils/useExecuteRangeCommandOnBeforeInput";
+import { useSetActiveEventThunk } from "~/zustand/utils/useSetActiveEventThunk";
 
 type TableRow = Readonly<{
 	index: number;
@@ -95,8 +95,8 @@ const buildTableRow = (
 const useRanges = () => ({
 	codemodInputRanges: useModStore().ranges,
 	codemodOutputRanges: useCodemodOutputStore().ranges,
-	beforeInputRanges: useSnippetStore().beforeInputRanges,
-	afterInputRanges: useSnippetStore().afterInputRanges,
+	beforeInputRanges: useSnippetStore().beforeSnippetSelectionRanges,
+	afterInputRanges: useSnippetStore().afterSnippetSelectionRanges,
 });
 
 type Ranges = ReturnType<typeof useRanges>;

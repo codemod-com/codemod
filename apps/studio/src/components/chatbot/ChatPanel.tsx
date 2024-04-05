@@ -10,15 +10,11 @@ import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";
-import {
-	type Aliases,
-	applyAliases,
-	useGetAliases,
-} from "~/store/zustand/CFS/alias";
+import { type Aliases, applyAliases, useGetAliases } from "~/zustand/CFS/alias";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
-} from "../../store/zustand/CFS/prompts";
+} from "~/zustand/CFS/prompts";
 import { capitalizeWord } from "../../utils/string";
 import PromptForm from "./PromptForm";
 import ScrollToBottomButton from "./ScrollToBottomButton";

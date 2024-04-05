@@ -1,13 +1,13 @@
 import jscodeshift from "jscodeshift";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
 import { parseSnippet } from "~/utils/babelParser";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { type RangeCommand } from "~/utils/tree";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
+import { useLogStore } from "~/zustand/stores/log";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { useExecuteRangeCommandOnBeforeInput } from "~/zustand/utils/useExecuteRangeCommandOnBeforeInput";
 
 const alphanumerizeString = (input: string): string => {
 	let output = "";

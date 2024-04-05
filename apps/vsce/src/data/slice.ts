@@ -210,7 +210,7 @@ const rootSlice = createSlice({
 				set,
 			).filter(
 				(hashDigest) =>
-					// do not store hash digests of codemods
+					// do not zustand hash digests of codemods
 					(state.codemod.entities[hashDigest] ?? null) === null,
 			);
 		},

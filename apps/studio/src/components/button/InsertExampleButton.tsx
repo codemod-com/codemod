@@ -1,16 +1,17 @@
 import Tooltip from "~/components/Tooltip/Tooltip";
 import { Button } from "~/components/ui/button";
 import { ExampleIcon } from "~/icons/Example";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
 import {
 	AFTER_SNIPPET_DEFAULT_CODE,
 	BEFORE_SNIPPET_DEFAULT_CODE,
 	buildDefaultCodemodSource,
-} from "~/store/getInitialState";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+} from "~/zustand/utils/getInitialState";
 
 const InsertExampleButton = () => {
-	const { engine, setInput, setOutput } = useSnippetStore();
+	const { engine, setBeforeSnippetText, setAfterSnippetText } =
+		useSnippetStore();
 	const { setContent } = useModStore();
 	return (
 		<Tooltip
@@ -18,8 +19,8 @@ const InsertExampleButton = () => {
 				<Button
 					className="flex items-center justify-center px-0"
 					onClick={() => {
-						setInput(BEFORE_SNIPPET_DEFAULT_CODE);
-						setOutput(AFTER_SNIPPET_DEFAULT_CODE);
+						setBeforeSnippetText(BEFORE_SNIPPET_DEFAULT_CODE);
+						setAfterSnippetText(AFTER_SNIPPET_DEFAULT_CODE);
 						setContent(buildDefaultCodemodSource(engine));
 					}}
 					size="xs"

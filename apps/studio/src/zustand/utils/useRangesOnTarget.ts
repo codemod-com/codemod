@@ -1,7 +1,7 @@
 // import { createAsyncThunk } from "@reduxjs/toolkit";
 // import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-// import type { AppDispatch, RootState } from "~/store";
-// import { useLogStore } from "~/store/zustand/log";
+// import type { AppDispatch, RootState } from "~/zustand";
+// import { useLogStore } from "~/zustand/zustand/log";
 // import { type RangeCommand } from "~/utils/tree";
 // import { executeRangeCommandOnBeforeInputThunk } from "./useExecuteRangeCommandOnBeforeInput";
 // import { codemodOutputSlice } from "./slices/codemodOutput";
@@ -49,12 +49,12 @@
 // });
 
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
 import { type RangeCommand } from "~/utils/tree";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
+import { useLogStore } from "~/zustand/stores/log";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { useExecuteRangeCommandOnBeforeInput } from "~/zustand/utils/useExecuteRangeCommandOnBeforeInput";
 
 type UseRange = Readonly<{
 	ranges: ReadonlyArray<OffsetRange>;

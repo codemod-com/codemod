@@ -10,13 +10,13 @@ import {
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { TabNames, useViewStore } from "~/store/zustand/view";
-import { useSetActiveEventThunk } from "../../store/useSetActiveEventThunk";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
+import { useLogStore } from "~/zustand/stores/log";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
+import { TabNames, useViewStore } from "~/zustand/stores/view";
+import { useRangesOnTarget } from "~/zustand/utils/useRangesOnTarget";
+import { useSetActiveEventThunk } from "~/zustand/utils/useSetActiveEventThunk";
 import { useSnippet } from "./SnippetUI";
 
 const MonacoDiffEditor = dynamic(
@@ -29,7 +29,8 @@ const MonacoDiffEditor = dynamic(
 
 export const useCodeDiff = () => {
 	const { setEvents, events } = useLogStore();
-	const { engine, inputSnippet, afterInputRanges } = useSnippetStore();
+	const { engine, beforeSnippetText, afterSnippetSelectionRanges } =
+		useSnippetStore();
 
 	const { setHasRuntimeErrors } = useModStore();
 
@@ -46,7 +47,7 @@ export const useCodeDiff = () => {
 
 	const { setActiveTab } = useViewStore();
 
-	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+	const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippetText);
 	const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
 	const firstCodemodExecutionErrorEvent = events.find(
@@ -62,10 +63,10 @@ export const useCodeDiff = () => {
 			return;
 		}
 
-		postMessage(engine, content, inputSnippet);
+		postMessage(engine, content, beforeSnippetText);
 	}, [
 		engine,
-		inputSnippet,
+		beforeSnippetText,
 		content,
 		snippetBeforeHasOnlyWhitespaces,
 		codemodSourceHasOnlyWhitespaces,
@@ -101,7 +102,7 @@ export const useCodeDiff = () => {
 	};
 
 	const originalEditorProps = {
-		highlights: afterInputRanges,
+		highlights: afterSnippetSelectionRanges,
 		onSelectionChange: handleSelectionChange,
 		onChange: onSnippetChange,
 		value,

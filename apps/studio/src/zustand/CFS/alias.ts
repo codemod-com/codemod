@@ -1,6 +1,6 @@
-import { useCodemodExecutionError } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useCodemodExecutionError } from "~/zustand/stores/log";
+import { useModStore } from "~/zustand/stores/mod";
+import { useSnippetStore } from "~/zustand/stores/snippets";
 
 export type AliasName =
 	| "$CODEMOD"
@@ -25,11 +25,11 @@ export const useGetAliases = () => {
 	} = useModStore.getState();
 
 	const {
-		inputSnippet,
-		outputSnippet,
-		afterInputRanges,
+		beforeSnippetText,
+		afterSnippetText,
+		afterSnippetSelectionRanges,
 		afterRangeUpdatedAt,
-		beforeInputRanges,
+		beforeSnippetSelectionRanges,
 		beforeRangeUpdatedAt,
 	} = useSnippetStore.getState();
 
@@ -45,22 +45,22 @@ export const useGetAliases = () => {
 						updatedAt: rangesUpdatedAt,
 				  }
 				: null,
-		$BEFORE: { value: inputSnippet, updatedAt: -1 },
-		$AFTER: { value: outputSnippet, updatedAt: -1 },
-		$HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
+		$BEFORE: { value: beforeSnippetText, updatedAt: -1 },
+		$AFTER: { value: afterSnippetText, updatedAt: -1 },
+		$HIGHLIGHTED_IN_BEFORE: beforeSnippetSelectionRanges[0]
 			? {
-					value: inputSnippet.slice(
-						beforeInputRanges[0].start,
-						beforeInputRanges[0].end,
+					value: beforeSnippetText.slice(
+						beforeSnippetSelectionRanges[0].start,
+						beforeSnippetSelectionRanges[0].end,
 					),
 					updatedAt: beforeRangeUpdatedAt,
 			  }
 			: null,
-		$HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
+		$HIGHLIGHTED_IN_AFTER: afterSnippetSelectionRanges[0]
 			? {
-					value: outputSnippet.slice(
-						afterInputRanges[0].start,
-						afterInputRanges[0].end,
+					value: afterSnippetText.slice(
+						afterSnippetSelectionRanges[0].start,
+						afterSnippetSelectionRanges[0].end,
 					),
 					updatedAt: afterRangeUpdatedAt,
 			  }

@@ -5,13 +5,13 @@ import Tree, { type TreeNode } from "../../components/Tree";
 import useScrollNodeIntoView from "../../hooks/useScrollNodeIntoView";
 
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
 import {
 	useSelectFirstTreeNode,
 	useSelectSnippetsFor,
 	useSnippetStore,
-} from "~/store/zustand/snippets";
+} from "~/zustand/stores/snippets";
+import { useExecuteRangeCommandOnBeforeInput } from "~/zustand/utils/useExecuteRangeCommandOnBeforeInput";
 
 type Props = {
 	type: "before" | "after" | "output";

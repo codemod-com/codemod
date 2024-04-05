@@ -1,14 +1,14 @@
 import { isFile } from "@babel/types";
 import create from "zustand";
-import { INITIAL_STATE } from "~/store/getInitialState";
+import { INITIAL_STATE } from "~/zustand/utils/getInitialState";
 
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { JSEngine } from "~/types/Engine";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
+import { useCodemodOutputStore } from "~/zustand/stores/codemodOutput";
 import { parseSnippet } from "../../utils/babelParser";
 
 export type Token = Readonly<{
@@ -19,12 +19,12 @@ export type Token = Readonly<{
 
 type SnippetStateValues = {
 	engine: JSEngine;
-	inputSnippet: string;
-	outputSnippet: string;
-	beforeInputRootNode: TreeNode | null;
-	afterInputRootNode: TreeNode | null;
-	beforeInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
-	afterInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
+	beforeSnippetText: string;
+	afterSnippetText: string;
+	beforeSnippetRootNode: TreeNode | null;
+	afterSnippetRootNode: TreeNode | null;
+	beforeSnippetSelectionRanges: ReadonlyArray<TreeNode | OffsetRange>;
+	afterSnippetSelectionRanges: ReadonlyArray<TreeNode | OffsetRange>;
 	beforeRangeUpdatedAt: number;
 	afterRangeUpdatedAt: number;
 	beforeInputTokens: ReadonlyArray<Token>;
@@ -33,8 +33,8 @@ type SnippetStateValues = {
 
 type SnippetStateSetters = {
 	setEngine: (engine: JSEngine) => void;
-	setInput: (input: string) => void;
-	setOutput: (output: string) => void;
+	setBeforeSnippetText: (input: string) => void;
+	setAfterSnippetText: (output: string) => void;
 	setInputSelection: (command: RangeCommand) => void;
 	setOutputSelection: (command: RangeCommand) => void;
 };
@@ -79,13 +79,13 @@ export const getInitialState = (): SnippetStateValues => {
 
 	return {
 		engine,
-		beforeInputRootNode,
-		afterInputRootNode,
-		outputSnippet: afterSnippet,
-		inputSnippet: beforeSnippet,
-		beforeInputRanges: [],
+		beforeSnippetRootNode: beforeInputRootNode,
+		afterSnippetRootNode: afterInputRootNode,
+		afterSnippetText: afterSnippet,
+		beforeSnippetText: beforeSnippet,
+		beforeSnippetSelectionRanges: [],
 		beforeRangeUpdatedAt: Date.now(),
-		afterInputRanges: [],
+		afterSnippetSelectionRanges: [],
 		afterRangeUpdatedAt: Date.now(),
 		beforeInputTokens,
 		afterInputTokens,
@@ -95,32 +95,38 @@ export const getInitialState = (): SnippetStateValues => {
 export const useSnippetStore = create<SnippetState>((set, get) => ({
 	...getInitialState(),
 	setEngine: (engine) => set({ engine }),
-	setInput: (input) => {
+	setBeforeSnippetText: (input) => {
 		const parsed = parseSnippet(input);
 		const rootNode = isFile(parsed)
 			? mapBabelASTToRenderableTree(parsed)
 			: null;
-		set({ inputSnippet: input, beforeInputRootNode: rootNode });
+		set({ beforeSnippetText: input, beforeSnippetRootNode: rootNode });
 	},
-	setOutput: (output) => {
+	setAfterSnippetText: (output) => {
 		const parsed = parseSnippet(output);
 		const rootNode = isFile(parsed)
 			? mapBabelASTToRenderableTree(parsed)
 			: null;
-		set({ outputSnippet: output, afterInputRootNode: rootNode });
+		set({ afterSnippetText: output, afterSnippetRootNode: rootNode });
 	},
 	setInputSelection: (command) => {
-		const rootNode = get().beforeInputRootNode;
+		const rootNode = get().beforeSnippetRootNode;
 		if (rootNode) {
 			const ranges = buildRanges(rootNode, command);
-			set({ beforeInputRanges: ranges, beforeRangeUpdatedAt: Date.now() });
+			set({
+				beforeSnippetSelectionRanges: ranges,
+				beforeRangeUpdatedAt: Date.now(),
+			});
 		}
 	},
 	setOutputSelection: (command) => {
-		const rootNode = get().afterInputRootNode;
+		const rootNode = get().afterSnippetRootNode;
 		if (rootNode) {
 			const ranges = buildRanges(rootNode, command);
-			set({ afterInputRanges: ranges, afterRangeUpdatedAt: Date.now() });
+			set({
+				afterSnippetSelectionRanges: ranges,
+				afterRangeUpdatedAt: Date.now(),
+			});
 		}
 	},
 }));
@@ -134,10 +140,10 @@ export const useSelectFirstTreeNode = () => {
 
 		switch (type) {
 			case "before":
-				firstRange = state.beforeInputRanges[0];
+				firstRange = state.beforeSnippetSelectionRanges[0];
 				break;
 			case "after":
-				firstRange = state.afterInputRanges[0];
+				firstRange = state.afterSnippetSelectionRanges[0];
 				break;
 			case "output":
 				firstRange = ranges[0];
@@ -155,12 +161,12 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
 	// that will include snippet, rootNode, ranges,
 
 	const {
-		inputSnippet,
-		outputSnippet,
-		beforeInputRootNode,
-		afterInputRootNode,
-		beforeInputRanges,
-		afterInputRanges,
+		beforeSnippetText,
+		afterSnippetText,
+		beforeSnippetRootNode,
+		afterSnippetRootNode,
+		beforeSnippetSelectionRanges,
+		afterSnippetSelectionRanges,
 	} = useSnippetStore();
 
 	const { ranges, content, rootNode } = useCodemodOutputStore();
@@ -168,15 +174,15 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
 	switch (type) {
 		case "before":
 			return {
-				snippet: inputSnippet,
-				rootNode: beforeInputRootNode,
-				ranges: beforeInputRanges,
+				snippet: beforeSnippetText,
+				rootNode: beforeSnippetRootNode,
+				ranges: beforeSnippetSelectionRanges,
 			};
 		case "after":
 			return {
-				snippet: outputSnippet,
-				rootNode: afterInputRootNode,
-				ranges: afterInputRanges,
+				snippet: afterSnippetText,
+				rootNode: afterSnippetRootNode,
+				ranges: afterSnippetSelectionRanges,
 			};
 
 		case "output":

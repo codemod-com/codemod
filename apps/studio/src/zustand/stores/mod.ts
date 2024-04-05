@@ -5,7 +5,7 @@ import { TreeNode } from "~/types/tree";
 import { parseSnippet } from "../../utils/babelParser";
 import mapBabelASTToRenderableTree from "../../utils/mappers";
 import { RangeCommand, buildRanges } from "../../utils/tree";
-import { INITIAL_STATE } from "../getInitialState";
+import { INITIAL_STATE } from "../utils/getInitialState";
 
 type ModStateValues = {
 	internalContent: string | null;
