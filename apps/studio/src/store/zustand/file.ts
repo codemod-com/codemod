@@ -22,15 +22,10 @@ function shallowMatch(
 	obj1: { [key: string]: any },
 	obj2: { [key: string]: any },
 ): boolean {
-	const keys1 = Object.keys(obj1);
 	const keys2 = Object.keys(obj2);
 
-	if (keys1.length !== keys2.length) {
-		return false;
-	}
-
-	for (const key of keys1) {
-		if (!Object.hasOwn(obj2, key) || obj1[key] !== obj2[key]) {
+	for (const key of keys2) {
+		if (!Object.hasOwn(obj1, key) || obj1[key] !== obj2[key]) {
 			return false;
 		}
 	}
@@ -66,6 +61,7 @@ export const useFilesStore = create<FileState>((set, get) => ({
 
 		set(() => ({ files: updatedFiles }));
 	},
+
 	setAll(files: File[]) {
 		set(() => ({ files: buildCollection(files) }));
 	},
