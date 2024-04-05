@@ -200,7 +200,7 @@ type ExecuteCodemodMessage = Message &
 	}>;
 
 // npx ensures that the local codemod CLI (latest version) is used
-const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
 	const url = new URL("https://backend.codemod.com/codemods/list");
