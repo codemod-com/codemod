@@ -669,7 +669,7 @@ export default function transform(file, api) {
 							j.memberExpression(j.thisExpression(), j.identifier("owner")),
 							j.identifier("lookup"),
 						),
-						[j.literal("service:zustand")],
+						[j.literal("service:store")],
 					),
 				);
 			});
@@ -733,7 +733,7 @@ export default function transform(file, api) {
 												),
 												j.identifier("lookup"),
 											),
-											[j.literal("service:zustand")],
+											[j.literal("service:store")],
 										),
 										j.identifier("createRecord"),
 									),
