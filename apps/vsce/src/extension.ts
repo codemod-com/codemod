@@ -667,7 +667,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 					// TODO: support codemod arguments
 					// const args = selectCodemodArguments(
-					// 	zustand.getState(),
+					// 	store.getState(),
 					// 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
 					// );
 
