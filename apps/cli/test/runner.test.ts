@@ -25,6 +25,31 @@ export default function transform(file, api, options) {
 }
 `;
 
+const CODEMOD_F_INDEX_JS = `
+export default function transform(file, api, options) {
+	return "123";
+}`;
+
+const CODE_F_MDX = `
+import { Chart } from './snowfall.js';
+export const year = 2023;
+
+# Last year’s snowfall
+
+In {year}, the snowfall was above average.
+It was followed by a warm spring which caused
+flood conditions in many of the nearby rivers.
+
+<Chart a={year} color="#fcb32c" />
+`;
+
+const printer: PrinterBlueprint = {
+	__jsonOutput: false,
+	printMessage: () => {},
+	printOperationMessage: () => {},
+	printConsoleMessage: () => {},
+};
+
 describe("Runner", () => {
 	it("should transform staged files using the pre-commit codemods", async () => {
 		const volume = Volume.fromJSON({
@@ -37,12 +62,6 @@ describe("Runner", () => {
 		});
 
 		const ifs = createFsFromVolume(volume);
-		const printer: PrinterBlueprint = {
-			__jsonOutput: false,
-			printMessage: () => {},
-			printOperationMessage: () => {},
-			printConsoleMessage: () => {},
-		};
 
 		const codemodDownloader: CodemodDownloaderBlueprint = {
 			download: async (name: string) => {
@@ -164,4 +183,104 @@ describe("Runner", () => {
 			"unchanged",
 		);
 	});
+
+	// 	const volume = Volume.fromJSON({
+	// 		"/code/f.mdx": CODE_F_MDX,
+	// 		"/codemods/f/index.js": CODEMOD_F_INDEX_JS,
+	// 	});
+
+	// 	const ifs = createFsFromVolume(volume);
+
+	// 	const codemodDownloader: CodemodDownloaderBlueprint = {
+	// 		download: async (name: string) => {
+	// 			return {
+	// 				source: "package",
+	// 				name,
+	// 				engine: "jscodeshift",
+	// 				indexPath: `/codemods/${name}/index.ts`,
+	// 				directoryPath: `/codemods/${name}`,
+	// 				arguments: [],
+	// 			};
+	// 		},
+	// 	};
+
+	// 	const loadRepositoryConfiguration = () =>
+	// 		Promise.resolve<RepositoryConfiguration>({
+	// 			preCommitCodemods: [
+	// 				{
+	// 					source: "package",
+	// 					name: "f",
+	// 					arguments: {},
+	// 				},
+	// 			],
+	// 		});
+
+	// 	const codemodSettings: CodemodSettings = {
+	// 		kind: "runSourced",
+	// 		source: "/codemods/f/index.js",
+	// 		codemodEngine: "jscodeshift",
+	// 	};
+
+	// 	const flowSettings: FlowSettings = {
+	// 		include: ["**/*.*"],
+	// 		exclude: [],
+	// 		target: "/code",
+	// 		raw: false,
+	// 		"no-cache": false,
+	// 		noCache: false,
+	// 		json: false,
+	// 		threads: 1,
+	// 		skipInstall: false,
+	// 		"skip-install": false,
+	// 	};
+
+	// 	const currentWorkingDirectory = "/";
+
+	// 	const getCodemodSource = async (path: string) => {
+	// 		const data = await ifs.promises.readFile(path);
+
+	// 		if (typeof data === "string") {
+	// 			return data;
+	// 		}
+
+	// 		return data.toString("utf8");
+	// 	};
+
+	// 	const runSettings: RunSettings = {
+	// 		dryRun: false,
+	// 		caseHashDigest: randomBytes(20),
+	// 	};
+
+	// 	const runner = new Runner(
+	// 		ifs,
+	// 		printer,
+	// 		{
+	// 			sendEvent: () => {},
+	// 		},
+	// 		codemodDownloader,
+	// 		loadRepositoryConfiguration,
+	// 		codemodSettings,
+	// 		flowSettings,
+	// 		runSettings,
+	// 		{},
+	// 		null,
+	// 		currentWorkingDirectory,
+	// 		getCodemodSource,
+	// 	);
+
+	// 	await runner.run();
+
+	// 	equal(
+	// 		(await volume.promises.readFile("/code/f.mdx")).toString(),
+	// 		`
+	// 	import { Component } from './component.js'
+
+	// 	# Heading
+
+	// 	Text
+
+	// 	<Component b={'a'} />
+	//   `,
+	// 	);
+	// });
 });
