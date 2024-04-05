@@ -232,6 +232,7 @@ export class EngineService {
 	readonly #messageBus: MessageBus;
 
 	#execution: Execution | null = null;
+	__fetchCodemodsIntervalId: NodeJS.Timer | null = null;
 	private __codemodEngineRustExecutableUri: Uri | null = null;
 	private __executionMessageQueue: ExecuteCodemodMessage[] = [];
 
@@ -253,7 +254,12 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__fetchCodemods();
+		this.__fetchCodemodsIntervalId = setInterval(
+			async () => {
+				await this.__fetchCodemods();
+			},
+			5 * 60 * 1000, // 5 mins
+		);
 	}
 
 	async #onEnginesBootstrappedMessage(
@@ -318,6 +324,7 @@ export class EngineService {
 
 		this.#execution.halted = true;
 		this.#execution.childProcess.kill("SIGINT");
+		this.__fetchCodemodsIntervalId = null;
 	}
 
 	private __getQueuedCodemodHashes(): ReadonlyArray<CodemodHash> {
