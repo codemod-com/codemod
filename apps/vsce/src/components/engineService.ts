@@ -201,8 +201,6 @@ type ExecuteCodemodMessage = Message &
 
 // npx ensures that the local codemod CLI (latest version) is used
 const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
-// const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
-// const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
 	const url = new URL("https://backend.codemod.com/codemods/list");
@@ -255,43 +253,7 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__onCodemodEngineNodeLocated();
-	}
-
-	// private async __pollCodemodEngineNode() {
-	// 	let iterations = 0;
-
-	// 	const checkCodemodEngineNode = async () => {
-	// 		if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
-	// 			clearInterval(codemodEnginePollingIntervalId);
-	// 		}
-
-	// 		const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
-
-	// 		this.#messageBus.publish({
-	// 			kind: MessageKind.codemodEngineNodeLocated,
-	// 			codemodEngineNodeLocated,
-	// 		});
-
-	// 		if (codemodEngineNodeLocated) {
-	// 			this.__onCodemodEngineNodeLocated();
-	// 			clearInterval(codemodEnginePollingIntervalId);
-	// 		}
-
-	// 		iterations++;
-	// 	};
-
-	// 	// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
-	// 	const codemodEnginePollingIntervalId = setInterval(
-	// 		checkCodemodEngineNode,
-	// 		CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
-	// 	);
-
-	// 	checkCodemodEngineNode();
-	// }
-
-	private async __onCodemodEngineNodeLocated() {
-		await this.__fetchCodemods();
+		this.__fetchCodemods();
 	}
 
 	async #onEnginesBootstrappedMessage(
