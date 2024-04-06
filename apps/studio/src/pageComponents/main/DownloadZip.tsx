@@ -45,15 +45,13 @@ export const DownloadZip = () => {
 
 		const token = await getToken();
 
-		const humanCodemodName =
-			token !== null
-				? await getHumanCodemodName(modStore.internalContent, token)
-				: null;
+		const humanCodemodName = await getHumanCodemodName(
+			modStore.internalContent,
+			token,
+		);
 
 		await downloadProject({
-			name: humanCodemodName?.name ?? "codemod",
-			framework: humanCodemodName?.framework,
-			version: humanCodemodName?.version,
+			name: humanCodemodName,
 			codemodBody: modStore.internalContent,
 			cases: [
 				{
@@ -62,7 +60,7 @@ export const DownloadZip = () => {
 				},
 			],
 			engine,
-			user: session?.user,
+			username: session?.user.username ?? null,
 		});
 
 		setIsDownloading(false);
@@ -167,12 +165,12 @@ export function CopyTerminalCommands({ text }: { text: string }) {
 
 async function getHumanCodemodName(
 	codemod: string,
-	token: string,
-): Promise<{
-	name: string;
-	framework?: string;
-	version?: string;
-}> {
+	token: string | null,
+): Promise<string> {
+	if (token === null) {
+		return "codemod";
+	}
+
 	try {
 		if (!codemod) {
 			throw new Error("codemod content not found");
@@ -193,30 +191,10 @@ async function getHumanCodemodName(
 			}
 		}
 
-		const splitResult = codemodName.split("/");
-
-		if (splitResult.length === 1) {
-			return {
-				name: splitResult[0]!,
-			};
-		}
-
-		if (splitResult.length === 3) {
-			return {
-				framework: splitResult[0]!,
-				version: splitResult[1]!,
-				name: splitResult[2]!,
-			};
-		}
-
-		return {
-			name: "",
-		};
+		return codemodName;
 	} catch (error) {
 		console.error(error);
 
-		return {
-			name: "",
-		};
+		return "codemod";
 	}
 }

@@ -1,7 +1,8 @@
 import {
 	type ProjectDownloadInput,
 	getCodemodProjectFiles,
-} from "@codemod-com/utilities";
+	// Because webpack literally does not support tree-shaking
+} from "@codemod-com/utilities/dist/package-boilerplate";
 import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
 

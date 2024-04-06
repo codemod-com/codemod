@@ -1,6 +1,6 @@
 import * as changeCase from "change-case";
 import { js } from "js-beautify";
-import { KnownEngines } from "./index.js";
+import { KnownEngines } from "./schemata/codemodConfigSchema.js";
 
 export interface ProjectDownloadInput {
 	codemodBody?: string;
