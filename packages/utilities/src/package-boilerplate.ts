@@ -522,20 +522,27 @@ const testBody = ({
 export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
 	let mainFileBoilerplate: string;
 	let filename: "src/index.ts" | "src/rule.yaml";
-	if (input.engine === "jscodeshift") {
-		mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
-		filename = "src/index.ts";
-	} else if (input.engine === "tsmorph" || input.engine === "ts-morph") {
-		mainFileBoilerplate = emptyTsMorphBoilerplate;
-		filename = "src/index.ts";
-	} else if (input.engine === "filemod") {
-		mainFileBoilerplate = emptyFilemodBoilerplate;
-		filename = "src/index.ts";
-	} else if (input.engine === "ast-grep") {
-		mainFileBoilerplate = emptyAstGrepBoilerplate;
-		filename = "src/rule.yaml";
-	} else {
-		throw new Error(`Unknown engine: ${input.engine}`);
+
+	switch (input.engine) {
+		case "jscodeshift":
+			mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "tsmorph":
+		case "ts-morph":
+			mainFileBoilerplate = emptyTsMorphBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "filemod":
+			mainFileBoilerplate = emptyFilemodBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "ast-grep":
+			mainFileBoilerplate = emptyAstGrepBoilerplate;
+			filename = "src/rule.yaml";
+			break;
+		default:
+			throw new Error(`Unknown engine: ${input.engine}`);
 	}
 
 	const mainFileContent = input.codemodBody
