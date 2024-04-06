@@ -1,6 +1,6 @@
 import { sep } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities/functions/validationMethods";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { type Input, is } from "valibot";
 import type { Configuration as BiomeConfig } from "../types/biome.js";
 import type { JSONSchemaForESLintConfigurationFiles as EslintConfig } from "../types/eslint.js";
