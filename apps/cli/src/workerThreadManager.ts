@@ -109,6 +109,7 @@ export class WorkerThreadManager {
 		if (iteratorResult.done) {
 			this.__totalFileCount = this.__currentFileCount;
 
+			await this.__work();
 			return;
 		}
 
@@ -203,7 +204,7 @@ export class WorkerThreadManager {
 				this.__onPrinterMessage({
 					kind: "progress",
 					processedFileNumber: this.__processedFileNumber,
-					totalFileNumber: this.__currentFileCount - 1,
+					totalFileNumber: this.__currentFileCount,
 					processedFileName: resolve(workerThreadMessage.path),
 				});
 			}
