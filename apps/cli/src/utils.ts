@@ -1,8 +1,9 @@
-import { spawnSync } from "node:child_process";
+import { exec, spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
 import { readFile, unlink } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { promisify } from "node:util";
 import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
@@ -62,3 +63,5 @@ export const getCurrentUser = async (): Promise<string | null> => {
 
 	return username;
 };
+
+export const execPromise = promisify(exec);

@@ -27,16 +27,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 	public async download(
 		name: string,
 	): Promise<Codemod & { source: "package" }> {
-		this.__printer.printConsoleMessage(
-			"info",
-			colorizeText(
-				`Downloading the ${boldText(`"${name}"`)} codemod${
-					this._cacheDisabled ? ", not using cache..." : "..."
-				}`,
-				"cyan",
-			),
-		);
-
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
 		// make the codemod directory
@@ -45,6 +35,15 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		const directoryPath = join(this.__configurationDirectoryPath, hashDigest);
 
 		await mkdir(directoryPath, { recursive: true });
+
+		const stopLoading = this.__printer.withLoaderMessage((loader) =>
+			colorizeText(
+				`${loader.get("vertical-dots")}  Downloading the ${boldText(
+					`"${name}"`,
+				)} codemod${this._cacheDisabled ? ", not using cache..." : "..."}`,
+				"cyan",
+			),
+		);
 
 		// download codemod
 		try {
@@ -57,15 +56,22 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			);
 
 			await this._tarService.extract(directoryPath, buffer);
+			stopLoading();
 		} catch (error) {
-			if (error instanceof AxiosError && error.response?.status === 404) {
-				await handleListNamesCommand({ printer: this.__printer });
+			stopLoading();
+			if (error instanceof AxiosError) {
+				if (
+					error.response?.status === 400 &&
+					error.response.data.error === "Codemod not found"
+				) {
+					await handleListNamesCommand({ printer: this.__printer });
 
-				throw new Error(
-					`Could not find codemod ${boldText(
-						name,
-					)} in the registry. Verify the name to be in the list above and try again.`,
-				);
+					throw new Error(
+						`Could not find codemod ${boldText(
+							name,
+						)} in the registry. Verify the name to be in the list above and try again.`,
+					);
+				}
 			}
 
 			throw new Error(`Error while downloading codemod ${name}: ${error}`);

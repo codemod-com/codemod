@@ -7,7 +7,7 @@ import { glob } from "fast-glob";
 import FormData from "form-data";
 import { publish, validateAccessToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText } from "./utils.js";
+import { boldText, colorizeText, execPromise } from "./utils.js";
 
 const getToken = async (): Promise<string> => {
 	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
@@ -78,11 +78,6 @@ export const handlePublishCliCommand = async (
 		);
 	}
 
-	printer.printConsoleMessage(
-		"info",
-		`Publishing the "${codemodRc.name}" codemod to the Codemod Registry.`,
-	);
-
 	if (codemodRc.engine !== "recipe") {
 		let globSearchPattern: string;
 		let actualMainFileName: string;
@@ -102,21 +97,74 @@ export const handlePublishCliCommand = async (
 			default:
 				globSearchPattern = "dist/index.cjs";
 				actualMainFileName = "index.cjs";
-				errorOnMissing = `Did you forget to run "codemod build"?`;
+				if (codemodRc.build?.input) {
+					const inputFiles = await glob(codemodRc.build.input, {
+						absolute: true,
+						cwd: source,
+						onlyFiles: true,
+					});
+					const entryPoint = inputFiles.at(0);
+					if (entryPoint === undefined) {
+						errorOnMissing = `Please create the main file under ${boldText(
+							codemodRc.build.input,
+						)} first.`;
+						break;
+					}
+				}
+
+				if (codemodRc.build?.output) {
+					errorOnMissing = `Please make sure the output path in your .codemodrc.json under ${boldText(
+						codemodRc.build.output,
+					)} flag is correct.`;
+					break;
+				}
+
+				errorOnMissing =
+					"Please make sure your codemod can be built correctly.";
 		}
 
-		const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
-			absolute: true,
-			cwd: source,
-			onlyFiles: true,
-		});
-
-		const mainFilePath = mainFiles.at(0);
-
-		if (mainFilePath === undefined) {
-			throw new Error(
-				`Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
+		const locateMainFile = async () => {
+			const mainFiles = await glob(
+				codemodRc.build?.output ?? globSearchPattern,
+				{
+					absolute: true,
+					ignore: ["**/node_modules/**"],
+					cwd: source,
+					onlyFiles: true,
+				},
 			);
+
+			return mainFiles.at(0);
+		};
+
+		let mainFilePath = await locateMainFile();
+		if (mainFilePath === undefined) {
+			const stopLoading = printer.withLoaderMessage((loader) =>
+				colorizeText(
+					`${loader.get(
+						"vertical-dots",
+					)} Could not find the main file of the codemod. Trying to build...`,
+					"cyan",
+				),
+			);
+
+			try {
+				// Try to build the codemod anyways, and if after build there is still no main file
+				// or the process throws - throw an error
+				await execPromise("codemod build", { cwd: source });
+
+				mainFilePath = await locateMainFile();
+				stopLoading();
+				// Likely meaning that the "codemod build" command succeeded, but the file was still not found in output
+				if (mainFilePath === undefined) {
+					throw new Error();
+				}
+			} catch (error) {
+				stopLoading();
+				throw new Error(
+					`Could not find the main file of the codemod. ${errorOnMissing}`,
+				);
+			}
 		}
 
 		const mainFileBuf = await fs.promises.readFile(mainFilePath);
@@ -133,9 +181,22 @@ export const handlePublishCliCommand = async (
 		//
 	}
 
+	const stopLoading = printer.withLoaderMessage((loader) =>
+		colorizeText(
+			`${loader.get(
+				"vertical-dots",
+			)} Publishing the codemod using name from ${boldText(
+				".codemodrc.json",
+			)} file: ${boldText(`"${codemodRc.name}"`)}`,
+			"cyan",
+		),
+	);
+
 	try {
 		await publish(token, formData);
+		stopLoading();
 	} catch (error) {
+		stopLoading();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
 		const errorMessage = `${boldText(
@@ -149,7 +210,7 @@ export const handlePublishCliCommand = async (
 		"info",
 		boldText(
 			colorizeText(
-				`Successfully published the ${codemodRc.name} codemod.`,
+				`Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
 				"cyan",
 			),
 		),
