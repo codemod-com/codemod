@@ -52,7 +52,6 @@ export const mdxAdapter =
 		const tree = parseMdx(oldData);
 
 		visit(tree, (node) => {
-			console.log(node.type);
 			if (!JSX_NODE_TYPES.includes(node.type)) {
 				return CONTINUE;
 			}
