@@ -1,5 +1,7 @@
 import stringify from "vue-sfc-descriptor-to-string";
-import { parseComponent } from "vue-template-compiler/build";
+// import { parseComponent } from "vue-template-compiler/build";
+
+import { parse } from "@vue/compiler-sfc";
 
 type TransformFunction = (
 	codemodSource: string,
@@ -8,15 +10,15 @@ type TransformFunction = (
 	...rest: unknown[]
 ) => string;
 
-export const vueCFSAdapter =
+export const vue3SFCAdapter =
 	(transform: TransformFunction): TransformFunction =>
 	(codemodSource, oldPath, oldData, api, options, callback) => {
-		const descriptor = parseComponent(oldData);
+		const { descriptor } = parse(oldData);
 
 		const { script, scriptSetup } = descriptor;
 
 		[script, scriptSetup].forEach((script) => {
-			if (!script) {
+			if (script === null) {
 				return;
 			}
 
