@@ -32,6 +32,7 @@
 		"@swc/wasm-web": "^1.3.100",
 		"@t3-oss/env-nextjs": "^0.7.1",
 		"@types/jscodeshift": "^0.11.6",
+		"@types/ramda": "^0.29.12",
 		"@vercel/analytics": "^1.0.2",
 		"ai": "^2.1.32",
 		"ast-node-builder": "^4.2.1",
@@ -51,6 +52,7 @@
 		"os-browserify": "^0.3.0",
 		"pako": "^2.1.0",
 		"prettier": "^2.8.8",
+		"ramda": "^0.29.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-hook-form": "^7.48.2",
@@ -81,7 +83,11 @@
 		"test": "vitest run"
 	},
 	"browserslist": {
-		"production": [">0.2%", "not dead", "not op_mini all"],
+		"production": [
+			">0.2%",
+			"not dead",
+			"not op_mini all"
+		],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
