@@ -16,29 +16,210 @@ icon: 'grid-round-2-plus'
   alt="Codemod Registry hero banner"
 />
 
-Publishing your codemods to the Codemod Registry allows you to easily share them with thousands of developers around the world.
-
-Once added, they will automatically integrate with the Codemod platform. This simplifies codemod discovery and distribution, and offers a great developer experience for running codemods.
+You can easily share your codemods with thousands of people around the world by adding them to the Codemod Registry. Once added, they will automatically integrate with Codemod platform. This simplifies codemod discovery and distribution, and offers a better running codemods experience.
 
 <Info>
 Publishing codemods to the registry is especially useful for framework/library builders. With features like shareable codemod deep links and Codemod CLI & IDE extenion, your users can adopt your latest releases with one click, straight from your migration doc. <Tooltip tip="MSW V2 migration">[See example ->](https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods)</Tooltip>
 </Info>
 
----
+## Supported codemod engines
 
-<Tip>
-Before publishing your codemod, make sure that your codemod conforms to [the structure required by the Codemod platform](https://github.com/codemod-com/codemod/blob/main/packages/codemods/pull_request_template.md).
+Codemod platform currently supports the following codemod engines: [`ast-grep`](https://github.com/ast-grep/ast-grep), [`filemod`](https://github.com/codemod-com/codemod/tree/main/packages/filemod), [`jscodeshift`](https://github.com/facebook/jscodeshift), [`ts-morph`](https://github.com/dsherret/ts-morph), and [`piranha`](https://github.com/uber/piranha).
 
-The easiest way to do this is by placing your codemod in [Codemod Studio](https://codemod.studio) and then clicking "Export Locally" to download a registry-compatible local codemod.
-</Tip>
+## Required codemod package structure
+
+To make your codemod package compatible with Codemod platform, it needs to have a `.codemodrc.json` configuration file in the project root.
+
+```bash
+├── dist
+│   ├── index.cjs # this is the default path for the built codemod file. when someone runs your codemod, this file will be executed.
+├── src
+│   ├── index.ts # this is the default path for the codemod's entry point file.
+│   ├── ...
+├── .codemodrc.json # contains the codemod configuration
+└── README.md # must contain a short description and examples, such as in the example at the bottom of this page
+```
+
+<AccordionGroup>
+  <Accordion title=".codemodrc.json reference">
+    
+    <ResponseField name="name" type="string" required>
+      Specifies the slugified name of the codemod published to the codemod registry.
+    </ResponseField>
+    
+    <ResponseField name="version" type="string" required>
+      Specifies the current codemod version. Should follow the [SemVer scheme](https://semver.org/).
+      <Warning>The version field must be bumped every time the codemod is published.</Warning>
+    </ResponseField>
+    
+    <ResponseField name="private" type="boolean" default="false">
+      Can be used to set the codemod visibility to `private`.
+
+      By default, when a codemod is published without a namespace, visibility will be set as `public`.
+      If a codemod is published under a namespace, such as `@codemod/my-codemod`, visibility will be set as `private`.
+    </ResponseField>
+    
+    <ResponseField name="engine" type="string" required>
+      Specifies the engine used to run the codemod.
+      Can be any of:
+      - `filemod`
+      - `jscodeshift`
+      - `ts-morph`
+      - `ast-grep`
+      - `piranha` (requires additional `language` field that specifies one of the supported piranha languages:
+      `java`, `kt`, `go`, `py`, `swift`, `ts`, `tsx`, or `scala`)
+      - `recipe` (requires additional `names` field, which is an ordered array of codemod names that will be executed)
+    </ResponseField>
+    
+    <ResponseField name="include" type="glob pattern array">
+      Can be used to override the default glob pattern for files that will be processed by the codemod.
+    </ResponseField>
+    
+    <ResponseField name="applicability" type="object">
+      The applicability field is an object with `from` and `to` keys that are both arrays of tuples.
+      This field can be used to specify the dependencies and versions this codemod is made for.
+      This field is also used to check if the codemod is compatible with the project it will run over.
+    
+      Each tuple consists of three elements:
+      1. a library name
+      2. a comparison operator (`<`, `>`, `<=`, `>=`, `=`)
+      3. a version number ([SemVer](https://semver.org/) compatible)
+    </ResponseField>
+    
+    <ResponseField name="deps" type="array of strings">
+      Can be used to specify dependencies to be installed after successful a codemod run.
+      You can also specify a package to be removed by prepending it with a `-` sign.
+      Each dependency should be a string in one of the following formats:
+      - `package-name@version`
+      - `-package-name`
+      - `package-name`
+    </ResponseField>
+    
+    <ResponseField name="arguments" type="array of objects">
+      If your codemod requires arguments, you can specify them in this field.
+
+      <Expandable title="Argument fields">
+        <ResponseField name="name" type="string">
+          Specifies the argument name.
+        </ResponseField>
+
+        <ResponseField name="description" type="string">
+          Specifies the argument description.
+        </ResponseField>
+
+        <ResponseField name="kind" type="string">
+          Specifies the argument argument type. Can be any of: `string`, `number`, or `boolean`.
+        </ResponseField>
+
+        <ResponseField name="required" type="boolean">
+          Specifies if the argument is required.
+        </ResponseField>
+      </Expandable>
+
+    </ResponseField>
+    
+    <ResponseField name="meta" type="object">
+      Specifies additional information about your codemod for discoverability purposes.
+
+      <Expandable title="Meta child fields">
+        <ResponseField name="tags" type="array of strings">
+          Specifies tags for your codemods (ex: next.js, react).
+        </ResponseField>
+
+        <ResponseField name="git" type="string">
+          Specifies the url to the codemod's repository.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+    
+    <ResponseField name="build" type="object">
+      Specifies custom paths for the build input and output files.
+
+      <Expandable title="Build child fields">
+        <ResponseField name="input" type="string">
+          Specifies the path to the input file.
+        </ResponseField>
+
+        <ResponseField name="output" type="string">
+          Specifies the path to the output file.
+        </ResponseField>
+      </Expandable>
+    </ResponseField>
+
+    ### Example of a valid configuration file:
+
+  ```json .codemodrc.json
+    {
+      "name": "my-unique-codemod-name",
+      "version": "1.0.0",
+      "private": false,
+      "engine": "filemod",
+      "include": ["**/*.js"],
+      "applicability": {
+        "from": [["react", ">", "17.0.0"], ["react", "<", "17.1.9"]],
+        "to": [["react", "=", "18.0.0"]]
+      },
+      "deps": ["-jest", "vitest@2.0.0"],
+      "arguments": [
+        {
+          "name": "arg1",
+          "description": "Arg number one",
+          "kind": "string",
+          "required": false
+        },
+        {
+          "name": "arg2",
+          "description": "Some other arg",
+          "kind": "number",
+          "required": true
+        }
+      ],
+      "meta": {
+        "tags": ["react", "migration"],
+        "git": "https://github.com/codemod-com/codemod"
+      },
+      "build": {
+        "input": "src/index.ts",
+        "output": "dist/index.cjs"
+      }
+    }
+    ```
+    
+  </Accordion>
+
+  <Accordion
+    title="README file reference"
+  >
+
+    ```markdown README.md
+    ## Description
+
+    This codemod does X, Y, and Z.
+
+    ## Examples
+
+    ### Before
+
+    // some code
+
+    ### After
+
+    // some code
+
+    ## Other links
+
+    - [Link to the GitHub repository](https://github.com/codemod-com/codemod)
+    ```
+  </Accordion>
+</AccordionGroup>
 
 ## Publish with Codemod CLI
 
-You can use Codemod CLI to publish a local codemod to the codemod registry.
+Once your codemod package is [compatible with Codemod platform](#required-codemod-package-structure), you can use Codemod CLI to publish a local codemod to the codemod registry.
 
 <Steps>
-  <Step title="Login to the Codemod platform">
-  Login to the Codemod platform by using:
+  <Step title="Login to Codemod platform">
+  Login to Codemod platform by using:
   
   ```bash
   codemod login
@@ -48,19 +229,22 @@ You can use Codemod CLI to publish a local codemod to the codemod registry.
   </Step>
 
   <Step title="Build your local project">
-  If you local project is not already built, you can build it using codemod CLI:
+  <Info>
+  This will build a JavaScript project using `esbuild` and create a `dist` directory in your project root. If your codemod is not using a JavaScript engine, you can skip this step.
+  </Info>
+  
+  If your local project is not already built, you can build it using codemod CLI:
 
+  1. Install `esbuild` globally (if not installed):
+  ```bash
+  npm install -g esbuild
+  ```
+  
+  2. Build codemod:
   ```bash
   codemod build
   ```
 
-  <Tip>
-  To build the codemod using codemod CLI, global installation of `esbuild` package is required. You can install it using package manager of choice. For example, using `npm`:
-
-  ```bash
-  npm install -g esbuild
-  ```
-  </Tip>
   </Step>
 
   <Step title="Publish your codemod">

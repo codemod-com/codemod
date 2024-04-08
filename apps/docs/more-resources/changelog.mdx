@@ -1,7 +1,41 @@
 ---
 title: 'Changelog'
-description: 'Latest releases for the Codemod platform.'
+description: 'Latest releases for Codemod platform.'
 icon: 'scroll'
+---
+
+
+## v1.0.1
+
+### New features
+
+- [Studio]: updates package that is downloaded from studio to include test fixtures and remove custom build script and esbuild from downloaded packages as we now allow building using codemod build
+- [Registry]: removes s3 github action for publishing the codemods, leaving codemod publish as the only flow to let codemods into the registry
+- [Registry]: allows publishing piranha, ast-grep and recipes besides regular js codemods
+- [Registry]: sets sane defaults for file formats that get affected by the codemods. allows user to override them using --include option or include property in .codemodrc.json
+- [Registry]: adds DB layer in before publishing codemod to s3, which ensures that our source of truth is synced with S3 and allows other apps in our ecosystem to use this layer to get the latest data
+- [CLI]: codemod build feature which if global esbuild installation is found, allows to build a codemod package
+- [CLI]: codemod list and codemod search behaving similarly, allowing to fuzzy-find codemods in the registry
+- [CLI]: deprecates codemod sync feature. cache still works and is used when the codemod is first run. cache gets invalidated within fixed time period, and there is a --no-cache command to disable it manually
+- [CLI]: more user-friendly messages were added when something goes wrong
+- [CLI]: renames our apps in git repository to cli , backend , etc…
+- [Backend]: Migrated from the SequelizeORM to PrismaORM.
+- [Backend]: Migrated from ncc bundler to esbuild bundler.
+- [Backend]: Created Codemod and CodemoVersion tables with required schemas related to Registry and CLI functionality.
+- [Backend]: Created codemods API endpoints related to Registry and CLI functionality.
+- [Backend]: Refactored existing DB repositories with corresponding Prisma functionality.
+- [Backend]: Updated current token endpoints with corresponding Prisma functionality.
+- [Backend]: Refactored unit tests and created test DB for testing purposes.
+- [Backend]: Refactored Dockerfile and docker compose files related to our CI/CD strategy.
+- [Backend]: Created CI/CD workflow via Github Actions.
+
+### New Contributors
+
+- @alexbit-codemod made their first contribution in #83
+- @mirai2k made their first contribution in #141
+- @grzim made their first contribution in #205
+- @ppashakhanloo made their first contribution in #217
+
 ---
 
 ## v1.0.0

@@ -1,0 +1,41 @@
+---
+title: 'Getting started'
+description: 'Start building codemods using Codemod platform.'
+icon: 'book-open-cover'
+---
+
+<img
+  className="block dark:hidden"
+  src="/images/deploying-codemods/hero-light.svg"
+  alt="Deploying Codemods hero banner"
+/>
+
+<img
+  className="hidden dark:block"
+  src="/images/deploying-codemods/hero-dark.svg"
+  alt="Deploying codemods hero banner"
+/>
+
+Codemod platform allows you to build a wide variety of codemods and easily distribute them to different parts of the platform, such as the [Codemod Registry](/codemod-registry/), [CLI](/deploying-codemods/cli), and [VS Code extension](/deploying-codemods/vsce). This allows them to be discovered, shared, and used by the community.
+
+To do so, codemods must follow the [required codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure).
+
+There are two ways of scaffolding a new codemod package that follow the required package structure:
+
+## Option 1: Initialize using CLI
+
+You can quickly create a codemod package using the Codemod CLI and start developing with supported codemod engines such as: `ast-grep`, `filemod`, `jscodeshift`, `ts-morph`, or `piranha`.
+
+To do so, run the following command:
+
+```bash
+codemod init
+```
+
+<Tip>
+To easily scaffold the codemod package, Codemod CLI prompt you to answer a few questions about your codemod. You can use the `-y` flag to skip the questions and use the default values.
+</Tip>
+
+## Option 2: Use Codemod Studio
+
+[Codemod Studio](/building-codemods/codemod-studio) allows you to easily create codemods with the power of AI. All codemods built and/or exported by Codemod Studio will automatically conform to the package structure required by Codemod platform.
