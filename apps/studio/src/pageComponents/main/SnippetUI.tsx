@@ -33,9 +33,9 @@ export const useSnippet = (type: SnippetType) => {
 		[setInput, setOutput, type],
 	);
 
-	const onSnippetBlur = useCallback(() => {
+	const onSnippetBlur = () => {
 		onSnippetChange(prettify(snippetValue));
-	}, [onSnippetChange]);
+	};
 
 	const handleSelectionChange = useCallback(
 		(range: OffsetRange) => {
