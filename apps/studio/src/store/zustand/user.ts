@@ -11,6 +11,7 @@ export type UserState = {
 	setPendingAction: ToVoid<PendingAction[]>;
 	addPendingActionsWhenSigned: ToVoid<PendingAction>;
 	retrievePendingAction: (action: PendingAction) => boolean;
+	hasPendingAction: (action: PendingAction) => boolean;
 };
 
 export const useUserState = create<UserState>((set, get) => ({
@@ -20,11 +21,12 @@ export const useUserState = create<UserState>((set, get) => ({
 				localStorage.getItem("pendingActionsWhenSigned") || "[]",
 		  ) as string[]),
 	setPendingAction: (actions: PendingAction[]) => {
-		console.log("arbuz");
 		set({ pendingActionsWhenSigned: actions });
 		if (!isServer)
 			localStorage.setItem("pendingActionsWhenSigned", JSON.stringify(actions));
 	},
+	hasPendingAction: (action: PendingAction) =>
+		get().pendingActionsWhenSigned.includes(action),
 	addPendingActionsWhenSigned: (action: PendingAction) =>
 		get().setPendingAction(get().pendingActionsWhenSigned.concat(action)),
 	retrievePendingAction: (action: PendingAction) => {
