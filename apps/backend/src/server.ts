@@ -3,7 +3,9 @@ import "./cron.js";
 
 import { randomBytes } from "node:crypto";
 import { OutgoingHttpHeaders } from "node:http";
+import { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -210,15 +212,8 @@ const clerkClient = areClerkKeysSet(environment)
 const wrapRequestHandlerMethod =
 	<T>(handler: CustomHandler<T>): RouteHandlerMethod =>
 	async (request, reply) => {
-		const getAccessTokenOrThrow = () => {
-			const accessToken = getCustomAccessToken(environment, request.headers);
-
-			if (accessToken === null) {
-				throw new UnauthorizedError();
-			}
-
-			return accessToken;
-		};
+		const getAccessToken = () =>
+			getCustomAccessToken(environment, request.headers);
 
 		const setAccessToken = (accessToken: string) => {
 			reply.header(X_INTUITA_ACCESS_TOKEN, accessToken);
@@ -235,16 +230,43 @@ const wrapRequestHandlerMethod =
 			return userId;
 		};
 
+		const getClerkUserData = async (
+			userId: string,
+		): Promise<{
+			user: User;
+			organizations: OrganizationMembership[];
+			allowedNamespaces: string[];
+		} | null> => {
+			if (clerkClient === null) {
+				return null;
+			}
+
+			const user = await clerkClient.users.getUser(userId);
+			const userOrganizations =
+				await clerkClient.users.getOrganizationMembershipList({ userId });
+			const userAllowedNamespaces = [
+				user.username,
+				...userOrganizations.map((org) => org.organization.slug),
+			].filter(isNeitherNullNorUndefined);
+
+			return {
+				user,
+				organizations: userOrganizations,
+				allowedNamespaces: userAllowedNamespaces,
+			};
+		};
+
 		const now = () => Date.now();
 
 		try {
 			const data = await handler({
 				tokenService,
 				codemodService,
-				getAccessTokenOrThrow,
+				getAccessToken,
 				setAccessToken,
 				clerkClient,
 				getClerkUserId,
+				getClerkUserData,
 				now,
 				request,
 				reply,

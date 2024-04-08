@@ -4,7 +4,10 @@ import { readFile, unlink } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
-import { ValidateTokenResponse } from "@codemod-com/utilities";
+import {
+	ValidateTokenResponse,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
@@ -64,10 +67,12 @@ export const getTokenData = async (): Promise<TokenData | null> => {
 	}
 };
 
-export const getCurrentUserData = async (): Promise<{
+type UserData = {
 	user: ValidateTokenResponse;
 	token: TokenData;
-} | null> => {
+};
+
+export const getCurrentUserData = async (): Promise<UserData | null> => {
 	const tokenData = await getTokenData();
 
 	if (tokenData === null) {
@@ -92,3 +97,35 @@ export const getCurrentUserData = async (): Promise<{
 };
 
 export const execPromise = promisify(exec);
+
+export const getOrgsNames = (
+	userData: UserData,
+	type: "slug" | "name" | "slug-and-name" = "slug",
+): string[] => {
+	let mapFunc: (
+		org: UserData["user"]["organizations"][number],
+	) => string | null;
+	switch (type) {
+		case "slug":
+			mapFunc = (org) => org.slug;
+			break;
+		case "name":
+			mapFunc = (org) => org.name;
+			break;
+		case "slug-and-name":
+			mapFunc = (org) => {
+				if (org.name === org.slug) {
+					return org.name;
+				}
+
+				return `${org.name} (${org.slug})`;
+			};
+			break;
+		default:
+			throw new Error("Invalid type");
+	}
+
+	return userData.user.organizations
+		.map(mapFunc)
+		.filter(isNeitherNullNorUndefined);
+};

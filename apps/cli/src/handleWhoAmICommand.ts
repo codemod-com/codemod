@@ -1,5 +1,10 @@
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
+import {
+	boldText,
+	colorizeText,
+	getCurrentUserData,
+	getOrgsNames,
+} from "./utils.js";
 
 export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	const userData = await getCurrentUserData();
@@ -26,7 +31,7 @@ export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 			"info",
 			colorizeText(
 				`You have access to the following organizations: ${boldText(
-					`- ${organizations.map((org) => org.slug).join("\n- ")}`,
+					`- ${getOrgsNames(userData).join("\n- ")}`,
 				)}`,
 				"cyan",
 			),

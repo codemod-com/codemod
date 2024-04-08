@@ -1,28 +1,18 @@
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { CustomHandler } from "../customHandler.js";
 import { parseListCodemodsQuery } from "../schemata/query.js";
 import { ShortCodemodInfo } from "../services/codemodService.js";
-import { CLAIM_ISSUE_CREATION } from "../services/tokenService.js";
-import { environment, getCustomAccessToken } from "../util.js";
 
 export const getCodemodsListHandler: CustomHandler<ShortCodemodInfo[]> = async (
 	dependencies,
 ) => {
 	const { search } = parseListCodemodsQuery(dependencies.request.query);
 
-	const accessToken = getCustomAccessToken(
-		environment,
-		dependencies.request.headers,
+	const userId = await dependencies.getClerkUserId();
+	const userData = await dependencies.getClerkUserData(userId);
+
+	return dependencies.codemodService.getCodemodsList(
+		userId,
+		search,
+		userData?.allowedNamespaces,
 	);
-
-	let userId: string | null = null;
-	if (isNeitherNullNorUndefined(accessToken)) {
-		userId = await dependencies.tokenService.findUserIdMetadataFromToken(
-			accessToken,
-			BigInt(Date.now()),
-			CLAIM_ISSUE_CREATION,
-		);
-	}
-
-	return dependencies.codemodService.getCodemodsList(userId, search);
 };

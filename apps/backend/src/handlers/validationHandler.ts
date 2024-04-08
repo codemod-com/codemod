@@ -8,12 +8,15 @@ import { ALL_CLAIMS } from "../services/tokenService.js";
 export const validationHandler: CustomHandler<{
 	success: true;
 	username: string | null;
-}> = async ({ clerkClient, tokenService, getAccessTokenOrThrow }) => {
+}> = async ({ clerkClient, tokenService, getAccessToken }) => {
 	if (clerkClient === null) {
 		throw new InternalServerError();
 	}
 
-	const accessToken = getAccessTokenOrThrow();
+	const accessToken = getAccessToken();
+	if (accessToken === null) {
+		throw new UnauthorizedError();
+	}
 
 	const userId = await tokenService.findUserIdMetadataFromToken(
 		accessToken,

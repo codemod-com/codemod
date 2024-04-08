@@ -218,10 +218,19 @@ export class CodemodService {
 		return codemod;
 	}
 
-	public async getCodemodDownloadLink(name: string): Promise<{ link: string }> {
+	public async getCodemodDownloadLink(
+		name: string,
+		generateSignedUrl: (
+			bucket: string,
+			uploadKey: string,
+			expireTimeout?: number,
+		) => Promise<string>,
+		allowedNamespaces?: string[],
+	): Promise<{ link: string }> {
 		const codemod = await this.prisma.codemod.findFirst({
 			where: {
 				name,
+				OR: [{ private: false }, { author: { in: allowedNamespaces } }],
 			},
 			include: {
 				versions: {
@@ -232,11 +241,22 @@ export class CodemodService {
 				},
 			},
 		});
-
-		const downloadLink = codemod?.versions[0]?.bucketLink;
-
-		if (!downloadLink) {
+		if (!codemod) {
 			throw new CodemodNotFoundError();
+		}
+
+		const latestVersion = codemod.versions.at(0);
+		if (!latestVersion) {
+			throw new CodemodNotFoundError();
+		}
+
+		let downloadLink = `https://${latestVersion.s3Bucket}.s3.us-west-1.amazonaws.com/${latestVersion.s3UploadKey}`;
+
+		if (codemod.private) {
+			downloadLink = await generateSignedUrl(
+				latestVersion.s3Bucket,
+				latestVersion.s3UploadKey!,
+			);
 		}
 
 		return { link: downloadLink };
@@ -245,12 +265,16 @@ export class CodemodService {
 	public async getCodemodsList(
 		userId: string | null,
 		search: string | undefined,
+		allowedNamespaces?: string[],
 	): Promise<ShortCodemodInfo[]> {
 		let codemodData: ShortCodemodInfo[];
 
 		if (isNeitherNullNorUndefined(userId)) {
-			// TODO: custom logic based on user auth
-			const dbCodemods = await this.prisma.codemod.findMany();
+			const dbCodemods = await this.prisma.codemod.findMany({
+				where: {
+					OR: [{ private: false }, { author: { in: allowedNamespaces } }],
+				},
+			});
 
 			const codemods = await Promise.all(
 				dbCodemods.map(async (codemod) => {

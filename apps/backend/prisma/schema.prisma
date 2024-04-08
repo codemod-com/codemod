@@ -59,6 +59,8 @@ model CodemodVersion {
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
   bucketLink               String   @db.VarChar(255)
+  s3Bucket                 String   @db.VarChar(255)
+  s3UploadKey              String   @db.VarChar(255)
   tags                     String[] @default([])
   codemodId                Int
   codemod                  Codemod  @relation(fields: [codemodId], references: [id])

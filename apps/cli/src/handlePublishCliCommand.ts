@@ -67,7 +67,9 @@ export const handlePublishCliCommand = async (
 				);
 			}
 		}
-	} else if (!codemodNameRegex.test(codemodRc.name)) {
+	}
+
+	if (!codemodNameRegex.test(codemodRc.name)) {
 		throw new Error(
 			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 		);
