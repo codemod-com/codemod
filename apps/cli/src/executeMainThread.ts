@@ -1,9 +1,7 @@
-import { exec } from "child_process";
 import * as fs from "fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { promisify } from "util";
 import Axios from "axios";
 import { IFs } from "memfs";
 import yargs from "yargs";
@@ -35,6 +33,7 @@ import {
 	AppInsightsTelemetryService,
 	NoTelemetryService,
 } from "./telemetryService.js";
+import { execPromise } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -307,7 +306,6 @@ export const executeMainThread = async () => {
 
 	if (String(argv._) === "build") {
 		// Allow node to look for modules in global paths
-		const execPromise = promisify(exec);
 		const globalPaths = await Promise.allSettled([
 			execPromise("npm root -g"),
 			execPromise("pnpm root -g"),

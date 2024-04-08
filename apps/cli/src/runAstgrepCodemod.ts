@@ -1,8 +1,7 @@
-import { exec } from "node:child_process";
-import { promisify } from "node:util";
 import type { FileCommand } from "./fileCommands.js";
 import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import { execPromise } from "./utils.js";
 
 const javaScriptPatterns = ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"];
 const typeScriptPatterns = ["**/*.ts", "**/*.cts", "**/*.mts"];
@@ -64,8 +63,6 @@ export const astGrepLanguageToPatterns: Record<string, string[]> = {
 
 	html: htmlPatterns,
 };
-
-const execPromise = promisify(exec);
 
 type AstGrepCompactOutput = {
 	text: string;
