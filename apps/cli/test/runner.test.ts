@@ -201,7 +201,7 @@ describe("Runner", () => {
 		);
 	});
 
-	it("should transform staged files using the pre-commit codemods", async () => {
+	it("should apply adapters for mdx and vue file formats", async () => {
 		const volume = Volume.fromJSON({
 			"/code/vue.vue": VUE_VUE,
 			"/code/mdx.mdx": MDX_MDX,
