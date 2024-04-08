@@ -25,6 +25,41 @@ export default function transform(file, api, options) {
 }
 `;
 
+const VUE_VUE = `
+<script setup>
+import { ref } from 'vue'
+const greeting = ref('Hello World!')
+</script>
+
+<template>
+<p class="greeting">{{ greeting }}</p>
+</template>
+
+<style>
+.greeting {
+color: red;
+font-weight: bold;
+}
+</style>
+`;
+
+const MDX_MDX = `
+import { Chart } from './snowfall.js';
+export const year = 2023;
+
+# Last year’s snowfall
+
+In {year}, the snowfall was above average.
+It was followed by a warm spring which caused
+flood conditions in many of the nearby rivers.
+
+<Chart b={'erwe'} />
+`;
+
+const SOURCED_CODEMOD = `module.exports = function transform(file, api, options) {
+  return "transformed";
+} `;
+
 const printer: PrinterBlueprint = {
 	__jsonOutput: false,
 	printMessage: () => {},
@@ -163,6 +198,132 @@ describe("Runner", () => {
 		equal(
 			(await volume.promises.readFile("/code/e.ts")).toString(),
 			"unchanged",
+		);
+	});
+
+	it("should transform staged files using the pre-commit codemods", async () => {
+		const volume = Volume.fromJSON({
+			"/code/vue.vue": VUE_VUE,
+			"/code/mdx.mdx": MDX_MDX,
+			"/codemods/a/index.js": SOURCED_CODEMOD,
+		});
+
+		const ifs = createFsFromVolume(volume);
+
+		const codemodDownloader: CodemodDownloaderBlueprint = {
+			download: async (name: string) => {
+				return {
+					source: "package",
+					name,
+					engine: "jscodeshift",
+					indexPath: `/codemods/${name}/index.ts`,
+					directoryPath: `/codemods/${name}`,
+					arguments: [],
+				};
+			},
+		};
+
+		const loadRepositoryConfiguration = () =>
+			Promise.resolve<RepositoryConfiguration>({
+				preCommitCodemods: [],
+			});
+
+		const codemodSettings: CodemodSettings = {
+			kind: "runSourced",
+			source: "/codemods/a/index.js",
+			codemodEngine: "jscodeshift",
+		};
+
+		const flowSettings: FlowSettings = {
+			include: ["**/*.{ts,tsx,vue,mdx}"],
+			exclude: [],
+			target: "/code",
+			raw: false,
+			"no-cache": false,
+			noCache: false,
+			"skip-install": true,
+			skipInstall: true,
+			json: false,
+			threads: 1,
+		};
+
+		const currentWorkingDirectory = "/";
+
+		const getCodemodSource = async (path: string) => {
+			const data = await ifs.promises.readFile(path);
+
+			if (typeof data === "string") {
+				return data;
+			}
+
+			return data.toString("utf8");
+		};
+
+		const runSettings: RunSettings = {
+			dryRun: false,
+			caseHashDigest: randomBytes(20),
+		};
+
+		const runner = new Runner(
+			ifs,
+			printer,
+			{
+				sendEvent: () => {},
+			},
+			codemodDownloader,
+			loadRepositoryConfiguration,
+			codemodSettings,
+			flowSettings,
+			runSettings,
+			{},
+			null,
+			currentWorkingDirectory,
+			getCodemodSource,
+		);
+
+		await runner.run();
+
+		await new Promise((res) => {
+			setTimeout(res, 1000);
+		});
+
+		equal(
+			(await volume.promises.readFile("/code/vue.vue"))
+				.toString()
+				.replace(/\W/gm, ""),
+			`
+        <script setup>
+        transformed
+        </script>
+    
+        <template>
+        <p class="greeting">{{ greeting }}</p>
+        </template>
+    
+        <style>
+        .greeting {
+        color: red;
+        font-weight: bold;
+        }
+        </style>
+      `.replace(/\W/gm, ""),
+		);
+
+		equal(
+			(await volume.promises.readFile("/code/mdx.mdx"))
+				.toString()
+				.replace(/\W/gm, ""),
+			`
+      transformed
+      
+      # Last year’s snowfall
+      
+      In {year}, the snowfall was above average.
+      It was followed by a warm spring which caused
+      flood conditions in many of the nearby rivers.
+      
+       transformed
+      `.replace(/\W/gm, ""),
 		);
 	});
 });
