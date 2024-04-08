@@ -1,5 +1,5 @@
 import type { DataAPI } from "@codemod-com/filemod";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities/functions/validationMethods";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import type { Input } from "valibot";
 import type {
 	Configuration as BiomeConfig,

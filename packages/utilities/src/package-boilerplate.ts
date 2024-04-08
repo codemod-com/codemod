@@ -1,6 +1,6 @@
 import * as changeCase from "change-case";
 import { js } from "js-beautify";
-import { KnownEngines } from "./index.js";
+import { KnownEngines } from "./schemata/codemodConfigSchema.js";
 
 export interface ProjectDownloadInput {
 	codemodBody?: string;
@@ -13,8 +13,9 @@ export interface ProjectDownloadInput {
 	tags?: string[];
 }
 
-export interface CodemodProjectOutput {
-	"src/index.ts": string;
+type FixtureInputFile = `__testfixtures__/fixture${number}.input.ts`;
+type FixtureOutputFile = `__testfixtures__/fixture${number}.output.ts`;
+export type CodemodProjectOutput = {
 	"test/test.ts": string;
 	LICENSE: string;
 	"README.md": string;
@@ -24,8 +25,9 @@ export interface CodemodProjectOutput {
 	".codemodrc.json": string;
 	".gitignore": string;
 
-	[key: string]: string;
-}
+	[key: FixtureInputFile]: string;
+	[key: FixtureOutputFile]: string;
+} & ({ "src/index.ts": string } | { "src/rule.yaml": string });
 
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
 	js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
@@ -518,12 +520,37 @@ const testBody = ({
 };
 
 export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
+	let mainFileBoilerplate: string;
+	let filename: "src/index.ts" | "src/rule.yaml";
+
+	switch (input.engine) {
+		case "jscodeshift":
+			mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "tsmorph":
+		case "ts-morph":
+			mainFileBoilerplate = emptyTsMorphBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "filemod":
+			mainFileBoilerplate = emptyFilemodBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "ast-grep":
+			mainFileBoilerplate = emptyAstGrepBoilerplate;
+			filename = "src/rule.yaml";
+			break;
+		default:
+			throw new Error(`Unknown engine: ${input.engine}`);
+	}
+
+	const mainFileContent = input.codemodBody
+		? beautify(input.codemodBody)
+		: mainFileBoilerplate;
+
 	const files: CodemodProjectOutput = {
-		"src/index.ts": input.codemodBody
-			? beautify(input.codemodBody)
-			: input.engine === "jscodeshift"
-			  ? emptyJsCodeShiftBoilerplate
-			  : emptyTsMorphBoilerplate,
+		[filename]: mainFileContent,
 		"test/test.ts": testBody(input),
 		LICENSE: license(input),
 		"README.md": readme(input),
@@ -532,7 +559,9 @@ export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
 		"tsconfig.json": tsconfigJson(),
 		".codemodrc.json": codemodRc(input),
 		".gitignore": "node_modules\ndist",
-	};
+		// Cast is needed because typescript apparently does not understand that filename is one of the required
+		// keys in the original type and throws error.
+	} as CodemodProjectOutput;
 
 	if (input.cases) {
 		for (let i = 0; i < input.cases.length; i++) {
@@ -570,7 +599,41 @@ export default function transformer(
 }
 `);
 
-export const emptyTsMorphBoilerplate = beautify(`
+export const emptyFilemodBoilerplate = beautify(`
+export const repomod: Filemod<Dependencies, Options> = {
+	includePatterns: ["**/*.ts"],
+	excludePatterns: ["**/node_modules/**"],
+	handleFile: async (api, path, options) => {
+		return [{ kind: "upsertFile", path }];
+	},
+	handleData: async (
+		api,
+		path,
+		data,
+	) => {
+    if (fileName.includes("change-me.ts")) {
+      return {
+        kind: "upsertData",
+        data: "hello world",
+        path,
+      };
+    }
+
+    return { kind: "noop" };
+  }
+}
+`);
+
+export const emptyAstGrepBoilerplate = beautify(`
+# To see how to write a rule, check out the documentation at: https://ast-grep.github.io/guide/rule-config.html
+id: test-ast-grep
+language: bash-exp
+rule:
+  pattern: DATA_DIR=$A
+fix: DATA_DIR="/new/path/to/resources"
+`);
+
+export const emptyTsMorphBoilerplate = beautify(`;
 import { type SourceFile, SyntaxKind } from "ts-morph";
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {

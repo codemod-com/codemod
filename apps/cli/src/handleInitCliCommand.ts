@@ -152,48 +152,46 @@ export const handleInitCliCommand = async (
 		),
 	);
 
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(
-			`\nRun ${boldText("`codemod build`")} to build the codemod.`,
-			"cyan",
-		),
-	);
+	const isJsCodemod =
+		answers?.engine === "jscodeshift" ||
+		answers?.engine === "ts-morph" ||
+		answers?.engine === "filemod" ||
+		answers === null;
+	if (isJsCodemod) {
+		printer.printConsoleMessage(
+			"info",
+			colorizeText(
+				`\nRun ${boldText("`codemod build`")} to build the codemod.`,
+				"cyan",
+			),
+		);
+	}
 
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(
-			`Run ${boldText(
-				`\`codemod --source ${codemodBaseDir}\``,
-			)} to run the codemod on current working directory (or specify a target using ${colorizeText(
-				"--target",
-				"orange",
-			)} option).`,
-			"cyan",
-		),
-	);
+	const howToRunText = `Run ${boldText(
+		`\`codemod --source ${codemodBaseDir}\``,
+	)} to run the codemod on current working directory (or specify a target using ${colorizeText(
+		"--target",
+		"orange",
+	)} option).`;
+	printer.printConsoleMessage("info", colorizeText(howToRunText, "cyan"));
 
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(
-			`Run ${boldText(
-				"`codemod publish`",
-			)} to publish the codemod to the Codemod registry. ${colorizeText(
-				"NOTE: Your codemod has to be built using the build command",
-				"orange",
-			)}`,
-			"cyan",
-		),
-	);
+	let publishText = `Run ${boldText(
+		"`codemod publish`",
+	)} to publish the codemod to the Codemod registry.`;
+	if (isJsCodemod) {
+		publishText += colorizeText(
+			"NOTE: Your codemod has to be built using the build command",
+			"orange",
+		);
+	}
+	printer.printConsoleMessage("info", colorizeText(publishText, "cyan"));
 
+	const otherGuidelinesText = `For other guidelines, please visit our documentation at ${terminalLink(
+		boldText("https://docs.codemod.com"),
+		"https://docs.codemod.com",
+	)} or type ${boldText("`codemod --help`")}.`;
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			`For other guidelines, please visit our documentation at ${terminalLink(
-				boldText("https://docs.codemod.com"),
-				"https://docs.codemod.com",
-			)} or type ${boldText("`codemod --help`")}.`,
-			"cyan",
-		),
+		colorizeText(otherGuidelinesText, "cyan"),
 	);
 };

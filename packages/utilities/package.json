@@ -5,12 +5,9 @@
 	"description": "The utilities used across Codemod.com packages",
 	"type": "module",
 	"main": "./dist/index.js",
-	"exports": {
-		".": "./src/index.ts",
-		"./package-boilerplate": "./src/package-boilerplate.ts",
-		"./functions/validationMethods": "./src/functions/validationMethods.ts"
-	},
+	"module": "./dist/index.js",
 	"types": "./dist/index.d.ts",
+	"sideEffects": false,
 	"files": [
 		"./dist",
 		"!**/*.test.js",
