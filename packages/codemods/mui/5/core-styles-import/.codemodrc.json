@@ -5,7 +5,7 @@
 	"name": "mui/5/core-styles-import",
 	"engine": "jscodeshift",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["@material-ui/core", ">=", "4.0.0"]]

@@ -6,6 +6,6 @@
 	"engine": "piranha",
 	"language": "go",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

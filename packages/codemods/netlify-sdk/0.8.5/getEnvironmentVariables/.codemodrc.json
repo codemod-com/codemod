@@ -5,7 +5,7 @@
 	"name": "netlify/0.8.5/getEnvironmentVariables",
 	"engine": "jscodeshift",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["@netlify/sdk", ">=", "0.8.5"]]

@@ -16,6 +16,9 @@ async function main() {
 			"best practices",
 			"refactoring",
 			"cleanup",
+			"mining",
+			"security",
+			"other",
 		]);
 		const tags = faker.lorem.words(3).split(" ");
 		const engine = faker.helpers.arrayElement(["jscodeshift", "ts-morph"]);
@@ -28,8 +31,7 @@ async function main() {
 				slug: faker.datatype.uuid(),
 				name: faker.lorem.words(2),
 				shortDescription,
-				useCaseCategory,
-				tags,
+				tags: tags.concat(useCaseCategory),
 				engine,
 				applicability,
 				featured: faker.datatype.boolean(),

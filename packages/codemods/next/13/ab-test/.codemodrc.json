@@ -6,8 +6,7 @@
 	"engine": "filemod",
 	"arguments": [],
 	"meta": {
-		"tags": ["next.js"],
-		"useCaseCategory": "migration"
+		"tags": ["next.js", "migration"]
 	},
 	"applicability": {
 		"from": [["next", "<", "13.0.0"]]

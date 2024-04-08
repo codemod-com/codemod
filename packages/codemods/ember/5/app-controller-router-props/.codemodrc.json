@@ -9,6 +9,6 @@
 	},
 	"meta": {
 		"git": "https://github.com/ember-codemods/ember-3x-codemods/blob/master/transforms/app-controller-router-props",
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

@@ -28,6 +28,6 @@
 		}
 	],
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

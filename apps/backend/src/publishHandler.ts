@@ -248,7 +248,6 @@ export const publishHandler =
 				vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
 				applicability: codemodRc.applicability,
 				tags: codemodRc.meta?.tags,
-				useCaseCategory: codemodRc.meta?.useCaseCategory,
 				arguments: codemodRc.arguments,
 			};
 
@@ -276,7 +275,6 @@ export const publishHandler =
 							.join("-"),
 						name,
 						shortDescription: descriptionMdBuffer?.toString("utf-8"),
-						useCaseCategory: codemodRc.meta?.useCaseCategory,
 						tags: codemodRc.meta?.tags,
 						engine: codemodRc.engine,
 						applicability: codemodRc.applicability,

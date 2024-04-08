@@ -10,6 +10,6 @@
 	},
 	"meta": {
 		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-props-changed-migration",
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	}
 }

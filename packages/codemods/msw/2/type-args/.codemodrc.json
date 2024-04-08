@@ -5,7 +5,7 @@
 	"name": "msw/2/type-args",
 	"engine": "ts-morph",
 	"meta": {
-		"useCaseCategory": "migration"
+		"tags": ["migration"]
 	},
 	"applicability": {
 		"from": [["msw", ">=", "1.0.0"]]
