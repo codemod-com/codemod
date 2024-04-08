@@ -4,6 +4,10 @@ import { readFile, unlink } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { promisify } from "node:util";
+import {
+	ValidateTokenResponse,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
@@ -42,26 +46,86 @@ export const COLOR_MAP = {
 	orange: "\x1b[33m",
 };
 
-export const getCurrentUser = async (): Promise<string | null> => {
+export type TokenData = {
+	value: string;
+	path: string;
+};
+
+export const getTokenData = async (): Promise<TokenData | null> => {
 	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
+
 	if (!existsSync(tokenTxtPath)) {
 		return null;
 	}
 
-	const content = await readFile(tokenTxtPath, {
-		encoding: "utf-8",
-	});
-
-	let username: string | null = null;
 	try {
-		const response = await validateAccessToken(content);
-		username = response.username;
+		const token = await readFile(tokenTxtPath, "utf-8");
+
+		return { value: token, path: tokenTxtPath };
 	} catch (error) {
-		await unlink(tokenTxtPath);
+		return null;
+	}
+};
+
+type UserData = {
+	user: ValidateTokenResponse;
+	token: TokenData;
+};
+
+export const getCurrentUserData = async (): Promise<UserData | null> => {
+	const tokenData = await getTokenData();
+
+	if (tokenData === null) {
 		return null;
 	}
 
-	return username;
+	const { value: token, path } = tokenData;
+	let responseData: ValidateTokenResponse;
+	try {
+		responseData = await validateAccessToken(token);
+	} catch (error) {
+		try {
+			await unlink(path);
+		} catch (err) {
+			//
+		}
+
+		return null;
+	}
+
+	return { user: responseData, token: tokenData };
 };
 
 export const execPromise = promisify(exec);
+
+export const getOrgsNames = (
+	userData: UserData,
+	type: "slug" | "name" | "slug-and-name" = "slug",
+): string[] => {
+	let mapFunc: (
+		org: UserData["user"]["organizations"][number],
+	) => string | null;
+	switch (type) {
+		case "slug":
+			mapFunc = (org) => org.slug;
+			break;
+		case "name":
+			mapFunc = (org) => org.name;
+			break;
+		case "slug-and-name":
+			mapFunc = (org) => {
+				if (org.name === org.slug) {
+					return org.name;
+				}
+
+				return `${org.name} (${org.slug})`;
+			};
+			break;
+		default:
+			throw new Error("Invalid type");
+	}
+
+	return userData.user.organizations
+		.map(mapFunc)
+		.filter(isNeitherNullNorUndefined);
+};

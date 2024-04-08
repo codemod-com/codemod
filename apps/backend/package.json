@@ -1,6 +1,6 @@
 {
 	"name": "@codemod-com/backend",
-	"version": "0.0.57",
+	"version": "0.0.58",
 	"scripts": {
 		"build": "node esbuild.config.js",
 		"start": "prisma -v && pnpm run db:migrate:apply && node build/index.js",
@@ -38,7 +38,8 @@
 		"vitest": "1.1.0"
 	},
 	"dependencies": {
-		"@aws-sdk/client-s3": "^3.525.0",
+		"@aws-sdk/client-s3": "^3.549.0",
+		"@aws-sdk/s3-request-presigner": "^3.549.0",
 		"@clerk/backend": "0.36.0",
 		"@clerk/fastify": "0.6.27",
 		"@codemod-com/utilities": "workspace:*",

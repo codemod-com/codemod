@@ -1,20 +1,16 @@
-import type { CodemodListReturn } from "@codemod-com/utilities";
+import type {
+	CodemodListResponse,
+	ValidateTokenResponse,
+} from "@codemod-com/utilities";
 import Axios from "axios";
 import type FormData from "form-data";
-import { type Output, nullable, object, parse, string } from "valibot";
 
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
-const dataSchema = object({
-	username: nullable(string()),
-});
-
-type Data = Output<typeof dataSchema>;
-
 export const validateAccessToken = async (
 	accessToken: string,
-): Promise<Data> => {
-	const response = await Axios.post(
+): Promise<ValidateTokenResponse> => {
+	const res = await Axios.post<ValidateTokenResponse>(
 		"https://backend.codemod.com/validateAccessToken",
 		{},
 		{
@@ -25,7 +21,7 @@ export const validateAccessToken = async (
 		},
 	);
 
-	return parse(dataSchema, response.data);
+	return res.data;
 };
 
 export const publish = async (
@@ -52,7 +48,6 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 
 export const getCodemodDownloadURI = async (
 	name: string,
-	// Will be needed later for querying private codemods
 	accessToken?: string,
 ): Promise<string> => {
 	const url = new URL("https://backend.codemod.com/codemods/downloadLink");
@@ -75,7 +70,7 @@ export const getCodemodDownloadURI = async (
 export const getCodemodList = async (options?: {
 	accessToken?: string;
 	search?: string;
-}): Promise<CodemodListReturn> => {
+}): Promise<CodemodListResponse> => {
 	const { accessToken, search } = options ?? {};
 
 	const headers: { [key: string]: string } = {};
@@ -88,7 +83,7 @@ export const getCodemodList = async (options?: {
 		url.searchParams.set("search", search);
 	}
 
-	const res = await Axios.get<CodemodListReturn>(url.toString(), {
+	const res = await Axios.get<CodemodListResponse>(url.toString(), {
 		headers,
 		timeout: 10000,
 	});

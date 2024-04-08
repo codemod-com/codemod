@@ -4,7 +4,12 @@ import { join } from "node:path";
 import { backOff } from "exponential-backoff";
 import { confirmUserLoggedIn, generateUserLoginIntent } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, getCurrentUser, openURL } from "./utils.js";
+import {
+	boldText,
+	colorizeText,
+	getCurrentUserData,
+	openURL,
+} from "./utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
@@ -25,8 +30,8 @@ const routeUserToStudioForLogin = (
 	}
 };
 export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
-	const username = await getCurrentUser();
-	if (username !== null) {
+	const userData = await getCurrentUserData();
+	if (userData !== null) {
 		printer.printConsoleMessage(
 			"info",
 			colorizeText(boldText("You're already logged in."), "cyan"),

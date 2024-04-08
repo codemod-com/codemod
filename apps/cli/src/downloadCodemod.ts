@@ -9,7 +9,7 @@ import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
 import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { PrinterBlueprint } from "./printer.js";
 import { TarService } from "./services/tarService.js";
-import { boldText, colorizeText } from "./utils.js";
+import { boldText, colorizeText, getTokenData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	download(name: string): Promise<Codemod & { source: "package" }>;
@@ -47,7 +47,11 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		// download codemod
 		try {
-			const s3DownloadLink = await getCodemodDownloadURI(name);
+			const tokenData = await getTokenData();
+			const s3DownloadLink = await getCodemodDownloadURI(
+				name,
+				tokenData?.value,
+			);
 			const localCodemodPath = join(directoryPath, "codemod.tar.gz");
 
 			const buffer = await this._fileDownloadService.download(

@@ -1,4 +1,4 @@
-import { type Clerk } from "@clerk/backend";
+import { Clerk, OrganizationMembership, User } from "@clerk/backend";
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Environment } from "./schemata/env.js";
 import { CodemodService } from "./services/codemodService.js";
@@ -7,10 +7,15 @@ import { type TokenService } from "./services/tokenService.js";
 export type CustomHandler<T> = (args: {
 	tokenService: TokenService;
 	codemodService: CodemodService;
-	getAccessTokenOrThrow: () => string;
+	getAccessToken: () => string | null;
 	setAccessToken: (token: string) => void;
 	clerkClient: ReturnType<typeof Clerk> | null;
 	getClerkUserId: () => Promise<string>;
+	getClerkUserData: (userId: string) => Promise<{
+		user: User;
+		organizations: OrganizationMembership[];
+		allowedNamespaces: string[];
+	} | null>;
 	now: () => number;
 	environment: Environment;
 	request: FastifyRequest;

@@ -1,6 +1,6 @@
 import { AllEngines, Arguments } from "./codemodConfigSchema.js";
 
-export type CodemodListReturn = {
+export type CodemodListResponse = {
 	name: string;
 	author: string;
 	engine: AllEngines;

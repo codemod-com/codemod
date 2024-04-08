@@ -1,39 +1,34 @@
 import * as fs from "fs";
-import { homedir } from "node:os";
 import { join } from "node:path";
 import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import FormData from "form-data";
-import { publish, validateAccessToken } from "./apis.js";
+import { publish } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, execPromise } from "./utils.js";
-
-const getToken = async (): Promise<string> => {
-	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
-
-	try {
-		return await fs.promises.readFile(tokenTxtPath, "utf-8");
-	} catch (error) {
-		throw new Error(
-			`Log in first using the "codemod login" command to publish codemods.`,
-		);
-	}
-};
+import {
+	boldText,
+	colorizeText,
+	execPromise,
+	getCurrentUserData,
+} from "./utils.js";
 
 export const handlePublishCliCommand = async (
 	printer: PrinterBlueprint,
 	source: string,
 ) => {
-	const token = await getToken();
-	const { username } = await validateAccessToken(token);
+	const userData = await getCurrentUserData();
 
-	if (username === null) {
+	if (userData === null) {
 		throw new Error(
 			"The GitHub username of the current user is not known. Contact Codemod.com.",
 		);
 	}
 
+	const {
+		user: { username },
+		token: { value: token },
+	} = userData;
 	printer.printConsoleMessage(
 		"info",
 		`You are logged in as '${boldText(
@@ -72,7 +67,9 @@ export const handlePublishCliCommand = async (
 				);
 			}
 		}
-	} else if (!codemodNameRegex.test(codemodRc.name)) {
+	}
+
+	if (!codemodNameRegex.test(codemodRc.name)) {
 		throw new Error(
 			`The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
 		);

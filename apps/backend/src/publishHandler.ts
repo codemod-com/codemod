@@ -17,11 +17,6 @@ import { Environment } from "./schemata/env.js";
 import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
-// TODO: move
-const getS3Url = (bucket: string, region: string) => {
-	return `https://${bucket}.s3.${region}.amazonaws.com`;
-};
-
 export const publishHandler =
 	(environment: Environment, tokenService: TokenService): RouteHandlerMethod =>
 	async (request, reply) => {
@@ -57,6 +52,9 @@ export const publishHandler =
 			});
 
 			const { username } = await clerkClient.users.getUser(userId);
+			const orgs = await clerkClient.users.getOrganizationMembershipList({
+				userId,
+			});
 
 			if (username === null) {
 				throw new Error("The username of the current user does not exist");
@@ -137,28 +135,22 @@ export const publishHandler =
 			if (name.startsWith("@") && name.includes("/")) {
 				namespace = name.split("/").at(0)?.slice(1)!;
 
-				// TODO:
-				// 1. create orgs table and relations
-				// 2. check if user is eligible to publish under given org
+				const allowedNamespaces = [
+					username,
+					...orgs.map((org) => org.organization.slug),
+				].filter(isNeitherNullNorUndefined);
 
-				// const org = await prisma.organization.findFirst({
-				// 	where: {
-				// 		name: namespace,
-				// 	},
-				// });
-
-				// if (org === null) {
-				// 	return reply.code(400).send({
-				// 		error: `Organization ${namespace} does not exist`,
-				// 		success: false,
-				// 	});
-				// }
+				if (!allowedNamespaces.includes(namespace)) {
+					return reply.code(403).send({
+						error: `You are not allowed to publish under namespace "${namespace}"`,
+						success: false,
+					});
+				}
 			}
 
-			// if publishing under a namespace, then private as a fallback
-			// TODO: uncomment when our private bucket and strategy is ready
-			// const isPrivate = codemodRc.private ?? !!namespace;
-			const isPrivate = false;
+			// private flag in codemodrc as primary source of truth,
+			// fallback is to check if publishing under a namespace. if yes - set to private by default
+			const isPrivate = codemodRc.private ?? !!namespace;
 
 			if (!isNeitherNullNorUndefined(name)) {
 				return reply.code(400).send({
@@ -225,14 +217,13 @@ export const publishHandler =
 
 			const REQUEST_TIMEOUT = 5000;
 
-			const bucket = isPrivate ? "codemod-private-v2" : "codemod-public-v2";
+			const bucket =
+				isPrivate && namespace ? "codemod-private-v2" : "codemod-public-v2";
 
-			const registryUrl = getS3Url(bucket, "us-west-1");
 			const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
-			// TODO: uncomment when our private bucket and strategy is ready
-			// if (namespace) {
-			// 	uploadKeyParts.unshift(namespace);
-			// }
+			if (isPrivate && namespace) {
+				uploadKeyParts.unshift(namespace);
+			}
 			uploadKeyParts.unshift("codemod-registry");
 			const uploadKey = uploadKeyParts.join("/");
 
@@ -241,7 +232,8 @@ export const publishHandler =
 				"codemod"
 			> = {
 				version,
-				bucketLink: `${registryUrl}/${uploadKey}`,
+				s3Bucket: bucket,
+				s3UploadKey: uploadKey,
 				engine: codemodRc.engine,
 				sourceRepo: codemodRc.meta?.git,
 				shortDescription: descriptionMdBuffer?.toString("utf-8"),
@@ -281,12 +273,17 @@ export const publishHandler =
 						verified: isVerified,
 						private: isPrivate,
 						author,
+						arguments: codemodRc.arguments,
 						versions: {
 							create: codemodVersionEntry,
 						},
-						arguments: codemodRc.arguments,
 					},
 					update: {
+						shortDescription: descriptionMdBuffer?.toString("utf-8"),
+						tags: codemodRc.meta?.tags,
+						engine: codemodRc.engine,
+						applicability: codemodRc.applicability,
+						arguments: codemodRc.arguments,
 						versions: {
 							create: codemodVersionEntry,
 						},

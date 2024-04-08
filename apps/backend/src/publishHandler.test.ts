@@ -23,6 +23,12 @@ const mocks = vi.hoisted(() => {
 				delete: vi.fn(),
 			},
 		},
+		clerkClient: {
+			users: {
+				getUser: vi.fn().mockImplementation(() => ({ username: "username" })),
+				getOrganizationMembershipList: vi.fn().mockImplementation(() => []),
+			},
+		},
 		S3Client,
 		PutObjectCommand,
 	};
@@ -98,13 +104,7 @@ vi.mock("@clerk/fastify", async () => {
 
 	return {
 		...actual,
-		createClerkClient: vi.fn().mockImplementation(() => {
-			return {
-				users: {
-					getUser: vi.fn().mockImplementation(() => ({ username: "username" })),
-				},
-			};
-		}),
+		createClerkClient: vi.fn().mockImplementation(() => mocks.clerkClient),
 	};
 });
 
@@ -537,6 +537,126 @@ describe("/publish route", async () => {
 
 			expect(response.body).toEqual({
 				error: `Failed publishing to S3: ${errorMsg}`,
+				success: false,
+			});
+		});
+	});
+
+	describe("when publishing via org", async () => {
+		it("should go through happy path if user has access to the org", async () => {
+			mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+			mocks.clerkClient.users.getOrganizationMembershipList.mockImplementation(
+				() => [{ organization: { slug: "org" } }],
+			);
+			mocks.prisma.codemod.upsert.mockImplementation(() => {
+				return { id: "id" };
+			});
+			mocks.S3Client.prototype.send = vi.fn().mockImplementation(() => ({}));
+
+			mocks.prisma.codemodVersion.findMany = vi.fn().mockImplementation(() => {
+				return [];
+			});
+
+			const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+				name: "@org/mycodemod",
+				version: "1.0.0",
+				applicability: {
+					from: [["eslint", ">=", "12.0.0"]],
+				},
+				engine: "jscodeshift",
+				meta: {
+					tags: ["migration"],
+				},
+			};
+
+			const codemodRcBuf = Buffer.from(
+				JSON.stringify(codemodRcContents),
+				"utf8",
+			);
+
+			const expectedCode = 200;
+
+			const response = await supertest(fastify.server)
+				.post("/publish")
+				.attach(".codemodrc.json", codemodRcBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("index.cjs", indexCjsBuf, {
+					contentType: "multipart/form-data",
+					filename: "index.cjs",
+				})
+				.attach("description.md", readmeBuf, {
+					contentType: "multipart/form-data",
+					filename: "description.md",
+				})
+				.expect((res) => {
+					if (res.status !== expectedCode) {
+						console.log(JSON.stringify(res.body, null, 2));
+					}
+				})
+				.expect("Content-Type", "application/json; charset=utf-8")
+				.expect(expectedCode);
+
+			const clientInstance = mocks.S3Client.mock.instances[0];
+			expect(clientInstance.send).toHaveBeenCalledOnce();
+
+			expect(response.body).toEqual({
+				success: true,
+			});
+		});
+
+		it("should fail if user has no access to the org", async () => {
+			mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+			mocks.clerkClient.users.getOrganizationMembershipList.mockImplementation(
+				() => [],
+			);
+
+			const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+				name: "@org/mycodemod",
+				version: "1.0.0",
+				applicability: {
+					from: [["eslint", ">=", "12.0.0"]],
+				},
+				engine: "jscodeshift",
+				meta: {
+					tags: ["migration"],
+				},
+			};
+
+			const codemodRcBuf = Buffer.from(
+				JSON.stringify(codemodRcContents),
+				"utf8",
+			);
+
+			const expectedCode = 403;
+
+			const response = await supertest(fastify.server)
+				.post("/publish")
+				.attach(".codemodrc.json", codemodRcBuf, {
+					contentType: "multipart/form-data",
+					filename: ".codemodrc.json",
+				})
+				.attach("index.cjs", indexCjsBuf, {
+					contentType: "multipart/form-data",
+					filename: "index.cjs",
+				})
+				.attach("description.md", readmeBuf, {
+					contentType: "multipart/form-data",
+					filename: "description.md",
+				})
+				.expect((res) => {
+					if (res.status !== expectedCode) {
+						console.log(JSON.stringify(res.body, null, 2));
+					}
+				})
+				.expect("Content-Type", "application/json; charset=utf-8")
+				.expect(expectedCode);
+
+			expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
+
+			expect(response.body).toEqual({
+				error: `You are not allowed to publish under namespace "org"`,
 				success: false,
 			});
 		});
