@@ -10,7 +10,7 @@ import { App as CampaignManager } from "../campaignManager/App";
 import { App as FileExplorer } from "../fileExplorer/App";
 import { PanelGroup, ResizablePanel } from "../shared/Panel";
 import { SectionHeader } from "../shared/SectionHeader";
-import { Command } from "../shared/types";
+import { type Command } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 
 export const CodemodRuns = (

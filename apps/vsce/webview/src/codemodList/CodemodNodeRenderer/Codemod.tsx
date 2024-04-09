@@ -7,7 +7,7 @@ import CustomPopover from "../../shared/CustomPopover";
 import { CodemodHash } from "../../shared/types";
 import { vscode } from "../../shared/utilities/vscode";
 import ActionButton from "../TreeView/ActionButton";
-import { Progress } from "../useProgressBar";
+import { type Progress } from "../useProgressBar";
 import styles from "./style.module.css";
 
 type CodemodItemNode = CodemodNode & { kind: "CODEMOD" };
