@@ -201,8 +201,6 @@ type ExecuteCodemodMessage = Message &
 
 // npx ensures that the local codemod CLI (latest version) is used
 const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
-// const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
-// const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
 	const url = new URL("https://backend.codemod.com/codemods/list");
@@ -234,6 +232,7 @@ export class EngineService {
 	readonly #messageBus: MessageBus;
 
 	#execution: Execution | null = null;
+	__fetchCodemodsIntervalId: NodeJS.Timer | null = null;
 	private __codemodEngineRustExecutableUri: Uri | null = null;
 	private __executionMessageQueue: ExecuteCodemodMessage[] = [];
 
@@ -255,43 +254,12 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__onCodemodEngineNodeLocated();
-	}
-
-	// private async __pollCodemodEngineNode() {
-	// 	let iterations = 0;
-
-	// 	const checkCodemodEngineNode = async () => {
-	// 		if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
-	// 			clearInterval(codemodEnginePollingIntervalId);
-	// 		}
-
-	// 		const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
-
-	// 		this.#messageBus.publish({
-	// 			kind: MessageKind.codemodEngineNodeLocated,
-	// 			codemodEngineNodeLocated,
-	// 		});
-
-	// 		if (codemodEngineNodeLocated) {
-	// 			this.__onCodemodEngineNodeLocated();
-	// 			clearInterval(codemodEnginePollingIntervalId);
-	// 		}
-
-	// 		iterations++;
-	// 	};
-
-	// 	// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
-	// 	const codemodEnginePollingIntervalId = setInterval(
-	// 		checkCodemodEngineNode,
-	// 		CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
-	// 	);
-
-	// 	checkCodemodEngineNode();
-	// }
-
-	private async __onCodemodEngineNodeLocated() {
-		await this.__fetchCodemods();
+		this.__fetchCodemodsIntervalId = setInterval(
+			async () => {
+				await this.__fetchCodemods();
+			},
+			5 * 60 * 1000, // 5 mins
+		);
 	}
 
 	async #onEnginesBootstrappedMessage(
@@ -356,6 +324,7 @@ export class EngineService {
 
 		this.#execution.halted = true;
 		this.#execution.childProcess.kill("SIGINT");
+		this.__fetchCodemodsIntervalId = null;
 	}
 
 	private __getQueuedCodemodHashes(): ReadonlyArray<CodemodHash> {
