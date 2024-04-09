@@ -1,6 +1,8 @@
+import { extname } from "node:path";
 import vm from "node:vm";
 import tsmorph from "ts-morph";
 import { nullish, parse, string } from "valibot";
+import { getAdapterByExtname } from "./adapters/index.js";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
@@ -80,7 +82,11 @@ export const runTsMorphCodemod = (
 	safeArgumentRecord: SafeArgumentRecord,
 	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
-	const newData = transform(
+	const adapter = getAdapterByExtname(extname(oldPath));
+
+	const transformFn = adapter !== null ? adapter(transform) : transform;
+
+	const newData = transformFn(
 		codemodSource,
 		oldPath,
 		oldData,

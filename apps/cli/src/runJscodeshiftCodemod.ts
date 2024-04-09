@@ -1,6 +1,8 @@
+import { extname } from "node:path";
 import vm from "node:vm";
-import jscodeshift, { API, FileInfo } from "jscodeshift";
+import jscodeshift, { API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
+import { getAdapterByExtname } from "./adapters/index.js";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
@@ -18,7 +20,8 @@ export const buildApi = (parser: string): API => ({
 
 const transform = (
 	codemodSource: string,
-	fileInfo: FileInfo,
+	oldPath: string,
+	oldData: string,
 	api: API,
 	options: {
 		// the options will be of type ArgumentRecord
@@ -56,7 +59,7 @@ const transform = (
 			exports,
 		}),
 		exports,
-		__CODEMODCOM__file: fileInfo,
+		__CODEMODCOM__file: { source: oldData, path: oldPath },
 		__CODEMODCOM__api: api,
 		__CODEMODCOM__options: options,
 		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
@@ -78,6 +81,8 @@ export const runJscodeshiftCodemod = (
 ): readonly FileCommand[] => {
 	const commands: FileCommand[] = [];
 
+	const adapter = getAdapterByExtname(extname(oldPath));
+
 	const createFile = (newPath: string, newData: string): void => {
 		commands.push({
 			kind: "createFile",
@@ -89,12 +94,12 @@ export const runJscodeshiftCodemod = (
 
 	const api = buildApi("tsx");
 
-	const newData = transform(
+	const transformFn = adapter !== null ? adapter(transform) : transform;
+
+	const newData = transformFn(
 		codemodSource,
-		{
-			path: oldPath,
-			source: oldData,
-		},
+		oldPath,
+		oldData,
 		api,
 		{
 			...safeArgumentRecord,
