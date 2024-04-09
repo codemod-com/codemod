@@ -1,0 +1,12 @@
+{
+	"version": "1.0.0",
+	"name": "react/19/replace-use-form-state",
+	"private": false,
+	"engine": "jscodeshift",
+	"meta": {
+		"tags": ["react", "migration"]
+	},
+	"applicability": {
+		"from": [["react", "<=", "18"]]
+	}
+}
