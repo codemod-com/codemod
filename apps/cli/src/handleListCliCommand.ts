@@ -9,14 +9,20 @@ export const handleListNamesCommand = async (options: {
 }) => {
 	const { printer, search } = options;
 
-	if (search && printer.__jsonOutput) {
-		printer.printConsoleMessage(
-			"info",
-			boldText(colorizeText(`Searching for ${search}...`, "cyan")),
+	let stopSearchingMessage = () => {};
+	if (search && !printer.__jsonOutput) {
+		stopSearchingMessage = printer.withLoaderMessage((loader) =>
+			colorizeText(
+				`${loader.get("vertical-dots")}  Searching for ${boldText(
+					`"${search}"`,
+				)}`,
+				"cyan",
+			),
 		);
 	}
 
 	const configObjects = await getCodemodList(options);
+	stopSearchingMessage();
 
 	if (printer.__jsonOutput) {
 		printer.printOperationMessage({
