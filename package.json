@@ -36,7 +36,8 @@
 		"test": "turbo run test --concurrency=10",
 		"test:win": "turbo run test:win",
 		"coverage": "vitest run --coverage",
-		"prepare": "husky install"
+		"prepare": "husky install",
+		"release:changelog": "node scripts/releaseChangelog.mjs"
 	},
 	"devDependencies": {
 		"@codemod-com/tsconfig": "workspace:*",
@@ -47,6 +48,7 @@
 		"concurrently": "^8.2.0",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.1.0",
+		"node-fetch": "^3.3.2",
 		"tsx": "^4.2.0",
 		"turbo": "^1.10.14",
 		"typescript": "^5.2.0",
