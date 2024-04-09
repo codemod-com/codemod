@@ -13,7 +13,7 @@ import CreateIssue from "../CreateIssue";
 import { App as CodemodList } from "../codemodList/App";
 import { CommunityTab } from "../communityTab/CommunityTab";
 import { useTheme } from "../shared/Snippet/useTheme";
-import { WebviewMessage } from "../shared/types";
+import { type WebviewMessage } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 import { CodemodRuns } from "./CodemodRuns";
 

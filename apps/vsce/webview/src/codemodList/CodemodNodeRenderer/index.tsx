@@ -8,7 +8,7 @@ import { CodemodHash } from "../../shared/types";
 import CodemodArguments from "../CodemodArguments";
 import { InfiniteProgress } from "../TreeView/InfiniteProgress";
 import ProgressBar from "../TreeView/ProgressBar";
-import { Progress } from "../useProgressBar";
+import { type Progress } from "../useProgressBar";
 import Codemod from "./Codemod";
 import Directory from "./Directory";
 import styles from "./style.module.css";
