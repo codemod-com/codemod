@@ -1,28 +1,20 @@
-import { readFile, unlink } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { revokeCLIToken } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
+import { getCurrentUserData } from "./utils.js";
 
 export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
-	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
+	const userData = await getCurrentUserData();
 
-	let token: string;
-
-	try {
-		token = await readFile(tokenTxtPath, "utf-8");
-	} catch (err) {
+	if (userData === null) {
 		printer.printConsoleMessage("info", "You are already logged out.");
 		return;
 	}
 
 	try {
-		await revokeCLIToken(token.trim());
+		await revokeCLIToken(userData.token);
 	} catch (err) {
-		// Don't inform user if something went wrong, just delete the token file.
+		//
 	}
 
-	await unlink(tokenTxtPath);
-
-	printer.printConsoleMessage("info", "You have successfully logged out.");
+	printer.printConsoleMessage("info", "You have been successfully logged out.");
 };
