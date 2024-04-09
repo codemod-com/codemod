@@ -36,6 +36,7 @@ import { parseIv, parseValidateIntentParams } from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
+	parseGetUserRepositoriesParams,
 	parseSendChatBody,
 	parseSendMessageBody,
 } from "./schemata/schema.js";
@@ -482,43 +483,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return result;
 	});
 
-	instance.post(
-		"/sourceControl/:provider/user/repos",
-		async (request, reply) => {
-			if (!auth) {
-				throw new Error("This endpoint requires auth configuration.");
-			}
-
-			const { provider } = parseCreateIssueParams(request.params);
-			const accessToken = getCustomAccessToken(environment, request.headers);
-
-			if (accessToken === null) {
-				return reply.code(401).send();
-			}
-
-			const userId = await tokenService.findUserIdMetadataFromToken(
-				accessToken,
-				BigInt(Date.now()),
-				CLAIM_ISSUE_CREATION,
-			);
-
-			const oAuthToken = await auth.getOAuthToken(userId, provider);
-
-			const sourceControlProvider = getSourceControlProvider(
-				provider,
-				oAuthToken,
-				null,
-			);
-
-			const result = await sourceControl.getUserRepositories(
-				sourceControlProvider,
-			);
-
-			reply.type("application/json").code(200);
-			return result;
-		},
-	);
-
 	done();
 };
 
@@ -685,6 +649,39 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	});
 
 	instance.post("/publish", publishHandler(environment, tokenService));
+
+	instance.get(
+		"/sourceControl/:provider/user/repos",
+		async (request, reply) => {
+			if (!auth) {
+				throw new Error("This endpoint requires auth configuration.");
+			}
+
+			// getting userId from clerk directly should be safe
+			const { userId } = getAuth(request);
+
+			if (!userId) {
+				return reply.code(401).send();
+			}
+
+			const { provider } = parseGetUserRepositoriesParams(request.params);
+
+			const oAuthToken = await auth.getOAuthToken(userId, provider);
+
+			const sourceControlProvider = getSourceControlProvider(
+				provider,
+				oAuthToken,
+				null,
+			);
+
+			const result = await sourceControl.getUserRepositories(
+				sourceControlProvider,
+			);
+
+			reply.type("application/json").code(200);
+			return result;
+		},
+	);
 
 	done();
 };

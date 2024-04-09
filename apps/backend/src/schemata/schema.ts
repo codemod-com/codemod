@@ -32,11 +32,11 @@ export const sendChatBodySchema = S.struct({
 
 export const parseSendChatBody = S.parseSync(sendChatBodySchema);
 
-export const createIssueParamsSchema = S.struct({
+export const providerSchema = S.struct({
 	provider: S.literal("github"),
 });
 
-export const parseCreateIssueParams = S.parseSync(createIssueParamsSchema);
+export const parseCreateIssueParams = S.parseSync(providerSchema);
 
 export const createIssueBodySchema = S.struct({
 	repo: S.string,
@@ -45,3 +45,5 @@ export const createIssueBodySchema = S.struct({
 });
 
 export const parseCreateIssueBody = S.parseSync(createIssueBodySchema);
+
+export const parseGetUserRepositoriesParams = S.parseSync(providerSchema);
