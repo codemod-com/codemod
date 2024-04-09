@@ -38,11 +38,26 @@ export type Assignee = Readonly<{
 	html_url: string;
 }>;
 
+export type GithubRepository = {
+	id: number;
+	name: string;
+	full_name: string;
+	private: boolean;
+	html_url: string;
+	default_branch: string;
+	permissions: {
+		admin: boolean;
+		push: boolean;
+		pull: boolean;
+	};
+};
+
 export interface SourceControlProvider {
 	createIssue(params: NewIssueParams): Promise<Issue>;
 	createPullRequest(params: CreatePRParams): Promise<PullRequest>;
 	getPullRequests(params: ListPRParams): Promise<PullRequest[]>;
 	getAssignees(): Promise<Assignee[]>;
+	getUserRepositories(): Promise<GithubRepository[]>;
 }
 
 // biome-ignore lint/complexity/noStaticOnlyClass: reason?
@@ -95,6 +110,16 @@ export class SourceControl {
 	async getAssignees(provider: SourceControlProvider): Promise<Assignee[]> {
 		try {
 			return await provider.getAssignees();
+		} catch (e) {
+			throw SourceControlError.parse(e);
+		}
+	}
+
+	async getUserRepositories(
+		provider: SourceControlProvider,
+	): Promise<GithubRepository[]> {
+		try {
+			return await provider.getUserRepositories();
 		} catch (e) {
 			throw SourceControlError.parse(e);
 		}

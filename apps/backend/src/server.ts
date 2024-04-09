@@ -36,6 +36,7 @@ import { parseIv, parseValidateIntentParams } from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
+	parseGetUserRepositoriesParams,
 	parseSendChatBody,
 	parseSendMessageBody,
 } from "./schemata/schema.js";
@@ -59,12 +60,12 @@ import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
 
 const getSourceControlProvider = (
 	provider: "github",
-	repo: string,
 	oAuthToken: string,
+	repo: string | null,
 ) => {
 	switch (provider) {
 		case "github": {
-			return new GithubProvider(repo, oAuthToken);
+			return new GithubProvider(oAuthToken, repo);
 		}
 	}
 };
@@ -469,8 +470,8 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 		const sourceControlProvider = getSourceControlProvider(
 			provider,
-			repo,
 			oAuthToken,
+			repo,
 		);
 
 		const result = await sourceControl.createIssue(sourceControlProvider, {
@@ -648,6 +649,39 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	});
 
 	instance.post("/publish", publishHandler(environment, tokenService));
+
+	instance.get(
+		"/sourceControl/:provider/user/repos",
+		async (request, reply) => {
+			if (!auth) {
+				throw new Error("This endpoint requires auth configuration.");
+			}
+
+			// getting userId from clerk directly should be safe
+			const { userId } = getAuth(request);
+
+			if (!userId) {
+				return reply.code(401).send();
+			}
+
+			const { provider } = parseGetUserRepositoriesParams(request.params);
+
+			const oAuthToken = await auth.getOAuthToken(userId, provider);
+
+			const sourceControlProvider = getSourceControlProvider(
+				provider,
+				oAuthToken,
+				null,
+			);
+
+			const result = await sourceControl.getUserRepositories(
+				sourceControlProvider,
+			);
+
+			reply.type("application/json").code(200);
+			return result;
+		},
+	);
 
 	done();
 };
