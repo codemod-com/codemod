@@ -15,6 +15,10 @@ COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
+WORKDIR /app/packages/utilties
+
+RUN pnpm build
+
 WORKDIR /app/apps/backend
 
 RUN pnpm db:generate
