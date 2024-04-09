@@ -4,7 +4,7 @@ import getExecutionStatus, {
 	GetExecutionStatusResponse,
 } from "~/api/getExecutionStatus";
 
-export const useProgressBar = (
+export const useExecutionStatus = (
 	executionId: string,
 ): GetExecutionStatusResponse | null => {
 	const [executionStatus, setExecutionStatus] =
