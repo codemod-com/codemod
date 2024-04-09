@@ -15,7 +15,7 @@ COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
-WORKDIR /app/packages/utilties
+WORKDIR /app/packages/utilities
 
 RUN pnpm build
 
