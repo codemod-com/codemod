@@ -3,6 +3,7 @@ import gh from "parse-github-url";
 import {
 	Assignee,
 	CreatePRParams,
+	GithubRepository,
 	Issue,
 	ListPRParams,
 	NewIssueParams,
@@ -36,22 +37,26 @@ function parseGithubRepoUrl(url: string): Repository {
 		throw new ParseGithubUrlError(errorMessage);
 	}
 }
-
 export class GithubProvider implements SourceControlProvider {
-	private readonly __repo: Repository;
+	private readonly __repo: string | null = null;
 	private readonly __baseUrl: string;
 	private readonly __authHeader: string;
 
-	constructor(repo: string, oAuthToken: string) {
-		const parsedRepoUrl = parseGithubRepoUrl(repo);
+	constructor(oAuthToken: string, repo: string | null) {
+		this.__baseUrl = "https://api.github.com";
+		this.__repo = repo;
 
-		this.__repo = parsedRepoUrl;
-		this.__baseUrl = `https://api.github.com/repos/${this.__repo.owner}/${this.__repo.name}`;
 		this.__authHeader = `Bearer ${oAuthToken}`;
 	}
 
+	private get __repoUrl() {
+		const { owner, name } = parseGithubRepoUrl(this.__repo ?? "");
+
+		return `${this.__baseUrl}/repos/${owner}/${name}`;
+	}
+
 	async createIssue(params: NewIssueParams): Promise<Issue> {
-		const res = await axios.post(`${this.__baseUrl}/issues`, params, {
+		const res = await axios.post(`${this.__repoUrl}/issues`, params, {
 			headers: {
 				Authorization: this.__authHeader,
 			},
@@ -61,7 +66,7 @@ export class GithubProvider implements SourceControlProvider {
 	}
 
 	async createPullRequest(params: CreatePRParams): Promise<PullRequest> {
-		const res = await axios.post(`${this.__baseUrl}/pulls`, params, {
+		const res = await axios.post(`${this.__repoUrl}/pulls`, params, {
 			headers: {
 				Authorization: this.__authHeader,
 			},
@@ -84,7 +89,7 @@ export class GithubProvider implements SourceControlProvider {
 
 		const query = new URLSearchParams(queryParams).toString();
 
-		const res = await axios.get(`${this.__baseUrl}/pulls?${query}`, {
+		const res = await axios.get(`${this.__repoUrl}/pulls?${query}`, {
 			headers: {
 				Authorization: this.__authHeader,
 			},
@@ -94,7 +99,17 @@ export class GithubProvider implements SourceControlProvider {
 	}
 
 	async getAssignees(): Promise<Assignee[]> {
-		const res = await axios.get(`${this.__baseUrl}/assignees`, {
+		const res = await axios.get(`${this.__repoUrl}/assignees`, {
+			headers: {
+				Authorization: this.__authHeader,
+			},
+		});
+
+		return res.data;
+	}
+
+	async getUserRepositories(): Promise<GithubRepository[]> {
+		const res = await axios.get("https://api.github.com/user/repos", {
 			headers: {
 				Authorization: this.__authHeader,
 			},
