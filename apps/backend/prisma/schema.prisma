@@ -58,7 +58,6 @@ model CodemodVersion {
   amountOfUses             Int      @default(0)
   totalTimeSaved           Int      @default(0)
   openedPrs                Int      @default(0)
-  bucketLink               String   @db.VarChar(255)
   s3Bucket                 String   @db.VarChar(255)
   s3UploadKey              String   @db.VarChar(255)
   tags                     String[] @default([])
