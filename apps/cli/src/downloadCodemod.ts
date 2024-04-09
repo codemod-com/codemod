@@ -6,7 +6,6 @@ import { AxiosError } from "axios";
 import { getCodemodDownloadURI } from "./apis.js";
 import { Codemod } from "./codemod.js";
 import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
-import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { PrinterBlueprint } from "./printer.js";
 import { TarService } from "./services/tarService.js";
 import { boldText, colorizeText, getTokenData } from "./utils.js";
@@ -68,13 +67,24 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 					error.response?.status === 400 &&
 					error.response.data.error === "Codemod not found"
 				) {
-					await handleListNamesCommand({ printer: this.__printer });
-
-					throw new Error(
-						`Could not find codemod ${boldText(
-							name,
-						)} in the registry. Verify the name to be in the list above and try again.`,
+					// Until we have distinction between `codemod` and `codemod run`, we don't want to throw and error here,
+					// because it will get picked up by logic in runner.ts, which will prepend `Error while running the codemod`
+					// to the error text. We just want to print the error and let user decide what to do for now.
+					this.__printer.printConsoleMessage(
+						"error",
+						// biome-ignore lint: readability reasons
+						"The specified command or codemod name could not be recognized.\n" +
+							`To view available commands, execute ${boldText(
+								`"codemod --help"`,
+							)}.\n` +
+							`To see a list of existing codemods, run ${boldText(
+								`"codemod search"`,
+							)} or ${boldText(
+								`"codemod list"`,
+							)} with a query representing the codemod you are looking for.`,
 					);
+
+					process.exit(1);
 				}
 			}
 
