@@ -220,11 +220,13 @@ export class CodemodService {
 
 	public async getCodemodDownloadLink(
 		name: string,
-		generateSignedUrl: (
-			bucket: string,
-			uploadKey: string,
-			expireTimeout?: number,
-		) => Promise<string>,
+		generateSignedUrl:
+			| ((
+					bucket: string,
+					uploadKey: string,
+					expireTimeout?: number,
+			  ) => Promise<string>)
+			| null,
 		allowedNamespaces?: string[],
 	): Promise<{ link: string }> {
 		const codemod = await this.prisma.codemod.findFirst({
@@ -253,6 +255,11 @@ export class CodemodService {
 		let downloadLink = `https://${latestVersion.s3Bucket}.s3.us-west-1.amazonaws.com/${latestVersion.s3UploadKey}`;
 
 		if (codemod.private) {
+			if (generateSignedUrl === null) {
+				throw new Error(
+					`Error generating signed URL for private codemod ${name}`,
+				);
+			}
 			downloadLink = await generateSignedUrl(
 				latestVersion.s3Bucket,
 				latestVersion.s3UploadKey!,
