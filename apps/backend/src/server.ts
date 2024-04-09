@@ -332,6 +332,7 @@ const wrapRequestHandlerMethod =
 			}
 
 			reply.code(500).send();
+			console.error(error);
 			return;
 		}
 	};
@@ -351,8 +352,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return { version: packageJson.default.version };
 	});
 
-	instance.get("/codemods", wrapRequestHandlerMethod(getCodemodsHandler));
-
 	instance.get(
 		"/codemods/filters",
 		wrapRequestHandlerMethod(getCodemodsFiltersHandler),
@@ -362,6 +361,8 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		"/codemods/:slug",
 		wrapRequestHandlerMethod(getCodemodBySlugHandler),
 	);
+
+	instance.get("/codemods", wrapRequestHandlerMethod(getCodemodsHandler));
 
 	instance.get(
 		"/codemods/downloadLink",
