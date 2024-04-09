@@ -225,7 +225,7 @@ Once your codemod package is [compatible with Codemod platform](#required-codemo
   codemod login
   ```
   
-  When logging in, you will be redirected to your generated auth token on the web platform. Simply copy your token and enter it into your terminal to login with Codemod CLI.
+  You will be redirected to the Codemod platform login page. Upon successful login, our CLI will automatically authenticate you.
   </Step>
 
   <Step title="Build your local project">
@@ -239,6 +239,8 @@ Once your codemod package is [compatible with Codemod platform](#required-codemo
   ```bash
   npm install -g esbuild
   ```
+
+  <Note>We install `esbuild` globally for you upon installation of Codemod CLI, so you might not need to install it again.</Note>
   
   2. Build codemod:
   ```bash

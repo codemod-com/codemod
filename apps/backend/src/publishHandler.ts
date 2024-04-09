@@ -283,6 +283,7 @@ export const publishHandler =
 						tags: codemodRc.meta?.tags,
 						engine: codemodRc.engine,
 						applicability: codemodRc.applicability,
+						private: isPrivate,
 						arguments: codemodRc.arguments,
 						versions: {
 							create: codemodVersionEntry,

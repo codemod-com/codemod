@@ -27,7 +27,7 @@ export const handlePublishCliCommand = async (
 
 	const {
 		user: { username },
-		token: { value: token },
+		token,
 	} = userData;
 	printer.printConsoleMessage(
 		"info",

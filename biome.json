@@ -11,7 +11,8 @@
 			".eslint*",
 			".next",
 			".vscode",
-			"build-ncc"
+			"build-ncc",
+			"generated"
 		],
 		"rules": {
 			"suspicious": {
@@ -110,7 +111,8 @@
 			"node_modules",
 			"build-ncc",
 			".next",
-			".vscode"
+			".vscode",
+			"generated"
 		]
 	},
 	"organizeImports": {

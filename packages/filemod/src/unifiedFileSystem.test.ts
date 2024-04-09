@@ -1,7 +1,7 @@
 import { createHash } from "crypto";
 import { deepStrictEqual } from "node:assert";
 import { join } from "node:path";
-import { FileSystemAdapter, glob } from "fast-glob";
+import glob, { type FileSystemAdapter } from "fast-glob";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import type {

@@ -33,7 +33,7 @@ import {
 	AppInsightsTelemetryService,
 	NoTelemetryService,
 } from "./telemetryService.js";
-import { execPromise } from "./utils";
+import { execPromise, initGlobalNodeModules } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -246,10 +246,8 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "login") {
-		const token = argv.token ?? null;
-
 		try {
-			await handleLoginCliCommand(printer, token);
+			await handleLoginCliCommand(printer);
 		} catch (error) {
 			if (!(error instanceof Error)) {
 				return;
@@ -305,20 +303,7 @@ export const executeMainThread = async () => {
 	}
 
 	if (String(argv._) === "build") {
-		// Allow node to look for modules in global paths
-		const globalPaths = await Promise.allSettled([
-			execPromise("npm root -g"),
-			execPromise("pnpm root -g"),
-			execPromise("yarn global dir"),
-			execPromise("echo $BUN_INSTALL/install/global/node_modules"),
-		]);
-		process.env.NODE_PATH = globalPaths
-			.map((res) =>
-				res.status === "fulfilled" ? res.value.stdout.trim() : null,
-			)
-			.filter(Boolean)
-			.join(":");
-		require("module").Module._initPaths();
+		await initGlobalNodeModules();
 
 		try {
 			await execPromise("esbuild --version");
