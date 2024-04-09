@@ -7,7 +7,7 @@ import type {
 	UnifiedEntry,
 } from "@codemod-com/filemod";
 import { UnifiedFileSystem } from "@codemod-com/filemod";
-import { FileSystemAdapter, glob } from "fast-glob";
+import glob, { type FileSystemAdapter } from "fast-glob";
 import type { API } from "jscodeshift";
 import jscodeshift from "jscodeshift";
 import { type IFs } from "memfs";

@@ -11,6 +11,7 @@ build({
 	outfile: "./dist/index.cjs",
 	external: [
 		"esbuild",
+		"keytar",
 		// Workaround for @vue/compiler-sfc dynamic require
 		"mustache",
 		"templayed",

@@ -1,13 +1,10 @@
 import { exec, spawnSync } from "node:child_process";
-import { existsSync } from "node:fs";
-import { readFile, unlink } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { promisify } from "node:util";
 import {
 	ValidateTokenResponse,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
+import keytar from "keytar";
 import { validateAccessToken } from "./apis";
 
 export const doubleQuotify = (str: string): string =>
@@ -46,54 +43,28 @@ export const COLOR_MAP = {
 	orange: "\x1b[33m",
 };
 
-export type TokenData = {
-	value: string;
-	path: string;
-};
-
-export const getTokenData = async (): Promise<TokenData | null> => {
-	const tokenTxtPath = join(homedir(), ".codemod", "token.txt");
-
-	if (!existsSync(tokenTxtPath)) {
-		return null;
-	}
-
-	try {
-		const token = await readFile(tokenTxtPath, "utf-8");
-
-		return { value: token, path: tokenTxtPath };
-	} catch (error) {
-		return null;
-	}
-};
-
 type UserData = {
 	user: ValidateTokenResponse;
-	token: TokenData;
+	token: string;
 };
 
 export const getCurrentUserData = async (): Promise<UserData | null> => {
-	const tokenData = await getTokenData();
+	const [userCredentials] = await keytar.findCredentials("codemod.com");
 
-	if (tokenData === null) {
+	if (!isNeitherNullNorUndefined(userCredentials)) {
 		return null;
 	}
 
-	const { value: token, path } = tokenData;
+	const { account, password: token } = userCredentials;
 	let responseData: ValidateTokenResponse;
 	try {
 		responseData = await validateAccessToken(token);
 	} catch (error) {
-		try {
-			await unlink(path);
-		} catch (err) {
-			//
-		}
-
+		await keytar.deletePassword("codemod.com", account);
 		return null;
 	}
 
-	return { user: responseData, token: tokenData };
+	return { user: responseData, token };
 };
 
 export const execPromise = promisify(exec);
@@ -128,4 +99,18 @@ export const getOrgsNames = (
 	return userData.user.organizations
 		.map(mapFunc)
 		.filter(isNeitherNullNorUndefined);
+};
+
+export const initGlobalNodeModules = async (): Promise<void> => {
+	const globalPaths = await Promise.allSettled([
+		execPromise("npm root -g"),
+		execPromise("pnpm root -g"),
+		execPromise("yarn global dir"),
+		execPromise("echo $BUN_INSTALL/install/global/node_modules"),
+	]);
+	process.env.NODE_PATH = globalPaths
+		.map((res) => (res.status === "fulfilled" ? res.value.stdout.trim() : null))
+		.filter(Boolean)
+		.join(":");
+	require("module").Module._initPaths();
 };

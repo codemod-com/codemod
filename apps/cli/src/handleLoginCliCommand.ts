@@ -1,7 +1,5 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { backOff } from "exponential-backoff";
+import keytar from "keytar";
 import { confirmUserLoggedIn, generateUserLoginIntent } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import {
@@ -58,12 +56,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 			},
 		);
 
-		const codemodDirectoryPath = join(homedir(), ".codemod");
-		const tokenTxtPath = join(codemodDirectoryPath, "token.txt");
-		// Ensure that `/.codemod.` folder exists
-		await mkdir(codemodDirectoryPath, { recursive: true });
-
-		await writeFile(tokenTxtPath, token, "utf-8");
+		await keytar.setPassword("codemod.com", "user-account", token);
 
 		stopLoading();
 		printer.printConsoleMessage(
