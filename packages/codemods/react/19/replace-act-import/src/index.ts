@@ -83,42 +83,6 @@ export default function transform(
 			.remove();
 	}
 
-	// Get act direct import from test utils
-	// const actImport = root
-	//   .find(j.ImportDeclaration, {
-	//     source: {value: 'react-dom/test-utils'},
-	//     specifiers: [{type: 'ImportSpecifier', imported: {name: 'act'}}],
-	//   })
-	//   .at(0);
-
-	// if (actImport) {
-	//   // actImport.remove();
-	//   // const reactImport = root
-	//   //   .find(j.ImportDeclaration, {
-	//   //     source: {value: 'react'},
-	//   //     specifiers: [{type: 'ImportSpecifier'}],
-	//   //   })
-	//   //   .paths()
-	//   //   .at(0);
-
-	//   // if (!reactImport) {
-	//   //   const newReactImport = j.importDeclaration(
-	//   //     [j.importSpecifier(j.identifier('act'))],
-	//   //     j.literal('react')
-	//   //   );
-
-	//   //   root.find(j.VariableDeclaration).at(0).get().insertBefore(newReactImport);
-	//   // } else {
-	//   //   const newImportSpecifier = j.importSpecifier(
-	//   //     j.identifier('act'),
-	//   //     j.identifier('act')
-	//   //   );
-
-	//   //   reactImport?.node.specifiers?.push(newImportSpecifier);
-	//   // }
-
-	// }
-
 	root
 		.find(j.ImportDeclaration, {
 			source: { value: "react-dom/test-utils" },
