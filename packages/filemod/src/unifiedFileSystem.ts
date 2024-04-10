@@ -104,14 +104,25 @@ export class UnifiedFileSystem {
 			const pathHashDigest = this.__buildPathHashDigest(unifiedEntry.path);
 
 			if (unifiedEntry.kind === "directory") {
-				// TODO check if it's not removed
+				// directory was deleted (or moved), remove its hash
+				if (this.__changes.get(pathHashDigest) === null) {
+					this.__directoryFiles.delete(directoryPathHashDigest, pathHashDigest);
+
+					return;
+				}
 
 				this.__directoryFiles.upsert(directoryPathHashDigest, pathHashDigest);
 				this.__entries.set(pathHashDigest, unifiedEntry);
 			}
 
 			if (unifiedEntry.kind === "file") {
-				// TODO check if it's not removed
+				//  file was deleted (or moved), remove its hash
+
+				if (this.__changes.get(pathHashDigest) === null) {
+					this.__directoryFiles.delete(directoryPathHashDigest, pathHashDigest);
+
+					return;
+				}
 
 				this.__directoryFiles.upsert(directoryPathHashDigest, pathHashDigest);
 				this.__entries.set(pathHashDigest, unifiedEntry);
@@ -206,6 +217,29 @@ export class UnifiedFileSystem {
 
 		this.__entries.set(pathHashDigest, unifiedFile);
 		this.__changes.set(pathHashDigest, null);
+	}
+
+	public async moveFile(
+		oldFilePath: string,
+		newFilePath: string,
+	): Promise<void> {
+		const oldPathHashDigest = this.__buildPathHashDigest(oldFilePath);
+
+		const unifiedFile = this.__entries.get(oldPathHashDigest);
+
+		if (unifiedFile === undefined) {
+			throw new Error(`File ${oldFilePath} not found`);
+		}
+
+		const oldFileContent = await this.readFile(oldFilePath);
+
+		if (typeof oldFileContent !== "string") {
+			throw new Error(`File ${oldFileContent} was deleted`);
+		}
+
+		this.__changes.set(oldPathHashDigest, null);
+
+		this.upsertData(newFilePath, oldFileContent);
 	}
 
 	public upsertData(filePath: string, data: string): void {
