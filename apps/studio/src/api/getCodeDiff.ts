@@ -14,7 +14,7 @@ export const getCodeDiff = async (
 
 		return res.data;
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 		return null;
 	}
 };

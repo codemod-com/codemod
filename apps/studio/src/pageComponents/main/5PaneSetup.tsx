@@ -219,12 +219,27 @@ const Main = () => {
 			return;
 		}
 
+		if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
+			const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+			const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+			localStorage.setItem(command, [sessionId, iv].join(","));
+		} else {
+			localStorage.setItem(command, new Date().getTime().toString());
+		}
+
+		router.push("/auth/sign-in");
+	}, [getToken, isSignedIn, router]);
+
+	useEffect(() => {
+		const searchParams = new URLSearchParams(window.location.search);
+		const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+
 		if (command === LEARN_KEY) {
 			(async () => {
 				try {
-					const engine = searchParams.get(
-						SEARCH_PARAMS_KEYS.ENGINE,
-					) as KnownEngines;
+					const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
+						"jscodeshift") as KnownEngines;
 					const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
 
 					if (!engine || !diffId) {
@@ -246,18 +261,7 @@ const Main = () => {
 			})();
 			return;
 		}
-
-		if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-			const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-			const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
-
-			localStorage.setItem(command, [sessionId, iv].join(","));
-		} else {
-			localStorage.setItem(command, new Date().getTime().toString());
-		}
-
-		router.push("/auth/sign-in");
-	}, [getToken, isSignedIn, router]);
+	}, []);
 
 	const codemodHeader = (
 		<Panel.Header className="h-[30px]">

@@ -65,9 +65,6 @@ const getSourceFile = (filePath: string, fileExtension: string) => {
 	return project.addSourceFileAtPathIfExists(filePath) ?? null;
 };
 
-const encode = (code: string): string =>
-	Buffer.from(code).toString("base64url");
-
 const UrlParamKeys = {
 	Engine: "engine" as const,
 	DiffId: "diffId" as const,
@@ -82,9 +79,9 @@ const createCodemodStudioURL = ({
 	diffId: string;
 }): string | null => {
 	try {
-		const url = new URL("https://codemod.studio/");
+		const url = new URL("http://localhost:3000/");
 		const searchParams = new URLSearchParams([
-			[UrlParamKeys.Engine, encode(engine)],
+			[UrlParamKeys.Engine, engine],
 			[UrlParamKeys.DiffId, diffId],
 			[UrlParamKeys.Command, "learn"],
 		]);

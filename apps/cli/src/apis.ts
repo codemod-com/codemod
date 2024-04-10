@@ -127,8 +127,12 @@ export const createCodeDiff = async (body: {
 	afterSnippet: string;
 }): Promise<string> => {
 	const res = await Axios.post<CreateCodeDiffResponse>(
-		"https://backend.codemod.com/diffs",
-		body,
+		"http://localhost:8081/diffs",
+		{
+			before: body.beforeSnippet,
+			after: body.afterSnippet,
+			source: "cli",
+		},
 	);
 
 	return res.data.id;

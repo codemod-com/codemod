@@ -14,7 +14,6 @@
 		"@clerk/nextjs": "4.29.3",
 		"@clerk/themes": "1.7.10",
 		"@codemod-com/utilities": "workspace:*",
-		"@effect/schema": "^0.33.0",
 		"@hookform/resolvers": "^3.3.2",
 		"@monaco-editor/react": "^4.4.6",
 		"@phosphor-icons/react": "^2.0.10",
@@ -82,11 +81,7 @@
 		"test": "vitest run"
 	},
 	"browserslist": {
-		"production": [
-			">0.2%",
-			"not dead",
-			"not op_mini all"
-		],
+		"production": [">0.2%", "not dead", "not op_mini all"],
 		"development": [
 			"last 1 chrome version",
 			"last 1 firefox version",
