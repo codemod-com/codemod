@@ -176,7 +176,7 @@ export class CodemodService {
 
 		const filters: Filter[] = [
 			{
-				id: "useCaseCategory",
+				id: "category",
 				title: "Use case category",
 				values: await Promise.all(
 					useCaseCategoryTags.map(async (category) => ({
@@ -191,7 +191,7 @@ export class CodemodService {
 				),
 			},
 			{
-				id: "frameworks",
+				id: "framework",
 				title: "Frameworks",
 				values: await Promise.all(
 					frameworkTags.map(async (framework) => {
