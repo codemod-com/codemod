@@ -151,7 +151,11 @@ export const getInitialState = (): InitialState => {
 				return value;
 			}
 
-			return decode(value);
+			try {
+				return decode(value);
+			} catch (error) {
+				return value;
+			}
 		};
 
 		const csc = searchParams.get(

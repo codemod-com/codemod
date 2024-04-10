@@ -5,11 +5,16 @@ type GetCodeDiffResponse = {
 	after: string;
 };
 
-export const getCodeDiff = async (
-	diffId: string,
-): Promise<GetCodeDiffResponse | null> => {
+export const getCodeDiff = async (body: {
+	diffId: string;
+	iv: string;
+}): Promise<GetCodeDiffResponse | null> => {
+	const { diffId, iv } = body;
+
 	try {
-		const res = await apiClient.get<GetCodeDiffResponse>(`diffs/${diffId}`);
+		const res = await apiClient.get<GetCodeDiffResponse>(
+			`diffs/${diffId}?iv=${iv}`,
+		);
 		// Axios automatically converts header names to lowercase in the `headers` object.
 
 		return res.data;

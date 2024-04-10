@@ -241,12 +241,13 @@ const Main = () => {
 					const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
 						"jscodeshift") as KnownEngines;
 					const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+					const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
-					if (!engine || !diffId) {
+					if (!engine || !diffId || !iv) {
 						return;
 					}
 
-					const snippets = await getCodeDiff(diffId);
+					const snippets = await getCodeDiff({ diffId, iv });
 
 					if (!snippets) {
 						return;

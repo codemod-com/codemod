@@ -121,11 +121,12 @@ export const confirmUserLoggedIn = async (
 
 type CreateCodeDiffResponse = {
 	id: string;
+	iv: string;
 };
 export const createCodeDiff = async (body: {
 	beforeSnippet: string;
 	afterSnippet: string;
-}): Promise<string> => {
+}): Promise<CreateCodeDiffResponse> => {
 	const res = await Axios.post<CreateCodeDiffResponse>(
 		"https://backend.codemod.com/diffs",
 		{
@@ -135,5 +136,5 @@ export const createCodeDiff = async (body: {
 		},
 	);
 
-	return res.data.id;
+	return res.data;
 };

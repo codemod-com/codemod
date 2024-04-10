@@ -364,6 +364,10 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
 	instance.get("/diffs/:id", async (request, reply) => {
 		const { id } = parseGetCodeDiffParams(request.params);
+		const { iv: ivStr } = parseIv(request.query);
+
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+		const iv = Buffer.from(ivStr, "base64url");
 
 		const codeDiff = await prisma.codeDiff.findUnique({
 			where: { id },
@@ -374,19 +378,53 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			return;
 		}
 
+		let before: string;
+		let after: string;
+		try {
+			before = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.before, "base64url"),
+			).toString();
+			after = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.after, "base64url"),
+			).toString();
+		} catch (err) {
+			reply.code(400).send();
+			return;
+		}
+
 		reply.type("application/json").code(200);
-		return { before: codeDiff.before, after: codeDiff.after };
+		return { before, after };
 	});
 
 	instance.post("/diffs", async (request, reply) => {
 		const body = parseDiffCreationBody(request.body);
 
+		const iv = randomBytes(16);
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+
 		const codeDiff = await prisma.codeDiff.create({
-			data: body,
+			data: {
+				name: body.name,
+				source: body.source,
+				before: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.before),
+				).toString("base64url"),
+				after: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.after),
+				).toString("base64url"),
+			},
 		});
 
 		reply.type("application/json").code(200);
-		return { id: codeDiff.id };
+		return { id: codeDiff.id, iv: iv.toString("base64url") };
 	});
 
 	instance.delete("/revokeToken", wrapRequestHandlerMethod(revokeTokenHandler));

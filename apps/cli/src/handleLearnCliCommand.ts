@@ -68,21 +68,25 @@ const getSourceFile = (filePath: string, fileExtension: string) => {
 const UrlParamKeys = {
 	Engine: "engine" as const,
 	DiffId: "diffId" as const,
+	IV: "iv" as const,
 	Command: "command" as const,
 };
 
 const createCodemodStudioURL = ({
 	engine,
 	diffId,
+	iv,
 }: {
 	engine: KnownEngines;
 	diffId: string;
+	iv: string;
 }): string | null => {
 	try {
 		const url = new URL("https://codemod.studio/");
 		const searchParams = new URLSearchParams([
 			[UrlParamKeys.Engine, engine],
 			[UrlParamKeys.DiffId, diffId],
+			[UrlParamKeys.IV, iv],
 			[UrlParamKeys.Command, "learn"],
 		]);
 
@@ -242,11 +246,15 @@ export const handleLearnCliCommand = async (
 		// remove all occurrences of `\n` at the beginning
 		.replace(/^\n+/, "");
 
-	const diffId = await createCodeDiff({ beforeSnippet, afterSnippet });
+	const { id: diffId, iv } = await createCodeDiff({
+		beforeSnippet,
+		afterSnippet,
+	});
 	const url = createCodemodStudioURL({
 		// TODO: Support other engines in the future
 		engine: "jscodeshift",
 		diffId,
+		iv,
 	});
 
 	if (url === null) {
