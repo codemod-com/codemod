@@ -79,7 +79,7 @@ const createCodemodStudioURL = ({
 	diffId: string;
 }): string | null => {
 	try {
-		const url = new URL("http://localhost:3000/");
+		const url = new URL("https://codemod.studio/");
 		const searchParams = new URLSearchParams([
 			[UrlParamKeys.Engine, engine],
 			[UrlParamKeys.DiffId, diffId],
