@@ -6,7 +6,10 @@
 	"description": "A monorepo for all the interconnected tools of codemod.com",
 	"private": true,
 	"packageManager": "pnpm@8.7.5",
-	"engines": { "node": ">=20.x", "pnpm": ">=8.7.x" },
+	"engines": {
+		"node": ">=20.x",
+		"pnpm": ">=8.7.x"
+	},
 	"keywords": [
 		"codemod",
 		"migration",
@@ -40,6 +43,7 @@
 		"release:changelog": "node scripts/releaseChangelog.mjs"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "1.5.3",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
@@ -48,12 +52,10 @@
 		"concurrently": "^8.2.0",
 		"husky": "^8.0.3",
 		"lint-staged": "^15.1.0",
-		"node-fetch": "^3.3.2",
 		"tsx": "^4.2.0",
 		"turbo": "^1.10.14",
 		"typescript": "^5.2.0",
-		"vitest": "^1.4.0",
-		"@biomejs/biome": "1.5.3"
+		"vitest": "^1.4.0"
 	},
 	"lint-staged": {
 		"*": [

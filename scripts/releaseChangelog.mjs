@@ -1,5 +1,3 @@
-import fetch from "node-fetch";
-
 const CODEMOD_REPO_PULL_REQUESTS =
 	"https://api.github.com/repos/codemod-com/codemod/pulls";
 
