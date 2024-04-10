@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/nextjs";
 import { deflate } from "pako";
-import { encode } from "universal-base64url";
+// import { encode } from "universal-base64url";
 import sendMessage from "~/api/sendMessage";
 import { type ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
@@ -13,50 +13,50 @@ export const useShareLink = () => {
 	const { internalContent } = useModStore();
 	const { getToken } = useAuth();
 
-	const getExtensionUrl = async (): Promise<URL | null> => {
-		try {
-			if (internalContent === null) {
-				throw new Error("codemod content not found");
-			}
+	// const getExtensionUrl = async (): Promise<URL | null> => {
+	// 	try {
+	// 		if (internalContent === null) {
+	// 			throw new Error("codemod content not found");
+	// 		}
 
-			const token = await getToken();
+	// 		const token = await getToken();
 
-			let codemodName = "untitled";
-			if (token !== null) {
-				// Ask LLM to come up with a name for the given codemod
-				const codemodNameOrError = await sendMessage({
-					message: generateCodemodNamePrompt(internalContent),
-					token,
-				});
+	// 		let codemodName = "untitled";
+	// 		if (token !== null) {
+	// 			// Ask LLM to come up with a name for the given codemod
+	// 			const codemodNameOrError = await sendMessage({
+	// 				message: generateCodemodNamePrompt(internalContent),
+	// 				token,
+	// 			});
 
-				if (codemodNameOrError.isLeft()) {
-					console.error(codemodNameOrError.getLeft());
-				} else {
-					codemodName = codemodNameOrError.get().text;
-				}
-			}
+	// 			if (codemodNameOrError.isLeft()) {
+	// 				console.error(codemodNameOrError.getLeft());
+	// 			} else {
+	// 				codemodName = codemodNameOrError.get().text;
+	// 			}
+	// 		}
 
-			const searchParams = new URLSearchParams();
-			searchParams.set(SEARCH_PARAMS_KEYS.ENGINE, encode(engine));
-			searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
-			searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
-			searchParams.set(
-				SEARCH_PARAMS_KEYS.CODEMOD_SOURCE,
-				encode(internalContent ?? ""),
-			);
-			searchParams.set(SEARCH_PARAMS_KEYS.CODEMOD_NAME, encode(codemodName));
+	// 		const searchParams = new URLSearchParams();
+	// 		searchParams.set(SEARCH_PARAMS_KEYS.ENGINE, encode(engine));
+	// 		searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
+	// 		searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
+	// 		searchParams.set(
+	// 			SEARCH_PARAMS_KEYS.CODEMOD_SOURCE,
+	// 			encode(internalContent ?? ""),
+	// 		);
+	// 		searchParams.set(SEARCH_PARAMS_KEYS.CODEMOD_NAME, encode(codemodName));
 
-			const url = new URL(window.location.href);
-			url.search = searchParams.toString();
+	// 		const url = new URL(window.location.href);
+	// 		url.search = searchParams.toString();
 
-			return url;
-		} catch (error) {
-			// eslint-disable-next-line no-console
-			console.error(error);
+	// 		return url;
+	// 	} catch (error) {
+	// 		// eslint-disable-next-line no-console
+	// 		console.error(error);
 
-			return null;
-		}
-	};
+	// 		return null;
+	// 	}
+	// };
 
 	const getURL = async (): Promise<URL | null> => {
 		try {
@@ -117,5 +117,6 @@ export const useShareLink = () => {
 		}
 	};
 
-	return { getURL, getExtensionUrl };
+	// return { getURL, getExtensionUrl };
+	return { getURL };
 };

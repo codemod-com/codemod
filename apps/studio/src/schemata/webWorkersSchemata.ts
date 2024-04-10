@@ -22,6 +22,6 @@ const webWorkerOutgoingMessageSchema = object({
 export const parseWebWorkerOutgoingMessage = (input: unknown) =>
 	parse(webWorkerOutgoingMessageSchema, input);
 
-export type WebWorkerOutgoingMessage = Output<
-	typeof webWorkerOutgoingMessageSchema
+export type WebWorkerOutgoingMessage = Readonly<
+	Output<typeof webWorkerOutgoingMessageSchema>
 >;

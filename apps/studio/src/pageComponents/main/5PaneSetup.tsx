@@ -56,7 +56,11 @@ import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
 import { useTheme } from "./themeContext";
 
-const enginesConfig = [
+const enginesConfig: Array<{
+	label: string;
+	disabled: boolean;
+	value: KnownEngines | "piranha";
+}> = [
 	{
 		label: "jscodeshift",
 		value: "jscodeshift",
@@ -64,7 +68,7 @@ const enginesConfig = [
 	},
 	{
 		label: "ts-morph [beta]",
-		value: "tsmorph",
+		value: "ts-morph",
 		disabled: false,
 	},
 	{
@@ -123,7 +127,7 @@ const Main = () => {
 	// 	progressInfo: { processed: 100, total: 300 },
 	// };
 
-	const onEngineChange = (value: string) => {
+	const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
 		setEngine(value as KnownEngines);
 	};
 
