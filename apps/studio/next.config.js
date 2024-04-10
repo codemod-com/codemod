@@ -43,10 +43,6 @@ const nextConfig = {
 			},
 		};
 	},
-	experimental: {
-		esmExternals: true,
-		externalDir: true,
-	},
 };
 
 export default nextConfig;
