@@ -25,7 +25,6 @@ import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
-import { getCodemodsFiltersHandler } from "./handlers/getCodemodsFiltersHandler.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
@@ -351,11 +350,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		reply.type("application/json").code(200);
 		return { version: packageJson.default.version };
 	});
-
-	instance.get(
-		"/codemods/filters",
-		wrapRequestHandlerMethod(getCodemodsFiltersHandler),
-	);
 
 	instance.get(
 		"/codemods/:slug",
