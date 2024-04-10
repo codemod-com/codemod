@@ -239,6 +239,10 @@ Once your codemod package is [compatible with Codemod platform](#required-codemo
   This will build a JavaScript project using `esbuild` and create a `dist` directory in your project root. If your codemod is not using a JavaScript engine, you can skip this step.
   </Info>
 
+  <Info>
+  This step requires global `esbuild` package installation. We attempt to install it for you upon codemod CLI installation via post-install script. However, due to OS and package managers specifics, it might not always work as expected. In case you are seeing error saying esbuild package could not be found, please install it manually by running `npm install -g esbuild`.
+  </Info>
+
   </Step>
 
   <Step title="Publish your codemod">
