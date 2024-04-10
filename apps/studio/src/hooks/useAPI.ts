@@ -36,7 +36,6 @@ export const useAPI = <T>(endpoint: string) => {
 	const { getToken } = useAuth();
 	const getHeaders = async () => ({
 		headers: {
-			"Access-Control-Allow-Origin": "*",
 			"Content-Type": "application/json",
 			Authorization: `Bearer ${await getToken()}`,
 		},
