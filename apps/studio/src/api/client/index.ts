@@ -1,8 +1,9 @@
 import axios, { type AxiosError } from "axios";
 import toast from "react-hot-toast";
+import { env } from "~/env";
 
 const apiClient = axios.create({
-	baseURL: "http://0.0.0.0:8081", // env.NEXT_PUBLIC_API_URL,
+	baseURL: env.NEXT_PUBLIC_API_URL,
 	timeout: 60000,
 });
 
