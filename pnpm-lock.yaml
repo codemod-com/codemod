@@ -586,6 +586,9 @@ importers:
       universal-base64url:
         specifier: ^1.1.0
         version: 1.1.0
+      valibot:
+        specifier: ^0.24.1
+        version: 0.24.1
       web-vitals:
         specifier: ^2.1.4
         version: 2.1.4

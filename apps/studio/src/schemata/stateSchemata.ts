@@ -1,12 +1,13 @@
-import * as S from "@effect/schema/Schema";
+import { knownEnginesSchema } from "@codemod-com/utilities";
+import { type Output, object, parse, string } from "valibot";
 
-const stateSchema = S.struct({
-	engine: S.union(S.literal("jscodeshift"), S.literal("tsmorph")),
-	beforeSnippet: S.string,
-	afterSnippet: S.string,
-	codemodSource: S.string,
+const stateSchema = object({
+	engine: knownEnginesSchema,
+	beforeSnippet: string(),
+	afterSnippet: string(),
+	codemodSource: string(),
 });
 
-export type State = S.To<typeof stateSchema>;
+export type State = Output<typeof stateSchema>;
 
-export const parseState = S.parseSync(stateSchema);
+export const parseState = (input: unknown) => parse(stateSchema, input);

@@ -2,7 +2,7 @@ import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { decrypt, encrypt } from "../crypto/crypto.js";
 import { CustomHandler } from "../customHandler.js";
 import { prisma } from "../db/prisma.js";
-import { parseBuildAccessTokenQuery } from "../schemata/query.js";
+import { parseBuildAccessTokenQuery } from "../schemata/schema.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 
 export const buildAccessTokenHandler: CustomHandler<Record<string, never>> =

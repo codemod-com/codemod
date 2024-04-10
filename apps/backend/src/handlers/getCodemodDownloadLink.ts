@@ -1,7 +1,7 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { CustomHandler } from "../customHandler.js";
-import { parseGetCodemodLatestVersionQuery } from "../schemata/query.js";
+import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 
 export const getCodemodDownloadLink: CustomHandler<{

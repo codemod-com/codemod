@@ -21,7 +21,7 @@ export const ExportButton = ({ className }: Props) => {
 
 	assertsNeitherNullNorUndefined(modStore);
 
-	if (engine === "tsmorph") {
+	if (engine !== "jscodeshift") {
 		return null;
 	}
 
