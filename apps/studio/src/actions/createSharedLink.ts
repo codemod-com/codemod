@@ -45,6 +45,7 @@ type CreateSharedLinkRequest = Readonly<{
 }>;
 
 export const createSharedLink = async (
+	destination: "studio" | "vsce",
 	body: CreateSharedLinkRequest,
 ): Promise<string | null> => {
 	if (!env.DUBCO_API_TOKEN || !env.DUBCO_WORKSPACE_ID) {
@@ -68,7 +69,7 @@ export const createSharedLink = async (
 			color: string;
 		}>;
 
-		const studioTag = tags.find((tag) => tag.name === "Studio");
+		const studioTag = tags.find((tag) => tag.name === destination);
 
 		const response = await fetch(
 			`https://api.dub.co/links?workspaceId=${env.DUBCO_WORKSPACE_ID}`,
@@ -79,7 +80,8 @@ export const createSharedLink = async (
 					authorization: `Bearer ${env.DUBCO_API_TOKEN}`,
 				},
 				body: JSON.stringify({
-					...body,
+					url: body.url,
+					domain: body.domain ?? "go.codemod.com",
 					tagIds: studioTag ? [studioTag.id] : [],
 				}),
 			},

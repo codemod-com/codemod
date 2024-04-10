@@ -16,7 +16,7 @@ export const usePublicLinkSharing = () => {
 			return;
 		}
 
-		const shortURL = await createSharedLink({ url: url.toString() });
+		const shortURL = await createSharedLink("studio", { url: url.toString() });
 
 		if (!shortURL) {
 			toast.error(
