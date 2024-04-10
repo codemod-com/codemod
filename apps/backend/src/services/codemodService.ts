@@ -23,7 +23,7 @@ type LongCodemodIndoDetails = {
 
 export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
 
-export type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
+export type ShortCodemodInfo = Pick<Codemod, "name" | "author" | "slug"> &
 	Pick<CodemodVersion, "engine">;
 
 export type Filter = {
@@ -321,6 +321,7 @@ export class CodemodService {
 
 					return {
 						name: codemod.name,
+						slug: codemod.slug,
 						engine: latestVersion?.engine,
 						author: codemod.author,
 						tags: latestVersion.tags,
@@ -351,6 +352,7 @@ export class CodemodService {
 
 					return {
 						name: codemod.name,
+						slug: codemod.slug,
 						engine: latestVersion?.engine,
 						author: codemod.author,
 						tags: latestVersion.tags,
