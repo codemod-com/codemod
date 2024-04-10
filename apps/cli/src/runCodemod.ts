@@ -159,8 +159,10 @@ export const runCodemod = async (
 
 	if (codemod.engine === "recipe") {
 		if (!runSettings.dryRun) {
-			for (const subCodemod of codemod.codemods) {
+			for (let i = 0; i < codemod.codemods.length; ++i) {
 				const commands: FormattedFileCommand[] = [];
+
+				const subCodemod = codemod.codemods[i]!;
 
 				await runCodemod(
 					fileSystem,
@@ -174,6 +176,19 @@ export const runCodemod = async (
 					(message) => {
 						if (message.kind === "error") {
 							onPrinterMessage(message);
+						}
+
+						if (message.kind === "progress") {
+							onPrinterMessage({
+								kind: "progress",
+								recipeCodemodName:
+									subCodemod.source === "package" ? subCodemod.name : undefined,
+								processedFileNumber:
+									message.totalFileNumber * i + message.processedFileNumber,
+								totalFileNumber:
+									message.totalFileNumber * codemod.codemods.length,
+								processedFileName: message.processedFileName,
+							});
 						}
 						// we are discarding any printer messages from subcodemods
 						// if we are within a recipe

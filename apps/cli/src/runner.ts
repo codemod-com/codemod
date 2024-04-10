@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 import { join } from "path";
 import { parseCodemodConfig } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import { readFile } from "fs/promises";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
@@ -63,7 +64,9 @@ export class Runner {
 			if (this._codemodSettings.kind === "runSourced") {
 				const codemodOptions = await buildSourcedCodemodOptions(
 					this._fs,
+					this._printer,
 					this._codemodSettings,
+					this._codemodDownloader,
 				);
 
 				const safeArgumentRecord = buildSafeArgumentRecord(
@@ -182,7 +185,40 @@ export class Runner {
 			}
 
 			if (this._name !== null) {
-				const codemod = await this._codemodDownloader.download(this._name);
+				let codemod: Awaited<
+					ReturnType<typeof this._codemodDownloader.download>
+				>;
+				try {
+					codemod = await this._codemodDownloader.download(this._name);
+				} catch (error) {
+					if (error instanceof AxiosError) {
+						if (
+							error.response?.status === 400 &&
+							error.response.data.error === "Codemod not found"
+						) {
+							// Until we have distinction between `codemod` and `codemod run`, we don't want to throw and error here,
+							// because it will get picked up by logic in runner.ts, which will prepend `Error while running the codemod`
+							// to the error text. We just want to print the error and let user decide what to do for now.
+							this._printer.printConsoleMessage(
+								"error",
+								// biome-ignore lint: readability reasons
+								"The specified command or codemod name could not be recognized.\n" +
+									`To view available commands, execute ${boldText(
+										`"codemod --help"`,
+									)}.\n` +
+									`To see a list of existing codemods, run ${boldText(
+										`"codemod search"`,
+									)} or ${boldText(
+										`"codemod list"`,
+									)} with a query representing the codemod you are looking for.`,
+							);
+
+							process.exit(1);
+						}
+					}
+
+					throw new Error(`Error while downloading codemod ${name}: ${error}`);
+				}
 
 				this._printer.printConsoleMessage(
 					"info",

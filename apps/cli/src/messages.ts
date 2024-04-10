@@ -12,6 +12,7 @@ export type FinishMessage = Readonly<{
 
 export type ProgressMessage = Readonly<{
 	kind: "progress";
+	recipeCodemodName?: string;
 	processedFileNumber: number;
 	processedFileName: string;
 	totalFileNumber: number;
