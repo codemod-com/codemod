@@ -37,8 +37,7 @@ export const getCustomAccessToken = (
 	headers: IncomingHttpHeaders,
 ): string | null =>
 	flattenArray(
-		headers[environment.X_CODEMOD_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""] ??
-			headers[environment.X_INTUITA_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""],
+		headers[environment.X_CODEMOD_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""],
 	);
 
 export const buildTimeoutPromise = (ms: number) =>

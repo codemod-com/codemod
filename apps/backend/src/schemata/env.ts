@@ -16,7 +16,6 @@ export const environmentSchema = object({
 	PORT: coerce(number(), (input) => Number(input)),
 	DATA: optional(string()),
 	X_CODEMOD_ACCESS_TOKEN: optional(string()),
-	X_INTUITA_ACCESS_TOKEN: optional(string()),
 	CLERK_DISABLED: optional(literal("true")),
 	// unused start
 	ENCRYPTION_KEY: string(),
