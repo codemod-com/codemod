@@ -418,9 +418,6 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
-      '@effect/schema':
-        specifier: ^0.33.0
-        version: 0.33.2(@effect/data@0.17.6)(@effect/io@0.38.2)
       '@hookform/resolvers':
         specifier: ^3.3.2
         version: 3.3.4(react-hook-form@7.50.1)
@@ -8216,29 +8213,6 @@ packages:
     resolution: {integrity: sha512-dBVuXR082gk3jsFp7Rd/JI4kytwGHecnCoTtXFb7DB6CNHp4rg5k1bhg0nWdLGLnOV71lmDzGQaLMy8iPLY0pw==}
     engines: {node: '>=10.0.0'}
     dev: true
-
-  /@effect/data@0.17.6:
-    resolution: {integrity: sha512-/vwz7Jh05eS0qY8kczR/YyJd18d0C+PMtUkAealh4f6gwvhABLGCnktNJTcq/+UHxY0Cbv18r5uaJ4+7PPC+WQ==}
-    dev: false
-
-  /@effect/io@0.38.2(@effect/data@0.17.6):
-    resolution: {integrity: sha512-rnAXFo9BDLbY7DgQE1e8uP/sEniyVCsB7gNs+yXPu0XK9s4kaGinH6XgwYRDBuu7Fu1tQ1yd7JoAdEb7yutNRg==}
-    peerDependencies:
-      '@effect/data': ^0.17.1
-    dependencies:
-      '@effect/data': 0.17.6
-    dev: false
-
-  /@effect/schema@0.33.2(@effect/data@0.17.6)(@effect/io@0.38.2):
-    resolution: {integrity: sha512-GfV4kXAs4tkx09bGD6J4RDqVN+xea4UP0I05r1wloox6j0eYgXYaSKAXAZ7qBKVywkba3cDUDZhc9nplAD8TAA==}
-    peerDependencies:
-      '@effect/data': ^0.17.1
-      '@effect/io': ^0.38.0
-    dependencies:
-      '@effect/data': 0.17.6
-      '@effect/io': 0.38.2(@effect/data@0.17.6)
-      fast-check: 3.15.1
-    dev: false
 
   /@effect/schema@0.52.0(effect@2.0.0-next.59)(fast-check@3.15.1):
     resolution: {integrity: sha512-x6SmSdoL6PeZVAaK895NoRkKF8D/w+XyO8i17cUsQYFJBHNyUTi9Y1H2wrO8TkxhTmC93ejburpM+35/OKCi2Q==}
