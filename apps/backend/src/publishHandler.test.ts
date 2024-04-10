@@ -210,7 +210,7 @@ describe("/publish route", async () => {
 
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-			Bucket: "codemod-public-v2",
+			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
 			Body: "archive",
 		});
@@ -279,7 +279,7 @@ describe("/publish route", async () => {
 
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-			Bucket: "codemod-public-v2",
+			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
 			Body: "archive",
 		});

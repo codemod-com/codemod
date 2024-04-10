@@ -218,7 +218,7 @@ export const publishHandler =
 			const REQUEST_TIMEOUT = 5000;
 
 			const bucket =
-				isPrivate && namespace ? "codemod-private-v2" : "codemod-public-v2";
+				isPrivate && namespace ? "codemod-private" : "codemod-public";
 
 			const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
 			if (isPrivate && namespace) {
