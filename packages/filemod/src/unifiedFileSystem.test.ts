@@ -122,7 +122,7 @@ describe("unifiedFileSystem", () => {
 		]);
 	});
 
-	it.only("should move files", async () => {
+	it("should move files", async () => {
 		const volume = Volume.fromJSON({
 			"/opt/a/a.json": "",
 		});
