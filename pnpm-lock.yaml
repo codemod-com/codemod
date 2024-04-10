@@ -671,12 +671,12 @@ importers:
 
   apps/vsce:
     dependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@effect/schema':
         specifier: ^0.52.0
         version: 0.52.0(effect@2.0.0-next.59)(fast-check@3.15.1)
-      '@intuita-inc/utilities':
-        specifier: ^1.0.2
-        version: 1.1.0(effect@2.0.0-next.59)(fast-check@3.15.1)
       '@reduxjs/toolkit':
         specifier: ^1.9.5
         version: 1.9.7
@@ -9429,15 +9429,6 @@ packages:
       react-hook-form: ^7.0.0
     dependencies:
       react-hook-form: 7.50.1(react@18.2.0)
-    dev: false
-
-  /@intuita-inc/utilities@1.1.0(effect@2.0.0-next.59)(fast-check@3.15.1):
-    resolution: {integrity: sha512-2/H2/v22Wuxb8SYB8QUB8AsdZoAr4Y0pAa0Rs+aym2DWOEysJB4aHsgF1YH2JqYiz59rQeIVAiYnELIqv/XZKg==}
-    dependencies:
-      '@effect/schema': 0.52.0(effect@2.0.0-next.59)(fast-check@3.15.1)
-    transitivePeerDependencies:
-      - effect
-      - fast-check
     dev: false
 
   /@isaacs/cliui@8.0.2:

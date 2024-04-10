@@ -14,11 +14,7 @@
 		"vscode": "^1.74.0",
 		"node": "^20.0.0"
 	},
-	"categories": [
-		"Programming Languages",
-		"Formatters",
-		"Linters"
-	],
+	"categories": ["Programming Languages", "Formatters", "Linters"],
 	"keywords": [
 		"codemod",
 		"upgrade",
@@ -106,17 +102,13 @@
 					"order": 3,
 					"type": "array",
 					"description": "The glob pattern to use when searching for files to execute codemods over",
-					"default": [
-						"**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}"
-					]
+					"default": ["**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}"]
 				},
 				"codemod.exclude": {
 					"order": 4,
 					"type": "array",
 					"description": "The glob pattern to use when searching for files to exclude from codemod execution",
-					"default": [
-						"**/node_modules/**/*.*"
-					]
+					"default": ["**/node_modules/**/*.*"]
 				},
 				"codemod.formatWithPrettier": {
 					"order": 5,
@@ -267,7 +259,7 @@
 	},
 	"dependencies": {
 		"@effect/schema": "^0.52.0",
-		"@intuita-inc/utilities": "^1.0.2",
+		"@codemod-com/utilities": "workspace:*",
 		"@reduxjs/toolkit": "^1.9.5",
 		"@vscode/extension-telemetry": "^0.7.7",
 		"@vscode/vsce": "^2.22.0",
@@ -290,7 +282,5 @@
 		"ts-morph": "^19.0.0",
 		"universal-base64url": "^1.1.0"
 	},
-	"extensionDependencies": [
-		"vscode.git"
-	]
+	"extensionDependencies": ["vscode.git"]
 }

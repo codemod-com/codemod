@@ -6,7 +6,7 @@ import {
 	CaseReadingService,
 	JOB_KIND,
 	SurfaceAgnosticJob,
-} from "@intuita-inc/utilities";
+} from "@codemod-com/utilities";
 import { FileType, Uri, window, workspace } from "vscode";
 import { Store } from ".";
 import { Case, CaseHash, caseHashCodec } from "../cases/types";

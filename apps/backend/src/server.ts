@@ -74,10 +74,6 @@ const X_CODEMOD_ACCESS_TOKEN = (
 	environment.X_CODEMOD_ACCESS_TOKEN ?? ""
 ).toLocaleLowerCase();
 
-const X_INTUITA_ACCESS_TOKEN = (
-	environment.X_INTUITA_ACCESS_TOKEN ?? ""
-).toLocaleLowerCase();
-
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 	const { PORT: port } = environment;
 	if (Number.isNaN(port)) {
@@ -135,18 +131,10 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 		methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
 		exposedHeaders: [
 			X_CODEMOD_ACCESS_TOKEN,
-			// TODO deprecated
-			X_INTUITA_ACCESS_TOKEN,
 			"x-clerk-auth-reason",
 			"x-clerk-auth-message",
 		],
-		allowedHeaders: [
-			X_CODEMOD_ACCESS_TOKEN,
-			// TODO deprecated
-			X_INTUITA_ACCESS_TOKEN,
-			"Content-Type",
-			"Authorization",
-		],
+		allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
 	} satisfies FastifyCorsOptions);
 
 	await fastify.register(fastifyRateLimit, {
@@ -217,7 +205,6 @@ const wrapRequestHandlerMethod =
 			getCustomAccessToken(environment, request.headers);
 
 		const setAccessToken = (accessToken: string) => {
-			reply.header(X_INTUITA_ACCESS_TOKEN, accessToken);
 			reply.header(X_CODEMOD_ACCESS_TOKEN, accessToken);
 		};
 
