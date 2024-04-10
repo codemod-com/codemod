@@ -1,7 +1,7 @@
 {
 	"name": "@codemod-com/filemod",
 	"author": "Codemod, Inc.",
-	"version": "2.0.2",
+	"version": "2.0.3",
 	"description": "The filemod by Codemod.com",
 	"type": "module",
 	"main": "./dist/index.js",

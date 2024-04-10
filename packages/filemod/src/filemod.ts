@@ -260,6 +260,16 @@ const handleCommand = async <D extends RSU, S extends State>(
 			path: command.path,
 		});
 	}
+
+	if (command.kind === "moveFile") {
+		api.unifiedFileSystem.moveFile(command.oldPath, command.newPath);
+
+		callbackService.onCommandExecuted?.({
+			kind: command.kind,
+			oldPath: command.oldPath,
+			newPath: command.newPath,
+		});
+	}
 };
 
 export const executeFilemod = async <D extends RSU, S extends State>(
