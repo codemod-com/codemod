@@ -95,6 +95,7 @@ export default {
 	},
 	plugins: [
 		// eslint-disable-next-line global-require
+		require("tailwindcss-radix")(),
 		require("tailwindcss-animate"),
 	],
 } satisfies Config;

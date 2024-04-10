@@ -1,7 +1,7 @@
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { SignInButton } from "@clerk/nextjs";
 import { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
@@ -29,6 +29,7 @@ import {
 } from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 // import { useExecutionStatus } from "~/hooks/useExecutionStatus";
+import { useAuth } from "~/hooks/useAuth";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import {
@@ -110,8 +111,7 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 };
 
 const Main = () => {
-	const { isSignedIn, getToken } = useAuth();
-	const router = useRouter();
+	const { getSignIn, getToken, isSignedIn } = useAuth();
 	const panelRefs: PanelsRefs = useRef({});
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
@@ -232,8 +232,8 @@ const Main = () => {
 			localStorage.setItem(command, new Date().getTime().toString());
 		}
 
-		router.push("/auth/sign-in");
-	}, [getToken, isSignedIn, router]);
+		getSignIn();
+	}, [getToken, isSignedIn]);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search);
@@ -418,10 +418,7 @@ const Main = () => {
 
 function SignInRequired() {
 	const theme = useTheme();
-	const router = useRouter();
-	const signUserIn = () => {
-		router.push("/auth/sign-in");
-	};
+	const { getSignIn } = useAuth();
 
 	return (
 		<div className="grid h-full absolute top-0 bottom-0 w-full">
@@ -447,7 +444,7 @@ function SignInRequired() {
 					Sign in to use AI assistant to build codemod
 				</p>
 				<Button
-					onClick={signUserIn}
+					onClick={getSignIn()}
 					className="flex w-full text-white gap-2 items-center"
 				>
 					Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />

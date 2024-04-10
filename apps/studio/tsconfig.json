@@ -26,6 +26,7 @@
 		"baseUrl": ".",
 		"paths": {
 			"~/*": ["src/*"],
+			"be-types": ["../backend/types"],
 			"tslib": ["node_modules/tslib"],
 			"ts-morph": ["node_modules/ts-morph"]
 		},

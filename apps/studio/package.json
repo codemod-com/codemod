@@ -5,6 +5,7 @@
 	"type": "module",
 	"private": true,
 	"dependencies": {
+		"@ariakit/react": "^0.4.5",
 		"@babel/parser": "^7.21.1",
 		"@babel/plugin-syntax-flow": "^7.14.5",
 		"@babel/plugin-transform-react-jsx": "^7.14.9",
@@ -47,6 +48,7 @@
 		"jszip": "^3.10.1",
 		"katex": "^0.16.10",
 		"lucide-react": "^0.265.0",
+		"match-sorter": "^6.3.4",
 		"monaco-editor": "^0.36.1",
 		"next": "14.0.3",
 		"os-browserify": "^0.3.0",
@@ -68,6 +70,7 @@
 		"remark-gfm": "^3.0.1",
 		"remark-math": "^5.1.1",
 		"tailwind-merge": "^1.10.0",
+		"tailwindcss-radix": "^3.0.3",
 		"ts-morph": "^19.0.0",
 		"tslib": "2.4.1",
 		"universal-base64url": "^1.1.0",
