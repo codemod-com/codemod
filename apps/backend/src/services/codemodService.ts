@@ -16,6 +16,13 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
 	return result;
 };
 
+type LongCodemodIndoDetails = {
+	framework: string | null | undefined;
+	useCaseCategory: string | null | undefined;
+};
+
+export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
+
 export type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
 	Pick<CodemodVersion, "engine">;
 
@@ -34,76 +41,6 @@ export class CodemodNotFoundError extends Error {}
 export class CodemodService {
 	public constructor(protected prisma: PrismaClient) {}
 
-	private async getCategoryCounts(
-		whereClause: Prisma.CodemodWhereInput,
-	): Promise<Filter[]> {
-		const useCaseCategories = await (
-			await this.prisma.tag.findMany({
-				where: { classification: "useCaseCategory" },
-			})
-		).map((c) => c.title);
-
-		const categoryCounts = await Promise.all(
-			useCaseCategories.map(async (category) => {
-				const count = await this.prisma.codemod.count({
-					where: {
-						AND: [whereClause, { tags: { has: category } }],
-					},
-				});
-				return {
-					id: category,
-					title:
-						category.charAt(0).toUpperCase() +
-						category.slice(1).replaceAll("_", " "),
-					count,
-				};
-			}),
-		);
-
-		return [
-			{
-				id: "useCaseCategory",
-				title: "Use case category",
-				values: categoryCounts,
-			},
-		];
-	}
-
-	private async getFrameworkCounts(
-		whereClause: Prisma.CodemodWhereInput,
-	): Promise<Filter[]> {
-		const frameworks = await (
-			await this.prisma.tag.findMany({
-				where: { classification: "framework" },
-			})
-		).map((c) => c.title);
-
-		const frameworkCounts = await Promise.all(
-			frameworks.map(async (framework) => {
-				const count = await this.prisma.codemod.count({
-					where: {
-						AND: [whereClause, { tags: { has: framework } }],
-					},
-				});
-				return {
-					id: framework,
-					title:
-						framework.charAt(0).toUpperCase() +
-						framework.slice(1).replaceAll("_", " "),
-					count,
-				};
-			}),
-		);
-
-		return [
-			{
-				id: "frameworks",
-				title: "Frameworks",
-				values: frameworkCounts,
-			},
-		];
-	}
-
 	public async getCodemods(
 		search: string | undefined,
 		category: string | string[] | undefined,
@@ -114,7 +51,7 @@ export class CodemodService {
 		size: number,
 	): Promise<{
 		total: number;
-		data: Codemod[];
+		data: LongCodemodInfo[];
 		filters: Filter[];
 		page: number;
 		size: number;
@@ -123,7 +60,6 @@ export class CodemodService {
 		const authors = parseAndFilterQueryParams(author);
 		const frameworks = parseAndFilterQueryParams(framework);
 
-		const filters: Filter[] = [];
 		const searchAndFilterClauses: Prisma.CodemodWhereInput["AND"] = [];
 		const whereClause: Prisma.CodemodWhereInput = {
 			AND: searchAndFilterClauses,
@@ -205,8 +141,30 @@ export class CodemodService {
 			this.prisma.codemod.count({ where: whereClause }),
 		]);
 
-		const useCaseFilters = await this.getCategoryCounts(whereClause);
-		const frameworkFilters = await this.getFrameworkCounts(whereClause);
+		const useCaseCategoryTags = await this.prisma.tag.findMany({
+			where: { classification: "useCaseCategory" },
+		});
+
+		const frameworkTags = await this.prisma.tag.findMany({
+			where: { classification: "framework" },
+		});
+
+		const data: LongCodemodInfo[] = await Promise.all(
+			codemods.map(async (codemod) => {
+				const useCaseCategory = useCaseCategoryTags.find((tag) =>
+					tag.aliases.some((t) => codemod.tags.includes(t)),
+				)?.displayName;
+				const framework = frameworkTags.find((tag) =>
+					tag.aliases.some((t) => codemod.tags.includes(t)),
+				)?.displayName;
+
+				return {
+					...codemod,
+					framework,
+					useCaseCategory,
+				};
+			}),
+		);
 
 		const authorCounts = await this.prisma.codemod.groupBy({
 			by: ["author"],
@@ -216,19 +174,52 @@ export class CodemodService {
 			where: whereClause,
 		});
 
-		const authorFilters: Filter = {
-			id: "author",
-			title: "Author",
-			values: authorCounts.map((count) => ({
-				id: count.author,
-				title: count.author,
-				count: count._count.author,
-			})),
-		};
+		const filters: Filter[] = [
+			{
+				id: "useCaseCategory",
+				title: "Use case category",
+				values: await Promise.all(
+					useCaseCategoryTags.map(async (category) => ({
+						id: category.title,
+						title: category.displayName,
+						count: await this.prisma.codemod.count({
+							where: {
+								AND: [whereClause, { tags: { hasSome: category.aliases } }],
+							},
+						}),
+					})),
+				),
+			},
+			{
+				id: "frameworks",
+				title: "Frameworks",
+				values: await Promise.all(
+					frameworkTags.map(async (framework) => {
+						const count = await this.prisma.codemod.count({
+							where: {
+								AND: [whereClause, { tags: { hasSome: framework.aliases } }],
+							},
+						});
+						return {
+							id: framework.title,
+							title: framework.displayName,
+							count,
+						};
+					}),
+				),
+			},
+			{
+				id: "author",
+				title: "Author",
+				values: authorCounts.map((count) => ({
+					id: count.author,
+					title: count.author,
+					count: count._count.author,
+				})),
+			},
+		];
 
-		filters.push(...useCaseFilters, ...frameworkFilters, authorFilters);
-
-		return { total, data: codemods, filters, page, size };
+		return { total, data, filters, page, size };
 	}
 
 	public async getCodemodBySlug(slug: string): Promise<Codemod> {
