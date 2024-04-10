@@ -6,22 +6,18 @@ import {
 	useUser,
 } from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
-import { useRouter } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { useAuth } from "~/hooks/useAuth";
 import { LogoutIcon } from "~/icons/LogoutIcon";
 
 const AuthButtons = () => {
-	const router = useRouter();
+	const { getSignIn } = useAuth();
 	const { user } = useUser();
-
-	const signUserIn = () => {
-		router.push("/auth/sign-in");
-	};
 
 	return (
 		<>
 			<SignedOut>
-				<Button onClick={signUserIn} size="sm" variant="outline">
+				<Button onClick={getSignIn()} size="sm" variant="outline">
 					<SignInIcon className="mr-2 h-4 w-4" />
 					Sign in
 				</Button>

@@ -5,7 +5,10 @@ import { usePublicLinkSharing } from "~/pageComponents/main/usePublicLinkSharing
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 
-export const useButtons = (ensureSignIn: VoidFunction) => {
+export const useButtons = (
+	ensureSignIn: VoidFunction,
+	isProcessing?: boolean,
+) => {
 	const { setInput, setOutput } = useSnippetStore();
 	const { setContent } = useModStore();
 	const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
@@ -16,6 +19,7 @@ export const useButtons = (ensureSignIn: VoidFunction) => {
 			onClick: ensureSignIn,
 			Icon: CheckIcon,
 			text: "Run on branch",
+			disabled: isProcessing,
 		},
 		{
 			hintText: "Clear all inputs",

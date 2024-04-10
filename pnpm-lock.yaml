@@ -391,6 +391,9 @@ importers:
 
   apps/studio:
     dependencies:
+      '@ariakit/react':
+        specifier: ^0.4.5
+        version: 0.4.5(react-dom@18.2.0)(react@18.2.0)
       '@babel/parser':
         specifier: ^7.21.1
         version: 7.23.9
@@ -517,6 +520,9 @@ importers:
       lucide-react:
         specifier: ^0.265.0
         version: 0.265.0(react@18.2.0)
+      match-sorter:
+        specifier: ^6.3.4
+        version: 6.3.4
       monaco-editor:
         specifier: ^0.36.1
         version: 0.36.1
@@ -580,6 +586,9 @@ importers:
       tailwind-merge:
         specifier: ^1.10.0
         version: 1.14.0
+      tailwindcss-radix:
+        specifier: ^3.0.3
+        version: 3.0.3
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
@@ -700,7 +709,7 @@ importers:
         version: 4.0.0(axios@1.6.8)
       codemod:
         specifier: latest
-        version: 0.10.2
+        version: 0.10.3
       diff:
         specifier: ^5.1.0
         version: 5.1.0
@@ -4472,6 +4481,34 @@ packages:
       - encoding
     dev: false
 
+  /@ariakit/core@0.4.5:
+    resolution: {integrity: sha512-e294+bEcyzt/H/kO4fS5/czLAlkF7PY+Kul3q2z54VY+GGay8NlVs9UezAB7L4jUBlYRAXwp7/1Sq3R7b+MZ7w==}
+    dev: false
+
+  /@ariakit/react-core@0.4.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-ciTYPwpj/+mdA+EstveEnoygbx5e4PXQJxfkLKy4lkTkDJJUS9GcbYhdnIFJVUta6P1YFvzkIKo+/y9mcbMKJg==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/core': 0.4.5
+      '@floating-ui/dom': 1.6.3
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@ariakit/react@0.4.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-GUHxaOY1JZrJUHkuV20IY4NWcgknhqTQM0qCQcVZDCi+pJiWchUjTG+UyIr/Of02hU569qnQ7yovskCf+V3tNg==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/react-core': 0.4.5(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@aws-crypto/crc32@3.0.0:
     resolution: {integrity: sha512-IzSgsrxUcsrejQbPVilIKy16kAT52EwB6zSaI+M3xxIhKh5+aldEyvI+z6erM7TCLB2BJsFrtHjp6/4/sr+3dA==}
     dependencies:
@@ -5466,7 +5503,6 @@ packages:
     engines: {node: '>=6.9.0'}
     dependencies:
       '@babel/types': 7.24.0
-    dev: true
 
   /@babel/helper-module-transforms@7.23.3(@babel/core@7.23.9):
     resolution: {integrity: sha512-7bBs4ED9OmswdfDzpz4MpWgSrV7FXlc3zIagvLFjS5H+Mk7Snr21vQ6QwrsoCGMfNC4e4LQPdoULEt4ykz0SRQ==}
@@ -5476,7 +5512,7 @@ packages:
     dependencies:
       '@babel/core': 7.23.9
       '@babel/helper-environment-visitor': 7.22.20
-      '@babel/helper-module-imports': 7.22.15
+      '@babel/helper-module-imports': 7.24.3
       '@babel/helper-simple-access': 7.22.5
       '@babel/helper-split-export-declaration': 7.22.6
       '@babel/helper-validator-identifier': 7.22.20
@@ -14416,16 +14452,20 @@ packages:
       periscopic: 3.1.0
     dev: false
 
-  /codemod@0.10.2:
-    resolution: {integrity: sha512-ZxM4iNGMKh/0Y0oF4LyDZtXtn8oRCHBUY+7+IsYs5fQbsoj6F4pLF5frzu8fUYaXoL7nUFeNcdgbs9oFeQooBg==}
+  /codemod@0.10.3:
+    resolution: {integrity: sha512-e/yguJayl3Sy/gbqaRzzRAeuiz1Ob/6klpbEzbHT+aKjW9xj3cVVt2LiUJ8jcvq2rVD6+i0mlb58gCZ5YeiuJw==}
     engines: {node: '>=18.5.0'}
     hasBin: true
+    requiresBuild: true
     dependencies:
+      '@vue/compiler-sfc': 3.4.21
       exponential-backoff: 3.1.1
       inquirer: 9.2.16
       js-yaml: 4.1.0
+      keytar: 7.9.0
       ms: 2.1.3
       prettier: 3.2.5
+      vue-sfc-descriptor-to-string: 2.0.0
     dev: false
 
   /color-convert@1.9.3:
@@ -17797,6 +17837,13 @@ packages:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
     dev: false
 
+  /match-sorter@6.3.4:
+    resolution: {integrity: sha512-jfZW7cWS5y/1xswZo8VBOdudUiSd9nifYRWphc9M5D/ee4w4AoXLgBEdRbgVaxbMuagBPeUC5y2Hi8DO6o9aDg==}
+    dependencies:
+      '@babel/runtime': 7.23.9
+      remove-accents: 0.5.0
+    dev: false
+
   /md5@2.3.0:
     resolution: {integrity: sha512-T1GITYmFaKuO91vxyoQMFETst+O71VUPEU3ze5GNzDm0OWdP8v1ziTaAEPUr/3kLsY3Sftgz242A1SetQiDL7g==}
     dependencies:
@@ -20762,6 +20809,10 @@ packages:
       unified: 10.1.2
     dev: false
 
+  /remove-accents@0.5.0:
+    resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
+    dev: false
+
   /repeat-string@1.6.1:
     resolution: {integrity: sha512-PV0dzCYDNfRi1jCDbJzpW7jNNDRuCOG/jI5ctQcGKt/clZD+YcPS3yIlWuTJMmESC8aevCFmWJy5wjAFgNqN6w==}
     engines: {node: '>=0.10'}
@@ -21713,6 +21764,10 @@ packages:
     dependencies:
       tailwindcss: 3.4.1
     dev: true
+
+  /tailwindcss-radix@3.0.3:
+    resolution: {integrity: sha512-uueKWJIY98tU4Fip2FTL2eXBqX428e5HBwbu+8rqqJ9H3NuhkcAGS66wNHZjeix56f6nNBhkhMLpQeIrmVxH/w==}
+    dev: false
 
   /tailwindcss@3.4.1:
     resolution: {integrity: sha512-qAYmXRfk3ENzuPBakNK0SRrUDipP8NQnEY6772uDhflcQz5EhRdD7JNZxyrFHVQNCwULPBn6FNPp9brpO7ctcA==}
@@ -22924,7 +22979,7 @@ packages:
       debug: 4.3.4(supports-color@5.5.0)
       pathe: 1.1.2
       picocolors: 1.0.0
-      vite: 5.2.8(@types/node@20.12.4)
+      vite: 5.0.12(@types/node@20.12.4)
     transitivePeerDependencies:
       - '@types/node'
       - less
@@ -23610,7 +23665,7 @@ packages:
       strip-literal: 2.1.0
       tinybench: 2.6.0
       tinypool: 0.8.2
-      vite: 5.2.8(@types/node@20.12.4)
+      vite: 5.0.12(@types/node@20.12.4)
       vite-node: 1.4.0(@types/node@20.12.4)
       why-is-node-running: 2.2.2
     transitivePeerDependencies:

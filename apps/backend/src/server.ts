@@ -6,7 +6,7 @@ import { OutgoingHttpHeaders } from "node:http";
 import { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import cors, { FastifyCorsOptions } from "@fastify/cors";
+import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
@@ -114,30 +114,43 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 		handleProcessExit(0);
 	});
 
+	fastify.addHook("onRequest", (request, reply, done) => {
+		reply.header("Access-Control-Allow-Origin", "false");
+		done();
+	});
+
 	await fastify.register(cors, {
-		origin: (origin, cb) => {
-			if (!origin) {
-				cb(null, true);
-				return;
-			}
+		origin: false, // Disallow all cross-origin requests
+	});
 
-			const hostname = new URL(origin).hostname.replace(/^www\./, "");
-
-			if (hostname === "localhost" || hostname === "codemod.studio") {
-				cb(null, true);
-				return;
-			}
-
-			cb(new Error("Not allowed"), false);
-		},
-		methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
-		exposedHeaders: [
-			X_CODEMOD_ACCESS_TOKEN,
-			"x-clerk-auth-reason",
-			"x-clerk-auth-message",
-		],
-		allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
-	} satisfies FastifyCorsOptions);
+	// await fastify.register(cors, {
+	// 	origin: (origin, cb) => {
+	// 		if (!origin) {
+	// 			cb(null, true);
+	// 			return;
+	// 		}
+	//
+	// 		const hostname = new URL(origin).hostname.replace(/^www\./, "");
+	//
+	// 		if (hostname === "localhost" || hostname === "codemod.studio") {
+	// 			cb(null, true);
+	// 			return;
+	// 		}
+	//
+	// 		cb(new Error("Not allowed"), false);
+	// 	},
+	// 	methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
+	// 	exposedHeaders: [
+	// 		X_CODEMOD_ACCESS_TOKEN,
+	// 		"x-clerk-auth-reason",
+	// 		"x-clerk-auth-message",
+	// 	],
+	// 	allowedHeaders: [
+	// 		X_CODEMOD_ACCESS_TOKEN,
+	// 		"Content-Type",
+	// 		"Authorization",
+	// 	],
+	// } satisfies FastifyCorsOptions);
 
 	await fastify.register(fastifyRateLimit, {
 		max: 100,
