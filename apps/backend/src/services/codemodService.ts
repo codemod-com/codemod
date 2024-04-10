@@ -153,10 +153,10 @@ export class CodemodService {
 			codemods.map(async (codemod) => {
 				const useCaseCategory = useCaseCategoryTags.find((tag) =>
 					tag.aliases.some((t) => codemod.tags.includes(t)),
-				)?.displayName;
+				)?.title;
 				const framework = frameworkTags.find((tag) =>
 					tag.aliases.some((t) => codemod.tags.includes(t)),
-				)?.displayName;
+				)?.title;
 
 				return {
 					...codemod,
