@@ -160,8 +160,8 @@ export class CodemodService {
 
 				return {
 					...codemod,
-					framework: framework || "",
-					useCaseCategory: useCaseCategory || "",
+					framework: framework ?? "",
+					useCaseCategory: useCaseCategory ?? "",
 				};
 			}),
 		);
