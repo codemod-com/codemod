@@ -1,6 +1,7 @@
 import type { Message } from "ai";
 import {
 	type Output,
+	array,
 	literal,
 	number,
 	object,
@@ -27,7 +28,7 @@ const frozenMessageSchema = object({
 type FrozenMessage = Output<typeof frozenMessageSchema>;
 
 export const parseFrozenMessages = (input: unknown) =>
-	parse(frozenMessageSchema, input);
+	parse(array(frozenMessageSchema), input);
 
 export const freezeMessage = (message: Message): FrozenMessage => ({
 	id: message.id,

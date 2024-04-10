@@ -15,7 +15,6 @@ export const getCodeDiff = async (body: {
 		const res = await apiClient.get<GetCodeDiffResponse>(
 			`diffs/${diffId}?iv=${iv}`,
 		);
-		// Axios automatically converts header names to lowercase in the `headers` object.
 
 		return res.data;
 	} catch (e) {
