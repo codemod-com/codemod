@@ -16,12 +16,12 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
 	return result;
 };
 
-type LongCodemodIndoDetails = {
+type LongCodemodInfoDetails = {
 	framework: string | null | undefined;
 	useCaseCategory: string | null | undefined;
 };
 
-export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
+export type LongCodemodInfo = Codemod & LongCodemodInfoDetails;
 
 export type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
 	Pick<CodemodVersion, "engine">;
