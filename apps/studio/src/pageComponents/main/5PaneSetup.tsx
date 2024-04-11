@@ -3,7 +3,7 @@ import { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-// import toast from "react-hot-toast";
+import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import { getCodeDiff } from "~/api/getCodeDiff";
@@ -20,6 +20,7 @@ import {
 	AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
+import { Progress } from "~/components/ui/progress";
 import {
 	Select,
 	SelectContent,
@@ -28,8 +29,8 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-// import { useExecutionStatus } from "~/hooks/useExecutionStatus";
 import { useAuth } from "~/hooks/useAuth";
+import { useExecutionStatus } from "~/hooks/useExecutionStatus";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import {
@@ -118,38 +119,52 @@ const Main = () => {
 
 	const { engine, setEngine } = useSnippetStore();
 	const { toggleTheme, isDark } = useTheme();
-	// const executionId = "id"; // TODO: replace it with real id
-	// const executionStatus = useExecutionStatus(executionId) ?? {
-	// 	// TODO: Remove dummy data
-	// 	status: "progress",
-	// 	statusMessage: "processed 100 files",
-	// 	result: null,
-	// 	progressInfo: { processed: 100, total: 300 },
-	// };
+	const executionId = "id"; // TODO: replace it with real id
+	const executionStatus = useExecutionStatus(executionId) ?? {
+		// TODO: Remove dummy data
+		status: "progress",
+		statusMessage: "processed 100 files",
+		result: null,
+		progressInfo: { processed: 100, total: 300 },
+	};
 
 	const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
 		setEngine(value as KnownEngines);
 	};
 
-	// useEffect(() => {
-	// 	if (executionStatus === null) {
-	// 		return;
-	// 	}
-	// 	const { status, statusMessage, result } = executionStatus;
-	// 	if (status === "done") {
-	// 		toast.success(
-	// 			result === null
-	// 				? statusMessage
-	// 				: `${statusMessage}\nGo to ${result.link} to see the results.`,
-	// 			{ duration: 6000 },
-	// 		);
-	// 	}
-	// 	if (status === "progress") {
-	// 		toast(statusMessage, {
-	// 			icon: "🚧",
-	// 		});
-	// 	}
-	// }, [executionStatus]);
+	useEffect(() => {
+		if (executionStatus === null) {
+			return;
+		}
+		const { status, statusMessage, result, progressInfo } = executionStatus;
+		if (status === "done") {
+			toast.success(
+				result === null
+					? statusMessage
+					: `${statusMessage}\nGo to ${result.link} to see the results.`,
+				{ duration: 6000, id: executionId },
+			);
+		}
+
+		if (status === "progress") {
+			toast(
+				() => (
+					<div className="flex flex-col items-center justify-center w-80">
+						{progressInfo !== null && (
+							<Progress
+								className="mt-2"
+								value={(progressInfo.processed / progressInfo.total) * 100}
+							/>
+						)}
+						<p className="font-normal text-lg mt-3">{statusMessage}</p>
+					</div>
+				),
+				{
+					id: executionId,
+				},
+			);
+		}
+	}, [executionStatus]);
 
 	const snippetStore = useSnippetStore();
 
