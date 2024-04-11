@@ -36,11 +36,28 @@ export const Header = () => {
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
 
-	const { codemodRunStatus, onCodemodRun } = useCodemodExecution({
-		engine,
-		target: selectedRepository?.full_name ?? null,
-		source: internalContent,
-	});
+	const { codemodRunStatus, onCodemodRun } = useCodemodExecution();
+
+	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
+	const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
+
+	const handleCodemodRun = async () => {
+		if (
+			selectedRepository === undefined ||
+			internalContent === null ||
+			!isCodemodSourceNotEmpty
+		) {
+			return;
+		}
+
+		await onCodemodRun({
+			engine,
+			target: selectedRepository.full_name,
+			source: internalContent,
+		});
+
+		hideRepositoryModal();
+	};
 
 	const getRepositories = async () => {
 		const repositories = (await getRepos()).data;
@@ -72,13 +89,10 @@ export const Header = () => {
 		? showModalWithRepositories
 		: getSignIn({ withPendingAction: "openRepoModal" });
 
-	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
-	const isCodemodSourceSet = internalContent?.trim() !== "";
-
 	const buttons = useButtons(
 		ensureSignIn,
 		isCodemodRunIdle,
-		isCodemodSourceSet,
+		isCodemodSourceNotEmpty,
 	);
 
 	// Post repo to run codemod on it
@@ -117,7 +131,7 @@ export const Header = () => {
 				repositoriesToShow={repositoriesToShow}
 				selectRepository={selectRepository}
 				selectedRepository={selectedRepository}
-				onRunCodemod={onCodemodRun}
+				onRunCodemod={handleCodemodRun}
 			/>
 			<TopBar />
 			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
