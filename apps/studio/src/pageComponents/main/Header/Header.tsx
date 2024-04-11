@@ -1,6 +1,7 @@
 import { GithubRepository } from "be-types";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
+import Text from "~/components/Text";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { GH_REPO_LIST } from "~/constants";
@@ -99,15 +100,18 @@ export const Header = () => {
 		codemodRunStatus?.status ?? "idle",
 	);
 
-	const progress =
+	const progressInfo =
 		codemodRunStatus?.status === "progress"
 			? codemodRunStatus.progressInfo
 			: null;
-	const processBar = progress && (
+	const isFetchingRepo =
+		codemodRunStatus?.status === "progress" &&
+		codemodRunStatus.progressInfo === null;
+	const processBar = progressInfo && (
 		<div className="flex flex-col items-center justify-center w-80">
 			<Progress
 				className="mt-2"
-				value={(progress.processed / progress.total) * 100}
+				value={(progressInfo.processed / progressInfo.total) * 100}
 			/>
 		</div>
 	);
@@ -125,8 +129,19 @@ export const Header = () => {
 			<TopBar />
 			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
 				<div />
-				<div className="flex gap-2">
-					{processBar}
+				<div className="flex gap-2 items-center">
+					{isFetchingRepo ? (
+						<Text
+							heading="span"
+							size="sm"
+							color="black"
+							className="mr-3 text-center"
+						>
+							Fetching repository...
+						</Text>
+					) : (
+						processBar
+					)}
 					{buttons.map(({ Icon, hintText, ...button }) => (
 						<Button
 							size="xs"

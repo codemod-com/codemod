@@ -75,7 +75,7 @@ export const useExecutionStatus = (
 								</Button>
 							</span>
 						),
-						{ duration: 1000 * 60 * 3 }, // 3 minutes
+						{ duration: 1000 * 60 * 3, id: executionId }, // 3 minutes
 					);
 
 					return;

@@ -72,7 +72,7 @@ const getExecutionStatus = async ({
 		// );
 
 		// @TODO mock
-		const mockedRes = codemodRunStatusResponses[i % 4];
+		const mockedRes = codemodRunStatusResponses[i % 5];
 		i++;
 
 		if (!mockedRes) {
