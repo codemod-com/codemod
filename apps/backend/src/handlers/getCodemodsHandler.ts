@@ -1,6 +1,6 @@
 import { Codemod } from "@prisma/client";
 import { CustomHandler } from "../customHandler.js";
-import { parseGetCodemodsQuery } from "../schemata/query.js";
+import { parseGetCodemodsQuery } from "../schemata/schema.js";
 
 export const getCodemodsHandler: CustomHandler<{
 	total: number;

@@ -1,3 +1,4 @@
+import { KnownEngines } from "@codemod-com/utilities";
 import React, { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
@@ -5,7 +6,6 @@ import { isServer } from "~/config";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
-import { JSEngine } from "~/types/Engine";
 import { Void } from "~/types/transformations";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
@@ -88,7 +88,7 @@ export const AstSection = ({
 }: {
 	panels: PanelData[];
 	panelRefs: PanelsRefs;
-	engine: JSEngine;
+	engine: KnownEngines;
 }) => {
 	return panels.filter(isVisible).map((panel, i, { length }) => (
 		<>

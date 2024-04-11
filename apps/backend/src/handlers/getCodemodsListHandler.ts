@@ -1,5 +1,5 @@
 import { CustomHandler } from "../customHandler.js";
-import { parseListCodemodsQuery } from "../schemata/query.js";
+import { parseListCodemodsQuery } from "../schemata/schema.js";
 import { ShortCodemodInfo } from "../services/codemodService.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 

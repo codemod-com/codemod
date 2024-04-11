@@ -12,7 +12,7 @@ import type { PrinterBlueprint } from "./printer.js";
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph"];
 
 export const handleBuildCliCommand = async (
-	printer: PrinterBlueprint,
+	_printer: PrinterBlueprint,
 	source: string,
 ) => {
 	const absoluteSource = resolve(source);

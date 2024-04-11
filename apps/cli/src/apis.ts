@@ -118,3 +118,23 @@ export const confirmUserLoggedIn = async (
 
 	return res.data.token;
 };
+
+type CreateCodeDiffResponse = {
+	id: string;
+	iv: string;
+};
+export const createCodeDiff = async (body: {
+	beforeSnippet: string;
+	afterSnippet: string;
+}): Promise<CreateCodeDiffResponse> => {
+	const res = await Axios.post<CreateCodeDiffResponse>(
+		"https://backend.codemod.com/diffs",
+		{
+			before: body.beforeSnippet,
+			after: body.afterSnippet,
+			source: "cli",
+		},
+	);
+
+	return res.data;
+};

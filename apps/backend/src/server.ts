@@ -31,13 +31,16 @@ import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
-import { parseIv, parseValidateIntentParams } from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
+	parseDiffCreationBody,
+	parseGetCodeDiffParams,
 	parseGetUserRepositoriesParams,
+	parseIv,
 	parseSendChatBody,
 	parseSendMessageBody,
+	parseValidateIntentParams,
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
@@ -359,6 +362,71 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		wrapRequestHandlerMethod(validationHandler),
 	);
 
+	instance.get("/diffs/:id", async (request, reply) => {
+		const { id } = parseGetCodeDiffParams(request.params);
+		const { iv: ivStr } = parseIv(request.query);
+
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+		const iv = Buffer.from(ivStr, "base64url");
+
+		const codeDiff = await prisma.codeDiff.findUnique({
+			where: { id },
+		});
+
+		if (!codeDiff) {
+			reply.code(400).send();
+			return;
+		}
+
+		let before: string;
+		let after: string;
+		try {
+			before = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.before, "base64url"),
+			).toString();
+			after = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.after, "base64url"),
+			).toString();
+		} catch (err) {
+			reply.code(400).send();
+			return;
+		}
+
+		reply.type("application/json").code(200);
+		return { before, after };
+	});
+
+	instance.post("/diffs", async (request, reply) => {
+		const body = parseDiffCreationBody(request.body);
+
+		const iv = randomBytes(16);
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+
+		const codeDiff = await prisma.codeDiff.create({
+			data: {
+				name: body.name,
+				source: body.source,
+				before: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.before),
+				).toString("base64url"),
+				after: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.after),
+				).toString("base64url"),
+			},
+		});
+
+		reply.type("application/json").code(200);
+		return { id: codeDiff.id, iv: iv.toString("base64url") };
+	});
+
 	instance.delete("/revokeToken", wrapRequestHandlerMethod(revokeTokenHandler));
 
 	instance.get("/intents/:id", async (request, reply) => {
@@ -401,8 +469,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		await prisma.userLoginIntent.delete({
 			where: { id: result.id },
 		});
-
-		// TODO: Create cron to clean up intents
 
 		reply.type("application/json").code(200);
 		return { token: decryptedToken };

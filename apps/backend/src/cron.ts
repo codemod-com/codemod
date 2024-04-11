@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { prisma } from "./db/prisma";
 
-const job = new CronJob(
+new CronJob(
 	"* * * * *", // cronTime
 	async () => {
 		const twoMinutesAgo = new Date();

@@ -2,10 +2,10 @@ import { isFile } from "@babel/types";
 import create from "zustand";
 import { INITIAL_STATE } from "~/store/getInitialState";
 
+import { KnownEngines } from "@codemod-com/utilities";
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { JSEngine } from "~/types/Engine";
 import { type TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
@@ -18,7 +18,7 @@ export type Token = Readonly<{
 }>;
 
 type SnippetStateValues = {
-	engine: JSEngine;
+	engine: KnownEngines;
 	inputSnippet: string;
 	outputSnippet: string;
 	beforeInputRootNode: TreeNode | null;
@@ -32,7 +32,7 @@ type SnippetStateValues = {
 };
 
 type SnippetStateSetters = {
-	setEngine: (engine: JSEngine) => void;
+	setEngine: (engine: KnownEngines) => void;
 	setInput: (input: string) => void;
 	setOutput: (output: string) => void;
 	setInputSelection: (command: RangeCommand) => void;

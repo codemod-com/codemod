@@ -1,10 +1,12 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
+import { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
+import { getCodeDiff } from "~/api/getCodeDiff";
 import Panel from "~/components/Panel";
 import InsertExampleButton from "~/components/button/InsertExampleButton";
 import Chat from "~/components/chatbot/Chat";
@@ -54,7 +56,11 @@ import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
 import { useTheme } from "./themeContext";
 
-const enginesConfig = [
+const enginesConfig: Array<{
+	label: string;
+	disabled: boolean;
+	value: KnownEngines | "piranha";
+}> = [
 	{
 		label: "jscodeshift",
 		value: "jscodeshift",
@@ -62,7 +68,7 @@ const enginesConfig = [
 	},
 	{
 		label: "ts-morph [beta]",
-		value: "tsmorph",
+		value: "ts-morph",
 		disabled: false,
 	},
 	{
@@ -72,12 +78,12 @@ const enginesConfig = [
 	},
 ];
 
-const isServer = typeof window === "undefined";
+const LEARN_KEY = "learn";
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
 const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2 =
 	"accessTokenRequestedByVSCE";
 const ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY = "accessTokenRequestedByCLI";
-const ACCESS_TOKEN_REQUESTED_KEYS = [
+const ACCESS_TOKEN_COMMANDS = [
 	ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1,
 	ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2,
 	ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
@@ -121,10 +127,8 @@ const Main = () => {
 	// 	progressInfo: { processed: 100, total: 300 },
 	// };
 
-	const onEngineChange = (value: string) => {
-		if (value === "jscodeshift" || value === "tsmorph") {
-			setEngine(value);
-		}
+	const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
+		setEngine(value as KnownEngines);
 	};
 
 	// useEffect(() => {
@@ -146,6 +150,8 @@ const Main = () => {
 	// 		});
 	// 	}
 	// }, [executionStatus]);
+
+	const snippetStore = useSnippetStore();
 
 	useEffect(() => {
 		if (!isSignedIn) {
@@ -182,9 +188,7 @@ const Main = () => {
 			} else {
 				await routeUserToVSCodeWithAccessToken(clerkToken);
 			}
-			ACCESS_TOKEN_REQUESTED_KEYS.forEach((key) =>
-				localStorage.removeItem(key),
-			);
+			ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
 		})();
 	}, [isSignedIn, getToken]);
 
@@ -192,7 +196,7 @@ const Main = () => {
 		const searchParams = new URLSearchParams(window.location.search);
 		const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
-		if (command === null || !ACCESS_TOKEN_REQUESTED_KEYS.includes(command)) {
+		if (command === null || !ACCESS_TOKEN_COMMANDS.includes(command)) {
 			return;
 		}
 
@@ -212,8 +216,8 @@ const Main = () => {
 						sessionId,
 						iv,
 					});
-					return;
 				}
+
 				await routeUserToVSCodeWithAccessToken(clerkToken);
 			})();
 			return;
@@ -230,6 +234,39 @@ const Main = () => {
 
 		router.push("/auth/sign-in");
 	}, [getToken, isSignedIn, router]);
+
+	useEffect(() => {
+		const searchParams = new URLSearchParams(window.location.search);
+		const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+
+		if (command === LEARN_KEY) {
+			(async () => {
+				try {
+					const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
+						"jscodeshift") as KnownEngines;
+					const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+					const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+					if (!engine || !diffId || !iv) {
+						return;
+					}
+
+					const snippets = await getCodeDiff({ diffId, iv });
+
+					if (!snippets) {
+						return;
+					}
+
+					snippetStore.setInput(snippets.before);
+					snippetStore.setOutput(snippets.after);
+					snippetStore.setEngine(engine);
+				} catch (err) {
+					console.error(err);
+				}
+			})();
+			return;
+		}
+	}, []);
 
 	const codemodHeader = (
 		<Panel.Header className="h-[30px]">
@@ -422,7 +459,7 @@ function SignInRequired() {
 
 const LoginWarningModal = () => {
 	const { isSignedIn, isLoaded } = useAuth();
-	const isFromCLI = useSearchParams().get("command") === "learn";
+	const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
 	const [isOpen, setIsOpen] = useState(false);
 	useEffect(() => {
 		setIsOpen(isFromCLI && isLoaded && !isSignedIn);
@@ -493,7 +530,7 @@ const AssistantTab = ({
 		}
 	};
 
-	if (engine === "tsmorph") {
+	if (engine === "ts-morph") {
 		return (
 			<div className="flex h-full w-full items-center justify-center">
 				<Text>The Assistant is not yet available for TS-Morph codemods.</Text>
