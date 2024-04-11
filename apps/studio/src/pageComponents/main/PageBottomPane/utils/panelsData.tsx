@@ -1,4 +1,4 @@
-import { KnownEngines } from "@codemod-com/utilities";
+import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
 import {
 	ContentViewerVariant,

@@ -2,7 +2,7 @@ import { isFile } from "@babel/types";
 import { create } from "zustand";
 import { INITIAL_STATE } from "~/store/getInitialState";
 
-import { KnownEngines } from "@codemod-com/utilities";
+import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";

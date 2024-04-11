@@ -1,7 +1,7 @@
 import { useAuth } from "@clerk/nextjs";
+import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import { GithubRepository } from "be-types";
 import apiClient from "~/api/client";
-import { JSEngine } from "~/types/Engine";
 
 const repositoriesMock: { data: GithubRepository[] } = {
 	data: [
@@ -39,7 +39,7 @@ const codemodRunMock = {
 };
 
 export type ExecuteCodemodRequest = {
-	engine: JSEngine;
+	engine: KnownEngines;
 	source: string;
 	target: string;
 };
