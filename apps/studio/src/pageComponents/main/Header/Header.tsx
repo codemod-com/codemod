@@ -13,7 +13,7 @@ import { useButtons } from "~/pageComponents/main/Header/useButtons";
 import { usePendingActionsOnSignInStore } from "~/store/zustand/user";
 import { DownloadZip } from "../DownloadZip";
 
-const Header = () => {
+export const Header = () => {
 	const { isSignedIn, getSignIn } = useAuth();
 	const [repositoriesToShow, setRepositoriesToShow] = useState<
 		GithubRepository[]
@@ -120,5 +120,3 @@ const Header = () => {
 		</>
 	);
 };
-
-export default Header;

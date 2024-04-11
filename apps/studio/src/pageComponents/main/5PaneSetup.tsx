@@ -51,7 +51,7 @@ import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import Codemod from "./Codemod";
-import Header from "./Header/Header";
+import { Header } from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
@@ -111,7 +111,7 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 };
 
 const Main = () => {
-	const { getSignIn, getToken, isSignedIn } = useAuth();
+	const { isSignedIn, getToken, getSignIn } = useAuth();
 	const panelRefs: PanelsRefs = useRef({});
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
