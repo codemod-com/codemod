@@ -5,10 +5,14 @@ import getExecutionStatus, {
 } from "~/api/getExecutionStatus";
 
 export const useExecutionStatus = (
-	executionId: string,
+	executionId: string | null,
 ): GetExecutionStatusResponse | null => {
 	const [executionStatus, setExecutionStatus] =
-		useState<GetExecutionStatusResponse | null>(null);
+		useState<GetExecutionStatusResponse>({
+			status: "idle",
+			statusMessage: "Not started",
+		});
+
 	const { getToken } = useAuth();
 
 	useEffect(() => {

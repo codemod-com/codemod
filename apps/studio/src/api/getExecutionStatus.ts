@@ -3,12 +3,20 @@ import { GET_EXECUTION_STATUS } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";
 
-type GetExecutionStatusResponse = Readonly<{
-	status: "progress" | "done";
-	statusMessage: string; // "waiting for execution to start" | "fetching repo" | "processing files: 100/1000"
-	result: { link: string } | null; // link to Github branch / PR created by the execution
-	progressInfo: { processed: number; total: number } | null;
-}>;
+type GetExecutionStatusResponse =
+	| Readonly<{
+			status: "idle";
+			statusMessage: string;
+	  }>
+	| Readonly<{
+			status: "progress";
+			progressInfo: { processed: number; total: number };
+	  }>
+	| Readonly<{
+			status: "done";
+			statusMessage: string;
+			result: { link: string };
+	  }>;
 
 type GetExecutionStatusRequest = Readonly<{
 	token: string;

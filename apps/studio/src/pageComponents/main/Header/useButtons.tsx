@@ -7,7 +7,8 @@ import { useSnippetStore } from "~/store/zustand/snippets";
 
 export const useButtons = (
 	ensureSignIn: VoidFunction,
-	isProcessing?: boolean,
+	isCodemodRunIdle: boolean,
+	isCodemodSourceSet: boolean,
 ) => {
 	const { setInput, setOutput } = useSnippetStore();
 	const { setContent } = useModStore();
@@ -15,11 +16,15 @@ export const useButtons = (
 	const { getShareLink } = usePublicLinkSharing();
 	return [
 		{
-			hintText: "Run Codemod on branch",
+			hintText: !isCodemodRunIdle
+				? "Codemod is already executing"
+				: !isCodemodSourceSet
+				  ? "Specify the codemod source"
+				  : "Run Codemod on branch",
 			onClick: ensureSignIn,
 			Icon: CheckIcon,
 			text: "Run on branch",
-			disabled: isProcessing,
+			disabled: !isCodemodRunIdle || !isCodemodSourceSet,
 		},
 		{
 			hintText: "Clear all inputs",

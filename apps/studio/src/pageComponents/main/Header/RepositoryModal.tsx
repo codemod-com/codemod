@@ -135,7 +135,18 @@ export const RepositoryModal = ({
 						</RadixSelect.Content>
 					</ComboboxProvider>
 				</RadixSelect.Root>
-				<Button className="ml-3 text-amber-50" onClick={onRunCodemod}>
+				<Button
+					className="ml-3 text-amber-50"
+					onClick={onRunCodemod}
+					hint={
+						!selectRepository ? (
+							<p className="font-normal">
+								Select repository to run the codemod
+							</p>
+						) : null
+					}
+					disabled={!selectedRepository}
+				>
 					Run Codemod
 				</Button>
 			</div>
