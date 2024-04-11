@@ -3,20 +3,23 @@ import { GET_EXECUTION_STATUS } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";
 
-type GetExecutionStatusResponse =
-	| Readonly<{
-			status: "idle";
-			statusMessage: string;
-	  }>
-	| Readonly<{
-			status: "progress";
-			progressInfo: { processed: number; total: number };
-	  }>
-	| Readonly<{
-			status: "done";
-			statusMessage: string;
-			result: { link: string };
-	  }>;
+type GetExecutionStatusResponse = Readonly<{ message: string }> &
+	(
+		| Readonly<{
+				status: "idle";
+		  }>
+		| Readonly<{
+				status: "progress";
+				progressInfo: { processed: number; total: number };
+		  }>
+		| Readonly<{
+				status: "done";
+				result: { link: string };
+		  }>
+		| Readonly<{
+				status: "error";
+		  }>
+	);
 
 type GetExecutionStatusRequest = Readonly<{
 	token: string;

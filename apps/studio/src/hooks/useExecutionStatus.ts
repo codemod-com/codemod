@@ -4,20 +4,23 @@ import getExecutionStatus, {
 	GetExecutionStatusResponse,
 } from "~/api/getExecutionStatus";
 
+const idleStatus = {
+	status: "idle",
+	message: "Not started",
+} as const;
+
 export const useExecutionStatus = (
 	executionId: string | null,
 ): GetExecutionStatusResponse | null => {
 	const [executionStatus, setExecutionStatus] =
-		useState<GetExecutionStatusResponse>({
-			status: "idle",
-			statusMessage: "Not started",
-		});
+		useState<GetExecutionStatusResponse>(idleStatus);
 
 	const { getToken } = useAuth();
 
 	useEffect(() => {
 		const handler = async () => {
-			if (!executionId) {
+			if (executionId === null) {
+				setExecutionStatus(idleStatus);
 				return;
 			}
 
