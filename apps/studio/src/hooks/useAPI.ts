@@ -41,8 +41,8 @@ export const useAPI = <T>(endpoint: string) => {
 		},
 	});
 	return {
-		get: async <U = T>() =>
-			await apiClient.get<U>(endpoint, await getHeaders()),
+		get: async <U = T>() => repositoriesMock,
+		//   await apiClient.get<U>(endpoint, await getHeaders()),
 		put: async <U = T>(body: U) =>
 			await apiClient.put<U>(endpoint, {
 				...(await getHeaders()),
