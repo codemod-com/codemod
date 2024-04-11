@@ -18,6 +18,7 @@ export const useExecutionStatus = (
 	const { getToken } = useAuth();
 
 	useEffect(() => {
+		let timeoutId = -1;
 		const handler = async () => {
 			if (executionId === null) {
 				setExecutionStatus(idleStatus);
@@ -37,11 +38,14 @@ export const useExecutionStatus = (
 
 			if (executionStatusOrError.isLeft()) {
 				console.error(executionStatusOrError.getLeft());
+				clearTimeout(timeoutId);
 			} else {
-				setExecutionStatus(executionStatusOrError.get());
+				const execution = executionStatusOrError.get();
+				setExecutionStatus(execution);
+				if (execution.status === "done") clearTimeout(timeoutId);
 			}
 		};
-		handler();
+		timeoutId = window.setTimeout(handler, 5000);
 	}, [executionId, getToken]);
 
 	return executionStatus;
