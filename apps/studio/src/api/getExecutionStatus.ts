@@ -24,16 +24,12 @@ type GetExecutionStatusRequest = Readonly<{
 	executionId: string;
 }>;
 
+let i = 0;
 const codemodRunStatusResponses: GetExecutionStatusResponse[] = [
 	{
-		status: "done",
-		message: "",
-		result: { link: "http://github.com/cal.com" },
-	},
-	{
 		status: "progress",
-		message: "Processing files: 1234/12345",
-		progressInfo: { processed: 123, total: 12345 },
+		message: "Fetching repo...",
+		progressInfo: null,
 	},
 	{
 		status: "progress",
@@ -42,8 +38,13 @@ const codemodRunStatusResponses: GetExecutionStatusResponse[] = [
 	},
 	{
 		status: "progress",
-		message: "Fetching repo...",
-		progressInfo: null,
+		message: "Processing files: 1234/12345",
+		progressInfo: { processed: 123, total: 12345 },
+	},
+	{
+		status: "done",
+		message: "",
+		result: { link: "http://github.com/cal.com" },
 	},
 ];
 const getExecutionStatus = async ({
@@ -66,7 +67,8 @@ const getExecutionStatus = async ({
 		// );
 
 		// @TODO mock
-		const mockedRes = codemodRunStatusResponses.pop();
+		const mockedRes = codemodRunStatusResponses[i % 4];
+		i++;
 
 		if (!mockedRes) {
 			throw Error("");
