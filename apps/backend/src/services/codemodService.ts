@@ -177,7 +177,7 @@ export class CodemodService {
 		const filters: Filter[] = [
 			{
 				id: "category",
-				title: "Use case category",
+				title: "Use case",
 				values: await Promise.all(
 					useCaseCategoryTags.map(async (category) => ({
 						id: category.title,
@@ -192,7 +192,7 @@ export class CodemodService {
 			},
 			{
 				id: "framework",
-				title: "Frameworks",
+				title: "Framework",
 				values: await Promise.all(
 					frameworkTags.map(async (framework) => {
 						const count = await this.prisma.codemod.count({
@@ -210,7 +210,7 @@ export class CodemodService {
 			},
 			{
 				id: "author",
-				title: "Author",
+				title: "Owner",
 				values: authorCounts.map((count) => ({
 					id: count.author,
 					title: count.author,
