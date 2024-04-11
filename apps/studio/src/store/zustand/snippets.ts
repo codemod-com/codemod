@@ -1,5 +1,5 @@
 import { isFile } from "@babel/types";
-import create from "zustand";
+import { create } from "zustand";
 import { INITIAL_STATE } from "~/store/getInitialState";
 
 import { KnownEngines } from "@codemod-com/utilities";

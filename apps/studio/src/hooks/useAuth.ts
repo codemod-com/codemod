@@ -1,15 +1,11 @@
 import { useAuth as useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { authUrl } from "~/config";
-import {
-	PendingAction,
-	usePendingActionsOnSignInStore,
-} from "~/store/zustand/user";
+import { PendingAction, useUserSession } from "~/store/zustand/userSession";
 
 export const useAuth = () => {
 	const router = useRouter();
-	const { reset, addPendingActionsWhenSigned } =
-		usePendingActionsOnSignInStore();
+	const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
 	return {
 		...useClerk(),
 		getSignIn:
@@ -17,7 +13,7 @@ export const useAuth = () => {
 				withPendingAction,
 			}: { withPendingAction?: PendingAction } | undefined = {}) =>
 			() => {
-				reset();
+				resetPendingActions();
 				if (withPendingAction) addPendingActionsWhenSigned(withPendingAction);
 				router.push(authUrl);
 			},
