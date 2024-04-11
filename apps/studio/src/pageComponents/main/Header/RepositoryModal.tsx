@@ -57,10 +57,8 @@ export const RepositoryModal = ({
 	const { isDark } = useTheme();
 	return isRepositoryModalShown ? (
 		<Modal onClose={hideRepositoryModal} centered transparent={false}>
-			<div
-				className="flex justify-center align-items-center"
-				style={{ padding: "24px", background: "white" }}
-			>
+			<h2 className="text-center p-2">Select Repository</h2>
+			<div className="flex justify-center align-items-cente p-4 bg-white min-w-[400px]">
 				<RadixSelect.Root
 					value={selectedRepository?.full_name}
 					onValueChange={selectRepository}

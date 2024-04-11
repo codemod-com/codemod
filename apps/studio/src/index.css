@@ -22,6 +22,7 @@
 			0 1px 3px 0 rgb(0 0 0 / 0.1),
 			0 1px 2px -1px rgb(0 0 0 / 0.1);
 	color-scheme: light;
+	min-width: 200px;
 }
 
 .select:hover {
@@ -56,6 +57,7 @@
 	align-items: center;
 	padding: 0.25rem;
 	padding-bottom: 0px;
+	min-width: 200px;
 }
 
 .combobox {
