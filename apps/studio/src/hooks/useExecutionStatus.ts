@@ -46,6 +46,10 @@ export const useExecutionStatus = (
 			}
 		};
 		timeoutId = window.setTimeout(handler, 5000);
+
+		return () => {
+			window.clearTimeout(timeoutId);
+		};
 	}, [executionId, getToken]);
 
 	return executionStatus;
