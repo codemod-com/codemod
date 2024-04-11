@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/nextjs";
 import { GithubRepository } from "be-types";
 import apiClient from "~/api/client";
+import { JSEngine } from "~/types/Engine";
 
 const repositoriesMock: { data: GithubRepository[] } = {
 	data: [
@@ -32,6 +33,13 @@ const repositoriesMock: { data: GithubRepository[] } = {
 		},
 	],
 };
+
+export type ExecuteCodemodRequest = {
+	engine: JSEngine;
+	source: string;
+	target: string;
+};
+
 export const useAPI = <T>(endpoint: string) => {
 	const { getToken } = useAuth();
 	const getHeaders = async () => ({
@@ -48,8 +56,8 @@ export const useAPI = <T>(endpoint: string) => {
 				...(await getHeaders()),
 				body: JSON.stringify(body),
 			}),
-		post: async <U = T>(body: U) =>
-			await apiClient.post<U>(endpoint, {
+		post: async <K, U = T>(body: U) =>
+			await apiClient.post<K>(endpoint, {
 				...(await getHeaders()),
 				body: JSON.stringify(body),
 			}),

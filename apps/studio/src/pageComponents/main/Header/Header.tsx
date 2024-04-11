@@ -4,7 +4,7 @@ import { pipe } from "ramda";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
 import { GH_REPO_LIST, RUN_CODEMOD } from "~/constants";
-import { useAPI } from "~/hooks/useAPI";
+import { ExecuteCodemodRequest, useAPI } from "~/hooks/useAPI";
 import { useAuth } from "~/hooks/useAuth";
 import { useExecutionStatus } from "~/hooks/useExecutionStatus";
 import { useModal } from "~/hooks/useModal";
@@ -33,9 +33,7 @@ export const Header = () => {
 	} = useModal();
 
 	const { get: getRepos } = useAPI<GithubRepository[]>(GH_REPO_LIST);
-	const { post: runCodemod } = useAPI<{ codemodExecutionId: string }>(
-		RUN_CODEMOD,
-	);
+	const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
 	const { engine } = useSnippetStore();
 	const { internalContent } = useModStore();
@@ -89,12 +87,16 @@ export const Header = () => {
 		}
 
 		try {
-			const { codemodExecutionId } = await runCodemod({
+			const { data } = await runCodemod<
+				{ codemodExecutionId: string },
+				ExecuteCodemodRequest
+			>({
 				engine,
 				source: internalContent,
 				target: selectedRepository.full_name,
 			});
 
+			const { codemodExecutionId } = data;
 			setExecutionId(codemodExecutionId);
 		} catch (e) {}
 	};
