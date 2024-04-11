@@ -48,10 +48,10 @@ const getFirstValibotIssue = (issues: Issues) => {
 
 export const extractLibNameAndVersion = (val: string) => {
 	const parts = val.split("@");
-	let version: string | undefined;
+	let version: string | null = null;
 	let libName: string;
 	if (parts.length > 1) {
-		version = parts.pop();
+		version = parts.pop() ?? null;
 		libName = parts.join("@");
 	} else {
 		libName = val;
@@ -193,7 +193,7 @@ const configJsonBaseSchema = object({
 					}
 
 					// e.g. vitest. This would install the latest version
-					if (!version) {
+					if (version === null) {
 						return true;
 					}
 

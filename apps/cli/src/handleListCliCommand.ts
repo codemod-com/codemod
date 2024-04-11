@@ -3,12 +3,10 @@ import { getCodemodList } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
 
-export const handleListNamesCommand = async (options: {
-	printer: PrinterBlueprint;
-	search?: string;
-}) => {
-	const { printer, search } = options;
-
+export const handleListNamesCommand = async (
+	printer: PrinterBlueprint,
+	search: string | null,
+) => {
 	let stopSearchingMessage = () => {};
 	if (search && !printer.__jsonOutput) {
 		stopSearchingMessage = printer.withLoaderMessage((loader) =>
@@ -21,7 +19,7 @@ export const handleListNamesCommand = async (options: {
 		);
 	}
 
-	const configObjects = await getCodemodList(options);
+	const configObjects = await getCodemodList({ search });
 	stopSearchingMessage();
 
 	if (printer.__jsonOutput) {
