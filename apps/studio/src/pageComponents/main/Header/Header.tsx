@@ -14,7 +14,7 @@ import { TopBar } from "~/pageComponents/main/Header/TopBar";
 import { useButtons } from "~/pageComponents/main/Header/useButtons";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
-import { usePendingActionsOnSignInStore } from "~/store/zustand/user";
+import { useUserSession } from "~/store/zustand/userSession";
 import { DownloadZip } from "../DownloadZip";
 
 export const Header = () => {
@@ -71,8 +71,7 @@ export const Header = () => {
 		const repositories = (await getRepos()).data;
 		setRepositoriesToShow(repositories);
 	};
-	const { retrievePendingAction, hasPendingAction } =
-		usePendingActionsOnSignInStore();
+	const { retrievePendingAction, hasPendingAction } = useUserSession();
 
 	const showModalWithRepositories = pipe(
 		getRepositories,

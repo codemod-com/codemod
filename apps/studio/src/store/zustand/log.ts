@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import type { Event } from "~/schemata/eventSchemata";
 import { TabNames, useViewStore } from "./view";
 

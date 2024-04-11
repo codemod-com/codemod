@@ -1,5 +1,5 @@
 import { isFile } from "@babel/types";
-import create from "zustand";
+import { create } from "zustand";
 import { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { TreeNode } from "~/types/tree";
 import { parseSnippet } from "../../utils/babelParser";

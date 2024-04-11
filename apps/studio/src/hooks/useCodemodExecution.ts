@@ -1,14 +1,12 @@
-import { useState } from "react";
-
 import { RUN_CODEMOD } from "~/constants";
+import { useUserSession } from "~/store/zustand/userSession";
 import { ExecuteCodemodRequest, useAPI } from "./useAPI";
 import { useExecutionStatus } from "./useExecutionStatus";
 
-export const useCodemodExecution = ([
-	executionId = null,
-	setExecutionId,
-]: ReturnType<typeof useState<string | null>>) => {
-	const codemodRunStatus = useExecutionStatus(executionId);
+export const useCodemodExecution = () => {
+	const { codemodExecutionId, setCodemodExecutionId } = useUserSession();
+
+	const codemodRunStatus = useExecutionStatus(codemodExecutionId);
 	const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
 	const onCodemodRun = async (request: ExecuteCodemodRequest) => {
@@ -19,7 +17,7 @@ export const useCodemodExecution = ([
 			>(request);
 
 			const { codemodExecutionId } = data;
-			setExecutionId(codemodExecutionId);
+			setCodemodExecutionId(codemodExecutionId);
 
 			return data;
 		} catch (e) {}
@@ -28,13 +26,13 @@ export const useCodemodExecution = ([
 	const onCodemodRunCancel = async () => {
 		// @TODO add ability to cancel current run
 
-		setExecutionId(null);
+		setCodemodExecutionId(null);
 	};
 
 	return {
 		onCodemodRun,
 		onCodemodRunCancel,
 		codemodRunStatus,
-		executionId,
+		codemodExecutionId,
 	};
 };
