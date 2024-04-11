@@ -1,5 +1,4 @@
 import "dotenv/config";
-import "./cron.js";
 
 import { randomBytes } from "node:crypto";
 import { OutgoingHttpHeaders } from "node:http";

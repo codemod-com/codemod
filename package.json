@@ -33,9 +33,11 @@
 		"lint:apply": "biome check --apply .",
 		"lint:linter": "biome lint --apply .",
 		"lint:formatter": "biome format --write .",
-		"test": "turbo run test --concurrency=10",
-		"test:win": "turbo run test:win",
-		"coverage": "vitest run --coverage",
+		"test": "pnpm run test:unit && pnpm run test:backend",
+		"test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
+		"test:backend": "pnpm --filter @codemod-com/backend test",
+		"test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
+		"coverage": "pnpm test:unit --coverage",
 		"prepare": "husky install"
 	},
 	"devDependencies": {
