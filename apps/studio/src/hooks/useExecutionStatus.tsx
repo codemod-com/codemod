@@ -57,6 +57,26 @@ export const useExecutionStatus = (
 						{ duration: 6000, id: executionId },
 					);
 
+					toast(
+						(t) => (
+							<span className="flex flex-col items-center justify-center w-80">
+								{`Go to ${(
+									<a
+										target="_blank"
+										rel="noreferrer noopener"
+										href={status.result.link}
+									>
+										{status.result.link}
+									</a>
+								)} to see the results.`}
+								<button type="button" onClick={() => toast.dismiss(t.id)}>
+									Dismiss
+								</button>
+							</span>
+						),
+						{ duration: 1000 * 60 * 3 }, // 3 minutes
+					);
+
 					return;
 				}
 
