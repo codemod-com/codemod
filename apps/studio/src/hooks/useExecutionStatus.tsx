@@ -4,7 +4,6 @@ import toast from "react-hot-toast";
 import getExecutionStatus, {
 	GetExecutionStatusResponse,
 } from "~/api/getExecutionStatus";
-import { Progress } from "~/components/ui/progress";
 
 const idleStatus = {
 	status: "idle",
@@ -59,29 +58,6 @@ export const useExecutionStatus = (
 					);
 
 					return;
-				}
-
-				if (status.status === "progress") {
-					toast(
-						() => (
-							<div className="flex flex-col items-center justify-center w-80">
-								{status.progressInfo !== null && (
-									<Progress
-										className="mt-2"
-										value={
-											(status.progressInfo.processed /
-												status.progressInfo.total) *
-											100
-										}
-									/>
-								)}
-								<p className="font-normal text-lg mt-3">{status.message}</p>
-							</div>
-						),
-						{
-							id: executionId,
-						},
-					);
 				}
 
 				timeoutId = window.setTimeout(handler, 5000);
