@@ -9,9 +9,7 @@ export const userSessionSchema = S.struct({
 	codemodExecutionId: S.union(S.string, S.null),
 });
 
-export const parseUserSession = S.parseSync(userSessionSchema);
-
-type UserSession = S.To<typeof userSessionSchema>;
+type UserSession = S.Schema.To<typeof userSessionSchema>;
 
 export const Actions = ["openRepoModal"];
 

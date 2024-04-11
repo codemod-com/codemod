@@ -1,4 +1,4 @@
-import { knownEnginesSchema } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { knownEnginesSchema } from "@codemod-com/utilities";
 import { type Output, object, parse, string } from "valibot";
 
 const stateSchema = object({

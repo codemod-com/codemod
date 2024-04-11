@@ -18,7 +18,7 @@ export const useCodemodExecution = () => {
 
 			const { codemodExecutionId } = data;
 			// @TODO
-			setCodemodExecutionId(Math.random());
+			setCodemodExecutionId(Math.random().toString());
 
 			return data;
 		} catch (e) {}
