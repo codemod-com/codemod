@@ -1,4 +1,4 @@
-import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import React, { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";

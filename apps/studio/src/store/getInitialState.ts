@@ -1,5 +1,5 @@
 /* eslint-disable import/group-exports */
-import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";

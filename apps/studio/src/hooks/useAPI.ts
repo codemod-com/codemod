@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import { GithubRepository } from "be-types";
 import apiClient from "~/api/client";
 

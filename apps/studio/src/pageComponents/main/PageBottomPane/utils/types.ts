@@ -1,4 +1,4 @@
-import { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import { ValueOf } from "next/constants";
 import React, { MutableRefObject, ReactNode } from "react";
 import { ImperativePanelHandle } from "react-resizable-panels";
