@@ -83,14 +83,6 @@ export const Header = () => {
 		);
 
 	useEffect(() => {
-		if (codemodExecutionId === null || codemodRunStatus === null) {
-			return;
-		}
-
-		const { status, message } = codemodRunStatus;
-	}, [codemodRunStatus, codemodExecutionId]);
-
-	useEffect(() => {
 		if (shouldOpenPendingRepoModal && isSignedIn) {
 			showModalWithRepositories();
 			retrievePendingAction("openRepoModal");
