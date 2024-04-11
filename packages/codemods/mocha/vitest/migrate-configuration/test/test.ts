@@ -95,8 +95,6 @@ describe("mocha config-files", () => {
 			[vitestConfigPath]: "",
 		});
 
-		console.log(externalFileCommands);
-
 		deepEqual(externalFileCommands.length, 7);
 
 		ok(
