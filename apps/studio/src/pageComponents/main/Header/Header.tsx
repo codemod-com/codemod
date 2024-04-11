@@ -2,7 +2,9 @@ import { GithubRepository } from "be-types";
 import { useRouter } from "next/navigation";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { Button } from "~/components/ui/button";
+import { Progress } from "~/components/ui/progress";
 import { GH_REPO_LIST } from "~/constants";
 import { useAPI } from "~/hooks/useAPI";
 import { useAuth } from "~/hooks/useAuth";
@@ -15,8 +17,6 @@ import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 import { useUserSession } from "~/store/zustand/userSession";
 import { DownloadZip } from "../DownloadZip";
-import toast from "react-hot-toast";
-import { Progress } from "~/components/ui/progress";
 
 export const Header = () => {
 	const { isSignedIn, getSignIn } = useAuth();
@@ -95,25 +95,6 @@ export const Header = () => {
 				id: codemodExecutionId,
 			});
 			router.push(result.link);
-		} else if (status === "progress") {
-			const { progressInfo } = codemodRunStatus;
-
-			toast(
-				() => (
-					<div className="flex flex-col items-center justify-center w-80">
-						{progressInfo !== null && (
-							<Progress
-								className="mt-2"
-								value={(progressInfo.processed / progressInfo.total) * 100}
-							/>
-						)}
-						<p className="font-normal text-lg mt-3">{message}</p>
-					</div>
-				),
-				{
-					id: codemodExecutionId,
-				},
-			);
 		}
 	}, [codemodRunStatus, codemodExecutionId]);
 
@@ -133,9 +114,7 @@ export const Header = () => {
 	const router = useRouter();
 
 	const progress =
-		codemodRunStatus?.status === "progress"
-			? codemodRunStatus.progressInfo
-			: null;
+		codemodRunStatus?.status === "progress" ? codemodRunStatus.progress : null;
 	const processBar = progress && (
 		<div className="mx-2 flex h-auto items-center   rounded bg-red-500 px-2 py-0 text-sm text-gray-text-dark-title">
 			<span className="mr-1 h-2 w-2 rounded bg-white p-1" />
