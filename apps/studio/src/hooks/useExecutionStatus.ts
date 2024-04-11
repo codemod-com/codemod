@@ -36,16 +36,28 @@ export const useExecutionStatus = (
 				token,
 			});
 
+			console.log(executionStatusOrError, "????");
 			if (executionStatusOrError.isLeft()) {
 				console.error(executionStatusOrError.getLeft());
 				clearTimeout(timeoutId);
+				setExecutionStatus({
+					status: "error",
+					message: executionStatusOrError.getLeft()?.message,
+				});
 			} else {
 				const execution = executionStatusOrError.get();
 				setExecutionStatus(execution);
-				if (execution.status === "done") clearTimeout(timeoutId);
+
+				if (execution.status === "done") {
+					clearTimeout(timeoutId);
+					return;
+				}
+
+				timeoutId = window.setTimeout(handler, 5000);
 			}
 		};
-		timeoutId = window.setTimeout(handler, 5000);
+
+		handler();
 
 		return () => {
 			window.clearTimeout(timeoutId);

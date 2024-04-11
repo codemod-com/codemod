@@ -96,11 +96,7 @@ export const Header = () => {
 		? showModalWithRepositories
 		: getSignIn({ withPendingAction: "openRepoModal" });
 
-	const buttons = useButtons(
-		ensureSignIn,
-		isCodemodRunIdle,
-		isCodemodSourceNotEmpty,
-	);
+	const buttons = useButtons(ensureSignIn, codemodRunStatus?.status ?? "idle");
 
 	const router = useRouter();
 	useEffect(() => {

@@ -34,6 +34,10 @@ const repositoriesMock: { data: GithubRepository[] } = {
 	],
 };
 
+const codemodRunMock = {
+	codemodExecutionId: 1,
+};
+
 export type ExecuteCodemodRequest = {
 	engine: JSEngine;
 	source: string;
@@ -56,10 +60,10 @@ export const useAPI = <T>(endpoint: string) => {
 				...(await getHeaders()),
 				body: JSON.stringify(body),
 			}),
-		post: async <K, U = T>(body: U) =>
-			await apiClient.post<K>(endpoint, {
-				...(await getHeaders()),
-				body: JSON.stringify(body),
-			}),
+		post: async <K, U = T>(body: U) => codemodRunMock,
+		// await apiClient.post<K>(endpoint, {
+		// 	...(await getHeaders()),
+		// 	body: JSON.stringify(body),
+		// }),
 	};
 };
