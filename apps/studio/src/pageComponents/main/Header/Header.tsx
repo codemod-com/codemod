@@ -3,10 +3,10 @@ import { GithubRepository } from "be-types";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
 import { Button } from "~/components/ui/button";
-import { GH_REPO_LIST, RUN_CODEMOD } from "~/constants";
-import { ExecuteCodemodRequest, useAPI } from "~/hooks/useAPI";
+import { GH_REPO_LIST } from "~/constants";
+import { useAPI } from "~/hooks/useAPI";
 import { useAuth } from "~/hooks/useAuth";
-import { useExecutionStatus } from "~/hooks/useExecutionStatus";
+import { useCodemodExecution } from "~/hooks/useCodemodExecution";
 import { useModal } from "~/hooks/useModal";
 import { RepositoryModal } from "~/pageComponents/main/Header/RepositoryModal";
 import { TopBar } from "~/pageComponents/main/Header/TopBar";
@@ -22,10 +22,6 @@ export const Header = () => {
 		GithubRepository[]
 	>([]);
 
-	const [executionId, setExecutionId] = useState<string | null>(null);
-
-	const status = useExecutionStatus(executionId);
-
 	const {
 		showModal: showRepositoryModal,
 		hideModal: hideRepositoryModal,
@@ -33,12 +29,19 @@ export const Header = () => {
 	} = useModal();
 
 	const { get: getRepos } = useAPI<GithubRepository[]>(GH_REPO_LIST);
-	const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
 	const { engine } = useSnippetStore();
 	const { internalContent } = useModStore();
+
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
+
+	const { codemodRunStatus, onCodemodRun } = useCodemodExecution({
+		engine,
+		target: selectedRepository?.full_name ?? null,
+		source: internalContent,
+	});
+
 	const getRepositories = async () => {
 		const repositories = (await getRepos()).data;
 		setRepositoriesToShow(repositories);
@@ -69,7 +72,7 @@ export const Header = () => {
 		? showModalWithRepositories
 		: getSignIn({ withPendingAction: "openRepoModal" });
 
-	const isCodemodRunIdle = status?.status === "idle";
+	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
 	const isCodemodSourceSet = internalContent?.trim() !== "";
 
 	const buttons = useButtons(
@@ -77,29 +80,6 @@ export const Header = () => {
 		isCodemodRunIdle,
 		isCodemodSourceSet,
 	);
-
-	const areCodemodRunRequiredArgsSet =
-		selectedRepository !== undefined && internalContent !== null;
-
-	const handleRunCodemod = async () => {
-		if (!areCodemodRunRequiredArgsSet) {
-			return;
-		}
-
-		try {
-			const { data } = await runCodemod<
-				{ codemodExecutionId: string },
-				ExecuteCodemodRequest
-			>({
-				engine,
-				source: internalContent,
-				target: selectedRepository.full_name,
-			});
-
-			const { codemodExecutionId } = data;
-			setExecutionId(codemodExecutionId);
-		} catch (e) {}
-	};
 
 	// Post repo to run codemod on it
 
@@ -137,7 +117,7 @@ export const Header = () => {
 				repositoriesToShow={repositoriesToShow}
 				selectRepository={selectRepository}
 				selectedRepository={selectedRepository}
-				onRunCodemod={handleRunCodemod}
+				onRunCodemod={onCodemodRun}
 			/>
 			<TopBar />
 			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
