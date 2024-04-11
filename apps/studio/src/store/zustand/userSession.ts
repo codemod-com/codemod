@@ -36,7 +36,6 @@ export const useUserSession = create<UserSessionStore>()(
 		(set, get) => ({
 			...buildDefaultUserSession(),
 			setCodemodExecutionId: (codemodExecutionId: string | null) => {
-				console.log(codemodExecutionId, "???/");
 				set({ codemodExecutionId });
 			},
 			setPendingActions: (actions: PendingAction[]) => {

@@ -17,7 +17,7 @@ export const useCodemodExecution = () => {
 			>(request);
 
 			const { codemodExecutionId } = data;
-			setCodemodExecutionId(codemodExecutionId);
+			setCodemodExecutionId(Math.random());
 
 			return data;
 		} catch (e) {}

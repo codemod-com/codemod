@@ -40,6 +40,7 @@ const getButtonPropsByStatus = (status: Status): Partial<ButtonProps> => {
 
 export const useButtons = (
 	ensureSignIn: VoidFunction,
+	onCodemodRunCancel: VoidFunction,
 	codemodRunStatus: GetExecutionStatusResponse["status"],
 ) => {
 	const { setInput, setOutput } = useSnippetStore();
@@ -51,7 +52,8 @@ export const useButtons = (
 
 	return [
 		{
-			onClick: ensureSignIn,
+			onClick:
+				codemodRunStatus === "progress" ? onCodemodRunCancel : ensureSignIn,
 			Icon: CheckIcon,
 			disabled: false,
 			...props,

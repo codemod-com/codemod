@@ -2,7 +2,6 @@ import { GithubRepository } from "be-types";
 import { useRouter } from "next/navigation";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { Button } from "~/components/ui/button";
 import { Progress } from "~/components/ui/progress";
 import { GH_REPO_LIST } from "~/constants";
@@ -39,10 +38,13 @@ export const Header = () => {
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
 
-	const { codemodExecutionId, codemodRunStatus, onCodemodRun } =
-		useCodemodExecution();
+	const {
+		codemodExecutionId,
+		codemodRunStatus,
+		onCodemodRun,
+		onCodemodRunCancel,
+	} = useCodemodExecution();
 
-	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
 	const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
 
 	const handleCodemodRun = async () => {
@@ -81,22 +83,22 @@ export const Header = () => {
 			repositoriesToShow.find((repo) => repo.full_name === name),
 		);
 
-	useEffect(() => {
-		if (codemodExecutionId === null || codemodRunStatus === null) {
-			return;
-		}
+	// useEffect(() => {
+	// 	if (codemodExecutionId === null || codemodRunStatus === null) {
+	// 		return;
+	// 	}
 
-		const { status, message } = codemodRunStatus;
+	// 	const { status, message } = codemodRunStatus;
 
-		if (status === "done") {
-			const { result } = codemodRunStatus;
-			toast.success(`${message}\nRouting you to see the results.`, {
-				duration: 6000,
-				id: codemodExecutionId,
-			});
-			router.push(result.link);
-		}
-	}, [codemodRunStatus, codemodExecutionId]);
+	// 	if (status === "done") {
+	// 		const { result } = codemodRunStatus;
+	// 		toast.success(`${message}\nRouting you to see the results.`, {
+	// 			duration: 6000,
+	// 			id: codemodExecutionId,
+	// 		});
+	// 		router.push(result.link);
+	// 	}
+	// }, [codemodRunStatus, codemodExecutionId]);
 
 	useEffect(() => {
 		if (shouldOpenPendingRepoModal && isSignedIn) {
@@ -109,12 +111,18 @@ export const Header = () => {
 		? showModalWithRepositories
 		: getSignIn({ withPendingAction: "openRepoModal" });
 
-	const buttons = useButtons(ensureSignIn, codemodRunStatus?.status ?? "idle");
+	const buttons = useButtons(
+		ensureSignIn,
+		onCodemodRunCancel,
+		codemodRunStatus?.status ?? "idle",
+	);
 
 	const router = useRouter();
 
 	const progress =
-		codemodRunStatus?.status === "progress" ? codemodRunStatus.progress : null;
+		codemodRunStatus?.status === "progress"
+			? codemodRunStatus.progressInfo
+			: null;
 	const processBar = progress && (
 		<div className="flex flex-col items-center justify-center w-80">
 			<Progress

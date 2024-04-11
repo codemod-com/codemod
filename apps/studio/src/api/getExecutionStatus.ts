@@ -8,7 +8,7 @@ type GetExecutionStatusResponse = Readonly<{ message: string }> &
 		  }>
 		| Readonly<{
 				status: "progress";
-				progress?: unknown;
+				progressInfo: { total: number; processed: number } | null;
 		  }>
 		| Readonly<{
 				status: "done";
@@ -33,14 +33,17 @@ const codemodRunStatusResponses: GetExecutionStatusResponse[] = [
 	{
 		status: "progress",
 		message: "Processing files: 1234/12345",
+		progressInfo: { processed: 123, total: 12345 },
 	},
 	{
 		status: "progress",
 		message: "Processing files: 123/12345",
+		progressInfo: { processed: 1234, total: 12345 },
 	},
 	{
 		status: "progress",
 		message: "Fetching repo...",
+		progressInfo: null,
 	},
 ];
 const getExecutionStatus = async ({
