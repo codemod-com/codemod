@@ -2,7 +2,6 @@ import { GithubRepository } from "be-types";
 import { useRouter } from "next/navigation";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
-import { GetExecutionStatusResponse } from "~/api/getExecutionStatus";
 import { Button } from "~/components/ui/button";
 import { GH_REPO_LIST } from "~/constants";
 import { useAPI } from "~/hooks/useAPI";
@@ -16,12 +15,11 @@ import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 import { useUserSession } from "~/store/zustand/userSession";
 import { DownloadZip } from "../DownloadZip";
+import toast from "react-hot-toast";
+import { Progress } from "~/components/ui/progress";
 
 export const Header = () => {
 	const { isSignedIn, getSignIn } = useAuth();
-	const [executionId, setExecutionId] = useState<string | null>();
-	const [executionStatus, setExecutionStatus] =
-		useState<GetExecutionStatusResponse>();
 
 	const [repositoriesToShow, setRepositoriesToShow] = useState<
 		GithubRepository[]
@@ -41,10 +39,8 @@ export const Header = () => {
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
 
-	const { codemodRunStatus, onCodemodRun } = useCodemodExecution([
-		executionId,
-		setExecutionId,
-	]);
+	const { codemodExecutionId, codemodRunStatus, onCodemodRun } =
+		useCodemodExecution();
 
 	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
 	const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
@@ -86,6 +82,42 @@ export const Header = () => {
 		);
 
 	useEffect(() => {
+		if (codemodExecutionId === null || codemodRunStatus === null) {
+			return;
+		}
+
+		const { status, message } = codemodRunStatus;
+
+		if (status === "done") {
+			const { result } = codemodRunStatus;
+			toast.success(`${message}\nRouting you to see the results.`, {
+				duration: 6000,
+				id: codemodExecutionId,
+			});
+			router.push(result.link);
+		} else if (status === "progress") {
+			const { progressInfo } = codemodRunStatus;
+
+			toast(
+				() => (
+					<div className="flex flex-col items-center justify-center w-80">
+						{progressInfo !== null && (
+							<Progress
+								className="mt-2"
+								value={(progressInfo.processed / progressInfo.total) * 100}
+							/>
+						)}
+						<p className="font-normal text-lg mt-3">{message}</p>
+					</div>
+				),
+				{
+					id: codemodExecutionId,
+				},
+			);
+		}
+	}, [codemodRunStatus, codemodExecutionId]);
+
+	useEffect(() => {
 		if (shouldOpenPendingRepoModal && isSignedIn) {
 			showModalWithRepositories();
 			retrievePendingAction("openRepoModal");
@@ -99,19 +131,18 @@ export const Header = () => {
 	const buttons = useButtons(ensureSignIn, codemodRunStatus?.status ?? "idle");
 
 	const router = useRouter();
-	useEffect(() => {
-		if (executionStatus?.status === "done")
-			router.push(executionStatus.result.link);
-	}, [executionStatus, router]);
 
 	const progress =
-		executionStatus?.status === "progress"
-			? executionStatus.progressInfo
+		codemodRunStatus?.status === "progress"
+			? codemodRunStatus.progressInfo
 			: null;
 	const processBar = progress && (
-		<div className=" mx-2 flex h-auto items-center   rounded bg-red-500 px-2 py-0 text-sm text-gray-text-dark-title">
+		<div className="mx-2 flex h-auto items-center   rounded bg-red-500 px-2 py-0 text-sm text-gray-text-dark-title">
 			<span className="mr-1 h-2 w-2 rounded bg-white p-1" />
-			Progress: {Math.floor((progress.processed * 100) / progress.total)}%
+			<Progress
+				className="mt-2"
+				value={(progress.processed / progress.total) * 100}
+			/>
 		</div>
 	);
 

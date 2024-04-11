@@ -20,7 +20,6 @@ import {
 	AlertDialogTitle,
 } from "~/components/ui/alert-dialog";
 import { Button } from "~/components/ui/button";
-import { Progress } from "~/components/ui/progress";
 import {
 	Select,
 	SelectContent,
@@ -30,7 +29,6 @@ import {
 } from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { useAuth } from "~/hooks/useAuth";
-import { useExecutionStatus } from "~/hooks/useExecutionStatus";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import {
@@ -118,53 +116,11 @@ const Main = () => {
 		useSnippetsPanels({ panelRefs });
 
 	const { engine, setEngine } = useSnippetStore();
-	const { toggleTheme, isDark } = useTheme();
-	const executionId = "id"; // TODO: replace it with real id
-	const executionStatus = useExecutionStatus(executionId) ?? {
-		// TODO: Remove dummy data
-		status: "progress",
-		statusMessage: "processed 100 files",
-		result: null,
-		progressInfo: { processed: 100, total: 300 },
-	};
+	const { isDark } = useTheme();
 
 	const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
 		setEngine(value as KnownEngines);
 	};
-
-	useEffect(() => {
-		if (executionStatus === null) {
-			return;
-		}
-		const { status, statusMessage, result, progressInfo } = executionStatus;
-		if (status === "done") {
-			toast.success(
-				result === null
-					? statusMessage
-					: `${statusMessage}\nGo to ${result.link} to see the results.`,
-				{ duration: 6000, id: executionId },
-			);
-		}
-
-		if (status === "progress") {
-			toast(
-				() => (
-					<div className="flex flex-col items-center justify-center w-80">
-						{progressInfo !== null && (
-							<Progress
-								className="mt-2"
-								value={(progressInfo.processed / progressInfo.total) * 100}
-							/>
-						)}
-						<p className="font-normal text-lg mt-3">{statusMessage}</p>
-					</div>
-				),
-				{
-					id: executionId,
-				},
-			);
-		}
-	}, [executionStatus]);
 
 	const snippetStore = useSnippetStore();
 
