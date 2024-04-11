@@ -3,7 +3,6 @@ import { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import { getCodeDiff } from "~/api/getCodeDiff";
