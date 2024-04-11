@@ -36,7 +36,6 @@ export const useExecutionStatus = (
 				token,
 			});
 
-			console.log(executionStatusOrError, "????");
 			if (executionStatusOrError.isLeft()) {
 				console.error(executionStatusOrError.getLeft());
 				clearTimeout(timeoutId);
