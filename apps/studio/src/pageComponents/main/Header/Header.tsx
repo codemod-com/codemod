@@ -116,8 +116,7 @@ export const Header = () => {
 	const progress =
 		codemodRunStatus?.status === "progress" ? codemodRunStatus.progress : null;
 	const processBar = progress && (
-		<div className="mx-2 flex h-auto items-center   rounded bg-red-500 px-2 py-0 text-sm text-gray-text-dark-title">
-			<span className="mr-1 h-2 w-2 rounded bg-white p-1" />
+		<div className="flex flex-col items-center justify-center w-80">
 			<Progress
 				className="mt-2"
 				value={(progress.processed / progress.total) * 100}
