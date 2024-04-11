@@ -1,7 +1,8 @@
-import * as Label from "@radix-ui/react-label";
 import { GithubRepository } from "be-types";
+import { useRouter } from "next/navigation";
 import { pipe } from "ramda";
 import { useEffect, useState } from "react";
+import { GetExecutionStatusResponse } from "~/api/getExecutionStatus";
 import { Button } from "~/components/ui/button";
 import { GH_REPO_LIST } from "~/constants";
 import { useAPI } from "~/hooks/useAPI";
@@ -18,6 +19,10 @@ import { DownloadZip } from "../DownloadZip";
 
 export const Header = () => {
 	const { isSignedIn, getSignIn } = useAuth();
+	const [executionId, setExecutionId] = useState<string | null>();
+	const [executionStatus, setExecutionStatus] =
+		useState<GetExecutionStatusResponse>();
+
 	const [repositoriesToShow, setRepositoriesToShow] = useState<
 		GithubRepository[]
 	>([]);
@@ -36,7 +41,10 @@ export const Header = () => {
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
 
-	const { codemodRunStatus, onCodemodRun } = useCodemodExecution();
+	const { codemodRunStatus, onCodemodRun } = useCodemodExecution([
+		executionId,
+		setExecutionId,
+	]);
 
 	const isCodemodRunIdle = codemodRunStatus?.status === "idle";
 	const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
@@ -95,34 +103,23 @@ export const Header = () => {
 		isCodemodSourceNotEmpty,
 	);
 
-	// Post repo to run codemod on it
+	const router = useRouter();
+	useEffect(() => {
+		if (executionStatus?.status === "done")
+			router.push(executionStatus.result.link);
+	}, [executionStatus, router]);
 
-	// const { post: postRepo } = useAPI<GithubRepository>();
-	// const onRunCodemod = () => {
-	// 	post(selectedRepository);
-	// }
-
-	// Get info about codemod progress
-
-	// const { get: getProgressForRepo } = useAPI<GithubRepository[]>();
-	// const [progress, setProgress] = useState<number>();
-	// useEffect(() => {
-	// 	if(progress === 100) goToGHPage()
-	// }, [progress]);
-
-	const processBar = (
-		<div
-			style={{
-				display: "flex",
-				padding: "0 20px",
-				flexWrap: "wrap",
-				gap: 15,
-				alignItems: "center",
-			}}
-		>
-			<Label.Root>Codemod application progress:</Label.Root>
+	const progress =
+		executionStatus?.status === "progress"
+			? executionStatus.progressInfo
+			: null;
+	const processBar = progress && (
+		<div className=" mx-2 flex h-auto items-center   rounded bg-red-500 px-2 py-0 text-sm text-gray-text-dark-title">
+			<span className="mr-1 h-2 w-2 rounded bg-white p-1" />
+			Progress: {Math.floor((progress.processed * 100) / progress.total)}%
 		</div>
 	);
+
 	return (
 		<>
 			<RepositoryModal
@@ -137,7 +134,7 @@ export const Header = () => {
 			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
 				<div />
 				<div className="flex gap-2">
-					{/*{typeof progress !== undefined && processBar}*/}
+					{processBar}
 					{buttons.map(({ Icon, hintText, ...button }) => (
 						<Button
 							size="xs"

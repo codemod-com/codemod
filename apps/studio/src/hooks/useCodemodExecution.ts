@@ -4,9 +4,10 @@ import { RUN_CODEMOD } from "~/constants";
 import { ExecuteCodemodRequest, useAPI } from "./useAPI";
 import { useExecutionStatus } from "./useExecutionStatus";
 
-export const useCodemodExecution = () => {
-	const [executionId, setExecutionId] = useState<string | null>(null);
-
+export const useCodemodExecution = ([
+	executionId = null,
+	setExecutionId,
+]: ReturnType<typeof useState<string | null>>) => {
 	const codemodRunStatus = useExecutionStatus(executionId);
 	const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
