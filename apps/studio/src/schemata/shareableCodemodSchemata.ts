@@ -1,4 +1,4 @@
-import { knownEnginesSchema } from "@codemod-com/utilities";
+import { knownEnginesSchema } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
 import {
 	type Output,
 	literal,
