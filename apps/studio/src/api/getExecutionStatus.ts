@@ -33,13 +33,18 @@ const codemodRunStatusResponses: GetExecutionStatusResponse[] = [
 	},
 	{
 		status: "progress",
-		message: "Processing files: 123/12345",
-		progressInfo: { processed: 1234, total: 12345 },
+		message: "Processing files: 300/12345",
+		progressInfo: { processed: 300, total: 12345 },
 	},
 	{
 		status: "progress",
-		message: "Processing files: 1234/12345",
-		progressInfo: { processed: 123, total: 12345 },
+		message: "Processing files: 2500/12345",
+		progressInfo: { processed: 2500, total: 12345 },
+	},
+	{
+		status: "progress",
+		message: "Processing files: 10000/12345",
+		progressInfo: { processed: 10000, total: 12345 },
 	},
 	{
 		status: "done",
