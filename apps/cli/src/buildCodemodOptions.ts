@@ -15,7 +15,7 @@ import type { Codemod } from "./codemod.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import type { PrinterBlueprint } from "./printer.js";
 import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
-import { boldText } from "./utils.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const extractEngine = async (
 	fs: IFs,
@@ -130,6 +130,13 @@ export const buildSourcedCodemodOptions = async (
 			codemodConfig as CodemodConfig & { engine: "recipe" }
 		).names;
 
+		const spinner = printer.withLoaderMessage(
+			colorizeText(
+				`Downloading ${subCodemodsNames.length} recipe codemods...`,
+				"cyan",
+			),
+		);
+
 		const codemods = await Promise.all(
 			subCodemodsNames.map(async (subCodemodName) => {
 				const localMachinePath = resolve(codemodOptions.source, subCodemodName);
@@ -144,8 +151,9 @@ export const buildSourcedCodemodOptions = async (
 				}
 
 				try {
-					return await codemodDownloader.download(subCodemodName);
+					return await codemodDownloader.download(subCodemodName, true);
 				} catch (error) {
+					spinner.fail();
 					if (error instanceof AxiosError) {
 						if (
 							error.response?.status === 400 &&
@@ -163,6 +171,8 @@ export const buildSourcedCodemodOptions = async (
 				}
 			}),
 		);
+
+		spinner.succeed();
 
 		return {
 			source: "package",
