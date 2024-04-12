@@ -42,7 +42,7 @@
 			},
 			"correctness": {
 				"noUndeclaredVariables": "off",
-        "noUnusedImports": "error",
+				"noUnusedImports": "error",
 				"noUnusedVariables": "off",
 				"noConstAssign": "warn",
 				"noEmptyCharacterClassInRegex": "warn",
