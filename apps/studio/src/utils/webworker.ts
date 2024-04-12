@@ -4,26 +4,26 @@ import {
 	isMemberExpression,
 } from "@babel/types";
 import jscodeshift, {
-	API,
-	ArrowFunctionExpression,
-	CallExpression,
-	Collection,
-	FileInfo,
-	FunctionDeclaration,
-	FunctionExpression,
-	JSCodeshift,
+	type API,
+	type ArrowFunctionExpression,
+	type CallExpression,
+	type Collection,
+	type FileInfo,
+	type FunctionDeclaration,
+	type FunctionExpression,
+	type JSCodeshift,
 } from "jscodeshift";
 import * as tsmorph from "ts-morph";
 import * as ts from "typescript";
 import {
-	WebWorkerOutgoingMessage,
+	type WebWorkerOutgoingMessage,
 	parseWebWorkerIncomingMessage,
 } from "../schemata/webWorkersSchemata";
 import { EventManager } from "./eventManager";
 import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 import {
-	ProxifiedCollection,
-	ProxifiedPath,
+	type ProxifiedCollection,
+	type ProxifiedPath,
 	proxifyJSCodeshift,
 } from "./proxy";
 
@@ -461,9 +461,13 @@ export const getTransformFunction = async (
 			.join(", ");
 
 		const start =
-			typeof args[args.length - 2] === "number" ? args[args.length - 2] : NaN;
+			typeof args[args.length - 2] === "number"
+				? args[args.length - 2]
+				: Number.NaN;
 		const end =
-			typeof args[args.length - 1] === "number" ? args[args.length - 1] : NaN;
+			typeof args[args.length - 1] === "number"
+				? args[args.length - 1]
+				: Number.NaN;
 
 		eventManager.pushEvent({
 			kind: "printedMessage",
@@ -487,10 +491,10 @@ export const getTransformFunction = async (
 		typeof exports === "function"
 			? exports
 			: exports.__esModule && typeof exports.default === "function"
-			  ? exports.default
-			  : exports.__esModule && typeof exports.handleSourceFile === "function"
-				  ? exports.handleSourceFile
-				  : null;
+				? exports.default
+				: exports.__esModule && typeof exports.handleSourceFile === "function"
+					? exports.handleSourceFile
+					: null;
 
 	if (transformer === null) {
 		throw new Error("Could not compile the provided codemod");

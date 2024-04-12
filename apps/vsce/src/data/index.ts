@@ -1,9 +1,9 @@
-import { Dispatch, Reducer, configureStore } from "@reduxjs/toolkit";
+import { type Dispatch, type Reducer, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
-import { PersistPartial } from "redux-persist/es/persistReducer";
-import { Memento, window } from "vscode";
+import type { PersistPartial } from "redux-persist/es/persistReducer";
+import { type Memento, window } from "vscode";
 import { persistedStateCodecNew } from "../persistedState/codecs";
-import rootReducer, { actions, getInitialState } from "./slice";
+import rootReducer, { type actions, getInitialState } from "./slice";
 import MementoStorage from "./storage";
 
 const PERSISTANCE_PREFIX = "persist";

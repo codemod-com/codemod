@@ -1,4 +1,4 @@
-import * as S from "@effect/schema/Schema";
+import { object, parse, string } from "valibot";
 
 export class ClaudeService {
 	public constructor(
@@ -51,11 +51,7 @@ export class ClaudeService {
 
 		const json = await response.json();
 
-		const { completion } = S.parseSync(
-			S.struct({
-				completion: S.string,
-			}),
-		)(json);
+		const { completion } = parse(object({ completion: string() }), json);
 
 		return completion;
 	}

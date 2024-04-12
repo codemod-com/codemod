@@ -2,12 +2,12 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
-	CodemodConfig,
+	type CodemodConfig,
 	extractLibNameAndVersion,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import inquirer from "inquirer";
-import { PrinterBlueprint } from "./printer";
+import type { PrinterBlueprint } from "./printer";
 import { boldText, colorizeText, execPromise } from "./utils";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";

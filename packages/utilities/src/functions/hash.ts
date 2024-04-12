@@ -1,4 +1,4 @@
-import { createHash } from "crypto";
+import { createHash } from "node:crypto";
 
 export const buildHash = (data: string) =>
 	createHash("ripemd160").update(data).digest("base64url");

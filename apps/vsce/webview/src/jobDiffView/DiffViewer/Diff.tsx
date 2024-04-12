@@ -1,7 +1,7 @@
-import { DiffEditor, Monaco } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
+import { DiffEditor, type Monaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 import { memo, useEffect, useRef, useState } from "react";
-import { Diff, getDiff } from "../../shared/Snippet/calculateDiff";
+import { type Diff, getDiff } from "../../shared/Snippet/calculateDiff";
 import configure from "./configure";
 
 export type { Diff };

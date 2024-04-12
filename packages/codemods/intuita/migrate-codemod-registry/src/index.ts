@@ -90,8 +90,8 @@ const handleFile: HandleFile<Dependencies, State> = async (
 		parsedPath.name === "index"
 			? "src"
 			: parsedPath.name === "test" && directoryName.at(-1) !== "test"
-			  ? "test"
-			  : "",
+				? "test"
+				: "",
 		parsedPath.base,
 	);
 
@@ -266,7 +266,7 @@ const handleData: HandleData<Dependencies, State> = async (
 						mocha: "^10.2.0",
 						"@types/mocha": "^10.0.4",
 						"ts-node": "^10.9.1",
-				  }
+					}
 				: undefined;
 
 			if (devDependencies !== undefined && engine === "jscodeshift") {
@@ -317,7 +317,7 @@ const handleData: HandleData<Dependencies, State> = async (
 			const scripts: Record<string, string> | undefined = jsEngineUsed
 				? {
 						"build:cjs": `cjs-builder ./src/index.${extension}`,
-				  }
+					}
 				: undefined;
 
 			if (scripts !== undefined && testTsDoesExist) {
@@ -360,18 +360,18 @@ const handleData: HandleData<Dependencies, State> = async (
 					? [
 							"import type { API, FileInfo } from 'jscodeshift';",
 							"export default function transform(file: FileInfo, api: API): string;",
-					  ].join("\n")
+						].join("\n")
 					: engine === "ts-morph"
-					  ? [
+						? [
 								"import type { SourceFile } from 'ts-morph';",
 								"export function handleSourceFile(sourceFile: SourceFile): string | undefined;",
-						  ].join("\n")
-					  : engine === "filemod"
-						  ? [
+							].join("\n")
+						: engine === "filemod"
+							? [
 									"import type { Filemod } from '@codemod-com/filemod';",
 									"export const repomod: Filemod<{}, {}>;",
-							  ].join("\n")
-						  : "";
+								].join("\n")
+							: "";
 
 			return {
 				kind: "upsertData",

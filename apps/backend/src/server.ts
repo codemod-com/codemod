@@ -1,22 +1,25 @@
 import "dotenv/config";
 
 import { randomBytes } from "node:crypto";
-import { OutgoingHttpHeaders } from "node:http";
-import { OrganizationMembership, User } from "@clerk/backend";
+import type { OutgoingHttpHeaders } from "node:http";
+import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import cors, { FastifyCorsOptions } from "@fastify/cors";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
-import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
+import Fastify, {
+	type FastifyPluginCallback,
+	type RouteHandlerMethod,
+} from "fastify";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
 import { decrypt, encrypt } from "./crypto/crypto.js";
 import {
-	CustomHandler,
+	type CustomHandler,
 	ForbiddenError,
 	UnauthorizedError,
 } from "./customHandler.js";
@@ -171,7 +174,7 @@ const chatGptApi =
 				completionParams: {
 					...COMPLETION_PARAMS,
 				},
-		  })
+			})
 		: null;
 
 const openAiEdgeApi =
@@ -180,7 +183,7 @@ const openAiEdgeApi =
 				new openAiEdge.Configuration({
 					apiKey: environment.OPEN_AI_API_KEY,
 				}),
-		  )
+			)
 		: null;
 
 const tokenService = new TokenService(
@@ -197,7 +200,7 @@ const clerkClient = areClerkKeysSet(environment)
 			publishableKey: environment.CLERK_PUBLISH_KEY,
 			secretKey: environment.CLERK_SECRET_KEY,
 			jwtKey: environment.CLERK_JWT_KEY,
-	  })
+		})
 	: null;
 
 const wrapRequestHandlerMethod =

@@ -2,7 +2,7 @@
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useSelectActiveEvent } from "~/store/zustand/log";
 import { useModStore } from "~/store/zustand/mod";

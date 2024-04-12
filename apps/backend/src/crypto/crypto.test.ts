@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { describe, expect, test } from "vitest";
 import {
-	DecryptedTokenMetadata,
-	KeyIvPair,
+	type DecryptedTokenMetadata,
+	type KeyIvPair,
 	decryptUserId,
 	encrypt,
 	encryptTokenMetadata,

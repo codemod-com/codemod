@@ -1,4 +1,4 @@
-import { File, Node, isFile, isStatement } from "@babel/types";
+import { type File, type Node, isFile, isStatement } from "@babel/types";
 import { buildAST } from "ast-node-builder";
 
 const stringifyNode = (node: Node): string => {
@@ -15,7 +15,7 @@ export const buildFactoryCode = (node: Node): string => {
 	const astNode: File | null = isFile(node)
 		? node
 		: isStatement(node)
-		  ? {
+			? {
 					type: "File" as const,
 					program: {
 						type: "Program" as const,
@@ -24,8 +24,8 @@ export const buildFactoryCode = (node: Node): string => {
 						sourceType: "script",
 						sourceFile: "afterSnippet.tsx",
 					},
-			  }
-		  : null;
+				}
+			: null;
 
 	if (astNode === null) {
 		return stringifyNode(node);

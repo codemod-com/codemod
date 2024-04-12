@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+import { writeFileSync } from "node:fs";
 import { compile, compileFromFile } from "json-schema-to-typescript";
 
 const biomeLicense = await fetch(

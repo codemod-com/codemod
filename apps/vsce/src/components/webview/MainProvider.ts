@@ -2,26 +2,30 @@ import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "fast-glob";
 import {
-	ExtensionContext,
+	type ExtensionContext,
 	Uri,
-	WebviewView,
-	WebviewViewProvider,
+	type WebviewView,
+	type WebviewViewProvider,
 	commands,
 	window,
 	workspace,
 } from "vscode";
-import { Store } from "../../data";
+import type { Store } from "../../data";
 import { actions } from "../../data/slice";
 import { SEARCH_PARAMS_KEYS } from "../../extension";
 import { createIssueResponseCodec } from "../../github/types";
 import { relativeToAbsolutePath } from "../../selectors/selectCodemodTree";
 import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
 import { buildGlobPattern } from "../../utilities";
-import { EngineService } from "../engineService";
-import { MessageBus, MessageKind } from "../messageBus";
-import { UserService } from "../userService";
+import type { EngineService } from "../engineService";
+import { type MessageBus, MessageKind } from "../messageBus";
+import type { UserService } from "../userService";
 import { WebviewResolver } from "./WebviewResolver";
-import { CodemodHash, WebviewMessage, WebviewResponse } from "./webviewEvents";
+import type {
+	CodemodHash,
+	WebviewMessage,
+	WebviewResponse,
+} from "./webviewEvents";
 
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 

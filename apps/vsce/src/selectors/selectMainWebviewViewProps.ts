@@ -1,6 +1,6 @@
 import type { Uri } from "vscode";
 import type { RootState } from "../data";
-import { CodemodHash } from "../packageJsonAnalyzer/types";
+import type { CodemodHash } from "../packageJsonAnalyzer/types";
 import { selectCodemodRunsTree } from "./selectCodemodRunsTree";
 import { absoluteToRelativePath, selectCodemodTree } from "./selectCodemodTree";
 import { selectExplorerTree } from "./selectExplorerTree";

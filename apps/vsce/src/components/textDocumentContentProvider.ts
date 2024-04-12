@@ -1,8 +1,8 @@
 import {
-	Event,
+	type Event,
 	EventEmitter,
-	ProviderResult,
-	TextDocumentContentProvider,
+	type ProviderResult,
+	type TextDocumentContentProvider,
 	Uri,
 } from "vscode";
 

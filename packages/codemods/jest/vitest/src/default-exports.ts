@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { dirname, join, resolve } from "path";
+import { dirname, join, resolve } from "node:path";
 import type core from "jscodeshift";
 import type { Collection } from "jscodeshift";
 

@@ -1,4 +1,4 @@
-import { SnippetType } from "~/pageComponents/main/PageBottomPane";
+import type { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { useSnippetStore } from "~/store/zustand/snippets";
 

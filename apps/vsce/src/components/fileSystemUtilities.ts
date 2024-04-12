@@ -1,6 +1,6 @@
-import { Mode } from "node:fs";
+import type { Mode } from "node:fs";
 import { chmod } from "node:fs/promises";
-import { FileSystem, FileSystemError, Uri } from "vscode";
+import { type FileSystem, FileSystemError, type Uri } from "vscode";
 
 export class FileSystemUtilities {
 	readonly #fs: FileSystem;

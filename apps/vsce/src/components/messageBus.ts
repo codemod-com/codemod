@@ -1,10 +1,10 @@
-import { Disposable, EventEmitter, Uri } from "vscode";
+import { type Disposable, EventEmitter, type Uri } from "vscode";
 import type { Case, CaseHash } from "../cases/types";
-import { PiranhaLanguage } from "../data/codemodConfigSchema";
-import { ExecutionError } from "../errors/types";
+import type { PiranhaLanguage } from "../data/codemodConfigSchema";
+import type { ExecutionError } from "../errors/types";
 import type { Job, JobHash } from "../jobs/types";
-import { CodemodHash } from "../packageJsonAnalyzer/types";
-import { CodemodArgumentWithValue } from "../selectors/selectCodemodTree";
+import type { CodemodHash } from "../packageJsonAnalyzer/types";
+import type { CodemodArgumentWithValue } from "../selectors/selectCodemodTree";
 
 export enum MessageKind {
 	/** cases and jobs */

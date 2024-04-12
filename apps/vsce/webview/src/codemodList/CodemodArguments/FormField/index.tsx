@@ -4,7 +4,7 @@ import {
 	VSCodeOption,
 	VSCodeTextField,
 } from "@vscode/webview-ui-toolkit/react";
-import { CodemodArgumentWithValue } from "../../../../../src/selectors/selectCodemodTree";
+import type { CodemodArgumentWithValue } from "../../../../../src/selectors/selectCodemodTree";
 import styles from "./style.module.css";
 
 type Props = CodemodArgumentWithValue & {

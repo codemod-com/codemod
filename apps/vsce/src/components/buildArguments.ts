@@ -1,4 +1,4 @@
-import { Uri } from "vscode";
+import type { Uri } from "vscode";
 import type { Configuration } from "../configuration";
 import { buildCrossplatformArg, buildGlobPattern } from "../utilities";
 import type { Message, MessageKind } from "./messageBus";
@@ -19,7 +19,7 @@ export const buildArguments = (
 			? (command.arguments ?? []).flatMap(({ name, value }) => [
 					name,
 					String(value),
-			  ])
+				])
 			: [];
 
 	if (command.kind === "executePiranhaRule") {

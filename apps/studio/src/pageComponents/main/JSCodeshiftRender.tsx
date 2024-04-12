@@ -1,15 +1,20 @@
 import dynamic from "next/dynamic";
-import { PropsWithChildren, ReactNode, useCallback, useEffect } from "react";
+import {
+	type PropsWithChildren,
+	type ReactNode,
+	useCallback,
+	useEffect,
+} from "react";
 import {
 	BoundResizePanel,
-	PanelData,
-	PanelsRefs,
+	type PanelData,
+	type PanelsRefs,
 	SnippetHeader,
-	SnippetType,
+	type SnippetType,
 } from "src/pageComponents/main/PageBottomPane";
 import { useWebWorker } from "~/hooks/useWebWorker";
 import { cn } from "~/lib/utils";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { useLogStore } from "~/store/zustand/log";

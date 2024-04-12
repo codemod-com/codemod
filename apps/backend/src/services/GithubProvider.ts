@@ -1,6 +1,6 @@
 import axios from "axios";
 import gh from "parse-github-url";
-import {
+import type {
 	Assignee,
 	CreatePRParams,
 	GithubRepository,

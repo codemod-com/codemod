@@ -1,7 +1,10 @@
 import { useEffect } from "react";
 import { useToggleVisibility } from "~/hooks/useToggleVisibility";
 import { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
-import { PanelsRefs, panelsData } from "~/pageComponents/main/PageBottomPane";
+import {
+	type PanelsRefs,
+	panelsData,
+} from "~/pageComponents/main/PageBottomPane";
 import { WarningTexts } from "~/pageComponents/main/PageBottomPane/Components/WarningTexts";
 import { inferVisibilities } from "~/pageComponents/main/PageBottomPane/utils/inferVisibilites";
 

@@ -1,5 +1,5 @@
-import { sep } from "path";
-import { RootState } from "../data";
+import { sep } from "node:path";
+import type { RootState } from "../data";
 import { isNeitherNullNorUndefined } from "../utilities";
 
 export const selectCodemodRunsTree = (state: RootState, rootPath: string) => {

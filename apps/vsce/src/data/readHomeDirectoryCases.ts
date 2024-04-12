@@ -1,18 +1,18 @@
-import EventEmitter from "events";
-import { existsSync } from "fs";
-import { homedir } from "os";
-import { join } from "path";
+import EventEmitter from "node:events";
+import { existsSync } from "node:fs";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import {
 	CaseReadingService,
 	JOB_KIND,
-	SurfaceAgnosticJob,
+	type SurfaceAgnosticJob,
 } from "@codemod-com/utilities";
 import { FileType, Uri, window, workspace } from "vscode";
-import { Store } from ".";
-import { Case, CaseHash, caseHashCodec } from "../cases/types";
-import { CodemodEntry } from "../codemods/types";
-import { MessageBus, MessageKind } from "../components/messageBus";
-import { Job, JobKind, jobHashCodec } from "../jobs/types";
+import type { Store } from ".";
+import { type Case, type CaseHash, caseHashCodec } from "../cases/types";
+import type { CodemodEntry } from "../codemods/types";
+import { type MessageBus, MessageKind } from "../components/messageBus";
+import { type Job, JobKind, jobHashCodec } from "../jobs/types";
 import { actions } from "./slice";
 
 interface HomeDirectoryEventEmitter extends EventEmitter {

@@ -1,4 +1,4 @@
-import { CodemodListReturn } from "@codemod-com/utilities";
+import type { CodemodListReturn } from "@codemod-com/utilities";
 
 export type RewriteMessage = Readonly<{
 	kind: "rewrite";

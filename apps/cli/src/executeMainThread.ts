@@ -1,9 +1,9 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import Axios from "axios";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
