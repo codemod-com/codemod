@@ -1,27 +1,27 @@
 import { readFile } from "node:fs/promises";
 import { relative } from "node:path";
-import { Filemod } from "@codemod-com/filemod";
-import { FileSystemAdapter, glob, globStream } from "fast-glob";
+import type { Filemod } from "@codemod-com/filemod";
+import { type FileSystemAdapter, glob, globStream } from "fast-glob";
 import * as yaml from "js-yaml";
-import { IFs, Volume, createFsFromVolume } from "memfs";
+import { type IFs, Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
-import { Codemod } from "./codemod.js";
+import type { Codemod } from "./codemod.js";
 import {
-	FormattedFileCommand,
+	type FormattedFileCommand,
 	buildFormattedFileCommands,
 	modifyFileSystemUponCommand,
 } from "./fileCommands.js";
 import { getTransformer, transpile } from "./getTransformer.js";
-import { OperationMessage } from "./messages.js";
-import { PrinterBlueprint } from "./printer.js";
+import type { OperationMessage } from "./messages.js";
+import type { PrinterBlueprint } from "./printer.js";
 import { astGrepLanguageToPatterns } from "./runAstgrepCodemod.js";
-import { Dependencies, runRepomod } from "./runRepomod.js";
-import { SafeArgumentRecord } from "./safeArgumentRecord.js";
-import { FlowSettings } from "./schemata/flowSettingsSchema.js";
-import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
+import { type Dependencies, runRepomod } from "./runRepomod.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
-import { WorkerThreadMessage } from "./workerThreadMessages.js";
+import type { WorkerThreadMessage } from "./workerThreadMessages.js";
 
 export { escape } from "minimatch";
 
@@ -36,12 +36,27 @@ export const buildPatterns = async (
 	include: string[];
 	exclude: string[];
 }> => {
+	const formatFunc = (pattern: string) => {
+		if (pattern.startsWith("**")) {
+			return pattern;
+		}
+
+		if (pattern.startsWith("/")) {
+			return `**${pattern}`;
+		}
+
+		return `**/${pattern}`;
+	};
+
+	const excludePatterns = flowSettings.exclude ?? [];
+	const formattedExclude = excludePatterns.map(formatFunc);
+
 	const files = flowSettings.files;
 
 	if (files) {
 		return {
 			include: files,
-			exclude: flowSettings.exclude ?? [],
+			exclude: formattedExclude,
 		};
 	}
 
@@ -82,23 +97,8 @@ export const buildPatterns = async (
 		}
 	}
 
-	const formatFunc = (pattern: string) => {
-		if (pattern.startsWith("**")) {
-			return pattern;
-		}
-
-		if (pattern.startsWith("/")) {
-			return `**${pattern}`;
-		}
-
-		return `**/${pattern}`;
-	};
-
 	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
 	const formattedInclude = patterns.map(formatFunc);
-
-	const excludePatterns = flowSettings.exclude ?? [];
-	const formattedExclude = excludePatterns.map(formatFunc);
 
 	return {
 		include: formattedInclude,
@@ -284,14 +284,12 @@ export const runCodemod = async (
 			}
 		}
 
-		const patterns = flowSettings.files ?? flowSettings.include ?? [];
-
-		const newPaths = await glob(patterns.slice(), {
+		const newPaths = await glob(paths.include, {
 			absolute: true,
 			cwd: flowSettings.target,
-			// @ts-expect-error type inconsistency
+			ignore: paths.exclude,
 			fs: mfs,
-			nodir: true,
+			onlyFiles: true,
 		});
 
 		const fileCommands = await buildFileCommands(
