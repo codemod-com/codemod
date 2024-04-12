@@ -109,7 +109,6 @@ export class WorkerThreadManager {
 		if (iteratorResult.done) {
 			this.__totalFileCount = this.__currentFileCount;
 
-			await this.__work();
 			return;
 		}
 
@@ -127,13 +126,17 @@ export class WorkerThreadManager {
 			return;
 		}
 
-		const filePath = this.__filePaths.pop();
+		const filePath = this.__filePaths.shift();
 
 		if (filePath === undefined) {
+			// console.log("this.__totalFileCount", this.__totalFileCount);
+			// console.log("this.__idleWorkerIds.length", this.__idleWorkerIds.length);
+			// console.log("this.__workerCount", this.__workerCount);
 			if (
 				this.__totalFileCount !== null &&
 				this.__idleWorkerIds.length === this.__workerCount
 			) {
+				console.log("there");
 				this.__finished = true;
 
 				this.__finish();
@@ -190,15 +193,17 @@ export class WorkerThreadManager {
 				for (const command of commands) {
 					await this.__onCommand(command);
 				}
-			} else if (workerThreadMessage.kind === "error") {
+				return;
+			}
+
+			if (workerThreadMessage.kind === "error") {
 				this.__onPrinterMessage({
 					kind: "error",
 					message: workerThreadMessage.message,
 					path: workerThreadMessage.path,
 				});
+				return;
 			}
-
-			++this.__processedFileNumber;
 
 			if (workerThreadMessage.path) {
 				this.__onPrinterMessage({
