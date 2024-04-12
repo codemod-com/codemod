@@ -7,13 +7,17 @@ import {
 	parseCodemodConfig,
 	tarPack,
 } from "@codemod-com/utilities";
+import type { RouteHandlerMethod } from "fastify";
 import * as semver from "semver";
 import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
-import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
-import { CLAIM_PUBLISHING } from "./services/tokenService.js";
-import { getCustomAccessToken } from "./util.js";
+import type { Environment } from "./schemata/env.js";
+import {
+	CLAIM_PUBLISHING,
+	type TokenService,
+} from "./services/tokenService.js";
+import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
 export const publishHandler: CustomHandler<Record<string, never>> = async ({
 	environment,
