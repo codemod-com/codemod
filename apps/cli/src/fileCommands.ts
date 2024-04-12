@@ -65,7 +65,7 @@ const parserMappers = new Map<string, Options["parser"]>([
 	["ts", "typescript"],
 	["tsx", "typescript"],
 	["js", "babel"],
-	["jsx", "babel"],
+	["jsx", "typescript"],
 	["json", "json"],
 	["json5", "json5"],
 	["jsonc", "json"],
@@ -114,7 +114,7 @@ export const formatText = async (
 	try {
 		const { format } = await import("prettier");
 		const options = await getConfig(path);
-		return format(newData, options);
+		return await format(newData, options);
 	} catch (err) {
 		return newData;
 	}
