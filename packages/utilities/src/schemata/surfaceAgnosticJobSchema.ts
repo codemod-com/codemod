@@ -1,4 +1,4 @@
-import * as S from "@effect/schema/Schema";
+import { literal, object, parse, string, union, type Output } from "valibot";
 
 // bitwise masks 0x____ZYXX
 const NEW_FILE_CREATED = 0;
@@ -18,45 +18,46 @@ export enum JOB_KIND {
 	COPY_FILE = OLD_FILE_COPIED,
 }
 
-const surfaceAgnosticJobSchema = S.union(
-	S.struct({
-		kind: S.literal(JOB_KIND.CREATE_FILE),
-		jobHashDigest: S.string,
-		pathUri: S.string,
-		dataUri: S.string,
+const surfaceAgnosticJobSchema = union([
+	object({
+		kind: literal(JOB_KIND.CREATE_FILE),
+		jobHashDigest: string(),
+		pathUri: string(),
+		dataUri: string(),
 	}),
-	S.struct({
-		kind: S.literal(JOB_KIND.UPDATE_FILE),
-		jobHashDigest: S.string,
-		pathUri: S.string,
-		newDataUri: S.string,
+	object({
+		kind: literal(JOB_KIND.UPDATE_FILE),
+		jobHashDigest: string(),
+		pathUri: string(),
+		newDataUri: string(),
 	}),
-	S.struct({
-		kind: S.literal(JOB_KIND.MOVE_FILE),
-		jobHashDigest: S.string,
-		oldPathUri: S.string,
-		newPathUri: S.string,
+	object({
+		kind: literal(JOB_KIND.MOVE_FILE),
+		jobHashDigest: string(),
+		oldPathUri: string(),
+		newPathUri: string(),
 	}),
-	S.struct({
-		kind: S.literal(JOB_KIND.MOVE_AND_UPDATE_FILE),
-		jobHashDigest: S.string,
-		oldPathUri: S.string,
-		newPathUri: S.string,
-		newDataUri: S.string,
+	object({
+		kind: literal(JOB_KIND.MOVE_AND_UPDATE_FILE),
+		jobHashDigest: string(),
+		oldPathUri: string(),
+		newPathUri: string(),
+		newDataUri: string(),
 	}),
-	S.struct({
-		kind: S.literal(JOB_KIND.DELETE_FILE),
-		jobHashDigest: S.string,
-		pathUri: S.string,
+	object({
+		kind: literal(JOB_KIND.DELETE_FILE),
+		jobHashDigest: string(),
+		pathUri: string(),
 	}),
-	S.struct({
-		kind: S.literal(JOB_KIND.COPY_FILE),
-		jobHashDigest: S.string,
-		sourcePathUri: S.string,
-		targetPathUri: S.string,
+	object({
+		kind: literal(JOB_KIND.COPY_FILE),
+		jobHashDigest: string(),
+		sourcePathUri: string(),
+		targetPathUri: string(),
 	}),
-);
+]);
 
-export const parseSurfaceAgnosticJob = S.parseSync(surfaceAgnosticJobSchema);
+export const parseSurfaceAgnosticJob = (input: unknown) =>
+	parse(surfaceAgnosticJobSchema, input);
 
-export type SurfaceAgnosticJob = S.Schema.To<typeof surfaceAgnosticJobSchema>;
+export type SurfaceAgnosticJob = Output<typeof surfaceAgnosticJobSchema>;

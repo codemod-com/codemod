@@ -1,12 +1,17 @@
-import { createHash } from "node:crypto";
-import { homedir } from "node:os";
-import { join } from "node:path";
+import {
+	PIRANHA_LANGUAGES,
+	piranhaLanguageSchema,
+} from "@codemod-com/utilities";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
 import prettyReporter from "io-ts-reporters";
+import { createHash } from "node:crypto";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import { parse } from "valibot";
 import * as vscode from "vscode";
 import { CaseManager } from "./cases/caseManager";
-import { type CaseHash, caseHashCodec } from "./cases/types";
+import { caseHashCodec, type CaseHash } from "./cases/types";
 import { createClearStateCommand } from "./commands/clearStateCommand";
 import { BootstrapExecutablesService } from "./components/bootstrapExecutablesService";
 import { DownloadService } from "./components/downloadService";
@@ -14,7 +19,7 @@ import { EngineService } from "./components/engineService";
 import { FileService } from "./components/fileService";
 import { FileSystemUtilities } from "./components/fileSystemUtilities";
 import { JobManager } from "./components/jobManager";
-import { type Command, MessageBus, MessageKind } from "./components/messageBus";
+import { MessageBus, MessageKind, type Command } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
 import { GlobalStateTokenStorage, UserService } from "./components/userService";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
@@ -27,10 +32,6 @@ import {
 import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
-import {
-	PIRANHA_LANGUAGES,
-	parsePiranhaLanguage,
-} from "./data/codemodConfigSchema";
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
@@ -458,7 +459,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					throw new Error("You must specify the language");
 				}
 
-				const language = parsePiranhaLanguage(quickPick);
+				const language = parse(piranhaLanguageSchema, quickPick);
 
 				messageBus.publish({
 					kind: MessageKind.executeCodemodSet,
