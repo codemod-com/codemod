@@ -9,7 +9,7 @@ import {
 	decodeWorkerThreadMessage,
 } from "./workerThreadMessages.js";
 
-const WORKER_THREAD_TIME_LIMIT = 10000;
+const WORKER_THREAD_TIME_LIMIT = 20_000;
 
 export class WorkerThreadManager {
 	private __finished = false;
