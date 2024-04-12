@@ -380,10 +380,9 @@ export const runCodemod = async (
 						kind: "progress",
 						processedFileNumber: message.processedFileNumber,
 						totalFileNumber: message.totalFileNumber,
-						processedFileName: relative(
-							flowSettings.target,
-							message.processedFileName,
-						),
+						processedFileName: message.processedFileName
+							? relative(flowSettings.target, message.processedFileName)
+							: null,
 					});
 				} else {
 					onPrinterMessage(message);

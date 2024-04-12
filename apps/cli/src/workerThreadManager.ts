@@ -9,18 +9,14 @@ import {
 	decodeWorkerThreadMessage,
 } from "./workerThreadMessages.js";
 
-const WORKER_THREAD_TIME_LIMIT = 20_000;
-
 export class WorkerThreadManager {
 	private __finished = false;
 	private __idleWorkerIds: number[] = [];
 	private __workers: Worker[] = [];
 	private __workerTimestamps: number[] = [];
 	private __filePaths: string[] = [];
-	private __currentFileCount = 0;
-	private __totalFileCount: number | null = null;
+	private __totalFileCount = 0;
 	private __processedFileNumber = 0;
-	private readonly __interval: NodeJS.Timeout;
 
 	public constructor(
 		private readonly __workerCount: number,
@@ -62,32 +58,6 @@ export class WorkerThreadManager {
 			this.__workers.push(worker);
 		}
 
-		this.__interval = setInterval(() => {
-			const now = Date.now();
-
-			for (let i = 0; i < __workerCount; ++i) {
-				const timestamp = this.__workerTimestamps[i] ?? Date.now();
-
-				if (now > timestamp + WORKER_THREAD_TIME_LIMIT) {
-					// hanging promise on purpose
-					this.__workers[i]?.terminate();
-
-					const filename = process.env.TEST
-						? join(dirname(__filename), "../dist/index.cjs")
-						: __filename;
-
-					const worker = new Worker(filename);
-					worker.on("message", this.__buildOnWorkerMessage(i));
-
-					this.__workers[i] = worker;
-
-					this.__idleWorkerIds.push(i);
-
-					this.__workerTimestamps[i] = Date.now();
-				}
-			}
-		}, 1000);
-
 		this.__pullNewPath();
 	}
 
@@ -95,8 +65,6 @@ export class WorkerThreadManager {
 		if (this.__finished) {
 			return;
 		}
-
-		clearInterval(this.__interval);
 
 		for (const worker of this.__workers) {
 			await worker.terminate();
@@ -107,13 +75,10 @@ export class WorkerThreadManager {
 		const iteratorResult = await this.__pathGenerator.next();
 
 		if (iteratorResult.done) {
-			this.__totalFileCount = this.__currentFileCount;
-
-			await this.__work();
 			return;
 		}
 
-		++this.__currentFileCount;
+		++this.__totalFileCount;
 
 		this.__filePaths.push(iteratorResult.value);
 
@@ -127,7 +92,7 @@ export class WorkerThreadManager {
 			return;
 		}
 
-		const filePath = this.__filePaths.pop();
+		const filePath = this.__filePaths.shift();
 
 		if (filePath === undefined) {
 			if (
@@ -164,8 +129,6 @@ export class WorkerThreadManager {
 	}
 
 	private __finish(): void {
-		clearInterval(this.__interval);
-
 		for (const worker of this.__workers) {
 			worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
 		}
@@ -198,16 +161,14 @@ export class WorkerThreadManager {
 				});
 			}
 
-			++this.__processedFileNumber;
-
-			if (workerThreadMessage.path) {
-				this.__onPrinterMessage({
-					kind: "progress",
-					processedFileNumber: this.__processedFileNumber,
-					totalFileNumber: this.__currentFileCount,
-					processedFileName: resolve(workerThreadMessage.path),
-				});
-			}
+			this.__onPrinterMessage({
+				kind: "progress",
+				processedFileNumber: ++this.__processedFileNumber,
+				totalFileNumber: this.__totalFileCount,
+				processedFileName: workerThreadMessage.path
+					? resolve(workerThreadMessage.path)
+					: null,
+			});
 
 			this.__idleWorkerIds.push(i);
 			await this.__work();

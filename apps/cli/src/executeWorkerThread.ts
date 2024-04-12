@@ -40,7 +40,6 @@ const messageHandler = async (m: unknown) => {
 		try {
 			message = decodeMainThreadMessage(m);
 		} catch (err) {
-			console.dir(err, { depth: 10 });
 			throw new Error(`Failed to decode message: ${String(err)}`);
 		}
 

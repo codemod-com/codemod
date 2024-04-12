@@ -1,9 +1,9 @@
+import type { CodemodListResponse } from "@codemod-com/utilities";
 import type { CustomHandler } from "../customHandler.js";
 import { parseListCodemodsQuery } from "../schemata/schema.js";
-import type { ShortCodemodInfo } from "../services/codemodService.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 
-export const getCodemodsListHandler: CustomHandler<ShortCodemodInfo[]> =
+export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
 	async ({
 		getAccessToken,
 		tokenService,

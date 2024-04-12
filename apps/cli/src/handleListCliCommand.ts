@@ -7,20 +7,15 @@ export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,
 	search: string | null,
 ) => {
-	let stopSearchingMessage = () => {};
+	let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
 	if (search && !printer.__jsonOutput) {
-		stopSearchingMessage = printer.withLoaderMessage((loader) =>
-			colorizeText(
-				`${loader.get("vertical-dots")}  Searching for ${boldText(
-					`"${search}"`,
-				)}`,
-				"cyan",
-			),
+		spinner = printer.withLoaderMessage(
+			colorizeText(`Searching for ${boldText(`"${search}"`)}`, "cyan"),
 		);
 	}
 
 	const configObjects = await getCodemodList({ search });
-	stopSearchingMessage();
+	spinner?.stop();
 
 	if (printer.__jsonOutput) {
 		printer.printOperationMessage({
@@ -30,11 +25,11 @@ export const handleListNamesCommand = async (
 		return;
 	}
 
-	let prettified = configObjects
-		.map(({ name, verified: _, tags: tagsArray, engine, author }) => {
+	let prettified = configObjects.map(
+		({ name, verified: _, tags: tagsArray, engine, author }) => {
 			const tags = tagsArray.join(", ");
 
-			if (search && (name === search || tags.includes(search))) {
+			if (search && (name === search || tagsArray.includes(search))) {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					tags: boldText(colorizeText(tags, "cyan")),
@@ -49,8 +44,8 @@ export const handleListNamesCommand = async (
 				engine,
 				author,
 			};
-		})
-		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+		},
+	);
 
 	if (search) {
 		prettified = prettified.slice(0, 10);

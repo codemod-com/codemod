@@ -130,11 +130,9 @@ export const buildSourcedCodemodOptions = async (
 			codemodConfig as CodemodConfig & { engine: "recipe" }
 		).names;
 
-		const stopLoading = printer.withLoaderMessage((loader) =>
+		const spinner = printer.withLoaderMessage(
 			colorizeText(
-				`${loader.get("vertical-dots")}  Downloading ${
-					subCodemodsNames.length
-				} recipe codemods...`,
+				`Downloading ${subCodemodsNames.length} recipe codemods...`,
 				"cyan",
 			),
 		);
@@ -155,7 +153,7 @@ export const buildSourcedCodemodOptions = async (
 				try {
 					return await codemodDownloader.download(subCodemodName, true);
 				} catch (error) {
-					stopLoading();
+					spinner.fail();
 					if (error instanceof AxiosError) {
 						if (
 							error.response?.status === 400 &&
@@ -174,7 +172,7 @@ export const buildSourcedCodemodOptions = async (
 			}),
 		);
 
-		stopLoading();
+		spinner.succeed();
 
 		return {
 			source: "package",
