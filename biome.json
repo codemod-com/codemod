@@ -42,7 +42,7 @@
 			},
 			"correctness": {
 				"noUndeclaredVariables": "off",
-        "noUnusedImports": "error",
+				"noUnusedImports": "error",
 				"noUnusedVariables": "off",
 				"noConstAssign": "warn",
 				"noEmptyCharacterClassInRegex": "warn",
@@ -67,6 +67,7 @@
 				"noForEach": "off"
 			},
 			"style": {
+				"useNodejsImportProtocol": "error",
 				"noCommaOperator": "warn",
 				"noRestrictedGlobals": "error",
 				"useLiteralEnumMembers": "off",
