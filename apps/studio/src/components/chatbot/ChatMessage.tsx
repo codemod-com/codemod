@@ -90,7 +90,6 @@ const ChatMessage = ({ message }: Props) => {
 										);
 									}
 
-									// eslint-disable-next-line no-param-reassign
 									children[0] = (children[0] as string).replace("`▍`", "▍");
 								}
 

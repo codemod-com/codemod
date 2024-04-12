@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
 import type { IFileHandle } from "memfs/lib/node/types/misc.js";

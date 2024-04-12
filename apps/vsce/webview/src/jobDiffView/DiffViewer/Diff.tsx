@@ -90,7 +90,6 @@ export const DiffComponent = memo(
 		useEffect(() => {
 			// set modified content to `newFileContent` only once when the new job first loads
 			setModifiedContent(newFileContent);
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [jobHash]);
 
 		return (

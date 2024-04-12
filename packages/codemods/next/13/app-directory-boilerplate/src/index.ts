@@ -15,7 +15,6 @@ import type { visit } from "unist-util-visit";
 
 type Root = ReturnType<typeof fromMarkdown>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 	parseMdx?: (data: string) => Root;

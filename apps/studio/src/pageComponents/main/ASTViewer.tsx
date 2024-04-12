@@ -1,4 +1,3 @@
-/* eslint-disable no-nested-ternary */
 import { useCallback, useEffect, useRef } from "react";
 import Text from "../../components/Text";
 import Tree, { type TreeNode } from "../../components/Tree";

@@ -12,10 +12,8 @@ import type { RangeCommand } from "~/utils/tree";
 const alphanumerizeString = (input: string): string => {
 	let output = "";
 
-	// eslint-disable-next-line no-restricted-syntax
 	for (const character of input) {
 		if (!character.match(/[a-zA-Z0-9]/)) {
-			// eslint-disable-next-line no-continue
 			continue;
 		}
 
@@ -111,7 +109,6 @@ const calculateReplacementRanges = (
 
 			const regex = new RegExp(phrases.join(".*?"), "gs");
 
-			// eslint-disable-next-line no-restricted-syntax
 			for (const regExpMatchArray of output.matchAll(regex)) {
 				const start = regExpMatchArray.index ?? 0;
 				const end = start + regExpMatchArray[0].length;

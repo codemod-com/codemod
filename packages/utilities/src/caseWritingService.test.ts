@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createHash, randomBytes } from "node:crypto";
 import { open, rm } from "node:fs/promises";
 import { afterAll, describe, expect, it } from "vitest";

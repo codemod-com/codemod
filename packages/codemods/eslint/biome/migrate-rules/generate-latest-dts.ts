@@ -21,7 +21,6 @@ const schemastoreNotice = await fetch(
 	.then((res) => res.text())
 	.then((text) => text.replace(/\n/g, "\n * "));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const eslintSchema: any = await fetch(
 	"https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/eslintrc.json",
 ).then((res) => res.json());
@@ -32,7 +31,6 @@ compile(eslintSchema, "ESLint").then((ts) =>
 	),
 );
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const prettierSchema: any = await fetch(
 	"https://github.com/SchemaStore/schemastore/raw/master/src/schemas/json/prettierrc.json",
 ).then((res) => res.json());

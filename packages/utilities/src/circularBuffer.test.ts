@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { EventEmitter } from "node:events";
 import { describe, expect, it } from "vitest";
 import { CircularBuffer } from "./circularBuffer.js";

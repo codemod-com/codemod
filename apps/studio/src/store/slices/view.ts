@@ -1,4 +1,3 @@
-// /* eslint-disable import/group-exports */
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import type { RootState } from "~/store";
 //
@@ -24,11 +23,9 @@
 // 	initialState,
 // 	reducers: {
 // 		setActiveTab(state, action: PayloadAction<ViewState["activeTab"]>) {
-// 			// eslint-disable-next-line no-param-reassign
 // 			state.activeTab = action.payload;
 // 		},
 // 		setASTViewCollapsed(state, action: PayloadAction<boolean>) {
-// 			// eslint-disable-next-line no-param-reassign
 // 			state.astViewCollapsed = action.payload;
 // 		},
 // 	},

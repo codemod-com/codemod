@@ -15,7 +15,6 @@ const ThemeContext = createContext<{
 	toggleTheme: () => void;
 }>({
 	isDark: null,
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	toggleTheme: () => {},
 });
 const THEME_CONST = "_THEME_";

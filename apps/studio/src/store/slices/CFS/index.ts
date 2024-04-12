@@ -1,5 +1,3 @@
-// /* eslint-disable no-plusplus */
-// /* eslint-disable no-param-reassign */
 // import { type Node } from "@babel/types";
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import { type SendMessageResponse } from "~/api/sendMessage";
@@ -18,7 +16,6 @@
 //
 // function isNeitherNullNorUndefined<T>(
 // 	value: T,
-// 	// eslint-disable-next-line @typescript-eslint/ban-types
 // ): value is T & {} {
 // 	return value !== null && value !== undefined;
 // }
@@ -111,7 +108,6 @@
 // 		}
 //
 // 		if (Array.isArray(child)) {
-// 			// eslint-disable-next-line no-debugger
 // 			const mappedChild = child
 // 				.filter(isNode)
 // 				.filter((ch) => {

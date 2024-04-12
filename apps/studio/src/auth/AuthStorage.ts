@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 import { withSession } from "@clerk/nextjs";
 import { useEffect } from "react";
 

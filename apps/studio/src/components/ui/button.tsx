@@ -52,7 +52,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 	) => {
 		const RenderElement = asChild ? Slot : "button";
 		if (isLoading) {
-			// eslint-disable-next-line no-param-reassign
 			props.children = [
 				<Loader2
 					key="loading-indicator"

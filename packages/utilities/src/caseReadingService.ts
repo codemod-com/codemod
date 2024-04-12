@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-enum-comparison */
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import type { Hash } from "node:crypto";
 import { createHash } from "node:crypto";
 import EventEmitter from "node:events";

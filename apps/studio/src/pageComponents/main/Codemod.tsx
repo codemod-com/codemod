@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/extensions
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";

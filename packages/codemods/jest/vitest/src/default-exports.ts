@@ -77,7 +77,6 @@ export const updateDefaultExportMocks = <T>(
 				join(dirname(filePath), moduleName.value as string),
 			);
 
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const module = require(modulePath);
 
 			if (typeof module === "object") {

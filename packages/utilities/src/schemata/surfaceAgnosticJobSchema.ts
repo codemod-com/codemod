@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/prefer-literal-enum-member */
 import * as S from "@effect/schema/Schema";
 
 // bitwise masks 0x____ZYXX
