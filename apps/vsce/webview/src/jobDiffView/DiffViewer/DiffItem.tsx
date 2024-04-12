@@ -1,11 +1,17 @@
-import { KeyboardEvent, forwardRef, memo, useCallback, useState } from "react";
-import { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
+import {
+	type KeyboardEvent,
+	forwardRef,
+	memo,
+	useCallback,
+	useState,
+} from "react";
+import type { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
 import debounce from "../../shared/utilities/debounce";
 import { vscode } from "../../shared/utilities/vscode";
 import { Collapsable } from "../Components/Collapsable";
 import { exportToCodemodStudio, reportIssue } from "../util";
 import { Header } from "./Container";
-import { Diff, DiffComponent } from "./Diff";
+import { type Diff, DiffComponent } from "./Diff";
 import "./DiffItem.css";
 
 type Props = PanelViewProps & { kind: "JOB" } & {

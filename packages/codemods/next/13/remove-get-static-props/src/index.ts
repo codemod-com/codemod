@@ -188,17 +188,17 @@ const buildGetDataVariableDeclaration = (
 	const id = j.Identifier.check(firstParam)
 		? j.identifier(firstParam.name)
 		: j.ObjectPattern.check(firstParam)
-		  ? j.objectPattern.from({
+			? j.objectPattern.from({
 					...firstParam,
 					typeAnnotation: null,
-			  })
-		  : null;
+				})
+			: null;
 
 	return id === null
 		? j.expressionStatement(callExpression)
 		: j.variableDeclaration("const", [
 				j.variableDeclarator(id, callExpression),
-		  ]);
+			]);
 };
 
 const buildBuildLegacyCtxVariableDeclaration = (j: JSCodeshift) => {
@@ -897,7 +897,7 @@ export const addRevalidateVariableDeclaration: ModFunction<any, "write"> = (
 		return [false, []];
 	}
 
-	const revalidate = parseInt(String(settings.revalidate) ?? "0", 10);
+	const revalidate = Number.parseInt(String(settings.revalidate) ?? "0", 10);
 
 	const exportNamedDeclaration = j.exportNamedDeclaration(
 		j.variableDeclaration("const", [

@@ -317,7 +317,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 										ts.factory.createIdentifier("status"),
 										ts.factory.createNumericLiteral(httpResponseStatus),
 									),
-							  ]
+								]
 							: []),
 						...(headers.length
 							? [
@@ -325,7 +325,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 										ts.factory.createIdentifier("headers"),
 										ts.factory.createObjectLiteralExpression(headers, false),
 									),
-							  ]
+								]
 							: []),
 					];
 

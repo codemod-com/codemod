@@ -1,7 +1,7 @@
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import {
-	Output,
-	ValiError,
+	type Output,
+	type ValiError,
 	array,
 	coerce,
 	literal,

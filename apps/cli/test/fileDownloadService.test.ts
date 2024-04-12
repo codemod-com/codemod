@@ -1,8 +1,8 @@
-import { deepEqual } from "assert";
+import { deepEqual } from "node:assert";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { FileDownloadService } from "../src/fileDownloadService.js";
-import { PrinterBlueprint } from "../src/printer.js";
+import type { PrinterBlueprint } from "../src/printer.js";
 
 describe("FileDownloadService", () => {
 	const FILE_PATH = "file.ts";

@@ -5,11 +5,14 @@ import type { IFs } from "memfs";
 export const buildFileMap = async (
 	sourceFileSystem: IFs,
 	targetFileSystem: IFs,
-	paths: string[],
+	paths: {
+		include: string[];
+		exclude: string[];
+	},
 ): Promise<Map<string, string>> => {
 	const fileMap = new Map<string, string>();
 
-	for (const path of paths) {
+	for (const path of paths.include) {
 		const data = await sourceFileSystem.promises.readFile(path, {
 			encoding: "utf8",
 		});

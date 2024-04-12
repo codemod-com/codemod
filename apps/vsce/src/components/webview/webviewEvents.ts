@@ -1,13 +1,13 @@
-import { Command } from "vscode";
-import { CaseHash } from "../../cases/types";
+import type { Command } from "vscode";
+import type { CaseHash } from "../../cases/types";
 import { JobHash } from "../../jobs/types";
 import { CodemodHash } from "../../packageJsonAnalyzer/types";
-import { ActiveTabId } from "../../persistedState/codecs";
-import { _ExplorerNodeHashDigest } from "../../persistedState/explorerNodeCodec";
-import { CodemodNodeHashDigest } from "../../selectors/selectCodemodTree";
-import { ErrorWebviewViewProps } from "../../selectors/selectErrorWebviewViewProps";
-import { MainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
-import { PanelViewProps } from "./panelViewProps";
+import type { ActiveTabId } from "../../persistedState/codecs";
+import type { _ExplorerNodeHashDigest } from "../../persistedState/explorerNodeCodec";
+import type { CodemodNodeHashDigest } from "../../selectors/selectCodemodTree";
+import type { ErrorWebviewViewProps } from "../../selectors/selectErrorWebviewViewProps";
+import type { MainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
+import type { PanelViewProps } from "./panelViewProps";
 
 export type { Command } from "vscode";
 

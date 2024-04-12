@@ -1,8 +1,8 @@
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import {
-	KnownEngines,
-	ProjectDownloadInput,
+	type KnownEngines,
+	type ProjectDownloadInput,
 	getCodemodProjectFiles,
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
@@ -99,7 +99,7 @@ export const handleInitCliCommand = async (
 				username: userData?.user.username ?? null,
 				// TODO:
 				// tags
-		  }
+			}
 		: {
 				engine: "jscodeshift",
 				name: "my-awesome-codemod",
@@ -107,7 +107,7 @@ export const handleInitCliCommand = async (
 				username: userData?.user.username ?? null,
 				// TODO:
 				// tags
-		  };
+			};
 
 	const files = getCodemodProjectFiles(downloadInput);
 

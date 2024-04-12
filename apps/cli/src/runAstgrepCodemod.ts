@@ -1,6 +1,6 @@
 import type { FileCommand } from "./fileCommands.js";
 import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
-import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 import { execPromise } from "./utils.js";
 
 const javaScriptPatterns = ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"];

@@ -1,9 +1,9 @@
-import { createHash } from "crypto";
-import { sep } from "path";
+import { createHash } from "node:crypto";
+import { sep } from "node:path";
 import * as t from "io-ts";
 import { Project } from "ts-morph";
-import { Uri, Webview } from "vscode";
-import { _ExplorerNode } from "./persistedState/explorerNodeCodec";
+import { Uri, type Webview } from "vscode";
+import type { _ExplorerNode } from "./persistedState/explorerNodeCodec";
 
 export function isNeitherNullNorUndefined<T>(
 	value: T,

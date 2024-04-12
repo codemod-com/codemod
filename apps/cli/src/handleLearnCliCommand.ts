@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
-import { KnownEngines } from "@codemod-com/utilities";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "./apis.js";
 import {
@@ -10,7 +10,7 @@ import {
 	getLatestCommitHash,
 	isFileInGitDirectory,
 } from "./gitCommands.js";
-import { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText, doubleQuotify, openURL } from "./utils.js";
 
 // remove all special characters and whitespaces

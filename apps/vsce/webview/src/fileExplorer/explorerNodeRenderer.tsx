@@ -1,12 +1,12 @@
 import { useCallback } from "react";
-import {
+import type {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
 } from "../../../src/persistedState/explorerNodeCodec";
-import { ExplorerTree } from "../../../src/selectors/selectExplorerTree";
-import { NodeDatum } from "../customTreeView";
+import type { ExplorerTree } from "../../../src/selectors/selectExplorerTree";
+import type { NodeDatum } from "../customTreeView";
 import { vscode } from "../shared/utilities/vscode";
-import TreeItem, { IconName } from "./FileExplorerTreeNode";
+import TreeItem, { type IconName } from "./FileExplorerTreeNode";
 
 const getIconName = (explorerNode: _ExplorerNode): IconName | null => {
 	if (explorerNode.kind === "FILE") {
@@ -44,9 +44,9 @@ export const explorerNodeRenderer =
 				? "indeterminate"
 				: explorerTree.selectedExplorerNodeHashDigests.includes(
 							explorerNodeHashDigest,
-					  )
-				  ? "checked"
-				  : "blank";
+						)
+					? "checked"
+					: "blank";
 
 		const handleClick = useCallback(
 			(event: React.MouseEvent) => {

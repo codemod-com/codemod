@@ -1,5 +1,5 @@
 import { deepEqual, ok } from "node:assert";
-import { API, buildApi, executeFilemod } from "@codemod-com/filemod";
+import { type API, buildApi, executeFilemod } from "@codemod-com/filemod";
 import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
 import type { DirectoryJSON } from "memfs";
 import { Volume, createFsFromVolume } from "memfs";

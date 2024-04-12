@@ -2,19 +2,19 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 import {
-	AllEngines,
-	CodemodConfig,
+	type AllEngines,
+	type CodemodConfig,
 	allEnginesSchema,
 	parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import { object, parse } from "valibot";
-import { Codemod } from "./codemod.js";
-import { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
-import { PrinterBlueprint } from "./printer.js";
-import { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
+import type { Codemod } from "./codemod.js";
+import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const extractEngine = async (

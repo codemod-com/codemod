@@ -1,5 +1,5 @@
 import {
-	ChildProcessWithoutNullStreams,
+	type ChildProcessWithoutNullStreams,
 	exec,
 	spawn,
 } from "node:child_process";
@@ -10,21 +10,21 @@ import axios from "axios";
 import * as E from "fp-ts/Either";
 import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
-import { FileSystem, Uri, commands, window, workspace } from "vscode";
-import { Case } from "../cases/types";
+import { type FileSystem, Uri, commands, window, workspace } from "vscode";
+import type { Case } from "../cases/types";
 import {
-	CodemodEntry,
-	CodemodListResponse,
+	type CodemodEntry,
+	type CodemodListResponse,
 	codemodListResponseCodec,
 } from "../codemods/types";
-import { Configuration } from "../configuration";
-import { Container } from "../container";
-import { Store } from "../data";
+import type { Configuration } from "../configuration";
+import type { Container } from "../container";
+import type { Store } from "../data";
 import { actions } from "../data/slice";
-import { ExecutionError, executionErrorCodec } from "../errors/types";
+import { type ExecutionError, executionErrorCodec } from "../errors/types";
 import { buildJobHash } from "../jobs/buildJobHash";
-import { Job, JobKind } from "../jobs/types";
-import { CodemodHash } from "../packageJsonAnalyzer/types";
+import { type Job, JobKind } from "../jobs/types";
+import type { CodemodHash } from "../packageJsonAnalyzer/types";
 import {
 	buildCrossplatformArg,
 	buildTypeCodec,
@@ -32,7 +32,7 @@ import {
 	streamToString,
 } from "../utilities";
 import { buildArguments } from "./buildArguments";
-import { Message, MessageBus, MessageKind } from "./messageBus";
+import { type Message, type MessageBus, MessageKind } from "./messageBus";
 
 export class EngineNotFoundError extends Error {}
 export class UnableToParseEngineResponseError extends Error {}

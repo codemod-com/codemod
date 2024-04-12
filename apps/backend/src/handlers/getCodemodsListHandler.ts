@@ -1,6 +1,6 @@
-import { CustomHandler } from "../customHandler.js";
+import type { CustomHandler } from "../customHandler.js";
 import { parseListCodemodsQuery } from "../schemata/schema.js";
-import { ShortCodemodInfo } from "../services/codemodService.js";
+import type { ShortCodemodInfo } from "../services/codemodService.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 
 export const getCodemodsListHandler: CustomHandler<ShortCodemodInfo[]> =

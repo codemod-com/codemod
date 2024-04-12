@@ -1,4 +1,4 @@
-import { randomBytes } from "crypto";
+import { randomBytes } from "node:crypto";
 import { JOB_KIND, type SurfaceAgnosticJob } from "@codemod-com/utilities";
 import {
 	type FormattedFileCommand,

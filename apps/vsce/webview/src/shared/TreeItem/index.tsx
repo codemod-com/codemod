@@ -1,5 +1,10 @@
 import cn from "classnames";
-import { CSSProperties, ReactNode, useLayoutEffect, useRef } from "react";
+import {
+	type CSSProperties,
+	type ReactNode,
+	useLayoutEffect,
+	useRef,
+} from "react";
 import styles from "./style.module.css";
 
 const getLabelComponent = (

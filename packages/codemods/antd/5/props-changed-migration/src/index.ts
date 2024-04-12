@@ -281,7 +281,7 @@ const transform: Transform = (file, api, options) => {
 									// Component Usage JSXElement `<Tag />`
 									nodePath.parent.parent.node,
 									j.nullLiteral(),
-							  )
+								)
 							: null;
 
 						// <><Tag visible={vi} /></>

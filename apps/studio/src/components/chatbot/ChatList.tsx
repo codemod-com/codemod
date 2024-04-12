@@ -1,4 +1,4 @@
-import { type Message } from "ai";
+import type { Message } from "ai";
 import { memo } from "react";
 import { Separator } from "~/components/ui/separator";
 import { cn } from "~/lib/utils";

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { PanelViewProps } from "../../../src/components/webview/panelViewProps";
-import { type WebviewMessage } from "../shared/types";
+import type { WebviewMessage } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 import { JobDiffViewContainer } from "./DiffViewer/index";
 import "./index.css";

@@ -1,4 +1,4 @@
-import { type JobHash } from "../shared/types";
+import type { JobHash } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 
 export const reportIssue = (

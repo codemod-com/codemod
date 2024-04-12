@@ -1,12 +1,12 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import { type CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
 import { getCodemodDownloadURI } from "./apis.js";
-import { Codemod } from "./codemod.js";
-import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
-import { PrinterBlueprint } from "./printer.js";
-import { TarService } from "./services/tarService.js";
+import type { Codemod } from "./codemod.js";
+import type { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { TarService } from "./services/tarService.js";
 import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{

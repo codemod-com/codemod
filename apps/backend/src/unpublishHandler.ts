@@ -3,7 +3,7 @@ import {
 	extractLibNameAndVersion,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { CustomHandler } from "./customHandler";
+import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
 import { parseUnpublishBody } from "./schemata/schema";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";

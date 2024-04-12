@@ -2,7 +2,7 @@ import {
 	ArrowElbowDownLeft as ArrowElbowDownLeftIcon,
 	Trash as TrashIcon,
 } from "@phosphor-icons/react";
-import { type UseChatHelpers } from "ai/react";
+import type { UseChatHelpers } from "ai/react";
 import * as React from "react";
 import Textarea from "react-textarea-autosize";
 import Tooltip from "~/components/Tooltip/Tooltip";

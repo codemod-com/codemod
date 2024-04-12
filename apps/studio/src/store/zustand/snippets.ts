@@ -2,11 +2,11 @@ import { isFile } from "@babel/types";
 import create from "zustand";
 import { INITIAL_STATE } from "~/store/getInitialState";
 
-import { KnownEngines } from "@codemod-com/utilities";
-import { SnippetType } from "~/pageComponents/main/PageBottomPane";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { KnownEngines } from "@codemod-com/utilities";
+import type { SnippetType } from "~/pageComponents/main/PageBottomPane";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { type TreeNode } from "~/types/tree";
+import type { TreeNode } from "~/types/tree";
 import mapBabelASTToRenderableTree from "~/utils/mappers";
 import { type RangeCommand, buildRanges } from "~/utils/tree";
 import { parseSnippet } from "../../utils/babelParser";
@@ -56,7 +56,7 @@ export const getInitialState = (): SnippetStateValues => {
 					start,
 					end,
 					value: value ?? beforeSnippet.slice(start, end),
-			  }))
+				}))
 			: []
 		: [];
 
@@ -73,7 +73,7 @@ export const getInitialState = (): SnippetStateValues => {
 					start,
 					end,
 					value: value ?? afterSnippet.slice(start, end),
-			  }))
+				}))
 			: []
 		: [];
 

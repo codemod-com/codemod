@@ -1,4 +1,4 @@
-import { PropsWithChildren, type ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from "react";
 import Text from "~/components/Text";
 import { cn } from "~/lib/utils";
 

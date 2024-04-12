@@ -1,11 +1,11 @@
 import * as O from "fp-ts/Option";
 import * as T from "fp-ts/These";
 import { pipe } from "fp-ts/lib/function";
-import {
+import type {
 	CodemodArgumentWithValue,
 	CodemodNodeHashDigest,
 } from "../../../../src/selectors/selectCodemodTree";
-import { CodemodHash } from "../../shared/types";
+import type { CodemodHash } from "../../shared/types";
 import { vscode } from "../../shared/utilities/vscode";
 import { DirectorySelector } from "../components/DirectorySelector";
 import FormField from "./FormField";

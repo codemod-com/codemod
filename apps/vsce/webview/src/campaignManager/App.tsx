@@ -1,7 +1,7 @@
 import cn from "classnames";
-import { CaseHash } from "../../../src/cases/types";
-import { CodemodRunsTree } from "../../../src/selectors/selectCodemodRunsTree";
-import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import type { CaseHash } from "../../../src/cases/types";
+import type { CodemodRunsTree } from "../../../src/selectors/selectCodemodRunsTree";
+import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { ReactComponent as CaseIcon } from "../assets/case.svg";
 import { CustomTreeView } from "../customTreeView";
 import LoadingProgress from "../jobDiffView/Components/LoadingProgress";

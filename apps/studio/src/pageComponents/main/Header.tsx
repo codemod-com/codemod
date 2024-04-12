@@ -1,4 +1,4 @@
-import { KnownEngines } from "@codemod-com/utilities";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
 import { Link as LinkIcon } from "@phosphor-icons/react";
 import AuthButtons from "~/auth/AuthButtons";

@@ -1,4 +1,4 @@
-import { AllEngines, Arguments } from "./codemodConfigSchema.js";
+import type { AllEngines, Arguments } from "./codemodConfigSchema.js";
 
 export type CodemodListResponse = {
 	name: string;

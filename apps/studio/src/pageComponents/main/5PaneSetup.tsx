@@ -1,5 +1,5 @@
 import { SignInButton, useAuth } from "@clerk/nextjs";
-import { KnownEngines } from "@codemod-com/utilities";
+import type { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -34,8 +34,8 @@ import { cn } from "~/lib/utils";
 import {
 	AstSection,
 	BoundResizePanel,
-	PanelData,
-	PanelsRefs,
+	type PanelData,
+	type PanelsRefs,
 	ResizablePanelsIndices,
 	ShowPanelTile,
 } from "~/pageComponents/main/PageBottomPane";
@@ -169,7 +169,7 @@ const Main = () => {
 
 			if (
 				timestamp === null ||
-				new Date().getTime() - parseInt(timestamp, 10) > TWO_MINS_IN_MS
+				new Date().getTime() - Number.parseInt(timestamp, 10) > TWO_MINS_IN_MS
 			) {
 				return;
 			}

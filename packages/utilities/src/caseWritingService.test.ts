@@ -10,7 +10,7 @@ import {
 	serializePostamble,
 	serializePreamble,
 } from "./caseWritingService.js";
-import { type SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
+import type { SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
 import {
 	JOB_KIND,
 	type SurfaceAgnosticJob,

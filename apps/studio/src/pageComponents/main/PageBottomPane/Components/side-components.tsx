@@ -1,17 +1,18 @@
-import { KnownEngines } from "@codemod-com/utilities";
-import React, { PropsWithChildren } from "react";
+import type { KnownEngines } from "@codemod-com/utilities";
+import type React from "react";
+import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { isServer } from "~/config";
 import { VisibilityIcon } from "~/icons/VisibilityIcon";
 import { cn } from "~/lib/utils";
 import ASTViewer from "~/pageComponents/main/ASTViewer";
-import { Void } from "~/types/transformations";
+import type { Void } from "~/types/transformations";
 import { debounce } from "~/utils/debounce";
 import { isNil } from "~/utils/isNil";
 import { isVisible } from "~/utils/visibility";
 import Layout from "../../Layout";
-import {
+import type {
 	ContentViewerProps,
 	PanelComponentProps,
 	PanelData,
@@ -46,7 +47,7 @@ export const BoundResizePanel = ({
 					? debounce((size) => {
 							const panel = panelRefs.current[boundedIndex];
 							if (!isNil(panel) && !isNil(size)) panel.resize(size);
-					  }, 5)
+						}, 5)
 					: undefined
 			}
 		>

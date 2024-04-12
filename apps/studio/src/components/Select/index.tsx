@@ -1,4 +1,4 @@
-import { type ReactNode, type SelectHTMLAttributes } from "react";
+import type { ReactNode, SelectHTMLAttributes } from "react";
 
 type Props = Omit<SelectHTMLAttributes<HTMLSelectElement>, "className"> & {
 	children?: ReactNode;
