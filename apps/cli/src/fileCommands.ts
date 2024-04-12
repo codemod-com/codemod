@@ -1,8 +1,7 @@
 import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
 import type { IFs } from "memfs";
-import { format, resolveConfig, version } from "prettier";
-import type { Options } from "prettier";
+import { type Options, format, resolveConfig } from "prettier";
 import { filterNeitherNullNorUndefined } from "./filterNeitherNullNorUndefined.js";
 import type { OperationMessage } from "./messages.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
@@ -111,12 +110,9 @@ export const formatText = async (
 	}
 
 	try {
-		console.log("there");
 		const options = await getConfig(path);
-		console.log(version);
 		return format(newData, options);
 	} catch (err) {
-		console.error(err);
 		return newData;
 	}
 };
