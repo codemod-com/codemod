@@ -40,7 +40,6 @@ export const getTransformer = (source: string) => {
 	const keys = ["module", "exports", "require"];
 	const values = [module, module.exports, _require];
 
-	// eslint-disable-next-line prefer-spread
 	new Function(...keys, source).apply(null, values);
 
 	return typeof module.exports === "function"

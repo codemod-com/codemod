@@ -1,5 +1,3 @@
-// /* eslint-disable import/group-exports */
-// /* eslint-disable no-param-reassign */
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import type { Event } from "~/schemata/eventSchemata";
 // import type { RootState } from "../index";

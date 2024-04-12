@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 import type React from "react";
 import type { TreeNode } from "../components/Tree";
 

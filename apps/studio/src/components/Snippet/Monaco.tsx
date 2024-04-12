@@ -93,7 +93,6 @@ const MonacoEditor = forwardRef<
 						if (typeof ref === "function") {
 							ref(editor);
 						} else if (ref) {
-							// eslint-disable-next-line no-param-reassign
 							ref.current = editor;
 						}
 

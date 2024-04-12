@@ -12,9 +12,7 @@ import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 export const buildApi = (parser: string): API => ({
 	j: jscodeshift.withParser(parser),
 	jscodeshift: jscodeshift.withParser(parser),
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	stats: () => {},
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
 	report: () => {},
 });
 

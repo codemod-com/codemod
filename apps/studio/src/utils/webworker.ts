@@ -484,7 +484,6 @@ export const getTransformFunction = async (
 	const keys = ["module", "exports", "require", "printMessage"];
 	const values = [module, exports, requireFunction, printMessage];
 
-	// eslint-disable-next-line prefer-spread
 	new Function(...keys, compiledCode.outputText).apply(null, values);
 
 	const transformer =

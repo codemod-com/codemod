@@ -2,7 +2,6 @@ import { basename, extname } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
 import type tsmorph from "ts-morph";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 }>;

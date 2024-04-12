@@ -1,4 +1,3 @@
-/* eslint-disable import/group-exports */
 import type { KnownEngines } from "@codemod-com/utilities";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
@@ -104,7 +103,6 @@ export const buildDefaultCodemodSource = (engine: KnownEngines) => {
 	return TSMORPH_STARTER_SNIPPET;
 };
 
-/* eslint-disable import/group-exports */
 export const SEARCH_PARAMS_KEYS = Object.freeze({
 	ENGINE: "engine" as const,
 	DIFF_ID: "diffId" as const,
@@ -262,7 +260,6 @@ export const getInitialState = (): InitialState => {
 				command: null,
 			};
 		} catch (error) {
-			// eslint-disable-next-line no-console
 			console.error(error);
 		}
 	}

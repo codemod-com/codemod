@@ -9,5 +9,4 @@ type TreeNode = {
 	end: number;
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export type { TreeNode };
