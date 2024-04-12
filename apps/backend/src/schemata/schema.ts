@@ -131,3 +131,10 @@ export const getCodeDiffSchema = object({
 
 export const parseGetCodeDiffParams = (input: unknown) =>
 	parse(getCodeDiffSchema, input);
+
+export const unpublishBodySchema = object({
+	name: string(),
+});
+
+export const parseUnpublishBody = (input: unknown) =>
+	parse(unpublishBodySchema, input);

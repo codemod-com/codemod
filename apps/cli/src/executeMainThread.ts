@@ -83,6 +83,16 @@ export const executeMainThread = async () => {
 				description: "path to the codemod to be published",
 			}),
 		)
+		.command(
+			"unpublish",
+			"unpublish previously published codemod from Codemod Registry",
+			(y) =>
+				buildUseJsonOption(y).option("force", {
+					type: "boolean",
+					alias: "f",
+					description: "whether to remove all versions",
+				}),
+		)
 		.command("init", "initialize a codemod package", (y) =>
 			buildUseJsonOption(y).option("no-prompt", {
 				alias: "y",
@@ -154,6 +164,25 @@ export const executeMainThread = async () => {
 		telemetryService = new NoTelemetryService();
 	}
 
+	const executeCliCommand = async (
+		executableCallback: () => Promise<unknown> | unknown,
+	) => {
+		try {
+			await executableCallback();
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
+
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
+			});
+		}
+
+		exit();
+	};
+
 	process.on("SIGINT", exit);
 
 	const configurationDirectoryPath = join(
@@ -170,136 +199,51 @@ export const executeMainThread = async () => {
 	);
 
 	if (["list", "ls", "search"].includes(argv._.at(0) as string)) {
-		try {
-			const lastArgument =
-				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
+		const lastArgument =
+			argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
 
-			let searchTerm: string | null = null;
-			if (lastArgument) {
-				if (lastArgument.length < 2) {
-					throw new Error(
-						"Search term must be at least 2 characters long. Aborting...",
-					);
-				}
-
-				searchTerm = lastArgument;
+		let searchTerm: string | null = null;
+		if (lastArgument) {
+			if (lastArgument.length < 2) {
+				throw new Error(
+					"Search term must be at least 2 characters long. Aborting...",
+				);
 			}
 
-			await handleListNamesCommand({
-				printer,
-				search: searchTerm ?? undefined,
-			});
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
+			searchTerm = lastArgument;
 		}
 
-		exit();
-
-		return;
+		return executeCliCommand(() => handleListNamesCommand(printer, searchTerm));
 	}
 
 	if (String(argv._) === "learn") {
-		const target = argv.target ?? null;
-
-		try {
-			await handleLearnCliCommand(printer, target);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() =>
+			handleLearnCliCommand(printer, argv.target ?? null),
+		);
 	}
 
 	if (String(argv._) === "whoami") {
-		try {
-			await handleWhoAmICommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() => handleWhoAmICommand(printer));
 	}
 
 	if (String(argv._) === "login") {
-		try {
-			await handleLoginCliCommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() => handleLoginCliCommand(printer));
 	}
 
 	if (String(argv._) === "logout") {
-		try {
-			await handleLogoutCliCommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() => handleLogoutCliCommand(printer));
 	}
 
 	if (String(argv._) === "publish") {
-		try {
-			await handlePublishCliCommand(printer, argv.source ?? process.cwd());
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+		return executeCliCommand(() =>
+			handlePublishCliCommand(printer, argv.source ?? process.cwd()),
+		);
+	}
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (String(argv._) === "unpublish") {
+		return executeCliCommand(() =>
+			handlePublishCliCommand(printer, argv.source ?? process.cwd()),
+		);
 	}
 
 	if (String(argv._) === "build") {
@@ -321,41 +265,15 @@ export const executeMainThread = async () => {
 			"./handleBuildCliCommand.js"
 		);
 
-		try {
-			await handleBuildCliCommand(printer, argv.source ?? process.cwd());
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() =>
+			handleBuildCliCommand(printer, argv.source ?? process.cwd()),
+		);
 	}
 
 	if (String(argv._) === "init") {
-		try {
-			await handleInitCliCommand(printer, argv.noPrompt ?? false);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() =>
+			handleInitCliCommand(printer, argv.noPrompt),
+		);
 	}
 
 	const lastArgument = argv._[argv._.length - 1];
