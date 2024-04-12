@@ -10,10 +10,7 @@ import type { TarService } from "./services/tarService.js";
 import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	download(
-		name: string,
-		disableLoading?: boolean,
-	): Promise<Codemod & { source: "package" }>;
+	download(name: string): Promise<Codemod & { source: "package" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -27,7 +24,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async download(
 		name: string,
-		disableLoading?: boolean,
 	): Promise<Codemod & { source: "package" }> {
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
@@ -38,17 +34,14 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		let stopLoading = () => {};
-		if (!disableLoading) {
-			stopLoading = this.__printer.withLoaderMessage((loader) =>
-				colorizeText(
-					`${loader.get("vertical-dots")}  Downloading the ${boldText(
-						`"${name}"`,
-					)} codemod${this._cacheDisabled ? ", not using cache..." : "..."}`,
-					"cyan",
-				),
-			);
-		}
+		const spinner = this.__printer.withLoaderMessage(
+			colorizeText(
+				`Downloading the ${boldText(`"${name}"`)} codemod${
+					this._cacheDisabled ? ", not using cache..." : "..."
+				}`,
+				"cyan",
+			),
+		);
 
 		// download codemod
 		try {
@@ -62,9 +55,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			);
 
 			await this._tarService.extract(directoryPath, buffer);
-			stopLoading();
+			spinner.succeed();
 		} catch (err) {
-			stopLoading();
+			spinner.fail();
 			throw err;
 		}
 

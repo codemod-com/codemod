@@ -40,18 +40,15 @@ export const handleUnpublishCliCommand = async (
 		token,
 	} = userData;
 
-	const stopLoading = printer.withLoaderMessage((loader) =>
-		colorizeText(
-			`${loader.get("vertical-dots")} Unpublishing ${boldText(`"${name}"`)}`,
-			"cyan",
-		),
+	const spinner = printer.withLoaderMessage(
+		colorizeText(`Unpublishing ${boldText(`"${name}"`)}`, "cyan"),
 	);
 
 	try {
 		await unpublish(token, name);
-		stopLoading();
+		spinner.succeed();
 	} catch (error) {
-		stopLoading();
+		spinner.fail();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
 		const errorMessage = `${boldText(
