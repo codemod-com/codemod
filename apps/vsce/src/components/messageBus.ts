@@ -1,6 +1,6 @@
+import type { PiranhaLanguage } from "@codemod-com/utilities";
 import { type Disposable, EventEmitter, type Uri } from "vscode";
 import type { Case, CaseHash } from "../cases/types";
-import type { PiranhaLanguage } from "../data/codemodConfigSchema";
 import type { ExecutionError } from "../errors/types";
 import type { Job, JobHash } from "../jobs/types";
 import type { CodemodHash } from "../packageJsonAnalyzer/types";

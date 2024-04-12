@@ -38,7 +38,6 @@
 	},
 	"dependencies": {
 		"@codemod-com/filemod": "workspace:*",
-		"@effect/schema": "^0.52.0",
 		"bl": "^6.0.11",
 		"change-case": "^5.2.0",
 		"fast-glob": "3.3.2",

@@ -1,9 +1,14 @@
 import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import {
+	PIRANHA_LANGUAGES,
+	piranhaLanguageSchema,
+} from "@codemod-com/utilities";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
 import prettyReporter from "io-ts-reporters";
+import { parse } from "valibot";
 import * as vscode from "vscode";
 import { CaseManager } from "./cases/caseManager";
 import { type CaseHash, caseHashCodec } from "./cases/types";
@@ -27,10 +32,6 @@ import {
 import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
-import {
-	PIRANHA_LANGUAGES,
-	parsePiranhaLanguage,
-} from "./data/codemodConfigSchema";
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
@@ -458,7 +459,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					throw new Error("You must specify the language");
 				}
 
-				const language = parsePiranhaLanguage(quickPick);
+				const language = parse(piranhaLanguageSchema, quickPick);
 
 				messageBus.publish({
 					kind: MessageKind.executeCodemodSet,
