@@ -258,7 +258,6 @@
 		"webpack-cli": "5.1.4"
 	},
 	"dependencies": {
-		"@effect/schema": "^0.52.0",
 		"@codemod-com/utilities": "workspace:*",
 		"@reduxjs/toolkit": "^1.9.5",
 		"@vscode/extension-telemetry": "^0.7.7",
