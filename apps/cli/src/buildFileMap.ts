@@ -12,6 +12,8 @@ export const buildFileMap = async (
 ): Promise<Map<string, string>> => {
 	const fileMap = new Map<string, string>();
 
+	console.log(paths);
+
 	for (const path of paths.include) {
 		const data = await sourceFileSystem.promises.readFile(path, {
 			encoding: "utf8",
