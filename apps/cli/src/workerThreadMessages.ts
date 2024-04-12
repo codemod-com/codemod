@@ -26,11 +26,6 @@ const workerThreadMessageSchema = union([
 		consoleKind: consoleKindSchema,
 		message: string(),
 	}),
-	object({
-		kind: literal("runCodemod"),
-		path: string(),
-		data: string(),
-	}),
 ]);
 
 export type WorkerThreadMessage = Output<typeof workerThreadMessageSchema>;

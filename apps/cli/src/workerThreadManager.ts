@@ -129,14 +129,10 @@ export class WorkerThreadManager {
 		const filePath = this.__filePaths.shift();
 
 		if (filePath === undefined) {
-			// console.log("this.__totalFileCount", this.__totalFileCount);
-			// console.log("this.__idleWorkerIds.length", this.__idleWorkerIds.length);
-			// console.log("this.__workerCount", this.__workerCount);
 			if (
 				this.__totalFileCount !== null &&
 				this.__idleWorkerIds.length === this.__workerCount
 			) {
-				console.log("there");
 				this.__finished = true;
 
 				this.__finish();
@@ -187,32 +183,29 @@ export class WorkerThreadManager {
 				return;
 			}
 
+			++this.__processedFileNumber;
 			if (workerThreadMessage.kind === "commands") {
 				const commands = workerThreadMessage.commands as FormattedFileCommand[];
 
 				for (const command of commands) {
 					await this.__onCommand(command);
 				}
-				return;
-			}
-
-			if (workerThreadMessage.kind === "error") {
+			} else if (workerThreadMessage.kind === "error") {
 				this.__onPrinterMessage({
 					kind: "error",
 					message: workerThreadMessage.message,
 					path: workerThreadMessage.path,
 				});
-				return;
 			}
 
-			if (workerThreadMessage.path) {
-				this.__onPrinterMessage({
-					kind: "progress",
-					processedFileNumber: this.__processedFileNumber,
-					totalFileNumber: this.__currentFileCount,
-					processedFileName: resolve(workerThreadMessage.path),
-				});
-			}
+			this.__onPrinterMessage({
+				kind: "progress",
+				processedFileNumber: this.__processedFileNumber,
+				totalFileNumber: this.__currentFileCount,
+				processedFileName: workerThreadMessage.path
+					? resolve(workerThreadMessage.path)
+					: null,
+			});
 
 			this.__idleWorkerIds.push(i);
 			await this.__work();
