@@ -111,7 +111,7 @@ export const formatText = async (
 	}
 
 	try {
-		const { format } = await import("prettier/standalone.js");
+		const { format } = await import("prettier");
 		const options = await getConfig(path);
 		return await format(newData, options);
 	} catch (err) {
