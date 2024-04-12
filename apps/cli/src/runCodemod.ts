@@ -36,12 +36,27 @@ export const buildPatterns = async (
 	include: string[];
 	exclude: string[];
 }> => {
+	const formatFunc = (pattern: string) => {
+		if (pattern.startsWith("**")) {
+			return pattern;
+		}
+
+		if (pattern.startsWith("/")) {
+			return `**${pattern}`;
+		}
+
+		return `**/${pattern}`;
+	};
+
+	const excludePatterns = flowSettings.exclude ?? [];
+	const formattedExclude = excludePatterns.map(formatFunc);
+
 	const files = flowSettings.files;
 
 	if (files) {
 		return {
 			include: files,
-			exclude: flowSettings.exclude ?? [],
+			exclude: formattedExclude,
 		};
 	}
 
@@ -84,9 +99,6 @@ export const buildPatterns = async (
 
 	// Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
 	const formattedInclude = patterns.map(formatFunc);
-
-	const excludePatterns = flowSettings.exclude ?? [];
-	const formattedExclude = excludePatterns.map(formatFunc);
 
 	return {
 		include: formattedInclude,
@@ -276,7 +288,6 @@ export const runCodemod = async (
 			absolute: true,
 			cwd: flowSettings.target,
 			ignore: paths.exclude,
-			// @ts-expect-error type inconsistency
 			fs: mfs,
 			onlyFiles: true,
 		});
