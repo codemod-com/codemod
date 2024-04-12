@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
 import type { IFs } from "memfs";
-import { type Options, format, resolveConfig } from "prettier";
+import type { Options } from "prettier";
 import { filterNeitherNullNorUndefined } from "./filterNeitherNullNorUndefined.js";
 import type { OperationMessage } from "./messages.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
@@ -82,6 +82,7 @@ const parserMappers = new Map<string, Options["parser"]>([
 ]);
 
 export const getConfig = async (path: string): Promise<Options> => {
+	const { resolveConfig } = await import("prettier");
 	let config = await resolveConfig(path, {
 		editorconfig: false,
 	});
@@ -111,6 +112,7 @@ export const formatText = async (
 	}
 
 	try {
+		const { format } = await import("prettier");
 		const options = await getConfig(path);
 		return format(newData, options);
 	} catch (err) {
