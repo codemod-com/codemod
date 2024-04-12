@@ -1,11 +1,11 @@
 import {
+	type Output,
 	boolean,
 	number,
 	parse,
 	record,
 	string,
 	union,
-	type Output,
 } from "valibot";
 
 export const argumentRecordSchema = record(

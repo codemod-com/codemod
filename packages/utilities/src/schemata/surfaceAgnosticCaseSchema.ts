@@ -1,4 +1,4 @@
-import { bigint, object, parse, string, type Output } from "valibot";
+import { type Output, bigint, object, parse, string } from "valibot";
 import { argumentRecordSchema } from "./argumentRecordSchema.js";
 
 const surfaceAgnosticCaseSchema = object({

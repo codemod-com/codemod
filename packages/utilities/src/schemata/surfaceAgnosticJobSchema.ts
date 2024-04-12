@@ -1,4 +1,4 @@
-import { literal, object, parse, string, union, type Output } from "valibot";
+import { type Output, literal, object, parse, string, union } from "valibot";
 
 // bitwise masks 0x____ZYXX
 const NEW_FILE_CREATED = 0;
