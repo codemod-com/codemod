@@ -2,13 +2,13 @@ import { equal } from "node:assert";
 import { randomBytes } from "node:crypto";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
-import { CodemodDownloaderBlueprint } from "../src/downloadCodemod.js";
-import { PrinterBlueprint } from "../src/printer.js";
-import { RepositoryConfiguration } from "../src/repositoryConfiguration.js";
+import type { CodemodDownloaderBlueprint } from "../src/downloadCodemod.js";
+import type { PrinterBlueprint } from "../src/printer.js";
+import type { RepositoryConfiguration } from "../src/repositoryConfiguration.js";
 import { Runner } from "../src/runner.js";
-import { CodemodSettings } from "../src/schemata/codemodSettingsSchema.js";
-import { FlowSettings } from "../src/schemata/flowSettingsSchema.js";
-import { RunSettings } from "../src/schemata/runArgvSettingsSchema.js";
+import type { CodemodSettings } from "../src/schemata/codemodSettingsSchema.js";
+import type { FlowSettings } from "../src/schemata/flowSettingsSchema.js";
+import type { RunSettings } from "../src/schemata/runArgvSettingsSchema.js";
 
 const CODEMOD_D_INDEX_TS = `
 export default function transform(file, api, options) {

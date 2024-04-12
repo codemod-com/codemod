@@ -1,8 +1,8 @@
 import { type ReactNode, forwardRef } from "react";
 import {
 	type ImperativePanelHandle,
-	Panel as RResizablePanel,
 	type PanelProps,
+	Panel as RResizablePanel,
 } from "react-resizable-panels";
 import { cn } from "~/lib/utils";
 import { PanelHeader, PanelTab, PanelTitle } from "./PanelHeader";

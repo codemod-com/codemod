@@ -1,4 +1,4 @@
-import { type Arguments, type KnownEngines } from "@codemod-com/utilities";
+import type { Arguments, KnownEngines } from "@codemod-com/utilities";
 
 export type Codemod =
 	| Readonly<{

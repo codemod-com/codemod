@@ -2,7 +2,7 @@ import {
 	VSCodeButton,
 	VSCodeProgressRing,
 } from "@vscode/webview-ui-toolkit/react";
-import { CaseHash } from "../../../../src/cases/types";
+import type { CaseHash } from "../../../../src/cases/types";
 import CustomPopover from "../../shared/CustomPopover";
 import { vscode } from "../../shared/utilities/vscode";
 import styles from "./style.module.css";

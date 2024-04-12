@@ -1,4 +1,4 @@
-import { Argv } from "yargs";
+import type { Argv } from "yargs";
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_DRY_RUN,

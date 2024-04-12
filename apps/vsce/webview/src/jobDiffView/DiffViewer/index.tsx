@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
-import { CaseHash } from "../../../../src/cases/types";
+import type { CaseHash } from "../../../../src/cases/types";
 import type { PanelViewProps } from "../../../../src/components/webview/panelViewProps";
 import { useTheme } from "../../shared/Snippet/useTheme";
-import { DiffViewType } from "../../shared/types";
+import type { DiffViewType } from "../../shared/types";
 import { vscode } from "../../shared/utilities/vscode";
 import { useCTLKey } from "../hooks/useKey";
 import { JobDiffView } from "./DiffItem";

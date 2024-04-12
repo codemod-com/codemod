@@ -118,7 +118,7 @@ function getTSType(path: NodePath) {
 							j.tsStringKeyword(),
 							getTSType(resolveRequired(type)),
 						]),
-				  );
+					);
 		}
 
 		case "oneOf": {
@@ -145,7 +145,7 @@ function getTSType(path: NodePath) {
 										return j.tsUnknownKeyword();
 								}
 							}),
-				  );
+					);
 		}
 
 		case "oneOfType":

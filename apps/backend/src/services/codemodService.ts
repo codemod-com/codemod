@@ -1,5 +1,10 @@
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import { Codemod, CodemodVersion, Prisma, PrismaClient } from "@prisma/client";
+import type {
+	Codemod,
+	CodemodVersion,
+	Prisma,
+	PrismaClient,
+} from "@prisma/client";
 import Fuse from "fuse.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {

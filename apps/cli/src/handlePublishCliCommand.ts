@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { join } from "node:path";
 import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";

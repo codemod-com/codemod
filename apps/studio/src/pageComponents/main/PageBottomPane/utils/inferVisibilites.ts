@@ -1,4 +1,4 @@
-import { BottomPanelData } from "~/pageComponents/main/PageBottomPane/utils/types";
+import type { BottomPanelData } from "~/pageComponents/main/PageBottomPane/utils/types";
 import { isVisible } from "~/utils/visibility";
 
 export const inferVisibilities = ({

@@ -1,4 +1,4 @@
-import { type ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import Text from "../Text";
 
 type CheckboxProps = {

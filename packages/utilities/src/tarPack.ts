@@ -1,4 +1,4 @@
-import zlib from "zlib";
+import zlib from "node:zlib";
 import bl from "bl";
 import * as tarStream from "tar-stream";
 

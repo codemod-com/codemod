@@ -5,7 +5,7 @@ import jscodeshift from "jscodeshift";
 import type { DirectoryJSON } from "memfs";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
-import { repomod, transform as jscodeshiftTransform } from "../src/index.js";
+import { transform as jscodeshiftTransform, repomod } from "../src/index.js";
 
 const globalOptions = {
 	buildLegacyCtxUtilAbsolutePath: "/opt/project/hooks/buildLegacyCtx.tsx",

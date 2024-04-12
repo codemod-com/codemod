@@ -1,6 +1,6 @@
 import {
 	type Input,
-	Issues,
+	type Issues,
 	type Output,
 	ValiError,
 	array,

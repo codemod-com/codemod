@@ -1,5 +1,5 @@
 import {
-	CustomHandler,
+	type CustomHandler,
 	InternalServerError,
 	UnauthorizedError,
 } from "../customHandler.js";

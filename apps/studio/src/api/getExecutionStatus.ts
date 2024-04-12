@@ -1,4 +1,4 @@
-import { type AxiosError } from "axios";
+import type { AxiosError } from "axios";
 import { GET_EXECUTION_STATUS } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";

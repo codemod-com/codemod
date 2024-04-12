@@ -1,25 +1,31 @@
-import { readFileSync } from "fs";
+import { readFileSync } from "node:fs";
 import { diffTrimmedLines } from "diff";
 import areEqual from "fast-deep-equal";
 import { encode } from "universal-base64url";
-import { Uri, ViewColumn, WebviewPanel, commands, window } from "vscode";
+import {
+	type Uri,
+	ViewColumn,
+	type WebviewPanel,
+	commands,
+	window,
+} from "vscode";
 import type { RootState, Store } from "../../data";
 import { actions } from "../../data/slice";
 import { SEARCH_PARAMS_KEYS } from "../../extension";
 import { JobKind, mapPersistedJobToJob } from "../../jobs/types";
-import { _ExplorerNode } from "../../persistedState/explorerNodeCodec";
+import type { _ExplorerNode } from "../../persistedState/explorerNodeCodec";
 import { selectExplorerTree } from "../../selectors/selectExplorerTree";
 import {
 	createInMemorySourceFile,
 	removeLineBreaksAtStartAndEnd,
 	removeSpecialCharacters,
 } from "../../utilities";
-import { JobManager } from "../jobManager";
-import { MessageBus, MessageKind } from "../messageBus";
-import { MainViewProvider } from "./MainProvider";
+import type { JobManager } from "../jobManager";
+import { type MessageBus, MessageKind } from "../messageBus";
+import type { MainViewProvider } from "./MainProvider";
 import { WebviewResolver } from "./WebviewResolver";
-import { PanelViewProps } from "./panelViewProps";
-import { WebviewMessage, WebviewResponse } from "./webviewEvents";
+import type { PanelViewProps } from "./panelViewProps";
+import type { WebviewMessage, WebviewResponse } from "./webviewEvents";
 
 const TYPE = "codemodPanel";
 const WEBVIEW_NAME = "jobDiffView";

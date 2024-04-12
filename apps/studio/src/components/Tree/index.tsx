@@ -1,4 +1,4 @@
-import { type Node } from "@babel/types";
+import type { Node } from "@babel/types";
 import { memo, useEffect, useState } from "react";
 import TreeView from "react-treeview";
 import Text from "../Text";
@@ -76,7 +76,7 @@ const Tree = ({
 							selectionEnd={selectionEnd}
 							selectionStart={selectionStart}
 						/>
-				  ))
+					))
 				: null}
 		</TreeView>
 	);

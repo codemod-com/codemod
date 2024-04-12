@@ -1,4 +1,4 @@
-import { CustomHandler, UnauthorizedError } from "../customHandler.js";
+import { type CustomHandler, UnauthorizedError } from "../customHandler.js";
 
 export const revokeTokenHandler: CustomHandler<{
 	success: true;

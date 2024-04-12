@@ -1,12 +1,12 @@
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
 import { cn } from "~/lib/utils";
 import CodeSnippedPanel, {
 	DiffEditorWrapper,
-	useCodeDiff,
+	type useCodeDiff,
 } from "~/pageComponents/main/JSCodeshiftRender";
-import {
+import type {
 	PanelData,
 	PanelsRefs,
 } from "~/pageComponents/main/PageBottomPane/utils/types";

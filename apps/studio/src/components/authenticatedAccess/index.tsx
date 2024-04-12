@@ -1,5 +1,5 @@
 import { useAuth } from "@clerk/nextjs";
-import { type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 type Props = {
 	isAuthenticated?: boolean;

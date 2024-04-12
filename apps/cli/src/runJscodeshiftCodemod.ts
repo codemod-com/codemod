@@ -1,13 +1,13 @@
 import { extname } from "node:path";
 import vm from "node:vm";
-import jscodeshift, { API } from "jscodeshift";
+import jscodeshift, { type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
 import { getAdapterByExtname } from "./adapters/index.js";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
 import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
-import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
 export const buildApi = (parser: string): API => ({
 	j: jscodeshift.withParser(parser),

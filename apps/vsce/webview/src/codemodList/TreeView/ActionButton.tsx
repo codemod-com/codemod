@@ -1,6 +1,6 @@
 import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import cn from "classnames";
-import { CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import CustomPopover from "../../shared/CustomPopover";
 import s from "./style.module.css";
 

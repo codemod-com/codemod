@@ -2,19 +2,22 @@ import { createHash } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { createClerkClient } from "@clerk/fastify";
 import {
-	CodemodConfig,
+	type CodemodConfig,
 	codemodNameRegex,
 	isNeitherNullNorUndefined,
 	parseCodemodConfig,
 	tarPack,
 } from "@codemod-com/utilities";
-import { RouteHandlerMethod } from "fastify";
+import type { RouteHandlerMethod } from "fastify";
 import * as semver from "semver";
-import { z } from "zod";
-import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
+import type { z } from "zod";
+import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import { prisma } from "./db/prisma.js";
-import { Environment } from "./schemata/env.js";
-import { CLAIM_PUBLISHING, TokenService } from "./services/tokenService.js";
+import type { Environment } from "./schemata/env.js";
+import {
+	CLAIM_PUBLISHING,
+	type TokenService,
+} from "./services/tokenService.js";
 import { areClerkKeysSet, getCustomAccessToken } from "./util.js";
 
 export const publishHandler =

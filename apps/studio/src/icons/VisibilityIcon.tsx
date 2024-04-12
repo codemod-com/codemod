@@ -1,5 +1,5 @@
 import { Chevrons } from "~/icons/Chevrons";
-import { VisibilityOptions } from "~/types/options";
+import type { VisibilityOptions } from "~/types/options";
 import { alwaysVisible } from "~/utils/visibility";
 
 export const VisibilityIcon = ({

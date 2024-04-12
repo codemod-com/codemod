@@ -288,6 +288,7 @@ export const runCodemod = async (
 			absolute: true,
 			cwd: flowSettings.target,
 			ignore: paths.exclude,
+			// @ts-expect-error type inconsistency
 			fs: mfs,
 			onlyFiles: true,
 		});

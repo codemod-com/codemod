@@ -1,9 +1,9 @@
 import { join, relative, sep } from "node:path";
 import * as T from "fp-ts/These";
 import * as t from "io-ts";
-import { CodemodEntry } from "../codemods/types";
-import { RootState } from "../data";
-import { CodemodHash } from "../packageJsonAnalyzer/types";
+import type { CodemodEntry } from "../codemods/types";
+import type { RootState } from "../data";
+import type { CodemodHash } from "../packageJsonAnalyzer/types";
 import { buildHash, capitalize } from "../utilities";
 
 interface CodemodNodeHashDigestBrand {

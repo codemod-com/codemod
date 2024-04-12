@@ -1,10 +1,10 @@
-import { ReactNode, forwardRef, useEffect, useRef } from "react";
+import { type ReactNode, forwardRef, useEffect, useRef } from "react";
 import {
-	ImperativePanelHandle,
+	type ImperativePanelHandle,
+	type PanelGroupProps,
+	type PanelProps,
 	Panel as RResizablePanel,
 	PanelGroup as RResizablePanelGroup,
-	PanelGroupProps,
-	PanelProps,
 } from "react-resizable-panels";
 
 type ResizablePanelProps = {

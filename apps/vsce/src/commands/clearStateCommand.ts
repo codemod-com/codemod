@@ -2,8 +2,8 @@ import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { FileType, Uri, workspace } from "vscode";
-import { FileService } from "../components/fileService";
-import { Store } from "../data";
+import type { FileService } from "../components/fileService";
+import type { Store } from "../data";
 import { actions } from "../data/slice";
 import { doesJobAddNewFile } from "../selectors/comparePersistedJobs";
 

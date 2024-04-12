@@ -1,5 +1,5 @@
 import { Uri } from "vscode";
-import { Job, JobKind, PersistedJob } from "../jobs/types";
+import { type Job, JobKind, type PersistedJob } from "../jobs/types";
 
 export const doesJobAddNewFile = (kind: Job["kind"]): boolean => {
 	return [

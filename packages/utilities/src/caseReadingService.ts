@@ -3,7 +3,7 @@
 import type { Hash } from "node:crypto";
 import { createHash } from "node:crypto";
 import EventEmitter from "node:events";
-import { type PathLike } from "node:fs";
+import type { PathLike } from "node:fs";
 import { CircularBuffer } from "./circularBuffer.js";
 import { FileReadingService } from "./fileReadingService.js";
 import { FileWatcher } from "./fileWatcher.js";

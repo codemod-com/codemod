@@ -1,5 +1,5 @@
-import { Codemod } from "./codemod.js";
-import { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
+import type { Codemod } from "./codemod.js";
+import type { ArgumentRecord } from "./schemata/argumentRecordSchema.js";
 
 export type SafeArgumentRecord = ArgumentRecord;
 

@@ -1,4 +1,4 @@
-import { AxiosError, AxiosInstance } from "axios";
+import { AxiosError, type AxiosInstance } from "axios";
 import nock from "nock";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import type { FileSystem } from "vscode";

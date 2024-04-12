@@ -1,11 +1,11 @@
 import { dirname, join, resolve } from "node:path";
 import { Worker } from "node:worker_threads";
-import { FormattedFileCommand } from "./fileCommands.js";
-import { MainThreadMessage } from "./mainThreadMessages.js";
-import { OperationMessage } from "./messages.js";
-import { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import type { FormattedFileCommand } from "./fileCommands.js";
+import type { MainThreadMessage } from "./mainThreadMessages.js";
+import type { OperationMessage } from "./messages.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
 import {
-	WorkerThreadMessage,
+	type WorkerThreadMessage,
 	decodeWorkerThreadMessage,
 } from "./workerThreadMessages.js";
 

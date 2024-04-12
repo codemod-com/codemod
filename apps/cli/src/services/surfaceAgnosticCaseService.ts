@@ -1,11 +1,11 @@
-import { join } from "path";
+import { join } from "node:path";
 import { CaseWritingService } from "@codemod-com/utilities";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
-import { FormattedFileCommand } from "../fileCommands.js";
-import { SafeArgumentRecord } from "../safeArgumentRecord.js";
-import { FlowSettings } from "../schemata/flowSettingsSchema.js";
-import { RunSettings } from "../schemata/runArgvSettingsSchema.js";
+import type { FormattedFileCommand } from "../fileCommands.js";
+import type { SafeArgumentRecord } from "../safeArgumentRecord.js";
+import type { FlowSettings } from "../schemata/flowSettingsSchema.js";
+import type { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
 export class SurfaceAgnosticCaseService {
 	protected _caseWritingService: CaseWritingService | null = null;

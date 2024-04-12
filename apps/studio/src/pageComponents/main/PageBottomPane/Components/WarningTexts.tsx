@@ -1,6 +1,6 @@
 import Text from "~/components/Text";
 import { Button } from "~/components/ui/button";
-import { WarningTextsProps } from "~/pageComponents/main/PageBottomPane";
+import type { WarningTextsProps } from "~/pageComponents/main/PageBottomPane";
 
 export const WarningTexts = ({
 	snippetBeforeHasOnlyWhitespaces,

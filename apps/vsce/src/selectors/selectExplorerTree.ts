@@ -1,10 +1,10 @@
-import platformPath from "path";
+import platformPath from "node:path";
 import { go } from "fuzzysort";
-import { CaseHash } from "../cases/types";
-import { RootState } from "../data";
-import { JobHash } from "../jobs/types";
+import type { CaseHash } from "../cases/types";
+import type { RootState } from "../data";
+import type { JobHash } from "../jobs/types";
 import { LeftRightHashSetManager } from "../leftRightHashes/leftRightHashSetManager";
-import {
+import type {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
 } from "../persistedState/explorerNodeCodec";
