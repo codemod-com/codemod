@@ -32,11 +32,17 @@ export const buildPatterns = async (
 	codemod: Codemod,
 	filemod: Filemod<Dependencies, Record<string, unknown>> | null,
 	printer: PrinterBlueprint,
-): Promise<string[]> => {
+): Promise<{
+	include: string[];
+	exclude: string[];
+}> => {
 	const files = flowSettings.files;
 
 	if (files) {
-		return files;
+		return {
+			include: files,
+			exclude: flowSettings.exclude ?? [],
+		};
 	}
 
 	let patterns = flowSettings.include ?? codemod.include;
@@ -94,23 +100,27 @@ export const buildPatterns = async (
 	const excludePatterns = flowSettings.exclude ?? [];
 	const formattedExclude = excludePatterns.map(formatFunc);
 
-	return formattedInclude.filter(
-		(pattern) => !formattedExclude.includes(pattern),
-	);
+	return {
+		include: formattedInclude,
+		exclude: formattedExclude,
+	};
 };
 
 export const buildPathsGlob = async (
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	patterns: string[],
+	patterns: {
+		include: string[];
+		exclude: string[];
+	},
 ) => {
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	return glob(patterns.slice(), {
+	return glob(patterns.include, {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
-		ignore: flowSettings.exclude.slice(),
+		ignore: patterns.exclude,
 		onlyFiles: true,
 		dot: true,
 	});
@@ -119,15 +129,18 @@ export const buildPathsGlob = async (
 async function* buildPathGlobGenerator(
 	fileSystem: IFs,
 	flowSettings: FlowSettings,
-	patterns: string[],
+	patterns: {
+		include: string[];
+		exclude: string[];
+	},
 ): AsyncGenerator<string, void, unknown> {
 	const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-	const stream = globStream(patterns.slice(), {
+	const stream = globStream(patterns.include, {
 		absolute: true,
 		cwd: flowSettings.target,
 		fs: fileSystemAdapter,
-		ignore: flowSettings.exclude.slice(),
+		ignore: patterns.exclude,
 		onlyFiles: true,
 		dot: true,
 	});
