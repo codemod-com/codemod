@@ -79,6 +79,10 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
 			...orgs.map((org) => org.organization.slug),
 		].filter(isNeitherNullNorUndefined);
 
+		if (environment.VERIFIED_PUBLISHERS.includes(username)) {
+			allowedNamespaces.push("codemod-com", "codemod.com");
+		}
+
 		if (!allowedNamespaces.includes(codemod.author)) {
 			return reply.code(403).send({
 				error: "You are not allowed to perform this operation",

@@ -28,17 +28,13 @@ export const handleUnpublishCliCommand = async (
 		!force
 	) {
 		throw new Error(
-			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${colorizeText(
+			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${boldText(
 				"--force (-f)",
-				"orange",
 			)}" flag.`,
 		);
 	}
 
-	const {
-		user: { username },
-		token,
-	} = userData;
+	const { token } = userData;
 
 	const spinner = printer.withLoaderMessage(
 		colorizeText(`Unpublishing ${boldText(`"${name}"`)}`, "cyan"),
