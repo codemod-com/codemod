@@ -42,6 +42,7 @@
 			},
 			"correctness": {
 				"noUndeclaredVariables": "off",
+        "noUnusedImports": "error",
 				"noUnusedVariables": "off",
 				"noConstAssign": "warn",
 				"noEmptyCharacterClassInRegex": "warn",
@@ -93,10 +94,7 @@
 				"noNoninteractiveTabindex": "warn"
 			},
 			"performance": { "noDelete": "off" },
-			"security": { "noDangerouslySetInnerHtml": "warn" },
-			"nursery": {
-				"noUnusedImports": "error"
-			}
+			"security": { "noDangerouslySetInnerHtml": "warn" }
 		}
 	},
 	"formatter": {
