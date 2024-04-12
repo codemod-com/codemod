@@ -58,7 +58,6 @@ export const DEFAULT_PRETTIER_OPTIONS: Options = {
 	arrowParens: "always",
 	endOfLine: "lf",
 	parser: "typescript",
-	plugins: ["importAttributes"],
 };
 
 const parserMappers = new Map<string, Options["parser"]>([
@@ -112,7 +111,7 @@ export const formatText = async (
 	}
 
 	try {
-		const { format } = await import("prettier/standalone.js");
+		const { format } = await import("prettier");
 		const options = await getConfig(path);
 		return await format(newData, options);
 	} catch (err) {
