@@ -64,7 +64,7 @@ const parserMappers = new Map<string, Options["parser"]>([
 	["ts", "typescript"],
 	["tsx", "typescript"],
 	["js", "babel"],
-	["jsx", "typescript"],
+	["jsx", "babel"],
 	["json", "json"],
 	["json5", "json5"],
 	["jsonc", "json"],
