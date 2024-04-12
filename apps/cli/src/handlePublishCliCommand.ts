@@ -21,7 +21,7 @@ export const handlePublishCliCommand = async (
 
 	if (userData === null) {
 		throw new Error(
-			"The GitHub username of the current user is not known. Contact Codemod.com.",
+			"To be able to publish to Codemod Registry, please log in first.",
 		);
 	}
 
@@ -29,12 +29,6 @@ export const handlePublishCliCommand = async (
 		user: { username },
 		token,
 	} = userData;
-	printer.printConsoleMessage(
-		"info",
-		`You are logged in as '${boldText(
-			username,
-		)}' and able to publish a codemod to our public registry.`,
-	);
 
 	const formData = new FormData();
 
@@ -184,7 +178,7 @@ export const handlePublishCliCommand = async (
 				"vertical-dots",
 			)} Publishing the codemod using name from ${boldText(
 				".codemodrc.json",
-			)} file: ${boldText(`"${codemodRc.name}"`)}`,
+			)} file: "${boldText(codemodRc.name)}"`,
 			"cyan",
 		),
 	);

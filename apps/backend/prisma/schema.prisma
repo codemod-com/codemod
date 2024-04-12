@@ -62,7 +62,7 @@ model CodemodVersion {
   s3UploadKey              String   @db.VarChar(255)
   tags                     String[] @default([])
   codemodId                Int
-  codemod                  Codemod  @relation(fields: [codemodId], references: [id])
+  codemod                  Codemod  @relation(fields: [codemodId], references: [id], onDelete: Cascade)
   createdAt                DateTime @default(now())
   updatedAt                DateTime @default(now()) @updatedAt
 }

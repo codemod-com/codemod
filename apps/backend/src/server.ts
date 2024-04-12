@@ -57,6 +57,7 @@ import {
 	TokenRevokedError,
 	TokenService,
 } from "./services/tokenService.js";
+import { unpublishHandler } from "./unpublishHandler.js";
 import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
 
 const getSourceControlProvider = (
@@ -705,7 +706,9 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return;
 	});
 
-	instance.post("/publish", publishHandler(environment, tokenService));
+	instance.post("/publish", wrapRequestHandlerMethod(publishHandler));
+
+	instance.post("/unpublish", wrapRequestHandlerMethod(unpublishHandler));
 
 	instance.get(
 		"/sourceControl/:provider/user/repos",

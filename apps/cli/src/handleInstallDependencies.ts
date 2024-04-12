@@ -135,7 +135,7 @@ export const handleInstallDependencies = async (options: {
 		const toInstall: string[] = [];
 		const toDelete: string[] = [];
 		for (const dep of deps) {
-			const { libName, version } = extractLibNameAndVersion(dep);
+			const { libName } = extractLibNameAndVersion(dep);
 
 			if (libName?.startsWith("-")) {
 				toDelete.push(libName.slice(1));

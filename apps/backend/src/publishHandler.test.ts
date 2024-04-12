@@ -132,7 +132,6 @@ describe("/publish route", async () => {
 
 	await fastify.ready();
 
-	const areClerkKeysSpy = vi.spyOn(utils, "areClerkKeysSet");
 	const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
 
 	const tarPackSpy = vi.spyOn(codemodComUtils, "tarPack");
@@ -181,7 +180,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(tarPackSpy).toHaveBeenCalledOnce();
@@ -250,7 +248,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(tarPackSpy).toHaveBeenCalledOnce();
@@ -315,7 +312,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(response.body).toEqual({
