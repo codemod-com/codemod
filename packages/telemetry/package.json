@@ -5,9 +5,6 @@
 	"description": "Telemetry for CLI and VSCE",
 	"type": "module",
 	"main": "./dist/index.js",
-	"exports": {
-		".": "./src/index.ts"
-	},
 	"types": "./dist/index.d.ts",
 	"files": [
 		"./dist",

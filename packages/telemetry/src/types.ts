@@ -2,7 +2,6 @@ export type BaseEvent = { kind: string } & Record<string, unknown>;
 
 export type TelemetrySenderOptions = {
 	cloudRole: string;
-	distinctId: string;
 	allowedEnvelopeTags?: string[];
 };
 
