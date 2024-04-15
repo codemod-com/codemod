@@ -3,8 +3,8 @@ import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-	ApplicationInsightsSender,
 	NullSender,
+	PostHogSender,
 	type TelemetrySender,
 } from "@codemod-com/telemetry";
 
@@ -134,7 +134,7 @@ export const executeMainThread = async () => {
 	const telemetryService: TelemetrySender<TelemetryEvent> =
 		argv.telemetryDisable
 			? new NullSender()
-			: new ApplicationInsightsSender({
+			: new PostHogSender({
 					cloudRole: "CLI",
 				});
 
