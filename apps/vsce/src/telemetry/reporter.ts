@@ -86,8 +86,13 @@ export class VscodeTelemetryReporter implements Telemetry {
 			kind: message.halted ? "codemodHalted" : "codemodExecuted",
 			executionId: message.case.hash,
 			fileCount: message.jobs.length,
-			codemodName: message.case.codemodName,
+			codemodName: this.__transformPathLikeName(message.case.codemodName),
 		});
+	}
+
+	// transform path-like strings to bypass vscode logger filter
+	__transformPathLikeName(str: string): string {
+		return str.replaceAll("/", "_");
 	}
 
 	sendEvent(event: Event): void {

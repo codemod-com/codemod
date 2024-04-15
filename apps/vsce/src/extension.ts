@@ -39,7 +39,7 @@ import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
-import { telemetryLogger } from "./telemetry/logger";
+import { buildTelemetryLogger } from "./telemetry/logger";
 import { VscodeTelemetryReporter } from "./telemetry/reporter";
 import { buildHash, isNeitherNullNorUndefined } from "./utilities";
 
@@ -125,13 +125,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	const vscodeTelemetry = new VscodeTelemetryReporter(
-		telemetryLogger,
+		buildTelemetryLogger(context),
 		messageBus,
 	);
 
 	vscodeTelemetry.sendEvent({
 		kind: "codemodExecuted",
-		codemodName: "test_test",
+		codemodName: "next/13/name",
 		fileCount: 0,
 		executionId: "123" as CaseHash,
 	});
