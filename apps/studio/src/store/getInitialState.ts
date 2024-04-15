@@ -57,13 +57,11 @@ root.find(j.FunctionDeclaration, {
     });
 });`;
 
-export const STARTER_SNIPPET = `// HERE'S A SAMPLE CODEMOD.
-
-// CLICK THE 'CLEAR ALL' BUTTON ABOVE TO START FRESH & REMOVE ALL SAMPLE INPUTS.
-
-// PROVIDE BEFORE/AFTER CODE SNIPPETS, WHICH SERVE AS YOUR TEST FIXTURES.
-
-// CREATE A NEW CODEMOD USING MODGPT OR THE GUI CODEMOD BUILDER.
+export const STARTER_SNIPPET = `// BELOW IS A SAMPLE CODEMOD. BUILD YOUR OWN:
+// 1. INPUT: Fill out the Before and After editors with sample code snippets as test fixtures.
+// 2. AI: In the ModGPT tab on the left, click the button: "Build a codemod to transform before to after"
+// 3. OUTPUT: Let AI generate your codemod. Once generated, copy and paste it here.
+   // This studio features a live codemod runner, so you can immediately see how your codemod transforms the "Before" snippet once pasted below.
 
 
 import type { FileInfo, API, Options } from 'jscodeshift';
