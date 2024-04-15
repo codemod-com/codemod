@@ -36,6 +36,7 @@ import { parseFlowSettings } from "./schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { TarService } from "./services/tarService.js";
 import type { TelemetryEvent } from "./telemetry";
+import { getCurrentUserData } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -136,6 +137,16 @@ export const executeMainThread = async () => {
 			? new NullSender()
 			: new PostHogSender({
 					cloudRole: "CLI",
+					getUserDistinctId: async () => {
+						const userData = await getCurrentUserData();
+
+						if (!userData) {
+							// @TODO create anonymous session
+							return "AnonymousUser";
+						}
+
+						return userData.user.userId;
+					},
 				});
 
 	let exit: () => void = () => {
