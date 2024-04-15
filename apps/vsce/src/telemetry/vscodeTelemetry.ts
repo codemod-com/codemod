@@ -1,134 +1,137 @@
 import type TelemetryReporter from "@vscode/extension-telemetry";
 import type { CaseHash } from "../cases/types";
 import {
-	type Message,
-	type MessageBus,
-	MessageKind,
+  type Message,
+  type MessageBus,
+  MessageKind,
 } from "../components/messageBus";
 import type { Job } from "../jobs/types";
 import type { ErrorEvent, Event, Telemetry } from "./telemetry";
 
+import { type TelemetryLogger, type TelemetrySender, env } from "vscode";
+
+import { AppInsightsTelemetryService, BaseEvent } from "@codemod-com/telemetry";
+
+export class VSCodeTelemetrySender<Event extends BaseEvent>
+  implements TelemetrySender
+{
+  constructor(
+    private readonly __appInsights: AppInsightsTelemetryService<Event>
+  ) {}
+
+  sendEventData(
+    eventName: Event["kind"],
+    data?: Record<string, unknown> | undefined
+  ): void {
+    this.__appInsights.sendEvent({ kind: eventName, ...data } as Event);
+  }
+
+  sendErrorData(): void {}
+}
+
 export class VscodeTelemetry implements Telemetry {
-	constructor(
-		private readonly __telemetryReporter: TelemetryReporter,
-		private readonly __messageBus: MessageBus,
-	) {
-		this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
-			this.__onCodemodSetExecuted(message);
-		});
+  private __telemetryLogger: TelemetryLogger;
 
-		this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
-			this.__onJobsAcceptedMessage(message),
-		);
+  constructor(private readonly __messageBus: MessageBus) {
+    this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
+      this.__onCodemodSetExecuted(message);
+    });
 
-		this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
-			this.__onJobsRejectedMessage(message),
-		);
-	}
+    this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
+      this.__onJobsAcceptedMessage(message)
+    );
 
-	__onJobsAcceptedMessage(
-		message: Message & { kind: MessageKind.jobsAccepted },
-	): void {
-		const { deletedJobs } = message;
+    this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
+      this.__onJobsRejectedMessage(message)
+    );
 
-		const jobsByExecution: Record<CaseHash, Job[]> = {};
+    const appInsightsService = new AppInsightsTelemetryService<
+      Event | ErrorEvent
+    >({
+      cloudRole: "VSCE",
+    });
 
-		for (const job of deletedJobs) {
-			const { caseHashDigest } = job;
+    const telemetrySender = new VSCodeTelemetrySender(appInsightsService);
 
-			if (!jobsByExecution[caseHashDigest]) {
-				jobsByExecution[caseHashDigest] = [];
-			}
+    /**
+     * Extensions must NOT call the methods of
+     * their sender directly as the logger provides extra guards and cleaning.
+     *
+     * Logger guarantees that user's Vscode telemetry settings are respected.
+     * see https://vscode-api.js.org/interfaces/vscode.TelemetryLogger.html
+     */
+    this.__telemetryLogger = env.createTelemetryLogger(telemetrySender);
+  }
 
-			jobsByExecution[caseHashDigest]?.push(job);
-		}
+  __onJobsAcceptedMessage(
+    message: Message & { kind: MessageKind.jobsAccepted }
+  ): void {
+    const { deletedJobs } = message;
 
-		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-			this.sendEvent({
-				kind: "jobsAccepted",
-				jobCount: jobs.length,
-				executionId: caseHashDigest as CaseHash,
-			});
-		}
-	}
+    const jobsByExecution: Record<CaseHash, Job[]> = {};
 
-	__onJobsRejectedMessage(
-		message: Message & { kind: MessageKind.jobsRejected },
-	): void {
-		const { deletedJobs } = message;
+    for (const job of deletedJobs) {
+      const { caseHashDigest } = job;
 
-		const jobsByExecution: Record<string, Job[]> = {};
+      if (!jobsByExecution[caseHashDigest]) {
+        jobsByExecution[caseHashDigest] = [];
+      }
 
-		for (const job of deletedJobs) {
-			const { caseHashDigest } = job;
+      jobsByExecution[caseHashDigest]?.push(job);
+    }
 
-			if (!jobsByExecution[caseHashDigest]) {
-				jobsByExecution[caseHashDigest] = [];
-			}
+    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+      this.sendEvent({
+        kind: "jobsAccepted",
+        jobCount: jobs.length,
+        executionId: caseHashDigest as CaseHash,
+      });
+    }
+  }
 
-			jobsByExecution[caseHashDigest]?.push(job);
-		}
+  __onJobsRejectedMessage(
+    message: Message & { kind: MessageKind.jobsRejected }
+  ): void {
+    const { deletedJobs } = message;
 
-		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-			this.sendEvent({
-				kind: "jobsRejected",
-				jobCount: jobs.length,
-				executionId: caseHashDigest as CaseHash,
-			});
-		}
-	}
+    const jobsByExecution: Record<string, Job[]> = {};
 
-	__onCodemodSetExecuted(
-		message: Message & { kind: MessageKind.codemodSetExecuted },
-	): void {
-		this.sendEvent({
-			kind: message.halted ? "codemodHalted" : "codemodExecuted",
-			executionId: message.case.hash,
-			fileCount: message.jobs.length,
-			codemodName: message.case.codemodName,
-		});
-	}
+    for (const job of deletedJobs) {
+      const { caseHashDigest } = job;
 
-	__rawEventToTelemetryEvent(event: ErrorEvent | Event): {
-		properties: Record<string, string>;
-		measurements: Record<string, number>;
-		name: string;
-	} {
-		const properties: Record<string, string> = {};
-		const measurements: Record<string, number> = {};
+      if (!jobsByExecution[caseHashDigest]) {
+        jobsByExecution[caseHashDigest] = [];
+      }
 
-		for (const [key, value] of Object.entries(event)) {
-			if (typeof value === "string") {
-				properties[key] = value;
-				continue;
-			}
+      jobsByExecution[caseHashDigest]?.push(job);
+    }
 
-			if (typeof value === "number") {
-				measurements[key] = value;
-			}
-		}
+    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+      this.sendEvent({
+        kind: "jobsRejected",
+        jobCount: jobs.length,
+        executionId: caseHashDigest as CaseHash,
+      });
+    }
+  }
 
-		return {
-			name: event.kind,
-			properties,
-			measurements,
-		};
-	}
+  __onCodemodSetExecuted(
+    message: Message & { kind: MessageKind.codemodSetExecuted }
+  ): void {
+    this.sendEvent({
+      kind: message.halted ? "codemodHalted" : "codemodExecuted",
+      executionId: message.case.hash,
+      fileCount: message.jobs.length,
+      codemodName: message.case.codemodName,
+    });
+  }
 
-	sendEvent(event: Event): void {
-		const { name, properties, measurements } =
-			this.__rawEventToTelemetryEvent(event);
+  sendEvent(event: Event): void {
+    this.__telemetryLogger.logUsage(event.kind, event);
+  }
 
-		this.__telemetryReporter.sendTelemetryEvent(name, properties, measurements);
-	}
-
-	sendError(event: ErrorEvent): void {
-		const { name, properties, measurements } =
-			this.__rawEventToTelemetryEvent(event);
-		this.__telemetryReporter.sendTelemetryErrorEvent(
-			name,
-			properties,
-			measurements,
-		);
-	}
+  // @TEMP treating Error as regular event
+  sendError(event: ErrorEvent): void {
+    this.__telemetryLogger.logUsage(event.kind, event);
+  }
 }

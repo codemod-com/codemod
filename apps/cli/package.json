@@ -36,6 +36,7 @@
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
+		"@codemod-com/telemetry": "workspace:*",
 		"@svgr/hast-util-to-babel-ast": "^7.0.0",
 		"@types/babel__traverse": "^7.20.1",
 		"@types/columnify": "^1.5.4",
