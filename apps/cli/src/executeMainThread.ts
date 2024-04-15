@@ -3,22 +3,19 @@ import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-	NullSender,
-	PostHogSender,
-	type TelemetrySender,
+  AppInsightsTelemetryService,
+  NoTelemetryService,
 } from "@codemod-com/telemetry";
-
 import Axios from "axios";
 import type { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
 import {
-	buildOptions,
-	buildUseCacheOption,
-	buildUseJsonOption,
+  buildOptions,
+  buildUseCacheOption,
+  buildUseJsonOption,
 } from "./buildOptions.js";
-import { generateDistinctId, getDistinctId } from "./distinctId";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
 import { handleInitCliCommand } from "./handleInitCliCommand";
@@ -36,285 +33,271 @@ import { parseCodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { parseFlowSettings } from "./schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { TarService } from "./services/tarService.js";
-import type { TelemetryEvent } from "./telemetry";
-import { getCurrentUserData } from "./utils";
+import { TelemetryEvent } from "./telemetry";
 
 export const executeMainThread = async () => {
-	const slicedArgv = hideBin(process.argv);
+  const slicedArgv = hideBin(process.argv);
 
-	const argvObject = yargs(slicedArgv)
-		.scriptName("codemod")
-		.usage("Usage: <command> [options]")
-		.command("*", "runs a codemod or recipe", (y) => buildOptions(y))
-		.command(
-			"runOnPreCommit [files...]",
-			"run pre-commit codemods against staged files passed positionally",
-			(y) => buildUseJsonOption(buildUseCacheOption(y)),
-		)
-		.command(
-			["list", "ls", "search"],
-			"lists all the codemods & recipes in the public registry. can be used to search by name and tags",
-			(y) => buildUseJsonOption(buildUseCacheOption(y)),
-		)
-		.command(
-			"learn",
-			"exports the current `git diff` in a file to before/after panels in the Codemod Studio",
-			(y) => buildUseJsonOption(y),
-		)
-		.command(
-			"login",
-			"logs in through authentication in the Codemod Studio",
-			(y) => buildUseJsonOption(y),
-		)
-		.command("logout", "logs out", (y) => buildUseJsonOption(y))
-		.command(
-			"whoami",
-			"prints the user data of currently logged in user",
-			(y) => buildUseJsonOption(y),
-		)
-		.command(
-			"build",
-			"build the JavaScript engine codemod (requires global esbuild installation)",
-			(y) =>
-				buildUseJsonOption(y).option("source", {
-					type: "string",
-					description: "path to the codemod to be built",
-				}),
-		)
-		.command("publish", "publish the codemod to Codemod Registry", (y) =>
-			buildUseJsonOption(y).option("source", {
-				type: "string",
-				description: "path to the codemod to be published",
-			}),
-		)
-		.command(
-			"unpublish",
-			"unpublish previously published codemod from Codemod Registry",
-			(y) =>
-				buildUseJsonOption(y).option("force", {
-					type: "boolean",
-					alias: "f",
-					boolean: true,
-					description: "whether to remove all versions",
-				}),
-		)
-		.command("init", "initialize a codemod package", (y) =>
-			buildUseJsonOption(y).option("no-prompt", {
-				alias: "y",
-				type: "boolean",
-				description: "skip all prompts and use default values",
-			}),
-		)
-		.help()
-		.version(version);
+  const argvObject = yargs(slicedArgv)
+    .scriptName("codemod")
+    .usage("Usage: <command> [options]")
+    .command("*", "runs a codemod or recipe", (y) => buildOptions(y))
+    .command(
+      "runOnPreCommit [files...]",
+      "run pre-commit codemods against staged files passed positionally",
+      (y) => buildUseJsonOption(buildUseCacheOption(y))
+    )
+    .command(
+      ["list", "ls", "search"],
+      "lists all the codemods & recipes in the public registry. can be used to search by name and tags",
+      (y) => buildUseJsonOption(buildUseCacheOption(y))
+    )
+    .command(
+      "learn",
+      "exports the current `git diff` in a file to before/after panels in the Codemod Studio",
+      (y) => buildUseJsonOption(y)
+    )
+    .command(
+      "login",
+      "logs in through authentication in the Codemod Studio",
+      (y) => buildUseJsonOption(y)
+    )
+    .command("logout", "logs out", (y) => buildUseJsonOption(y))
+    .command(
+      "whoami",
+      "prints the user data of currently logged in user",
+      (y) => buildUseJsonOption(y)
+    )
+    .command(
+      "build",
+      "build the JavaScript engine codemod (requires global esbuild installation)",
+      (y) =>
+        buildUseJsonOption(y).option("source", {
+          type: "string",
+          description: "path to the codemod to be built",
+        })
+    )
+    .command("publish", "publish the codemod to Codemod Registry", (y) =>
+      buildUseJsonOption(y).option("source", {
+        type: "string",
+        description: "path to the codemod to be published",
+      })
+    )
+    .command(
+      "unpublish",
+      "unpublish previously published codemod from Codemod Registry",
+      (y) =>
+        buildUseJsonOption(y).option("force", {
+          type: "boolean",
+          alias: "f",
+          boolean: true,
+          description: "whether to remove all versions",
+        })
+    )
+    .command("init", "initialize a codemod package", (y) =>
+      buildUseJsonOption(y).option("no-prompt", {
+        alias: "y",
+        type: "boolean",
+        description: "skip all prompts and use default values",
+      })
+    )
+    .help()
+    .version(version);
 
-	if (slicedArgv.length === 0) {
-		argvObject.showHelp();
-		return;
-	}
+  if (slicedArgv.length === 0) {
+    argvObject.showHelp();
+    return;
+  }
 
-	const argv = await Promise.resolve(argvObject.argv);
+  const argv = await Promise.resolve(argvObject.argv);
 
-	const fetchBuffer = async (url: string) => {
-		const { data } = await Axios.get(url, {
-			responseType: "arraybuffer",
-		});
+  const fetchBuffer = async (url: string) => {
+    const { data } = await Axios.get(url, {
+      responseType: "arraybuffer",
+    });
 
-		return Buffer.from(data);
-	};
+    return Buffer.from(data);
+  };
 
-	const printer = new Printer(argv.json);
+  const printer = new Printer(argv.json);
 
-	const fileDownloadService = new FileDownloadService(
-		argv.noCache,
-		fetchBuffer,
-		() => Date.now(),
-		fs as unknown as IFs,
-		printer,
-	);
+  const fileDownloadService = new FileDownloadService(
+    argv.noCache,
+    fetchBuffer,
+    () => Date.now(),
+    fs as unknown as IFs,
+    printer
+  );
 
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
+  let telemetryService:
+    | AppInsightsTelemetryService<TelemetryEvent>
+    | NoTelemetryService<TelemetryEvent>;
+  let exit: () => void = () => {
+    process.exit(0);
+  };
+  const tarService = new TarService(fs as unknown as IFs);
 
-	const getUserDistinctId = async (): Promise<string> => {
-		const userData = await getCurrentUserData();
+  if (!argv.telemetryDisable) {
+    telemetryService = new AppInsightsTelemetryService({
+      cloudRole: "CLI",
+    });
 
-		if (userData !== null) {
-			return userData.user.userId;
-		}
+    exit = async () => {
+      // appInsights telemetry client uses batches to send telemetry.
+      // this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
+      // see Channel2.prototype.send
+      // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+      await telemetryService.dispose();
+      process.exit(0);
+    };
+  } else {
+    telemetryService = new NoTelemetryService();
+  }
 
-		const distinctId = await getDistinctId(configurationDirectoryPath);
+  const executeCliCommand = async (
+    executableCallback: () => Promise<unknown> | unknown
+  ) => {
+    try {
+      await executableCallback();
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-		if (distinctId !== null) {
-			return distinctId;
-		}
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
+    }
 
-		return await generateDistinctId(configurationDirectoryPath);
-	};
+    exit();
+  };
 
-	const telemetryService: TelemetrySender<TelemetryEvent> =
-		argv.telemetryDisable
-			? new NullSender()
-			: new PostHogSender({
-					cloudRole: "CLI",
-					distinctId: await getUserDistinctId(),
-				});
+  process.on("SIGINT", exit);
 
-	let exit: () => void = () => {
-		process.exit(0);
-	};
-	const tarService = new TarService(fs as unknown as IFs);
+  const configurationDirectoryPath = join(
+    String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+    ".codemod"
+  );
 
-	exit = async () => {
-		// appInsights telemetry client uses batches to send telemetry.
-		// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-		// see Channel2.prototype.send
-		// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-		await telemetryService.dispose();
-		process.exit(0);
-	};
+  const codemodDownloader = new CodemodDownloader(
+    printer,
+    configurationDirectoryPath,
+    argv.noCache,
+    fileDownloadService,
+    tarService
+  );
 
-	const executeCliCommand = async (
-		executableCallback: () => Promise<unknown> | unknown,
-	) => {
-		try {
-			await executableCallback();
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
+  const command = String(argv._.at(0));
 
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
+  const lastArgument = String(argv._.at(-1));
 
-		exit();
-	};
+  if (["list", "ls", "search"].includes(command)) {
+    const lastArgument =
+      argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
 
-	process.on("SIGINT", exit);
+    let searchTerm: string | null = null;
+    if (lastArgument) {
+      if (lastArgument.length < 2) {
+        throw new Error(
+          "Search term must be at least 2 characters long. Aborting..."
+        );
+      }
 
-	const codemodDownloader = new CodemodDownloader(
-		printer,
-		configurationDirectoryPath,
-		argv.noCache,
-		fileDownloadService,
-		tarService,
-	);
+      searchTerm = lastArgument;
+    }
 
-	const command = String(argv._.at(0));
+    return executeCliCommand(() => handleListNamesCommand(printer, searchTerm));
+  }
 
-	const lastArgument = String(argv._.at(-1));
+  if (command === "learn") {
+    return executeCliCommand(() =>
+      handleLearnCliCommand(printer, argv.target ?? null)
+    );
+  }
 
-	if (["list", "ls", "search"].includes(command)) {
-		const lastArgument =
-			argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
+  if (command === "whoami") {
+    return executeCliCommand(() => handleWhoAmICommand(printer));
+  }
 
-		let searchTerm: string | null = null;
-		if (lastArgument) {
-			if (lastArgument.length < 2) {
-				throw new Error(
-					"Search term must be at least 2 characters long. Aborting...",
-				);
-			}
+  if (command === "login") {
+    return executeCliCommand(() => handleLoginCliCommand(printer));
+  }
 
-			searchTerm = lastArgument;
-		}
+  if (command === "logout") {
+    return executeCliCommand(() => handleLogoutCliCommand(printer));
+  }
 
-		return executeCliCommand(() => handleListNamesCommand(printer, searchTerm));
-	}
+  if (command === "publish") {
+    return executeCliCommand(() =>
+      handlePublishCliCommand(printer, argv.source ?? process.cwd())
+    );
+  }
 
-	if (command === "learn") {
-		return executeCliCommand(() =>
-			handleLearnCliCommand(printer, argv.target ?? null),
-		);
-	}
+  if (command === "unpublish") {
+    return executeCliCommand(() =>
+      handleUnpublishCliCommand(printer, lastArgument, argv.force)
+    );
+  }
 
-	if (command === "whoami") {
-		return executeCliCommand(() => handleWhoAmICommand(printer));
-	}
+  if (command === "build") {
+    await initGlobalNodeModules();
 
-	if (command === "login") {
-		return executeCliCommand(() => handleLoginCliCommand(printer));
-	}
+    try {
+      await execPromise("esbuild --version");
+    } catch (error) {
+      printer.printOperationMessage({
+        kind: "error",
+        message:
+          "To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run `npm i -g esbuild`",
+      });
 
-	if (command === "logout") {
-		return executeCliCommand(() => handleLogoutCliCommand(printer));
-	}
+      exit();
+    }
 
-	if (command === "publish") {
-		return executeCliCommand(() =>
-			handlePublishCliCommand(printer, argv.source ?? process.cwd()),
-		);
-	}
+    const { handleBuildCliCommand } = await import(
+      "./handleBuildCliCommand.js"
+    );
 
-	if (command === "unpublish") {
-		return executeCliCommand(() =>
-			handleUnpublishCliCommand(printer, lastArgument, argv.force),
-		);
-	}
+    return executeCliCommand(() =>
+      handleBuildCliCommand(printer, argv.source ?? process.cwd())
+    );
+  }
 
-	if (command === "build") {
-		await initGlobalNodeModules();
+  if (command === "init") {
+    return executeCliCommand(() =>
+      handleInitCliCommand(printer, argv.noPrompt)
+    );
+  }
 
-		try {
-			await execPromise("esbuild --version");
-		} catch (error) {
-			printer.printOperationMessage({
-				kind: "error",
-				message:
-					"To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run `npm i -g esbuild`",
-			});
+  if (lastArgument && fs.existsSync(lastArgument)) {
+    argv.source = lastArgument;
+  }
 
-			exit();
-		}
+  const codemodSettings = parseCodemodSettings(argv);
+  const flowSettings = parseFlowSettings(argv);
+  const runSettings = parseRunSettings(homedir(), argv);
 
-		const { handleBuildCliCommand } = await import(
-			"./handleBuildCliCommand.js"
-		);
+  const getCodemodSource = (path: string) =>
+    readFile(path, { encoding: "utf8" });
 
-		return executeCliCommand(() =>
-			handleBuildCliCommand(printer, argv.source ?? process.cwd()),
-		);
-	}
+  const runner = new Runner(
+    fs as unknown as IFs,
+    printer,
+    telemetryService,
+    codemodDownloader,
+    loadRepositoryConfiguration,
+    codemodSettings,
+    flowSettings,
+    runSettings,
+    // TODO: fix type
+    argv as Record<string, string | number | boolean>,
+    lastArgument,
+    flowSettings.target,
+    getCodemodSource
+  );
 
-	if (command === "init") {
-		return executeCliCommand(() =>
-			handleInitCliCommand(printer, argv.noPrompt),
-		);
-	}
+  await runner.run();
 
-	if (lastArgument && fs.existsSync(lastArgument)) {
-		argv.source = lastArgument;
-	}
-
-	const codemodSettings = parseCodemodSettings(argv);
-	const flowSettings = parseFlowSettings(argv);
-	const runSettings = parseRunSettings(homedir(), argv);
-
-	const getCodemodSource = (path: string) =>
-		readFile(path, { encoding: "utf8" });
-
-	const runner = new Runner(
-		fs as unknown as IFs,
-		printer,
-		telemetryService,
-		codemodDownloader,
-		loadRepositoryConfiguration,
-		codemodSettings,
-		flowSettings,
-		runSettings,
-		// TODO: fix type
-		argv as Record<string, string | number | boolean>,
-		lastArgument,
-		flowSettings.target,
-		getCodemodSource,
-	);
-
-	await runner.run();
-
-	exit();
+  exit();
 };

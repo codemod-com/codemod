@@ -1,105 +1,136 @@
 import type { CaseHash } from "../cases/types";
 import {
-	type Message,
-	type MessageBus,
-	MessageKind,
+  type Message,
+  type MessageBus,
+  MessageKind,
 } from "../components/messageBus";
 import type { Job } from "../jobs/types";
 import type { ErrorEvent, Event, Telemetry } from "./telemetry";
 
-import type { TelemetryLogger } from "vscode";
+import { type TelemetryLogger, type TelemetrySender, env } from "vscode";
 
-export class VscodeTelemetryReporter implements Telemetry {
-	constructor(
-		private readonly __telemetryLogger: TelemetryLogger,
-		private readonly __messageBus: MessageBus,
-	) {
-		this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
-			this.__onCodemodSetExecuted(message);
-		});
+import { AppInsightsTelemetryService, BaseEvent } from "@codemod-com/telemetry";
 
-		this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
-			this.__onJobsAcceptedMessage(message),
-		);
+export class VSCodeTelemetrySender<Event extends BaseEvent>
+  implements TelemetrySender
+{
+  constructor(
+    private readonly __appInsights: AppInsightsTelemetryService<Event>
+  ) {}
 
-		this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
-			this.__onJobsRejectedMessage(message),
-		);
-	}
+  sendEventData(
+    eventName: Event["kind"],
+    data?: Record<string, unknown> | undefined
+  ): void {
+    this.__appInsights.sendEvent({ kind: eventName, ...data } as Event);
+  }
 
-	__onJobsAcceptedMessage(
-		message: Message & { kind: MessageKind.jobsAccepted },
-	): void {
-		const { deletedJobs } = message;
+  sendErrorData(): void {}
+}
 
-		const jobsByExecution: Record<CaseHash, Job[]> = {};
+export class VscodeTelemetry implements Telemetry {
+  private __telemetryLogger: TelemetryLogger;
 
-		for (const job of deletedJobs) {
-			const { caseHashDigest } = job;
+  constructor(private readonly __messageBus: MessageBus) {
+    this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
+      this.__onCodemodSetExecuted(message);
+    });
 
-			if (!jobsByExecution[caseHashDigest]) {
-				jobsByExecution[caseHashDigest] = [];
-			}
+    this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
+      this.__onJobsAcceptedMessage(message)
+    );
 
-			jobsByExecution[caseHashDigest]?.push(job);
-		}
+    this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
+      this.__onJobsRejectedMessage(message)
+    );
 
-		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-			this.sendEvent({
-				kind: "jobsAccepted",
-				jobCount: jobs.length,
-				executionId: caseHashDigest as CaseHash,
-			});
-		}
-	}
+    const appInsightsService = new AppInsightsTelemetryService<
+      Event | ErrorEvent
+    >({
+      cloudRole: "VSCE",
+    });
 
-	__onJobsRejectedMessage(
-		message: Message & { kind: MessageKind.jobsRejected },
-	): void {
-		const { deletedJobs } = message;
+    const telemetrySender = new VSCodeTelemetrySender(appInsightsService);
 
-		const jobsByExecution: Record<string, Job[]> = {};
+    /**
+     * Extensions must NOT call the methods of
+     * their sender directly as the logger provides extra guards and cleaning.
+     *
+     * Logger guarantees that user's Vscode telemetry settings are respected.
+     * see https://vscode-api.js.org/interfaces/vscode.TelemetryLogger.html
+     */
+    this.__telemetryLogger = env.createTelemetryLogger(telemetrySender);
+  }
 
-		for (const job of deletedJobs) {
-			const { caseHashDigest } = job;
+  __onJobsAcceptedMessage(
+    message: Message & { kind: MessageKind.jobsAccepted }
+  ): void {
+    const { deletedJobs } = message;
 
-			if (!jobsByExecution[caseHashDigest]) {
-				jobsByExecution[caseHashDigest] = [];
-			}
+    const jobsByExecution: Record<CaseHash, Job[]> = {};
 
-			jobsByExecution[caseHashDigest]?.push(job);
-		}
+    for (const job of deletedJobs) {
+      const { caseHashDigest } = job;
 
-		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-			this.sendEvent({
-				kind: "jobsRejected",
-				jobCount: jobs.length,
-				executionId: caseHashDigest as CaseHash,
-			});
-		}
-	}
+      if (!jobsByExecution[caseHashDigest]) {
+        jobsByExecution[caseHashDigest] = [];
+      }
 
-	__onCodemodSetExecuted(
-		message: Message & { kind: MessageKind.codemodSetExecuted },
-	): void {
-		this.sendEvent({
-			kind: message.halted ? "codemodHalted" : "codemodExecuted",
-			executionId: message.case.hash,
-			fileCount: message.jobs.length,
-			codemodName: this.__transformPathLikeName(message.case.codemodName),
-		});
-	}
+      jobsByExecution[caseHashDigest]?.push(job);
+    }
 
-	// transform path-like strings to bypass vscode logger filter
-	__transformPathLikeName(str: string): string {
-		return str.replaceAll("/", "_");
-	}
+    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+      this.sendEvent({
+        kind: "jobsAccepted",
+        jobCount: jobs.length,
+        executionId: caseHashDigest as CaseHash,
+      });
+    }
+  }
 
-	sendEvent(event: Event): void {
-		this.__telemetryLogger.logUsage(event.kind, event);
-	}
+  __onJobsRejectedMessage(
+    message: Message & { kind: MessageKind.jobsRejected }
+  ): void {
+    const { deletedJobs } = message;
 
-	sendError(event: ErrorEvent): void {
-		this.__telemetryLogger.logError(event.kind, event);
-	}
+    const jobsByExecution: Record<string, Job[]> = {};
+
+    for (const job of deletedJobs) {
+      const { caseHashDigest } = job;
+
+      if (!jobsByExecution[caseHashDigest]) {
+        jobsByExecution[caseHashDigest] = [];
+      }
+
+      jobsByExecution[caseHashDigest]?.push(job);
+    }
+
+    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+      this.sendEvent({
+        kind: "jobsRejected",
+        jobCount: jobs.length,
+        executionId: caseHashDigest as CaseHash,
+      });
+    }
+  }
+
+  __onCodemodSetExecuted(
+    message: Message & { kind: MessageKind.codemodSetExecuted }
+  ): void {
+    this.sendEvent({
+      kind: message.halted ? "codemodHalted" : "codemodExecuted",
+      executionId: message.case.hash,
+      fileCount: message.jobs.length,
+      codemodName: message.case.codemodName,
+    });
+  }
+
+  sendEvent(event: Event): void {
+    this.__telemetryLogger.logUsage(event.kind, event);
+  }
+
+  // @TEMP treating Error as regular event
+  sendError(event: ErrorEvent): void {
+    this.__telemetryLogger.logUsage(event.kind, event);
+  }
 }
