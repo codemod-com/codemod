@@ -40,7 +40,7 @@ import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
 import { telemetryLogger } from "./telemetry/logger";
-import { VscodeTelemetry } from "./telemetry/reporter";
+import { VscodeTelemetryReporter } from "./telemetry/reporter";
 import { buildHash, isNeitherNullNorUndefined } from "./utilities";
 
 export enum SEARCH_PARAMS_KEYS {
@@ -124,7 +124,22 @@ export async function activate(context: vscode.ExtensionContext) {
 		store,
 	);
 
-	const vscodeTelemetry = new VscodeTelemetry(telemetryLogger, messageBus);
+	const vscodeTelemetry = new VscodeTelemetryReporter(
+		telemetryLogger,
+		messageBus,
+	);
+
+	vscodeTelemetry.sendEvent({
+		kind: "codemodExecuted",
+		codemodName: "test_test",
+		fileCount: 0,
+		executionId: "123" as CaseHash,
+	});
+
+	vscodeTelemetry.sendError({
+		kind: "failedToExecuteCommand",
+		commandName: "test_test",
+	});
 
 	new BootstrapExecutablesService(
 		downloadService,

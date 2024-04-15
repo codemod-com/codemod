@@ -9,7 +9,7 @@ import type { ErrorEvent, Event, Telemetry } from "./telemetry";
 
 import type { TelemetryLogger } from "vscode";
 
-export class VscodeTelemetry implements Telemetry {
+export class VscodeTelemetryReporter implements Telemetry {
 	constructor(
 		private readonly __telemetryLogger: TelemetryLogger,
 		private readonly __messageBus: MessageBus,
