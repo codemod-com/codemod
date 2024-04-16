@@ -1,0 +1,48 @@
+{
+	"compilerOptions": {
+		"lib": ["dom", "dom.iterable", "esnext", "WebWorker"],
+		"target": "ESNext",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"allowJs": true,
+		"esModuleInterop": true,
+		"isolatedModules": true,
+		"useDefineForClassFields": true,
+		"jsx": "preserve",
+		"resolveJsonModule": true,
+		"incremental": true,
+		"noEmit": true,
+		"outDir": "dist",
+		"strict": true,
+		"strictNullChecks": true,
+		"noUncheckedIndexedAccess": true,
+		"skipLibCheck": true,
+		"allowSyntheticDefaultImports": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUnusedLocals": false,
+		"noUnusedParameters": false,
+		"preserveWatchOutput": true,
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./*"],
+			"studio/main/*": ["./app/(website)/studio/main/*"],
+			"~/*": ["./app/(website)/studio/src/*"],
+			"tslib": ["node_modules/tslib"],
+			"ts-morph": ["node_modules/ts-morph"]
+		},
+		"plugins": [{ "name": "next" }]
+	},
+	"include": [
+		".eslintrc.cjs",
+		"next-env.d.ts",
+		"reset.d.ts",
+		"../../../txt.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		"**/*.cjs",
+		"**/*.mjs",
+		".next/types/**/*.ts",
+		"next.config.js"
+	],
+	"exclude": ["node_modules"]
+}
