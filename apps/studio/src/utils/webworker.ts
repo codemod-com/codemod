@@ -615,7 +615,7 @@ self.onmessage = async (messageEvent) => {
 			const project = new tsmorph.Project({
 				useInMemoryFileSystem: true,
 			});
-			const sourceFile = project.createSourceFile("index.tsx", input);
+			const sourceFile = project.createSourceFile("page.tsx", input);
 			const output = transformFunction(sourceFile);
 
 			if (typeof output === "string") {

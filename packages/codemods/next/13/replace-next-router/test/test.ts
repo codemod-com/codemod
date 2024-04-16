@@ -52,7 +52,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -78,7 +78,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -106,7 +106,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -134,7 +134,7 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -160,7 +160,7 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 		deepStrictEqual(actual, expected);
 	});
 
@@ -188,7 +188,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -215,7 +215,7 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -248,7 +248,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -289,7 +289,7 @@ describe("next 13 replace-next-router", () => {
 
 		// TODO useMemo second parameter -> searchParams if at all
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -319,7 +319,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -338,7 +338,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -358,7 +358,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -378,7 +378,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -392,7 +392,7 @@ describe("next 13 replace-next-router", () => {
 			import './index.css';
 		`;
 
-		const { actual } = transform(beforeText, afterText, "index.tsx");
+		const { actual } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, undefined);
 	});
@@ -422,7 +422,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -444,7 +444,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -468,7 +468,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -491,7 +491,7 @@ describe("next 13 replace-next-router", () => {
 	        }
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -516,7 +516,7 @@ describe("next 13 replace-next-router", () => {
 	        }
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -539,7 +539,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -563,7 +563,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -586,7 +586,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -609,7 +609,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -632,7 +632,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -659,7 +659,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -682,7 +682,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -707,7 +707,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -721,7 +721,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual } = transform(beforeText, beforeText, "index.tsx");
+		const { actual } = transform(beforeText, beforeText, "page.tsx");
 
 		deepStrictEqual(actual, undefined);
 	});
@@ -754,7 +754,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -783,7 +783,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -813,7 +813,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -840,7 +840,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -867,7 +867,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -897,7 +897,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -927,7 +927,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1233,7 +1233,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1267,7 +1267,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1300,7 +1300,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1333,7 +1333,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1359,7 +1359,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1390,7 +1390,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1416,7 +1416,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1440,7 +1440,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1475,7 +1475,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1510,7 +1510,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1541,7 +1541,7 @@ describe("next 13 replace-next-router", () => {
 				return null;}
 				`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1569,7 +1569,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1597,7 +1597,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1613,7 +1613,7 @@ describe("next 13 replace-next-router", () => {
 			function(router: AppRouterInstance) {}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1639,7 +1639,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1663,7 +1663,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1687,7 +1687,7 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1717,7 +1717,7 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1774,7 +1774,7 @@ describe("next 13 replace-next-router", () => {
 			}, [searchParams, router]);
 		}`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1816,7 +1816,7 @@ describe("next 13 replace-next-router", () => {
 				: obj;
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1842,7 +1842,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1883,7 +1883,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1914,7 +1914,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1949,7 +1949,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -1995,7 +1995,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2027,7 +2027,7 @@ describe("next 13 replace-next-router", () => {
 		
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2065,7 +2065,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2093,7 +2093,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2123,7 +2123,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2151,7 +2151,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2181,7 +2181,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
@@ -2199,7 +2199,7 @@ describe("next 13 replace-next-router", () => {
 			}));
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+		const { actual, expected } = transform(beforeText, afterText, "page.tsx");
 
 		deepStrictEqual(actual, expected);
 	});
