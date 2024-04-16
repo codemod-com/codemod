@@ -2,10 +2,17 @@
 
 import { ThemeProvider } from "@context/useTheme";
 import { MainPage } from "@studio/main/index";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
+	const router = useRouter();
+	useEffect(() => {
+		router.push("https://codemod.com/studio");
+	}, [router]);
+
 	return (
 		<ThemeProvider>
 			<MainPage />
