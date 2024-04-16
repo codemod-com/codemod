@@ -70,11 +70,17 @@ export async function activate(context: vscode.ExtensionContext) {
 	const userService = new UserService(globalStateTokenStorage);
 
 	const accessToken = userService.getLinkedToken();
-	if (accessToken !== null) {
-		const valid = await validateAccessToken(accessToken);
-		vscode.commands.executeCommand("setContext", "codemod.signedIn", valid);
+	// @TODO support tracking anunymous users
+	let distinctId = "AnonymousUser";
 
-		if (!valid) {
+	if (accessToken !== null) {
+		const userData = await validateAccessToken(accessToken);
+
+		const signedIn = userData !== null;
+
+		vscode.commands.executeCommand("setContext", "codemod.signedIn", signedIn);
+
+		if (!signedIn) {
 			userService.unlinkCodemodComUserAccount();
 			const decision = await vscode.window.showInformationMessage(
 				"You are signed out because your session has expired.",
@@ -94,6 +100,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.commands.executeCommand("codemod.redirect", url);
 			}
 		}
+
+		distinctId = userData?.userId ?? "AnonymousUser";
 	}
 
 	const configurationContainer = buildContainer(getConfiguration());
@@ -125,7 +133,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 
 	const vscodeTelemetry = new VscodeTelemetryReporter(
-		buildTelemetryLogger(context),
+		buildTelemetryLogger(distinctId),
 		messageBus,
 	);
 

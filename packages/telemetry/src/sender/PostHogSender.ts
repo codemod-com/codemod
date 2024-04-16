@@ -26,7 +26,7 @@ export class PostHogSender<Event extends BaseEvent>
 		const { kind, ...properties } = event;
 
 		this.__telemetryClient?.capture({
-			distinctId: await this.__options.getUserDistinctId(),
+			distinctId: this.__options.distinctId,
 			event: kind,
 			properties: { cloudRole: this.__options.cloudRole, ...properties },
 		});

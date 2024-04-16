@@ -132,21 +132,23 @@ export const executeMainThread = async () => {
 		printer,
 	);
 
+	const getDistinctId = async () => {
+		const userData = await getCurrentUserData();
+
+		if (!userData) {
+			// @TODO create anonymous session
+			return "AnonymousUser";
+		}
+
+		return userData.user.userId;
+	};
+
 	const telemetryService: TelemetrySender<TelemetryEvent> =
 		argv.telemetryDisable
 			? new NullSender()
 			: new PostHogSender({
 					cloudRole: "CLI",
-					getUserDistinctId: async () => {
-						const userData = await getCurrentUserData();
-
-						if (!userData) {
-							// @TODO create anonymous session
-							return "AnonymousUser";
-						}
-
-						return userData.user.userId;
-					},
+					distinctId: await getDistinctId(),
 				});
 
 	let exit: () => void = () => {
