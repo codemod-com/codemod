@@ -135,18 +135,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		messageBus,
 	);
 
-	vscodeTelemetry.sendEvent({
-		kind: "codemodExecuted",
-		codemodName: "next/13/name",
-		fileCount: 0,
-		executionId: "123" as CaseHash,
-	});
-
-	vscodeTelemetry.sendError({
-		kind: "failedToExecuteCommand",
-		commandName: "test_test",
-	});
-
 	new BootstrapExecutablesService(
 		downloadService,
 		context.globalStorageUri,
