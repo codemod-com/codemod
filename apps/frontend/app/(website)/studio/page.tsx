@@ -6,11 +6,12 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
+import { CODEMOD_STUDIO_URL } from "~/constants/urls";
 
 export default function Page() {
 	const router = useRouter();
 	useEffect(() => {
-		router.push("https://codemod.com/studio");
+		router.push(CODEMOD_STUDIO_URL);
 	}, [router]);
 
 	return (
