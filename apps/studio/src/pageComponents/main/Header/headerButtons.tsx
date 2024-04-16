@@ -1,14 +1,9 @@
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
-import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { Link as LinkIcon } from "@phosphor-icons/react/dist/csr/Link";
-import { GetExecutionStatusResponse } from "~/api/getExecutionStatus";
 import { Button } from "~/components/ui/button";
-import { useEnsureUserSigned } from "~/hooks/useEnsureUserSigned";
 import { usePublicLinkSharing } from "~/pageComponents/main/usePublicLinkSharing";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
-
-type Status = GetExecutionStatusResponse["status"];
 
 type ButtonProps = {
 	text: string;
@@ -16,60 +11,13 @@ type ButtonProps = {
 	disabled: boolean;
 };
 
-const getButtonPropsByStatus = (status: Status): Partial<ButtonProps> => {
-	switch (status) {
-		case "done":
-		case "idle": {
-			return {
-				text: "Run on branch",
-				hintText: "Run Codemod on branch",
-			};
-		}
-		case "progress": {
-			return {
-				text: "Stop",
-				hintText: "Terminate current codemod run",
-			};
-		}
-		default: {
-			return {
-				text: "Run on branch",
-				hintText: "Run Codemod on branch",
-			};
-		}
-	}
-};
-
-export const HeaderButtons = ({
-	onCodemodRunCancel,
-	codemodRunStatus,
-	showModalWithRepositories,
-}: {
-	showModalWithRepositories: VoidFunction;
-	onCodemodRunCancel: () => Promise<void>;
-	codemodRunStatus: GetExecutionStatusResponse["status"];
-}) => {
+export const HeaderButtons = () => {
 	const { setInput, setOutput } = useSnippetStore();
-	const showRepoModalToSignedUser = useEnsureUserSigned(
-		showModalWithRepositories,
-		"openRepoModal",
-	);
 	const { setContent } = useModStore();
 	const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
 	const { getShareLink } = usePublicLinkSharing();
 
-	const props = getButtonPropsByStatus(codemodRunStatus);
-
 	const buttonsData = [
-		{
-			onClick:
-				codemodRunStatus === "progress"
-					? onCodemodRunCancel
-					: showRepoModalToSignedUser,
-			Icon: CheckIcon,
-			disabled: false,
-			...props,
-		},
 		{
 			hintText: "Clear all inputs",
 			onClick: () => {
