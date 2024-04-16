@@ -1,8 +1,8 @@
 // import { createAsyncThunk } from "@reduxjs/toolkit";
-// import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-// import type { AppDispatch, RootState } from "~/store";
-// import { useLogStore } from "~/store/zustand/log";
-// import { type RangeCommand } from "~/utils/tree";
+// import { type OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+// import type { AppDispatch, RootState } from "@studio/store";
+// import { useLogStore } from "@studio/store/zustand/log";
+// import { type RangeCommand } from "@studio/utils/tree";
 // import { executeRangeCommandOnBeforeInputThunk } from "./useExecuteRangeCommandOnBeforeInput";
 // import { codemodOutputSlice } from "./slices/codemodOutput";
 // import { setCodemodSelection } from "./slices/mod";
@@ -48,13 +48,13 @@
 // 	}
 // });
 
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import type { RangeCommand } from "~/utils/tree";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
+import { useLogStore } from "@studio/store/zustand/log";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import type { RangeCommand } from "@studio/utils/tree";
 
 type UseRange = Readonly<{
 	ranges: ReadonlyArray<OffsetRange>;

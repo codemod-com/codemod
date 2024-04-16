@@ -1,7 +1,7 @@
 import { isFile } from "@babel/types";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import type { TreeNode } from "@studio/types/tree";
 import create from "zustand";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import type { TreeNode } from "~/types/tree";
 import { parseSnippet } from "../../utils/babelParser";
 import mapBabelASTToRenderableTree from "../../utils/mappers";
 import { type RangeCommand, buildRanges } from "../../utils/tree";

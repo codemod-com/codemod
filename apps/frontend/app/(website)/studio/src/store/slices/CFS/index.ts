@@ -1,9 +1,9 @@
 // import { type Node } from "@babel/types";
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-// import { type SendMessageResponse } from "~/api/sendMessage";
-// import { type TreeNode } from "~/components/Tree";
-// import type { RootState } from "~/store";
-// import { getNodeById, getNodeHash, isNode } from "~/utils/tree";
+// import { type SendMessageResponse } from "@studio/api/sendMessage";
+// import { type TreeNode } from "@studio/components/Tree";
+// import type { RootState } from "@studio/store";
+// import { getNodeById, getNodeHash, isNode } from "@studio/utils/tree";
 // import { type PromptPreset, autoGenerateCodemodPrompt } from "./prompts";
 //
 // const SLICE_KEY = "CFS";

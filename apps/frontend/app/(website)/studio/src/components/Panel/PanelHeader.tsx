@@ -1,6 +1,6 @@
+import Text from "@studio/components/Text";
+import { cn } from "@studio/lib/utils";
 import type { PropsWithChildren, ReactNode } from "react";
-import Text from "~/components/Text";
-import { cn } from "~/lib/utils";
 
 type PanelHeaderProps = PropsWithChildren<{
 	className?: string;

@@ -1,5 +1,5 @@
+import { cn } from "@studio/lib/utils";
 import { type ReactNode, createElement } from "react";
-import { cn } from "~/lib/utils";
 
 type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl";
 type Heading = "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "span";

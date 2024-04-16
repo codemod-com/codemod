@@ -5,16 +5,16 @@ import {
 	MagicWand,
 	Stop as StopIcon,
 } from "@phosphor-icons/react";
-import type { UseChatHelpers } from "ai/react";
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
-import { flushSync } from "react-dom";
-import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
+import { Button } from "@studio/components/ui/button";
+import { cn } from "@studio/lib/utils";
 import {
 	type Aliases,
 	applyAliases,
 	useGetAliases,
-} from "~/store/zustand/CFS/alias";
+} from "@studio/store/zustand/CFS/alias";
+import type { UseChatHelpers } from "ai/react";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,

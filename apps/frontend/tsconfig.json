@@ -25,8 +25,8 @@
 		"baseUrl": ".",
 		"paths": {
 			"@/*": ["./*"],
-			"studio/main/*": ["./app/(website)/studio/main/*"],
-			"~/*": ["./app/(website)/studio/src/*"],
+			"@studio/main/*": ["./app/(website)/studio/main/*"],
+			"@studio/*": ["./app/(website)/studio/src/*"],
 			"tslib": ["node_modules/tslib"],
 			"ts-morph": ["node_modules/ts-morph"]
 		},

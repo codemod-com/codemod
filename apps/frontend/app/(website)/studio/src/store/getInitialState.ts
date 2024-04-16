@@ -1,10 +1,10 @@
 import type { KnownEngines } from "@codemod-com/utilities";
+import { parseShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
+// import { parseState } from "@studio/schemata/stateSchemata";
+import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
+import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
-import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";
-// import { parseState } from "~/schemata/stateSchemata";
-import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
-import { prettify } from "~/utils/prettify";
 
 export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
     const { data } = state;
@@ -229,7 +229,7 @@ export const getInitialState = (): InitialState => {
 
 	if (stringifiedState !== null) {
 		try {
-			const state = JSON.parse(stringifiedState) // parseState(JSON.parse(stringifiedState));
+			const state = JSON.parse(stringifiedState); // parseState(JSON.parse(stringifiedState));
 
 			const everyValueIsEmpty = [
 				state.afterSnippet,

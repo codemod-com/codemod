@@ -1,5 +1,5 @@
+import { cn } from "@studio/lib/utils";
 import type { ChangeEvent } from "react";
-import { cn } from "~/lib/utils";
 
 type InputProps = {
 	defaultValue: string;

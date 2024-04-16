@@ -1,5 +1,5 @@
 import type { Monaco } from "@monaco-editor/react";
-import { monaco } from "~/customMonaco";
+import { monaco } from "@studio/customMonaco";
 
 const LANG_ID = "promptLang";
 const tokens = [

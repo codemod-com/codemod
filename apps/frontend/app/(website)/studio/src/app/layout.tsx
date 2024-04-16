@@ -1,8 +1,8 @@
+import { ThemeProvider } from "@studio/main/themeContext";
 import { Analytics } from "@vercel/analytics/react";
 import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
-import { ThemeProvider } from "studio/main/themeContext";
 import AuthProvider from "../auth/AuthProvider";
 import "../index.css";
 

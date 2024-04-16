@@ -1,5 +1,5 @@
+import { isNil } from "@studio/utils/isNil";
 import type { ImperativePanelHandle } from "react-resizable-panels";
-import { isNil } from "~/utils/isNil";
 
 export const collapseOnNextTick = ({
 	panel,

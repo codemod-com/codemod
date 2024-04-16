@@ -1,13 +1,13 @@
-import Tooltip from "~/components/Tooltip/Tooltip";
-import { Button } from "~/components/ui/button";
-import { ExampleIcon } from "~/icons/Example";
+import Tooltip from "@studio/components/Tooltip/Tooltip";
+import { Button } from "@studio/components/ui/button";
+import { ExampleIcon } from "@studio/icons/Example";
 import {
 	AFTER_SNIPPET_DEFAULT_CODE,
 	BEFORE_SNIPPET_DEFAULT_CODE,
 	buildDefaultCodemodSource,
-} from "~/store/getInitialState";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+} from "@studio/store/getInitialState";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 const InsertExampleButton = () => {
 	const { engine, setInput, setOutput } = useSnippetStore();

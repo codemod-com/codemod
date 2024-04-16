@@ -1,8 +1,8 @@
 import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
+import type { monaco } from "@studio/customMonaco";
+import { useTheme } from "@studio/main/themeContext";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { forwardRef, useRef, useState } from "react";
-import type { monaco } from "~/customMonaco";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useTheme } from "studio/main/themeContext";
 import configure from "./configure";
 import { useEditor } from "./hook";
 

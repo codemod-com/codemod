@@ -3,7 +3,7 @@ import {
 	Sun as SunIcon,
 	Warning as WarningIcon,
 } from "@phosphor-icons/react";
-import { Label } from "~/components/ui/label";
+import { Label } from "@studio/components/ui/label";
 import EngineSelector from "./ModelSelector";
 
 const WELCOME_SCREEN_ITEMS = [

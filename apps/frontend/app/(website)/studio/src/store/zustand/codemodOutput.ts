@@ -1,11 +1,11 @@
 import { isFile } from "@babel/types";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import type { TreeNode } from "@studio/types/tree";
+import { parseSnippet } from "@studio/utils/babelParser";
+import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+import { buildRanges } from "@studio/utils/tree";
+import type { RangeCommand } from "@studio/utils/tree";
 import create from "zustand";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import type { TreeNode } from "~/types/tree";
-import { parseSnippet } from "~/utils/babelParser";
-import mapBabelASTToRenderableTree from "~/utils/mappers";
-import { buildRanges } from "~/utils/tree";
-import type { RangeCommand } from "~/utils/tree";
 
 type CodemodOutputState = {
 	content: string | null;

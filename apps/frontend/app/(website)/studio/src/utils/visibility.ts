@@ -1,5 +1,5 @@
-import type { VisibilityOptions } from "~/types/options";
-import { isNil } from "~/utils/isNil";
+import type { VisibilityOptions } from "@studio/types/options";
+import { isNil } from "@studio/utils/isNil";
 
 export const isVisible = (
 	visibility?:

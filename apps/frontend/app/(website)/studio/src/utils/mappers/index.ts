@@ -1,5 +1,5 @@
 import type { Node } from "@babel/types";
-import type { TreeNode } from "~/components/Tree";
+import type { TreeNode } from "@studio/components/Tree";
 
 const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
 	const { type } = babelAstNode;

@@ -1,15 +1,13 @@
+import ChevronRightSVG from "@/assets/icons/chevronright.svg";
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-// import toast from "react-hot-toast";
-import { PanelGroup } from "react-resizable-panels";
-import getAccessToken from "~/api/getAccessToken";
-import { getCodeDiff } from "~/api/getCodeDiff";
-import Panel from "~/components/Panel";
-import InsertExampleButton from "~/components/button/InsertExampleButton";
-import Chat from "~/components/chatbot/Chat";
+import getAccessToken from "@studio/api/getAccessToken";
+import { getCodeDiff } from "@studio/api/getCodeDiff";
+import Panel from "@studio/components/Panel";
+import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
+import Text from "@studio/components/Text";
+import InsertExampleButton from "@studio/components/button/InsertExampleButton";
+import Chat from "@studio/components/chatbot/Chat";
 import {
 	AlertDialog,
 	AlertDialogAction,
@@ -18,43 +16,49 @@ import {
 	AlertDialogFooter,
 	AlertDialogHeader,
 	AlertDialogTitle,
-} from "~/components/ui/alert-dialog";
-import { Button } from "~/components/ui/button";
+} from "@studio/components/ui/alert-dialog";
+import { Button } from "@studio/components/ui/button";
 import {
 	Select,
 	SelectContent,
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "~/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-// import { useExecutionStatus } from "~/hooks/useExecutionStatus";
-import { UserIcon } from "~/icons/User";
-import { cn } from "~/lib/utils";
+} from "@studio/components/ui/select";
 import {
-	AstSection,
-	BoundResizePanel,
-	type PanelData,
-	type PanelsRefs,
-	ResizablePanelsIndices,
-	ShowPanelTile,
-	CodeSnippets,
-} from "./PageBottomPane";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { TabNames, useViewStore } from "~/store/zustand/view";
-import { openLink } from "~/utils/openLink";
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@studio/components/ui/tabs";
+import { UserIcon } from "@studio/icons/User";
+import { cn } from "@studio/lib/utils";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { TabNames, useViewStore } from "@studio/store/zustand/view";
+import { openLink } from "@studio/utils/openLink";
+import Image from "next/image";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+// import toast from "react-hot-toast";
+import { PanelGroup } from "react-resizable-panels";
 import themeConfig from "../../../../tailwind.config";
-import ChevronRightSVG from "@/assets/icons/chevronright.svg";
-import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import Text from "~/components/Text";
 import Codemod from "./Codemod";
 import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
-import { useTheme } from "./themeContext";
+import {
+	AstSection,
+	BoundResizePanel,
+	CodeSnippets,
+	type PanelData,
+	type PanelsRefs,
+	ResizablePanelsIndices,
+	ShowPanelTile,
+} from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
+import { useTheme } from "./themeContext";
 
 const enginesConfig: Array<{
 	label: string;

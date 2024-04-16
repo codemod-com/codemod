@@ -1,8 +1,8 @@
 import { useAuth } from "@clerk/clerk-react";
-import { useEffect, useState } from "react";
 import getExecutionStatus, {
 	type GetExecutionStatusResponse,
-} from "~/api/getExecutionStatus";
+} from "@studio/api/getExecutionStatus";
+import { useEffect, useState } from "react";
 
 export const useExecutionStatus = (
 	executionId: string,

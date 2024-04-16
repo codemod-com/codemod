@@ -1,11 +1,4 @@
-import {
-	type MouseEventHandler,
-	memo,
-	useCallback,
-	useMemo,
-	useState,
-} from "react";
-import { Label } from "~/components/ui/label";
+import { Label } from "@studio/components/ui/label";
 import {
 	Table as ShadCNTable,
 	TableRow as ShadCNTableRow,
@@ -13,15 +6,22 @@ import {
 	TableCell,
 	TableHead,
 	TableHeader,
-} from "~/components/ui/table";
-import { cn } from "~/lib/utils";
-import type { Event } from "~/schemata/eventSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useSetActiveEventThunk } from "~/store/useSetActiveEventThunk";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+} from "@studio/components/ui/table";
+import { cn } from "@studio/lib/utils";
+import type { Event } from "@studio/schemata/eventSchemata";
+import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
+import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
+import { useLogStore } from "@studio/store/zustand/log";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import {
+	type MouseEventHandler,
+	memo,
+	useCallback,
+	useMemo,
+	useState,
+} from "react";
 
 type TableRow = Readonly<{
 	index: number;

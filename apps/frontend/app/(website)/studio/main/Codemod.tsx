@@ -1,13 +1,13 @@
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
+import { useSelectActiveEvent } from "@studio/store/zustand/log";
+import { useModStore } from "@studio/store/zustand/mod";
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useSelectActiveEvent } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
 import { prettify } from "../src/utils/prettify";
 
-const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
+const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
 	ssr: false,
 });

@@ -1,13 +1,13 @@
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { useRanges } from "@studio/store/useRanges";
+import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { prettify } from "@studio/utils/prettify";
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRanges } from "~/store/useRanges";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { prettify } from "~/utils/prettify";
-import { SnippetType } from "./PageBottomPane";
+import type { SnippetType } from "./PageBottomPane";
 
-const CodeSnippet = dynamic(() => import("~/components/Snippet"), {
+const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
 	loading: () => <p>Loading...</p>,
 	ssr: false,
 });

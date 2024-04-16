@@ -1,4 +1,4 @@
-import type { Void } from "~/types/transformations";
+import type { Void } from "@studio/types/transformations";
 
 export type VisibilityOptions = {
 	toggleVisibility: Void;

@@ -1,6 +1,6 @@
-import { useCodemodExecutionError } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useCodemodExecutionError } from "@studio/store/zustand/log";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 export type AliasName =
 	| "$CODEMOD"

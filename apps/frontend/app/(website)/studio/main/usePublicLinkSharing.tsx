@@ -1,7 +1,7 @@
+import { createSharedLink } from "@studio/actions/createSharedLink";
+import { useShareLink } from "@studio/hooks/useShareLink";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
-import { createSharedLink } from "~/actions/createSharedLink";
-import { useShareLink } from "~/hooks/useShareLink";
 
 export const usePublicLinkSharing = () => {
 	const { getURL } = useShareLink();

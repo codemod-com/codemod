@@ -1,5 +1,5 @@
+import type { TreeNode } from "@studio/components/Tree";
 import type React from "react";
-import type { TreeNode } from "~/components/Tree";
 
 const useScrollNodeIntoView = () => {
 	const scrollIntoView = async (

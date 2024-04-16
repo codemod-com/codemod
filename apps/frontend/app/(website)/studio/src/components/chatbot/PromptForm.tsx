@@ -2,13 +2,13 @@ import {
 	ArrowElbowDownLeft as ArrowElbowDownLeftIcon,
 	Trash as TrashIcon,
 } from "@phosphor-icons/react";
+import Tooltip from "@studio/components/Tooltip/Tooltip";
+import { Button, buttonVariants } from "@studio/components/ui/button";
+import { useEnterSubmit } from "@studio/hooks/useEnterSubmit";
+import { cn } from "@studio/lib/utils";
 import type { UseChatHelpers } from "ai/react";
 import * as React from "react";
 import Textarea from "react-textarea-autosize";
-import Tooltip from "~/components/Tooltip/Tooltip";
-import { Button, buttonVariants } from "~/components/ui/button";
-import { useEnterSubmit } from "~/hooks/useEnterSubmit";
-import { cn } from "~/lib/utils";
 
 export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
 	onSubmit: (value: string) => Promise<void>;

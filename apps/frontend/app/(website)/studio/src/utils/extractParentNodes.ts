@@ -1,4 +1,4 @@
-import type { TreeNode } from "~/components/Tree";
+import type { TreeNode } from "@studio/components/Tree";
 
 function extractParentNodes(tree: TreeNode, targetNode: TreeNode): TreeNode[] {
 	const { children = [], ...rest } = tree;

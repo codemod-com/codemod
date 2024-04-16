@@ -2,13 +2,13 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
 import { Check as CheckIcon, Copy as CopyIcon } from "@phosphor-icons/react";
+import { Button } from "@studio/components/ui/button";
+import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
+import { cn } from "@studio/lib/utils";
+import { useTheme } from "@studio/main/themeContext";
 import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { Button } from "~/components/ui/button";
-import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
-import { cn } from "~/lib/utils";
-import { useTheme } from "studio/main/themeContext";
 
 interface Props {
 	language: string;

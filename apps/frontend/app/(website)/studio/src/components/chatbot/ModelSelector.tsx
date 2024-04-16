@@ -4,10 +4,10 @@ import {
 	SelectItem,
 	SelectTrigger,
 	SelectValue,
-} from "~/components/ui/select";
-import { cn } from "~/lib/utils";
-import { useCFSStore } from "~/store/zustand/CFS";
-import { useTheme } from "studio/main/themeContext";
+} from "@studio/components/ui/select";
+import { cn } from "@studio/lib/utils";
+import { useTheme } from "@studio/main/themeContext";
+import { useCFSStore } from "@studio/store/zustand/CFS";
 import { type Engine, LLM_ENGINES } from "../../store/zustand/CFS";
 
 const EngineSelector = () => {

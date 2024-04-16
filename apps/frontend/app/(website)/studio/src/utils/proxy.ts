@@ -1,8 +1,8 @@
 import { type Node, isNode } from "@babel/types";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { ASTNode } from "ast-types";
 import type { ASTPath, Collection, JSCodeshift } from "jscodeshift";
 import { print } from "recast";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import type { EventManager } from "./eventManager";
 import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 

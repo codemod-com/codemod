@@ -1,16 +1,25 @@
 import { useAuth, useSession } from "@clerk/nextjs";
+import sendMessage from "@studio/api/sendMessage";
+import { Button } from "@studio/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogTrigger,
+} from "@studio/components/ui/dialog";
+import {
+	Tabs,
+	TabsContent,
+	TabsList,
+	TabsTrigger,
+} from "@studio/components/ui/tabs";
+import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
+import { DownloadIcon } from "@studio/icons/Download";
+import { cn } from "@studio/lib/utils";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { downloadProject } from "@studio/utils/download";
 import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
-import sendMessage from "~/api/sendMessage";
-import { Button } from "~/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "~/components/ui/dialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useCopyToClipboard } from "~/hooks/useCopyToClipboard";
-import { DownloadIcon } from "~/icons/Download";
-import { cn } from "~/lib/utils";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { downloadProject } from "~/utils/download";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 

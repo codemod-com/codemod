@@ -1,8 +1,8 @@
 "use client";
 
+import { MainPage } from "@studio/pageComponents";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
-import { MainPage } from "~/pageComponents";
 
 export default function Page() {
 	return (

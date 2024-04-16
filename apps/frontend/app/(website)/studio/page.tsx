@@ -1,11 +1,11 @@
 "use client";
 
-import UserAuthStorage from "~/auth/AuthStorage";
-import { Label } from "~/components/ui/label";
+import AuthProvider from "@studio/auth/AuthProvider";
+import UserAuthStorage from "@studio/auth/AuthStorage";
+import { Label } from "@studio/components/ui/label";
+import { ThemeProvider } from "@studio/main/themeContext";
 import New5PaneSetup from "./main/5PaneSetup";
 import { useInputs } from "./main/useInputs";
-import AuthProvider from "~/auth/AuthProvider";
-import { ThemeProvider } from "studio/main/themeContext";
 
 const MainPageContent = () => {
 	const isMobile =
@@ -36,7 +36,7 @@ const MainPageContent = () => {
 					playsInline
 				>
 					<source
-						src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-studio/codemod-studio-quickstart.mp4"
+						src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-@studio/codemod-studio-quickstart.mp4"
 						type="video/mp4"
 					/>
 					Your browser does not support the video tag.
@@ -55,6 +55,6 @@ export default () => (
 				<UserAuthStorage />
 				<MainPageContent />
 			</ThemeProvider>
-	</AuthProvider>
+		</AuthProvider>
 	</>
 );

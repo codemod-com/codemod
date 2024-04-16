@@ -1,4 +1,4 @@
-import type { Event } from "~/schemata/eventSchemata";
+import type { Event } from "@studio/schemata/eventSchemata";
 
 export class EventManager {
 	private __events: Event[] = [];

@@ -1,8 +1,8 @@
 import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
+import type { monaco } from "@studio/customMonaco";
+import { useTheme } from "@studio/main/themeContext";
+import type { VisibilityOptions } from "@studio/types/options";
 import { useRef, useState } from "react";
-import type { monaco } from "~/customMonaco";
-import type { VisibilityOptions } from "~/types/options";
-import { useTheme } from "studio/main/themeContext";
 import { type EditorProps, useEditor } from "./hook";
 
 type CustomProps = {

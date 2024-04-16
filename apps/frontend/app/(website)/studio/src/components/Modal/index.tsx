@@ -1,5 +1,5 @@
+import { cn } from "@studio/lib/utils";
 import type { FC, ReactNode } from "react";
-import { cn } from "~/lib/utils";
 
 type ModalProps = Readonly<{
 	children?: ReactNode;

@@ -1,5 +1,5 @@
-import { useSnippetStore } from "~/store/zustand/snippets";
-import type { RangeCommand } from "~/utils/tree";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import type { RangeCommand } from "@studio/utils/tree";
 
 export const useExecuteRangeCommandOnBeforeInput = () => {
 	const { setInputSelection } = useSnippetStore();

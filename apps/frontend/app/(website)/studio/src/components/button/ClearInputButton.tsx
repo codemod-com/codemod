@@ -1,9 +1,9 @@
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
-import Tooltip from "~/components/Tooltip/Tooltip";
-import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import Tooltip from "@studio/components/Tooltip/Tooltip";
+import { Button } from "@studio/components/ui/button";
+import { cn } from "@studio/lib/utils";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 type Props = { className?: string };
 

@@ -1,5 +1,6 @@
-@import '~/components/Panel/panel.css';
-@import '~/components/button/button.css';
+@config "./tailwind.studio.config.js";
+@import '@studio/components/Panel/panel.css';
+@import '@studio/components/button/button.css';
 @import 'react-tooltip/dist/react-tooltip.css';
 @import 'reactjs-popup/dist/index.css';
 

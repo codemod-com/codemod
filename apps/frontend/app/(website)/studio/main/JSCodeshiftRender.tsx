@@ -1,3 +1,13 @@
+import { useWebWorker } from "@studio/hooks/useWebWorker";
+import { cn } from "@studio/lib/utils";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
+import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
+import { useLogStore } from "@studio/store/zustand/log";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { TabNames, useViewStore } from "@studio/store/zustand/view";
 import dynamic from "next/dynamic";
 import {
 	type PropsWithChildren,
@@ -12,20 +22,10 @@ import {
 	SnippetHeader,
 	type SnippetType,
 } from "./PageBottomPane";
-import { useWebWorker } from "~/hooks/useWebWorker";
-import { cn } from "~/lib/utils";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "~/store/useRangesOnTarget";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import { useLogStore } from "~/store/zustand/log";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
-import { TabNames, useViewStore } from "~/store/zustand/view";
 import { useSnippet } from "./SnippetUI";
-import { useSetActiveEventThunk } from "~/store/useSetActiveEventThunk";
 
 const MonacoDiffEditor = dynamic(
-	() => import("~/components/Snippet/MonacoDiffEditor"),
+	() => import("@studio/components/Snippet/MonacoDiffEditor"),
 	{
 		loading: () => <p>Loading...</p>,
 		ssr: false,

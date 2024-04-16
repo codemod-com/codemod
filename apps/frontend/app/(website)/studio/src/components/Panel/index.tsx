@@ -1,10 +1,10 @@
+import { cn } from "@studio/lib/utils";
 import { type ReactNode, forwardRef } from "react";
 import {
 	type ImperativePanelHandle,
 	type PanelProps,
 	Panel as RResizablePanel,
 } from "react-resizable-panels";
-import { cn } from "~/lib/utils";
 import { PanelHeader, PanelTab, PanelTitle } from "./PanelHeader";
 
 type Props = {

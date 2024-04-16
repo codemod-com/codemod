@@ -1,7 +1,7 @@
 import type { HeaderProps } from "../utils/types";
 
-import Pane from "~/components/Panel";
-import { VisibilityIcon } from "~/icons/VisibilityIcon";
+import Pane from "@studio/components/Panel";
+import { VisibilityIcon } from "@studio/icons/VisibilityIcon";
 
 export const SnippetHeader = ({
 	isCollapsed = false,

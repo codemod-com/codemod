@@ -34,9 +34,13 @@ export default async function Layout({
 }) {
 	const globalData = await loadGlobalData(GLOBAL_QUERY);
 
-	globalData.data.navigation.navigationItems.push(
-		{_type: 'link', href: '/studio', label: 'Studio', _key: 'studio'})
-	console.log({globalData})
+	globalData.data.navigation.navigationItems.push({
+		_type: "link",
+		href: "/studio",
+		label: "Studio",
+		_key: "studio",
+	});
+
 	return (
 		<>
 			{draftMode().isEnabled ? (

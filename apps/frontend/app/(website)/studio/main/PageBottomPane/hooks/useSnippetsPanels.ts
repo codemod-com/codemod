@@ -1,12 +1,9 @@
+import { useToggleVisibility } from "@studio/hooks/useToggleVisibility";
+import { useCodeDiff } from "@studio/main/JSCodeshiftRender";
+import { type PanelsRefs, panelsData } from "@studio/main/PageBottomPane";
+import { WarningTexts } from "@studio/main/PageBottomPane/Components/WarningTexts";
+import { inferVisibilities } from "@studio/main/PageBottomPane/utils/inferVisibilites";
 import { useEffect } from "react";
-import { useToggleVisibility } from "~/hooks/useToggleVisibility";
-import { useCodeDiff } from "studio/main/JSCodeshiftRender";
-import {
-	type PanelsRefs,
-	panelsData,
-} from "studio/main/PageBottomPane";
-import { WarningTexts } from "studio/main/PageBottomPane/Components/WarningTexts";
-import { inferVisibilities } from "studio/main/PageBottomPane/utils/inferVisibilites";
 
 export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
 	const { beforePanel, afterPanel, outputPanel } = panelsData;

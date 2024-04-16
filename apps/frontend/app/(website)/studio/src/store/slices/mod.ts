@@ -1,7 +1,7 @@
 // import { isFile } from "@babel/types";
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-// import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
-// import { INITIAL_STATE } from "~/store/getInitialState";
+// import { type OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+// import { INITIAL_STATE } from "@studio/store/getInitialState";
 // import { type TreeNode } from "../../types/tree";
 // import { parseSnippet } from "../../utils/babelParser";
 // import mapBabelASTToRenderableTree from "../../utils/mappers";

@@ -1,6 +1,6 @@
 import type { Node } from "@babel/types";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import type { TreeNode } from "~/components/Tree";
+import type { TreeNode } from "@studio/components/Tree";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 
 export type RangeCommand =

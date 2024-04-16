@@ -1,16 +1,16 @@
+import Text from "@studio/components/Text";
+import Tree, { type TreeNode } from "@studio/components/Tree";
+import useScrollNodeIntoView from "@studio/hooks/useScrollNodeIntoView";
 import { useCallback, useEffect, useRef } from "react";
-import Text from "~/components/Text";
-import Tree, { type TreeNode } from "~/components/Tree";
-import useScrollNodeIntoView from "~/hooks/useScrollNodeIntoView";
 
-import type { SnippetType } from "studio/main/PageBottomPane";
-import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
+import type { SnippetType } from "@studio/main/PageBottomPane";
+import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import {
 	useSelectFirstTreeNode,
 	useSelectSnippetsFor,
 	useSnippetStore,
-} from "~/store/zustand/snippets";
+} from "@studio/store/zustand/snippets";
 
 type Props = {
 	type: "before" | "after" | "output";

@@ -103,7 +103,7 @@
     font-family: "inconsolata", monospace;
   }
   .inline-code {
-    /*@apply rounded-[4px] border-emphasis-dark bg-background-dark/10  box-decoration-clone px-[4px] py-0 text-codeMobile  leading-6 lg:text-code dark:border dark:bg-emphasis-dark/10;*/
+    @apply rounded-[4px] border-emphasis-dark bg-background-dark/10  box-decoration-clone px-[4px] py-0 text-codeMobile  leading-6 lg:text-code dark:border dark:bg-emphasis-dark/10;
     font-family: "inconsolata", monospace;
   }
 }
@@ -116,12 +116,12 @@ html {
     background-color 0.01s ease-out,
     color 0.01s ease-out;
 
-  /*@apply bg-primary-dark text-primary-light dark:bg-primary-light dark:text-primary-dark;*/
+  @apply bg-primary-dark text-primary-light dark:bg-primary-light dark:text-primary-dark;
 }
 
 body {
   font-family: var(--satoshi-regular);
-  /*@apply selection:bg-accent selection:text-primary-light;*/
+  @apply selection:bg-accent selection:text-primary-light;
 }
 
 ol,

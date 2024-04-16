@@ -6,7 +6,7 @@ import tsmorph from "./dts/ts-morph.txt?raw";
 
 export const applyExtraLibs = (m: Monaco) => {
 	// generate bundled d.ts content with:
-	// dts-bundle --name ast-types --main node_modules/ast-types/main.d.ts --out /intuita/studio/src/components/Snippet/dts/ast-types.txt
+	// dts-bundle --name ast-types --main node_modules/ast-types/main.d.ts --out /intuita/@studio/src/components/Snippet/dts/ast-types.txt
 
 	m.languages.typescript.typescriptDefaults.addExtraLib(
 		ASTTypes,

@@ -1,16 +1,16 @@
 import type { KnownEngines } from "@codemod-com/utilities";
+import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
+import { isServer } from "@studio/config";
+import { VisibilityIcon } from "@studio/icons/VisibilityIcon";
+import { cn } from "@studio/lib/utils";
+import type { Void } from "@studio/types/transformations";
+import { debounce } from "@studio/utils/debounce";
+import { isNil } from "@studio/utils/isNil";
+import { isVisible } from "@studio/utils/visibility";
 import type React from "react";
 import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
-import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import { isServer } from "~/config";
-import { VisibilityIcon } from "~/icons/VisibilityIcon";
-import { cn } from "~/lib/utils";
 import ASTViewer from "../../ASTViewer";
-import type { Void } from "~/types/transformations";
-import { debounce } from "~/utils/debounce";
-import { isNil } from "~/utils/isNil";
-import { isVisible } from "~/utils/visibility";
 import Layout from "../../Layout";
 import type {
 	ContentViewerProps,

@@ -1,11 +1,11 @@
 import type { KnownEngines } from "@codemod-com/utilities";
-import ASTViewer from "studio/main/ASTViewer";
+import ASTViewer from "@studio/main/ASTViewer";
 import {
 	type ContentViewerVariant,
 	type PanelData,
 	ResizablePanelsIndices,
-} from "studio/main/PageBottomPane/utils/types";
-import type { Repeat } from "~/types/transformations";
+} from "@studio/main/PageBottomPane/utils/types";
+import type { Repeat } from "@studio/types/transformations";
 
 export const getContent =
 	(type: ContentViewerVariant) => (engine: KnownEngines) =>

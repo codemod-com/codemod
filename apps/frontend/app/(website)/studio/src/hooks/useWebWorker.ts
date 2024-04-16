@@ -1,10 +1,10 @@
 import type { KnownEngines } from "@codemod-com/utilities";
-import { useCallback, useEffect, useRef, useState } from "react";
-import type { Event } from "~/schemata/eventSchemata";
+import type { Event } from "@studio/schemata/eventSchemata";
 import {
 	type WebWorkerIncomingMessage,
 	parseWebWorkerOutgoingMessage,
-} from "~/schemata/webWorkersSchemata";
+} from "@studio/schemata/webWorkersSchemata";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 type State =
 	| {

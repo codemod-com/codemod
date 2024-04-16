@@ -1,10 +1,10 @@
 import type { KnownEngines } from "@codemod-com/utilities";
+import type { State } from "@studio/schemata/stateSchemata";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useEffect } from "react";
-import type { State } from "~/schemata/stateSchemata";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 export const useInputs = () => {
 	const {

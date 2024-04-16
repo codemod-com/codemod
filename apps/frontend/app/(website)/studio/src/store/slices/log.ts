@@ -1,8 +1,8 @@
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-// import type { Event } from "~/schemata/eventSchemata";
+// import type { Event } from "@studio/schemata/eventSchemata";
 // import type { RootState } from "../index";
 // import { TabNames, selectActiveTab } from "./view";
-// import { useViewStore } from "~/store/zustand/view";
+// import { useViewStore } from "@studio/store/zustand/view";
 //
 // export const SLICE_KEY = "log";
 //

@@ -1,10 +1,10 @@
 // import { isFile } from "@babel/types";
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
-// import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-// import type { RootState } from "~/store";
-// import { parseSnippet } from "~/utils/babelParser";
-// import mapBabelASTToRenderableTree from "~/utils/mappers";
-// import { type RangeCommand, buildRanges } from "~/utils/tree";
+// import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+// import type { RootState } from "@studio/store";
+// import { parseSnippet } from "@studio/utils/babelParser";
+// import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+// import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 // import type { TreeNode } from "../../types/tree";
 //
 // type CodemodOutputState = Readonly<{

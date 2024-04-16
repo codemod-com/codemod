@@ -1,5 +1,5 @@
 import type { Monaco } from "@monaco-editor/react";
-import type { monaco } from "~/customMonaco";
+import type { monaco } from "@studio/customMonaco";
 import { applyExtraLibs } from "./extraLibs";
 import registerPromptLang, {
 	LANG_ID as PROMPT_LANG_ID,

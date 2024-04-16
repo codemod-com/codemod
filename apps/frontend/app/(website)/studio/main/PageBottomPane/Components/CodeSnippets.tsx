@@ -1,17 +1,14 @@
+import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
+import { cn } from "@studio/lib/utils";
+import { isVisible } from "@studio/utils/visibility";
 import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
-import ResizeHandle from "~/components/ResizePanel/ResizeHandler";
-import { cn } from "~/lib/utils";
+import type { PanelData, PanelsRefs } from "../";
 import CodeSnippedPanel, {
 	DiffEditorWrapper,
 	type useCodeDiff,
 } from "../../JSCodeshiftRender";
-import type {
-	PanelData,
-	PanelsRefs,
-} from "../";
 import SnippetUI from "../../SnippetUI";
-import { isVisible } from "~/utils/visibility";
 
 type CodeSnippetsProps = {
 	panels: PanelData[];

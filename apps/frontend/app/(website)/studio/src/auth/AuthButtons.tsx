@@ -6,9 +6,9 @@ import {
 	useUser,
 } from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
+import { Button } from "@studio/components/ui/button";
+import { LogoutIcon } from "@studio/icons/LogoutIcon";
 import { useRouter } from "next/navigation";
-import { Button } from "~/components/ui/button";
-import { LogoutIcon } from "~/icons/LogoutIcon";
 
 const AuthButtons = () => {
 	const router = useRouter();

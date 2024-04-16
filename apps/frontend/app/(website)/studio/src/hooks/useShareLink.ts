@@ -1,12 +1,12 @@
 import { useAuth } from "@clerk/nextjs";
-import { deflate } from "pako";
 // import { encode } from "universal-base64url";
-import sendMessage from "~/api/sendMessage";
-// import type { ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
-import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
-import { generateCodemodNamePrompt } from "~/store/zustand/CFS/prompts";
-import { useModStore } from "~/store/zustand/mod";
-import { useSnippetStore } from "~/store/zustand/snippets";
+import sendMessage from "@studio/api/sendMessage";
+// import type { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { generateCodemodNamePrompt } from "@studio/store/zustand/CFS/prompts";
+import { useModStore } from "@studio/store/zustand/mod";
+import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { deflate } from "pako";
 
 export const useShareLink = () => {
 	const { engine, inputSnippet, outputSnippet } = useSnippetStore();
@@ -87,7 +87,7 @@ export const useShareLink = () => {
 				b: inputSnippet,
 				a: outputSnippet,
 				c: internalContent ?? "",
-			} )//satisfies ShareableCodemod);
+			}); //satisfies ShareableCodemod);
 
 			const uint8array = deflate(input, { level: 9 });
 

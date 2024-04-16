@@ -1,7 +1,7 @@
+import { Separator } from "@studio/components/ui/separator";
+import { cn } from "@studio/lib/utils";
 import type { Message } from "ai";
 import { memo } from "react";
-import { Separator } from "~/components/ui/separator";
-import { cn } from "~/lib/utils";
 import ChatMessage from "./ChatMessage";
 
 interface Props {

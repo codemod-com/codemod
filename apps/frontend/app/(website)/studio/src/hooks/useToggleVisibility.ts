@@ -1,5 +1,5 @@
+import type { VisibilityOptions } from "@studio/types/options";
 import { useState } from "react";
-import type { VisibilityOptions } from "~/types/options";
 
 export const useToggleVisibility = (initialValue = true): VisibilityOptions => {
 	const [isVisible, setIsVisible] = useState(initialValue);

@@ -1,22 +1,22 @@
-import { useAuth } from "@clerk/nextjs";
-import { useChat } from "ai/react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { flushSync } from "react-dom";
-import toast from "react-hot-toast";
-import { SEND_CHAT } from "~/constants/apiEndpoints";
 import { env } from "@/env";
-import { cn } from "~/lib/utils";
+import { useAuth } from "@clerk/nextjs";
+import { SEND_CHAT } from "@studio/constants/apiEndpoints";
+import { cn } from "@studio/lib/utils";
 import {
 	freezeMessage,
 	parseFrozenMessages,
 	unfreezeMessage,
-} from "~/schemata/chatSchemata";
-import { useCodemodExecutionError } from "~/store/zustand/log";
+} from "@studio/schemata/chatSchemata";
+import { useCodemodExecutionError } from "@studio/store/zustand/log";
+import { useChat } from "ai/react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { flushSync } from "react-dom";
+import toast from "react-hot-toast";
 
-import { useCFSStore } from "~/store/zustand/CFS";
-import { applyAliases, useGetAliases } from "~/store/zustand/CFS/alias";
-import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
-import { useModStore } from "~/store/zustand/mod";
+import { useCFSStore } from "@studio/store/zustand/CFS";
+import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
+import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
+import { useModStore } from "@studio/store/zustand/mod";
 import ChatList from "./ChatList";
 import { ChatPanel } from "./ChatPanel";
 import ChatScrollAnchor from "./ChatScrollAnchor";

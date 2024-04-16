@@ -1,6 +1,6 @@
+import { monaco } from "@studio/customMonaco";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useEffect, useRef, useState } from "react";
-import { monaco } from "~/customMonaco";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 
 type Link = {
 	regex: RegExp;

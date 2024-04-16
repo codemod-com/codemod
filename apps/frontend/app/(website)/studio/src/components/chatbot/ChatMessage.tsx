@@ -1,16 +1,16 @@
+import CompanyLogoSVG from "@/assets/icons/company_logo.svg";
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import { CaretDown, CaretRight, User as UserIcon } from "@phosphor-icons/react";
+import { Button } from "@studio/components/ui/button";
+import { cn } from "@studio/lib/utils";
+import { useTheme } from "@studio/main/themeContext";
 import type { Message } from "ai";
 import Image from "next/image";
 import { type FC, memo, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
-import { useTheme } from "studio/main/themeContext";
-import CompanyLogoSVG from "@/assets/icons/company_logo.svg";
 import CodeBlock from "./CodeBlock";
 
 const MemoizedReactMarkdown: FC<Options> = memo(

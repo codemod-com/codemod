@@ -1,14 +1,14 @@
 import { isFile } from "@babel/types";
+import { INITIAL_STATE } from "@studio/store/getInitialState";
 import create from "zustand";
-import { INITIAL_STATE } from "~/store/getInitialState";
 
 import type { KnownEngines } from "@codemod-com/utilities";
-import type { SnippetType } from "studio/main/PageBottomPane";
-import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
-import type { TreeNode } from "~/types/tree";
-import mapBabelASTToRenderableTree from "~/utils/mappers";
-import { type RangeCommand, buildRanges } from "~/utils/tree";
+import type { SnippetType } from "@studio/main/PageBottomPane";
+import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
+import type { TreeNode } from "@studio/types/tree";
+import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 import { parseSnippet } from "../../utils/babelParser";
 
 export type Token = Readonly<{

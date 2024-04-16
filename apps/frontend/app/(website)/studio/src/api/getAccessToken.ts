@@ -1,5 +1,5 @@
+import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import type { AxiosError } from "axios";
-import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
 import { BUILD_ACCESS_TOKEN } from "../constants";
 import { Either } from "../utils/Either";
 import apiClient from "./client";
