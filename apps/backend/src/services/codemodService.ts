@@ -1,4 +1,5 @@
 import {
+	type AllEngines,
 	type CodemodListResponse,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
@@ -302,65 +303,62 @@ export class CodemodService {
 				where: {
 					OR: [{ private: false }, { author: { in: allowedNamespaces } }],
 				},
-			});
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						slug: codemod.slug,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments,
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		} else {
-			const dbCodemods = await this.prisma.codemod.findMany();
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+			const dbCodemods = await this.prisma.codemod.findMany({
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						slug: codemod.slug,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments,
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		}
