@@ -37,11 +37,11 @@ export const viewport: Viewport = {
 	themeColor: "black",
 };
 
-export default async function RootLayout({
+export const StudioLayout = ({
 	children,
 }: {
 	children: React.ReactNode;
-}) {
+}) => {
 	const nonce = headers().get("x-nonce") ?? undefined;
 
 	return (
@@ -75,4 +75,4 @@ export default async function RootLayout({
 			</AuthProvider>
 		</html>
 	);
-}
+};

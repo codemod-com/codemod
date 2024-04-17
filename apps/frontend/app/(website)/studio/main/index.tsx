@@ -50,11 +50,7 @@ const MainPageContent = () => {
 
 export const MainPage = () => (
 	<>
-		<AuthProvider>
-			<ThemeProvider>
-				<UserAuthStorage />
-				<MainPageContent />
-			</ThemeProvider>
-		</AuthProvider>
+		<UserAuthStorage />
+		<MainPageContent />
 	</>
 );
