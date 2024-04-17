@@ -116,7 +116,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 						{isCustomerStory
 							? null
 							: articleSidebar?.showToc &&
-								toc.length > 0 && (
+							  toc.length > 0 && (
 									<>
 										<TableOfContents
 											variant="sidebar"
@@ -125,7 +125,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 										/>
 										<div className="mt-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
 									</>
-								)}
+							  )}
 					</div>
 				</div>
 
@@ -170,7 +170,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 							{isCustomerStory
 								? null
 								: articleSidebar?.showToc &&
-									toc.length > 0 && (
+								  toc.length > 0 && (
 										<>
 											<TableOfContents
 												variant="sidebar"
@@ -179,7 +179,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 											/>
 											<div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
 										</>
-									)}
+								  )}
 
 							{isCustomerStory && customerStorySidebar?.articleCta && (
 								<div className="">

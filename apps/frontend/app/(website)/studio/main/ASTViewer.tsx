@@ -32,8 +32,8 @@ const ASTViewer = ({ type }: Props) => {
 		type === "before"
 			? executeRangeCommandOnBeforeInputThunk
 			: type === "after"
-				? setOutputSelection
-				: setSelections;
+			  ? setOutputSelection
+			  : setSelections;
 
 	const scrollNodeIntoView = useScrollNodeIntoView();
 

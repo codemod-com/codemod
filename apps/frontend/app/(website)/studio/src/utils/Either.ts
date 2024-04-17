@@ -55,7 +55,7 @@ export class Either<L, R> {
 					? errorMessage
 					: `An error has ocurred retrieving value: ${JSON.stringify(
 							this.value,
-						)}`,
+					  )}`,
 			);
 		};
 

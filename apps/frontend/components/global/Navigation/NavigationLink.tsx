@@ -62,7 +62,7 @@ export default function NavigationLink(
 									!props.textStyle || props.textStyle === "default",
 								"body-m-medium": props.textStyle === "medium",
 								"body-l-medium": props.textStyle === "large",
-							},
+						  },
 				)}
 				{...spreadProps}
 			>
