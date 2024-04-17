@@ -104,7 +104,7 @@ function ArrayInput({ members, ...props }: any) {
 					!member?.item?.value?.destination ||
 					member?.item?.value?.source?.includes(search) ||
 					member?.item?.value?.destination?.includes(search),
-		  );
+			);
 	return (
 		<div style={{ display: "grid", gap: 8 }}>
 			<TextInput

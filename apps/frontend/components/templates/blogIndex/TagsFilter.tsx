@@ -40,7 +40,7 @@ export default function TagsFilter({
 					: {
 							value: tag.slug.current,
 							label: tag.title,
-					  },
+						},
 			)
 			.filter(Boolean) as Array<FilterOption>),
 	];

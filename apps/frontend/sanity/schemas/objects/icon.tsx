@@ -69,7 +69,7 @@ function CustomSelect(props: any) {
 	const icons = search
 		? Object.values(Icons).map((icon) =>
 				icon.toLowerCase().includes(search.toLowerCase()) ? icon : null,
-		  )
+			)
 		: Object.values(Icons).map((icon) => icon);
 	const { elementProps, onChange, value = "" } = props;
 

@@ -56,7 +56,7 @@ export default function definePage(schema: PageDefinition) {
 							...publishStatusField,
 							group: "settings",
 						},
-				  ]),
+					]),
 			{
 				...seoField,
 				hidden: schema.options?.hideSeo,

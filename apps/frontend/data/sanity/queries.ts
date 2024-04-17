@@ -253,14 +253,14 @@ export function buildBlogIndexQuery({
 		isCustomerStory
 			? null
 			: tag
-			  ? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
-			  : null,
+				? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
+				: null,
 		// featured posts filter
 		isCustomerStory
 			? `!(_id in ^.featuredCustomerStories[]->_id )`
 			: tag
-			  ? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
-			  : `!(_id in ^.featuredPosts[]->_id )`,
+				? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
+				: `!(_id in ^.featuredPosts[]->_id )`,
 	];
 	const filtersString = filters.filter(Boolean).join(" && ");
 	const orderFragment = `order(${sortBy ?? "_createdAt"} ${
@@ -272,10 +272,10 @@ export function buildBlogIndexQuery({
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
 		: tag
-		  ? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
+			? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
-		  : `featuredPosts[]-> {
+			: `featuredPosts[]-> {
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`;
 

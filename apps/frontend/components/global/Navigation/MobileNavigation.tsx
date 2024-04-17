@@ -83,8 +83,8 @@ export function MobileDropdown({
 												isDarkMode
 													? "secondary"
 													: index === 0
-													  ? "primary"
-													  : "secondary"
+														? "primary"
+														: "secondary"
 											}
 										>
 											{item?.label}

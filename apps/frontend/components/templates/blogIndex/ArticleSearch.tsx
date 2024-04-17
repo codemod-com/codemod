@@ -33,7 +33,7 @@ const ArticleSearch = ({
 						method: "POST",
 						body: JSON.stringify({ textSearch: searchText }),
 						cache: "no-cache",
-				  }).then((res) => res.json())
+					}).then((res) => res.json())
 				: null;
 
 			setArticlesData(articles);

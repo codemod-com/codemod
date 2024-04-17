@@ -47,7 +47,7 @@ export const BoundResizePanel = ({
 					? debounce((size) => {
 							const panel = panelRefs.current[boundedIndex];
 							if (!isNil(panel) && !isNil(size)) panel.resize(size);
-					  }, 5)
+						}, 5)
 					: undefined
 			}
 		>

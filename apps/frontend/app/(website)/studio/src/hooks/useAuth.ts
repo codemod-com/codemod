@@ -1,7 +1,10 @@
 import { useAuth as useClerk } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { authUrl } from "@studio/config";
-import { PendingAction, useUserSession } from "@studio/store/zustand/userSession";
+import {
+	PendingAction,
+	useUserSession,
+} from "@studio/store/zustand/userSession";
 
 export const useAuth = () => {
 	const router = useRouter();

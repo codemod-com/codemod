@@ -38,7 +38,7 @@ export function SanityImage({
 				objectPosition: props.image?.hotspot
 					? `${props.image?.hotspot.x * 100}% ${props.image?.hotspot.y * 100}%`
 					: undefined,
-		  }
+			}
 		: {};
 	const style = { ...hotspotStyle, ...imageProps.style, ...elProps.style };
 

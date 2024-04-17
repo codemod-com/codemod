@@ -69,7 +69,7 @@ export type CollectionRouteData<
 		? {
 				pageNum?: number;
 				entriesPerPage?: number;
-		  }
+			}
 		: {}) &
 		(Options["filterable"] extends true
 			? CollectionFilteredData<Options["CurrentFilterDocData"]>
