@@ -5,10 +5,10 @@
 	"license": "Apache License, Version 2.0",
 	"description": "A monorepo for all the interconnected tools of codemod.com",
 	"private": true,
-	"packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019",
+	"packageManager": "pnpm@9.0.2+sha256.d6fc013639b81658ff175829ebb9435bcb89eff206769e460fd3ae27c2054df6",
 	"engines": {
 		"node": ">=20.x",
-		"pnpm": ">=8.7.x"
+		"pnpm": ">=9.x"
 	},
 	"keywords": [
 		"codemod",
