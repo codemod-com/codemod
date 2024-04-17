@@ -29,10 +29,7 @@
 			"@studio/*": ["./app/(website)/studio/src/*"],
 			"tslib": ["node_modules/tslib"],
 			"ts-morph": ["node_modules/ts-morph"],
-			"@utils/*": ["./utils/*"],
-			"@studio/tailwind.config": [
-				"./app/(website)/studio/src/tailwind.studio.config.ts"
-			]
+			"@utils/*": ["./utils/*"]
 		},
 		"plugins": [{ "name": "next" }]
 	},
