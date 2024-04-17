@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import {
 	ArrowElbowDownLeft as ArrowElbowDownLeftIcon,
 	Trash as TrashIcon,
@@ -5,7 +6,6 @@ import {
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button, buttonVariants } from "@studio/components/ui/button";
 import { useEnterSubmit } from "@studio/hooks/useEnterSubmit";
-import { cn } from "@studio/lib/utils";
 import type { UseChatHelpers } from "ai/react";
 import * as React from "react";
 import Textarea from "react-textarea-autosize";

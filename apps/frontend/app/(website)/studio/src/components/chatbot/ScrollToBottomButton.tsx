@@ -1,7 +1,7 @@
+import { cn } from "@/utils";
 import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
 import { Button, type ButtonProps } from "@studio/components/ui/button";
 import { useScrollToBottomDetector } from "@studio/hooks/useScrollToBottomDetector";
-import { cn } from "@studio/lib/utils";
 
 const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
 	const scrollWindow =

@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import {
 	Select,
 	SelectContent,
@@ -5,7 +6,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@studio/components/ui/select";
-import { cn } from "@studio/lib/utils";
 import { useTheme } from "@studio/main/themeContext";
 import { useCFSStore } from "@studio/store/zustand/CFS";
 import { type Engine, LLM_ENGINES } from "../../store/zustand/CFS";

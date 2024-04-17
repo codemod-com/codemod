@@ -1,5 +1,5 @@
+import { cn } from "@/utils";
 import { useWebWorker } from "@studio/hooks/useWebWorker";
-import { cn } from "@studio/lib/utils";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
 import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";

@@ -1,10 +1,10 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
+import { cn } from "@/utils";
 import { Check as CheckIcon, Copy as CopyIcon } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
-import { cn } from "@studio/lib/utils";
 import { useTheme } from "@studio/main/themeContext";
 import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

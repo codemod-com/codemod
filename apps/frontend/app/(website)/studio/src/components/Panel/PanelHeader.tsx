@@ -1,5 +1,5 @@
+import { cn } from "@/utils";
 import Text from "@studio/components/Text";
-import { cn } from "@studio/lib/utils";
 import type { PropsWithChildren, ReactNode } from "react";
 
 type PanelHeaderProps = PropsWithChildren<{

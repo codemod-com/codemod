@@ -1,4 +1,4 @@
-import { cn } from "@studio/lib/utils";
+import { cn } from "@/utils";
 import { type ReactNode, createElement } from "react";
 
 type TextSize = "xs" | "sm" | "base" | "lg" | "xl" | "2xl" | "3xl" | "4xl";

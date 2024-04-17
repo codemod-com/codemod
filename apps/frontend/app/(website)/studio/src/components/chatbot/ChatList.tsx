@@ -1,5 +1,5 @@
+import { cn } from "@/utils";
 import { Separator } from "@studio/components/ui/separator";
-import { cn } from "@studio/lib/utils";
 import type { Message } from "ai";
 import { memo } from "react";
 import ChatMessage from "./ChatMessage";

@@ -1,8 +1,8 @@
+import { cn } from "@/utils";
 import type { KnownEngines } from "@codemod-com/utilities";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
 import { isServer } from "@studio/config";
 import { VisibilityIcon } from "@studio/icons/VisibilityIcon";
-import { cn } from "@studio/lib/utils";
 import type { Void } from "@studio/types/transformations";
 import { debounce } from "@studio/utils/debounce";
 import { isNil } from "@studio/utils/isNil";

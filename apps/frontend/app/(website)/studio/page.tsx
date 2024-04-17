@@ -1,60 +1,22 @@
 "use client";
 
-import AuthProvider from "@studio/auth/AuthProvider";
-import UserAuthStorage from "@studio/auth/AuthStorage";
-import { Label } from "@studio/components/ui/label";
-import { ThemeProvider } from "@studio/main/themeContext";
-import New5PaneSetup from "./main/5PaneSetup";
-import { useInputs } from "./main/useInputs";
+import { MainPage } from "@studio/main/index";
+import { Toaster } from "react-hot-toast";
+import { Tooltip } from "react-tooltip";
 
-const MainPageContent = () => {
-	const isMobile =
-		typeof window !== "undefined" &&
-		/iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone/i.test(
-			navigator.userAgent,
-		);
+export default function Page() {
+	return (
+		<>
+			<MainPage />
+			<Tooltip
+				className="z-50 w-40 bg-gray-light text-center text-xs text-gray-text-dark-title dark:bg-gray-lighter dark:text-gray-text-title "
+				delayHide={0}
+				delayShow={200}
+				id="button-tooltip"
+			/>
+			<Toaster />
+		</>
+	);
+}
 
-	useInputs();
-
-	if (isMobile) {
-		return (
-			<div className="flex h-[100vh] w-full flex-col items-center justify-center p-7">
-				<Label className="text-center font-light leading-5">
-					Codemod Studio is designed for desktop usage.
-				</Label>
-				<Label className="mb-5 text-center font-light leading-5">
-					Check out this brief demo video below to learn more about Codemod
-					Studio.
-				</Label>
-				<video
-					className="rounded-sm"
-					width="320"
-					height="40%"
-					autoPlay
-					muted
-					loop
-					playsInline
-				>
-					<source
-						src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-@studio/codemod-studio-quickstart.mp4"
-						type="video/mp4"
-					/>
-					Your browser does not support the video tag.
-				</video>
-			</div>
-		);
-	}
-
-	return <New5PaneSetup />;
-};
-
-export default () => (
-	<>
-		<AuthProvider>
-			<ThemeProvider>
-				<UserAuthStorage />
-				<MainPageContent />
-			</ThemeProvider>
-		</AuthProvider>
-	</>
-);
+export const dynamic = "force-dynamic";

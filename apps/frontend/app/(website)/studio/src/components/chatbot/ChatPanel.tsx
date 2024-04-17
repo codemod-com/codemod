@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import { useAuth } from "@clerk/nextjs";
 import {
 	ArrowElbowDownLeft,
@@ -6,7 +7,6 @@ import {
 	Stop as StopIcon,
 } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
-import { cn } from "@studio/lib/utils";
 import {
 	type Aliases,
 	applyAliases,
