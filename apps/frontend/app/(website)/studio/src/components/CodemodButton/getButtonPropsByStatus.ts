@@ -1,7 +1,7 @@
-import { GetExecutionStatusResponse } from "@studio/api/getExecutionStatus";
+import type { GetExecutionStatusResponse } from "@studio/api/getExecutionStatus";
 
 type Status = GetExecutionStatusResponse["status"];
-export const getButtonPropsByStatus = (status?: Status | null) => {
+export const getButtonPropsByStatus = (status: Status) => {
 	switch (status) {
 		case "done":
 		case "idle": {
