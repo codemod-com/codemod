@@ -50,7 +50,7 @@ import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import Codemod from "./Codemod";
-import Header from "./Header";
+import { Header } from "./Header/Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";

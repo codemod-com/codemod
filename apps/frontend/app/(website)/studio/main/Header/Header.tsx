@@ -1,7 +1,7 @@
 import { CodemodButton } from "@studio/components/CodemodButton";
-import { TopBar } from "@studio/pageComponents/main/Header/TopBar";
-import { HeaderButtons } from "@studio/pageComponents/main/Header/headerButtons";
 import { DownloadZip } from "../DownloadZip";
+import { TopBar } from "./TopBar";
+import { HeaderButtons } from "./headerButtons";
 
 export const Header = () => {
 	return (
