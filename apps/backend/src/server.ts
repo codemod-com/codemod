@@ -117,6 +117,11 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 		handleProcessExit(0);
 	});
 
+	fastify.addHook("onRequest", (request, reply, done) => {
+		reply.header("Access-Control-Allow-Origin", "false");
+		done();
+	});
+
 	await fastify.register(cors, {
 		origin: (origin, cb) => {
 			if (!origin) {
@@ -139,7 +144,12 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 			"x-clerk-auth-reason",
 			"x-clerk-auth-message",
 		],
-		allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
+		allowedHeaders: [
+			X_CODEMOD_ACCESS_TOKEN,
+			"Content-Type",
+			"Authorization",
+			"access-control-allow-origin",
+		],
 	} satisfies FastifyCorsOptions);
 
 	await fastify.register(fastifyRateLimit, {

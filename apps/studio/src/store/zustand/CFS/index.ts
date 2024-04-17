@@ -1,4 +1,4 @@
-import create from "zustand";
+import { create } from "zustand";
 import type { SendMessageResponse } from "~/api/sendMessage";
 import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
 import type { PromptPreset } from "./prompts";
