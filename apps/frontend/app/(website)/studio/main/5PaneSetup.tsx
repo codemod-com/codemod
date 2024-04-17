@@ -427,10 +427,6 @@ function SignInRequired() {
 		router.push("/auth/sign-in");
 	};
 
-	console.log(
-		"themeConfig.theme.extend.colors",
-		themeConfig.theme.extend.colors,
-	);
 	return (
 		<div className="grid h-full absolute top-0 bottom-0 w-full">
 			<div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />

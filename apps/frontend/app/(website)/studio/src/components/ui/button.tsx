@@ -61,7 +61,6 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			];
 		}
 
-		console.log({ variant });
 		const Comp = (
 			<RenderElement
 				className={cn(buttonVariants({ variant, size, className }))}
