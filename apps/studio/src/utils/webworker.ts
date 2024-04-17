@@ -439,7 +439,7 @@ export const getTransformFunction = async (
 	});
 
 	const exports: Exports = {};
-	const module = { exports };
+	const moduleWithExports = { exports };
 
 	const requireFunction = (name: string) => {
 		if (name === "ts-morph") {
@@ -482,7 +482,7 @@ export const getTransformFunction = async (
 	};
 
 	const keys = ["module", "exports", "require", "printMessage"];
-	const values = [module, exports, requireFunction, printMessage];
+	const values = [moduleWithExports, exports, requireFunction, printMessage];
 
 	new Function(...keys, compiledCode.outputText).apply(null, values);
 

@@ -36,13 +36,13 @@ import { UserIcon } from "@studio/icons/User";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import themeConfig from "@studio/tailwind.config";
 import { openLink } from "@studio/utils/openLink";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
+import themeConfig from "../../../../tailwind.config";
 import Codemod from "./Codemod";
 import Header from "./Header";
 import Layout from "./Layout";
@@ -427,10 +427,6 @@ function SignInRequired() {
 		router.push("/auth/sign-in");
 	};
 
-	console.log(
-		"themeConfig.theme.extend.colors",
-		themeConfig.theme.extend.colors,
-	);
 	return (
 		<div className="grid h-full absolute top-0 bottom-0 w-full">
 			<div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />

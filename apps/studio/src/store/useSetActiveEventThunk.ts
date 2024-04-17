@@ -25,8 +25,6 @@ const alphanumerizeString = (input: string): string => {
 
 const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
 	const parseResult = parseSnippet(snippet);
-	const executeRangeCommandOnBeforeInputThunk =
-		useExecuteRangeCommandOnBeforeInput();
 
 	const tokens =
 		parseResult !== null && "tokens" in parseResult
