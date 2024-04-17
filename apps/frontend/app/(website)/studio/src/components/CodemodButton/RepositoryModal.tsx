@@ -1,7 +1,7 @@
-import { GithubRepository } from "be-types";
-import { matchSorter } from "match-sorter";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
+import type { GithubRepository } from "be-types";
+import { matchSorter } from "match-sorter";
 
 import {
 	Combobox,
@@ -10,10 +10,9 @@ import {
 	ComboboxProvider,
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
-import { startTransition, useMemo, useState } from "react";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "@studio/icons";
-import { useTheme } from "@studio/pageComponents/main/themeContext";
-import { ToVoid } from "@studio/types/transformations";
+import type { ToVoid } from "@studio/types/transformations";
+import { startTransition, useMemo, useState } from "react";
 
 export type RepositoryModalProps = {
 	hideRepositoryModal: VoidFunction;
@@ -54,7 +53,6 @@ export const RepositoryModal = ({
 		repositoriesToShow.length,
 	]);
 
-	const { isDark } = useTheme();
 	return isRepositoryModalShown ? (
 		<Modal onClose={hideRepositoryModal} centered transparent={false}>
 			<h2 className="text-center p-2">Select Repository</h2>
