@@ -23,8 +23,8 @@ export function getCustomBody({
 		styles === false
 			? []
 			: styles === true
-				? ["h2", "h3", "h4", "h5", "blockquote"]
-				: styles;
+			  ? ["h2", "h3", "h4", "h5", "blockquote"]
+			  : styles;
 
 	return {
 		type: "array",
@@ -35,7 +35,7 @@ export function getCustomBody({
 					? [
 							{ title: "Bullet list", value: "bullet" },
 							{ title: "Numbered list", value: "number" },
-						]
+					  ]
 					: [],
 				styles: availableStyles.length
 					? [
@@ -44,7 +44,7 @@ export function getCustomBody({
 								title: STYLE_LABELS[h as keyof typeof STYLE_LABELS] || h,
 								value: h,
 							})),
-						]
+					  ]
 					: [],
 				marks: {
 					annotations: [

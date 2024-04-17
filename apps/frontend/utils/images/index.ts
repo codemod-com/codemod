@@ -127,7 +127,7 @@ export function createGetImageProps(imageBuilder: ImageUrlBuilder) {
 				? props.maxWidth
 				: Math.round(
 						LARGEST_VIEWPORT * (Number(props.maxWidth.match(/\d*/)?.[0]) / 100),
-					);
+				  );
 
 		const baseBuilder = imageBuilder.image(image).fit("max").auto("format");
 		const builder = props.imageTransformer

@@ -43,7 +43,7 @@ export const useGetAliases = () => {
 							codemodInputRanges[0].end,
 						),
 						updatedAt: rangesUpdatedAt,
-					}
+				  }
 				: null,
 		$BEFORE: { value: inputSnippet, updatedAt: -1 },
 		$AFTER: { value: outputSnippet, updatedAt: -1 },
@@ -54,7 +54,7 @@ export const useGetAliases = () => {
 						beforeInputRanges[0].end,
 					),
 					updatedAt: beforeRangeUpdatedAt,
-				}
+			  }
 			: null,
 		$HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
 			? {
@@ -63,7 +63,7 @@ export const useGetAliases = () => {
 						afterInputRanges[0].end,
 					),
 					updatedAt: afterRangeUpdatedAt,
-				}
+			  }
 			: null,
 		$EXECUTION_ERROR: {
 			value: codemodExecutionError ?? "",

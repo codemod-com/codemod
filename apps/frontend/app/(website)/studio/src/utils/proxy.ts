@@ -243,8 +243,8 @@ export const proxifyCollection = <T>(
 				const methodName = p.startsWith("forEach")
 					? "forEach"
 					: p.startsWith("map")
-						? "map"
-						: "filter";
+					  ? "map"
+					  : "filter";
 
 				const codemodSourceRange = getOffsetRangeFromMethodName(methodName, p);
 
@@ -429,8 +429,8 @@ export const proxifyCollection = <T>(
 				const methodName = p.startsWith("find_")
 					? "find"
 					: p.startsWith("findVariableDeclarators")
-						? "findVariableDeclarators"
-						: "findJSXElements";
+					  ? "findVariableDeclarators"
+					  : "findJSXElements";
 
 				const codemodSourceRange = getOffsetRangeFromMethodName(methodName, p);
 
