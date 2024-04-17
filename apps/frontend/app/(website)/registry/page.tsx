@@ -10,7 +10,7 @@ import { notFound } from "next/navigation";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(
-	props,
+	_: unknown,
 	parent: ResolvingMetadata,
 ): Promise<Metadata | null> {
 	const initialData = await loadRegistryIndex();
