@@ -1,7 +1,7 @@
 import { exec, spawnSync } from "node:child_process";
 import { promisify } from "node:util";
 import {
-	ValidateTokenResponse,
+	type ValidateTokenResponse,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import keytar from "keytar";
@@ -112,5 +112,5 @@ export const initGlobalNodeModules = async (): Promise<void> => {
 		.map((res) => (res.status === "fulfilled" ? res.value.stdout.trim() : null))
 		.filter(Boolean)
 		.join(":");
-	require("module").Module._initPaths();
+	require("node:module").Module._initPaths();
 };

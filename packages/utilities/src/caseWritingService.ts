@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { createHash } from "node:crypto";
 import { EventEmitter } from "node:events";
-import { type IFileHandle } from "memfs/lib/node/types/misc.js";
+import type { IFileHandle } from "memfs/lib/node/types/misc.js";
 import type { SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
 import type { SurfaceAgnosticJob } from "./schemata/surfaceAgnosticJobSchema.js";
 import { JOB_KIND } from "./schemata/surfaceAgnosticJobSchema.js";

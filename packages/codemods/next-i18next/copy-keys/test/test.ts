@@ -52,34 +52,28 @@ describe("next-i18n copy keys", () => {
 				keys: "copyKey",
 			},
 		);
+		deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
 
-		{
-			deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
+		deepStrictEqual(
+			upsertEnDataCommand.path,
+			"/opt/project/public/static/locales/en/new.json",
+		);
 
-			deepStrictEqual(
-				upsertEnDataCommand.path,
-				"/opt/project/public/static/locales/en/new.json",
-			);
+		deepStrictEqual(
+			upsertEnDataCommand.data.replace(/\W/gm, ""),
+			`{"copyKey": "copyKeyEnglish"}`.replace(/\W/gm, ""),
+		);
+		deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
 
-			deepStrictEqual(
-				upsertEnDataCommand.data.replace(/\W/gm, ""),
-				`{"copyKey": "copyKeyEnglish"}`.replace(/\W/gm, ""),
-			);
-		}
+		deepStrictEqual(
+			upsertDeDataCommand.path,
+			"/opt/project/public/static/locales/de/new.json",
+		);
 
-		{
-			deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
-
-			deepStrictEqual(
-				upsertDeDataCommand.path,
-				"/opt/project/public/static/locales/de/new.json",
-			);
-
-			deepStrictEqual(
-				upsertDeDataCommand.data.replace(/\W/gm, ""),
-				`{"copyKey": "copyKeyGerman"}`.replace(/\W/gm, ""),
-			);
-		}
+		deepStrictEqual(
+			upsertDeDataCommand.data.replace(/\W/gm, ""),
+			`{"copyKey": "copyKeyGerman"}`.replace(/\W/gm, ""),
+		);
 	});
 
 	it("should copy a key into an existing namespace", async () => {
@@ -122,39 +116,33 @@ describe("next-i18n copy keys", () => {
 				keys: "copyKey",
 			},
 		);
+		deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
 
-		{
-			deepStrictEqual(upsertEnDataCommand?.kind, "upsertFile");
+		deepStrictEqual(
+			upsertEnDataCommand.path,
+			"/opt/project/public/static/locales/en/existing.json",
+		);
 
-			deepStrictEqual(
-				upsertEnDataCommand.path,
-				"/opt/project/public/static/locales/en/existing.json",
-			);
+		deepStrictEqual(
+			upsertEnDataCommand.data.replace(/\W/gm, ""),
+			`{"otherKey": "otherKeyEnglish","copyKey": "copyKeyEnglish"}`.replace(
+				/\W/gm,
+				"",
+			),
+		);
+		deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
 
-			deepStrictEqual(
-				upsertEnDataCommand.data.replace(/\W/gm, ""),
-				`{"otherKey": "otherKeyEnglish","copyKey": "copyKeyEnglish"}`.replace(
-					/\W/gm,
-					"",
-				),
-			);
-		}
+		deepStrictEqual(
+			upsertDeDataCommand.path,
+			"/opt/project/public/static/locales/de/existing.json",
+		);
 
-		{
-			deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
-
-			deepStrictEqual(
-				upsertDeDataCommand.path,
-				"/opt/project/public/static/locales/de/existing.json",
-			);
-
-			deepStrictEqual(
-				upsertDeDataCommand.data.replace(/\W/gm, ""),
-				`{"otherKey": "otherKeyGerman","copyKey": "copyKeyGerman",}`.replace(
-					/\W/gm,
-					"",
-				),
-			);
-		}
+		deepStrictEqual(
+			upsertDeDataCommand.data.replace(/\W/gm, ""),
+			`{"otherKey": "otherKeyGerman","copyKey": "copyKeyGerman",}`.replace(
+				/\W/gm,
+				"",
+			),
+		);
 	});
 });

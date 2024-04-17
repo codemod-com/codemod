@@ -1,8 +1,8 @@
-import { Mode } from "node:fs";
-import { AxiosResponse, isAxiosError } from "axios";
-import { FileSystem, Uri } from "vscode";
+import type { Mode } from "node:fs";
+import { type AxiosResponse, isAxiosError } from "axios";
+import type { FileSystem, Uri } from "vscode";
 import { DEFAULT_RETRY_COUNT, retryingClient } from "../axios";
-import { FileSystemUtilities } from "./fileSystemUtilities";
+import type { FileSystemUtilities } from "./fileSystemUtilities";
 
 export class RequestError extends Error {}
 export class ForbiddenRequestError extends Error {}

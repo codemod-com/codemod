@@ -2,12 +2,12 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
 import {
-	CodemodConfig,
+	type CodemodConfig,
 	extractLibNameAndVersion,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import inquirer from "inquirer";
-import { PrinterBlueprint } from "./printer";
+import type { PrinterBlueprint } from "./printer";
 import { boldText, colorizeText, execPromise } from "./utils";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
@@ -278,11 +278,8 @@ export const handleInstallDependencies = async (options: {
 		}
 
 		if (install === "root") {
-			const stopRemovalMessageLoading = printer.withLoaderMessage((loader) =>
-				colorizeText(
-					`${loader.get("vertical-dots")}  Removing: ${toDelete.join(", ")}...`,
-					"cyan",
-				),
+			const stopRemovalSpinner = printer.withLoaderMessage(
+				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
 			);
 			try {
 				await execPromise(
@@ -292,34 +289,24 @@ export const handleInstallDependencies = async (options: {
 			} catch (err) {
 				// Fails when no dep
 			}
-			stopRemovalMessageLoading();
+			stopRemovalSpinner.succeed();
 
-			const stopInstallationMessageLoading = printer.withLoaderMessage(
-				(loader) =>
-					colorizeText(
-						`${loader.get("vertical-dots")}  Installing: ${toInstall.join(
-							", ",
-						)}...`,
-						"cyan",
-					),
+			const stopInstallationSpinner = printer.withLoaderMessage(
+				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
 			);
 			try {
 				await execPromise(
 					`${detectedPackageManager} ${addRootCmd} ${toInstall.join(" ")}`,
 					{ cwd: rootPath },
 				);
-				stopInstallationMessageLoading();
+				stopInstallationSpinner.succeed();
 			} catch (err) {
-				stopInstallationMessageLoading();
+				stopInstallationSpinner.fail();
 				throw err;
-				//
 			}
 		} else {
-			const stopRemovalMessageLoading = printer.withLoaderMessage((loader) =>
-				colorizeText(
-					`${loader.get("vertical-dots")}  Removing: ${toDelete.join(", ")}...`,
-					"cyan",
-				),
+			const stopRemovalSpinner = printer.withLoaderMessage(
+				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				const packageJsonContent = await readFile(packageJsonPath, {
@@ -359,17 +346,11 @@ export const handleInstallDependencies = async (options: {
 					// Fails when no dep
 				}
 
-				stopRemovalMessageLoading();
+				stopRemovalSpinner.succeed();
 			}
 
-			const stopInstallationMessageLoading = printer.withLoaderMessage(
-				(loader) =>
-					colorizeText(
-						`${loader.get("vertical-dots")}  Installing: ${toInstall.join(
-							", ",
-						)}...`,
-						"cyan",
-					),
+			const stopInstallationSpinner = printer.withLoaderMessage(
+				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				if (packageJsonPath === rootPackageJsonPath) {
@@ -390,9 +371,9 @@ export const handleInstallDependencies = async (options: {
 						`${detectedPackageManager} ${addCmd} ${toInstall.join(" ")}`,
 						{ cwd: dirname(packageJsonPath) },
 					);
-					stopInstallationMessageLoading();
+					stopInstallationSpinner.succeed();
 				} catch (err) {
-					stopInstallationMessageLoading();
+					stopInstallationSpinner.fail();
 					throw err;
 					//
 				}

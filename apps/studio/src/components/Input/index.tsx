@@ -1,4 +1,4 @@
-import { type ChangeEvent } from "react";
+import type { ChangeEvent } from "react";
 import { cn } from "~/lib/utils";
 
 type InputProps = {
@@ -28,5 +28,4 @@ const UnControlledInput = ({
 	);
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export { UnControlledInput };

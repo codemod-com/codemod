@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { useCallback } from "react";
-import { SnippetType } from "src/pageComponents/main/PageBottomPane";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { SnippetType } from "src/pageComponents/main/PageBottomPane";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useRanges } from "~/store/useRanges";
 import { useRangesOnTarget } from "~/store/useRangesOnTarget";
 import { useSnippetStore } from "~/store/zustand/snippets";

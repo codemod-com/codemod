@@ -1,5 +1,5 @@
 import jscodeshift from "jscodeshift";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { useLogStore } from "~/store/zustand/log";
@@ -7,15 +7,13 @@ import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
 import { parseSnippet } from "~/utils/babelParser";
 import { isNeitherNullNorUndefined } from "~/utils/isNeitherNullNorUndefined";
-import { type RangeCommand } from "~/utils/tree";
+import type { RangeCommand } from "~/utils/tree";
 
 const alphanumerizeString = (input: string): string => {
 	let output = "";
 
-	// eslint-disable-next-line no-restricted-syntax
 	for (const character of input) {
 		if (!character.match(/[a-zA-Z0-9]/)) {
-			// eslint-disable-next-line no-continue
 			continue;
 		}
 
@@ -111,7 +109,6 @@ const calculateReplacementRanges = (
 
 			const regex = new RegExp(phrases.join(".*?"), "gs");
 
-			// eslint-disable-next-line no-restricted-syntax
 			for (const regExpMatchArray of output.matchAll(regex)) {
 				const start = regExpMatchArray.index ?? 0;
 				const end = start + regExpMatchArray[0].length;

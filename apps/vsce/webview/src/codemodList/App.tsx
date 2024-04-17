@@ -1,7 +1,7 @@
 import cn from "classnames";
 import areEqual from "fast-deep-equal";
 import { memo, useMemo } from "react";
-import { PanelGroupStorage } from "react-resizable-panels";
+import type { PanelGroupStorage } from "react-resizable-panels";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { PanelGroup } from "../shared/Panel";
 import SearchBar from "../shared/SearchBar";

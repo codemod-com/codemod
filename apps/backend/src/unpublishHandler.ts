@@ -3,7 +3,7 @@ import {
 	extractLibNameAndVersion,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { CustomHandler } from "./customHandler";
+import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
 import { parseUnpublishBody } from "./schemata/schema";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
@@ -78,6 +78,10 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
 			username,
 			...orgs.map((org) => org.organization.slug),
 		].filter(isNeitherNullNorUndefined);
+
+		if (environment.VERIFIED_PUBLISHERS.includes(username)) {
+			allowedNamespaces.push("codemod-com", "codemod.com");
+		}
 
 		if (!allowedNamespaces.includes(codemod.author)) {
 			return reply.code(403).send({

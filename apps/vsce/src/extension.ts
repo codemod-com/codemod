@@ -1,12 +1,17 @@
-import { createHash } from "crypto";
-import { homedir } from "os";
-import { join } from "path";
+import { createHash } from "node:crypto";
+import { homedir } from "node:os";
+import { join } from "node:path";
+import {
+	PIRANHA_LANGUAGES,
+	piranhaLanguageSchema,
+} from "@codemod-com/utilities";
 import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
 import prettyReporter from "io-ts-reporters";
+import { parse } from "valibot";
 import * as vscode from "vscode";
 import { CaseManager } from "./cases/caseManager";
-import { CaseHash, caseHashCodec } from "./cases/types";
+import { type CaseHash, caseHashCodec } from "./cases/types";
 import { createClearStateCommand } from "./commands/clearStateCommand";
 import { BootstrapExecutablesService } from "./components/bootstrapExecutablesService";
 import { DownloadService } from "./components/downloadService";
@@ -14,7 +19,7 @@ import { EngineService } from "./components/engineService";
 import { FileService } from "./components/fileService";
 import { FileSystemUtilities } from "./components/fileSystemUtilities";
 import { JobManager } from "./components/jobManager";
-import { Command, MessageBus, MessageKind } from "./components/messageBus";
+import { type Command, MessageBus, MessageKind } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
 import { GlobalStateTokenStorage, UserService } from "./components/userService";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
@@ -27,14 +32,10 @@ import {
 import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
-import {
-	PIRANHA_LANGUAGES,
-	parsePiranhaLanguage,
-} from "./data/codemodConfigSchema";
 import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
-import { CodemodHash } from "./packageJsonAnalyzer/types";
-import { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
+import type { CodemodHash } from "./packageJsonAnalyzer/types";
+import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { buildCaseHash } from "./telemetry/hashes";
 import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
@@ -458,7 +459,7 @@ export async function activate(context: vscode.ExtensionContext) {
 					throw new Error("You must specify the language");
 				}
 
-				const language = parsePiranhaLanguage(quickPick);
+				const language = parse(piranhaLanguageSchema, quickPick);
 
 				messageBus.publish({
 					kind: MessageKind.executeCodemodSet,
@@ -528,13 +529,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									language: codemod.language,
 									name: codemod.name,
 									arguments: [],
-							  }
+								}
 							: {
 									kind: "executeCodemod",
 									codemodHash,
 									name: codemod.name,
 									arguments: [],
-							  };
+								};
 
 					store.dispatch(
 						actions.setFocusedCodemodHashDigest(
@@ -689,13 +690,13 @@ export async function activate(context: vscode.ExtensionContext) {
 									language: codemodEntry.language,
 									name: codemodEntry.name,
 									arguments: [],
-							  }
+								}
 							: {
 									kind: "executeCodemod",
 									codemodHash: codemodEntry.hashDigest as CodemodHash,
 									name: codemodEntry.name,
 									arguments: [],
-							  };
+								};
 
 					messageBus.publish({
 						kind: MessageKind.executeCodemodSet,

@@ -1,9 +1,10 @@
-import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
-import { ValueOf } from "next/constants";
-import React, { MutableRefObject, ReactNode } from "react";
-import { ImperativePanelHandle } from "react-resizable-panels";
-import { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
-import { VisibilityOptions } from "~/types/options";
+import type { KnownEngines } from "@codemod-com/utilities";
+import type { ValueOf } from "next/constants";
+import type React from "react";
+import type { MutableRefObject, ReactNode } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
+import type { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
+import type { VisibilityOptions } from "~/types/options";
 
 export type PanelsRefs = MutableRefObject<
 	Record<string, ImperativePanelHandle | null>

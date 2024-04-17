@@ -258,7 +258,6 @@
 		"webpack-cli": "5.1.4"
 	},
 	"dependencies": {
-		"@effect/schema": "^0.52.0",
 		"@codemod-com/utilities": "workspace:*",
 		"@reduxjs/toolkit": "^1.9.5",
 		"@vscode/extension-telemetry": "^0.7.7",
@@ -280,7 +279,8 @@
 		"redux-persist": "^6.0.0",
 		"semver": "^7.3.8",
 		"ts-morph": "^19.0.0",
-		"universal-base64url": "^1.1.0"
+		"universal-base64url": "^1.1.0",
+		"valibot": "^0.24.1"
 	},
 	"extensionDependencies": ["vscode.git"]
 }

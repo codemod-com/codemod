@@ -1,5 +1,8 @@
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import { Codemod, CodemodVersion, Prisma, PrismaClient } from "@prisma/client";
+import {
+	type CodemodListResponse,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
+import type { Codemod, Prisma, PrismaClient } from "@prisma/client";
 import Fuse from "fuse.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
@@ -22,9 +25,6 @@ type LongCodemodIndoDetails = {
 };
 
 export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
-
-export type ShortCodemodInfo = Pick<Codemod, "name" | "author" | "slug"> &
-	Pick<CodemodVersion, "engine">;
 
 export type Filter = {
 	id: string;
@@ -294,8 +294,8 @@ export class CodemodService {
 		userId: string | null,
 		search: string | undefined,
 		allowedNamespaces?: string[],
-	): Promise<ShortCodemodInfo[]> {
-		let codemodData: ShortCodemodInfo[];
+	): Promise<CodemodListResponse> {
+		let codemodData: CodemodListResponse;
 
 		if (isNeitherNullNorUndefined(userId)) {
 			const dbCodemods = await this.prisma.codemod.findMany({
@@ -373,6 +373,10 @@ export class CodemodService {
 			});
 
 			codemodData = fuse.search(search).map((res) => res.item);
+		} else {
+			codemodData = codemodData.sort((a, b) =>
+				a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+			);
 		}
 
 		return codemodData;

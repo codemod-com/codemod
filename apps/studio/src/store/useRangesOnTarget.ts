@@ -48,13 +48,13 @@
 // 	}
 // });
 
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import { useLogStore } from "~/store/zustand/log";
 import { useModStore } from "~/store/zustand/mod";
 import { useSnippetStore } from "~/store/zustand/snippets";
-import { type RangeCommand } from "~/utils/tree";
+import type { RangeCommand } from "~/utils/tree";
 
 type UseRange = Readonly<{
 	ranges: ReadonlyArray<OffsetRange>;

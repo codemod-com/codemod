@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { type CodemodHash, type WebviewMessage } from "../shared/types";
+import type { CodemodHash, WebviewMessage } from "../shared/types";
 
 export type Progress = Readonly<{
 	codemodHash: CodemodHash;

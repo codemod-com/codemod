@@ -1,18 +1,19 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import { type CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import type { Ora } from "ora";
 import { getCodemodDownloadURI } from "./apis.js";
-import { Codemod } from "./codemod.js";
-import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
-import { PrinterBlueprint } from "./printer.js";
-import { TarService } from "./services/tarService.js";
+import type { Codemod } from "./codemod.js";
+import type { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { TarService } from "./services/tarService.js";
 import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	download(
 		name: string,
-		disableLoading?: boolean,
+		disableSpinner?: boolean,
 	): Promise<Codemod & { source: "package" }>;
 }>;
 
@@ -27,7 +28,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async download(
 		name: string,
-		disableLoading?: boolean,
+		disableSpinner?: boolean,
 	): Promise<Codemod & { source: "package" }> {
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
@@ -38,13 +39,13 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		let stopLoading = () => {};
-		if (!disableLoading) {
-			stopLoading = this.__printer.withLoaderMessage((loader) =>
+		let spinner: Ora | null = null;
+		if (!disableSpinner) {
+			spinner = this.__printer.withLoaderMessage(
 				colorizeText(
-					`${loader.get("vertical-dots")}  Downloading the ${boldText(
-						`"${name}"`,
-					)} codemod${this._cacheDisabled ? ", not using cache..." : "..."}`,
+					`Downloading the ${boldText(`"${name}"`)} codemod${
+						this._cacheDisabled ? ", not using cache..." : "..."
+					}`,
 					"cyan",
 				),
 			);
@@ -62,9 +63,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			);
 
 			await this._tarService.extract(directoryPath, buffer);
-			stopLoading();
+			spinner?.succeed();
 		} catch (err) {
-			stopLoading();
+			spinner?.fail();
 			throw err;
 		}
 

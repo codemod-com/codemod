@@ -10,7 +10,7 @@ import { UnifiedFileSystem } from "@codemod-com/filemod";
 import glob, { type FileSystemAdapter } from "fast-glob";
 import type { API } from "jscodeshift";
 import jscodeshift from "jscodeshift";
-import { type IFs } from "memfs";
+import type { IFs } from "memfs";
 
 export const buildApi = (parser: string | undefined): API => ({
 	j: parser ? jscodeshift.withParser(parser) : jscodeshift,

@@ -2,19 +2,19 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import path, { resolve } from "node:path";
 import {
-	AllEngines,
-	CodemodConfig,
+	type AllEngines,
+	type CodemodConfig,
 	allEnginesSchema,
 	parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import { object, parse } from "valibot";
-import { Codemod } from "./codemod.js";
-import { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
-import { PrinterBlueprint } from "./printer.js";
-import { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
+import type { Codemod } from "./codemod.js";
+import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const extractEngine = async (
@@ -130,11 +130,9 @@ export const buildSourcedCodemodOptions = async (
 			codemodConfig as CodemodConfig & { engine: "recipe" }
 		).names;
 
-		const stopLoading = printer.withLoaderMessage((loader) =>
+		const spinner = printer.withLoaderMessage(
 			colorizeText(
-				`${loader.get("vertical-dots")}  Downloading ${
-					subCodemodsNames.length
-				} recipe codemods...`,
+				`Downloading ${subCodemodsNames.length} recipe codemods...`,
 				"cyan",
 			),
 		);
@@ -155,7 +153,7 @@ export const buildSourcedCodemodOptions = async (
 				try {
 					return await codemodDownloader.download(subCodemodName, true);
 				} catch (error) {
-					stopLoading();
+					spinner.fail();
 					if (error instanceof AxiosError) {
 						if (
 							error.response?.status === 400 &&
@@ -174,7 +172,7 @@ export const buildSourcedCodemodOptions = async (
 			}),
 		);
 
-		stopLoading();
+		spinner.succeed();
 
 		return {
 			source: "package",

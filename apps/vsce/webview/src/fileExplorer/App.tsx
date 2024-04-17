@@ -1,10 +1,10 @@
 import { useCallback } from "react";
-import { CaseHash } from "../../../src/cases/types";
-import {
+import type { CaseHash } from "../../../src/cases/types";
+import type {
 	_ExplorerNode,
 	_ExplorerNodeHashDigest,
 } from "../../../src/persistedState/explorerNodeCodec";
-import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { useProgressBar } from "../codemodList/useProgressBar";
 import { CustomTreeView } from "../customTreeView";
 import LoadingProgress from "../jobDiffView/Components/LoadingProgress";

@@ -1,16 +1,16 @@
 import { createHash } from "node:crypto";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
-	CodemodConfig,
+	type CodemodConfig,
 	codemodNameRegex,
 	isNeitherNullNorUndefined,
 	parseCodemodConfig,
 	tarPack,
 } from "@codemod-com/utilities";
 import * as semver from "semver";
-import { z } from "zod";
-import { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
-import { CustomHandler } from "./customHandler";
+import type { z } from "zod";
+import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
+import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";

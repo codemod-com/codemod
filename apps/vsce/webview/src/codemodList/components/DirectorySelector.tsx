@@ -3,7 +3,8 @@ import {
 	VSCodeTextField,
 } from "@vscode/webview-ui-toolkit/react";
 import cn from "classnames";
-import React, { useEffect, useLayoutEffect, useState } from "react";
+import type React from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import styles from "./style.module.css";
 
 type Props = {

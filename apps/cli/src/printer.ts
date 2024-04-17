@@ -1,7 +1,8 @@
+import ora, { type Ora } from "ora";
 import type { OperationMessage } from "./messages.js";
-import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 import { boldText, colorizeText } from "./utils.js";
-import { WorkerThreadMessage } from "./workerThreadMessages.js";
+import type { WorkerThreadMessage } from "./workerThreadMessages.js";
 
 export type PrinterBlueprint = Readonly<{
 	__jsonOutput: boolean;
@@ -11,11 +12,7 @@ export type PrinterBlueprint = Readonly<{
 	printOperationMessage(message: OperationMessage): void;
 	printConsoleMessage(kind: ConsoleKind, message: string): void;
 
-	withLoaderMessage(
-		cb: (loader: {
-			get: (type: "dots" | "whirl" | "vertical-dots") => string;
-		}) => string,
-	): () => void;
+	withLoaderMessage(text: string): Ora;
 }>;
 
 export class Printer implements PrinterBlueprint {
@@ -67,13 +64,15 @@ export class Printer implements PrinterBlueprint {
 
 		if (message.kind === "progress") {
 			console.log(
-				`%sProcessed %d files out of %d: ${boldText("%s")}`,
+				"%sProcessed %d files out of %d%s",
 				message.recipeCodemodName
 					? boldText(`(${message.recipeCodemodName})  `)
 					: "",
 				message.processedFileNumber,
 				message.totalFileNumber,
-				message.processedFileName,
+				message.processedFileName
+					? `: ${boldText(message.processedFileName)}`
+					: "",
 			);
 		}
 	}
@@ -95,44 +94,7 @@ export class Printer implements PrinterBlueprint {
 		console[kind](message);
 	}
 
-	public withLoaderMessage(
-		cb: (loader: {
-			get: (type: "dots" | "whirl" | "vertical-dots") => string;
-		}) => string,
-	): () => void {
-		let messageUpdateFunction: () => void;
-
-		const loader = {
-			get: (type: "dots" | "whirl" | "vertical-dots"): string => {
-				const id = `loader_${Object.keys(this.loaderStates).length}`;
-				this.loaderStates[id] = { type, index: 0 };
-				return id; // Placeholder for the loader, to be replaced in the message
-			},
-		};
-
-		(async () => {
-			const messageTemplate = cb(loader); // Get the message template with loader placeholders
-			messageUpdateFunction = () => {
-				let message = messageTemplate;
-				for (const [id, loaderState] of Object.entries(this.loaderStates)) {
-					const symbols = this.loaderSymbols[loaderState.type];
-					message = message.replace(id, symbols[loaderState.index]!);
-					loaderState.index = (loaderState.index + 1) % symbols.length; // Update for next tick
-				}
-				// Example output handling; replace with actual output logic
-				process.stdout.write(`\r${message}`); // Output the updated message
-			};
-
-			this.loadingTimer = setInterval(messageUpdateFunction, 250);
-		})();
-
-		return () => {
-			if (this.loadingTimer) {
-				clearInterval(this.loadingTimer);
-				this.loadingTimer = null;
-			}
-			this.loaderStates = {}; // Reset loader states
-			process.stdout.write("\n");
-		};
+	public withLoaderMessage(text: string): Ora {
+		return ora({ text, color: "cyan" }).start();
 	}
 }

@@ -28,30 +28,23 @@ export const handleUnpublishCliCommand = async (
 		!force
 	) {
 		throw new Error(
-			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${colorizeText(
+			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${boldText(
 				"--force (-f)",
-				"orange",
 			)}" flag.`,
 		);
 	}
 
-	const {
-		user: { username },
-		token,
-	} = userData;
+	const { token } = userData;
 
-	const stopLoading = printer.withLoaderMessage((loader) =>
-		colorizeText(
-			`${loader.get("vertical-dots")} Unpublishing ${boldText(`"${name}"`)}`,
-			"cyan",
-		),
+	const spinner = printer.withLoaderMessage(
+		colorizeText(`Unpublishing ${boldText(`"${name}"`)}`, "cyan"),
 	);
 
 	try {
 		await unpublish(token, name);
-		stopLoading();
+		spinner.succeed();
 	} catch (error) {
-		stopLoading();
+		spinner.fail();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
 		const errorMessage = `${boldText(

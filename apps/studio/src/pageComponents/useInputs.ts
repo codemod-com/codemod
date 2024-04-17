@@ -1,6 +1,6 @@
-import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { useEffect } from "react";
-import { type State } from "~/schemata/stateSchemata";
+import type { State } from "~/schemata/stateSchemata";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 
 import { useModStore } from "~/store/zustand/mod";

@@ -1,13 +1,13 @@
-import { createHash, randomBytes } from "crypto";
+import { createHash, randomBytes } from "node:crypto";
 import {
 	Prisma,
-	PrismaClient,
-	TokenMetadata,
-	TokenRevocation,
+	type PrismaClient,
+	type TokenMetadata,
+	type TokenRevocation,
 } from "@prisma/client";
 import {
-	EncryptedTokenMetadata,
-	KeyIvPair,
+	type EncryptedTokenMetadata,
+	type KeyIvPair,
 	decryptUserId,
 	encryptTokenMetadata,
 	sign,

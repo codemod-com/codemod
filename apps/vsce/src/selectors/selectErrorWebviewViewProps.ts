@@ -1,4 +1,4 @@
-import { RootState } from "../data";
+import type { RootState } from "../data";
 
 export const selectErrorWebviewViewProps = (
 	state: RootState,

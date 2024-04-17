@@ -1,4 +1,4 @@
-export {};
+export type {};
 // import { Export as ExportIcon } from "@phosphor-icons/react";
 // import { Loader2 } from "lucide-react";
 // import { type MouseEvent, useState } from "react";

@@ -7,13 +7,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { ActiveTabId } from "../../../src/persistedState/codecs";
+import type { ActiveTabId } from "../../../src/persistedState/codecs";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import CreateIssue from "../CreateIssue";
 import { App as CodemodList } from "../codemodList/App";
 import { CommunityTab } from "../communityTab/CommunityTab";
 import { useTheme } from "../shared/Snippet/useTheme";
-import { type WebviewMessage } from "../shared/types";
+import type { WebviewMessage } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 import { CodemodRuns } from "./CodemodRuns";
 

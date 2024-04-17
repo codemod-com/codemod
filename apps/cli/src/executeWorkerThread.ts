@@ -1,5 +1,8 @@
 import { parentPort } from "node:worker_threads";
-import { FileCommand, buildFormattedFileCommands } from "./fileCommands.js";
+import {
+	type FileCommand,
+	buildFormattedFileCommands,
+} from "./fileCommands.js";
 import {
 	type MainThreadMessage,
 	decodeMainThreadMessage,
@@ -7,8 +10,8 @@ import {
 import { runAstGrepCodemod } from "./runAstgrepCodemod.js";
 import { runJscodeshiftCodemod } from "./runJscodeshiftCodemod.js";
 import { runTsMorphCodemod } from "./runTsMorphCodemod.js";
-import { ConsoleKind } from "./schemata/consoleKindSchema.js";
-import { type WorkerThreadMessage } from "./workerThreadMessages.js";
+import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { WorkerThreadMessage } from "./workerThreadMessages.js";
 
 class PathAwareError extends Error {
 	constructor(
@@ -37,7 +40,6 @@ const messageHandler = async (m: unknown) => {
 		try {
 			message = decodeMainThreadMessage(m);
 		} catch (err) {
-			console.dir(err, { depth: 10 });
 			throw new Error(`Failed to decode message: ${String(err)}`);
 		}
 

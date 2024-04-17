@@ -8,11 +8,11 @@ import {
 import { Label } from "~/components/ui/label";
 import {
 	Table as ShadCNTable,
+	TableRow as ShadCNTableRow,
 	TableBody,
 	TableCell,
 	TableHead,
 	TableHeader,
-	TableRow as ShadCNTableRow,
 } from "~/components/ui/table";
 import { cn } from "~/lib/utils";
 import type { Event } from "~/schemata/eventSchemata";

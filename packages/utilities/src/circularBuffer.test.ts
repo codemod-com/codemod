@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-declaration-merging */
 import { EventEmitter } from "node:events";
 import { describe, expect, it } from "vitest";
 import { CircularBuffer } from "./circularBuffer.js";
@@ -82,72 +81,51 @@ describe("CircularBuffer", () => {
 
 	it("should read and write without overflowing the buffer", async () => {
 		const circularBuffer = new TestCircularBuffer(3);
+		circularBuffer.write(Buffer.from([1, 2]), 2);
 
-		{
-			circularBuffer.write(Buffer.from([1, 2]), 2);
+		expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([1, 2, 0]));
+		expect(circularBuffer.getStart()).toEqual(0);
+		expect(circularBuffer.getEnd()).toEqual(2);
+		expect(circularBuffer.getFreeByteLength()).toEqual(1);
+		expect(await circularBuffer.requireBytes(1)()).toStrictEqual(
+			Buffer.from([1]),
+		);
 
-			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([1, 2, 0]));
-			expect(circularBuffer.getStart()).toEqual(0);
-			expect(circularBuffer.getEnd()).toEqual(2);
-			expect(circularBuffer.getFreeByteLength()).toEqual(1);
-		}
+		expect(circularBuffer.getStart()).toEqual(1);
+		expect(circularBuffer.getEnd()).toEqual(2);
+		expect(circularBuffer.getFreeByteLength()).toEqual(2);
+		circularBuffer.write(Buffer.from([3, 4]), 2);
 
-		{
-			expect(await circularBuffer.requireBytes(1)()).toStrictEqual(
-				Buffer.from([1]),
-			);
+		expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([4, 2, 3]));
+		expect(circularBuffer.getStart()).toEqual(1);
+		expect(circularBuffer.getEnd()).toEqual(1);
+		expect(circularBuffer.getFreeByteLength()).toEqual(0);
+		expect(await circularBuffer.requireBytes(2)()).toStrictEqual(
+			Buffer.from([2, 3]),
+		);
+		expect(circularBuffer.getStart()).toEqual(0);
+		expect(circularBuffer.getEnd()).toEqual(1);
+		expect(circularBuffer.getFreeByteLength()).toEqual(2);
+		expect(await circularBuffer.requireBytes(1)()).toStrictEqual(
+			Buffer.from([4]),
+		);
 
-			expect(circularBuffer.getStart()).toEqual(1);
-			expect(circularBuffer.getEnd()).toEqual(2);
-			expect(circularBuffer.getFreeByteLength()).toEqual(2);
-		}
+		expect(circularBuffer.getStart()).toEqual(1);
+		expect(circularBuffer.getEnd()).toEqual(1);
+		expect(circularBuffer.getFreeByteLength()).toEqual(3);
+		circularBuffer.write(Buffer.from([5, 6, 7]), 3);
 
-		{
-			circularBuffer.write(Buffer.from([3, 4]), 2);
+		expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([7, 5, 6]));
+		expect(circularBuffer.getStart()).toEqual(1);
+		expect(circularBuffer.getEnd()).toEqual(1);
+		expect(circularBuffer.getFreeByteLength()).toEqual(0);
+		expect(await circularBuffer.requireBytes(3)()).toStrictEqual(
+			Buffer.from([5, 6, 7]),
+		);
 
-			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([4, 2, 3]));
-			expect(circularBuffer.getStart()).toEqual(1);
-			expect(circularBuffer.getEnd()).toEqual(1);
-			expect(circularBuffer.getFreeByteLength()).toEqual(0);
-		}
-
-		{
-			expect(await circularBuffer.requireBytes(2)()).toStrictEqual(
-				Buffer.from([2, 3]),
-			);
-			expect(circularBuffer.getStart()).toEqual(0);
-			expect(circularBuffer.getEnd()).toEqual(1);
-			expect(circularBuffer.getFreeByteLength()).toEqual(2);
-		}
-
-		{
-			expect(await circularBuffer.requireBytes(1)()).toStrictEqual(
-				Buffer.from([4]),
-			);
-
-			expect(circularBuffer.getStart()).toEqual(1);
-			expect(circularBuffer.getEnd()).toEqual(1);
-			expect(circularBuffer.getFreeByteLength()).toEqual(3);
-		}
-
-		{
-			circularBuffer.write(Buffer.from([5, 6, 7]), 3);
-
-			expect(circularBuffer.getBuffer()).toStrictEqual(Buffer.from([7, 5, 6]));
-			expect(circularBuffer.getStart()).toEqual(1);
-			expect(circularBuffer.getEnd()).toEqual(1);
-			expect(circularBuffer.getFreeByteLength()).toEqual(0);
-		}
-
-		{
-			expect(await circularBuffer.requireBytes(3)()).toStrictEqual(
-				Buffer.from([5, 6, 7]),
-			);
-
-			expect(circularBuffer.getStart()).toEqual(1);
-			expect(circularBuffer.getEnd()).toEqual(1);
-			expect(circularBuffer.getFreeByteLength()).toEqual(3);
-		}
+		expect(circularBuffer.getStart()).toEqual(1);
+		expect(circularBuffer.getEnd()).toEqual(1);
+		expect(circularBuffer.getFreeByteLength()).toEqual(3);
 	});
 
 	it("should not allow for writing zero bytes", () => {

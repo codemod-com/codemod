@@ -1,6 +1,6 @@
-import { type PathLike } from "node:fs";
+import type { PathLike } from "node:fs";
 import { type FileHandle, open } from "node:fs/promises";
-import { type CircularBuffer } from "./circularBuffer.js";
+import type { CircularBuffer } from "./circularBuffer.js";
 
 export class FileReadingService {
 	protected _bytesRead = 0;

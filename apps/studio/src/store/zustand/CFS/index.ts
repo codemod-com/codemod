@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { SendMessageResponse } from "~/api/sendMessage";
 import { autoGenerateCodemodPrompt } from "~/store/zustand/CFS/prompts";
-import { PromptPreset } from "./prompts";
+import type { PromptPreset } from "./prompts";
 
 export const LLM_ENGINES = [
 	"gpt-4",

@@ -1,5 +1,5 @@
 import type { WebviewApi } from "vscode-webview";
-import { WebviewResponse } from "../../../../src/components/webview/webviewEvents";
+import type { WebviewResponse } from "../../../../src/components/webview/webviewEvents";
 
 class VSCodeAPIWrapper {
 	private readonly vsCodeApi: WebviewApi<unknown> | undefined;

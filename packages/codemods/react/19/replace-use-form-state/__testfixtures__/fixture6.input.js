@@ -1,4 +1,4 @@
-import { createPortal, useFormState as UFS } from "react-dom";
+import { useFormState as UFS, createPortal } from "react-dom";
 
 function StatefulForm({}) {
 	const [state, formAction] = UFS(increment, 0);

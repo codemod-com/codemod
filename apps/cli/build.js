@@ -12,6 +12,7 @@ build({
 	external: [
 		"esbuild",
 		"keytar",
+		"prettier",
 		// Workaround for @vue/compiler-sfc dynamic require
 		"mustache",
 		"templayed",

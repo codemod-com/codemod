@@ -1,14 +1,14 @@
 import cn from "classnames";
 import { useEffect, useRef } from "react";
-import {
+import type {
 	CodemodNodeHashDigest,
 	NodeDatum,
 } from "../../../../src/selectors/selectCodemodTree";
-import { CodemodHash } from "../../shared/types";
+import type { CodemodHash } from "../../shared/types";
 import CodemodArguments from "../CodemodArguments";
 import { InfiniteProgress } from "../TreeView/InfiniteProgress";
 import ProgressBar from "../TreeView/ProgressBar";
-import { type Progress } from "../useProgressBar";
+import type { Progress } from "../useProgressBar";
 import Codemod from "./Codemod";
 import Directory from "./Directory";
 import styles from "./style.module.css";

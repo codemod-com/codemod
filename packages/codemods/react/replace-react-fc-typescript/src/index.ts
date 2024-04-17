@@ -110,7 +110,6 @@ export default function transform(fileInfo: FileInfo, api: API) {
 			componentFunctionFirstParameter = j.objectPattern.from({
 				...restParams,
 				// remove locations because properties might have a spread like ({ id, ...rest }) => and it breaks otherwise
-				/* eslint-disable @typescript-eslint/no-unused-vars*/
 				properties: properties.map(({ loc, ...rest }) => {
 					const key = rest.type.slice(0, 1).toLowerCase() + rest.type.slice(1);
 					// This workaround is because the AST parsed has "RestElement, but codeshift (as well as the types) expects "RestProperty"
@@ -160,7 +159,6 @@ export default function transform(fileInfo: FileInfo, api: API) {
 
 	function removeReactFCorSFCdeclaration(n: ASTPath<VariableDeclarator>) {
 		const { id, ...restOfNode } = n.node;
-		/* eslint-disable @typescript-eslint/no-unused-vars*/
 		const { typeAnnotation, ...restOfId } = id as Identifier;
 		const newId = j.identifier.from({ ...restOfId });
 		const newVariableDeclarator = j.variableDeclarator.from({
@@ -234,12 +232,10 @@ function extractPropsDefinitionFromReactFC(
 
 	// form of React.FC<Props> or React.SFC<Props>
 	if (isTsTypeReference(typeParameterFirstParam)) {
-		/* eslint-disable @typescript-eslint/no-unused-vars*/ /* eslint-disable @typescript-eslint/no-unused-vars*/
 		const { loc, ...rest } = typeParameterFirstParam;
 		newInnerTypeAnnotation = j.tsTypeReference.from({ ...rest });
 	} else if (j.TSIntersectionType.check(typeParameterFirstParam)) {
 		// form of React.FC<Props & Props2>
-		/* eslint-disable @typescript-eslint/no-unused-vars*/
 		const { loc, ...rest } = typeParameterFirstParam;
 		newInnerTypeAnnotation = j.tsIntersectionType.from({
 			...rest,
@@ -262,7 +258,6 @@ function extractPropsDefinitionFromReactFC(
 }
 
 // dynamically call the api method to build the proper node. For example TSPropertySignature becomes tsPropertySignature
-// @ts-expect-error object types 	/* eslint-disable @typescript-eslint/no-unused-vars*/
 function buildDynamicalNodeByType(j: JSCodeshift, { loc, ...rest }: unknown) {
 	const key = rest.type.slice(0, 2).toLowerCase() + rest.type.slice(2);
 	return j[key].from({ ...rest });

@@ -1,5 +1,5 @@
 import { Analytics } from "@vercel/analytics/react";
-import { type Metadata, type Viewport } from "next";
+import type { Metadata, Viewport } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
 import { ThemeProvider } from "~/pageComponents/main/themeContext";

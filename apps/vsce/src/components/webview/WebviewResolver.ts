@@ -1,5 +1,5 @@
-import { randomBytes } from "crypto";
-import { Uri, Webview } from "vscode";
+import { randomBytes } from "node:crypto";
+import { Uri, type Webview } from "vscode";
 import { getUri } from "../../utilities";
 
 const monacoWorkers: Record<string, string> = {

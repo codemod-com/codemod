@@ -2,7 +2,7 @@ import { useAuth } from "@clerk/nextjs";
 import { deflate } from "pako";
 // import { encode } from "universal-base64url";
 import sendMessage from "~/api/sendMessage";
-import { type ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
+import type { ShareableCodemod } from "~/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 import { generateCodemodNamePrompt } from "~/store/zustand/CFS/prompts";
 import { useModStore } from "~/store/zustand/mod";
@@ -51,7 +51,6 @@ export const useShareLink = () => {
 
 	// 		return url;
 	// 	} catch (error) {
-	// 		// eslint-disable-next-line no-console
 	// 		console.error(error);
 
 	// 		return null;

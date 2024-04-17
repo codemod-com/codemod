@@ -1,8 +1,8 @@
-import { Clerk, OrganizationMembership, User } from "@clerk/backend";
-import { FastifyReply, FastifyRequest } from "fastify";
-import { Environment } from "./schemata/env.js";
-import { CodemodService } from "./services/codemodService.js";
-import { type TokenService } from "./services/tokenService.js";
+import type { Clerk, OrganizationMembership, User } from "@clerk/backend";
+import type { FastifyReply, FastifyRequest } from "fastify";
+import type { Environment } from "./schemata/env.js";
+import type { CodemodService } from "./services/codemodService.js";
+import type { TokenService } from "./services/tokenService.js";
 
 export type CustomHandler<T> = (args: {
 	tokenService: TokenService;

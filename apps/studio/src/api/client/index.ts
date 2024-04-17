@@ -14,7 +14,6 @@ const errorHandler = (error: AxiosError<{ message?: string }>) => {
 		});
 	}
 
-	// eslint-disable-next-line prefer-promise-reject-errors
 	return Promise.reject({ ...error });
 };
 

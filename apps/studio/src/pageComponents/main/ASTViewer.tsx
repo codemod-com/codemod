@@ -1,10 +1,9 @@
-/* eslint-disable no-nested-ternary */
 import { useCallback, useEffect, useRef } from "react";
 import Text from "../../components/Text";
 import Tree, { type TreeNode } from "../../components/Tree";
 import useScrollNodeIntoView from "../../hooks/useScrollNodeIntoView";
 
-import { SnippetType } from "~/pageComponents/main/PageBottomPane";
+import type { SnippetType } from "~/pageComponents/main/PageBottomPane";
 import { useExecuteRangeCommandOnBeforeInput } from "~/store/useExecuteRangeCommandOnBeforeInput";
 import { useCodemodOutputStore } from "~/store/zustand/codemodOutput";
 import {
@@ -33,8 +32,8 @@ const ASTViewer = ({ type }: Props) => {
 		type === "before"
 			? executeRangeCommandOnBeforeInputThunk
 			: type === "after"
-			  ? setOutputSelection
-			  : setSelections;
+				? setOutputSelection
+				: setSelections;
 
 	const scrollNodeIntoView = useScrollNodeIntoView();
 

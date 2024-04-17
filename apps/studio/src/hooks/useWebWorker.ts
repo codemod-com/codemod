@@ -1,5 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Event } from "~/schemata/eventSchemata";
 import {

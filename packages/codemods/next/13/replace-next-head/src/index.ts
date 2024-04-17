@@ -972,7 +972,6 @@ const buildMetadataStatement = (metadataObject: Record<string, unknown>) => {
 
 type Root = ReturnType<typeof fromMarkdown>;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 	parseMdx?: (data: string) => Root;

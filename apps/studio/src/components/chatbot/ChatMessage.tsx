@@ -1,7 +1,7 @@
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import { CaretDown, CaretRight, User as UserIcon } from "@phosphor-icons/react";
-import { type Message } from "ai";
+import type { Message } from "ai";
 import Image from "next/image";
 import { type FC, memo, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
@@ -90,7 +90,6 @@ const ChatMessage = ({ message }: Props) => {
 										);
 									}
 
-									// eslint-disable-next-line no-param-reassign
 									children[0] = (children[0] as string).replace("`▍`", "▍");
 								}
 

@@ -1,7 +1,7 @@
-import { DiffEditor, Monaco } from "@monaco-editor/react";
-import { editor } from "monaco-editor";
+import { DiffEditor, type Monaco } from "@monaco-editor/react";
+import type { editor } from "monaco-editor";
 import { memo, useEffect, useRef, useState } from "react";
-import { Diff, getDiff } from "../../shared/Snippet/calculateDiff";
+import { type Diff, getDiff } from "../../shared/Snippet/calculateDiff";
 import configure from "./configure";
 
 export type { Diff };
@@ -90,7 +90,6 @@ export const DiffComponent = memo(
 		useEffect(() => {
 			// set modified content to `newFileContent` only once when the new job first loads
 			setModifiedContent(newFileContent);
-			// eslint-disable-next-line react-hooks/exhaustive-deps
 		}, [jobHash]);
 
 		return (

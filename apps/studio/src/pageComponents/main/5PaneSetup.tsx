@@ -1,8 +1,9 @@
-import { SignInButton } from "@clerk/nextjs";
-import { type KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import { SignInButton, useAuth } from "@clerk/nextjs";
+import type { KnownEngines } from "@codemod-com/utilities";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+// import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
 import getAccessToken from "~/api/getAccessToken";
 import { getCodeDiff } from "~/api/getCodeDiff";
@@ -27,14 +28,14 @@ import {
 	SelectValue,
 } from "~/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
-import { useAuth } from "~/hooks/useAuth";
+// import { useExecutionStatus } from "~/hooks/useExecutionStatus";
 import { UserIcon } from "~/icons/User";
 import { cn } from "~/lib/utils";
 import {
 	AstSection,
 	BoundResizePanel,
-	PanelData,
-	PanelsRefs,
+	type PanelData,
+	type PanelsRefs,
 	ResizablePanelsIndices,
 	ShowPanelTile,
 } from "~/pageComponents/main/PageBottomPane";
@@ -49,7 +50,7 @@ import ChevronRightSVG from "../../assets/icons/chevronright.svg";
 import ResizeHandle from "../../components/ResizePanel/ResizeHandler";
 import Text from "../../components/Text";
 import Codemod from "./Codemod";
-import { Header } from "./Header";
+import Header from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
@@ -109,17 +110,46 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
 };
 
 const Main = () => {
-	const { isSignedIn, getToken, getSignIn } = useAuth();
+	const { isSignedIn, getToken } = useAuth();
+	const router = useRouter();
 	const panelRefs: PanelsRefs = useRef({});
 	const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
 		useSnippetsPanels({ panelRefs });
 
 	const { engine, setEngine } = useSnippetStore();
-	const { isDark } = useTheme();
+	const { toggleTheme, isDark } = useTheme();
+	// const executionId = "id"; // TODO: replace it with real id
+	// const executionStatus = useExecutionStatus(executionId) ?? {
+	// 	// TODO: Remove dummy data
+	// 	status: "progress",
+	// 	statusMessage: "processed 100 files",
+	// 	result: null,
+	// 	progressInfo: { processed: 100, total: 300 },
+	// };
 
 	const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
 		setEngine(value as KnownEngines);
 	};
+
+	// useEffect(() => {
+	// 	if (executionStatus === null) {
+	// 		return;
+	// 	}
+	// 	const { status, statusMessage, result } = executionStatus;
+	// 	if (status === "done") {
+	// 		toast.success(
+	// 			result === null
+	// 				? statusMessage
+	// 				: `${statusMessage}\nGo to ${result.link} to see the results.`,
+	// 			{ duration: 6000 },
+	// 		);
+	// 	}
+	// 	if (status === "progress") {
+	// 		toast(statusMessage, {
+	// 			icon: "🚧",
+	// 		});
+	// 	}
+	// }, [executionStatus]);
 
 	const snippetStore = useSnippetStore();
 
@@ -139,7 +169,7 @@ const Main = () => {
 
 			if (
 				timestamp === null ||
-				new Date().getTime() - parseInt(timestamp, 10) > TWO_MINS_IN_MS
+				new Date().getTime() - Number.parseInt(timestamp, 10) > TWO_MINS_IN_MS
 			) {
 				return;
 			}
@@ -202,8 +232,8 @@ const Main = () => {
 			localStorage.setItem(command, new Date().getTime().toString());
 		}
 
-		getSignIn();
-	}, [getToken, isSignedIn]);
+		router.push("/auth/sign-in");
+	}, [getToken, isSignedIn, router]);
 
 	useEffect(() => {
 		const searchParams = new URLSearchParams(window.location.search);
@@ -388,7 +418,10 @@ const Main = () => {
 
 function SignInRequired() {
 	const theme = useTheme();
-	const { getSignIn } = useAuth();
+	const router = useRouter();
+	const signUserIn = () => {
+		router.push("/auth/sign-in");
+	};
 
 	return (
 		<div className="grid h-full absolute top-0 bottom-0 w-full">
@@ -414,7 +447,7 @@ function SignInRequired() {
 					Sign in to use AI assistant to build codemod
 				</p>
 				<Button
-					onClick={getSignIn()}
+					onClick={signUserIn}
 					className="flex w-full text-white gap-2 items-center"
 				>
 					Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />

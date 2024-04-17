@@ -1,7 +1,7 @@
-import { FileSystem, Uri, window } from "vscode";
-import { Telemetry } from "../telemetry/telemetry";
-import { DownloadService, ForbiddenRequestError } from "./downloadService";
-import { MessageBus, MessageKind } from "./messageBus";
+import { type FileSystem, Uri, window } from "vscode";
+import type { Telemetry } from "../telemetry/telemetry";
+import { type DownloadService, ForbiddenRequestError } from "./downloadService";
+import { type MessageBus, MessageKind } from "./messageBus";
 
 // aka bootstrap engines
 export class BootstrapExecutablesService {

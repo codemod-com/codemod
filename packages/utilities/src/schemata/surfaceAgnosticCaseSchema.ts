@@ -1,14 +1,15 @@
-import * as S from "@effect/schema/Schema";
+import { type Output, bigint, object, parse, string } from "valibot";
 import { argumentRecordSchema } from "./argumentRecordSchema.js";
 
-const surfaceAgnosticCaseSchema = S.struct({
-	caseHashDigest: S.string,
-	codemodHashDigest: S.string,
-	createdAt: S.bigint,
-	absoluteTargetPath: S.string,
+const surfaceAgnosticCaseSchema = object({
+	caseHashDigest: string(),
+	codemodHashDigest: string(),
+	createdAt: bigint(),
+	absoluteTargetPath: string(),
 	argumentRecord: argumentRecordSchema,
 });
 
-export const parseSurfaceAgnosticCase = S.parseSync(surfaceAgnosticCaseSchema);
+export const parseSurfaceAgnosticCase = (input: unknown) =>
+	parse(surfaceAgnosticCaseSchema, input);
 
-export type SurfaceAgnosticCase = S.Schema.To<typeof surfaceAgnosticCaseSchema>;
+export type SurfaceAgnosticCase = Output<typeof surfaceAgnosticCaseSchema>;
