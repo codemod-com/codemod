@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import { useAuth, useSession } from "@clerk/nextjs";
 import sendMessage from "@studio/api/sendMessage";
 import { Button } from "@studio/components/ui/button";
@@ -14,7 +15,6 @@ import {
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { DownloadIcon } from "@studio/icons/Download";
-import { cn } from "@studio/lib/utils";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { downloadProject } from "@studio/utils/download";

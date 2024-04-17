@@ -1,5 +1,5 @@
+import { cn } from "@/utils";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
-import { cn } from "@studio/lib/utils";
 import { isVisible } from "@studio/utils/visibility";
 import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";

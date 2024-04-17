@@ -1,4 +1,4 @@
-import { cn } from "@studio/lib/utils";
+import { cn } from "@/utils";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 
 type Props = ButtonHTMLAttributes<HTMLButtonElement> & {

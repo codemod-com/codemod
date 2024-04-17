@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import { Label } from "@studio/components/ui/label";
 import {
 	Table as ShadCNTable,
@@ -7,7 +8,6 @@ import {
 	TableHead,
 	TableHeader,
 } from "@studio/components/ui/table";
-import { cn } from "@studio/lib/utils";
 import type { Event } from "@studio/schemata/eventSchemata";
 import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
 import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";

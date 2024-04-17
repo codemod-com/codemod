@@ -6,3 +6,5 @@ function cn(...inputs: ClassValue[]) {
 }
 
 export { cn };
+export * from "./getBlocksToc";
+export * from "./getImageProps";

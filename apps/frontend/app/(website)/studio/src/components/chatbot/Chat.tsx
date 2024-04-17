@@ -1,7 +1,7 @@
 import { env } from "@/env";
+import { cn } from "@/utils";
 import { useAuth } from "@clerk/nextjs";
 import { SEND_CHAT } from "@studio/constants/apiEndpoints";
-import { cn } from "@studio/lib/utils";
 import {
 	freezeMessage,
 	parseFrozenMessages,

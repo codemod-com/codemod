@@ -1,6 +1,6 @@
+import { cn } from "@/utils";
 import { Slot } from "@radix-ui/react-slot";
 import Tooltip from "@studio/components/Tooltip/Tooltip";
-import { cn } from "@studio/lib/utils";
 import { type VariantProps, cva } from "class-variance-authority";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
@@ -61,6 +61,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 			];
 		}
 
+		console.log({ variant });
 		const Comp = (
 			<RenderElement
 				className={cn(buttonVariants({ variant, size, className }))}

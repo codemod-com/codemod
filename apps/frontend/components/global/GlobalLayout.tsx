@@ -2,7 +2,7 @@
 
 import { useHideMenu } from "@/components/global/useHideMenu";
 import type { GlobalPagePayload } from "@/types";
-import { cn } from "~/lib/utils";
+import { cn } from "@/utils";
 import Footer from "./Footer";
 import Navigation from "./Navigation";
 
