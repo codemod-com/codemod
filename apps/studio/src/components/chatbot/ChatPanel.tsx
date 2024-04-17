@@ -15,6 +15,7 @@ import {
 	applyAliases,
 	useGetAliases,
 } from "~/store/zustand/CFS/alias";
+import { useCodemodExecutionError } from "~/store/zustand/log";
 import {
 	autoGenerateCodemodPrompt,
 	fixCodemodBlockNoDebugInfoPrompt,
@@ -40,6 +41,7 @@ export interface ChatPanelProps
 }
 
 const getPrompts = (aliases: Aliases) => {
+	const codemodExecutionError = useCodemodExecutionError();
 	const prompts = [
 		["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
 	];
@@ -51,6 +53,10 @@ const getPrompts = (aliases: Aliases) => {
 			"Regenerate specified code block",
 			fixCodemodBlockNoDebugInfoPrompt,
 		]);
+	}
+
+	if (codemodExecutionError) {
+		prompts.unshift(["Fix codemod error", codemodExecutionError]);
 	}
 
 	return prompts;

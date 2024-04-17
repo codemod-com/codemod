@@ -65,10 +65,14 @@ export const useGetAliases = () => {
 					updatedAt: afterRangeUpdatedAt,
 				}
 			: null,
-		$EXECUTION_ERROR: {
-			value: codemodExecutionError ?? "",
-			updatedAt: rangesUpdatedAt,
-		},
+		...(codemodExecutionError
+			? {
+					$EXECUTION_ERROR: {
+						value: codemodExecutionError,
+						updatedAt: rangesUpdatedAt,
+					},
+				}
+			: {}),
 	};
 };
 
