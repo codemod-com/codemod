@@ -326,7 +326,7 @@ export class CodemodService {
 					author: codemod.author,
 					tags: latestVersion.tags,
 					verified: codemod.verified,
-					arguments: codemod.arguments,
+					arguments: codemod.arguments ?? [],
 				};
 			});
 
@@ -356,7 +356,7 @@ export class CodemodService {
 					author: codemod.author,
 					tags: latestVersion.tags,
 					verified: codemod.verified,
-					arguments: codemod.arguments,
+					arguments: codemod.arguments ?? [],
 				};
 			});
 
