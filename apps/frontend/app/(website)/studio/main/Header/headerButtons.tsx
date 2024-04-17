@@ -1,9 +1,9 @@
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
 import { Link as LinkIcon } from "@phosphor-icons/react/dist/csr/Link";
 import { Button } from "@studio/components/ui/button";
-import { usePublicLinkSharing } from "@studio/pageComponents/main/usePublicLinkSharing";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { usePublicLinkSharing } from "../usePublicLinkSharing";
 
 type ButtonProps = {
 	text: string;
@@ -40,8 +40,9 @@ export const HeaderButtons = () => {
 
 	return (
 		<>
-			{buttonsData.map(({ Icon, hintText, ...button }) => (
+			{buttonsData.map(({ Icon, hintText, ...button }, index) => (
 				<Button
+					key={index}
 					size="xs"
 					variant="outline"
 					className="flex gap-1"
