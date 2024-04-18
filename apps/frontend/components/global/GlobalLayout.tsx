@@ -23,11 +23,11 @@ export default function GlobalLayout({
 				className,
 			)}
 		>
-			{!hideMenu && <Navigation data={data.navigation} />}
+			{!hideMenu && data && <Navigation data={data.navigation} />}
 			<main className={cn("w-full", !hideMenu && "max-w-[1312px]")}>
 				{children}
 			</main>
-			{!hideMenu && <Footer data={data.footer} />}
+			{!hideMenu && data && <Footer data={data.footer} />}
 		</div>
 	);
 }
