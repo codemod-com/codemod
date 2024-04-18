@@ -1,9 +1,10 @@
 import { readFile } from "node:fs/promises";
 import { relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
+import type { FileSystem } from "@codemod-com/utilities";
 import { type FileSystemAdapter, glob, globStream } from "fast-glob";
 import * as yaml from "js-yaml";
-import { type IFs, Volume, createFsFromVolume } from "memfs";
+import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
 import type { Codemod } from "./codemod.js";
@@ -107,7 +108,7 @@ export const buildPatterns = async (
 };
 
 export const buildPathsGlob = async (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	flowSettings: FlowSettings,
 	patterns: {
 		include: string[];
@@ -127,7 +128,7 @@ export const buildPathsGlob = async (
 };
 
 async function* buildPathGlobGenerator(
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	flowSettings: FlowSettings,
 	patterns: {
 		include: string[];
@@ -153,7 +154,7 @@ async function* buildPathGlobGenerator(
 }
 
 export const runCodemod = async (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	printer: PrinterBlueprint,
 	codemod: Codemod,
 	flowSettings: FlowSettings,
@@ -163,8 +164,6 @@ export const runCodemod = async (
 		message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
 	) => void,
 	safeArgumentRecord: SafeArgumentRecord,
-	currentWorkingDirectory: string,
-	getCodemodSource: (path: string) => Promise<string>,
 ): Promise<void> => {
 	if (codemod.engine === "piranha") {
 		throw new Error("Piranha not supported");
@@ -207,8 +206,6 @@ export const runCodemod = async (
 						// if we are within a recipe
 					},
 					safeArgumentRecord,
-					currentWorkingDirectory,
-					getCodemodSource,
 				);
 
 				for (const command of commands) {
@@ -264,8 +261,6 @@ export const runCodemod = async (
 					// if we are within a recipe
 				},
 				safeArgumentRecord,
-				currentWorkingDirectory,
-				getCodemodSource,
 			);
 
 			for (const command of commands) {
@@ -309,7 +304,7 @@ export const runCodemod = async (
 		return;
 	}
 
-	const codemodSource = await getCodemodSource(codemod.indexPath);
+	const codemodSource = await readFile(codemod.indexPath, { encoding: "utf8" });
 
 	const transpiledSource = codemod.indexPath.endsWith(".ts")
 		? transpile(codemodSource.toString())
@@ -340,7 +335,6 @@ export const runCodemod = async (
 			flowSettings.raw,
 			safeArgumentRecord,
 			onPrinterMessage,
-			currentWorkingDirectory,
 		);
 
 		const commands = await buildFormattedFileCommands(fileCommands);

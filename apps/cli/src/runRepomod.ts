@@ -11,13 +11,13 @@ import {
 	buildApi,
 	executeFilemod,
 } from "@codemod-com/filemod";
+import type { FileSystem } from "@codemod-com/utilities";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
 import { type FileSystemAdapter, glob } from "fast-glob";
 import jscodeshift from "jscodeshift";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
 import { toMarkdown } from "mdast-util-to-markdown";
-import type { IFs } from "memfs";
 import { mdxjs } from "micromark-extension-mdxjs";
 import rehypeParse from "rehype-parse";
 import tsmorph from "ts-morph";
@@ -54,13 +54,12 @@ export type Dependencies = Readonly<{
 }>;
 
 export const runRepomod = async (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	filemod: Filemod<Dependencies, Record<string, unknown>>,
 	target: string,
 	disablePrettier: boolean,
 	safeArgumentRecord: SafeArgumentRecord,
 	onPrinterMessage: (message: OperationMessage) => void,
-	currentWorkingDirectory: string,
 ): Promise<readonly FileCommand[]> => {
 	const buildPathHashDigest = (path: string) =>
 		createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
@@ -99,6 +98,7 @@ export const runRepomod = async (
 		path: string,
 	): Promise<ReadonlyArray<UnifiedEntry>> => {
 		const entries = await fileSystem.promises.readdir(path, {
+			// @ts-ignore
 			withFileTypes: true,
 		});
 
@@ -145,7 +145,7 @@ export const runRepomod = async (
 		getDirname: (path) => dirname(path),
 		getBasename: (path) => basename(path),
 		joinPaths: (...paths) => join(...paths),
-		currentWorkingDirectory,
+		currentWorkingDirectory: target,
 	};
 
 	const api = buildApi<Dependencies>(

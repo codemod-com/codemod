@@ -1,12 +1,8 @@
-import * as fs from "node:fs";
-import { homedir } from "node:os";
-import { join } from "node:path";
 import {
 	NullSender,
 	PostHogSender,
 	type TelemetrySender,
 } from "@codemod-com/telemetry";
-import type { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -20,9 +16,7 @@ import { handlePublishCliCommand } from "./commands/publish";
 import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
-import { FileDownloadService } from "./fileDownloadService.js";
 import { Printer } from "./printer.js";
-import { TarService } from "./services/tarService.js";
 import type { TelemetryEvent } from "./telemetry";
 import {
 	execPromise,
@@ -88,19 +82,6 @@ export const executeMainThread = async () => {
 
 	const printer = new Printer(argv.json);
 
-	const fileDownloadService = new FileDownloadService(
-		argv.noCache,
-		fs,
-		printer,
-	);
-
-	const tarService = new TarService(fs as unknown as IFs);
-
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
-
 	argvObject
 		.scriptName("codemod")
 		.usage("Usage: <command> [options]")
@@ -111,7 +92,9 @@ export const executeMainThread = async () => {
 			"runs a codemod or recipe",
 			(y) => buildRunOptions(y),
 			async (args) =>
-				executeCliCommand(() => handleRunCliCommand(printer, args)),
+				executeCliCommand(() =>
+					handleRunCliCommand(printer, args, telemetryService),
+				),
 		)
 		// TODO: improve and remove the need for this command
 		// .command(

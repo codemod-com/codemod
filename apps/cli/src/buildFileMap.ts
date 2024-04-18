@@ -1,10 +1,10 @@
 import { createHash } from "node:crypto";
 import { dirname } from "node:path";
-import type { IFs } from "memfs";
+import type { FileSystem } from "@codemod-com/utilities";
 
 export const buildFileMap = async (
-	sourceFileSystem: IFs,
-	targetFileSystem: IFs,
+	sourceFileSystem: FileSystem,
+	targetFileSystem: FileSystem,
 	paths: {
 		include: string[];
 		exclude: string[];

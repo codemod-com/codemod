@@ -4,12 +4,12 @@ import path, { resolve } from "node:path";
 import {
 	type AllEngines,
 	type CodemodConfig,
+	type FileSystem,
 	allEnginesSchema,
 	parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
-import type { IFs } from "memfs";
 import { object, parse } from "valibot";
 import type { Codemod } from "./codemod.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
@@ -18,7 +18,7 @@ import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { boldText, colorizeText } from "./utils.js";
 
 const extractEngine = async (
-	fs: IFs,
+	fs: FileSystem,
 	filePath: string,
 ): Promise<AllEngines | null> => {
 	try {
@@ -79,7 +79,7 @@ const extractMainScriptPath = async (
 };
 
 export const buildSourcedCodemodOptions = async (
-	fs: IFs,
+	fs: FileSystem,
 	printer: PrinterBlueprint,
 	codemodOptions: CodemodSettings & { kind: "runSourced" },
 	codemodDownloader: CodemodDownloaderBlueprint,

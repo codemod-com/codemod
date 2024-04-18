@@ -1,5 +1,5 @@
+import type { FileSystem } from "@codemod-com/utilities";
 import { Axios } from "axios";
-import type { IFs } from "memfs";
 import type { PrinterBlueprint } from "./printer.js";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
@@ -19,7 +19,7 @@ const fetchBuffer = async (url: string) => {
 export class FileDownloadService implements FileDownloadServiceBlueprint {
 	public constructor(
 		protected readonly _disableCache: boolean,
-		protected readonly _ifs: IFs | typeof import("fs"),
+		protected readonly _ifs: FileSystem,
 		protected readonly _printer: PrinterBlueprint,
 	) {}
 

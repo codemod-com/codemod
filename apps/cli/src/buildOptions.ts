@@ -9,9 +9,7 @@ import {
 	DEFAULT_USE_JSON,
 } from "./constants.js";
 
-export const buildGlobalOptions = <T extends Record<string, unknown>>(
-	y: Argv<T>,
-) =>
+export const buildGlobalOptions = <T>(y: Argv<T>) =>
 	y
 		.option("telemetryDisable", {
 			type: "boolean",
@@ -33,11 +31,7 @@ type RunArgvOptions = Awaited<
 	ReturnType<ReturnType<typeof buildRunOptions>>["argv"]
 >;
 
-type lol = RunArgvOptions[""];
-
-export const buildRunOptions = <T extends Record<string, unknown>>(
-	y: Argv<T>,
-) => {
+export const buildRunOptions = <T>(y: Argv<T>) => {
 	return buildGlobalOptions(
 		y
 			.option("include", {

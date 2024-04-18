@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
-import type { IFs } from "memfs";
+import type { FileSystem } from "@codemod-com/utilities";
 import type { Options } from "prettier";
 import { filterNeitherNullNorUndefined } from "./filterNeitherNullNorUndefined.js";
 import type { OperationMessage } from "./messages.js";
@@ -172,7 +172,7 @@ export const buildFormattedFileCommands = async (
 };
 
 export const modifyFileSystemUponWetRunCommand = async (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	command: FormattedFileCommand,
 ): Promise<void> => {
 	if (command.kind === "createFile") {
@@ -237,7 +237,7 @@ export const buildNewDataPathForUpdateFileCommand = (
 };
 
 export const modifyFileSystemUponDryRunCommand = async (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	outputDirectoryPath: string,
 	command: FormattedFileCommand,
 ): Promise<void> => {
@@ -261,7 +261,7 @@ export const modifyFileSystemUponDryRunCommand = async (
 };
 
 export const modifyFileSystemUponCommand = (
-	fileSystem: IFs,
+	fileSystem: FileSystem,
 	runSettings: RunSettings,
 	command: FormattedFileCommand,
 ) => {

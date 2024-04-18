@@ -22,12 +22,13 @@ const lockFilesToPmMap: Record<string, PackageManager> = {
 type InstallationChoice = "root" | "affected" | "none";
 
 export const handleInstallDependencies = async (options: {
+	codemodName: string;
 	printer: PrinterBlueprint;
 	target: string;
 	deps: NonNullable<CodemodConfig["deps"]>;
 	affectedFiles: string[];
 }) => {
-	const { printer, target, affectedFiles, deps } = options;
+	const { codemodName, printer, target, affectedFiles, deps } = options;
 
 	try {
 		if (deps.length === 0) {
@@ -209,7 +210,9 @@ export const handleInstallDependencies = async (options: {
 		printer.printConsoleMessage(
 			"info",
 			`\n${colorizeText(
-				"This codemod expects the following dependency changes:",
+				`Codemod "${boldText(
+					codemodName,
+				)}" expects the following dependency changes:`,
 				"cyan",
 			)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
 		);

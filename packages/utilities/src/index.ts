@@ -19,6 +19,12 @@ export {
 	type KnownEngines,
 	type PiranhaLanguage,
 } from "./schemata/codemodConfigSchema.js";
+export { type FileSystem } from "./schemata/types.js";
+export {
+	type ArgumentRecord,
+	argumentRecordSchema,
+	parseArgumentRecordSchema,
+} from "./schemata/argumentRecordSchema.js";
 export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
 export {
 	JOB_KIND,
