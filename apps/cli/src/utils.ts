@@ -1,4 +1,6 @@
 import { exec, spawnSync } from "node:child_process";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { promisify } from "node:util";
 import {
 	type ValidateTokenResponse,
@@ -114,3 +116,9 @@ export const initGlobalNodeModules = async (): Promise<void> => {
 		.join(":");
 	require("node:module").Module._initPaths();
 };
+
+export const getConfigurationDirectoryPath = (argvUnderScore?: unknown) =>
+	join(
+		String(argvUnderScore) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);

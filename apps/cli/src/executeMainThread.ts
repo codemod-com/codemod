@@ -16,29 +16,15 @@ import { handlePublishCliCommand } from "./commands/publish";
 import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
+import { getUserDistinctId } from "./distinctId";
 import { Printer } from "./printer.js";
 import type { TelemetryEvent } from "./telemetry";
-import {
-	execPromise,
-	getCurrentUserData,
-	initGlobalNodeModules,
-} from "./utils";
+import { execPromise, initGlobalNodeModules } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
 
 	const argvObject = buildGlobalOptions(yargs(slicedArgv));
-
-	const getDistinctId = async () => {
-		const userData = await getCurrentUserData();
-
-		if (!userData) {
-			// @TODO create anonymous session
-			return "AnonymousUser";
-		}
-
-		return userData.user.userId;
-	};
 
 	const argv = await Promise.resolve(argvObject.argv);
 
@@ -47,7 +33,7 @@ export const executeMainThread = async () => {
 			? new NullSender()
 			: new PostHogSender({
 					cloudRole: "CLI",
-					distinctId: await getDistinctId(),
+					distinctId: await getUserDistinctId(),
 				});
 
 	const exit = async () => {

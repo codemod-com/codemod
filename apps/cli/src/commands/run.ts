@@ -23,7 +23,7 @@ import { parseFlowSettings } from "../schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "../schemata/runArgvSettingsSchema.js";
 import { TarService } from "../services/tarService.js";
 import type { TelemetryEvent } from "../telemetry.js";
-import { boldText } from "../utils.js";
+import { boldText, getConfigurationDirectoryPath } from "../utils.js";
 
 export const handleRunCliCommand = async (
 	printer: PrinterBlueprint,
@@ -48,10 +48,7 @@ export const handleRunCliCommand = async (
 
 	const tarService = new TarService(fs as unknown as IFs);
 
-	const configurationDirectoryPath = join(
-		String(args._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
+	const configurationDirectoryPath = getConfigurationDirectoryPath(args._);
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,
