@@ -1,5 +1,6 @@
 "use client";
 
+import GlobalLayout from "@/components/global/GlobalLayout";
 import { useHideMenu } from "@/components/global/useHideMenu";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import type { GlobalPagePayload } from "@/types";
@@ -19,12 +20,9 @@ export default function GlobalLayoutPreview({
 		initial,
 	});
 
-	const hideMenu = useHideMenu();
 	return (
-		<div className="flex min-h-svh w-full flex-col items-center">
-			{!hideMenu && <Navigation data={data?.navigation!} />}
-			<main className={cn("w-full', 'max-w-[1312px]")}>{children}</main>
-			{!hideMenu && <Footer data={data?.footer!} />}
-		</div>
+		<GlobalLayout data={data!} className={""}>
+			{children}
+		</GlobalLayout>
 	);
 }

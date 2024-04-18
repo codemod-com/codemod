@@ -9,13 +9,20 @@ import Navigation from "./Navigation";
 export default function GlobalLayout({
 	data,
 	children,
+	className = "justify-between",
 }: {
 	data: GlobalPagePayload;
+	className?: string;
 	children: any;
 }) {
 	const hideMenu = useHideMenu();
 	return (
-		<div className="flex min-h-svh w-full flex-col items-center justify-between">
+		<div
+			className={cn(
+				"flex min-h-svh w-full flex-col items-center justify-between",
+				className,
+			)}
+		>
 			{!hideMenu && <Navigation data={data.navigation} />}
 			<main className={cn("w-full", !hideMenu && "max-w-[1312px]")}>
 				{children}
