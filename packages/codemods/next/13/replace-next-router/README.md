@@ -1,7 +1,3 @@
-# Replace Next Router
-
-## Description
-
 Since Next.js 13.4, you can use the following hooks from the `next/navigation` module:
 
 -   `useRouter`,

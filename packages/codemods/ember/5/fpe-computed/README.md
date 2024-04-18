@@ -1,10 +1,4 @@
-# Fpe Computed
-
-## Description
-
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import EmberObject from '@ember/object';
@@ -30,7 +24,7 @@ client.set('lastName', 'Fuller');
 client.get('fullName'); // 'Betty Fuller'
 ```
 
-### After:
+## After
 
 ```tsx
 import EmberObject, { computed } from '@ember/object';

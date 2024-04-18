@@ -1,10 +1,6 @@
-# Migrate eslintrc to biome.json
-
-## Description
-
 This codemod replaces configuration files for ESLint with corresponding biome.json for all the found rules. It also replaces Prettier configuration.
 
-### NOTE:
+## Note:
 
 This codemod accepts manual user input, which is required to migrate away from eslint. In order to run it properly, run the following command:
 

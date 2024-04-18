@@ -1,10 +1,4 @@
-# Fpe On
-
-## Description
-
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import EmberObject from '@ember/object';
@@ -21,7 +15,7 @@ let job = Job.create();
 sendEvent(job, 'completed'); // Logs 'Job completed!'
 ```
 
-### After:
+## After
 
 ```tsx
 import EmberObject from '@ember/object';

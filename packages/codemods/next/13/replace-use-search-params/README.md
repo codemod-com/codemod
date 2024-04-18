@@ -1,7 +1,3 @@
-# Replace useSearchParams with useCompatSearchParams
-
-## Description
-
 A recent update in Next.js brought a breaking change: the useSearchParams hook no longer includes params. To ease the migration, the new useCompatSearchParams hook can be used. This hook mimics the behavior of the old useSearchParams in two ways:
 
 -   it includes both params and searchParams

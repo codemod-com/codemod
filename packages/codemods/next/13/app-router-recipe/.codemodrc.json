@@ -1,7 +1,7 @@
 {
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"name": "next/13/app-router-recipe",
-	"version": "1.0.0",
+	"version": "1.0.3",
 	"private": false,
 	"engine": "recipe",
 	"names": [
@@ -11,7 +11,8 @@
 		"next/13/app-directory-boilerplate"
 	],
 	"meta": {
-		"tags": ["next.js", "migration"]
+		"tags": ["next.js", "migration"],
+		"git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/next/13/app-router-recipe"
 	},
 	"applicability": {
 		"from": [["next", "<", "13.0.0"]]

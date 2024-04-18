@@ -1,12 +1,6 @@
-# Deprecate Merge
-
-## Description
-
 This codemod replaces all calls to `Ember.merge` with `Ember.assign`.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import { merge } from '@ember/polyfills';
@@ -16,7 +10,7 @@ var b = { last: 'Katz' };
 merge(a, b);
 ```
 
-### After:
+## After
 
 ```tsx
 import { assign } from '@ember/polyfills';

@@ -1,12 +1,6 @@
-# Cp Volatile
-
-## Description
-
 This codemod removes all calls to `volatile()` and ensures that native getters are directly used.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 const Person = EmberObject.extend({
@@ -16,7 +10,7 @@ const Person = EmberObject.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 const Person = EmberObject.extend({

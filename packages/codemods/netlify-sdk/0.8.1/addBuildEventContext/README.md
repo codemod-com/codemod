@@ -1,12 +1,6 @@
-# Rename addBuildEventContext
-
-## Description
-
 This codemod renames `addBuildContext` to `addBuildEventContext` as required in Netlify SDK v0.8.1.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 import { NetlifyIntegration } from '@netlify/sdk';
@@ -17,7 +11,7 @@ const integration = new NetlifyIntegration();
 integration.addBuildContext(() => {});
 ```
 
-### After
+## After
 
 ```jsx
 import { NetlifyIntegration } from '@netlify/sdk';

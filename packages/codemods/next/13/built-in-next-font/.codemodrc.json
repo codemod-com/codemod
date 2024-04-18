@@ -1,6 +1,6 @@
 {
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": false,
 	"name": "next/13/built-in-next-font",
 	"description": "The codemod removes @next/font and changes @next/font imports to use the built-in next/font instead.",

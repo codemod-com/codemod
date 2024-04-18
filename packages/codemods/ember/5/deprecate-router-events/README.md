@@ -1,12 +1,6 @@
-# Deprecate Router Events
-
-## Description
-
 This codemod removes all calls to `willTransition` or `didTransition` events on the Router via usage of `routeWillChange` event listener and `routeDidChange` event listener.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import Router from '@ember/routing/router';
@@ -32,7 +26,7 @@ export default Router.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 import Router from '@ember/routing/router';

@@ -1,10 +1,4 @@
-# Jquery Apis
-
-## Description
-
 This codemod replaces all calls to `this.$()` inside of an `Ember.Component` with `this.element` property, which provides a reference to a native DOM element.
-
-## Example
 
 ## Events
 

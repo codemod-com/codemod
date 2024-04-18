@@ -1,7 +1,3 @@
-# Migrate Data Fetching Methods
-
-## Description
-
 The following data fetching methods are no longer available in the `app` directory:
 
 -   `getStaticPaths`,
@@ -102,33 +98,3 @@ export default async function Post({ params }: PageProps) {
 
 export const dynamicParams = true;
 ```
-
-## Applicability Criteria
-
-Next.js version is greater or equal to 13.4.
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~2 minutes per occurrence
-
-### Owner
-
-Codemod.com
-
-### Links for more info
-
--   https://nextjs.org/docs/app/building-your-application/upgrading/app-router-migration#static-site-generation-getstaticprops

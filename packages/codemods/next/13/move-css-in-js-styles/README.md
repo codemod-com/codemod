@@ -1,7 +1,3 @@
-# Move CSS in JS Styles
-
-## Description
-
 This highly experimental codemod moves the CSS-in-JS styles into the CSS Modules.
 
 ## Example

@@ -1,14 +1,8 @@
-# Update Response Usages
-
-## Description
-
 To send a response from MSW handler, one would previously use something like `res(ctx.text("Hello world"))`. In msw v2, this is achieved by returning a native WebAPI Response object. msw v2 conveniently exposes a `HttpResponse` function that has useful methods for creating just that object with a desired body. This codemod replaces the old `res` calls with the new `HttpResponse` function calls and a bunch of ctx utilities that usually go with it. See examples below.
 
 This codemod does not remove unused properties on the callback signature due to the fact that there are more changes in other codemods included in the `upgrade-recipe` that rely on it. To apply these changes, you will have to run the recipe or run a `callback-signature` codemod that will do only that and replace all the references of old signature arguments.
 
-## Example
-
-### Before
+## Before
 
 ```ts
 import { rest } from 'msw';
@@ -23,7 +17,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { rest } from 'msw';
@@ -41,7 +35,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 import { rest } from 'msw';
@@ -51,7 +45,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { rest, delay } from 'msw';
@@ -65,7 +59,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 import { rest } from 'msw';
@@ -75,7 +69,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { delay, rest } from 'msw';
@@ -85,7 +79,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 import { rest } from 'msw';
@@ -95,7 +89,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { rest } from 'msw';
@@ -105,7 +99,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 graphql.query('GetUser', (req, res, ctx) => {
@@ -123,7 +117,7 @@ graphql.query('GetUser', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 graphql.query('GetUser', (req, res, ctx) => {

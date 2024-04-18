@@ -1,12 +1,6 @@
-# Cp Property
-
-## Description
-
 `.property()` is a modifier that adds additional property dependencies to an existing computed property. This codemod moves the dependencies to the main computed property definition.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 const Person = EmberObject.extend({
@@ -16,7 +10,7 @@ const Person = EmberObject.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 const Person = EmberObject.extend({

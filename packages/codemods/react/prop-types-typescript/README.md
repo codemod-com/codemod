@@ -1,7 +1,3 @@
-# Migrate prop types to typescript
-
-## Description
-
 Codemod to convert React PropTypes to TypeScript types.
 
 -   Supports function and class components
@@ -11,9 +7,7 @@ Codemod to convert React PropTypes to TypeScript types.
 -   Copies JSDoc comments to the generated TypeScript types
 -   Option to remove or preserve PropTypes after converting to TS
 
-## Example
-
-### Before:
+## Before:
 
 ```jsx
 import PropTypes from 'prop-types';
@@ -29,7 +23,7 @@ MyComponent.propTypes = {
 };
 ```
 
-### After:
+## After:
 
 ```tsx
 import React from 'react';

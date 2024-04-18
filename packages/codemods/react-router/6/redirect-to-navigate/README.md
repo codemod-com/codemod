@@ -1,4 +1,0 @@
-# Redirect To Navigate
-
-## Description
-

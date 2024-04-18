@@ -1,12 +1,6 @@
-# Notify Property Change
-
-## Description
-
 This codemod removes all calls to `propertyWillChange` and replaces all calls to `propertyDidChange` with `notifyPropertyChange`.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 Ember.propertyWillChange(object, 'someProperty');
@@ -18,7 +12,7 @@ doStuff(object);
 object.propertyDidChange('someProperty');
 ```
 
-### After:
+## After
 
 ```tsx
 doStuff(object);

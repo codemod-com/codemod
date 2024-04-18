@@ -1,6 +1,6 @@
 {
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": false,
 	"name": "next/13/next-image-to-legacy-image",
 	"description": "The codemod safely migrates Next.js 10, 11, and 12 applications that use the next/image import to the renamed next/legacy/image import in Next.js 13.",

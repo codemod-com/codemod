@@ -1,7 +1,3 @@
-# Migrate Tests from Mocha to Vitest
-
-## Description
-
 Run this codemod to upgrade your codebase from using mocha to vitest.
 
 ## Example

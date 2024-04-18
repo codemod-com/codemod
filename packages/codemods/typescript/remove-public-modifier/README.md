@@ -1,12 +1,6 @@
-# Remove Public Modifier
-
-## Description
-
 This codemod removes public modifier in interface declarations as it is implicit.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 class MyClass {
@@ -20,7 +14,7 @@ class MyClass {
 }
 ```
 
-### After
+## After
 
 ```jsx
 class MyClass {

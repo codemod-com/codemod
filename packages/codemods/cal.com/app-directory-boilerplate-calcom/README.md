@@ -1,7 +1,3 @@
-# App Directory Boilerplate for Cal.com
-
-## Description
-
 The first step to migrate your pages to the `app` directory is to provide a new file structure, respected by the App router.
 
 This is attempted by this codemod, which reads the contents of your `pages` directory and creates the placeholder files.

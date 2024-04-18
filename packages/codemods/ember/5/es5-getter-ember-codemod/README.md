@@ -1,12 +1,6 @@
-# ES5 Getter Ember Codemod
-
-## Description
-
 This codemod transforms `get()` to `getProperties()` to use traditional object dot notation. This standard was proposed by Ember.js team in https://github.com/emberjs/rfcs/blob/master/text/0281-es5-getters.md.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });
@@ -28,7 +22,7 @@ controller.get('foo.bar');
 controller.get('foo-bar');
 ```
 
-### After:
+## After
 
 ```tsx
 let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });

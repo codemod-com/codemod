@@ -1,15 +1,9 @@
-# Bull to BullMQ
-
-## Description
-
 This codemod provides straightforward changes to migrate from bull to bullmq.
 You have to manually create queue names for the existing queues in your application.
 You need to apply these names for the created workers in the files which previously used .process().
 You will have to manually specify connection details if you used `createClient` method on `new Queue()` options before. Connection details should now also be specified for and `Worker` classes.
 
-## Example
-
-### Before
+## Before
 
 ```ts
 import Queue from 'bull';
@@ -64,7 +58,7 @@ queue.process(async function (job) {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { Queue, DefaultJobOptions, QueueEvents, Worker } from "bullmq";

@@ -1,7 +1,3 @@
-# Metadata to Viewport Export
-
-## Description
-
 This codemod migrates certain viewport metadata to `viewport` export.
 
 ## Example

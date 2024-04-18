@@ -1,12 +1,6 @@
-# Replace Location Query
-
-## Description
-
 This codemod replaces instances of `location.query` with `parse(location.search)`, where `parse` is a function imported from `query-string`.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 const List = ({ location }) => (
@@ -16,7 +10,7 @@ const List = ({ location }) => (
 );
 ```
 
-### After
+## After
 
 ```jsx
 import { parse } from 'query-string';
@@ -27,29 +21,3 @@ const List = ({ location }) => (
 	</div>
 );
 ```
-
-## Applicability Criteria
-
-React Router version 3.x.y
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Autonomous**: Changes can safely be pushed and merged without further human involvement.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~3 minutes per occurrence
-
-### Owner
-
-[Codemod.com](https://codemod.com)

@@ -1,4 +1,0 @@
-# Remove Go Hooks
-
-## Description
-

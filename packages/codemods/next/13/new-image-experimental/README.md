@@ -1,7 +1,3 @@
-# New Image Experimental
-
-## Description
-
 This codemod **dangerously** migrates the usages of the `Image` component from the `next/legacy/image` module to the `next/image` module.
 This is achieved by adding inline styles and removing unused props.
 

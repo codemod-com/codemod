@@ -1,7 +1,3 @@
-# Built in Next Font
-
-## Description
-
 This codemod transforms the module specifier `@next/font/*` in import statements into `next/font/*`.
 
 Using the `@next/font/*` modules is deprecated since Next.js v13.2.

@@ -1,7 +1,3 @@
-# Comment Deletable Files
-
-## Description
-
 This codemod is recommended when migrating from the `/pages` to the `/app` directory.
 
 It adds a comment to files that should be deleted and migrated to different files during the migration process.
