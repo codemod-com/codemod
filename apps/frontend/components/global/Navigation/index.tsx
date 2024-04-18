@@ -121,7 +121,7 @@ export default function Navigation({ data }: NavigationProps) {
 				ref={headerRef}
 				className={cx(
 					"left-0 top-0 z-40 w-full border-b-[1px] border-transparent transition-all duration-0",
-					isStaticHeader ? "absolute" : "fixed",
+					// isStaticHeader ? "absolute" : "fixed", // this makes the top bar menu items unclickable
 					{
 						" border-border-light dark:border-border-dark":
 							y > headerHeight + 10,
