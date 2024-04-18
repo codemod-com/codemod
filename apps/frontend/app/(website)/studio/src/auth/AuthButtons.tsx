@@ -27,7 +27,7 @@ const AuthButtons = () => {
 				</Button>
 			</SignedOut>
 			<SignedIn>
-				<div className=" flex items-center gap-2">
+				<div className="flex items-center gap-2">
 					<UserButton afterSignOutUrl="/" />
 					{user?.firstName}
 					<SignOutButton>

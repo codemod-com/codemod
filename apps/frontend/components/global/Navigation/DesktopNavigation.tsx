@@ -1,5 +1,6 @@
 import Button from "@/components/shared/Button";
 import type { NavigationPayload, SanityLinkType } from "@/types";
+import AuthButtons from "@studio/auth/AuthButtons";
 import NavigationLink from "./NavigationLink";
 
 type DesktopNavigationProps = {
@@ -25,19 +26,17 @@ export function DesktopNavigationRight(props: {
 }) {
 	return (
 		<div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
-			{props.items
-				?.map((item, index) => (
-					<NavigationLink hideExternalIcon key={item._key} href={item?.href}>
-						<Button
-							glow={index === 0}
-							intent={index === 0 ? "secondary" : "inline"}
-						>
-							{item?.label}
-						</Button>
-					</NavigationLink>
-				))
-
-				.reverse()}
+			{props.items?.map((item, index) => (
+				<NavigationLink hideExternalIcon key={item._key} href={item?.href}>
+					<Button
+						glow={index === 0}
+						intent={index === 0 ? "secondary" : "inline"}
+					>
+						{item?.label}
+					</Button>
+				</NavigationLink>
+			))}
+			<AuthButtons />
 		</div>
 	);
 }
