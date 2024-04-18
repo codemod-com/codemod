@@ -16,9 +16,9 @@
   </p>
 </p>
 
-## Codemod.com
+## Codemod
 
-At Codemod.com we are building the ecosystem, platform and tooling around code modification bots, aka codemods. Codemod platform helps you create, distribute, and deploy codemods in codebases of any size.
+Codemod platform helps you create, distribute, and run codemods in codebases of any size.
 
 The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
 
@@ -30,7 +30,7 @@ For details on how to use Codemod platform, check out our [documentation](https:
 
 ## Quickstart
 
-To get started with Codemod platform, you can install Codemod CLI:
+To get started, you can install Codemod CLI:
 
 ```
 npm i -g codemod
