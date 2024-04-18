@@ -141,7 +141,7 @@ export default function LogoWithContextMenu() {
 					<DropdownMenu.Group className="pt-s">
 						<DropdownMenu.Item asChild>
 							<a
-								href="https://codemod.studio/"
+								href="https://codemod.com/studio/"
 								target="_blank"
 								rel="noopener noreferrer"
 								className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"

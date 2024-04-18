@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 		title: "Codemod Studio",
 		description:
 			"Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.",
-		url: "https://codemod.studio",
+		url: "https://codemod.com/studio",
 		siteName: "Codemod Studio",
 		locale: "en_US",
 	},
