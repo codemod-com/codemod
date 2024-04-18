@@ -41,9 +41,11 @@
 		"test:backend": "pnpm --filter @codemod-com/backend test",
 		"test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
 		"coverage": "pnpm test:unit --coverage",
-		"prepare": "husky install"
+		"prepare": "husky install",
+    "release:changelog": "node scripts/releaseChangelog.mjs"
 	},
 	"devDependencies": {
+		"@biomejs/biome": "1.5.3",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
