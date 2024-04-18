@@ -214,7 +214,7 @@ export async function buildLinterConfig(
 
 	// Find corresponding rules based on the state passed and infer other stuff from eslint config
 	const markDownUrl =
-		"https://raw.githubusercontent.com/biomejs/biome/main/website/src/content/docs/linter/rules-sources.mdx";
+		"https://raw.githubusercontent.com/biomejs/website/main/src/content/docs/linter/rules-sources.mdx";
 	const biomeRules = await fetch(markDownUrl)
 		.then((res) => res.text())
 		.then((text) => text.split("\n").slice(5));
