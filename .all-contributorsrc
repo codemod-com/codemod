@@ -171,6 +171,16 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "arybitskiy",
+      "name": "Aleksy",
+      "avatar_url": "https://avatars.githubusercontent.com/u/4195805?v=4",
+      "profile": "https://github.com/arybitskiy",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
