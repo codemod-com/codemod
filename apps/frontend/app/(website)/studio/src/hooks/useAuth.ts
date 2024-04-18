@@ -1,10 +1,10 @@
 import { useAuth as useClerk } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import { authUrl } from "@studio/config";
 import {
-	PendingAction,
+	type PendingAction,
 	useUserSession,
 } from "@studio/store/zustand/userSession";
+import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
 	const router = useRouter();
