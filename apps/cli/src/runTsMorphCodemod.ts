@@ -6,8 +6,8 @@ import { getAdapterByExtname } from "./adapters/index.js";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
-import { SafeArgumentRecord } from "./safeArgumentRecord.js";
-import { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 
 const transform = (
 	codemodSource: string,

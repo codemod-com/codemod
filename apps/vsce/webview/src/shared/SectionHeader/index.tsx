@@ -1,6 +1,6 @@
 import cn from "classnames";
-import { CSSProperties } from "react";
-import { Command } from "vscode";
+import type { CSSProperties } from "react";
+import type { Command } from "vscode";
 import { vscode } from "../utilities/vscode";
 import s from "./style.module.css";
 

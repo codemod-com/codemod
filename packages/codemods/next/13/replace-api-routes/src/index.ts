@@ -1,5 +1,5 @@
 import { format, parse, sep } from "node:path";
-import type { ParsedPath } from "path";
+import type { ParsedPath } from "node:path";
 import type { Filemod, UnifiedFileSystem } from "@codemod-com/filemod";
 import type {
 	ArrowFunction,
@@ -11,7 +11,6 @@ import type {
 } from "ts-morph";
 import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 	unifiedFileSystem: UnifiedFileSystem;

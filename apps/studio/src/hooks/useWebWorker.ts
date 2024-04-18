@@ -1,11 +1,10 @@
-/* eslint-disable import/prefer-default-export */
+import type { KnownEngines } from "@codemod-com/utilities";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Event } from "~/schemata/eventSchemata";
 import {
 	type WebWorkerIncomingMessage,
 	parseWebWorkerOutgoingMessage,
 } from "~/schemata/webWorkersSchemata";
-import { JSEngine } from "~/types/Engine";
 
 type State =
 	| {
@@ -72,7 +71,7 @@ export const useWebWorker = () => {
 	}, []);
 
 	const postMessage = useCallback(
-		(engine: JSEngine, content: string, input: string) => {
+		(engine: KnownEngines, content: string, input: string) => {
 			ref.current?.postMessage({
 				engine: String(engine),
 				content: String(content),

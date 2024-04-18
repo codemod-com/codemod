@@ -162,7 +162,6 @@ const Chat = ({ id, className }: Props) => {
 			setMessages([]);
 			handleSelectPrompt(autoGenerateCodemodPrompt);
 		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [command, aliases.$BEFORE, aliases.$AFTER, isLoading, isSignedIn]);
 
 	useEffect(() => {

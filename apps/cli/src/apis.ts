@@ -37,6 +37,22 @@ export const publish = async (
 	});
 };
 
+export const unpublish = async (
+	accessToken: string,
+	name: string,
+): Promise<void> => {
+	await Axios.post(
+		"https://backend.codemod.com/unpublish",
+		{ name },
+		{
+			headers: {
+				[X_CODEMOD_ACCESS_TOKEN]: accessToken,
+			},
+			timeout: 10000,
+		},
+	);
+};
+
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 	await Axios.delete("https://backend.codemod.com/revokeToken", {
 		headers: {
@@ -69,7 +85,7 @@ export const getCodemodDownloadURI = async (
 
 export const getCodemodList = async (options?: {
 	accessToken?: string;
-	search?: string;
+	search?: string | null;
 }): Promise<CodemodListResponse> => {
 	const { accessToken, search } = options ?? {};
 
@@ -117,4 +133,24 @@ export const confirmUserLoggedIn = async (
 	);
 
 	return res.data.token;
+};
+
+type CreateCodeDiffResponse = {
+	id: string;
+	iv: string;
+};
+export const createCodeDiff = async (body: {
+	beforeSnippet: string;
+	afterSnippet: string;
+}): Promise<CreateCodeDiffResponse> => {
+	const res = await Axios.post<CreateCodeDiffResponse>(
+		"https://backend.codemod.com/diffs",
+		{
+			before: body.beforeSnippet,
+			after: body.afterSnippet,
+			source: "cli",
+		},
+	);
+
+	return res.data;
 };

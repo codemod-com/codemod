@@ -15,7 +15,7 @@ export function middleware(request: NextRequest) {
         default-src 'self';
         script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline';
 		frame-src https://challenges.cloudflare.com/;
-        connect-src *.google-analytics.com https://clerk.codemod.studio https://api.short.io https://telemetry.intuita.io https://backend.codemod.com https://codemod.studio https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev;
+        connect-src *.google-analytics.com https://clerk.codemod.studio https://api.short.io https://backend.codemod.com https://codemod.studio https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev;
         style-src 'self' 'unsafe-inline';
         img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com;
         font-src 'self';

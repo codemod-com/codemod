@@ -1,5 +1,6 @@
+import type { KnownEngines } from "@codemod-com/utilities";
 import { useEffect } from "react";
-import { type State } from "~/schemata/stateSchemata";
+import type { State } from "~/schemata/stateSchemata";
 import { SEARCH_PARAMS_KEYS } from "~/store/getInitialState";
 
 import { useModStore } from "~/store/zustand/mod";
@@ -31,23 +32,8 @@ export const useInputs = () => {
 	useEffect(() => {
 		const storageEventListener = (storageEvent: StorageEvent) => {
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.ENGINE) {
-				if (
-					storageEvent.newValue === "jscodeshift" ||
-					storageEvent.newValue === "tsmorph"
-				) {
-					setEngine(storageEvent.newValue);
-					return;
-				}
-
-				setEngine("jscodeshift");
-			}
-
-			if (storageEvent.key === SEARCH_PARAMS_KEYS.AFTER_SNIPPET) {
-				setInput(storageEvent.newValue ?? "");
-			}
-
-			if (storageEvent.key === SEARCH_PARAMS_KEYS.BEFORE_SNIPPET) {
-				setOutput(storageEvent.newValue ?? "");
+				setEngine(storageEvent.newValue as KnownEngines);
+				return;
 			}
 
 			if (storageEvent.key === SEARCH_PARAMS_KEYS.CODEMOD_SOURCE) {

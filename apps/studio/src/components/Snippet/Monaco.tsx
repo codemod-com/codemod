@@ -1,7 +1,7 @@
 import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
 import { forwardRef, useRef, useState } from "react";
-import { type monaco } from "~/customMonaco";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { monaco } from "~/customMonaco";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 import { useTheme } from "../../pageComponents/main/themeContext";
 import configure from "./configure";
 import { useEditor } from "./hook";
@@ -93,7 +93,6 @@ const MonacoEditor = forwardRef<
 						if (typeof ref === "function") {
 							ref(editor);
 						} else if (ref) {
-							// eslint-disable-next-line no-param-reassign
 							ref.current = editor;
 						}
 

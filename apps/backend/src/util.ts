@@ -1,5 +1,5 @@
-import { IncomingHttpHeaders } from "node:http";
-import { Environment, parseEnvironment } from "./schemata/env.js";
+import type { IncomingHttpHeaders } from "node:http";
+import { type Environment, parseEnvironment } from "./schemata/env.js";
 
 export const areClerkKeysSet = (
 	environment: Environment,
@@ -37,8 +37,7 @@ export const getCustomAccessToken = (
 	headers: IncomingHttpHeaders,
 ): string | null =>
 	flattenArray(
-		headers[environment.X_CODEMOD_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""] ??
-			headers[environment.X_INTUITA_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""],
+		headers[environment.X_CODEMOD_ACCESS_TOKEN?.toLocaleLowerCase() ?? ""],
 	);
 
 export const buildTimeoutPromise = (ms: number) =>

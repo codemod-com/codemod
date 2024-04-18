@@ -1,23 +1,25 @@
 import "dotenv/config";
-import "./cron.js";
 
 import { randomBytes } from "node:crypto";
-import { OutgoingHttpHeaders } from "node:http";
-import { OrganizationMembership, User } from "@clerk/backend";
+import type { OutgoingHttpHeaders } from "node:http";
+import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import cors, { FastifyCorsOptions } from "@fastify/cors";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
-import Fastify, { FastifyPluginCallback, RouteHandlerMethod } from "fastify";
+import Fastify, {
+	type FastifyPluginCallback,
+	type RouteHandlerMethod,
+} from "fastify";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
 import { COMPLETION_PARAMS } from "./constants.js";
 import { decrypt, encrypt } from "./crypto/crypto.js";
 import {
-	CustomHandler,
+	type CustomHandler,
 	ForbiddenError,
 	UnauthorizedError,
 } from "./customHandler.js";
@@ -25,20 +27,22 @@ import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
-import { getCodemodsFiltersHandler } from "./handlers/getCodemodsFiltersHandler.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
 import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
 import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
-import { parseIv, parseValidateIntentParams } from "./schemata/query.js";
 import {
 	parseCreateIssueBody,
 	parseCreateIssueParams,
+	parseDiffCreationBody,
+	parseGetCodeDiffParams,
 	parseGetUserRepositoriesParams,
+	parseIv,
 	parseSendChatBody,
 	parseSendMessageBody,
+	parseValidateIntentParams,
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
@@ -56,6 +60,7 @@ import {
 	TokenRevokedError,
 	TokenService,
 } from "./services/tokenService.js";
+import { unpublishHandler } from "./unpublishHandler.js";
 import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
 
 const getSourceControlProvider = (
@@ -72,10 +77,6 @@ const getSourceControlProvider = (
 
 const X_CODEMOD_ACCESS_TOKEN = (
 	environment.X_CODEMOD_ACCESS_TOKEN ?? ""
-).toLocaleLowerCase();
-
-const X_INTUITA_ACCESS_TOKEN = (
-	environment.X_INTUITA_ACCESS_TOKEN ?? ""
 ).toLocaleLowerCase();
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -135,22 +136,14 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 		methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
 		exposedHeaders: [
 			X_CODEMOD_ACCESS_TOKEN,
-			// TODO deprecated
-			X_INTUITA_ACCESS_TOKEN,
 			"x-clerk-auth-reason",
 			"x-clerk-auth-message",
 		],
-		allowedHeaders: [
-			X_CODEMOD_ACCESS_TOKEN,
-			// TODO deprecated
-			X_INTUITA_ACCESS_TOKEN,
-			"Content-Type",
-			"Authorization",
-		],
+		allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
 	} satisfies FastifyCorsOptions);
 
 	await fastify.register(fastifyRateLimit, {
-		max: 100,
+		max: 1000,
 		timeWindow: 60 * 1000, // 1 minute
 	});
 
@@ -181,7 +174,7 @@ const chatGptApi =
 				completionParams: {
 					...COMPLETION_PARAMS,
 				},
-		  })
+			})
 		: null;
 
 const openAiEdgeApi =
@@ -190,7 +183,7 @@ const openAiEdgeApi =
 				new openAiEdge.Configuration({
 					apiKey: environment.OPEN_AI_API_KEY,
 				}),
-		  )
+			)
 		: null;
 
 const tokenService = new TokenService(
@@ -207,7 +200,7 @@ const clerkClient = areClerkKeysSet(environment)
 			publishableKey: environment.CLERK_PUBLISH_KEY,
 			secretKey: environment.CLERK_SECRET_KEY,
 			jwtKey: environment.CLERK_JWT_KEY,
-	  })
+		})
 	: null;
 
 const wrapRequestHandlerMethod =
@@ -217,7 +210,6 @@ const wrapRequestHandlerMethod =
 			getCustomAccessToken(environment, request.headers);
 
 		const setAccessToken = (accessToken: string) => {
-			reply.header(X_INTUITA_ACCESS_TOKEN, accessToken);
 			reply.header(X_CODEMOD_ACCESS_TOKEN, accessToken);
 		};
 
@@ -353,11 +345,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 	});
 
 	instance.get(
-		"/codemods/filters",
-		wrapRequestHandlerMethod(getCodemodsFiltersHandler),
-	);
-
-	instance.get(
 		"/codemods/:slug",
 		wrapRequestHandlerMethod(getCodemodBySlugHandler),
 	);
@@ -377,6 +364,71 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		"/validateAccessToken",
 		wrapRequestHandlerMethod(validationHandler),
 	);
+
+	instance.get("/diffs/:id", async (request, reply) => {
+		const { id } = parseGetCodeDiffParams(request.params);
+		const { iv: ivStr } = parseIv(request.query);
+
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+		const iv = Buffer.from(ivStr, "base64url");
+
+		const codeDiff = await prisma.codeDiff.findUnique({
+			where: { id },
+		});
+
+		if (!codeDiff) {
+			reply.code(400).send();
+			return;
+		}
+
+		let before: string;
+		let after: string;
+		try {
+			before = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.before, "base64url"),
+			).toString();
+			after = decrypt(
+				"aes-256-cbc",
+				{ key, iv },
+				Buffer.from(codeDiff.after, "base64url"),
+			).toString();
+		} catch (err) {
+			reply.code(400).send();
+			return;
+		}
+
+		reply.type("application/json").code(200);
+		return { before, after };
+	});
+
+	instance.post("/diffs", async (request, reply) => {
+		const body = parseDiffCreationBody(request.body);
+
+		const iv = randomBytes(16);
+		const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+
+		const codeDiff = await prisma.codeDiff.create({
+			data: {
+				name: body.name,
+				source: body.source,
+				before: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.before),
+				).toString("base64url"),
+				after: encrypt(
+					"aes-256-cbc",
+					{ key, iv },
+					Buffer.from(body.after),
+				).toString("base64url"),
+			},
+		});
+
+		reply.type("application/json").code(200);
+		return { id: codeDiff.id, iv: iv.toString("base64url") };
+	});
 
 	instance.delete("/revokeToken", wrapRequestHandlerMethod(revokeTokenHandler));
 
@@ -420,8 +472,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		await prisma.userLoginIntent.delete({
 			where: { id: result.id },
 		});
-
-		// TODO: Create cron to clean up intents
 
 		reply.type("application/json").code(200);
 		return { token: decryptedToken };
@@ -649,7 +699,9 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 		return;
 	});
 
-	instance.post("/publish", publishHandler(environment, tokenService));
+	instance.post("/publish", wrapRequestHandlerMethod(publishHandler));
+
+	instance.post("/unpublish", wrapRequestHandlerMethod(unpublishHandler));
 
 	instance.get(
 		"/sourceControl/:provider/user/repos",

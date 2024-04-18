@@ -36,7 +36,7 @@ export class EventManager {
 		this.__events[index] = newEvent;
 	}
 
-	public getEvents(): ReadonlyArray<Event> {
+	public getEvents(): Array<Event> {
 		return this.__events;
 	}
 }

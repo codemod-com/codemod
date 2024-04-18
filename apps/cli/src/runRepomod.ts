@@ -1,32 +1,32 @@
 import { createHash } from "node:crypto";
 import { basename, dirname, join } from "node:path";
 import {
-	CallbackService,
-	Filemod,
-	GlobArguments,
-	PathAPI,
-	PathHashDigest,
-	UnifiedEntry,
+	type CallbackService,
+	type Filemod,
+	type GlobArguments,
+	type PathAPI,
+	type PathHashDigest,
+	type UnifiedEntry,
 	UnifiedFileSystem,
 	buildApi,
 	executeFilemod,
 } from "@codemod-com/filemod";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
-import { FileSystemAdapter, glob } from "fast-glob";
+import { type FileSystemAdapter, glob } from "fast-glob";
 import jscodeshift from "jscodeshift";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
 import { toMarkdown } from "mdast-util-to-markdown";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import { mdxjs } from "micromark-extension-mdxjs";
 import rehypeParse from "rehype-parse";
 import tsmorph from "ts-morph";
 import { unified } from "unified";
 import { filter } from "unist-util-filter";
 import { visit } from "unist-util-visit";
-import { FileCommand } from "./fileCommands.js";
-import { OperationMessage } from "./messages.js";
-import { SafeArgumentRecord } from "./safeArgumentRecord.js";
+import type { FileCommand } from "./fileCommands.js";
+import type { OperationMessage } from "./messages.js";
+import type { SafeArgumentRecord } from "./safeArgumentRecord.js";
 
 const parseMdx = (data: string) =>
 	fromMarkdown(data, {

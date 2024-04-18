@@ -40,11 +40,8 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 	const { id: sessionId, iv: initVector } = await generateUserLoginIntent();
 
 	routeUserToStudioForLogin(printer, sessionId, initVector);
-	const stopLoading = printer.withLoaderMessage((loader) =>
-		colorizeText(
-			`${loader.get("vertical-dots")} Redirecting to Codemod sign-in page`,
-			"cyan",
-		),
+	const spinner = printer.withLoaderMessage(
+		colorizeText("Redirecting to Codemod sign-in page", "cyan"),
 	);
 	try {
 		const token = await backOff(
@@ -58,13 +55,13 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 
 		await keytar.setPassword("codemod.com", "user-account", token);
 
-		stopLoading();
+		spinner.succeed();
 		printer.printConsoleMessage(
 			"info",
 			colorizeText(boldText("You are successfully logged in."), "cyan"),
 		);
 	} catch (e) {
-		stopLoading();
+		spinner.fail();
 		throw new Error("Could not validate access token. Please try again.");
 	}
 };

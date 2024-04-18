@@ -1,4 +1,4 @@
-/* eslint-disable import/group-exports */
+import type { KnownEngines } from "@codemod-com/utilities";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "~/schemata/shareableCodemodSchemata";
@@ -57,13 +57,11 @@ root.find(j.FunctionDeclaration, {
     });
 });`;
 
-export const STARTER_SNIPPET = `// HERE'S A SAMPLE CODEMOD.
-
-// CLICK THE 'CLEAR ALL' BUTTON ABOVE TO START FRESH & REMOVE ALL SAMPLE INPUTS.
-
-// PROVIDE BEFORE/AFTER CODE SNIPPETS, WHICH SERVE AS YOUR TEST FIXTURES.
-
-// CREATE A NEW CODEMOD USING MODGPT OR THE GUI CODEMOD BUILDER.
+export const STARTER_SNIPPET = `// BELOW IS A SAMPLE CODEMOD. BUILD YOUR OWN:
+// 1. INPUT: Fill out the Before and After editors with sample code snippets as test fixtures.
+// 2. AI: In the ModGPT tab on the left, click the button: "Build a codemod to transform before to after"
+// 3. OUTPUT: Let AI generate your codemod. Once generated, copy and paste it here.
+   // This studio features a live codemod runner, so you can immediately see how your codemod transforms the "Before" snippet once pasted below.
 
 
 import type { FileInfo, API, Options } from 'jscodeshift';
@@ -90,9 +88,7 @@ export const handleSourceFile = (
 }
 `;
 
-export const buildDefaultCodemodSource = (
-	engine: "jscodeshift" | "tsmorph",
-) => {
+export const buildDefaultCodemodSource = (engine: KnownEngines) => {
 	if (engine === "jscodeshift") {
 		return prettify(
 			STARTER_SNIPPET.replace(
@@ -105,11 +101,9 @@ export const buildDefaultCodemodSource = (
 	return TSMORPH_STARTER_SNIPPET;
 };
 
-/* eslint-disable import/group-exports */
 export const SEARCH_PARAMS_KEYS = Object.freeze({
 	ENGINE: "engine" as const,
-	BEFORE_SNIPPET: "beforeSnippet" as const,
-	AFTER_SNIPPET: "afterSnippet" as const,
+	DIFF_ID: "diffId" as const,
 	CODEMOD_SOURCE: "codemodSource" as const,
 	CODEMOD_NAME: "codemodName" as const,
 	COMMAND: "command" as const,
@@ -120,7 +114,7 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
 });
 
 type InitialState = Readonly<{
-	engine: "jscodeshift" | "tsmorph";
+	engine: KnownEngines;
 	beforeSnippet: string;
 	afterSnippet: string;
 	codemodSource: string;
@@ -153,7 +147,11 @@ export const getInitialState = (): InitialState => {
 				return value;
 			}
 
-			return decode(value);
+			try {
+				return decode(value);
+			} catch (error) {
+				return value;
+			}
 		};
 
 		const csc = searchParams.get(
@@ -191,13 +189,10 @@ export const getInitialState = (): InitialState => {
 			}
 		}
 
-		const engine = decodeNullable(searchParams.get(SEARCH_PARAMS_KEYS.ENGINE));
-		const beforeSnippet = decodeNullable(
-			searchParams.get(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET),
-		);
-		const afterSnippet = decodeNullable(
-			searchParams.get(SEARCH_PARAMS_KEYS.AFTER_SNIPPET),
-		);
+		const engine = decodeNullable(
+			searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
+		) as KnownEngines;
+		const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
 		const codemodSource = decodeNullable(
 			searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
 		);
@@ -209,23 +204,17 @@ export const getInitialState = (): InitialState => {
 
 		const someSearchParamsSet = [
 			engine,
-			beforeSnippet,
-			afterSnippet,
+			diffId,
 			codemodSource,
 			codemodName,
 			command,
 		].some((s) => s !== null);
 
 		if (someSearchParamsSet) {
-			const parsedEngine: "jscodeshift" | "tsmorph" =
-				engine === "jscodeshift" || engine === "tsmorph"
-					? engine
-					: ("jscodeshift" as const);
-
 			return {
-				engine: parsedEngine,
-				beforeSnippet: beforeSnippet ?? "",
-				afterSnippet: afterSnippet ?? "",
+				engine: engine ?? "jscodeshift",
+				beforeSnippet: "",
+				afterSnippet: "",
 				codemodSource: codemodSource ?? "",
 				codemodName: codemodName ?? "",
 				command:
@@ -269,7 +258,6 @@ export const getInitialState = (): InitialState => {
 				command: null,
 			};
 		} catch (error) {
-			// eslint-disable-next-line no-console
 			console.error(error);
 		}
 	}

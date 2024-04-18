@@ -1,6 +1,6 @@
 import {
 	type Input,
-	Issues,
+	type Issues,
 	type Output,
 	ValiError,
 	array,
@@ -48,10 +48,10 @@ const getFirstValibotIssue = (issues: Issues) => {
 
 export const extractLibNameAndVersion = (val: string) => {
 	const parts = val.split("@");
-	let version: string | undefined;
+	let version: string | null = null;
 	let libName: string;
 	if (parts.length > 1) {
-		version = parts.pop();
+		version = parts.pop() ?? null;
 		libName = parts.join("@");
 	} else {
 		libName = val;
@@ -91,7 +91,7 @@ export const argumentsSchema = array(
 export type Arguments = Output<typeof argumentsSchema>;
 export type ArgumentsInput = Input<typeof argumentsSchema>;
 
-const PIRANHA_LANGUAGES = [
+export const PIRANHA_LANGUAGES = [
 	"java",
 	"kt",
 	"go",
@@ -101,6 +101,12 @@ const PIRANHA_LANGUAGES = [
 	"tsx",
 	"scala",
 ] as const;
+
+export const piranhaLanguageSchema = union(
+	PIRANHA_LANGUAGES.map((language) => literal(language)),
+);
+
+export type PiranhaLanguage = Output<typeof piranhaLanguageSchema>;
 
 // Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 const semVerRegex =
@@ -193,7 +199,7 @@ const configJsonBaseSchema = object({
 					}
 
 					// e.g. vitest. This would install the latest version
-					if (!version) {
+					if (version === null) {
 						return true;
 					}
 
@@ -246,7 +252,7 @@ export const codemodConfigSchema = union([
 		configJsonBaseSchema,
 		object({
 			engine: literal("piranha"),
-			language: union(PIRANHA_LANGUAGES.map((language) => literal(language))),
+			language: piranhaLanguageSchema,
 		}),
 	]),
 ]);

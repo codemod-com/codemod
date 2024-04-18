@@ -1,8 +1,8 @@
-import * as S from "@effect/schema/Schema";
+import { type Output, number, object } from "valibot";
 
-export const offsetRangeSchema = S.struct({
-	start: S.number,
-	end: S.number,
+export const offsetRangeSchema = object({
+	start: number(),
+	end: number(),
 });
 
-export type OffsetRange = S.To<typeof offsetRangeSchema>;
+export type OffsetRange = Output<typeof offsetRangeSchema>;

@@ -1,16 +1,26 @@
-/* eslint-disable import/group-exports */
-import * as S from "@effect/schema/Schema";
+import { knownEnginesSchema } from "@codemod-com/utilities";
+import {
+	type Output,
+	literal,
+	number,
+	object,
+	optional,
+	parse,
+	string,
+	union,
+} from "valibot";
 
-export const shareableCodemodSchemata = S.struct({
-	v: S.optional(S.number), // version
-	e: S.optional(S.union(S.literal("jscodeshift"), S.literal("tsmorph"))), // engine
-	n: S.optional(S.string), // codemod name
-	b: S.optional(S.string), // before snippet
-	a: S.optional(S.string), // after snippet
-	c: S.optional(S.string), // codemod content
-	m: S.optional(S.union(S.literal("learn"), S.literal("accessTokenRequested"))), // command
+export const shareableCodemodSchemata = object({
+	v: optional(number()), // version
+	e: optional(knownEnginesSchema), // engine
+	n: optional(string()), // codemod name
+	b: optional(string()), // before snippet
+	a: optional(string()), // after snippet
+	c: optional(string()), // codemod content
+	m: optional(union([literal("learn"), literal("accessTokenRequested")])), // command
 });
 
-export const parseShareableCodemod = S.parseSync(shareableCodemodSchemata);
+export const parseShareableCodemod = (input: unknown) =>
+	parse(shareableCodemodSchemata, input);
 
-export type ShareableCodemod = S.To<typeof shareableCodemodSchemata>;
+export type ShareableCodemod = Output<typeof shareableCodemodSchemata>;

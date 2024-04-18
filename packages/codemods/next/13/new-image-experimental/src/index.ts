@@ -24,11 +24,11 @@ SOFTWARE.
 */
 
 /*
-Changes to the original file: add any typings in places where the compiler complained, nullability checks
+Changes to the original file: add any typings in places where the compiler complained, nullability checks, imports using node protocol
 */
 
-import { writeFileSync } from "fs";
-import { basename } from "path";
+import { writeFileSync } from "node:fs";
+import { basename } from "node:path";
 import type {
 	API,
 	Collection,

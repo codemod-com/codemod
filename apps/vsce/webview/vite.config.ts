@@ -1,5 +1,4 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { fileURLToPath } from "url";
+import { fileURLToPath } from "node:url";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 import monacoEditorPlugin from "vite-plugin-monaco-editor";

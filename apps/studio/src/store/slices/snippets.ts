@@ -1,6 +1,3 @@
-// /* eslint-disable no-nested-ternary */
-// /* eslint-disable import/group-exports */
-// /* eslint-disable no-param-reassign */
 // import { isFile } from "@babel/types";
 // import { type PayloadAction, createSlice } from "@reduxjs/toolkit";
 // import type { Token } from "~/pageComponents/main/CFS/SelectionShowCase";

@@ -1,6 +1,4 @@
-/* eslint-disable import/prefer-default-export */
-/* eslint-disable import/no-unresolved */
-import { type Monaco } from "@monaco-editor/react";
+import type { Monaco } from "@monaco-editor/react";
 import ASTTypes from "./dts/ast-types.txt?raw";
 import jsCodeShiftIndex from "./dts/jscodeshift.txt?raw";
 import recast from "./dts/recast.txt?raw";

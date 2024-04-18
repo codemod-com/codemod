@@ -1,24 +1,34 @@
-/* eslint-disable import/group-exports */
-import * as S from "@effect/schema/Schema";
 import type { Message } from "ai";
+import {
+	type Output,
+	array,
+	literal,
+	number,
+	object,
+	optional,
+	parse,
+	string,
+	union,
+} from "valibot";
 
-const frozenMessageSchema = S.struct({
-	id: S.string,
-	createdAt: S.optional(S.number),
-	content: S.string,
-	role: S.union(
-		S.literal("system"),
-		S.literal("user"),
-		S.literal("assistant"),
-		S.literal("function"),
-	),
-	name: S.optional(S.string),
-	functionCall: S.optional(S.string),
+const frozenMessageSchema = object({
+	id: string(),
+	createdAt: optional(number()),
+	content: string(),
+	role: union([
+		literal("system"),
+		literal("user"),
+		literal("assistant"),
+		literal("function"),
+	]),
+	name: optional(string()),
+	functionCall: optional(string()),
 });
 
-type FrozenMessage = S.To<typeof frozenMessageSchema>;
+type FrozenMessage = Output<typeof frozenMessageSchema>;
 
-export const parseFrozenMessages = S.parseSync(S.array(frozenMessageSchema));
+export const parseFrozenMessages = (input: unknown) =>
+	parse(array(frozenMessageSchema), input);
 
 export const freezeMessage = (message: Message): FrozenMessage => ({
 	id: message.id,

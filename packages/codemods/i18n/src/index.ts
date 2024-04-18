@@ -10,7 +10,6 @@ import type {
 } from "ts-morph";
 import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 	unifiedFileSystem: UnifiedFileSystem;
@@ -41,7 +40,6 @@ const getValidTemplateHeadText = (
 	return text.length !== 0 ? text : null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const getValidTemplateTailText = (
 	expression: TemplateExpression,
 ): string | null => {

@@ -1,16 +1,16 @@
 import * as vscode from "vscode";
-import { Store } from "../data";
+import type { Store } from "../data";
 import { actions } from "../data/slice";
 import { acceptJobs } from "../jobs/acceptJobs";
 import {
-	JobHash,
+	type JobHash,
 	JobKind,
 	mapJobToPersistedJob,
 	mapPersistedJobToJob,
 } from "../jobs/types";
 import { isNeitherNullNorUndefined } from "../utilities";
-import { FileService } from "./fileService";
-import { Message, MessageBus, MessageKind } from "./messageBus";
+import type { FileService } from "./fileService";
+import { type Message, type MessageBus, MessageKind } from "./messageBus";
 
 export class JobManager {
 	public constructor(

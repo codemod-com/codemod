@@ -132,7 +132,6 @@ describe("/publish route", async () => {
 
 	await fastify.ready();
 
-	const areClerkKeysSpy = vi.spyOn(utils, "areClerkKeysSet");
 	const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
 
 	const tarPackSpy = vi.spyOn(codemodComUtils, "tarPack");
@@ -181,7 +180,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(tarPackSpy).toHaveBeenCalledOnce();
@@ -210,7 +208,7 @@ describe("/publish route", async () => {
 
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-			Bucket: "codemod-public-v2",
+			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
 			Body: "archive",
 		});
@@ -250,7 +248,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(tarPackSpy).toHaveBeenCalledOnce();
@@ -279,7 +276,7 @@ describe("/publish route", async () => {
 
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-			Bucket: "codemod-public-v2",
+			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
 			Body: "archive",
 		});
@@ -315,7 +312,6 @@ describe("/publish route", async () => {
 			.expect("Content-Type", "application/json; charset=utf-8")
 			.expect(expectedCode);
 
-		expect(areClerkKeysSpy).toHaveBeenCalledOnce();
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
 		expect(response.body).toEqual({

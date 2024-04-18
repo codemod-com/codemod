@@ -11,12 +11,6 @@
 		"clean": {
 			"cache": false
 		},
-		"test": {
-			"cache": false
-		},
-		"test:win": {
-			"cache": false
-		},
 		"build": {
 			"dependsOn": ["^build"],
 			"outputs": ["build/**", "dist/**"]

@@ -3,7 +3,6 @@ import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
 import type { Identifier, SourceFile } from "ts-morph";
 import tsmorph, { Node, SyntaxKind } from "ts-morph";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 type Dependencies = Readonly<{
 	tsmorph: typeof tsmorph;
 }>;

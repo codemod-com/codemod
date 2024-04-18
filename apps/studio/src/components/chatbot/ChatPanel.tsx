@@ -5,8 +5,8 @@ import {
 	MagicWand,
 	Stop as StopIcon,
 } from "@phosphor-icons/react";
-import { type UseChatHelpers } from "ai/react";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import type { UseChatHelpers } from "ai/react";
+import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Button } from "~/components/ui/button";
 import { cn } from "~/lib/utils";

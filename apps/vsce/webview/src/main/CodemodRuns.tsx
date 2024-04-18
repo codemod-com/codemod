@@ -1,16 +1,16 @@
 import { VSCodeProgressRing } from "@vscode/webview-ui-toolkit/react";
 import { useEffect, useMemo, useRef } from "react";
 import {
-	ImperativePanelHandle,
-	PanelGroupStorage,
+	type ImperativePanelHandle,
+	type PanelGroupStorage,
 	PanelResizeHandle,
 } from "react-resizable-panels";
-import { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import { App as CampaignManager } from "../campaignManager/App";
 import { App as FileExplorer } from "../fileExplorer/App";
 import { PanelGroup, ResizablePanel } from "../shared/Panel";
 import { SectionHeader } from "../shared/SectionHeader";
-import { type Command } from "../shared/types";
+import type { Command } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
 
 export const CodemodRuns = (

@@ -1,7 +1,8 @@
-import * as S from "@effect/schema/Schema";
+import { object, parse, string } from "valibot";
 
-const urlParamsEnvelopeSchema = S.struct({
-	urlParams: S.string,
+const urlParamsEnvelopeSchema = object({
+	urlParams: string(),
 });
 
-export const parseUrlParamsEnvelope = S.parseSync(urlParamsEnvelopeSchema);
+export const parseUrlParamsEnvelope = (input: unknown) =>
+	parse(urlParamsEnvelopeSchema, input);

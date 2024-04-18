@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import { dirname, join, resolve } from "path";
+import { dirname, join, resolve } from "node:path";
 import type core from "jscodeshift";
 import type { Collection } from "jscodeshift";
 
@@ -77,7 +77,6 @@ export const updateDefaultExportMocks = <T>(
 				join(dirname(filePath), moduleName.value as string),
 			);
 
-			// eslint-disable-next-line @typescript-eslint/no-var-requires
 			const module = require(modulePath);
 
 			if (typeof module === "object") {

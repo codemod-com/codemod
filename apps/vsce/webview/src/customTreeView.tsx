@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { CodemodNodeHashDigest } from "../../src/selectors/selectCodemodTree";
+import type { CodemodNodeHashDigest } from "../../src/selectors/selectCodemodTree";
 import { useKey } from "./jobDiffView/hooks/useKey";
 
 const getCodemodActionButtons = (

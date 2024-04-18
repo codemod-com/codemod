@@ -1,17 +1,20 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
+import { type CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import type { Ora } from "ora";
 import { getCodemodDownloadURI } from "./apis.js";
-import { Codemod } from "./codemod.js";
-import { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
-import { PrinterBlueprint } from "./printer.js";
-import { TarService } from "./services/tarService.js";
+import type { Codemod } from "./codemod.js";
+import type { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { TarService } from "./services/tarService.js";
 import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
-	download(name: string): Promise<Codemod & { source: "package" }>;
+	download(
+		name: string,
+		disableSpinner?: boolean,
+	): Promise<Codemod & { source: "package" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -25,6 +28,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 	public async download(
 		name: string,
+		disableSpinner?: boolean,
 	): Promise<Codemod & { source: "package" }> {
 		await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
@@ -35,14 +39,17 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
 		await mkdir(directoryPath, { recursive: true });
 
-		const stopLoading = this.__printer.withLoaderMessage((loader) =>
-			colorizeText(
-				`${loader.get("vertical-dots")}  Downloading the ${boldText(
-					`"${name}"`,
-				)} codemod${this._cacheDisabled ? ", not using cache..." : "..."}`,
-				"cyan",
-			),
-		);
+		let spinner: Ora | null = null;
+		if (!disableSpinner) {
+			spinner = this.__printer.withLoaderMessage(
+				colorizeText(
+					`Downloading the ${boldText(`"${name}"`)} codemod${
+						this._cacheDisabled ? ", not using cache..." : "..."
+					}`,
+					"cyan",
+				),
+			);
+		}
 
 		// download codemod
 		try {
@@ -56,36 +63,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 			);
 
 			await this._tarService.extract(directoryPath, buffer);
-			stopLoading();
-		} catch (error) {
-			stopLoading();
-			if (error instanceof AxiosError) {
-				if (
-					error.response?.status === 400 &&
-					error.response.data.error === "Codemod not found"
-				) {
-					// Until we have distinction between `codemod` and `codemod run`, we don't want to throw and error here,
-					// because it will get picked up by logic in runner.ts, which will prepend `Error while running the codemod`
-					// to the error text. We just want to print the error and let user decide what to do for now.
-					this.__printer.printConsoleMessage(
-						"error",
-						// biome-ignore lint: readability reasons
-						"The specified command or codemod name could not be recognized.\n" +
-							`To view available commands, execute ${boldText(
-								`"codemod --help"`,
-							)}.\n` +
-							`To see a list of existing codemods, run ${boldText(
-								`"codemod search"`,
-							)} or ${boldText(
-								`"codemod list"`,
-							)} with a query representing the codemod you are looking for.`,
-					);
-
-					process.exit(1);
-				}
-			}
-
-			throw new Error(`Error while downloading codemod ${name}: ${error}`);
+			spinner?.succeed();
+		} catch (err) {
+			spinner?.fail();
+			throw err;
 		}
 
 		let config: CodemodConfig;

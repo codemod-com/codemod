@@ -2,7 +2,7 @@ import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	webpack: (config, { isServer }) => {
+	webpack: (config, { isServer, webpack }) => {
 		if (!isServer) {
 			config.plugins.push(
 				new MonacoEditorPlugin({
@@ -12,6 +12,12 @@ const nextConfig = {
 				}),
 			);
 		}
+
+		config.plugins.push(
+			new webpack.NormalModuleReplacementPlugin(/node:/, (resource) => {
+				resource.request = resource.request.replace(/^node:/, "");
+			}),
+		);
 
 		return {
 			...config,
@@ -30,6 +36,9 @@ const nextConfig = {
 				fallback: {
 					...config.resolve.fallback,
 					fs: false,
+					crypto: false,
+					buffer: false,
+					stream: false,
 				},
 			},
 		};

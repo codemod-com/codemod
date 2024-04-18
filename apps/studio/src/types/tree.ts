@@ -1,4 +1,4 @@
-import { type Node } from "@babel/types";
+import type { Node } from "@babel/types";
 
 type TreeNode = {
 	id: string;
@@ -9,5 +9,4 @@ type TreeNode = {
 	end: number;
 };
 
-// eslint-disable-next-line import/prefer-default-export
 export type { TreeNode };

@@ -1,4 +1,4 @@
-import { type Monaco } from "@monaco-editor/react";
+import type { Monaco } from "@monaco-editor/react";
 import { monaco } from "~/customMonaco";
 
 const LANG_ID = "promptLang";

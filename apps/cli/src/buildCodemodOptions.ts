@@ -1,28 +1,33 @@
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path from "node:path";
+import path, { resolve } from "node:path";
 import {
-	CodemodConfig,
-	KnownEngines,
-	knownEnginesSchema,
+	type AllEngines,
+	type CodemodConfig,
+	allEnginesSchema,
 	parseCodemodConfig,
 } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import { glob } from "fast-glob";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import { object, parse } from "valibot";
-import { Codemod } from "./codemod.js";
-import { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
+import type { Codemod } from "./codemod.js";
+import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
+import type { PrinterBlueprint } from "./printer.js";
+import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
+import { boldText, colorizeText } from "./utils.js";
 
 const extractEngine = async (
 	fs: IFs,
 	filePath: string,
-): Promise<KnownEngines | null> => {
+): Promise<AllEngines | null> => {
 	try {
 		const data = await fs.promises.readFile(filePath, {
 			encoding: "utf-8",
 		});
 
 		const schema = object({
-			engine: knownEnginesSchema,
+			engine: allEnginesSchema,
 		});
 
 		const { engine } = parse(schema, JSON.parse(data.toString()));
@@ -75,7 +80,9 @@ const extractMainScriptPath = async (
 
 export const buildSourcedCodemodOptions = async (
 	fs: IFs,
+	printer: PrinterBlueprint,
 	codemodOptions: CodemodSettings & { kind: "runSourced" },
+	codemodDownloader: CodemodDownloaderBlueprint,
 ): Promise<Codemod> => {
 	const isDirectorySource = await fs.promises
 		.lstat(codemodOptions.source)
@@ -107,21 +114,80 @@ export const buildSourcedCodemodOptions = async (
 
 	const codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
 
-	const mainScriptPath = await extractMainScriptPath(
-		codemodConfig,
-		codemodOptions.source,
-	);
-
 	const engine = await extractEngine(
 		fs,
 		path.join(codemodOptions.source, ".codemodrc.json"),
 	);
 
-	if (engine === null) {
+	if (engine === "piranha" || engine === null) {
 		throw new Error(
-			`Engine specified in .codemodrc.json at ${codemodOptions.source} is not a JavaScript codemod engine or does not exist.`,
+			`Engine specified in .codemodrc.json at ${codemodOptions.source} is not a valid codemod engine for local run.`,
 		);
 	}
+
+	if (engine === "recipe") {
+		const subCodemodsNames = (
+			codemodConfig as CodemodConfig & { engine: "recipe" }
+		).names;
+
+		const spinner = printer.withLoaderMessage(
+			colorizeText(
+				`Downloading ${subCodemodsNames.length} recipe codemods...`,
+				"cyan",
+			),
+		);
+
+		const codemods = await Promise.all(
+			subCodemodsNames.map(async (subCodemodName) => {
+				const localMachinePath = resolve(codemodOptions.source, subCodemodName);
+
+				if (existsSync(localMachinePath)) {
+					return buildSourcedCodemodOptions(
+						fs,
+						printer,
+						{ ...codemodOptions, source: resolve(subCodemodName) },
+						codemodDownloader,
+					);
+				}
+
+				try {
+					return await codemodDownloader.download(subCodemodName, true);
+				} catch (error) {
+					spinner.fail();
+					if (error instanceof AxiosError) {
+						if (
+							error.response?.status === 400 &&
+							error.response.data.error === "Codemod not found"
+						) {
+							throw new Error(
+								`Error locating one of the recipe codemods: "${boldText(
+									subCodemodName,
+								)}"`,
+							);
+						}
+					}
+
+					throw error;
+				}
+			}),
+		);
+
+		spinner.succeed();
+
+		return {
+			source: "package",
+			name: codemodConfig.name,
+			engine: "recipe",
+			directoryPath: codemodOptions.source,
+			arguments: codemodConfig.arguments,
+			codemods,
+		};
+	}
+
+	const mainScriptPath = await extractMainScriptPath(
+		codemodConfig,
+		codemodOptions.source,
+	);
 
 	return {
 		source: "package",

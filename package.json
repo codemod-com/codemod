@@ -5,7 +5,7 @@
 	"license": "Apache License, Version 2.0",
 	"description": "A monorepo for all the interconnected tools of codemod.com",
 	"private": true,
-	"packageManager": "pnpm@8.7.5",
+	"packageManager": "pnpm@9.0.2+sha256.d6fc013639b81658ff175829ebb9435bcb89eff206769e460fd3ae27c2054df6",
 	"engines": {
 		"node": ">=20.x",
 		"pnpm": ">=8.7.x"
@@ -36,11 +36,13 @@
 		"lint:apply": "biome check --apply .",
 		"lint:linter": "biome lint --apply .",
 		"lint:formatter": "biome format --write .",
-		"test": "turbo run test --concurrency=10",
-		"test:win": "turbo run test:win",
-		"coverage": "vitest run --coverage",
+		"test": "pnpm run test:unit && pnpm run test:backend",
+		"test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
+		"test:backend": "pnpm --filter @codemod-com/backend test",
+		"test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
+		"coverage": "pnpm test:unit --coverage",
 		"prepare": "husky install",
-		"release:changelog": "node scripts/releaseChangelog.mjs"
+    "release:changelog": "node scripts/releaseChangelog.mjs"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
@@ -55,7 +57,8 @@
 		"tsx": "^4.2.0",
 		"turbo": "^1.10.14",
 		"typescript": "^5.2.0",
-		"vitest": "^1.4.0"
+		"vitest": "^1.4.0",
+		"@biomejs/biome": "^1.6.4"
 	},
 	"lint-staged": {
 		"*": [

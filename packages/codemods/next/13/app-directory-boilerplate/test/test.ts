@@ -370,7 +370,6 @@ describe("next 13 app-directory-boilerplate", () => {
 		}
 		`;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [, upsertFileCommand, _, deleteIndexJsxCommand] = await transform({
 			"/opt/project/pages/index.jsx": content,
 		});
@@ -407,7 +406,6 @@ describe("next 13 app-directory-boilerplate", () => {
 		}
 		`;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [, upsertFileCommand, _, deleteIndexJsxCommand] = await transform({
 			"/opt/project/pages/index.jsx": content,
 		});
@@ -625,7 +623,6 @@ describe("next 13 app-directory-boilerplate", () => {
 			}
 		`;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [, , upsertLayoutCommand, , upsertPageCommand, , deleteFileCommand] =
 			await transform({
 				"/opt/project/pages/index.tsx": index,
@@ -662,7 +659,6 @@ describe("next 13 app-directory-boilerplate", () => {
 			}
 		`;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		const [upsertPageCommand, _, deleteFileCommand] = await transform({
 			"/opt/project/pages/a/b/c.tsx": index,
 		});

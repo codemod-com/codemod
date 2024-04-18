@@ -229,23 +229,20 @@ Once your codemod package is [compatible with Codemod platform](#required-codemo
   </Step>
 
   <Step title="Build your local project">
-  <Info>
+
+  <Note>
   This will build a JavaScript project using `esbuild` and create a `dist` directory in your project root. If your codemod is not using a JavaScript engine, you can skip this step.
-  </Info>
-  
+  </Note>
+
   If your local project is not already built, you can build it using codemod CLI:
 
-  1. Install `esbuild` globally (if not installed):
-  ```bash
-  npm install -g esbuild
-  ```
-
-  <Note>We install `esbuild` globally for you upon installation of Codemod CLI, so you might not need to install it again.</Note>
-  
-  2. Build codemod:
   ```bash
   codemod build
   ```
+
+  <Accordion title="Error: The package `esbuild` could not be found.">
+    This step requires requires global `esbuild` package installation. `esbuild` is installed by default while [installing Codemod CLI](/deploying-codemods/cli#installation). If you get an error saying "The package `esbuild` could not be found." try installing it manually by running `npm install -g esbuild`.
+  </Accordion>
 
   </Step>
 

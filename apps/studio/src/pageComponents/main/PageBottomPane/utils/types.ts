@@ -1,9 +1,10 @@
-import { ValueOf } from "next/constants";
-import React, { MutableRefObject, ReactNode } from "react";
-import { ImperativePanelHandle } from "react-resizable-panels";
-import { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
-import { JSEngine } from "~/types/Engine";
-import { VisibilityOptions } from "~/types/options";
+import type { KnownEngines } from "@codemod-com/utilities";
+import type { ValueOf } from "next/constants";
+import type React from "react";
+import type { MutableRefObject, ReactNode } from "react";
+import type { ImperativePanelHandle } from "react-resizable-panels";
+import type { useCodeDiff } from "~/pageComponents/main/JSCodeshiftRender";
+import type { VisibilityOptions } from "~/types/options";
 
 export type PanelsRefs = MutableRefObject<
 	Record<string, ImperativePanelHandle | null>
@@ -31,7 +32,7 @@ export type ContentViewerVariant = "before" | "after" | "output";
 
 export type ContentViewerProps = {
 	type: ContentViewerVariant;
-	engine: JSEngine;
+	engine: KnownEngines;
 };
 
 export enum ResizablePanelsIndices {
@@ -53,7 +54,7 @@ export enum ResizablePanelsIndices {
 	AST_TAB = 14,
 }
 
-export type PanelContentRenderer = (engine: JSEngine) => React.ReactNode;
+export type PanelContentRenderer = (engine: KnownEngines) => React.ReactNode;
 
 export type PanelData = Pick<
 	PanelComponentProps,

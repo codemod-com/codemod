@@ -3,26 +3,19 @@ import { getCodemodList } from "./apis.js";
 import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText } from "./utils.js";
 
-export const handleListNamesCommand = async (options: {
-	printer: PrinterBlueprint;
-	search?: string;
-}) => {
-	const { printer, search } = options;
-
-	let stopSearchingMessage = () => {};
+export const handleListNamesCommand = async (
+	printer: PrinterBlueprint,
+	search: string | null,
+) => {
+	let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
 	if (search && !printer.__jsonOutput) {
-		stopSearchingMessage = printer.withLoaderMessage((loader) =>
-			colorizeText(
-				`${loader.get("vertical-dots")}  Searching for ${boldText(
-					`"${search}"`,
-				)}`,
-				"cyan",
-			),
+		spinner = printer.withLoaderMessage(
+			colorizeText(`Searching for ${boldText(`"${search}"`)}`, "cyan"),
 		);
 	}
 
-	const configObjects = await getCodemodList(options);
-	stopSearchingMessage();
+	const configObjects = await getCodemodList({ search });
+	spinner?.stop();
 
 	if (printer.__jsonOutput) {
 		printer.printOperationMessage({
@@ -32,11 +25,11 @@ export const handleListNamesCommand = async (options: {
 		return;
 	}
 
-	let prettified = configObjects
-		.map(({ name, verified: _, tags: tagsArray, engine, author }) => {
+	let prettified = configObjects.map(
+		({ name, verified: _, tags: tagsArray, engine, author }) => {
 			const tags = tagsArray.join(", ");
 
-			if (search && (name === search || tags.includes(search))) {
+			if (search && (name === search || tagsArray.includes(search))) {
 				return {
 					name: boldText(colorizeText(name, "cyan")),
 					tags: boldText(colorizeText(tags, "cyan")),
@@ -51,8 +44,8 @@ export const handleListNamesCommand = async (options: {
 				engine,
 				author,
 			};
-		})
-		.sort((a, b) => a.name.toLowerCase().localeCompare(b.name.toLowerCase()));
+		},
+	);
 
 	if (search) {
 		prettified = prettified.slice(0, 10);

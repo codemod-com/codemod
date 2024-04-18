@@ -1,5 +1,5 @@
 import {
-	CustomHandler,
+	type CustomHandler,
 	InternalServerError,
 	UnauthorizedError,
 } from "../customHandler.js";
@@ -37,6 +37,7 @@ export const validationHandler: CustomHandler<{
 
 	return {
 		success: true,
+		userId: user.id,
 		username: user.username,
 		organizations: userOrgs.map((orgObj) => orgObj.organization),
 	};

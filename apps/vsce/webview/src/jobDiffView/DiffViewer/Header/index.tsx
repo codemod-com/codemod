@@ -3,7 +3,7 @@ import cn from "classnames";
 import { ReactComponent as SplitIcon } from "../../../assets/Split.svg";
 import { ReactComponent as UnifiedIcon } from "../../../assets/Unified.svg";
 import CustomPopover from "../../../shared/CustomPopover";
-import { DiffViewType } from "../../../shared/types";
+import type { DiffViewType } from "../../../shared/types";
 import styles from "./style.module.css";
 
 type Props = Readonly<{

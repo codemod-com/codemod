@@ -1,4 +1,4 @@
-import { type ParserOptions } from "@babel/parser";
+import type { ParserOptions } from "@babel/parser";
 
 const parserOptions = {
 	sourceType: "module",

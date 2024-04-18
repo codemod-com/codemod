@@ -1,6 +1,6 @@
 import jscodeshift from "jscodeshift";
 import { describe, expect, it, vi } from "vitest";
-import { Event } from "../schemata/eventSchemata";
+import type { Event } from "../schemata/eventSchemata";
 import { EventManager } from "./eventManager";
 import { proxifyJSCodeshift } from "./proxy";
 

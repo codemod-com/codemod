@@ -1,10 +1,10 @@
 import { isFile } from "@babel/types";
 import create from "zustand";
-import { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { TreeNode } from "~/types/tree";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { TreeNode } from "~/types/tree";
 import { parseSnippet } from "../../utils/babelParser";
 import mapBabelASTToRenderableTree from "../../utils/mappers";
-import { RangeCommand, buildRanges } from "../../utils/tree";
+import { type RangeCommand, buildRanges } from "../../utils/tree";
 import { INITIAL_STATE } from "../getInitialState";
 
 type ModStateValues = {

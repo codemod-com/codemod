@@ -67,7 +67,7 @@ export const DownloadZip = () => {
 		setIsOpen(true);
 	};
 
-	if (engine === "tsmorph") {
+	if (engine === "ts-morph") {
 		return null;
 	}
 

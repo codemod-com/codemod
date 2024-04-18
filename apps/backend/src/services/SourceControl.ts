@@ -67,8 +67,8 @@ export class SourceControlError extends Error {
 			isAxiosError(e) && e.response?.data.message
 				? e.response?.data.message
 				: e instanceof Error
-				  ? e.message
-				  : String(e);
+					? e.message
+					: String(e);
 		return new SourceControlError(message);
 	}
 }

@@ -23,9 +23,7 @@ type ModFunction<T, D extends "read" | "write"> = (
 ) => [D extends "write" ? boolean : false, ReadonlyArray<LazyModFunction>];
 
 type LazyModFunction = [
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	ModFunction<any, "read" | "write">,
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
 	Collection<any>,
 	State,
 ];
@@ -227,14 +225,14 @@ export const repomod: Filemod<Dependencies, State> = {
 		const hookPathType = absolutePathPresent
 			? "absolute"
 			: relativePathPresent
-			  ? "relative"
-			  : null;
+				? "relative"
+				: null;
 
 		const hookPath = absolutePathPresent
 			? useCompatSearchParamsHookAbsolutePath
 			: relativePathPresent
-			  ? useCompatSearchParamsHookRelativePath
-			  : null;
+				? useCompatSearchParamsHookRelativePath
+				: null;
 
 		if (
 			hookPathType === null ||

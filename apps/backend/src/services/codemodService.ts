@@ -1,5 +1,9 @@
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import { Codemod, CodemodVersion, Prisma, PrismaClient } from "@prisma/client";
+import {
+	type AllEngines,
+	type CodemodListResponse,
+	isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
+import type { Codemod, Prisma, PrismaClient } from "@prisma/client";
 import Fuse from "fuse.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
@@ -16,8 +20,22 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
 	return result;
 };
 
-export type ShortCodemodInfo = Pick<Codemod, "name" | "author"> &
-	Pick<CodemodVersion, "engine">;
+type LongCodemodIndoDetails = {
+	framework: string | null | undefined;
+	useCaseCategory: string | null | undefined;
+};
+
+export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
+
+export type Filter = {
+	id: string;
+	title: string;
+	values: Array<{
+		id: string;
+		title: string;
+		count: number;
+	}>;
+};
 
 export class CodemodNotFoundError extends Error {}
 
@@ -30,12 +48,12 @@ export class CodemodService {
 		author: string | string[] | undefined,
 		framework: string | string[] | undefined,
 		verified: boolean | undefined,
-		featured: boolean | undefined,
 		page: number,
 		size: number,
 	): Promise<{
 		total: number;
-		data: Codemod[];
+		data: LongCodemodInfo[];
+		filters: Filter[];
 		page: number;
 		size: number;
 	}> {
@@ -59,6 +77,12 @@ export class CodemodService {
 					},
 					{
 						shortDescription: {
+							contains: search,
+							mode: "insensitive" as Prisma.QueryMode,
+						},
+					},
+					{
+						author: {
 							contains: search,
 							mode: "insensitive" as Prisma.QueryMode,
 						},
@@ -100,16 +124,10 @@ export class CodemodService {
 			searchAndFilterClauses.push({ verified });
 		}
 
-		if (isNeitherNullNorUndefined(featured)) {
-			searchAndFilterClauses.push({ featured });
-		}
-
 		const [codemods, total] = await Promise.all([
 			this.prisma.codemod.findMany({
 				where: whereClause,
-				orderBy: {
-					updatedAt: "desc",
-				},
+				orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
 				skip: (page - 1) * size,
 				take: size,
 				include: {
@@ -124,81 +142,85 @@ export class CodemodService {
 			this.prisma.codemod.count({ where: whereClause }),
 		]);
 
-		return { total, data: codemods, page, size };
-	}
-
-	public async getCodemodsFilters(): Promise<{
-		useCaseFilters: {
-			name: string | null;
-			count: number;
-		}[];
-		ownerFilters: {
-			name: string;
-			count: number;
-		}[];
-		frameworkFilters: {
-			name: string;
-			count: number;
-		}[];
-	}> {
-		const [frameworks, groupedOwners] = await Promise.all([
-			this.prisma.tag.findMany({
-				where: {
-					classification: "framework",
-				},
-			}),
-			this.prisma.codemod.groupBy({
-				by: ["author"],
-				_count: {
-					_all: true,
-				},
-			}),
-		]);
-
-		const useCaseTags = await this.prisma.tag.findMany({
-			where: {
-				classification: "useCaseCategory",
-			},
+		const useCaseCategoryTags = await this.prisma.tag.findMany({
+			where: { classification: "useCaseCategory" },
 		});
 
-		const useCaseFilters: { name: string; count: number }[] = [];
-		await Promise.all(
-			useCaseTags.map(async (tag) => {
-				useCaseFilters.push({
-					name: tag.displayName,
-					count: await this.prisma.codemod.count({
-						where: {
-							tags: {
-								hasSome: tag.aliases,
-							},
-						},
-					}),
-				});
-			}),
-		);
+		const frameworkTags = await this.prisma.tag.findMany({
+			where: { classification: "framework" },
+		});
 
-		const ownerFilters = groupedOwners.map(({ author, _count }) => ({
-			name: author,
-			count: _count._all,
-		}));
+		const data: LongCodemodInfo[] = await Promise.all(
+			codemods.map(async (codemod) => {
+				const useCaseCategory = useCaseCategoryTags.find((tag) =>
+					tag.aliases.some((t) => codemod.tags.includes(t)),
+				)?.title;
+				const framework = frameworkTags.find((tag) =>
+					tag.aliases.some((t) => codemod.tags.includes(t)),
+				)?.title;
 
-		const frameworkFilters = await Promise.all(
-			frameworks.map(async (framework) => {
-				const count = await this.prisma.codemod.count({
-					where: {
-						tags: {
-							hasSome: framework.aliases,
-						},
-					},
-				});
 				return {
-					name: framework.displayName,
-					count,
+					...codemod,
+					framework: framework ?? "",
+					useCaseCategory: useCaseCategory ?? "",
 				};
 			}),
 		);
 
-		return { useCaseFilters, ownerFilters, frameworkFilters };
+		const authorCounts = await this.prisma.codemod.groupBy({
+			by: ["author"],
+			_count: {
+				author: true,
+			},
+			where: whereClause,
+		});
+
+		const filters: Filter[] = [
+			{
+				id: "category",
+				title: "Use case",
+				values: await Promise.all(
+					useCaseCategoryTags.map(async (category) => ({
+						id: category.title,
+						title: category.displayName,
+						count: await this.prisma.codemod.count({
+							where: {
+								AND: [whereClause, { tags: { hasSome: category.aliases } }],
+							},
+						}),
+					})),
+				),
+			},
+			{
+				id: "framework",
+				title: "Framework",
+				values: await Promise.all(
+					frameworkTags.map(async (framework) => {
+						const count = await this.prisma.codemod.count({
+							where: {
+								AND: [whereClause, { tags: { hasSome: framework.aliases } }],
+							},
+						});
+						return {
+							id: framework.title,
+							title: framework.displayName,
+							count,
+						};
+					}),
+				),
+			},
+			{
+				id: "author",
+				title: "Owner",
+				values: authorCounts.map((count) => ({
+					id: count.author,
+					title: count.author,
+					count: count._count.author,
+				})),
+			},
+		];
+
+		return { total, data, filters, page, size };
 	}
 
 	public async getCodemodBySlug(slug: string): Promise<Codemod> {
@@ -273,71 +295,70 @@ export class CodemodService {
 		userId: string | null,
 		search: string | undefined,
 		allowedNamespaces?: string[],
-	): Promise<ShortCodemodInfo[]> {
-		let codemodData: ShortCodemodInfo[];
+	): Promise<CodemodListResponse> {
+		let codemodData: CodemodListResponse;
 
 		if (isNeitherNullNorUndefined(userId)) {
 			const dbCodemods = await this.prisma.codemod.findMany({
 				where: {
 					OR: [{ private: false }, { author: { in: allowedNamespaces } }],
 				},
-			});
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments ?? [],
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		} else {
-			const dbCodemods = await this.prisma.codemod.findMany();
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+			const dbCodemods = await this.prisma.codemod.findMany({
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments ?? [],
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		}
@@ -350,6 +371,10 @@ export class CodemodService {
 			});
 
 			codemodData = fuse.search(search).map((res) => res.item);
+		} else {
+			codemodData = codemodData.sort((a, b) =>
+				a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
+			);
 		}
 
 		return codemodData;

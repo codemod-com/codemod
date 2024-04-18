@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { join } from "node:path";
 import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
@@ -21,7 +21,7 @@ export const handlePublishCliCommand = async (
 
 	if (userData === null) {
 		throw new Error(
-			"The GitHub username of the current user is not known. Contact Codemod.com.",
+			"To be able to publish to Codemod Registry, please log in first.",
 		);
 	}
 
@@ -29,12 +29,6 @@ export const handlePublishCliCommand = async (
 		user: { username },
 		token,
 	} = userData;
-	printer.printConsoleMessage(
-		"info",
-		`You are logged in as '${boldText(
-			username,
-		)}' and able to publish a codemod to our public registry.`,
-	);
 
 	const formData = new FormData();
 
@@ -136,11 +130,9 @@ export const handlePublishCliCommand = async (
 
 		let mainFilePath = await locateMainFile();
 		if (mainFilePath === undefined) {
-			const stopLoading = printer.withLoaderMessage((loader) =>
+			const spinner = printer.withLoaderMessage(
 				colorizeText(
-					`${loader.get(
-						"vertical-dots",
-					)} Could not find the main file of the codemod. Trying to build...`,
+					"Could not find the main file of the codemod. Trying to build...",
 					"cyan",
 				),
 			);
@@ -151,13 +143,13 @@ export const handlePublishCliCommand = async (
 				await execPromise("codemod build", { cwd: source });
 
 				mainFilePath = await locateMainFile();
-				stopLoading();
+				spinner.succeed();
 				// Likely meaning that the "codemod build" command succeeded, but the file was still not found in output
 				if (mainFilePath === undefined) {
 					throw new Error();
 				}
 			} catch (error) {
-				stopLoading();
+				spinner.fail();
 				throw new Error(
 					`Could not find the main file of the codemod. ${errorOnMissing}`,
 				);
@@ -178,22 +170,20 @@ export const handlePublishCliCommand = async (
 		//
 	}
 
-	const stopLoading = printer.withLoaderMessage((loader) =>
+	const publishSpinner = printer.withLoaderMessage(
 		colorizeText(
-			`${loader.get(
-				"vertical-dots",
-			)} Publishing the codemod using name from ${boldText(
+			`Publishing the codemod using name from ${boldText(
 				".codemodrc.json",
-			)} file: ${boldText(`"${codemodRc.name}"`)}`,
+			)} file: "${boldText(codemodRc.name)}"`,
 			"cyan",
 		),
 	);
 
 	try {
 		await publish(token, formData);
-		stopLoading();
+		publishSpinner.succeed();
 	} catch (error) {
-		stopLoading();
+		publishSpinner.fail();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
 		const errorMessage = `${boldText(

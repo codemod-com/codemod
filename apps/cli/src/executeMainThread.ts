@@ -1,9 +1,15 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import {
+	NullSender,
+	PostHogSender,
+	type TelemetrySender,
+} from "@codemod-com/telemetry";
+
 import Axios from "axios";
-import { IFs } from "memfs";
+import type { IFs } from "memfs";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -12,7 +18,7 @@ import {
 	buildUseCacheOption,
 	buildUseJsonOption,
 } from "./buildOptions.js";
-import { APP_INSIGHTS_INSTRUMENTATION_STRING } from "./constants.js";
+import { generateDistinctId, getDistinctId } from "./distinctId";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
 import { handleInitCliCommand } from "./handleInitCliCommand";
@@ -21,6 +27,7 @@ import { handleListNamesCommand } from "./handleListCliCommand.js";
 import { handleLoginCliCommand } from "./handleLoginCliCommand.js";
 import { handleLogoutCliCommand } from "./handleLogoutCliCommand.js";
 import { handlePublishCliCommand } from "./handlePublishCliCommand.js";
+import { handleUnpublishCliCommand } from "./handleUnpublishCliCommand";
 import { handleWhoAmICommand } from "./handleWhoAmICommand";
 import { Printer } from "./printer.js";
 import { loadRepositoryConfiguration } from "./repositoryConfiguration.js";
@@ -29,11 +36,8 @@ import { parseCodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { parseFlowSettings } from "./schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { TarService } from "./services/tarService.js";
-import {
-	AppInsightsTelemetryService,
-	NoTelemetryService,
-} from "./telemetryService.js";
-import { execPromise, initGlobalNodeModules } from "./utils";
+import type { TelemetryEvent } from "./telemetry";
+import { getCurrentUserData } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -83,6 +87,17 @@ export const executeMainThread = async () => {
 				description: "path to the codemod to be published",
 			}),
 		)
+		.command(
+			"unpublish",
+			"unpublish previously published codemod from Codemod Registry",
+			(y) =>
+				buildUseJsonOption(y).option("force", {
+					type: "boolean",
+					alias: "f",
+					boolean: true,
+					description: "whether to remove all versions",
+				}),
+		)
 		.command("init", "initialize a codemod package", (y) =>
 			buildUseJsonOption(y).option("no-prompt", {
 				alias: "y",
@@ -118,48 +133,69 @@ export const executeMainThread = async () => {
 		printer,
 	);
 
-	let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
+	const configurationDirectoryPath = join(
+		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);
+
+	const getUserDistinctId = async (): Promise<string> => {
+		const userData = await getCurrentUserData();
+
+		if (userData !== null) {
+			return userData.user.userId;
+		}
+
+		const distinctId = await getDistinctId(configurationDirectoryPath);
+
+		if (distinctId !== null) {
+			return distinctId;
+		}
+
+		return await generateDistinctId(configurationDirectoryPath);
+	};
+
+	const telemetryService: TelemetrySender<TelemetryEvent> =
+		argv.telemetryDisable
+			? new NullSender()
+			: new PostHogSender({
+					cloudRole: "CLI",
+					distinctId: await getUserDistinctId(),
+				});
+
 	let exit: () => void = () => {
 		process.exit(0);
 	};
 	const tarService = new TarService(fs as unknown as IFs);
 
-	if (!argv.telemetryDisable) {
-		// hack to prevent appInsights from trying to read applicationinsights.json
-		// this env should be set before appinsights is imported
-		// https://github.com/microsoft/ApplicationInsights-node.js/blob/0217324c477a96b5dd659510bbccad27934084a3/Library/JsonConfig.ts#L122
-		process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = "{}";
-		const appInsights = await import("applicationinsights");
+	exit = async () => {
+		// appInsights telemetry client uses batches to send telemetry.
+		// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
+		// see Channel2.prototype.send
+		// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+		await telemetryService.dispose();
+		process.exit(0);
+	};
 
-		// .start() is skipped intentionally, to prevent any non-custom events from tracking
-		appInsights.setup(APP_INSIGHTS_INSTRUMENTATION_STRING);
+	const executeCliCommand = async (
+		executableCallback: () => Promise<unknown> | unknown,
+	) => {
+		try {
+			await executableCallback();
+		} catch (error) {
+			if (!(error instanceof Error)) {
+				return;
+			}
 
-		telemetryService = new AppInsightsTelemetryService(
-			appInsights.defaultClient,
-		);
-
-		exit = () => {
-			// appInsights telemetry client uses batches to send telemetry.
-			// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-			// see Channel2.prototype.send
-			// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-			appInsights.defaultClient.flush({
-				callback: () => {
-					appInsights.dispose();
-					process.exit(0);
-				},
+			printer.printOperationMessage({
+				kind: "error",
+				message: error.message,
 			});
-		};
-	} else {
-		telemetryService = new NoTelemetryService();
-	}
+		}
+
+		exit();
+	};
 
 	process.on("SIGINT", exit);
-
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,
@@ -169,140 +205,59 @@ export const executeMainThread = async () => {
 		tarService,
 	);
 
-	if (["list", "ls", "search"].includes(argv._.at(0) as string)) {
-		try {
-			const lastArgument =
-				argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
+	const command = String(argv._.at(0));
 
-			let searchTerm: string | null = null;
-			if (lastArgument) {
-				if (lastArgument.length < 2) {
-					throw new Error(
-						"Search term must be at least 2 characters long. Aborting...",
-					);
-				}
+	const lastArgument = String(argv._.at(-1));
 
-				searchTerm = lastArgument;
+	if (["list", "ls", "search"].includes(command)) {
+		const lastArgument =
+			argv._.length > 1 ? String(argv._.at(-1)).trim() : null;
+
+		let searchTerm: string | null = null;
+		if (lastArgument) {
+			if (lastArgument.length < 2) {
+				throw new Error(
+					"Search term must be at least 2 characters long. Aborting...",
+				);
 			}
 
-			await handleListNamesCommand({
-				printer,
-				search: searchTerm ?? undefined,
-			});
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
+			searchTerm = lastArgument;
 		}
 
-		exit();
-
-		return;
+		return executeCliCommand(() => handleListNamesCommand(printer, searchTerm));
 	}
 
-	if (String(argv._) === "learn") {
-		const target = argv.target ?? null;
-
-		try {
-			await handleLearnCliCommand(printer, target);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "learn") {
+		return executeCliCommand(() =>
+			handleLearnCliCommand(printer, argv.target ?? null),
+		);
 	}
 
-	if (String(argv._) === "whoami") {
-		try {
-			await handleWhoAmICommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "whoami") {
+		return executeCliCommand(() => handleWhoAmICommand(printer));
 	}
 
-	if (String(argv._) === "login") {
-		try {
-			await handleLoginCliCommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "login") {
+		return executeCliCommand(() => handleLoginCliCommand(printer));
 	}
 
-	if (String(argv._) === "logout") {
-		try {
-			await handleLogoutCliCommand(printer);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "logout") {
+		return executeCliCommand(() => handleLogoutCliCommand(printer));
 	}
 
-	if (String(argv._) === "publish") {
-		try {
-			await handlePublishCliCommand(printer, argv.source ?? process.cwd());
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "publish") {
+		return executeCliCommand(() =>
+			handlePublishCliCommand(printer, argv.source ?? process.cwd()),
+		);
 	}
 
-	if (String(argv._) === "build") {
+	if (command === "unpublish") {
+		return executeCliCommand(() =>
+			handleUnpublishCliCommand(printer, lastArgument, argv.force),
+		);
+	}
+
+	if (command === "build") {
 		await initGlobalNodeModules();
 
 		try {
@@ -321,48 +276,19 @@ export const executeMainThread = async () => {
 			"./handleBuildCliCommand.js"
 		);
 
-		try {
-			await handleBuildCliCommand(printer, argv.source ?? process.cwd());
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+		return executeCliCommand(() =>
+			handleBuildCliCommand(printer, argv.source ?? process.cwd()),
+		);
 	}
 
-	if (String(argv._) === "init") {
-		try {
-			await handleInitCliCommand(printer, argv.noPrompt ?? false);
-		} catch (error) {
-			if (!(error instanceof Error)) {
-				return;
-			}
-
-			printer.printOperationMessage({
-				kind: "error",
-				message: error.message,
-			});
-		}
-
-		exit();
-
-		return;
+	if (command === "init") {
+		return executeCliCommand(() =>
+			handleInitCliCommand(printer, argv.noPrompt),
+		);
 	}
 
-	const lastArgument = argv._[argv._.length - 1];
-	const nameOrPath = typeof lastArgument === "string" ? lastArgument : null;
-
-	if (nameOrPath && fs.existsSync(nameOrPath)) {
-		argv.source = nameOrPath;
+	if (lastArgument && fs.existsSync(lastArgument)) {
+		argv.source = lastArgument;
 	}
 
 	const codemodSettings = parseCodemodSettings(argv);
@@ -383,7 +309,7 @@ export const executeMainThread = async () => {
 		runSettings,
 		// TODO: fix type
 		argv as Record<string, string | number | boolean>,
-		nameOrPath,
+		lastArgument,
 		flowSettings.target,
 		getCodemodSource,
 	);

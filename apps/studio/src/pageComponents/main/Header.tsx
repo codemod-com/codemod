@@ -1,3 +1,4 @@
+import type { KnownEngines } from "@codemod-com/utilities";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
 import { Link as LinkIcon } from "@phosphor-icons/react";
 import AuthButtons from "~/auth/AuthButtons";
@@ -14,8 +15,8 @@ const Header = () => {
 	const { setContent } = useModStore();
 	const { toggleTheme, isDark } = useTheme();
 
-	const onEngineChange = (value: string) => {
-		if (value === "jscodeshift" || value === "tsmorph") {
+	const onEngineChange = (value: KnownEngines) => {
+		if (value === "jscodeshift" || value === "ts-morph") {
 			setEngine(value);
 		}
 	};

@@ -58,7 +58,6 @@ export const DEFAULT_PRETTIER_OPTIONS: Options = {
 	arrowParens: "always",
 	endOfLine: "lf",
 	parser: "typescript",
-	plugins: ["importAttributes"],
 };
 
 const parserMappers = new Map<string, Options["parser"]>([
@@ -83,7 +82,6 @@ const parserMappers = new Map<string, Options["parser"]>([
 
 export const getConfig = async (path: string): Promise<Options> => {
 	const { resolveConfig } = await import("prettier");
-
 	let config = await resolveConfig(path, {
 		editorconfig: false,
 	});
@@ -115,8 +113,9 @@ export const formatText = async (
 	try {
 		const { format } = await import("prettier");
 		const options = await getConfig(path);
-		return format(newData, options);
+		return await format(newData, options);
 	} catch (err) {
+		console.log(err);
 		return newData;
 	}
 };
@@ -271,7 +270,7 @@ export const modifyFileSystemUponCommand = (
 				fileSystem,
 				runSettings.outputDirectoryPath,
 				command,
-		  )
+			)
 		: modifyFileSystemUponWetRunCommand(fileSystem, command);
 };
 

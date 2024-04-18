@@ -1,6 +1,6 @@
-import { Codemod } from "@prisma/client";
-import { CustomHandler } from "../customHandler.js";
-import { parseGetCodemodsQuery } from "../schemata/query.js";
+import type { Codemod } from "@prisma/client";
+import type { CustomHandler } from "../customHandler.js";
+import { parseGetCodemodsQuery } from "../schemata/schema.js";
 
 export const getCodemodsHandler: CustomHandler<{
 	total: number;
@@ -10,7 +10,7 @@ export const getCodemodsHandler: CustomHandler<{
 }> = async (dependencies) => {
 	const query = parseGetCodemodsQuery(dependencies.request.query);
 
-	const { search, verified, category, author, framework, featured } = query;
+	const { search, verified, category, author, framework } = query;
 
 	const page = query.page || 1;
 	const size = query.size || 10;
@@ -21,7 +21,6 @@ export const getCodemodsHandler: CustomHandler<{
 		author,
 		framework,
 		verified,
-		featured,
 		page,
 		size,
 	);

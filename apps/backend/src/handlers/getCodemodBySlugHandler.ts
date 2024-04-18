@@ -1,6 +1,6 @@
-import { Codemod } from "@prisma/client";
-import { CustomHandler } from "../customHandler.js";
-import { parseGetCodemodBySlugParams } from "../schemata/query.js";
+import type { Codemod } from "@prisma/client";
+import type { CustomHandler } from "../customHandler.js";
+import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
 
 export const getCodemodBySlugHandler: CustomHandler<Codemod> = async (
 	dependencies,

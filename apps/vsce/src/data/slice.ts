@@ -1,22 +1,22 @@
-import platformPath from "path";
+import platformPath from "node:path";
 import {
-	PayloadAction,
+	type PayloadAction,
 	createEntityAdapter,
 	createSlice,
 } from "@reduxjs/toolkit";
 import * as vscode from "vscode";
-import { Case, CaseHash } from "../cases/types";
-import { CodemodEntry } from "../codemods/types";
-import { JobHash } from "../components/webview/webviewEvents";
-import { ExecutionError } from "../errors/types";
-import { PersistedJob } from "../jobs/types";
+import type { Case, CaseHash } from "../cases/types";
+import type { CodemodEntry } from "../codemods/types";
+import type { JobHash } from "../components/webview/webviewEvents";
+import type { ExecutionError } from "../errors/types";
+import type { PersistedJob } from "../jobs/types";
 import {
-	ActiveTabId,
-	RootState,
+	type ActiveTabId,
+	type RootState,
 	panelGroupSettingsCodec,
 } from "../persistedState/codecs";
-import { _ExplorerNodeHashDigest } from "../persistedState/explorerNodeCodec";
-import { CodemodNodeHashDigest } from "../selectors/selectCodemodTree";
+import type { _ExplorerNodeHashDigest } from "../persistedState/explorerNodeCodec";
+import type { CodemodNodeHashDigest } from "../selectors/selectCodemodTree";
 import {
 	selectExplorerNodes,
 	selectNodeData,

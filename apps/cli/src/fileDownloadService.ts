@@ -1,5 +1,5 @@
 import type { IFs } from "memfs";
-import { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "./printer.js";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 

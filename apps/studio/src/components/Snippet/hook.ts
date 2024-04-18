@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { monaco } from "~/customMonaco";
-import { type OffsetRange } from "~/schemata/offsetRangeSchemata";
+import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
 
 type Link = {
 	regex: RegExp;
@@ -35,7 +35,6 @@ const findMatches = (
 ): { start: number; end: number }[] => {
 	const matches: { start: number; end: number }[] = [];
 	let match: RegExpExecArray | null;
-	// eslint-disable-next-line no-cond-assign
 	while ((match = regex.exec(str)) !== null) {
 		matches.push({
 			start: match.index,
@@ -124,7 +123,6 @@ export const useEditor = (
 				const startPos = selection.getStartPosition();
 				const endPos = selection.getEndPosition();
 
-				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const startOffset = editor.getModel()?.getOffsetAt(startPos);
 				const endOffset = editor.getModel()?.getOffsetAt(endPos);
 

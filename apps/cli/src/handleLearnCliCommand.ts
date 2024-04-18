@@ -1,6 +1,8 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { Project } from "ts-morph";
+import { createCodeDiff } from "./apis.js";
 import {
 	findLastlyModifiedFile,
 	findModifiedFiles,
@@ -8,7 +10,7 @@ import {
 	getLatestCommitHash,
 	isFileInGitDirectory,
 } from "./gitCommands.js";
-import { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "./printer.js";
 import { boldText, colorizeText, doubleQuotify, openURL } from "./utils.js";
 
 // remove all special characters and whitespaces
@@ -63,36 +65,28 @@ const getSourceFile = (filePath: string, fileExtension: string) => {
 	return project.addSourceFileAtPathIfExists(filePath) ?? null;
 };
 
-const encode = (code: string): string =>
-	Buffer.from(code).toString("base64url");
-
 const UrlParamKeys = {
 	Engine: "engine" as const,
-	BeforeSnippet: "beforeSnippet" as const,
-	AfterSnippet: "afterSnippet" as const,
-	CodemodSource: "codemodSource" as const,
+	DiffId: "diffId" as const,
+	IV: "iv" as const,
 	Command: "command" as const,
 };
 
 const createCodemodStudioURL = ({
 	engine,
-	beforeSnippet,
-	afterSnippet,
+	diffId,
+	iv,
 }: {
-	engine: "jscodeshift" | "tsmorph";
-	beforeSnippet: string;
-	afterSnippet: string;
+	engine: KnownEngines;
+	diffId: string;
+	iv: string;
 }): string | null => {
 	try {
-		const encodedEngine = encode(engine);
-		const encodedBeforeSnippet = encode(beforeSnippet);
-		const encodedAfterSnippet = encode(afterSnippet);
-
 		const url = new URL("https://codemod.studio/");
 		const searchParams = new URLSearchParams([
-			[UrlParamKeys.Engine, encodedEngine],
-			[UrlParamKeys.BeforeSnippet, encodedBeforeSnippet],
-			[UrlParamKeys.AfterSnippet, encodedAfterSnippet],
+			[UrlParamKeys.Engine, engine],
+			[UrlParamKeys.DiffId, diffId],
+			[UrlParamKeys.IV, iv],
 			[UrlParamKeys.Command, "learn"],
 		]);
 
@@ -251,11 +245,16 @@ export const handleLearnCliCommand = async (
 		.join("")
 		// remove all occurrences of `\n` at the beginning
 		.replace(/^\n+/, "");
+
+	const { id: diffId, iv } = await createCodeDiff({
+		beforeSnippet,
+		afterSnippet,
+	});
 	const url = createCodemodStudioURL({
 		// TODO: Support other engines in the future
 		engine: "jscodeshift",
-		beforeSnippet,
-		afterSnippet,
+		diffId,
+		iv,
 	});
 
 	if (url === null) {

@@ -1,7 +1,7 @@
 import { CronJob } from "cron";
 import { prisma } from "./db/prisma";
 
-const job = new CronJob(
+const cleanupLoginIntentsCron = new CronJob(
 	"* * * * *", // cronTime
 	async () => {
 		const twoMinutesAgo = new Date();
@@ -16,5 +16,9 @@ const job = new CronJob(
 		});
 	}, // onTick
 	null, // onComplete
-	true, // start
+	false, // start
 );
+
+export const startCronJobs = () => {
+	cleanupLoginIntentsCron.start();
+};

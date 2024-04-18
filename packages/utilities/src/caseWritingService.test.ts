@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { createHash, randomBytes } from "node:crypto";
 import { open, rm } from "node:fs/promises";
 import { afterAll, describe, expect, it } from "vitest";
@@ -10,7 +9,7 @@ import {
 	serializePostamble,
 	serializePreamble,
 } from "./caseWritingService.js";
-import { type SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
+import type { SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
 import {
 	JOB_KIND,
 	type SurfaceAgnosticJob,

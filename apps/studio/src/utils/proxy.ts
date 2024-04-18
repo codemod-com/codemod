@@ -1,9 +1,9 @@
-import { Node, isNode } from "@babel/types";
-import { ASTNode } from "ast-types";
-import { ASTPath, Collection, JSCodeshift } from "jscodeshift";
+import { type Node, isNode } from "@babel/types";
+import type { ASTNode } from "ast-types";
+import type { ASTPath, Collection, JSCodeshift } from "jscodeshift";
 import { print } from "recast";
 import type { OffsetRange } from "~/schemata/offsetRangeSchemata";
-import { EventManager } from "./eventManager";
+import type { EventManager } from "./eventManager";
 import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
 
 export type ProxifiedCollection<T> = Collection<T> & { _doSend: boolean };
@@ -55,8 +55,10 @@ const getOffsetRangeFromMethodName = (
 	const matchedStart = regExpMatchArray?.[1];
 	const matchedEnd = regExpMatchArray?.[2];
 
-	const start = matchedStart !== undefined ? parseInt(matchedStart, 10) : NaN;
-	const end = matchedEnd !== undefined ? parseInt(matchedEnd, 10) : NaN;
+	const start =
+		matchedStart !== undefined ? Number.parseInt(matchedStart, 10) : Number.NaN;
+	const end =
+		matchedEnd !== undefined ? Number.parseInt(matchedEnd, 10) : Number.NaN;
 
 	return { start, end };
 };
@@ -126,8 +128,8 @@ export const proxifyPath = <T>(
 		return path;
 	}
 
-	const beforeSnippetStart = node.start ?? NaN;
-	const beforeSnippetEnd = node.end ?? NaN;
+	const beforeSnippetStart = node.start ?? Number.NaN;
+	const beforeSnippetEnd = node.end ?? Number.NaN;
 
 	const proxifiedPath = new Proxy(path, {
 		get(target, p, receiver) {
@@ -241,8 +243,8 @@ export const proxifyCollection = <T>(
 				const methodName = p.startsWith("forEach")
 					? "forEach"
 					: p.startsWith("map")
-					  ? "map"
-					  : "filter";
+						? "map"
+						: "filter";
 
 				const codemodSourceRange = getOffsetRangeFromMethodName(methodName, p);
 
@@ -427,8 +429,8 @@ export const proxifyCollection = <T>(
 				const methodName = p.startsWith("find_")
 					? "find"
 					: p.startsWith("findVariableDeclarators")
-					  ? "findVariableDeclarators"
-					  : "findJSXElements";
+						? "findVariableDeclarators"
+						: "findJSXElements";
 
 				const codemodSourceRange = getOffsetRangeFromMethodName(methodName, p);
 

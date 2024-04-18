@@ -9,7 +9,7 @@ export class ReplicateService {
 			auth !== null
 				? new Replicate({
 						auth,
-				  })
+					})
 				: null;
 	}
 

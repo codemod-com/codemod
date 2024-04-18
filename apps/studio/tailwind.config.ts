@@ -1,4 +1,4 @@
-import { type Config } from "tailwindcss";
+import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 
 export default {
@@ -93,8 +93,5 @@ export default {
 			},
 		},
 	},
-	plugins: [
-		// eslint-disable-next-line global-require
-		require("tailwindcss-animate"),
-	],
+	plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -2,12 +2,12 @@ import cn from "classnames";
 import areEqual from "fast-deep-equal";
 import { memo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
-import { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
+import type { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
 import CustomPopover from "../../shared/CustomPopover";
-import { CodemodHash } from "../../shared/types";
+import type { CodemodHash } from "../../shared/types";
 import { vscode } from "../../shared/utilities/vscode";
 import ActionButton from "../TreeView/ActionButton";
-import { type Progress } from "../useProgressBar";
+import type { Progress } from "../useProgressBar";
 import styles from "./style.module.css";
 
 type CodemodItemNode = CodemodNode & { kind: "CODEMOD" };

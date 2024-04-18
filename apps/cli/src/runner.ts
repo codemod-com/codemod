@@ -1,7 +1,9 @@
-import { createHash } from "crypto";
-import { join } from "path";
+import { createHash } from "node:crypto";
+import { readFile } from "node:fs/promises";
+import { join } from "node:path";
+import type { TelemetrySender } from "@codemod-com/telemetry";
 import { parseCodemodConfig } from "@codemod-com/utilities";
-import { readFile } from "fs/promises";
+import { AxiosError } from "axios";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
@@ -18,9 +20,9 @@ import { runCodemod } from "./runCodemod.js";
 import { buildSafeArgumentRecord } from "./safeArgumentRecord.js";
 import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
-import { RunSettings } from "./schemata/runArgvSettingsSchema.js";
+import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
-import type { TelemetryBlueprint } from "./telemetryService.js";
+import type { TelemetryEvent } from "./telemetry.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export class Runner {
@@ -29,7 +31,7 @@ export class Runner {
 	public constructor(
 		protected readonly _fs: IFs,
 		protected readonly _printer: PrinterBlueprint,
-		protected readonly _telemetry: TelemetryBlueprint,
+		protected readonly _telemetry: TelemetrySender<TelemetryEvent>,
 		protected readonly _codemodDownloader: CodemodDownloaderBlueprint,
 		protected readonly _loadRepositoryConfiguration: () => Promise<RepositoryConfiguration>,
 		protected readonly _codemodSettings: CodemodSettings,
@@ -63,7 +65,9 @@ export class Runner {
 			if (this._codemodSettings.kind === "runSourced") {
 				const codemodOptions = await buildSourcedCodemodOptions(
 					this._fs,
+					this._printer,
 					this._codemodSettings,
+					this._codemodDownloader,
 				);
 
 				const safeArgumentRecord = buildSafeArgumentRecord(
@@ -182,7 +186,40 @@ export class Runner {
 			}
 
 			if (this._name !== null) {
-				const codemod = await this._codemodDownloader.download(this._name);
+				let codemod: Awaited<
+					ReturnType<typeof this._codemodDownloader.download>
+				>;
+				try {
+					codemod = await this._codemodDownloader.download(this._name);
+				} catch (error) {
+					if (error instanceof AxiosError) {
+						if (
+							error.response?.status === 400 &&
+							error.response.data.error === "Codemod not found"
+						) {
+							// Until we have distinction between `codemod` and `codemod run`, we don't want to throw and error here,
+							// because it will get picked up by logic in runner.ts, which will prepend `Error while running the codemod`
+							// to the error text. We just want to print the error and let user decide what to do for now.
+							this._printer.printConsoleMessage(
+								"error",
+								// biome-ignore lint: readability reasons
+								"The specified command or codemod name could not be recognized.\n" +
+									`To view available commands, execute ${boldText(
+										`"codemod --help"`,
+									)}.\n` +
+									`To see a list of existing codemods, run ${boldText(
+										`"codemod search"`,
+									)} or ${boldText(
+										`"codemod list"`,
+									)} with a query representing the codemod you are looking for.`,
+							);
+
+							process.exit(1);
+						}
+					}
+
+					throw new Error(`Error while downloading codemod ${name}: ${error}`);
+				}
 
 				this._printer.printConsoleMessage(
 					"info",
