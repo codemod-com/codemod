@@ -18,6 +18,7 @@ export type Organization = {
 };
 
 export type ValidateTokenResponse = {
+	userId: string;
 	username: string;
 	organizations: Organization[];
 };

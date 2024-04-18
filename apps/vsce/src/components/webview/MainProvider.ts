@@ -1,3 +1,4 @@
+import type { ValidateTokenResponse } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "fast-glob";
@@ -31,9 +32,9 @@ const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const validateAccessToken = async (
 	accessToken: string,
-): Promise<boolean> => {
+): Promise<ValidateTokenResponse | null> => {
 	try {
-		const response = await axios.post(
+		const response = await axios.post<ValidateTokenResponse>(
 			"https://backend.codemod.com/validateAccessToken",
 			{},
 			{
@@ -44,13 +45,13 @@ export const validateAccessToken = async (
 			},
 		);
 
-		return response.status === 200;
+		return response.data;
 	} catch (error) {
 		if (!axios.isAxiosError(error)) {
 			console.error(error);
 		}
 
-		return false;
+		return null;
 	}
 };
 

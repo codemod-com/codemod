@@ -33,7 +33,6 @@ export type Event =
 			jobCount: number;
 			executionId: CaseHash;
 	  }>;
-
 export interface Telemetry {
 	sendEvent(event: Event): void;
 

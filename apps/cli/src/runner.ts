@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { TelemetrySender } from "@codemod-com/telemetry";
 import { parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import type { IFs } from "memfs";
@@ -21,7 +22,7 @@ import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
-import type { TelemetryBlueprint } from "./telemetryService.js";
+import type { TelemetryEvent } from "./telemetry.js";
 import { boldText, colorizeText } from "./utils.js";
 
 export class Runner {
@@ -30,7 +31,7 @@ export class Runner {
 	public constructor(
 		protected readonly _fs: IFs,
 		protected readonly _printer: PrinterBlueprint,
-		protected readonly _telemetry: TelemetryBlueprint,
+		protected readonly _telemetry: TelemetrySender<TelemetryEvent>,
 		protected readonly _codemodDownloader: CodemodDownloaderBlueprint,
 		protected readonly _loadRepositoryConfiguration: () => Promise<RepositoryConfiguration>,
 		protected readonly _codemodSettings: CodemodSettings,

@@ -37,6 +37,7 @@ export const validationHandler: CustomHandler<{
 
 	return {
 		success: true,
+		userId: user.id,
 		username: user.username,
 		organizations: userOrgs.map((orgObj) => orgObj.organization),
 	};
