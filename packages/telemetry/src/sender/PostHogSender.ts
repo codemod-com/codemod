@@ -14,7 +14,7 @@ export class PostHogSender<Event extends BaseEvent>
 	constructor(private readonly __options: TelemetrySenderOptions) {
 		this.__telemetryClient = new PostHog(
 			"phc_nGWKWP3t1fcNFqGi6UdstXjMf0fxx7SBeohHPSS6d2Y",
-			{ host: "https://eu.posthog.com" },
+			{ host: "https://app.posthog.com" },
 		);
 	}
 
