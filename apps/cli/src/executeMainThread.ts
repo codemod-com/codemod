@@ -18,6 +18,7 @@ import {
 	buildUseCacheOption,
 	buildUseJsonOption,
 } from "./buildOptions.js";
+import { generateDistinctId, getDistinctId } from "./distinctId";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
 import { handleInitCliCommand } from "./handleInitCliCommand";
@@ -132,15 +133,25 @@ export const executeMainThread = async () => {
 		printer,
 	);
 
-	const getDistinctId = async () => {
+	const configurationDirectoryPath = join(
+		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);
+
+	const getUserDistinctId = async (): Promise<string> => {
 		const userData = await getCurrentUserData();
 
-		if (!userData) {
-			// @TODO create anonymous session
-			return "AnonymousUser";
+		if (userData !== null) {
+			return userData.user.userId;
 		}
 
-		return userData.user.userId;
+		const distinctId = await getDistinctId(configurationDirectoryPath);
+
+		if (distinctId !== null) {
+			return distinctId;
+		}
+
+		return await generateDistinctId(configurationDirectoryPath);
 	};
 
 	const telemetryService: TelemetrySender<TelemetryEvent> =
@@ -148,7 +159,7 @@ export const executeMainThread = async () => {
 			? new NullSender()
 			: new PostHogSender({
 					cloudRole: "CLI",
-					distinctId: await getDistinctId(),
+					distinctId: await getUserDistinctId(),
 				});
 
 	let exit: () => void = () => {
@@ -185,11 +196,6 @@ export const executeMainThread = async () => {
 	};
 
 	process.on("SIGINT", exit);
-
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,
