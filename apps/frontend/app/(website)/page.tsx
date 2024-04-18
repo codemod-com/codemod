@@ -16,7 +16,7 @@ export async function generateMetadata(
 	props: RouteProps,
 	parent: ResolvingMetadata,
 ) {
-	const pathname = `/`;
+	const pathname = "/";
 	const initialData = await loadModularPage(pathname);
 
 	if (!initialData?.data) {
@@ -27,7 +27,7 @@ export async function generateMetadata(
 }
 
 export default async function IndexRoute() {
-	const pathname = `/`;
+	const pathname = "/";
 	const initial = await loadModularPage(pathname);
 
 	if (draftMode().isEnabled) {
