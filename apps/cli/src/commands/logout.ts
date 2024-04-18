@@ -1,6 +1,6 @@
-import { revokeCLIToken } from "./apis.js";
-import type { PrinterBlueprint } from "./printer.js";
-import { getCurrentUserData } from "./utils.js";
+import { revokeCLIToken } from "../apis.js";
+import type { PrinterBlueprint } from "../printer.js";
+import { getCurrentUserData } from "../utils.js";
 
 export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
 	const userData = await getCurrentUserData();

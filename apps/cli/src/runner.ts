@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import type { TelemetrySender } from "@codemod-com/telemetry";
@@ -7,7 +8,7 @@ import { AxiosError } from "axios";
 import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
 import { buildSourcedCodemodOptions } from "./buildCodemodOptions.js";
-import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
+import type { Codemod } from "./codemod.js";
 import {
 	type FormattedFileCommand,
 	buildPrinterMessageUponCommand,
@@ -15,12 +16,8 @@ import {
 } from "./fileCommands.js";
 import { handleInstallDependencies } from "./handleInstallDependencies.js";
 import type { PrinterBlueprint } from "./printer.js";
-import type { RepositoryConfiguration } from "./repositoryConfiguration.js";
 import { runCodemod } from "./runCodemod.js";
 import { buildSafeArgumentRecord } from "./safeArgumentRecord.js";
-import type { CodemodSettings } from "./schemata/codemodSettingsSchema.js";
-import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
-import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
 import type { TelemetryEvent } from "./telemetry.js";
 import { boldText, colorizeText } from "./utils.js";
@@ -29,19 +26,10 @@ export class Runner {
 	private __modifiedFilePaths: string[];
 
 	public constructor(
-		protected readonly _fs: IFs,
+		protected readonly _codemods: Codemod[],
+		protected readonly _fs: IFs | typeof fs,
 		protected readonly _printer: PrinterBlueprint,
 		protected readonly _telemetry: TelemetrySender<TelemetryEvent>,
-		protected readonly _codemodDownloader: CodemodDownloaderBlueprint,
-		protected readonly _loadRepositoryConfiguration: () => Promise<RepositoryConfiguration>,
-		protected readonly _codemodSettings: CodemodSettings,
-		protected readonly _flowSettings: FlowSettings,
-		protected readonly _runSettings: RunSettings,
-		// TODO: fix types
-		protected readonly _argv: Record<string, string | number | boolean>,
-		protected readonly _name: string | null,
-		protected readonly _currentWorkingDirectory: string,
-		protected readonly _getCodemodSource: (path: string) => Promise<string>,
 	) {
 		this.__modifiedFilePaths = [];
 	}

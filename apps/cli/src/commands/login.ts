@@ -1,13 +1,13 @@
 import { backOff } from "exponential-backoff";
 import keytar from "keytar";
-import { confirmUserLoggedIn, generateUserLoginIntent } from "./apis.js";
-import type { PrinterBlueprint } from "./printer.js";
+import { confirmUserLoggedIn, generateUserLoginIntent } from "../apis.js";
+import type { PrinterBlueprint } from "../printer.js";
 import {
 	boldText,
 	colorizeText,
 	getCurrentUserData,
 	openURL,
-} from "./utils.js";
+} from "../utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 

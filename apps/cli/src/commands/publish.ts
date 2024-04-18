@@ -4,14 +4,14 @@ import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import FormData from "form-data";
-import { publish } from "./apis.js";
-import type { PrinterBlueprint } from "./printer.js";
+import { publish } from "../apis.js";
+import type { PrinterBlueprint } from "../printer.js";
 import {
 	boldText,
 	colorizeText,
 	execPromise,
 	getCurrentUserData,
-} from "./utils.js";
+} from "../utils.js";
 
 export const handlePublishCliCommand = async (
 	printer: PrinterBlueprint,

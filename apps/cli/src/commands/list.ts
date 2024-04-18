@@ -1,7 +1,7 @@
 import columnify from "columnify";
-import { getCodemodList } from "./apis.js";
-import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText } from "./utils.js";
+import { getCodemodList } from "../apis.js";
+import type { PrinterBlueprint } from "../printer.js";
+import { boldText, colorizeText } from "../utils.js";
 
 export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,

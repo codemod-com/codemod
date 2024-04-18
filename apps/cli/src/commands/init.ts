@@ -7,8 +7,8 @@ import {
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
-import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
+import type { PrinterBlueprint } from "../printer.js";
+import { boldText, colorizeText, getCurrentUserData } from "../utils.js";
 
 const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
 	"jscodeshift",

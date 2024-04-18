@@ -1,10 +1,10 @@
-import type { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "../printer.js";
 import {
 	boldText,
 	colorizeText,
 	getCurrentUserData,
 	getOrgsNames,
-} from "./utils.js";
+} from "../utils.js";
 
 export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	const userData = await getCurrentUserData();

@@ -3,9 +3,9 @@ import {
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import { unpublish } from "./apis.js";
-import type { PrinterBlueprint } from "./printer.js";
-import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
+import { unpublish } from "../apis.js";
+import type { PrinterBlueprint } from "../printer.js";
+import { boldText, colorizeText, getCurrentUserData } from "../utils.js";
 
 export const handleUnpublishCliCommand = async (
 	printer: PrinterBlueprint,

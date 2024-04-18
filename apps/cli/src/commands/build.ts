@@ -6,7 +6,7 @@ import {
 } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "fast-glob";
-import type { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "../printer.js";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph"];
