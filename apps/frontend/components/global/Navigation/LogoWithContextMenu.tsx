@@ -136,7 +136,7 @@ export default function LogoWithContextMenu() {
 					</DropdownMenu.Group>
 
 					<div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-						Platforms
+						Platform
 					</div>
 					<DropdownMenu.Group className="pt-s">
 						<DropdownMenu.Item asChild>
