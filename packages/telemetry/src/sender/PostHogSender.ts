@@ -13,7 +13,7 @@ export class PostHogSender<Event extends BaseEvent>
 
 	constructor(private readonly __options: TelemetrySenderOptions) {
 		this.__telemetryClient = new PostHog(
-			"phc_uOnV4eaTYjdAVaP7eL63Z2TRXcaVZ3guGKrERQam0eY",
+			"phc_nGWKWP3t1fcNFqGi6UdstXjMf0fxx7SBeohHPSS6d2Y",
 			{ host: "https://eu.posthog.com" },
 		);
 	}
@@ -27,7 +27,7 @@ export class PostHogSender<Event extends BaseEvent>
 
 		this.__telemetryClient?.capture({
 			distinctId: this.__options.distinctId,
-			event: kind,
+			event: `codemod.${this.__options.cloudRole}.${kind}`,
 			properties: { cloudRole: this.__options.cloudRole, ...properties },
 		});
 	}

@@ -36,6 +36,7 @@ import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
 import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
+import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
 import { buildTelemetryLogger } from "./telemetry/logger";
 import { VscodeTelemetryReporter } from "./telemetry/reporter";
@@ -68,8 +69,12 @@ export async function activate(context: vscode.ExtensionContext) {
 	const userService = new UserService(globalStateTokenStorage);
 
 	const accessToken = userService.getLinkedToken();
-	// @TODO support tracking anunymous users
-	let distinctId = "AnonymousUser";
+
+	let distinctId = await getDistinctId(context);
+
+	if (distinctId === null) {
+		distinctId = await generateDistinctId(context);
+	}
 
 	if (accessToken !== null) {
 		const userData = await validateAccessToken(accessToken);
