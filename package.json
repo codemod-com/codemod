@@ -42,7 +42,7 @@
 		"test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
 		"coverage": "pnpm test:unit --coverage",
 		"prepare": "husky install",
-    "release:changelog": "node scripts/releaseChangelog.mjs"
+		"release:changelog": "node scripts/releaseChangelog.mjs"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.5.3",
