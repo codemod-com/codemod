@@ -261,10 +261,10 @@ function Companies(props: CompaniesProps) {
 		<Section className="relative z-0 w-full max-w-full overflow-x-clip py-2xl lg:py-20">
 			<div className="relative z-20 flex flex-col items-center justify-center text-center">
 				<div className="flex flex-col items-center justify-center gap-4">
-					<h2 className="l-heading max-w-96 text-balance font-bold lg:max-w-[800px]">
+					<h2 className="select-none l-heading max-w-96 text-balance font-bold lg:max-w-[800px]">
 						{props.companies.title}
 					</h2>
-					<p className="body-l mb-10 max-w-lg lg:max-w-2xl">
+					<p className="select-none body-l mb-10 max-w-lg lg:max-w-2xl">
 						{props.companies.subtitle}
 					</p>
 				</div>
