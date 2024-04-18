@@ -1,3 +1,4 @@
+import { argumentRecordSchema } from "@codemod-com/utilities";
 import {
 	type Output,
 	boolean,
@@ -7,7 +8,6 @@ import {
 	string,
 	union,
 } from "valibot";
-import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
 const mainThreadMessageSchema = union([
 	object({

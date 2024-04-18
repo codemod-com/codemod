@@ -1,5 +1,5 @@
 import type { FileSystem } from "@codemod-com/utilities";
-import { Axios } from "axios";
+import axios from "axios";
 import type { PrinterBlueprint } from "./printer.js";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
@@ -7,14 +7,6 @@ const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 export type FileDownloadServiceBlueprint = Readonly<{
 	download(url: string, path: string): Promise<Buffer>;
 }>;
-
-const fetchBuffer = async (url: string) => {
-	const { data } = await Axios.get(url, {
-		responseType: "arraybuffer",
-	});
-
-	return Buffer.from(data);
-};
 
 export class FileDownloadService implements FileDownloadServiceBlueprint {
 	public constructor(
@@ -42,7 +34,11 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 			}
 		}
 
-		const buffer = await fetchBuffer(url);
+		const { data } = await axios.get(url, {
+			responseType: "arraybuffer",
+		});
+
+		const buffer = Buffer.from(data);
 
 		await this._ifs.promises.writeFile(path, buffer);
 

@@ -2,10 +2,10 @@ import type { Hash } from "node:crypto";
 import { createHash } from "node:crypto";
 import EventEmitter from "node:events";
 import type { PathLike } from "node:fs";
+import { parseArgumentRecordSchema } from "@codemod-com/utilities";
 import { CircularBuffer } from "./circularBuffer.js";
 import { FileReadingService } from "./fileReadingService.js";
 import { FileWatcher } from "./fileWatcher.js";
-import { parseArgumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 import type { SurfaceAgnosticCase } from "./schemata/surfaceAgnosticCaseSchema.js";
 import {
 	JOB_KIND,
