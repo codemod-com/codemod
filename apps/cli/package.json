@@ -5,9 +5,7 @@
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
-	"repository": {
-		"type": "git"
-	},
+	"repository": "github:codemod-com/codemod",
 	"keywords": [
 		"codemod",
 		"jscodeshift",
