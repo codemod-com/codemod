@@ -56,7 +56,7 @@ export const RepositoryModal = ({
 	return isRepositoryModalShown ? (
 		<Modal onClose={hideRepositoryModal} centered transparent={false}>
 			<h2 className="text-center p-2">Select Repository</h2>
-			<div className="flex justify-center align-items-cente p-4 bg-white min-w-[400px]">
+			<div className="flex justify-center align-items-cente p-4 bg-white min-w-[400px] rounded-lg border-0">
 				<RadixSelect.Root
 					value={selectedRepository?.full_name}
 					onValueChange={selectRepository}
@@ -74,9 +74,12 @@ export const RepositoryModal = ({
 							});
 						}}
 					>
-						<RadixSelect.Trigger aria-label="Language" className="select">
+						<RadixSelect.Trigger
+							aria-label="Language"
+							className="select flex items-center"
+						>
 							<RadixSelect.Value placeholder="Select a repository" />
-							<RadixSelect.Icon className="select-icon">
+							<RadixSelect.Icon className="select-icon ml-1">
 								<ChevronUpDownIcon />
 							</RadixSelect.Icon>
 						</RadixSelect.Trigger>
