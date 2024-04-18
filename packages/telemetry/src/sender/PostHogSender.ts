@@ -1,5 +1,7 @@
 import { PostHog } from "posthog-node";
 
+import { redactFilePaths } from "../utils/redactFilePath.js";
+
 import type {
 	BaseEvent,
 	TelemetrySender,
@@ -25,10 +27,21 @@ export class PostHogSender<Event extends BaseEvent>
 	public async sendEvent(event: Event): Promise<void> {
 		const { kind, ...properties } = event;
 
+		const redactedProperties = Object.entries(properties).reduce<
+			Record<string, string>
+		>((properties, [key, value]) => {
+			properties[key] = redactFilePaths(value);
+
+			return properties;
+		}, {});
+
 		this.__telemetryClient?.capture({
 			distinctId: this.__options.distinctId,
 			event: `codemod.${this.__options.cloudRole}.${kind}`,
-			properties: { cloudRole: this.__options.cloudRole, ...properties },
+			properties: {
+				cloudRole: this.__options.cloudRole,
+				...redactedProperties,
+			},
 		});
 	}
 }
