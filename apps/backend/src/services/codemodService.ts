@@ -241,12 +241,12 @@ export class CodemodService {
 			throw new CodemodNotFoundError();
 		}
 
-		const frameworkTags = await this.prisma.tag.findMany({
-			where: { classification: "framework" },
-		});
-
 		const useCaseCategoryTags = await this.prisma.tag.findMany({
 			where: { classification: "useCaseCategory" },
+		});
+
+		const frameworkTags = await this.prisma.tag.findMany({
+			where: { classification: "framework" },
 		});
 
 		const useCaseCategory = useCaseCategoryTags.find((tag) =>
