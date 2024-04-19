@@ -490,10 +490,10 @@ export const getTransformFunction = async (
 		typeof exports === "function"
 			? exports
 			: exports.__esModule && typeof exports.default === "function"
-			  ? exports.default
-			  : exports.__esModule && typeof exports.handleSourceFile === "function"
-				  ? exports.handleSourceFile
-				  : null;
+				? exports.default
+				: exports.__esModule && typeof exports.handleSourceFile === "function"
+					? exports.handleSourceFile
+					: null;
 
 	if (transformer === null) {
 		throw new Error("Could not compile the provided codemod");

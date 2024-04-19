@@ -1,5 +1,5 @@
-import Image from "next/image";
 import Arrows from "@/assets/icons/double-arrow.svg";
+import Image from "next/image";
 
 const degs = {
 	left: 90,

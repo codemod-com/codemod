@@ -56,7 +56,7 @@ export const getInitialState = (): SnippetStateValues => {
 					start,
 					end,
 					value: value ?? beforeSnippet.slice(start, end),
-			  }))
+				}))
 			: []
 		: [];
 
@@ -73,7 +73,7 @@ export const getInitialState = (): SnippetStateValues => {
 					start,
 					end,
 					value: value ?? afterSnippet.slice(start, end),
-			  }))
+				}))
 			: []
 		: [];
 

@@ -76,7 +76,7 @@ const Tree = ({
 							selectionEnd={selectionEnd}
 							selectionStart={selectionStart}
 						/>
-				  ))
+					))
 				: null}
 		</TreeView>
 	);
