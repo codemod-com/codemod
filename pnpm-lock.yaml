@@ -4424,7 +4424,7 @@ importers:
         version: 1.4.0(@types/node@20.8.5)(terser@5.27.0)
 
   packages/runner:
-    devDependencies:
+    dependencies:
       '@babel/core':
         specifier: ^7.24.4
         version: 7.24.4
@@ -4452,21 +4452,6 @@ importers:
       '@svgr/hast-util-to-babel-ast':
         specifier: ^7.0.0
         version: 7.0.0
-      '@types/babel__traverse':
-        specifier: ^7.20.1
-        version: 7.20.5
-      '@types/js-yaml':
-        specifier: 4.0.9
-        version: 4.0.9
-      '@types/jscodeshift':
-        specifier: ^0.11.11
-        version: 0.11.11
-      '@types/node':
-        specifier: 20.8.5
-        version: 20.8.5
-      '@vitest/coverage-v8':
-        specifier: ^1.0.1
-        version: 1.2.2(vitest@1.4.0(@types/node@20.8.5)(terser@5.27.0))
       '@vue/compiler-sfc':
         specifier: ^3.4.21
         version: 3.4.21
@@ -4500,9 +4485,6 @@ importers:
       ts-morph:
         specifier: ^22.0.0
         version: 22.0.0
-      typescript:
-        specifier: ^5.2.2
-        version: 5.3.3
       unified:
         specifier: ^10.1.2
         version: 10.1.2
@@ -4512,12 +4494,31 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
-      vitest:
-        specifier: ^1.0.1
-        version: 1.4.0(@types/node@20.8.5)(terser@5.27.0)
       vue-sfc-descriptor-to-string:
         specifier: ^2.0.0
         version: 2.0.0
+    devDependencies:
+      '@types/babel__traverse':
+        specifier: ^7.20.1
+        version: 7.20.5
+      '@types/js-yaml':
+        specifier: 4.0.9
+        version: 4.0.9
+      '@types/jscodeshift':
+        specifier: ^0.11.11
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.8.5
+        version: 20.8.5
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.4.0(@types/node@20.8.5)(terser@5.27.0))
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.4.0(@types/node@20.8.5)(terser@5.27.0)
 
   packages/telemetry:
     dependencies:
