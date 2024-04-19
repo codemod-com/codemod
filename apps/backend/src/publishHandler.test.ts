@@ -5,12 +5,16 @@ import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { runServer } from "./server.js";
 import * as utils from "./util.js";
 
+const TAR_SERVICE_PACK_RETURN = "archive";
+
 const mocks = vi.hoisted(() => {
 	const S3Client = vi.fn();
 	S3Client.prototype.send = vi.fn();
 
 	const TarService = vi.fn();
-	TarService.prototype.pack = vi.fn();
+	TarService.prototype.pack = vi
+		.fn()
+		.mockImplementation(() => TAR_SERVICE_PACK_RETURN);
 
 	const PutObjectCommand = vi.fn();
 
@@ -110,6 +114,15 @@ vi.mock("./services/tokenService.js", async () => {
 	return { ...actual, TokenService };
 });
 
+vi.mock("@codemod-com/utilities", async () => {
+	const actual = await vi.importActual("@codemod-com/utilities");
+
+	return {
+		...actual,
+		TarService: mocks.TarService,
+	};
+});
+
 describe("/publish route", async () => {
 	const fastify = await runServer();
 
@@ -187,7 +200,7 @@ describe("/publish route", async () => {
 				data: readmeBuf,
 			},
 		]);
-		expect(tarServiceInstance.pack).toReturnWith("archive");
+		expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
 
 		const hashDigest = createHash("ripemd160")
 			.update(codemodRcContents.name)
@@ -200,7 +213,7 @@ describe("/publish route", async () => {
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
 			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-			Body: "archive",
+			Body: TAR_SERVICE_PACK_RETURN,
 		});
 
 		expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -256,7 +269,7 @@ describe("/publish route", async () => {
 				data: readmeBuf,
 			},
 		]);
-		expect(tarServiceInstance.pack).toReturnWith("archive");
+		expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
 
 		const hashDigest = createHash("ripemd160")
 			.update(codemodRcContents.name)
@@ -269,7 +282,7 @@ describe("/publish route", async () => {
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
 			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-			Body: "archive",
+			Body: TAR_SERVICE_PACK_RETURN,
 		});
 
 		expect(clientInstance.send).toHaveBeenCalledOnce();
