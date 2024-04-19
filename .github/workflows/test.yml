@@ -28,7 +28,7 @@ jobs:
             - name: Install modules
               uses: pnpm/action-setup@v2
               with:
-                  version: 8
+                  version: 9
 
             - name: Install dependencies
               run: pnpm install
