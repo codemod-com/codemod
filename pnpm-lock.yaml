@@ -297,11 +297,8 @@ importers:
 
   apps/frontend:
     dependencies:
-      '@babel/core':
-        specifier: ^7.24.4
-        version: 7.24.4
       '@babel/parser':
-        specifier: ^7.24.4
+        specifier: ^7.21.1
         version: 7.24.4
       '@babel/plugin-syntax-flow':
         specifier: ^7.14.5
@@ -310,14 +307,11 @@ importers:
         specifier: ^7.14.9
         version: 7.23.4(@babel/core@7.24.4)
       '@babel/preset-env':
-        specifier: ^7.24.1
+        specifier: ^7.1.6
         version: 7.24.4(@babel/core@7.24.4)
-      '@babel/preset-typescript':
-        specifier: ^7.24.1
-        version: 7.24.1(@babel/core@7.24.4)
       '@babel/types':
-        specifier: ^7.24.0
-        version: 7.24.0
+        specifier: 7.21.2
+        version: 7.21.2
       '@clerk/clerk-react':
         specifier: 4.30.3
         version: 4.30.3(react@18.2.0)
@@ -592,6 +586,9 @@ importers:
         specifier: ^4.5.2
         version: 4.5.2(@types/react@18.2.55)(immer@9.0.21)(react@18.2.0)
     devDependencies:
+      '@babel/core':
+        specifier: ^7.21.0
+        version: 7.24.4
       '@testing-library/dom':
         specifier: ^9.0.0
         version: 9.3.4
@@ -4428,6 +4425,9 @@ importers:
       '@babel/traverse':
         specifier: 7.24.1
         version: 7.24.1
+      '@babel/types':
+        specifier: ^7.24.0
+        version: 7.24.0
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../filemod
@@ -5547,6 +5547,10 @@ packages:
 
   '@babel/traverse@7.24.1':
     resolution: {integrity: sha512-xuU6o9m68KeqZbQuDt2TcKSxUw/mrsvavlEqQ1leZ/B+C9tk6E4sRWy97WaXgvq5E+nU3cXMxv3WKOCanVMCmQ==}
+    engines: {node: '>=6.9.0'}
+
+  '@babel/types@7.21.2':
+    resolution: {integrity: sha512-3wRZSs7jiFaB8AjxiiD+VqN5DTG2iRvJGQ+qYFrs/654lg6kGTQWIOFjlBo5RaXuAZjBmP3+OQH4dmhqiiyYxw==}
     engines: {node: '>=6.9.0'}
 
   '@babel/types@7.24.0':
@@ -15178,7 +15182,7 @@ snapshots:
 
   '@babel/parser@7.24.4':
     dependencies:
-      '@babel/types': 7.24.0
+      '@babel/types': 7.21.2
 
   '@babel/plugin-bugfix-firefox-class-in-computed-class-key@7.24.4(@babel/core@7.24.4)':
     dependencies:
@@ -15844,6 +15848,12 @@ snapshots:
       globals: 11.12.0
     transitivePeerDependencies:
       - supports-color
+
+  '@babel/types@7.21.2':
+    dependencies:
+      '@babel/helper-string-parser': 7.23.4
+      '@babel/helper-validator-identifier': 7.22.20
+      to-fast-properties: 2.0.0
 
   '@babel/types@7.24.0':
     dependencies:

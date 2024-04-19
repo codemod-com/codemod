@@ -37,6 +37,7 @@
 		"@babel/preset-env": "^7.24.1",
 		"@babel/preset-typescript": "^7.24.1",
 		"@babel/traverse": "7.24.1",
+		"@babel/types": "^7.24.0",
 		"@codemod-com/filemod": "workspace:*",
 		"@codemod-com/printer": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
