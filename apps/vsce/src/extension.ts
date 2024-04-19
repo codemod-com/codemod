@@ -70,8 +70,11 @@ export async function activate(context: vscode.ExtensionContext) {
 	const userService = new UserService(globalStateTokenStorage);
 
 	const accessToken = userService.getLinkedToken();
-	// @TODO support tracking anunymous users
-	let distinctId = "AnonymousUser";
+	let distinctId = await getDistinctId(context);
+
+	if (distinctId === null) {
+		distinctId = await generateDistinctId(context);
+	}
 
 	if (accessToken !== null) {
 		const userData = await validateAccessToken(accessToken);
