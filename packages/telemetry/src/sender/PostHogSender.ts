@@ -24,8 +24,16 @@ export class PostHogSender<Event extends BaseEvent>
 		return this.__telemetryClient.shutdown();
 	}
 
-	public async sendEvent(event: Event): Promise<void> {
+	public async sendEvent(
+		event: Event,
+		// allow to override distinctId and cloudRole in the sendEvent method directly
+		optionsOverrides?: Partial<TelemetrySenderOptions>,
+	): Promise<void> {
 		const { kind, ...properties } = event;
+
+		const distinctId =
+			optionsOverrides?.distinctId ?? this.__options.distinctId;
+		const cloudRole = optionsOverrides?.cloudRole ?? this.__options.cloudRole;
 
 		const redactedProperties = Object.entries(properties).reduce<
 			Record<string, string>
@@ -36,10 +44,10 @@ export class PostHogSender<Event extends BaseEvent>
 		}, {});
 
 		this.__telemetryClient?.capture({
-			distinctId: this.__options.distinctId,
-			event: `codemod.${this.__options.cloudRole}.${kind}`,
+			distinctId,
+			event: `codemod.${cloudRole}.${kind}`,
 			properties: {
-				cloudRole: this.__options.cloudRole,
+				cloudRole: cloudRole,
 				...redactedProperties,
 			},
 		});
