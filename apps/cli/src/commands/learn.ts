@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
-import type { KnownEngines } from "@codemod-com/utilities";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
@@ -10,8 +11,7 @@ import {
 	getLatestCommitHash,
 	isFileInGitDirectory,
 } from "../gitCommands.js";
-import type { PrinterBlueprint } from "../printer.js";
-import { boldText, colorizeText, doubleQuotify, openURL } from "../utils.js";
+import { openURL } from "../utils.js";
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>
@@ -154,9 +154,13 @@ export const handleLearnCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			`Learning ${boldText("`git diff`")} at ${boldText(path)} has begun...\n`,
-			"cyan",
+		chalk.cyan(
+			"Learning ",
+			chalk.bold(doubleQuotify("git diff")),
+			" at ",
+			chalk.bold(path),
+			" has begun...",
+			"\n",
 		),
 	);
 
@@ -267,10 +271,7 @@ export const handleLearnCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			"Learning went successful! Opening the Codemod Studio...\n",
-			"cyan",
-		),
+		chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
 	);
 
 	const success = openURL(url);

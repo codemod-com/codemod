@@ -1,22 +1,20 @@
 import { deepEqual } from "node:assert";
+import type { PrinterBlueprint } from "@codemod-com/printer";
 import { Volume, createFsFromVolume } from "memfs";
 import { describe, it } from "vitest";
 import { FileDownloadService } from "../src/fileDownloadService.js";
-import type { PrinterBlueprint } from "../src/printer.js";
 
 describe("FileDownloadService", () => {
 	const FILE_PATH = "file.ts";
 	const OLD_CONTENT = "OLD_CONTENT";
 	const NEW_CONTENT = "NEW_CONTENT";
 
-	const OLD_MTIME = 1;
-	const NOW = 24 * 60 * 60 * 1000;
-	const NEW_MTIME = NOW + OLD_MTIME * 1000;
-
 	const printer: PrinterBlueprint = {
+		__jsonOutput: false,
 		printMessage: () => {},
 		printOperationMessage: () => {},
 		printConsoleMessage: () => {},
+		withLoaderMessage: (() => {}) as any,
 	};
 
 	const URL = "http://example.com";
@@ -26,17 +24,9 @@ describe("FileDownloadService", () => {
 			[FILE_PATH]: OLD_CONTENT,
 		});
 
-		volume.utimesSync(FILE_PATH, OLD_MTIME, OLD_MTIME);
-
 		const ifs = createFsFromVolume(volume);
 
-		const fileDownloadService = new FileDownloadService(
-			true,
-			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
-			() => NEW_MTIME,
-			ifs,
-			printer,
-		);
+		const fileDownloadService = new FileDownloadService(true, ifs, printer);
 
 		const buffer = await fileDownloadService.download(URL, FILE_PATH);
 
@@ -52,17 +42,9 @@ describe("FileDownloadService", () => {
 			[FILE_PATH]: OLD_CONTENT,
 		});
 
-		volume.utimesSync(FILE_PATH, OLD_MTIME, OLD_MTIME);
-
 		const ifs = createFsFromVolume(volume);
 
-		const fileDownloadService = new FileDownloadService(
-			false,
-			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
-			() => NEW_MTIME,
-			ifs,
-			printer,
-		);
+		const fileDownloadService = new FileDownloadService(false, ifs, printer);
 
 		const buffer = await fileDownloadService.download(URL, FILE_PATH);
 
@@ -78,17 +60,9 @@ describe("FileDownloadService", () => {
 			[FILE_PATH]: OLD_CONTENT,
 		});
 
-		volume.utimesSync(FILE_PATH, OLD_MTIME, OLD_MTIME);
-
 		const ifs = createFsFromVolume(volume);
 
-		const fileDownloadService = new FileDownloadService(
-			false,
-			() => Promise.resolve(Buffer.from(NEW_CONTENT)),
-			() => OLD_MTIME,
-			ifs,
-			printer,
-		);
+		const fileDownloadService = new FileDownloadService(false, ifs, printer);
 
 		const buffer = await fileDownloadService.download(URL, FILE_PATH);
 

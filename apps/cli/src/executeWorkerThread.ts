@@ -1,17 +1,16 @@
 import { parentPort } from "node:worker_threads";
 import {
-	type FileCommand,
-	buildFormattedFileCommands,
-} from "./fileCommands.js";
-import {
 	type MainThreadMessage,
 	decodeMainThreadMessage,
-} from "./mainThreadMessages.js";
-import { runAstGrepCodemod } from "./runAstgrepCodemod.js";
-import { runJscodeshiftCodemod } from "./runJscodeshiftCodemod.js";
-import { runTsMorphCodemod } from "./runTsMorphCodemod.js";
-import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
-import type { WorkerThreadMessage } from "./workerThreadMessages.js";
+} from "@codemod-com/printer";
+import type { ConsoleKind, WorkerThreadMessage } from "@codemod-com/printer";
+import {
+	type FileCommand,
+	buildFormattedFileCommands,
+	runAstGrepCodemod,
+	runJscodeshiftCodemod,
+	runTsMorphCodemod,
+} from "@codemod-com/runner";
 
 class PathAwareError extends Error {
 	constructor(
@@ -86,8 +85,6 @@ const messageHandler = async (m: unknown) => {
 						message.path,
 						message.data,
 						initializationMessage.disablePrettier,
-						initializationMessage.safeArgumentRecord,
-						consoleCallback,
 					);
 					break;
 				default:

@@ -1,11 +1,12 @@
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+	doubleQuotify,
 	extractLibNameAndVersion,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { unpublish } from "../apis.js";
-import type { PrinterBlueprint } from "../printer.js";
-import { boldText, colorizeText, getCurrentUserData } from "../utils.js";
+import { getCurrentUserData } from "../utils.js";
 
 export const handleUnpublishCliCommand = async (
 	printer: PrinterBlueprint,
@@ -28,7 +29,7 @@ export const handleUnpublishCliCommand = async (
 		!force
 	) {
 		throw new Error(
-			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${boldText(
+			`Please provide the version of the codemod you want to unpublish. If you want to unpublish all versions, use the "${chalk.bold(
 				"--force (-f)",
 			)}" flag.`,
 		);
@@ -37,7 +38,7 @@ export const handleUnpublishCliCommand = async (
 	const { token } = userData;
 
 	const spinner = printer.withLoaderMessage(
-		colorizeText(`Unpublishing ${boldText(`"${name}"`)}`, "cyan"),
+		chalk.cyan("Unpublishing ", chalk.bold(doubleQuotify(name))),
 	);
 
 	try {
@@ -47,7 +48,7 @@ export const handleUnpublishCliCommand = async (
 		spinner.fail();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
-		const errorMessage = `${boldText(
+		const errorMessage = `${chalk.bold(
 			`Could not unpublish the "${name}" codemod`,
 		)}:\n${message}`;
 		printer.printOperationMessage({ kind: "error", message: errorMessage });
@@ -56,11 +57,10 @@ export const handleUnpublishCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		boldText(
-			colorizeText(
-				`Codemod "${boldText(name)}" was successfully unpublished.`,
-				"cyan",
-			),
+		chalk.cyan(
+			"Codemod ",
+			chalk.bold(doubleQuotify(name)),
+			" was successfully unpublished.",
 		),
 	);
 };

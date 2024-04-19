@@ -1,12 +1,12 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
+import type { PrinterBlueprint } from "@codemod-com/printer";
 import {
 	isNeitherNullNorUndefined,
 	parseCodemodConfig,
 } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "fast-glob";
-import type { PrinterBlueprint } from "../printer.js";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph"];

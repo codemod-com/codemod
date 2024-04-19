@@ -1,6 +1,6 @@
+import type { PrinterBlueprint } from "@codemod-com/printer";
 import type { FileSystem } from "@codemod-com/utilities";
 import axios from "axios";
-import type { PrinterBlueprint } from "./printer.js";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 

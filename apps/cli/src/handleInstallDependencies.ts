@@ -1,14 +1,14 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
 	type CodemodConfig,
+	execPromise,
 	extractLibNameAndVersion,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import inquirer from "inquirer";
-import type { PrinterBlueprint } from "./printer";
-import { boldText, colorizeText, execPromise } from "./utils";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
 
@@ -153,18 +153,18 @@ export const handleInstallDependencies = async (options: {
 		const rootPackageJsonPath = join(rootPath, "package.json");
 
 		const installedDepsString = toInstall.length
-			? colorizeText(`+ ${toInstall.join("\n+ ")}`, "green")
+			? chalk.green(`+ ${toInstall.join("\n+ ")}`)
 			: "";
 		const unInstalledDepsString = toDelete.length
-			? colorizeText(`- ${toDelete.join("\n- ")}`, "red")
+			? chalk.red(`- ${toDelete.join("\n- ")}`)
 			: "";
-		const affectedString = boldText(
+		const affectedString = chalk.bold(
 			affectedProjectsPackageJsons
 				.map((p) => {
 					const relativePath = relative(target, p);
 
 					if (p === rootPackageJsonPath) {
-						return `${colorizeText("ROOT:", "orange")} ${relativePath}`;
+						return `${chalk.yellow("ROOT:")} ${relativePath}`;
 					}
 
 					return relativePath;
@@ -204,16 +204,15 @@ export const handleInstallDependencies = async (options: {
 
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(`\nAffected package.jsons:\n${affectedString}`, "cyan"),
+			chalk.cyan(`\nAffected package.jsons:\n${affectedString}`),
 		);
 
 		printer.printConsoleMessage(
 			"info",
-			`\n${colorizeText(
-				`Codemod "${boldText(
+			`\n${chalk.cyan(
+				`Codemod "${chalk.bold(
 					codemodName,
 				)}" expects the following dependency changes:`,
-				"cyan",
 			)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
 		);
 
@@ -231,7 +230,7 @@ export const handleInstallDependencies = async (options: {
 		if (install === "none") {
 			printer.printConsoleMessage(
 				"info",
-				colorizeText("Skipping dependency installation...", "cyan"),
+				chalk.cyan("Skipping dependency installation..."),
 			);
 			return;
 		}
@@ -256,9 +255,8 @@ export const handleInstallDependencies = async (options: {
 
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				`Using package manager: ${boldText(detectedPackageManager)}\n`,
-				"cyan",
+			chalk.cyan(
+				`Using package manager: ${chalk.bold(detectedPackageManager)}\n`,
 			),
 		);
 
@@ -282,7 +280,7 @@ export const handleInstallDependencies = async (options: {
 
 		if (install === "root") {
 			const stopRemovalSpinner = printer.withLoaderMessage(
-				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
+				chalk.cyan(`Removing: ${toDelete.join(", ")}...`),
 			);
 			try {
 				await execPromise(
@@ -295,7 +293,7 @@ export const handleInstallDependencies = async (options: {
 			stopRemovalSpinner.succeed();
 
 			const stopInstallationSpinner = printer.withLoaderMessage(
-				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
+				chalk.cyan(`Installing: ${toInstall.join(", ")}...`),
 			);
 			try {
 				await execPromise(
@@ -309,7 +307,7 @@ export const handleInstallDependencies = async (options: {
 			}
 		} else {
 			const stopRemovalSpinner = printer.withLoaderMessage(
-				colorizeText(`Removing: ${toDelete.join(", ")}...`, "cyan"),
+				chalk.cyan(`Removing: ${toDelete.join(", ")}...`),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				const packageJsonContent = await readFile(packageJsonPath, {
@@ -353,7 +351,7 @@ export const handleInstallDependencies = async (options: {
 			}
 
 			const stopInstallationSpinner = printer.withLoaderMessage(
-				colorizeText(`Installing: ${toInstall.join(", ")}...`, "cyan"),
+				chalk.cyan(`Installing: ${toInstall.join(", ")}...`),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				if (packageJsonPath === rootPackageJsonPath) {
@@ -385,22 +383,15 @@ export const handleInstallDependencies = async (options: {
 
 		let installedInString: string;
 		if (install === "affected") {
-			installedInString = colorizeText(
-				affectedProjectsPackageJsons.join("\n"),
-				"cyan",
-			);
+			installedInString = chalk.cyan(affectedProjectsPackageJsons.join("\n"));
 		} else {
-			installedInString = colorizeText(
-				resolve(target, rootPackageJsonPath),
-				"cyan",
-			);
+			installedInString = chalk.cyan(resolve(target, rootPackageJsonPath));
 		}
 
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
+			chalk.green(
 				`Successfully installed dependencies:\n\n${installedDepsString}\n${unInstalledDepsString}\n\nin:\n${installedInString}`,
-				"green",
 			),
 		);
 	} catch (error) {

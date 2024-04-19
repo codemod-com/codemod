@@ -1,11 +1,12 @@
 import { createHash } from "node:crypto";
+import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
 	type CodemodConfig,
+	TarService,
 	codemodNameRegex,
 	isNeitherNullNorUndefined,
 	parseCodemodConfig,
-	tarPack,
 } from "@codemod-com/utilities";
 import * as semver from "semver";
 import type { z } from "zod";
@@ -202,7 +203,8 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
 			});
 		}
 
-		const archive = await tarPack(buffers);
+		const tarService = new TarService(fs);
+		const archive = await tarService.pack(buffers);
 
 		const hashDigest = createHash("ripemd160").update(name).digest("base64url");
 

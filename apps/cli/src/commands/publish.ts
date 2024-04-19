@@ -1,17 +1,17 @@
 import * as fs from "node:fs";
 import { join } from "node:path";
-import { codemodNameRegex, parseCodemodConfig } from "@codemod-com/utilities";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import {
+	codemodNameRegex,
+	doubleQuotify,
+	execPromise,
+	parseCodemodConfig,
+} from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import FormData from "form-data";
 import { publish } from "../apis.js";
-import type { PrinterBlueprint } from "../printer.js";
-import {
-	boldText,
-	colorizeText,
-	execPromise,
-	getCurrentUserData,
-} from "../utils.js";
+import { getCurrentUserData } from "../utils.js";
 
 export const handlePublishCliCommand = async (
 	printer: PrinterBlueprint,
@@ -96,7 +96,7 @@ export const handlePublishCliCommand = async (
 					});
 					const entryPoint = inputFiles.at(0);
 					if (entryPoint === undefined) {
-						errorOnMissing = `Please create the main file under ${boldText(
+						errorOnMissing = `Please create the main file under ${chalk.bold(
 							codemodRc.build.input,
 						)} first.`;
 						break;
@@ -104,7 +104,7 @@ export const handlePublishCliCommand = async (
 				}
 
 				if (codemodRc.build?.output) {
-					errorOnMissing = `Please make sure the output path in your .codemodrc.json under ${boldText(
+					errorOnMissing = `Please make sure the output path in your .codemodrc.json under ${chalk.bold(
 						codemodRc.build.output,
 					)} flag is correct.`;
 					break;
@@ -131,9 +131,8 @@ export const handlePublishCliCommand = async (
 		let mainFilePath = await locateMainFile();
 		if (mainFilePath === undefined) {
 			const spinner = printer.withLoaderMessage(
-				colorizeText(
+				chalk.cyan(
 					"Could not find the main file of the codemod. Trying to build...",
-					"cyan",
 				),
 			);
 
@@ -171,11 +170,11 @@ export const handlePublishCliCommand = async (
 	}
 
 	const publishSpinner = printer.withLoaderMessage(
-		colorizeText(
-			`Publishing the codemod using name from ${boldText(
-				".codemodrc.json",
-			)} file: "${boldText(codemodRc.name)}"`,
-			"cyan",
+		chalk.cyan(
+			"Publishing the codemod using name from ",
+			chalk.bold(".codemodrc.json"),
+			" file: ",
+			chalk.bold(doubleQuotify(codemodRc.name)),
 		),
 	);
 
@@ -186,7 +185,7 @@ export const handlePublishCliCommand = async (
 		publishSpinner.fail();
 		const message =
 			error instanceof AxiosError ? error.response?.data.error : String(error);
-		const errorMessage = `${boldText(
+		const errorMessage = `${chalk.bold(
 			`Could not publish the "${codemodRc.name}" codemod`,
 		)}:\n${message}`;
 		printer.printOperationMessage({ kind: "error", message: errorMessage });
@@ -195,17 +194,16 @@ export const handlePublishCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		boldText(
-			colorizeText(
+		chalk.bold(
+			chalk.cyan(
 				`Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
-				"cyan",
 			),
 		),
 	);
 
 	printer.printConsoleMessage(
 		"info",
-		`\nNow, you can run the codemod anywhere:\n${boldText(
+		`\nNow, you can run the codemod anywhere:\n${chalk.bold(
 			`$ codemod ${codemodRc.name}`,
 		)}`,
 	);

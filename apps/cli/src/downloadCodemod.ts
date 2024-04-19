@@ -1,14 +1,18 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
-import { type CodemodConfig, parseCodemodConfig } from "@codemod-com/utilities";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import type { Codemod } from "@codemod-com/runner";
+import {
+	type CodemodConfig,
+	doubleQuotify,
+	parseCodemodConfig,
+} from "@codemod-com/utilities";
+import type { TarService } from "@codemod-com/utilities";
 import type { Ora } from "ora";
 import { getCodemodDownloadURI } from "./apis.js";
-import type { Codemod } from "./codemod.js";
 import type { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
-import type { PrinterBlueprint } from "./printer.js";
-import type { TarService } from "./services/tarService.js";
-import { boldText, colorizeText, getCurrentUserData } from "./utils.js";
+import { getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
 	download(
@@ -42,11 +46,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		let spinner: Ora | null = null;
 		if (!disableSpinner) {
 			spinner = this.__printer.withLoaderMessage(
-				colorizeText(
-					`Downloading the ${boldText(`"${name}"`)} codemod${
+				chalk.cyan(
+					`Downloading the ${chalk.bold(doubleQuotify(name))} codemod${
 						this._cacheDisabled ? ", not using cache..." : "..."
 					}`,
-					"cyan",
 				),
 			);
 		}
@@ -62,7 +65,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 				localCodemodPath,
 			);
 
-			await this._tarService.extract(directoryPath, buffer);
+			await this._tarService.unpack(directoryPath, buffer);
 			spinner?.succeed();
 		} catch (err) {
 			spinner?.fail();

@@ -1,13 +1,8 @@
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
 import keytar from "keytar";
 import { confirmUserLoggedIn, generateUserLoginIntent } from "../apis.js";
-import type { PrinterBlueprint } from "../printer.js";
-import {
-	boldText,
-	colorizeText,
-	getCurrentUserData,
-	openURL,
-} from "../utils.js";
+import { getCurrentUserData, openURL } from "../utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
@@ -32,7 +27,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 	if (userData !== null) {
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(boldText("You're already logged in."), "cyan"),
+			chalk.bold.cyan("You're already logged in."),
 		);
 		return;
 	}
@@ -41,7 +36,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 
 	routeUserToStudioForLogin(printer, sessionId, initVector);
 	const spinner = printer.withLoaderMessage(
-		colorizeText("Redirecting to Codemod sign-in page", "cyan"),
+		chalk.cyan("Redirecting to Codemod sign-in page"),
 	);
 	try {
 		const token = await backOff(
@@ -58,7 +53,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
 		spinner.succeed();
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(boldText("You are successfully logged in."), "cyan"),
+			chalk.bold.cyan("You are successfully logged in."),
 		);
 	} catch (e) {
 		spinner.fail();

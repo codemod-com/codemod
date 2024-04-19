@@ -1,7 +1,7 @@
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { doubleQuotify } from "@codemod-com/utilities";
 import columnify from "columnify";
 import { getCodemodList } from "../apis.js";
-import type { PrinterBlueprint } from "../printer.js";
-import { boldText, colorizeText } from "../utils.js";
 
 export const handleListNamesCommand = async (
 	printer: PrinterBlueprint,
@@ -10,7 +10,7 @@ export const handleListNamesCommand = async (
 	let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
 	if (search && !printer.__jsonOutput) {
 		spinner = printer.withLoaderMessage(
-			colorizeText(`Searching for ${boldText(`"${search}"`)}`, "cyan"),
+			chalk.cyan("Searching for ", chalk.bold(doubleQuotify(search))),
 		);
 	}
 
@@ -31,10 +31,10 @@ export const handleListNamesCommand = async (
 
 			if (search && (name === search || tagsArray.includes(search))) {
 				return {
-					name: boldText(colorizeText(name, "cyan")),
-					tags: boldText(colorizeText(tags, "cyan")),
-					engine: boldText(colorizeText(engine, "cyan")),
-					author: boldText(colorizeText(author, "cyan")),
+					name: chalk.bold.cyan(name),
+					tags: chalk.bold.cyan(tags),
+					engine: chalk.bold.cyan(engine),
+					author: chalk.bold.cyan(author),
 				};
 			}
 
@@ -53,21 +53,21 @@ export const handleListNamesCommand = async (
 		if (prettified.length === 0) {
 			printer.printConsoleMessage(
 				"info",
-				boldText(colorizeText("No results matched your search.", "red")),
+				chalk.bold.red("No results matched your search."),
 			);
 			return;
 		}
 
 		printer.printConsoleMessage(
 			"info",
-			boldText(colorizeText("Here are the top search results:\n", "cyan")),
+			chalk.bold.cyan("Here are the top search results:\n"),
 		);
 	}
 
 	printer.printConsoleMessage(
 		"info",
 		columnify(prettified, {
-			headingTransform: (heading) => boldText(heading.toLocaleUpperCase()),
+			headingTransform: (heading) => chalk.bold(heading.toLocaleUpperCase()),
 		}),
 	);
 };

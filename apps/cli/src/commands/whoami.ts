@@ -1,10 +1,5 @@
-import type { PrinterBlueprint } from "../printer.js";
-import {
-	boldText,
-	colorizeText,
-	getCurrentUserData,
-	getOrgsNames,
-} from "../utils.js";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { getCurrentUserData, getOrgsNames } from "../utils.js";
 
 export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	const userData = await getCurrentUserData();
@@ -12,10 +7,7 @@ export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	if (userData === null) {
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				boldText("To use this command, please log in first."),
-				"red",
-			),
+			chalk.bold.red("To use this command, please log in first."),
 		);
 		return;
 	}
@@ -23,17 +15,15 @@ export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	const { username, organizations } = userData.user;
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(`You are logged in as ${boldText(username)}.`, "cyan"),
+		chalk.cyan("You are logged in as ", chalk.bold(username), "."),
 	);
 
 	if (organizations.length > 0) {
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				`You have access to the following organizations: ${boldText(
-					`- ${getOrgsNames(userData).join("\n- ")}`,
-				)}`,
-				"cyan",
+			chalk.cyan(
+				"You have access to the following organizations: ",
+				chalk.bold(`- ${getOrgsNames(userData).join("\n- ")}`),
 			),
 		);
 	}

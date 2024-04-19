@@ -1,4 +1,3 @@
-import type { Argv } from "yargs";
 import {
 	DEFAULT_DISABLE_PRETTIER,
 	DEFAULT_DRY_RUN,
@@ -7,7 +6,8 @@ import {
 	DEFAULT_SKIP_INSTALL,
 	DEFAULT_THREAD_COUNT,
 	DEFAULT_USE_JSON,
-} from "./constants.js";
+} from "@codemod-com/runner";
+import type { Argv } from "yargs";
 
 export const buildGlobalOptions = <T>(y: Argv<T>) =>
 	y

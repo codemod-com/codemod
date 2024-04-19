@@ -1,10 +1,12 @@
 import { join } from "node:path";
+import type {
+	FlowSettings,
+	FormattedFileCommand,
+	RunSettings,
+} from "@codemod-com/runner";
 import { CaseWritingService, type FileSystem } from "@codemod-com/utilities";
 import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
-import type { FormattedFileCommand } from "../fileCommands.js";
 import type { SafeArgumentRecord } from "../safeArgumentRecord.js";
-import type { FlowSettings } from "../schemata/flowSettingsSchema.js";
-import type { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
 export class SurfaceAgnosticCaseService {
 	protected _caseWritingService: CaseWritingService | null = null;

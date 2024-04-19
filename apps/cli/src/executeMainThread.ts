@@ -1,11 +1,15 @@
+import { Printer } from "@codemod-com/printer";
 import {
 	NullSender,
 	PostHogSender,
 	type TelemetrySender,
 } from "@codemod-com/telemetry";
+import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
+import { getUserDistinctId } from "./analytics/distinctId";
+import type { TelemetryEvent } from "./analytics/telemetry";
 import { buildGlobalOptions, buildRunOptions } from "./buildOptions.js";
 import { handleInitCliCommand } from "./commands/init";
 import { handleLearnCliCommand } from "./commands/learn";
@@ -16,15 +20,17 @@ import { handlePublishCliCommand } from "./commands/publish";
 import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
-import { getUserDistinctId } from "./distinctId";
-import { Printer } from "./printer.js";
-import type { TelemetryEvent } from "./telemetry";
-import { execPromise, initGlobalNodeModules } from "./utils";
+import { initGlobalNodeModules } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
 
 	const argvObject = buildGlobalOptions(yargs(slicedArgv));
+
+	if (slicedArgv.length === 0) {
+		argvObject.showHelp();
+		return;
+	}
 
 	const argv = await Promise.resolve(argvObject.argv);
 
@@ -83,11 +89,15 @@ export const executeMainThread = async () => {
 				),
 		)
 		// TODO: improve and remove the need for this command
-		// .command(
-		// 	"runOnPreCommit [files...]",
-		// 	"run pre-commit codemods against staged files passed positionally",
-		// 	(y) => buildUseCacheOption(y),
-		// )
+		.command(
+			"runOnPreCommit [files...]",
+			"run pre-commit codemods against staged files passed positionally",
+			(y) => buildRunOptions(y),
+			async (args) =>
+				executeCliCommand(() =>
+					handleRunCliCommand(printer, args, telemetryService),
+				),
+		)
 		.command(
 			["list", "ls", "search"],
 			"lists all the codemods & recipes in the public registry. can be used to search by name and tags",
@@ -160,8 +170,9 @@ export const executeMainThread = async () => {
 				} catch (error) {
 					printer.printOperationMessage({
 						kind: "error",
-						message:
-							"To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run `npm i -g esbuild`",
+						message: `To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run ${doubleQuotify(
+							"npm i -g esbuild",
+						)}`,
 					});
 
 					exit();
@@ -217,11 +228,6 @@ export const executeMainThread = async () => {
 			async (args) =>
 				executeCliCommand(() => handleInitCliCommand(printer, args.noPrompt)),
 		);
-
-	if (slicedArgv.length === 0) {
-		argvObject.showHelp();
-		return;
-	}
 
 	exit();
 };

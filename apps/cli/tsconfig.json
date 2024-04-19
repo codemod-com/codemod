@@ -4,7 +4,7 @@
 		"checkJs": false,
 		"target": "ES2015"
 	},
-	"include": ["./src", "./test"],
+	"include": ["./src", "./test", "src/adapters"],
 	"exclude": ["./dist", "./node_modules"],
 	"extends": "@codemod-com/tsconfig/base.json"
 }

@@ -4,26 +4,29 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import {
+	type CodemodToRun,
+	Runner,
+	parseCodemodSettings,
+	parseFlowSettings,
+	parseRunSettings,
+} from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
-import { parseCodemodConfig } from "@codemod-com/utilities";
+import { doubleQuotify, parseCodemodConfig } from "@codemod-com/utilities";
+import { TarService } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import type { IFs } from "memfs";
 import terminalLink from "terminal-link";
+import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import type { buildRunOptions } from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
+import { buildPrinterMessageUponCommand } from "../fileCommands.js";
 import { FileDownloadService } from "../fileDownloadService.js";
 import { handleInstallDependencies } from "../handleInstallDependencies.js";
-import type { PrinterBlueprint } from "../printer.js";
 import { loadRepositoryConfiguration } from "../repositoryConfiguration.js";
-import { type CodemodToRun, Runner } from "../runner.js";
 import { buildSafeArgumentRecord } from "../safeArgumentRecord.js";
-import { parseCodemodSettings } from "../schemata/codemodSettingsSchema.js";
-import { parseFlowSettings } from "../schemata/flowSettingsSchema.js";
-import { parseRunSettings } from "../schemata/runArgvSettingsSchema.js";
-import { TarService } from "../services/tarService.js";
-import type { TelemetryEvent } from "../telemetry.js";
-import { boldText, getConfigurationDirectoryPath } from "../utils.js";
+import { getConfigurationDirectoryPath } from "../utils.js";
 
 export const handleRunCliCommand = async (
 	printer: PrinterBlueprint,
@@ -46,7 +49,7 @@ export const handleRunCliCommand = async (
 		printer,
 	);
 
-	const tarService = new TarService(fs as unknown as IFs);
+	const tarService = new TarService(fs);
 
 	const configurationDirectoryPath = getConfigurationDirectoryPath(args._);
 
@@ -89,13 +92,13 @@ export const handleRunCliCommand = async (
 						"error",
 						// biome-ignore lint: readability reasons
 						"The specified command or codemod name could not be recognized.\n" +
-							`To view available commands, execute ${boldText(
-								`"codemod --help"`,
+							`To view available commands, execute ${chalk.bold(
+								doubleQuotify("codemod --help"),
 							)}.\n` +
-							`To see a list of existing codemods, run ${boldText(
-								`"codemod search"`,
-							)} or ${boldText(
-								`"codemod list"`,
+							`To see a list of existing codemods, run ${chalk.bold(
+								doubleQuotify("codemod search"),
+							)} or ${chalk.bold(
+								doubleQuotify("codemod list"),
 							)} with a query representing the codemod you are looking for.`,
 					);
 
@@ -128,7 +131,7 @@ export const handleRunCliCommand = async (
 		}
 	}
 
-	const runner = new Runner(codemods, fs, printer, runSettings, argvFlags);
+	const runner = new Runner(codemods, fs, runSettings, argvFlags);
 
 	if (runSettings.dryRun) {
 		printer.printConsoleMessage(
@@ -193,6 +196,17 @@ export const handleRunCliCommand = async (
 				commandName: "codemod.executeCodemod",
 			});
 		},
+		(command) => {
+			const printerMessage = buildPrinterMessageUponCommand(
+				runSettings,
+				command,
+			);
+
+			if (printerMessage) {
+				printer.printOperationMessage(printerMessage);
+			}
+		},
+		(message) => printer.printMessage(message),
 	);
 
 	if (runSettings.dryRun) {

@@ -1,14 +1,15 @@
 import { mkdir, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
 	type KnownEngines,
 	type ProjectDownloadInput,
+	doubleQuotify,
 	getCodemodProjectFiles,
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
-import type { PrinterBlueprint } from "../printer.js";
-import { boldText, colorizeText, getCurrentUserData } from "../utils.js";
+import { getCurrentUserData } from "../utils.js";
 
 const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
 	"jscodeshift",
@@ -124,11 +125,10 @@ export const handleInitCliCommand = async (
 		} catch (err) {
 			printer.printConsoleMessage(
 				"error",
-				colorizeText(
-					`Failed to write file ${boldText(path)}: ${
+				chalk.red(
+					`Failed to write file ${chalk.bold(path)}: ${
 						(err as Error).message
 					}. Aborting codemod creation...`,
-					"red",
 				),
 			);
 
@@ -146,10 +146,7 @@ export const handleInitCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		colorizeText(
-			`Codemod package created at ${boldText(codemodBaseDir)}.`,
-			"cyan",
-		),
+		chalk.cyan(`Codemod package created at ${chalk.bold(codemodBaseDir)}.`),
 	);
 
 	const isJsCodemod =
@@ -160,38 +157,34 @@ export const handleInitCliCommand = async (
 	if (isJsCodemod) {
 		printer.printConsoleMessage(
 			"info",
-			colorizeText(
-				`\nRun ${boldText("`codemod build`")} to build the codemod.`,
-				"cyan",
+			chalk.cyan(
+				"\nRun ",
+				chalk.bold(doubleQuotify("codemod build")),
+				" to build the codemod.",
 			),
 		);
 	}
 
-	const howToRunText = `Run ${boldText(
+	const howToRunText = `Run ${chalk.bold(
 		`\`codemod --source ${codemodBaseDir}\``,
-	)} to run the codemod on current working directory (or specify a target using ${colorizeText(
+	)} to run the codemod on current working directory (or specify a target using ${chalk.yellow(
 		"--target",
-		"orange",
 	)} option).`;
-	printer.printConsoleMessage("info", colorizeText(howToRunText, "cyan"));
+	printer.printConsoleMessage("info", chalk.cyan(howToRunText, "cyan"));
 
-	let publishText = `Run ${boldText(
-		"`codemod publish`",
+	let publishText = `Run ${chalk.bold(
+		doubleQuotify("codemod publish"),
 	)} to publish the codemod to the Codemod registry.`;
 	if (isJsCodemod) {
-		publishText += colorizeText(
+		publishText += chalk.yellow(
 			"NOTE: Your codemod has to be built using the build command",
-			"orange",
 		);
 	}
-	printer.printConsoleMessage("info", colorizeText(publishText, "cyan"));
+	printer.printConsoleMessage("info", chalk.cyan(publishText));
 
 	const otherGuidelinesText = `For other guidelines, please visit our documentation at ${terminalLink(
-		boldText("https://docs.codemod.com"),
+		chalk.bold("https://docs.codemod.com"),
 		"https://docs.codemod.com",
-	)} or type ${boldText("`codemod --help`")}.`;
-	printer.printConsoleMessage(
-		"info",
-		colorizeText(otherGuidelinesText, "cyan"),
-	);
+	)} or type ${chalk.bold(doubleQuotify("codemod --help"))}.`;
+	printer.printConsoleMessage("info", chalk.cyan(otherGuidelinesText));
 };
