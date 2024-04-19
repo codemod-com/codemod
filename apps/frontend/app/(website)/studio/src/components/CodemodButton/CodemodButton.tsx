@@ -1,22 +1,30 @@
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
-import { GithubRepository } from "be-types";
-import { useState } from "react";
+import getGHBranches from "@studio/api/getGHBranches";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useHandleCodemodRun } from "@studio/components/CodemodButton/useHandleCodemodRun";
 import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/useOpenRepoModalAfterSignIn";
 import { Button } from "@studio/components/ui/button";
+import { mockData } from "@studio/hooks/useAPI";
+import { useAuth } from "@studio/hooks/useAuth";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
+import type { GithubRepository } from "be-types";
+import { useEffect, useState } from "react";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
 export const CodemodButton = () => {
+	const { getToken } = useAuth();
+
 	const [repositoriesToShow, setRepositoriesToShow] = useState<
 		GithubRepository[]
-	>([]);
-
+	>(mockData.repositories.data); // @TODO initialize it with empty array when integrated with backend
 	const [selectedRepository, setSelectedRepository] =
 		useState<GithubRepository>();
+
+	const [branchesToShow, setBranchesToShow] = useState<string[]>([]);
+	const [selectedBranch, setSelectedBranch] = useState<string>();
+	const [targetPathInput, setTargetPathInput] = useState<string>("");
 
 	const { codemodRunStatus, onCodemodRunCancel } = useCodemodExecution();
 
@@ -47,8 +55,38 @@ export const CodemodButton = () => {
 		setSelectedRepository(
 			repositoriesToShow.find((repo) => repo.full_name === name),
 		);
+	const selectBranch = (branch: string) =>
+		setSelectedBranch(branchesToShow.find((name) => name === branch));
 
-	const handleCodemodRun = useHandleCodemodRun(selectedRepository);
+	const handleCodemodRun = useHandleCodemodRun(
+		selectedRepository,
+		selectedBranch,
+		targetPathInput,
+	);
+
+	useEffect(() => {
+		if (selectedRepository) {
+			const getBranches = async () => {
+				const token = await getToken();
+				if (token === null) {
+					return;
+				}
+				const branchesOrError = await getGHBranches({
+					repo: selectedRepository,
+					token,
+				});
+				if (branchesOrError.isLeft()) {
+					console.error(branchesOrError.getLeft());
+				} else {
+					setBranchesToShow(branchesOrError.get().slice());
+				}
+			};
+			// @TODO remove the code below when integrated with backend
+			setBranchesToShow(mockData.branches.data);
+			// @TODO uncomment the code below when integrated with backend
+			// getBranches();
+		}
+	}, [getToken, selectedRepository]);
 
 	return (
 		<>
@@ -58,6 +96,11 @@ export const CodemodButton = () => {
 				repositoriesToShow={repositoriesToShow}
 				selectRepository={selectRepository}
 				selectedRepository={selectedRepository}
+				branchesToShow={branchesToShow}
+				selectBranch={selectBranch}
+				selectedBranch={selectedBranch}
+				targetPathInput={targetPathInput}
+				setTargetPathInput={setTargetPathInput}
 				onRunCodemod={onRunCodemod}
 			/>
 			<ProgressBar codemodRunStatus={codemodRunStatus} />

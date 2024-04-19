@@ -1,11 +1,11 @@
-import { GithubRepository } from "be-types";
-import { pipe } from "ramda";
-import { Dispatch, SetStateAction, useEffect } from "react";
 import { GH_REPO_LIST } from "@studio/constants";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useAuth } from "@studio/hooks/useAuth";
 import { useModal } from "@studio/hooks/useModal";
 import { useUserSession } from "@studio/store/zustand/userSession";
+import type { GithubRepository } from "be-types";
+import { pipe } from "ramda";
+import { type Dispatch, type SetStateAction, useEffect } from "react";
 
 /*
 When a user is not signed - redirect them to GH sign in.
@@ -24,7 +24,7 @@ export const useOpenRepoModalAfterSignIn = (
 	} = useModal();
 
 	const getRepositories = async () => {
-		const repositories = (await getRepos()).data;
+		const repositories = ((await getRepos()) as any).repositories.data;
 		setRepositoriesToShow(repositories);
 	};
 	const { retrievePendingAction, hasPendingAction } = useUserSession();

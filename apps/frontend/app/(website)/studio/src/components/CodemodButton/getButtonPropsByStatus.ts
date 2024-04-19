@@ -6,7 +6,7 @@ export const getButtonPropsByStatus = (status: Status) => {
 		case "done":
 		case "idle": {
 			return {
-				text: "Run on branch",
+				text: "Run on Github",
 				hintText:
 					"This runs Codemod on your Github branch and push a commit with changes.",
 			};
@@ -19,7 +19,7 @@ export const getButtonPropsByStatus = (status: Status) => {
 		}
 		default: {
 			return {
-				text: "Run on branch",
+				text: "Run on Github",
 				hintText:
 					"This runs Codemod on your Github branch and push a commit with changes.",
 			};

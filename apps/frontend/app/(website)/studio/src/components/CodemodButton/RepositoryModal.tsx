@@ -1,3 +1,4 @@
+import Input from "@/components/shared/Input";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
 import type { GithubRepository } from "be-types";
@@ -20,6 +21,11 @@ export type RepositoryModalProps = {
 	repositoriesToShow: GithubRepository[];
 	selectRepository: ToVoid<GithubRepository["full_name"]>;
 	selectedRepository?: GithubRepository;
+	branchesToShow: string[];
+	selectBranch: ToVoid<string>;
+	selectedBranch?: string;
+	targetPathInput: string;
+	setTargetPathInput: ToVoid<string>;
 	onRunCodemod: VoidFunction;
 };
 export const RepositoryModal = ({
@@ -28,49 +34,68 @@ export const RepositoryModal = ({
 	repositoriesToShow,
 	selectRepository,
 	selectedRepository,
+	branchesToShow,
+	selectBranch,
+	selectedBranch,
+	targetPathInput,
+	setTargetPathInput,
 	onRunCodemod,
 }: RepositoryModalProps) => {
-	const [valueToFilterBy, setValueToFilterBy] =
+	const [repoValueToFilterBy, setRepoValueToFilterBy] =
 		useState<GithubRepository["full_name"]>();
-	const [open, setOpen] = useState(false);
+	const [branchValueToFilterBy, setBranchValueToFilterBy] = useState<string>();
+	const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
+	const [branchSelectorOpen, setBranchSelectorOpen] = useState(false);
 
-	const matches = useMemo(() => {
-		if (!valueToFilterBy) return repositoriesToShow;
+	const repoMatches = useMemo(() => {
+		if (!repoValueToFilterBy) return repositoriesToShow;
 		const keys = ["full_name"];
-		const matches = matchSorter(repositoriesToShow, valueToFilterBy, { keys });
+		const matches = matchSorter(repositoriesToShow, repoValueToFilterBy, {
+			keys,
+		});
 		// Radix Select does not work if we don't render the selected item, so we
 		// make sure to include it in the list of matches.
-		const selectedRepo = repositoriesToShow.find(
+		const selected = repositoriesToShow.find(
 			(repo) => repo.full_name === selectedRepository?.full_name,
 		);
-		if (selectedRepo && !matches.includes(selectedRepo)) {
-			matches.push(selectedRepo);
+		if (selected && !matches.includes(selected)) {
+			matches.push(selected);
 		}
 		return matches;
 	}, [
-		valueToFilterBy,
+		repoValueToFilterBy,
 		selectedRepository?.full_name,
 		repositoriesToShow.length,
 	]);
 
+	const branchMatches = useMemo(() => {
+		if (!branchValueToFilterBy) return branchesToShow;
+		const matches = matchSorter(branchesToShow, branchValueToFilterBy);
+		const selected = branchesToShow.find((branch) => branch === selectedBranch);
+		if (selected && !matches.includes(selected)) {
+			matches.push(selected);
+		}
+		return matches;
+	}, [branchValueToFilterBy, selectedBranch, branchesToShow.length]);
+
 	return isRepositoryModalShown ? (
 		<Modal onClose={hideRepositoryModal} centered transparent={false}>
-			<h2 className="text-center p-2">Select Repository</h2>
-			<div className="flex justify-center align-items-cente p-4 bg-white min-w-[400px] rounded-lg border-0">
+			<h2 className="text-center p-2">Run Codemod on Github branch</h2>
+			<div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
 				<RadixSelect.Root
 					value={selectedRepository?.full_name}
 					onValueChange={selectRepository}
-					open={open}
-					onOpenChange={setOpen}
+					open={repoSelectorOpen}
+					onOpenChange={setRepoSelectorOpen}
 				>
 					<ComboboxProvider
-						open={open}
-						setOpen={setOpen}
+						open={repoSelectorOpen}
+						setOpen={setRepoSelectorOpen}
 						resetValueOnHide
 						includesBaseElement={false}
 						setValue={(value) => {
 							startTransition(() => {
-								setValueToFilterBy(value);
+								setRepoValueToFilterBy(value);
 							});
 						}}
 					>
@@ -78,7 +103,7 @@ export const RepositoryModal = ({
 							aria-label="Language"
 							className="select flex items-center"
 						>
-							<RadixSelect.Value placeholder="Select a repository" />
+							<RadixSelect.Value placeholder="Select a repository (required)" />
 							<RadixSelect.Icon className="select-icon ml-1">
 								<ChevronUpDownIcon />
 							</RadixSelect.Icon>
@@ -115,7 +140,7 @@ export const RepositoryModal = ({
 								/>
 							</div>
 							<ComboboxList className="listbox">
-								{matches.map(({ full_name }) => (
+								{repoMatches.map(({ full_name }) => (
 									<RadixSelect.Item
 										key={full_name}
 										value={full_name}
@@ -134,21 +159,107 @@ export const RepositoryModal = ({
 						</RadixSelect.Content>
 					</ComboboxProvider>
 				</RadixSelect.Root>
-				<Button
-					className="ml-3 text-amber-50"
-					onClick={onRunCodemod}
-					hint={
-						!selectRepository ? (
-							<p className="font-normal">
-								Select repository to run the codemod
-							</p>
-						) : null
-					}
-					disabled={!selectedRepository}
-				>
-					Run Codemod
-				</Button>
 			</div>
+
+			{selectedRepository && (
+				<div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
+					<RadixSelect.Root
+						value={selectedBranch}
+						onValueChange={selectBranch}
+						open={branchSelectorOpen}
+						onOpenChange={setBranchSelectorOpen}
+					>
+						<ComboboxProvider
+							open={branchSelectorOpen}
+							setOpen={setBranchSelectorOpen}
+							resetValueOnHide
+							includesBaseElement={false}
+							setValue={(value) => {
+								startTransition(() => {
+									setBranchValueToFilterBy(value);
+								});
+							}}
+						>
+							<RadixSelect.Trigger
+								aria-label="Language"
+								className="select flex items-center"
+							>
+								<RadixSelect.Value placeholder="Select a branch (required)" />
+								<RadixSelect.Icon className="select-icon ml-1">
+									<ChevronUpDownIcon />
+								</RadixSelect.Icon>
+							</RadixSelect.Trigger>
+							<RadixSelect.Content
+								role="dialog"
+								aria-label="Languages"
+								position="popper"
+								className="popover"
+								sideOffset={4}
+								alignOffset={-16}
+							>
+								<div className="combobox-wrapper">
+									<div className="combobox-icon">
+										<SearchIcon />
+									</div>
+									<Combobox
+										autoSelect
+										placeholder="Search branches"
+										className="combobox"
+										onBlurCapture={(event) => {
+											event.preventDefault();
+											event.stopPropagation();
+										}}
+									/>
+								</div>
+								<ComboboxList className="listbox">
+									{branchMatches.map((branch) => (
+										<RadixSelect.Item
+											key={branch}
+											value={branch}
+											asChild
+											className="item"
+										>
+											<ComboboxItem>
+												<RadixSelect.ItemText>{branch}</RadixSelect.ItemText>
+												<RadixSelect.ItemIndicator className="item-indicator">
+													<CheckIcon />
+												</RadixSelect.ItemIndicator>
+											</ComboboxItem>
+										</RadixSelect.Item>
+									))}
+								</ComboboxList>
+							</RadixSelect.Content>
+						</ComboboxProvider>
+					</RadixSelect.Root>
+				</div>
+			)}
+
+			{selectedRepository && selectedBranch && (
+				<div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
+					<p className="text-center text-xs">Target path (optional)</p>
+					<Input
+						type="text"
+						value={targetPathInput}
+						placeholder="/packages/apps/frontend/"
+						onChange={(event: any) => setTargetPathInput(event.target.value)}
+					/>
+				</div>
+			)}
+
+			<Button
+				className="m-3 text-amber-50"
+				onClick={onRunCodemod}
+				hint={
+					!selectedRepository ? (
+						<p className="font-normal">Select repository to run the codemod</p>
+					) : !selectedBranch ? (
+						<p className="font-normal">Select branch to run the codemod</p>
+					) : null
+				}
+				disabled={!selectedRepository || !selectedBranch}
+			>
+				Run Codemod
+			</Button>
 		</Modal>
 	) : null;
 };
