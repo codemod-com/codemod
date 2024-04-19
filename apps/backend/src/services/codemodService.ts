@@ -223,13 +223,17 @@ export class CodemodService {
 		return { total, data, filters, page, size };
 	}
 
-	public async getCodemodBySlug(slug: string): Promise<Codemod> {
+	public async getCodemodBySlug(slug: string): Promise<LongCodemodInfo> {
 		const codemod = await this.prisma.codemod.findFirst({
 			where: {
 				slug,
 			},
 			include: {
-				versions: true,
+				versions: {
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
 			},
 		});
 
@@ -237,7 +241,27 @@ export class CodemodService {
 			throw new CodemodNotFoundError();
 		}
 
-		return codemod;
+		const useCaseCategoryTags = await this.prisma.tag.findMany({
+			where: { classification: "useCaseCategory" },
+		});
+
+		const frameworkTags = await this.prisma.tag.findMany({
+			where: { classification: "framework" },
+		});
+
+		const useCaseCategory = useCaseCategoryTags.find((tag) =>
+			tag.aliases.some((t) => codemod.tags.includes(t)),
+		)?.title;
+
+		const framework = frameworkTags.find((tag) =>
+			tag.aliases.some((t) => codemod.tags.includes(t)),
+		)?.title;
+
+		return {
+			...codemod,
+			framework: framework ?? "",
+			useCaseCategory: useCaseCategory ?? "",
+		};
 	}
 
 	public async getCodemodDownloadLink(
@@ -327,6 +351,7 @@ export class CodemodService {
 					tags: latestVersion.tags,
 					verified: codemod.verified,
 					arguments: codemod.arguments ?? [],
+					updatedAt: codemod.updatedAt,
 				};
 			});
 
@@ -357,6 +382,7 @@ export class CodemodService {
 					tags: latestVersion.tags,
 					verified: codemod.verified,
 					arguments: codemod.arguments ?? [],
+					updatedAt: codemod.updatedAt,
 				};
 			});
 
