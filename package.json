@@ -68,8 +68,5 @@
 		"overrides": {
 			"postcss": "8.4.35"
 		}
-	},
-	"resolutions": {
-		"@types/hast": "^3.0.4"
 	}
 }

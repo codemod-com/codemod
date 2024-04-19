@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@types/hast': ^3.0.4
   postcss: 8.4.35
 
 importers:
@@ -8435,6 +8434,9 @@ packages:
 
   '@types/glob@8.1.0':
     resolution: {integrity: sha512-IO+MJPVhoqz+28h1qLAcBEH2+xHMK6MTyHJc7MTnnYb6wsoLR29POVGJ7LycmVXIqyy/4/2ShP5sUwTXuOwb/w==}
+
+  '@types/hast@2.3.10':
+    resolution: {integrity: sha512-McWspRw8xx8J9HurkVBfYj0xKoE25tOFlHGdx4MJ5xORQrMGZNqJhVQWaIbm6Oyla5kYOXtDiopzKRJzEOkwJw==}
 
   '@types/hast@3.0.4':
     resolution: {integrity: sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==}
@@ -18414,6 +18416,10 @@ snapshots:
       '@types/minimatch': 5.1.2
       '@types/node': 20.12.4
 
+  '@types/hast@2.3.10':
+    dependencies:
+      '@types/unist': 2.0.10
+
   '@types/hast@3.0.4':
     dependencies:
       '@types/unist': 3.0.2
@@ -20910,7 +20916,7 @@ snapshots:
 
   hastscript@6.0.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 2.3.10
       comma-separated-tokens: 1.0.8
       hast-util-parse-selector: 2.2.5
       property-information: 5.6.0
@@ -22017,7 +22023,7 @@ snapshots:
 
   mdast-util-to-hast@12.3.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 2.3.10
       '@types/mdast': 3.0.15
       mdast-util-definitions: 5.1.2
       micromark-util-sanitize-uri: 1.2.0
@@ -23565,7 +23571,7 @@ snapshots:
 
   react-markdown@8.0.7(@types/react@18.2.55)(react@18.2.0):
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 2.3.10
       '@types/prop-types': 15.7.11
       '@types/react': 18.2.55
       '@types/unist': 2.0.10
@@ -23844,7 +23850,7 @@ snapshots:
 
   remark-rehype@10.1.0:
     dependencies:
-      '@types/hast': 3.0.4
+      '@types/hast': 2.3.10
       '@types/mdast': 3.0.15
       mdast-util-to-hast: 12.3.0
       unified: 10.1.2
