@@ -22,7 +22,6 @@
 	"keywords": [],
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"@biomejs/biome": "1.5.3",
 		"@types/node": "20.10.3",
 		"@vitest/coverage-v8": "^1.0.1",
 		"applicationinsights": "^2.9.1",

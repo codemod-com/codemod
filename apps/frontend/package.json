@@ -131,7 +131,6 @@
 		"zustand": "^4.5.2"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.5.3",
 		"@testing-library/dom": "^9.0.0",
 		"@testing-library/jest-dom": "^5.16.5",
 		"@testing-library/react": "^13.4.0",

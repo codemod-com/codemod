@@ -17,7 +17,6 @@
 	"author": "Codemod inc.",
 	"private": true,
 	"devDependencies": {
-		"@biomejs/biome": "1.5.3",
 		"@codemod-com/tsconfig": "workspace:*",
 		"@codemod-com/telemetry": "workspace:*",
 		"@faker-js/faker": "^8.4.1",

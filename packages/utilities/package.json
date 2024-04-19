@@ -24,7 +24,6 @@
 	"keywords": [],
 	"license": "Apache-2.0",
 	"devDependencies": {
-		"@biomejs/biome": "1.5.3",
 		"@types/js-beautify": "^1.14.3",
 		"@types/jscodeshift": "^0.11.11",
 		"@types/ms": "^0.7.34",
