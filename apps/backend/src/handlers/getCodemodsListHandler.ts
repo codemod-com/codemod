@@ -38,9 +38,9 @@ export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
 		const userId = await getUserId();
 		const distinctId = userId ?? randomBytes(16).toString("hex");
 
-		const clientIdentifier = parseClientIdentifierSchema(
-			request.headers["x-client-identifier"],
-		);
+		const clientIdentifier = request.headers["x-client-identifier"]
+			? parseClientIdentifierSchema(request.headers["x-client-identifier"])
+			: "UNKNOWN";
 
 		telemetryService.sendEvent(
 			{
