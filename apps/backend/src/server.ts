@@ -38,6 +38,8 @@ import {
 	parseCreateIssueParams,
 	parseDiffCreationBody,
 	parseGetCodeDiffParams,
+	parseGetRepoBranchesBody,
+	parseGetRepoBranchesParams,
 	parseGetUserRepositoriesParams,
 	parseIv,
 	parseSendChatBody,
@@ -740,6 +742,38 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 			const result = await sourceControl.getUserRepositories(
 				sourceControlProvider,
 			);
+
+			reply.type("application/json").code(200);
+			return result;
+		},
+	);
+
+	instance.get(
+		"/sourceControl/:provider/repo/branches",
+		async (request, reply) => {
+			if (!auth) {
+				throw new Error("This endpoint requires auth configuration.");
+			}
+
+			// getting userId from clerk directly should be safe
+			const { userId } = getAuth(request);
+
+			if (!userId) {
+				return reply.code(401).send();
+			}
+
+			const { provider } = parseGetRepoBranchesParams(request.params);
+			const repo = parseGetRepoBranchesBody(request.body);
+
+			const oAuthToken = await auth.getOAuthToken(userId, provider);
+
+			const sourceControlProvider = getSourceControlProvider(
+				provider,
+				oAuthToken,
+				repo.full_name,
+			);
+
+			const result = await sourceControl.getBranches(sourceControlProvider);
 
 			reply.type("application/json").code(200);
 			return result;

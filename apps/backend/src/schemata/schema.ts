@@ -60,6 +60,25 @@ export const parseCreateIssueBody = (input: unknown) =>
 export const parseGetUserRepositoriesParams = (input: unknown) =>
 	parse(providerSchema, input);
 
+export const getRepoBranchesBodySchema = object({
+	id: number(),
+	name: string(),
+	full_name: string(),
+	private: boolean(),
+	html_url: string(),
+	default_branch: string(),
+	permissions: object({
+		admin: boolean(),
+		push: boolean(),
+		pull: boolean(),
+	}),
+});
+
+export const parseGetRepoBranchesBody = (input: unknown) =>
+	parse(getRepoBranchesBodySchema, input);
+export const parseGetRepoBranchesParams = (input: unknown) =>
+	parse(providerSchema, input);
+
 export const getCodemodsQuerySchema = object({
 	search: optional(coerce(string(), String)),
 	category: optional(union([string(), array(string())])),
