@@ -3,7 +3,8 @@
 	"name": "Codemod.com",
 	"logo": {
 		"dark": "/logo/codemod-logo-dark.svg",
-		"light": "/logo/codemod-logo-light.svg"
+		"light": "/logo/codemod-logo-light.svg",
+		"href": "https://codemod.com"
 	},
 	"favicon": "/favicon.svg",
 	"colors": {
