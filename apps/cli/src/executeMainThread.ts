@@ -2,6 +2,12 @@ import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import {
+	NullSender,
+	PostHogSender,
+	type TelemetrySender,
+} from "@codemod-com/telemetry";
+
 import Axios from "axios";
 import type { IFs } from "memfs";
 import yargs from "yargs";
@@ -12,7 +18,7 @@ import {
 	buildUseCacheOption,
 	buildUseJsonOption,
 } from "./buildOptions.js";
-import { APP_INSIGHTS_INSTRUMENTATION_STRING } from "./constants.js";
+import { generateDistinctId, getDistinctId } from "./distinctId";
 import { CodemodDownloader } from "./downloadCodemod.js";
 import { FileDownloadService } from "./fileDownloadService.js";
 import { handleInitCliCommand } from "./handleInitCliCommand";
@@ -30,11 +36,8 @@ import { parseCodemodSettings } from "./schemata/codemodSettingsSchema.js";
 import { parseFlowSettings } from "./schemata/flowSettingsSchema.js";
 import { parseRunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { TarService } from "./services/tarService.js";
-import {
-	AppInsightsTelemetryService,
-	NoTelemetryService,
-} from "./telemetryService.js";
-import { execPromise, initGlobalNodeModules } from "./utils";
+import type { TelemetryEvent } from "./telemetry";
+import { getCurrentUserData } from "./utils";
 
 export const executeMainThread = async () => {
 	const slicedArgv = hideBin(process.argv);
@@ -112,6 +115,17 @@ export const executeMainThread = async () => {
 
 	const argv = await Promise.resolve(argvObject.argv);
 
+	// client identifier is required to prevent duplicated tracking of events
+	// we can specify that request is coming from the VSCE or other client
+	const clientIdentifier =
+		typeof argv.clientIdentifier === "string" ? argv.clientIdentifier : "CLI";
+
+	Axios.interceptors.request.use((config) => {
+		config.headers["X-Client-Identifier"] = clientIdentifier;
+
+		return config;
+	});
+
 	const fetchBuffer = async (url: string) => {
 		const { data } = await Axios.get(url, {
 			responseType: "arraybuffer",
@@ -130,41 +144,48 @@ export const executeMainThread = async () => {
 		printer,
 	);
 
-	let telemetryService: AppInsightsTelemetryService | NoTelemetryService;
+	const configurationDirectoryPath = join(
+		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);
+
+	const getUserDistinctId = async (): Promise<string> => {
+		const userData = await getCurrentUserData();
+
+		if (userData !== null) {
+			return userData.user.userId;
+		}
+
+		const distinctId = await getDistinctId(configurationDirectoryPath);
+
+		if (distinctId !== null) {
+			return distinctId;
+		}
+
+		return await generateDistinctId(configurationDirectoryPath);
+	};
+
+	const telemetryService: TelemetrySender<TelemetryEvent> =
+		argv.telemetryDisable
+			? new NullSender()
+			: new PostHogSender({
+					cloudRole: clientIdentifier,
+					distinctId: await getUserDistinctId(),
+				});
+
 	let exit: () => void = () => {
 		process.exit(0);
 	};
 	const tarService = new TarService(fs as unknown as IFs);
 
-	if (!argv.telemetryDisable) {
-		// hack to prevent appInsights from trying to read applicationinsights.json
-		// this env should be set before appinsights is imported
-		// https://github.com/microsoft/ApplicationInsights-node.js/blob/0217324c477a96b5dd659510bbccad27934084a3/Library/JsonConfig.ts#L122
-		process.env.APPLICATIONINSIGHTS_CONFIGURATION_CONTENT = "{}";
-		const appInsights = await import("applicationinsights");
-
-		// .start() is skipped intentionally, to prevent any non-custom events from tracking
-		appInsights.setup(APP_INSIGHTS_INSTRUMENTATION_STRING);
-
-		telemetryService = new AppInsightsTelemetryService(
-			appInsights.defaultClient,
-		);
-
-		exit = () => {
-			// appInsights telemetry client uses batches to send telemetry.
-			// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-			// see Channel2.prototype.send
-			// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-			appInsights.defaultClient.flush({
-				callback: () => {
-					appInsights.dispose();
-					process.exit(0);
-				},
-			});
-		};
-	} else {
-		telemetryService = new NoTelemetryService();
-	}
+	exit = async () => {
+		// appInsights telemetry client uses batches to send telemetry.
+		// this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
+		// see Channel2.prototype.send
+		// we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+		await telemetryService.dispose();
+		process.exit(0);
+	};
 
 	const executeCliCommand = async (
 		executableCallback: () => Promise<unknown> | unknown,
@@ -186,11 +207,6 @@ export const executeMainThread = async () => {
 	};
 
 	process.on("SIGINT", exit);
-
-	const configurationDirectoryPath = join(
-		String(argv._) === "runOnPreCommit" ? process.cwd() : homedir(),
-		".codemod",
-	);
 
 	const codemodDownloader = new CodemodDownloader(
 		printer,

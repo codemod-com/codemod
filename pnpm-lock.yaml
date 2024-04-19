@@ -159,6 +159,9 @@ importers:
       '@biomejs/biome':
         specifier: 1.5.3
         version: 1.5.3
+      '@codemod-com/telemetry':
+        specifier: workspace:*
+        version: link:../../packages/telemetry
       '@codemod-com/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
