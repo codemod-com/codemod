@@ -56,6 +56,7 @@
 		"unified": "^10.1.2",
 		"unist-util-filter": "^5.0.1",
 		"unist-util-visit": "^5.0.0",
+		"valibot": "^0.24.1",
 		"vue-sfc-descriptor-to-string": "^2.0.0"
 	}
 }

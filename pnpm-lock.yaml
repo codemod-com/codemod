@@ -4482,6 +4482,9 @@ importers:
       unist-util-visit:
         specifier: ^5.0.0
         version: 5.0.0
+      valibot:
+        specifier: ^0.24.1
+        version: 0.24.1
       vue-sfc-descriptor-to-string:
         specifier: ^2.0.0
         version: 2.0.0

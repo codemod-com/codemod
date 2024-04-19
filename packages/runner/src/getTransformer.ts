@@ -1,4 +1,11 @@
 import nodePath from "node:path";
+// Fixes The inferred type of 'getTransformer' cannot be named without a reference to
+// '.pnpm/@babel+types@7.24.0/node_modules/@babel/types'.
+// This is likely not portable. A type annotation is necessary.
+// This should be fixed in future version of TypeScript:
+// https://github.com/microsoft/TypeScript/issues/42873#issuecomment-2066874644
+// TODO: update TypeScript
+import type {} from "@babel/types";
 import type { Filemod } from "@codemod-com/filemod";
 import * as tsmorph from "ts-morph";
 import ts from "typescript";
