@@ -156,12 +156,6 @@ importers:
         specifier: ^3.1.6
         version: 3.1.6
     devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
-      '@codemod-com/telemetry':
-        specifier: workspace:*
-        version: link:../../packages/telemetry
       '@codemod-com/tsconfig':
         specifier: workspace:*
         version: link:../../packages/tsconfig
@@ -598,9 +592,6 @@ importers:
         specifier: ^4.5.2
         version: 4.5.2(@types/react@18.2.55)(immer@9.0.21)(react@18.2.0)
     devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
       '@testing-library/dom':
         specifier: ^9.0.0
         version: 9.3.4
@@ -4364,9 +4355,6 @@ importers:
 
   packages/filemod:
     devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
       '@types/node':
         specifier: 20.8.5
         version: 20.8.5
@@ -4526,9 +4514,6 @@ importers:
         specifier: ^4.0.0
         version: 4.0.0
     devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
       '@types/node':
         specifier: 20.10.3
         version: 20.10.3
@@ -4583,9 +4568,6 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
     devDependencies:
-      '@biomejs/biome':
-        specifier: 1.5.3
-        version: 1.5.3
       '@types/js-beautify':
         specifier: ^1.14.3
         version: 1.14.3
