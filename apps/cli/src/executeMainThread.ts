@@ -27,12 +27,9 @@ export const executeMainThread = async () => {
 
 	const argvObject = buildGlobalOptions(yargs(slicedArgv));
 
-	if (slicedArgv.length === 0) {
-		argvObject.showHelp();
-		return;
-	}
-
 	const argv = await Promise.resolve(argvObject.argv);
+
+	const printer = new Printer(argv.json);
 
 	const telemetryService: TelemetrySender<TelemetryEvent> =
 		argv.telemetryDisable
@@ -72,8 +69,6 @@ export const executeMainThread = async () => {
 
 	process.on("SIGINT", exit);
 
-	const printer = new Printer(argv.json);
-
 	argvObject
 		.scriptName("codemod")
 		.usage("Usage: <command> [options]")
@@ -103,17 +98,14 @@ export const executeMainThread = async () => {
 			"lists all the codemods & recipes in the public registry. can be used to search by name and tags",
 			(y) => buildGlobalOptions(y),
 			async (args) => {
-				const lastArgument = String(args._.at(-1));
+				const searchTerm = args._.length > 1 ? String(args._.at(-1)) : null;
 
-				let searchTerm: string | null = null;
-				if (lastArgument) {
-					if (lastArgument.length < 2) {
+				if (searchTerm) {
+					if (searchTerm.length < 2) {
 						throw new Error(
 							"Search term must be at least 2 characters long. Aborting...",
 						);
 					}
-
-					searchTerm = lastArgument;
 				}
 
 				return executeCliCommand(() =>
@@ -209,7 +201,13 @@ export const executeMainThread = async () => {
 					description: "whether to remove all versions",
 				}),
 			async (args) => {
-				const lastArgument = String(args._.at(-1));
+				const lastArgument = args._.length > 1 ? String(args._.at(-1)) : null;
+
+				if (!lastArgument) {
+					throw new Error(
+						"You must provide the name of the codemod to unpublish. Aborting...",
+					);
+				}
 
 				return executeCliCommand(() =>
 					handleUnpublishCliCommand(printer, lastArgument, args.force),
@@ -229,5 +227,11 @@ export const executeMainThread = async () => {
 				executeCliCommand(() => handleInitCliCommand(printer, args.noPrompt)),
 		);
 
-	exit();
+	if (slicedArgv.length === 0) {
+		argvObject.showHelp();
+		return;
+	}
+
+	argvObject.parse();
+	// exit();
 };

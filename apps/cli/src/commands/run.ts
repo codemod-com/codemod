@@ -40,7 +40,7 @@ export const handleRunCliCommand = async (
 	}
 
 	const codemodSettings = parseCodemodSettings(args);
-	const argvFlags = parseFlowSettings(args);
+	const flowSettings = parseFlowSettings(args);
 	const runSettings = parseRunSettings(homedir(), args);
 
 	const fileDownloadService = new FileDownloadService(
@@ -63,6 +63,8 @@ export const handleRunCliCommand = async (
 
 	const codemods: CodemodToRun[] = [];
 
+	console.log("there1123213");
+
 	if (codemodSettings.kind === "runSourced") {
 		const codemod = await buildSourcedCodemodOptions(
 			fs,
@@ -76,7 +78,7 @@ export const handleRunCliCommand = async (
 			hashDigest: createHash("ripemd160")
 				.update(codemodSettings.source)
 				.digest(),
-			safeArgumentRecord: buildSafeArgumentRecord(codemod, argvFlags),
+			safeArgumentRecord: buildSafeArgumentRecord(codemod, flowSettings),
 		});
 	} else if (codemodSettings.kind === "runNamed") {
 		let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
@@ -112,7 +114,7 @@ export const handleRunCliCommand = async (
 		codemods.push({
 			...codemod,
 			hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-			safeArgumentRecord: buildSafeArgumentRecord(codemod, argvFlags),
+			safeArgumentRecord: buildSafeArgumentRecord(codemod, flowSettings),
 		});
 	} else {
 		const { preCommitCodemods } = await loadRepositoryConfiguration();
@@ -131,7 +133,7 @@ export const handleRunCliCommand = async (
 		}
 	}
 
-	const runner = new Runner(codemods, fs, runSettings, argvFlags);
+	const runner = new Runner(codemods, fs, runSettings, flowSettings);
 
 	if (runSettings.dryRun) {
 		printer.printConsoleMessage(
@@ -221,7 +223,7 @@ export const handleRunCliCommand = async (
 		);
 	}
 
-	if (!runSettings.dryRun && !argvFlags.skipInstall) {
+	if (!runSettings.dryRun && !flowSettings.skipInstall) {
 		for (const [codemodName, { deps, affectedFiles }] of Object.entries(
 			depsToInstall,
 		)) {
@@ -229,7 +231,7 @@ export const handleRunCliCommand = async (
 				codemodName,
 				printer,
 				affectedFiles,
-				target: argvFlags.target,
+				target: flowSettings.target,
 				deps,
 			});
 		}
