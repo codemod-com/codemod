@@ -18,6 +18,7 @@ import {
 	codemodListResponseCodec,
 } from "../codemods/types";
 import type { Configuration } from "../configuration";
+import { CLI_NPM_LINK } from "../constants";
 import type { Container } from "../container";
 import type { Store } from "../data";
 import { actions } from "../data/slice";
@@ -45,9 +46,6 @@ export const Messages = {
 };
 
 const TERMINATE_IDLE_PROCESS_TIMEOUT = 30 * 1000;
-const currentCLIMajorVersion = 0;
-// TODO: get this info from backend
-const currentCLIMinorVersion = 10;
 
 export enum EngineMessageKind {
 	finish = 2,
@@ -325,11 +323,18 @@ export class EngineService {
 			return false;
 		}
 
-		const result = await streamToString(childProcess.stdout);
+		const [latestVersion, userCLIVersion] = await Promise.all([
+			this.__fetchCLILatestVersion(),
+			streamToString(childProcess.stdout),
+		]);
 
-		return result.startsWith(
-			`${currentCLIMajorVersion}.${currentCLIMinorVersion}`,
-		);
+		return userCLIVersion.startsWith(latestVersion);
+	}
+
+	private async __fetchCLILatestVersion(): Promise<string> {
+		const response = await axios.get(CLI_NPM_LINK);
+		const data = await response.data;
+		return data.version;
 	}
 
 	private async __fetchCodemods(): Promise<void> {
