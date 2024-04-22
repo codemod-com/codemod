@@ -15,7 +15,7 @@ Codemod Studio allows you to “instantly” create code automation bots with th
 
 ### 1. Build
 
-With the help of fine-tuned LLMs under-the-hood and codemod creation features such as expert-curated prompts, smart highlighting & GUI codemod builder, Codemod Studio can help you build codemods in a few minutes.
+With the help of fine-tuned LLMs under-the-hood and codemod creation features such as expert-curated prompts, and smart highlighting, Codemod Studio can help you build codemods in a few minutes.
 
 ### 2. Test
 
@@ -23,7 +23,7 @@ Codemod Studio allows you to iteratively test, debug, and improve your codemods 
 
 ### 3. Run
 
-With close integration with Codemod platform, Codemod Studio allows you to easily run your codemods over your projects using Codemod CLI or VS Code Extension.
+With close integration with Codemod platform, Codemod Studio allows you to easily run your codemods over your projects using Codemod CLI, VS Code Extension, or on your GitHub repositories right from the studio.
 
 ## Documentation
 
