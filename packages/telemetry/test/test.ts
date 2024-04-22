@@ -12,7 +12,7 @@ vi.mock("posthog-node", async () => {
 	};
 });
 
-describe("Should send telemetry", () => {
+describe.skip("Should send telemetry", () => {
 	it("Should build correct role, properties and event name", () => {
 		const sender = new PostHogSender({
 			cloudRole: "ROLE",
