@@ -39,7 +39,7 @@ export default async function RootLayout({
 					type="text/css"
 				/>
 			</head>
-			<body id="root">
+			<body>
 				<AuthProvider>
 					{children}
 					<Analytics />
