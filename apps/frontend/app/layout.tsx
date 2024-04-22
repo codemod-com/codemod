@@ -39,12 +39,10 @@ export default async function RootLayout({
 					type="text/css"
 				/>
 			</head>
-			<body>
+			<body id="root">
 				<AuthProvider>
-					<ThemeProvider>
-						{children}
-						<Analytics />
-					</ThemeProvider>
+					{children}
+					<Analytics />
 				</AuthProvider>
 			</body>
 		</html>

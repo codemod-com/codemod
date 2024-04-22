@@ -7,9 +7,9 @@ function App() {
   const [theme, setTheme] = useState('light');
   // ...
   return (
-    <ThemeContext.Provider value={theme}>
+    <UseTheme.Provider value={theme}>
       <Page />
-    </ThemeContext.Provider>
+    </UseTheme.Provider>
   );
 }
 ```
@@ -21,9 +21,9 @@ function App() {
   const [theme, setTheme] = useState('light');
   // ...
   return (
-    <ThemeContext value={theme}>
+    <UseTheme value={theme}>
       <Page />
-    </ThemeContext>
+    </UseTheme>
   );
 }
 ```

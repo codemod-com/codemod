@@ -1,4 +1,4 @@
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
 import type { monaco } from "@studio/customMonaco";
 import type { VisibilityOptions } from "@studio/types/options";

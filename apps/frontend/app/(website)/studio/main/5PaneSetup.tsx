@@ -2,7 +2,7 @@ import ChevronRightSVG from "@/assets/icons/chevronright.svg";
 import { cn } from "@/utils";
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities";
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 import getAccessToken from "@studio/api/getAccessToken";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
