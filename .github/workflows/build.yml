@@ -39,8 +39,6 @@ jobs:
                   NX_DAEMON: ''
                   SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
                   SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
-                  TURBO_REMOTE_ONLY: ''
-                  TURBO_RUN_SUMMARY: ''
                   VERCEL: '1'
                   VERCEL_ENV: 'development'
                   VERCEL_GIT_COMMIT_AUTHOR_LOGIN: ''
