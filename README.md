@@ -8,17 +8,17 @@
 
   <p align="center">
     <br />
-    <a href="https://codemod.com/automations/">Registry</a>
+    <a href="https://codemod.com/registry/">Registry</a>
     ·
     <a href="https://codemod.com/community">Community</a>
     ·
-    <a href="https://docs.codemod.com">Documentation</a>
+    <a href="https://docs.codemod.com">Docs</a>
   </p>
 </p>
 
-## Codemod.com
+## Codemod
 
-At Codemod.com we are building the ecosystem, platform and tooling around code modification bots, aka codemods. The Codemod platform helps you create, distribute, and deploy codemods in codebases of any size.
+Codemod platform helps you create, distribute, and run codemods in codebases of any size.
 
 The AI-powered, community-led codemods enable you to automate framework upgrades, large refactoring, and boilerplate programming with unparalleled speed and developer experience.
 
@@ -26,16 +26,62 @@ We are making dream migrations a reality for all developers in the world, one fr
 
 ## Documentation
 
-For details on how to use the Codemod platform, check out our [documentation](https://go.codemod.com/docs).
+For details on how to use Codemod platform, check out our [documentation](https://go.codemod.com/docs).
+
+## Quickstart
+
+To get started, you can install Codemod CLI:
+
+```
+npm i -g codemod
+```
+
+With Codemod CLI, you can:
+
+### 1. Build codemods
+
+You can easily build codemods using AI by opening a local project, making changes in a file, and running the following command:
+
+```
+codemod learn
+```
+
+### 2. Publish codemods
+
+You can publish a [compatible](https://docs.codemod.com/codemod-registry/publishing-codemods#required-codemod-package-structure) local codemod package to [Codemod Registry](https://codemod.com/registry) with:
+
+```
+codemod publish
+```
+
+### 3. Run codemods
+
+```
+codemod [codemod name]
+```
 
 ## Community
 
-The Codemod community can be found on [Slack](https://codemod.com/community), where you can ask questions, share your feedback, and contribute to the community.
+Codemod community can be found on [Slack](https://codemod.com/community), where you can ask questions, share your feedback, and contribute to the community.
 
 Our [Code of Conduct](/CODE_OF_CONDUCT.md) applies to all Codemod community channels.
 
+## Contributing
 
-## Contributors ✨
+To contribute to Codemod platform, please refer to the [contributing guide](/CONTRIBUTING.md).
+
+### Bounties
+
+<a href="https://console.algora.io/org/codemod-com/bounties?status=open">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://console.algora.io/api/og/codemod-com/bounties.png?p=0&status=open&theme=dark">
+    <img alt="Bounties of codemod-com" src="https://console.algora.io/api/og/codemod-com/bounties.png?p=0&status=open&theme=light">
+  </picture>
+</a>
+
+### Contributors ✨
+
+![Alt](https://repobeats.axiom.co/api/embed/a601b01213da7b870268b1fe2ee8384efc40c308.svg "Repobeats analytics image")
 
 Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
 
@@ -66,6 +112,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Nuurek"><img src="https://avatars.githubusercontent.com/u/12049357?v=4?s=100" width="100px;" alt="Nuurek"/><br /><sub><b>Nuurek</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Nuurek" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3ANuurek" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Baghdasarov"><img src="https://avatars.githubusercontent.com/u/16937233?v=4?s=100" width="100px;" alt="Norayr Baghdasarov"/><br /><sub><b>Norayr Baghdasarov</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=Baghdasarov" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3ABaghdasarov" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/grzim"><img src="https://avatars.githubusercontent.com/u/8398557?v=4?s=100" width="100px;" alt="Grzegorz"/><br /><sub><b>Grzegorz</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/issues?q=author%3Agrzim" title="Bug reports">🐛</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/arybitskiy"><img src="https://avatars.githubusercontent.com/u/4195805?v=4?s=100" width="100px;" alt="Aleksy"/><br /><sub><b>Aleksy</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=arybitskiy" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3Aarybitskiy" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>

@@ -3,7 +3,8 @@
 	"name": "Codemod.com",
 	"logo": {
 		"dark": "/logo/codemod-logo-dark.svg",
-		"light": "/logo/codemod-logo-light.svg"
+		"light": "/logo/codemod-logo-light.svg",
+		"href": "https://codemod.com"
 	},
 	"favicon": "/favicon.svg",
 	"colors": {
@@ -26,7 +27,7 @@
 		},
 		{
 			"name": "Blog",
-			"url": "https://docs.codemod.com/blog"
+			"url": "https://codemod.com/blog"
 		},
 		{
 			"name": "Join Community",
@@ -70,17 +71,7 @@
 		},
 		{
 			"group": "Other Resources",
-			"pages": [
-				"more-resources/changelog",
-				{
-					"group": "Legal",
-					"pages": [
-						"more-resources/legal/telemetry-compliance",
-						"more-resources/legal/privacy-policy",
-						"more-resources/legal/terms-and-conditions"
-					]
-				}
-			]
+			"pages": ["more-resources/changelog"]
 		},
 		{
 			"group": "Explore examples",
@@ -99,28 +90,16 @@
 	},
 	"redirects": [
 		{
-			"source": "/blog",
-			"destination": "https://blog.codemod.com/"
+			"source": "/more-resources/legal/telemetry-compliance",
+			"destination": "https://codemod.com/telemetry-compliance"
 		},
 		{
-			"source": "/blog/eslint-to-biome",
-			"destination": "https://blog.codemod.com/eslint-to-biome"
+			"source": "/more-resources/legal/privacy-policy",
+			"destination": "https://codemod.com/privacy-policy"
 		},
 		{
-			"source": "/blog/codemodable",
-			"destination": "https://blog.codemod.com/codemodable"
-		},
-		{
-			"source": "/blog/cal-next-migration",
-			"destination": "https://blog.codemod.com/cal-next-migration"
-		},
-		{
-			"source": "/blog/mocha-to-vitest-migration",
-			"destination": "https://blog.codemod.com/mocha-to-vitest-migration"
-		},
-		{
-			"source": "/blog/dream-migration",
-			"destination": "https://blog.codemod.com/dream-migration"
+			"source": "/more-resources/legal/terms-and-conditions",
+			"destination": "https://codemod.com/terms-and-conditions"
 		}
 	]
 }

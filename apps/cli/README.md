@@ -25,7 +25,7 @@ For details on how to use the Codemod platform, check out our [documentation](ht
 
 ### List available codemods
 
-The `list` command can be used to list all codemods available in the [Codemod Registry](https://codemod.com/automations).
+The `list` command can be used to list all codemods available in the [Codemod Registry](https://codemod.com/registry).
 
     codemod list
 

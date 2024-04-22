@@ -7,9 +7,6 @@ export type TelemetrySenderOptions = {
 };
 
 export type TelemetrySender<Event extends BaseEvent> = {
-	sendEvent(
-		event: Event,
-		optionOverrides?: Partial<TelemetrySenderOptions>,
-	): void;
+	sendEvent(event: Event): void;
 	dispose(): Promise<unknown>;
 };

@@ -115,17 +115,6 @@ export const executeMainThread = async () => {
 
 	const argv = await Promise.resolve(argvObject.argv);
 
-	// client identifier is required to prevent duplicated tracking of events
-	// we can specify that request is coming from the VSCE or other client
-	const clientIdentifier =
-		typeof argv.clientIdentifier === "string" ? argv.clientIdentifier : "CLI";
-
-	Axios.interceptors.request.use((config) => {
-		config.headers["X-Client-Identifier"] = clientIdentifier;
-
-		return config;
-	});
-
 	const fetchBuffer = async (url: string) => {
 		const { data } = await Axios.get(url, {
 			responseType: "arraybuffer",
@@ -169,7 +158,7 @@ export const executeMainThread = async () => {
 		argv.telemetryDisable
 			? new NullSender()
 			: new PostHogSender({
-					cloudRole: clientIdentifier,
+					cloudRole: "CLI",
 					distinctId: await getUserDistinctId(),
 				});
 

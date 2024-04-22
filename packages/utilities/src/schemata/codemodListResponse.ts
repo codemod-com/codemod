@@ -8,4 +8,5 @@ export type CodemodListResponse = {
 	tags: string[];
 	verified: boolean;
 	arguments: Arguments;
+	updatedAt: Date;
 }[];

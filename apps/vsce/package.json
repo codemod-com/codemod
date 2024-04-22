@@ -3,7 +3,7 @@
 	"author": "Codemod, Inc.",
 	"displayName": "Codemod.com",
 	"description": " Discover, run & manage codemods faster & easier.",
-	"version": "0.38.20",
+	"version": "0.38.21",
 	"publisher": "codemod",
 	"icon": "img/codemod_square128.png",
 	"repository": {
@@ -259,8 +259,8 @@
 	},
 	"dependencies": {
 		"@codemod-com/utilities": "workspace:*",
+		"@codemod-com/telemetry": "workspace:*",
 		"@reduxjs/toolkit": "^1.9.5",
-		"@vscode/extension-telemetry": "^0.7.7",
 		"@vscode/vsce": "^2.22.0",
 		"axios": "^1.6.8",
 		"axios-retry": "^4.0.0",

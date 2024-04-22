@@ -1,4 +1,5 @@
 import {
+	type AllEngines,
 	type CodemodListResponse,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
@@ -222,13 +223,17 @@ export class CodemodService {
 		return { total, data, filters, page, size };
 	}
 
-	public async getCodemodBySlug(slug: string): Promise<Codemod> {
+	public async getCodemodBySlug(slug: string): Promise<LongCodemodInfo> {
 		const codemod = await this.prisma.codemod.findFirst({
 			where: {
 				slug,
 			},
 			include: {
-				versions: true,
+				versions: {
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
 			},
 		});
 
@@ -236,7 +241,27 @@ export class CodemodService {
 			throw new CodemodNotFoundError();
 		}
 
-		return codemod;
+		const useCaseCategoryTags = await this.prisma.tag.findMany({
+			where: { classification: "useCaseCategory" },
+		});
+
+		const frameworkTags = await this.prisma.tag.findMany({
+			where: { classification: "framework" },
+		});
+
+		const useCaseCategory = useCaseCategoryTags.find((tag) =>
+			tag.aliases.some((t) => codemod.tags.includes(t)),
+		)?.title;
+
+		const framework = frameworkTags.find((tag) =>
+			tag.aliases.some((t) => codemod.tags.includes(t)),
+		)?.title;
+
+		return {
+			...codemod,
+			framework: framework ?? "",
+			useCaseCategory: useCaseCategory ?? "",
+		};
 	}
 
 	public async getCodemodDownloadLink(
@@ -302,65 +327,64 @@ export class CodemodService {
 				where: {
 					OR: [{ private: false }, { author: { in: allowedNamespaces } }],
 				},
-			});
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						slug: codemod.slug,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments ?? [],
+					updatedAt: codemod.updatedAt,
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		} else {
-			const dbCodemods = await this.prisma.codemod.findMany();
-
-			const codemods = await Promise.all(
-				dbCodemods.map(async (codemod) => {
-					const latestVersion = await this.prisma.codemodVersion.findFirst({
-						where: {
-							codemodId: codemod.id,
-						},
+			const dbCodemods = await this.prisma.codemod.findMany({
+				include: {
+					versions: {
 						orderBy: {
 							createdAt: "desc",
 						},
-					});
+						take: 1,
+					},
+				},
+			});
 
-					if (!latestVersion) {
-						return null;
-					}
+			const codemods = dbCodemods.map((codemod) => {
+				const latestVersion = codemod.versions?.[0];
+				if (!latestVersion) {
+					return null;
+				}
 
-					return {
-						name: codemod.name,
-						slug: codemod.slug,
-						engine: latestVersion?.engine,
-						author: codemod.author,
-						tags: latestVersion.tags,
-						verified: codemod.verified,
-						arguments: codemod.arguments,
-					};
-				}),
-			);
+				return {
+					name: codemod.name,
+					slug: codemod.slug,
+					engine: latestVersion?.engine as AllEngines,
+					author: codemod.author,
+					tags: latestVersion.tags,
+					verified: codemod.verified,
+					arguments: codemod.arguments ?? [],
+					updatedAt: codemod.updatedAt,
+				};
+			});
 
 			codemodData = codemods.filter(Boolean);
 		}

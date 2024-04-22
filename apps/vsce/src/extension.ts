@@ -5,7 +5,6 @@ import {
 	PIRANHA_LANGUAGES,
 	piranhaLanguageSchema,
 } from "@codemod-com/utilities";
-import TelemetryReporter from "@vscode/extension-telemetry";
 import { isLeft } from "fp-ts/lib/Either";
 import prettyReporter from "io-ts-reporters";
 import { parse } from "valibot";
@@ -37,8 +36,10 @@ import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
 import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
+import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
-import { VscodeTelemetry } from "./telemetry/vscodeTelemetry";
+import { buildTelemetryLogger } from "./telemetry/logger";
+import { VscodeTelemetryReporter } from "./telemetry/reporter";
 import { buildHash, isNeitherNullNorUndefined } from "./utilities";
 
 export enum SEARCH_PARAMS_KEYS {
@@ -68,11 +69,21 @@ export async function activate(context: vscode.ExtensionContext) {
 	const userService = new UserService(globalStateTokenStorage);
 
 	const accessToken = userService.getLinkedToken();
-	if (accessToken !== null) {
-		const valid = await validateAccessToken(accessToken);
-		vscode.commands.executeCommand("setContext", "codemod.signedIn", valid);
 
-		if (!valid) {
+	let distinctId = await getDistinctId(context);
+
+	if (distinctId === null) {
+		distinctId = await generateDistinctId(context);
+	}
+
+	if (accessToken !== null) {
+		const userData = await validateAccessToken(accessToken);
+
+		const signedIn = userData !== null;
+
+		vscode.commands.executeCommand("setContext", "codemod.signedIn", signedIn);
+
+		if (!signedIn) {
 			userService.unlinkCodemodComUserAccount();
 			const decision = await vscode.window.showInformationMessage(
 				"You are signed out because your session has expired.",
@@ -92,6 +103,8 @@ export async function activate(context: vscode.ExtensionContext) {
 				vscode.commands.executeCommand("codemod.redirect", url);
 			}
 		}
+
+		distinctId = userData?.userId ?? "AnonymousUser";
 	}
 
 	const configurationContainer = buildContainer(getConfiguration());
@@ -122,9 +135,8 @@ export async function activate(context: vscode.ExtensionContext) {
 		store,
 	);
 
-	const telemetryKey = "d9f8ad27-50df-46e3-8acf-81ea279c8444";
-	const vscodeTelemetry = new VscodeTelemetry(
-		new TelemetryReporter(telemetryKey),
+	const vscodeTelemetry = new VscodeTelemetryReporter(
+		buildTelemetryLogger(distinctId),
 		messageBus,
 	);
 

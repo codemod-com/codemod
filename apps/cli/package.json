@@ -1,12 +1,14 @@
 {
 	"name": "codemod",
 	"author": "Codemod, Inc.",
-	"version": "0.10.7",
+	"version": "0.10.8",
 	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
 	"type": "module",
 	"exports": null,
 	"repository": {
-		"type": "git"
+		"type": "git",
+		"url": "https://github.com/codemod-com/codemod.git",
+		"directory": "apps/cli"
 	},
 	"keywords": [
 		"codemod",
@@ -36,6 +38,7 @@
 		"@biomejs/biome": "1.5.3",
 		"@codemod-com/filemod": "workspace:*",
 		"@codemod-com/utilities": "workspace:*",
+		"@codemod-com/telemetry": "workspace:*",
 		"@svgr/hast-util-to-babel-ast": "^7.0.0",
 		"@types/babel__traverse": "^7.20.1",
 		"@types/columnify": "^1.5.4",
