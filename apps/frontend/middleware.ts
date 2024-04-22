@@ -1,17 +1,18 @@
-import { getRedirect } from "@/data/sanity/redirects";
+// import { getRedirect } from "@/data/sanity/redirects";
 import type { NextRequest } from "next/server";
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 
 // @TODO: Handle redirects from Sanity
 export async function middleware(request: NextRequest) {
 	const pathname = request.nextUrl.pathname;
-	const redirect = await getRedirect(pathname);
+	// @TODO fix sanity in middleware error
+	// const redirect = await getRedirect(pathname);
 
-	if (redirect) {
-		return NextResponse.redirect(new URL(redirect.destination, request.url), {
-			status: redirect.permanent ? 301 : 302,
-		});
-	}
+	// if (redirect) {
+	// 	return NextResponse.redirect(new URL(redirect.destination, request.url), {
+	// 		status: redirect.permanent ? 301 : 302,
+	// 	});
+	// }
 }
 
 export const config = {
