@@ -50,7 +50,7 @@ class Handler {
 	checkArgumentContract() {
 		const node = this.path.node;
 
-		if (node.arguments.length == 0 || node.arguments.length > 2) {
+		if (node.arguments.length === 0 || node.arguments.length > 2) {
 			return false;
 		}
 

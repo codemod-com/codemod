@@ -66,5 +66,6 @@ export const buildArguments = (
 	args.push("--dry");
 	args.push("--output", buildCrossplatformArg(storageUri.fsPath));
 	args.push(...codemodArguments);
+	args.push("--clientIdentifier", buildCrossplatformArg("VSCE"));
 	return args;
 };

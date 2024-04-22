@@ -112,12 +112,8 @@ export const DirectorySelector = ({
 				width: "100%",
 			}}
 			onKeyDown={handleKeyDown}
-			tabIndex={0}
 		>
-			<div
-				className="flex flex-col w-full overflow-hidden relative"
-				tabIndex={0}
-			>
+			<div className="flex flex-col w-full overflow-hidden relative">
 				<VSCodeTextField
 					id="directory-selector"
 					className={cn(styles.textField)}

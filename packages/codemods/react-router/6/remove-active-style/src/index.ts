@@ -73,7 +73,7 @@ function transform(
 
 			const cssProp = styleAttr.value.expression.properties[0].key.name;
 
-			if (typeof cssProp != "string") {
+			if (typeof cssProp !== "string") {
 				return;
 			}
 

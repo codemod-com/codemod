@@ -57,13 +57,13 @@ export default function transform(fileInfo: FileInfo, api: API) {
 		let reactFcOrSfcNode: any;
 		if (isIdentifier(n.node.id)) {
 			if (
-				j.TSIntersectionType.check(n.node.id.typeAnnotation!.typeAnnotation)
+				j.TSIntersectionType.check(n.node.id.typeAnnotation?.typeAnnotation)
 			) {
-				reactFcOrSfcNode = n.node.id.typeAnnotation!.typeAnnotation
+				reactFcOrSfcNode = n.node.id.typeAnnotation?.typeAnnotation
 					?.types[0] as TSTypeReference;
 			} else {
-				reactFcOrSfcNode = n.node.id.typeAnnotation!
-					.typeAnnotation as TSTypeReference;
+				reactFcOrSfcNode = n.node.id.typeAnnotation
+					?.typeAnnotation as TSTypeReference;
 			}
 		}
 
@@ -223,7 +223,7 @@ function extractPropsDefinitionFromReactFC(
 	j: JSCodeshift,
 	reactFcOrSfcNode: TSTypeReference,
 ): TSTypeAnnotation {
-	const typeParameterFirstParam = reactFcOrSfcNode.typeParameters!.params[0];
+	const typeParameterFirstParam = reactFcOrSfcNode.typeParameters?.params[0];
 	let newInnerTypeAnnotation:
 		| TSTypeReference
 		| TSIntersectionType

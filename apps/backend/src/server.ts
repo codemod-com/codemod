@@ -4,6 +4,7 @@ import { randomBytes } from "node:crypto";
 import type { OutgoingHttpHeaders } from "node:http";
 import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
+import { PostHogSender } from "@codemod-com/telemetry";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
@@ -60,6 +61,7 @@ import {
 	TokenRevokedError,
 	TokenService,
 } from "./services/tokenService.js";
+import type { TelemetryEvents } from "./telemetry.js";
 import { unpublishHandler } from "./unpublishHandler.js";
 import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
 
@@ -193,6 +195,11 @@ const tokenService = new TokenService(
 	environment.PEPPER ?? "",
 );
 
+const telemetryService = new PostHogSender<TelemetryEvents>({
+	cloudRole: "",
+	distinctId: "",
+});
+
 const codemodService = new CodemodService(prisma);
 
 const clerkClient = areClerkKeysSet(environment)
@@ -255,6 +262,7 @@ const wrapRequestHandlerMethod =
 			const data = await handler({
 				tokenService,
 				codemodService,
+				telemetryService,
 				getAccessToken,
 				setAccessToken,
 				clerkClient,

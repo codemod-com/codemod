@@ -144,7 +144,7 @@ export function clearDependenciesAndAddNotes(
 					tailwindPluginExisted = true;
 				}
 				depExisted = true;
-				delete newObj.dependencies![dep];
+				delete newObj.dependencies?.[dep];
 			}
 		});
 	}
@@ -156,7 +156,7 @@ export function clearDependenciesAndAddNotes(
 					tailwindPluginExisted = true;
 				}
 				depExisted = true;
-				delete newObj.devDependencies![dep];
+				delete newObj.devDependencies?.[dep];
 			}
 		});
 	}

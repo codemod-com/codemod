@@ -28,3 +28,28 @@ jobs:
               env:
                   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'YOUR_CLERK_PUBLISHABLE_KEY'
                   NEXT_PUBLIC_API_URL: 'http://localhost:5173'
+                  HUBSPOT_CONTACT_FORM_ID: ${{ secrets.HUBSPOT_CONTACT_FORM_ID }}
+                  HUBSPOT_JOB_FORM_ID: ${{ secrets.HUBSPOT_JOB_FORM_ID }}
+                  HUBSPOT_NEWSLETTER_FORM_ID: ${{ secrets.HUBSPOT_NEWSLETTER_FORM_ID }}
+                  HUBSPOT_PORTAL_ID: ${{ secrets.HUBSPOT_PORTAL_ID }}
+                  NEXT_PUBLIC_BASE_URL: 'https://codemod.com'
+                  NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT: 'https://backend.codemod.com/codemods'
+                  NEXT_PUBLIC_SANITY_DATASET: 'production'
+                  NEXT_PUBLIC_SANITY_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+                  NX_DAEMON: ''
+                  SANITY_API_TOKEN: ${{ secrets.SANITY_API_TOKEN }}
+                  SANITY_API_WRITE_TOKEN: ${{ secrets.SANITY_API_WRITE_TOKEN }}
+                  VERCEL: '1'
+                  VERCEL_ENV: 'development'
+                  VERCEL_GIT_COMMIT_AUTHOR_LOGIN: ''
+                  VERCEL_GIT_COMMIT_AUTHOR_NAME: ''
+                  VERCEL_GIT_COMMIT_MESSAGE: ''
+                  VERCEL_GIT_COMMIT_REF: ''
+                  VERCEL_GIT_COMMIT_SHA: ''
+                  VERCEL_GIT_PREVIOUS_SHA: ''
+                  VERCEL_GIT_PROVIDER: ''
+                  VERCEL_GIT_PULL_REQUEST_ID: ''
+                  VERCEL_GIT_REPO_ID: ''
+                  VERCEL_GIT_REPO_OWNER: ''
+                  VERCEL_GIT_REPO_SLUG: ''
+                  VERCEL_URL: ''
