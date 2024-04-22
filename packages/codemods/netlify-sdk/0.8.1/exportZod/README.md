@@ -1,18 +1,12 @@
-# Export Zod
-
-## Description
-
 This codemod exports z from zod as required in Netlify SDK v0.8.1.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 import { z } from '@netlify/sdk';
 ```
 
-### After
+## After
 
 ```jsx
 import { z } from '@netlify/sdk';

@@ -1,12 +1,6 @@
-# Rename addBuildEventHandler
-
-## Description
-
 This codemod renames `addBuildHook` to `addBuildEventHandler` as required in Netlify SDK v0.8.1.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 import { NetlifyIntegration } from '@netlify/sdk';
@@ -19,7 +13,7 @@ integration.addBuildHook('onPreBuild', () => {
 });
 ```
 
-### After
+## After
 
 ```jsx
 import { NetlifyIntegration } from '@netlify/sdk';

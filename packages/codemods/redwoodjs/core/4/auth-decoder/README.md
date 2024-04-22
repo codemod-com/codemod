@@ -1,12 +1,6 @@
-# Auth Decoder
-
-## Description
-
 This codemod for RedwoodJS v4 automatically inserts an `authDecoder` property into the `createGraphQLHandler` call if it's not already present. It also adds an import statement for `authDecoder` from `@redwoodjs/auth-auth0-api` at the beginning of the file, ensuring that the necessary functionality for authentication is correctly integrated.
 
-## Example
-
-### Before
+## Before
 
 ```ts
 import { createGraphQLHandler } from '@redwoodjs/graphql-server';
@@ -28,7 +22,7 @@ export const handler = createGraphQLHandler({
 });
 ```
 
-### After
+## After
 
 ```ts
 import { authDecoder } from '@redwoodjs/auth-auth0-api';

@@ -1,18 +1,12 @@
-# createOrUpdateVariables
-
-## Description
-
 This codemod changes `createOrUpdateVariables` to pass an object instead of the separate arguments as required in Netlify SDK v0.8.5.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 createOrUpdateVariables(accountId, siteId, variables);
 ```
 
-### After
+## After
 
 ```jsx
 createOrUpdateVariables({

@@ -1,4 +1,0 @@
-# Remove Compat Router
-
-## Description
-

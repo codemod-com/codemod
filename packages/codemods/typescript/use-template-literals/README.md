@@ -1,19 +1,13 @@
-# Use Template Literals
-
-## Description
-
 This codemod replaces string concatenations with template literals.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 const name = 'John';
 const greeting = 'Hello, ' + name + '!';
 ```
 
-### After
+## After
 
 ```jsx
 const name = 'John';

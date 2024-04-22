@@ -1,12 +1,6 @@
-# Convert moduleFor to setupTest
-
-## Description
-
 This codemod transforms from the older `moduleFor*` syntax of `ember-qunit@2` to the newer `setup*Test` syntax.
 
-## Example
-
-### Before:
+## Before
 
 ```tsx
 import { moduleFor, test } from 'ember-qunit';
@@ -20,7 +14,7 @@ test('should allow messages to be queued', function (assert) {
 });
 ```
 
-### After:
+## After
 
 ```tsx
 import { setupTest } from 'ember-qunit';

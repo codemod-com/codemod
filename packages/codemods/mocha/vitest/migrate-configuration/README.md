@@ -1,7 +1,3 @@
-# Migrate Configuration from Mocha to Vitest
-
-## Description
-
 Run this codemod to upgrade configuration files that need to be changed after migrating from `mocha` to `vitest`.
 
 ## Example

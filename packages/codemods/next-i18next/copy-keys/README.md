@@ -1,7 +1,3 @@
-# Next-i18next Copy Keys
-
-## Description
-
 This codemod copies specific keys from one translation namespace to another, for each of the supported languages.
 
 The codemod expects the following arguments:
@@ -12,11 +8,9 @@ The codemod expects the following arguments:
 
 You need to pass these arguments using the [Codemod Arguments' settings](https://docs.codemod.com/docs/vs-code-extension/advanced-usage#set-codemod-arguments) in Codemod VSCode extension or [Codemod CLI](https://docs.codemod.com/docs/cli/quickstart).
 
-## Example:
+## Before
 
-### Before:
-
-#### .../en/common.json
+### .../en/common.json
 
 ```json
 {
@@ -25,7 +19,7 @@ You need to pass these arguments using the [Codemod Arguments' settings](https:/
 }
 ```
 
-#### .../en/new.json
+### .../en/new.json
 
 ```json
 {
@@ -33,9 +27,9 @@ You need to pass these arguments using the [Codemod Arguments' settings](https:/
 }
 ```
 
-### After:
+## After
 
-#### .../en/common.json
+### .../en/common.json
 
 ```json
 {
@@ -44,7 +38,7 @@ You need to pass these arguments using the [Codemod Arguments' settings](https:/
 }
 ```
 
-#### .../en/new.json
+### .../en/new.json
 
 ```json
 {

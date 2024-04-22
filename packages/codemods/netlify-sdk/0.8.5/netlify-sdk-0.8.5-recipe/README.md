@@ -1,7 +1,3 @@
-# Netlify SDK v0.8.5 Recipe
-
-## Description
-
 The SDK v0.8.5 Recipe is a set of codemods that assist you with migrating to Netlify SDK v0.8.5.
 
 The recipe includes the following codemods:

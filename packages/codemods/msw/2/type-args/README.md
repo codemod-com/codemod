@@ -1,16 +1,10 @@
-# Move Generic Arguments and Body Type Casts
-
-## Description
-
 There is a change to generic type interface of `rest.method()` calls. This codemod puts the generic arguments in the correct order to keep type safety.
 
-### WARNING
+## WARNING
 
 This codemod runs `.fixUnusedIdentifiers()` on a target source file. This would remove any unused declarations in the file. This is due to the atomicity of this codemod, which blindly inserts the callback structure into each msw handler callback and then cleans up the variables that are not used anymore.
 
-## Example
-
-### Before
+## Before
 
 ```ts
 http.get<ReqBodyType, PathParamsType>('/resource', (req, res, ctx) => {
@@ -18,7 +12,7 @@ http.get<ReqBodyType, PathParamsType>('/resource', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 http.get<PathParamsType, ReqBodyType>('/resource', (req, res, ctx) => {
@@ -26,7 +20,7 @@ http.get<PathParamsType, ReqBodyType>('/resource', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 http.get<ReqBodyType>('/resource', (req, res, ctx) => {
@@ -34,7 +28,7 @@ http.get<ReqBodyType>('/resource', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 http.get<any, ReqBodyType>('/resource', (req, res, ctx) => {
@@ -42,7 +36,7 @@ http.get<any, ReqBodyType>('/resource', (req, res, ctx) => {
 });
 ```
 
-### Before
+## Before
 
 ```ts
 const handlers: RestHandler<DefaultBodyType>[] = [
@@ -52,7 +46,7 @@ const handlers: RestHandler<DefaultBodyType>[] = [
 ];
 ```
 
-### After
+## After
 
 ```ts
 const handlers: HttpHandler[] = [
@@ -62,7 +56,7 @@ const handlers: HttpHandler[] = [
 ];
 ```
 
-### Before
+## Before
 
 ```ts
 export function mockFactory(
@@ -77,7 +71,7 @@ export function mockFactory(
 }
 ```
 
-### After
+## After
 
 ```ts
 export function mockFactory(

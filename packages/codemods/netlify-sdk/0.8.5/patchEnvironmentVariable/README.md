@@ -1,12 +1,6 @@
-# patchEnvironmentVariable
-
-## Description
-
 This codemod changes `patchEnvironmentVariable` to pass an object instead of the separate arguments as required in Netlify SDK v0.8.5.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 patchEnvironmentVariable(
@@ -19,7 +13,7 @@ patchEnvironmentVariable(
 );
 ```
 
-### After
+## After
 
 ```jsx
 patchEnvironmentVariable({

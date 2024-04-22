@@ -1,12 +1,6 @@
-# Cp Property Map
-
-## Description
-
 `.property()` is a modifier that adds additional property dependencies to an existing computed property. For `filter`, `map`, and `sort` computed property macros, this codemod ensures they receive an array of additional dependent keys as a second parameter.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 const Person = EmberObject.extend({
@@ -16,7 +10,7 @@ const Person = EmberObject.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 const Person = EmberObject.extend({

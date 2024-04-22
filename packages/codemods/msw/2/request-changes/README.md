@@ -1,7 +1,3 @@
-# Apply request changes
-
-## Description
-
 Following the original msw upgrade guide, the signature of the request handler have changed. Some of the parameters have changed their type, some widely used objects are available directly on the callback argument object for convenience. Following changes are applied by this codemod:
 
 -   `req.url` is now obtained as `new URL(request.url)`, request being a new object available for destructure from the single callback argument
@@ -11,9 +7,7 @@ Following the original msw upgrade guide, the signature of the request handler h
 
 This codemod does not update the mentioned signatures of callback methods due to the fact that there are more changes in other codemods included in the `upgrade-recipe` that rely on the old signature. To apply the changes, you will have to run the recipe or run a `callback-signature` codemod that will do only that and replace all the references of old signature arguments.
 
-## Example
-
-### Before
+## Before
 
 ```ts
 import { rest } from 'msw';
@@ -31,7 +25,7 @@ rest.get('/user', (req, res, ctx) => {
 });
 ```
 
-### After
+## After
 
 ```ts
 import { http as caller, type HttpHandler } from 'msw';

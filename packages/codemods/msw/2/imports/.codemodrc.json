@@ -1,6 +1,6 @@
 {
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": false,
 	"name": "msw/2/imports",
 	"engine": "ts-morph",

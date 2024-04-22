@@ -1,4 +1,0 @@
-# Compat Route
-
-## Description
-

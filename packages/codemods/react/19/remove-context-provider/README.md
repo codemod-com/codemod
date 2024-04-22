@@ -1,12 +1,6 @@
-# Change Context.Provider to Context
-
-## Description
-
 This codemod will remove the usage of `Provider` for contexts; e.g., Context.Provider to Context
 
-## Example
-
-### Before:
+## Before:
 
 ```tsx
 function App() {
@@ -20,7 +14,7 @@ function App() {
 }
 ```
 
-### After:
+## After:
 
 ```tsx
 function App() {

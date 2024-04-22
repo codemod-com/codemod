@@ -1,12 +1,6 @@
-# Core Styles Import
-
-## Description
-
 Renames private import from `core/styles/*` to `core/styles`
 
-## Example
-
-### Before
+## Before
 
 ```typescript
 import { createTheme } from '@material-ui/core/styles';
@@ -15,7 +9,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Overrides } from '@material-ui/core/styles/overrides';
 ```
 
-### After
+## After
 
 ```typescript
 import {

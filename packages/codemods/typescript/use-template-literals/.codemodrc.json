@@ -1,6 +1,6 @@
 {
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"private": false,
 	"name": "typescript/use-template-literals",
 	"description": "This codemod replaces string concatenations with template literals.",

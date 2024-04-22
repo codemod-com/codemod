@@ -1,7 +1,3 @@
-# Mocha to Vitest Migration Recipe
-
-## Description
-
 This recipe is a set of codemods that will upgrade your project from using `mocha` to `vitest`.
 
 The recipe includes the following codemods:

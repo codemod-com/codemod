@@ -1,10 +1,4 @@
-# Fpe Observes
-
-## Description
-
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import EmberObject from '@ember/object';
@@ -16,7 +10,7 @@ export default EmberObject.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 import EmberObject from '@ember/object';

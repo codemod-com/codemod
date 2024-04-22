@@ -1,13 +1,7 @@
-# App Controller Router Props
-
-## Description
-
 This codemod replaces all occurrences of `this.currentRouteName` with `this.router.currentRouteName`
 and `this.currentPath` with `this.router.currentPath`.
 
-## Example
-
-### Before:
+## Before
 
 ```jsx
 import Controller from '@ember/controller';
@@ -29,7 +23,7 @@ export default Controller.extend({
 });
 ```
 
-### After:
+## After
 
 ```tsx
 import Controller from '@ember/controller';

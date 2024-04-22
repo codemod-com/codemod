@@ -1,5 +1,5 @@
 {
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
 	"name": "biome/migrate-rules",
 	"private": false,

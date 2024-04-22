@@ -1,12 +1,6 @@
-# Replace params prop
-
-## Description
-
 Replaces `params` prop passed by react-router with `match.params`.
 
-## Example
-
-### Before
+## Before
 
 ```jsx
 const PostEdit = ({ params }) => (
@@ -16,7 +10,7 @@ const PostEdit = ({ params }) => (
 );
 ```
 
-### After
+## After
 
 ```jsx
 const PostEdit = ({ match }) => (
@@ -25,31 +19,3 @@ const PostEdit = ({ match }) => (
 	</div>
 );
 ```
-
-## Applicability Criteria
-
-React Router version 3.x.y
-
-## Other Metadata
-
-### Codemod Version
-
-v1.0.0
-
-### Change Mode
-
-**Assistive**: The automation partially completes changes. Human involvement is needed to make changes ready to be pushed and merged.
-
-### **Codemod Engine**
-
-jscodeshift
-
-### Estimated Time Saving
-
-~1 minutes per occurrence
-
-### Owner
-
-[Codemod.com](https://github.com/codemod-com)
-
-### Links for more info
