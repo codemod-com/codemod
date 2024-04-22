@@ -21,7 +21,7 @@ type Submenu = {
 
 export default function Footer({ data }: FooterProps) {
 	return (
-		<div className="w-full bg-gradient-to-br from-accent from-[32%] to-[#EEFDC2] to-[87%]">
+		<div className="w-full bg-gradient-to-br from-[#d6ff62] from-[32%] to-[#EEFDC2] to-[87%]">
 			<footer className="relative mx-auto min-h-[749px] max-w-[1312px] px-m pt-l text-primary-light lg:min-h-[545px] lg:px-2xl lg:pt-2xl">
 				<div className="flex h-full flex-col gap-32">
 					<div className="flex flex-col justify-between lg:flex-row">
