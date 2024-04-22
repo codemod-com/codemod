@@ -45,6 +45,9 @@ export const Messages = {
 };
 
 const TERMINATE_IDLE_PROCESS_TIMEOUT = 30 * 1000;
+const currentCLIMajorVersion = 0;
+// TODO: get this info from backend
+const currentCLIMinorVersion = 10;
 
 export enum EngineMessageKind {
 	finish = 2,
@@ -199,8 +202,9 @@ type ExecuteCodemodMessage = Message &
 		kind: MessageKind.executeCodemodSet;
 	}>;
 
-// npx ensures that the local codemod CLI (latest version) is used
-const CODEMOD_ENGINE_NODE_COMMAND = "npx codemod";
+const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
+const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
+const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
 	const url = new URL("https://backend.codemod.com/codemods/list");
@@ -254,12 +258,44 @@ export class EngineService {
 			this.#onExecuteCodemodSetMessage(message);
 		});
 
-		this.__fetchCodemodsIntervalId = setInterval(
-			async () => {
-				await this.__fetchCodemods();
-			},
-			5 * 60 * 1000, // 5 mins
+		this.__pollCodemodEngineNode();
+	}
+
+	private async __pollCodemodEngineNode() {
+		let iterations = 0;
+
+		const checkCodemodEngineNode = async () => {
+			if (iterations > CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT) {
+				clearInterval(codemodEnginePollingIntervalId);
+			}
+
+			const codemodEngineNodeLocated = await this.isCodemodEngineNodeLocated();
+
+			this.#messageBus.publish({
+				kind: MessageKind.codemodEngineNodeLocated,
+				codemodEngineNodeLocated,
+			});
+
+			if (codemodEngineNodeLocated) {
+				this.__fetchCodemodsIntervalId = setInterval(
+					async () => {
+						await this.__fetchCodemods();
+					},
+					5 * 60 * 1000, // 5 mins
+				);
+				clearInterval(codemodEnginePollingIntervalId);
+			}
+
+			iterations++;
+		};
+
+		// we retry codemod engine installation checks automatically, so we can detect when user installs the codemod
+		const codemodEnginePollingIntervalId = setInterval(
+			checkCodemodEngineNode,
+			CODEMOD_ENGINE_NODE_POLLING_INTERVAL,
 		);
+
+		checkCodemodEngineNode();
 	}
 
 	async #onEnginesBootstrappedMessage(
@@ -291,7 +327,9 @@ export class EngineService {
 
 		const result = await streamToString(childProcess.stdout);
 
-		return result.length !== 0;
+		return result.startsWith(
+			`${currentCLIMajorVersion}.${currentCLIMinorVersion}`,
+		);
 	}
 
 	private async __fetchCodemods(): Promise<void> {
