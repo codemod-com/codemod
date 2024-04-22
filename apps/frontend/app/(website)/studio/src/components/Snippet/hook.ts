@@ -327,7 +327,7 @@ export const useEditor = (
 		preventTriggerChangeEvent.current = false;
 		editor.setPosition(prevCursorPosition);
 		setRenderFinished(true);
-	}, [value, editor, editor.setPosition, editor.getValue, editor?.getModel]);
+	}, [value, editor, editor?.setPosition, editor?.getValue, editor?.getModel]);
 
 	return renderFinished;
 };
