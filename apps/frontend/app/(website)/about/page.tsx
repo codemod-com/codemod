@@ -4,6 +4,7 @@ import { loadAboutPage } from "@/data/sanity";
 import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMetadata";
 import type { RouteProps } from "@/types";
 import type { ResolvingMetadata } from "next";
+import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 

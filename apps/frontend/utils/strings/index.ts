@@ -1,4 +1,4 @@
-export function sanitizeString(str) {
+export function sanitizeString(str: string) {
 	return str.replace(/[\r\n\t]+|[\u200B-\u200D\uFEFF]/g, "").trim();
 }
 
@@ -17,7 +17,7 @@ export function truncate(str: string, maxLength: number) {
 	const firstWhitespaceAfterTruncation =
 		str.slice(maxLength).search(/\s/) + maxLength;
 
-	return str.slice(0, firstWhitespaceAfterTruncation) + "...";
+	return `${str.slice(0, firstWhitespaceAfterTruncation)}...`;
 }
 
 export function capitalize(str: string) {

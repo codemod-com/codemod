@@ -1,4 +1,4 @@
-import type { SectionInRenderer } from "@/types";
+import type { SectionInRenderer, SectionsBody } from "@/types";
 import type { AutomationResponse } from "@/types/object.types";
 import { getDeepLinkId } from "@/utils/ids";
 
@@ -11,6 +11,7 @@ export const SectionsRenderer = ({
 	sections?: SectionInRenderer[];
 	initialAutomations?: AutomationResponse[];
 	fieldName: string;
+	// @ts-ignore
 	componentsMap: Record<string, React.ComponentType<any>>;
 }) => {
 	if (!sections?.length) {
@@ -30,7 +31,7 @@ export const SectionsRenderer = ({
 					return null;
 				}
 				const extraProps =
-					section._type == "section.registry" ? { initialAutomations } : {};
+					section._type === "section.registry" ? { initialAutomations } : {};
 				return (
 					<Component
 						key={section._key}

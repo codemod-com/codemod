@@ -1,9 +1,10 @@
 "use client";
 
-import Button from "@/components/shared/Button";
+import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { AnimatePresence, motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import NavigationLink from "./NavigationLink";
 
@@ -11,6 +12,7 @@ type MobileNavigationProps = {
 	items: SanityLinkType[];
 	visible: boolean;
 	navigationCtas?: NavigationPayload["navigationItems"];
+	closeFn: () => void;
 };
 
 // Mobile dropdown component
@@ -18,9 +20,11 @@ export function MobileDropdown({
 	items,
 	visible,
 	navigationCtas,
+	closeFn,
 }: MobileNavigationProps) {
 	const [currentTheme, setCurrentTheme] = useState("light" as "light" | "dark");
 	const isDarkMode = currentTheme === "dark";
+	const pathname = usePathname();
 
 	const animationVariants = {
 		initial: {
@@ -42,7 +46,11 @@ export function MobileDropdown({
 	};
 
 	useEffect(() => {
-		const theme = localStorage.getItem("theme") as "light" | "dark";
+		const darkMatcher = window.matchMedia("(prefers-color-scheme: dark)");
+		const storedTheme = localStorage.getItem("theme") as "light" | "dark";
+
+		const theme = storedTheme || darkMatcher.matches ? "dark" : "light";
+
 		setCurrentTheme(theme);
 	}, []);
 
@@ -57,7 +65,14 @@ export function MobileDropdown({
 								animationVariants={animationVariants}
 								index={index}
 							>
-								<NavigationLink href={item.href}>{item.label}</NavigationLink>
+								<NavigationLink
+									isCurrent={item.href === pathname}
+									onClick={closeFn}
+									className="w-full py-s transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
+									href={item.href}
+								>
+									{item.label}
+								</NavigationLink>
 							</MobileDropdownItem>
 						))}
 
@@ -71,25 +86,21 @@ export function MobileDropdown({
 						>
 							{navigationCtas
 								?.map((item, index) => (
-									<NavigationLink
-										className="flex-1"
+									<LinkButton
 										key={item._key}
+										className="w-full"
 										href={item?.href}
+										glow={index === 0 && isDarkMode}
+										intent={
+											isDarkMode
+												? "secondary"
+												: index === 0
+													? "primary"
+													: "secondary"
+										}
 									>
-										<Button
-											className="w-full"
-											glow={index === 0 && isDarkMode}
-											intent={
-												isDarkMode
-													? "secondary"
-													: index === 0
-													  ? "primary"
-													  : "secondary"
-											}
-										>
-											{item?.label}
-										</Button>
-									</NavigationLink>
+										{item?.label}
+									</LinkButton>
 								))
 
 								.reverse()}
@@ -113,7 +124,7 @@ function MobileDropdownItem({
 	return (
 		<DropdownMenu.Item asChild>
 			<motion.div
-				className="bg-primary-dark py-s first:pt-xxs last:pb-xxs dark:bg-primary-light [&:not(:last-child)]:border-b-[1px] [&:not(:last-child)]:border-b-border-light [&:not(:last-child)]:dark:border-border-dark"
+				className="bg-primary-dark first:pt-xxs last:pb-xxs dark:bg-primary-light [&:not(:last-child)]:border-b-[1px] [&:not(:last-child)]:border-b-border-light [&:not(:last-child)]:dark:border-border-dark"
 				variants={animationVariants}
 				initial="initial"
 				animate="animate"

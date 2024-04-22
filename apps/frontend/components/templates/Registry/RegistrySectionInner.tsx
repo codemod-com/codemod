@@ -109,7 +109,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
 
 			<div className="relative flex flex-col items-center">
 				<ul className="m-0 mx-auto flex w-full max-w-[962px] animate-fade-in flex-col gap-3 divide-y-[1px] divide-border-light dark:divide-border-dark">
-					{!!data?.data?.length ? (
+					{data?.data?.length ? (
 						data?.data?.map((entry) => (
 							<RegistrySectionCard
 								filterIconDictionary={props.filterIconDictionary}
@@ -125,7 +125,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
 						</div>
 					)}
 				</ul>
-				<div className="pointer-events-none absolute bottom-0 z-10 h-1/4 w-full bg-gradient-to-t from-white dark:from-background-dark"></div>
+				<div className="pointer-events-none absolute bottom-0 z-10 h-1/4 w-full bg-gradient-to-t from-white dark:from-background-dark" />
 				<LinkButton intent="primary" className="z-20" href={`/registry`} arrow>
 					{props.ctaLabel || "View all automations"}
 				</LinkButton>

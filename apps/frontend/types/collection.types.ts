@@ -15,9 +15,9 @@ export type RouteData<
 		/**
 		 * The data of the current document _type's schema
 		 */
-		DocData: {};
+		DocData: Record<string, unknown>;
 
-		ExtraData?: {};
+		ExtraData?: Record<string, unknown>;
 	},
 > = BasicPageDocumentPayload &
 	Options["ExtraData"] & {
@@ -46,18 +46,18 @@ export type CollectionRouteData<
 		/**
 		 * The data fetched for each document in the collection, as defined by `entryQueryFragment` in the collection's routing config.
 		 */
-		EntryData: {};
+		EntryData: Record<string, unknown>;
 
 		/**
 		 * The data fetched for the `collectionIndex` document, as defined by `docQuery` in the collection's routing config.
 		 */
-		CollectionDocData: {};
+		CollectionDocData: Record<string, unknown>;
 
 		/**
 		 * The data to fetch for each reference filter currently applied to the collection,
 		 * as defined by `currentFilterQueryFragment` in the collection's routing config.
 		 */
-		CurrentFilterDocData?: {};
+		CurrentFilterDocData?: Record<string, unknown>;
 	},
 > = RouteData<{
 	localized: true;
@@ -69,11 +69,11 @@ export type CollectionRouteData<
 		? {
 				pageNum?: number;
 				entriesPerPage?: number;
-		  }
-		: {}) &
+			}
+		: Record<string, unknown>) &
 		(Options["filterable"] extends true
 			? CollectionFilteredData<Options["CurrentFilterDocData"]>
-			: {});
+			: Record<string, unknown>);
 }>;
 
 export interface CollectionFilteredData<

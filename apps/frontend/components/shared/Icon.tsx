@@ -1,4 +1,5 @@
 import { cx } from "cva";
+import React from "react";
 
 export enum IconId {
 	"Arrow Left" = "arrow-left",
@@ -17,6 +18,7 @@ export enum IconId {
 	"Chevron Up" = "chevron-up",
 	Close = "close",
 	"Codemod Studio" = "codemod-studio",
+	"Codemod Dot Pulse" = "codemod-dot-pulse",
 	"Codemod Brand" = "codemod-brand",
 	Command = "command",
 	Copy = "copy",
@@ -28,6 +30,7 @@ export enum IconId {
 	Home = "home",
 	"Layers 2" = "layers-2",
 	Loading = "loading",
+	Location = "location",
 	Mail = "mail",
 	Medal = "medal",
 	Moon = "moon",
@@ -101,8 +104,8 @@ export const TechLogo = ({ name, className }: LogoProps) => {
 							y2="37.8635764%"
 							id="linearGradient-1"
 						>
-							<stop stopColor="#4285EB" offset="0%"></stop>
-							<stop stopColor="#2EC7FF" offset="100%"></stop>
+							<stop stopColor="#4285EB" offset="0%" />
+							<stop stopColor="#2EC7FF" offset="100%" />
 						</linearGradient>
 						<linearGradient
 							x1="69.644116%"
@@ -111,9 +114,9 @@ export const TechLogo = ({ name, className }: LogoProps) => {
 							y2="108.456714%"
 							id="linearGradient-2"
 						>
-							<stop stopColor="#29CDFF" offset="0%"></stop>
-							<stop stopColor="#148EFF" offset="37.8600687%"></stop>
-							<stop stopColor="#0A60FF" offset="100%"></stop>
+							<stop stopColor="#29CDFF" offset="0%" />
+							<stop stopColor="#148EFF" offset="37.8600687%" />
+							<stop stopColor="#0A60FF" offset="100%" />
 						</linearGradient>
 						<linearGradient
 							x1="69.6908165%"
@@ -122,9 +125,9 @@ export const TechLogo = ({ name, className }: LogoProps) => {
 							y2="117.391248%"
 							id="linearGradient-3"
 						>
-							<stop stopColor="#FA816E" offset="0%"></stop>
-							<stop stopColor="#F74A5C" offset="41.472606%"></stop>
-							<stop stopColor="#F51D2C" offset="100%"></stop>
+							<stop stopColor="#FA816E" offset="0%" />
+							<stop stopColor="#F74A5C" offset="41.472606%" />
+							<stop stopColor="#F51D2C" offset="100%" />
 						</linearGradient>
 						<linearGradient
 							x1="68.1279872%"
@@ -133,9 +136,9 @@ export const TechLogo = ({ name, className }: LogoProps) => {
 							y2="114.942679%"
 							id="linearGradient-4"
 						>
-							<stop stopColor="#FA8E7D" offset="0%"></stop>
-							<stop stopColor="#F74A5C" offset="51.2635191%"></stop>
-							<stop stopColor="#F51D2C" offset="100%"></stop>
+							<stop stopColor="#FA8E7D" offset="0%" />
+							<stop stopColor="#F74A5C" offset="51.2635191%" />
+							<stop stopColor="#F51D2C" offset="100%" />
 						</linearGradient>
 					</defs>
 					<g stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
@@ -143,22 +146,22 @@ export const TechLogo = ({ name, className }: LogoProps) => {
 							<path
 								d="M116.850078,4.54548777 L4.52892893,116.774275 C-1.50964298,122.807881 -1.50964298,132.553174 4.52892893,138.586781 L116.850078,250.815568 C122.88865,256.849175 132.641964,256.849175 138.680536,250.815568 L185.77519,203.759641 C191.183172,198.356106 191.183172,189.595245 185.77519,184.191711 C180.367208,178.788175 171.599136,178.788175 166.191154,184.191711 L130.489075,219.864432 C128.986084,221.366187 126.704989,221.366187 125.201998,219.864432 L35.5055378,130.241729 C34.0025469,128.739974 34.0025469,126.460755 35.5055378,124.959 L125.201998,35.3362976 C126.704989,33.8345425 128.986084,33.8345425 130.489075,35.3362976 L166.191154,71.009019 C171.599136,76.4125539 180.367208,76.4125539 185.77519,71.009019 C191.183172,65.605484 191.183172,56.8446228 185.77519,51.4410879 L138.685727,4.39028013 C132.622361,-1.51275655 122.86548,-1.46496803 116.850078,4.54548777 Z"
 								fill="url(#linearGradient-1)"
-							></path>
+							/>
 							<path
 								d="M116.850078,4.54548777 L4.52892893,116.774275 C-1.50964298,122.807881 -1.50964298,132.553174 4.52892893,138.586781 L116.850078,250.815568 C122.88865,256.849175 132.641964,256.849175 138.680536,250.815568 L185.77519,203.759641 C191.183172,198.356106 191.183172,189.595245 185.77519,184.191711 C180.367208,178.788175 171.599136,178.788175 166.191154,184.191711 L130.489075,219.864432 C128.986084,221.366187 126.704989,221.366187 125.201998,219.864432 L35.5055378,130.241729 C34.0025469,128.739974 34.0025469,126.460755 35.5055378,124.959 L125.201998,35.3362976 C128.944397,32.1100005 135.050525,25.5752137 144.017405,24.0468431 C150.68143,22.9109853 157.967021,25.4109881 165.874177,31.546852 C160.587747,26.2647619 151.52493,17.2125713 138.685727,4.39028013 C132.622361,-1.51275655 122.86548,-1.46496803 116.850078,4.54548777 Z"
 								fill="url(#linearGradient-2)"
-							></path>
+							/>
 							<path
 								d="M196.646643,173.754365 C202.054625,179.157899 210.822696,179.157899 216.230677,173.754365 L250.970004,139.043604 C257.008576,133.009998 257.008576,123.264704 250.970711,117.231801 L215.928547,82.342615 C210.507763,76.945494 201.736908,76.953277 196.325725,82.3600099 C190.917743,87.7635449 190.917743,96.524406 196.325725,101.927941 L219.993396,125.57615 C221.496387,127.077905 221.496387,129.357124 219.993396,130.858879 L196.646643,154.186433 C191.23866,159.589968 191.23866,168.350829 196.646643,173.754365 Z"
 								fill="url(#linearGradient-3)"
-							></path>
+							/>
 							<ellipse
 								fill="url(#linearGradient-4)"
 								cx="128.326913"
 								cy="128.241672"
 								rx="30.3267102"
 								ry="30.3017724"
-							></ellipse>
+							/>
 						</g>
 					</g>
 				</svg>
@@ -858,6 +861,124 @@ export default function Icon({ name, className }: IconProps) {
 				</svg>
 			);
 
+		case "codemod-dot-pulse":
+			return (
+				<svg
+					id="lul85hax16262661"
+					viewBox="0 0 600 600"
+					xmlns="http://www.w3.org/2000/svg"
+					xmlnsXlink="http://www.w3.org/1999/xlink"
+					className={className}
+				>
+					<g id="lul85hax16262661_translate">
+						<g transform="matrix(1,0,0,1,0,0)">
+							<g
+								id="lul85hax16262661"
+								opacity="1"
+								style={{ mixBlendMode: "normal" }}
+							>
+								<g>
+									<defs>
+										<clipPath
+											id="lul85hax16262661_clipPath"
+											x="-50%"
+											y="-50%"
+											width="200%"
+											height="200%"
+										>
+											<path
+												d="M0.01,0h599.98c0.00552,0 0.01,0.00448 0.01,0.01v599.98c0,0.00552 -0.00448,0.01 -0.01,0.01h-599.98c-0.00552,0 -0.01,-0.00448 -0.01,-0.01v-599.98c0,-0.00552 0.00448,-0.01 0.01,-0.01z"
+												fill="white"
+												clipRule="nonzero"
+											/>
+										</clipPath>
+									</defs>
+									<g clipPath="url(#lul85hax16262661_clipPath)">
+										<g id="lul85hb590925487_translate">
+											<g transform="matrix(1,0,0,1,90.0044,117.4508)">
+												<g
+													id="lul85hb590925487"
+													opacity="1"
+													style={{ mixBlendMode: "normal" }}
+												>
+													<g>
+														<g>
+															<path
+																id="lul85hb590925487_fill_path"
+																d="M0,312.715l122.13561,-312.715h40.7117l-122.56425,312.715z"
+																fillRule="nonzero"
+																fill="rgb(11, 21, 30)"
+																fillOpacity="0.15"
+																style={{ mixBlendMode: "normal" }}
+															/>
+														</g>
+													</g>
+												</g>
+											</g>
+										</g>
+										<g id="lul85hb856377086_translate">
+											<g transform="matrix(1,0,0,1,228.5157,212.2931)">
+												<g
+													id="lul85hb856377086"
+													opacity="1"
+													style={{ mixBlendMode: "normal" }}
+												>
+													<g>
+														<g>
+															<path
+																id="lul85hb856377086_fill_path"
+																d="M103.92855,0.01219c53.27432,0 90.52136,30.31667 97.89204,77.52956h-40.7117c-6.93037,-26.85095 -28.58991,-41.152 -55.87004,-41.152c-38.54463,0 -64.96745,29.44719 -64.96745,75.36249c0,45.9153 24.68388,74.93386 63.2407,74.93386c29.01855,0 50.6786,-15.1578 58.03708,-40.28304h40.7117c-8.22796,45.9153 -47.64153,76.66061 -98.74878,76.66061c-62.37175,0 -103.5121,-44.17688 -103.5121,-110.88276c0,-66.70589 42.00982,-112.1809 103.9524,-112.1809z"
+																fillRule="nonzero"
+																fill="rgb(11, 21, 30)"
+																fillOpacity="0.15"
+																style={{ mixBlendMode: "normal" }}
+															/>
+														</g>
+													</g>
+												</g>
+											</g>
+										</g>
+										<g id="lul85hba33866020_translate">
+											<g transform="matrix(1,0,0,1,452.421,374.2844)">
+												<g
+													id="lul85hba33866020"
+													opacity="1"
+													style={{ mixBlendMode: "normal" }}
+												>
+													<g>
+														<g>
+															<path
+																id="lul85hba33866020_fill_path"
+																d="M0,30.75697c0,-16.89675 14.28887,-30.75697 31.18563,-30.75697c16.89675,0 30.7596,13.86022 30.7596,30.75697c0,16.89675 -14.29149,30.31667 -30.7596,30.31667c-16.46811,0 -31.18563,-13.86022 -31.18563,-30.31667z"
+																fillRule="nonzero"
+																fill="rgb(11, 21, 30)"
+																fillOpacity="0.15"
+																style={{ mixBlendMode: "normal" }}
+															/>
+														</g>
+													</g>
+												</g>
+											</g>
+										</g>
+									</g>
+								</g>
+							</g>
+						</g>
+					</g>
+					<animate
+						href="#lul85hba33866020"
+						attributeName="opacity"
+						values="1;0;0;1;1;1"
+						dur="1.4s"
+						repeatCount="indefinite"
+						calcMode="spline"
+						keyTimes="0;0.21;0.36;0.57;0.57;1"
+						keySplines="0.5 0.35 0.15 1;0.5 0.35 0.15 1;0.5 0.35 0.15 1;0.5 0.35 0.15 1;0.5 0.35 0.15 1"
+						additive="replace"
+						fill="freeze"
+					/>
+				</svg>
+			);
 		case "command":
 			return (
 				<svg
@@ -1068,6 +1189,38 @@ export default function Icon({ name, className }: IconProps) {
 						strokeWidth="1.2"
 						strokeLinecap="square"
 					/>
+				</svg>
+			);
+		case "location":
+			return (
+				<svg
+					width="32"
+					height="32"
+					viewBox="0 0 32 32"
+					fill="none"
+					xmlns="http://www.w3.org/2000/svg"
+					className={className}
+				>
+					<g id="Frame">
+						<path
+							id="Vector"
+							d="M26.6663 13.3334C26.6663 21.3334 15.9997 29.3334 15.9997 29.3334C15.9997 29.3334 5.33301 21.3334 5.33301 13.3334C5.33301 10.5044 6.45681 7.79133 8.4572 5.79094C10.4576 3.79055 13.1707 2.66675 15.9997 2.66675C18.8286 2.66675 21.5418 3.79055 23.5421 5.79094C25.5425 7.79133 26.6663 10.5044 26.6663 13.3334Z"
+							stroke="currentColor"
+							strokeOpacity="0.6"
+							strokeWidth="1.92"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						/>
+						<path
+							id="Vector_2"
+							d="M15.9998 17.3331C18.2089 17.3331 19.9998 15.5423 19.9998 13.3331C19.9998 11.124 18.2089 9.33313 15.9998 9.33313C13.7906 9.33313 11.9998 11.124 11.9998 13.3331C11.9998 15.5423 13.7906 17.3331 15.9998 17.3331Z"
+							stroke="currentColor"
+							strokeOpacity="0.6"
+							strokeWidth="1.92"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						/>
+					</g>
 				</svg>
 			);
 

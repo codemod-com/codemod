@@ -8,7 +8,7 @@ export const useExitAnimation = (
 	const [shouldRender, setRender] = useState(trigger);
 
 	useEffect(() => {
-		let timeout;
+		let timeout: string | number | NodeJS.Timeout | undefined;
 		if (trigger) {
 			setRender(true);
 		} else {

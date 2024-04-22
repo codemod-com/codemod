@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { usePathname } from "next/navigation";
@@ -19,7 +19,6 @@ import Button from "@/components/shared/Button";
 import { STATIC_HEADER_ROUTES } from "@/constants";
 import type { NavigationPayload } from "@/types";
 import { cx } from "cva";
-import { clamp } from "framer-motion";
 import { useWindowScroll } from "react-use";
 import AnnouncementBar from "./AnnouncementBar";
 
@@ -31,6 +30,7 @@ export default function Navigation({ data }: NavigationProps) {
 	const pathname = usePathname();
 
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+	const [hasMounted, setHasMounted] = useState(false);
 	const renderMobileMenu = useExitAnimation(mobileMenuOpen);
 	const [isStaticHeader, setIsStaticHeader] = useState(
 		STATIC_HEADER_ROUTES.includes(pathname),
@@ -39,63 +39,20 @@ export default function Navigation({ data }: NavigationProps) {
 		setMobileMenuOpen(value);
 	};
 
-	const [scrollDirection, setScrollDirection] = useState<"down" | "up">("down");
 	const [isBgSolid, setIsBgSolid] = useState(false);
 	const headerRef = useRef<HTMLDivElement>(null);
 	const { y } = useWindowScroll();
-	const lastYPos = useRef(typeof window !== "undefined" ? window.scrollY : 0);
 
 	const headerHeight = headerRef.current?.offsetHeight || 0;
-	const isHeaderFluid = y > headerHeight;
-
-	const animateHeader = useCallback(() => {
-		if (headerRef.current) {
-			if (isStaticHeader) {
-				headerRef.current.style.transform = "translateY(0)";
-				headerRef.current.style.transitionDuration = "0ms";
-
-				return;
-			}
-			if (y > lastYPos.current) {
-				headerRef.current.style.transform = `translateY(-${clamp(
-					0,
-					headerHeight,
-					y,
-				)}px)`;
-				headerRef.current.style.transitionDuration = isHeaderFluid
-					? "300ms"
-					: "0ms";
-				scrollDirection !== "down" && setScrollDirection("down");
-			} else {
-				headerRef.current.style.transform = "translateY(0)";
-				headerRef.current.style.transitionDuration = "200ms";
-				scrollDirection !== "up" && setScrollDirection("up");
-			}
-			lastYPos.current = y;
-		}
-	}, [y, scrollDirection, isHeaderFluid, headerHeight, isStaticHeader]);
-
-	useEffect(() => {
-		if (isStaticHeader) {
-			animateHeader();
-			return;
-		}
-		document.addEventListener("scroll", animateHeader);
-
-		return () => {
-			document.removeEventListener("scroll", animateHeader);
-		};
-	}, [animateHeader, isStaticHeader]);
 
 	useEffect(() => {
 		setMobileMenuOpen(false);
-		if (headerRef.current) {
-			animateHeader();
-		}
 		setIsStaticHeader(STATIC_HEADER_ROUTES.includes(pathname));
-
-		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [pathname]);
+
+	useEffect(() => {
+		setHasMounted(true);
+	}, []);
 
 	useEffect(() => {
 		setIsBgSolid(isStaticHeader ? false : y > headerHeight / 2);
@@ -120,11 +77,16 @@ export default function Navigation({ data }: NavigationProps) {
 			<div
 				ref={headerRef}
 				className={cx(
-					"left-0 top-0 z-40 w-full border-b-[1px] border-transparent transition-all duration-0",
+					"left-0 top-0 z-40 w-full border-b-[1px]  transition-all duration-150 ease-out z-10000",
 					isStaticHeader ? "absolute" : "fixed",
 					{
+						"-translate-y-10 opacity-0": !hasMounted,
+						"translate-y-0 opacity-100": hasMounted,
+					},
+					{
 						" border-border-light dark:border-border-dark":
-							y > headerHeight + 10,
+							y > 300 && hasMounted,
+						" border-transparent": y < 300 && hasMounted,
 						"bg-white dark:bg-background-dark": isBgSolid,
 					},
 				)}
@@ -146,7 +108,12 @@ export default function Navigation({ data }: NavigationProps) {
 						<LogoWithContextMenu />
 
 						{/* Desktop */}
-						<DesktopNavigationItems items={data?.navigationItems} />
+						<DesktopNavigationItems
+							items={data?.navigationItems?.map((item) => ({
+								...item,
+								isCurrent: item?.href === pathname,
+							}))}
+						/>
 						<DesktopNavigationRight items={data?.navigationCtas} />
 						{/* Mobile */}
 						<div className="flex items-center gap-3 lg:hidden">
@@ -174,6 +141,7 @@ export default function Navigation({ data }: NavigationProps) {
 											items={data?.navigationItems}
 											visible={mobileMenuOpen}
 											navigationCtas={data?.navigationCtas}
+											closeFn={() => setMobileMenuOpen(false)}
 										/>
 									</DropdownMenu.Content>
 								</DropdownMenu.Portal>

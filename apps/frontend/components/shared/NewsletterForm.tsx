@@ -23,6 +23,8 @@ export default function NewsletterForm(props: PageCtaDouble) {
 					onSubmit={handleSubmit}
 					action={NEWSLETTER_ENDPOINT}
 				>
+					<input name="honeypot" placeholder="honeypot" type="hidden" />
+
 					<Input
 						name="email"
 						className={cx(

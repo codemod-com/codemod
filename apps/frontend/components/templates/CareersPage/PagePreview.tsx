@@ -4,6 +4,7 @@ import type { QueryResponseInitial } from "@sanity/react-loader";
 
 import { useQuery } from "@/data/sanity/useQuery";
 
+import PageCta from "@/components/templates/ModularPage/PageCta";
 import { CAREERS_PAGE_QUERY } from "@/data/sanity/queries";
 import type { CareersPagePayload } from "@/types";
 import CareersPageContent from "./CareersPageContent";

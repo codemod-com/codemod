@@ -96,7 +96,6 @@ const TreeItem = ({
 		<div
 			key={id}
 			ref={ref}
-			tabIndex={0}
 			className={cn(styles.root, focused && styles.focused)}
 			onClick={onClick}
 			style={inlineStyles?.root}

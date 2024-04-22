@@ -20,7 +20,7 @@ export default async function SectionRegistry(props: SectionRegistryProps) {
 			<div className="container">
 				<div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
 					{props.title && (
-						<h4 className="l-heading font-bold">{props.title}</h4>
+						<h2 className="l-heading font-bold">{props.title}</h2>
 					)}
 					{props.subtitle && (
 						<p className="body-l max-w-2xl">{props.subtitle}</p>

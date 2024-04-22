@@ -5,6 +5,7 @@ import { RichText } from "@/components/shared/RichText";
 import Section from "@/components/shared/Section";
 import type { Plan } from "@/types";
 import { vercelStegaSplit } from "@vercel/stega";
+import React from "react";
 import type { PricingPageProps } from "./Page";
 
 export default function PricingSection({ data }: PricingPageProps) {
@@ -38,12 +39,6 @@ export default function PricingSection({ data }: PricingPageProps) {
 }
 
 function PricePlanCard(props: Plan) {
-	const PLAN_ICON = {
-		Developer: "user",
-		"Team Tier": "group",
-		Enterprise: "build",
-	};
-
 	const { cleaned: title } = vercelStegaSplit(props.title || "");
 	return (
 		<div className="flex min-h-[500px] flex-1 flex-col rounded-[8px] border border-border-light p-l lg:min-h-[600px] dark:border-border-dark">
@@ -96,6 +91,7 @@ function PricePlanCard(props: Plan) {
 				intent="primary"
 				href={props.cta?.link}
 				className="mt-auto"
+				hideExternalIcon
 			>
 				{props.cta?.label}
 			</LinkButton>

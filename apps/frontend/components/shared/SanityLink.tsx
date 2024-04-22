@@ -3,7 +3,7 @@ import type { LinkData } from "@/types/generic.types";
 import { isExternalUrl } from "@/utils/urls";
 import { vercelStegaSplit } from "@vercel/stega";
 import Link from "next/link";
-import { type ComponentProps, forwardRef } from "react";
+import { Component, type ComponentProps, forwardRef } from "react";
 
 export interface SanityLinkProps extends ComponentProps<"a"> {
 	link: Partial<LinkData> | SanityLinkType;

@@ -154,6 +154,22 @@ export type QuoteProps = {
 };
 
 export type AutomationAPIListResponse = {
+	name: string;
+	slug: string;
+	engine: string;
+	author: string;
+	tags: string[];
+	verified: boolean;
+	arguments: {
+		kind: string;
+		name: string;
+		required: boolean;
+	}[];
+
+	updatedAt: string | null;
+};
+
+export type AutomationAPISearchResponse = {
 	data?: AutomationResponse[];
 	filters?: AutomationFilter[];
 	total: number;
@@ -241,7 +257,7 @@ export type AutomationImportSchema = {
 	automationName: string;
 	automationId: number;
 	shortDescription: string;
-	publishStatus: PublishStatus.public;
+	publishStatus: PublishStatus;
 	seo: {
 		title: string;
 		description?: string;
@@ -261,6 +277,7 @@ export type AutomationImportSchema = {
 	automationStories?: AutomationStories;
 	filterIconDictionary?: AutomationFilterIconDictionary;
 	currentVersion?: AutomationResponseVersion;
+	framework?: string | null;
 };
 
 export type AutomationStories = Array<{
@@ -286,6 +303,23 @@ export type GlobalLabels = {
 		applyToPosition?: string;
 		applyToPositionDescription?: string;
 		applyToPositionCTA?: string;
+	};
+	codemodPage: {
+		ctaTitle?: string;
+		ctaDescription?: string;
+		documentationPopup?: BlocksBody;
+		documentationPopupLink: CTAData;
+		runCommandPrefix?: string;
+		backToIndex?: string;
+		cta?: CTAData;
+		runSectionTitle?: string;
+		runCommandTitle?: string;
+		vsCodeExtensionTitle?: string;
+		vsCodeExtensionButtonLabel?: string;
+		codemodStudioExampleTitle?: string;
+		codemodStudioExampleButtonLabel?: string;
+		textProjectTitle?: string;
+		sourceRepoTitle?: string;
 	};
 };
 export type RegistryCardData = AutomationResponse & {

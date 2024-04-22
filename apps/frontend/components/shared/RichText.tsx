@@ -105,7 +105,7 @@ function createDefaultComponents(
 				<p
 					{...prepareProps(props)}
 					className={cx({
-						"mb-10": usage === "default",
+						"mt-10 first:mt-0": usage === "default",
 					})}
 				>
 					{props.children}

@@ -75,7 +75,6 @@ export const JobDiffView = memo(
 				<div
 					ref={ref}
 					className="px-5 pb-2-5 diff-view-container h-full"
-					tabIndex={0}
 					onKeyDown={(event: KeyboardEvent) => {
 						if (event.key === "ArrowLeft") {
 							event.preventDefault();

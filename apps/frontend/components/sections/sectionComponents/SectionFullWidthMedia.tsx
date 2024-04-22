@@ -13,7 +13,7 @@ export default function SectionFullWidthMedia(
 			<div className="container">
 				<div className="mx-auto flex max-w-3xl flex-col items-center gap-4 text-center">
 					{props.title && (
-						<h4 className="l-heading font-bold">{props.title}</h4>
+						<h2 className="l-heading font-bold">{props.title}</h2>
 					)}
 					{props.subtitle && (
 						<p className="body-l max-w-2xl">{props.subtitle}</p>
@@ -32,12 +32,12 @@ export default function SectionFullWidthMedia(
 								<TabContent key={item._key} forId={item._key}>
 									<div className="aspect-video overflow-hidden rounded-lg">
 										{item?.mediaItem?.[0] &&
-											(item?.mediaItem?.[0] as any)?._type == "muxVideo" && (
+											(item?.mediaItem?.[0] as any)?._type === "muxVideo" && (
 												// @ts-ignore
 												<Video {...item.mediaItem?.[0]} />
 											)}
 
-										{(item?.mediaItem?.[0] as any)?._type ==
+										{(item?.mediaItem?.[0] as any)?._type ===
 											"imageWithAltField" && (
 											<SanityImage
 												image={item.mediaItem?.[0] as SanityImageWithAltField}

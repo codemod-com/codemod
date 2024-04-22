@@ -17,7 +17,7 @@ import {
 } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
-	const framework = capitalize(getAutomationFramworkTitle(props));
+	const framework = getAutomationFramworkTitle(props);
 
 	const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
@@ -28,7 +28,7 @@ export default function RegistryCard(props: RegistryCardData) {
 	);
 
 	const frameworkIcons = getFilterSection(
-		"framework",
+		REGISTRY_FILTER_TYPES.framework,
 		props.filterIconDictionary,
 	);
 	const frameworkImage = getFilterIcon(
@@ -50,10 +50,7 @@ export default function RegistryCard(props: RegistryCardData) {
 	);
 
 	return (
-		<li
-			tabIndex={0}
-			className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light   dark:focus-visible:ring-border-dark"
-		>
+		<li className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light   dark:focus-visible:ring-border-dark">
 			<div className="flex flex-col items-start">
 				<div>
 					{props.featured && <span className="tag">Featured</span>}
@@ -71,7 +68,7 @@ export default function RegistryCard(props: RegistryCardData) {
 						<p
 							className="body-l mt-3 line-clamp-3"
 							dangerouslySetInnerHTML={{ __html: formattedDescription }}
-						></p>
+						/>
 					)}
 				</div>
 			</div>

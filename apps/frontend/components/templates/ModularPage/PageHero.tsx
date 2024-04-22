@@ -27,6 +27,7 @@ export default function PageHero(props: PageHeroProps) {
 							key={props.ctas[0]._key}
 							intent="primary"
 							arrow
+							hideExternalIcon
 							href={props.ctas[0].link}
 						>
 							{props.ctas[0].label}
@@ -34,6 +35,7 @@ export default function PageHero(props: PageHeroProps) {
 					)}
 					{props.ctas?.[1] && (
 						<LinkButton
+							hideExternalIcon
 							key={props.ctas[1]._key}
 							intent="secondary"
 							href={props.ctas[1].link}

@@ -110,7 +110,7 @@ export default defineConfig({
 			if (packageJson.dependencies?.mocha) {
 				Object.keys(packageJson.dependencies).forEach((dep) => {
 					if (dep.includes("mocha")) {
-						delete packageJson.dependencies![dep];
+						delete packageJson.dependencies?.[dep];
 					}
 				});
 
@@ -120,7 +120,7 @@ export default defineConfig({
 			if (packageJson.devDependencies?.mocha) {
 				Object.keys(packageJson.devDependencies).forEach((dep) => {
 					if (dep.includes("mocha")) {
-						delete packageJson.devDependencies![dep];
+						delete packageJson.devDependencies?.[dep];
 					}
 				});
 
@@ -134,7 +134,7 @@ export default defineConfig({
 				Object.entries(packageJson.scripts).forEach(([name, script]) => {
 					if (script.includes("mocha")) {
 						mochaScriptExists = true;
-						delete packageJson.scripts![name];
+						delete packageJson.scripts?.[name];
 					}
 				});
 

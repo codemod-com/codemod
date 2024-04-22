@@ -24,11 +24,16 @@ export default function LogoWithContextMenu() {
 	function handleTouchEnd(event: React.TouchEvent) {
 		event.preventDefault();
 		// If touch ends and timer is still active, clear it
+		if (!open) {
+			navigateHome();
+		}
 		if (pressTimer) clearTimeout(pressTimer);
 	}
 
 	const copyToClipboard = (svg: string) => {
-		navigator.clipboard.writeText(svg);
+		if (navigator?.clipboard?.writeText) {
+			navigator.clipboard.writeText(svg);
+		}
 	};
 
 	function handleRightClick(event: React.MouseEvent) {
@@ -56,6 +61,8 @@ export default function LogoWithContextMenu() {
 				onTouchStart={handleTouchStart}
 				onTouchEnd={handleTouchEnd}
 				className="select-none py-px"
+				name="Logo Button"
+				aria-label="Right click for context menu"
 			>
 				<Logo />
 			</DropdownMenu.Trigger>

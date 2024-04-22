@@ -1,3 +1,4 @@
+import "@/sanity/lib/custom.css";
 import schemas from "@/sanity/schemas";
 import { codeInput } from "@sanity/code-input";
 import { table } from "@sanity/table";

@@ -1,4 +1,5 @@
-import { Badge, type BadgeTone, Flex, Stack } from "@sanity/ui";
+import { Badge, type BadgeTone, Flex, Stack, Text } from "@sanity/ui";
+import React from "react";
 import { type TextInputProps, type TextOptions, useFormValue } from "sanity";
 
 type CountedTextOptions = TextOptions & {

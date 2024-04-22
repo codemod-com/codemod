@@ -16,6 +16,7 @@
 		],
 		"rules": {
 			"suspicious": {
+				"noMisleadingCharacterClass": "warn",
 				"noDuplicateClassMembers": "off",
 				"noRedeclare": "off",
 				"noDoubleEquals": "warn",
@@ -66,12 +67,15 @@
 				"noForEach": "off"
 			},
 			"style": {
+				"noArguments": "warn",
+				"noUnusedTemplateLiteral": "off",
 				"noCommaOperator": "warn",
 				"noRestrictedGlobals": "error",
 				"useLiteralEnumMembers": "off",
 				"noNonNullAssertion": "warn"
 			},
 			"a11y": {
+				"noSvgWithoutTitle": "warn",
 				"noBlankTarget": "warn",
 				"useAltText": "warn",
 				"useAnchorContent": "warn",
@@ -92,7 +96,7 @@
 				"useKeyWithClickEvents": "off",
 				"noNoninteractiveTabindex": "warn"
 			},
-			"performance": { "noDelete": "off" },
+			"performance": { "noDelete": "off", "noAccumulatingSpread": "warn" },
 			"security": { "noDangerouslySetInnerHtml": "warn" }
 		}
 	},

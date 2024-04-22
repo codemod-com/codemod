@@ -13,9 +13,11 @@ import type {
 import type {
 	AutomationFilterIconDictionary,
 	AutomationStories,
+	GlobalLabels,
 } from "@/types/object.types";
 import {
 	AUTOMATION_PAGE_QUERY,
+	AUTOMATION_STORIES,
 	NOT_FOUND_DOC_QUERY,
 	ROUTE_QUERY,
 	buildBlogIndexQuery,
@@ -90,6 +92,7 @@ export function loadAutomationPage(aTags: string[]) {
 	return loadQuery<{
 		automationStories: AutomationStories;
 		filterIconDictionary: AutomationFilterIconDictionary;
+		globalLabels?: GlobalLabels["codemodPage"];
 	}>({
 		query: AUTOMATION_PAGE_QUERY,
 		params: { aTags },

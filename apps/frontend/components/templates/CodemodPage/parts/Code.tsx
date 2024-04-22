@@ -29,7 +29,10 @@ const CodeBlock = ({ children }) => {
 		: "";
 
 	const handleCopy = () => {
-		navigator.clipboard.writeText(code.trim());
+		if (navigator?.clipboard?.writeText) {
+			navigator.clipboard.writeText(code.trim());
+		}
+
 		setCopied(true);
 		setTimeout(() => {
 			setCopied(false);
@@ -74,7 +77,7 @@ const CodeBlock = ({ children }) => {
 			<Highlight theme={theme} code={code.trim()} language={language}>
 				{({ className, style, tokens, getLineProps, getTokenProps }) => (
 					<pre
-						className={"my-2 rounded-lg p-[20px] " + className}
+						className={`no-scrollbar my-2 overflow-x-scroll rounded-lg p-[20px]${className}`}
 						style={style}
 					>
 						{tokens.map((line, i) => (

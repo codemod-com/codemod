@@ -3,9 +3,9 @@ import LinkButton from "@/components/shared/LinkButton";
 import NewsletterForm from "@/components/shared/NewsletterForm";
 import { RichText } from "@/components/shared/RichText";
 import Section from "@/components/shared/Section";
-import {
-	type PageCta,
-	type PageCtaDouble,
+import type {
+	PageCta,
+	PageCtaDouble,
 	PageCtaTriple,
 } from "@/types/object.types";
 import { cx } from "cva";
@@ -34,7 +34,7 @@ function SimplePageCta(props: PageCta) {
 					<div className="body-l max-w-[540px]">
 						<RichText value={props.paragraph} />
 					</div>
-					{props.cta && props.cta.icon && props.cta.icon === "standard" ? (
+					{props.cta?.icon && props.cta.icon === "standard" ? (
 						<LinkButton
 							href={props.cta.link}
 							intent={props.cta.style}
@@ -44,7 +44,7 @@ function SimplePageCta(props: PageCta) {
 							{props.cta.label}
 						</LinkButton>
 					) : null}
-					{props.cta && props.cta.icon && props.cta.icon !== "standard" ? (
+					{props.cta?.icon && props.cta.icon !== "standard" ? (
 						<LinkButton
 							href={props.cta.link}
 							intent={props.cta.style}
@@ -166,13 +166,20 @@ function PageCtaDoubleBlock(
 					<RichText value={paragraph} />
 				</div>
 			) : null}
-			{cta && cta.icon && cta.icon === "standard" ? (
-				<LinkButton intent={cta.style} arrow className="mt-xl" href={cta.link}>
+			{cta?.icon && cta.icon === "standard" ? (
+				<LinkButton
+					hideExternalIcon
+					intent={cta.style}
+					arrow
+					className="mt-xl"
+					href={cta.link}
+				>
 					{cta.label}
 				</LinkButton>
 			) : null}
-			{cta && cta.icon && cta.icon !== "standard" ? (
+			{cta?.icon && cta.icon !== "standard" ? (
 				<LinkButton
+					hideExternalIcon
 					intent={cta.style}
 					icon={cta.icon}
 					iconPosition="right"
@@ -235,6 +242,7 @@ function PageCtaTriple(props: PageCtaTriple) {
 									{cta?.icon ? (
 										cta?.icon === "standard" ? (
 											<LinkButton
+												hideExternalIcon
 												intent={cta.style}
 												key={cta.title}
 												arrow
@@ -245,6 +253,7 @@ function PageCtaTriple(props: PageCtaTriple) {
 											</LinkButton>
 										) : (
 											<LinkButton
+												hideExternalIcon
 												intent={cta.style}
 												icon={cta.icon}
 												iconPosition="left"

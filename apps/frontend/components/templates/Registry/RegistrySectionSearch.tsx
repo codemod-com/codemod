@@ -30,7 +30,14 @@ const RegistrySectionSearch = ({ placeholder, onSearch }: Props) => {
 	const [searchInput, setSearchInput] = useState("");
 	return (
 		<div className="flex w-full flex-1 items-center gap-3">
-			<div ref={inputWrapperRef} className="w-full">
+			<div
+				ref={inputWrapperRef}
+				onClick={() => {
+					const input = inputWrapperRef.current?.querySelector("input");
+					input?.focus();
+				}}
+				className="w-full"
+			>
 				<Input
 					onChange={(e) => {
 						onSearch("q", e.target.value);

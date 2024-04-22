@@ -21,14 +21,14 @@ export default function RegistrySectionCard(
 		onFilter: (key?: string | null, value?: string | null) => void;
 	},
 ) {
-	const framework = capitalize(getAutomationFramworkTitle(props));
+	const framework = getAutomationFramworkTitle(props);
 
 	const formattedDescription = getFormattedDescription(
 		props.shortDescription || "",
 	);
 
 	const frameworkIcons = getFilterSection(
-		"framework",
+		REGISTRY_FILTER_TYPES.framework,
 		props.filterIconDictionary,
 	);
 	const frameworkImage = getFilterIcon(
@@ -50,10 +50,7 @@ export default function RegistrySectionCard(
 	);
 
 	return (
-		<li
-			tabIndex={0}
-			className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
-		>
+		<li className="flex flex-col items-start gap-m py-l transition-[width] focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark">
 			<div className="flex flex-col items-start">
 				<div>
 					{props.featured && <span className="tag">Featured</span>}
@@ -70,7 +67,7 @@ export default function RegistrySectionCard(
 					<p
 						className="body-l line-clamp-3"
 						dangerouslySetInnerHTML={{ __html: formattedDescription }}
-					></p>
+					/>
 				</div>
 			</div>
 
@@ -80,8 +77,7 @@ export default function RegistrySectionCard(
 					{framework && (
 						<button
 							onClick={() =>
-								props.onFilter &&
-								props.onFilter(REGISTRY_FILTER_TYPES.framework, framework)
+								props.onFilter?.(REGISTRY_FILTER_TYPES.framework, framework)
 							}
 						>
 							<Tag intent="default">
@@ -119,8 +115,7 @@ export default function RegistrySectionCard(
 					{props.useCaseCategory && (
 						<button
 							onClick={() =>
-								props.onFilter &&
-								props.onFilter(
+								props.onFilter?.(
 									REGISTRY_FILTER_TYPES.useCase,
 									props.useCaseCategory,
 								)
@@ -137,8 +132,7 @@ export default function RegistrySectionCard(
 				{props.author && (
 					<button
 						onClick={() =>
-							props.onFilter &&
-							props.onFilter(REGISTRY_FILTER_TYPES.owner, props.author)
+							props.onFilter?.(REGISTRY_FILTER_TYPES.owner, props.author)
 						}
 					>
 						<div className="flex items-center gap-xs">

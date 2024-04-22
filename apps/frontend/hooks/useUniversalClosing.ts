@@ -39,7 +39,7 @@ function useUniversalClosing<T extends HTMLElement>(
 				return;
 			}
 
-			if (ref.current && ref.current.contains(ev.target as Node)) {
+			if (ref.current?.contains(ev.target as Node)) {
 				isClickOutside = false;
 			}
 		});

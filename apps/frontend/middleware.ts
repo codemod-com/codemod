@@ -1,6 +1,6 @@
+import { getRedirect } from "@/data/sanity/redirects";
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { getRedirect } from "./data/sanity/redirects";
 
 // @TODO: Handle redirects from Sanity
 export async function middleware(request: NextRequest) {

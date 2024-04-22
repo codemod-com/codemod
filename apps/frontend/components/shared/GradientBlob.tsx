@@ -13,6 +13,6 @@ export default function GradientBlob({
 				"gradient-ellipse right-[80%] top-[46%] z-10  h-[481px] w-[402px] shrink-0 rotate-90 rounded-[481px] opacity-40  blur-[45px] lg:top-[34%] lg:h-[856px] lg:w-[716px] lg:blur-[160px] dark:opacity-15":
 					style === "ellipse",
 			})}
-		></div>
+		/>
 	);
 }

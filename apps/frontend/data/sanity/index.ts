@@ -59,14 +59,15 @@ export async function loadSanityPageByRouteProps({
 	params: { path },
 }: RouteProps): Promise<
 	| queryStore.QueryResponseInitial<ModularPagePayload | null>
+	| queryStore.QueryResponseInitial<BlogArticlePayload | null>
 	| queryStore.QueryResponseInitial<TextPagePayload | null>
 > {
 	let pathname: string;
 
 	if (Array.isArray(path)) {
-		pathname = "/" + path.join("/");
+		pathname = `/${path.join("/")}`;
 	} else {
-		pathname = "/" + path;
+		pathname = `/${path}`;
 	}
 
 	const routeData = await loadRoute(pathname);

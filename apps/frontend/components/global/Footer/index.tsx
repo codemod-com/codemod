@@ -1,3 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
+import React from "react";
+
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import FooterLogo from "@/components/shared/FooterLogo";
 import { TechLogo } from "@/components/shared/Icon";
@@ -90,6 +93,7 @@ function FooterSocialLinks({
 					rel="noopener noreferrer"
 					key={socialLink._key}
 					href={socialLink?.link?.href}
+					title={socialLink?.link?.label}
 				>
 					<TechLogo name={socialLink?.logo} />
 				</a>

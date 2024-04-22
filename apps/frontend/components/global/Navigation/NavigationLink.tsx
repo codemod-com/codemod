@@ -11,6 +11,7 @@ type NavigationLinkProps = {
 	asButton?: boolean;
 	textStyle?: "default" | "medium" | "large" | "inline";
 	hideExternalIcon?: boolean;
+	isCurrent?: boolean;
 } & React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
 type NavigationLinkAsButtonProps = {
@@ -26,7 +27,7 @@ export default function NavigationLink(
 	function isButton(
 		props: NavigationLinkProps | NavigationLinkAsButtonProps,
 	): props is NavigationLinkAsButtonProps {
-		return (props as NavigationLinkAsButtonProps).asButton == true;
+		return (props as NavigationLinkAsButtonProps).asButton === true;
 	}
 
 	if (isButton(props)) {
@@ -41,39 +42,42 @@ export default function NavigationLink(
 				{children}
 			</button>
 		);
-	} else {
-		const { href, children, hideExternalIcon, inline, ...linkProps } = props;
-		const { cleaned } = vercelStegaSplit(props?.href || "");
-		const isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
-		const spreadProps = { ...props };
-		delete props.asButton;
-		delete spreadProps.textStyle;
-		delete spreadProps.hideExternalIcon;
-
-		return (
-			<SanityLink
-				link={{ href: cleaned || "" }}
-				className={cx(
-					"group inline-flex cursor-pointer items-center gap-xxs font-medium",
-					inline
-						? null
-						: {
-								"body-s-medium":
-									!props.textStyle || props.textStyle === "default",
-								"body-m-medium": props.textStyle === "medium",
-								"body-l-medium": props.textStyle === "large",
-						  },
-				)}
-				{...spreadProps}
-			>
-				{children}
-				{isExternal ? (
-					<Icon
-						name="arrow-up-right"
-						className="h-4 w-4 transition-transform ease-out group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
-					/>
-				) : null}
-			</SanityLink>
-		);
 	}
+	const { href, children, hideExternalIcon, inline, ...linkProps } = props;
+	const { cleaned } = vercelStegaSplit(props?.href || "");
+	const isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
+	const spreadProps = { ...props };
+	delete props.asButton;
+	delete spreadProps.textStyle;
+	delete spreadProps.hideExternalIcon;
+	delete spreadProps.isCurrent;
+	delete spreadProps.inline;
+
+	return (
+		<SanityLink
+			link={{ href: cleaned || "" }}
+			{...spreadProps}
+			className={cx(
+				props.className,
+				"group inline-flex cursor-pointer items-center gap-xxs ",
+				props.isCurrent ? "font-bold" : "font-medium",
+				inline
+					? null
+					: {
+							"body-s-medium":
+								!props.textStyle || props.textStyle === "default",
+							"body-m-medium": props.textStyle === "medium",
+							"body-l-medium": props.textStyle === "large",
+						},
+			)}
+		>
+			{children}
+			{isExternal ? (
+				<Icon
+					name="arrow-up-right"
+					className="h-4 w-4 transition-transform ease-out group-hover:-translate-y-[2px] group-hover:translate-x-[2px]"
+				/>
+			) : null}
+		</SanityLink>
+	);
 }

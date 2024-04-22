@@ -8,7 +8,6 @@ import config from "@/config";
 import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
-import { StudioLayout } from "@studio/app/studio-layout";
 
 const LiveVisualEditing = dynamic(
 	() => import("@/components/LiveVisualEditing"),
@@ -36,15 +35,16 @@ export default async function Layout({
 	const globalData = await loadGlobalData(GLOBAL_QUERY);
 
 	return (
-		<StudioLayout>
-			{draftMode().isEnabled ? (
-				<GlobalLayoutPreview data={globalData.data!}>
-					{children}
-				</GlobalLayoutPreview>
-			) : (
-				<GlobalLayout data={globalData.data!}>{children}</GlobalLayout>
-			)}
+		<>
+			{globalData.data &&
+				(draftMode().isEnabled ? (
+					<GlobalLayoutPreview data={globalData.data}>
+						{children}
+					</GlobalLayoutPreview>
+				) : (
+					<GlobalLayout data={globalData.data}>{children}</GlobalLayout>
+				))}
 			{draftMode().isEnabled && <LiveVisualEditing />}
-		</StudioLayout>
+		</>
 	);
 }

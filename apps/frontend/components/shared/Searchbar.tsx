@@ -40,7 +40,7 @@ export default function Searchbar({
 	);
 
 	const handleSearch = (searchQuery: string) => {
-		onChange && onChange();
+		onChange?.();
 		setQuery(searchQuery);
 	};
 

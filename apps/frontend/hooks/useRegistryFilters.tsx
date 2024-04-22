@@ -14,8 +14,8 @@ export function useRegistryFilters() {
 		}
 		// Clear filter buttons only - leaving search query
 		const searchQuery = search.get("q");
-		router.prefetch("/registry" + (searchQuery ? `?q=${searchQuery}` : ""));
-		return router.push("/registry" + (searchQuery ? `?q=${searchQuery}` : ""));
+		router.prefetch(`/registry${searchQuery ? `?q=${searchQuery}` : ""}`);
+		return router.push(`/registry${searchQuery ? `?q=${searchQuery}` : ""}`);
 	}
 
 	function handleFilterChange(filterPath: string, slug?: string) {
@@ -23,26 +23,26 @@ export function useRegistryFilters() {
 
 		if (!slug || slug === slugify("") || slug === newParams.get(filterPath)) {
 			newParams.delete(filterPath);
-			router.prefetch(pathname + "?" + newParams.toString());
-			router.push(pathname + "?" + newParams.toString(), { scroll: false });
+			router.prefetch(`${pathname}?${newParams.toString()}`);
+			router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
 			return;
 		}
 
 		newParams.set(filterPath, slug);
-		router.prefetch(pathname + "?" + newParams.toString());
-		router.push(pathname + "?" + newParams.toString(), { scroll: false });
+		router.prefetch(`${pathname}?${newParams.toString()}`);
+		router.push(`${pathname}?${newParams.toString()}`, { scroll: false });
 	}
 	function prefetchFilterChange(filterPath: string, slug?: string) {
 		const newParams = new URLSearchParams(search.toString());
 
 		if (!slug || slug === slugify("") || slug === newParams.get(filterPath)) {
 			newParams.delete(filterPath);
-			router.prefetch(pathname + "?" + newParams.toString());
+			router.prefetch(`${pathname}?${newParams.toString()}`);
 			return;
 		}
 
 		newParams.set(filterPath, slug);
-		router.prefetch(pathname + "?" + newParams.toString());
+		router.prefetch(`${pathname}?${newParams.toString()}`);
 	}
 
 	return {

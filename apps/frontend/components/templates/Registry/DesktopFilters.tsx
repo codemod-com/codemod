@@ -44,7 +44,7 @@ export default function DesktopFilters({
 				variants={sidebarVariants}
 			>
 				{automationFilters?.map((section, i, arr) => (
-					<React.Fragment key={section.title || "" + i}>
+					<React.Fragment key={section.title || `${i}`}>
 						<FilterSection
 							filterIconDictionary={filterIconDictionary}
 							placeholders={placeholders}

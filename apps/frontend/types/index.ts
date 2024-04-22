@@ -359,7 +359,7 @@ export type BlogArticlePayload = BasicPageDocumentPayload & {
 
 export type CodemodPagePayload = BasicPageDocumentPayload &
 	AutomationImportSchema & {
-		runCommand: string;
+		globalLabels?: GlobalLabels["codemodPage"];
 	};
 
 export type BlogArticleSidebar = {

@@ -59,7 +59,8 @@ export default function FilterSection(
 	return (
 		<div className="grid w-full flex-col items-start gap-3">
 			<h3 className="xs-heading">{props.title}</h3>
-			{Number(props.values?.length) > DEFAULT_FILTER_LENGTH && (
+			{Number(getFilteredFilters(props.values)?.length) >
+				DEFAULT_FILTER_LENGTH && (
 				<Input
 					placeholder={`Search ${props.title}`}
 					icon="search"
@@ -91,7 +92,7 @@ export default function FilterSection(
 							return (
 								<motion.li
 									className="w-full"
-									key={filter.title || "" + i}
+									key={filter.title || `${i}`}
 									initial={{
 										opacity: 0,
 										y: -10,
@@ -140,7 +141,7 @@ export default function FilterSection(
 						availableFilters?.slice(DEFAULT_FILTER_LENGTH).map((filter, i) => (
 							<motion.li
 								className="w-full"
-								key={filter.title || "" + i}
+								key={filter.title || `${i}`}
 								initial={{
 									opacity: 0,
 									y: -10,

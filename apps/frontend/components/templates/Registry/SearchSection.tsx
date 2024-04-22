@@ -32,7 +32,7 @@ export default function SearchSection({
 				newParams.delete("q");
 			}
 
-			router.push((path ?? pathname) + "?" + newParams.toString(), {
+			router.push(`${path ?? pathname}?${newParams.toString()}`, {
 				scroll: false,
 			});
 		} catch {
@@ -55,13 +55,14 @@ export default function SearchSection({
 		setLoading(searchQuery.length > 0);
 	}
 
-	useEffect(() => {
-		function handleKeyDown(event: KeyboardEvent) {
-			if (event.metaKey && event.key === "k") {
-				event.preventDefault();
-				inputWrapperRef.current?.querySelector("input")?.focus();
-			}
+	function handleKeyDown(event: KeyboardEvent) {
+		if (event.metaKey && event.key === "k") {
+			event.preventDefault();
+			inputWrapperRef.current?.querySelector("input")?.focus();
 		}
+	}
+
+	useEffect(() => {
 		window.addEventListener("keydown", handleKeyDown);
 		return () => {
 			window.removeEventListener("keydown", handleKeyDown);
@@ -83,18 +84,24 @@ export default function SearchSection({
 					<Icon name="filter" />
 				</Button>
 
-				<div ref={inputWrapperRef} className="w-full">
+				<div
+					ref={inputWrapperRef}
+					onClick={() => {
+						inputWrapperRef.current?.querySelector("input")?.focus();
+					}}
+					className="w-full"
+				>
 					<Input
 						onChange={(e) => handleSearch(e.target.value)}
 						placeholder={placeholder}
-						icon={loading ? "loading" : "search"}
+						icon={loading ? "codemod-dot-pulse" : "search"}
 						command={searchInput ? undefined : "⌘K"}
 						onClear={() => {
 							setSearchInput("");
 						}}
 						value={searchInput}
 						inputClassName="placeholder:text-secondary-light dark:placeholder:text-secondary-dark"
-						iconClassName="text-secondary-light dark:text-secondary-dark"
+						iconClassName="text-secondary-light dark:text-secondary-dark w-5 h-5"
 					/>
 				</div>
 			</div>

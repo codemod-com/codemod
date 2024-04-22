@@ -67,7 +67,7 @@ export default function CodemodList({
 					}}
 				>
 					<ul className="m-0 flex w-full animate-fade-in flex-col divide-y-[1px] divide-border-light dark:divide-border-dark">
-						{!!registryCards?.length ? (
+						{registryCards?.length ? (
 							registryCards?.map((entry) => (
 								<RegistryCard
 									filterIconDictionary={initial?.filterIconDictionary}

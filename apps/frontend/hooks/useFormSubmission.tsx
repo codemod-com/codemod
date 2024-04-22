@@ -20,6 +20,10 @@ export function useFormSubmission() {
 			e.currentTarget || (e.target as HTMLFormElement),
 		);
 
+		if (formData.get("honeypot")) {
+			return;
+		}
+
 		setFormState("loading");
 
 		const res = await fetch(`${formRef?.current?.action}`, {

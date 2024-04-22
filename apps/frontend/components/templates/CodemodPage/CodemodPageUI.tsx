@@ -1,5 +1,6 @@
 import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
+import LinkButton from "@/components/shared/LinkButton";
 import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
@@ -23,28 +24,17 @@ export interface CodemodPageProps {
 	description: JSX.Element | null;
 }
 
-const placeholders = {
-	ctaDescription:
-		"Use AI-powered codemod studio and automate undifferentiated tasks for yourself, colleagues or the community",
-	documentation:
-		"Install cli first: pnpm i -g codemod. For details see the documentation",
-	runCommand: "npx codemod",
-};
-
 export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 	const framework = getAutomationFramworkTitle(data);
 
 	const { cleaned: author } = vercelStegaSplit(`${data?.author}`);
 
 	const frameworkIcons = getFilterSection(
-		"framework",
+		REGISTRY_FILTER_TYPES.framework,
 		data?.filterIconDictionary,
 	);
-	const frameworkImage = getFilterIcon(
-		frameworkIcons,
-		getAutomationFramworkTitle(data),
-	);
 
+	const frameworkImage = getFilterIcon(frameworkIcons, framework);
 	const authorIcons = getFilterSection("author", data?.filterIconDictionary);
 
 	const authorImage = getFilterIcon(authorIcons, author);
@@ -68,7 +58,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 					prefetch
 				>
 					<Icon name="arrow-left" className="w-3" />
-					Back
+					{data?.globalLabels?.backToIndex || "Back"}
 				</Link>
 			</div>
 
@@ -185,7 +175,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 					</div>
 
 					<div className="mt-6 flex flex-col gap-[12px]">
-						{data?.pathname && (
+						{data?.automationName && (
 							<h1 className="m-heading">{unslugify(data?.automationName)}</h1>
 						)}
 					</div>
@@ -217,7 +207,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 						)}
 					</div>
 					{description ? (
-						<div className="[&_h1]:s-heading [&_h2]:xs-heading [&_code]:inline-code mt-10 hidden flex-col gap-4 lg:flex [&_a]:underline">
+						<div className=" [&_code]:inline-code mt-10 hidden flex-col gap-4 lg:flex [&_a]:underline">
 							{description}
 						</div>
 					) : null}
@@ -229,33 +219,55 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 					<div className="flex w-full flex-col gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
 						<div className="flex items-center justify-between">
 							<p className="xs-heading">Run</p>
-							<InfoTooltip content={placeholders.documentation} />
+							{data?.globalLabels?.documentationPopup && (
+								<InfoTooltip
+									cta={data.globalLabels.documentationPopupLink}
+									content={data?.globalLabels?.documentationPopup}
+								/>
+							)}
 						</div>
-						{data?.runCommand && (
+						{data?.automationName && (
 							<div className="flex flex-col gap-xs">
-								<p className="body-s">CLI</p>
-								<Snippet variant="secondary" command={data?.runCommand} />
+								<p className="body-s">
+									{data.globalLabels?.runCommandTitle || "CLI"}
+								</p>
+								<Snippet
+									variant="secondary"
+									command={`${
+										data?.globalLabels?.runCommandPrefix || "codemod"
+									} ${data.automationName}`}
+								/>
 							</div>
 						)}
 						{data?.currentVersion?.vsCodeLink && (
 							<div className="flex flex-col gap-xs">
-								<p className="body-s">VS code extension</p>
+								<p className="body-s">
+									{data.globalLabels?.vsCodeExtensionTitle ||
+										"VS Code extension"}
+								</p>
 								<Button
 									iconPosition="left"
 									icon="noborder-vscode"
 									intent="secondary"
 								>
-									<a href={data?.currentVersion?.vsCodeLink}>Run in VS Code</a>
+									<a href={data?.currentVersion?.vsCodeLink}>
+										{data.globalLabels?.vsCodeExtensionButtonLabel ||
+											"Run in VS Code"}
+									</a>
 								</Button>
 							</div>
 						)}
 
 						{data?.currentVersion?.codemodStudioExampleLink && (
 							<div className="flex flex-col gap-xs">
-								<p className="body-s">Codemod Studio</p>
+								<p className="body-s">
+									{data.globalLabels?.codemodStudioExampleTitle ||
+										"Codemod Studio"}
+								</p>
 								<Button arrow intent="secondary">
 									<a href={data?.currentVersion?.codemodStudioExampleLink}>
-										Run in Codemod Studio
+										{data.globalLabels?.codemodStudioExampleButtonLabel ||
+											"Run in Codemod Studio"}
 									</a>
 								</Button>
 							</div>
@@ -263,7 +275,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 
 						{data?.currentVersion?.testProjectCommand && (
 							<div className="flex flex-col gap-xs">
-								<p className="body-s">Install test project</p>
+								<p className="body-s">
+									{data.globalLabels?.textProjectTitle || "Example Project"}
+								</p>
 								<Snippet
 									variant="secondary"
 									command={data?.currentVersion?.testProjectCommand}
@@ -273,14 +287,25 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 						{data?.currentVersion?.sourceRepo && (
 							<div className="flex flex-col gap-xs">
 								<div className="flex items-center">
-									<p className="body-s">Repository</p>
+									<p className="body-s">
+										{data.globalLabels?.sourceRepoTitle || "Repository"}
+									</p>
 									{/* <div className="flex gap-2">
                     <img src="/icons/star.svg" alt="GitHub icon" />
                     <p>1.7K</p>
                   </div> */}
 								</div>
 								<div className="flex items-center gap-2">
-									<img src="/logotypes/light/github.svg" alt="GitHub icon" />
+									<img
+										src="/logotypes/light/github.svg"
+										className="dark:hidden"
+										alt="GitHub icon"
+									/>
+									<img
+										src="/logotypes/dark/github.svg"
+										className="hidden dark:block"
+										alt="GitHub icon"
+									/>
 									<a
 										target="_blank"
 										href={data?.currentVersion?.sourceRepo}
@@ -351,18 +376,30 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
               ))}
             </div>
           )} */}
-					<div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
-						<div className="flex flex-col gap-[12px]">
-							<p className="xs-heading">Build custom codemods</p>
-							<p className="body-s">{placeholders.ctaDescription}</p>
+					{data?.globalLabels?.cta?.link && (
+						<div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
+							{data?.globalLabels?.ctaTitle && (
+								<div className="relative z-10 flex flex-col gap-[12px]">
+									<p className="xs-heading">
+										{data?.globalLabels?.ctaTitle || "Build custom codemods"}
+									</p>
+									{data?.globalLabels?.ctaDescription && (
+										<p className="body-s">
+											{data?.globalLabels?.ctaDescription}
+										</p>
+									)}
+								</div>
+							)}
+							<img
+								className="pointer-events-none absolute left-0 top-[60px] -z-10 w-full"
+								alt="background illustration"
+								src="/illustration/planet.svg"
+							/>
+							<LinkButton href={data?.globalLabels?.cta?.link} intent="primary">
+								{data?.globalLabels?.cta?.label || "Get started now"}
+							</LinkButton>
 						</div>
-						<img
-							className="absolute left-0 top-[60px] w-full"
-							alt="background illustration"
-							src="/illustration/planet.svg"
-						/>
-						<Button intent="primary">Get started now</Button>
-					</div>
+					)}
 				</aside>
 				{description ? (
 					<div className="[&_h1]:s-heading [&_h2]:xs-heading flex flex-col gap-4 lg:hidden [&_a]:underline">

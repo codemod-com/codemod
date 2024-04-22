@@ -91,6 +91,8 @@ export default definePage({
 							name: "previousCompanyLogo",
 							title: "Previous Company Logo",
 							type: "object",
+							description:
+								"Please, upload logos with transparent background (svg preferred) and in their horizontal variation. Also try and trim vertical margins as much as possible.",
 							fields: logoFields,
 						},
 					],

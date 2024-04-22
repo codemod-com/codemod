@@ -23,7 +23,9 @@ export function CodeSnippet(props: { code: CodeBlockProps }) {
 		: languageToPrismId(props.code.language);
 
 	const handleCopy = () => {
-		navigator.clipboard.writeText(props.code?.code);
+		if (navigator?.clipboard?.writeText) {
+			navigator.clipboard.writeText(props.code?.code);
+		}
 		setCopied(true);
 		setTimeout(() => {
 			setCopied(false);

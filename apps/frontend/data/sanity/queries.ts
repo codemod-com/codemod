@@ -1,4 +1,4 @@
-import { CUSTOMER_STORY_TAG } from "@/constants";
+import { CUSTOMER_STORY_TAG, REGISTRY_FILTER_TYPES } from "@/constants";
 import { groq } from "next-sanity";
 
 export const REGISTRY_CARD_FRAGMENT = groq`
@@ -144,6 +144,7 @@ export const TEXT_PAGE_QUERY = groq`
     *[_type == 'textPage' && pathname.current == $pathname][0] {
         ...,
         'pathname': pathname.current,
+        body[] {${PT_BLOCK_FRAGMENT}},
     }
     `;
 
@@ -222,6 +223,7 @@ export const AUTOMATION_STORIES = groq`
 export const AUTOMATION_PAGE_QUERY = groq`
 {
 "filterIconDictionary": ${FILTER_ICON_DICTONARY_FRAGMENT},
+"globalLabels": *[_type == "globalLabels"][0].codemodPage,
 }
 `;
 // To be added later once we finalize linking to automations
@@ -253,14 +255,14 @@ export function buildBlogIndexQuery({
 		isCustomerStory
 			? null
 			: tag
-			  ? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
-			  : null,
+				? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
+				: null,
 		// featured posts filter
 		isCustomerStory
 			? `!(_id in ^.featuredCustomerStories[]->_id )`
 			: tag
-			  ? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
-			  : `!(_id in ^.featuredPosts[]->_id )`,
+				? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
+				: `!(_id in ^.featuredPosts[]->_id )`,
 	];
 	const filtersString = filters.filter(Boolean).join(" && ");
 	const orderFragment = `order(${sortBy ?? "_createdAt"} ${
@@ -272,10 +274,10 @@ export function buildBlogIndexQuery({
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
 		: tag
-		  ? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
+			? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
-		  : `featuredPosts[]-> {
+			: `featuredPosts[]-> {
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`;
 

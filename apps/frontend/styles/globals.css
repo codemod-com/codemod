@@ -1,5 +1,5 @@
 
-@import '../app/(website)/studios/src/index.css';
+@import '../app/(website)/studio/src/studio.css';
 
 @tailwind base;
 
@@ -102,6 +102,15 @@
 @tailwind utilities;
 
 @layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
   .animation-pause {
     animation-play-state: paused;
   }
@@ -166,7 +175,7 @@
     font-family: "inconsolata", monospace;
   }
   .inline-code {
-    @apply rounded-[4px] border-emphasis-dark bg-background-dark/10  box-decoration-clone px-[4px] py-0 text-codeMobile  leading-6 lg:text-code dark:border dark:bg-emphasis-dark/10;
+    @apply w-fit rounded-[4px] border-emphasis-dark bg-background-dark/10 box-decoration-clone  px-[4px] py-0 text-codeMobile leading-6 lg:text-code dark:border dark:bg-emphasis-dark/10;
     font-family: "inconsolata", monospace;
   }
 }
@@ -174,15 +183,16 @@
 html {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+
   transition:
-    background-color 0.01s ease-out,
-    color 0.01s ease-out;
+          background-color 0.01s ease-out,
+          color 0.01s ease-out;
 
   @apply bg-primary-dark text-primary-light dark:bg-primary-light dark:text-primary-dark;
 }
 
 body {
+  overflow-x: hidden;
   font-family: var(--satoshi-regular);
   @apply selection:bg-accent selection:text-primary-light;
 }
@@ -233,9 +243,9 @@ h6 {
 
   @media (min-width: 1024px) {
     background: linear-gradient(
-      180deg,
-      #bbfc03 0%,
-      rgba(187, 252, 3, 0.17) 100%
+            180deg,
+            #bbfc03 0%,
+            rgba(187, 252, 3, 0.17) 100%
     );
   }
 }
@@ -243,9 +253,9 @@ h6 {
 .codeblock pre {
   font-variant-numeric: slashed-zero;
   font-feature-settings:
-    "ss02" on,
-    "clig" off,
-    "liga" off;
+          "ss02" on,
+          "clig" off,
+          "liga" off;
 }
 
 h2[class*="heading"] a,

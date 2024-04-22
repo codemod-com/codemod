@@ -6,6 +6,7 @@ import type {
 	AutomationFilterType,
 	AutomationResponse,
 	AutomationStories,
+	GlobalLabels,
 } from "@/types/object.types";
 import { unslugify } from "@/utils/strings";
 
@@ -35,7 +36,7 @@ export function getFormattedDescription(
 
 export function getAutomationFramworkTitle(
 	automation?: {
-		framework?: string;
+		framework?: string | null;
 		applicability?: AutomationResponse["applicability"];
 	} | null,
 ) {
@@ -117,15 +118,11 @@ export function transformAutomation(
 	automation: AutomationResponse & {
 		automationStories: AutomationStories;
 		filterIconDictionary: AutomationFilterIconDictionary;
+		globalLabels?: GlobalLabels["codemodPage"];
 	},
 ): CodemodPagePayload {
-	const _currentVersion = automation.versions?.[0];
+	const _currentVersion = automation.versions[automation.versions.length - 1];
 	if (_currentVersion) {
-		for (const key in _currentVersion) {
-			if (_currentVersion[key] === null) {
-				delete _currentVersion[key];
-			}
-		}
 		_currentVersion.applicability = convertAutomationApplicability(
 			_currentVersion?.applicability,
 		);
@@ -133,33 +130,21 @@ export function transformAutomation(
 	const currentVersion = _currentVersion;
 
 	return {
+		...automation,
 		_id: `imported-automation-${automation.id}`,
 		_type: "automation",
 		pathname: `/registry/${automation.slug}`,
 		internalTitle: unslugify(automation.name),
-		publishStatus: PublishStatus.public,
+		publishStatus: automation.private
+			? PublishStatus.hidden
+			: PublishStatus.public,
 		seo: {
 			title: unslugify(automation.name),
 		},
-		shortDescription: automation.shortDescription,
 		automationName: automation.name,
 		automationId: automation.id,
-		featured: !!automation.featured,
-		verified: !!automation.verified,
-		private: !!automation.private,
-		author: automation.author,
-		amountOfUses: automation.amountOfUses,
-		totalTimeSaved: automation.totalTimeSaved,
-		openedPrs: automation.openedPrs,
-		createdAt: automation.createdAt,
-		updatedAt: automation.updatedAt,
-		useCaseCategory: automation.useCaseCategory,
 		visible: true,
-		applicability: automation.applicability,
 		currentVersion,
-		filterIconDictionary: automation.filterIconDictionary,
-		automationStories: automation.automationStories,
 		title: unslugify(automation.name),
-		runCommand: "npm run",
 	};
 }

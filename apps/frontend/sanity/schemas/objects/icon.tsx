@@ -62,14 +62,14 @@ function CustomSelect(props: any) {
 	const onClose = useCallback(() => setOpen(false), []);
 	const onOpen = useCallback(() => setOpen(true), []);
 	const [search, setSearch] = useState("");
-	const isTechLogo = /logo/.test(props.id);
+	const isTechLogo = /logo\b/.test(props.id);
 
 	const Icons = isTechLogo ? TechLogoId : IconId;
 
 	const icons = search
 		? Object.values(Icons).map((icon) =>
 				icon.toLowerCase().includes(search.toLowerCase()) ? icon : null,
-		  )
+			)
 		: Object.values(Icons).map((icon) => icon);
 	const { elementProps, onChange, value = "" } = props;
 
@@ -231,10 +231,10 @@ function BlockVariantCard({
 					justifyContent: "center",
 				}}
 			>
-				{/icon/.test(type) ? (
-					<Icon name={icon as IconName} />
-				) : (
+				{/logo\b/.test(type) ? (
 					<TechLogo name={icon as LogoName} />
+				) : (
+					<Icon name={icon as IconName} />
 				)}
 			</div>
 			<Text size={0}>{addSpaceBeforeCapitalLetters(icon)}</Text>

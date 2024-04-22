@@ -61,9 +61,8 @@ export default function KeepVisible({
 			child.style.transition = "top 0.5s ease-out";
 			child.style.bottom = "";
 			return;
-		} else {
-			child.style.transition = "";
 		}
+		child.style.transition = "";
 
 		const childStyle: any = {};
 		const parentStyle: any = {
@@ -76,7 +75,7 @@ export default function KeepVisible({
 			parentStyle.justifyContent = "";
 			childSticky.current = "none";
 			childStyle.position = "relative";
-			childStyle.top = childRect.top - parentRect.top + "px";
+			childStyle.top = `${childRect.top - parentRect.top}px`;
 			childStyle.bottom = "";
 		} else if (scrollingDown && childEdgeInView) {
 			parentStyle.justifyContent = "flex-end";

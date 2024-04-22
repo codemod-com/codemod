@@ -3,7 +3,7 @@
 import type { QueryResponseInitial } from "@sanity/react-loader";
 
 import { useQuery } from "@/data/sanity/useQuery";
-import type { ModularPagePayload } from "@/types";
+import { type ModularPagePayload, PagePayload } from "@/types";
 
 import PageCta from "@/components/templates/ModularPage/PageCta";
 import PageHero from "@/components/templates/ModularPage/PageHero";

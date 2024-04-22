@@ -126,8 +126,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 					buttonVariant({ intent, flush: props?.flush }),
 					className,
 					{
-						["gap-xxs"]: arrow,
-						["pointer-events-none"]: loading,
+						"gap-xxs": arrow,
+						"pointer-events-none": loading,
 					},
 				)}
 				{...spreadableProps}
@@ -143,7 +143,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 						<Spinner />
 					</span>
 				) : null}
-				{icon && iconPosition && iconPosition == "right" ? (
+				{icon && iconPosition && iconPosition === "right" ? (
 					<Icon name={icon as IconName} className={disabledIconState} />
 				) : null}
 				{icon && !iconPosition ? (
@@ -170,7 +170,7 @@ Button.displayName = "Button";
 
 export default Button;
 
-function GlowSVG() {
+export function GlowSVG() {
 	return (
 		<svg
 			width="84"
@@ -228,7 +228,7 @@ function GlowSVG() {
 	);
 }
 
-function GlowBorderBottom() {
+export function GlowBorderBottom() {
 	return (
 		<div className="hidden dark:absolute dark:bottom-[-1px] dark:left-1 dark:right-1 dark:z-[1] dark:flex dark:h-[1px] dark:max-w-full dark:bg-gradient-to-r dark:from-transparent dark:via-white dark:to-transparent" />
 	);

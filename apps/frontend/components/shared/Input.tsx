@@ -1,5 +1,7 @@
+"use client";
+
 import { cx } from "cva";
-import type React from "react";
+import React from "react";
 
 import Icon, { type IconName } from "@/components/shared/Icon";
 
@@ -32,8 +34,24 @@ export default function Input({
 	const spreadProps = { ...props };
 	delete spreadProps.inputClassName;
 	delete spreadProps.iconClassName;
+
+	const inputRef = React.useRef<HTMLInputElement>(null);
+	const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+
+	function focusInput() {
+		if (inputRef.current) {
+			inputRef.current.focus();
+		} else if (textareaRef.current) {
+			textareaRef.current.focus();
+		}
+	}
 	return (
-		<div className="flex w-full flex-col gap-xs">
+		<div
+			className="flex w-full flex-col gap-xs"
+			onClick={() => {
+				focusInput();
+			}}
+		>
 			{label?.length ? (
 				<label className="body-xs">
 					{label}
@@ -65,6 +83,7 @@ export default function Input({
 				) : null}
 				{isTextArea ? (
 					<textarea
+						ref={textareaRef}
 						className={cx(
 							"body-s w-full bg-transparent",
 							"focus:outline-none",
@@ -77,6 +96,7 @@ export default function Input({
 					/>
 				) : (
 					<input
+						ref={inputRef}
 						className={cx(
 							"body-s w-full bg-transparent",
 							"focus:outline-none",

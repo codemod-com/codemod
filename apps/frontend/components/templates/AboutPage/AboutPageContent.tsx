@@ -9,6 +9,7 @@ import type { LogoDarkLight, PageHeroProps } from "@/types/object.types";
 import type { SanityImageObject } from "@sanity/image-url/lib/types/types";
 import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
+import React from "react";
 import type { AboutPageProps } from "./Page";
 
 export default function AboutPageSections({ data }: AboutPageProps) {
@@ -140,8 +141,8 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 	);
 
 	return (
-		<div className="p-s lg:p-m">
-			<div className="flex flex-col">
+		<div className="flex flex-col p-s lg:p-m ">
+			<div className="flex h-full flex-col">
 				<div className="max-h-[212px] max-w-[212px] bg-emphasis-light lg:h-[212px] lg:w-[212px] dark:bg-emphasis-dark">
 					{props.image ? (
 						<SanityImage
@@ -207,11 +208,11 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 					</a>
 				</div>
 
-				<div className="body-s-medium pb-m font-medium">
+				<div className="body-s-medium mb-6 font-medium">
 					{props.bio && <RichText value={props.bio} />}
 				</div>
 
-				<div className="flex items-center gap-xs">
+				<div className="mt-auto flex items-center gap-xs justify-self-end">
 					{props.previousCompanyLogo?.darkModeImage?.asset && (
 						<span className="body-s-medium hidden font-medium dark:block">
 							Previously:
@@ -231,7 +232,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 							alt={previousCompany}
 							elProps={{
 								className:
-									"h-[26px] min-h-[26px] max-w-[50px] dark:hidden object-contain",
+									"max-h-4 w-auto max-w-[100px] dark:hidden object-contain",
 							}}
 						/>
 					)}
@@ -242,7 +243,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 							alt={previousCompany}
 							elProps={{
 								className:
-									"h-[26px] min-h-[26px] max-w-[50px] hidden dark:block object-contain",
+									"max-h-4 w-auto max-w-[100px] hidden dark:block object-contain",
 							}}
 						/>
 					)}

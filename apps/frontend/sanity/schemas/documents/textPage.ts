@@ -45,7 +45,7 @@ export const textPage = definePage({
 		{
 			name: "body",
 			title: "Content",
-			type: "richtext",
+			type: "ptBody",
 			validation: (Rule) => Rule.required(),
 			group: "content",
 		},

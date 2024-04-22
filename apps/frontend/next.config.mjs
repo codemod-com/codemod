@@ -65,6 +65,16 @@ const config = {
 	async redirects() {
 		return [
 			{
+				source: "/automations/eslint-to-biome-migrate-rules/",
+				destination: "/registry/biome-migrate-rules",
+				permanent: false,
+			},
+			{
+				source: "/automations/mocha-to-vitest-migration-recipe/",
+				destination: "/registry/mocha-vitest-recipe",
+				permanent: false,
+			},
+			{
 				source: "/automations/:slug*",
 				destination: "/registry/:slug*",
 				permanent: true,

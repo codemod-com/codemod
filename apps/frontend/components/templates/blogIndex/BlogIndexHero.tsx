@@ -51,7 +51,7 @@ export default function BlogIndexHero(props: BlogIndexProps) {
 						: activeTagTitle || props.data?.title}
 				</h1>
 			)}
-			{!!featuredPosts?.length ? (
+			{featuredPosts?.length ? (
 				<div
 					style={{
 						// @ts-ignore

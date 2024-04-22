@@ -15,6 +15,18 @@ import {
 } from "react";
 import KeepVisible from "../global/KeepVisible";
 
+function throttle(func, delay) {
+	let inProgress = false;
+	return function () {
+		if (inProgress) return;
+		inProgress = true;
+		func.apply(this, arguments);
+		setTimeout(() => {
+			inProgress = false;
+		}, delay);
+	};
+}
+
 const TableOfContents = ({
 	outlines,
 	title,
@@ -53,10 +65,11 @@ const TableOfContents = ({
 	);
 
 	useEffect(() => {
-		const activeIndex = outlines.findIndex(
-			(item) =>
-				getPtComponentId(item as any) === window?.location?.hash?.slice(1),
-		);
+		const activeIndex =
+			outlines?.findIndex(
+				(item) =>
+					getPtComponentId(item as any) === window?.location?.hash?.slice(1),
+			) ?? -1;
 		setActiveHeadingIndex(activeIndex === -1 ? 0 : activeIndex);
 		const ptId = getPtComponentId(outlines[activeIndex] as any);
 		scrollToPt(ptId);
@@ -76,10 +89,42 @@ const TableOfContents = ({
 		return capitalize(toPlainText(block).toLocaleLowerCase());
 	};
 
+	const onScroll = useCallback(() => {
+		let index = 0;
+		for (const heading of outlines || []) {
+			const headingElement = document.getElementById(
+				`${getPtComponentId(heading.block as any)}`,
+			);
+			if (headingElement) {
+				const rect = headingElement.getBoundingClientRect();
+				if (rect.top >= 0 && rect.top <= 300) {
+					window.history.replaceState(
+						null,
+						"",
+						`#${getPtComponentId(heading.block as any)}`,
+					);
+					setActiveHeadingIndex(index);
+					break;
+				}
+			}
+
+			index++;
+		}
+	}, [outlines]);
+
+	useEffect(() => {
+		window.addEventListener("scroll", throttle(onScroll, 100));
+
+		return () => {
+			window.removeEventListener("scroll", throttle(onScroll, 100));
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
 	return (
 		<>
-			<div className="relative h-full w-full">
-				<KeepVisible top={100} bottom={0}>
+			<div className="relative h-full w-full scrollbar-color">
+				<div className="sticky top-36 overflow-y-scroll pl-1 max-h-screen ">
 					<div className="h-max">
 						{children}
 						<p
@@ -95,7 +140,7 @@ const TableOfContents = ({
 						</p>
 						<div ref={tocRef} className="group relative">
 							{variant === "default" && (
-								<div className="absolute left-0 top-0 z-0 h-full w-px bg-gradient-to-b from-transparent via-black dark:via-white"></div>
+								<div className="absolute left-0 top-0 z-0 h-full w-px bg-gradient-to-b from-transparent via-black dark:via-white" />
 							)}
 							{variant === "default" && (
 								<div
@@ -178,7 +223,7 @@ const TableOfContents = ({
 							)}
 						</div>
 					</div>
-				</KeepVisible>
+				</div>
 			</div>
 		</>
 	);

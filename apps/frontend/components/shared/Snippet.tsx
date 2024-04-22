@@ -1,7 +1,7 @@
 "use client";
 
 import { cx } from "cva";
-import { useState } from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
 import Icon from "./Icon";
 
@@ -21,9 +21,12 @@ export default function Snippet({
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = () => {
-		navigator.clipboard.writeText(command);
+		if (navigator?.clipboard?.writeText) {
+			navigator.clipboard.writeText(command);
+		}
+
 		setCopied(true);
-		onCopy && onCopy();
+		onCopy?.();
 		setTimeout(() => {
 			setCopied(false);
 		}, 1200);
@@ -53,10 +56,10 @@ export default function Snippet({
 			{!copied ? (
 				<button
 					className={cx(
-						"body-s-medium m-xxs flex animate-fade-in items-center gap-xs rounded-[4px] duration-200",
+						"body-s-medium  m-xxs flex animate-fade-in items-center gap-xs rounded-[4px] duration-200",
 						" px-[12px] py-xxs font-medium  transition-all",
 						{
-							"bg-gradient-to-br from-accent to-[#EEFDC2] hover:to-accent":
+							"bg-gradient-to-br from-accent to-[#EEFDC2] text-primary-light hover:to-accent ":
 								variant === "primary",
 						},
 					)}

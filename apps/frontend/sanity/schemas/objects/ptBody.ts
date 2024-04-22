@@ -1,9 +1,11 @@
+import CustomPTEditor from "@/sanity/lib/components/CustomPTEditor";
 import { getCustomBody } from "../helpers/getCustomBody";
 import { codeSnippet } from "./codeSnippet";
 import { collapsible } from "./collapsible";
 import { imageBlock } from "./image";
 import { muxVideoWithCaption } from "./muxVideoWithCaption";
 import { quoteBlock } from "./quoteBlock";
+import { ptTable } from "./table";
 import { twitterEmbed } from "./twitterEmbed";
 import { youtubeVideo } from "./youtubeVideo";
 
@@ -14,7 +16,7 @@ const ptBlocks = [
 	twitterEmbed,
 	codeSnippet,
 	quoteBlock,
-	// ptTable,
+	ptTable,
 ];
 
 export const ptBody = {
@@ -25,6 +27,9 @@ export const ptBody = {
 		lists: true,
 		blockTypes: [...ptBlocks, collapsible].map((block) => block.name),
 	}),
+	components: {
+		input: CustomPTEditor,
+	},
 };
 
 export const ptBodyCollapsible = {
@@ -35,4 +40,7 @@ export const ptBodyCollapsible = {
 		lists: true,
 		blockTypes: ptBlocks.map((block) => block.name),
 	}),
+	components: {
+		input: CustomPTEditor,
+	},
 };

@@ -55,6 +55,7 @@ export default function ContactPageUI({ data }: ContactPageProps) {
 							onSubmit={handleSubmit}
 							action={CONTACT_ENDPOINT}
 						>
+							<input name="honeypot" placeholder="honeypot" type="hidden" />
 							<div className="">
 								<Input
 									name="name"

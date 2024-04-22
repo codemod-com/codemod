@@ -84,7 +84,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 						<span className="body-s-medium px-1 font-medium text-secondary-light dark:text-secondary-dark">
 							·
 						</span>
-						{typeof props.readTime == "number" && (
+						{typeof props.readTime === "number" && (
 							<span className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
 								{Number(props.readTime)} min read
 							</span>
@@ -116,7 +116,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 						{isCustomerStory
 							? null
 							: articleSidebar?.showToc &&
-							  toc.length > 0 && (
+								toc.length > 0 && (
 									<>
 										<TableOfContents
 											variant="sidebar"
@@ -125,13 +125,13 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 										/>
 										<div className="mt-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
 									</>
-							  )}
+								)}
 					</div>
 				</div>
 
 				<div className="relative flex w-full">
 					{/* Body */}
-					<div className="body-m relative -mt-10 max-w-full flex-1 lg:pr-[68px]">
+					<div className="body-m relative max-w-full flex-1 lg:max-w-xl lg:pr-[68px]  xl:max-w-3xl">
 						{props?.body && (
 							<>
 								<RichText
@@ -170,7 +170,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 							{isCustomerStory
 								? null
 								: articleSidebar?.showToc &&
-								  toc.length > 0 && (
+									toc.length > 0 && (
 										<>
 											<TableOfContents
 												variant="sidebar"
@@ -179,7 +179,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 											/>
 											<div className="my-8 h-[1px] w-full bg-gradient-to-r from-transparent via-[#0b151e] to-transparent dark:via-emphasis-dark" />
 										</>
-								  )}
+									)}
 
 							{isCustomerStory && customerStorySidebar?.articleCta && (
 								<div className="">

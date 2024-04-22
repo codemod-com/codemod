@@ -1,5 +1,6 @@
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import { cx } from "cva";
+import React from "react";
 
 type RelatedLinks = {
 	className?: string;

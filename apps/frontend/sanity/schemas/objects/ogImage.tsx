@@ -6,7 +6,4 @@ export const ogImage = defineType({
 	description:
 		"Optional but highly encouraged for increasing conversion rates for links to this page shared in social media.",
 	type: "image",
-	options: {
-		hotspot: true,
-	},
 });

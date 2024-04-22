@@ -1,6 +1,8 @@
 "use client";
+
 import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
+import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import useInView from "../../../hooks/useInView";
 import Icon from "../Icon";
@@ -84,7 +86,8 @@ function Video({
 
 	useEffect(() => {
 		if (replay && video.current) {
-			video.current.load();
+			video.current.pause();
+			video.current.currentTime = 0;
 			video.current.play();
 		}
 	}, [replay, video]);

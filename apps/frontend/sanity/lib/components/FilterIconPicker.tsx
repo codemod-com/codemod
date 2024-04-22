@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { type StringInputProps, set, unset } from "sanity";
+import { type StringInputProps, set, unset, useFormValue } from "sanity";
 
 import { useFetchAutomations } from "@/hooks/useFetchAutomations";
 import { Card, Select, Spinner, Text } from "@sanity/ui";

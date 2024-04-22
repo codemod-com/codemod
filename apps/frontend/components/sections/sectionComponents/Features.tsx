@@ -6,6 +6,7 @@ import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
 import MuxVideo from "@/components/shared/Video/MuxVideo";
 import type { FeaturesProps } from "@/types/section.types";
+import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
 import { useState } from "react";
 
@@ -75,7 +76,7 @@ export default function Features(props: FeaturesProps) {
 										video={feature.bgVideo?.light.asset}
 									/>
 								)}
-								<div className="absolute bottom-0 h-1/4 w-full bg-gradient-to-t from-white dark:from-background-dark"></div>
+								<div className="absolute bottom-0 h-1/4 w-full bg-gradient-to-t from-white dark:from-background-dark" />
 							</div>
 
 							<GradientBorderBox
@@ -90,9 +91,9 @@ export default function Features(props: FeaturesProps) {
 											: "max-w-[460px] justify-center lg:h-[590px]",
 									)}
 								>
-									{!!feature?.tag ? (
+									{feature?.tag ? (
 										<div className="z-10 mb-s">
-											<Tag intent="default">{feature.tag}</Tag>
+											<Tag intent="static">{feature.tag}</Tag>
 										</div>
 									) : null}
 
@@ -159,9 +160,9 @@ export default function Features(props: FeaturesProps) {
 											/>
 										)}
 									</div>
-									{!!feature?.tag ? (
+									{feature?.tag ? (
 										<div className="z-10 mb-s">
-											<Tag intent="default">{feature.tag}</Tag>
+											<Tag intent="static">{feature.tag}</Tag>
 										</div>
 									) : null}
 

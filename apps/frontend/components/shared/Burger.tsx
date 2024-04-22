@@ -1,4 +1,5 @@
 import { cx } from "cva";
+import React from "react";
 
 export default function Burger({ open = false }) {
 	return (

@@ -111,6 +111,7 @@
 		"remark-gfm": "^3.0.1",
 		"remark-math": "^5.1.1",
 		"sanity": "^3.36.4",
+		"sanity-plugin-asset-source-ogimage": "^2.0.0-2",
 		"sanity-plugin-documents-pane": "^2.2.1",
 		"sanity-plugin-media": "^2.2.5",
 		"sanity-plugin-mux-input": "^2.2.4",

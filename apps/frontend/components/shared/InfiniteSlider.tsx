@@ -57,7 +57,8 @@ export default function InfiniteSlider({
 											image={item?.lightModeImage}
 											elProps={{
 												alt: item?.lightModeImage?.alt,
-												className: "w-24 object-cover dark:hidden relative",
+												className:
+													"w-24 max-h-[48px] object-cover dark:hidden relative",
 											}}
 										/>
 									)}
@@ -68,7 +69,7 @@ export default function InfiniteSlider({
 											elProps={{
 												alt: item?.darkModeImage?.alt,
 												className:
-													"w-24 object-cover hidden dark:block relative",
+													"w-24 max-h-[48px] object-cover hidden dark:block relative",
 											}}
 										/>
 									)}

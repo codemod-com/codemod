@@ -32,9 +32,9 @@ const getFirstValibotIssue = (issues: Issues) => {
 		);
 
 		if (isNeitherNullNorUndefined(firstIssueWithPath)) {
-			reasonableError = `${firstIssueWithPath.message} at \`${firstIssueWithPath
-				.path!.map((p) => p.key)
-				.join(".")}\``;
+			reasonableError = `${
+				firstIssueWithPath.message
+			} at \`${firstIssueWithPath.path?.map((p) => p.key).join(".")}\``;
 			break;
 		}
 	}

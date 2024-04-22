@@ -8,12 +8,12 @@ document.addEventListener("visibilitychange", () => {
     var storedTheme = localStorage.getItem("theme");
     var prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    const theme = "-" + ((prefersDarkMode ? "dark" : "light") || storedTheme);
+    const theme = "-" + (storedTheme || (prefersDarkMode ? "dark" : "light"));
 
       if (state) {
-        favicon.setAttribute("href", "favicon" + state + theme + ".ico")
+        favicon.setAttribute("href", "/favicon" + state + theme + ".ico")
       } else {
-        favicon.setAttribute("href", "favicon.ico")
+        favicon.setAttribute("href", "/favicon.ico")
       }
     })`;
 

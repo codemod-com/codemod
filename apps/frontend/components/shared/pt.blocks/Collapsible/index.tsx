@@ -10,11 +10,17 @@ export default function Collapsible(props: {
 	title?: string;
 	content?: PortableTextBlock[];
 }) {
-	const [isOpen, setIsOpen] = useState(true);
+	const [isOpen, setIsOpen] = useState(false);
 	return (
-		<div className="my-4 w-full rounded-lg border-l-[4px] border-tertiary-light bg-emphasis-light px-m pb-m pt-s dark:border-tertiary-light dark:bg-emphasis-dark">
+		<div className="my-10 w-full rounded-lg border-l-[4px] border-tertiary-light bg-emphasis-light px-m py-s last:mb-0 dark:border-tertiary-dark/10 dark:bg-emphasis-dark">
 			<button
-				className="flex w-full items-center gap-2 border-b border-border-light py-2 dark:border-border-dark"
+				className={cx(
+					"flex w-full items-center gap-2 border-b border-border-light py-2 dark:border-border-dark",
+					{
+						"border-none": !isOpen,
+						"mb-4": isOpen,
+					},
+				)}
 				onClick={() => setIsOpen((curr) => !curr)}
 			>
 				<Icon name="chevron-down" className={cx({ "-rotate-90": !isOpen })} />

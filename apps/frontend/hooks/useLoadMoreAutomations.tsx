@@ -1,6 +1,6 @@
 import Icon from "@/components/shared/Icon";
 import type { RegistryIndexPayload } from "@/types";
-import type { AutomationAPIListResponse } from "@/types/object.types";
+import type { AutomationAPISearchResponse } from "@/types/object.types";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -17,7 +17,7 @@ export function useLoadMoreAutomations({
 	initial: RegistryIndexPayload["entries"];
 	total: number;
 }) {
-	const [data, setData] = useState<AutomationAPIListResponse>({
+	const [data, setData] = useState<AutomationAPISearchResponse>({
 		data: initial,
 		page: pageNumber,
 		size: entriesPerPage,
@@ -43,7 +43,7 @@ export function useLoadMoreAutomations({
 			}),
 		});
 
-		const moreAutomations: AutomationAPIListResponse = await res.json();
+		const moreAutomations: AutomationAPISearchResponse = await res.json();
 
 		if (res.status === 200 && data && moreAutomations.data) {
 			setQueryState("success");

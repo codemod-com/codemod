@@ -45,12 +45,11 @@ export default function BlogArticleCard(props: BlogArticleCardProps) {
 			<div className="flex flex-col pt-6">
 				<div className="flex gap-[0.625rem]">
 					{isCustomerStory ? <Tag>{CUSTOMER_STORY_TAG.label}</Tag> : null}
-					{props.tags &&
-						props.tags?.slice(0, 2).map((tag, index) => (
-							<Tag key={tag?.slug ?? String(index)} intent="default">
-								{tag?.title}
-							</Tag>
-						))}
+					{props.tags?.slice(0, 2).map((tag, index) => (
+						<Tag key={tag?.slug ?? String(index)} intent="default">
+							{tag?.title}
+						</Tag>
+					))}
 				</div>
 
 				<SanityLink link={link}>

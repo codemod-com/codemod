@@ -1,3 +1,4 @@
+import { LinkIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
 export const tag = defineType({

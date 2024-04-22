@@ -5,6 +5,7 @@ import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import type { TestiomonialsProps } from "@/types";
 import { cx } from "cva";
+import React from "react";
 
 export default function SectionExample(props: TestiomonialsProps) {
 	function generateBorderExtensions(
@@ -18,14 +19,13 @@ export default function SectionExample(props: TestiomonialsProps) {
 				bl: index === 3,
 				br: index === 3,
 			};
-		} else {
-			return {
-				tl: index === 1 || (index - 1) % 3 === 0,
-				tr: index % 3 === 0,
-				bl: index === 1 || (index - 1) % 3 === 0,
-				br: index % 3 === 0,
-			};
 		}
+		return {
+			tl: index === 1 || (index - 1) % 3 === 0,
+			tr: index % 3 === 0,
+			bl: index === 1 || (index - 1) % 3 === 0,
+			br: index % 3 === 0,
+		};
 	}
 
 	const getSides = (index: number) => {
