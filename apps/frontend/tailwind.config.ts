@@ -31,11 +31,11 @@ const colorPalette = {
 		DEFAULT: "hsl(var(--muted))",
 		foreground: "hsl(var(--muted-foreground))",
 	},
-	accent: {
-		DEFAULT: "hsl(var(--accent))",
-		foreground: "hsl(var(--accent-foreground))",
-		pressed: "hsl(var(--accent-pressed))",
-	},
+	// accent: {
+	// 	DEFAULT: "hsl(var(--accent))",
+	// 	foreground: "hsl(var(--accent-foreground))",
+	// 	pressed: "hsl(var(--accent-pressed))",
+	// },
 	popover: {
 		DEFAULT: "hsl(var(--popover))",
 		foreground: "hsl(var(--popover-foreground))",
@@ -44,7 +44,7 @@ const colorPalette = {
 		DEFAULT: "hsl(var(--card))",
 		foreground: "hsl(var(--card-foreground))",
 	},
-	// accent: "#D6FF62",
+	accent: "#D6FF62",
 	background: {
 		DEFAULT: "hsl(var(--background))",
 		light: "#0B151E1A",
