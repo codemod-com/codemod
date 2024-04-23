@@ -13,8 +13,11 @@ import {
 	parseRunSettings,
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
-import { doubleQuotify, parseCodemodConfig } from "@codemod-com/utilities";
-import { TarService } from "@codemod-com/utilities";
+import {
+	TarService,
+	doubleQuotify,
+	parseCodemodConfig,
+} from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
@@ -62,8 +65,6 @@ export const handleRunCliCommand = async (
 	);
 
 	const codemods: CodemodToRun[] = [];
-
-	console.log("there1123213");
 
 	if (codemodSettings.kind === "runSourced") {
 		const codemod = await buildSourcedCodemodOptions(
