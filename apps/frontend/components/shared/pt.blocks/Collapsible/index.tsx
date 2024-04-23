@@ -23,7 +23,13 @@ export default function Collapsible(props: {
 				)}
 				onClick={() => setIsOpen((curr) => !curr)}
 			>
-				<Icon name="chevron-down" className={cx({ "-rotate-90": !isOpen })} />
+				<div
+					className={cx("flex items-center justify-center w-[20px] h-[20px]", {
+						"-rotate-90": !isOpen,
+					})}
+				>
+					<Icon name="chevron-down" />
+				</div>
 
 				<h3 className="xs-heading">{props.title}</h3>
 			</button>
