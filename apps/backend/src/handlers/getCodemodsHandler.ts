@@ -13,7 +13,7 @@ export const getCodemodsHandler: CustomHandler<{
 	const { search, verified, category, author, framework } = query;
 
 	const page = query.page || 1;
-	const size = query.size || 10;
+	const size = query.size || 30;
 
 	return dependencies.codemodService.getCodemods(
 		search,
