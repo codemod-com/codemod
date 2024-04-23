@@ -153,7 +153,7 @@ function createDefaultComponents(
                 name={hasIcon ? props.value.icon : "tip"}
                 className="dark:text-primary-dark"
               />
-              <span className="xs-heading  ml-2">
+              <span className="xs-heading ml-2">
                 {props.value.title || "Tip"}
               </span>
             </span>
