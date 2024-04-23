@@ -2,17 +2,21 @@
 
 import { ThemeProvider } from "@context/useTheme";
 import { MainPage } from "@studio/main/index";
-import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
-import { CODEMOD_STUDIO_URL } from "~/constants/urls";
+import { CODEMOD_STUDIO_URL } from "./src/constants/urls";
 
 export default function Page() {
-	const router = useRouter();
 	useEffect(() => {
-		router.push(CODEMOD_STUDIO_URL);
-	}, [router]);
+		if (window === undefined) {
+			return;
+		}
+
+		if (window.location.hostname === "codemod.studio") {
+			window.location.replace(CODEMOD_STUDIO_URL);
+		}
+	}, []);
 
 	return (
 		<ThemeProvider>
