@@ -232,7 +232,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 							alt={previousCompany}
 							elProps={{
 								className:
-									"max-h-4 w-auto max-w-[100px] dark:hidden object-contain",
+									"max-h-[16px] w-auto max-w-[100px] dark:hidden object-contain",
 							}}
 						/>
 					)}
@@ -243,7 +243,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
 							alt={previousCompany}
 							elProps={{
 								className:
-									"max-h-4 w-auto max-w-[100px] hidden dark:block object-contain",
+									"max-h-[16px] w-auto max-w-[100px] hidden dark:block object-contain",
 							}}
 						/>
 					)}

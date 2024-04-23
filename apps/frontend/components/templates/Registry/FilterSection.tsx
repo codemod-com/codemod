@@ -94,7 +94,7 @@ export default function FilterSection(
 									className="w-full"
 									key={filter.title || `${i}`}
 									initial={{
-										opacity: 0,
+										opacity: 1,
 										y: -10,
 									}}
 									animate={{
@@ -129,7 +129,7 @@ export default function FilterSection(
 										}}
 									>
 										<div className="flex w-full justify-between">
-											<span className="text-left">
+											<span className="text-left dark:text-primary-dark">
 												{capitalize(filter.title)}
 											</span>
 										</div>
@@ -143,7 +143,7 @@ export default function FilterSection(
 								className="w-full"
 								key={filter.title || `${i}`}
 								initial={{
-									opacity: 0,
+									opacity: 1,
 									y: -10,
 								}}
 								animate={{
@@ -177,7 +177,7 @@ export default function FilterSection(
 									}}
 								>
 									<div className="flex w-full items-center justify-between">
-										<span className="text-left">
+										<span className="text-left dark:text-secondary-dark">
 											{capitalize(filter.title)}
 										</span>
 									</div>
