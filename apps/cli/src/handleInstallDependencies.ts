@@ -4,6 +4,7 @@ import { dirname, join, relative, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
 	type CodemodConfig,
+	doubleQuotify,
 	execPromise,
 	extractLibNameAndVersion,
 } from "@codemod-com/utilities";
@@ -153,10 +154,10 @@ export const handleInstallDependencies = async (options: {
 		const rootPackageJsonPath = join(rootPath, "package.json");
 
 		const installedDepsString = toInstall.length
-			? chalk.green(`+ ${toInstall.join("\n+ ")}`)
+			? chalk.green("+", toInstall.join("\n+ "))
 			: "";
 		const unInstalledDepsString = toDelete.length
-			? chalk.red(`- ${toDelete.join("\n- ")}`)
+			? chalk.red("-", toDelete.join("\n- "))
 			: "";
 		const affectedString = chalk.bold(
 			affectedProjectsPackageJsons
@@ -210,9 +211,9 @@ export const handleInstallDependencies = async (options: {
 		printer.printConsoleMessage(
 			"info",
 			`\n${chalk.cyan(
-				`Codemod "${chalk.bold(
-					codemodName,
-				)}" expects the following dependency changes:`,
+				"Codemod",
+				chalk.bold(doubleQuotify(codemodName)),
+				"expects the following dependency changes:",
 			)}\n${installedDepsString}\n${unInstalledDepsString}\n`,
 		);
 
@@ -256,7 +257,9 @@ export const handleInstallDependencies = async (options: {
 		printer.printConsoleMessage(
 			"info",
 			chalk.cyan(
-				`Using package manager: ${chalk.bold(detectedPackageManager)}\n`,
+				"Using package manager:",
+				chalk.bold(detectedPackageManager),
+				"\n",
 			),
 		);
 
@@ -280,7 +283,7 @@ export const handleInstallDependencies = async (options: {
 
 		if (install === "root") {
 			const stopRemovalSpinner = printer.withLoaderMessage(
-				chalk.cyan(`Removing: ${toDelete.join(", ")}...`),
+				chalk.cyan("Removing:", `${toDelete.join(", ")}...`),
 			);
 			try {
 				await execPromise(
@@ -293,7 +296,7 @@ export const handleInstallDependencies = async (options: {
 			stopRemovalSpinner.succeed();
 
 			const stopInstallationSpinner = printer.withLoaderMessage(
-				chalk.cyan(`Installing: ${toInstall.join(", ")}...`),
+				chalk.cyan("Installing:", `${toInstall.join(", ")}...`),
 			);
 			try {
 				await execPromise(
@@ -307,7 +310,7 @@ export const handleInstallDependencies = async (options: {
 			}
 		} else {
 			const stopRemovalSpinner = printer.withLoaderMessage(
-				chalk.cyan(`Removing: ${toDelete.join(", ")}...`),
+				chalk.cyan("Removing:", `${toDelete.join(", ")}...`),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				const packageJsonContent = await readFile(packageJsonPath, {
@@ -351,7 +354,7 @@ export const handleInstallDependencies = async (options: {
 			}
 
 			const stopInstallationSpinner = printer.withLoaderMessage(
-				chalk.cyan(`Installing: ${toInstall.join(", ")}...`),
+				chalk.cyan("Installing:", `${toInstall.join(", ")}...`),
 			);
 			for (const packageJsonPath of affectedProjectsPackageJsons) {
 				if (packageJsonPath === rootPackageJsonPath) {
@@ -383,7 +386,10 @@ export const handleInstallDependencies = async (options: {
 
 		let installedInString: string;
 		if (install === "affected") {
-			installedInString = chalk.cyan(affectedProjectsPackageJsons.join("\n"));
+			installedInString = chalk.cyan(
+				"\n",
+				affectedProjectsPackageJsons.join("\n"),
+			);
 		} else {
 			installedInString = chalk.cyan(resolve(target, rootPackageJsonPath));
 		}
@@ -391,7 +397,12 @@ export const handleInstallDependencies = async (options: {
 		printer.printConsoleMessage(
 			"info",
 			chalk.green(
-				`Successfully installed dependencies:\n\n${installedDepsString}\n${unInstalledDepsString}\n\nin:\n${installedInString}`,
+				"Successfully installed dependencies:\n\n",
+				installedDepsString,
+				"\n",
+				unInstalledDepsString,
+				"\n\nin:",
+				installedInString,
 			),
 		);
 	} catch (error) {

@@ -10,7 +10,7 @@ export const handleListNamesCommand = async (
 	let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
 	if (search && !printer.__jsonOutput) {
 		spinner = printer.withLoaderMessage(
-			chalk.cyan("Searching for ", chalk.bold(doubleQuotify(search))),
+			chalk.cyan("Searching for", chalk.bold(doubleQuotify(search))),
 		);
 	}
 

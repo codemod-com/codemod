@@ -171,9 +171,9 @@ export const handlePublishCliCommand = async (
 
 	const publishSpinner = printer.withLoaderMessage(
 		chalk.cyan(
-			"Publishing the codemod using name from ",
+			"Publishing the codemod using name from",
 			chalk.bold(".codemodrc.json"),
-			" file: ",
+			"file:",
 			chalk.bold(doubleQuotify(codemodRc.name)),
 		),
 	);
