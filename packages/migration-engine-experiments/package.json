@@ -1,0 +1,27 @@
+{
+	"name": "@codemod-com/migration-engine-experiments",
+	"author": "Codemod, Inc.",
+	"version": "0.0.1",
+	"description": "Experimental migration engine by Codemod.com",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"./dist",
+		"!**/*.test.js",
+		"!**/*.test.d.ts",
+		"README.md",
+		"tsconfig.json"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"coverage": "vitest run --coverage"
+	},
+	"keywords": ["migration engine", "ast-grep", "jscodeshift"],
+	"license": "Apache-2.0",
+	"dependencies": {
+		"@ast-grep/napi": "^0.20.5"
+	}
+}
