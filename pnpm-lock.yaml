@@ -4366,6 +4366,12 @@ importers:
         specifier: ^1.0.1
         version: 1.0.4(@types/node@20.8.5)
 
+  packages/migration-engine-experiments:
+    dependencies:
+      '@ast-grep/napi':
+        specifier: ^0.20.5
+        version: 0.20.5
+
   packages/tsconfig: {}
 
   packages/utilities:
@@ -4464,6 +4470,92 @@ packages:
       web-streams-polyfill: 3.3.2
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@ast-grep/napi-darwin-arm64@0.20.5:
+    resolution: {integrity: sha512-wEEjQ2cjf1eDyTdG+P+pIeWWAJBam/dCVJCpiEayxObyvtqX7V1dHPYetnN1/iKssgqTVCJ3mA5HUOg6Wrs3sQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-darwin-x64@0.20.5:
+    resolution: {integrity: sha512-6AN9yHIXI1Um7FaVaZau1F/ElKofFcgR9b1Ffmz0V20rb9yEcp2PnAmAt5Lj8yrvbaRUXITFGp3MFpAZhlNNZA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-linux-arm64-gnu@0.20.5:
+    resolution: {integrity: sha512-vDtGR45hYUguHXJhtQQMZKVj+rdeZnZ9cOKdAqvtoAJkV2vmVWtuUc5NrF+nUboeqHDz6LT+XVIRSXnfFP0N0g==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-linux-x64-gnu@0.20.5:
+    resolution: {integrity: sha512-3X1QIxjGNfKnOW7adAGcV8jHuy4pOwPwv95aXv7ZvgaDHHJ23xut4EpCcRolMoO2rnVaXAj3Q2Sf/L4A4LM+Lg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-linux-x64-musl@0.20.5:
+    resolution: {integrity: sha512-LrrJOvf4aLn7qb7lTBVG7/gg1pojEZfK5thZ9PjJET7k2WWX9D9E9xfKex1pqwxCYVd56lVoeHlQBX06gy6mmQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-win32-arm64-msvc@0.20.5:
+    resolution: {integrity: sha512-I7B6vYViAltUiN/YBrd9K7INVx+QK0GkegRRl54xAF0CXTuyA8YMjUq8BRe647oKViaZVFfw421RyHNnk+9RPQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-win32-ia32-msvc@0.20.5:
+    resolution: {integrity: sha512-MJzWPPh4Hw/mQEep2cpJIzIq7Bo+7lhx0+uzqJiNXYV1mQs3rd24aXiD+MIWkjeYdHI9C2FkJ28i1HL9/vwhAA==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi-win32-x64-msvc@0.20.5:
+    resolution: {integrity: sha512-G4WOdBEsmRtd51HX3BVXTAlkAqJZERf/OQMXP2PluENZX3bE/NHc++1TykDSGqBXrfXjB/1olVL4S8ZzMTHkCg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@ast-grep/napi@0.20.5:
+    resolution: {integrity: sha512-wByxeGhhdTvLxCVgsYHpRQ6H7zz9oGzR3sKHonmKUxMnzwYdpYP/I669/jD0wS1PV/zzTrmBqhRO9rElOlq/LQ==}
+    engines: {node: '>= 10'}
+    optionalDependencies:
+      '@ast-grep/napi-darwin-arm64': 0.20.5
+      '@ast-grep/napi-darwin-x64': 0.20.5
+      '@ast-grep/napi-linux-arm64-gnu': 0.20.5
+      '@ast-grep/napi-linux-x64-gnu': 0.20.5
+      '@ast-grep/napi-linux-x64-musl': 0.20.5
+      '@ast-grep/napi-win32-arm64-msvc': 0.20.5
+      '@ast-grep/napi-win32-ia32-msvc': 0.20.5
+      '@ast-grep/napi-win32-x64-msvc': 0.20.5
     dev: false
 
   /@aws-crypto/crc32@3.0.0:
@@ -14798,6 +14890,23 @@ packages:
       periscopic: 3.1.0
     dev: false
 
+  /codemod@0.10.8:
+    resolution: {integrity: sha512-kjHUWGf5MYWhTdk85q88dZuqHZMwnJTV63N/XzLW1ALiB4gobExsoRfWZmLhyN5wxkuWHNGevRntMUpw5fXy2g==}
+    engines: {node: '>=18.5.0'}
+    hasBin: true
+    requiresBuild: true
+    dependencies:
+      '@vue/compiler-sfc': 3.4.21
+      exponential-backoff: 3.1.1
+      inquirer: 9.2.16
+      js-yaml: 4.1.0
+      keytar: 7.9.0
+      ms: 2.1.3
+      ora: 8.0.1
+      prettier: 3.2.5
+      vue-sfc-descriptor-to-string: 2.0.0
+    dev: false
+
   /color-convert@1.9.3:
     resolution: {integrity: sha512-QfAUtd+vFdAtFQcC8CCyYt1fYWxSqAiK2cSD6zDB8N3cpsEBAvRxp9zOGg6G/SHHJYAT88/az/IuDGALsNVbGg==}
     dependencies:
@@ -21815,9 +21924,6 @@ packages:
   /sqlite3@5.1.7:
     resolution: {integrity: sha512-GGIyOiFaG+TUra3JIfkI/zGP8yZYLPQ0pl1bH+ODjiX57sPhrLU5sQJn1y9bDKZUFYkX1crlrPfSYt0BKKdkog==}
     requiresBuild: true
-    peerDependenciesMeta:
-      node-gyp:
-        optional: true
     dependencies:
       bindings: 1.5.0
       node-addon-api: 7.1.0
