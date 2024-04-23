@@ -9,6 +9,7 @@ export const useTheme = () => {
 	useEffect(() => {
 		if (theme) {
 			document.documentElement.classList.remove("light", "dark");
+			document.body.classList.remove("bg-gray-darker", "bg-gray-bg-light");
 			document.documentElement.classList.add(theme);
 		} else {
 			_setTheme((localStorage.getItem("theme") as Theme) || "light");

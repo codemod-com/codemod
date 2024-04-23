@@ -217,7 +217,7 @@ export default {
 			"1/3": "33.3%",
 		},
 		extend: {
-			colors: colorsT,
+			colors: colorPalette,
 			fontFamily: {
 				regular: "var(--satoshi-regular)",
 				medium: "var(--satoshi-medium)",
