@@ -12,6 +12,7 @@ import {
 	applyAliases,
 	useGetAliases,
 } from "@studio/store/zustand/CFS/alias";
+import { useCodemodExecutionError } from "@studio/store/zustand/log";
 import type { UseChatHelpers } from "ai/react";
 import { type Dispatch, type SetStateAction, useRef, useState } from "react";
 import { flushSync } from "react-dom";
@@ -39,7 +40,8 @@ export interface ChatPanelProps
 	setToken: Dispatch<SetStateAction<string | null>>;
 }
 
-const getPrompts = (aliases: Aliases) => {
+const usePrompts = (aliases: Aliases) => {
+	const codemodExecutionError = useCodemodExecutionError();
 	const prompts = [
 		["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
 	];
@@ -51,6 +53,10 @@ const getPrompts = (aliases: Aliases) => {
 			"Regenerate specified code block",
 			fixCodemodBlockNoDebugInfoPrompt,
 		]);
+	}
+
+	if (codemodExecutionError) {
+		prompts.unshift(["Fix codemod error", codemodExecutionError]);
 	}
 
 	return prompts;
@@ -80,7 +86,7 @@ export function ChatPanel({
 	const { getToken, isSignedIn } = useAuth();
 
 	const aliases = useGetAliases();
-	const promptsList = getPrompts(aliases);
+	const promptsList = usePrompts(aliases);
 	const aliasList = getOrderedAliasList(aliases);
 
 	const handleSubmit = async (value: string) => {
