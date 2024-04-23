@@ -1,3 +1,6 @@
+"use client";
+
+import { CodemodButton } from "@/app/(website)/studio/src/components/CodemodButton";
 import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
@@ -257,6 +260,22 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 </Button>
               </div>
             )}
+
+            <div className="flex flex-col gap-xs">
+              <p className="body-s">Github</p>
+              <CodemodButton
+                CustomButton={({ onClick }) => (
+                  <Button
+                    iconPosition="left"
+                    icon="github"
+                    intent="secondary"
+                    onClick={onClick}
+                  >
+                    Run on Github branch
+                  </Button>
+                )}
+              />
+            </div>
 
             {data?.currentVersion?.codemodStudioExampleLink && (
               <div className="flex flex-col gap-xs">

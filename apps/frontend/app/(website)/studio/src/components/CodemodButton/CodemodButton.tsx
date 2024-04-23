@@ -10,10 +10,17 @@ import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
+import type { ToVoid } from "../../types/transformations";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
-export const CodemodButton = () => {
+type CodemodButtonProps = {
+  CustomButton: React.ComponentType<{
+    onClick: ToVoid<unknown>;
+  }>;
+};
+
+export const CodemodButton = ({ CustomButton }: CodemodButtonProps) => {
   const { getToken } = useAuth();
 
   const [repositoriesToShow, setRepositoriesToShow] = useState<
@@ -104,16 +111,20 @@ export const CodemodButton = () => {
         onRunCodemod={onRunCodemod}
       />
       <ProgressBar codemodRunStatus={codemodRunStatus} />
-      <Button
-        onClick={onClick}
-        size="xs"
-        variant="outline"
-        className="flex gap-1"
-        hint={<p className="font-normal">{hintText}</p>}
-      >
-        <CheckIcon />
-        {text}
-      </Button>
+      {CustomButton ? (
+        <CustomButton onClick={onClick} />
+      ) : (
+        <Button
+          onClick={onClick}
+          size="xs"
+          variant="outline"
+          className="flex gap-1"
+          hint={<p className="font-normal">{hintText}</p>}
+        >
+          <CheckIcon />
+          {text}
+        </Button>
+      )}
     </>
   );
 };
