@@ -58,9 +58,9 @@ export const handleUnpublishCliCommand = async (
 	printer.printConsoleMessage(
 		"info",
 		chalk.cyan(
-			"Codemod ",
+			"Codemod",
 			chalk.bold(doubleQuotify(name)),
-			" was successfully unpublished.",
+			"was successfully unpublished.",
 		),
 	);
 };

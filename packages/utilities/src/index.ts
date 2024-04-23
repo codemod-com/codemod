@@ -1,5 +1,6 @@
 export { debounce } from "./functions/debounce.js";
 export {
+	backtickify,
 	buildCrossplatformArg,
 	capitalize,
 	doubleQuotify,

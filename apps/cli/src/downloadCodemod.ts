@@ -47,9 +47,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 		if (!disableSpinner) {
 			spinner = this.__printer.withLoaderMessage(
 				chalk.cyan(
-					`Downloading the ${chalk.bold(doubleQuotify(name))} codemod${
-						this._cacheDisabled ? ", not using cache..." : "..."
-					}`,
+					"Downloading the",
+					chalk.bold(doubleQuotify(name)),
+					"codemod",
+					this._cacheDisabled ? "" : "(using cache)",
 				),
 			);
 		}

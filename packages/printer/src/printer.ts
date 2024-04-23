@@ -45,7 +45,7 @@ export class Printer implements PrinterBlueprint {
 			let errorText: string = text;
 
 			if (path) {
-				errorText = `${chalk.bold(`Error at ${path}:`)}\n\n${text}`;
+				errorText = `${chalk.bold("Error at", `${path}:`)}\n\n${text}`;
 			}
 
 			console.error(chalk.red(`\n${errorText}\n`));
