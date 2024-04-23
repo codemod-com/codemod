@@ -1155,16 +1155,23 @@ export const handleSourceFile = (
 		.filter((x): x is string => x !== null)
 		.sort();
 
+	const hasUseClient = sourceFile
+		.getStatements()[0]
+		?.getText()
+		.includes("use client");
+
+	const insertImportAfterStatement = hasUseClient ? 1 : 0;
+
 	if (namedImports.length > 0) {
 		sourceFile.insertStatements(
-			0,
+			insertImportAfterStatement,
 			`import { ${namedImports.join(", ")} } from "next/navigation";`,
 		);
 	}
 
 	if (fileLevelUsageManager.shouldImportAppRouterInstance()) {
 		sourceFile.insertStatements(
-			0,
+			insertImportAfterStatement,
 			'import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";',
 		);
 	}

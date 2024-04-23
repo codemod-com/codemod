@@ -496,6 +496,31 @@ describe("next 13 replace-next-router", () => {
 		deepStrictEqual(actual, expected);
 	});
 
+	it("should insert import after 'use client' directive", async () => {
+		const beforeText = `
+			  "use client";
+	          import { useRouter } from 'next/router';
+
+	          function Component() {
+	              const { pathname } = useRouter();
+	          }
+	      `;
+
+		const afterText = `
+			"use client";
+			import { usePathname } from "next/navigation";
+
+	        function Component() {
+				/** TODO "pathname" no longer contains square-bracket expressions. Rewrite the code relying on them if required. **/
+	            const pathname = usePathname();
+	        }
+	    `;
+
+		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+
+		deepStrictEqual(actual, expected);
+	});
+
 	it("should replace { pathname } destructed from router with usePathname()", async () => {
 		const beforeText = `
 	          import { useRouter } from 'next/router';
@@ -1605,12 +1630,12 @@ describe("next 13 replace-next-router", () => {
 	it("should replace NextRouter with AppRouterInstance", () => {
 		const beforeText = `
 			import type { NextRouter } from "next/router"; 
-			function(router: NextRouter) {}
+			function Component(router: NextRouter) {}
 		`;
 
 		const afterText = `
 			import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
-			function(router: AppRouterInstance) {}
+			function Component(router: AppRouterInstance) {}
 		`;
 
 		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
