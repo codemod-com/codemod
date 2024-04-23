@@ -2,22 +2,10 @@
 
 import { ThemeProvider } from "@context/useTheme";
 import { MainPage } from "@studio/main/index";
-import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
-import { CODEMOD_STUDIO_URL, OLD_STUDIO_HOSTNAME } from "./src/constants/urls";
 
 export default function Page() {
-	useEffect(() => {
-		if (window === undefined) {
-			return;
-		}
-
-		if (window.location.hostname === OLD_STUDIO_HOSTNAME) {
-			window.location.replace(CODEMOD_STUDIO_URL);
-		}
-	}, []);
-
 	return (
 		<ThemeProvider>
 			<MainPage />
