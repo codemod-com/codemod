@@ -70,7 +70,6 @@ export async function activate(context: vscode.ExtensionContext) {
 	const userService = new UserService(globalStateTokenStorage);
 
 	const accessToken = userService.getLinkedToken();
-
 	let distinctId = await getDistinctId(context);
 
 	if (distinctId === null) {

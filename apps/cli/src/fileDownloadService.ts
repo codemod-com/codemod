@@ -1,5 +1,6 @@
-import type { IFs } from "memfs";
-import type { PrinterBlueprint } from "./printer.js";
+import type { PrinterBlueprint } from "@codemod-com/printer";
+import type { FileSystem } from "@codemod-com/utilities";
+import axios from "axios";
 
 const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
 
@@ -10,9 +11,7 @@ export type FileDownloadServiceBlueprint = Readonly<{
 export class FileDownloadService implements FileDownloadServiceBlueprint {
 	public constructor(
 		protected readonly _disableCache: boolean,
-		protected readonly _fetchBuffer: (url: string) => Promise<Buffer>,
-		protected readonly _getNow: () => number,
-		protected readonly _ifs: IFs,
+		protected readonly _ifs: FileSystem,
 		protected readonly _printer: PrinterBlueprint,
 	) {}
 
@@ -23,7 +22,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 
 				const mtime = stats.mtime.getTime();
 
-				const now = this._getNow();
+				const now = Date.now();
 
 				if (now - mtime < CACHE_EVICTION_THRESHOLD) {
 					const tDataOut = await this._ifs.promises.readFile(path);
@@ -35,7 +34,11 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 			}
 		}
 
-		const buffer = await this._fetchBuffer(url);
+		const { data } = await axios.get(url, {
+			responseType: "arraybuffer",
+		});
+
+		const buffer = Buffer.from(data);
 
 		await this._ifs.promises.writeFile(path, buffer);
 

@@ -1,13 +1,20 @@
 import { createHash } from "node:crypto";
-import * as codemodComUtils from "@codemod-com/utilities";
+import type { CodemodConfigInput } from "@codemod-com/utilities";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { runServer } from "./server.js";
 import * as utils from "./util.js";
 
+const TAR_SERVICE_PACK_RETURN = "archive";
+
 const mocks = vi.hoisted(() => {
 	const S3Client = vi.fn();
 	S3Client.prototype.send = vi.fn();
+
+	const TarService = vi.fn();
+	TarService.prototype.pack = vi
+		.fn()
+		.mockImplementation(() => TAR_SERVICE_PACK_RETURN);
 
 	const PutObjectCommand = vi.fn();
 
@@ -30,6 +37,7 @@ const mocks = vi.hoisted(() => {
 			},
 		},
 		S3Client,
+		TarService,
 		PutObjectCommand,
 	};
 });
@@ -86,19 +94,6 @@ vi.mock("./util.js", async () => {
 	};
 });
 
-vi.mock("@codemod-com/utilities", async () => {
-	const actual = await vi.importActual("@codemod-com/utilities");
-
-	const tarPack = vi.fn().mockImplementation(() => "archive");
-	const hashDigest = "hashDigest";
-
-	return {
-		...actual,
-		tarPack,
-		hashDigest,
-	};
-});
-
 vi.mock("@clerk/fastify", async () => {
 	const actual = await vi.importActual("@clerk/fastify");
 
@@ -119,6 +114,15 @@ vi.mock("./services/tokenService.js", async () => {
 	return { ...actual, TokenService };
 });
 
+vi.mock("@codemod-com/utilities", async () => {
+	const actual = await vi.importActual("@codemod-com/utilities");
+
+	return {
+		...actual,
+		TarService: mocks.TarService,
+	};
+});
+
 describe("/publish route", async () => {
 	const fastify = await runServer();
 
@@ -134,9 +138,7 @@ describe("/publish route", async () => {
 
 	const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
 
-	const tarPackSpy = vi.spyOn(codemodComUtils, "tarPack");
-
-	const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+	const codemodRcContents: CodemodConfigInput = {
 		name: "mycodemod",
 		version: "1.0.0",
 		private: false,
@@ -182,8 +184,9 @@ describe("/publish route", async () => {
 
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
-		expect(tarPackSpy).toHaveBeenCalledOnce();
-		expect(tarPackSpy).toHaveBeenCalledWith([
+		const tarServiceInstance = mocks.TarService.mock.instances[0];
+		expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
+		expect(tarServiceInstance.pack).toHaveBeenCalledWith([
 			{
 				name: ".codemodrc.json",
 				data: codemodRcBuf,
@@ -197,7 +200,7 @@ describe("/publish route", async () => {
 				data: readmeBuf,
 			},
 		]);
-		expect(tarPackSpy).toReturnWith("archive");
+		expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
 
 		const hashDigest = createHash("ripemd160")
 			.update(codemodRcContents.name)
@@ -210,7 +213,7 @@ describe("/publish route", async () => {
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
 			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-			Body: "archive",
+			Body: TAR_SERVICE_PACK_RETURN,
 		});
 
 		expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -250,8 +253,9 @@ describe("/publish route", async () => {
 
 		expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
-		expect(tarPackSpy).toHaveBeenCalledOnce();
-		expect(tarPackSpy).toHaveBeenCalledWith([
+		const tarServiceInstance = mocks.TarService.mock.instances[0];
+		expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
+		expect(tarServiceInstance.pack).toHaveBeenCalledWith([
 			{
 				name: ".codemodrc.json",
 				data: codemodRcBuf,
@@ -265,7 +269,7 @@ describe("/publish route", async () => {
 				data: readmeBuf,
 			},
 		]);
-		expect(tarPackSpy).toReturnWith("archive");
+		expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
 
 		const hashDigest = createHash("ripemd160")
 			.update(codemodRcContents.name)
@@ -278,7 +282,7 @@ describe("/publish route", async () => {
 		expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
 			Bucket: "codemod-public",
 			Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-			Body: "archive",
+			Body: TAR_SERVICE_PACK_RETURN,
 		});
 
 		expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -553,7 +557,7 @@ describe("/publish route", async () => {
 				return [];
 			});
 
-			const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+			const codemodRcContents: CodemodConfigInput = {
 				name: "@org/mycodemod",
 				version: "1.0.0",
 				applicability: {
@@ -608,7 +612,7 @@ describe("/publish route", async () => {
 				() => [],
 			);
 
-			const codemodRcContents: codemodComUtils.CodemodConfigInput = {
+			const codemodRcContents: CodemodConfigInput = {
 				name: "@org/mycodemod",
 				version: "1.0.0",
 				applicability: {

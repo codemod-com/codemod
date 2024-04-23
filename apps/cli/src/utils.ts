@@ -1,14 +1,13 @@
-import { exec, spawnSync } from "node:child_process";
-import { promisify } from "node:util";
+import { spawnSync } from "node:child_process";
+import { homedir } from "node:os";
+import { join } from "node:path";
 import {
 	type ValidateTokenResponse,
+	execPromise,
 	isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import keytar from "keytar";
 import { validateAccessToken } from "./apis";
-
-export const doubleQuotify = (str: string): string =>
-	str.startsWith('"') && str.endsWith('"') ? str : `"${str}"`;
 
 export const openURL = (url: string): boolean => {
 	// `spawnSync` is used because `execSync` has an input length limit
@@ -26,21 +25,6 @@ export const openURL = (url: string): boolean => {
 		console.error("Error while opening URL:", error);
 		return false;
 	}
-};
-
-export const boldText = (text: string) => {
-	return `\x1b[1m${text}\x1b[22m`;
-};
-
-export const colorizeText = (text: string, color: keyof typeof COLOR_MAP) => {
-	return `${COLOR_MAP[color]}${text}\x1b[39m`;
-};
-
-export const COLOR_MAP = {
-	cyan: "\x1b[36m",
-	red: "\x1b[31m",
-	green: "\x1b[32m",
-	orange: "\x1b[33m",
 };
 
 type UserData = {
@@ -66,8 +50,6 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
 
 	return { user: responseData, token };
 };
-
-export const execPromise = promisify(exec);
 
 export const getOrgsNames = (
 	userData: UserData,
@@ -114,3 +96,9 @@ export const initGlobalNodeModules = async (): Promise<void> => {
 		.join(":");
 	require("node:module").Module._initPaths();
 };
+
+export const getConfigurationDirectoryPath = (argvUnderScore?: unknown) =>
+	join(
+		String(argvUnderScore) === "runOnPreCommit" ? process.cwd() : homedir(),
+		".codemod",
+	);

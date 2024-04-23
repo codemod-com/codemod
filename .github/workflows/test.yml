@@ -28,7 +28,7 @@ jobs:
             - name: Install modules
               uses: pnpm/action-setup@v2
               with:
-                  version: 8
+                  version: 9
 
             - name: Install dependencies
               run: pnpm install
@@ -37,10 +37,10 @@ jobs:
               if: matrix.os == 'ubuntu-latest'
               run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
 
-            - name: Build prisma
+            - name: Generate prisma types
               run: pnpm --filter @codemod-com/backend db:generate
 
-            - name: Build engine
+            - name: Build necessary packages
               run: pnpm build --filter codemod
 
             - name: Run unit tests

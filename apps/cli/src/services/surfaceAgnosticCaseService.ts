@@ -1,17 +1,18 @@
 import { join } from "node:path";
-import { CaseWritingService } from "@codemod-com/utilities";
-import type { IFs } from "memfs";
+import type {
+	FlowSettings,
+	FormattedFileCommand,
+	RunSettings,
+} from "@codemod-com/runner";
+import { CaseWritingService, type FileSystem } from "@codemod-com/utilities";
 import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
-import type { FormattedFileCommand } from "../fileCommands.js";
 import type { SafeArgumentRecord } from "../safeArgumentRecord.js";
-import type { FlowSettings } from "../schemata/flowSettingsSchema.js";
-import type { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
 export class SurfaceAgnosticCaseService {
 	protected _caseWritingService: CaseWritingService | null = null;
 
 	public constructor(
-		private readonly _fs: IFs,
+		private readonly _fs: FileSystem,
 		private readonly _runSettings: RunSettings,
 		private readonly _flowSettings: FlowSettings,
 		private readonly _argumentRecord: SafeArgumentRecord,

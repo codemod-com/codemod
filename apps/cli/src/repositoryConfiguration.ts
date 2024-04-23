@@ -1,3 +1,4 @@
+import { argumentRecordSchema } from "@codemod-com/utilities";
 import { cosmiconfig } from "cosmiconfig";
 import {
 	type Output,
@@ -9,7 +10,6 @@ import {
 	string,
 	union,
 } from "valibot";
-import { argumentRecordSchema } from "./schemata/argumentRecordSchema.js";
 
 const preCommitCodemodSchema = union([
 	object({

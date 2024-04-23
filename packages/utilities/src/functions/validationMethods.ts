@@ -1,6 +1,6 @@
 export const isNeitherNullNorUndefined = <T>(
-	t: NonNullable<T> | null | undefined,
-): t is NonNullable<T> => t !== null && t !== undefined;
+	value: T | null | undefined,
+): value is T => value !== undefined && value !== null;
 
 export const assertsNeitherNullOrUndefined = <T>(
 	value: T,

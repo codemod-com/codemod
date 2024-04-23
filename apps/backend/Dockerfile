@@ -1,7 +1,5 @@
 FROM --platform=linux/amd64 node:19-alpine3.16
 
-ENV COREPACK_ENABLE_STRICT=0
-
 WORKDIR /app/
 
 RUN npm install -g pnpm

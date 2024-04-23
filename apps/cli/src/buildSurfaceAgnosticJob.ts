@@ -1,10 +1,10 @@
 import { randomBytes } from "node:crypto";
-import { JOB_KIND, type SurfaceAgnosticJob } from "@codemod-com/utilities";
 import {
 	type FormattedFileCommand,
 	buildNewDataPathForCreateFileCommand,
 	buildNewDataPathForUpdateFileCommand,
-} from "./fileCommands.js";
+} from "@codemod-com/runner";
+import { JOB_KIND, type SurfaceAgnosticJob } from "@codemod-com/utilities";
 
 export const buildSurfaceAgnosticJob = (
 	outputDirectoryPath: string,

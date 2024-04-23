@@ -1,0 +1,62 @@
+{
+	"name": "@codemod-com/runner",
+	"author": "Codemod, Inc.",
+	"version": "1.0.0",
+	"description": "The codemod runner used in Codemod.com ecosystem",
+	"type": "module",
+	"main": "./dist/index.js",
+	"module": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": [
+		"./dist",
+		"!**/*.test.js",
+		"!**/*.test.d.ts",
+		"LICENSE",
+		"README.md",
+		"tsconfig.json"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest run",
+		"coverage": "vitest run --coverage"
+	},
+	"keywords": [],
+	"license": "Apache-2.0",
+	"devDependencies": {
+		"@types/babel__traverse": "^7.20.1",
+		"@types/js-yaml": "4.0.9",
+		"@types/jscodeshift": "^0.11.11",
+		"@types/node": "20.8.5",
+		"@vitest/coverage-v8": "^1.0.1",
+		"typescript": "^5.2.2",
+		"vitest": "^1.0.1"
+	},
+	"dependencies": {
+		"@babel/core": "^7.24.4",
+		"@babel/parser": "^7.24.4",
+		"@babel/preset-env": "^7.24.1",
+		"@babel/preset-typescript": "^7.24.1",
+		"@babel/traverse": "7.24.1",
+		"@babel/types": "^7.24.0",
+		"@codemod-com/filemod": "workspace:*",
+		"@codemod-com/printer": "workspace:*",
+		"@codemod-com/utilities": "workspace:*",
+		"@svgr/hast-util-to-babel-ast": "^7.0.0",
+		"@vue/compiler-sfc": "^3.4.21",
+		"fast-glob": "^3.3.2",
+		"js-yaml": "4.1.0",
+		"jscodeshift": "^0.15.2",
+		"mdast-util-from-markdown": "^2.0.0",
+		"mdast-util-mdx": "^3.0.0",
+		"mdast-util-to-markdown": "^2.1.0",
+		"memfs": "^4.8.2",
+		"micromark-extension-mdxjs": "^2.0.0",
+		"prettier": "^3.2.5",
+		"ts-morph": "^22.0.0",
+		"unified": "^10.1.2",
+		"unist-util-filter": "^5.0.1",
+		"unist-util-visit": "^5.0.0",
+		"valibot": "^0.24.1",
+		"vue-sfc-descriptor-to-string": "^2.0.0"
+	}
+}

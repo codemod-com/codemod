@@ -1,5 +1,6 @@
 export const singleQuotify = (str: string) => `'${str}'`;
 export const doubleQuotify = (str: string) => `"${str}"`;
+export const backtickify = (str: string) => `\`${str}\``;
 
 export const buildCrossplatformArg = (str: string) => {
 	const isWin = process.platform === "win32";

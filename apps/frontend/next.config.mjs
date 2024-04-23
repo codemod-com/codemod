@@ -39,6 +39,7 @@ const config = {
 					crypto: false,
 					buffer: false,
 					stream: false,
+					child_process: false,
 				},
 			},
 		};
