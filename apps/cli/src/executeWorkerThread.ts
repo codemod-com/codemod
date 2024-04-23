@@ -1,9 +1,10 @@
 import { parentPort } from "node:worker_threads";
 import {
+	type ConsoleKind,
 	type MainThreadMessage,
+	type WorkerThreadMessage,
 	decodeMainThreadMessage,
 } from "@codemod-com/printer";
-import type { ConsoleKind, WorkerThreadMessage } from "@codemod-com/printer";
 import {
 	type FileCommand,
 	buildFormattedFileCommands,
