@@ -94,7 +94,7 @@ export default function FilterSection(
 									className="w-full"
 									key={filter.title || `${i}`}
 									initial={{
-										opacity: 0,
+										opacity: 1,
 										y: -10,
 									}}
 									animate={{
@@ -143,7 +143,7 @@ export default function FilterSection(
 								className="w-full"
 								key={filter.title || `${i}`}
 								initial={{
-									opacity: 0,
+									opacity: 1,
 									y: -10,
 								}}
 								animate={{
