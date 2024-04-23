@@ -15,14 +15,14 @@ export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
 	const { username, organizations } = userData.user;
 	printer.printConsoleMessage(
 		"info",
-		chalk.cyan("You are logged in as ", chalk.bold(username), "."),
+		chalk.cyan("You are logged in as", `${chalk.bold(username)}.`),
 	);
 
 	if (organizations.length > 0) {
 		printer.printConsoleMessage(
 			"info",
 			chalk.cyan(
-				"You have access to the following organizations: ",
+				"You have access to the following organizations:\n",
 				chalk.bold(`- ${getOrgsNames(userData).join("\n- ")}`),
 			),
 		);

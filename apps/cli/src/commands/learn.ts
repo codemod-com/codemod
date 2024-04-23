@@ -155,11 +155,11 @@ export const handleLearnCliCommand = async (
 	printer.printConsoleMessage(
 		"info",
 		chalk.cyan(
-			"Learning ",
+			"Learning",
 			chalk.bold(doubleQuotify("git diff")),
-			" at ",
+			"at",
 			chalk.bold(path),
-			" has begun...",
+			"has begun...",
 			"\n",
 		),
 	);

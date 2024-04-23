@@ -126,9 +126,10 @@ export const handleInitCliCommand = async (
 			printer.printConsoleMessage(
 				"error",
 				chalk.red(
-					`Failed to write file ${chalk.bold(path)}: ${
-						(err as Error).message
-					}. Aborting codemod creation...`,
+					"Failed to write file",
+					`${chalk.bold(path)}:`,
+					`${(err as Error).message}.`,
+					"Aborting codemod creation...",
 				),
 			);
 
@@ -146,7 +147,7 @@ export const handleInitCliCommand = async (
 
 	printer.printConsoleMessage(
 		"info",
-		chalk.cyan(`Codemod package created at ${chalk.bold(codemodBaseDir)}.`),
+		chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
 	);
 
 	const isJsCodemod =
@@ -158,15 +159,15 @@ export const handleInitCliCommand = async (
 		printer.printConsoleMessage(
 			"info",
 			chalk.cyan(
-				"\nRun ",
+				"\nRun",
 				chalk.bold(doubleQuotify("codemod build")),
-				" to build the codemod.",
+				"to build the codemod.",
 			),
 		);
 	}
 
 	const howToRunText = `Run ${chalk.bold(
-		`\`codemod --source ${codemodBaseDir}\``,
+		doubleQuotify(`codemod --source ${codemodBaseDir}`),
 	)} to run the codemod on current working directory (or specify a target using ${chalk.yellow(
 		"--target",
 	)} option).`;
