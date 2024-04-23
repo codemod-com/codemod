@@ -1,4 +1,4 @@
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
 import type { monaco } from "@studio/customMonaco";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";

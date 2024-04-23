@@ -4,6 +4,7 @@ import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMeta
 import type { RouteProps } from "@/types";
 import type { ResolvingMetadata } from "next";
 
+import { ThemeProvider } from "@/app/context";
 import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
@@ -30,9 +31,9 @@ export default async function IndexRoute() {
 	const pathname = `/`;
 	const initial = await loadModularPage(pathname);
 
-	if (draftMode().isEnabled) {
-		return <PagePreview initial={initial} />;
-	}
-
-	return <Page data={initial.data!} />;
+	return draftMode().isEnabled ? (
+		<PagePreview initial={initial} />
+	) : (
+		<Page data={initial.data!} />
+	);
 }

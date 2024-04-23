@@ -1,2 +1,2 @@
 export * from "./AuthProvider";
-export * from "./themeContext";
+export * from "./useTheme";

@@ -10,7 +10,7 @@ import {
 	useState,
 } from "react";
 
-const ThemeContext = createContext<{
+const UseTheme = createContext<{
 	isDark: boolean | null;
 	toggleTheme: () => void;
 }>({
@@ -51,15 +51,15 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
 	}, [setDarkTheme, isDark]);
 
 	return (
-		<ThemeContext.Provider value={{ isDark, toggleTheme }}>
+		<UseTheme.Provider value={{ isDark, toggleTheme }}>
 			{children}
-		</ThemeContext.Provider>
+		</UseTheme.Provider>
 	);
 };
 
 const isBrowserSchemeDark = () =>
 	window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 
-const useTheme = () => useContext(ThemeContext);
+const useTheme = () => useContext(UseTheme);
 
 export { ThemeProvider, useTheme };

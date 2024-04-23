@@ -2,7 +2,7 @@
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Markdown/CodeBlock.tsx
 
 import { cn } from "@/utils";
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 import { Check as CheckIcon, Copy as CopyIcon } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";

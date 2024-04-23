@@ -1,6 +1,6 @@
 import CompanyLogoSVG from "@/assets/icons/company_logo.svg";
 import { cn } from "@/utils";
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 // Inspired by Chatbot-UI and modified to fit the needs of this project
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import { CaretDown, CaretRight, User as UserIcon } from "@phosphor-icons/react";

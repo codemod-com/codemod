@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import { useTheme } from "@context/themeContext";
+import { useTheme } from "@context/useTheme";
 import {
 	Select,
 	SelectContent,

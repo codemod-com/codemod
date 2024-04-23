@@ -41,10 +41,8 @@ export default async function RootLayout({
 			</head>
 			<body>
 				<AuthProvider>
-					<ThemeProvider>
-						{children}
-						<Analytics />
-					</ThemeProvider>
+					{children}
+					<Analytics />
 				</AuthProvider>
 			</body>
 		</html>
