@@ -128,7 +128,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
 
 			const hostname = new URL(origin).hostname.replace(/^www\./, "");
 
-			if (hostname === "localhost" || hostname === "codemod.studio") {
+			if (hostname === "localhost" || hostname === "codemod.com") {
 				cb(null, true);
 				return;
 			}
