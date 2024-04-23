@@ -10,15 +10,11 @@ assignees: ''
 
 ---
 
+### Codemod name
+
+
 ### Codemod description
 
-Add a clear description of what should the codemod do.
-
-### Applicability Criteria
-
--   Framework/library: [e.g. Next.js]
--   Version: [e.g. v12 -> v13]
-    > Add details about the type of project this codemod should target. If this codemod is a general refactor, include the target language and other relevant information.
 
 ### Code before transformation
 
@@ -32,10 +28,42 @@ Add a clear description of what should the codemod do.
 //insert the expected **correct** output here
 ```
 
-### Estimated time saving
+### Codemod engine
+jscodeshift, ast-grep, ts-morph, filemod, piranha
 
-Add an expected time saving this codemod can provide. [e.g. 20 minutes per occurrence]
+### file extensions to process
+["**/*.js"]
 
-### Additional context
+### Applicability Criteria
+the patterns that codemod wants to detect can be found in projects in the below range
+from: [["react", ">", "17.0.0"], ["react", "<", "17.1.9"]],
+      
+what is the earliest version of the package where the new pattern is introdued?
+to: ["react", "=", "18.0.0"]
 
+### post commands - installing/unsintalling packages
+when this codemod is run, does user need to install or uninstall some packages?
+["-jest", "vitest@2.0.0"]
+    
+
+### Codemod arguments
+if your codemod needs some user inputs define the arguments here
+"arguments": [
+      {
+        "name": "arg1",
+        "description": "Arg number one",
+        "kind": "string",
+        "required": false
+      }
+    ]
+
+### tags for discovery
+which tags should be applied to this codemod to make it easily discoverable?
+["react", "migration"]
+
+### Codemod source URL
+where is the source of this codemod reside?
+"git": "https://github.com/codemod-com/codemod"
+    
+### Additional context or links
 Add any other context about the problem here. This might include extra considerations, edge cases, relevant business logic, existing migration guides, relevant links, etc.
