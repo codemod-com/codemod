@@ -5,7 +5,7 @@ import { MainPage } from "@studio/main/index";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
-import { CODEMOD_STUDIO_URL } from "./src/constants/urls";
+import { CODEMOD_STUDIO_URL, OLD_STUDIO_HOSTNAME } from "./src/constants/urls";
 
 export default function Page() {
 	useEffect(() => {
@@ -13,7 +13,7 @@ export default function Page() {
 			return;
 		}
 
-		if (window.location.hostname === "codemod.studio") {
+		if (window.location.hostname === OLD_STUDIO_HOSTNAME) {
 			window.location.replace(CODEMOD_STUDIO_URL);
 		}
 	}, []);
