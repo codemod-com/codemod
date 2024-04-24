@@ -4028,18 +4028,24 @@ importers:
         
   packages/codemods/react/19/ref-to-arrow-function-ref:
     devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
       '@types/jscodeshift':
         specifier: ^0.11.10
         version: 0.11.11
-      '@types/node':
-        specifier: 20.9.0
-        version: 20.9.0
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.5.1(vitest@1.5.1)
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.2(@babel/preset-env@7.24.4)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.9.0)(typescript@5.3.3)
       typescript:
-        specifier: 5.2.2
-        version: 5.2.2
+        specifier: ^5.2.2
+        version: 5.3.3
       vitest:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.9.0)
