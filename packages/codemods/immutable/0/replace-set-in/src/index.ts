@@ -28,98 +28,98 @@ Changes to the original file: added options, remove hasDefault
 */
 
 import type {
-  ASTPath,
-  ArrayExpression,
-  CallExpression,
-  Identifier,
-  JSCodeshift,
-  Literal,
-  MemberExpression,
-  Transform,
+	ASTPath,
+	ArrayExpression,
+	CallExpression,
+	Identifier,
+	JSCodeshift,
+	Literal,
+	MemberExpression,
+	Transform,
 } from "jscodeshift";
 
 class Handler {
-  private j: JSCodeshift;
-  private path: ASTPath<CallExpression>;
-  private argumentsMatch: boolean;
+	private j: JSCodeshift;
+	private path: ASTPath<CallExpression>;
+	private argumentsMatch: boolean;
 
-  constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
-    this.j = j;
-    this.path = path;
-    this.argumentsMatch = this.checkArgumentContract();
-  }
+	constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
+		this.j = j;
+		this.path = path;
+		this.argumentsMatch = this.checkArgumentContract();
+	}
 
-  checkArgumentContract() {
-    const node = this.path.node;
+	checkArgumentContract() {
+		const node = this.path.node;
 
-    if (node.arguments.length !== 2) {
-      return false;
-    }
+		if (node.arguments.length !== 2) {
+			return false;
+		}
 
-    return node.arguments[0]?.type === "ArrayExpression";
-  }
+		return node.arguments[0]?.type === "ArrayExpression";
+	}
 
-  transform() {
-    if (!this.argumentsMatch) {
-      return;
-    }
+	transform() {
+		if (!this.argumentsMatch) {
+			return;
+		}
 
-    const arrayArguments = this.path.node.arguments[0] as ArrayExpression;
-    const value = this.path.node.arguments[1] as any;
+		const arrayArguments = this.path.node.arguments[0] as ArrayExpression;
+		const value = this.path.node.arguments[1] as any;
 
-    this.path.replace(
-      this.j.assignmentExpression("=", this.generate(arrayArguments), value),
-    );
-  }
+		this.path.replace(
+			this.j.assignmentExpression("=", this.generate(arrayArguments), value),
+		);
+	}
 
-  private generate(
-    arrayArguments: ArrayExpression,
-    index = arrayArguments.elements.length - 1,
-  ): Identifier | MemberExpression {
-    if (index === -1) {
-      const memberExpression = this.path.node.callee as MemberExpression;
+	private generate(
+		arrayArguments: ArrayExpression,
+		index = arrayArguments.elements.length - 1,
+	): Identifier | MemberExpression {
+		if (index === -1) {
+			const memberExpression = this.path.node.callee as MemberExpression;
 
-      return memberExpression.object as Identifier;
-    }
+			return memberExpression.object as Identifier;
+		}
 
-    const arg = arrayArguments.elements[index];
+		const arg = arrayArguments.elements[index];
 
-    return this.j.memberExpression(
-      this.generate(arrayArguments, index - 1),
-      this.normalizeProperty(arg),
-      this.isComputed(arg),
-    );
-  }
+		return this.j.memberExpression(
+			this.generate(arrayArguments, index - 1),
+			this.normalizeProperty(arg),
+			this.isComputed(arg),
+		);
+	}
 
-  private normalizeProperty(arg: any) {
-    if (arg?.type === "Literal") {
-      return this.j.identifier(`${(arg as Literal).value}`);
-    }
+	private normalizeProperty(arg: any) {
+		if (arg?.type === "Literal") {
+			return this.j.identifier(`${(arg as Literal).value}`);
+		}
 
-    return arg;
-  }
+		return arg;
+	}
 
-  private isComputed(arg: any) {
-    return arg?.type !== "Literal";
-  }
+	private isComputed(arg: any) {
+		return arg?.type !== "Literal";
+	}
 }
 
 const transform: Transform = (file, api, options) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  const collections = root.find(j.CallExpression, {
-    callee: {
-      type: "MemberExpression",
-      property: {
-        type: "Identifier",
-        name: "setIn",
-      },
-    },
-  });
+	const j = api.jscodeshift;
+	const root = j(file.source);
+	const collections = root.find(j.CallExpression, {
+		callee: {
+			type: "MemberExpression",
+			property: {
+				type: "Identifier",
+				name: "setIn",
+			},
+		},
+	});
 
-  collections.forEach((path) => new Handler(j, path).transform());
+	collections.forEach((path) => new Handler(j, path).transform());
 
-  return root.toSource(options);
+	return root.toSource(options);
 };
 
 export default transform;

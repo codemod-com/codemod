@@ -1,105 +1,105 @@
 {
-  "$schema": "https://mintlify.com/schema.json",
-  "name": "Codemod.com",
-  "logo": {
-    "dark": "/logo/codemod-logo-dark.svg",
-    "light": "/logo/codemod-logo-light.svg",
-    "href": "https://codemod.com"
-  },
-  "favicon": "/favicon.svg",
-  "colors": {
-    "primary": "#0B151E",
-    "light": "#D6FF62",
-    "dark": "#0B151E",
-    "anchors": {
-      "from": "#91c500",
-      "to": "#91c500"
-    }
-  },
-  "topbarCtaButton": {
-    "type": "github",
-    "url": "https://github.com/codemod-com/codemod"
-  },
-  "tabs": [
-    {
-      "name": "Examples",
-      "url": "examples"
-    },
-    {
-      "name": "Blog",
-      "url": "https://codemod.com/blog"
-    },
-    {
-      "name": "Join Community",
-      "url": "https://codemod.com/community"
-    }
-  ],
-  "navigation": [
-    {
-      "group": "Introduction",
-      "pages": ["introduction"]
-    },
-    {
-      "group": "Building Codemods",
-      "pages": [
-        "building-codemods/getting-started",
-        "building-codemods/codemod-studio"
-      ]
-    },
-    {
-      "group": "Codemod Registry",
-      "pages": [
-        "codemod-registry/introduction",
-        "codemod-registry/publishing-codemods"
-      ]
-    },
-    {
-      "group": "Running codemods",
-      "pages": [
-        "deploying-codemods/introduction",
-        "deploying-codemods/cli",
-        "deploying-codemods/vsce"
-      ]
-    },
-    {
-      "group": "Quick Links",
-      "pages": [
-        "external-links/codemod-registry",
-        "external-links/codemod-studio",
-        "external-links/vsce"
-      ]
-    },
-    {
-      "group": "Other Resources",
-      "pages": ["more-resources/changelog"]
-    },
-    {
-      "group": "Explore examples",
-      "pages": ["examples/introduction"]
-    }
-  ],
-  "feedback": {
-    "thumbsRating": true,
-    "suggestEdit": true,
-    "raiseIssue": true
-  },
-  "footerSocials": {
-    "twitter": "https://twitter.com/codemod",
-    "github": "https://github.com/codemod-com",
-    "linkedin": "https://www.linkedin.com/company/codemod"
-  },
-  "redirects": [
-    {
-      "source": "/more-resources/legal/telemetry-compliance",
-      "destination": "https://codemod.com/telemetry-compliance"
-    },
-    {
-      "source": "/more-resources/legal/privacy-policy",
-      "destination": "https://codemod.com/privacy-policy"
-    },
-    {
-      "source": "/more-resources/legal/terms-and-conditions",
-      "destination": "https://codemod.com/terms-and-conditions"
-    }
-  ]
+	"$schema": "https://mintlify.com/schema.json",
+	"name": "Codemod.com",
+	"logo": {
+		"dark": "/logo/codemod-logo-dark.svg",
+		"light": "/logo/codemod-logo-light.svg",
+		"href": "https://codemod.com"
+	},
+	"favicon": "/favicon.svg",
+	"colors": {
+		"primary": "#0B151E",
+		"light": "#D6FF62",
+		"dark": "#0B151E",
+		"anchors": {
+			"from": "#91c500",
+			"to": "#91c500"
+		}
+	},
+	"topbarCtaButton": {
+		"type": "github",
+		"url": "https://github.com/codemod-com/codemod"
+	},
+	"tabs": [
+		{
+			"name": "Examples",
+			"url": "examples"
+		},
+		{
+			"name": "Blog",
+			"url": "https://codemod.com/blog"
+		},
+		{
+			"name": "Join Community",
+			"url": "https://codemod.com/community"
+		}
+	],
+	"navigation": [
+		{
+			"group": "Introduction",
+			"pages": ["introduction"]
+		},
+		{
+			"group": "Building Codemods",
+			"pages": [
+				"building-codemods/getting-started",
+				"building-codemods/codemod-studio"
+			]
+		},
+		{
+			"group": "Codemod Registry",
+			"pages": [
+				"codemod-registry/introduction",
+				"codemod-registry/publishing-codemods"
+			]
+		},
+		{
+			"group": "Running codemods",
+			"pages": [
+				"deploying-codemods/introduction",
+				"deploying-codemods/cli",
+				"deploying-codemods/vsce"
+			]
+		},
+		{
+			"group": "Quick Links",
+			"pages": [
+				"external-links/codemod-registry",
+				"external-links/codemod-studio",
+				"external-links/vsce"
+			]
+		},
+		{
+			"group": "Other Resources",
+			"pages": ["more-resources/changelog"]
+		},
+		{
+			"group": "Explore examples",
+			"pages": ["examples/introduction"]
+		}
+	],
+	"feedback": {
+		"thumbsRating": true,
+		"suggestEdit": true,
+		"raiseIssue": true
+	},
+	"footerSocials": {
+		"twitter": "https://twitter.com/codemod",
+		"github": "https://github.com/codemod-com",
+		"linkedin": "https://www.linkedin.com/company/codemod"
+	},
+	"redirects": [
+		{
+			"source": "/more-resources/legal/telemetry-compliance",
+			"destination": "https://codemod.com/telemetry-compliance"
+		},
+		{
+			"source": "/more-resources/legal/privacy-policy",
+			"destination": "https://codemod.com/privacy-policy"
+		},
+		{
+			"source": "/more-resources/legal/terms-and-conditions",
+			"destination": "https://codemod.com/terms-and-conditions"
+		}
+	]
 }

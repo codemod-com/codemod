@@ -1,4 +1,4 @@
 {
-  "extends": "@codemod-com/tsconfig/codemod.json",
-  "include": ["./src/**/*.{ts,js}"]
+	"extends": "@codemod-com/tsconfig/codemod.json",
+	"include": ["./src/**/*.{ts,js}"]
 }

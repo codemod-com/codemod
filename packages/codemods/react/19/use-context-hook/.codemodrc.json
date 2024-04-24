@@ -1,13 +1,13 @@
 {
-  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.1",
-  "name": "react/19/use-context-hook",
-  "private": false,
-  "engine": "jscodeshift",
-  "meta": {
-    "tags": ["react", "migration"]
-  },
-  "applicability": {
-    "from": [["react", "<=", "18"]]
-  }
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+	"version": "1.0.1",
+	"name": "react/19/use-context-hook",
+	"private": false,
+	"engine": "jscodeshift",
+	"meta": {
+		"tags": ["react", "migration"]
+	},
+	"applicability": {
+		"from": [["react", "<=", "18"]]
+	}
 }

@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 create-hash-history", () => {
-  it("should add createHashHistory", async () => {
-    const input = `
+	it("should add createHashHistory", async () => {
+		const input = `
 		import { Router, hashHistory } from 'react-router';
 
 		const MyApp = () => (
@@ -16,7 +16,7 @@ describe("react-router v4 create-hash-history", () => {
 		);
 		`;
 
-    const output = `
+		const output = `
 		const history = createHashHistory();
 		import createHashHistory from 'history/createHashHistory';
 		import { Router, hashHistory } from 'react-router';
@@ -28,20 +28,20 @@ describe("react-router v4 create-hash-history", () => {
 		);
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: trimLicense(input),
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: trimLicense(input),
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
+		});
 
-    console.log(output, actualOutput, "??");
+		console.log(output, actualOutput, "??");
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      trimLicense(output).replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			trimLicense(output).replace(/\W/gm, ""),
+		);
+	});
 });

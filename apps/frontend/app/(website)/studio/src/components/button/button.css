@@ -1,5 +1,4 @@
-@config "../../../tailwind.config.ts";
-.studio .btn {
+.btn {
 	@apply border;
 	@apply rounded;
 	@apply flex;
@@ -10,14 +9,14 @@
 	@apply transition-all;
 	@apply m-1;
 }
-.studio .btn-gray {
+.btn-gray {
 	@apply text-gray-text-title;
 	@apply dark:text-gray-text-dark-title;
 	@apply ring-gray-light-darker;
 	@apply dark:ring-gray-dark;
 }
 
-.studio .btn-gray-solid {
+.btn-gray-solid {
 	@apply hover:bg-gray-bg;
 	@apply bg-gray-light-darker;
 	@apply dark:bg-gray-dark;
@@ -25,7 +24,7 @@
 	@apply dark:border-gray-dark;
 }
 
-.studio .btn-gray-outline {
+.btn-gray-outline {
 	@apply dark:bg-gray-dark;
 	@apply dark:border-gray-bg;
 	@apply dark:bg-opacity-20;
@@ -40,7 +39,7 @@
 	@apply dark:hover:bg-opacity-20;
 	@apply bg-opacity-20;
 }
-.studio .btn-gray-ghost {
+.btn-gray-ghost {
 	@apply bg-transparent;
 	@apply dark:bg-transparent;
 	@apply text-black;
@@ -52,7 +51,7 @@
 	@apply hover:bg-gray-lighter;
 }
 
-.studio .btn-primary {
+.btn-primary {
 	@apply text-primary;
 	@apply dark:text-primary;
 	@apply ring-primary;
@@ -63,7 +62,7 @@
 	@apply dark:ring-opacity-20;
 }
 
-.studio .btn-primary-solid {
+.btn-primary-solid {
 	@apply bg-primary;
 	@apply dark:bg-primary;
 	@apply dark:text-black;
@@ -77,7 +76,7 @@
 	@apply hover:bg-primary-light;
 }
 
-.studio .btn-primary-outline {
+.btn-primary-outline {
 	@apply bg-primary-light;
 	@apply dark:bg-primary-light;
 	@apply dark:text-primary-light;
@@ -94,7 +93,7 @@
 	@apply bg-opacity-10;
 }
 
-.studio .btn-primary-ghost {
+.btn-primary-ghost {
 	@apply bg-transparent;
 	@apply dark:bg-transparent;
 	@apply text-primary-dark;
@@ -103,48 +102,48 @@
 	@apply border-gray-light;
 }
 
-.studio .btn-sm {
+.btn-sm {
 	@apply text-sm;
 	@apply px-3;
 	@apply py-1;
 	@apply font-normal;
 }
 
-.studio .btn-xs {
+.btn-xs {
 	@apply text-xs;
 	@apply px-1;
 	@apply py-1;
 	@apply font-normal;
 }
 
-.studio .btn-lg {
+.btn-lg {
 	@apply text-lg;
 	@apply font-semibold;
 	@apply px-6;
 	@apply py-2;
 }
 
-.studio .btn-xl {
+.btn-xl {
 	@apply text-xl;
 	@apply font-bold;
 	@apply px-6;
 	@apply py-2;
 }
 
-.studio .btn-base {
+.btn-base {
 	@apply text-base;
 	@apply font-normal;
 	@apply px-6;
 	@apply py-2;
 }
 
-.studio .btn-loading {
+.btn-loading {
 	@apply cursor-not-allowed;
 	@apply opacity-50;
 }
-.studio .btn-disabled {
+.btn-disabled {
 	@apply cursor-pointer;
 }
-.studio .btn-active {
+.btn-active {
 	@apply ring-2;
 }

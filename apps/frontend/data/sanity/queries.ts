@@ -230,58 +230,58 @@ export const AUTOMATION_PAGE_QUERY = groq`
 // "automationStories": ${AUTOMATION_STORIES},
 
 export function buildBlogIndexQuery({
-  entriesPerPage = 10,
-  infiniteLoading = false,
-  pathParam,
-  pageNumber = 1,
-  sortBy,
-  sortOrder,
+	entriesPerPage = 10,
+	infiniteLoading = false,
+	pathParam,
+	pageNumber = 1,
+	sortBy,
+	sortOrder,
 }: {
-  entriesPerPage?: number;
-  pathParam?: string;
-  infiniteLoading?: boolean;
-  pageNumber?: number;
-  sortBy?: string;
-  sortOrder?: string;
+	entriesPerPage?: number;
+	pathParam?: string;
+	infiniteLoading?: boolean;
+	pageNumber?: number;
+	sortBy?: string;
+	sortOrder?: string;
 }) {
-  const tag = pathParam;
-  const pageStart = infiniteLoading ? 0 : entriesPerPage * (pageNumber - 1);
-  const pageEnd = entriesPerPage * pageNumber;
-  const isCustomerStory = pathParam === CUSTOMER_STORY_TAG.value;
-  const filters = [
-    // customer story filter
-    isCustomerStory ? `_type == "blog.customerStory"` : null,
-    // tags filter
-    isCustomerStory
-      ? null
-      : tag
-        ? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
-        : null,
-    // featured posts filter
-    isCustomerStory
-      ? `!(_id in ^.featuredCustomerStories[]->_id )`
-      : tag
-        ? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
-        : `!(_id in ^.featuredPosts[]->_id )`,
-  ];
-  const filtersString = filters.filter(Boolean).join(" && ");
-  const orderFragment = `order(${sortBy ?? "_createdAt"} ${
-    sortOrder ?? "desc"
-  })`;
+	const tag = pathParam;
+	const pageStart = infiniteLoading ? 0 : entriesPerPage * (pageNumber - 1);
+	const pageEnd = entriesPerPage * pageNumber;
+	const isCustomerStory = pathParam === CUSTOMER_STORY_TAG.value;
+	const filters = [
+		// customer story filter
+		isCustomerStory ? `_type == "blog.customerStory"` : null,
+		// tags filter
+		isCustomerStory
+			? null
+			: tag
+				? `defined(tags[]) && count(tags[@->slug.current in ["${tag}"]]) > 0`
+				: null,
+		// featured posts filter
+		isCustomerStory
+			? `!(_id in ^.featuredCustomerStories[]->_id )`
+			: tag
+				? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
+				: `!(_id in ^.featuredPosts[]->_id )`,
+	];
+	const filtersString = filters.filter(Boolean).join(" && ");
+	const orderFragment = `order(${sortBy ?? "_createdAt"} ${
+		sortOrder ?? "desc"
+	})`;
 
-  const featuredPosts = isCustomerStory
-    ? `"featuredPosts": featuredCustomerStories[]-> {
+	const featuredPosts = isCustomerStory
+		? `"featuredPosts": featuredCustomerStories[]-> {
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
-    : tag
-      ? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
+		: tag
+			? `"featuredPosts":*[_type == "blog.tag" && slug.current == "${tag}"][0].featuredPosts[]->{
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
-      : `featuredPosts[]-> {
+			: `featuredPosts[]-> {
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`;
 
-  return groq`
+	return groq`
     *[_type == "blogIndex" && pathname.current == $pathname][0] {
       ...,
       "blogTags": *[_type == "blog.tag" && count(*[_type == "blog.article" && defined(tags[]) && ^._id in tags[]._ref]) > 0][0..2] {
@@ -293,21 +293,21 @@ export function buildBlogIndexQuery({
       },
       "pathname": pathname.current,
       "entries": *[_type in ["blog.article", "blog.customerStory"] ${
-        filtersString ? "&& " : ""
-      }${filtersString}]
+				filtersString ? "&& " : ""
+			}${filtersString}]
         | ${orderFragment} [${pageStart}...${pageEnd}] {
        ${BLOG_ARTICLE_CARD_FRAGMENT}
         },
       "entriesCount": count(*[_type in ["blog.article", "blog.customerStory"] ${
-        filtersString ? "&& " : ""
-      }${filtersString}]),
+				filtersString ? "&& " : ""
+			}${filtersString}]),
       "entriesPerPage": ${entriesPerPage},
       "pageNum": ${pageNumber},
     }
     `;
 }
 export function buildRegistryIndexQuery() {
-  return groq`
+	return groq`
     *[_type == "registryIndex" && pathname.current == $pathname][0] {
       ...,
       "pathname": pathname.current,

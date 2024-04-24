@@ -3,9 +3,9 @@ import type { CustomHandler } from "../customHandler.js";
 import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
 
 export const getCodemodBySlugHandler: CustomHandler<Codemod> = async (
-  dependencies,
+	dependencies,
 ) => {
-  const { slug } = parseGetCodemodBySlugParams(dependencies.request.params);
+	const { slug } = parseGetCodemodBySlugParams(dependencies.request.params);
 
-  return dependencies.codemodService.getCodemodBySlug(slug);
+	return dependencies.codemodService.getCodemodBySlug(slug);
 };

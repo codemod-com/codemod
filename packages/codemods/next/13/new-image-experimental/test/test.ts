@@ -33,7 +33,7 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("new-image-experimental", () => {
-  const INPUT = `
+	const INPUT = `
 		const withPwa = (opts) => {
 			// no-op but image this adds props
 			return opts
@@ -46,7 +46,7 @@ describe("new-image-experimental", () => {
 		  })
 	`;
 
-  const OUTPUT = `
+	const OUTPUT = `
 		const withPwa = (opts) => {
 			// no-op but image this adds props
 			return opts
@@ -59,35 +59,35 @@ describe("new-image-experimental", () => {
 		  })
 	`;
 
-  it("should replace next.config.ts with the tsx parser", () => {
-    const fileInfo: FileInfo = {
-      path: "next.config.ts",
-      source: INPUT,
-    };
+	it("should replace next.config.ts with the tsx parser", () => {
+		const fileInfo: FileInfo = {
+			path: "next.config.ts",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
-      dryRun: true,
-    });
+		const actualOutput = transform(fileInfo, buildApi("tsx"), {
+			dryRun: true,
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("should replace next.config.ts with the recast parser", () => {
-    const fileInfo: FileInfo = {
-      path: "next.config.ts",
-      source: INPUT,
-    };
+	it("should replace next.config.ts with the recast parser", () => {
+		const fileInfo: FileInfo = {
+			path: "next.config.ts",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi(undefined), {
-      dryRun: true,
-    });
+		const actualOutput = transform(fileInfo, buildApi(undefined), {
+			dryRun: true,
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

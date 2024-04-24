@@ -29,25 +29,25 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("next 14 next-og-import", () => {
-  it("should move transform import from server to og", () => {
-    const INPUT = `
+	it("should move transform import from server to og", () => {
+		const INPUT = `
             import { ImageResponse } from 'next/server';
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
             import { ImageResponse } from 'next/og';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

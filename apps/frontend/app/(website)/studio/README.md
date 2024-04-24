@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://codemod.com/studio">
+  <a href="https://codemod.studio">
       <picture>
           <source media="(prefers-color-scheme: dark)" srcset="/apps/docs/images/codemod-studio/codemod-studio-hero-dark.jpg">
           <source media="(prefers-color-scheme: light)" srcset="/apps/docs/images/codemod-studio/codemod-studio-hero-light.jpg">

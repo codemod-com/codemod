@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 replace-nested-routes", () => {
-  it("should deprecate nested routes and use `render` prop of parent component instead", async () => {
-    const input = `
+	it("should deprecate nested routes and use `render` prop of parent component instead", async () => {
+		const input = `
 		import React from 'react';
 		import { BrowserRouter as Router, Route } from 'react-router-dom';
 		
@@ -23,7 +23,7 @@ describe("react-router v4 replace-nested-routes", () => {
 		};		
 		`;
 
-    const output = `
+		const output = `
 		import React from 'react';
 		import { BrowserRouter as Router, Route } from 'react-router-dom';
 		
@@ -41,16 +41,16 @@ describe("react-router v4 replace-nested-routes", () => {
 		  );
 		};			
 		`;
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      output.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
+		);
+	});
 });

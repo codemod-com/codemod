@@ -43,7 +43,7 @@ The `learn` command can be used to send the diff of the latest edited file to th
 
     codemod learn
 
-After running this command, if any git diff exists, `codemod` will use the diff as before/after snippets in the [Codemod Studio](https://codemod.com/studio).
+After running this command, if any git diff exists, `codemod` will use the diff as before/after snippets in the [Codemod Studio](https://codemod.studio).
 
 ## Community
 

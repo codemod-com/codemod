@@ -29,10 +29,10 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("next 13 new-link", () => {
-  it("add legacy behavior", () => {
-    // adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
+	it("add legacy behavior", () => {
+		// adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
 
-    const INPUT = `
+		const INPUT = `
             import Link from 'next/link'
 
             function Comp({children}) {
@@ -48,7 +48,7 @@ describe("next 13 new-link", () => {
             }
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
             import Link from 'next/link'
 
             function Comp({children}) {
@@ -64,16 +64,16 @@ describe("next 13 new-link", () => {
             }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

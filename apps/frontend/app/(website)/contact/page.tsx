@@ -8,28 +8,28 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
 const ContactPagePreview = dynamic(
-  () => import("@/components/templates/ContactPage/PagePreview"),
+	() => import("@/components/templates/ContactPage/PagePreview"),
 );
 
 export async function generateMetadata(
-  props: RouteProps,
-  parent: ResolvingMetadata,
+	props: RouteProps,
+	parent: ResolvingMetadata,
 ) {
-  const initialData = await loadContactPage("/contact");
+	const initialData = await loadContactPage("/contact");
 
-  if (!initialData?.data) return notFound();
+	if (!initialData?.data) return notFound();
 
-  return resolveSanityRouteMetadata(initialData.data, parent);
+	return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function Contact() {
-  const initial = await loadContactPage("/contact");
+	const initial = await loadContactPage("/contact");
 
-  if (draftMode().isEnabled) {
-    return (
-      <ContactPagePreview initial={initial} params={{ pathname: "/contact" }} />
-    );
-  }
+	if (draftMode().isEnabled) {
+		return (
+			<ContactPagePreview initial={initial} params={{ pathname: "/contact" }} />
+		);
+	}
 
-  return <ContactPage data={initial.data} />;
+	return <ContactPage data={initial.data} />;
 }

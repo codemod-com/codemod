@@ -29,43 +29,43 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	const j = api.jscodeshift;
 
-  const root = j(file.source);
+	const root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "Router" } },
-    })
-    .forEach((path) => {
-      const hasSwitch = root.findJSXElements("Switch").length > 0;
+	root
+		.find(j.JSXElement, {
+			openingElement: { name: { name: "Router" } },
+		})
+		.forEach((path) => {
+			const hasSwitch = root.findJSXElements("Switch").length > 0;
 
-      if (hasSwitch) {
-        return;
-      }
+			if (hasSwitch) {
+				return;
+			}
 
-      const children = path.value.children;
-      const newEl = j.jsxElement(
-        j.jsxOpeningElement(j.jsxIdentifier("Switch"), [], false),
-        j.jsxClosingElement(j.jsxIdentifier("Switch")),
-        children,
-      );
+			const children = path.value.children;
+			const newEl = j.jsxElement(
+				j.jsxOpeningElement(j.jsxIdentifier("Switch"), [], false),
+				j.jsxClosingElement(j.jsxIdentifier("Switch")),
+				children,
+			);
 
-      path.value.children = [j.jsxText("\n  "), newEl, j.jsxText("\n")];
-      dirtyFlag = true;
-    });
+			path.value.children = [j.jsxText("\n  "), newEl, j.jsxText("\n")];
+			dirtyFlag = true;
+		});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

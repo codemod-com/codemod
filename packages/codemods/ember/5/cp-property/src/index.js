@@ -26,25 +26,25 @@ SOFTWARE.
 */
 
 export default function transform(file, api) {
-  const j = api.jscodeshift;
+	const j = api.jscodeshift;
 
-  const root = j(file.source);
+	const root = j(file.source);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        type: "MemberExpression",
-        object: { callee: { name: "computed" } },
-        property: { name: "property" },
-      },
-    })
-    //.forEach(p => console.log(p))
-    .replaceWith((path) => {
-      let args = [...path.value.arguments].concat(
-        path.value.callee.object.arguments,
-      );
-      return j.callExpression(j.identifier("computed"), args);
-    });
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				object: { callee: { name: "computed" } },
+				property: { name: "property" },
+			},
+		})
+		//.forEach(p => console.log(p))
+		.replaceWith((path) => {
+			let args = [...path.value.arguments].concat(
+				path.value.callee.object.arguments,
+			);
+			return j.callExpression(j.identifier("computed"), args);
+		});
 
-  return root.toSource();
+	return root.toSource();
 }

@@ -1,71 +1,71 @@
 {
-  "name": "@codemod-com/codemod",
-  "version": "1.0.0",
-  "author": "Codemod, Inc.",
-  "license": "Apache License, Version 2.0",
-  "description": "A monorepo for all the interconnected tools of codemod.com",
-  "private": true,
-  "engines": {
-    "node": ">=20.x",
-    "pnpm": ">=8.x"
-  },
-  "keywords": [
-    "codemod",
-    "migration",
-    "jscodeshift",
-    "ts-morph",
-    "next.js",
-    "react",
-    "refactoring",
-    "transform",
-    "cli",
-    "studio",
-    "AST"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/codemod-com/codemod.git"
-  },
-  "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "clean": "turbo run clean",
-    "link": "turbo run link",
-    "lint": "biome check .",
-    "lint:apply": "biome check --apply .",
-    "lint:linter": "biome lint --apply .",
-    "lint:formatter": "biome format --write .",
-    "test": "pnpm run test:unit && pnpm run test:backend",
-    "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
-    "test:backend": "pnpm --filter @codemod-com/backend test",
-    "test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
-    "coverage": "pnpm test:unit --coverage",
-    "prepare": "husky install",
-    "release:changelog": "node scripts/releaseChangelog.mjs"
-  },
-  "devDependencies": {
-    "@codemod-com/tsconfig": "workspace:*",
-    "@codemod-com/utilities": "workspace:*",
-    "@total-typescript/ts-reset": "^0.4.2",
-    "@types/node": "^20.5.1",
-    "@vitest/coverage-v8": "^1.0.1",
-    "concurrently": "^8.2.0",
-    "husky": "^8.0.3",
-    "lint-staged": "^15.1.0",
-    "tsx": "^4.2.0",
-    "turbo": "^1.10.14",
-    "typescript": "^5.2.0",
-    "vitest": "^1.4.0",
-    "@biomejs/biome": "^1.6.4"
-  },
-  "lint-staged": {
-    "*": [
-      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true"
-    ]
-  },
-  "pnpm": {
-    "overrides": {
-      "postcss": "8.4.35"
-    }
-  }
+	"name": "@codemod-com/codemod",
+	"version": "1.0.0",
+	"author": "Codemod, Inc.",
+	"license": "Apache License, Version 2.0",
+	"description": "A monorepo for all the interconnected tools of codemod.com",
+	"private": true,
+	"engines": {
+		"node": ">=20.x",
+		"pnpm": ">=8.x"
+	},
+	"keywords": [
+		"codemod",
+		"migration",
+		"jscodeshift",
+		"ts-morph",
+		"next.js",
+		"react",
+		"refactoring",
+		"transform",
+		"cli",
+		"studio",
+		"AST"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codemod-com/codemod.git"
+	},
+	"scripts": {
+		"dev": "turbo run dev",
+		"build": "turbo run build",
+		"clean": "turbo run clean",
+		"link": "turbo run link",
+		"lint": "biome check .",
+		"lint:apply": "biome check --apply .",
+		"lint:linter": "biome lint --apply .",
+		"lint:formatter": "biome format --write .",
+		"test": "pnpm run test:unit && pnpm run test:backend",
+		"test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
+		"test:backend": "pnpm --filter @codemod-com/backend test",
+		"test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
+		"coverage": "pnpm test:unit --coverage",
+		"prepare": "husky install",
+		"release:changelog": "node scripts/releaseChangelog.mjs"
+	},
+	"devDependencies": {
+		"@codemod-com/tsconfig": "workspace:*",
+		"@codemod-com/utilities": "workspace:*",
+		"@total-typescript/ts-reset": "^0.4.2",
+		"@types/node": "^20.5.1",
+		"@vitest/coverage-v8": "^1.0.1",
+		"concurrently": "^8.2.0",
+		"husky": "^8.0.3",
+		"lint-staged": "^15.1.0",
+		"tsx": "^4.2.0",
+		"turbo": "^1.10.14",
+		"typescript": "^5.2.0",
+		"vitest": "^1.4.0",
+		"@biomejs/biome": "^1.6.4"
+	},
+	"lint-staged": {
+		"*": [
+			"biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true"
+		]
+	},
+	"pnpm": {
+		"overrides": {
+			"postcss": "8.4.35"
+		}
+	}
 }

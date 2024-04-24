@@ -1,21 +1,21 @@
 {
-  "name": "@codemod-com/codemod-next-13-new-image-experimental",
-  "dependencies": {},
-  "devDependencies": {
-    "@codemod-com/utilities": "workspace:*",
-    "typescript": "^5.2.2",
-    "ts-node": "^10.9.1",
-    "jscodeshift": "^0.15.1",
-    "@types/jscodeshift": "^0.11.10",
-    "vitest": "^1.0.1",
-    "@vitest/coverage-v8": "^1.0.1"
-  },
-  "main": "./dist/index.cjs",
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest watch",
-    "coverage": "vitest run --coverage"
-  },
-  "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
-  "type": "module"
+	"name": "@codemod-com/codemod-next-13-new-image-experimental",
+	"dependencies": {},
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"typescript": "^5.2.2",
+		"ts-node": "^10.9.1",
+		"jscodeshift": "^0.15.1",
+		"@types/jscodeshift": "^0.11.10",
+		"vitest": "^1.0.1",
+		"@vitest/coverage-v8": "^1.0.1"
+	},
+	"main": "./dist/index.cjs",
+	"scripts": {
+		"test": "vitest run",
+		"test:watch": "vitest watch",
+		"coverage": "vitest run --coverage"
+	},
+	"files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
+	"type": "module"
 }

@@ -28,23 +28,23 @@ License URL: https://github.com/ember-codemods/ember-no-implicit-this-codemod/bl
 */
 
 export default function transform(file, api) {
-  const j = api.jscodeshift;
+	const j = api.jscodeshift;
 
-  const root = j(file.source);
+	const root = j(file.source);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        type: "MemberExpression",
-        property: { name: "observes" },
-      },
-    })
-    .replaceWith((path) => {
-      return j.callExpression(
-        j.identifier("observer"),
-        path.value.arguments.concat(path.value.callee.object),
-      );
-    });
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				property: { name: "observes" },
+			},
+		})
+		.replaceWith((path) => {
+			return j.callExpression(
+				j.identifier("observer"),
+				path.value.arguments.concat(path.value.callee.object),
+			);
+		});
 
-  return root.toSource();
+	return root.toSource();
 }

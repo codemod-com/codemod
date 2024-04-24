@@ -5,21 +5,21 @@ import { ThLargeIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
 export const ptTable = defineType({
-  name: "ptTable",
-  title: "Table",
-  type: "object",
-  icon: ThLargeIcon,
-  fields: [
-    {
-      name: "table",
-      type: "table",
-    },
-  ],
-  preview: {
-    prepare() {
-      return {
-        title: "Table",
-      };
-    },
-  },
+	name: "ptTable",
+	title: "Table",
+	type: "object",
+	icon: ThLargeIcon,
+	fields: [
+		{
+			name: "table",
+			type: "table",
+		},
+	],
+	preview: {
+		prepare() {
+			return {
+				title: "Table",
+			};
+		},
+	},
 });

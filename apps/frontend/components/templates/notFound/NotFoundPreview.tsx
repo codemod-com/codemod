@@ -7,17 +7,17 @@ import type { NotFoundPayload } from "@/types";
 import { NotFoundHero } from "./NotFoundHero";
 
 export const NotFoundPreview = ({ initial }) => {
-  const { data } = useQuery<NotFoundPayload | null>(
-    NOT_FOUND_DOC_QUERY,
-    {
-      locale: "en",
-    },
-    { initial },
-  );
-  return (
-    <>
-      <NotFoundHero data={data!} />
-      {data?.footerCta && <PageCta {...data.footerCta} />}
-    </>
-  );
+	const { data } = useQuery<NotFoundPayload | null>(
+		NOT_FOUND_DOC_QUERY,
+		{
+			locale: "en",
+		},
+		{ initial },
+	);
+	return (
+		<>
+			<NotFoundHero data={data!} />
+			{data?.footerCta && <PageCta {...data.footerCta} />}
+		</>
+	);
 };

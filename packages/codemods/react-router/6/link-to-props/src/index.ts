@@ -30,74 +30,74 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	const j = api.jscodeshift;
 
-  const root = j(file.source);
+	const root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root
-    .find(j.JSXElement, {
-      openingElement: {
-        name: { name: "Link" },
-      },
-    })
-    .forEach((path) => {
-      const props = path.value.openingElement.attributes ?? [];
+	root
+		.find(j.JSXElement, {
+			openingElement: {
+				name: { name: "Link" },
+			},
+		})
+		.forEach((path) => {
+			const props = path.value.openingElement.attributes ?? [];
 
-      props
-        .filter((prop) => ("name" in prop ? prop.name.name === "to" : false))
-        .forEach((prop) => {
-          const values =
-            "value" in prop &&
-            prop.value &&
-            "expression" in prop.value &&
-            "properties" in prop.value.expression
-              ? prop.value.expression.properties
-              : [];
+			props
+				.filter((prop) => ("name" in prop ? prop.name.name === "to" : false))
+				.forEach((prop) => {
+					const values =
+						"value" in prop &&
+						prop.value &&
+						"expression" in prop.value &&
+						"properties" in prop.value.expression
+							? prop.value.expression.properties
+							: [];
 
-          values.forEach((v) => {
-            if (
-              "key" in v &&
-              "name" in v.key &&
-              v.key.name === "pathname" &&
-              "value" in prop &&
-              "value" in v &&
-              "value" in v.value &&
-              v.value.value
-            ) {
-              prop.value = j.literal(v.value.value);
+					values.forEach((v) => {
+						if (
+							"key" in v &&
+							"name" in v.key &&
+							v.key.name === "pathname" &&
+							"value" in prop &&
+							"value" in v &&
+							"value" in v.value &&
+							v.value.value
+						) {
+							prop.value = j.literal(v.value.value);
 
-              dirtyFlag = true;
-            }
+							dirtyFlag = true;
+						}
 
-            if ("key" in v && "name" in v.key && v.key.name === "state") {
-              const newProp = j.jsxAttribute(
-                j.jsxIdentifier(v.key.name),
-                j.jsxExpressionContainer(j.identifier("state")),
-              );
+						if ("key" in v && "name" in v.key && v.key.name === "state") {
+							const newProp = j.jsxAttribute(
+								j.jsxIdentifier(v.key.name),
+								j.jsxExpressionContainer(j.identifier("state")),
+							);
 
-              if (path.value.openingElement.attributes) {
-                path.value.openingElement.attributes.push(newProp);
-              } else {
-                path.value.openingElement.attributes = [newProp];
-              }
+							if (path.value.openingElement.attributes) {
+								path.value.openingElement.attributes.push(newProp);
+							} else {
+								path.value.openingElement.attributes = [newProp];
+							}
 
-              dirtyFlag = true;
-            }
-          });
-        });
-    });
+							dirtyFlag = true;
+						}
+					});
+				});
+		});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

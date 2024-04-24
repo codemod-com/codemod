@@ -1,4 +1,4 @@
 export type TelemetryEvents = {
-  kind: "listNames";
-  searchTerm?: string;
+	kind: "listNames";
+	searchTerm?: string;
 };

@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 wrap-with-imports", () => {
-  it("should wrap Route components with Switch", async () => {
-    const input = `
+	it("should wrap Route components with Switch", async () => {
+		const input = `
 		import { Route, Router } from 'react-router-dom';
 
 		const MyApp = () => (
@@ -19,7 +19,7 @@ describe("react-router v4 wrap-with-imports", () => {
 		);
 		`;
 
-    const output = `
+		const output = `
 		import { Route, Router } from 'react-router-dom';
 
 		const MyApp = () => (
@@ -34,18 +34,18 @@ describe("react-router v4 wrap-with-imports", () => {
 		);
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      output.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
+		);
+	});
 });

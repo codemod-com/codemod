@@ -5,56 +5,56 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router 4 replace-location-query", () => {
-  it("one instance", () => {
-    const INPUT = `
+	it("one instance", () => {
+		const INPUT = `
 			const id = location.query.id;
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			import { parse } from 'query-string';
 			const id = parse(location.search).id;
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("multiple instances", () => {
-    const INPUT = `
+	it("multiple instances", () => {
+		const INPUT = `
 			const id = location.query.id;
 			const name = location.query.name;
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			import { parse } from 'query-string';
 			const id = parse(location.search).id;
 			const name = parse(location.search).name;
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("one instance in a functional component", () => {
-    const INPUT = `
+	it("one instance in a functional component", () => {
+		const INPUT = `
 			const List = ({ location }) => (
 				<div>
 					<h1>{location.query.sort}</h1>
@@ -62,7 +62,7 @@ describe("react-router 4 replace-location-query", () => {
 			);
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			import { parse } from 'query-string';
 			const List = ({ location }) => (
 				<div>
@@ -71,21 +71,21 @@ describe("react-router 4 replace-location-query", () => {
 			);
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("multiple instances in a functional component", () => {
-    const INPUT = `
+	it("multiple instances in a functional component", () => {
+		const INPUT = `
 			const List = ({ location }) => (
 				<div>
 					<h1>{location.query.sort}</h1>
@@ -95,7 +95,7 @@ describe("react-router 4 replace-location-query", () => {
 			);
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			import { parse } from 'query-string';
 			const List = ({ location }) => (
 				<div>
@@ -106,50 +106,50 @@ describe("react-router 4 replace-location-query", () => {
 			);
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("query-string import statement should not be added when location.query is not used", () => {
-    const INPUT = `
+	it("query-string import statement should not be added when location.query is not used", () => {
+		const INPUT = `
 			const x = location;
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const x = location;
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  describe("examples from netlify-react-ui", () => {
-    it("example 1", () => {
-      const INPUT = `
+	describe("examples from netlify-react-ui", () => {
+		it("example 1", () => {
+			const INPUT = `
 			function getOptions(props) {
 				return { ...props.location.query };
 			}
         `;
 
-      const OUTPUT = `
+			const OUTPUT = `
 			import { parse } from 'query-string';
 
 			function getOptions(props) {
@@ -157,18 +157,18 @@ describe("react-router 4 replace-location-query", () => {
 			}
         `;
 
-      const fileInfo: FileInfo = {
-        path: "index.js",
-        source: INPUT,
-      };
+			const fileInfo: FileInfo = {
+				path: "index.js",
+				source: INPUT,
+			};
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-      actualOutput?.replace(/\W/gm, ""), OUTPUT.replace(/\W/gm, "");
-    });
+			actualOutput?.replace(/\W/gm, ""), OUTPUT.replace(/\W/gm, "");
+		});
 
-    it("example 2", () => {
-      const INPUT = `
+		it("example 2", () => {
+			const INPUT = `
 			function mapStateToProps(state: State, ownProps) {
 				const { site, plan } = ownProps.location.query;
 
@@ -179,7 +179,7 @@ describe("react-router 4 replace-location-query", () => {
 			}
 			`;
 
-      const OUTPUT = `
+			const OUTPUT = `
 			import { parse } from 'query-string';
 			
 			function mapStateToProps(state: State, ownProps) {
@@ -192,21 +192,21 @@ describe("react-router 4 replace-location-query", () => {
 			}
 			`;
 
-      const fileInfo: FileInfo = {
-        path: "index.js",
-        source: INPUT,
-      };
+			const fileInfo: FileInfo = {
+				path: "index.js",
+				source: INPUT,
+			};
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        OUTPUT.replace(/\W/gm, ""),
-      );
-    });
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
+			);
+		});
 
-    it("example 3", () => {
-      const INPUT = `
+		it("example 3", () => {
+			const INPUT = `
 			const SiteAuditLog = (props) => {
 				const { page } = props.location.query;
 			  
@@ -214,7 +214,7 @@ describe("react-router 4 replace-location-query", () => {
 			};
 			`;
 
-      const OUTPUT = `
+			const OUTPUT = `
 			import { parse } from 'query-string';
 
 			const SiteAuditLog = (props) => {
@@ -224,17 +224,17 @@ describe("react-router 4 replace-location-query", () => {
 			};
 			`;
 
-      const fileInfo: FileInfo = {
-        path: "index.js",
-        source: INPUT,
-      };
+			const fileInfo: FileInfo = {
+				path: "index.js",
+				source: INPUT,
+			};
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+			const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        OUTPUT.replace(/\W/gm, ""),
-      );
-    });
-  });
+			assert.deepEqual(
+				actualOutput?.replace(/\W/gm, ""),
+				OUTPUT.replace(/\W/gm, ""),
+			);
+		});
+	});
 });

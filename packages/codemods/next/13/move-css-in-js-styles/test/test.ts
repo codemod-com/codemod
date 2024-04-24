@@ -31,36 +31,36 @@ export default () => (
 `;
 
 const STYLE_FILE =
-  "\n         p {\n          color: red;\n         }\n        ";
+	"\n         p {\n          color: red;\n         }\n        ";
 
 describe("next 13 move-css-in-js-styles", () => {
-  it("should remove the style component, add an import and a class name", async () => {
-    const fileInfo: FileInfo = {
-      path: "/opt/repository/pages/index.js",
-      source: INPUT,
-    };
+	it("should remove the style component, add an import and a class name", async () => {
+		const fileInfo: FileInfo = {
+			path: "/opt/repository/pages/index.js",
+			source: INPUT,
+		};
 
-    const options = {
-      createFile(path: string, data: string) {
-        return { path, data };
-      },
-    };
+		const options = {
+			createFile(path: string, data: string) {
+				return { path, data };
+			},
+		};
 
-    const spy = sinon.spy(options);
+		const spy = sinon.spy(options);
 
-    const actualOutput = transform(fileInfo, buildApi("js"), options);
+		const actualOutput = transform(fileInfo, buildApi("js"), options);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
 
-    assert.deepEqual(
-      spy.createFile.calledOnceWith(
-        "/opt/repository/pages/index.module.css",
-        STYLE_FILE,
-      ),
-      true,
-    );
-  });
+		assert.deepEqual(
+			spy.createFile.calledOnceWith(
+				"/opt/repository/pages/index.module.css",
+				STYLE_FILE,
+			),
+			true,
+		);
+	});
 });

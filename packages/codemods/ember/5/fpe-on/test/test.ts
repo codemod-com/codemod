@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 fpe-on", () => {
-  it("basic", () => {
-    const INPUT = `
+	it("basic", () => {
+		const INPUT = `
 		import EmberObject from '@ember/object';
         import { sendEvent } from '@ember/object/events';
 
@@ -21,7 +21,7 @@ describe("ember 5 fpe-on", () => {
         sendEvent(job, 'completed'); // Logs 'Job completed!'
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 		import { on } from '@ember/object/evented';
         import EmberObject from '@ember/object';
         import { sendEvent } from '@ember/object/events';
@@ -37,16 +37,16 @@ describe("ember 5 fpe-on", () => {
         sendEvent(job, 'completed'); // Logs 'Job completed!'
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

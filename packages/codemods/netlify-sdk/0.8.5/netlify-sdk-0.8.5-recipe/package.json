@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/codemod-netlify-sdk-0.8.5-netlify-sdk-0.8.5-recipe",
-  "files": ["./README.md", "./.codemodrc.json"],
-  "type": "module"
+	"name": "@codemod-com/codemod-netlify-sdk-0.8.5-netlify-sdk-0.8.5-recipe",
+	"files": ["./README.md", "./.codemodrc.json"],
+	"type": "module"
 }

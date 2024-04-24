@@ -34,8 +34,8 @@ import transform from "../src/index.js";
  */
 
 describe("ember 5 convert-module-for-to-setup-test", () => {
-  it("basic-typescript-support", () => {
-    const INPUT = `
+	it("basic-typescript-support", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:flash', 'Unit | Service | Flash', {
@@ -47,7 +47,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -60,21 +60,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.ts",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		const actualOutput = transform(fileInfo, buildApi("ts"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("custom-functions-in-options", () => {
-    const INPUT = `
+	it("custom-functions-in-options", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('stuff:here', {
@@ -123,7 +123,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -189,21 +189,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("custom-module-for-implementation", () => {
-    const INPUT = `
+	it("custom-module-for-implementation", () => {
+		const INPUT = `
         import moduleForComponent from '../helpers/module-for-component';
         import { test } from 'ember-qunit';
         
@@ -216,7 +216,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import moduleForComponent from '../helpers/module-for-component';
         import { test } from 'qunit';
         
@@ -229,21 +229,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("get-owner-this", () => {
-    const INPUT = `
+	it("get-owner-this", () => {
+		const INPUT = `
         import Service from '@ember/service';
         import { moduleFor, test } from 'ember-qunit';
         
@@ -300,7 +300,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import Service from '@ember/service';
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
@@ -361,21 +361,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("global-wait", () => {
-    const INPUT = `
+	it("global-wait", () => {
+		const INPUT = `
         import { test } from 'qunit';
         import moduleForAcceptance from '../helpers/module-for-acceptance';
         
@@ -388,7 +388,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupApplicationTest } from 'ember-qunit';
         
@@ -403,21 +403,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("inject", () => {
-    const INPUT = `
+	it("inject", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
  
         moduleFor('service:foo-bar', 'Unit | Service | FooBar', {
@@ -438,7 +438,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -461,21 +461,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("lookup", () => {
-    const INPUT = `
+	it("lookup", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo', {
@@ -495,7 +495,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -520,45 +520,45 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("merge-qunit-imports", () => {
-    const INPUT = `
+	it("merge-qunit-imports", () => {
+		const INPUT = `
         import { skip } from 'qunit';
         import { moduleFor, test } from 'ember-qunit';
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, skip, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-for-acceptance", () => {
-    const INPUT = `
+	it("module-for-acceptance", () => {
+		const INPUT = `
     import { test } from 'qunit';
     import moduleForAcceptance from '../helpers/module-for-acceptance';
     import { setupTestHelper } from 'setup-test-helper';
@@ -721,7 +721,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
     });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
     import { module, test } from 'qunit';
     import { setupApplicationTest } from 'ember-qunit';
     import { setupTestHelper } from 'setup-test-helper';
@@ -870,21 +870,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
     });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-for-arg-combos", () => {
-    const INPUT = `
+	it("module-for-arg-combos", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo');
@@ -906,7 +906,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -935,21 +935,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });        
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-for-component", () => {
-    const INPUT = `
+	it("module-for-component", () => {
+		const INPUT = `
         import { moduleForComponent, test } from 'ember-qunit';
         import wait from 'ember-test-helpers/wait';
         import hbs from 'htmlbars-inline-precompile';
@@ -1027,7 +1027,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupRenderingTest, setupTest } from 'ember-qunit';
         import { clearRender, render, settled } from '@ember/test-helpers';
@@ -1108,21 +1108,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-for-model", () => {
-    const INPUT = `
+	it("module-for-model", () => {
+		const INPUT = `
         import {moduleForModel, test} from 'ember-qunit';
 
         moduleForModel('foo', 'Unit | Model | foo');
@@ -1140,7 +1140,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1163,21 +1163,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-for-with-lifecycle-callbacks", () => {
-    const INPUT = `
+	it("module-for-with-lifecycle-callbacks", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo', {
@@ -1224,7 +1224,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1278,21 +1278,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("module-with-long-name", () => {
-    const INPUT = `
+	it("module-with-long-name", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo with a very long name that would cause line breaks');
@@ -1302,7 +1302,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });        
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1315,21 +1315,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("multi-module-for", () => {
-    const INPUT = `
+	it("multi-module-for", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo');
@@ -1345,7 +1345,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1366,21 +1366,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("native-qunit-to-nested", () => {
-    const INPUT = `
+	it("native-qunit-to-nested", () => {
+		const INPUT = `
         import { abs } from 'dummy/helpers/abs';
         import { module, test } from 'qunit';
         
@@ -1395,7 +1395,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { abs } from 'dummy/helpers/abs';
         import { module, test } from 'qunit';
         
@@ -1410,21 +1410,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("nested-module-with-arrow", () => {
-    const INPUT = `
+	it("nested-module-with-arrow", () => {
+		const INPUT = `
         import { module, test } from 'qunit';
         import { setupRenderingTest, setupTest } from 'ember-qunit';
         import { clearRender, render, settled } from '@ember/test-helpers';
@@ -1457,7 +1457,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupRenderingTest, setupTest } from 'ember-qunit';
         import { clearRender, render, settled } from '@ember/test-helpers';
@@ -1491,21 +1491,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("non-module-ember-qunit-imports", () => {
-    const INPUT = `
+	it("non-module-ember-qunit-imports", () => {
+		const INPUT = `
         import resolver from './helpers/resolver';
         import {
           setResolver
@@ -1516,7 +1516,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         start();
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import resolver from './helpers/resolver';
         import {
           setResolver
@@ -1527,21 +1527,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         start();
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("non-module-render-usage", () => {
-    const INPUT = `
+	it("non-module-render-usage", () => {
+		const INPUT = `
         import someOtherThing from '../foo-bar/';
 
         // this example doesn't use this.render inside of a test block, so it should not be transformed
@@ -1551,7 +1551,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import someOtherThing from '../foo-bar/';
 
         // this example doesn't use this.render inside of a test block, so it should not be transformed
@@ -1561,21 +1561,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("on", () => {
-    const INPUT = `
+	it("on", () => {
+		const INPUT = `
         import { moduleForComponent, test } from 'ember-qunit';
         import hbs from 'htmlbars-inline-precompile';
         
@@ -1611,7 +1611,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupRenderingTest } from 'ember-qunit';
         import { render } from '@ember/test-helpers';
@@ -1660,21 +1660,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("register", () => {
-    const INPUT = `
+	it("register", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo', {
@@ -1697,7 +1697,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1725,43 +1725,43 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("remove-empty-import", () => {
-    const INPUT = `
+	it("remove-empty-import", () => {
+		const INPUT = `
         import { module, test } from 'ember-qunit';
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("resolver", () => {
-    const INPUT = `
+	it("resolver", () => {
+		const INPUT = `
         import { module } from 'qunit';
         import { moduleFor, moduleForComponent, test } from 'ember-qunit';
         import hbs from 'htmlbars-inline-precompile';
@@ -1796,7 +1796,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest, setupRenderingTest } from 'ember-qunit';
         import { render } from '@ember/test-helpers';
@@ -1837,44 +1837,44 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("rewrite-imports", () => {
-    const INPUT = `
+	it("rewrite-imports", () => {
+		const INPUT = `
         import { moduleFor, moduleForComponent, moduleForModel } from 'ember-qunit';
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module } from 'qunit';
         import { setupTest } from 'ember-qunit';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("simple-module-for", () => {
-    const INPUT = `
+	it("simple-module-for", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:foo', 'Unit | Service | Foo');
@@ -1895,7 +1895,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         skip('this is included');
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -1919,21 +1919,21 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("subject", () => {
-    const INPUT = `
+	it("subject", () => {
+		const INPUT = `
         import { moduleFor, test } from 'ember-qunit';
 
         moduleFor('service:flash', 'Unit | Service | Flash', {
@@ -2029,7 +2029,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         
@@ -2134,44 +2134,44 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("test-skip-imports", () => {
-    const INPUT = `
+	it("test-skip-imports", () => {
+		const INPUT = `
         import { moduleFor, test, skip } from 'ember-qunit';
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { module, skip, test } from 'qunit';
         import { setupTest } from 'ember-qunit';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("wait", () => {
-    const INPUT = `
+	it("wait", () => {
+		const INPUT = `
         import wait from 'ember-test-helpers/wait';
 
         function stuff() {
@@ -2181,7 +2181,7 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         }
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import { settled } from '@ember/test-helpers';
 
         function stuff() {
@@ -2191,16 +2191,16 @@ describe("ember 5 convert-module-for-to-setup-test", () => {
         }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

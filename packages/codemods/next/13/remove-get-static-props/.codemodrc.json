@@ -1,23 +1,23 @@
 {
-  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.2",
-  "private": false,
-  "name": "next/13/remove-get-static-props",
-  "description": "The codemod removes getStaticProps data fetching method.",
-  "engine": "filemod",
-  "applicability": {
-    "from": [["next", "<", "13.0.0"]]
-  },
-  "arguments": [
-    {
-      "name": "buildLegacyCtxUtilAbsolutePath",
-      "description": "Absolute path of buildLegacyCtx utility file",
-      "kind": "string",
-      "required": true
-    }
-  ],
-  "meta": {
-    "tags": ["next.js", "migration"]
-  },
-  "include": ["**/*.js", "**/*.ts"]
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+	"version": "1.0.2",
+	"private": false,
+	"name": "next/13/remove-get-static-props",
+	"description": "The codemod removes getStaticProps data fetching method.",
+	"engine": "filemod",
+	"applicability": {
+		"from": [["next", "<", "13.0.0"]]
+	},
+	"arguments": [
+		{
+			"name": "buildLegacyCtxUtilAbsolutePath",
+			"description": "Absolute path of buildLegacyCtx utility file",
+			"kind": "string",
+			"required": true
+		}
+	],
+	"meta": {
+		"tags": ["next.js", "migration"]
+	},
+	"include": ["**/*.js", "**/*.ts"]
 }

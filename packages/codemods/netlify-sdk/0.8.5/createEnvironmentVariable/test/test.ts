@@ -5,12 +5,12 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("netlify 0.8.5 createEnvironmentVariable", () => {
-  it("changes createEnvironmentVariable to pass an object instead of the separate arguments", () => {
-    const INPUT = `
+	it("changes createEnvironmentVariable to pass an object instead of the separate arguments", () => {
+		const INPUT = `
             createEnvironmentVariable(accountId, siteId, key, values);
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
             createEnvironmentVariable({
                 accountId: accountId,
                 siteId: siteId,
@@ -19,16 +19,16 @@ describe("netlify 0.8.5 createEnvironmentVariable", () => {
             })
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

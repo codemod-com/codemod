@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 jquery-apis", () => {
-  it("Events", () => {
-    const INPUT = `
+	it("Events", () => {
+		const INPUT = `
 		import Component from '@ember/component';
 
         export default Component.extend({
@@ -16,7 +16,7 @@ describe("ember 5 jquery-apis", () => {
         });
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import Component from '@ember/component';
 
         export default Component.extend({
@@ -25,21 +25,21 @@ describe("ember 5 jquery-apis", () => {
         }
         });
         `;
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 
-  it("Query Selector", () => {
-    const INPUT = `
+	it("Query Selector", () => {
+		const INPUT = `
 		import Component from '@ember/component';
 
         export default Component.extend({
@@ -49,7 +49,7 @@ describe("ember 5 jquery-apis", () => {
         });
         `;
 
-    const OUTPUT = `
+		const OUTPUT = `
         import Component from '@ember/component';
 
         export default Component.extend({
@@ -58,16 +58,16 @@ describe("ember 5 jquery-apis", () => {
         }
         });
         `;
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

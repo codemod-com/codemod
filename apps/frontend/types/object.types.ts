@@ -4,104 +4,104 @@ import type { BlocksBody, PublishStatus } from ".";
 import type { CTAData, ImageWithAltFieldObject } from "./generic.types";
 
 export type SanityImageWithAltField = SanityImageObject & {
-  alt: string;
+	alt: string;
 };
 
 export type LogoDarkLight = {
-  lightModeImage?: SanityImageWithAltField;
-  darkModeImage?: SanityImageWithAltField;
+	lightModeImage?: SanityImageWithAltField;
+	darkModeImage?: SanityImageWithAltField;
 };
 
 export type PageHeroProps = {
-  title: string;
-  subtitle?: string;
-  ctas?: (CTAData & { _key: string })[];
-  logoCarousel?: {
-    title: string;
-    logos: (LogoDarkLight & {
-      link?: string;
-    })[];
-  };
+	title: string;
+	subtitle?: string;
+	ctas?: (CTAData & { _key: string })[];
+	logoCarousel?: {
+		title: string;
+		logos: (LogoDarkLight & {
+			link?: string;
+		})[];
+	};
 };
 export type TextPageHeroProps = {
-  title: string;
-  lastUpdatedText?: string;
-  tocTitle: string;
-  body: BlocksBody;
+	title: string;
+	lastUpdatedText?: string;
+	tocTitle: string;
+	body: BlocksBody;
 };
 
 export type PageCta = {
-  title: string;
-  paragraph: BlocksBody;
-  cta: SanityStyledCta;
-  _type: "pageCta";
+	title: string;
+	paragraph: BlocksBody;
+	cta: SanityStyledCta;
+	_type: "pageCta";
 };
 
 export type PageCtaDouble = {
-  title: string;
-  leftSectionTitle: string;
-  leftSectionParagraph: BlocksBody;
-  leftSectionCta: SanityStyledCta;
-  rightSectionTitle: string;
-  rightSectionParagraph: BlocksBody;
-  rightSectionIsNewsletter: boolean;
-  rightSectionCta?: SanityStyledCta;
-  privacyLink?: CTAData;
-  _type: "pageCtaDouble";
+	title: string;
+	leftSectionTitle: string;
+	leftSectionParagraph: BlocksBody;
+	leftSectionCta: SanityStyledCta;
+	rightSectionTitle: string;
+	rightSectionParagraph: BlocksBody;
+	rightSectionIsNewsletter: boolean;
+	rightSectionCta?: SanityStyledCta;
+	privacyLink?: CTAData;
+	_type: "pageCtaDouble";
 };
 
 export type PageCtaTriple = {
-  title: string;
-  paragraph: BlocksBody;
-  splitPattern?: string;
-  ctas: SanityStyledCta[];
-  _type: "pageCtaTriple";
+	title: string;
+	paragraph: BlocksBody;
+	splitPattern?: string;
+	ctas: SanityStyledCta[];
+	_type: "pageCtaTriple";
 };
 
 export type SanityStyledCta = {
-  title: string;
-  label: string;
-  link: string;
-  style: "primary" | "secondary";
-  icon: IconName | "standard";
+	title: string;
+	label: string;
+	link: string;
+	style: "primary" | "secondary";
+	icon: IconName | "standard";
 };
 export type MediaTab = {
-  _key: string;
-  tabTitle?: string;
-  mediaItem: (Omit<MuxVideoBlock, "caption"> | ImageWithAltFieldObject)[];
+	_key: string;
+	tabTitle?: string;
+	mediaItem: (Omit<MuxVideoBlock, "caption"> | ImageWithAltFieldObject)[];
 };
 
 export type MuxVideo = {
-  _type: "mux.video";
-  asset: {
-    playbackId?: string;
-    resolution?: string;
-  };
+	_type: "mux.video";
+	asset: {
+		playbackId?: string;
+		resolution?: string;
+	};
 };
 
 export type BlogTagInCard = {
-  title?: string;
-  slug?: string;
+	title?: string;
+	slug?: string;
 };
 
 export type BlogArticleCardData = {
-  _id: string;
-  _type: string;
-  title?: string;
-  featuredImage?: ImageWithAltFieldObject;
-  publishedAt?: string;
-  tags?: BlogTagInCard[];
-  preamble?: string;
-  body: BlocksBody;
-  pathname: string;
-  slug: string;
-  authors?: (BlogAuthor & { _key: string })[];
+	_id: string;
+	_type: string;
+	title?: string;
+	featuredImage?: ImageWithAltFieldObject;
+	publishedAt?: string;
+	tags?: BlogTagInCard[];
+	preamble?: string;
+	body: BlocksBody;
+	pathname: string;
+	slug: string;
+	authors?: (BlogAuthor & { _key: string })[];
 };
 
 export type BlogAuthor = {
-  name: string;
-  details?: string;
-  image?: SanityImageWithAltField;
+	name: string;
+	details?: string;
+	image?: SanityImageWithAltField;
 };
 
 /**
@@ -109,86 +109,86 @@ export type BlogAuthor = {
  */
 
 export type MuxVideoBlock = {
-  hasControls?: boolean;
-  loop?: boolean;
-  video?: MuxVideo;
-  darkVideo?: MuxVideo;
-  autoPlay?: boolean;
-  caption?: string;
+	hasControls?: boolean;
+	loop?: boolean;
+	video?: MuxVideo;
+	darkVideo?: MuxVideo;
+	autoPlay?: boolean;
+	caption?: string;
 };
 export type ImageBlock = {
-  image: ImageWithAltFieldObject;
-  caption?: string;
+	image: ImageWithAltFieldObject;
+	caption?: string;
 };
 
 export type TwitterEmbedBlock = {
-  _type: "twitterEmbed";
-  url?: string;
+	_type: "twitterEmbed";
+	url?: string;
 };
 
 export type YoutubeVideoBlock = {
-  _type: "youtubeVideo";
-  caption?: string;
-  youtubeUrl?: string;
+	_type: "youtubeVideo";
+	caption?: string;
+	youtubeUrl?: string;
 };
 
 export type CodeBlockProps = {
-  language: string;
-  highlightedLines?: number[];
-  code: string;
-  filename: string;
+	language: string;
+	highlightedLines?: number[];
+	code: string;
+	filename: string;
 };
 
 export type TableBlock = {
-  _type: "ptTable";
-  _key: string;
-  table?: { rows: [{ cells?: string[]; _type: string; _key: string }] };
+	_type: "ptTable";
+	_key: string;
+	table?: { rows: [{ cells?: string[]; _type: string; _key: string }] };
 };
 
 export type QuoteProps = {
-  image?: SanityImageWithAltField;
-  quote?: string;
-  authorName?: string;
-  authorPosition?: string;
-  authorImage?: SanityImageWithAltField;
+	image?: SanityImageWithAltField;
+	quote?: string;
+	authorName?: string;
+	authorPosition?: string;
+	authorImage?: SanityImageWithAltField;
 };
 
 export type AutomationAPIListResponse = {
-  name: string;
-  slug: string;
-  engine: string;
-  author: string;
-  tags: string[];
-  verified: boolean;
-  arguments: {
-    kind: string;
-    name: string;
-    required: boolean;
-  }[];
+	name: string;
+	slug: string;
+	engine: string;
+	author: string;
+	tags: string[];
+	verified: boolean;
+	arguments: {
+		kind: string;
+		name: string;
+		required: boolean;
+	}[];
 
-  updatedAt: string | null;
+	updatedAt: string | null;
 };
 
 export type AutomationAPISearchResponse = {
-  data?: AutomationResponse[];
-  filters?: AutomationFilter[];
-  total: number;
-  page: number;
-  size: number;
+	data?: AutomationResponse[];
+	filters?: AutomationFilter[];
+	total: number;
+	page: number;
+	size: number;
 };
 
 export type AutomationFilterIconValue = LogoDarkLight & {
-  filterValue: string;
-  icon?: string;
+	filterValue: string;
+	icon?: string;
 };
 
 export type AutomationFilterType = {
-  filterId: string;
-  filterValues?: AutomationFilterIconValue[];
+	filterId: string;
+	filterValues?: AutomationFilterIconValue[];
 };
 
 export type AutomationFilterIconDictionary = {
-  filters?: AutomationFilterType[];
+	filters?: AutomationFilterType[];
 };
 
 /**
@@ -201,128 +201,128 @@ export type AutomationFilterIconDictionary = {
 export type AutomationApplicabilityValue = [string, string, string];
 
 export type AutomationApplicability = {
-  from: AutomationApplicabilityValue[];
-  to?: AutomationApplicabilityValue[];
+	from: AutomationApplicabilityValue[];
+	to?: AutomationApplicabilityValue[];
 };
 
 export type AutomationResponse = {
-  id: number;
-  slug: string;
-  shortDescription: string;
-  useCaseCategory?: string | null;
-  tags: string[];
-  engine: string;
-  applicability: AutomationApplicability;
-  name: string;
-  featured: boolean;
-  verified: boolean;
-  private: boolean;
-  author: string;
-  amountOfUses: number;
-  totalTimeSaved: number;
-  openedPrs: number;
-  createdAt: string;
-  updatedAt: string;
-  framework?: string;
-  versions: AutomationResponseVersion[];
+	id: number;
+	slug: string;
+	shortDescription: string;
+	useCaseCategory?: string | null;
+	tags: string[];
+	engine: string;
+	applicability: AutomationApplicability;
+	name: string;
+	featured: boolean;
+	verified: boolean;
+	private: boolean;
+	author: string;
+	amountOfUses: number;
+	totalTimeSaved: number;
+	openedPrs: number;
+	createdAt: string;
+	updatedAt: string;
+	framework?: string;
+	versions: AutomationResponseVersion[];
 };
 
 export type AutomationResponseVersion = {
-  id: number;
-  version: string;
-  shortDescription: string;
-  engine: string;
-  applicability?: AutomationApplicability;
-  arguments: any[];
-  vsCodeLink: string;
-  codemodStudioExampleLink?: string;
-  testProjectCommand?: string;
-  sourceRepo?: string;
-  amountOfUses: number;
-  totalTimeSaved: number;
-  openedPrs: number;
-  bucketLink: string;
-  useCaseCategory?: string;
-  tags: string[];
-  codemodId: number;
-  createdAt: string;
-  updatedAt: string;
+	id: number;
+	version: string;
+	shortDescription: string;
+	engine: string;
+	applicability?: AutomationApplicability;
+	arguments: any[];
+	vsCodeLink: string;
+	codemodStudioExampleLink?: string;
+	testProjectCommand?: string;
+	sourceRepo?: string;
+	amountOfUses: number;
+	totalTimeSaved: number;
+	openedPrs: number;
+	bucketLink: string;
+	useCaseCategory?: string;
+	tags: string[];
+	codemodId: number;
+	createdAt: string;
+	updatedAt: string;
 };
 
 export type AutomationImportSchema = {
-  _id: string;
-  _type: "automation";
-  internalTitle?: string;
-  pathname: string;
-  automationName: string;
-  automationId: number;
-  shortDescription: string;
-  publishStatus: PublishStatus;
-  seo: {
-    title: string;
-    description?: string;
-  };
-  useCaseCategory?: string | null;
-  applicability?: AutomationApplicability;
-  featured: boolean;
-  verified: boolean;
-  private: boolean;
-  visible?: boolean;
-  author: string;
-  amountOfUses: number;
-  totalTimeSaved: number;
-  openedPrs: number;
-  createdAt: string;
-  updatedAt: string;
-  automationStories?: AutomationStories;
-  filterIconDictionary?: AutomationFilterIconDictionary;
-  currentVersion?: AutomationResponseVersion;
-  framework?: string | null;
+	_id: string;
+	_type: "automation";
+	internalTitle?: string;
+	pathname: string;
+	automationName: string;
+	automationId: number;
+	shortDescription: string;
+	publishStatus: PublishStatus;
+	seo: {
+		title: string;
+		description?: string;
+	};
+	useCaseCategory?: string | null;
+	applicability?: AutomationApplicability;
+	featured: boolean;
+	verified: boolean;
+	private: boolean;
+	visible?: boolean;
+	author: string;
+	amountOfUses: number;
+	totalTimeSaved: number;
+	openedPrs: number;
+	createdAt: string;
+	updatedAt: string;
+	automationStories?: AutomationStories;
+	filterIconDictionary?: AutomationFilterIconDictionary;
+	currentVersion?: AutomationResponseVersion;
+	framework?: string | null;
 };
 
 export type AutomationStories = Array<{
-  title: string;
-  tagline: string;
-  pathname: string;
+	title: string;
+	tagline: string;
+	pathname: string;
 }> | null;
 
 export type AutomationFilter = {
-  id: string;
-  title: string;
-  values: { id: string; title: string; count: number }[];
+	id: string;
+	title: string;
+	values: { id: string; title: string; count: number }[];
 };
 
 export type GlobalLabels = {
-  blog: {
-    relatedArticles?: string;
-    backToIndex?: string;
-  };
-  careers: {
-    relatedJobs?: string;
-    backToIndex?: string;
-    applyToPosition?: string;
-    applyToPositionDescription?: string;
-    applyToPositionCTA?: string;
-  };
-  codemodPage: {
-    ctaTitle?: string;
-    ctaDescription?: string;
-    documentationPopup?: BlocksBody;
-    documentationPopupLink: CTAData;
-    runCommandPrefix?: string;
-    backToIndex?: string;
-    cta?: CTAData;
-    runSectionTitle?: string;
-    runCommandTitle?: string;
-    vsCodeExtensionTitle?: string;
-    vsCodeExtensionButtonLabel?: string;
-    codemodStudioExampleTitle?: string;
-    codemodStudioExampleButtonLabel?: string;
-    textProjectTitle?: string;
-    sourceRepoTitle?: string;
-  };
+	blog: {
+		relatedArticles?: string;
+		backToIndex?: string;
+	};
+	careers: {
+		relatedJobs?: string;
+		backToIndex?: string;
+		applyToPosition?: string;
+		applyToPositionDescription?: string;
+		applyToPositionCTA?: string;
+	};
+	codemodPage: {
+		ctaTitle?: string;
+		ctaDescription?: string;
+		documentationPopup?: BlocksBody;
+		documentationPopupLink: CTAData;
+		runCommandPrefix?: string;
+		backToIndex?: string;
+		cta?: CTAData;
+		runSectionTitle?: string;
+		runCommandTitle?: string;
+		vsCodeExtensionTitle?: string;
+		vsCodeExtensionButtonLabel?: string;
+		codemodStudioExampleTitle?: string;
+		codemodStudioExampleButtonLabel?: string;
+		textProjectTitle?: string;
+		sourceRepoTitle?: string;
+	};
 };
 export type RegistryCardData = AutomationResponse & {
-  verifiedTooltip?: string;
-  filterIconDictionary?: AutomationFilterIconDictionary;
+	verifiedTooltip?: string;
+	filterIconDictionary?: AutomationFilterIconDictionary;
 };

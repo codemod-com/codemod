@@ -8,46 +8,46 @@ import { getConfigurationDirectoryPath, getCurrentUserData } from "../utils";
  */
 
 const getDistinctId = async (configurationDirectoryPath: string) => {
-  try {
-    const sessionContent = await readFile(
-      join(configurationDirectoryPath, "session.json"),
-      "utf-8",
-    );
+	try {
+		const sessionContent = await readFile(
+			join(configurationDirectoryPath, "session.json"),
+			"utf-8",
+		);
 
-    return JSON.parse(sessionContent).id;
-  } catch (e) {
-    return null;
-  }
+		return JSON.parse(sessionContent).id;
+	} catch (e) {
+		return null;
+	}
 };
 
 const generateDistinctId = async (configurationDirectoryPath: string) => {
-  await mkdir(configurationDirectoryPath, { recursive: true });
+	await mkdir(configurationDirectoryPath, { recursive: true });
 
-  const id = randomBytes(16).toString("hex");
-  await writeFile(
-    join(configurationDirectoryPath, "session.json"),
-    JSON.stringify({ id }),
-  );
+	const id = randomBytes(16).toString("hex");
+	await writeFile(
+		join(configurationDirectoryPath, "session.json"),
+		JSON.stringify({ id }),
+	);
 
-  return id;
+	return id;
 };
 
 const getUserDistinctId = async (): Promise<string> => {
-  const configurationDirectoryPath = getConfigurationDirectoryPath();
+	const configurationDirectoryPath = getConfigurationDirectoryPath();
 
-  const userData = await getCurrentUserData();
+	const userData = await getCurrentUserData();
 
-  if (userData !== null) {
-    return userData.user.userId;
-  }
+	if (userData !== null) {
+		return userData.user.userId;
+	}
 
-  const distinctId = await getDistinctId(configurationDirectoryPath);
+	const distinctId = await getDistinctId(configurationDirectoryPath);
 
-  if (distinctId !== null) {
-    return distinctId;
-  }
+	if (distinctId !== null) {
+		return distinctId;
+	}
 
-  return await generateDistinctId(configurationDirectoryPath);
+	return await generateDistinctId(configurationDirectoryPath);
 };
 
 export { getDistinctId, generateDistinctId, getUserDistinctId };

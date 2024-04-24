@@ -3,9 +3,9 @@ import type { JSONSchemaForESLintConfigurationFiles as ESLintConfig } from "../t
 export type RuleValue = "error" | "warn" | "off";
 
 export type Dependencies = Readonly<{
-  fetch: typeof fetch;
+	fetch: typeof fetch;
 }>;
 
 export type Options = Readonly<{
-  config: ESLintConfig | null;
+	config: ESLintConfig | null;
 }>;

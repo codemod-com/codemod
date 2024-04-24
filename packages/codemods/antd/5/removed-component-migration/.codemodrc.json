@@ -1,15 +1,15 @@
 {
-  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
-  "name": "antd/remove-component",
-  "private": false,
-  "engine": "jscodeshift",
-  "arguments": [],
-  "applicability": {
-    "from": [["antd", "<", "5.0.0"]]
-  },
-  "meta": {
-    "git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration",
-    "tags": ["migration"]
-  }
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+	"version": "1.0.0",
+	"name": "antd/remove-component",
+	"private": false,
+	"engine": "jscodeshift",
+	"arguments": [],
+	"applicability": {
+		"from": [["antd", "<", "5.0.0"]]
+	},
+	"meta": {
+		"git": "https://github.com/ant-design/codemod-v5/tree/main?tab=readme-ov-file#v5-removed-component-migration",
+		"tags": ["migration"]
+	}
 }

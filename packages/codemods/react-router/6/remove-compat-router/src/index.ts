@@ -30,44 +30,44 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	const j = api.jscodeshift;
 
-  const root = j(file.source);
+	const root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root
-    .find(j.ImportSpecifier, {
-      imported: { name: "CompatRouter" },
-    })
-    .forEach((path) => {
-      j(path.parentPath.parentPath).remove();
-      dirtyFlag = true;
-    });
+	root
+		.find(j.ImportSpecifier, {
+			imported: { name: "CompatRouter" },
+		})
+		.forEach((path) => {
+			j(path.parentPath.parentPath).remove();
+			dirtyFlag = true;
+		});
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "CompatRouter" } },
-    })
-    .forEach((path) => {
-      const children = path.value.children;
-      const parent = path.parentPath.parentPath.node;
+	root
+		.find(j.JSXElement, {
+			openingElement: { name: { name: "CompatRouter" } },
+		})
+		.forEach((path) => {
+			const children = path.value.children;
+			const parent = path.parentPath.parentPath.node;
 
-      j(path).remove();
-      parent.children = children;
+			j(path).remove();
+			parent.children = children;
 
-      dirtyFlag = true;
-    });
+			dirtyFlag = true;
+		});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

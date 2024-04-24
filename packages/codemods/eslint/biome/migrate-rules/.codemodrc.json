@@ -1,22 +1,22 @@
 {
-  "version": "1.0.2",
-  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "name": "biome/migrate-rules",
-  "private": false,
-  "engine": "filemod",
-  "applicability": {
-    "from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
-    "to": [["biome", "=", "1.5.3"]]
-  },
-  "arguments": [
-    {
-      "name": "rules",
-      "kind": "string",
-      "required": false
-    }
-  ],
-  "deps": ["-eslint", "-prettier", "@biomejs/biome@1.5.3"],
-  "meta": {
-    "tags": ["migration"]
-  }
+	"version": "1.0.2",
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+	"name": "biome/migrate-rules",
+	"private": false,
+	"engine": "filemod",
+	"applicability": {
+		"from": [["eslint", ">=", "0.0.0"], ["prettier", ">=", "0.0.0"]],
+		"to": [["biome", "=", "1.5.3"]]
+	},
+	"arguments": [
+		{
+			"name": "rules",
+			"kind": "string",
+			"required": false
+		}
+	],
+	"deps": ["-eslint", "-prettier", "@biomejs/biome@1.5.3"],
+	"meta": {
+		"tags": ["migration"]
+	}
 }

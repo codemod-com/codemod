@@ -1,30 +1,30 @@
 {
-  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
-  "private": false,
-  "engine": "filemod",
-  "name": "remove-unused-feature-flags-2",
-  "arguments": [
-    {
-      "name": "fileMarker",
-      "kind": "string",
-      "required": true,
-      "default": ""
-    },
-    {
-      "name": "functionName",
-      "kind": "string",
-      "default": "",
-      "required": true
-    },
-    {
-      "name": "featureFlagName",
-      "kind": "string",
-      "default": "",
-      "required": true
-    }
-  ],
-  "meta": {
-    "tags": ["cleanup"]
-  }
+	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+	"version": "1.0.0",
+	"private": false,
+	"engine": "filemod",
+	"name": "remove-unused-feature-flags-2",
+	"arguments": [
+		{
+			"name": "fileMarker",
+			"kind": "string",
+			"required": true,
+			"default": ""
+		},
+		{
+			"name": "functionName",
+			"kind": "string",
+			"default": "",
+			"required": true
+		},
+		{
+			"name": "featureFlagName",
+			"kind": "string",
+			"default": "",
+			"required": true
+		}
+	],
+	"meta": {
+		"tags": ["cleanup"]
+	}
 }

@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 deprecate-router-events", () => {
-  it("basic", () => {
-    const INPUT = `
+	it("basic", () => {
+		const INPUT = `
 		import Router from '@ember/routing/router';
         import { inject as service } from '@ember/service';
 
@@ -30,7 +30,7 @@ describe("ember 5 deprecate-router-events", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 		import Router from '@ember/routing/router';
         import { inject as service } from '@ember/service';
 
@@ -56,16 +56,16 @@ describe("ember 5 deprecate-router-events", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

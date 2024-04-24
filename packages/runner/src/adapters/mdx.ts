@@ -7,90 +7,90 @@ import type { Node } from "unist-util-filter/lib";
 import { CONTINUE, SKIP, visit } from "unist-util-visit";
 
 type TransformFunction = (
-  codemodSource: string,
-  oldPath: string,
-  oldData: string,
-  ...rest: unknown[]
+	codemodSource: string,
+	oldPath: string,
+	oldData: string,
+	...rest: unknown[]
 ) => string;
 
 const parseMdx = (data: string) =>
-  fromMarkdown(data, {
-    extensions: [mdxjs()],
-    mdastExtensions: [mdxFromMarkdown()],
-  });
+	fromMarkdown(data, {
+		extensions: [mdxjs()],
+		mdastExtensions: [mdxFromMarkdown()],
+	});
 
 const stringifyMdx = (tree: Root) =>
-  toMarkdown(tree, { extensions: [mdxToMarkdown()] });
+	toMarkdown(tree, { extensions: [mdxToMarkdown()] });
 
 const getNodeOffsetRange = (node: Node) => {
-  const { position } = node;
+	const { position } = node;
 
-  if (position === undefined) {
-    return null;
-  }
+	if (position === undefined) {
+		return null;
+	}
 
-  const {
-    start: { offset: startOffset },
-    end: { offset: endOffset },
-  } = position;
+	const {
+		start: { offset: startOffset },
+		end: { offset: endOffset },
+	} = position;
 
-  if (startOffset === undefined || endOffset === undefined) {
-    return null;
-  }
+	if (startOffset === undefined || endOffset === undefined) {
+		return null;
+	}
 
-  return {
-    start: startOffset,
-    end: endOffset,
-  };
+	return {
+		start: startOffset,
+		end: endOffset,
+	};
 };
 
 const JSX_NODE_TYPES = ["mdxjsEsm", "mdxJsxFlowElement"];
 
 export const mdxAdapter =
-  (transform: TransformFunction): TransformFunction =>
-  (codemodSource, oldPath, oldData, api, options, callback) => {
-    const tree = parseMdx(oldData);
+	(transform: TransformFunction): TransformFunction =>
+	(codemodSource, oldPath, oldData, api, options, callback) => {
+		const tree = parseMdx(oldData);
 
-    visit(tree, (node) => {
-      if (!JSX_NODE_TYPES.includes(node.type)) {
-        return CONTINUE;
-      }
+		visit(tree, (node) => {
+			if (!JSX_NODE_TYPES.includes(node.type)) {
+				return CONTINUE;
+			}
 
-      const offsetRange = getNodeOffsetRange(node);
+			const offsetRange = getNodeOffsetRange(node);
 
-      if (offsetRange === null) {
-        return CONTINUE;
-      }
+			if (offsetRange === null) {
+				return CONTINUE;
+			}
 
-      const { start, end } = offsetRange;
+			const { start, end } = offsetRange;
 
-      const mdxjsEsmValue = oldData.slice(start, end);
+			const mdxjsEsmValue = oldData.slice(start, end);
 
-      const transformedMdxjsEsmValue = transform(
-        codemodSource,
-        oldPath,
-        mdxjsEsmValue,
-        api,
-        options,
-        callback,
-      );
+			const transformedMdxjsEsmValue = transform(
+				codemodSource,
+				oldPath,
+				mdxjsEsmValue,
+				api,
+				options,
+				callback,
+			);
 
-      if (typeof transformedMdxjsEsmValue !== "string") {
-        return SKIP;
-      }
+			if (typeof transformedMdxjsEsmValue !== "string") {
+				return SKIP;
+			}
 
-      const root = parseMdx(transformedMdxjsEsmValue);
+			const root = parseMdx(transformedMdxjsEsmValue);
 
-      const newNode = root.children[0];
+			const newNode = root.children[0];
 
-      if (newNode === undefined) {
-        return SKIP;
-      }
+			if (newNode === undefined) {
+				return SKIP;
+			}
 
-      Object.assign(node, newNode);
+			Object.assign(node, newNode);
 
-      return SKIP;
-    });
+			return SKIP;
+		});
 
-    return stringifyMdx(tree);
-  };
+		return stringifyMdx(tree);
+	};

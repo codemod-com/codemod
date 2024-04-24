@@ -1,8 +1,8 @@
 import type { CaseHash } from "../cases/types";
 import {
-  type Message,
-  type MessageBus,
-  MessageKind,
+	type Message,
+	type MessageBus,
+	MessageKind,
 } from "../components/messageBus";
 import type { Job } from "../jobs/types";
 import type { ErrorEvent, Event, Telemetry } from "./telemetry";
@@ -10,81 +10,96 @@ import type { ErrorEvent, Event, Telemetry } from "./telemetry";
 import type { TelemetryLogger } from "vscode";
 
 export class VscodeTelemetryReporter implements Telemetry {
-  constructor(
-    private readonly __telemetryLogger: TelemetryLogger,
-    private readonly __messageBus: MessageBus,
-  ) {
-    this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
-      this.__onJobsAcceptedMessage(message),
-    );
+	constructor(
+		private readonly __telemetryLogger: TelemetryLogger,
+		private readonly __messageBus: MessageBus,
+	) {
+		this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
+			this.__onCodemodSetExecuted(message);
+		});
 
-    this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
-      this.__onJobsRejectedMessage(message),
-    );
-  }
+		this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
+			this.__onJobsAcceptedMessage(message),
+		);
 
-  __onJobsAcceptedMessage(
-    message: Message & { kind: MessageKind.jobsAccepted },
-  ): void {
-    const { deletedJobs } = message;
+		this.__messageBus.subscribe(MessageKind.jobsRejected, (message) =>
+			this.__onJobsRejectedMessage(message),
+		);
+	}
 
-    const jobsByExecution: Record<CaseHash, Job[]> = {};
+	__onJobsAcceptedMessage(
+		message: Message & { kind: MessageKind.jobsAccepted },
+	): void {
+		const { deletedJobs } = message;
 
-    for (const job of deletedJobs) {
-      const { caseHashDigest } = job;
+		const jobsByExecution: Record<CaseHash, Job[]> = {};
 
-      if (!jobsByExecution[caseHashDigest]) {
-        jobsByExecution[caseHashDigest] = [];
-      }
+		for (const job of deletedJobs) {
+			const { caseHashDigest } = job;
 
-      jobsByExecution[caseHashDigest]?.push(job);
-    }
+			if (!jobsByExecution[caseHashDigest]) {
+				jobsByExecution[caseHashDigest] = [];
+			}
 
-    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-      this.sendEvent({
-        kind: "jobsAccepted",
-        jobCount: jobs.length,
-        executionId: caseHashDigest as CaseHash,
-      });
-    }
-  }
+			jobsByExecution[caseHashDigest]?.push(job);
+		}
 
-  __onJobsRejectedMessage(
-    message: Message & { kind: MessageKind.jobsRejected },
-  ): void {
-    const { deletedJobs } = message;
+		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+			this.sendEvent({
+				kind: "jobsAccepted",
+				jobCount: jobs.length,
+				executionId: caseHashDigest as CaseHash,
+			});
+		}
+	}
 
-    const jobsByExecution: Record<string, Job[]> = {};
+	__onJobsRejectedMessage(
+		message: Message & { kind: MessageKind.jobsRejected },
+	): void {
+		const { deletedJobs } = message;
 
-    for (const job of deletedJobs) {
-      const { caseHashDigest } = job;
+		const jobsByExecution: Record<string, Job[]> = {};
 
-      if (!jobsByExecution[caseHashDigest]) {
-        jobsByExecution[caseHashDigest] = [];
-      }
+		for (const job of deletedJobs) {
+			const { caseHashDigest } = job;
 
-      jobsByExecution[caseHashDigest]?.push(job);
-    }
+			if (!jobsByExecution[caseHashDigest]) {
+				jobsByExecution[caseHashDigest] = [];
+			}
 
-    for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
-      this.sendEvent({
-        kind: "jobsRejected",
-        jobCount: jobs.length,
-        executionId: caseHashDigest as CaseHash,
-      });
-    }
-  }
+			jobsByExecution[caseHashDigest]?.push(job);
+		}
 
-  // transform path-like strings to bypass vscode logger filter
-  __transformPathLikeName(str: string): string {
-    return str.replaceAll("/", "_");
-  }
+		for (const [caseHashDigest, jobs] of Object.entries(jobsByExecution)) {
+			this.sendEvent({
+				kind: "jobsRejected",
+				jobCount: jobs.length,
+				executionId: caseHashDigest as CaseHash,
+			});
+		}
+	}
 
-  sendEvent(event: Event): void {
-    this.__telemetryLogger.logUsage(event.kind, event);
-  }
+	__onCodemodSetExecuted(
+		message: Message & { kind: MessageKind.codemodSetExecuted },
+	): void {
+		this.sendEvent({
+			kind: message.halted ? "codemodHalted" : "codemodExecuted",
+			executionId: message.case.hash,
+			fileCount: message.jobs.length,
+			codemodName: this.__transformPathLikeName(message.case.codemodName),
+		});
+	}
 
-  sendError(event: ErrorEvent): void {
-    this.__telemetryLogger.logError(event.kind, event);
-  }
+	// transform path-like strings to bypass vscode logger filter
+	__transformPathLikeName(str: string): string {
+		return str.replaceAll("/", "_");
+	}
+
+	sendEvent(event: Event): void {
+		this.__telemetryLogger.logUsage(event.kind, event);
+	}
+
+	sendError(event: ErrorEvent): void {
+		this.__telemetryLogger.logError(event.kind, event);
+	}
 }

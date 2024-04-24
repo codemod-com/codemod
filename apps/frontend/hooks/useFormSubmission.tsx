@@ -7,55 +7,55 @@ export const NEWSLETTER_ENDPOINT = "/api/newsletter-form";
 export const APPLY_TO_JOB_ENDPOINT = "/api/apply-to-job";
 
 export function useFormSubmission() {
-  const formRef = useRef<HTMLFormElement>(null);
-  const [formState, setFormState] = useState<
-    "idle" | "loading" | "error" | "success"
-  >("idle");
-  const [canSend, setCanSend] = useState(false);
+	const formRef = useRef<HTMLFormElement>(null);
+	const [formState, setFormState] = useState<
+		"idle" | "loading" | "error" | "success"
+	>("idle");
+	const [canSend, setCanSend] = useState(false);
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+	async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+		e.preventDefault();
 
-    const formData = new FormData(
-      e.currentTarget || (e.target as HTMLFormElement),
-    );
+		const formData = new FormData(
+			e.currentTarget || (e.target as HTMLFormElement),
+		);
 
-    if (formData.get("honeypot")) {
-      return;
-    }
+		if (formData.get("honeypot")) {
+			return;
+		}
 
-    setFormState("loading");
+		setFormState("loading");
 
-    const res = await fetch(`${formRef?.current?.action}`, {
-      method: "POST",
-      body: new URLSearchParams(formData as any),
-    });
+		const res = await fetch(`${formRef?.current?.action}`, {
+			method: "POST",
+			body: new URLSearchParams(formData as any),
+		});
 
-    if (res.status === 200 || res.headers.get("location") === "/success") {
-      setFormState("success");
-    } else {
-      setFormState("error");
-    }
-  }
+		if (res.status === 200 || res.headers.get("location") === "/success") {
+			setFormState("success");
+		} else {
+			setFormState("error");
+		}
+	}
 
-  useEffect(() => {
-    const form = formRef.current;
-    function checkValidity(e: Event) {
-      if (e.currentTarget instanceof HTMLFormElement) {
-        setCanSend(e.currentTarget.checkValidity());
-      }
-    }
-    form?.addEventListener("keyup", checkValidity);
+	useEffect(() => {
+		const form = formRef.current;
+		function checkValidity(e: Event) {
+			if (e.currentTarget instanceof HTMLFormElement) {
+				setCanSend(e.currentTarget.checkValidity());
+			}
+		}
+		form?.addEventListener("keyup", checkValidity);
 
-    return () => {
-      form?.removeEventListener("keyup", checkValidity);
-    };
-  }, [formRef]);
+		return () => {
+			form?.removeEventListener("keyup", checkValidity);
+		};
+	}, [formRef]);
 
-  return {
-    formState,
-    handleSubmit,
-    formRef,
-    canSend,
-  };
+	return {
+		formState,
+		handleSubmit,
+		formRef,
+		canSend,
+	};
 }

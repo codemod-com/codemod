@@ -10,30 +10,30 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
 const PagePreview = dynamic(
-  () => import("@/components/templates/ModularPage/PagePreview"),
+	() => import("@/components/templates/ModularPage/PagePreview"),
 );
 
 export async function generateMetadata(
-  props: RouteProps,
-  parent: ResolvingMetadata,
+	props: RouteProps,
+	parent: ResolvingMetadata,
 ) {
-  const pathname = `/`;
-  const initialData = await loadModularPage(pathname);
+	const pathname = `/`;
+	const initialData = await loadModularPage(pathname);
 
-  if (!initialData?.data) {
-    return notFound();
-  }
+	if (!initialData?.data) {
+		return notFound();
+	}
 
-  return resolveSanityRouteMetadata(initialData.data, parent);
+	return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function IndexRoute() {
-  const pathname = `/`;
-  const initial = await loadModularPage(pathname);
+	const pathname = `/`;
+	const initial = await loadModularPage(pathname);
 
-  return draftMode().isEnabled ? (
-    <PagePreview initial={initial} />
-  ) : (
-    <Page data={initial.data!} />
-  );
+	return draftMode().isEnabled ? (
+		<PagePreview initial={initial} />
+	) : (
+		<Page data={initial.data!} />
+	);
 }

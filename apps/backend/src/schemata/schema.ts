@@ -1,150 +1,150 @@
 import {
-  array,
-  boolean,
-  coerce,
-  literal,
-  number,
-  object,
-  optional,
-  parse,
-  string,
-  union,
+	array,
+	boolean,
+	coerce,
+	literal,
+	number,
+	object,
+	optional,
+	parse,
+	string,
+	union,
 } from "valibot";
 
 const engineSchema = union([
-  literal("gpt-4"),
-  literal("claude-2.0"),
-  literal("claude-instant-1.2"),
-  literal("replit-code-v1-3b"),
-  literal("gpt-4-with-chroma"),
+	literal("gpt-4"),
+	literal("claude-2.0"),
+	literal("claude-instant-1.2"),
+	literal("replit-code-v1-3b"),
+	literal("gpt-4-with-chroma"),
 ]);
 
 const clientIdentifierSchema = union([
-  literal("WEBSITE"),
-  literal("STUDIO"),
-  literal("VSCE"),
-  literal("CLI"),
+	literal("WEBSITE"),
+	literal("STUDIO"),
+	literal("VSCE"),
+	literal("CLI"),
 ]);
 
 export const parseClientIdentifierSchema = (input: unknown) =>
-  parse(clientIdentifierSchema, input);
+	parse(clientIdentifierSchema, input);
 
 export const sendMessageBodySchema = object({
-  message: string(),
-  parentMessageId: optional(string()),
+	message: string(),
+	parentMessageId: optional(string()),
 });
 
 export const parseSendMessageBody = (input: unknown) =>
-  parse(sendMessageBodySchema, input);
+	parse(sendMessageBodySchema, input);
 
 export const sendChatBodySchema = object({
-  messages: array(
-    object({
-      content: string(),
-      role: union([literal("system"), literal("user"), literal("assistant")]),
-      name: optional(string()),
-    }),
-  ),
-  engine: optional(engineSchema, "gpt-4"),
+	messages: array(
+		object({
+			content: string(),
+			role: union([literal("system"), literal("user"), literal("assistant")]),
+			name: optional(string()),
+		}),
+	),
+	engine: optional(engineSchema, "gpt-4"),
 });
 
 export const parseSendChatBody = (input: unknown) =>
-  parse(sendChatBodySchema, input);
+	parse(sendChatBodySchema, input);
 
 export const providerSchema = object({
-  provider: literal("github"),
+	provider: literal("github"),
 });
 
 export const parseCreateIssueParams = (input: unknown) =>
-  parse(providerSchema, input);
+	parse(providerSchema, input);
 
 export const createIssueBodySchema = object({
-  repo: string(),
-  title: string(),
-  body: string(),
+	repo: string(),
+	title: string(),
+	body: string(),
 });
 
 export const parseCreateIssueBody = (input: unknown) =>
-  parse(createIssueBodySchema, input);
+	parse(createIssueBodySchema, input);
 
 export const parseGetUserRepositoriesParams = (input: unknown) =>
-  parse(providerSchema, input);
+	parse(providerSchema, input);
 
 export const getCodemodsQuerySchema = object({
-  search: optional(coerce(string(), String)),
-  category: optional(union([string(), array(string())])),
-  author: optional(union([string(), array(string())])),
-  framework: optional(union([string(), array(string())])),
-  verified: optional(coerce(boolean(), (input) => input === "true")),
-  page: optional(coerce(number(), Number)),
-  size: optional(coerce(number(), Number)),
+	search: optional(coerce(string(), String)),
+	category: optional(union([string(), array(string())])),
+	author: optional(union([string(), array(string())])),
+	framework: optional(union([string(), array(string())])),
+	verified: optional(coerce(boolean(), (input) => input === "true")),
+	page: optional(coerce(number(), Number)),
+	size: optional(coerce(number(), Number)),
 });
 
 export const parseGetCodemodsQuery = (input: unknown) =>
-  parse(getCodemodsQuerySchema, input);
+	parse(getCodemodsQuerySchema, input);
 
 export const getCodemodBySlugParamsSchema = object({
-  slug: string(),
+	slug: string(),
 });
 
 export const parseGetCodemodBySlugParams = (input: unknown) =>
-  parse(getCodemodBySlugParamsSchema, input);
+	parse(getCodemodBySlugParamsSchema, input);
 
 export const getCodemodLatestVersionQuerySchema = object({
-  name: string(),
+	name: string(),
 });
 
 export const parseGetCodemodLatestVersionQuery = (input: unknown) =>
-  parse(getCodemodLatestVersionQuerySchema, input);
+	parse(getCodemodLatestVersionQuerySchema, input);
 
 export const listCodemodsQuerySchema = object({
-  search: optional(string()),
+	search: optional(string()),
 });
 
 export const parseListCodemodsQuery = (input: unknown) =>
-  parse(listCodemodsQuerySchema, input);
+	parse(listCodemodsQuerySchema, input);
 
 export const validateIntentParamsSchema = object({
-  id: string(),
+	id: string(),
 });
 
 export const parseValidateIntentParams = (input: unknown) =>
-  parse(validateIntentParamsSchema, input);
+	parse(validateIntentParamsSchema, input);
 
 export const buildAccessTokenQuerySchema = object({
-  sessionId: optional(string()),
-  iv: optional(string()),
+	sessionId: optional(string()),
+	iv: optional(string()),
 });
 
 export const parseBuildAccessTokenQuery = (input: unknown) =>
-  parse(buildAccessTokenQuerySchema, input);
+	parse(buildAccessTokenQuerySchema, input);
 
 export const ivObjectSchema = object({
-  iv: string(),
+	iv: string(),
 });
 
 export const parseIv = (input: unknown) => parse(ivObjectSchema, input);
 
 export const diffCreationBodySchema = object({
-  before: string(),
-  after: string(),
-  source: union([literal("cli"), literal("studio")]),
-  name: optional(string(), "untitled"),
+	before: string(),
+	after: string(),
+	source: union([literal("cli"), literal("studio")]),
+	name: optional(string(), "untitled"),
 });
 
 export const parseDiffCreationBody = (input: unknown) =>
-  parse(diffCreationBodySchema, input);
+	parse(diffCreationBodySchema, input);
 
 export const getCodeDiffSchema = object({
-  id: string(),
+	id: string(),
 });
 
 export const parseGetCodeDiffParams = (input: unknown) =>
-  parse(getCodeDiffSchema, input);
+	parse(getCodeDiffSchema, input);
 
 export const unpublishBodySchema = object({
-  name: string(),
+	name: string(),
 });
 
 export const parseUnpublishBody = (input: unknown) =>
-  parse(unpublishBodySchema, input);
+	parse(unpublishBodySchema, input);

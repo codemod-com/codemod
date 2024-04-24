@@ -1,24 +1,24 @@
 import apiClient from "./client";
 
 type GetCodeDiffResponse = {
-  before: string;
-  after: string;
+	before: string;
+	after: string;
 };
 
 export const getCodeDiff = async (body: {
-  diffId: string;
-  iv: string;
+	diffId: string;
+	iv: string;
 }): Promise<GetCodeDiffResponse | null> => {
-  const { diffId, iv } = body;
+	const { diffId, iv } = body;
 
-  try {
-    const res = await apiClient.get<GetCodeDiffResponse>(
-      `diffs/${diffId}?iv=${iv}`,
-    );
+	try {
+		const res = await apiClient.get<GetCodeDiffResponse>(
+			`diffs/${diffId}?iv=${iv}`,
+		);
 
-    return res.data;
-  } catch (e) {
-    console.error(e);
-    return null;
-  }
+		return res.data;
+	} catch (e) {
+		console.error(e);
+		return null;
+	}
 };

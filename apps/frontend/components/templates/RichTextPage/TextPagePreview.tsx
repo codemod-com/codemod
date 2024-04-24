@@ -8,18 +8,18 @@ import type { TextPagePayload } from "@/types";
 import TextPage from "./TextPage";
 
 type PreviewRouteProps = {
-  initial: QueryResponseInitial<TextPagePayload | null>;
+	initial: QueryResponseInitial<TextPagePayload | null>;
 };
 export default function TextPagePreview(props: PreviewRouteProps) {
-  const { initial } = props;
-  const { data } = useQuery<TextPagePayload | null>(
-    TEXT_PAGE_QUERY,
-    {
-      pathname: initial.data?.pathname,
-      locale: "en",
-    },
-    { initial },
-  );
+	const { initial } = props;
+	const { data } = useQuery<TextPagePayload | null>(
+		TEXT_PAGE_QUERY,
+		{
+			pathname: initial.data?.pathname,
+			locale: "en",
+		},
+		{ initial },
+	);
 
-  return data?._id && <TextPage data={data} />;
+	return data?._id && <TextPage data={data} />;
 }

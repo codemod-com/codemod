@@ -57,37 +57,37 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import type { RangeCommand } from "@studio/utils/tree";
 
 type UseRange = Readonly<{
-  ranges: ReadonlyArray<OffsetRange>;
-  target: "CODEMOD_INPUT" | "CODEMOD_OUTPUT" | "BEFORE_INPUT" | "AFTER_INPUT";
+	ranges: ReadonlyArray<OffsetRange>;
+	target: "CODEMOD_INPUT" | "CODEMOD_OUTPUT" | "BEFORE_INPUT" | "AFTER_INPUT";
 }>;
 
 export const useRangesOnTarget = () => {
-  const { setActiveEventHashDigest } = useLogStore();
-  const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
-  const setRanges = useExecuteRangeCommandOnBeforeInput();
-  const { setOutputSelection } = useSnippetStore();
-  return ({ ranges, target }: UseRange) => {
-    setActiveEventHashDigest(null);
+	const { setActiveEventHashDigest } = useLogStore();
+	const { setCodemodSelection } = useModStore();
+	const { setSelections } = useCodemodOutputStore();
+	const setRanges = useExecuteRangeCommandOnBeforeInput();
+	const { setOutputSelection } = useSnippetStore();
+	return ({ ranges, target }: UseRange) => {
+		setActiveEventHashDigest(null);
 
-    const rangeCommand: RangeCommand = {
-      kind: "FIND_CLOSEST_PARENT",
-      ranges,
-    };
+		const rangeCommand: RangeCommand = {
+			kind: "FIND_CLOSEST_PARENT",
+			ranges,
+		};
 
-    switch (target) {
-      case "CODEMOD_INPUT":
-        setCodemodSelection(rangeCommand);
-        break;
-      case "CODEMOD_OUTPUT":
-        setSelections(rangeCommand);
-        break;
-      case "BEFORE_INPUT":
-        setRanges(rangeCommand);
-        break;
-      case "AFTER_INPUT":
-        setOutputSelection(rangeCommand);
-        break;
-    }
-  };
+		switch (target) {
+			case "CODEMOD_INPUT":
+				setCodemodSelection(rangeCommand);
+				break;
+			case "CODEMOD_OUTPUT":
+				setSelections(rangeCommand);
+				break;
+			case "BEFORE_INPUT":
+				setRanges(rangeCommand);
+				break;
+			case "AFTER_INPUT":
+				setOutputSelection(rangeCommand);
+				break;
+		}
+	};
 };

@@ -1,14 +1,14 @@
 export interface ExternalUpsertFileCommand {
-  kind: "upsertFile";
-  path: string;
-  data: string;
+	kind: "upsertFile";
+	path: string;
+	data: string;
 }
 
 export interface ExternalDeleteFileCommand {
-  kind: "deleteFile";
-  path: string;
+	kind: "deleteFile";
+	path: string;
 }
 
 export type ExternalFileCommand =
-  | ExternalUpsertFileCommand
-  | ExternalDeleteFileCommand;
+	| ExternalUpsertFileCommand
+	| ExternalDeleteFileCommand;

@@ -1,85 +1,85 @@
 {
-  "name": "codemod",
-  "author": "Codemod, Inc.",
-  "version": "0.10.10",
-  "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
-  "type": "module",
-  "exports": null,
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/codemod-com/codemod.git",
-    "directory": "apps/cli"
-  },
-  "keywords": [
-    "codemod",
-    "jscodeshift",
-    "ts-morph",
-    "refactor",
-    "transform",
-    "cli",
-    "dependencies",
-    "migrate",
-    "eslint",
-    "prettier",
-    "progress",
-    "AST",
-    "next.js",
-    "ember",
-    "react"
-  ],
-  "main": "./dist/index.cjs",
-  "bin": "./dist/index.cjs",
-  "devDependencies": {
-    "@codemod-com/filemod": "workspace:*",
-    "@codemod-com/printer": "workspace:*",
-    "@codemod-com/runner": "workspace:*",
-    "@codemod-com/telemetry": "workspace:*",
-    "@codemod-com/utilities": "workspace:*",
-    "@types/columnify": "^1.5.4",
-    "@types/inquirer": "^9.0.7",
-    "@types/node": "18.11.9",
-    "@types/yargs": "^17.0.13",
-    "@vitest/coverage-v8": "^1.0.1",
-    "exponential-backoff": "^3.1.1",
-    "inquirer": "^9.2.16",
-    "keytar": "^7.9.0",
-    "axios": "^1.6.8",
-    "columnify": "^1.6.0",
-    "cosmiconfig": "^8.3.6",
-    "esbuild": "^0.17.14",
-    "fast-glob": "^3.3.2",
-    "form-data": "^4.0.0",
-    "memfs": "^4.6.0",
-    "prettier": "^3.2.5",
-    "terminal-link": "^3.0.0",
-    "ts-morph": "18.0.0",
-    "typescript": "5.2.2",
-    "valibot": "^0.24.1",
-    "vitest": "^1.0.1",
-    "yargs": "^17.6.2"
-  },
-  "scripts": {
-    "build": "node ./build.js",
-    "package": "pkg --compress GZip .",
-    "test": "TEST=1 vitest run",
-    "coverage": "TEST=1 vitest run --coverage",
-    "prepublishOnly": "pnpm run build",
-    "postinstall": "node scripts/postinstall.js"
-  },
-  "engines": {
-    "node": ">=18.5.0"
-  },
-  "pkg": {
-    "outputPath": "./package/"
-  },
-  "license": "Apache License, Version 2.0",
-  "files": [
-    "./dist/index.cjs",
-    "LICENSE",
-    "README.md",
-    "scripts/postinstall.js"
-  ],
-  "publishConfig": {
-    "access": "public"
-  }
+	"name": "codemod",
+	"author": "Codemod, Inc.",
+	"version": "0.10.9",
+	"description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
+	"type": "module",
+	"exports": null,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/codemod-com/codemod.git",
+		"directory": "apps/cli"
+	},
+	"keywords": [
+		"codemod",
+		"jscodeshift",
+		"ts-morph",
+		"refactor",
+		"transform",
+		"cli",
+		"dependencies",
+		"migrate",
+		"eslint",
+		"prettier",
+		"progress",
+		"AST",
+		"next.js",
+		"ember",
+		"react"
+	],
+	"main": "./dist/index.cjs",
+	"bin": "./dist/index.cjs",
+	"devDependencies": {
+		"@codemod-com/filemod": "workspace:*",
+		"@codemod-com/printer": "workspace:*",
+		"@codemod-com/runner": "workspace:*",
+		"@codemod-com/telemetry": "workspace:*",
+		"@codemod-com/utilities": "workspace:*",
+		"@types/columnify": "^1.5.4",
+		"@types/inquirer": "^9.0.7",
+		"@types/node": "18.11.9",
+		"@types/yargs": "^17.0.13",
+		"@vitest/coverage-v8": "^1.0.1",
+		"exponential-backoff": "^3.1.1",
+		"inquirer": "^9.2.16",
+		"keytar": "^7.9.0",
+		"axios": "^1.6.8",
+		"columnify": "^1.6.0",
+		"cosmiconfig": "^8.3.6",
+		"esbuild": "^0.17.14",
+		"fast-glob": "^3.3.2",
+		"form-data": "^4.0.0",
+		"memfs": "^4.6.0",
+		"prettier": "^3.2.5",
+		"terminal-link": "^3.0.0",
+		"ts-morph": "18.0.0",
+		"typescript": "5.2.2",
+		"valibot": "^0.24.1",
+		"vitest": "^1.0.1",
+		"yargs": "^17.6.2"
+	},
+	"scripts": {
+		"build": "node ./build.js",
+		"package": "pkg --compress GZip .",
+		"test": "TEST=1 vitest run",
+		"coverage": "TEST=1 vitest run --coverage",
+		"prepublishOnly": "pnpm run build",
+		"postinstall": "node scripts/postinstall.js"
+	},
+	"engines": {
+		"node": ">=18.5.0"
+	},
+	"pkg": {
+		"outputPath": "./package/"
+	},
+	"license": "Apache License, Version 2.0",
+	"files": [
+		"./dist/index.cjs",
+		"LICENSE",
+		"README.md",
+		"scripts/postinstall.js"
+	],
+	"publishConfig": {
+		"access": "public"
+	}
 }

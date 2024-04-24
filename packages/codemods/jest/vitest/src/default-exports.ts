@@ -27,126 +27,126 @@ import type core from "jscodeshift";
 import type { Collection } from "jscodeshift";
 
 export const updateDefaultExportMocks = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
-  filePath: string,
+	root: Collection<T>,
+	j: core.JSCodeshift,
+	filePath: string,
 ) => {
-  root
-    .find(j.CallExpression, {
-      callee: {
-        type: "MemberExpression",
-        object: { type: "Identifier", name: "jest" },
-        property: { type: "Identifier" },
-      },
-    })
-    .filter((path) => {
-      const { callee } = path.value;
-      if (
-        !j.MemberExpression.check(callee) ||
-        !j.Identifier.check(callee.property)
-      ) {
-        return false;
-      }
+	root
+		.find(j.CallExpression, {
+			callee: {
+				type: "MemberExpression",
+				object: { type: "Identifier", name: "jest" },
+				property: { type: "Identifier" },
+			},
+		})
+		.filter((path) => {
+			const { callee } = path.value;
+			if (
+				!j.MemberExpression.check(callee) ||
+				!j.Identifier.check(callee.property)
+			) {
+				return false;
+			}
 
-      return ["mock", "setMock"].includes(callee.property.name);
-    })
-    .forEach((path) => {
-      const { arguments: args } = path.value;
+			return ["mock", "setMock"].includes(callee.property.name);
+		})
+		.forEach((path) => {
+			const { arguments: args } = path.value;
 
-      if (args.length < 2) {
-        return;
-      }
+			if (args.length < 2) {
+				return;
+			}
 
-      const [moduleName, mock] = args;
+			const [moduleName, mock] = args;
 
-      if (
-        mock.type !== "ArrowFunctionExpression" &&
-        mock.type !== "FunctionExpression"
-      ) {
-        return;
-      }
+			if (
+				mock.type !== "ArrowFunctionExpression" &&
+				mock.type !== "FunctionExpression"
+			) {
+				return;
+			}
 
-      if (
-        moduleName.type !== "Literal" &&
-        moduleName.type !== "StringLiteral"
-      ) {
-        return;
-      }
+			if (
+				moduleName.type !== "Literal" &&
+				moduleName.type !== "StringLiteral"
+			) {
+				return;
+			}
 
-      const modulePath = resolve(
-        join(dirname(filePath), moduleName.value as string),
-      );
+			const modulePath = resolve(
+				join(dirname(filePath), moduleName.value as string),
+			);
 
-      const module = require(modulePath);
+			const module = require(modulePath);
 
-      if (typeof module === "object") {
-        return;
-      }
+			if (typeof module === "object") {
+				return;
+			}
 
-      if (mock.type === "ArrowFunctionExpression") {
-        const mockBody = mock.body;
-        if (
-          mockBody.type === "ObjectExpression" &&
-          mockBody.properties
-            .map((p) => {
-              if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
-                return;
-              }
+			if (mock.type === "ArrowFunctionExpression") {
+				const mockBody = mock.body;
+				if (
+					mockBody.type === "ObjectExpression" &&
+					mockBody.properties
+						.map((p) => {
+							if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
+								return;
+							}
 
-              return p.key.name;
-            })
-            .filter(Boolean)
-            .includes("default")
-        ) {
-          return;
-        }
+							return p.key.name;
+						})
+						.filter(Boolean)
+						.includes("default")
+				) {
+					return;
+				}
 
-        if (mockBody.type !== "BlockStatement") {
-          mock.body = j.objectExpression([
-            j.property("init", j.identifier("default"), mockBody),
-          ]);
-          return;
-        }
-      }
+				if (mockBody.type !== "BlockStatement") {
+					mock.body = j.objectExpression([
+						j.property("init", j.identifier("default"), mockBody),
+					]);
+					return;
+				}
+			}
 
-      if (
-        !j.FunctionExpression.check(mock) &&
-        !j.ArrowFunctionExpression.check(mock)
-      ) {
-        return;
-      }
+			if (
+				!j.FunctionExpression.check(mock) &&
+				!j.ArrowFunctionExpression.check(mock)
+			) {
+				return;
+			}
 
-      const mockBody = mock.body;
+			const mockBody = mock.body;
 
-      if (!j.BlockStatement.check(mockBody)) {
-        return;
-      }
+			if (!j.BlockStatement.check(mockBody)) {
+				return;
+			}
 
-      const returnStatement = mockBody.body[mockBody.body.length - 1];
-      if (returnStatement.type === "ReturnStatement") {
-        const returnArgument = returnStatement.argument;
+			const returnStatement = mockBody.body[mockBody.body.length - 1];
+			if (returnStatement.type === "ReturnStatement") {
+				const returnArgument = returnStatement.argument;
 
-        if (returnArgument) {
-          if (
-            returnArgument.type === "ObjectExpression" &&
-            returnArgument.properties
-              .map((p) => {
-                if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
-                  return;
-                }
+				if (returnArgument) {
+					if (
+						returnArgument.type === "ObjectExpression" &&
+						returnArgument.properties
+							.map((p) => {
+								if (!j.ObjectProperty.check(p) || !j.Identifier.check(p.key)) {
+									return;
+								}
 
-                return p.key.name;
-              })
-              .filter(Boolean)
-              .includes("default")
-          ) {
-            return;
-          }
+								return p.key.name;
+							})
+							.filter(Boolean)
+							.includes("default")
+					) {
+						return;
+					}
 
-          returnStatement.argument = j.objectExpression([
-            j.property("init", j.identifier("default"), returnArgument),
-          ]);
-        }
-      }
-    });
+					returnStatement.argument = j.objectExpression([
+						j.property("init", j.identifier("default"), returnArgument),
+					]);
+				}
+			}
+		});
 };

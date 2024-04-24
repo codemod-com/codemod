@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 jquery-event", () => {
-  it("basic", () => {
-    const INPUT = `
+	it("basic", () => {
+		const INPUT = `
 		// your event handler:
         export default Component.extend({
         click(event) {
@@ -15,7 +15,7 @@ describe("ember 5 jquery-event", () => {
         });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 		// your event handler:
         export default Component.extend({
         click(event) {
@@ -24,16 +24,16 @@ describe("ember 5 jquery-event", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			OUTPUT.replace(/\W/gm, ""),
+		);
+	});
 });

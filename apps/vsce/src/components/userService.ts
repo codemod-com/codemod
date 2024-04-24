@@ -1,30 +1,30 @@
 import type { Memento } from "vscode";
 
 export class GlobalStateTokenStorage {
-  constructor(private readonly __globalState: Memento) {}
+	constructor(private readonly __globalState: Memento) {}
 
-  getAccessToken(): string | null {
-    const accessToken = this.__globalState.get("accessToken");
-    return typeof accessToken === "string" ? accessToken : null;
-  }
+	getAccessToken(): string | null {
+		const accessToken = this.__globalState.get("accessToken");
+		return typeof accessToken === "string" ? accessToken : null;
+	}
 
-  setAccessToken(accessToken: string | undefined): void {
-    this.__globalState.update("accessToken", accessToken);
-  }
+	setAccessToken(accessToken: string | undefined): void {
+		this.__globalState.update("accessToken", accessToken);
+	}
 }
 
 export class UserService {
-  constructor(private readonly __storage: GlobalStateTokenStorage) {}
+	constructor(private readonly __storage: GlobalStateTokenStorage) {}
 
-  getLinkedToken() {
-    return this.__storage.getAccessToken();
-  }
+	getLinkedToken() {
+		return this.__storage.getAccessToken();
+	}
 
-  unlinkCodemodComUserAccount(): void {
-    this.__storage.setAccessToken(undefined);
-  }
+	unlinkCodemodComUserAccount(): void {
+		this.__storage.setAccessToken(undefined);
+	}
 
-  linkCodemodComUserAccount(accessToken: string): void {
-    this.__storage.setAccessToken(accessToken);
-  }
+	linkCodemodComUserAccount(accessToken: string): void {
+		this.__storage.setAccessToken(accessToken);
+	}
 }

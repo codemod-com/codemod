@@ -26,93 +26,93 @@ import type core from "jscodeshift";
 import type { Collection } from "jscodeshift";
 
 const jestGlobalApis = [
-  "afterAll",
-  "afterEach",
-  "beforeAll",
-  "beforeEach",
-  "describe",
-  "test",
-  "it",
-  "fit",
-  "expect",
+	"afterAll",
+	"afterEach",
+	"beforeAll",
+	"beforeEach",
+	"describe",
+	"test",
+	"it",
+	"fit",
+	"expect",
 ];
 
 const testApiProps = ["concurrent", "each", "only", "skip", "todo", "failing"];
 const jestGlobalApiProps = {
-  describe: ["each", "only", "skip"],
-  fit: ["each", "failing"],
-  it: testApiProps,
-  test: testApiProps,
+	describe: ["each", "only", "skip"],
+	fit: ["each", "failing"],
+	it: testApiProps,
+	test: testApiProps,
 };
 
 const jestToVitestApiMap: Record<string, string> = {
-  fit: "it",
-  jest: "vi",
+	fit: "it",
+	jest: "vi",
 };
 
 export const getApisFromMemberExpression = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
+	root: Collection<T>,
+	j: core.JSCodeshift,
 ): string[] => {
-  const apisFromMemberExpression = [];
+	const apisFromMemberExpression = [];
 
-  for (const [jestApi, jestApiProps] of Object.entries(jestGlobalApiProps)) {
-    const propNamesList = root
-      .find(j.MemberExpression, {
-        object: { name: jestApi },
-        property: { type: "Identifier" },
-      })
-      .nodes()
-      .map((node) => j.Identifier.check(node.property) && node.property.name)
-      .filter(Boolean) as string[];
+	for (const [jestApi, jestApiProps] of Object.entries(jestGlobalApiProps)) {
+		const propNamesList = root
+			.find(j.MemberExpression, {
+				object: { name: jestApi },
+				property: { type: "Identifier" },
+			})
+			.nodes()
+			.map((node) => j.Identifier.check(node.property) && node.property.name)
+			.filter(Boolean) as string[];
 
-    const propNames = [...new Set(propNamesList)];
-    for (const propName of propNames) {
-      if (jestApiProps.includes(propName)) {
-        apisFromMemberExpression.push(jestToVitestApiMap[jestApi] ?? jestApi);
-        break;
-      }
-    }
-  }
+		const propNames = [...new Set(propNamesList)];
+		for (const propName of propNames) {
+			if (jestApiProps.includes(propName)) {
+				apisFromMemberExpression.push(jestToVitestApiMap[jestApi] ?? jestApi);
+				break;
+			}
+		}
+	}
 
-  const jestObjectName = "jest";
-  const jestObjectApiCalls = root
-    .find(j.MemberExpression, {
-      object: { name: jestObjectName },
-      property: { type: "Identifier" },
-    })
-    .filter(
-      (path) =>
-        j.Identifier.check(path.node.property) &&
-        path.node.property.name !== "disableAutomock",
-    );
+	const jestObjectName = "jest";
+	const jestObjectApiCalls = root
+		.find(j.MemberExpression, {
+			object: { name: jestObjectName },
+			property: { type: "Identifier" },
+		})
+		.filter(
+			(path) =>
+				j.Identifier.check(path.node.property) &&
+				path.node.property.name !== "disableAutomock",
+		);
 
-  if (jestObjectApiCalls.length) {
-    apisFromMemberExpression.push(
-      jestToVitestApiMap[jestObjectName] ?? jestObjectName,
-    );
-  }
+	if (jestObjectApiCalls.length) {
+		apisFromMemberExpression.push(
+			jestToVitestApiMap[jestObjectName] ?? jestObjectName,
+		);
+	}
 
-  return apisFromMemberExpression;
+	return apisFromMemberExpression;
 };
 
 export const getApisFromCallExpression = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
+	root: Collection<T>,
+	j: core.JSCodeshift,
 ): string[] => {
-  const apisFromCallExpression = [];
+	const apisFromCallExpression = [];
 
-  for (const jestGlobalApi of jestGlobalApis) {
-    const calls = root.find(j.CallExpression, {
-      callee: { name: jestGlobalApi },
-    });
+	for (const jestGlobalApi of jestGlobalApis) {
+		const calls = root.find(j.CallExpression, {
+			callee: { name: jestGlobalApi },
+		});
 
-    if (calls.length > 0) {
-      apisFromCallExpression.push(
-        jestGlobalApi !== "fit" ? jestGlobalApi : "it",
-      );
-    }
-  }
+		if (calls.length > 0) {
+			apisFromCallExpression.push(
+				jestGlobalApi !== "fit" ? jestGlobalApi : "it",
+			);
+		}
+	}
 
-  return apisFromCallExpression;
+	return apisFromCallExpression;
 };

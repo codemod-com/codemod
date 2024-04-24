@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 index-router", () => {
-  it('Should replace IndexRoute with Route with "exact" prop', async () => {
-    const input = `
+	it('Should replace IndexRoute with Route with "exact" prop', async () => {
+		const input = `
 		const App = () => (
 			<div>
 				<IndexRoute component={Home} />;
@@ -14,7 +14,7 @@ describe("react-router v4 index-router", () => {
 		);
 		`;
 
-    const output = `
+		const output = `
 		const App = () => (
 			<div>
 				<Route exact path="/" component={Home} />;
@@ -22,18 +22,18 @@ describe("react-router v4 index-router", () => {
 		);		
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		const actualOutput = transform(fileInfo, buildApi("js"), {
+			quote: "single",
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      output.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			output.replace(/\W/gm, ""),
+		);
+	});
 });

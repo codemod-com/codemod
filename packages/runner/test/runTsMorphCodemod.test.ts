@@ -21,32 +21,32 @@ export const handleSourceFile = (
 `);
 
 describe("runTsMorphCodemod", () => {
-  it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
+	it("should return transformed output", () => {
+		const messages: [ConsoleKind, string][] = [];
 
-    const fileCommands = runTsMorphCodemod(
-      codemodSource,
-      "index.ts",
-      "",
-      false,
-      {},
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
-    );
+		const fileCommands = runTsMorphCodemod(
+			codemodSource,
+			"index.ts",
+			"",
+			false,
+			{},
+			(consoleKind, message) => {
+				messages.push([consoleKind, message]);
+			},
+		);
 
-    deepStrictEqual(fileCommands.length, 1);
+		deepStrictEqual(fileCommands.length, 1);
 
-    const [fileCommand] = fileCommands;
+		const [fileCommand] = fileCommands;
 
-    deepStrictEqual(fileCommand, {
-      kind: "updateFile",
-      oldPath: "index.ts",
-      oldData: "",
-      newData: "class Test {\n}\n",
-      formatWithPrettier: true,
-    });
+		deepStrictEqual(fileCommand, {
+			kind: "updateFile",
+			oldPath: "index.ts",
+			oldData: "",
+			newData: "class Test {\n}\n",
+			formatWithPrettier: true,
+		});
 
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
-  });
+		deepStrictEqual(messages, [["log", "/index.ts"]]);
+	});
 });

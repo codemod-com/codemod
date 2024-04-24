@@ -8,7 +8,7 @@
 @tailwind utilities;
 
 
-.studio  {
+html {
 	scroll-behavior: smooth;
 }
 
@@ -58,12 +58,12 @@
 }
 
 /* monaco styles */
-.studio .monaco-link {
+.monaco-link {
 	text-decoration: underline;
 	color: blue;
 	cursor: pointer;
 }
-.studio .after-hidden .editor.original , .studio .after-hidden .original-in-monaco-diff-editor {
+.after-hidden .editor.original , .after-hidden .original-in-monaco-diff-editor {
 	display: none;
 }
 
@@ -71,33 +71,33 @@
 	left: 0 !important;
 }
 
-.studio .output-shown .editor.original , .studio .output-shown .original-in-monaco-diff-editor {
+.output-shown .editor.original , .output-shown .original-in-monaco-diff-editor {
 	display: none;
 }
 
-.studio .output-shown .editor.modified {
+.output-shown .editor.modified {
 	width: 100%;
 }
 
-.studio .after-shown .editor.modified {
+.after-shown .editor.modified {
 	display: none;
 }
 
-.studio .after-shown .editor.original {
+.after-shown .editor.original {
 	display: block;
 	width: 100%;
 }
 
-.studio .after-shown .editor.original * {
+.after-shown .editor.original * {
 	width: 100%;
 }
 
-.studio .after-shown .editor.original {
+.after-shown .editor.original {
 	left: 0 !important;
 }
 
 
-.studio .monaco-placeholder {
+.monaco-placeholder {
 	position: absolute;
 	display: block;
 	white-space: pre-wrap;
@@ -115,37 +115,37 @@
 * resize handler
 */
 
-.studio .resizeHandleOuter {
+.resizeHandleOuter {
 	position: relative;
 	@apply bg-gray-300;
 	@apply dark:bg-gray-600;
 }
 
-.studio .resizeHandleOuter:hover {
+.resizeHandleOuter:hover {
 	@apply bg-primary-light;
 	@apply dark:bg-primary-dark;
 }
 
-.studio .resizeHandlerOuter-horizontal {
+.resizeHandlerOuter-horizontal {
 	width: 3px;
 	outline: none;
 	@apply h-full;
 	@apply my-auto;
 }
 
-.studio .resizeHandlerOuter-vertical {
+.resizeHandlerOuter-vertical {
 	height: 3px;
 	outline: none;
 	@apply w-full;
 	@apply mx-auto;
 }
 
-.studio .resizeHandleOuter[data-resize-handle-active] {
+.resizeHandleOuter[data-resize-handle-active] {
 	@apply bg-primary;
 	@apply dark:bg-primary;
 }
 
-.studio .resizeHandlerOuter-horizontal .icon {
+.resizeHandlerOuter-horizontal .icon {
 	width: 1em;
 	height: 1em;
 	position: absolute;
@@ -154,7 +154,7 @@
 	left: calc(50% - 0.5rem);
 }
 
-.studio .resizeHandlerOuter-vertical .icon {
+.resizeHandlerOuter-vertical .icon {
 	width: 1em;
 	height: 1em;
 	position: absolute;
@@ -163,7 +163,7 @@
 	left: calc(50% - 0.5rem);
 }
 
-.studio .resizeHandleOuter .icon {
+.resizeHandleOuter .icon {
 	width: 1em;
 	height: 1em;
 	position: absolute;
@@ -171,7 +171,7 @@
 	bottom: calc(50% - 0.5rem);
 }
 
-.studio .resizeHandleInner-horizontal {
+.resizeHandleInner-horizontal {
 	top: 0.25em;
 	bottom: 0.25em;
 	left: 0.25em;
@@ -180,7 +180,7 @@
 	transition: background-color 0.2s linear;
 }
 
-.studio .resizeHandleInner-vertical {
+.resizeHandleInner-vertical {
 	top: 0.25em;
 	bottom: 0.25em;
 	left: 0.25em;
@@ -189,26 +189,26 @@
 	transition: background-color 0.2s linear;
 }
 
-.studio .highlight {
+.highlight {
 	background-color: rgb(150, 220, 255);
 }
 
-.studio .dark .highlight {
+.dark .highlight {
 	background-color: rgba(96, 96, 192, 0.5);
 }
 
-.studio .monaco-editor {
+.monaco-editor {
 	--vscode-editor-selectionBackground: rgba(96, 96, 192, 0.5) !important;
 }
 
-.studio .popup-content {
+.popup-content {
 	@apply bg-gray-light-darker;
 	@apply dark:bg-gray-light;
 	@apply dark:border-gray-darker;
 	@apply shadow-none;
 }
 
-.studio .popup-arrow {
+.popup-arrow {
 	@apply text-gray-light-darker;
 	@apply dark:text-gray-light;
 	@apply dark:border-gray-darker;
@@ -216,77 +216,78 @@
 }
 
 /*!* below is from shadcn-ui setup *!*/
-.studio {
-		--background: 0 0% 100%;
-		--foreground: 222.2 84% 4.9%;
+/*@layer base {*/
+/*	:root {*/
+/*		--background: 0 0% 100%;*/
+/*		--foreground: 222.2 84% 4.9%;*/
 
-		--card: 0 0% 100%;
-		--card-foreground: 222.2 84% 4.9%;
+/*		--card: 0 0% 100%;*/
+/*		--card-foreground: 222.2 84% 4.9%;*/
 
-		--popover: 0 0% 100%;
-		--popover-foreground: 222.2 84% 4.9%;
+/*		--popover: 0 0% 100%;*/
+/*		--popover-foreground: 222.2 84% 4.9%;*/
 
-		--primary: 222.2 47.4% 11.2%;
-		--primary-foreground: 210 40% 98%;
+/*		--primary: 222.2 47.4% 11.2%;*/
+/*		--primary-foreground: 210 40% 98%;*/
 
-		--secondary: 210 40% 96.1%;
-		--secondary-foreground: 222.2 47.4% 11.2%;
+/*		--secondary: 210 40% 96.1%;*/
+/*		--secondary-foreground: 222.2 47.4% 11.2%;*/
 
-		--muted: 210 40% 96.1%;
-		--muted-foreground: 215.4 16.3% 46.9%;
+/*		--muted: 210 40% 96.1%;*/
+/*		--muted-foreground: 215.4 16.3% 46.9%;*/
 
-		--accent: 210 40% 96.1%;
-		--accent-foreground: 222.2 47.4% 11.2%;
-		--accent-pressed: 210 40% 85%;
+/*		--accent: 210 40% 96.1%;*/
+/*		--accent-foreground: 222.2 47.4% 11.2%;*/
+/*		--accent-pressed: 210 40% 85%;*/
 
-		--destructive: 0 84.2% 60.2%;
-		--destructive-foreground: 210 40% 98%;
+/*		--destructive: 0 84.2% 60.2%;*/
+/*		--destructive-foreground: 210 40% 98%;*/
 
-		--border: 214.3 31.8% 91.4%;
-		--input: 214.3 31.8% 91.4%;
-		--ring: 222.2 84% 4.9%;
+/*		--border: 214.3 31.8% 91.4%;*/
+/*		--input: 214.3 31.8% 91.4%;*/
+/*		--ring: 222.2 84% 4.9%;*/
 
-		--radius: 0.5rem;
-	}
+/*		--radius: 0.5rem;*/
+/*	}*/
 
-.dark .studio  {
-	--background: 222.2 84% 4.9%;
-	--foreground: 210 40% 98%;
+/*	.dark {*/
+/*		--background: 222.2 84% 4.9%;*/
+/*		--foreground: 210 40% 98%;*/
 
-	--card: 222.2 84% 4.9%;
-	--card-foreground: 210 40% 98%;
+/*		--card: 222.2 84% 4.9%;*/
+/*		--card-foreground: 210 40% 98%;*/
 
-	--popover: 222.2 84% 4.9%;
-	--popover-foreground: 210 40% 98%;
+/*		--popover: 222.2 84% 4.9%;*/
+/*		--popover-foreground: 210 40% 98%;*/
 
-	--primary: 210 40% 98%;
-	--primary-foreground: 222.2 47.4% 11.2%;
+/*		--primary: 210 40% 98%;*/
+/*		--primary-foreground: 222.2 47.4% 11.2%;*/
 
-	--secondary: 217.2 32.6% 17.5%;
-	--secondary-foreground: 210 40% 98%;
+/*		--secondary: 217.2 32.6% 17.5%;*/
+/*		--secondary-foreground: 210 40% 98%;*/
 
-	--muted: 217.2 32.6% 17.5%;
-	--muted-foreground: 215 20.2% 65.1%;
+/*		--muted: 217.2 32.6% 17.5%;*/
+/*		--muted-foreground: 215 20.2% 65.1%;*/
 
-	--accent: 217.2 32.6% 17.5%;
-	--accent-foreground: 210 40% 98%;
-	--accent-pressed: 217.2 32.6% 26.5%;
+/*		--accent: 217.2 32.6% 17.5%;*/
+/*		--accent-foreground: 210 40% 98%;*/
+/*		--accent-pressed: 217.2 32.6% 26.5%;*/
 
-	--destructive: 0 62.8% 30.6%;
-	--destructive-foreground: 210 40% 98%;
+/*		--destructive: 0 62.8% 30.6%;*/
+/*		--destructive-foreground: 210 40% 98%;*/
 
-	--border: 217.2 32.6% 17.5%;
-	--input: 217.2 32.6% 17.5%;
-	--ring: hsl(212.7, 26.8%, 83.9);
-}
+/*		--border: 217.2 32.6% 17.5%;*/
+/*		--input: 217.2 32.6% 17.5%;*/
+/*		--ring: hsl(212.7, 26.8%, 83.9);*/
+/*	}*/
+/*}*/
 
 
-
-.studio * {
+* {
 	@apply border-border;
 }
 
-.studio  {
+body {
 	@apply bg-background text-foreground;
 }
 

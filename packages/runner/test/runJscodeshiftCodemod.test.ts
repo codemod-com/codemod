@@ -57,36 +57,36 @@ export default function transform(
 `);
 
 describe("runJscodeshiftCodemod", () => {
-  it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
+	it("should return transformed output", () => {
+		const messages: [ConsoleKind, string][] = [];
 
-    const oldData = "function mapStateToProps(state) {}";
+		const oldData = "function mapStateToProps(state) {}";
 
-    const fileCommands = runJscodeshiftCodemod(
-      codemodSource,
-      "/index.ts",
-      oldData,
-      false,
-      {},
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
-    );
+		const fileCommands = runJscodeshiftCodemod(
+			codemodSource,
+			"/index.ts",
+			oldData,
+			false,
+			{},
+			(consoleKind, message) => {
+				messages.push([consoleKind, message]);
+			},
+		);
 
-    deepStrictEqual(fileCommands.length, 1);
+		deepStrictEqual(fileCommands.length, 1);
 
-    const [fileCommand] = fileCommands;
+		const [fileCommand] = fileCommands;
 
-    const newData = "function mapStateToProps(state: State) {}";
+		const newData = "function mapStateToProps(state: State) {}";
 
-    deepStrictEqual(fileCommand, {
-      kind: "updateFile",
-      oldPath: "/index.ts",
-      oldData,
-      newData,
-      formatWithPrettier: true,
-    });
+		deepStrictEqual(fileCommand, {
+			kind: "updateFile",
+			oldPath: "/index.ts",
+			oldData,
+			newData,
+			formatWithPrettier: true,
+		});
 
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
-  });
+		deepStrictEqual(messages, [["log", "/index.ts"]]);
+	});
 });

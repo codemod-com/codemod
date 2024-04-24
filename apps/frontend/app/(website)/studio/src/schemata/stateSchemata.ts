@@ -2,10 +2,10 @@ import { knownEnginesSchema } from "@codemod-com/utilities";
 import { type Output, object, parse, string } from "valibot";
 
 const stateSchema = object({
-  engine: knownEnginesSchema,
-  beforeSnippet: string(),
-  afterSnippet: string(),
-  codemodSource: string(),
+	engine: knownEnginesSchema,
+	beforeSnippet: string(),
+	afterSnippet: string(),
+	codemodSource: string(),
 });
 
 export type State = Output<typeof stateSchema>;

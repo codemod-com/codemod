@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 browser-router", () => {
-  it("should replace Router component with BrowserRouter, add BrowserRouter import", async () => {
-    const input = `
+	it("should replace Router component with BrowserRouter, add BrowserRouter import", async () => {
+		const input = `
 		import { Router, browserHistory } from 'react-router';
 		const MyApp = () => (
 		<Router history={browserHistory}>
@@ -15,7 +15,7 @@ describe("react-router v4 browser-router", () => {
 		);
 		`;
 
-    const output = `
+		const output = `
 		import { BrowserRouter } from 'react-router-dom';
 		import { Router, browserHistory } from 'react-router';
 		const MyApp = () => (
@@ -24,16 +24,16 @@ describe("react-router v4 browser-router", () => {
 		</BrowserRouter>
 		);
 		`;
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: trimLicense(input),
-    };
+		const fileInfo: FileInfo = {
+			path: "index.js",
+			source: trimLicense(input),
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		const actualOutput = transform(fileInfo, buildApi("js"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      trimLicense(output).replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ""),
+			trimLicense(output).replace(/\W/gm, ""),
+		);
+	});
 });

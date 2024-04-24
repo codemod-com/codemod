@@ -9,27 +9,27 @@ import type { RegistryIndexPayload } from "@/types";
 import RegistryIndex from "./RegistryIndex";
 
 type PreviewRouteProps = {
-  searchParams?: URLSearchParams;
-  initial: QueryResponseInitial<RegistryIndexPayload | null>;
+	searchParams?: URLSearchParams;
+	initial: QueryResponseInitial<RegistryIndexPayload | null>;
 };
 
 export default function RegistryIndexPreview(props: PreviewRouteProps) {
-  const { initial, searchParams } = props;
-  const registryEntries = initial?.data?.entries || [];
-  const registryIndexQuery = buildRegistryIndexQuery();
+	const { initial, searchParams } = props;
+	const registryEntries = initial?.data?.entries || [];
+	const registryIndexQuery = buildRegistryIndexQuery();
 
-  const { data } = useQuery<RegistryIndexPayload | null>(
-    registryIndexQuery,
-    { pathname: "/registry" },
-    { initial },
-  );
+	const { data } = useQuery<RegistryIndexPayload | null>(
+		registryIndexQuery,
+		{ pathname: "/registry" },
+		{ initial },
+	);
 
-  return data ? (
-    <RegistryIndex
-      data={{
-        ...data,
-        entries: registryEntries,
-      }}
-    />
-  ) : null;
+	return data ? (
+		<RegistryIndex
+			data={{
+				...data,
+				entries: registryEntries,
+			}}
+		/>
+	) : null;
 }

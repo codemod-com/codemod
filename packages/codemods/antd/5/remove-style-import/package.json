@@ -1,15 +1,15 @@
 {
-  "name": "@codemod-com/codemod-antd-5-v5-remove-style-import",
-  "dependencies": { "@codemod-com/antd5-utils": "workspace:*" },
-  "devDependencies": {
-    "@codemod-com/utilities": "workspace:*",
-    "typescript": "^5.2.2",
-    "ts-node": "^10.9.1",
-    "jscodeshift": "^0.15.1",
-    "@types/jscodeshift": "^0.11.10"
-  },
-  "main": "./dist/index.cjs",
-  "scripts": {},
-  "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
-  "type": "module"
+	"name": "@codemod-com/codemod-antd-5-v5-remove-style-import",
+	"dependencies": { "@codemod-com/antd5-utils": "workspace:*" },
+	"devDependencies": {
+		"@codemod-com/utilities": "workspace:*",
+		"typescript": "^5.2.2",
+		"ts-node": "^10.9.1",
+		"jscodeshift": "^0.15.1",
+		"@types/jscodeshift": "^0.11.10"
+	},
+	"main": "./dist/index.cjs",
+	"scripts": {},
+	"files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
+	"type": "module"
 }

@@ -4,43 +4,43 @@ import type { KnownEngines } from "./schemata/codemodConfigSchema.js";
 
 const { js } = jsBeautify;
 export interface ProjectDownloadInput {
-  codemodBody?: string;
-  name: string;
-  engine: KnownEngines | "tsmorph";
+	codemodBody?: string;
+	name: string;
+	engine: KnownEngines | "tsmorph";
 
-  license?: "MIT" | "Apache 2.0";
-  cases?: { before: string; after: string }[];
-  username: string | null;
-  tags?: string[];
+	license?: "MIT" | "Apache 2.0";
+	cases?: { before: string; after: string }[];
+	username: string | null;
+	tags?: string[];
 }
 
 type FixtureInputFile = `__testfixtures__/fixture${number}.input.ts`;
 type FixtureOutputFile = `__testfixtures__/fixture${number}.output.ts`;
 export type CodemodProjectOutput = {
-  "test/test.ts": string;
-  LICENSE: string;
-  "README.md": string;
-  "vitest.config.ts": string;
-  "package.json": string;
-  "tsconfig.json": string;
-  ".codemodrc.json": string;
-  ".gitignore": string;
+	"test/test.ts": string;
+	LICENSE: string;
+	"README.md": string;
+	"vitest.config.ts": string;
+	"package.json": string;
+	"tsconfig.json": string;
+	".codemodrc.json": string;
+	".gitignore": string;
 
-  [key: FixtureInputFile]: string;
-  [key: FixtureOutputFile]: string;
+	[key: FixtureInputFile]: string;
+	[key: FixtureOutputFile]: string;
 } & ({ "src/index.ts": string } | { "src/rule.yaml": string });
 
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
-  js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
+	js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
 const readme = ({ name, cases }: ProjectDownloadInput) => {
-  return `# ${changeCase.sentenceCase(name)}
+	return `# ${changeCase.sentenceCase(name)}
 
 ## Description
 
 ## Examples
 ${cases?.map(({ before, after }) => {
-  return `
+	return `
 ### Before
 
 \`\`\`ts
@@ -58,10 +58,10 @@ ${beautify(after)}
 };
 
 const license = ({
-  username,
-  license,
+	username,
+	license,
 }: Pick<ProjectDownloadInput, "username" | "license">) => {
-  const MIT = `The MIT License (MIT)
+	const MIT = `The MIT License (MIT)
 
 Copyright (c) 2024${username ? ` ${username}` : ""}
 
@@ -72,7 +72,7 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 `;
 
-  const APACHE = `                                 Apache License
+	const APACHE = `                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
 
@@ -275,15 +275,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    limitations under the License.
 `;
 
-  if (license === "Apache 2.0") {
-    return APACHE;
-  }
+	if (license === "Apache 2.0") {
+		return APACHE;
+	}
 
-  return MIT;
+	return MIT;
 };
 
 const vitestConfig = () => {
-  return beautify(`
+	return beautify(`
 	import { configDefaults, defineConfig } from 'vitest/config';
 
 	export default defineConfig({
@@ -295,13 +295,13 @@ const vitestConfig = () => {
 };
 
 const codemodRc = ({
-  name,
-  engine,
-  tags,
+	name,
+	engine,
+	tags,
 }: Pick<ProjectDownloadInput, "name" | "engine" | "tags">) => {
-  const finalName = changeCase.kebabCase(name);
+	const finalName = changeCase.kebabCase(name);
 
-  return beautify(`
+	return beautify(`
     {
       "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
       "version": "1.0.0",
@@ -316,7 +316,7 @@ const codemodRc = ({
 };
 
 const tsconfigJson = () => {
-  return beautify(`
+	return beautify(`
     {
       "compilerOptions": {
         "outDir": "./dist",
@@ -344,29 +344,29 @@ const tsconfigJson = () => {
 };
 
 const packageJson = ({
-  name,
-  engine,
-  username,
+	name,
+	engine,
+	username,
 }: Pick<ProjectDownloadInput, "name" | "engine" | "username">) => {
-  const finalName = changeCase.kebabCase(name);
+	const finalName = changeCase.kebabCase(name);
 
-  let packages = "";
-  if (engine === "jscodeshift") {
-    packages = `
+	let packages = "";
+	if (engine === "jscodeshift") {
+		packages = `
 	    "jscodeshift": "^0.15.1",
       "@types/jscodeshift": "^0.11.10"
     `;
-  } else if (engine === "ts-morph" || engine === "tsmorph") {
-    packages = `
+	} else if (engine === "ts-morph" || engine === "tsmorph") {
+		packages = `
       "ts-morph": "^20.0.0"
     `;
-  } else if (engine === "filemod") {
-    packages = `
+	} else if (engine === "filemod") {
+		packages = `
       "@codemod-com/filemod": "^2.0.0"
     `;
-  }
+	}
 
-  return beautify(`
+	return beautify(`
       {
         "name": "${finalName}",
         "author": "${username ?? ""}",
@@ -393,14 +393,14 @@ const packageJson = ({
 };
 
 const testBody = ({
-  name,
-  cases,
-  engine,
+	name,
+	cases,
+	engine,
 }: Pick<ProjectDownloadInput, "name" | "engine" | "cases">) => {
-  let body = "";
+	let body = "";
 
-  if (engine === "jscodeshift") {
-    body = beautify(`
+	if (engine === "jscodeshift") {
+		body = beautify(`
         import { describe, it } from 'vitest';
         import jscodeshift, { API } from 'jscodeshift';
         import transform from '../src/index.js';
@@ -425,14 +425,14 @@ const testBody = ({
 
         describe('${name}', () => {
           ${cases?.map((_, i) => {
-            return beautify(
-              `it('test #${i + 1}', async () => {
+						return beautify(
+							`it('test #${i + 1}', async () => {
                 const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
-                  i + 1
-                }.input.ts'), 'utf-8');
+									i + 1
+								}.input.ts'), 'utf-8');
                 const OUTPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
-                  i + 1
-                }.output.ts'), 'utf-8');
+									i + 1
+								}.output.ts'), 'utf-8');
 
                 const actualOutput = transform(
                   {
@@ -448,15 +448,15 @@ const testBody = ({
                 );
               });
             `,
-              { indent_level: 4 },
-            );
-          })}
+							{ indent_level: 4 },
+						);
+					})}
         });
     `);
-  }
+	}
 
-  if (engine === "ts-morph" || engine === "tsmorph") {
-    body = beautify(`
+	if (engine === "ts-morph" || engine === "tsmorph") {
+		body = beautify(`
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
@@ -488,15 +488,15 @@ const testBody = ({
 
         describe('${name}', () => {
           ${cases?.map((_, i) => {
-            return beautify(
-              `
+						return beautify(
+							`
               it('test #${i + 1}', () => {
                 const INPUT = await readFile('../__testfixtures__/fixture${
-                  i + 1
-                }.input.ts', 'utf-8');
+									i + 1
+								}.input.ts', 'utf-8');
                 const OUTPUT = await readFile('../__testfixtures__/fixture${
-                  i + 1
-                }.output.ts', 'utf-8');
+									i + 1
+								}.output.ts', 'utf-8');
 
                 const { actual, expected } = transform(
                   beforeText,
@@ -510,71 +510,71 @@ const testBody = ({
                 );
               });
             `,
-              { indent_level: 4 },
-            );
-          })}
+							{ indent_level: 4 },
+						);
+					})}
         });
     `);
-  }
+	}
 
-  return body;
+	return body;
 };
 
 export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
-  let mainFileBoilerplate: string;
-  let filename: "src/index.ts" | "src/rule.yaml";
+	let mainFileBoilerplate: string;
+	let filename: "src/index.ts" | "src/rule.yaml";
 
-  switch (input.engine) {
-    case "jscodeshift":
-      mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
-      filename = "src/index.ts";
-      break;
-    case "tsmorph":
-    case "ts-morph":
-      mainFileBoilerplate = emptyTsMorphBoilerplate;
-      filename = "src/index.ts";
-      break;
-    case "filemod":
-      mainFileBoilerplate = emptyFilemodBoilerplate;
-      filename = "src/index.ts";
-      break;
-    case "ast-grep":
-      mainFileBoilerplate = emptyAstGrepBoilerplate;
-      filename = "src/rule.yaml";
-      break;
-    default:
-      throw new Error(`Unknown engine: ${input.engine}`);
-  }
+	switch (input.engine) {
+		case "jscodeshift":
+			mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "tsmorph":
+		case "ts-morph":
+			mainFileBoilerplate = emptyTsMorphBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "filemod":
+			mainFileBoilerplate = emptyFilemodBoilerplate;
+			filename = "src/index.ts";
+			break;
+		case "ast-grep":
+			mainFileBoilerplate = emptyAstGrepBoilerplate;
+			filename = "src/rule.yaml";
+			break;
+		default:
+			throw new Error(`Unknown engine: ${input.engine}`);
+	}
 
-  const mainFileContent = input.codemodBody
-    ? beautify(input.codemodBody)
-    : mainFileBoilerplate;
+	const mainFileContent = input.codemodBody
+		? beautify(input.codemodBody)
+		: mainFileBoilerplate;
 
-  const files: CodemodProjectOutput = {
-    [filename]: mainFileContent,
-    "test/test.ts": testBody(input),
-    LICENSE: license(input),
-    "README.md": readme(input),
-    "vitest.config.ts": vitestConfig(),
-    "package.json": packageJson(input),
-    "tsconfig.json": tsconfigJson(),
-    ".codemodrc.json": codemodRc(input),
-    ".gitignore": "node_modules\ndist",
-    // Cast is needed because typescript apparently does not understand that filename is one of the required
-    // keys in the original type and throws error.
-  } as CodemodProjectOutput;
+	const files: CodemodProjectOutput = {
+		[filename]: mainFileContent,
+		"test/test.ts": testBody(input),
+		LICENSE: license(input),
+		"README.md": readme(input),
+		"vitest.config.ts": vitestConfig(),
+		"package.json": packageJson(input),
+		"tsconfig.json": tsconfigJson(),
+		".codemodrc.json": codemodRc(input),
+		".gitignore": "node_modules\ndist",
+		// Cast is needed because typescript apparently does not understand that filename is one of the required
+		// keys in the original type and throws error.
+	} as CodemodProjectOutput;
 
-  if (input.cases) {
-    for (let i = 0; i < input.cases.length; i++) {
-      // biome-ignore lint: cases[i] is defined
-      const { before, after } = input.cases[i]!;
+	if (input.cases) {
+		for (let i = 0; i < input.cases.length; i++) {
+			// biome-ignore lint: cases[i] is defined
+			const { before, after } = input.cases[i]!;
 
-      files[`__testfixtures__/fixture${i + 1}.input.ts`] = beautify(before);
-      files[`__testfixtures__/fixture${i + 1}.output.ts`] = beautify(after);
-    }
-  }
+			files[`__testfixtures__/fixture${i + 1}.input.ts`] = beautify(before);
+			files[`__testfixtures__/fixture${i + 1}.output.ts`] = beautify(after);
+		}
+	}
 
-  return files;
+	return files;
 };
 
 export const emptyJsCodeShiftBoilerplate = beautify(`

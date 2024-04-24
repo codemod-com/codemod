@@ -4,8 +4,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react/remove-forward-ref", () => {
-  it("Unwraps the render function: render function is ArrowFunctionExpression", () => {
-    const INPUT = `
+	it("Unwraps the render function: render function is ArrowFunctionExpression", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 
 			const MyInput = forwardRef((props, ref) => {
@@ -13,28 +13,28 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyInput = props => {
 				const { ref } = props;
 				return null;
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("Unwraps the render function: render function is FunctionExpression", () => {
-    const INPUT = `
+	it("Unwraps the render function: render function is FunctionExpression", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 
 			const MyInput = forwardRef(function A(props, ref) {
@@ -42,28 +42,28 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyInput = function A(props) {
 				const { ref } = props;
 				return null;
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("forwardRef import: removes the import when only forwardRef is a single specifier", () => {
-    const INPUT = `
+	it("forwardRef import: removes the import when only forwardRef is a single specifier", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 
 			const MyInput = forwardRef(function MyInput(props, ref) {
@@ -71,28 +71,28 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyInput = function MyInput(props) {
 				const { ref } = props;
 				return null;
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("forwardRef import: should not remove type imports", () => {
-    const INPUT = `
+	it("forwardRef import: should not remove type imports", () => {
+		const INPUT = `
 			import type { X } from "react";
 			import { forwardRef, type Y } from 'react';
 
@@ -101,7 +101,7 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			import type { X } from "react";
 			import { type Y } from 'react';
 			const MyInput = function MyInput(props) {
@@ -110,21 +110,21 @@ describe("react/remove-forward-ref", () => {
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("forwardRef import: removes forwardRef specifier", () => {
-    const INPUT = `
+	it("forwardRef import: removes forwardRef specifier", () => {
+		const INPUT = `
 			import { forwardRef, useState } from 'react';
 
 			const MyInput = forwardRef(function MyInput(props, ref) {
@@ -132,7 +132,7 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 		    import { useState } from 'react';
 			const MyInput = function MyInput(props) {
 				const { ref } = props;
@@ -140,21 +140,21 @@ describe("react/remove-forward-ref", () => {
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("Replaces the second arg of the render function: props are ObjectPattern", () => {
-    const INPUT = `
+	it("Replaces the second arg of the render function: props are ObjectPattern", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 
 			const MyInput = forwardRef(function MyInput({ onChange }, ref) {
@@ -162,27 +162,27 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyInput = function MyInput({ ref, onChange }) {
 				return <input ref={ref} onChange={onChange} />
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("Replaces the second arg of the render function: props are Identifier", () => {
-    const INPUT = `
+	it("Replaces the second arg of the render function: props are Identifier", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 
 			const MyInput = forwardRef(function MyInput(props, ref) {
@@ -190,28 +190,28 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyInput = function MyInput(props) {
 				const { ref } = props;
 				return <input ref={ref} onChange={props.onChange} />
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("Typescript: reuses forwardRef typeArguments", () => {
-    const INPUT = `
+	it("Typescript: reuses forwardRef typeArguments", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 			type Props = { a: 1 };
 			
@@ -220,7 +220,7 @@ describe("react/remove-forward-ref", () => {
 			});
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			type Props = { a: 1 };
 			const MyInput = (props: Props & { ref: React.RefObject<HTMLInputElement>; }) => {
 				const { ref } = props;
@@ -228,20 +228,20 @@ describe("react/remove-forward-ref", () => {
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 
-  it("Typescript: reuses wrapped function type arguments", () => {
-    const INPUT = `
+	it("Typescript: reuses wrapped function type arguments", () => {
+		const INPUT = `
 			import { forwardRef } from 'react';
 			const MyComponent = forwardRef(function Component(
 				myProps: Props,
@@ -252,7 +252,7 @@ describe("react/remove-forward-ref", () => {
 			  });
 		`;
 
-    const OUTPUT = `
+		const OUTPUT = `
 			const MyComponent = function Component(
 				myProps: Props & { ref: React.RefObject<HTMLButtonElement>; }
 			) {
@@ -261,16 +261,16 @@ describe("react/remove-forward-ref", () => {
 			};
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		const fileInfo = {
+			path: "index.js",
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    console.log(actualOutput, "???");
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      OUTPUT.replace(/\s/gm, ""),
-    );
-  });
+		const actualOutput = transform(fileInfo, buildApi("tsx"));
+		console.log(actualOutput, "???");
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ""),
+			OUTPUT.replace(/\s/gm, ""),
+		);
+	});
 });
