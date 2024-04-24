@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("history v4 use-back", () => {
-	it("should replace history.goBack() with history.back()", async () => {
-		const input = `
+  it("should replace history.goBack() with history.back()", async () => {
+    const input = `
 		history.goBack();
 
 		const Component = () => {		  
@@ -28,7 +28,7 @@ describe("history v4 use-back", () => {
 		  };
 		`;
 
-		const output = `
+    const output = `
 		history.back();
 
 		const Component = () => {		  
@@ -50,16 +50,16 @@ describe("history v4 use-back", () => {
 		  };
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: trimLicense(input),
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: trimLicense(input),
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi("js"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			trimLicense(output).replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      trimLicense(output).replace(/\W/gm, ""),
+    );
+  });
 });

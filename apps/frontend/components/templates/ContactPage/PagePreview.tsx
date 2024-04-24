@@ -9,24 +9,24 @@ import type { ContactPagePayload } from "@/types";
 import ContactPageUI from "./ContactPageUI";
 
 type Props = {
-	params: { pathname: string };
-	initial: QueryResponseInitial<ContactPagePayload | null>;
+  params: { pathname: string };
+  initial: QueryResponseInitial<ContactPagePayload | null>;
 };
 
 export default function ContactPagePreview(props: Props) {
-	const { params, initial } = props;
-	const { data } = useQuery<ContactPagePayload | null>(
-		CONTACT_PAGE_QUERY,
-		params,
-		{
-			initial,
-		},
-	);
+  const { params, initial } = props;
+  const { data } = useQuery<ContactPagePayload | null>(
+    CONTACT_PAGE_QUERY,
+    params,
+    {
+      initial,
+    },
+  );
 
-	return (
-		<>
-			<ContactPageUI data={data} />
-			{data?.cta && <PageCta {...data.cta} />}
-		</>
-	);
+  return (
+    <>
+      <ContactPageUI data={data} />
+      {data?.cta && <PageCta {...data.cta} />}
+    </>
+  );
 }

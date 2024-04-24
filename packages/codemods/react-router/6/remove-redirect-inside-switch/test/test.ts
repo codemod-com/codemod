@@ -10,27 +10,27 @@ import transform from "../src/index.js";
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
 describe("react-router v6 remove-redirect-inside-switch", () => {
-	it("should remove Redirect inside Switch", async () => {
-		const input = await readFile(join(__dirname, "input.js"), {
-			encoding: "utf8",
-		});
+  it("should remove Redirect inside Switch", async () => {
+    const input = await readFile(join(__dirname, "input.js"), {
+      encoding: "utf8",
+    });
 
-		const output = await readFile(join(__dirname, "output.js"), {
-			encoding: "utf8",
-		});
+    const output = await readFile(join(__dirname, "output.js"), {
+      encoding: "utf8",
+    });
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: input,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
-		});
+    const actualOutput = transform(fileInfo, buildApi("js"), {
+      quote: "single",
+    });
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      output.replace(/\W/gm, ""),
+    );
+  });
 });

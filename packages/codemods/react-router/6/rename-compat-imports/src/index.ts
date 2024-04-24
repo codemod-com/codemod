@@ -30,31 +30,31 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-	file: FileInfo,
-	api: API,
-	options: Options,
+  file: FileInfo,
+  api: API,
+  options: Options,
 ): string | undefined {
-	const j = api.jscodeshift;
+  const j = api.jscodeshift;
 
-	const root = j(file.source);
+  const root = j(file.source);
 
-	let dirtyFlag = false;
+  let dirtyFlag = false;
 
-	root
-		.find(j.ImportDeclaration, {
-			source: { value: "react-router-dom-v5-compat" },
-		})
-		.forEach((path) => {
-			path.value.source.value = "react-router-dom";
+  root
+    .find(j.ImportDeclaration, {
+      source: { value: "react-router-dom-v5-compat" },
+    })
+    .forEach((path) => {
+      path.value.source.value = "react-router-dom";
 
-			dirtyFlag = true;
-		});
+      dirtyFlag = true;
+    });
 
-	if (!dirtyFlag) {
-		return undefined;
-	}
+  if (!dirtyFlag) {
+    return undefined;
+  }
 
-	return root.toSource(options);
+  return root.toSource(options);
 }
 
 transform satisfies Transform;

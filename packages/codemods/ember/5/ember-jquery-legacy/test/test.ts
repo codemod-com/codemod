@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 ember-jquery-legacy", () => {
-	it("basic", () => {
-		const INPUT = `
+  it("basic", () => {
+    const INPUT = `
 		export default Component.extend({
             click(event) {
               let nativeEvent = event.originalEvent;
@@ -14,7 +14,7 @@ describe("ember 5 ember-jquery-legacy", () => {
             });
 		`;
 
-		const OUTPUT = `
+    const OUTPUT = `
 		import { normalizeEvent } from "ember-jquery-legacy";
         export default Component.extend({
         click(event) {
@@ -23,16 +23,16 @@ describe("ember 5 ember-jquery-legacy", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi("js"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });

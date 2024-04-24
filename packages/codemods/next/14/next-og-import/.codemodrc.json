@@ -1,15 +1,15 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.1",
-	"private": false,
-	"name": "next/14/next-og-import",
-	"description": "This codemod moves transforms imports from next/server to next/og for usage of Dynamic OG Image Generation.",
-	"engine": "jscodeshift",
-	"applicability": {
-		"from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
-	},
-	"meta": {
-		"tags": ["next.js", "migration"]
-	},
-	"include": ["**/*.js", "**/*.ts"]
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "next/14/next-og-import",
+  "description": "This codemod moves transforms imports from next/server to next/og for usage of Dynamic OG Image Generation.",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
+  },
+  "meta": {
+    "tags": ["next.js", "migration"]
+  },
+  "include": ["**/*.js", "**/*.ts"]
 }

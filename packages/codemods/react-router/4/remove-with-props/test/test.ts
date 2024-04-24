@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react-router v4 remove-with-props", () => {
-	it("Should replace withProps HOC", async () => {
-		const input = `
+  it("Should replace withProps HOC", async () => {
+    const input = `
 		import withProps from 'recompose/withProps';
 		import Dashboard from './Dashboard';
 
@@ -20,7 +20,7 @@ describe("react-router v4 remove-with-props", () => {
 		};
 		`;
 
-		const output = `
+    const output = `
 		import withProps from 'recompose/withProps';
 		import Dashboard from './Dashboard';
 
@@ -38,18 +38,18 @@ describe("react-router v4 remove-with-props", () => {
 		};
 		`;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: input,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: input,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("js"), {
-			quote: "single",
-		});
+    const actualOutput = transform(fileInfo, buildApi("js"), {
+      quote: "single",
+    });
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			output.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      output.replace(/\W/gm, ""),
+    );
+  });
 });

@@ -10,41 +10,41 @@ import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
 
 const LiveVisualEditing = dynamic(
-	() => import("@/components/LiveVisualEditing"),
+  () => import("@/components/LiveVisualEditing"),
 );
 
 export async function generateMetadata(): Promise<Metadata> {
-	const { data } = await loadGlobalData(GLOBAL_QUERY);
+  const { data } = await loadGlobalData(GLOBAL_QUERY);
 
-	return {
-		title: config.siteName,
-		openGraph: {
-			title: config.siteName,
-			images: !data?.fallbackOGImage
-				? undefined
-				: getOgImages(data.fallbackOGImage),
-		},
-	};
+  return {
+    title: config.siteName,
+    openGraph: {
+      title: config.siteName,
+      images: !data?.fallbackOGImage
+        ? undefined
+        : getOgImages(data.fallbackOGImage),
+    },
+  };
 }
 
 export default async function Layout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	const globalData = await loadGlobalData(GLOBAL_QUERY);
+  const globalData = await loadGlobalData(GLOBAL_QUERY);
 
-	return (
-		<>
-			{globalData.data &&
-				(draftMode().isEnabled ? (
-					<GlobalLayoutPreview data={globalData.data}>
-						{children}
-					</GlobalLayoutPreview>
-				) : (
-					<GlobalLayout data={globalData.data}>{children}</GlobalLayout>
-				))}
-			{draftMode().isEnabled && <LiveVisualEditing />}
-		</>
-	);
+  return (
+    <>
+      {globalData.data &&
+        (draftMode().isEnabled ? (
+          <GlobalLayoutPreview data={globalData.data}>
+            {children}
+          </GlobalLayoutPreview>
+        ) : (
+          <GlobalLayout data={globalData.data}>{children}</GlobalLayout>
+        ))}
+      {draftMode().isEnabled && <LiveVisualEditing />}
+    </>
+  );
 }

@@ -9,21 +9,21 @@ import { type BlogArticlePayload, Job } from "@/types";
 import BlogArticle from "./BlogArticle";
 
 type Props = {
-	initial: QueryResponseInitial<BlogArticlePayload | null>;
+  initial: QueryResponseInitial<BlogArticlePayload | null>;
 };
 
 export default function BlogArticlePreview(props: Props) {
-	const { initial } = props;
-	const { data } = useQuery<BlogArticlePayload | null>(
-		BLOG_ARTICLE_QUERY,
-		{
-			pathname: initial.data?.pathname,
-			locale: "en",
-		},
-		{
-			initial,
-		},
-	);
+  const { initial } = props;
+  const { data } = useQuery<BlogArticlePayload | null>(
+    BLOG_ARTICLE_QUERY,
+    {
+      pathname: initial.data?.pathname,
+      locale: "en",
+    },
+    {
+      initial,
+    },
+  );
 
-	return <BlogArticle data={data!} />;
+  return <BlogArticle data={data!} />;
 }

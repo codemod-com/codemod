@@ -10,13 +10,13 @@ import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 import type { FileCommand } from "./fileCommands.js";
 
 const transform = (
-	codemodSource: string,
-	oldPath: string,
-	oldData: string,
-	safeArgumentRecord: ArgumentRecord,
-	consoleCallback: (kind: ConsoleKind, message: string) => void,
+  codemodSource: string,
+  oldPath: string,
+  oldData: string,
+  safeArgumentRecord: ArgumentRecord,
+  consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): string | undefined | null => {
-	const codeToExecute = `
+  const codeToExecute = `
 		${CONSOLE_OVERRIDE}
 
 		const __module__ = { exports: {} };
@@ -50,61 +50,61 @@ const transform = (
 		handleSourceFile(sourceFile, __CODEMODCOM__argumentRecord);
 	`;
 
-	const exports = Object.freeze({});
+  const exports = Object.freeze({});
 
-	const context = vm.createContext({
-		module: Object.freeze({
-			exports,
-		}),
-		exports,
-		__CODEMODCOM__oldPath: oldPath,
-		__CODEMODCOM__oldData: oldData,
-		__CODEMODCOM__argumentRecord: safeArgumentRecord,
-		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
-		__CODEMOD_SOURCE__: codemodSource,
-		require: (name: string) => {
-			if (name === "ts-morph") {
-				return tsmorph;
-			}
-		},
-	});
+  const context = vm.createContext({
+    module: Object.freeze({
+      exports,
+    }),
+    exports,
+    __CODEMODCOM__oldPath: oldPath,
+    __CODEMODCOM__oldData: oldData,
+    __CODEMODCOM__argumentRecord: safeArgumentRecord,
+    __CODEMODCOM__console__: buildVmConsole(consoleCallback),
+    __CODEMOD_SOURCE__: codemodSource,
+    require: (name: string) => {
+      if (name === "ts-morph") {
+        return tsmorph;
+      }
+    },
+  });
 
-	const value = vm.runInContext(codeToExecute, context, { timeout: 30000 });
+  const value = vm.runInContext(codeToExecute, context, { timeout: 30000 });
 
-	return parse(nullish(string()), value);
+  return parse(nullish(string()), value);
 };
 
 export const runTsMorphCodemod = (
-	codemodSource: string,
-	oldPath: string,
-	oldData: string,
-	disablePrettier: boolean,
-	safeArgumentRecord: ArgumentRecord,
-	consoleCallback: (kind: ConsoleKind, message: string) => void,
+  codemodSource: string,
+  oldPath: string,
+  oldData: string,
+  disablePrettier: boolean,
+  safeArgumentRecord: ArgumentRecord,
+  consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
-	const adapter = getAdapterByExtname(extname(oldPath));
+  const adapter = getAdapterByExtname(extname(oldPath));
 
-	const transformFn = adapter !== null ? adapter(transform) : transform;
+  const transformFn = adapter !== null ? adapter(transform) : transform;
 
-	const newData = transformFn(
-		codemodSource,
-		oldPath,
-		oldData,
-		safeArgumentRecord,
-		consoleCallback,
-	);
+  const newData = transformFn(
+    codemodSource,
+    oldPath,
+    oldData,
+    safeArgumentRecord,
+    consoleCallback,
+  );
 
-	if (typeof newData !== "string" || oldData === newData) {
-		return [];
-	}
+  if (typeof newData !== "string" || oldData === newData) {
+    return [];
+  }
 
-	return [
-		{
-			kind: "updateFile",
-			oldPath,
-			oldData,
-			newData,
-			formatWithPrettier: !disablePrettier,
-		},
-	];
+  return [
+    {
+      kind: "updateFile",
+      oldPath,
+      oldData,
+      newData,
+      formatWithPrettier: !disablePrettier,
+    },
+  ];
 };

@@ -1,37 +1,37 @@
 import type { API, FileInfo } from "jscodeshift";
 
 export default function transform(
-	file: FileInfo,
-	api: API,
+  file: FileInfo,
+  api: API,
 ): string | undefined {
-	const j = api.jscodeshift;
-	const root = j(file.source);
+  const j = api.jscodeshift;
+  const root = j(file.source);
 
-	root.findJSXElements().forEach((elementPath) => {
-		const { value } = elementPath;
-		const elements = [value.openingElement, value.closingElement];
-		elements.forEach((element) => {
-			if (!element) {
-				return;
-			}
-			if (
-				!j.JSXMemberExpression.check(element.name) ||
-				!j.JSXIdentifier.check(element.name.object)
-			) {
-				return;
-			}
+  root.findJSXElements().forEach((elementPath) => {
+    const { value } = elementPath;
+    const elements = [value.openingElement, value.closingElement];
+    elements.forEach((element) => {
+      if (!element) {
+        return;
+      }
+      if (
+        !j.JSXMemberExpression.check(element.name) ||
+        !j.JSXIdentifier.check(element.name.object)
+      ) {
+        return;
+      }
 
-			const objectName = element.name.object.name;
-			const propertyName = element.name.property.name;
+      const objectName = element.name.object.name;
+      const propertyName = element.name.property.name;
 
-			if (
-				objectName.toLocaleLowerCase().includes("context") &&
-				propertyName === "Provider"
-			) {
-				element.name = element.name.object;
-			}
-		});
-	});
+      if (
+        objectName.toLocaleLowerCase().includes("context") &&
+        propertyName === "Provider"
+      ) {
+        element.name = element.name.object;
+      }
+    });
+  });
 
-	return root.toSource();
+  return root.toSource();
 }

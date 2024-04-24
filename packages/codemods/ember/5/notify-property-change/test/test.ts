@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("ember 5 notify-property-change", () => {
-	it("basic", () => {
-		const INPUT = `
+  it("basic", () => {
+    const INPUT = `
 		Ember.propertyWillChange(object, 'someProperty');
 		doStuff(object);
 		Ember.propertyDidChange(object, 'someProperty');
@@ -16,7 +16,7 @@ describe("ember 5 notify-property-change", () => {
 		object.propertyDidChange('someProperty');
 		`;
 
-		const OUTPUT = `
+    const OUTPUT = `
 		doStuff(object);
 		Ember.notifyPropertyChange(object, 'someProperty');
 		
@@ -24,16 +24,16 @@ describe("ember 5 notify-property-change", () => {
 		object.notifyPropertyChange('someProperty');
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi("js"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });

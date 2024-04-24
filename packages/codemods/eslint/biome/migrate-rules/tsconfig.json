@@ -1,10 +1,10 @@
 {
-	"extends": "@codemod-com/tsconfig/codemod.json",
-	"include": [
-		"types/*.d.ts",
-		"./src/**/*.ts",
-		"./src/**/*.js",
-		"./test/**/*.ts",
-		"./test/**/*.js"
-	]
+  "extends": "@codemod-com/tsconfig/codemod.json",
+  "include": [
+    "types/*.d.ts",
+    "./src/**/*.ts",
+    "./src/**/*.js",
+    "./test/**/*.ts",
+    "./test/**/*.js"
+  ]
 }
