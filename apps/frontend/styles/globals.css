@@ -2,6 +2,8 @@
 @import '../app/(website)/studio/src/studio.css';
 
 @tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
   --scrollbar-primary: #fff;
