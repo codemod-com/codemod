@@ -38,7 +38,7 @@ export class PostHogSender<Event extends BaseEvent>
 		const redactedProperties = Object.entries(properties).reduce<
 			Record<string, string>
 		>((properties, [key, value]) => {
-			properties[key] = redactFilePaths(value);
+			properties[key] = redactFilePaths(String(value));
 
 			return properties;
 		}, {});
