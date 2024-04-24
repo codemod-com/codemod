@@ -2,9 +2,183 @@ import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 import defaultTheme from "tailwindcss/defaultTheme";
 
+const colorPalette = {
+	// @TODO refine palette when design is finished
+	"gray-bg": "#F0F0F0",
+	"gray-bg-light": "#FFFFFF",
+	"gray-lighter": "#F5F5F5",
+	"gray-light": "#3D3D3D",
+	"gray-light-darker": "#D9D9D9",
+
+	"gray-dark": "#313030",
+	"gray-darker": "#262525",
+	"primary-light": "#598BFF",
+	"primary-dark": "#274BDB",
+	// Text
+	"gray-text-dark-normal": colors.gray[300],
+	"gray-text-normal": colors.gray[600],
+	"gray-text-title": colors.gray[900],
+	"gray-text-dark-title": colors.gray[100],
+	highlight: "#ffff0040",
+	input: "hsl(var(--input))",
+	ring: "hsl(var(--ring))",
+	foreground: "hsl(var(--foreground))",
+	destructive: {
+		DEFAULT: "hsl(var(--destructive))",
+		foreground: "hsl(var(--destructive-foreground))",
+	},
+	muted: {
+		DEFAULT: "hsl(var(--muted))",
+		foreground: "hsl(var(--muted-foreground))",
+	},
+	// accent: {
+	// 	DEFAULT: "hsl(var(--accent))",
+	// 	foreground: "hsl(var(--accent-foreground))",
+	// 	pressed: "hsl(var(--accent-pressed))",
+	// },
+	popover: {
+		DEFAULT: "hsl(var(--popover))",
+		foreground: "hsl(var(--popover-foreground))",
+	},
+	card: {
+		DEFAULT: "hsl(var(--card))",
+		foreground: "hsl(var(--card-foreground))",
+	},
+	accent: "#D6FF62",
+	background: {
+		DEFAULT: "hsl(var(--background))",
+		light: "#0B151E1A",
+		dark: "#0B151E",
+	},
+	primary: {
+		DEFAULT: "#3366FF",
+		light: "#0B151E",
+		dark: "#FFFFFF",
+	},
+	primaryHover: {
+		light: "#323A41",
+		dark: "#FFFFFFE5",
+	},
+	secondary: {
+		DEFAULT: "hsl(var(--secondary))",
+		foreground: "hsl(var(--secondary-foreground))",
+		light: "#0B151E99",
+		dark: "#FFFFFF99",
+	},
+	tertiary: {
+		light: "#0B151E66",
+		dark: "#FFFFFF59",
+	},
+	border: {
+		DEFAULT: "hsl(var(--border))",
+		light: "#0B151E1A",
+		dark: "#FFFFFF26",
+	},
+	emphasis: {
+		light: "#0B151E0D",
+		dark: "#FFFFFF1A",
+	},
+	success: {
+		light: "#A2DB00",
+		dark: "#A2DB00",
+	},
+	successSecondary: {
+		light: "#A2DB0026",
+		dark: "#A2DB0033",
+	},
+	error: {
+		light: "#EF0000",
+		dark: "#FF3333",
+	},
+	errorSecondary: {
+		light: "#EF00001A",
+		dark: "#211820",
+	},
+	info: {
+		light: "#00A0E4",
+		dark: "#00A0E4",
+	},
+	infoSecondary: {
+		light: "#00A0E426",
+		dark: "#00A0E433",
+	},
+	warning: {
+		DEFAULT: "#ff9800",
+		light: "#FEA800",
+		dark: "#FEA800",
+	},
+	warningSecondary: {
+		light: "#FEA80026",
+		dark: "#FEA80033",
+	},
+};
+
+const colorsT = {
+	accent: "#D6FF62",
+	background: {
+		light: "#0B151E1A",
+		dark: "#0B151E",
+	},
+	primary: {
+		light: "#0B151E",
+		dark: "#FFFFFF",
+	},
+	primaryHover: {
+		light: "#323A41",
+		dark: "#FFFFFFE5",
+	},
+	secondary: {
+		light: "#0B151E99",
+		dark: "#FFFFFF99",
+	},
+	tertiary: {
+		light: "#0B151E66",
+		dark: "#FFFFFF59",
+	},
+	border: {
+		light: "#0B151E1A",
+		dark: "#FFFFFF26",
+	},
+	emphasis: {
+		light: "#0B151E0D",
+		dark: "#FFFFFF1A",
+	},
+	success: {
+		light: "#A2DB00",
+		dark: "#A2DB00",
+	},
+	successSecondary: {
+		light: "#A2DB0026",
+		dark: "#A2DB0033",
+	},
+	error: {
+		light: "#EF0000",
+		dark: "#FF3333",
+	},
+	errorSecondary: {
+		light: "#EF00001A",
+		dark: "#211820",
+	},
+	info: {
+		light: "#00A0E4",
+		dark: "#00A0E4",
+	},
+	infoSecondary: {
+		light: "#00A0E426",
+		dark: "#00A0E433",
+	},
+	warning: {
+		light: "#FEA800",
+		dark: "#FEA800",
+	},
+	warningSecondary: {
+		light: "#FEA80026",
+		dark: "#FEA80033",
+	},
+};
 /** @type {import('tailwindcss').Config} */
 export default {
-	darkMode: "class",
+	darkMode: "selector",
 	content: [
 		"./app/**/*.{js,ts,jsx,tsx}",
 		"./components/**/*.{js,ts,jsx,tsx}",
@@ -43,116 +217,7 @@ export default {
 			"1/3": "33.3%",
 		},
 		extend: {
-			colors: {
-				// @TODO refine palette when design is finished
-				"gray-bg": "#F0F0F0",
-				"gray-bg-light": "#FFFFFF",
-				"gray-lighter": "#F5F5F5",
-				"gray-light": "#3D3D3D",
-				"gray-light-darker": "#D9D9D9",
-
-				"gray-dark": "#313030",
-				"gray-darker": "#262525",
-				"primary-light": "#598BFF",
-				"primary-dark": "#274BDB",
-				// Text
-				"gray-text-dark-normal": colors.gray[300],
-				"gray-text-normal": colors.gray[600],
-				"gray-text-title": colors.gray[900],
-				"gray-text-dark-title": colors.gray[100],
-				highlight: "#ffff0040",
-				input: "hsl(var(--input))",
-				ring: "hsl(var(--ring))",
-				foreground: "hsl(var(--foreground))",
-				destructive: {
-					DEFAULT: "hsl(var(--destructive))",
-					foreground: "hsl(var(--destructive-foreground))",
-				},
-				muted: {
-					DEFAULT: "hsl(var(--muted))",
-					foreground: "hsl(var(--muted-foreground))",
-				},
-				accent: {
-					DEFAULT: "hsl(var(--accent))",
-					foreground: "hsl(var(--accent-foreground))",
-					pressed: "hsl(var(--accent-pressed))",
-				},
-				popover: {
-					DEFAULT: "hsl(var(--popover))",
-					foreground: "hsl(var(--popover-foreground))",
-				},
-				card: {
-					DEFAULT: "hsl(var(--card))",
-					foreground: "hsl(var(--card-foreground))",
-				},
-				// accent: "#D6FF62",
-				background: {
-					DEFAULT: "hsl(var(--background))",
-					light: "#0B151E1A",
-					dark: "#0B151E",
-				},
-				primary: {
-					DEFAULT: "#3366FF",
-					light: "#0B151E",
-					dark: "#FFFFFF",
-				},
-				primaryHover: {
-					light: "#323A41",
-					dark: "#FFFFFFE5",
-				},
-				secondary: {
-					DEFAULT: "hsl(var(--secondary))",
-					foreground: "hsl(var(--secondary-foreground))",
-					light: "#0B151E99",
-					dark: "#FFFFFF99",
-				},
-				tertiary: {
-					light: "#0B151E66",
-					dark: "#FFFFFF59",
-				},
-				border: {
-					DEFAULT: "hsl(var(--border))",
-					light: "#0B151E1A",
-					dark: "#FFFFFF26",
-				},
-				emphasis: {
-					light: "#0B151E0D",
-					dark: "#FFFFFF1A",
-				},
-				success: {
-					light: "#A2DB00",
-					dark: "#A2DB00",
-				},
-				successSecondary: {
-					light: "#A2DB0026",
-					dark: "#A2DB0033",
-				},
-				error: {
-					light: "#EF0000",
-					dark: "#FF3333",
-				},
-				errorSecondary: {
-					light: "#EF00001A",
-					dark: "#211820",
-				},
-				info: {
-					light: "#00A0E4",
-					dark: "#00A0E4",
-				},
-				infoSecondary: {
-					light: "#00A0E426",
-					dark: "#00A0E433",
-				},
-				warning: {
-					DEFAULT: "#ff9800",
-					light: "#FEA800",
-					dark: "#FEA800",
-				},
-				warningSecondary: {
-					light: "#FEA80026",
-					dark: "#FEA80033",
-				},
-			},
+			colors: colorPalette,
 			fontFamily: {
 				regular: "var(--satoshi-regular)",
 				medium: "var(--satoshi-medium)",

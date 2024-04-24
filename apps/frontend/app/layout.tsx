@@ -6,10 +6,8 @@ import { mediaStyles } from "@/components/global/Media";
 import dynamicFavicon from "@/headScripts/dynamic_favicon";
 import themeScript from "@/headScripts/theme";
 
-import { ThemeProvider } from "@/app/context";
 import "@/styles/globals.css";
 import AuthProvider from "@context/AuthProvider";
-import type { Viewport } from "next";
 import { headers } from "next/headers";
 import Script from "next/script";
 

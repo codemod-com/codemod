@@ -106,7 +106,7 @@ export function DesktopNavigationRight(props: {
 					</Button>
 				</NavigationLink>
 			))}
-			<AuthButtons />
+			<AuthButtons variant="www" />
 		</div>
 	);
 }

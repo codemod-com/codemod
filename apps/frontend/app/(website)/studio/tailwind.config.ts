@@ -3,7 +3,7 @@ import colors from "tailwindcss/colors";
 
 export default {
 	content: ["./src/**/*.{ts,tsx}"],
-	darkMode: ["class"],
+	darkMode: "selector",
 	theme: {
 		container: {
 			center: true,
