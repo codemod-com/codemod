@@ -26,31 +26,31 @@ SOFTWARE.
 */
 
 export default function transform(file, api) {
-	const j = api.jscodeshift;
+  const j = api.jscodeshift;
 
-	const root = j(file.source);
+  const root = j(file.source);
 
-	root
-		.find(j.MemberExpression, {
-			object: {
-				name: "event",
-			},
-			property: {
-				name: "originalEvent",
-			},
-		})
-		.replaceWith((path) => {
-			let computedImport = j.importDeclaration(
-				[j.importSpecifier(j.identifier("normalizeEvent"))],
-				j.literal("ember-jquery-legacy"),
-			);
+  root
+    .find(j.MemberExpression, {
+      object: {
+        name: "event",
+      },
+      property: {
+        name: "originalEvent",
+      },
+    })
+    .replaceWith((path) => {
+      let computedImport = j.importDeclaration(
+        [j.importSpecifier(j.identifier("normalizeEvent"))],
+        j.literal("ember-jquery-legacy"),
+      );
 
-			let body = root.get().value.program.body;
-			body.unshift(computedImport);
-			return j.callExpression(j.identifier("normalizeEvent"), [
-				path.value.object,
-			]);
-		});
+      let body = root.get().value.program.body;
+      body.unshift(computedImport);
+      return j.callExpression(j.identifier("normalizeEvent"), [
+        path.value.object,
+      ]);
+    });
 
-	return root.toSource();
+  return root.toSource();
 }

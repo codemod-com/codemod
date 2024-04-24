@@ -30,51 +30,51 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-	file: FileInfo,
-	api: API,
-	options: Options,
+  file: FileInfo,
+  api: API,
+  options: Options,
 ): string | undefined {
-	const j = api.jscodeshift;
+  const j = api.jscodeshift;
 
-	const root = j(file.source);
+  const root = j(file.source);
 
-	const dirtyFlag = false;
+  const dirtyFlag = false;
 
-	root
-		.find(j.JSXElement, {
-			openingElement: {
-				name: { name: "Redirect" },
-			},
-		})
-		.forEach((path) => {
-			const openEl = path.value.openingElement;
+  root
+    .find(j.JSXElement, {
+      openingElement: {
+        name: { name: "Redirect" },
+      },
+    })
+    .forEach((path) => {
+      const openEl = path.value.openingElement;
 
-			if ("name" in openEl.name) {
-				openEl.name.name = "Navigate";
-			}
+      if ("name" in openEl.name) {
+        openEl.name.name = "Navigate";
+      }
 
-			const isPush =
-				openEl.attributes?.filter((a) =>
-					"name" in a ? a.name.name === "push" : false,
-				).length ?? 0 > 0;
+      const isPush =
+        openEl.attributes?.filter((a) =>
+          "name" in a ? a.name.name === "push" : false,
+        ).length ?? 0 > 0;
 
-			if (!isPush) {
-				if (openEl.attributes) {
-					openEl.attributes.push(j.jsxAttribute(j.jsxIdentifier("replace")));
-				}
-			} else {
-				openEl.attributes =
-					openEl.attributes?.filter((a) =>
-						"name" in a ? a.name.name !== "push" : false,
-					) ?? [];
-			}
-		});
+      if (!isPush) {
+        if (openEl.attributes) {
+          openEl.attributes.push(j.jsxAttribute(j.jsxIdentifier("replace")));
+        }
+      } else {
+        openEl.attributes =
+          openEl.attributes?.filter((a) =>
+            "name" in a ? a.name.name !== "push" : false,
+          ) ?? [];
+      }
+    });
 
-	if (!dirtyFlag) {
-		return undefined;
-	}
+  if (!dirtyFlag) {
+    return undefined;
+  }
 
-	return root.toSource(options);
+  return root.toSource(options);
 }
 
 transform satisfies Transform;
