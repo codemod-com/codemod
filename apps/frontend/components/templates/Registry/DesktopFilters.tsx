@@ -36,7 +36,7 @@ export default function DesktopFilters({
 		<div className={cx("scrollbar-color mr-16 hidden w-[290px] lg:flex")}>
 			<motion.div
 				className={cx(
-					"mr-16 flex max-h-svh w-[290px] flex-col items-start gap-6  pr-2",
+					"mr-16 flex  max-h-[90vh] w-[290px] flex-col items-start gap-6  pr-2",
 					desktopOpen ? "overflow-y-auto" : "overflow-hidden",
 				)}
 				initial={desktopOpen ? "open" : "closed"}
