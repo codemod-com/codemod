@@ -17,6 +17,7 @@
 	"scripts": {
 		"build": "tsc",
 		"test": "vitest run",
+		"test:watch": "vitest watch",
 		"coverage": "vitest run --coverage"
 	},
 	"keywords": [],

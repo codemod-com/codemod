@@ -14,10 +14,6 @@ export class VscodeTelemetryReporter implements Telemetry {
 		private readonly __telemetryLogger: TelemetryLogger,
 		private readonly __messageBus: MessageBus,
 	) {
-		this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
-			this.__onCodemodSetExecuted(message);
-		});
-
 		this.__messageBus.subscribe(MessageKind.jobsAccepted, (message) =>
 			this.__onJobsAcceptedMessage(message),
 		);
@@ -77,17 +73,6 @@ export class VscodeTelemetryReporter implements Telemetry {
 				executionId: caseHashDigest as CaseHash,
 			});
 		}
-	}
-
-	__onCodemodSetExecuted(
-		message: Message & { kind: MessageKind.codemodSetExecuted },
-	): void {
-		this.sendEvent({
-			kind: message.halted ? "codemodHalted" : "codemodExecuted",
-			executionId: message.case.hash,
-			fileCount: message.jobs.length,
-			codemodName: this.__transformPathLikeName(message.case.codemodName),
-		});
 	}
 
 	// transform path-like strings to bypass vscode logger filter

@@ -5,6 +5,7 @@ import {
 	type TelemetrySender,
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
+import Axios from "axios";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -29,13 +30,24 @@ export const executeMainThread = async () => {
 
 	const argv = await Promise.resolve(argvObject.argv);
 
+	// client identifier is required to prevent duplicated tracking of events
+	// we can specify that request is coming from the VSCE or other client
+	const clientIdentifier =
+		typeof argv.clientIdentifier === "string" ? argv.clientIdentifier : "CLI";
+
+	Axios.interceptors.request.use((config) => {
+		config.headers["X-Client-Identifier"] = clientIdentifier;
+
+		return config;
+	});
+
 	const printer = new Printer(argv.json);
 
 	const telemetryService: TelemetrySender<TelemetryEvent> =
 		argv.telemetryDisable
 			? new NullSender()
 			: new PostHogSender({
-					cloudRole: "CLI",
+					cloudRole: clientIdentifier,
 					distinctId: await getUserDistinctId(),
 				});
 
