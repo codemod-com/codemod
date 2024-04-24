@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
+  CODEMOD_STUDIO_URL,
   PIRANHA_LANGUAGES,
   piranhaLanguageSchema,
 } from "@codemod-com/utilities";
@@ -97,7 +98,7 @@ export async function activate(context: vscode.ExtensionContext) {
           "accessTokenRequestedByVSCE",
         );
 
-        const url = new URL("https://codemod.studio");
+        const url = new URL(CODEMOD_STUDIO_URL);
         url.search = searchParams.toString();
 
         vscode.commands.executeCommand("codemod.redirect", url);
@@ -212,7 +213,7 @@ export async function activate(context: vscode.ExtensionContext) {
         "accessTokenRequestedByVSCE",
       );
 
-      const url = new URL("https://codemod.studio");
+      const url = new URL(CODEMOD_STUDIO_URL);
       url.search = searchParams.toString();
 
       vscode.commands.executeCommand("codemod.redirect", url);
@@ -762,7 +763,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const beforeSnippet = Buffer.from(text).toString("base64url");
 
       const uri = vscode.Uri.parse(
-        `https://codemod.studio?beforeSnippet=${beforeSnippet}`,
+        `${CODEMOD_STUDIO_URL}?beforeSnippet=${beforeSnippet}`,
       );
 
       await vscode.env.openExternal(uri);
@@ -786,7 +787,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const afterSnippet = Buffer.from(text).toString("base64url");
 
       const uri = vscode.Uri.parse(
-        `https://codemod.studio?afterSnippet=${afterSnippet}`,
+        `${CODEMOD_STUDIO_URL}?afterSnippet=${afterSnippet}`,
       );
 
       await vscode.env.openExternal(uri);
@@ -904,7 +905,7 @@ export async function activate(context: vscode.ExtensionContext) {
               "accessTokenRequestedByVSCE",
             );
 
-            const url = new URL("https://codemod.studio");
+            const url = new URL(CODEMOD_STUDIO_URL);
             url.search = searchParams.toString();
 
             vscode.commands.executeCommand("codemod.redirect", url);

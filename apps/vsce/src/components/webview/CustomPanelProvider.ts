@@ -1,4 +1,5 @@
 import { readFileSync } from "node:fs";
+import { CODEMOD_STUDIO_URL } from "@codemod-com/utilities";
 import { diffTrimmedLines } from "diff";
 import areEqual from "fast-deep-equal";
 import { encode } from "universal-base64url";
@@ -26,7 +27,6 @@ import type { MainViewProvider } from "./MainProvider";
 import { WebviewResolver } from "./WebviewResolver";
 import type { PanelViewProps } from "./panelViewProps";
 import type { WebviewMessage, WebviewResponse } from "./webviewEvents";
-
 const TYPE = "codemodPanel";
 const WEBVIEW_NAME = "jobDiffView";
 
@@ -336,7 +336,7 @@ export class CustomPanelProvider {
               encode(job.codemodName),
             );
 
-            const url = new URL("https://codemod.studio");
+            const url = new URL(CODEMOD_STUDIO_URL);
             url.search = searchParams.toString();
 
             commands.executeCommand("codemod.redirect", url);
