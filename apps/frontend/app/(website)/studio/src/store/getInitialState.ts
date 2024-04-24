@@ -1,6 +1,5 @@
 import type { KnownEngines } from "@codemod-com/utilities";
-import { parseShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
-// import { parseState } from "@studio/schemata/stateSchemata";
+import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
@@ -127,6 +126,18 @@ type InitialState = Readonly<{
     | null;
 }>;
 
+const decodeNullable = (value: string | null): string | null => {
+  if (value === null) {
+    return value;
+  }
+
+  try {
+    return decode(value);
+  } catch (error) {
+    return value;
+  }
+};
+
 export const getInitialState = (): InitialState => {
   {
     if (typeof window === "undefined") {
@@ -141,18 +152,6 @@ export const getInitialState = (): InitialState => {
     }
 
     const searchParams = new URLSearchParams(window.location.search);
-
-    const decodeNullable = (value: string | null): string | null => {
-      if (value === null) {
-        return value;
-      }
-
-      try {
-        return decode(value);
-      } catch (error) {
-        return value;
-      }
-    };
 
     const csc = searchParams.get(
       SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD,
@@ -171,7 +170,6 @@ export const getInitialState = (): InitialState => {
         const uint8Array = Uint8Array.from(numberArray);
 
         const decryptedString = inflate(uint8Array, { to: "string" });
-
         const shareableCodemod = parseShareableCodemod(
           JSON.parse(decryptedString),
         );
@@ -229,7 +227,7 @@ export const getInitialState = (): InitialState => {
 
   if (stringifiedState !== null) {
     try {
-      const state = JSON.parse(stringifiedState); // parseState(JSON.parse(stringifiedState));
+      const state = JSON.parse(stringifiedState);
 
       const everyValueIsEmpty = [
         state.afterSnippet,
