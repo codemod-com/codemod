@@ -9,25 +9,25 @@ import themeScript from "@/headScripts/theme";
 import "@/styles/globals.css";
 
 export default async function RootLayout({
-	children,
+  children,
 }: {
-	children: React.ReactNode;
+  children: React.ReactNode;
 }) {
-	return (
-		<html lang="en" className={cx(globalFontsVariables, "scroll-smooth")}>
-			<head>
-				<script dangerouslySetInnerHTML={{ __html: dynamicFavicon }} />
-				<script dangerouslySetInnerHTML={{ __html: themeScript }} />
-				<style
-					key="fresnel-css"
-					dangerouslySetInnerHTML={{ __html: mediaStyles }}
-					type="text/css"
-				/>
-			</head>
-			<body>
-				{children}
-				<Analytics />
-			</body>
-		</html>
-	);
+  return (
+    <html lang="en" className={cx(globalFontsVariables, "scroll-smooth")}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: dynamicFavicon }} />
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+        <style
+          key="fresnel-css"
+          dangerouslySetInnerHTML={{ __html: mediaStyles }}
+          type="text/css"
+        />
+      </head>
+      <body>
+        {children}
+        <Analytics />
+      </body>
+    </html>
+  );
 }

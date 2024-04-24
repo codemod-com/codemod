@@ -9,95 +9,95 @@ import { useDebounce } from "react-use";
 import { useSidebar } from "./context";
 
 export default function SearchSection({
-	placeholder,
-	path,
+  placeholder,
+  path,
 }: {
-	placeholder?: string;
-	path?: string;
+  placeholder?: string;
+  path?: string;
 }) {
-	const router = useRouter();
-	const search = useSearchParams();
-	const pathname = usePathname();
-	const [searchInput, setSearchInput] = useState(search.get("q") || "");
+  const router = useRouter();
+  const search = useSearchParams();
+  const pathname = usePathname();
+  const [searchInput, setSearchInput] = useState(search.get("q") || "");
 
-	const [loading, setLoading] = useState(false);
-	const { toggleSidebar } = useSidebar();
-	const onSearch = async (query: string) => {
-		try {
-			const newParams = new URLSearchParams(search.toString());
+  const [loading, setLoading] = useState(false);
+  const { toggleSidebar } = useSidebar();
+  const onSearch = async (query: string) => {
+    try {
+      const newParams = new URLSearchParams(search.toString());
 
-			if (query) {
-				newParams.set("q", query);
-			} else {
-				newParams.delete("q");
-			}
+      if (query) {
+        newParams.set("q", query);
+      } else {
+        newParams.delete("q");
+      }
 
-			router.push((path ?? pathname) + "?" + newParams.toString(), {
-				scroll: false,
-			});
-		} catch {
-			setLoading(false);
-		}
-	};
-	const inputWrapperRef = React.useRef<HTMLInputElement>(null);
+      router.push((path ?? pathname) + "?" + newParams.toString(), {
+        scroll: false,
+      });
+    } catch {
+      setLoading(false);
+    }
+  };
+  const inputWrapperRef = React.useRef<HTMLInputElement>(null);
 
-	useDebounce(
-		() => {
-			if (path && !searchInput) return;
-			onSearch(searchInput);
-		},
-		250,
-		[searchInput],
-	);
+  useDebounce(
+    () => {
+      if (path && !searchInput) return;
+      onSearch(searchInput);
+    },
+    250,
+    [searchInput],
+  );
 
-	function handleSearch(searchQuery: string) {
-		setSearchInput(searchQuery);
-		setLoading(searchQuery.length > 0);
-	}
+  function handleSearch(searchQuery: string) {
+    setSearchInput(searchQuery);
+    setLoading(searchQuery.length > 0);
+  }
 
-	useEffect(() => {
-		function handleKeyDown(event: KeyboardEvent) {
-			if (event.metaKey && event.key === "k") {
-				event.preventDefault();
-				inputWrapperRef.current?.querySelector("input")?.focus();
-			}
-		}
-		window.addEventListener("keydown", handleKeyDown);
-		return () => {
-			window.removeEventListener("keydown", handleKeyDown);
-		};
-	}, []);
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.metaKey && event.key === "k") {
+        event.preventDefault();
+        inputWrapperRef.current?.querySelector("input")?.focus();
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
-	useEffect(() => {
-		if (!search.get("q") && searchInput) {
-			setSearchInput("");
-		}
-		setLoading(false);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [search]);
+  useEffect(() => {
+    if (!search.get("q") && searchInput) {
+      setSearchInput("");
+    }
+    setLoading(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [search]);
 
-	return (
-		<div className="flex flex-col items-start gap-3 overflow-x-clip pt-5 lg:flex-row lg:items-center lg:pb-xl">
-			<div className="flex w-full flex-1 items-center gap-2">
-				<Button intent="secondary-icon-only" onClick={() => toggleSidebar()}>
-					<Icon name="filter" />
-				</Button>
+  return (
+    <div className="flex flex-col items-start gap-3 overflow-x-clip pt-5 lg:flex-row lg:items-center lg:pb-xl">
+      <div className="flex w-full flex-1 items-center gap-2">
+        <Button intent="secondary-icon-only" onClick={() => toggleSidebar()}>
+          <Icon name="filter" />
+        </Button>
 
-				<div ref={inputWrapperRef} className="w-full">
-					<Input
-						onChange={(e) => handleSearch(e.target.value)}
-						placeholder={placeholder}
-						icon={loading ? "loading" : "search"}
-						command={searchInput ? undefined : "⌘K"}
-						onClear={() => {
-							setSearchInput("");
-						}}
-						value={searchInput}
-						inputClassName="placeholder:text-secondary-light dark:placeholder:text-secondary-dark"
-						iconClassName="text-secondary-light dark:text-secondary-dark"
-					/>
-				</div>
-			</div>
-		</div>
-	);
+        <div ref={inputWrapperRef} className="w-full">
+          <Input
+            onChange={(e) => handleSearch(e.target.value)}
+            placeholder={placeholder}
+            icon={loading ? "loading" : "search"}
+            command={searchInput ? undefined : "⌘K"}
+            onClear={() => {
+              setSearchInput("");
+            }}
+            value={searchInput}
+            inputClassName="placeholder:text-secondary-light dark:placeholder:text-secondary-dark"
+            iconClassName="text-secondary-light dark:text-secondary-dark"
+          />
+        </div>
+      </div>
+    </div>
+  );
 }

@@ -5,52 +5,52 @@ import ts from "typescript";
 import type { Dependencies } from "./runRepomod.js";
 
 export const transpile = (source: string): string => {
-	const { outputText } = ts.transpileModule(source, {
-		compilerOptions: {
-			target: ts.ScriptTarget.ES5,
-			module: ts.ModuleKind.CommonJS,
-		},
-	});
+  const { outputText } = ts.transpileModule(source, {
+    compilerOptions: {
+      target: ts.ScriptTarget.ES5,
+      module: ts.ModuleKind.CommonJS,
+    },
+  });
 
-	return outputText;
+  return outputText;
 };
 
 export const getTransformer = (source: string) => {
-	type Exports =
-		| {
-				__esModule?: true;
-				default?: unknown;
-				handleSourceFile?: unknown;
-				repomod?: Filemod<Dependencies, Record<string, unknown>>;
-				filemod?: Filemod<Dependencies, Record<string, unknown>>;
-		  }
-		| (() => void);
+  type Exports =
+    | {
+        __esModule?: true;
+        default?: unknown;
+        handleSourceFile?: unknown;
+        repomod?: Filemod<Dependencies, Record<string, unknown>>;
+        filemod?: Filemod<Dependencies, Record<string, unknown>>;
+      }
+    | (() => void);
 
-	const module = { exports: {} as Exports };
-	const _require = (name: string) => {
-		if (name === "ts-morph") {
-			return tsmorph;
-		}
+  const module = { exports: {} as Exports };
+  const _require = (name: string) => {
+    if (name === "ts-morph") {
+      return tsmorph;
+    }
 
-		if (name === "node:path") {
-			return nodePath;
-		}
-	};
+    if (name === "node:path") {
+      return nodePath;
+    }
+  };
 
-	const keys = ["module", "exports", "require"];
-	const values = [module, module.exports, _require];
+  const keys = ["module", "exports", "require"];
+  const values = [module, module.exports, _require];
 
-	new Function(...keys, source).apply(null, values);
+  new Function(...keys, source).apply(null, values);
 
-	return typeof module.exports === "function"
-		? module.exports
-		: module.exports.__esModule && typeof module.exports.default === "function"
-			? module.exports.default
-			: typeof module.exports.handleSourceFile === "function"
-				? module.exports.handleSourceFile
-				: module.exports.repomod !== undefined
-					? module.exports.repomod
-					: module.exports.filemod !== undefined
-						? module.exports.filemod
-						: null;
+  return typeof module.exports === "function"
+    ? module.exports
+    : module.exports.__esModule && typeof module.exports.default === "function"
+      ? module.exports.default
+      : typeof module.exports.handleSourceFile === "function"
+        ? module.exports.handleSourceFile
+        : module.exports.repomod !== undefined
+          ? module.exports.repomod
+          : module.exports.filemod !== undefined
+            ? module.exports.filemod
+            : null;
 };

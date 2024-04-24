@@ -2,6 +2,6 @@ import SectionRegistry from "./sectionComponents/SectionRegistry/SectionsRegistr
 import { commonSections } from "./sections.common";
 
 export const sections: Record<string, React.ComponentType<any>> = {
-	...commonSections,
-	"section.registry": SectionRegistry,
+  ...commonSections,
+  "section.registry": SectionRegistry,
 };

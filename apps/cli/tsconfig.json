@@ -1,10 +1,10 @@
 {
-	"compilerOptions": {
-		"allowJs": true,
-		"checkJs": false,
-		"target": "ES2015"
-	},
-	"include": ["./src", "./test"],
-	"exclude": ["./dist", "./node_modules"],
-	"extends": "@codemod-com/tsconfig/base.json"
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
+    "target": "ES2015"
+  },
+  "include": ["./src", "./test"],
+  "exclude": ["./dist", "./node_modules"],
+  "extends": "@codemod-com/tsconfig/base.json"
 }

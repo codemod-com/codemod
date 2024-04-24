@@ -6,45 +6,45 @@ import Link from "next/link";
 import { type ComponentProps, forwardRef } from "react";
 
 export interface SanityLinkProps extends ComponentProps<"a"> {
-	link: Partial<LinkData> | SanityLinkType;
-	scroll?: boolean;
+  link: Partial<LinkData> | SanityLinkType;
+  scroll?: boolean;
 }
 
 export const SanityLink = forwardRef<
-	HTMLAnchorElement,
-	React.PropsWithChildren<SanityLinkProps>
+  HTMLAnchorElement,
+  React.PropsWithChildren<SanityLinkProps>
 >(function SanityLink(props, ref) {
-	const { link, ...rest } = props;
-	const href = link.href || "";
-	const { cleaned } = vercelStegaSplit(href);
-	const isExternal = isExternalUrl(cleaned);
+  const { link, ...rest } = props;
+  const href = link.href || "";
+  const { cleaned } = vercelStegaSplit(href);
+  const isExternal = isExternalUrl(cleaned);
 
-	if (!href) {
-		return (
-			<span ref={ref} {...rest}>
-				{props.children}
-			</span>
-		);
-	}
+  if (!href) {
+    return (
+      <span ref={ref} {...rest}>
+        {props.children}
+      </span>
+    );
+  }
 
-	if (isExternal) {
-		return (
-			<a
-				{...rest}
-				href={cleaned}
-				target="_blank"
-				rel="noopener noreferrer"
-				tabIndex={0}
-				ref={ref}
-			>
-				{props.children}
-			</a>
-		);
-	}
+  if (isExternal) {
+    return (
+      <a
+        {...rest}
+        href={cleaned}
+        target="_blank"
+        rel="noopener noreferrer"
+        tabIndex={0}
+        ref={ref}
+      >
+        {props.children}
+      </a>
+    );
+  }
 
-	return (
-		<Link {...rest} href={href} tabIndex={0} ref={ref} prefetch>
-			{props.children}
-		</Link>
-	);
+  return (
+    <Link {...rest} href={href} tabIndex={0} ref={ref} prefetch>
+      {props.children}
+    </Link>
+  );
 });

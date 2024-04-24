@@ -1,14 +1,14 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"name": "next/13/ab-test",
-	"version": "1.0.0",
-	"private": false,
-	"engine": "filemod",
-	"arguments": [],
-	"meta": {
-		"tags": ["next.js", "migration"]
-	},
-	"applicability": {
-		"from": [["next", "<", "13.0.0"]]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "next/13/ab-test",
+  "version": "1.0.0",
+  "private": false,
+  "engine": "filemod",
+  "arguments": [],
+  "meta": {
+    "tags": ["next.js", "migration"]
+  },
+  "applicability": {
+    "from": [["next", "<", "13.0.0"]]
+  }
 }

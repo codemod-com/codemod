@@ -1,14 +1,14 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
-	"private": false,
-	"name": "react/19/remove-forward-ref",
-	"description": "Codemod to remove React.forwardRef function that will be deprecated in next major React release",
-	"engine": "jscodeshift",
-	"meta": {
-		"tags": ["react", "migration"]
-	},
-	"applicability": {
-		"from": [["react", "<=", "18"]]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "private": false,
+  "name": "react/19/remove-forward-ref",
+  "description": "Codemod to remove React.forwardRef function that will be deprecated in next major React release",
+  "engine": "jscodeshift",
+  "meta": {
+    "tags": ["react", "migration"]
+  },
+  "applicability": {
+    "from": [["react", "<=", "18"]]
+  }
 }

@@ -1,22 +1,22 @@
 import type { TreeNode } from "@studio/components/Tree";
 
 function extractParentNodes(tree: TreeNode, targetNode: TreeNode): TreeNode[] {
-	const { children = [], ...rest } = tree;
+  const { children = [], ...rest } = tree;
 
-	const result: TreeNode[] = [];
+  const result: TreeNode[] = [];
 
-	if (tree.id === targetNode.id) return result;
+  if (tree.id === targetNode.id) return result;
 
-	if (tree.start <= targetNode.start && tree.end >= targetNode.end) {
-		result.push({ ...rest });
-		for (let i = 0; i < children.length; ++i) {
-			const nodes = extractParentNodes(children[i]!, targetNode);
+  if (tree.start <= targetNode.start && tree.end >= targetNode.end) {
+    result.push({ ...rest });
+    for (let i = 0; i < children.length; ++i) {
+      const nodes = extractParentNodes(children[i]!, targetNode);
 
-			result.push(...nodes);
-		}
-	}
+      result.push(...nodes);
+    }
+  }
 
-	return result;
+  return result;
 }
 
 export default extractParentNodes;

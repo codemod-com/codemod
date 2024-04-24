@@ -9,86 +9,86 @@ import { Highlight, Prism } from "prism-react-renderer";
 import { useEffect, useState } from "react";
 
 const inconsolata = Inconsolata({
-	subsets: ["latin"],
-	weight: "400",
-	variable: "--inconsolata",
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--inconsolata",
 });
 
 const CodeBlock = ({ children }) => {
-	const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState(false);
 
-	const {
-		props: { className, children: code = "" },
-	} = children;
+  const {
+    props: { className, children: code = "" },
+  } = children;
 
-	const language = className
-		? className
-				.replace(/language-/, "")
-				?.trim()
-				?.toLowerCase()
-		: "";
+  const language = className
+    ? className
+        .replace(/language-/, "")
+        ?.trim()
+        ?.toLowerCase()
+    : "";
 
-	const handleCopy = () => {
-		navigator.clipboard.writeText(code.trim());
-		setCopied(true);
-		setTimeout(() => {
-			setCopied(false);
-		}, 1200);
-	};
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code.trim());
+    setCopied(true);
+    setTimeout(() => {
+      setCopied(false);
+    }, 1200);
+  };
 
-	const prismLanguageId = languageToPrismId(language);
+  const prismLanguageId = languageToPrismId(language);
 
-	useEffect(() => {
-		(async () => {
-			if (prismLanguageId) {
-				window.Prism = Prism;
-				await import(`prismjs/components/prism-${prismLanguageId}`);
+  useEffect(() => {
+    (async () => {
+      if (prismLanguageId) {
+        window.Prism = Prism;
+        await import(`prismjs/components/prism-${prismLanguageId}`);
 
-				if (window.Prism && typeof window.Prism.highlightAll === "function") {
-					window.Prism.highlightAll();
-				}
-			}
-		})();
-	}, [prismLanguageId]);
+        if (window.Prism && typeof window.Prism.highlightAll === "function") {
+          window.Prism.highlightAll();
+        }
+      }
+    })();
+  }, [prismLanguageId]);
 
-	if (!children || children.type !== "code") return null;
+  if (!children || children.type !== "code") return null;
 
-	return (
-		<div
-			className={clsx(
-				"codeblock relative mb-10 h-full rounded-md bg-emphasis-light/10 p-4 pr-12 dark:bg-emphasis-dark",
-				`${inconsolata.variable} font-mono text-lg`,
-			)}
-		>
-			<div className="absolute right-2 top-2">
-				<button
-					className={cx(
-						"body-s-medium m-xxs flex animate-fade-in items-center gap-xs rounded-[4px] p-3 font-medium transition-all  duration-200",
-						"text-tertiary-light lg:hover:bg-emphasis-light/5 dark:border-border-dark dark:text-tertiary-dark dark:lg:hover:bg-primaryHover-light",
-					)}
-					onClick={handleCopy}
-				>
-					<Icon name={copied ? "check" : "copy"} className="h-4 w-4" />
-				</button>
-			</div>
-			<Highlight theme={theme} code={code.trim()} language={language}>
-				{({ className, style, tokens, getLineProps, getTokenProps }) => (
-					<pre
-						className={"my-2 rounded-lg p-[20px] " + className}
-						style={style}
-					>
-						{tokens.map((line, i) => (
-							<div key={i} {...getLineProps({ line })}>
-								{line.map((token, key) => (
-									<span key={key} {...getTokenProps({ token })} />
-								))}
-							</div>
-						))}
-					</pre>
-				)}
-			</Highlight>
-		</div>
-	);
+  return (
+    <div
+      className={clsx(
+        "codeblock relative mb-10 h-full rounded-md bg-emphasis-light/10 p-4 pr-12 dark:bg-emphasis-dark",
+        `${inconsolata.variable} font-mono text-lg`,
+      )}
+    >
+      <div className="absolute right-2 top-2">
+        <button
+          className={cx(
+            "body-s-medium m-xxs flex animate-fade-in items-center gap-xs rounded-[4px] p-3 font-medium transition-all  duration-200",
+            "text-tertiary-light lg:hover:bg-emphasis-light/5 dark:border-border-dark dark:text-tertiary-dark dark:lg:hover:bg-primaryHover-light",
+          )}
+          onClick={handleCopy}
+        >
+          <Icon name={copied ? "check" : "copy"} className="h-4 w-4" />
+        </button>
+      </div>
+      <Highlight theme={theme} code={code.trim()} language={language}>
+        {({ className, style, tokens, getLineProps, getTokenProps }) => (
+          <pre
+            className={"my-2 rounded-lg p-[20px] " + className}
+            style={style}
+          >
+            {tokens.map((line, i) => (
+              <div key={i} {...getLineProps({ line })}>
+                {line.map((token, key) => (
+                  <span key={key} {...getTokenProps({ token })} />
+                ))}
+              </div>
+            ))}
+          </pre>
+        )}
+      </Highlight>
+    </div>
+  );
 };
 
 export default CodeBlock;

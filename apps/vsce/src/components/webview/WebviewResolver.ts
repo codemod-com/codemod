@@ -3,97 +3,97 @@ import { Uri, type Webview } from "vscode";
 import { getUri } from "../../utilities";
 
 const monacoWorkers: Record<string, string> = {
-	editorWorkerService: "editor.worker.bundle.js",
-	css: "css.worker.bundle.js",
-	html: "html.worker.bundle.js",
-	json: "json.worker.bundle.js",
-	typescript: "ts.worker.bundle.js",
-	javascript: "ts.worker.bundle.js",
-	less: "css.worker.bundle.js",
-	scss: "css.worker.bundle.js",
-	handlebars: "html.worker.bundle.js",
-	razor: "html.worker.bundle.js",
+  editorWorkerService: "editor.worker.bundle.js",
+  css: "css.worker.bundle.js",
+  html: "html.worker.bundle.js",
+  json: "json.worker.bundle.js",
+  typescript: "ts.worker.bundle.js",
+  javascript: "ts.worker.bundle.js",
+  less: "css.worker.bundle.js",
+  scss: "css.worker.bundle.js",
+  handlebars: "html.worker.bundle.js",
+  razor: "html.worker.bundle.js",
 };
 export class WebviewResolver {
-	constructor(private readonly __extensionPath: Uri) {}
+  constructor(private readonly __extensionPath: Uri) {}
 
-	public getWebviewOptions() {
-		return {
-			enableScripts: true,
-			localResourceRoots: [
-				Uri.joinPath(this.__extensionPath, "webview/build"),
-				Uri.joinPath(this.__extensionPath, "resources"),
-			],
-			retainContextWhenHidden: true,
-		};
-	}
+  public getWebviewOptions() {
+    return {
+      enableScripts: true,
+      localResourceRoots: [
+        Uri.joinPath(this.__extensionPath, "webview/build"),
+        Uri.joinPath(this.__extensionPath, "resources"),
+      ],
+      retainContextWhenHidden: true,
+    };
+  }
 
-	public resolveWebview(
-		webview: Webview,
-		webviewName: string,
-		initialData: string,
-		initialStateKey: string,
-	) {
-		webview.options = this.getWebviewOptions();
-		webview.html = this.__getHtmlForWebview(
-			webview,
-			webviewName,
-			initialData,
-			initialStateKey,
-		);
-	}
+  public resolveWebview(
+    webview: Webview,
+    webviewName: string,
+    initialData: string,
+    initialStateKey: string,
+  ) {
+    webview.options = this.getWebviewOptions();
+    webview.html = this.__getHtmlForWebview(
+      webview,
+      webviewName,
+      initialData,
+      initialStateKey,
+    );
+  }
 
-	private __getHtmlForWebview(
-		webview: Webview,
-		webviewName: string,
-		initialData: string,
-		initialStateKey: string,
-	) {
-		const stylesUri = getUri(webview, this.__extensionPath, [
-			"webview",
-			"build",
-			webviewName,
-			"assets",
-			"index.css",
-		]);
-		const scriptUri = getUri(webview, this.__extensionPath, [
-			"webview",
-			"build",
-			webviewName,
-			"assets",
-			`${webviewName}.js`,
-		]);
+  private __getHtmlForWebview(
+    webview: Webview,
+    webviewName: string,
+    initialData: string,
+    initialStateKey: string,
+  ) {
+    const stylesUri = getUri(webview, this.__extensionPath, [
+      "webview",
+      "build",
+      webviewName,
+      "assets",
+      "index.css",
+    ]);
+    const scriptUri = getUri(webview, this.__extensionPath, [
+      "webview",
+      "build",
+      webviewName,
+      "assets",
+      `${webviewName}.js`,
+    ]);
 
-		const nonce = randomBytes(16).toString("hex");
-		const codiconsUri = getUri(webview, this.__extensionPath, [
-			"resources",
-			"codicon.css",
-		]);
+    const nonce = randomBytes(16).toString("hex");
+    const codiconsUri = getUri(webview, this.__extensionPath, [
+      "resources",
+      "codicon.css",
+    ]);
 
-		const scriptSources = [`'nonce-${nonce}'`];
+    const scriptSources = [`'nonce-${nonce}'`];
 
-		const styleSources = [webview.cspSource, `'self'`, `'unsafe-inline'`];
+    const styleSources = [webview.cspSource, `'self'`, `'unsafe-inline'`];
 
-		const fontSources = [webview.cspSource];
+    const fontSources = [webview.cspSource];
 
-		const imageSources = [
-			webview.cspSource,
-			"'self'",
-			"data:",
-			"vscode-resource:",
-			"https:",
-		];
+    const imageSources = [
+      webview.cspSource,
+      "'self'",
+      "data:",
+      "vscode-resource:",
+      "https:",
+    ];
 
-		const getWorkerUri = (name: string) =>
-			getUri(webview, this.__extensionPath, [
-				"webview",
-				"build",
-				webviewName,
-				"monacoeditorwork",
-				monacoWorkers[name] ?? "",
-			]);
+    const getWorkerUri = (name: string) =>
+      getUri(webview, this.__extensionPath, [
+        "webview",
+        "build",
+        webviewName,
+        "monacoeditorwork",
+        monacoWorkers[name] ?? "",
+      ]);
 
-		return /*html*/ `
+    return /*html*/ `
 			<!DOCTYPE html>
 			<html lang="en">
 				<head>
@@ -144,5 +144,5 @@ export class WebviewResolver {
 				</body>
 			</html>
 		`;
-	}
+  }
 }

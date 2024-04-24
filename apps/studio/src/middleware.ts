@@ -1,17 +1,17 @@
 import { type NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-	if (process.env.NODE_ENV === "development") {
-		return NextResponse.next({
-			request,
-		});
-	}
+  if (process.env.NODE_ENV === "development") {
+    return NextResponse.next({
+      request,
+    });
+  }
 
-	// based off the examples presented on:
-	// https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
+  // based off the examples presented on:
+  // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
 
-	const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-	const cspHeader = `
+  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+  const cspHeader = `
         default-src 'self';
         script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-eval' 'unsafe-inline';
 		frame-src https://challenges.cloudflare.com/;
@@ -27,34 +27,34 @@ export function middleware(request: NextRequest) {
         upgrade-insecure-requests;
     `;
 
-	const contentSecurityPolicyHeaderValue = cspHeader
-		.replace(/\s{2,}/g, " ")
-		.trim();
+  const contentSecurityPolicyHeaderValue = cspHeader
+    .replace(/\s{2,}/g, " ")
+    .trim();
 
-	const headers = new Headers(request.headers);
-	headers.set("x-nonce", nonce);
-	headers.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
+  const headers = new Headers(request.headers);
+  headers.set("x-nonce", nonce);
+  headers.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
 
-	const response = NextResponse.next({
-		request: {
-			headers,
-		},
-	});
+  const response = NextResponse.next({
+    request: {
+      headers,
+    },
+  });
 
-	return response;
+  return response;
 }
 
 // based off the examples presented on:
 // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
 
 export const config = {
-	matcher: [
-		{
-			source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
-			missing: [
-				{ type: "header", key: "next-router-prefetch" },
-				{ type: "header", key: "purpose", value: "prefetch" },
-			],
-		},
-	],
+  matcher: [
+    {
+      source: "/((?!api|_next/static|_next/image|favicon.ico).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
+  ],
 };

@@ -28,84 +28,84 @@ Changes to the original file: added options
 */
 
 import type {
-	ASTPath,
-	CallExpression,
-	JSCodeshift,
-	MemberExpression,
-	Transform,
+  ASTPath,
+  CallExpression,
+  JSCodeshift,
+  MemberExpression,
+  Transform,
 } from "jscodeshift";
 
 class Handler {
-	private j: JSCodeshift;
-	private path: ASTPath<CallExpression>;
-	private argumentsMatch: boolean;
+  private j: JSCodeshift;
+  private path: ASTPath<CallExpression>;
+  private argumentsMatch: boolean;
 
-	constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
-		this.j = j;
-		this.path = path;
-		this.argumentsMatch = this.checkArgumentContract();
-	}
+  constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
+    this.j = j;
+    this.path = path;
+    this.argumentsMatch = this.checkArgumentContract();
+  }
 
-	checkArgumentContract() {
-		const node = this.path.node;
+  checkArgumentContract() {
+    const node = this.path.node;
 
-		if (node.arguments.length !== 2) {
-			return false;
-		}
+    if (node.arguments.length !== 2) {
+      return false;
+    }
 
-		const firstArg = node.arguments[0];
+    const firstArg = node.arguments[0];
 
-		if (firstArg?.type !== "Literal" && firstArg?.type !== "Identifier") {
-			return false;
-		}
+    if (firstArg?.type !== "Literal" && firstArg?.type !== "Identifier") {
+      return false;
+    }
 
-		return true;
-	}
+    return true;
+  }
 
-	transform() {
-		if (!this.argumentsMatch) {
-			return;
-		}
+  transform() {
+    if (!this.argumentsMatch) {
+      return;
+    }
 
-		const argument = this.path.node.arguments[0];
-		let newArgument: any = argument;
-		let computed = true;
+    const argument = this.path.node.arguments[0];
+    let newArgument: any = argument;
+    let computed = true;
 
-		if (argument?.type === "Literal") {
-			newArgument = this.j.identifier(`${argument.value}`);
-			computed = false;
-		}
+    if (argument?.type === "Literal") {
+      newArgument = this.j.identifier(`${argument.value}`);
+      computed = false;
+    }
 
-		const memberExpression = this.path.node.callee as MemberExpression;
-		const newMemberExpression = this.j.memberExpression(
-			memberExpression.object,
-			newArgument,
-			computed,
-		);
+    const memberExpression = this.path.node.callee as MemberExpression;
+    const newMemberExpression = this.j.memberExpression(
+      memberExpression.object,
+      newArgument,
+      computed,
+    );
 
-		const defaultExpression = this.path.node.arguments[1] as any;
-		this.path.replace(
-			this.j.assignmentExpression("=", newMemberExpression, defaultExpression),
-		);
-	}
+    const defaultExpression = this.path.node.arguments[1] as any;
+    this.path.replace(
+      this.j.assignmentExpression("=", newMemberExpression, defaultExpression),
+    );
+  }
 }
 
 const transform: Transform = (file, api, options) => {
-	const j = api.jscodeshift;
-	const root = j(file.source);
-	const collections = root.find(j.CallExpression, {
-		callee: {
-			type: "MemberExpression",
-			property: {
-				type: "Identifier",
-				name: "set",
-			},
-		},
-	});
+  const j = api.jscodeshift;
+  const root = j(file.source);
+  const collections = root.find(j.CallExpression, {
+    callee: {
+      type: "MemberExpression",
+      property: {
+        type: "Identifier",
+        name: "set",
+      },
+    },
+  });
 
-	collections.forEach((path) => new Handler(j, path).transform());
+  collections.forEach((path) => new Handler(j, path).transform());
 
-	return root.toSource(options);
+  return root.toSource(options);
 };
 
 export default transform;

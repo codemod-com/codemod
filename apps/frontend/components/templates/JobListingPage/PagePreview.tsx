@@ -9,15 +9,15 @@ import type { Job } from "@/types";
 import JobListingPageContent from "./JobListingPageContent";
 
 type Props = {
-	params: { pathname: string | string[] };
-	initial: QueryResponseInitial<Job | null>;
+  params: { pathname: string | string[] };
+  initial: QueryResponseInitial<Job | null>;
 };
 
 export default function JobListingPagePreview(props: Props) {
-	const { params, initial } = props;
-	const { data } = useQuery<Job | null>(JOB_QUERY, params, {
-		initial,
-	});
+  const { params, initial } = props;
+  const { data } = useQuery<Job | null>(JOB_QUERY, params, {
+    initial,
+  });
 
-	return <JobListingPageContent {...data!} />;
+  return <JobListingPageContent {...data!} />;
 }

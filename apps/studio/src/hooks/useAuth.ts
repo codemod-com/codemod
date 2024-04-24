@@ -4,18 +4,18 @@ import { authUrl } from "~/config";
 import { PendingAction, useUserSession } from "~/store/zustand/userSession";
 
 export const useAuth = () => {
-	const router = useRouter();
-	const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
-	return {
-		...useClerk(),
-		getSignIn:
-			({
-				withPendingAction,
-			}: { withPendingAction?: PendingAction } | undefined = {}) =>
-			() => {
-				resetPendingActions();
-				if (withPendingAction) addPendingActionsWhenSigned(withPendingAction);
-				router.push(authUrl);
-			},
-	};
+  const router = useRouter();
+  const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
+  return {
+    ...useClerk(),
+    getSignIn:
+      ({
+        withPendingAction,
+      }: { withPendingAction?: PendingAction } | undefined = {}) =>
+      () => {
+        resetPendingActions();
+        if (withPendingAction) addPendingActionsWhenSigned(withPendingAction);
+        router.push(authUrl);
+      },
+  };
 };

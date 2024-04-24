@@ -6,21 +6,21 @@ import { env } from "~/env";
 const clerkPubKey = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
 const AuthProvider = ({ children }: { children: ReactNode }) => {
-	// const { isDark } = useTheme();
-	// const theme = useMemo(() => (isDark ? dark : undefined), [isDark]);
-	if (!clerkPubKey) {
-		throw new Error("Clerk Public Key not set");
-	}
+  // const { isDark } = useTheme();
+  // const theme = useMemo(() => (isDark ? dark : undefined), [isDark]);
+  if (!clerkPubKey) {
+    throw new Error("Clerk Public Key not set");
+  }
 
-	return (
-		<ClerkProvider
-			appearance={{
-				baseTheme: dark,
-			}}
-			publishableKey={clerkPubKey as string}
-		>
-			{children}
-		</ClerkProvider>
-	);
+  return (
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+      publishableKey={clerkPubKey as string}
+    >
+      {children}
+    </ClerkProvider>
+  );
 };
 export default AuthProvider;

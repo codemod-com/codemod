@@ -1,33 +1,33 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
-	"name": "next-i18next/copy-keys",
-	"private": false,
-	"engine": "filemod",
-	"applicability": {
-		"from": [["next-i18next", ">", "14.0.0"]]
-	},
-	"arguments": [
-		{
-			"name": "oldNamespace",
-			"kind": "string",
-			"required": true,
-			"default": "common"
-		},
-		{
-			"name": "newNamespace",
-			"kind": "string",
-			"default": "new",
-			"required": true
-		},
-		{
-			"name": "keys",
-			"kind": "string",
-			"default": "",
-			"required": true
-		}
-	],
-	"meta": {
-		"tags": ["migration"]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "name": "next-i18next/copy-keys",
+  "private": false,
+  "engine": "filemod",
+  "applicability": {
+    "from": [["next-i18next", ">", "14.0.0"]]
+  },
+  "arguments": [
+    {
+      "name": "oldNamespace",
+      "kind": "string",
+      "required": true,
+      "default": "common"
+    },
+    {
+      "name": "newNamespace",
+      "kind": "string",
+      "default": "new",
+      "required": true
+    },
+    {
+      "name": "keys",
+      "kind": "string",
+      "default": "",
+      "required": true
+    }
+  ],
+  "meta": {
+    "tags": ["migration"]
+  }
 }

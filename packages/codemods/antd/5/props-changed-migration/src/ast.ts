@@ -28,67 +28,67 @@ Changes: move the code from JavaScript to TypeScript
 */
 
 import type {
-	ASTPath,
-	Collection,
-	JSCodeshift,
-	JSXAttribute,
-	TSParameterProperty,
+  ASTPath,
+  Collection,
+  JSCodeshift,
+  JSXAttribute,
+  TSParameterProperty,
 } from "jscodeshift";
 
 export const createObjectProperty = <T extends TSParameterProperty>(
-	j: JSCodeshift,
-	key: string,
-	value: T,
+  j: JSCodeshift,
+  key: string,
+  value: T,
 ) => j.property("init", j.identifier(key), value);
 
 export const createObjectExpression = <T>(j: JSCodeshift, obj: T) =>
-	j.objectExpression(
-		// @ts-expect-error type ambiguity
-		Object.entries(obj).map(([key, val]) =>
-			// @ts-expect-error type ambiguity
-			createObjectProperty(j, key, val),
-		),
-	);
+  j.objectExpression(
+    // @ts-expect-error type ambiguity
+    Object.entries(obj).map(([key, val]) =>
+      // @ts-expect-error type ambiguity
+      createObjectProperty(j, key, val),
+    ),
+  );
 
 export const getJSXAttributeValue = (
-	j: JSCodeshift,
-	nodePath: ASTPath<JSXAttribute>,
+  j: JSCodeshift,
+  nodePath: ASTPath<JSXAttribute>,
 ) => {
-	// <Tag visible={1} />
-	// 取出来 JSXExpressionContainer 其中值部分
-	if (nodePath.value?.value?.type === "JSXExpressionContainer") {
-		return nodePath.value.value.expression;
-	}
+  // <Tag visible={1} />
+  // 取出来 JSXExpressionContainer 其中值部分
+  if (nodePath.value?.value?.type === "JSXExpressionContainer") {
+    return nodePath.value.value.expression;
+  }
 
-	// <Tag visible="1" />
-	return nodePath.value.value;
+  // <Tag visible="1" />
+  return nodePath.value.value;
 };
 
 export const findAllAssignedNames = <T>(
-	root: Collection<T>,
-	j: JSCodeshift,
-	localAssignedName: string,
-	localAssignedNames: string[] = [],
+  root: Collection<T>,
+  j: JSCodeshift,
+  localAssignedName: string,
+  localAssignedNames: string[] = [],
 ) => {
-	const collection = root.find(j.VariableDeclarator, {
-		init: {
-			type: "Identifier",
-			name: localAssignedName,
-		},
-	});
+  const collection = root.find(j.VariableDeclarator, {
+    init: {
+      type: "Identifier",
+      name: localAssignedName,
+    },
+  });
 
-	if (collection.length > 0) {
-		collection.forEach((nodePath) => {
-			// @ts-expect-error type ambiguity
-			localAssignedNames.push(nodePath.node.id.name);
-			findAllAssignedNames(
-				root,
-				j,
-				// @ts-expect-error type ambiguity
-				nodePath.node.id.name,
-				localAssignedNames,
-			);
-		});
-	}
-	return localAssignedNames;
+  if (collection.length > 0) {
+    collection.forEach((nodePath) => {
+      // @ts-expect-error type ambiguity
+      localAssignedNames.push(nodePath.node.id.name);
+      findAllAssignedNames(
+        root,
+        j,
+        // @ts-expect-error type ambiguity
+        nodePath.node.id.name,
+        localAssignedNames,
+      );
+    });
+  }
+  return localAssignedNames;
 };

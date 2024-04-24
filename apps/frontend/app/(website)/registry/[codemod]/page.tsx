@@ -10,35 +10,35 @@ import { notFound } from "next/navigation";
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-	const res = await fetch(`https://backend.codemod.com/codemods/list`);
-	const allAutomations = await res.json();
-	return allAutomations.map((automation) => ({ codemod: automation.slug }));
+  const res = await fetch(`https://backend.codemod.com/codemods/list`);
+  const allAutomations = await res.json();
+  return allAutomations.map((automation) => ({ codemod: automation.slug }));
 }
 
 export default async function CodemodRoute({ params }) {
-	const initialAutomationData = await loadCodemod(params.codemod);
+  const initialAutomationData = await loadCodemod(params.codemod);
 
-	if (!initialAutomationData || "error" in initialAutomationData) {
-		notFound();
-	}
+  if (!initialAutomationData || "error" in initialAutomationData) {
+    notFound();
+  }
 
-	const automationPageData = await loadAutomationPage(
-		initialAutomationData.tags,
-	);
-	const pageData = transformAutomation({
-		...initialAutomationData,
-		...automationPageData?.data,
-	});
+  const automationPageData = await loadAutomationPage(
+    initialAutomationData.tags,
+  );
+  const pageData = transformAutomation({
+    ...initialAutomationData,
+    ...automationPageData?.data,
+  });
 
-	const description = pageData?.shortDescription ? (
-		<MDXRemote
-			components={{
-				pre: CodeBlock,
-				Route: () => null,
-			}}
-			source={vercelStegaCleanAll(pageData?.shortDescription || "")}
-		/>
-	) : null;
+  const description = pageData?.shortDescription ? (
+    <MDXRemote
+      components={{
+        pre: CodeBlock,
+        Route: () => null,
+      }}
+      source={vercelStegaCleanAll(pageData?.shortDescription || "")}
+    />
+  ) : null;
 
-	return <CodemodPage description={description} data={pageData} />;
+  return <CodemodPage description={description} data={pageData} />;
 }

@@ -1,14 +1,14 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
-	"private": false,
-	"name": "ember/5/es5-getter-ember-codemod",
-	"engine": "jscodeshift",
-	"applicability": {
-		"from": [["ember", ">=", "3.1.0"], ["ember", "<", "5.0.0"]]
-	},
-	"meta": {
-		"git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/es5-getter-ember-codemod",
-		"tags": ["migration"]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "private": false,
+  "name": "ember/5/es5-getter-ember-codemod",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["ember", ">=", "3.1.0"], ["ember", "<", "5.0.0"]]
+  },
+  "meta": {
+    "git": "https://github.com/ember-codemods/ember-3x-codemods/tree/master/transforms/es5-getter-ember-codemod",
+    "tags": ["migration"]
+  }
 }

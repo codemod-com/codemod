@@ -8,26 +8,26 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(
-	props: RouteProps,
-	parent: ResolvingMetadata,
+  props: RouteProps,
+  parent: ResolvingMetadata,
 ) {
-	const initialData = await loadCareersPage("/careers");
+  const initialData = await loadCareersPage("/careers");
 
-	if (!initialData?.data) return notFound();
+  if (!initialData?.data) return notFound();
 
-	return resolveSanityRouteMetadata(initialData.data, parent);
+  return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function Careers() {
-	const initial = await loadCareersPage("/careers");
+  const initial = await loadCareersPage("/careers");
 
-	if (!initial?.data) return notFound();
+  if (!initial?.data) return notFound();
 
-	if (draftMode().isEnabled) {
-		return (
-			<CareersPagePreview initial={initial} params={{ pathname: "/careers" }} />
-		);
-	}
+  if (draftMode().isEnabled) {
+    return (
+      <CareersPagePreview initial={initial} params={{ pathname: "/careers" }} />
+    );
+  }
 
-	return <CareersPage data={initial.data} />;
+  return <CareersPage data={initial.data} />;
 }

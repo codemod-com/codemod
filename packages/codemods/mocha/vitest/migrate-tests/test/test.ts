@@ -5,8 +5,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("mocha/vitest test", () => {
-	it("when `expect` for `chai` is being imported", () => {
-		const INPUT = `
+  it("when `expect` for `chai` is being imported", () => {
+    const INPUT = `
         import { expect } from 'chai';
 
         describe('Test Suite 1', () => {
@@ -22,7 +22,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
         import { expect, describe, it } from 'vitest';
 
         describe('Test Suite 1', () => {
@@ -38,21 +38,21 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 
-	it("when `chai` is not used", () => {
-		const INPUT = `
+  it("when `chai` is not used", () => {
+    const INPUT = `
         describe('Test Suite 1', () => {
           it('addition', () => {
             assert(1 + 1 == 2);
@@ -66,7 +66,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
         import { describe, it } from 'vitest';
 
         describe('Test Suite 1', () => {
@@ -82,21 +82,21 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 
-	it("should keep the preceding comments", () => {
-		const INPUT = `
+  it("should keep the preceding comments", () => {
+    const INPUT = `
         // preceding comments
         import { expect } from 'chai';
 
@@ -107,7 +107,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
       // preceding comments
         import { expect, describe, it } from 'vitest';
 
@@ -118,21 +118,21 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 
-	it("when beforeEach or afterAll are used", () => {
-		const INPUT = `
+  it("when beforeEach or afterAll are used", () => {
+    const INPUT = `
         describe('Test Suite 1', () => {
           beforeEach(() => {
             doAThing();
@@ -152,7 +152,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
         import { afterAll, beforeEach, describe, it } from 'vitest';
 
         describe('Test Suite 1', () => {
@@ -174,22 +174,22 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 
-	// Also removes this: Context entirely, but
-	it("when there are imports from mocha", () => {
-		const INPUT = `
+  // Also removes this: Context entirely, but
+  it("when there are imports from mocha", () => {
+    const INPUT = `
         import type { Context } from 'mocha';
 
         describe('Test Suite 1', () => {
@@ -203,7 +203,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
         import { describe, it } from 'vitest';
 
         describe('Test Suite 1', () => {
@@ -217,21 +217,21 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 
-	it("when there are imports from vitest", () => {
-		const INPUT = `
+  it("when there are imports from vitest", () => {
+    const INPUT = `
         import { describe, it } from 'vitest';
 
         describe('Test Suite 1', () => {
@@ -241,18 +241,18 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(actualOutput, undefined);
-	});
+    assert.deepEqual(actualOutput, undefined);
+  });
 
-	it("when there is a named import: test", () => {
-		const INPUT = `
+  it("when there is a named import: test", () => {
+    const INPUT = `
         import { test } from "../lib/fixtures";
         describe('Test Suite 1', () => {
           it('addition', function (this: Context) {
@@ -261,7 +261,7 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
         import { test } from "../lib/fixtures";
         import { describe, it } from 'vitest';
         describe('Test Suite 1', () => {
@@ -271,16 +271,16 @@ describe("mocha/vitest test", () => {
         });
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.ts",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });
