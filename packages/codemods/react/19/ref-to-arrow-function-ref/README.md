@@ -9,6 +9,6 @@ This codemod migrates string refs (deprecated) to callback refs.
 ## After
 
 ```ts
-< div ref = { ref => this.refs.refName; return () => delete this.refs.refName }
+< div ref = { ref => this.refs.refName = ref }
 />
 ```
