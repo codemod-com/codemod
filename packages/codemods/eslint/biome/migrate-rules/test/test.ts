@@ -7,43 +7,43 @@ import { describe, it } from "vitest";
 import { repomod } from "../src/index.js";
 
 const buildInternalAPI = async (json: DirectoryJSON) => {
-	const volume = Volume.fromJSON(json);
+  const volume = Volume.fromJSON(json);
 
-	const fs = createFsFromVolume(volume);
+  const fs = createFsFromVolume(volume);
 
-	const unifiedFileSystem = buildUnifiedFileSystem(fs);
-	const pathApi = buildPathAPI("/");
+  const unifiedFileSystem = buildUnifiedFileSystem(fs);
+  const pathApi = buildPathAPI("/");
 
-	return buildApi(unifiedFileSystem, () => ({ fetch }), pathApi);
+  return buildApi(unifiedFileSystem, () => ({ fetch }), pathApi);
 };
 
 const transform = async (api: API<any>) => {
-	return executeFilemod(
-		api,
-		repomod,
-		"/",
-		{
-			input: JSON.stringify({
-				rules: {
-					eqeqeq: ["warn", "smart"],
-					"no-cond-assign": ["warn", "except-parens"],
-					"no-unused-vars": ["off"],
-				},
-				ignorePatterns: [
-					"**/dist/**",
-					"**/build/**",
-					"pnpm-lock.yaml",
-					"**/node_modules/**",
-				],
-			}),
-		},
-		{},
-	);
+  return executeFilemod(
+    api,
+    repomod,
+    "/",
+    {
+      input: JSON.stringify({
+        rules: {
+          eqeqeq: ["warn", "smart"],
+          "no-cond-assign": ["warn", "except-parens"],
+          "no-unused-vars": ["off"],
+        },
+        ignorePatterns: [
+          "**/dist/**",
+          "**/build/**",
+          "pnpm-lock.yaml",
+          "**/node_modules/**",
+        ],
+      }),
+    },
+    {},
+  );
 };
 
 describe("eslint and prettier to biome migration", async () => {
-	const packageJsonPath = "/opt/project/package.json";
-	const packageJsonConfig = `
+  const packageJsonPath = "/opt/project/package.json";
+  const packageJsonConfig = `
     {
       "name": "package-name",
       "dependencies": {
@@ -79,9 +79,9 @@ describe("eslint and prettier to biome migration", async () => {
     }
   `;
 
-	const eslintRcPath = "/opt/project/.eslintrc";
-	const eslintIgnorePath = "/opt/project/.eslintignore";
-	const eslintIgnoreContent = `
+  const eslintRcPath = "/opt/project/.eslintrc";
+  const eslintIgnorePath = "/opt/project/.eslintignore";
+  const eslintIgnoreContent = `
     # config-key: config-value
     dist
     build
@@ -89,8 +89,8 @@ describe("eslint and prettier to biome migration", async () => {
     node_modules
   `;
 
-	const prettierRcPath = "/opt/project/.prettierrc";
-	const prettierRcContent = `
+  const prettierRcPath = "/opt/project/.prettierrc";
+  const prettierRcContent = `
     {
       "semi": false,
       "useTabs": true,
@@ -98,65 +98,65 @@ describe("eslint and prettier to biome migration", async () => {
       "trailingComma": "all"
     }
   `;
-	const prettierIgnorePath = "/opt/project/.prettierignore";
+  const prettierIgnorePath = "/opt/project/.prettierignore";
 
-	it("should contain correct file commands", async () => {
-		const api = await buildInternalAPI({
-			[packageJsonPath]: packageJsonConfig,
-			[eslintRcPath]: "",
-			[eslintIgnorePath]: eslintIgnoreContent,
-			[prettierRcPath]: prettierRcContent,
-			[prettierIgnorePath]: "",
-		});
-		const biomeJsonPath = api.fileAPI.joinPaths(
-			api.fileAPI.currentWorkingDirectory,
-			"biome.json",
-		);
+  it("should contain correct file commands", async () => {
+    const api = await buildInternalAPI({
+      [packageJsonPath]: packageJsonConfig,
+      [eslintRcPath]: "",
+      [eslintIgnorePath]: eslintIgnoreContent,
+      [prettierRcPath]: prettierRcContent,
+      [prettierIgnorePath]: "",
+    });
+    const biomeJsonPath = api.fileAPI.joinPaths(
+      api.fileAPI.currentWorkingDirectory,
+      "biome.json",
+    );
 
-		const externalFileCommands = await transform(api);
+    const externalFileCommands = await transform(api);
 
-		deepEqual(externalFileCommands.length, 6);
+    deepEqual(externalFileCommands.length, 6);
 
-		ok(
-			externalFileCommands.filter(
-				(command) =>
-					(command.kind === "upsertFile" && command.path === packageJsonPath) ||
-					(command.kind === "deleteFile" && command.path === eslintRcPath) ||
-					(command.kind === "deleteFile" &&
-						command.path === eslintIgnorePath) ||
-					(command.kind === "deleteFile" && command.path === prettierRcPath) ||
-					(command.kind === "deleteFile" &&
-						command.path === prettierIgnorePath) ||
-					(command.kind === "upsertFile" && command.path === biomeJsonPath),
-			).length === externalFileCommands.length,
-		);
-	});
+    ok(
+      externalFileCommands.filter(
+        (command) =>
+          (command.kind === "upsertFile" && command.path === packageJsonPath) ||
+          (command.kind === "deleteFile" && command.path === eslintRcPath) ||
+          (command.kind === "deleteFile" &&
+            command.path === eslintIgnorePath) ||
+          (command.kind === "deleteFile" && command.path === prettierRcPath) ||
+          (command.kind === "deleteFile" &&
+            command.path === prettierIgnorePath) ||
+          (command.kind === "upsertFile" && command.path === biomeJsonPath),
+      ).length === externalFileCommands.length,
+    );
+  });
 
-	it("should correctly modify package.json and create proper biome.json", async () => {
-		const api = await buildInternalAPI({
-			[packageJsonPath]: packageJsonConfig,
-			[eslintRcPath]: "",
-			[eslintIgnorePath]: eslintIgnoreContent,
-			[prettierRcPath]: prettierRcContent,
-			[prettierIgnorePath]: "",
-		});
-		const biomeJsonPath = api.fileAPI.joinPaths(
-			api.fileAPI.currentWorkingDirectory,
-			"biome.json",
-		);
+  it("should correctly modify package.json and create proper biome.json", async () => {
+    const api = await buildInternalAPI({
+      [packageJsonPath]: packageJsonConfig,
+      [eslintRcPath]: "",
+      [eslintIgnorePath]: eslintIgnoreContent,
+      [prettierRcPath]: prettierRcContent,
+      [prettierIgnorePath]: "",
+    });
+    const biomeJsonPath = api.fileAPI.joinPaths(
+      api.fileAPI.currentWorkingDirectory,
+      "biome.json",
+    );
 
-		const externalFileCommands = await transform(api);
+    const externalFileCommands = await transform(api);
 
-		const packageJsonCommand = externalFileCommands.find(
-			(command) =>
-				command.kind === "upsertFile" && command.path === packageJsonPath,
-		);
+    const packageJsonCommand = externalFileCommands.find(
+      (command) =>
+        command.kind === "upsertFile" && command.path === packageJsonPath,
+    );
 
-		ok(packageJsonCommand);
-		ok(packageJsonCommand.kind === "upsertFile");
-		deepEqual(
-			packageJsonCommand.data.replace(/\W/gm, ""),
-			`
+    ok(packageJsonCommand);
+    ok(packageJsonCommand.kind === "upsertFile");
+    deepEqual(
+      packageJsonCommand.data.replace(/\W/gm, ""),
+      `
         {
           "name": "package-name",
           "dependencies": {},
@@ -184,15 +184,15 @@ describe("eslint and prettier to biome migration", async () => {
           "type": "module"
         }
       `.replace(/\W/gm, ""),
-		);
+    );
 
-		ok(
-			externalFileCommands.some(
-				(command) =>
-					command.kind === "upsertFile" &&
-					command.path === biomeJsonPath &&
-					command.data.replace(/\W/gm, "") ===
-						`
+    ok(
+      externalFileCommands.some(
+        (command) =>
+          command.kind === "upsertFile" &&
+          command.path === biomeJsonPath &&
+          command.data.replace(/\W/gm, "") ===
+            `
               {
                 "linter": {
                   "ignore": [
@@ -218,7 +218,7 @@ describe("eslint and prettier to biome migration", async () => {
                 }
               }
 	          `.replace(/\W/gm, ""),
-			),
-		);
-	});
+      ),
+    );
+  });
 });

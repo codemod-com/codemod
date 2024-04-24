@@ -1,3 +1,4 @@
+@config "../../../tailwind.config.ts";
 .panel_panel_header {
 	@apply flex;
 	@apply justify-between;

@@ -1,23 +1,23 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
-	"private": false,
-	"name": "remove-unused-feature-flags",
-	"engine": "jscodeshift",
-	"arguments": [
-		{
-			"name": "functionName",
-			"kind": "string",
-			"default": "isFlagEnabled"
-		},
-		{
-			"name": "featureFlagName",
-			"kind": "string",
-			"default": "featureFlag",
-			"required": true
-		}
-	],
-	"meta": {
-		"tags": ["migration"]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "private": false,
+  "name": "remove-unused-feature-flags",
+  "engine": "jscodeshift",
+  "arguments": [
+    {
+      "name": "functionName",
+      "kind": "string",
+      "default": "isFlagEnabled"
+    },
+    {
+      "name": "featureFlagName",
+      "kind": "string",
+      "default": "featureFlag",
+      "required": true
+    }
+  ],
+  "meta": {
+    "tags": ["migration"]
+  }
 }

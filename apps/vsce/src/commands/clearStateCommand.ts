@@ -8,56 +8,56 @@ import { actions } from "../data/slice";
 import { doesJobAddNewFile } from "../selectors/comparePersistedJobs";
 
 type Dependencies = Readonly<{
-	store: Store;
-	fileService: FileService;
+  store: Store;
+  fileService: FileService;
 }>;
 
 export const createClearStateCommand =
-	({ fileService, store }: Dependencies) =>
-	async () => {
-		const state = store.getState();
+  ({ fileService, store }: Dependencies) =>
+  async () => {
+    const state = store.getState();
 
-		store.dispatch(actions.clearState());
+    store.dispatch(actions.clearState());
 
-		try {
-			const uris: Uri[] = [];
+    try {
+      const uris: Uri[] = [];
 
-			for (const job of Object.values(state.job.entities)) {
-				if (
-					!job ||
-					!doesJobAddNewFile(job.kind) ||
-					job.newContentUri === null ||
-					job.newContentUri.includes(".codemod/cases")
-				) {
-					continue;
-				}
+      for (const job of Object.values(state.job.entities)) {
+        if (
+          !job ||
+          !doesJobAddNewFile(job.kind) ||
+          job.newContentUri === null ||
+          job.newContentUri.includes(".codemod/cases")
+        ) {
+          continue;
+        }
 
-				uris.push(Uri.parse(job.newContentUri));
-			}
+        uris.push(Uri.parse(job.newContentUri));
+      }
 
-			await fileService.deleteFiles({ uris });
-		} catch (error) {
-			console.error(error);
-		}
+      await fileService.deleteFiles({ uris });
+    } catch (error) {
+      console.error(error);
+    }
 
-		try {
-			const casePath = join(homedir(), ".codemod", "cases");
-			if (!existsSync(casePath)) {
-				store.dispatch(actions.onStateCleared());
-				return;
-			}
-			const casesDirectoryUri = Uri.parse(casePath);
+    try {
+      const casePath = join(homedir(), ".codemod", "cases");
+      if (!existsSync(casePath)) {
+        store.dispatch(actions.onStateCleared());
+        return;
+      }
+      const casesDirectoryUri = Uri.parse(casePath);
 
-			const files = await workspace.fs.readDirectory(casesDirectoryUri);
+      const files = await workspace.fs.readDirectory(casesDirectoryUri);
 
-			const caseDirectoryUris = files
-				.filter(([, fileType]) => fileType === FileType.Directory)
-				.map(([name]) => Uri.joinPath(casesDirectoryUri, name));
+      const caseDirectoryUris = files
+        .filter(([, fileType]) => fileType === FileType.Directory)
+        .map(([name]) => Uri.joinPath(casesDirectoryUri, name));
 
-			await fileService.deleteDirectories({ uris: caseDirectoryUris });
-		} catch (error) {
-			console.error(error);
-		}
+      await fileService.deleteDirectories({ uris: caseDirectoryUris });
+    } catch (error) {
+      console.error(error);
+    }
 
-		store.dispatch(actions.onStateCleared());
-	};
+    store.dispatch(actions.onStateCleared());
+  };

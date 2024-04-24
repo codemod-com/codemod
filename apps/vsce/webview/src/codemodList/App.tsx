@@ -9,56 +9,56 @@ import { vscode } from "../shared/utilities/vscode";
 import TreeView from "./TreeView";
 
 const setSearchPhrase = (searchPhrase: string) => {
-	vscode.postMessage({
-		kind: "webview.global.setCodemodSearchPhrase",
-		searchPhrase,
-	});
+  vscode.postMessage({
+    kind: "webview.global.setCodemodSearchPhrase",
+    searchPhrase,
+  });
 };
 
 export const App = memo(
-	(
-		props: MainWebviewViewProps & {
-			activeTabId: "codemods";
-			screenWidth: number | null;
-		},
-	) => {
-		const storage = useMemo(
-			(): PanelGroupStorage => ({
-				getItem: () => JSON.stringify(props.panelGroupSettings),
-				setItem: (_, panelGroupSettings: string): void => {
-					vscode.postMessage({
-						kind: "webview.main.setCodemodDiscoveryPanelGroupSettings",
-						panelGroupSettings,
-					});
-				},
-			}),
-			[props.panelGroupSettings],
-		);
+  (
+    props: MainWebviewViewProps & {
+      activeTabId: "codemods";
+      screenWidth: number | null;
+    },
+  ) => {
+    const storage = useMemo(
+      (): PanelGroupStorage => ({
+        getItem: () => JSON.stringify(props.panelGroupSettings),
+        setItem: (_, panelGroupSettings: string): void => {
+          vscode.postMessage({
+            kind: "webview.main.setCodemodDiscoveryPanelGroupSettings",
+            panelGroupSettings,
+          });
+        },
+      }),
+      [props.panelGroupSettings],
+    );
 
-		return (
-			<>
-				<main className={cn("w-full", "h-full", "overflow-y-auto")}>
-					<PanelGroup
-						direction="vertical"
-						storage={storage}
-						autoSaveId="codemodListPanelGroup"
-						style={{ overflow: "auto" }}
-					>
-						<SearchBar
-							searchPhrase={props.searchPhrase}
-							setSearchPhrase={setSearchPhrase}
-							placeholder="Search codemods..."
-						/>
-						<TreeView
-							screenWidth={props.screenWidth}
-							tree={props.codemodTree}
-							rootPath={props.rootPath}
-							autocompleteItems={props.autocompleteItems}
-						/>
-					</PanelGroup>
-				</main>
-			</>
-		);
-	},
-	areEqual,
+    return (
+      <>
+        <main className={cn("w-full", "h-full", "overflow-y-auto")}>
+          <PanelGroup
+            direction="vertical"
+            storage={storage}
+            autoSaveId="codemodListPanelGroup"
+            style={{ overflow: "auto" }}
+          >
+            <SearchBar
+              searchPhrase={props.searchPhrase}
+              setSearchPhrase={setSearchPhrase}
+              placeholder="Search codemods..."
+            />
+            <TreeView
+              screenWidth={props.screenWidth}
+              tree={props.codemodTree}
+              rootPath={props.rootPath}
+              autocompleteItems={props.autocompleteItems}
+            />
+          </PanelGroup>
+        </main>
+      </>
+    );
+  },
+  areEqual,
 );

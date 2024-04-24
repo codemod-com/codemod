@@ -1,5 +1,5 @@
 {
-	"name": "@codemod-com/codemod-msw-2-upgrade-recipe",
-	"files": ["./README.md", "./.codemodrc.json"],
-	"type": "module"
+  "name": "@codemod-com/codemod-msw-2-upgrade-recipe",
+  "files": ["./README.md", "./.codemodrc.json"],
+  "type": "module"
 }

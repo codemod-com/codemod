@@ -1,15 +1,15 @@
 import { createHash } from "node:crypto";
 import { basename, dirname, join } from "node:path";
 import {
-	type CallbackService,
-	type Filemod,
-	type GlobArguments,
-	type PathAPI,
-	type PathHashDigest,
-	type UnifiedEntry,
-	UnifiedFileSystem,
-	buildApi,
-	executeFilemod,
+  type CallbackService,
+  type Filemod,
+  type GlobArguments,
+  type PathAPI,
+  type PathHashDigest,
+  type UnifiedEntry,
+  UnifiedFileSystem,
+  buildApi,
+  executeFilemod,
 } from "@codemod-com/filemod";
 import type { OperationMessage } from "@codemod-com/printer";
 import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
@@ -27,215 +27,215 @@ import { visit } from "unist-util-visit";
 import type { FileCommand } from "./fileCommands.js";
 
 const parseMdx = (data: string) =>
-	fromMarkdown(data, {
-		extensions: [mdxjs()],
-		mdastExtensions: [mdxFromMarkdown()],
-	});
+  fromMarkdown(data, {
+    extensions: [mdxjs()],
+    mdastExtensions: [mdxFromMarkdown()],
+  });
 
 const stringifyMdx = (tree: Root) =>
-	toMarkdown(tree, { extensions: [mdxToMarkdown()] });
+  toMarkdown(tree, { extensions: [mdxToMarkdown()] });
 
 type Root = ReturnType<typeof fromMarkdown>;
 
 export type Dependencies = Readonly<{
-	jscodeshift: typeof jscodeshift;
-	unified: typeof unified;
-	hastToBabelAst: typeof hastToBabelAst;
-	tsmorph: typeof tsmorph;
-	parseMdx: typeof parseMdx;
-	stringifyMdx: typeof stringifyMdx;
-	filterMdxAst: typeof filter;
-	visitMdxAst: typeof visit;
-	unifiedFileSystem: UnifiedFileSystem;
-	fetch: typeof fetch;
+  jscodeshift: typeof jscodeshift;
+  unified: typeof unified;
+  hastToBabelAst: typeof hastToBabelAst;
+  tsmorph: typeof tsmorph;
+  parseMdx: typeof parseMdx;
+  stringifyMdx: typeof stringifyMdx;
+  filterMdxAst: typeof filter;
+  visitMdxAst: typeof visit;
+  unifiedFileSystem: UnifiedFileSystem;
+  fetch: typeof fetch;
 }>;
 
 export const runRepomod = async (
-	fileSystem: FileSystem,
-	filemod: Filemod<Dependencies, Record<string, unknown>>,
-	target: string,
-	disablePrettier: boolean,
-	safeArgumentRecord: ArgumentRecord,
-	onPrinterMessage: (message: OperationMessage) => void,
+  fileSystem: FileSystem,
+  filemod: Filemod<Dependencies, Record<string, unknown>>,
+  target: string,
+  disablePrettier: boolean,
+  safeArgumentRecord: ArgumentRecord,
+  onPrinterMessage: (message: OperationMessage) => void,
 ): Promise<readonly FileCommand[]> => {
-	const buildPathHashDigest = (path: string) =>
-		createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
+  const buildPathHashDigest = (path: string) =>
+    createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
 
-	const getUnifiedEntry = async (path: string): Promise<UnifiedEntry> => {
-		const stat = await fileSystem.promises.stat(path);
+  const getUnifiedEntry = async (path: string): Promise<UnifiedEntry> => {
+    const stat = await fileSystem.promises.stat(path);
 
-		if (stat.isDirectory()) {
-			return {
-				kind: "directory",
-				path,
-			};
-		}
+    if (stat.isDirectory()) {
+      return {
+        kind: "directory",
+        path,
+      };
+    }
 
-		if (stat.isFile()) {
-			return {
-				kind: "file",
-				path,
-			};
-		}
+    if (stat.isFile()) {
+      return {
+        kind: "file",
+        path,
+      };
+    }
 
-		throw new Error(`The entry ${path} is neither a directory nor a file`);
-	};
+    throw new Error(`The entry ${path} is neither a directory nor a file`);
+  };
 
-	const globWrapper = (globArguments: GlobArguments) => {
-		return glob(globArguments.includePatterns.slice(), {
-			absolute: true,
-			cwd: globArguments.currentWorkingDirectory,
-			ignore: globArguments.excludePatterns.slice(),
-			fs: fileSystem as Partial<FileSystemAdapter>,
-			dot: true,
-		});
-	};
+  const globWrapper = (globArguments: GlobArguments) => {
+    return glob(globArguments.includePatterns.slice(), {
+      absolute: true,
+      cwd: globArguments.currentWorkingDirectory,
+      ignore: globArguments.excludePatterns.slice(),
+      fs: fileSystem as Partial<FileSystemAdapter>,
+      dot: true,
+    });
+  };
 
-	const readDirectory = async (
-		path: string,
-	): Promise<ReadonlyArray<UnifiedEntry>> => {
-		const entries = await fileSystem.promises.readdir(path, {
-			// @ts-ignore
-			withFileTypes: true,
-		});
+  const readDirectory = async (
+    path: string,
+  ): Promise<ReadonlyArray<UnifiedEntry>> => {
+    const entries = await fileSystem.promises.readdir(path, {
+      // @ts-ignore
+      withFileTypes: true,
+    });
 
-		return entries.map((entry) => {
-			if (typeof entry === "string" || !("isDirectory" in entry)) {
-				throw new Error("Entry can neither be a string or a Buffer");
-			}
+    return entries.map((entry) => {
+      if (typeof entry === "string" || !("isDirectory" in entry)) {
+        throw new Error("Entry can neither be a string or a Buffer");
+      }
 
-			if (entry.isDirectory()) {
-				return {
-					kind: "directory" as const,
-					path: join(path, entry.name.toString()),
-				};
-			}
+      if (entry.isDirectory()) {
+        return {
+          kind: "directory" as const,
+          path: join(path, entry.name.toString()),
+        };
+      }
 
-			if (entry.isFile()) {
-				return {
-					kind: "file" as const,
-					path: join(path, entry.name.toString()),
-				};
-			}
+      if (entry.isFile()) {
+        return {
+          kind: "file" as const,
+          path: join(path, entry.name.toString()),
+        };
+      }
 
-			throw new Error("The entry is neither directory not file");
-		});
-	};
+      throw new Error("The entry is neither directory not file");
+    });
+  };
 
-	const readFile = async (path: string): Promise<string> => {
-		const data = await fileSystem.promises.readFile(path, {
-			encoding: "utf8",
-		});
+  const readFile = async (path: string): Promise<string> => {
+    const data = await fileSystem.promises.readFile(path, {
+      encoding: "utf8",
+    });
 
-		return data.toString();
-	};
+    return data.toString();
+  };
 
-	const unifiedFileSystem = new UnifiedFileSystem(
-		buildPathHashDigest,
-		getUnifiedEntry,
-		globWrapper,
-		readDirectory,
-		readFile,
-	);
+  const unifiedFileSystem = new UnifiedFileSystem(
+    buildPathHashDigest,
+    getUnifiedEntry,
+    globWrapper,
+    readDirectory,
+    readFile,
+  );
 
-	const pathAPI: PathAPI = {
-		getDirname: (path) => dirname(path),
-		getBasename: (path) => basename(path),
-		joinPaths: (...paths) => join(...paths),
-		currentWorkingDirectory: target,
-	};
+  const pathAPI: PathAPI = {
+    getDirname: (path) => dirname(path),
+    getBasename: (path) => basename(path),
+    joinPaths: (...paths) => join(...paths),
+    currentWorkingDirectory: target,
+  };
 
-	const api = buildApi<Dependencies>(
-		unifiedFileSystem,
-		() => ({
-			jscodeshift,
-			unified,
-			hastToBabelAst,
-			tsmorph,
-			parseMdx,
-			stringifyMdx,
-			fetch,
-			visitMdxAst: visit,
-			filterMdxAst: filter,
-			unifiedFileSystem,
-		}),
-		pathAPI,
-	);
+  const api = buildApi<Dependencies>(
+    unifiedFileSystem,
+    () => ({
+      jscodeshift,
+      unified,
+      hastToBabelAst,
+      tsmorph,
+      parseMdx,
+      stringifyMdx,
+      fetch,
+      visitMdxAst: visit,
+      filterMdxAst: filter,
+      unifiedFileSystem,
+    }),
+    pathAPI,
+  );
 
-	const processedPathHashDigests = new Set<string>();
+  const processedPathHashDigests = new Set<string>();
 
-	const totalPathHashDigests = new Set<string>();
+  const totalPathHashDigests = new Set<string>();
 
-	for (const path of filemod.includePatterns ?? []) {
-		totalPathHashDigests.add(
-			createHash("ripemd160").update(path).digest("base64url"),
-		);
-	}
+  for (const path of filemod.includePatterns ?? []) {
+    totalPathHashDigests.add(
+      createHash("ripemd160").update(path).digest("base64url"),
+    );
+  }
 
-	const callbackService: CallbackService = {
-		onCommandExecuted: (command) => {
-			if (command.kind !== "upsertData" && command.kind !== "deleteFile") {
-				return;
-			}
+  const callbackService: CallbackService = {
+    onCommandExecuted: (command) => {
+      if (command.kind !== "upsertData" && command.kind !== "deleteFile") {
+        return;
+      }
 
-			const hashDigest = createHash("ripemd160")
-				.update(command.path)
-				.digest("base64url");
+      const hashDigest = createHash("ripemd160")
+        .update(command.path)
+        .digest("base64url");
 
-			processedPathHashDigests.add(hashDigest);
-			totalPathHashDigests.add(hashDigest);
+      processedPathHashDigests.add(hashDigest);
+      totalPathHashDigests.add(hashDigest);
 
-			onPrinterMessage({
-				kind: "progress",
-				processedFileNumber: processedPathHashDigests.size,
-				totalFileNumber: totalPathHashDigests.size,
-				processedFileName: command.path,
-			});
-		},
-		onError: (path, message) => {
-			onPrinterMessage({
-				kind: "error",
-				path,
-				message,
-			});
-		},
-	};
+      onPrinterMessage({
+        kind: "progress",
+        processedFileNumber: processedPathHashDigests.size,
+        totalFileNumber: totalPathHashDigests.size,
+        processedFileName: command.path,
+      });
+    },
+    onError: (path, message) => {
+      onPrinterMessage({
+        kind: "error",
+        path,
+        message,
+      });
+    },
+  };
 
-	const externalFileCommands = await executeFilemod(
-		api,
-		filemod,
-		target,
-		safeArgumentRecord,
-		callbackService,
-	);
+  const externalFileCommands = await executeFilemod(
+    api,
+    filemod,
+    target,
+    safeArgumentRecord,
+    callbackService,
+  );
 
-	return Promise.all(
-		externalFileCommands.map(async (externalFileCommand) => {
-			if (externalFileCommand.kind === "upsertFile") {
-				try {
-					await fileSystem.promises.stat(externalFileCommand.path);
+  return Promise.all(
+    externalFileCommands.map(async (externalFileCommand) => {
+      if (externalFileCommand.kind === "upsertFile") {
+        try {
+          await fileSystem.promises.stat(externalFileCommand.path);
 
-					return {
-						kind: "updateFile",
-						oldPath: externalFileCommand.path,
-						oldData: "", // TODO get the old data from the filemod
-						newData: externalFileCommand.data,
-						formatWithPrettier: !disablePrettier, // TODO have a list of extensions that prettier supports
-					};
-				} catch (error) {
-					return {
-						kind: "createFile",
-						newPath: externalFileCommand.path,
-						newData: externalFileCommand.data,
-						formatWithPrettier: !disablePrettier,
-					};
-				}
-			}
+          return {
+            kind: "updateFile",
+            oldPath: externalFileCommand.path,
+            oldData: "", // TODO get the old data from the filemod
+            newData: externalFileCommand.data,
+            formatWithPrettier: !disablePrettier, // TODO have a list of extensions that prettier supports
+          };
+        } catch (error) {
+          return {
+            kind: "createFile",
+            newPath: externalFileCommand.path,
+            newData: externalFileCommand.data,
+            formatWithPrettier: !disablePrettier,
+          };
+        }
+      }
 
-			return {
-				kind: "deleteFile",
-				oldPath: externalFileCommand.path,
-			};
-		}),
-	);
+      return {
+        kind: "deleteFile",
+        oldPath: externalFileCommand.path,
+      };
+    }),
+  );
 };

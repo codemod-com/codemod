@@ -1,15 +1,15 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.1",
-	"private": false,
-	"name": "react/replace-react-fc-typescript",
-	"description": "Codemod to replace React.FC when using React with Typescript.",
-	"engine": "jscodeshift",
-	"meta": {
-		"tags": ["react", "migration"]
-	},
-	"applicability": {
-		"from": [["react", ">=", "15.0.0"]]
-	},
-	"include": ["**/*.js", "**/*.ts"]
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "react/replace-react-fc-typescript",
+  "description": "Codemod to replace React.FC when using React with Typescript.",
+  "engine": "jscodeshift",
+  "meta": {
+    "tags": ["react", "migration"]
+  },
+  "applicability": {
+    "from": [["react", ">=", "15.0.0"]]
+  },
+  "include": ["**/*.js", "**/*.ts"]
 }

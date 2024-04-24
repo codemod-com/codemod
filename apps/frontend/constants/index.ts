@@ -1,12 +1,12 @@
 export const CUSTOMER_STORY_TAG = {
-	value: "customer-stories",
-	label: "Customer Stories",
+  value: "customer-stories",
+  label: "Customer Stories",
 } as const;
 
 export const REGISTRY_FILTER_TYPES = {
-	useCase: "category",
-	framework: "framework",
-	owner: "author",
+  useCase: "category",
+  framework: "framework",
+  owner: "author",
 } as const;
 
 export const STATIC_HEADER_ROUTES = ["/registry"];
