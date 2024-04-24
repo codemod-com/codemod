@@ -20,7 +20,7 @@ const buildApi = (parser: string | undefined): API => ({
 	},
 });
 
-describe("react/16/ref-to-arrow-function", () => {
+describe("react/19/ref-to-arrow-function", () => {
 	it("test #1", async () => {
 		const INPUT = await readFile(
 			join(__dirname, "..", "__testfixtures__/fixture1.input.tsx"),
