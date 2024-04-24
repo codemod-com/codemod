@@ -2,6 +2,7 @@ import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+import { CODEMOD_STUDIO_URL } from "@codemod-com/utilities";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
@@ -82,7 +83,7 @@ const createCodemodStudioURL = ({
   iv: string;
 }): string | null => {
   try {
-    const url = new URL("https://codemod.com/studio/");
+    const url = new URL(CODEMOD_STUDIO_URL);
     const searchParams = new URLSearchParams([
       [UrlParamKeys.Engine, engine],
       [UrlParamKeys.DiffId, diffId],

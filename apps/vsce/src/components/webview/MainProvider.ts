@@ -1,4 +1,5 @@
 import type { ValidateTokenResponse } from "@codemod-com/utilities";
+import { CODEMOD_STUDIO_URL } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "fast-glob";
@@ -27,7 +28,6 @@ import type {
   WebviewMessage,
   WebviewResponse,
 } from "./webviewEvents";
-
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const validateAccessToken = async (
@@ -125,7 +125,7 @@ const routeUserToStudioToAuthenticate = async () => {
 
   searchParams.set(SEARCH_PARAMS_KEYS.COMMAND, "accessTokenRequestedByVSCE");
 
-  const url = new URL("https://codemod.com/studio");
+  const url = new URL(CODEMOD_STUDIO_URL);
   url.search = searchParams.toString();
 
   commands.executeCommand("codemod.redirect", url);
