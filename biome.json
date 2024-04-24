@@ -16,7 +16,6 @@
     ],
     "rules": {
       "suspicious": {
-        "noMisleadingCharacterClass": "warn",
         "noDuplicateClassMembers": "off",
         "noRedeclare": "off",
         "noDoubleEquals": "warn",
