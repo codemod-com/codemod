@@ -11,100 +11,100 @@ const PERSISTANCE_KEY = "compressedRoot";
 const HYDRATION_TIMEOUT = 3 * 1000;
 
 const deserializeState = (serializedState: string) => {
-	const parsedState: Record<string, unknown> = {};
+  const parsedState: Record<string, unknown> = {};
 
-	try {
-		const rawState = JSON.parse(serializedState);
+  try {
+    const rawState = JSON.parse(serializedState);
 
-		if (typeof rawState !== "object" || rawState === null) {
-			return null;
-		}
+    if (typeof rawState !== "object" || rawState === null) {
+      return null;
+    }
 
-		Object.entries(rawState).forEach(([key, value]) => {
-			if (typeof value !== "string") {
-				return;
-			}
+    Object.entries(rawState).forEach(([key, value]) => {
+      if (typeof value !== "string") {
+        return;
+      }
 
-			parsedState[key] = JSON.parse(value);
-		});
-	} catch (e) {
-		console.error(e);
+      parsedState[key] = JSON.parse(value);
+    });
+  } catch (e) {
+    console.error(e);
 
-		return null;
-	}
+    return null;
+  }
 
-	return parsedState;
+  return parsedState;
 };
 
 const getPreloadedState = async (storage: MementoStorage) => {
-	const initialState = await storage.getItem(
-		`${PERSISTANCE_PREFIX}:${PERSISTANCE_KEY}`,
-	);
+  const initialState = await storage.getItem(
+    `${PERSISTANCE_PREFIX}:${PERSISTANCE_KEY}`,
+  );
 
-	if (!initialState) {
-		return null;
-	}
+  if (!initialState) {
+    return null;
+  }
 
-	const deserializedState = deserializeState(initialState);
+  const deserializedState = deserializeState(initialState);
 
-	if (!deserializedState) {
-		return null;
-	}
+  if (!deserializedState) {
+    return null;
+  }
 
-	const decodedState = persistedStateCodecNew.decode(deserializedState);
+  const decodedState = persistedStateCodecNew.decode(deserializedState);
 
-	// should never happen because of codec fallback
-	if (decodedState._tag !== "Right") {
-		return null;
-	}
+  // should never happen because of codec fallback
+  if (decodedState._tag !== "Right") {
+    return null;
+  }
 
-	return decodedState.right;
+  return decodedState.right;
 };
 
 const buildStore = async (workspaceState: Memento) => {
-	const storage = new MementoStorage(workspaceState);
+  const storage = new MementoStorage(workspaceState);
 
-	const persistedReducer = persistReducer(
-		{
-			key: PERSISTANCE_KEY,
-			storage,
-			timeout: HYDRATION_TIMEOUT,
-		},
-		rootReducer,
-	);
+  const persistedReducer = persistReducer(
+    {
+      key: PERSISTANCE_KEY,
+      storage,
+      timeout: HYDRATION_TIMEOUT,
+    },
+    rootReducer,
+  );
 
-	const validatedReducer: Reducer<(RootState & PersistPartial) | undefined> = (
-		state,
-		action,
-	) => {
-		if (action.type === "persist/REHYDRATE") {
-			const decoded = persistedStateCodecNew.decode(action.payload);
+  const validatedReducer: Reducer<(RootState & PersistPartial) | undefined> = (
+    state,
+    action,
+  ) => {
+    if (action.type === "persist/REHYDRATE") {
+      const decoded = persistedStateCodecNew.decode(action.payload);
 
-			const validatedPayload =
-				decoded._tag === "Right" ? decoded.right : getInitialState();
+      const validatedPayload =
+        decoded._tag === "Right" ? decoded.right : getInitialState();
 
-			return persistedReducer(state, {
-				...action,
-				payload: validatedPayload,
-			});
-		}
+      return persistedReducer(state, {
+        ...action,
+        payload: validatedPayload,
+      });
+    }
 
-		return persistedReducer(state, action);
-	};
+    return persistedReducer(state, action);
+  };
 
-	const preloadedState = await getPreloadedState(storage);
+  const preloadedState = await getPreloadedState(storage);
 
-	if (preloadedState === null) {
-		window.showWarningMessage("Unable to get preloaded state.");
-	}
+  if (preloadedState === null) {
+    window.showWarningMessage("Unable to get preloaded state.");
+  }
 
-	const store = configureStore({
-		reducer: validatedReducer,
-		...(preloadedState !== null && { preloadedState }),
-	});
+  const store = configureStore({
+    reducer: validatedReducer,
+    ...(preloadedState !== null && { preloadedState }),
+  });
 
-	const persistor = persistStore(store);
-	return { store, persistor };
+  const persistor = persistStore(store);
+  return { store, persistor };
 };
 
 type RootState = ReturnType<typeof rootReducer>;

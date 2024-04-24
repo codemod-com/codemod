@@ -5,32 +5,32 @@ import { describe, it } from "vitest";
 import { handleSourceFile } from "../src/index.js";
 
 const transform = (beforeText: string, afterText: string, path: string) => {
-	const project = new Project({
-		useInMemoryFileSystem: true,
-		skipFileDependencyResolution: true,
-		compilerOptions: {
-			allowJs: true,
-		},
-	});
+  const project = new Project({
+    useInMemoryFileSystem: true,
+    skipFileDependencyResolution: true,
+    compilerOptions: {
+      allowJs: true,
+    },
+  });
 
-	const actualSourceFile = project.createSourceFile(path, beforeText);
+  const actualSourceFile = project.createSourceFile(path, beforeText);
 
-	const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, "");
+  const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, "");
 
-	const expected = project
-		.createSourceFile(`expected${extname(path)}`, afterText)
-		.getFullText()
-		.replace(/\s/gm, "");
+  const expected = project
+    .createSourceFile(`expected${extname(path)}`, afterText)
+    .getFullText()
+    .replace(/\s/gm, "");
 
-	return {
-		actual,
-		expected,
-	};
+  return {
+    actual,
+    expected,
+  };
 };
 
 describe("next 13 replace-next-router", () => {
-	it('should add useSearchParams import because of "router.query"', async () => {
-		const beforeText = `
+  it('should add useSearchParams import because of "router.query"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -40,7 +40,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -52,13 +52,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should add useSearchParams import because of "useRouter().query"', async () => {
-		const beforeText = `
+  it('should add useSearchParams import because of "useRouter().query"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -66,7 +66,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -78,13 +78,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should add useSearchParams import because of "const { query } = useRouter()"', async () => {
-		const beforeText = `
+  it('should add useSearchParams import because of "const { query } = useRouter()"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -94,7 +94,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	        import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -106,13 +106,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should add searchParams variable declarator because of "useRouter()"', async () => {
-		const beforeText = `
+  it('should add searchParams variable declarator because of "useRouter()"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -122,7 +122,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	        import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -134,13 +134,13 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "...?.query" with "Object.fromEntries(...)"', async () => {
-		const beforeText = `
+  it('should replace "...?.query" with "Object.fromEntries(...)"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -150,7 +150,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	          import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -160,12 +160,12 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
-		deepStrictEqual(actual, expected);
-	});
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "?.query" with "searchParams"', async () => {
-		const beforeText = `
+  it('should replace "?.query" with "searchParams"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -175,7 +175,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	        import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -188,13 +188,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "useRouter().query" with "useSearchParams()"', async () => {
-		const beforeText = `
+  it('should replace "useRouter().query" with "useSearchParams()"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -202,7 +202,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	        import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -215,13 +215,13 @@ describe("next 13 replace-next-router", () => {
 			}
 			`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace ...router.query with ...Object.fromEntries(searchParams)", async () => {
-		const beforeText = `
+  it("should replace ...router.query with ...Object.fromEntries(searchParams)", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -233,7 +233,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	        import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -248,13 +248,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace router.query.a with getParam("a")', async () => {
-		const beforeText = `
+  it('should replace router.query.a with getParam("a")', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			const a = 1;
@@ -269,7 +269,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -287,15 +287,15 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		// TODO useMemo second parameter -> searchParams if at all
+    // TODO useMemo second parameter -> searchParams if at all
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "query" with "searchParams"', async () => {
-		const beforeText = `
+  it('should replace "query" with "searchParams"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -304,7 +304,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -319,13 +319,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should delete query from destructured useRouter call", async () => {
-		const beforeText = `
+  it("should delete query from destructured useRouter call", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -333,18 +333,18 @@ describe("next 13 replace-next-router", () => {
 			}  
 		`;
 
-		const afterText = `
+    const afterText = `
 			function Component() {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should delete empty useRouter destructuring", async () => {
-		const beforeText = `
+  it("should delete empty useRouter destructuring", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -352,19 +352,19 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			function Component() {
 
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should remove unused useRouter import specifiers", async () => {
-		const beforeText = `
+  it("should remove unused useRouter import specifiers", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -372,33 +372,33 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			function Component() {
 
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should not remove CSS imports", async () => {
-		const beforeText = `
+  it("should not remove CSS imports", async () => {
+    const beforeText = `
 			import './index.css';
 		`;
 
-		const afterText = `
+    const afterText = `
 			import './index.css';
 		`;
 
-		const { actual } = transform(beforeText, afterText, "index.tsx");
+    const { actual } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, undefined);
-	});
+    deepStrictEqual(actual, undefined);
+  });
 
-	it('should replace { a } = query with a = getParam("a")', async () => {
-		const beforeText = `
+  it('should replace { a } = query with a = getParam("a")', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -407,7 +407,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -422,20 +422,20 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().pathname with usePathname()", async () => {
-		const beforeText = `
+  it("should replace useRouter().pathname with usePathname()", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
 				const pathname = useRouter().pathname;
 			}
 	      `;
-		const afterText = `
+    const afterText = `
 			import { usePathname} from "next/navigation";
 
 			function Component() {
@@ -444,13 +444,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.pathname with usePathname()", async () => {
-		const beforeText = `
+  it("should replace router.pathname with usePathname()", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -459,7 +459,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 			function Component() {
@@ -468,13 +468,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace { pathname } destructed from useRouter() with usePathname()", async () => {
-		const beforeText = `
+  it("should replace { pathname } destructed from useRouter() with usePathname()", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -482,7 +482,7 @@ describe("next 13 replace-next-router", () => {
 	          }
 	      `;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 	        function Component() {
@@ -491,13 +491,13 @@ describe("next 13 replace-next-router", () => {
 	        }
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should insert import after 'use client' directive", async () => {
-		const beforeText = `
+  it("should insert import after 'use client' directive", async () => {
+    const beforeText = `
 			  "use client";
 	          import { useRouter } from 'next/router';
 
@@ -506,7 +506,7 @@ describe("next 13 replace-next-router", () => {
 	          }
 	      `;
 
-		const afterText = `
+    const afterText = `
 			"use client";
 			import { usePathname } from "next/navigation";
 
@@ -516,13 +516,13 @@ describe("next 13 replace-next-router", () => {
 	        }
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace { pathname } destructed from router with usePathname()", async () => {
-		const beforeText = `
+  it("should replace { pathname } destructed from router with usePathname()", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -532,7 +532,7 @@ describe("next 13 replace-next-router", () => {
 	          }
 	      `;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 	        function Component() {
@@ -541,13 +541,13 @@ describe("next 13 replace-next-router", () => {
 	        }
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace { pathname: p } destructed from router with const p = usePathname()", async () => {
-		const beforeText = `
+  it("should replace { pathname: p } destructed from router with const p = usePathname()", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -555,7 +555,7 @@ describe("next 13 replace-next-router", () => {
 	              const { pathname: p } = router;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 			function Component() {
@@ -564,13 +564,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.isReady with useSearchParams in variable declaration", async () => {
-		const beforeText = `
+  it("should replace router.isReady with useSearchParams in variable declaration", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -578,7 +578,7 @@ describe("next 13 replace-next-router", () => {
 	              const ready = router.isReady;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -588,13 +588,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.isReady with useSearchParams in ternary variable assignment", async () => {
-		const beforeText = `
+  it("should replace router.isReady with useSearchParams in ternary variable assignment", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -602,7 +602,7 @@ describe("next 13 replace-next-router", () => {
 				  const ready = router.isReady ? true : false;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -611,13 +611,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace !router.isReady with useSearchParams in variable declaration", async () => {
-		const beforeText = `
+  it("should replace !router.isReady with useSearchParams in variable declaration", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -625,7 +625,7 @@ describe("next 13 replace-next-router", () => {
 	              const notReady = !router.isReady;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -634,13 +634,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace !router.isReady with useSearchParams in ternary variable assignment", async () => {
-		const beforeText = `
+  it("should replace !router.isReady with useSearchParams in ternary variable assignment", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -648,7 +648,7 @@ describe("next 13 replace-next-router", () => {
 				  const ready = !router.isReady ? false : true;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -657,13 +657,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace !router.isReady with useSearchParams in `if` statement", async () => {
-		const beforeText = `
+  it("should replace !router.isReady with useSearchParams in `if` statement", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -673,7 +673,7 @@ describe("next 13 replace-next-router", () => {
 				  }
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -684,20 +684,20 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().isReady with true", async () => {
-		const beforeText = `
+  it("should replace useRouter().isReady with true", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
 	              const ready = useRouter().isReady;
 	          }
 	      `;
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 	        function Component() {
@@ -707,13 +707,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should remove { isReady } and replace usages with true", async () => {
-		const beforeText = `
+  it("should remove { isReady } and replace usages with true", async () => {
+    const beforeText = `
 	          import { useRouter } from 'next/router';
 
 	          function Component() {
@@ -722,7 +722,7 @@ describe("next 13 replace-next-router", () => {
 	          }
 	      `;
 
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -732,13 +732,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	      `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should noop for already-existing import", async () => {
-		const beforeText = `
+  it("should noop for already-existing import", async () => {
+    const beforeText = `
 			import { usePathname } from 'next/navigation';
 
 			function Component() {
@@ -746,13 +746,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual } = transform(beforeText, beforeText, "index.tsx");
+    const { actual } = transform(beforeText, beforeText, "index.tsx");
 
-		deepStrictEqual(actual, undefined);
-	});
+    deepStrictEqual(actual, undefined);
+  });
 
-	it("should replace query.a if query comes from useRouter return value destructurizing", async () => {
-		const beforeText = `
+  it("should replace query.a if query comes from useRouter return value destructurizing", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -764,7 +764,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -779,13 +779,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace { route } = useRouter() with usePathname()", async () => {
-		const beforeText = `
+  it("should replace { route } = useRouter() with usePathname()", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -795,7 +795,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 			export function Component() {
@@ -808,13 +808,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().query[A] with useSearchParams", async () => {
-		const beforeText = `
+  it("should replace useRouter().query[A] with useSearchParams", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			const A = 'constant';
@@ -824,7 +824,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -838,13 +838,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().query as A with useSearchParams", async () => {
-		const beforeText = `
+  it("should replace useRouter().query as A with useSearchParams", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -852,7 +852,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -865,13 +865,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.pathname with pathname", async () => {
-		const beforeText = `
+  it("should replace router.pathname with pathname", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -881,7 +881,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname } from "next/navigation";
 
 			export function Component() {
@@ -892,13 +892,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.asPath with usePathname + useSearchParams", async () => {
-		const beforeText = `
+  it("should replace router.asPath with usePathname + useSearchParams", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -908,7 +908,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -922,13 +922,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should switch the useRouter import source to next/router for router.push", async () => {
-		const beforeText = `
+  it("should switch the useRouter import source to next/router for router.push", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -940,7 +940,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useRouter } from "next/navigation";
 
 			export function Component() {
@@ -952,13 +952,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should transform usages within a JS default function", () => {
-		const beforeText = `
+  it("should transform usages within a JS default function", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export default function DynamicRoutes() {
@@ -971,7 +971,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -988,13 +988,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().query with ...Object.fromEntries(searchParams ?? new URLSearchParams())", () => {
-		const beforeText = `
+  it("should replace useRouter().query with ...Object.fromEntries(searchParams ?? new URLSearchParams())", () => {
+    const beforeText = `
 			import React from 'react'
 			import { useRouter } from 'next/router'
 
@@ -1007,7 +1007,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 			import React from 'react'
 
@@ -1022,13 +1022,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.isReady, router.asPath, router.href with proper replacements", () => {
-		const beforeText = `
+  it("should replace router.isReady, router.asPath, router.href with proper replacements", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router'
 
 			function Component() {
@@ -1042,7 +1042,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -1058,13 +1058,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter().isFallback with false", () => {
-		const beforeText = `
+  it("should replace useRouter().isFallback with false", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			export default function Component(props) {
@@ -1076,7 +1076,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			export default function Component(props) {
 				if (false) {
 					return null;
@@ -1086,13 +1086,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.isFallback with false", () => {
-		const beforeText = `
+  it("should replace router.isFallback with false", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router'
 
 			const Component = () => {
@@ -1106,7 +1106,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			const Component = () => {
 				if (false) {
 					return null;
@@ -1116,13 +1116,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should retain the useRouter import when router is in use", () => {
-		const beforeText = `
+  it("should retain the useRouter import when router is in use", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router'
 
 			const Component = () => {
@@ -1141,7 +1141,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useRouter } from "next/navigation";
 
 			const Component = () => {
@@ -1161,13 +1161,13 @@ describe("next 13 replace-next-router", () => {
 
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should use searchParams when dealing with function(query)", () => {
-		const beforeText = `
+  it("should use searchParams when dealing with function(query)", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router'
 
 			const Component = () => {
@@ -1177,7 +1177,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			const Component = () => {
@@ -1186,13 +1186,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should use searchParams when dealing with function(query)", () => {
-		const beforeText = `
+  it("should use searchParams when dealing with function(query)", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router'
 
 			const Component = () => {
@@ -1202,19 +1202,19 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			const Component = () => {
 				return null;
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.js");
+    const { actual, expected } = transform(beforeText, afterText, "index.js");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace router.asPath.startsWith with pathname?.startsWith", () => {
-		const beforeText = `
+  it("should replace router.asPath.startsWith with pathname?.startsWith", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			export default function Component() {
@@ -1233,7 +1233,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useRouter, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -1258,13 +1258,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "{ asPath } = useRouter()" with "pathname = usePathname()"', () => {
-		const beforeText = `
+  it('should replace "{ asPath } = useRouter()" with "pathname = usePathname()"', () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			export default function Component() {
@@ -1276,7 +1276,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -1292,13 +1292,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "path = useRouter().asPath" with "path = usePathname()"', () => {
-		const beforeText = `
+  it('should replace "path = useRouter().asPath" with "path = usePathname()"', () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			export default function Component() {
@@ -1310,7 +1310,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -1325,13 +1325,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "router.query[name]" with "getParam(name)"', () => {
-		const beforeText = `
+  it('should replace "router.query[name]" with "getParam(name)"', () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			export default function Component() {
@@ -1343,7 +1343,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -1358,13 +1358,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "router.replace({pathname: string})" with "router.replace(href: string)"', () => {
-		const beforeText = `
+  it('should replace "router.replace({pathname: string})" with "router.replace(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1375,7 +1375,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1384,13 +1384,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "router.replace({pathname: string, query: {...})" with "router.replace(href: string)"', () => {
-		const beforeText = `
+  it('should replace "router.replace({pathname: string, query: {...})" with "router.replace(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1404,7 +1404,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1415,13 +1415,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "router.push({pathname: string})" with "router.push(href: string)"', () => {
-		const beforeText = `
+  it('should replace "router.push({pathname: string})" with "router.push(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1432,7 +1432,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1441,13 +1441,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter import when push is destructured", () => {
-		const beforeText = `
+  it("should replace useRouter import when push is destructured", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1456,7 +1456,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1465,13 +1465,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace useRouter import when push is destructured  2", () => {
-		const beforeText = `
+  it("should replace useRouter import when push is destructured  2", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1487,7 +1487,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1500,13 +1500,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should replace "router.push({pathname: string, query: {...})" with "router.push(href: string)"', () => {
-		const beforeText = `
+  it('should replace "router.push({pathname: string, query: {...})" with "router.push(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1522,7 +1522,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 
 			function Component() {
@@ -1535,13 +1535,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should handle "const { query: { rescheduleUid } = {} } = useRouter();"', () => {
-		const beforeText = `
+  it('should handle "const { query: { rescheduleUid } = {} } = useRouter();"', () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			export default function Component() {
@@ -1551,7 +1551,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 
@@ -1566,13 +1566,13 @@ describe("next 13 replace-next-router", () => {
 				return null;}
 				`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should remove await from "await router.push(href: string)"', () => {
-		const beforeText = `
+  it('should remove await from "await router.push(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1583,7 +1583,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 		
 			function Component() {
@@ -1594,13 +1594,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should remove await from "await router.replace(href: string)"', () => {
-		const beforeText = `
+  it('should remove await from "await router.replace(href: string)"', () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1611,7 +1611,7 @@ describe("next 13 replace-next-router", () => {
 			}
 	  	`;
 
-		const afterText = `
+    const afterText = `
 	  		import { useRouter } from "next/navigation";
 		
 			function Component() {
@@ -1622,29 +1622,29 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace NextRouter with AppRouterInstance", () => {
-		const beforeText = `
+  it("should replace NextRouter with AppRouterInstance", () => {
+    const beforeText = `
 			import type { NextRouter } from "next/router"; 
 			function Component(router: NextRouter) {}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import type { AppRouterInstance } from "next/dist/shared/lib/app-router-context";
 			function Component(router: AppRouterInstance) {}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should support rest operator "{ p1, p2, ...r } = r.query"', async () => {
-		const beforeText = `
+  it('should support rest operator "{ p1, p2, ...r } = r.query"', async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component() {
@@ -1654,7 +1654,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 	    import { useSearchParams } from "next/navigation";
 
 			function Component() {
@@ -1664,13 +1664,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should support call expression parent node", () => {
-		const beforeText = `
+  it("should support call expression parent node", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function() {
@@ -1679,7 +1679,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useSearchParams } from "next/navigation";
 
 			function() {
@@ -1688,13 +1688,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should ensure that `useRouter` import is updated", () => {
-		const beforeText = `
+  it("should ensure that `useRouter` import is updated", () => {
+    const beforeText = `
 		import { useRouter } from "next/router";
 		
 		function Test() {
@@ -1703,7 +1703,7 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const afterText = `
+    const afterText = `
 		import { useRouter } from "next/navigation";
 		
 		function Test() {
@@ -1712,13 +1712,13 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should ensure that `useRouter` import is added when `router` is used as a short-hand property", () => {
-		const beforeText = `
+  it("should ensure that `useRouter` import is added when `router` is used as a short-hand property", () => {
+    const beforeText = `
 		import { useRouter } from "next/router";
 		
 		export default function CustomThemeProvider() {
@@ -1730,7 +1730,7 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const afterText = `
+    const afterText = `
 		import { useRouter } from "next/navigation";
 		
 		export default function CustomThemeProvider() {
@@ -1742,13 +1742,13 @@ describe("next 13 replace-next-router", () => {
 		}
 	`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should transform usages of the query property of the router's binding element", () => {
-		const beforeText = `
+  it("should transform usages of the query property of the router's binding element", () => {
+    const beforeText = `
 		import { useState, useEffect } from 'react';
 		import { useRouter } from 'next/router';
 
@@ -1775,7 +1775,7 @@ describe("next 13 replace-next-router", () => {
 		}
 		`;
 
-		const afterText = `
+    const afterText = `
 		import { useParams, useRouter, useSearchParams } from "next/navigation";
 		import { useState, useEffect, useCallback } from 'react';
 
@@ -1799,13 +1799,13 @@ describe("next 13 replace-next-router", () => {
 			}, [searchParams, router]);
 		}`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should transform the element-access-expression usages of the query property of the router's binding element", () => {
-		const beforeText = `
+  it("should transform the element-access-expression usages of the query property of the router's binding element", () => {
+    const beforeText = `
 		import { useRouter } from 'next/router';
 
 		function Component(): JSX.Element {
@@ -1824,7 +1824,7 @@ describe("next 13 replace-next-router", () => {
 				: obj;
 		`;
 
-		const afterText = `
+    const afterText = `
 		import { useParams, useSearchParams } from "next/navigation";
 		import { useCallback } from "react";
 		
@@ -1841,13 +1841,13 @@ describe("next 13 replace-next-router", () => {
 				: obj;
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should change the useRouter import from next/router into next/navigation", () => {
-		const beforeText = `
+  it("should change the useRouter import from next/router into next/navigation", () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 
 			function Component(): JSX.Element {
@@ -1857,7 +1857,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useRouter } from "next/navigation";
 
 			function Component(): JSX.Element {
@@ -1867,13 +1867,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should use different names for params and searchParams if the defaults are already used", () => {
-		const beforeText = `
+  it("should use different names for params and searchParams if the defaults are already used", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			function Component(): JSX.Element {
@@ -1887,7 +1887,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, usePathname, useSearchParams } from "next/navigation";
 			import { useCallback, useMemo } from "react";
 
@@ -1908,13 +1908,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should not add React hook imports to type-only imports", () => {
-		const beforeText = `
+  it("should not add React hook imports to type-only imports", () => {
+    const beforeText = `
 			import type { ReactNode } from 'react';
 			import { useRouter } from "next/router";
 
@@ -1925,7 +1925,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import type { ReactNode } from 'react';
 			import { useMemo } from "react";
@@ -1939,13 +1939,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should convert router.push within arrow functions", () => {
-		const beforeText = `
+  it("should convert router.push within arrow functions", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 			import { useEffect } from "react";
 
@@ -1961,7 +1961,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useRouter } from "next/navigation";
 			import { useEffect } from "react";
 			function Component(): JSX.Element {
@@ -1974,13 +1974,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should transform Object.entries(router.query) properly", () => {
-		const beforeText = `
+  it("should transform Object.entries(router.query) properly", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			function Component() {
@@ -1992,7 +1992,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 
@@ -2020,13 +2020,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it('should handle correctly the "router.query as C" destructuring', () => {
-		const beforeText = `
+  it('should handle correctly the "router.query as C" destructuring', () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 
 			function Component() {
@@ -2037,7 +2037,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 				import { useParams, useSearchParams } from "next/navigation";
 				import { useCallback } from "react";
 		
@@ -2052,13 +2052,13 @@ describe("next 13 replace-next-router", () => {
 		
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should not duplicate existing useCallback and useMemo named imports", () => {
-		const beforeText = `
+  it("should not duplicate existing useCallback and useMemo named imports", () => {
+    const beforeText = `
 			import { useCallback, useMemo } from "react";
 			import { useRouter } from "next/router";
 
@@ -2072,7 +2072,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, usePathname, useSearchParams } from "next/navigation";
 			import { useCallback, useMemo } from "react";
 
@@ -2090,13 +2090,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace asPath from destructuring a router", async () => {
-		const beforeText = `
+  it("should replace asPath from destructuring a router", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {
 				const router = useRouter();
@@ -2105,7 +2105,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 			
@@ -2118,13 +2118,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace asPath from destructuring a router with different name and property nodes", async () => {
-		const beforeText = `
+  it("should replace asPath from destructuring a router with different name and property nodes", async () => {
+    const beforeText = `
 			import { useRouter } from 'next/router';
 			function Component() {
 				const pathname = 1;
@@ -2134,7 +2134,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { usePathname, useSearchParams } from "next/navigation";
 			import { useMemo } from "react";
 			
@@ -2148,13 +2148,13 @@ describe("next 13 replace-next-router", () => {
 			}
 	    `;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should extract the property name instead of a name when destructuring router.query", () => {
-		const beforeText = `
+  it("should extract the property name instead of a name when destructuring router.query", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 			function Component() {
 				const router = useRouter();
@@ -2163,7 +2163,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 			
@@ -2176,13 +2176,13 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace destructuring of useRouter().query properly", () => {
-		const beforeText = `
+  it("should replace destructuring of useRouter().query properly", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 			
 			function Component() {
@@ -2191,7 +2191,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams, useSearchParams } from "next/navigation";
 			import { useCallback } from "react";
 			
@@ -2206,31 +2206,31 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should replace next/router jest mock with next/navigation", () => {
-		const beforeText = `
+  it("should replace next/router jest mock with next/navigation", () => {
+    const beforeText = `
 			jest.mock('next/router', () => ({
 				useRouter: jest.fn(() => router),
 			}));
 		`;
 
-		const afterText = `
+    const afterText = `
 			jest.mock('next/navigation', () => ({
 				useRouter: jest.fn(() => router),
 			}));
 		`;
 
-		const { actual, expected } = transform(beforeText, afterText, "index.tsx");
+    const { actual, expected } = transform(beforeText, afterText, "index.tsx");
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 
-	it("should simplify getParam(x) if the file path contains dynamic segments", () => {
-		const beforeText = `
+  it("should simplify getParam(x) if the file path contains dynamic segments", () => {
+    const beforeText = `
 			import { useRouter } from "next/router";
 				
 			function Component() {
@@ -2239,7 +2239,7 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const afterText = `
+    const afterText = `
 			import { useParams } from "next/navigation";
 
 			function Component() {
@@ -2252,12 +2252,12 @@ describe("next 13 replace-next-router", () => {
 			}
 		`;
 
-		const { actual, expected } = transform(
-			beforeText,
-			afterText,
-			"/pages/[[...a]]/[b]/[c].tsx",
-		);
+    const { actual, expected } = transform(
+      beforeText,
+      afterText,
+      "/pages/[[...a]]/[b]/[c].tsx",
+    );
 
-		deepStrictEqual(actual, expected);
-	});
+    deepStrictEqual(actual, expected);
+  });
 });

@@ -1,15 +1,15 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.2",
-	"private": false,
-	"name": "next/13/new-link",
-	"description": "The codemod safely removes <a> from next/link or includes the legacyBehavior property",
-	"engine": "jscodeshift",
-	"applicability": {
-		"from": [["next", "<", "13.0.0"]]
-	},
-	"meta": {
-		"tags": ["next.js", "migration"]
-	},
-	"include": ["**/*.js", "**/*.ts"]
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.2",
+  "private": false,
+  "name": "next/13/new-link",
+  "description": "The codemod safely removes <a> from next/link or includes the legacyBehavior property",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["next", "<", "13.0.0"]]
+  },
+  "meta": {
+    "tags": ["next.js", "migration"]
+  },
+  "include": ["**/*.js", "**/*.ts"]
 }

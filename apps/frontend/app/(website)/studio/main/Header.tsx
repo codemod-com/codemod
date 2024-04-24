@@ -11,62 +11,62 @@ import { DownloadZip } from "./DownloadZip";
 import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
 const Header = () => {
-	const { engine, setEngine, setInput, setOutput } = useSnippetStore();
-	const { setContent } = useModStore();
-	const { toggleTheme, isDark } = useTheme();
+  const { engine, setEngine, setInput, setOutput } = useSnippetStore();
+  const { setContent } = useModStore();
+  const { toggleTheme, isDark } = useTheme();
 
-	const onEngineChange = (value: KnownEngines) => {
-		if (value === "jscodeshift" || value === "ts-morph") {
-			setEngine(value);
-		}
-	};
+  const onEngineChange = (value: KnownEngines) => {
+    if (value === "jscodeshift" || value === "ts-morph") {
+      setEngine(value);
+    }
+  };
 
-	const { getShareLink, isCreating: isShareURLBeingCreated } =
-		usePublicLinkSharing();
+  const { getShareLink, isCreating: isShareURLBeingCreated } =
+    usePublicLinkSharing();
 
-	return (
-		<>
-			<div className="flex justify-between h-[50px] w-full flex-1 bg-white p-1">
-				<Button
-					variant="link"
-					className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
-				>
-					<a href="/">
-						<CodemodLogo />
-					</a>
-				</Button>
-				<AuthButtons />
-			</div>
-			<div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
-				<div />
-				<div className="flex gap-2">
-					{/* FIXME: remove text-white and specific classNames once buttons are moved to the new design */}
-					<Button
-						size="xs"
-						variant="outline"
-						className="flex gap-1"
-						hint={<p className="font-normal">Clear all inputs</p>}
-						onClick={() => {
-							setInput("");
-							setOutput("");
-							setContent("");
-						}}
-					>
-						<BackspaceIcon className="h-4 w-4" />
-						Clear all inputs
-					</Button>
-					<Button
-						size="xs"
-						variant="outline"
-						className="flex gap-1"
-						onClick={getShareLink}
-						isLoading={isShareURLBeingCreated}
-					>
-						{/* FIXME: refactor button component to replace loading icon with the button's icon */}
-						{!isShareURLBeingCreated && <LinkIcon className="h-4 w-4" />}
-						Share
-					</Button>
-					{/* <Button
+  return (
+    <>
+      <div className="flex justify-between h-[50px] w-full flex-1 bg-white p-1">
+        <Button
+          variant="link"
+          className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
+        >
+          <a href="/">
+            <CodemodLogo />
+          </a>
+        </Button>
+        <AuthButtons />
+      </div>
+      <div className="flex justify-between items-center h-[40px] w-full p-1 px-4">
+        <div />
+        <div className="flex gap-2">
+          {/* FIXME: remove text-white and specific classNames once buttons are moved to the new design */}
+          <Button
+            size="xs"
+            variant="outline"
+            className="flex gap-1"
+            hint={<p className="font-normal">Clear all inputs</p>}
+            onClick={() => {
+              setInput("");
+              setOutput("");
+              setContent("");
+            }}
+          >
+            <BackspaceIcon className="h-4 w-4" />
+            Clear all inputs
+          </Button>
+          <Button
+            size="xs"
+            variant="outline"
+            className="flex gap-1"
+            onClick={getShareLink}
+            isLoading={isShareURLBeingCreated}
+          >
+            {/* FIXME: refactor button component to replace loading icon with the button's icon */}
+            {!isShareURLBeingCreated && <LinkIcon className="h-4 w-4" />}
+            Share
+          </Button>
+          {/* <Button
 						size="xs"
 						variant="outline"
 						className="flex gap-1 pl-1"
@@ -79,10 +79,10 @@ const Header = () => {
 						<VSCodeIcon />
 						Run in VS Code
 					</Button> */}
-					<DownloadZip />
-				</div>
-			</div>
-			{/* <div className="flex h-[30px] w-full flex-1 items-center justify-end">
+          <DownloadZip />
+        </div>
+      </div>
+      {/* <div className="flex h-[30px] w-full flex-1 items-center justify-end">
 				<div className="flex items-center gap-3">
 					<PublicLinkSharingButton />
 					<Select onValueChange={onEngineChange} value={engine}>
@@ -154,8 +154,8 @@ const Header = () => {
 					/>
 				</div>
 			</div> */}
-		</>
-	);
+    </>
+  );
 };
 
 export default Header;

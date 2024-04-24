@@ -1,10 +1,10 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.0",
-	"name": "migrate-codemod-registry",
-	"private": false,
-	"engine": "filemod",
-	"meta": {
-		"tags": ["migration"]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "name": "migrate-codemod-registry",
+  "private": false,
+  "engine": "filemod",
+  "meta": {
+    "tags": ["migration"]
+  }
 }

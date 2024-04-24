@@ -16,66 +16,66 @@ import { groq } from "next-sanity";
 import { notFound } from "next/navigation";
 
 const PagePreview = dynamic(
-	() => import("@/components/templates/ModularPage/PagePreview"),
+  () => import("@/components/templates/ModularPage/PagePreview"),
 );
 
 export async function generateMetadata(
-	props: RouteProps,
-	parent: ResolvingMetadata,
+  props: RouteProps,
+  parent: ResolvingMetadata,
 ) {
-	const initialData = await loadSanityPageByRouteProps(props);
+  const initialData = await loadSanityPageByRouteProps(props);
 
-	if (!initialData?.data) return notFound();
+  if (!initialData?.data) return notFound();
 
-	return resolveSanityRouteMetadata(initialData.data, parent);
+  return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function DynamicRoute(props: RouteProps) {
-	const initial = await loadSanityPageByRouteProps(props);
+  const initial = await loadSanityPageByRouteProps(props);
 
-	if (!initial.data) {
-		notFound();
-	}
+  if (!initial.data) {
+    notFound();
+  }
 
-	switch (initial.data._type) {
-		case "page":
-			return draftMode().isEnabled ? (
-				<PagePreview initial={initial} />
-			) : (
-				<Page data={initial.data} />
-			);
-		case "textPage":
-			return draftMode().isEnabled ? (
-				<TextPagePreview
-					initial={initial as QueryResponseInitial<TextPagePayload | null>}
-				/>
-			) : (
-				<TextPage data={initial.data as TextPagePayload} />
-			);
-		case "blog.article":
-		case "blog.customerStory":
-			return draftMode().isEnabled ? (
-				<BlogArticlePreview
-					initial={initial as QueryResponseInitial<BlogArticlePayload | null>}
-				/>
-			) : (
-				<BlogArticle data={initial.data as BlogArticlePayload} />
-			);
+  switch (initial.data._type) {
+    case "page":
+      return draftMode().isEnabled ? (
+        <PagePreview initial={initial} />
+      ) : (
+        <Page data={initial.data} />
+      );
+    case "textPage":
+      return draftMode().isEnabled ? (
+        <TextPagePreview
+          initial={initial as QueryResponseInitial<TextPagePayload | null>}
+        />
+      ) : (
+        <TextPage data={initial.data as TextPagePayload} />
+      );
+    case "blog.article":
+    case "blog.customerStory":
+      return draftMode().isEnabled ? (
+        <BlogArticlePreview
+          initial={initial as QueryResponseInitial<BlogArticlePayload | null>}
+        />
+      ) : (
+        <BlogArticle data={initial.data as BlogArticlePayload} />
+      );
 
-		// %CLI/TEMPLATE-CASE%
-		default:
-			return <div>Template not found</div>;
-	}
+    // %CLI/TEMPLATE-CASE%
+    default:
+      return <div>Template not found</div>;
+  }
 }
 
 export async function generateStaticParams() {
-	const pages = await client.fetch(
-		groq`*[_type in ['modularPage', 'textPage', 'blog.article', 'blog.customerStory']]`,
-	);
+  const pages = await client.fetch(
+    groq`*[_type in ['modularPage', 'textPage', 'blog.article', 'blog.customerStory']]`,
+  );
 
-	const paths = pages.map((page: any) => ({
-		path: page.pathname.current.split("/").filter(Boolean),
-	}));
+  const paths = pages.map((page: any) => ({
+    path: page.pathname.current.split("/").filter(Boolean),
+  }));
 
-	return paths;
+  return paths;
 }

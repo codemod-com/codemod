@@ -1,39 +1,39 @@
 {
-	"name": "@codemod-com/printer",
-	"author": "Codemod, Inc.",
-	"version": "1.0.0",
-	"description": "Printer abstraction used in Codemod.com ecosystem",
-	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"files": [
-		"./dist",
-		"!**/*.test.js",
-		"!**/*.test.d.ts",
-		"LICENSE",
-		"README.md",
-		"tsconfig.json"
-	],
-	"scripts": {
-		"build": "tsc",
-		"test": "vitest run",
-		"coverage": "vitest run --coverage"
-	},
-	"keywords": [],
-	"license": "Apache-2.0",
-	"devDependencies": {
-		"@codemod-com/filemod": "workspace:*",
-		"@codemod-com/utilities": "workspace:*",
-		"@types/node": "20.8.5",
-		"@vitest/coverage-v8": "^1.0.1",
-		"typescript": "^5.2.2",
-		"vitest": "^1.0.1"
-	},
-	"dependencies": {
-		"chalk": "^5.3.0",
-		"ora": "^8.0.1",
-		"prettier": "^3.2.5",
-		"valibot": "^0.24.1"
-	}
+  "name": "@codemod-com/printer",
+  "author": "Codemod, Inc.",
+  "version": "1.0.0",
+  "description": "Printer abstraction used in Codemod.com ecosystem",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "./dist",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
+    "LICENSE",
+    "README.md",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
+  },
+  "keywords": [],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@codemod-com/filemod": "workspace:*",
+    "@codemod-com/utilities": "workspace:*",
+    "@types/node": "20.8.5",
+    "@vitest/coverage-v8": "^1.0.1",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "ora": "^8.0.1",
+    "prettier": "^3.2.5",
+    "valibot": "^0.24.1"
+  }
 }

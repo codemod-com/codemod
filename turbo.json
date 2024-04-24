@@ -1,23 +1,23 @@
 {
-	"$schema": "https://turbo.build/schema.json",
-	"pipeline": {
-		"dev": {
-			"cache": false,
-			"persistent": true
-		},
-		"link": {
-			"dependsOn": ["build"]
-		},
-		"clean": {
-			"cache": false
-		},
-		"build": {
-			"dependsOn": ["^build"],
-			"outputs": ["build/**", "dist/**"]
-		},
-		"create": {
-			"dependsOn": ["^create"],
-			"cache": false
-		}
-	}
+  "$schema": "https://turbo.build/schema.json",
+  "pipeline": {
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "link": {
+      "dependsOn": ["build"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**"]
+    },
+    "create": {
+      "dependsOn": ["^create"],
+      "cache": false
+    }
+  }
 }

@@ -30,112 +30,112 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 import type { API, FileInfo, Options, Transform } from "jscodeshift";
 
 function transform(
-	file: FileInfo,
-	api: API,
-	options: Options,
+  file: FileInfo,
+  api: API,
+  options: Options,
 ): string | undefined {
-	const j = api.jscodeshift;
+  const j = api.jscodeshift;
 
-	const root = j(file.source);
+  const root = j(file.source);
 
-	let dirtyFlag = false;
+  let dirtyFlag = false;
 
-	root
-		.findJSXElements("NavLink")
-		// .filter(hasAttributes({ style: () => true, activeStyle: () => true }))
-		.forEach((path) => {
-			const attrs = path.value.openingElement.attributes;
+  root
+    .findJSXElements("NavLink")
+    // .filter(hasAttributes({ style: () => true, activeStyle: () => true }))
+    .forEach((path) => {
+      const attrs = path.value.openingElement.attributes;
 
-			if (!attrs) {
-				return;
-			}
+      if (!attrs) {
+        return;
+      }
 
-			const [styleAttr] = attrs.filter((a) =>
-				"name" in a ? a.name.name === "style" : false,
-			);
+      const [styleAttr] = attrs.filter((a) =>
+        "name" in a ? a.name.name === "style" : false,
+      );
 
-			if (
-				!styleAttr ||
-				!("value" in styleAttr) ||
-				!styleAttr.value ||
-				!("expression" in styleAttr.value) ||
-				!styleAttr.value.expression ||
-				!("properties" in styleAttr.value.expression) ||
-				!styleAttr.value.expression.properties[0] ||
-				!("key" in styleAttr.value.expression.properties[0]) ||
-				!("name" in styleAttr.value.expression.properties[0].key) ||
-				!("value" in styleAttr.value.expression.properties[0]) ||
-				!("value" in styleAttr.value.expression.properties[0].value) ||
-				!styleAttr.value.expression.properties[0].value.value
-			) {
-				return;
-			}
+      if (
+        !styleAttr ||
+        !("value" in styleAttr) ||
+        !styleAttr.value ||
+        !("expression" in styleAttr.value) ||
+        !styleAttr.value.expression ||
+        !("properties" in styleAttr.value.expression) ||
+        !styleAttr.value.expression.properties[0] ||
+        !("key" in styleAttr.value.expression.properties[0]) ||
+        !("name" in styleAttr.value.expression.properties[0].key) ||
+        !("value" in styleAttr.value.expression.properties[0]) ||
+        !("value" in styleAttr.value.expression.properties[0].value) ||
+        !styleAttr.value.expression.properties[0].value.value
+      ) {
+        return;
+      }
 
-			const cssProp = styleAttr.value.expression.properties[0].key.name;
+      const cssProp = styleAttr.value.expression.properties[0].key.name;
 
-			if (typeof cssProp !== "string") {
-				return;
-			}
+      if (typeof cssProp !== "string") {
+        return;
+      }
 
-			const [activeStyleAttr] = attrs.filter((a) =>
-				"name" in a ? a.name.name === "activeStyle" : false,
-			);
+      const [activeStyleAttr] = attrs.filter((a) =>
+        "name" in a ? a.name.name === "activeStyle" : false,
+      );
 
-			if (
-				!activeStyleAttr ||
-				!("value" in activeStyleAttr) ||
-				!activeStyleAttr.value ||
-				!("expression" in activeStyleAttr.value) ||
-				!("properties" in activeStyleAttr.value.expression) ||
-				!activeStyleAttr.value.expression.properties[0] ||
-				!("value" in activeStyleAttr.value.expression.properties[0]) ||
-				!("value" in activeStyleAttr.value.expression.properties[0].value) ||
-				!activeStyleAttr.value.expression.properties[0].value.value
-			) {
-				return;
-			}
+      if (
+        !activeStyleAttr ||
+        !("value" in activeStyleAttr) ||
+        !activeStyleAttr.value ||
+        !("expression" in activeStyleAttr.value) ||
+        !("properties" in activeStyleAttr.value.expression) ||
+        !activeStyleAttr.value.expression.properties[0] ||
+        !("value" in activeStyleAttr.value.expression.properties[0]) ||
+        !("value" in activeStyleAttr.value.expression.properties[0].value) ||
+        !activeStyleAttr.value.expression.properties[0].value.value
+      ) {
+        return;
+      }
 
-			const idx = attrs.findIndex((a) =>
-				"name" in a ? a.name.name === "activeStyle" : false,
-			);
-			// remove activeStyle prop
-			attrs.splice(idx, 1);
+      const idx = attrs.findIndex((a) =>
+        "name" in a ? a.name.name === "activeStyle" : false,
+      );
+      // remove activeStyle prop
+      attrs.splice(idx, 1);
 
-			const propertyNode = j.property(
-				"init",
-				j.literal("isActive"),
-				j.identifier("isActive"),
-			);
+      const propertyNode = j.property(
+        "init",
+        j.literal("isActive"),
+        j.identifier("isActive"),
+      );
 
-			const arrFuncBody = j.objectExpression([
-				j.property(
-					"init",
-					j.literal(cssProp),
-					j.conditionalExpression(
-						j.identifier("isActive"),
-						j.literal(
-							activeStyleAttr.value.expression.properties[0].value.value,
-						),
-						j.literal(styleAttr.value.expression.properties[0].value.value),
-					),
-				),
-			]);
+      const arrFuncBody = j.objectExpression([
+        j.property(
+          "init",
+          j.literal(cssProp),
+          j.conditionalExpression(
+            j.identifier("isActive"),
+            j.literal(
+              activeStyleAttr.value.expression.properties[0].value.value,
+            ),
+            j.literal(styleAttr.value.expression.properties[0].value.value),
+          ),
+        ),
+      ]);
 
-			styleAttr.value = j.jsxExpressionContainer(
-				j.arrowFunctionExpression(
-					[j.objectPattern([propertyNode])],
-					arrFuncBody,
-				),
-			);
+      styleAttr.value = j.jsxExpressionContainer(
+        j.arrowFunctionExpression(
+          [j.objectPattern([propertyNode])],
+          arrFuncBody,
+        ),
+      );
 
-			dirtyFlag = true;
-		});
+      dirtyFlag = true;
+    });
 
-	if (!dirtyFlag) {
-		return undefined;
-	}
+  if (!dirtyFlag) {
+    return undefined;
+  }
 
-	return root.toSource(options);
+  return root.toSource(options);
 }
 
 transform satisfies Transform;

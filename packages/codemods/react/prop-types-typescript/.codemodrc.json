@@ -1,24 +1,24 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.1",
-	"private": false,
-	"name": "react/prop-types-typescript",
-	"description": "Codemod to convert React PropTypes to TypeScript types.",
-	"engine": "jscodeshift",
-	"applicability": {
-		"from": [["react", ">=", "15.0.0"]]
-	},
-	"arguments": [
-		{
-			"name": "preserve-prop-types",
-			"description": "Preserves prop types after converting to TS. There are two available modes: all and unconverted.",
-			"kind": "string",
-			"default": "none",
-			"required": false
-		}
-	],
-	"meta": {
-		"tags": ["react", "migration"]
-	},
-	"include": ["**/*.js", "**/*.ts"]
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "react/prop-types-typescript",
+  "description": "Codemod to convert React PropTypes to TypeScript types.",
+  "engine": "jscodeshift",
+  "applicability": {
+    "from": [["react", ">=", "15.0.0"]]
+  },
+  "arguments": [
+    {
+      "name": "preserve-prop-types",
+      "description": "Preserves prop types after converting to TS. There are two available modes: all and unconverted.",
+      "kind": "string",
+      "default": "none",
+      "required": false
+    }
+  ],
+  "meta": {
+    "tags": ["react", "migration"]
+  },
+  "include": ["**/*.js", "**/*.ts"]
 }

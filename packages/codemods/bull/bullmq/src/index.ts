@@ -6,18 +6,18 @@ import { replaceQueueOpts } from "./queue.js";
 import { replaceProcessWithWorkers } from "./worker.js";
 
 export default function transform(
-	file: FileInfo,
-	api: API,
+  file: FileInfo,
+  api: API,
 ): string | undefined {
-	const j = api.jscodeshift;
-	const root = j(file.source);
+  const j = api.jscodeshift;
+  const root = j(file.source);
 
-	replaceOldQueueImport(root, j);
-	replaceQueueOpts(root, j);
-	replaceTypeReferences(root, j);
+  replaceOldQueueImport(root, j);
+  replaceQueueOpts(root, j);
+  replaceTypeReferences(root, j);
 
-	replaceListeners(root, j);
-	replaceProcessWithWorkers(root, j);
+  replaceListeners(root, j);
+  replaceProcessWithWorkers(root, j);
 
-	return root.toSource();
+  return root.toSource();
 }

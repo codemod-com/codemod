@@ -1,13 +1,13 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.1",
-	"private": false,
-	"name": "mocha/vitest/migrate-test",
-	"engine": "jscodeshift",
-	"meta": {
-		"tags": ["migration"]
-	},
-	"applicability": {
-		"from": [["mocha", ">=", "9.0.0"]]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "mocha/vitest/migrate-test",
+  "engine": "jscodeshift",
+  "meta": {
+    "tags": ["migration"]
+  },
+  "applicability": {
+    "from": [["mocha", ">=", "9.0.0"]]
+  }
 }

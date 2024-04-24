@@ -1,13 +1,13 @@
 {
-	"$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-	"version": "1.0.1",
-	"private": false,
-	"name": "mui/5/core-styles-import",
-	"engine": "jscodeshift",
-	"meta": {
-		"tags": ["migration"]
-	},
-	"applicability": {
-		"from": [["@material-ui/core", ">=", "4.0.0"]]
-	}
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "mui/5/core-styles-import",
+  "engine": "jscodeshift",
+  "meta": {
+    "tags": ["migration"]
+  },
+  "applicability": {
+    "from": [["@material-ui/core", ">=", "4.0.0"]]
+  }
 }
