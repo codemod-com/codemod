@@ -14,6 +14,7 @@ const MainPageContent = () => {
 
   useInputs();
 
+  console.log("MainPageContent");
   if (isMobile) {
     return (
       <div className="flex h-[100vh] w-full flex-col items-center justify-center p-7">

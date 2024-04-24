@@ -20,7 +20,7 @@ export type Token = Readonly<{
 type SnippetStateValues = {
   engine: KnownEngines;
   inputSnippet: string;
-  outputSnippet: string;
+  afterSnippet: string;
   beforeInputRootNode: TreeNode | null;
   afterInputRootNode: TreeNode | null;
   beforeInputRanges: ReadonlyArray<TreeNode | OffsetRange>;
@@ -83,7 +83,7 @@ export const getInitialState = (): SnippetStateValues => {
     engine,
     beforeInputRootNode,
     afterInputRootNode,
-    outputSnippet: afterSnippet,
+    afterSnippet: afterSnippet,
     inputSnippet: beforeSnippet,
     beforeInputRanges: [],
     beforeRangeUpdatedAt: Date.now(),
@@ -109,7 +109,7 @@ export const useSnippetStore = create<SnippetState>((set, get) => ({
     const rootNode = isFile(parsed)
       ? mapBabelASTToRenderableTree(parsed)
       : null;
-    set({ outputSnippet: output, afterInputRootNode: rootNode });
+    set({ afterSnippet: output, afterInputRootNode: rootNode });
   },
   setInputSelection: (command) => {
     const rootNode = get().beforeInputRootNode;
@@ -158,7 +158,7 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
 
   const {
     inputSnippet,
-    outputSnippet,
+    afterSnippet,
     beforeInputRootNode,
     afterInputRootNode,
     beforeInputRanges,
@@ -176,7 +176,7 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
       };
     case "after":
       return {
-        snippet: outputSnippet,
+        snippet: afterSnippet,
         rootNode: afterInputRootNode,
         ranges: afterInputRanges,
       };

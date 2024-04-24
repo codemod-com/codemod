@@ -9,7 +9,7 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { deflate } from "pako";
 
 export const useShareLink = () => {
-  const { engine, inputSnippet, outputSnippet } = useSnippetStore();
+  const { engine, inputSnippet, afterSnippet } = useSnippetStore();
   const { internalContent } = useModStore();
   const { getToken } = useAuth();
 
@@ -85,7 +85,7 @@ export const useShareLink = () => {
         e: engine,
         n: codemodName,
         b: inputSnippet,
-        a: outputSnippet,
+        a: afterSnippet,
         c: internalContent ?? "",
       }); //satisfies ShareableCodemod);
 

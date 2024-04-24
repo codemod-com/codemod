@@ -26,7 +26,7 @@ export const useGetAliases = () => {
 
   const {
     inputSnippet,
-    outputSnippet,
+    afterSnippet,
     afterInputRanges,
     afterRangeUpdatedAt,
     beforeInputRanges,
@@ -46,7 +46,7 @@ export const useGetAliases = () => {
           }
         : null,
     $BEFORE: { value: inputSnippet, updatedAt: -1 },
-    $AFTER: { value: outputSnippet, updatedAt: -1 },
+    $AFTER: { value: afterSnippet, updatedAt: -1 },
     $HIGHLIGHTED_IN_BEFORE: beforeInputRanges[0]
       ? {
           value: inputSnippet.slice(
@@ -58,7 +58,7 @@ export const useGetAliases = () => {
       : null,
     $HIGHLIGHTED_IN_AFTER: afterInputRanges[0]
       ? {
-          value: outputSnippet.slice(
+          value: afterSnippet.slice(
             afterInputRanges[0].start,
             afterInputRanges[0].end,
           ),
