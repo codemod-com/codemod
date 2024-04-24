@@ -5,50 +5,50 @@ import { afterAll, describe, it } from "vitest";
 import { FileWatcher } from "./fileWatcher.js";
 
 const withFile = async <T>(
-	pathLike: string,
-	callback: (pathLike: PathLike) => Promise<T>,
+  pathLike: string,
+  callback: (pathLike: PathLike) => Promise<T>,
 ) => {
-	try {
-		await writeFile(pathLike, Buffer.from([]));
+  try {
+    await writeFile(pathLike, Buffer.from([]));
 
-		await callback(pathLike);
-	} finally {
-		await rm(pathLike);
-	}
+    await callback(pathLike);
+  } finally {
+    await rm(pathLike);
+  }
 };
 
 describe("fileWatcher", () => {
-	const fileName = `./${randomBytes(20).toString("base64url")}.data`;
+  const fileName = `./${randomBytes(20).toString("base64url")}.data`;
 
-	afterAll(() => rm(fileName, { force: true }));
+  afterAll(() => rm(fileName, { force: true }));
 
-	it("should report the correct number of changes", async () => {
-		await withFile(fileName, async (pathLike) => {
-			let callback: (() => void) | null = null;
+  it("should report the correct number of changes", async () => {
+    await withFile(fileName, async (pathLike) => {
+      let callback: (() => void) | null = null;
 
-			const watcher = new FileWatcher(pathLike, () => {
-				callback?.();
-			});
+      const watcher = new FileWatcher(pathLike, () => {
+        callback?.();
+      });
 
-			watcher.watch();
+      watcher.watch();
 
-			const fileHandle = await open(pathLike, "w");
+      const fileHandle = await open(pathLike, "w");
 
-			const write = async () => {
-				for (let i = 0; i < 3; ++i) {
-					await fileHandle.write(Buffer.from([1]));
-				}
-			};
+      const write = async () => {
+        for (let i = 0; i < 3; ++i) {
+          await fileHandle.write(Buffer.from([1]));
+        }
+      };
 
-			const callbackPromise = new Promise<void>((resolve) => {
-				callback = () => {
-					watcher.close();
+      const callbackPromise = new Promise<void>((resolve) => {
+        callback = () => {
+          watcher.close();
 
-					resolve();
-				};
-			});
+          resolve();
+        };
+      });
 
-			return Promise.all([write(), callbackPromise]);
-		});
-	});
+      return Promise.all([write(), callbackPromise]);
+    });
+  });
 });

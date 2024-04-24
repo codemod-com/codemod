@@ -13,113 +13,113 @@ import { PanelGroup } from "react-resizable-panels";
 import ASTViewer from "../../ASTViewer";
 import Layout from "../../Layout";
 import type {
-	ContentViewerProps,
-	PanelComponentProps,
-	PanelData,
-	PanelsRefs,
+  ContentViewerProps,
+  PanelComponentProps,
+  PanelData,
+  PanelsRefs,
 } from "../utils/types";
 
 export const BoundResizePanel = ({
-	defaultSize = 50,
-	minSize = 0,
-	panelRefs,
-	panelRefIndex,
-	children,
-	boundedIndex,
-	className,
-	style = {
-		maxHeight: isServer ? 0 : "unset",
-		flexBasis: isServer ? "50%" : "0",
-	},
+  defaultSize = 50,
+  minSize = 0,
+  panelRefs,
+  panelRefIndex,
+  children,
+  boundedIndex,
+  className,
+  style = {
+    maxHeight: isServer ? 0 : "unset",
+    flexBasis: isServer ? "50%" : "0",
+  },
 }: PanelComponentProps) => {
-	return (
-		<Layout.ResizablePanel
-			className={cn("relative dark:bg-gray-light", className)}
-			collapsible
-			defaultSize={defaultSize}
-			minSize={minSize}
-			ref={(ref) => {
-				panelRefs.current[panelRefIndex] = ref;
-			}}
-			style={style}
-			onResize={
-				!isNil(boundedIndex)
-					? debounce((size) => {
-							const panel = panelRefs.current[boundedIndex];
-							if (!isNil(panel) && !isNil(size)) panel.resize(size);
-						}, 5)
-					: undefined
-			}
-		>
-			{children}
-		</Layout.ResizablePanel>
-	);
+  return (
+    <Layout.ResizablePanel
+      className={cn("relative dark:bg-gray-light", className)}
+      collapsible
+      defaultSize={defaultSize}
+      minSize={minSize}
+      ref={(ref) => {
+        panelRefs.current[panelRefIndex] = ref;
+      }}
+      style={style}
+      onResize={
+        !isNil(boundedIndex)
+          ? debounce((size) => {
+              const panel = panelRefs.current[boundedIndex];
+              if (!isNil(panel) && !isNil(size)) panel.resize(size);
+            }, 5)
+          : undefined
+      }
+    >
+      {children}
+    </Layout.ResizablePanel>
+  );
 };
 
 export const ContentViewer: React.FC<ContentViewerProps> = ({
-	type,
-	engine,
+  type,
+  engine,
 }) => (
-	<>
-		{engine === "jscodeshift" ? (
-			<ASTViewer type={type} />
-		) : (
-			"The AST View is not yet supported for tsmorph"
-		)}
-	</>
+  <>
+    {engine === "jscodeshift" ? (
+      <ASTViewer type={type} />
+    ) : (
+      "The AST View is not yet supported for tsmorph"
+    )}
+  </>
 );
 
 export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
-	<Layout.ResizablePanel
-		collapsible
-		defaultSize={50}
-		minSize={0}
-		style={{
-			flexBasis: isServer ? "50%" : "0",
-		}}
-	>
-		<PanelGroup direction="vertical">{children}</PanelGroup>
-	</Layout.ResizablePanel>
+  <Layout.ResizablePanel
+    collapsible
+    defaultSize={50}
+    minSize={0}
+    style={{
+      flexBasis: isServer ? "50%" : "0",
+    }}
+  >
+    <PanelGroup direction="vertical">{children}</PanelGroup>
+  </Layout.ResizablePanel>
 );
 
 export const AstSection = ({
-	panels,
-	panelRefs,
-	engine,
+  panels,
+  panelRefs,
+  engine,
 }: {
-	panels: PanelData[];
-	panelRefs: PanelsRefs;
-	engine: KnownEngines;
+  panels: PanelData[];
+  panelRefs: PanelsRefs;
+  engine: KnownEngines;
 }) => {
-	return panels.filter(isVisible).map((panel, i, { length }) => (
-		<>
-			<BoundResizePanel
-				className="h-full"
-				panelRefs={panelRefs}
-				key={panel.relatedAST}
-				defaultSize={100 / panels.length}
-				panelRefIndex={panel.relatedAST}
-				boundedIndex={
-					panel.boundIndex === panel.relatedAST ? panel.snippedIndex : undefined
-				}
-				{...panel}
-			>
-				<ContentViewer type={panel.type} engine={engine} />
-			</BoundResizePanel>
-			{i !== length - 1 && isVisible(panels[i + 1]) && (
-				<ResizeHandle direction="horizontal" />
-			)}
-		</>
-	));
+  return panels.filter(isVisible).map((panel, i, { length }) => (
+    <>
+      <BoundResizePanel
+        className="h-full"
+        panelRefs={panelRefs}
+        key={panel.relatedAST}
+        defaultSize={100 / panels.length}
+        panelRefIndex={panel.relatedAST}
+        boundedIndex={
+          panel.boundIndex === panel.relatedAST ? panel.snippedIndex : undefined
+        }
+        {...panel}
+      >
+        <ContentViewer type={panel.type} engine={engine} />
+      </BoundResizePanel>
+      {i !== length - 1 && isVisible(panels[i + 1]) && (
+        <ResizeHandle direction="horizontal" />
+      )}
+    </>
+  ));
 };
 
 export const ShowPanelTile = ({
-	onClick,
-	panel,
-	header,
+  onClick,
+  panel,
+  header,
 }: { panel: PanelData; header: string; onClick: Void }) => (
-	<div className="hidden_panel_indicator" onClick={onClick}>
-		<VisibilityIcon visibilityOptions={panel.visibilityOptions} />
-		<span className="hidden_panel_indicator_text">{header}</span>
-	</div>
+  <div className="hidden_panel_indicator" onClick={onClick}>
+    <VisibilityIcon visibilityOptions={panel.visibilityOptions} />
+    <span className="hidden_panel_indicator_text">{header}</span>
+  </div>
 );

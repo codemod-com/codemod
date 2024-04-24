@@ -29,8 +29,8 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("next 14 next-og-import", () => {
-	it("should migrate viewport metadata to viewport export.", () => {
-		const INPUT = `
+  it("should migrate viewport metadata to viewport export.", () => {
+    const INPUT = `
 			export const metadata = {
 				title: 'My App',
 				themeColor: 'dark',
@@ -40,7 +40,7 @@ describe("next 14 next-og-import", () => {
 			}
         `;
 
-		const OUTPUT = `
+    const OUTPUT = `
 			export const metadata = {
 				title: 'My App',
 			}
@@ -51,16 +51,16 @@ describe("next 14 next-og-import", () => {
 			}
         `;
 
-		const fileInfo: FileInfo = {
-			path: "index.js",
-			source: INPUT,
-		};
+    const fileInfo: FileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
 
-		const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-		assert.deepEqual(
-			actualOutput?.replace(/\W/gm, ""),
-			OUTPUT.replace(/\W/gm, ""),
-		);
-	});
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });

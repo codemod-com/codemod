@@ -1,51 +1,51 @@
 {
-	"name": "@codemod-com/utilities",
-	"author": "Codemod, Inc.",
-	"version": "1.1.0",
-	"description": "The utilities used across Codemod.com packages",
-	"type": "module",
-	"main": "./dist/index.js",
-	"module": "./dist/index.js",
-	"types": "./dist/index.d.ts",
-	"sideEffects": false,
-	"files": [
-		"./dist",
-		"!**/*.test.js",
-		"!**/*.test.d.ts",
-		"LICENSE",
-		"README.md",
-		"tsconfig.json"
-	],
-	"scripts": {
-		"build": "tsc",
-		"test": "vitest run",
-		"coverage": "vitest run --coverage"
-	},
-	"keywords": [],
-	"license": "Apache-2.0",
-	"devDependencies": {
-		"@types/js-beautify": "^1.14.3",
-		"@types/jscodeshift": "^0.11.11",
-		"@types/ms": "^0.7.34",
-		"@types/node": "20.10.3",
-		"@types/tar": "^6.1.11",
-		"@types/tar-stream": "^3.1.3",
-		"@vitest/coverage-v8": "^1.0.1",
-		"memfs": "^4.8.2",
-		"ts-node": "10.9.1",
-		"typescript": "^5.3.2",
-		"vitest": "^1.0.1"
-	},
-	"dependencies": {
-		"@codemod-com/filemod": "workspace:*",
-		"bl": "^6.0.11",
-		"change-case": "^5.2.0",
-		"fast-glob": "^3.3.2",
-		"js-beautify": "^1.14.11",
-		"jscodeshift": "^0.15.1",
-		"ms": "^2.1.3",
-		"tar": "^6.1.15",
-		"tar-stream": "^3.1.7",
-		"valibot": "^0.24.1"
-	}
+  "name": "@codemod-com/utilities",
+  "author": "Codemod, Inc.",
+  "version": "1.1.0",
+  "description": "The utilities used across Codemod.com packages",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "files": [
+    "./dist",
+    "!**/*.test.js",
+    "!**/*.test.d.ts",
+    "LICENSE",
+    "README.md",
+    "tsconfig.json"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
+  },
+  "keywords": [],
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "@types/js-beautify": "^1.14.3",
+    "@types/jscodeshift": "^0.11.11",
+    "@types/ms": "^0.7.34",
+    "@types/node": "20.10.3",
+    "@types/tar": "^6.1.11",
+    "@types/tar-stream": "^3.1.3",
+    "@vitest/coverage-v8": "^1.0.1",
+    "memfs": "^4.8.2",
+    "ts-node": "10.9.1",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.1"
+  },
+  "dependencies": {
+    "@codemod-com/filemod": "workspace:*",
+    "bl": "^6.0.11",
+    "change-case": "^5.2.0",
+    "fast-glob": "^3.3.2",
+    "js-beautify": "^1.14.11",
+    "jscodeshift": "^0.15.1",
+    "ms": "^2.1.3",
+    "tar": "^6.1.15",
+    "tar-stream": "^3.1.7",
+    "valibot": "^0.24.1"
+  }
 }

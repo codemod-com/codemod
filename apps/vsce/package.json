@@ -1,285 +1,285 @@
 {
-	"name": "codemod-vscode-extension",
-	"author": "Codemod, Inc.",
-	"displayName": "Codemod.com",
-	"description": " Discover, run & manage codemods faster & easier.",
-	"version": "0.38.22",
-	"publisher": "codemod",
-	"icon": "img/codemod_square128.png",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/codemod-com/codemod/tree/main/apps/vsce"
-	},
-	"engines": {
-		"vscode": "^1.74.0",
-		"node": "^20.0.0"
-	},
-	"categories": ["Programming Languages", "Formatters", "Linters"],
-	"keywords": [
-		"codemod",
-		"upgrade",
-		"javascript",
-		"typescript",
-		"next",
-		"next.js",
-		"prettier",
-		"refactor",
-		"dependency"
-	],
-	"activationEvents": [
-		"onUri",
-		"workspaceContains:**/*.ts*",
-		"workspaceContains:**/*.js*"
-	],
-	"capabilities": {
-		"codeActionProvider": "true"
-	},
-	"contributes": {
-		"commands": [
-			{
-				"command": "codemod.showCodemodSettings",
-				"title": "Configure Codemod settings",
-				"icon": "$(settings-gear)"
-			},
-			{
-				"command": "codemod.signIn",
-				"title": "Sign in",
-				"icon": "$(sign-in)"
-			},
-			{
-				"command": "codemod.handleSignedInUser",
-				"title": "Signed in",
-				"icon": "$(accounts-view-bar-icon)"
-			},
-			{
-				"command": "codemod.clearOutputFiles",
-				"title": "Codemod: clear output files"
-			},
-			{
-				"command": "codemod.clearState",
-				"title": "Clear All",
-				"icon": "$(clear-all)"
-			},
-			{
-				"command": "codemod.rejectCase",
-				"title": "✗ Dismiss"
-			},
-			{
-				"command": "codemod.executeAsCodemod",
-				"title": "Codemod: Run as a codemod"
-			},
-			{
-				"command": "codemod.executeAsPiranhaRule",
-				"title": "Codemod: Run as a Piranha Rule"
-			},
-			{
-				"command": "codemod.executeCodemod",
-				"title": "Codemod: Execute Codemod"
-			},
-			{
-				"command": "codemod.executeCodemodWithinPath",
-				"title": "Codemod: Execute Codemod On Path"
-			},
-			{
-				"command": "codemod.sendAsBeforeSnippet",
-				"title": "Codemod: Send as Before Snippet to the Codemod Studio"
-			},
-			{
-				"command": "codemod.sendAsAfterSnippet",
-				"title": "Codemod: Send as After Snippet to the Codemod Studio"
-			}
-		],
-		"configuration": {
-			"title": "Codemod VSCode Extension Configuration",
-			"properties": {
-				"codemod.workerThreadCount": {
-					"order": 2,
-					"type": "number",
-					"default": 4,
-					"description": "The number of worker threads to execute any codemod over"
-				},
-				"codemod.include": {
-					"order": 3,
-					"type": "array",
-					"description": "The glob pattern to use when searching for files to execute codemods over",
-					"default": ["**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}"]
-				},
-				"codemod.exclude": {
-					"order": 4,
-					"type": "array",
-					"description": "The glob pattern to use when searching for files to exclude from codemod execution",
-					"default": ["**/node_modules/**/*.*"]
-				},
-				"codemod.formatWithPrettier": {
-					"order": 5,
-					"type": "boolean",
-					"description": "Use the Prettier formatter with the configuration derived from the location of a file to be formatter."
-				}
-			}
-		},
-		"viewsContainers": {
-			"activitybar": [
-				{
-					"id": "codemodViewId",
-					"title": "Codemod",
-					"icon": "img/codemod.svg"
-				}
-			],
-			"panel": [
-				{
-					"id": "codemodPanelViewContainerId",
-					"title": "Codemod",
-					"icon": "img/codemod.svg"
-				}
-			]
-		},
-		"views": {
-			"codemodViewId": [
-				{
-					"type": "webview",
-					"id": "codemodMainView",
-					"name": "",
-					"contextualTitle": "Main View"
-				}
-			],
-			"codemodPanelViewContainerId": [
-				{
-					"type": "webview",
-					"id": "codemodErrorViewId",
-					"name": "Errors",
-					"contextualTitle": "Errors"
-				}
-			]
-		},
-		"menus": {
-			"view/title": [
-				{
-					"command": "codemod.showCodemodSettings",
-					"when": "view == codemodMainView",
-					"group": "navigation"
-				},
-				{
-					"command": "codemod.signIn",
-					"when": "view == codemodMainView && !codemod.signedIn",
-					"group": "navigation"
-				},
-				{
-					"command": "codemod.handleSignedInUser",
-					"when": "view == codemodMainView && codemod.signedIn",
-					"group": "navigation"
-				}
-			],
-			"commandPalette": [
-				{
-					"command": "codemod.clearState",
-					"when": "false"
-				},
-				{
-					"command": "codemod.rejectCase",
-					"when": "false"
-				},
-				{
-					"command": "codemod.executeAsCodemod",
-					"when": "false"
-				},
-				{
-					"command": "codemod.executeAsPiranhaRule",
-					"when": "false"
-				},
-				{
-					"command": "codemod.executeCodemod",
-					"when": "false"
-				},
-				{
-					"command": "codemod.executeCodemodWithinPath",
-					"when": "editorIsOpen"
-				}
-			],
-			"editor/context": [
-				{
-					"command": "codemod.sendAsBeforeSnippet",
-					"when": "editorHasSelection",
-					"group": "9_cutcopypaste"
-				},
-				{
-					"command": "codemod.sendAsAfterSnippet",
-					"when": "editorHasSelection",
-					"group": "9_cutcopypaste"
-				}
-			],
-			"explorer/context": [
-				{
-					"command": "codemod.executeAsCodemod",
-					"group": "2_workspace",
-					"when": "resourceExtname == .js || resourceExtname == .ts"
-				},
-				{
-					"command": "codemod.executeAsPiranhaRule",
-					"group": "2_workspace",
-					"when": "explorerResourceIsFolder"
-				},
-				{
-					"command": "codemod.executeCodemodWithinPath",
-					"group": "2_workspace",
-					"when": "true"
-				}
-			]
-		}
-	},
-	"main": "./dist/extension.js",
-	"scripts": {
-		"vscode:prepublish": "pnpm run build",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"build": "pnpm install:webview && pnpm build:webview && pnpm install && NODE_ENV='production' webpack --devtool hidden-source-map",
-		"spellcheck": "pnpm cspell-cli '**/*.{ts,tsx}'",
-		"install:webview": "cd webview && pnpm install",
-		"build:webview": "cd webview && pnpm build:webview",
-		"watch:webview": "cd webview && pnpm start",
-		"package": "vsce package --no-dependencies --no-yarn"
-	},
-	"devDependencies": {
-		"@total-typescript/ts-reset": "^0.5.1",
-		"@types/chai": "^4.3.4",
-		"@types/diff": "^5.0.3",
-		"@types/glob": "^8.0.0",
-		"@types/node": "18.11.18",
-		"@types/semver": "^7.3.13",
-		"@types/vscode": "^1.74.0",
-		"@vscode/test-electron": "^2.2.2",
-		"chai": "^4.3.7",
-		"cspell-cli": "^6.17.1",
-		"esbuild": "^0.17.18",
-		"ts-loader": "^9.4.2",
-		"ts-node": "^10.9.1",
-		"typescript": "5.1.6",
-		"umd-compat-loader": "^2.1.2",
-		"webpack": "5.91.0",
-		"webpack-cli": "5.1.4"
-	},
-	"dependencies": {
-		"@codemod-com/utilities": "workspace:*",
-		"@codemod-com/telemetry": "workspace:*",
-		"@reduxjs/toolkit": "^1.9.5",
-		"@vscode/vsce": "^2.22.0",
-		"axios": "^1.6.8",
-		"axios-retry": "^4.0.0",
-		"diff": "^5.1.0",
-		"fast-deep-equal": "^3.1.3",
-		"fast-glob": "^3.3.2",
-		"fp-ts": "^2.15.0",
-		"fuzzysort": "^2.0.4",
-		"io-ts": "^2.2.20",
-		"io-ts-reporters": "^2.0.1",
-		"io-ts-types": "^0.5.19",
-		"monocle-ts": "^2.3.13",
-		"newtype-ts": "^0.3.5",
-		"nock": "^13.5.1",
-		"redux-persist": "^6.0.0",
-		"semver": "^7.3.8",
-		"ts-morph": "^19.0.0",
-		"universal-base64url": "^1.1.0",
-		"valibot": "^0.24.1"
-	},
-	"extensionDependencies": ["vscode.git"]
+  "name": "codemod-vscode-extension",
+  "author": "Codemod, Inc.",
+  "displayName": "Codemod.com",
+  "description": " Discover, run & manage codemods faster & easier.",
+  "version": "0.38.22",
+  "publisher": "codemod",
+  "icon": "img/codemod_square128.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codemod-com/codemod/tree/main/apps/vsce"
+  },
+  "engines": {
+    "vscode": "^1.74.0",
+    "node": "^20.0.0"
+  },
+  "categories": ["Programming Languages", "Formatters", "Linters"],
+  "keywords": [
+    "codemod",
+    "upgrade",
+    "javascript",
+    "typescript",
+    "next",
+    "next.js",
+    "prettier",
+    "refactor",
+    "dependency"
+  ],
+  "activationEvents": [
+    "onUri",
+    "workspaceContains:**/*.ts*",
+    "workspaceContains:**/*.js*"
+  ],
+  "capabilities": {
+    "codeActionProvider": "true"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "codemod.showCodemodSettings",
+        "title": "Configure Codemod settings",
+        "icon": "$(settings-gear)"
+      },
+      {
+        "command": "codemod.signIn",
+        "title": "Sign in",
+        "icon": "$(sign-in)"
+      },
+      {
+        "command": "codemod.handleSignedInUser",
+        "title": "Signed in",
+        "icon": "$(accounts-view-bar-icon)"
+      },
+      {
+        "command": "codemod.clearOutputFiles",
+        "title": "Codemod: clear output files"
+      },
+      {
+        "command": "codemod.clearState",
+        "title": "Clear All",
+        "icon": "$(clear-all)"
+      },
+      {
+        "command": "codemod.rejectCase",
+        "title": "✗ Dismiss"
+      },
+      {
+        "command": "codemod.executeAsCodemod",
+        "title": "Codemod: Run as a codemod"
+      },
+      {
+        "command": "codemod.executeAsPiranhaRule",
+        "title": "Codemod: Run as a Piranha Rule"
+      },
+      {
+        "command": "codemod.executeCodemod",
+        "title": "Codemod: Execute Codemod"
+      },
+      {
+        "command": "codemod.executeCodemodWithinPath",
+        "title": "Codemod: Execute Codemod On Path"
+      },
+      {
+        "command": "codemod.sendAsBeforeSnippet",
+        "title": "Codemod: Send as Before Snippet to the Codemod Studio"
+      },
+      {
+        "command": "codemod.sendAsAfterSnippet",
+        "title": "Codemod: Send as After Snippet to the Codemod Studio"
+      }
+    ],
+    "configuration": {
+      "title": "Codemod VSCode Extension Configuration",
+      "properties": {
+        "codemod.workerThreadCount": {
+          "order": 2,
+          "type": "number",
+          "default": 4,
+          "description": "The number of worker threads to execute any codemod over"
+        },
+        "codemod.include": {
+          "order": 3,
+          "type": "array",
+          "description": "The glob pattern to use when searching for files to execute codemods over",
+          "default": ["**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}"]
+        },
+        "codemod.exclude": {
+          "order": 4,
+          "type": "array",
+          "description": "The glob pattern to use when searching for files to exclude from codemod execution",
+          "default": ["**/node_modules/**/*.*"]
+        },
+        "codemod.formatWithPrettier": {
+          "order": 5,
+          "type": "boolean",
+          "description": "Use the Prettier formatter with the configuration derived from the location of a file to be formatter."
+        }
+      }
+    },
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "codemodViewId",
+          "title": "Codemod",
+          "icon": "img/codemod.svg"
+        }
+      ],
+      "panel": [
+        {
+          "id": "codemodPanelViewContainerId",
+          "title": "Codemod",
+          "icon": "img/codemod.svg"
+        }
+      ]
+    },
+    "views": {
+      "codemodViewId": [
+        {
+          "type": "webview",
+          "id": "codemodMainView",
+          "name": "",
+          "contextualTitle": "Main View"
+        }
+      ],
+      "codemodPanelViewContainerId": [
+        {
+          "type": "webview",
+          "id": "codemodErrorViewId",
+          "name": "Errors",
+          "contextualTitle": "Errors"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "codemod.showCodemodSettings",
+          "when": "view == codemodMainView",
+          "group": "navigation"
+        },
+        {
+          "command": "codemod.signIn",
+          "when": "view == codemodMainView && !codemod.signedIn",
+          "group": "navigation"
+        },
+        {
+          "command": "codemod.handleSignedInUser",
+          "when": "view == codemodMainView && codemod.signedIn",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "codemod.clearState",
+          "when": "false"
+        },
+        {
+          "command": "codemod.rejectCase",
+          "when": "false"
+        },
+        {
+          "command": "codemod.executeAsCodemod",
+          "when": "false"
+        },
+        {
+          "command": "codemod.executeAsPiranhaRule",
+          "when": "false"
+        },
+        {
+          "command": "codemod.executeCodemod",
+          "when": "false"
+        },
+        {
+          "command": "codemod.executeCodemodWithinPath",
+          "when": "editorIsOpen"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "codemod.sendAsBeforeSnippet",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste"
+        },
+        {
+          "command": "codemod.sendAsAfterSnippet",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "codemod.executeAsCodemod",
+          "group": "2_workspace",
+          "when": "resourceExtname == .js || resourceExtname == .ts"
+        },
+        {
+          "command": "codemod.executeAsPiranhaRule",
+          "group": "2_workspace",
+          "when": "explorerResourceIsFolder"
+        },
+        {
+          "command": "codemod.executeCodemodWithinPath",
+          "group": "2_workspace",
+          "when": "true"
+        }
+      ]
+    }
+  },
+  "main": "./dist/extension.js",
+  "scripts": {
+    "vscode:prepublish": "pnpm run build",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "build": "pnpm install:webview && pnpm build:webview && pnpm install && NODE_ENV='production' webpack --devtool hidden-source-map",
+    "spellcheck": "pnpm cspell-cli '**/*.{ts,tsx}'",
+    "install:webview": "cd webview && pnpm install",
+    "build:webview": "cd webview && pnpm build:webview",
+    "watch:webview": "cd webview && pnpm start",
+    "package": "vsce package --no-dependencies --no-yarn"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "^0.5.1",
+    "@types/chai": "^4.3.4",
+    "@types/diff": "^5.0.3",
+    "@types/glob": "^8.0.0",
+    "@types/node": "18.11.18",
+    "@types/semver": "^7.3.13",
+    "@types/vscode": "^1.74.0",
+    "@vscode/test-electron": "^2.2.2",
+    "chai": "^4.3.7",
+    "cspell-cli": "^6.17.1",
+    "esbuild": "^0.17.18",
+    "ts-loader": "^9.4.2",
+    "ts-node": "^10.9.1",
+    "typescript": "5.1.6",
+    "umd-compat-loader": "^2.1.2",
+    "webpack": "5.91.0",
+    "webpack-cli": "5.1.4"
+  },
+  "dependencies": {
+    "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/telemetry": "workspace:*",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@vscode/vsce": "^2.22.0",
+    "axios": "^1.6.8",
+    "axios-retry": "^4.0.0",
+    "diff": "^5.1.0",
+    "fast-deep-equal": "^3.1.3",
+    "fast-glob": "^3.3.2",
+    "fp-ts": "^2.15.0",
+    "fuzzysort": "^2.0.4",
+    "io-ts": "^2.2.20",
+    "io-ts-reporters": "^2.0.1",
+    "io-ts-types": "^0.5.19",
+    "monocle-ts": "^2.3.13",
+    "newtype-ts": "^0.3.5",
+    "nock": "^13.5.1",
+    "redux-persist": "^6.0.0",
+    "semver": "^7.3.8",
+    "ts-morph": "^19.0.0",
+    "universal-base64url": "^1.1.0",
+    "valibot": "^0.24.1"
+  },
+  "extensionDependencies": ["vscode.git"]
 }

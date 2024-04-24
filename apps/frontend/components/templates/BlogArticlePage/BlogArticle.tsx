@@ -3,14 +3,14 @@ import { type BlogArticlePayload, Job } from "@/types";
 import BlogArticlePageContent from "./BlogArticlePageContent";
 
 export interface BlogArticlePageProps {
-	data: BlogArticlePayload;
+  data: BlogArticlePayload;
 }
 
 export default function BlogArticlePage({ data }: BlogArticlePageProps) {
-	return (
-		<>
-			<BlogArticlePageContent {...data} />
-			{data?.pageCta && <PageCta {...data.pageCta} />}
-		</>
-	);
+  return (
+    <>
+      <BlogArticlePageContent {...data} />
+      {data?.pageCta && <PageCta {...data.pageCta} />}
+    </>
+  );
 }

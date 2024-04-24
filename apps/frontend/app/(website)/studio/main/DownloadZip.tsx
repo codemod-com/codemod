@@ -3,15 +3,15 @@ import { useAuth, useSession } from "@clerk/nextjs";
 import sendMessage from "@studio/api/sendMessage";
 import { Button } from "@studio/components/ui/button";
 import {
-	Dialog,
-	DialogContent,
-	DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogTrigger,
 } from "@studio/components/ui/dialog";
 import {
-	Tabs,
-	TabsContent,
-	TabsList,
-	TabsTrigger,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { DownloadIcon } from "@studio/icons/Download";
@@ -36,174 +36,174 @@ ${codemod}
 `;
 
 export const DownloadZip = () => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [isDownloading, setIsDownloading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
-	const modStore = useModStore();
-	const snippetStore = useSnippetStore();
-	const engine = snippetStore.engine;
+  const modStore = useModStore();
+  const snippetStore = useSnippetStore();
+  const engine = snippetStore.engine;
 
-	const { session } = useSession();
-	const { getToken } = useAuth();
+  const { session } = useSession();
+  const { getToken } = useAuth();
 
-	const handleClick = async () => {
-		setIsDownloading(true);
-		if (!modStore.internalContent) {
-			return;
-		}
+  const handleClick = async () => {
+    setIsDownloading(true);
+    if (!modStore.internalContent) {
+      return;
+    }
 
-		const token = await getToken();
+    const token = await getToken();
 
-		const humanCodemodName = await getHumanCodemodName(
-			modStore.internalContent,
-			token,
-		);
+    const humanCodemodName = await getHumanCodemodName(
+      modStore.internalContent,
+      token,
+    );
 
-		await downloadProject({
-			name: humanCodemodName,
-			codemodBody: modStore.internalContent,
-			cases: [
-				{
-					before: snippetStore.inputSnippet,
-					after: snippetStore.outputSnippet,
-				},
-			],
-			engine,
-			username: session?.user.username ?? null,
-		});
+    await downloadProject({
+      name: humanCodemodName,
+      codemodBody: modStore.internalContent,
+      cases: [
+        {
+          before: snippetStore.inputSnippet,
+          after: snippetStore.outputSnippet,
+        },
+      ],
+      engine,
+      username: session?.user.username ?? null,
+    });
 
-		setIsDownloading(false);
-		setIsOpen(true);
-	};
+    setIsDownloading(false);
+    setIsOpen(true);
+  };
 
-	if (engine === "ts-morph") {
-		return null;
-	}
+  if (engine === "ts-morph") {
+    return null;
+  }
 
-	return (
-		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger asChild>
-				<Button
-					size="xs"
-					variant="default"
-					className="text-white flex gap-1"
-					hint={
-						<p className="font-normal">
-							Download a ZIP archive to use this codemod locally
-						</p>
-					}
-					isLoading={isDownloading}
-					disabled={!modStore.internalContent || isDownloading}
-					onClick={handleClick}
-					id="download-zip-button"
-				>
-					<DownloadIcon />
-					Run locally via CLI
-				</Button>
-			</DialogTrigger>
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button
+          size="xs"
+          variant="default"
+          className="text-white flex gap-1"
+          hint={
+            <p className="font-normal">
+              Download a ZIP archive to use this codemod locally
+            </p>
+          }
+          isLoading={isDownloading}
+          disabled={!modStore.internalContent || isDownloading}
+          onClick={handleClick}
+          id="download-zip-button"
+        >
+          <DownloadIcon />
+          Run locally via CLI
+        </Button>
+      </DialogTrigger>
 
-			<DialogContent className="max-w-2xl">
-				<p>
-					Unzip the codemod package into your preferred folder, copy its path,
-					update the command below with the copied path, and run it.
-				</p>
+      <DialogContent className="max-w-2xl">
+        <p>
+          Unzip the codemod package into your preferred folder, copy its path,
+          update the command below with the copied path, and run it.
+        </p>
 
-				<Tabs defaultValue="npm">
-					<TabsList>
-						<TabsTrigger value="npm">npm</TabsTrigger>
-						<TabsTrigger value="pnpm">pnpm</TabsTrigger>
-					</TabsList>
+        <Tabs defaultValue="npm">
+          <TabsList>
+            <TabsTrigger value="npm">npm</TabsTrigger>
+            <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+          </TabsList>
 
-					<TabsContent value="npm">
-						<InstructionsContent pm="npm" />
-					</TabsContent>
-					<TabsContent value="pnpm">
-						<InstructionsContent pm="pnpm" />
-					</TabsContent>
-				</Tabs>
-			</DialogContent>
-		</Dialog>
-	);
+          <TabsContent value="npm">
+            <InstructionsContent pm="npm" />
+          </TabsContent>
+          <TabsContent value="pnpm">
+            <InstructionsContent pm="pnpm" />
+          </TabsContent>
+        </Tabs>
+      </DialogContent>
+    </Dialog>
+  );
 };
 
 function InstructionsContent({ pm }: { pm: "pnpm" | "npm" }) {
-	const npxDialect = useMemo(() => {
-		if (pm === "pnpm") {
-			return "pnpm dlx";
-		}
+  const npxDialect = useMemo(() => {
+    if (pm === "pnpm") {
+      return "pnpm dlx";
+    }
 
-		return "npx";
-	}, [pm]);
+    return "npx";
+  }, [pm]);
 
-	return (
-		<div className="space-y-1">
-			<CopyTerminalCommands
-				text={`${npxDialect} codemod --dry <codemod_path>`}
-			/>
-		</div>
-	);
+  return (
+    <div className="space-y-1">
+      <CopyTerminalCommands
+        text={`${npxDialect} codemod --dry <codemod_path>`}
+      />
+    </div>
+  );
 }
 
 export function CopyTerminalCommands({ text }: { text: string }) {
-	const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
+  const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
 
-	return (
-		<div className="flex items-center justify-between rounded-md bg-secondary p-2 text-secondary-foreground">
-			<code>{text}</code>
+  return (
+    <div className="flex items-center justify-between rounded-md bg-secondary p-2 text-secondary-foreground">
+      <code>{text}</code>
 
-			<Button
-				size="unstyled"
-				variant="unstyled"
-				className="space-x-2"
-				onClick={() => copy(text)}
-			>
-				{isCopied ? (
-					<Check className="h-4 w-4 text-green-600" />
-				) : (
-					<Copy
-						className={cn(
-							"h-4 w-4 cursor-pointer transition-colors hover:text-primary-light",
-							isCopied && "text-primary-light",
-						)}
-					/>
-				)}
-			</Button>
-		</div>
-	);
+      <Button
+        size="unstyled"
+        variant="unstyled"
+        className="space-x-2"
+        onClick={() => copy(text)}
+      >
+        {isCopied ? (
+          <Check className="h-4 w-4 text-green-600" />
+        ) : (
+          <Copy
+            className={cn(
+              "h-4 w-4 cursor-pointer transition-colors hover:text-primary-light",
+              isCopied && "text-primary-light",
+            )}
+          />
+        )}
+      </Button>
+    </div>
+  );
 }
 
 async function getHumanCodemodName(
-	codemod: string,
-	token: string | null,
+  codemod: string,
+  token: string | null,
 ): Promise<string> {
-	if (token === null) {
-		return "codemod";
-	}
+  if (token === null) {
+    return "codemod";
+  }
 
-	try {
-		if (!codemod) {
-			throw new Error("codemod content not found");
-		}
+  try {
+    if (!codemod) {
+      throw new Error("codemod content not found");
+    }
 
-		let codemodName = "";
-		if (token !== null) {
-			// Ask LLM to come up with a name for the given codemod
-			const codemodNameOrError = await sendMessage({
-				message: generateCodemodHumanNamePrompt(codemod),
-				token,
-			});
+    let codemodName = "";
+    if (token !== null) {
+      // Ask LLM to come up with a name for the given codemod
+      const codemodNameOrError = await sendMessage({
+        message: generateCodemodHumanNamePrompt(codemod),
+        token,
+      });
 
-			if (codemodNameOrError.isLeft()) {
-				console.error(codemodNameOrError.getLeft());
-			} else {
-				codemodName = codemodNameOrError.get().text;
-			}
-		}
+      if (codemodNameOrError.isLeft()) {
+        console.error(codemodNameOrError.getLeft());
+      } else {
+        codemodName = codemodNameOrError.get().text;
+      }
+    }
 
-		return codemodName;
-	} catch (error) {
-		console.error(error);
+    return codemodName;
+  } catch (error) {
+    console.error(error);
 
-		return "codemod";
-	}
+    return "codemod";
+  }
 }
