@@ -201,11 +201,6 @@ export default {
 			"accordion-down": "accordion-down 0.2s ease-out",
 			"accordion-up": "accordion-up 0.2s ease-out",
 		},
-		zIndex: {
-			1: "1",
-			// add 10,000 to avoid conflicts with other libraries
-			10000: "10000",
-		},
 		container: {
 			center: true,
 			padding: "2rem",

@@ -15,12 +15,12 @@ export default {
 		maxHeight: {
 			"1/3": "33.3%",
 		},
-		zIndex: {
-			1: "1",
-			// add 10,000 to avoid conflicts with other libraries
-			10000: "10000",
-		},
 		extend: {
+			zIndex: {
+				1: "1",
+				// add 10,000 to avoid conflicts with other libraries
+				10000: "10000",
+			},
 			colors: {
 				// @TODO refine palette when design is finished
 				"gray-bg": "#F0F0F0",
