@@ -102,7 +102,7 @@ export const DownloadZip = () => {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl bg-white">
         <p>
           Unzip the codemod package into your preferred folder, copy its path,
           update the command below with the copied path, and run it.
