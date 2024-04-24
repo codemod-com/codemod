@@ -125,7 +125,7 @@ const routeUserToStudioToAuthenticate = async () => {
 
   searchParams.set(SEARCH_PARAMS_KEYS.COMMAND, "accessTokenRequestedByVSCE");
 
-  const url = new URL("https://codemod.studio");
+  const url = new URL("https://codemod.com/studio");
   url.search = searchParams.toString();
 
   commands.executeCommand("codemod.redirect", url);

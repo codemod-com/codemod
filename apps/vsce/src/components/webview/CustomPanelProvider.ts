@@ -336,7 +336,7 @@ export class CustomPanelProvider {
               encode(job.codemodName),
             );
 
-            const url = new URL("https://codemod.studio");
+            const url = new URL("https://codemod.com/studio");
             url.search = searchParams.toString();
 
             commands.executeCommand("codemod.redirect", url);

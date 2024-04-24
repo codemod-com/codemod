@@ -97,7 +97,7 @@ export async function activate(context: vscode.ExtensionContext) {
           "accessTokenRequestedByVSCE",
         );
 
-        const url = new URL("https://codemod.studio");
+        const url = new URL("https://codemod.com/studio");
         url.search = searchParams.toString();
 
         vscode.commands.executeCommand("codemod.redirect", url);
@@ -212,7 +212,7 @@ export async function activate(context: vscode.ExtensionContext) {
         "accessTokenRequestedByVSCE",
       );
 
-      const url = new URL("https://codemod.studio");
+      const url = new URL("https://codemod.com/studio");
       url.search = searchParams.toString();
 
       vscode.commands.executeCommand("codemod.redirect", url);
@@ -762,7 +762,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const beforeSnippet = Buffer.from(text).toString("base64url");
 
       const uri = vscode.Uri.parse(
-        `https://codemod.studio?beforeSnippet=${beforeSnippet}`,
+        `https://codemod.com/studio?beforeSnippet=${beforeSnippet}`,
       );
 
       await vscode.env.openExternal(uri);
@@ -786,7 +786,7 @@ export async function activate(context: vscode.ExtensionContext) {
       const afterSnippet = Buffer.from(text).toString("base64url");
 
       const uri = vscode.Uri.parse(
-        `https://codemod.studio?afterSnippet=${afterSnippet}`,
+        `https://codemod.com/studio?afterSnippet=${afterSnippet}`,
       );
 
       await vscode.env.openExternal(uri);
@@ -904,7 +904,7 @@ export async function activate(context: vscode.ExtensionContext) {
               "accessTokenRequestedByVSCE",
             );
 
-            const url = new URL("https://codemod.studio");
+            const url = new URL("https://codemod.com/studio");
             url.search = searchParams.toString();
 
             vscode.commands.executeCommand("codemod.redirect", url);

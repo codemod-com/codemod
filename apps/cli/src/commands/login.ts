@@ -12,7 +12,7 @@ const routeUserToStudioForLogin = (
   iv: string,
 ) => {
   const success = openURL(
-    `https://codemod.studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
+    `https://codemod.com/studio/?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
   );
   if (!success) {
     printer.printOperationMessage({

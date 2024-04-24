@@ -426,7 +426,7 @@ const handleData: HandleData<Dependencies, State> = async (
 
       const root = j.withParser("tsx")(data);
 
-      // adapted from codemod.studio AI
+      // adapted from codemod.com/studio AI
       let dirtyFlag = false;
 
       root.find(j.ImportDeclaration).forEach((path) => {

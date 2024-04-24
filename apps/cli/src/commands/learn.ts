@@ -82,7 +82,7 @@ const createCodemodStudioURL = ({
   iv: string;
 }): string | null => {
   try {
-    const url = new URL("https://codemod.studio/");
+    const url = new URL("https://codemod.com/studio/");
     const searchParams = new URLSearchParams([
       [UrlParamKeys.Engine, engine],
       [UrlParamKeys.DiffId, diffId],
