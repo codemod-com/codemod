@@ -1,9 +1,7 @@
 import { useAuth } from "@clerk/nextjs";
 // import { encode } from "universal-base64url";
-import sendMessage from "@studio/api/sendMessage";
 // import type { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { generateCodemodNamePrompt } from "@studio/store/zustand/CFS/prompts";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { deflate } from "pako";
@@ -63,22 +61,20 @@ export const useShareLink = () => {
         throw new Error("codemod content not found");
       }
 
-      const token = await getToken();
+      const codemodName = "untitled";
+      //   if (token !== null) {
+      //     // Ask LLM to come up with a name for the given codemod
+      //     const codemodNameOrError = await sendMessage({
+      //       message: generateCodemodNamePrompt(internalContent),
+      //       token,
+      //     });
 
-      let codemodName = "untitled";
-      if (token !== null) {
-        // Ask LLM to come up with a name for the given codemod
-        const codemodNameOrError = await sendMessage({
-          message: generateCodemodNamePrompt(internalContent),
-          token,
-        });
-
-        if (codemodNameOrError.isLeft()) {
-          console.error(codemodNameOrError.getLeft());
-        } else {
-          codemodName = codemodNameOrError.get().text;
-        }
-      }
+      //     if (codemodNameOrError.isLeft()) {
+      //       console.error(codemodNameOrError.getLeft());
+      //     } else {
+      //       codemodName = codemodNameOrError.get().text;
+      //     }
+      //   }
 
       const input = JSON.stringify({
         v: 1, // version
