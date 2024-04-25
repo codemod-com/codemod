@@ -26,7 +26,9 @@ import { initGlobalNodeModules } from "./utils";
 export const executeMainThread = async () => {
   const slicedArgv = hideBin(process.argv);
 
-  const argvObject = buildGlobalOptions(yargs(slicedArgv));
+  const argvObject = buildGlobalOptions(
+    yargs(slicedArgv).help().version(version),
+  );
 
   const argv = await Promise.resolve(argvObject.argv);
 
@@ -84,8 +86,7 @@ export const executeMainThread = async () => {
   argvObject
     .scriptName("codemod")
     .usage("Usage: <command> [options]")
-    .help()
-    .version(version)
+
     .command(
       "*",
       "runs a codemod or recipe",
