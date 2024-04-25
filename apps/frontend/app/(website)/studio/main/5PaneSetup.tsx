@@ -56,7 +56,7 @@ import { PanelGroup } from "react-resizable-panels";
 import { C } from "vitest/dist/reporters-xEmem8D4";
 import themeConfig from "../../../../tailwind.config";
 import Codemod from "./Codemod";
-import Header from "./Header";
+import { Header } from "./Header";
 import Layout from "./Layout";
 import LiveIcon from "./LiveIcon";
 import Table from "./Log/Table";
