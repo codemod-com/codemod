@@ -9,7 +9,7 @@ export const TopBar = () => {
         variant="link"
         className="text-md -ml-1 pt-3 font-light text-gray-500 dark:text-gray-300"
       >
-        <a href="/apps/studio/public">
+        <a href="/apps/studio/public" className="h-[25px]">
           <CodemodLogo />
         </a>
       </Button>
