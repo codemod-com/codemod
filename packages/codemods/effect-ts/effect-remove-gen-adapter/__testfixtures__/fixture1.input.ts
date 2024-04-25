@@ -1,5 +1,9 @@
-Effect2.gen(function* (XXX) {
+Effect.gen(function* (XXX) {
   const a = yield* XXX(Effect.succeed(0));
   const b = yield* XXX(Effect.succeed(1));
-  return a + b;
+  const c = yield* XXX(
+    [Effect.succeed(0), Effect.succeed(1)] as const,
+    Effect.allWith(),
+  );
+  return a + b + c;
 });

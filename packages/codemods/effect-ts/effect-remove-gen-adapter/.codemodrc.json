@@ -6,6 +6,6 @@
   "engine": "jscodeshift",
   "meta": {
     "tags": ["effect-ts", "migration"],
-    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/"
+    "git": "https://github.com/Effect-TS/codemod"
   }
 }
