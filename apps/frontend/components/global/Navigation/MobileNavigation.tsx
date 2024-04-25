@@ -1,5 +1,6 @@
 "use client";
 
+import { TechLogo } from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
@@ -75,6 +76,19 @@ export function MobileDropdown({
                 </NavigationLink>
               </MobileDropdownItem>
             ))}
+            <NavigationLink
+              className="w-full py-s transition-colors hover:bg-primary-light/5 dark:hover:bg-primary-dark/5"
+              hideExternalIcon
+              href={`https://github.com/codemod-com/codemod`}
+            >
+              <span className="flex items-center gap-2">
+                <TechLogo
+                  className="text-black dark:text-white"
+                  name={"github"}
+                />
+                <span className="">{"Star us"}</span>
+              </span>
+            </NavigationLink>
 
             <motion.div
               className="flex gap-s pt-m"
@@ -119,7 +133,7 @@ function MobileDropdownItem({
 }: {
   children: React.ReactNode;
   index: number;
-  animationVariants?: any;
+  animationVariants?: Record<string, any>;
 }) {
   return (
     <DropdownMenu.Item asChild>

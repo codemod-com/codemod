@@ -213,7 +213,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           ) : null}
         </div>
         {/* Sidebar */}
-        <aside className="top-8 flex h-fit w-full flex-col gap-m lg:sticky lg:w-1/3 lg:min-w-[360px] lg:pl-[52px]">
+        <aside className="lg:top-[128px] flex h-fit w-full flex-col gap-m lg:sticky lg:w-1/3 lg:min-w-[360px] lg:pl-[52px]">
           {/* Run */}
 
           <div className="flex w-full flex-col gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">

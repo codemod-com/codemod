@@ -233,7 +233,11 @@ export type AutomationResponseVersion = {
   shortDescription: string;
   engine: string;
   applicability?: AutomationApplicability;
-  arguments: any[];
+  arguments: {
+    kind: string;
+    name: string;
+    required: boolean;
+  }[];
   vsCodeLink: string;
   codemodStudioExampleLink?: string;
   testProjectCommand?: string;
@@ -305,6 +309,7 @@ export type GlobalLabels = {
     applyToPositionCTA?: string;
   };
   codemodPage: {
+    ogDescription?: string;
     ctaTitle?: string;
     ctaDescription?: string;
     documentationPopup?: BlocksBody;
