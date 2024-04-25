@@ -215,6 +215,13 @@ importers:
         version: 1.1.0(@types/node@20.10.5)(jsdom@23.2.0)(terser@5.27.0)
 
   apps/cli:
+    dependencies:
+      keytar:
+        specifier: ^7.9.0
+        version: 7.9.0
+      prettier:
+        specifier: ^3.2.5
+        version: 3.2.5
     devDependencies:
       '@codemod-com/filemod':
         specifier: workspace:*
@@ -270,15 +277,9 @@ importers:
       inquirer:
         specifier: ^9.2.16
         version: 9.2.16
-      keytar:
-        specifier: ^7.9.0
-        version: 7.9.0
       memfs:
         specifier: ^4.6.0
         version: 4.8.2
-      prettier:
-        specifier: ^3.2.5
-        version: 3.2.5
       terminal-link:
         specifier: ^3.0.0
         version: 3.0.0
