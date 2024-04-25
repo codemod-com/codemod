@@ -19,16 +19,6 @@ const engineSchema = union([
   literal("gpt-4-with-chroma"),
 ]);
 
-const clientIdentifierSchema = union([
-  literal("WEBSITE"),
-  literal("STUDIO"),
-  literal("VSCE"),
-  literal("CLI"),
-]);
-
-export const parseClientIdentifierSchema = (input: unknown) =>
-  parse(clientIdentifierSchema, input);
-
 export const sendMessageBodySchema = object({
   message: string(),
   parentMessageId: optional(string()),
@@ -68,6 +58,25 @@ export const parseCreateIssueBody = (input: unknown) =>
   parse(createIssueBodySchema, input);
 
 export const parseGetUserRepositoriesParams = (input: unknown) =>
+  parse(providerSchema, input);
+
+export const getRepoBranchesBodySchema = object({
+  id: number(),
+  name: string(),
+  full_name: string(),
+  private: boolean(),
+  html_url: string(),
+  default_branch: string(),
+  permissions: object({
+    admin: boolean(),
+    push: boolean(),
+    pull: boolean(),
+  }),
+});
+
+export const parseGetRepoBranchesBody = (input: unknown) =>
+  parse(getRepoBranchesBodySchema, input);
+export const parseGetRepoBranchesParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const getCodemodsQuerySchema = object({
