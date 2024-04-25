@@ -2,6 +2,7 @@
 @import './components/button/button.css';
 @import 'react-tooltip/dist/react-tooltip.css';
 @import 'reactjs-popup/dist/index.css';
+@import './studio.css';
 
 @tailwind base;
 @tailwind components;
