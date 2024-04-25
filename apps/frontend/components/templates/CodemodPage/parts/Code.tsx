@@ -59,7 +59,7 @@ const CodeBlock = ({ children }) => {
   return (
     <div
       className={clsx(
-        "codeblock relative mb-10 h-full overflow-hidden rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark",
+        "codeblock relative mb-10 h-full overflow-hidden rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark/10",
         `${inconsolata.variable} font-mono text-lg`,
       )}
     >
