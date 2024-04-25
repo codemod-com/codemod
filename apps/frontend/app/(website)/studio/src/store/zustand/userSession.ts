@@ -1,30 +1,21 @@
-import {
-  type Output,
-  array,
-  literal,
-  nullable,
-  object,
-  string,
-  union,
-} from "valibot";
-
 import { uniq, without } from "ramda";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ToVoid } from "../../types/transformations";
 
-export const userSessionSchema = object({
-  pendingActionsWhenSigned: array(union([literal("openRepoModal")])),
-  codemodExecutionId: union([nullable(string())]),
-});
+export const pendingActions = [
+  "openRepoModal",
+  "redirectToStudio",
+  "redirectToRegister",
+] as const;
+export type PendingAction = (typeof pendingActions)[number];
 
-type UserSession = Output<typeof userSessionSchema>;
+type UserSessionGet = {
+  pendingActionsWhenSigned: PendingAction[];
+  codemodExecutionId: string | null;
+};
 
-export const Actions = ["openRepoModal"];
-
-export type PendingAction = UserSession["pendingActionsWhenSigned"][number];
-
-export type UserSessionStore = UserSession & {
+export type UserSessionStore = UserSessionGet & {
   setPendingActions: ToVoid<PendingAction[]>;
   setCodemodExecutionId: ToVoid<string | null>;
   addPendingActionsWhenSigned: ToVoid<PendingAction>;
@@ -33,7 +24,7 @@ export type UserSessionStore = UserSession & {
   resetPendingActions: VoidFunction;
 };
 
-const buildDefaultUserSession = (): UserSession => ({
+const buildDefaultUserSession = (): UserSessionGet => ({
   pendingActionsWhenSigned: [],
   codemodExecutionId: null,
 });
