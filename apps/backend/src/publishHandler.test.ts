@@ -69,6 +69,7 @@ vi.mock("./schemata/env.js", async () => {
         CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
         CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
         CLERK_JWT_KEY: "CLERK_JWT_KEY",
+        TASK_MANAGER_QUEUE_NAME: "TASK_MANAGER_QUEUE_NAME",
       };
     }),
   };
