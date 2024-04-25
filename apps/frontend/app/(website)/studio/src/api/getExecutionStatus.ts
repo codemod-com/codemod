@@ -4,7 +4,7 @@ import { Either } from "../utils/Either";
 import apiClient from "./client";
 
 type GetExecutionStatusResponse = Readonly<{
-  status: "progress" | "done";
+  status: "progress" | "done" | "idle";
   statusMessage: string; // "waiting for execution to start" | "fetching repo" | "processing files: 100/1000"
   result: { link: string } | null; // link to Github branch / PR created by the execution
   progressInfo: { processed: number; total: number } | null;

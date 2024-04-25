@@ -3,6 +3,7 @@ import gh from "parse-github-url";
 import type {
   Assignee,
   CreatePRParams,
+  GithubContent,
   GithubRepository,
   Issue,
   ListPRParams,
@@ -114,6 +115,29 @@ export class GithubProvider implements SourceControlProvider {
         Authorization: this.__authHeader,
       },
     });
+
+    return res.data;
+  }
+
+  async getBranches(): Promise<string[]> {
+    const res = await axios.get(`${this.__repoUrl}/branches`, {
+      headers: {
+        Authorization: this.__authHeader,
+      },
+    });
+
+    return res.data;
+  }
+
+  async getRepoContents(branchName: string): Promise<GithubContent[]> {
+    const res = await axios.get(
+      `${this.__repoUrl}/contents?ref=${branchName}`,
+      {
+        headers: {
+          Authorization: this.__authHeader,
+        },
+      },
+    );
 
     return res.data;
   }

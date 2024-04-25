@@ -39,11 +39,14 @@ import {
   parseCreateIssueParams,
   parseDiffCreationBody,
   parseGetCodeDiffParams,
+  parseGetRepoBranchesBody,
+  parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
-  parseSendChatBody,
+  parseSendChatBody 
   parseSendMessageBody,
   parseValidateIntentParams,
+  parseValidateIntentParamsnParams,
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
@@ -119,6 +122,11 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     handleProcessExit(0);
   });
 
+  fastify.addHook("onRequest", (request, reply, done) => {
+    reply.header("Access-Control-Allow-Origin", "false");
+    done();
+  });
+
   await fastify.register(cors, {
     origin: (origin, cb) => {
       if (!origin) {
@@ -141,7 +149,12 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
       "x-clerk-auth-reason",
       "x-clerk-auth-message",
     ],
-    allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
+    allowedHeaders: [
+      X_CODEMOD_ACCESS_TOKEN,
+      "Content-Type",
+      "Authorization",
+      "access-control-allow-origin",
+    ],
   } satisfies FastifyCorsOptions);
 
   await fastify.register(fastifyRateLimit, {
@@ -738,6 +751,37 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       const result = await sourceControl.getUserRepositories(
         sourceControlProvider,
       );
+      reply.type("application/json").code(200);
+      return result;
+    },
+  );
+
+  instance.get(
+    "/sourceControl/:provider/repo/branches",
+    async (request, reply) => {
+      if (!auth) {
+        throw new Error("This endpoint requires auth configuration.");
+      }
+
+      // getting userId from clerk directly should be safe
+      const { userId } = getAuth(request);
+
+      if (!userId) {
+        return reply.code(401).send();
+      }
+
+      const { provider } = parseGetRepoBranchesParams(request.params);
+      const repo = parseGetRepoBranchesBody(request.body);
+
+      const oAuthToken = await auth.getOAuthToken(userId, provider);
+
+      const sourceControlProvider = getSourceControlProvider(
+        provider,
+        oAuthToken,
+        repo.full_name,
+      );
+
+      const result = await sourceControl.getBranches(sourceControlProvider);
 
       reply.type("application/json").code(200);
       return result;
