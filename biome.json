@@ -12,7 +12,9 @@
       ".next",
       ".vscode",
       "build-ncc",
-      "generated"
+      "generated",
+      "*.py",
+      "./apps/ai/**"
     ],
     "rules": {
       "suspicious": {
@@ -114,7 +116,9 @@
       "build-ncc",
       ".next",
       ".vscode",
-      "generated"
+      "generated",
+      "*.py",
+      "./apps/ai/**"
     ]
   },
   "organizeImports": {
