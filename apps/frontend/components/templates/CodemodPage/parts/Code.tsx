@@ -59,12 +59,13 @@ const CodeBlock = ({ children }) => {
   return (
     <div
       className={clsx(
-        "codeblock relative mb-10 h-full rounded-md bg-emphasis-light/10 p-4 pr-12 dark:bg-emphasis-dark",
+        "codeblock relative mb-10 h-full overflow-hidden rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark",
         `${inconsolata.variable} font-mono text-lg`,
       )}
     >
       <div className="absolute right-2 top-2">
         <button
+          type="button"
           className={cx(
             "body-s-medium m-xxs flex animate-fade-in items-center gap-xs rounded-[4px] p-3 font-medium transition-all  duration-200",
             "text-tertiary-light lg:hover:bg-emphasis-light/5 dark:border-border-dark dark:text-tertiary-dark dark:lg:hover:bg-primaryHover-light",
@@ -77,7 +78,7 @@ const CodeBlock = ({ children }) => {
       <Highlight theme={theme} code={code.trim()} language={language}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={`no-scrollbar my-2 overflow-x-scroll rounded-lg p-[20px]${className}`}
+            className={`no-scrollbar my-2 overflow-x-scroll rounded-lg p-[20px] ${className}`}
             style={style}
           >
             {tokens.map((line, i) => (

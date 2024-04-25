@@ -1,5 +1,5 @@
 export function sanitizeString(str: string) {
-  return str.replace(/[\r\n\t]+|[\u200B-\u200D\uFEFF]/g, "").trim();
+  return str.replace(/[\r\n\t\u200B-\u200D\uFEFF]+/g, "").trim();
 }
 
 /**
@@ -36,7 +36,7 @@ export function slugify(str: string) {
     "a-z", // lower-case letters
     "0-9", // numbers
     " ", // spaces
-    "-", // hyphens
+    "\\-", // hyphens (escaped)
   ];
 
   return str
@@ -60,4 +60,13 @@ export function unslugify(str: string) {
   return str
     .replace(/-|_/g, " ")
     .replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
+export function insertMergeTags(
+  text: string,
+  mergeTags: Record<string, string>,
+) {
+  return text.replace(/{{\s*([^}]+)\s*}}/g, (_, key) => {
+    return mergeTags[key.trim()] || "";
+  });
 }

@@ -158,7 +158,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
             <img
               src="/static/img-placeholder.svg"
               className="h-full w-full rounded-s bg-secondary-light dark:bg-secondary-dark"
-              alt="Placeholder image"
+              alt="Placeholder"
             />
           )}
         </div>
@@ -178,34 +178,38 @@ function TeamMemberGridItem(props: TeamMemberProps) {
           </span>
         </GradientBorderBox>
         <div className="flex items-center gap-s py-s">
-          <a href={props.linkedin}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logotypes/light/linkedin.svg"
-              alt="Linkedin logo"
-              className="dark:hidden"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logotypes/dark/linkedin.svg"
-              alt="Linkedin logo"
-              className="hidden dark:block"
-            />
-          </a>
-          <a href={props.twitter}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logotypes/light/x.svg"
-              alt="X/Twitter logo"
-              className="dark:hidden"
-            />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/logotypes/dark/x.svg"
-              alt="X/Twitter logo"
-              className="hidden dark:block"
-            />
-          </a>
+          {props.linkedin && (
+            <a href={props.linkedin} target="_blank" rel="noopener noreferrer">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logotypes/light/linkedin.svg"
+                alt="Linkedin logo"
+                className="dark:hidden"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logotypes/dark/linkedin.svg"
+                alt="Linkedin logo"
+                className="hidden dark:block"
+              />
+            </a>
+          )}
+          {props.twitter && (
+            <a href={props.twitter} target="_blank" rel="noopener noreferrer">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logotypes/light/x.svg"
+                alt="X/Twitter logo"
+                className="dark:hidden"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/logotypes/dark/x.svg"
+                alt="X/Twitter logo"
+                className="hidden dark:block"
+              />
+            </a>
+          )}
         </div>
 
         <div className="body-s-medium mb-6 font-medium">

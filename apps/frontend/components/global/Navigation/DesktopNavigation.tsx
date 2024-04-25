@@ -1,4 +1,5 @@
 import Button from "@/components/shared/Button";
+import { TechLogo } from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
@@ -17,15 +18,15 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
   const [activeHeadingIndex, setActiveHeadingIndex] = useState(0);
   const [width, setWidth] = useState({ solid: 0, shadow: 0 });
   const updateTXAmount = useCallback(
-    (index, type: "solid" | "shadow") => {
+    (index: number, type: "solid" | "shadow") => {
       const tocRect = navRef.current?.getBoundingClientRect();
       const selectedOutlineRect =
         outlineRefs.current[index]?.getBoundingClientRect();
       setWidth({
         ...width,
-        [type]: selectedOutlineRect?.width,
+        [type]: Number(selectedOutlineRect?.width),
       });
-      const xDiff = selectedOutlineRect?.left! - tocRect?.left!;
+      const xDiff = Number(selectedOutlineRect?.left) - tocRect?.left!;
       setTXAmount({ ...tXAmount, [type]: xDiff });
     },
     [tXAmount, width],
@@ -86,6 +87,21 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
           </span>
         </NavigationLink>
       ))}
+      <NavigationLink
+        hideExternalIcon
+        href={`https://github.com/codemod-com/codemod`}
+      >
+        <span
+          className="flex items-center gap-2"
+          onMouseEnter={() => updateTXAmount(items.length, "shadow")}
+          ref={(el) => {
+            outlineRefs.current[items.length] = el as HTMLDivElement;
+          }}
+        >
+          <TechLogo className="text-black dark:text-white" name={"github"} />
+          <span className="">{"Star us"}</span>
+        </span>
+      </NavigationLink>
     </div>
   );
 }

@@ -103,6 +103,13 @@ export const globalLabels = defineType({
       type: "object",
       fields: [
         {
+          name: "ogDescription",
+          title: "Og description",
+          type: "string",
+          description:
+            "Description for the og tag with merge fields. E.g. Explore and run {{ framework }} {{ codemod_name }} on Codemod Registry. \n Available variables: framework, codemod_name.",
+        },
+        {
           name: "backToIndex",
           title: "Back to index",
           type: "string",

@@ -303,9 +303,6 @@ const ArticleAuthors = (props: { authors: BlogArticlePayload["authors"] }) => {
                   elProps={{
                     className: cx(
                       "block rounded-md relative object-cover w-10 h-10  ",
-                      {
-                        "border-l border-white": index !== 0,
-                      },
                     ),
                   }}
                 />
