@@ -19,6 +19,16 @@ const engineSchema = union([
   literal("gpt-4-with-chroma"),
 ]);
 
+const clientIdentifierSchema = union([
+  literal("WEBSITE"),
+  literal("STUDIO"),
+  literal("VSCE"),
+  literal("CLI"),
+]);
+
+export const parseClientIdentifierSchema = (input: unknown) =>
+  parse(clientIdentifierSchema, input);
+
 export const sendMessageBodySchema = object({
   message: string(),
   parentMessageId: optional(string()),
