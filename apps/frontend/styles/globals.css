@@ -11,6 +11,7 @@
   --text-color-code-plain: #0b151e;
   --text-color-code-comments: #0b151e66;
   --header-height: 114px;
+  --radius: 0.5rem;
 }
 :root.dark {
   --text-color-code-plain: #fff;

@@ -186,21 +186,6 @@ export default {
   ],
   theme: {
     ...defaultTheme,
-
-    keyframes: {
-      "accordion-down": {
-        from: { height: "0" },
-        to: { height: "var(--radix-accordion-content-height)" },
-      },
-      "accordion-up": {
-        from: { height: "var(--radix-accordion-content-height)" },
-        to: { height: "0" },
-      },
-    },
-    animation: {
-      "accordion-down": "accordion-down 0.2s ease-out",
-      "accordion-up": "accordion-up 0.2s ease-out",
-    },
     container: {
       center: true,
       padding: "2rem",
@@ -208,10 +193,25 @@ export default {
         "2xl": "1400px",
       },
     },
-    maxHeight: {
-      "1/3": "33.3%",
-    },
     extend: {
+      spacing: {
+        xxs: "4px",
+        xs: "8px",
+        s: "16px",
+        m: "24px",
+        l: "32px",
+        xl: "32px",
+        "2xl": "60px",
+        xxxl: "64px",
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+      },
+      maxHeight: {
+        "1/3": "33.3%",
+      },
       colors: colorPalette,
       fontFamily: {
         regular: "var(--satoshi-regular)",
@@ -374,16 +374,6 @@ export default {
           },
         ],
       },
-      spacing: {
-        xxs: "4px",
-        xs: "8px",
-        s: "16px",
-        m: "24px",
-        l: "32px",
-        xl: "32px",
-        "2xl": "60px",
-        xxxl: "64px",
-      },
       content: {
         check: 'url("/icons/check.svg")',
       },
@@ -398,11 +388,6 @@ export default {
         "fade-out": "fade-out 200ms cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-left": "slideLeft infinite 60s linear",
         "slide-right": "slideRight infinite 60s linear",
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
