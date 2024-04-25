@@ -43,7 +43,7 @@ import {
   parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
-  parseSendChatBody 
+  parseSendChatBody,
   parseSendMessageBody,
   parseValidateIntentParams,
   parseValidateIntentParamsnParams,
