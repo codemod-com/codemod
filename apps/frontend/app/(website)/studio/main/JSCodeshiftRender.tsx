@@ -68,17 +68,7 @@ export const useCodeDiff = () => {
     }
 
     postMessage(engine, content, inputSnippet);
-  }, [
-    setHasRuntimeErrors,
-    setEvents,
-    codemodOutput,
-    engine,
-    inputSnippet,
-    content,
-    snippetBeforeHasOnlyWhitespaces,
-    codemodSourceHasOnlyWhitespaces,
-    postMessage,
-  ]);
+  }, [snippetBeforeHasOnlyWhitespaces, codemodSourceHasOnlyWhitespaces]);
 
   useEffect(() => {
     if (webWorkerState.kind === "LEFT") {
