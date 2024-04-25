@@ -10,10 +10,12 @@ import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
+import { Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
   type RouteHandlerMethod,
 } from "fastify";
+import Redis from "ioredis";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -35,6 +37,8 @@ import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
 import {
+  parseCodemodRunBody,
+  parseCodemodStatusParams,
   parseCreateIssueBody,
   parseCreateIssueParams,
   parseDiffCreationBody,
@@ -209,6 +213,18 @@ const clerkClient = areClerkKeysSet(environment)
       jwtKey: environment.CLERK_JWT_KEY,
     })
   : null;
+
+const queue = new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
+  connection: {
+    host: String(environment.REDIS_HOST),
+    port: Number(environment.REDIS_PORT),
+  },
+});
+
+const redis = new Redis({
+  host: String(environment.REDIS_HOST),
+  port: Number(environment.REDIS_PORT),
+});
 
 const wrapRequestHandlerMethod =
   <T>(handler: CustomHandler<T>): RouteHandlerMethod =>
@@ -743,6 +759,53 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       return result;
     },
   );
+
+  instance.post("/codemodRun", async (request, reply) => {
+    if (!auth) {
+      throw new Error("This endpoint requires auth configuration.");
+    }
+
+    const { userId } = getAuth(request);
+
+    if (!userId) {
+      return reply.code(401).send();
+    }
+
+    const { source, engine, repo, codemodName } = parseCodemodRunBody(
+      request.body,
+    );
+
+    const job = await queue.add("codemodRun", {
+      userId,
+      source,
+      engine,
+      repo,
+      codemodName,
+    });
+
+    reply.type("application/json").code(200);
+    return { success: true, codemodRunId: job.id };
+  });
+
+  instance.get("/codemodRun/status/:jobId", async (request, reply) => {
+    if (!auth) {
+      throw new Error("This endpoint requires auth configuration.");
+    }
+
+    const { userId } = getAuth(request);
+
+    if (!userId) {
+      return reply.code(401).send();
+    }
+
+    const { jobId } = parseCodemodStatusParams(request.params);
+
+    const status = await redis.get(`job:${jobId}:status`);
+    const result = JSON.parse(status as string);
+
+    reply.type("application/json").code(200);
+    return { result };
+  });
 
   done();
 };

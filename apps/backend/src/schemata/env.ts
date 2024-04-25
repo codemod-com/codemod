@@ -47,6 +47,9 @@ export const environmentSchema = object({
   CLERK_SECRET_KEY: optional(string()),
   CLERK_JWT_KEY: optional(string()),
   REPLICATE_API_KEY: optional(string()),
+  REDIS_HOST: optional(string()),
+  REDIS_PORT: optional(string()),
+  TASK_MANAGER_QUEUE_NAME: optional(string()),
 });
 
 export type Environment = Output<typeof environmentSchema>;
