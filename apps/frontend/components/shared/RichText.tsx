@@ -135,7 +135,7 @@ function createDefaultComponents(
         return (
           <span
             className={cx(
-              "my-4 block rounded-lg border-l-4 border-solid  p-4",
+              "my-6 block rounded-lg border-l-4 border-solid  p-4",
               {
                 "border-accent bg-success-light/15 dark:bg-success-dark/15":
                   props.value.variant === "success" || !props.value.variant,
@@ -153,7 +153,7 @@ function createDefaultComponents(
                 name={hasIcon ? props.value.icon : "tip"}
                 className="dark:text-primary-dark"
               />
-              <span className="xs-heading  ml-2">
+              <span className="xs-heading ml-2">
                 {props.value.title || "Tip"}
               </span>
             </span>

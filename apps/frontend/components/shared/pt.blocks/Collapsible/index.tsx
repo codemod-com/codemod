@@ -31,7 +31,7 @@ export default function Collapsible(props: {
           <Icon name="chevron-down" />
         </div>
 
-        <h3 className="xs-heading">{props.title}</h3>
+        <h3 className="xs-heading text-left">{props.title}</h3>
       </button>
 
       {isOpen && props.content && <RichText value={props.content} />}
