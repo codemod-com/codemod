@@ -17,10 +17,9 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-  const { setInput, setOutput, inputSnippet, outputSnippet } =
-    useSnippetStore();
+  const { setInput, setOutput, inputSnippet, afterSnippet } = useSnippetStore();
 
-  const snippetValue = type === "before" ? inputSnippet : outputSnippet;
+  const snippetValue = type === "before" ? inputSnippet : afterSnippet;
 
   const setRangesOnTarget = useRangesOnTarget();
 

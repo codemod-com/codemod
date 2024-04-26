@@ -1,0 +1,1 @@
+export const MyComponent4: React.FC<{ inlineProp: number, disabled?: boolean }> = (props) => <span>foo < /span>

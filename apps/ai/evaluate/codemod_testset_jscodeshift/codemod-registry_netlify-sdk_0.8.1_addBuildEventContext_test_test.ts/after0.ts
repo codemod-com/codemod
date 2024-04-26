@@ -1,0 +1,3 @@
+integration.addBuildEventContext("onPreBuild", () => {
+    //FOO
+});

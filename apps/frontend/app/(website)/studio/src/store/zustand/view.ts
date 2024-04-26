@@ -5,6 +5,7 @@ export enum TabNames {
   GUIBuilder = "FIND_AND_REPLACE",
   DEBUG = "DEBUG_CONSOLE",
   AST = "AST",
+  INFERRER = "INFERRER",
 }
 
 type ViewState = {

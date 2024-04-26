@@ -7,14 +7,8 @@ import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 export const useInputs = () => {
-  const {
-    engine,
-    setEngine,
-    setInput,
-    setOutput,
-    inputSnippet,
-    outputSnippet,
-  } = useSnippetStore();
+  const { engine, setEngine, setInput, setOutput, inputSnippet, afterSnippet } =
+    useSnippetStore();
   const { internalContent, setContent } = useModStore();
 
   useEffect(() => {
@@ -23,11 +17,11 @@ export const useInputs = () => {
       JSON.stringify({
         engine,
         beforeSnippet: inputSnippet,
-        afterSnippet: outputSnippet,
+        afterSnippet: afterSnippet,
         codemodSource: internalContent ?? "",
       } satisfies State),
     );
-  }, [engine, inputSnippet, outputSnippet, internalContent]);
+  }, [engine, inputSnippet, afterSnippet, internalContent]);
 
   useEffect(() => {
     const storageEventListener = (storageEvent: StorageEvent) => {

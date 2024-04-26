@@ -1,0 +1,1 @@
+const WithIntersection: React.FC<Props1 & Props2> = ({ id, ...restProps }) => <span>{ id } < /span>

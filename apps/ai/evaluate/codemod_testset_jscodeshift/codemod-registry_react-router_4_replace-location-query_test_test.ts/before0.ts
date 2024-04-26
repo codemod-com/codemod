@@ -1,0 +1,1 @@
+const id = location.query.id;

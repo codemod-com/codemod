@@ -65,7 +65,7 @@ export const DownloadZip = () => {
       cases: [
         {
           before: snippetStore.inputSnippet,
-          after: snippetStore.outputSnippet,
+          after: snippetStore.afterSnippet,
         },
       ],
       engine,

@@ -2,6 +2,7 @@
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "linter": {
     "ignore": [
+      "./packages",
       "*.d.ts",
       "*.js",
       "dist",
@@ -12,7 +13,9 @@
       ".next",
       ".vscode",
       "build-ncc",
-      "generated"
+      "generated",
+      "*.py",
+      "./apps/ai/**"
     ],
     "rules": {
       "suspicious": {
@@ -56,7 +59,8 @@
         "useExhaustiveDependencies": "warn",
         "useYield": "warn",
         "useIsNan": "warn",
-        "useHookAtTopLevel": "error"
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "warn"
       },
       "complexity": {
         "noUselessConstructor": "off",
@@ -104,6 +108,7 @@
     "formatWithErrors": true,
     "indentStyle": "space",
     "ignore": [
+      "./packages",
       "*.d.ts",
       "input.js",
       "output.js",
@@ -114,7 +119,9 @@
       "build-ncc",
       ".next",
       ".vscode",
-      "generated"
+      "generated",
+      "*.py",
+      "./apps/ai/**"
     ]
   },
   "organizeImports": {

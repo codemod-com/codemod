@@ -1,0 +1,1 @@
+await client.enableBuildhook(siteId);

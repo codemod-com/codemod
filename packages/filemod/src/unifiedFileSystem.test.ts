@@ -11,7 +11,7 @@ import type {
 } from "./unifiedFileSystem.js";
 import { UnifiedFileSystem } from "./unifiedFileSystem.js";
 
-export const buildHashDigest = (data: string) =>
+const buildHashDigest = (data: string) =>
   createHash("ripemd160").update(data).digest("base64url");
 
 const buildUnifiedFileSystem = (volume: ReturnType<typeof Volume.fromJSON>) => {

@@ -1,13 +1,12 @@
 "use client";
 
-import { ThemeProvider } from "@context/useTheme";
 import { MainPage } from "@studio/main/index";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
   return (
-    <ThemeProvider>
+    <>
       <div className="studio">
         <MainPage />
         <Tooltip
@@ -18,7 +17,7 @@ export default function Page() {
         />
       </div>
       <Toaster />
-    </ThemeProvider>
+    </>
   );
 }
 

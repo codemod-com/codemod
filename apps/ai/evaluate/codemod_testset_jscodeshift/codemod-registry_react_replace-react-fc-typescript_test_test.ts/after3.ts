@@ -1,0 +1,1 @@
+const WithIntersection = ({ id, ...restProps }: Props1 & Props2) => <span>{ id } < /span>
