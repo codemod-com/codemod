@@ -5,7 +5,7 @@ import jscodeshift, { type API, type FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
-export const buildApi = (parser: string | undefined): API => ({
+const buildApi = (parser: string | undefined): API => ({
   j: parser ? jscodeshift.withParser(parser) : jscodeshift,
   jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
   stats: () => {

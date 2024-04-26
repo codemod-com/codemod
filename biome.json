@@ -15,7 +15,7 @@
       "build-ncc",
       "generated",
       "*.py",
-      "./apps/**"
+      "./apps/ai/**"
     ],
     "rules": {
       "suspicious": {
@@ -59,7 +59,8 @@
         "useExhaustiveDependencies": "warn",
         "useYield": "warn",
         "useIsNan": "warn",
-        "useHookAtTopLevel": "error"
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "warn"
       },
       "complexity": {
         "noUselessConstructor": "off",
@@ -120,7 +121,7 @@
       ".vscode",
       "generated",
       "*.py",
-      "./apps/**"
+      "./apps/ai/**"
     ]
   },
   "organizeImports": {

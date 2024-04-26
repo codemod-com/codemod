@@ -3,7 +3,7 @@ import { Project } from "ts-morph";
 import { describe, it } from "vitest";
 import { handleSourceFile } from "../src/index.js";
 
-export const transform = (
+const transform = (
   beforeText: string,
   afterText: string,
   extension: ".js" | ".tsx",
