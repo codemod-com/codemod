@@ -276,11 +276,10 @@ export class EngineService {
 
       if (codemodEngineNodeLocated) {
         this.__fetchCodemodsIntervalId = setInterval(
-          async () => {
-            await this.__fetchCodemods();
-          },
+          this.__fetchCodemods,
           5 * 60 * 1000, // 5 mins
         );
+        this.__fetchCodemods();
         clearInterval(codemodEnginePollingIntervalId);
       }
 

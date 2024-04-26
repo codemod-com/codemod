@@ -13,17 +13,13 @@ export const selectMainWebviewViewProps = (
   executionQueue: ReadonlyArray<CodemodHash>,
   codemodEngineNodeLocated: boolean,
 ) => {
-  if (rootUri === null) {
-    return null;
-  }
-
   if (state.activeTabId === "codemods") {
     return {
       activeTabId: state.activeTabId,
       toaster: state.toaster,
       searchPhrase: state.codemodDiscoveryView.searchPhrase,
       autocompleteItems: (autocompleteItems ?? []).map((item) =>
-        absoluteToRelativePath(item, rootUri.fsPath ?? ""),
+        absoluteToRelativePath(item, rootUri?.fsPath ?? ""),
       ),
       codemodTree: selectCodemodTree(
         state,
