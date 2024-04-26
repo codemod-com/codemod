@@ -38,6 +38,8 @@ uvicorn app:app
 ```
 Server needs to run ***before*** frontend app is loaded (refresh the app once the connection with ws is established)
 
+After each server crash a UI needs to be refreshed.
+
 ## Running the Evaluation
 To run the evaluation on the full registry, run the following commands:
 ```

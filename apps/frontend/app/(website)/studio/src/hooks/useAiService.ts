@@ -1,7 +1,6 @@
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 
-type WsStatus = "open" | "closed" | "error";
-type ExecutionStatus = "not started" | "processing";
+type ExecutionStatus = "open" | "in-progress" | "error" | "finished";
 const aiWsUrl = "ws://127.0.0.1:8000/ws";
 
 type WSResponse = {
@@ -19,6 +18,11 @@ export const useAiService = () => {
   const [wsStatus, setWsStatus] = useState("closed");
   const { inputSnippet, afterSnippet } = useSnippetStore();
   const { setContent } = useCodemodOutputStore();
+  const [startReady, setStartReady] = useState(false);
+
+  useEffect(() => {
+    console.log({ inputSnippet });
+  }, [inputSnippet]);
   const startOver = () => {
     setCodemod(null);
     setMessageHistory([]);
@@ -40,11 +44,10 @@ export const useAiService = () => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data) as WSResponse;
       setMessage(data.execution_status);
-      setWsStatus("processing");
       setMessageHistory((prev) => [...prev, data]);
       if (data.codemod) {
         setCodemod(data.codemod);
-        setWsStatus("finished");
+        setWsStatus(data.execution_status);
       }
     };
 

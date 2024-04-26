@@ -1,0 +1,32 @@
+
+import type { API, FileInfo, Options } from 'jscodeshift';
+
+function transform(file: FileInfo, api: API, options: Options): string | undefined {
+    const j = api.jscodeshift;
+
+    const root = j(file.source);
+
+    let dirtyFlag = false;
+
+    root.find(j.FunctionDeclaration, {
+        id: { name: 'mapStateToProps' },
+    }).forEach((path) => {
+        const params = path.value.params;
+        if (params.length === 1) {
+            const [state] = params;
+            if (j.Identifier.check(state)) {
+                state.typeAnnotation = j.tsTypeAnnotation(j.tsTypeReference(j.identifier('State')));
+            }
+        }
+
+        dirtyFlag = true;
+    });
+
+    if (!dirtyFlag) {
+        return undefined;
+    }
+
+    return root.toSource(options);
+}
+
+export default transform;

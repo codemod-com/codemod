@@ -51,10 +51,7 @@ export const AiButton = () => {
   const history = messageHistory.map((item) => (
     <div key={item.message} className="pt-5">
       <p>
-        <strong>execution status:</strong> {item.execution_status}
-      </p>
-      <p>
-        <strong>message: </strong>
+        <strong>action log: </strong>
         {item.message}
       </p>
     </div>

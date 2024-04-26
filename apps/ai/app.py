@@ -36,6 +36,7 @@ async def websocket_status(websocket: WebSocket):
             create_ts_file('tests/after_tmp.ts', after)
             async def logger(message):
                 print(message)
+                await asyncio.sleep(0)
                 await websocket.send_json(message)
             await generate_codemod('tests/before_tmp.ts', 'tests/after_tmp.ts', '.temp', configs.cmd_args.max_correction_attempts, configs.cmd_args.llm_engine, configs.cmd_args.codemod_engine, logger)
         except WebSocketDisconnect as e:
