@@ -1,8 +1,6 @@
 import type { PrinterBlueprint } from "@codemod-com/printer";
 import type { FileSystem } from "@codemod-com/utilities";
-import axios from "axios";
-
-const CACHE_EVICTION_THRESHOLD = 24 * 60 * 60 * 1000;
+import axios, { isAxiosError, type AxiosResponse } from "axios";
 
 export type FileDownloadServiceBlueprint = Readonly<{
   download(url: string, path: string): Promise<Buffer>;
@@ -17,20 +15,19 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 
   public async download(url: string, path: string): Promise<Buffer> {
     if (!this._disableCache) {
-      try {
-        const stats = await this._ifs.promises.stat(path);
+      const localCodemodLastModified =
+        await this.__getLocalFileLastModified(path);
+      const remoteCodemodLastModified =
+        await this.__getRemoteFileLastModified(url);
 
-        const mtime = stats.mtime.getTime();
+      // read from cache only if there is no newer remote file
+      if (
+        remoteCodemodLastModified !== null &&
+        localCodemodLastModified > remoteCodemodLastModified
+      ) {
+        const tDataOut = await this._ifs.promises.readFile(path);
 
-        const now = Date.now();
-
-        if (now - mtime < CACHE_EVICTION_THRESHOLD) {
-          const tDataOut = await this._ifs.promises.readFile(path);
-
-          return Buffer.from(tDataOut);
-        }
-      } catch (error) {
-        /* empty */
+        return Buffer.from(tDataOut);
       }
     }
 
@@ -43,5 +40,37 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
     await this._ifs.promises.writeFile(path, buffer);
 
     return buffer;
+  }
+
+  async __getLocalFileLastModified(path: string): Promise<number> {
+    const stats = await this._ifs.promises.stat(path);
+    return stats.mtime.getTime();
+  }
+  async __getRemoteFileLastModified(url: string): Promise<number | null> {
+    let response: AxiosResponse;
+
+    try {
+      response = await axios.head(url, {
+        timeout: 15000,
+      });
+    } catch (error) {
+      if (!isAxiosError(error)) {
+        throw error;
+      }
+
+      const status = error.response?.status;
+
+      if (status === 403) {
+        throw new Error(
+          `Could not make a request to ${url}: request forbidden`,
+        );
+      }
+
+      throw new Error(`Could not make a request to ${url}`);
+    }
+
+    const lastModified = response.headers["last-modified"];
+
+    return lastModified ? Date.parse(lastModified) : null;
   }
 }

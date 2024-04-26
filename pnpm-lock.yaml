@@ -390,10 +390,10 @@ importers:
         version: 1.0.7(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/code-input':
         specifier: ^4.1.3
-        version: 4.1.4(@babel/runtime@7.24.4)(@codemirror/lint@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 4.1.4(@babel/runtime@7.24.4)(@codemirror/lint@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/orderable-document-list':
         specifier: ^1.2.1
-        version: 1.2.1(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 1.2.1(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/preview-url-secret':
         specifier: ^1.6.3
         version: 1.6.11(@sanity/client@6.15.20(debug@4.3.4))
@@ -402,7 +402,7 @@ importers:
         version: 1.9.14(@sanity/client@6.15.20(debug@4.3.4))(react@18.2.0)
       '@sanity/table':
         specifier: ^1.1.2
-        version: 1.1.2(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 1.1.2(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/vision':
         specifier: ^3.29.1
         version: 3.38.0(@babel/runtime@7.24.4)(@codemirror/lint@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
@@ -414,10 +414,10 @@ importers:
         version: 0.7.3(typescript@5.3.3)(zod@3.22.3)
       '@tailwindcss/typography':
         specifier: 0.5.10
-        version: 0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)))
+        version: 0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)))
       '@tinloof/sanity-studio':
         specifier: ^1.0.0
-        version: 1.0.2(@sanity/client@6.15.20(debug@4.3.4))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react-is@18.2.0)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 1.0.2(@sanity/client@6.15.20(debug@4.3.4))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react-is@18.2.0)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@tinloof/sanity-web':
         specifier: ^0.1.0
         version: 0.1.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -504,7 +504,7 @@ importers:
         version: 4.4.1(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       next-sanity:
         specifier: ^8.5.0
-        version: 8.5.5(@sanity/client@6.15.20(debug@4.3.4))(@sanity/icons@2.11.8(react@18.2.0))(@sanity/types@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.2(@babel/core@7.24.4)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.10)
+        version: 8.5.5(@sanity/client@6.15.20(debug@4.3.4))(@sanity/icons@2.11.8(react@18.2.0))(@sanity/types@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.2(@babel/core@7.24.4)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.10)
       node-fetch:
         specifier: ^3.3.2
         version: 3.3.2
@@ -516,7 +516,7 @@ importers:
         version: 2.1.0
       postcss-multiple-tailwind:
         specifier: ^1.0.1
-        version: 1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)))
+        version: 1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)))
       prettier:
         specifier: ^2.8.8
         version: 2.8.8
@@ -579,19 +579,19 @@ importers:
         version: 5.1.1
       sanity:
         specifier: ^3.36.4
-        version: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+        version: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       sanity-plugin-asset-source-ogimage:
         specifier: ^2.0.0-2
-        version: 2.0.0-2(@sanity/icons@2.11.8(react@18.2.0))(@sanity/image-url@1.0.2)(@sanity/mutator@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))
+        version: 2.0.0-2(@sanity/icons@2.11.8(react@18.2.0))(@sanity/image-url@1.0.2)(@sanity/mutator@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))
       sanity-plugin-documents-pane:
         specifier: ^2.2.1
-        version: 2.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 2.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       sanity-plugin-media:
         specifier: ^2.2.5
-        version: 2.2.5(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 2.2.5(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       sanity-plugin-mux-input:
         specifier: ^2.2.4
-        version: 2.3.4(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+        version: 2.3.4(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       server-only:
         specifier: 0.0.1
         version: 0.0.1
@@ -724,13 +724,50 @@ importers:
         version: 4.0.2(webpack@5.91.0(esbuild@0.20.2))
       tailwindcss:
         specifier: 3.4.1
-        version: 3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))
+        version: 3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))
       tailwindcss-animate:
         specifier: ^1.0.7
-        version: 1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)))
+        version: 1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)))
       typescript:
         specifier: 5.3.3
         version: 5.3.3
+
+  apps/task-manager:
+    dependencies:
+      axios:
+        specifier: ^1.6.8
+        version: 1.6.8
+      bullmq:
+        specifier: ^5.7.2
+        version: 5.7.5
+      dotenv:
+        specifier: ^16.4.5
+        version: 16.4.5
+      parse-github-url:
+        specifier: 1.0.2
+        version: 1.0.2
+      simple-git:
+        specifier: ^3.24.0
+        version: 3.24.0
+      valibot:
+        specifier: ^0.24.1
+        version: 0.24.1
+    devDependencies:
+      '@types/node':
+        specifier: ^20.12.7
+        version: 20.12.7
+      esbuild:
+        specifier: ^0.20.2
+        version: 0.20.2
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.4.5)
+      tsx:
+        specifier: ^4.7.2
+        version: 4.7.3
+      typescript:
+        specifier: ^5.4.5
+        version: 5.4.5
 
   apps/vsce:
     dependencies:
@@ -978,19 +1015,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/Go/remove-unnecessary-nested-block: {}
 
@@ -1009,7 +1046,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
@@ -1031,7 +1068,7 @@ importers:
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
@@ -1090,19 +1127,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/cal.com/app-directory-boilerplate-calcom:
     dependencies:
@@ -1133,7 +1170,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -1145,13 +1182,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/cal.com/generate-metadata-tests-calcom:
     devDependencies:
@@ -1166,7 +1203,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -1178,13 +1215,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/cal.com/generate-url-patterns:
     devDependencies:
@@ -1199,7 +1236,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -1211,13 +1248,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/app-controller-router-props:
     devDependencies:
@@ -1229,19 +1266,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/array-wrapper:
     devDependencies:
@@ -1253,19 +1290,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/convert-module-for-to-setup-test:
     devDependencies:
@@ -1277,19 +1314,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/cp-property:
     devDependencies:
@@ -1301,19 +1338,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/cp-property-map:
     devDependencies:
@@ -1325,19 +1362,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/cp-volatile:
     devDependencies:
@@ -1349,19 +1386,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/deprecate-merge:
     devDependencies:
@@ -1373,19 +1410,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/deprecate-router-events:
     devDependencies:
@@ -1397,19 +1434,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/ember-jquery-legacy:
     devDependencies:
@@ -1421,19 +1458,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/es5-getter-ember-codemod:
     devDependencies:
@@ -1445,19 +1482,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/fpe-computed:
     devDependencies:
@@ -1469,19 +1506,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/fpe-observes:
     devDependencies:
@@ -1493,19 +1530,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/fpe-on:
     devDependencies:
@@ -1517,19 +1554,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/jquery-apis:
     devDependencies:
@@ -1541,19 +1578,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/jquery-event:
     devDependencies:
@@ -1565,19 +1602,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/notify-property-change:
     devDependencies:
@@ -1589,19 +1626,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/ember/5/object-new-constructor:
     devDependencies:
@@ -1613,19 +1650,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/eslint/biome/migrate-rules:
     devDependencies:
@@ -1640,7 +1677,7 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       json-schema-to-typescript:
         specifier: ^13.1.2
         version: 13.1.2
@@ -1649,7 +1686,7 @@ importers:
         version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
@@ -1658,7 +1695,7 @@ importers:
         version: 0.24.1
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/history/4/replace-state-object:
     devDependencies:
@@ -1670,19 +1707,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/history/4/use-back:
     devDependencies:
@@ -1694,19 +1731,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/history/4/use-block:
     devDependencies:
@@ -1718,19 +1755,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/history/4/use-location:
     devDependencies:
@@ -1742,19 +1779,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/i18n:
     devDependencies:
@@ -1769,7 +1806,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -1781,13 +1818,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/add-deprecation-comment:
     devDependencies:
@@ -1799,19 +1836,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/nest-from-js:
     devDependencies:
@@ -1823,19 +1860,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/remove-from-js:
     devDependencies:
@@ -1847,19 +1884,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/remove-import:
     devDependencies:
@@ -1871,19 +1908,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/remove-to-js:
     devDependencies:
@@ -1895,19 +1932,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/replace-get:
     devDependencies:
@@ -1919,19 +1956,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/replace-get-in:
     devDependencies:
@@ -1943,19 +1980,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/replace-merge:
     devDependencies:
@@ -1967,19 +2004,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/replace-set:
     devDependencies:
@@ -1991,19 +2028,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/0/replace-set-in:
     devDependencies:
@@ -2015,19 +2052,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/4/isterable-to-iscollection:
     devDependencies:
@@ -2039,19 +2076,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/4/map-to-array:
     devDependencies:
@@ -2063,19 +2100,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/immutable/4/rename-to-seq:
     devDependencies:
@@ -2087,19 +2124,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/intuita/migrate-codemod-registry:
     devDependencies:
@@ -2114,7 +2151,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -2126,13 +2163,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/jest/vitest:
     devDependencies:
@@ -2144,19 +2181,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/mocha/vitest/migrate-configuration:
     dependencies:
@@ -2175,7 +2212,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -2184,13 +2221,13 @@ importers:
         version: 4.6.0(quill-delta@5.1.0)(rxjs@7.8.1)(tslib@2.6.2)
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/mocha/vitest/migrate-tests:
     devDependencies:
@@ -2202,19 +2239,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/mocha/vitest/recipe: {}
 
@@ -2225,19 +2262,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/ctx-fetch:
     devDependencies:
@@ -2246,19 +2283,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/imports:
     devDependencies:
@@ -2267,19 +2304,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/lifecycle-events-signature:
     devDependencies:
@@ -2288,19 +2325,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/print-handler:
     devDependencies:
@@ -2309,19 +2346,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/req-passthrough:
     devDependencies:
@@ -2330,19 +2367,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/request-changes:
     devDependencies:
@@ -2351,19 +2388,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/response-usages:
     devDependencies:
@@ -2372,19 +2409,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/type-args:
     devDependencies:
@@ -2393,19 +2430,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/msw/2/upgrade-recipe: {}
 
@@ -2419,19 +2456,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.1/addBuildEventContext:
     devDependencies:
@@ -2443,19 +2480,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.1/addBuildEventHandler:
     devDependencies:
@@ -2467,19 +2504,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.1/disableBuildEventHandlers:
     devDependencies:
@@ -2491,19 +2528,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.1/enableBuildEventHandlers:
     devDependencies:
@@ -2515,19 +2552,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.1/exportZod:
     devDependencies:
@@ -2539,19 +2576,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.4/addApiHandler:
     devDependencies:
@@ -2563,19 +2600,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/createEnvironmentVariable:
     devDependencies:
@@ -2587,19 +2624,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/createOrUpdateVariable:
     devDependencies:
@@ -2611,19 +2648,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/createOrUpdateVariables:
     devDependencies:
@@ -2635,19 +2672,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/deleteEnvironmentVariable:
     devDependencies:
@@ -2659,19 +2696,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/deleteEnvironmentVariables:
     devDependencies:
@@ -2683,19 +2720,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/getEnvironmentVariables:
     devDependencies:
@@ -2707,19 +2744,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/netlify-sdk-0.8.5-recipe: {}
 
@@ -2733,19 +2770,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/netlify-sdk/0.8.5/updateEnvironmentVariable:
     devDependencies:
@@ -2757,19 +2794,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next-i18next/copy-keys:
     devDependencies:
@@ -2784,7 +2821,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -2796,13 +2833,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/ab-test:
     devDependencies:
@@ -2817,7 +2854,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -2829,13 +2866,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/app-directory-boilerplate:
     dependencies:
@@ -2866,7 +2903,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -2878,13 +2915,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/app-router-recipe: {}
 
@@ -2898,19 +2935,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/comment-deletable-files:
     devDependencies:
@@ -2922,19 +2959,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/move-css-in-js-styles:
     dependencies:
@@ -2950,19 +2987,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/new-image-experimental:
     devDependencies:
@@ -2974,19 +3011,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/new-link:
     devDependencies:
@@ -2998,19 +3035,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/next-image-to-legacy-image:
     devDependencies:
@@ -3022,19 +3059,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/remove-get-static-props:
     devDependencies:
@@ -3049,7 +3086,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: 0.14.0
         version: 0.14.0(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -3061,13 +3098,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/remove-next-export:
     devDependencies:
@@ -3082,7 +3119,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -3094,13 +3131,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/replace-api-routes:
     devDependencies:
@@ -3115,7 +3152,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -3127,13 +3164,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/replace-next-head:
     dependencies:
@@ -3167,7 +3204,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -3179,13 +3216,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/replace-next-router:
     devDependencies:
@@ -3194,19 +3231,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/replace-use-search-params:
     devDependencies:
@@ -3221,7 +3258,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -3233,13 +3270,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/13/upsert-use-client-directive:
     devDependencies:
@@ -3248,19 +3285,19 @@ importers:
         version: link:../../../../utilities
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       ts-morph:
         specifier: ^19.0.0
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/14/metadata-to-viewport-export:
     devDependencies:
@@ -3272,19 +3309,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/next/14/next-og-import:
     devDependencies:
@@ -3296,19 +3333,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-native/74/migrate-to-fire-interval-seconds:
     devDependencies:
@@ -3392,19 +3429,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/add-exact-prop:
     devDependencies:
@@ -3416,19 +3453,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/browser-router:
     devDependencies:
@@ -3440,19 +3477,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/create-hash-history:
     devDependencies:
@@ -3464,19 +3501,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/hash-router:
     devDependencies:
@@ -3488,19 +3525,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/index-route:
     devDependencies:
@@ -3512,19 +3549,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/remove-with-props:
     devDependencies:
@@ -3536,19 +3573,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/rename-imports:
     devDependencies:
@@ -3560,19 +3597,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/replace-location-query:
     devDependencies:
@@ -3584,19 +3621,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/replace-nested-routes:
     devDependencies:
@@ -3608,19 +3645,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/replace-param-prop:
     devDependencies:
@@ -3632,19 +3669,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/use-history-hook:
     devDependencies:
@@ -3656,7 +3693,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       esbuild:
         specifier: 0.19.5
         version: 0.19.5
@@ -3665,13 +3702,13 @@ importers:
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/4/wrap-with-switch:
     devDependencies:
@@ -3683,19 +3720,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/compat-route:
     devDependencies:
@@ -3707,19 +3744,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/compat-router:
     devDependencies:
@@ -3731,19 +3768,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/link-to-props:
     devDependencies:
@@ -3755,19 +3792,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/match-path-arguments:
     devDependencies:
@@ -3779,19 +3816,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/navlink-exact-end:
     devDependencies:
@@ -3803,19 +3840,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/redirect-to-navigate:
     devDependencies:
@@ -3827,19 +3864,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/remove-active-classname:
     devDependencies:
@@ -3851,19 +3888,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/remove-active-style:
     devDependencies:
@@ -3875,19 +3912,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/remove-compat-router:
     devDependencies:
@@ -3899,19 +3936,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/remove-go-hooks:
     devDependencies:
@@ -3923,19 +3960,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/remove-redirect-inside-switch:
     devDependencies:
@@ -3947,19 +3984,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/rename-compat-imports:
     devDependencies:
@@ -3971,19 +4008,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/static-router-imports:
     devDependencies:
@@ -3995,19 +4032,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/use-location:
     devDependencies:
@@ -4019,19 +4056,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/use-navigate:
     devDependencies:
@@ -4043,19 +4080,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/use-params:
     devDependencies:
@@ -4067,19 +4104,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react-router/6/use-route-match:
     devDependencies:
@@ -4091,19 +4128,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/19/remove-context-provider:
     devDependencies:
@@ -4115,19 +4152,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/19/remove-forward-ref:
     devDependencies:
@@ -4139,19 +4176,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/19/remove-memoization-hooks:
     devDependencies:
@@ -4163,19 +4200,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/19/replace-act-import:
     devDependencies:
@@ -4223,19 +4260,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/prop-types-typescript:
     devDependencies:
@@ -4247,19 +4284,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/react/replace-react-fc-typescript:
     devDependencies:
@@ -4271,19 +4308,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/redwoodjs/core/4/auth-decoder:
     devDependencies:
@@ -4295,19 +4332,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/redwoodjs/core/4/redwood-apollo-provider:
     devDependencies:
@@ -4319,19 +4356,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/redwoodjs/core/4/router-use-auth:
     devDependencies:
@@ -4343,19 +4380,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/redwoodjs/core/4/use-armor:
     devDependencies:
@@ -4367,19 +4404,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/remove-unused-feature-flags-2:
     devDependencies:
@@ -4394,7 +4431,7 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
@@ -4406,13 +4443,13 @@ importers:
         version: 19.0.0
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/typescript/remove-public-modifier:
     devDependencies:
@@ -4427,19 +4464,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/codemods/typescript/use-template-literals:
     devDependencies:
@@ -4454,19 +4491,19 @@ importers:
         version: 0.11.11
       '@vitest/coverage-v8':
         specifier: ^1.0.1
-        version: 1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+        version: 1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.1(@babel/preset-env@7.24.4(@babel/core@7.24.4))
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
         version: 5.3.3
       vitest:
         specifier: ^1.0.1
-        version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+        version: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
 
   packages/filemod:
     devDependencies:
@@ -7057,6 +7094,12 @@ packages:
   '@kurkle/color@0.3.2':
     resolution: {integrity: sha512-fuscdXJ9G1qb7W8VdHi+IwRqij3lBkosAm4ydQtEmbY58OzHXqQhvlxqEkoz0yssNVn38bcpRWgA9PP+OGoisw==}
 
+  '@kwsites/file-exists@1.1.1':
+    resolution: {integrity: sha512-m9/5YGR18lIwxSFDwfE3oA7bWuq9kdau6ugN4H2rJeyhFQZcG9AgSHkQtSD15a8WvTgfz9aikZMrKPHvbpqFiw==}
+
+  '@kwsites/promise-deferred@1.1.1':
+    resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
+
   '@langchain/community@0.0.29':
     resolution: {integrity: sha512-7KCr6JjmWfX26eNGYoDcsSx2PqFcrCt7g3Zy3YwFrjaCIob9ivsx59IXiOd4TgvKJmTiP3RjMTz55cDj7Es63g==}
     engines: {node: '>=18'}
@@ -9340,6 +9383,9 @@ packages:
 
   '@types/node@20.12.4':
     resolution: {integrity: sha512-E+Fa9z3wSQpzgYQdYmme5X3OTuejnnTx88A6p6vkkJosR3KBz+HpE3kqNm98VE6cfLFcISx7zW7MsJkH6KwbTw==}
+
+  '@types/node@20.12.7':
+    resolution: {integrity: sha512-wq0cICSkRLVaf3UGLMGItu/PtdY7oaXaI/RVU+xliKVOtRna3PRY57ZDfztpDL0n11vfymMUnXv8QwYCO7L1wg==}
 
   '@types/node@20.8.5':
     resolution: {integrity: sha512-SPlobFgbidfIeOYlzXiEjSYeIJiOCthv+9tSQVpvk4PAdIIc+2SmjNVzWXk9t0Y7dl73Zdf+OgXKHX9XtkqUpw==}
@@ -15724,6 +15770,9 @@ packages:
   simple-get@4.0.1:
     resolution: {integrity: sha512-brv7p5WgH0jmQJr1ZDDfKDOSeWWg+OVypG99A/5vYGPqJ6pxiaHLy8nxtFjBA7oMa01ebA9gfh1uMCFqOuXxvA==}
 
+  simple-git@3.24.0:
+    resolution: {integrity: sha512-QqAKee9Twv+3k8IFOFfPB2hnk6as6Y6ACUpwCtQvRYBAes23Wv3SZlHVobAzqcE8gfsisCvPw3HGW3HYM+VYYw==}
+
   simple-html-tokenizer@0.5.11:
     resolution: {integrity: sha512-C2WEK/Z3HoSFbYq8tI7ni3eOo/NneSPRoPpcM7WdLjFOArFuyXEjAoCdOC3DgMfRyziZQ1hCNR4mrNdWEvD0og==}
 
@@ -16455,6 +16504,11 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
+  tsx@4.7.3:
+    resolution: {integrity: sha512-+fQnMqIp/jxZEXLcj6WzYy9FhcS5/Dfk8y4AtzJ6ejKcKqmfTF8Gso/jtrzDggCF2zTU20gJa6n8XqPYwDAUYQ==}
+    engines: {node: '>=18.0.0'}
+    hasBin: true
+
   tunnel-agent@0.6.0:
     resolution: {integrity: sha512-McnNiV1l8RYeY8tBgEpuodCC1mLUdbSN+CYBL7kJsJNInOP8UjDDEwdk6Mw60vdLLrr5NHKZhMAOSrR2NZuQ+w==}
 
@@ -16594,6 +16648,11 @@ packages:
 
   typescript@5.3.3:
     resolution: {integrity: sha512-pXWcraxM0uxAS+tN0AG/BF2TyqmHO014Z070UsJ+pFvYuRSq8KH8DmWpnbXe0pEPDHXZV3FcAbJkijJ5oNEnWw==}
+    engines: {node: '>=14.17'}
+    hasBin: true
+
+  typescript@5.4.5:
+    resolution: {integrity: sha512-vcI4UpRgg81oIRUFwR0WSIHKt11nJ7SAVlYNIu+QpqeyXP+gpQJy/Z4+F0aGxSE4MqwjyXvW/TzgkLAx2AGHwQ==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -20041,6 +20100,14 @@ snapshots:
 
   '@kurkle/color@0.3.2': {}
 
+  '@kwsites/file-exists@1.1.1':
+    dependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@kwsites/promise-deferred@1.1.1': {}
+
   '@langchain/community@0.0.29(@aws-crypto/sha256-js@3.0.0)(@aws-sdk/credential-provider-node@3.549.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.2.1)(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(encoding@0.1.13)(openai@4.23.0(encoding@0.1.13)))(encoding@0.1.13)(ioredis@5.4.1)(jsdom@23.2.0)(lodash@4.17.21)(pg@8.11.3)(replicate@0.25.2)(ws@8.16.0)':
     dependencies:
       '@langchain/core': 0.1.29
@@ -21203,7 +21270,7 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
-  '@sanity/code-input@4.1.4(@babel/runtime@7.24.4)(@codemirror/lint@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@sanity/code-input@4.1.4(@babel/runtime@7.24.4)(@codemirror/lint@6.5.0)(@codemirror/theme-one-dark@6.1.2)(@lezer/common@1.2.1)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@codemirror/autocomplete': 6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1)
       '@codemirror/commands': 6.5.0
@@ -21227,7 +21294,7 @@ snapshots:
       '@uiw/react-codemirror': 4.21.25(@babel/runtime@7.24.4)(@codemirror/autocomplete@6.16.0(@codemirror/language@6.10.1)(@codemirror/state@6.4.1)(@codemirror/view@6.26.3)(@lezer/common@1.2.1))(@codemirror/language@6.10.1)(@codemirror/lint@6.5.0)(@codemirror/search@6.5.6)(@codemirror/state@6.4.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.26.3)(codemirror@6.0.1(@lezer/common@1.2.1))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - '@babel/runtime'
@@ -21271,7 +21338,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
 
-  '@sanity/document-internationalization@2.1.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@sanity/document-internationalization@2.1.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -21279,9 +21346,9 @@ snapshots:
       '@sanity/uuid': 3.0.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
-      sanity-plugin-internationalized-array: 1.10.9(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
-      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity-plugin-internationalized-array: 1.10.9(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - debug
@@ -21378,7 +21445,7 @@ snapshots:
       react-copy-to-clipboard: 5.1.0(react@18.2.0)
       react-dom: 18.2.0(react@18.2.0)
 
-  '@sanity/language-filter@3.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@sanity/language-filter@3.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -21386,7 +21453,7 @@ snapshots:
       '@sanity/util': 3.38.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - debug
@@ -21428,7 +21495,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@sanity/orderable-document-list@1.2.1(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@sanity/orderable-document-list@1.2.1(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@hello-pangea/dnd': 16.6.0(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/icons': 2.11.8(react@18.2.0)
@@ -21438,8 +21505,8 @@ snapshots:
       prop-types: 15.8.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
-      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - '@types/react'
@@ -21564,14 +21631,14 @@ snapshots:
       - debug
       - supports-color
 
-  '@sanity/table@1.1.2(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@sanity/table@1.1.2(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/ui': 1.9.3(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
     transitivePeerDependencies:
       - react-is
       - styled-components
@@ -22175,13 +22242,13 @@ snapshots:
     optionalDependencies:
       typescript: 5.3.3
 
-  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)))':
+  '@tailwindcss/typography@0.5.10(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)))':
     dependencies:
       lodash.castarray: 4.4.0
       lodash.isplainobject: 4.0.6
       lodash.merge: 4.6.2
       postcss-selector-parser: 6.0.10
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))
 
   '@tanem/react-nprogress@5.0.51(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
@@ -22252,10 +22319,10 @@ snapshots:
       '@babel/runtime': 7.23.9
       '@testing-library/dom': 9.3.4
 
-  '@tinloof/sanity-studio@1.0.2(@sanity/client@6.15.20(debug@4.3.4))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react-is@18.2.0)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+  '@tinloof/sanity-studio@1.0.2(@sanity/client@6.15.20(debug@4.3.4))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react-is@18.2.0)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
     dependencies:
       '@sanity/asset-utils': 1.3.0
-      '@sanity/document-internationalization': 2.1.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      '@sanity/document-internationalization': 2.1.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -22267,7 +22334,7 @@ snapshots:
       nanoid: 5.0.7
       react: 18.2.0
       react-rx: 2.1.3(react@18.2.0)(rxjs@7.8.1)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
     transitivePeerDependencies:
       - '@sanity/client'
       - debug
@@ -22509,7 +22576,7 @@ snapshots:
   '@types/body-parser@1.19.5':
     dependencies:
       '@types/connect': 3.4.38
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/chai@4.3.11': {}
 
@@ -22517,7 +22584,7 @@ snapshots:
 
   '@types/connect@3.4.38':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/cookiejar@2.1.5': {}
 
@@ -22526,7 +22593,7 @@ snapshots:
       '@types/connect': 3.4.38
       '@types/express': 4.17.21
       '@types/keygrip': 1.0.6
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/debug@4.1.12':
     dependencies:
@@ -22556,7 +22623,7 @@ snapshots:
 
   '@types/express-serve-static-core@4.17.43':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       '@types/qs': 6.9.11
       '@types/range-parser': 1.2.7
       '@types/send': 0.17.4
@@ -22578,12 +22645,12 @@ snapshots:
   '@types/glob@7.2.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/glob@8.1.0':
     dependencies:
       '@types/minimatch': 5.1.2
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/hast@2.3.10':
     dependencies:
@@ -22667,12 +22734,12 @@ snapshots:
 
   '@types/node-fetch@2.6.11':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       form-data: 4.0.0
 
   '@types/node-fetch@2.6.2':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       form-data: 3.0.1
 
   '@types/node@16.18.6': {}
@@ -22699,6 +22766,10 @@ snapshots:
     dependencies:
       undici-types: 5.26.5
 
+  '@types/node@20.12.7':
+    dependencies:
+      undici-types: 5.26.5
+
   '@types/node@20.8.5':
     dependencies:
       undici-types: 5.25.3
@@ -22713,13 +22784,13 @@ snapshots:
 
   '@types/parse-github-url@1.0.3':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/parse-json@4.0.2': {}
 
   '@types/pg@8.11.2':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       pg-protocol: 1.6.0
       pg-types: 4.0.2
 
@@ -22785,7 +22856,7 @@ snapshots:
 
   '@types/readable-stream@4.0.10':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       safe-buffer: 5.1.2
 
   '@types/retry@0.12.0': {}
@@ -22799,13 +22870,13 @@ snapshots:
   '@types/send@0.17.4':
     dependencies:
       '@types/mime': 1.3.5
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/serve-static@1.15.5':
     dependencies:
       '@types/http-errors': 2.0.4
       '@types/mime': 3.0.4
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/shallow-equals@1.0.3': {}
 
@@ -22819,7 +22890,7 @@ snapshots:
     dependencies:
       '@types/cookiejar': 2.1.5
       '@types/methods': 1.1.4
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/supertest@6.0.2':
     dependencies:
@@ -22828,11 +22899,11 @@ snapshots:
 
   '@types/tar-stream@3.1.3':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/tar@6.1.11':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       minipass: 4.2.8
 
   '@types/testing-library__jest-dom@5.14.9':
@@ -22843,7 +22914,7 @@ snapshots:
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   '@types/unist@2.0.10': {}
 
@@ -22964,14 +23035,14 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitejs/plugin-react@4.2.1(vite@4.5.3(@types/node@20.12.4)(terser@5.27.0))':
+  '@vitejs/plugin-react@4.2.1(vite@4.5.3(@types/node@20.12.7)(terser@5.27.0))':
     dependencies:
       '@babel/core': 7.24.4
       '@babel/plugin-transform-react-jsx-self': 7.23.3(@babel/core@7.24.4)
       '@babel/plugin-transform-react-jsx-source': 7.23.3(@babel/core@7.24.4)
       '@types/babel__core': 7.20.5
       react-refresh: 0.14.0
-      vite: 4.5.3(@types/node@20.12.4)(terser@5.27.0)
+      vite: 4.5.3(@types/node@20.12.7)(terser@5.27.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -23032,7 +23103,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@vitest/coverage-v8@1.2.2(vitest@1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))':
+  '@vitest/coverage-v8@1.2.2(vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0))':
     dependencies:
       '@ampproject/remapping': 2.2.1
       '@bcoe/v8-coverage': 0.2.3
@@ -23047,7 +23118,7 @@ snapshots:
       std-env: 3.7.0
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
-      vitest: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+      vitest: 1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -26792,7 +26863,7 @@ snapshots:
 
   jest-worker@27.5.1:
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       merge-stream: 2.0.0
       supports-color: 8.1.1
 
@@ -28503,7 +28574,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  next-sanity@8.5.5(@sanity/client@6.15.20(debug@4.3.4))(@sanity/icons@2.11.8(react@18.2.0))(@sanity/types@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.2(@babel/core@7.24.4)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.10):
+  next-sanity@8.5.5(@sanity/client@6.15.20(debug@4.3.4))(@sanity/icons@2.11.8(react@18.2.0))(@sanity/types@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.2(@babel/core@7.24.4)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.10):
     dependencies:
       '@portabletext/react': 3.0.18(react@18.2.0)
       '@sanity/client': 6.15.20
@@ -28517,7 +28588,7 @@ snapshots:
       history: 5.3.0
       next: 14.2.2(@babel/core@7.24.4)(@opentelemetry/api@1.7.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       react: 18.2.0
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - '@remix-run/react'
@@ -29195,18 +29266,18 @@ snapshots:
       camelcase-css: 2.0.1
       postcss: 8.4.35
 
-  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)):
+  postcss-load-config@4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)):
     dependencies:
       lilconfig: 3.0.0
       yaml: 2.3.4
     optionalDependencies:
       postcss: 8.4.35
-      ts-node: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+      ts-node: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
 
-  postcss-multiple-tailwind@1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))):
+  postcss-multiple-tailwind@1.0.1(postcss@8.4.35)(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))):
     dependencies:
       postcss: 8.4.35
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))
 
   postcss-nested@6.0.1(postcss@8.4.35):
     dependencies:
@@ -30324,7 +30395,7 @@ snapshots:
     dependencies:
       '@sanity/diff-match-patch': 3.1.1
 
-  sanity-plugin-asset-source-ogimage@2.0.0-2(@sanity/icons@2.11.8(react@18.2.0))(@sanity/image-url@1.0.2)(@sanity/mutator@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)):
+  sanity-plugin-asset-source-ogimage@2.0.0-2(@sanity/icons@2.11.8(react@18.2.0))(@sanity/image-url@1.0.2)(@sanity/mutator@3.38.0)(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)):
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/image-url': 1.0.2
@@ -30336,9 +30407,9 @@ snapshots:
       is-hotkey: 0.2.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
 
-  sanity-plugin-documents-pane@2.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+  sanity-plugin-documents-pane@2.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -30350,29 +30421,29 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
       react-fast-compare: 3.2.2
       rxjs: 7.8.1
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
-      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity-plugin-utils: 1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
     transitivePeerDependencies:
       - debug
 
-  sanity-plugin-internationalized-array@1.10.9(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+  sanity-plugin-internationalized-array@1.10.9(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@sanity/language-filter': 3.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      '@sanity/language-filter': 3.2.2(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/ui': 2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       fast-deep-equal: 3.1.3
       lodash.get: 4.4.2
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       suspend-react: 0.0.8(react@18.2.0)
     transitivePeerDependencies:
       - debug
 
-  sanity-plugin-media@2.2.5(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+  sanity-plugin-media@2.2.5(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
     dependencies:
       '@hookform/resolvers': 3.3.4(react-hook-form@7.50.1(react@18.2.0))
       '@reduxjs/toolkit': 1.9.7(react-redux@7.2.9(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
@@ -30399,14 +30470,14 @@ snapshots:
       redux: 4.2.1
       redux-observable: 2.0.0(redux@4.2.1)
       rxjs: 7.8.1
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       zod: 3.22.3
     transitivePeerDependencies:
       - '@types/react'
       - react-native
 
-  sanity-plugin-mux-input@2.3.4(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+  sanity-plugin-mux-input@2.3.4(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
     dependencies:
       '@mux/mux-player-react': 2.5.0(@types/react-dom@18.2.18)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@mux/upchunk': 3.3.3
@@ -30421,7 +30492,7 @@ snapshots:
       react-is: 18.2.0
       react-rx: 2.1.3(react@18.2.0)(rxjs@7.8.1)
       rxjs: 7.8.1
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       scroll-into-view-if-needed: 3.1.0
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       suspend-react: 0.1.3(react@18.2.0)
@@ -30432,7 +30503,7 @@ snapshots:
       - '@types/react-dom'
       - react-dom
 
-  sanity-plugin-utils@1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
+  sanity-plugin-utils@1.6.4(@sanity/ui@2.1.4(react-dom@18.2.0(react@18.2.0))(react-is@18.2.0)(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0))(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)):
     dependencies:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -30441,10 +30512,10 @@ snapshots:
       react-dom: 18.2.0(react@18.2.0)
       react-fast-compare: 3.2.2
       rxjs: 7.8.1
-      sanity: 3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
+      sanity: 3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0)
       styled-components: 6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
 
-  sanity@3.38.0(@types/node@20.12.4)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0):
+  sanity@3.38.0(@types/node@20.12.7)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.27.0):
     dependencies:
       '@dnd-kit/core': 6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@dnd-kit/modifiers': 6.0.1(@dnd-kit/core@6.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)
@@ -30484,7 +30555,7 @@ snapshots:
       '@types/speakingurl': 13.0.6
       '@types/tar-stream': 3.1.3
       '@types/use-sync-external-store': 0.0.6
-      '@vitejs/plugin-react': 4.2.1(vite@4.5.3(@types/node@20.12.4)(terser@5.27.0))
+      '@vitejs/plugin-react': 4.2.1(vite@4.5.3(@types/node@20.12.7)(terser@5.27.0))
       archiver: 7.0.1
       arrify: 1.0.1
       async-mutex: 0.4.1
@@ -30557,7 +30628,7 @@ snapshots:
       use-device-pixel-ratio: 1.1.2(react@18.2.0)
       use-hot-module-reload: 2.0.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
-      vite: 4.5.3(@types/node@20.12.4)(terser@5.27.0)
+      vite: 4.5.3(@types/node@20.12.7)(terser@5.27.0)
       yargs: 17.7.2
     transitivePeerDependencies:
       - '@types/node'
@@ -30732,6 +30803,14 @@ snapshots:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
+
+  simple-git@3.24.0:
+    dependencies:
+      '@kwsites/file-exists': 1.1.1
+      '@kwsites/promise-deferred': 1.1.1
+      debug: 4.3.4(supports-color@5.5.0)
+    transitivePeerDependencies:
+      - supports-color
 
   simple-html-tokenizer@0.5.11: {}
 
@@ -31232,11 +31311,11 @@ snapshots:
 
   tailwind-merge@1.14.0: {}
 
-  tailwindcss-animate@1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))):
+  tailwindcss-animate@1.0.7(tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))):
     dependencies:
-      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))
+      tailwindcss: 3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))
 
-  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3)):
+  tailwindcss@3.4.1(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3)):
     dependencies:
       '@alloc/quick-lru': 5.2.0
       arg: 5.0.2
@@ -31255,7 +31334,7 @@ snapshots:
       postcss: 8.4.35
       postcss-import: 15.1.0(postcss@8.4.35)
       postcss-js: 4.0.1(postcss@8.4.35)
-      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3))
+      postcss-load-config: 4.0.2(postcss@8.4.35)(ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3))
       postcss-nested: 6.0.1(postcss@8.4.35)
       postcss-selector-parser: 6.0.15
       resolve: 1.22.8
@@ -31566,14 +31645,14 @@ snapshots:
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
-  ts-node@10.9.2(@types/node@20.12.4)(typescript@5.3.3):
+  ts-node@10.9.2(@types/node@20.12.7)(typescript@5.3.3):
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       '@tsconfig/node10': 1.0.9
       '@tsconfig/node12': 1.0.11
       '@tsconfig/node14': 1.0.3
       '@tsconfig/node16': 1.0.4
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       acorn: 8.11.3
       acorn-walk: 8.3.2
       arg: 4.1.3
@@ -31581,6 +31660,24 @@ snapshots:
       diff: 4.0.2
       make-error: 1.3.6
       typescript: 5.3.3
+      v8-compile-cache-lib: 3.0.1
+      yn: 3.1.1
+
+  ts-node@10.9.2(@types/node@20.12.7)(typescript@5.4.5):
+    dependencies:
+      '@cspotcode/source-map-support': 0.8.1
+      '@tsconfig/node10': 1.0.9
+      '@tsconfig/node12': 1.0.11
+      '@tsconfig/node14': 1.0.3
+      '@tsconfig/node16': 1.0.4
+      '@types/node': 20.12.7
+      acorn: 8.11.3
+      acorn-walk: 8.3.2
+      arg: 4.1.3
+      create-require: 1.1.1
+      diff: 4.0.2
+      make-error: 1.3.6
+      typescript: 5.4.5
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
 
@@ -31623,6 +31720,13 @@ snapshots:
       fsevents: 2.3.3
 
   tsx@4.7.1:
+    dependencies:
+      esbuild: 0.19.12
+      get-tsconfig: 4.7.2
+    optionalDependencies:
+      fsevents: 2.3.3
+
+  tsx@4.7.3:
     dependencies:
       esbuild: 0.19.12
       get-tsconfig: 4.7.2
@@ -31749,6 +31853,8 @@ snapshots:
   typescript@5.2.2: {}
 
   typescript@5.3.3: {}
+
+  typescript@5.4.5: {}
 
   uc.micro@1.0.6: {}
 
@@ -32145,6 +32251,23 @@ snapshots:
       - supports-color
       - terser
 
+  vite-node@1.1.0(@types/node@20.12.7)(terser@5.27.0):
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.4(supports-color@5.5.0)
+      pathe: 1.1.2
+      picocolors: 1.0.0
+      vite: 5.2.8(@types/node@20.12.7)(terser@5.27.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
   vite-node@1.4.0(@types/node@20.10.3)(terser@5.27.0):
     dependencies:
       cac: 6.7.14
@@ -32247,13 +32370,13 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.27.0
 
-  vite@4.5.3(@types/node@20.12.4)(terser@5.27.0):
+  vite@4.5.3(@types/node@20.12.7)(terser@5.27.0):
     dependencies:
       esbuild: 0.18.20
       postcss: 8.4.35
       rollup: 3.29.4
     optionalDependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
       fsevents: 2.3.3
       terser: 5.27.0
 
@@ -32294,6 +32417,16 @@ snapshots:
       rollup: 4.9.6
     optionalDependencies:
       '@types/node': 20.12.4
+      fsevents: 2.3.3
+      terser: 5.27.0
+
+  vite@5.0.12(@types/node@20.12.7)(terser@5.27.0):
+    dependencies:
+      esbuild: 0.19.12
+      postcss: 8.4.35
+      rollup: 4.9.6
+    optionalDependencies:
+      '@types/node': 20.12.7
       fsevents: 2.3.3
       terser: 5.27.0
 
@@ -32354,6 +32487,16 @@ snapshots:
       rollup: 4.14.1
     optionalDependencies:
       '@types/node': 20.12.4
+      fsevents: 2.3.3
+      terser: 5.27.0
+
+  vite@5.2.8(@types/node@20.12.7)(terser@5.27.0):
+    dependencies:
+      esbuild: 0.20.2
+      postcss: 8.4.35
+      rollup: 4.14.1
+    optionalDependencies:
+      '@types/node': 20.12.7
       fsevents: 2.3.3
       terser: 5.27.0
 
@@ -32532,6 +32675,41 @@ snapshots:
       why-is-node-running: 2.2.2
     optionalDependencies:
       '@types/node': 20.12.4
+      jsdom: 23.2.0
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@1.1.0(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.27.0):
+    dependencies:
+      '@vitest/expect': 1.1.0
+      '@vitest/runner': 1.1.0
+      '@vitest/snapshot': 1.1.0
+      '@vitest/spy': 1.1.0
+      '@vitest/utils': 1.1.0
+      acorn-walk: 8.3.2
+      cac: 6.7.14
+      chai: 4.4.1
+      debug: 4.3.4(supports-color@5.5.0)
+      execa: 8.0.1
+      local-pkg: 0.5.0
+      magic-string: 0.30.7
+      pathe: 1.1.2
+      picocolors: 1.0.0
+      std-env: 3.7.0
+      strip-literal: 1.3.0
+      tinybench: 2.6.0
+      tinypool: 0.8.2
+      vite: 5.0.12(@types/node@20.12.7)(terser@5.27.0)
+      vite-node: 1.1.0(@types/node@20.12.7)(terser@5.27.0)
+      why-is-node-running: 2.2.2
+    optionalDependencies:
+      '@types/node': 20.12.7
       jsdom: 23.2.0
     transitivePeerDependencies:
       - less
@@ -32908,7 +33086,7 @@ snapshots:
 
   wkx@0.5.0:
     dependencies:
-      '@types/node': 20.12.4
+      '@types/node': 20.12.7
 
   workerpool@6.5.1: {}
 
