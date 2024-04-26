@@ -2,15 +2,18 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 type WsStatus = "open" | "closed" | "error";
 type ExecutionStatus = "not started" | "processing";
-const aiServiceUrl = "";
-const aiWsUrl = "ws://127.0.0.1:8000/ws/status";
+const aiWsUrl = "ws://127.0.0.1:8000/ws";
 
+type WSResponse = {
+  execution_status: ExecutionStatus;
+  message: string;
+};
 import { useEffect, useRef, useState } from "react";
 
 export const useAiService = () => {
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState<ExecutionStatus | null>(null);
   const [wsStatus, setWsStatus] = useState("closed");
-  const [executionStatus, setExecutionStatus] = useState("available");
+  const [executionStatus, setExecutionStatus] = useState("not started");
   const { inputSnippet, afterSnippet } = useSnippetStore();
 
   const socketRef = useRef<WebSocket | null>(null);
@@ -25,7 +28,9 @@ export const useAiService = () => {
     };
 
     socket.onmessage = (event) => {
-      setMessage(event.data);
+      console.log("vent.data", event.data);
+      const data = JSON.parse(event.data) as WSResponse;
+      setMessage(data.execution_status);
       setExecutionStatus("processing");
     };
 
@@ -38,10 +43,6 @@ export const useAiService = () => {
     socket.onerror = () => {
       setMessage(null);
       setWsStatus("error");
-    };
-
-    return () => {
-      socket.close();
     };
   }, []);
 

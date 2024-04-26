@@ -3,7 +3,9 @@ from pydantic import BaseModel
 from typing import List
 import asyncio
 import uuid
-from iterative_ai import generate_codemod_from_api
+import configs
+import json
+from iterative_ai import generate_codemod
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -17,45 +19,24 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-async def send_codemod_updates(websocket: WebSocket):
-    while True:
-        try:
-            execution_status = "Running"
-            message = "Execution started"
-            await websocket.send_json({
-                "execution_status": execution_status,
-                "message": message
-            })
-        except WebSocketDisconnect:
-            print("WebSocket disconnected (send loop)")
-            break
+def create_ts_file(file_path, content):
+    with open(file_path, "w") as f:
+        f.write(content)
 
-async def receive_messages(websocket: WebSocket):
+@app.websocket("/ws")
+async def websocket_status(websocket: WebSocket):
+    await websocket.accept()
+    print("connection open")
     while True:
         try:
             data = await websocket.receive_json()
-            input = data.get('input')
+            before = data.get('input')
             after = data.get('after')
-            print(f"Received from client - Input: {input}, After: {after}")
-            generate_codemod_from_api(before, after, websocket)
-        except WebSocketDisconnect:
-            print("WebSocket disconnected (receive loop)")
-            break
-        except Exception as e:
-            print(f"Error receiving message: {e}")
-
-@app.websocket("/ws/status")
-async def websocket_status(websocket: WebSocket):
-    await websocket.accept()
-    send_task = asyncio.create_task(send_codemod_updates(websocket))
-    receive_task = asyncio.create_task(receive_messages(websocket))
-
-    done, pending = await asyncio.wait(
-        [send_task, receive_task],
-        return_when=asyncio.FIRST_COMPLETED
-    )
-
-    for task in pending:
-        task.cancel()
-
-    print("WebSocket communication finished.")
+            create_ts_file('tests/before_tmp.ts', before)
+            create_ts_file('tests/after_tmp.ts', after)
+            async def logger(message):
+                print(message)
+                await websocket.send_json(message)
+            await generate_codemod('tests/before_tmp.ts', 'tests/after_tmp.ts', '.temp', configs.cmd_args.max_correction_attempts, configs.cmd_args.llm_engine, configs.cmd_args.codemod_engine, logger)
+        except WebSocketDisconnect as e:
+                print(f"WebSocket disconnected")
