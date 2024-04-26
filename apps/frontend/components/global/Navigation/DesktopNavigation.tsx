@@ -1,10 +1,10 @@
-import Button from "@/components/shared/Button";
 import { TechLogo } from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
 import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationLink from "./NavigationLink";
+import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
 
 type DesktopNavigationProps = {
   items: (SanityLinkType & { isCurrent?: boolean })[];
@@ -74,6 +74,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
           className="shadow-dot absolute -bottom-2 left-0 h-px bg-black/10 opacity-0 transition-all duration-150 ease-in-out group-hover/nav:scale-100 group-hover/nav:opacity-100 dark:bg-white/10"
         />
       }
+      <PlatformButtonWithDropdown />
       {items?.map((item, index) => (
         <NavigationLink className={cx()} key={item.href} href={item.href}>
           <span
@@ -112,7 +113,7 @@ export function DesktopNavigationRight(props: {
 }) {
   return (
     <div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
-      {props.items?.map((item, index) => (
+      {/* {props.items?.map((item, index) => (
         <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
           <Button
             glow={index === 0}
@@ -121,7 +122,7 @@ export function DesktopNavigationRight(props: {
             {item?.label}
           </Button>
         </NavigationLink>
-      ))}
+      ))} */}
       <AuthButtons variant="www" />
     </div>
   );
