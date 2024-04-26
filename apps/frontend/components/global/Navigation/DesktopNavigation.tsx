@@ -1,3 +1,4 @@
+import Button from "@/components/shared/Button";
 import { TechLogo } from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
@@ -113,7 +114,7 @@ export function DesktopNavigationRight(props: {
 }) {
   return (
     <div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
-      {/* {props.items?.map((item, index) => (
+      {props.items?.map((item, index) => (
         <NavigationLink hideExternalIcon key={item._key} href={item?.href}>
           <Button
             glow={index === 0}
@@ -122,7 +123,7 @@ export function DesktopNavigationRight(props: {
             {item?.label}
           </Button>
         </NavigationLink>
-      ))} */}
+      ))}
       <AuthButtons variant="www" />
     </div>
   );
