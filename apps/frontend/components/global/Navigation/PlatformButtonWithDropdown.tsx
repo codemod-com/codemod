@@ -1,10 +1,13 @@
 import Icon from "@/components/shared/Icon";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export default function PlatformButtonWithDropdown() {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
 
   function handleMouseEnter(event: React.MouseEvent) {
     event.preventDefault();
@@ -15,6 +18,11 @@ export default function PlatformButtonWithDropdown() {
     event.preventDefault();
     setOpen(false);
   }
+
+  useEffect(() => {
+    router.prefetch("/");
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <DropdownMenu.Root open={open}>
