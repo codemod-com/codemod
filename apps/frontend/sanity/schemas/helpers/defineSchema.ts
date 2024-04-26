@@ -23,6 +23,7 @@ export default function defineSchema(schema: SchemaDefinition) {
         name: "content",
         title: "Content",
         icon: ComposeIcon,
+        // biome-ignore lint/complexity/noUselessTernary: ?
         default: schema?.groups?.some((group) => group.default) ? false : true,
       },
       {

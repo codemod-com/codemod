@@ -14,8 +14,7 @@
       ".vscode",
       "build-ncc",
       "generated",
-      "*.py",
-      "./apps/**"
+      "*.py"
     ],
     "rules": {
       "suspicious": {
@@ -59,7 +58,8 @@
         "useExhaustiveDependencies": "warn",
         "useYield": "warn",
         "useIsNan": "warn",
-        "useHookAtTopLevel": "error"
+        "useHookAtTopLevel": "error",
+        "useJsxKeyInIterable": "warn"
       },
       "complexity": {
         "noUselessConstructor": "off",
@@ -119,8 +119,7 @@
       ".next",
       ".vscode",
       "generated",
-      "*.py",
-      "./apps/**"
+      "*.py"
     ]
   },
   "organizeImports": {
