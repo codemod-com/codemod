@@ -30,7 +30,6 @@ export const useAiService = () => {
   const socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    // Initialize WebSocket connection
     socketRef.current = new WebSocket(aiWsUrl);
     const socket = socketRef.current as WebSocket;
 
@@ -39,7 +38,6 @@ export const useAiService = () => {
     };
 
     socket.onmessage = (event) => {
-      console.log("vent.data", event.data);
       const data = JSON.parse(event.data) as WSResponse;
       setMessage(data.execution_status);
       setWsStatus("processing");
@@ -64,7 +62,6 @@ export const useAiService = () => {
   const sendSnippets = () => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
       const data = { input: inputSnippet, after: afterSnippet };
-      console.log({ data });
       socketRef.current.send(JSON.stringify(data));
     } else {
       console.error("WebSocket is not open.");
