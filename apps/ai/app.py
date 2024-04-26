@@ -35,6 +35,8 @@ async def websocket_status(websocket: WebSocket):
     print("connection open")
     while True:
         try:
+            print('----> waiting for data <-----')
+            await asyncio.sleep(0)
             data = await websocket.receive_json()
             before = data.get('input')
             after = data.get('after')
@@ -42,13 +44,14 @@ async def websocket_status(websocket: WebSocket):
             create_ts_file('tests/after_tmp.ts', after)
             async def logger(message):
                 print(message)
-                await asyncio.sleep(0)
                 await websocket.send_json(message)
+                await asyncio.sleep(0)
             result = await generate_codemod('tests/before_tmp.ts', 'tests/after_tmp.ts', '.temp', configs.cmd_args.max_correction_attempts, configs.cmd_args.llm_engine, configs.cmd_args.codemod_engine, logger)
             await logger({
                 "result": "finished",
                 "message": "Codemod created",
                 "codemod": result
             })
+            print('----> end of iteration <-----')
         except WebSocketDisconnect as e:
                 print(f"WebSocket disconnected")

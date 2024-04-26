@@ -8,34 +8,31 @@ function transform(file: FileInfo, api: API, options: Options): string | undefin
 
     let dirtyFlag = false;
 
-    root.find(j.ImportDeclaration, {
-        source: { value: 'state' },
+    root.find(j.TSTypeAnnotation, {
+        typeAnnotation: {
+            type: 'TSTypeReference',
+            typeName: {
+                type: 'Identifier',
+                name: 'State',
+            },
+        },
     }).forEach((path) => {
-        path.value.source.value = 'state';
-        path.value.specifiers.push(j.importSpecifier(j.identifier('State')));
-        dirtyFlag = true;
+        const importDeclaration = j.importDeclaration(
+            [j.importSpecifier(j.identifier('State'), j.identifier('State'))],
+            j.stringLiteral('state'),
+        );
+
+        const existingImports = root.find(j.ImportDeclaration, {
+            source: { value: 'state' },
+        });
+
+        if (existingImports.length === 0) {
+            root.find(j.Program).get('body', 0).insertBefore(importDeclaration);
+            dirtyFlag = true;
+        }
     });
 
-    if (!dirtyFlag) {
-        const mapStateToPropsNode = root.find(j.ArrowFunctionExpression, {
-            body: {
-                type: 'ObjectExpression',
-            },
-        });
-
-        mapStateToPropsNode.forEach((path) => {
-            const stateParam = path.value.params[0];
-            if (stateParam.typeAnnotation) {
-                const stateType = stateParam.typeAnnotation.typeAnnotation;
-                const importDeclaration = j.importDeclaration(
-                    [j.importSpecifier(j.identifier(stateType.typeAnnotation.id.name))],
-                    j.stringLiteral('state')
-                );
-                root.find(j.Program).get('body', 0).insertBefore(importDeclaration);
-                stateParam.typeAnnotation = null;
-            }
-        });
-
+    if (dirtyFlag) {
         return root.toSource(options);
     }
 

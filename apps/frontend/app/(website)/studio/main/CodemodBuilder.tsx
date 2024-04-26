@@ -27,8 +27,14 @@ const statusColors = {
   finished: "text-blue-600",
 };
 export const CodemodBuilder = () => {
-  const { messageHistory, applyCodemod, wsStatus, sendSnippets, startOver } =
-    useAiService();
+  const {
+    messageHistory,
+    applyCodemod,
+    codemod,
+    wsStatus,
+    sendSnippets,
+    startOver,
+  } = useAiService();
   const statusColor = wsStatus ? statusColors[wsStatus] : "";
   const status = (
     <div>
@@ -61,7 +67,7 @@ export const CodemodBuilder = () => {
     </div>
   ));
 
-  const applyCodemodButton = wsStatus === "finished" && (
+  const applyCodemodButton = codemod && (
     <div>
       <InternalButton onClick={applyCodemod}>Apply codemod</InternalButton>
     </div>

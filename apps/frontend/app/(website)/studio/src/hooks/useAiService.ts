@@ -31,7 +31,7 @@ export const useAiService = () => {
     setMessage(null);
     setWsStatus("ready");
   };
-  const applyCodemod = () => codemod && setContent(codemod);
+  const applyCodemod = () => codemod && setContent(JSON.stringify(codemod));
 
   const socketRef = useRef<WebSocket | null>(null);
 
@@ -46,6 +46,7 @@ export const useAiService = () => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data) as WSResponse;
       setWsStatus(data.execution_status);
+      console.log({ data }, data.codemod);
       setMessageHistory((prev) => [...prev, data]);
       if (data.codemod) {
         setCodemod(data.codemod);
@@ -61,6 +62,10 @@ export const useAiService = () => {
     socket.onerror = () => {
       setMessage(null);
       setWsStatus("error");
+    };
+
+    return () => {
+      socket.close();
     };
   }, []);
 
