@@ -4,6 +4,46 @@ description: 'Latest releases for Codemod platform.'
 icon: 'scroll'
 ---
 
+## v1.0.3
+
+### Bugs fixes & improvements
+
+- [Frontend] merged website into monorepo
+- [VSCode Extension] Fetch Codemods immediately after the latest version of Codemod CLI is detected
+- [VSCode Extension] Ensure that the user has the latest version of Codemod CLI before displaying Codemod Registry
+- [VSCode Extension] Show codemods even if a workplaces is not selected
+- [VSCode Extension] Text is not showing up when codemods load up initially
+- [Docs] update running codemods and studio docs images
+- [Docs] added studio readme
+- [CLI] Fix incorrect `--version` output
+- [CLI] Fix missing dependencies
+- [CLI] Fix codemod cache
+- [Telemetry] Fix duplicated events
+- [Telemetry] Allow tracking from multiple clients
+- [Registry] Fix adding imports in case of ‘use client’
+- [Registry] fix invalid codemod readme content
+- [Registry] Published React/19/Ref To Arrow Function codemod
+- [Registry] Published React Native 74 codemods
+- [Backend] Create codemod runn*er `task-manager` instance*
+- [Backend] Create `/codemodRun`  API endpoint
+- [Backend] Create `/codemodRun/status/:jobId` API endpoint
+- [Backend] Create full GitHub integration for codemod runn*er `task-manager`*
+- [Backend] Deploy codemod runn*er `task-manager`*
+- [Backend] Minor codemod registry API fixes and improvements
+
+### What’s next? 🏃
+
+- [AI] Added a Python service in monorepo that uses the algorithm designed and implemented by our AI experts. We have two way connection (WS), UI in place. It is not yet production ready, so now hidden behind a feature flag
+- Codemod Studio styling improvements
+- Improved `codemod publish` experience
+- Frontend styling fixes
+- Web registry improvements
+    - Improved search and filtering experience
+    - Working codemod run analytics
+    - and more
+
+---
+
 ## v1.0.2
 
 ### New features
