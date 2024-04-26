@@ -1,0 +1,26 @@
+{
+  "name": "@codemod-com/task-manager",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "start": "node build/worker.js"
+  },
+  "author": "Codemod inc.",
+  "private": true,
+  "dependencies": {
+    "axios": "^1.6.8",
+    "bullmq": "^5.7.2",
+    "dotenv": "^16.4.5",
+    "parse-github-url": "1.0.2",
+    "simple-git": "^3.24.0",
+    "valibot": "^0.24.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "esbuild": "^0.20.2",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  }
+}

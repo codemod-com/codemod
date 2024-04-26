@@ -148,3 +148,20 @@ export const unpublishBodySchema = object({
 
 export const parseUnpublishBody = (input: unknown) =>
   parse(unpublishBodySchema, input);
+
+export const codemodRunBodySchema = object({
+  source: string(),
+  codemodName: string(),
+  engine: union([literal("jscodeshift"), literal("ts-morph")]),
+  repo: string(),
+});
+
+export const parseCodemodRunBody = (input: unknown) =>
+  parse(codemodRunBodySchema, input);
+
+export const validateCodemodStatusParamsSchema = object({
+  jobId: string(),
+});
+
+export const parseCodemodStatusParams = (input: unknown) =>
+  parse(validateCodemodStatusParamsSchema, input);
