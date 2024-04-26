@@ -1,6 +1,7 @@
 import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
 import LinkButton from "@/components/shared/LinkButton";
+import RunCTAButton from "@/components/shared/RunCTAButton";
 import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
@@ -245,16 +246,18 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   {data.globalLabels?.vsCodeExtensionTitle ||
                     "VS Code extension"}
                 </p>
-                <Button
-                  iconPosition="left"
-                  icon="noborder-vscode"
-                  intent="secondary"
-                >
-                  <a href={data?.currentVersion?.vsCodeLink}>
-                    {data.globalLabels?.vsCodeExtensionButtonLabel ||
-                      "Run in VS Code"}
-                  </a>
-                </Button>
+                <RunCTAButton
+                  href={data?.currentVersion?.vsCodeLink}
+                  title={
+                    data.globalLabels?.vsCodeExtensionButtonLabel ||
+                    "Run in VS Code"
+                  }
+                  toastMessage="Opening Visual Studio Code..."
+                  toastOptions={{
+                    icon: <Icon name="vscode" className="h-5 w-5" />,
+                    className: "flex items-center gap-xs",
+                  }}
+                />
               </div>
             )}
 
