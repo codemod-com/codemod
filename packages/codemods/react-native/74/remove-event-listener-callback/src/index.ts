@@ -51,7 +51,7 @@ export default function transform(
     .forEach((path) => {
       // Check if the second argument is a function
       if (path.node.arguments[1]) {
-        if (path.node.arguments[1]?.type === "Identifier") {
+        if (j.Identifier.check(path.node.arguments[1])) {
           declarationsToRemove.push(path.node.arguments[1]?.name);
         }
         // Remove the second argument
@@ -66,7 +66,7 @@ export default function transform(
         .find(j.Identifier, { name: variable })
         .filter((path) => {
           return (
-            path.parent?.value.type !== "VariableDeclarator" ||
+            !j.VariableDeclarator.check(path.parent?.value) ||
             path.parent?.value.id.name !== variable
           );
         }).length;

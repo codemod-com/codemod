@@ -46,13 +46,13 @@ export default function transform(
 
   const removeAlertAction = (path: ASTPath<CallExpression>) => {
     // Check if the argument is an object
-    if (path.node.arguments[0]?.type === "ObjectExpression") {
+    if (j.ObjectExpression.check(path.node.arguments[0])) {
       // Find the property 'alertAction' and remove it
       path.node.arguments[0].properties =
         path.node.arguments[0].properties.filter((property) => {
           if (
-            property.type === "Property" &&
-            property.value.type === "Identifier"
+            j.Property.check(property) &&
+            j.Identifier.check(property.value)
           ) {
             variablesToRemove.push(property.value.name);
           }
@@ -92,7 +92,7 @@ export default function transform(
         .find(j.Identifier, { name: variable })
         .filter((path) => {
           return (
-            path.parent?.value.type !== "VariableDeclarator" ||
+            !j.VariableDeclarator.check(path.parent?.value) ||
             path.parent?.value.id.name !== variable
           );
         }).length;

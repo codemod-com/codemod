@@ -35,8 +35,6 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
-  const declarationsToRemove = [] as string[];
-
   // Mapping of repeatInterval values to their equivalent in seconds
   const intervalMapping = {
     minute: 60,
@@ -61,7 +59,7 @@ export default function transform(
     })
     .forEach((path) => {
       // Check if the argument is an object
-      if (path.node.arguments[0]?.type === "ObjectExpression") {
+      if (j.ObjectExpression.check(path.node.arguments[0])) {
         // Find the property 'repeatInterval' and replace it with 'fireIntervalSeconds'
         path.node.arguments[0].properties =
           path.node.arguments[0].properties.map((property) => {
@@ -70,7 +68,7 @@ export default function transform(
               "name" in property.key &&
               "value" in property &&
               property.key.name === "repeatInterval" &&
-              property.value.type === "Literal" &&
+              j.Literal.check(property.value) &&
               intervalMapping[
                 property.value.value as keyof typeof intervalMapping
               ]
