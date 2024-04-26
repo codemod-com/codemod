@@ -69,7 +69,7 @@ export const automationVersion = defineType({
     },
     {
       name: "totalTimeSaved",
-      title: "Total Time Saved",
+      title: "Total runs",
       type: "number",
       readOnly: true,
     },
