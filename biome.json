@@ -2,6 +2,7 @@
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "linter": {
     "ignore": [
+      "./packages",
       "./apps/frontend",
       "*.d.ts",
       "*.js",
@@ -107,6 +108,7 @@
     "formatWithErrors": true,
     "indentStyle": "space",
     "ignore": [
+      "./packages",
       "./apps/frontend",
       "*.d.ts",
       "input.js",
