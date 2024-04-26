@@ -1,7 +1,5 @@
-`function mapStateToProps(state: State) {
-    const { data } = state;
-    return {
-        data,
-    };
-}
-`
+import { State } from 'state';
+
+const mapStateToProps = (state: State) => ({
+    a: selectA(state),
+});

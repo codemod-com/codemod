@@ -62,7 +62,6 @@ def get_type_syntax_correction_prompt(errors, codemod, codemod_engine):
   prompt = "TypeScript compiler encountered the following error while compiling the codemod:\n"
   codemod_lines = codemod.splitlines()
 
-  print("----> x")
   prompt += retrieve_relevant_information(errors)
   for error in errors:
     prompt += f"* Error {error['message']} in line {codemod_lines[error['line']].strip()}\n"

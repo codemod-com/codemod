@@ -118,7 +118,7 @@ async def main():
         codemod_engine=configs.cmd_args.codemod_engine,
         logger=logger
     )
-    print(result)
+    print('result: ', result)
 
 if __name__ == "__main__":
     asyncio.run(main())

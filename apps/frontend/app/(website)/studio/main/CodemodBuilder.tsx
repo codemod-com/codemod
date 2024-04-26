@@ -1,7 +1,6 @@
 import { cn } from "@/utils";
 import { Button } from "@studio/components/ui/button";
 import { useAiService } from "@studio/hooks/useAiService";
-import { DownloadIcon } from "@studio/icons/Download";
 import type { PropsWithChildren } from "react";
 
 const InternalButton = ({
@@ -20,16 +19,21 @@ const InternalButton = ({
   </Button>
 );
 
-export const AiButton = () => {
+const statusColors = {
+  error: "text-red-700",
+  closed: "text-red-700",
+  "in-progress": "text-blue-600",
+  ready: "text-green-700",
+  finished: "text-blue-600",
+};
+export const CodemodBuilder = () => {
   const { messageHistory, applyCodemod, wsStatus, sendSnippets, startOver } =
     useAiService();
+  const statusColor = wsStatus ? statusColors[wsStatus] : "";
   const status = (
     <div>
       <div>
-        Status{" "}
-        <strong className={cn(wsStatus === "error", "text-red-700")}>
-          {wsStatus}
-        </strong>
+        Status <strong className={cn(statusColor)}>{wsStatus}</strong>
       </div>
     </div>
   );
@@ -48,8 +52,8 @@ export const AiButton = () => {
       </div>
     );
 
-  const history = messageHistory.map((item) => (
-    <div key={item.message} className="pt-5">
+  const history = messageHistory.map((item, i) => (
+    <div key={item.message + i} className="pt-5">
       <p>
         <strong>action log: </strong>
         {item.message}

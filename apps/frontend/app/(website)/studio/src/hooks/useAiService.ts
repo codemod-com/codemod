@@ -1,6 +1,11 @@
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 
-type ExecutionStatus = "open" | "in-progress" | "error" | "finished";
+type ExecutionStatus =
+  | "closed"
+  | "ready"
+  | "in-progress"
+  | "error"
+  | "finished";
 const aiWsUrl = "ws://127.0.0.1:8000/ws";
 
 type WSResponse = {
@@ -9,25 +14,22 @@ type WSResponse = {
   codemod?: string;
 };
 import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
+import { useModStore } from "@studio/store/zustand/mod";
 import { useEffect, useRef, useState } from "react";
 
 export const useAiService = () => {
   const [codemod, setCodemod] = useState<string | null>(null);
   const [messageHistory, setMessageHistory] = useState<WSResponse[]>([]);
-  const [message, setMessage] = useState<ExecutionStatus | null>(null);
-  const [wsStatus, setWsStatus] = useState("closed");
+  const [message, setMessage] = useState<string | null>(null);
+  const [wsStatus, setWsStatus] = useState<ExecutionStatus | null>("closed");
   const { inputSnippet, afterSnippet } = useSnippetStore();
-  const { setContent } = useCodemodOutputStore();
-  const [startReady, setStartReady] = useState(false);
+  const { setContent } = useModStore();
 
-  useEffect(() => {
-    console.log({ inputSnippet });
-  }, [inputSnippet]);
   const startOver = () => {
     setCodemod(null);
     setMessageHistory([]);
     setMessage(null);
-    setWsStatus("open");
+    setWsStatus("ready");
   };
   const applyCodemod = () => codemod && setContent(codemod);
 
@@ -43,11 +45,11 @@ export const useAiService = () => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data) as WSResponse;
-      setMessage(data.execution_status);
+      setWsStatus(data.execution_status);
       setMessageHistory((prev) => [...prev, data]);
       if (data.codemod) {
         setCodemod(data.codemod);
-        setWsStatus(data.execution_status);
+        setWsStatus("finished");
       }
     };
 

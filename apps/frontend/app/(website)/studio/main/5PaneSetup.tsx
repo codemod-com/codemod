@@ -34,7 +34,7 @@ import {
   TabsTrigger,
 } from "@studio/components/ui/tabs";
 import { UserIcon } from "@studio/icons/User";
-import { AiButton } from "@studio/main/AiButton";
+import { CodemodBuilder } from "@studio/main/CodemodBuilder";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
@@ -587,7 +587,7 @@ const AssistantTab = ({
         onScroll={handleScroll}
         ref={scrollContainerRef}
       >
-        <AiButton />
+        <CodemodBuilder />
       </TabsContent>
 
       <TabsContent

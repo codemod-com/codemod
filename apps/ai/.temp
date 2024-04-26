@@ -8,25 +8,38 @@ function transform(file: FileInfo, api: API, options: Options): string | undefin
 
     let dirtyFlag = false;
 
-    root.find(j.FunctionDeclaration, {
-        id: { name: 'mapStateToProps' },
+    root.find(j.ImportDeclaration, {
+        source: { value: 'state' },
     }).forEach((path) => {
-        const params = path.value.params;
-        if (params.length === 1) {
-            const [state] = params;
-            if (j.Identifier.check(state)) {
-                state.typeAnnotation = j.tsTypeAnnotation(j.tsTypeReference(j.identifier('State')));
-            }
-        }
-
+        path.value.source.value = 'state';
+        path.value.specifiers.push(j.importSpecifier(j.identifier('State')));
         dirtyFlag = true;
     });
 
     if (!dirtyFlag) {
-        return undefined;
+        const mapStateToPropsNode = root.find(j.ArrowFunctionExpression, {
+            body: {
+                type: 'ObjectExpression',
+            },
+        });
+
+        mapStateToPropsNode.forEach((path) => {
+            const stateParam = path.value.params[0];
+            if (stateParam.typeAnnotation) {
+                const stateType = stateParam.typeAnnotation.typeAnnotation;
+                const importDeclaration = j.importDeclaration(
+                    [j.importSpecifier(j.identifier(stateType.typeAnnotation.id.name))],
+                    j.stringLiteral('state')
+                );
+                root.find(j.Program).get('body', 0).insertBefore(importDeclaration);
+                stateParam.typeAnnotation = null;
+            }
+        });
+
+        return root.toSource(options);
     }
 
-    return root.toSource(options);
+    return undefined;
 }
 
 export default transform;

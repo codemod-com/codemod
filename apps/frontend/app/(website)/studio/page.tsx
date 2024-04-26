@@ -5,7 +5,6 @@ import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
-  console.log("page");
   return (
     <>
       <div className="studio">

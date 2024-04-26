@@ -19,6 +19,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# WS message:
+# "execution_status": "in-progress" | "finished" | "error"
+# message: string
+# error?: string (only when status is 'error')
+# codemod?: string (only when status is 'finished' )
+
 def create_ts_file(file_path, content):
     with open(file_path, "w") as f:
         f.write(content)
@@ -38,6 +44,11 @@ async def websocket_status(websocket: WebSocket):
                 print(message)
                 await asyncio.sleep(0)
                 await websocket.send_json(message)
-            await generate_codemod('tests/before_tmp.ts', 'tests/after_tmp.ts', '.temp', configs.cmd_args.max_correction_attempts, configs.cmd_args.llm_engine, configs.cmd_args.codemod_engine, logger)
+            result = await generate_codemod('tests/before_tmp.ts', 'tests/after_tmp.ts', '.temp', configs.cmd_args.max_correction_attempts, configs.cmd_args.llm_engine, configs.cmd_args.codemod_engine, logger)
+            await logger({
+                "result": "finished",
+                "message": "Codemod created",
+                "codemod": result
+            })
         except WebSocketDisconnect as e:
                 print(f"WebSocket disconnected")
