@@ -10,3 +10,4 @@ package.json
 *codemod_temp*
 *issues*.txt
 *.vscode*
+venv

@@ -1,7 +1,7 @@
 import { type Dispatch, type Reducer, configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import type { PersistPartial } from "redux-persist/es/persistReducer";
-import { type Memento, window } from "vscode";
+import type { Memento } from "vscode";
 import { persistedStateCodecNew } from "../persistedState/codecs";
 import rootReducer, { type actions, getInitialState } from "./slice";
 import MementoStorage from "./storage";
@@ -93,10 +93,6 @@ const buildStore = async (workspaceState: Memento) => {
   };
 
   const preloadedState = await getPreloadedState(storage);
-
-  if (preloadedState === null) {
-    window.showWarningMessage("Unable to get preloaded state.");
-  }
 
   const store = configureStore({
     reducer: validatedReducer,

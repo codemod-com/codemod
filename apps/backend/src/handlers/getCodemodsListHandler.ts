@@ -42,16 +42,19 @@ export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
       ? parseClientIdentifierSchema(request.headers["x-client-identifier"])
       : "UNKNOWN";
 
-    telemetryService.sendEvent(
-      {
-        kind: "listNames",
-        ...(search && { searchTerm: search }),
-      },
-      {
-        cloudRole: clientIdentifier,
-        distinctId,
-      },
-    );
+    // we are not interested in events without searchTerm
+    if (search !== undefined) {
+      telemetryService.sendEvent(
+        {
+          kind: "listNames",
+          searchTerm: search,
+        },
+        {
+          cloudRole: clientIdentifier,
+          distinctId,
+        },
+      );
+    }
 
     if (userId === null) {
       return codemodService.getCodemodsList(null, search, []);

@@ -14,7 +14,7 @@ import {
   type Job,
   PublishStatus,
 } from "@/types";
-import { capitalize } from "@/utils/strings";
+import { capitalize, insertMergeTags } from "@/utils/strings";
 import { pathToAbsUrl } from "@/utils/urls";
 import type { SanityImageObject } from "@sanity/image-url/lib/types/types";
 import { imageBuilder } from "./client";
@@ -175,6 +175,15 @@ export async function resolveSanityRouteMetadata(
         }
       : parent.openGraph?.images;
 
+  const _automationDescription =
+    (data as CodemodPagePayload)?.globalLabels?.ogDescription || "";
+
+  const automationDescription = insertMergeTags(_automationDescription, {
+    framework: capitalize(automationFrom),
+    codemod_name: title,
+  });
+
+  const description = seo?.description || automationDescription || "";
   return {
     title,
     openGraph: {

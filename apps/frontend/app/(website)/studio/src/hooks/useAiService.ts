@@ -7,14 +7,25 @@ const aiWsUrl = "ws://127.0.0.1:8000/ws";
 type WSResponse = {
   execution_status: ExecutionStatus;
   message: string;
+  codemod?: string;
 };
+import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import { useEffect, useRef, useState } from "react";
 
 export const useAiService = () => {
+  const [codemod, setCodemod] = useState<string | null>(null);
+  const [messageHistory, setMessageHistory] = useState<WSResponse[]>([]);
   const [message, setMessage] = useState<ExecutionStatus | null>(null);
   const [wsStatus, setWsStatus] = useState("closed");
-  const [executionStatus, setExecutionStatus] = useState("not started");
   const { inputSnippet, afterSnippet } = useSnippetStore();
+  const { setContent } = useCodemodOutputStore();
+  const startOver = () => {
+    setCodemod(null);
+    setMessageHistory([]);
+    setMessage(null);
+    setWsStatus("open");
+  };
+  const applyCodemod = () => codemod && setContent(codemod);
 
   const socketRef = useRef<WebSocket | null>(null);
 
@@ -24,20 +35,24 @@ export const useAiService = () => {
     const socket = socketRef.current as WebSocket;
 
     socket.onopen = () => {
-      setWsStatus("open");
+      setWsStatus("ready");
     };
 
     socket.onmessage = (event) => {
       console.log("vent.data", event.data);
       const data = JSON.parse(event.data) as WSResponse;
       setMessage(data.execution_status);
-      setExecutionStatus("processing");
+      setWsStatus("processing");
+      setMessageHistory((prev) => [...prev, data]);
+      if (data.codemod) {
+        setCodemod(data.codemod);
+        setWsStatus("finished");
+      }
     };
 
     socket.onclose = () => {
       setMessage(null);
-      setWsStatus("closed");
-      setExecutionStatus("available");
+      setWsStatus("error");
     };
 
     socket.onerror = () => {
@@ -59,7 +74,10 @@ export const useAiService = () => {
   return {
     message,
     wsStatus,
-    executionStatus,
     sendSnippets,
+    messageHistory,
+    codemod,
+    applyCodemod,
+    startOver,
   };
 };

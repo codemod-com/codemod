@@ -74,6 +74,7 @@
 	overflow: hidden;
 	white-space: nowrap;
 	color: inherit;
+	flex: 1 1 auto;
 }
 
 .codemodRoot {

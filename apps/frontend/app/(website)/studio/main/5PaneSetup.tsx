@@ -34,6 +34,7 @@ import {
   TabsTrigger,
 } from "@studio/components/ui/tabs";
 import { UserIcon } from "@studio/icons/User";
+import { AiButton } from "@studio/main/AiButton";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
@@ -513,6 +514,13 @@ const AssistantTab = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const savedScrollPositionRef = useRef<number>(0);
   const { isSignedIn } = useAuth();
+  const [showBuildPanel, setShowBuildPanel] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("feature-builder") === "true") {
+      setShowBuildPanel(true);
+    }
+  }, []);
 
   const { setActiveTab } = useViewStore();
 
@@ -557,8 +565,13 @@ const AssistantTab = ({
         })}
       >
         <TabsTrigger className="flex-1" value={TabNames.MODGPT}>
-          ModGPT
+          Chat
         </TabsTrigger>
+        {showBuildPanel && (
+          <TabsTrigger className="flex-1" value={TabNames.INFERRER}>
+            Builder
+          </TabsTrigger>
+        )}
         <TabsTrigger className="flex-1" value={TabNames.AST}>
           AST
         </TabsTrigger>
@@ -567,6 +580,15 @@ const AssistantTab = ({
           Debug
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent
+        className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
+        value={TabNames.INFERRER}
+        onScroll={handleScroll}
+        ref={scrollContainerRef}
+      >
+        <AiButton />
+      </TabsContent>
 
       <TabsContent
         className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"

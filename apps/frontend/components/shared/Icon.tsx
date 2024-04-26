@@ -1,5 +1,6 @@
 import { cx } from "cva";
 import React from "react";
+import BookOpen from "./animated-icons/BookOpen";
 
 export enum IconId {
   "Arrow Left" = "arrow-left",
@@ -88,6 +89,7 @@ export const TechLogo = ({ name, className }: LogoProps) => {
     case "ant-design":
       return (
         <svg
+          title="Ant Design"
           width="256px"
           height="256px"
           viewBox="0 0 256 256"
@@ -580,30 +582,7 @@ export default function Icon({ name, className }: IconProps) {
       );
 
     case "book-open":
-      return (
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 20 20"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className={className}
-        >
-          <path
-            d="M9.99996 5.83333C9.99996 4.94928 9.64877 4.10143 9.02365 3.47631C8.39853 2.85119 7.55068 2.5 6.66663 2.5H1.66663V15H7.49996C8.163 15 8.79889 15.2634 9.26773 15.7322C9.73657 16.2011 9.99996 16.837 9.99996 17.5M9.99996 5.83333V17.5M9.99996 5.83333C9.99996 4.94928 10.3511 4.10143 10.9763 3.47631C11.6014 2.85119 12.4492 2.5 13.3333 2.5H18.3333V15H12.5C11.8369 15 11.201 15.2634 10.7322 15.7322C10.2634 16.2011 9.99996 16.837 9.99996 17.5"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-          />
-          <path
-            d="M18.3333 2.5H13.3333C12.4493 2.5 11.6014 2.85119 10.9763 3.47631C10.3512 4.10143 10 4.94928 10 5.83333V17.5C10 16.837 10.2634 16.2011 10.7322 15.7322C11.2011 15.2634 11.837 15 12.5 15H18.3333V2.5Z"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            className="origin-center group-hover:animate-flip-x"
-          />
-        </svg>
-      );
+      return <BookOpen className={className} />;
 
     case "braces":
       return (

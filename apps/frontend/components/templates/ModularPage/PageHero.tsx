@@ -3,6 +3,7 @@ import GradientBorderBox from "@/components/shared/GradientBorderBox";
 import InfiniteSlider from "@/components/shared/InfiniteSlider";
 import LinkButton from "@/components/shared/LinkButton";
 import Section from "@/components/shared/Section";
+import BookOpenLinkButton from "@/components/shared/animated-icons/BookOpenLinkButton";
 import type { PageHeroProps } from "@/types/object.types";
 
 export default function PageHero(props: PageHeroProps) {
@@ -34,16 +35,14 @@ export default function PageHero(props: PageHeroProps) {
             </LinkButton>
           )}
           {props.ctas?.[1] && (
-            <LinkButton
-              hideExternalIcon
-              key={props.ctas[1]._key}
-              intent="secondary"
-              href={props.ctas[1].link}
-              iconPosition="left"
-              icon="book-open"
-            >
-              {props.ctas[1].label}
-            </LinkButton>
+            <>
+              <BookOpenLinkButton
+                intent="secondary"
+                href={props?.ctas?.[1].link}
+              >
+                {props.ctas[1].label}
+              </BookOpenLinkButton>
+            </>
           )}
         </div>
       </div>
