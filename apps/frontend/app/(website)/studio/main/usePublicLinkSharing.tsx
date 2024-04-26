@@ -8,13 +8,16 @@ export const usePublicLinkSharing = () => {
   const [isCreating, setIsCreating] = useState(false);
 
   const getShareLink = useCallback(async () => {
-    setIsCreating(true);
-
-    const url = await getURL();
+    const url = getURL();
 
     if (url === null) {
+      toast.error(
+        "There was an error creating a short link. Please try again later.",
+      );
       return;
     }
+
+    setIsCreating(true);
 
     const shortURL = await createSharedLink("studio", { url: url.toString() });
 

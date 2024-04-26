@@ -1,0 +1,1 @@
+Remove PushNotificationIOS.removeEventListener callback.

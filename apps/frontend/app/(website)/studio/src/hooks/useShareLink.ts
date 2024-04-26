@@ -1,6 +1,3 @@
-import { useAuth } from "@clerk/nextjs";
-// import { encode } from "universal-base64url";
-// import type { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
@@ -9,7 +6,6 @@ import { deflate } from "pako";
 export const useShareLink = () => {
   const { engine, inputSnippet, afterSnippet } = useSnippetStore();
   const { internalContent } = useModStore();
-  const { getToken } = useAuth();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
   // 	try {
@@ -55,26 +51,13 @@ export const useShareLink = () => {
   // 	}
   // };
 
-  const getURL = async (): Promise<URL | null> => {
+  const getURL = (): URL | null => {
     try {
       if (internalContent === null) {
         throw new Error("codemod content not found");
       }
 
       const codemodName = "untitled";
-      //   if (token !== null) {
-      //     // Ask LLM to come up with a name for the given codemod
-      //     const codemodNameOrError = await sendMessage({
-      //       message: generateCodemodNamePrompt(internalContent),
-      //       token,
-      //     });
-
-      //     if (codemodNameOrError.isLeft()) {
-      //       console.error(codemodNameOrError.getLeft());
-      //     } else {
-      //       codemodName = codemodNameOrError.get().text;
-      //     }
-      //   }
 
       const input = JSON.stringify({
         v: 1, // version

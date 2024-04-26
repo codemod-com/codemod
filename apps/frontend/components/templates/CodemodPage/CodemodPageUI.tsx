@@ -330,7 +330,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             <div className="flex items-center gap-s">
               <InfoCard
                 value={String(data?.currentVersion?.totalTimeSaved)}
-                label="Total time saved"
+                label="Total runs"
               />
               <span className="h-[36px] w-[2px] bg-border-light dark:bg-border-dark" />
               <InfoCard
