@@ -10,7 +10,7 @@ import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
-import { Queue } from "bullmq";
+import { type Job, Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
   type RouteHandlerMethod,
@@ -224,6 +224,7 @@ const queue = new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
 const redis = new Redis({
   host: String(environment.REDIS_HOST),
   port: Number(environment.REDIS_PORT),
+  maxRetriesPerRequest: null,
 });
 
 const wrapRequestHandlerMethod =
@@ -775,13 +776,19 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       request.body,
     );
 
-    const job = await queue.add("codemodRun", {
-      userId,
-      source,
-      engine,
-      repo,
-      codemodName,
-    });
+    let job: Job | null = null;
+    try {
+      job = await queue.add("codemodRun", {
+        userId,
+        source,
+        engine,
+        repo,
+        codemodName,
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error("Cannot add task to the queue.");
+    }
 
     reply.type("application/json").code(200);
     return { success: true, codemodRunId: job.id };
@@ -800,7 +807,14 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
     const { jobId } = parseCodemodStatusParams(request.params);
 
-    const status = await redis.get(`job:${jobId}:status`);
+    let status: string | null = null;
+    try {
+      status = await redis.get(`job:${jobId}:status`);
+    } catch (error) {
+      console.error(error);
+      throw new Error("Cannot get codemodRun status from Redis cache.");
+    }
+
     const result = JSON.parse(status as string);
 
     reply.type("application/json").code(200);
