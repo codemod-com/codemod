@@ -3310,6 +3310,78 @@ importers:
         specifier: ^1.0.1
         version: 1.1.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
 
+  packages/codemods/react-native/74/migrate-to-fire-interval-seconds:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+
+  packages/codemods/react-native/74/remove-alert-action:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+
+  packages/codemods/react-native/74/remove-event-listener-callback:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.2.2(vitest@1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.12.4)(typescript@5.3.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.3.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
+
   packages/codemods/react-redux/0/add-state-type:
     devDependencies:
       '@codemod-com/utilities':
@@ -23014,6 +23086,25 @@ snapshots:
       test-exclude: 6.0.0
       v8-to-istanbul: 9.2.0
       vitest: 1.4.0(@types/node@20.10.4)(jsdom@23.2.0)(terser@5.27.0)
+    transitivePeerDependencies:
+      - supports-color
+
+  '@vitest/coverage-v8@1.2.2(vitest@1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0))':
+    dependencies:
+      '@ampproject/remapping': 2.2.1
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.4(supports-color@5.5.0)
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 4.0.1
+      istanbul-reports: 3.1.6
+      magic-string: 0.30.7
+      magicast: 0.3.3
+      picocolors: 1.0.0
+      std-env: 3.7.0
+      test-exclude: 6.0.0
+      v8-to-istanbul: 9.2.0
+      vitest: 1.4.0(@types/node@20.12.4)(jsdom@23.2.0)(terser@5.27.0)
     transitivePeerDependencies:
       - supports-color
 
