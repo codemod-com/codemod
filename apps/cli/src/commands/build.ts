@@ -39,7 +39,7 @@ export const handleBuildCliCommand = async (
       onlyFiles: true,
     });
   } else {
-    entryPointGlob = await glob("./src/index.*", {
+    entryPointGlob = await glob("./src/index.{ts,js}", {
       absolute: true,
       cwd: absoluteSource,
       onlyFiles: true,
@@ -57,7 +57,9 @@ export const handleBuildCliCommand = async (
       );
     }
 
-    throw new Error(`Could not find entry point file in ${absoluteSource}.`);
+    throw new Error(
+      `Could not find the entry point file at ${absoluteSource}/src/index.{js,ts}. Make sure ${absoluteSource}/src/index.{js,ts} exists or specify a custom build input path by adding the "build.input" field to the codemodrc.json file.`,
+    );
   }
 
   try {
