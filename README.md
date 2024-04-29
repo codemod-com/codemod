@@ -118,8 +118,12 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="http://jonathangiardino.com"><img src="https://avatars.githubusercontent.com/u/47124762?v=4?s=100" width="100px;" alt="Jonathan Giardino"/><br /><sub><b>Jonathan Giardino</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=jonathangiardino" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3Ajonathangiardino" title="Bug reports">🐛</a></td>
     </tr>
     <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/diboune"><img src="https://avatars.githubusercontent.com/u/60890389?v=4?s=100" width="100px;" alt="Mohamed Amine Diboune"/><br /><sub><b>Mohamed Amine Diboune</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=diboune" title="Code">💻</a></td>
+    </tr>
+    <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/siffogh"><img src="https://avatars.githubusercontent.com/u/4761023?v=4?s=100" width="100px;" alt="Seif Ghezala"/><br /><sub><b>Seif Ghezala</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=siffogh" title="Code">💻</a></td>
     </tr>
+    
   </tbody>
 </table>
 
