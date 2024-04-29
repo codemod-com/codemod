@@ -20,12 +20,12 @@ const Codemod = () => {
 
   const content = internalContent ?? "";
 
-  const onBlur = useCallback(() => {
+  const onBlur = () => {
     const prettified = prettify(content);
     if (prettified !== content) {
       setContent(prettified);
     }
-  }, [setContent, content]);
+  };
 
   const onKeyUp = useCallback(
     (event: monaco.IKeyboardEvent) => {
