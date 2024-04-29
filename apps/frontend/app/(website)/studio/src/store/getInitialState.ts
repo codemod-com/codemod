@@ -124,6 +124,7 @@ type InitialState = Readonly<{
     | "accessTokenRequested"
     | "accessTokenRequestedByCLI"
     | "accessTokenRequestedByVSCE"
+    | "accessTokenRequestedByCURSOR"
     | null;
 }>;
 

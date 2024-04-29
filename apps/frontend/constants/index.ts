@@ -10,3 +10,6 @@ export const REGISTRY_FILTER_TYPES = {
 } as const;
 
 export const STATIC_HEADER_ROUTES = ["/registry"];
+
+export const VSCODE_PREFIX = "vscode//";
+export const CURSOR_PREFIX = "cursor://";
