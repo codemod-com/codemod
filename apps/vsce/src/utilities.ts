@@ -3,6 +3,12 @@ import { sep } from "node:path";
 import * as t from "io-ts";
 import { Project } from "ts-morph";
 import { Uri, type Webview } from "vscode";
+import {
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_SEARCH_PARAM,
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_SEARCH_PARAM,
+  CURSOR_PREFIX,
+  VSCODE_PREFIX,
+} from "./constants";
 import type { _ExplorerNode } from "./persistedState/explorerNodeCodec";
 
 export function isNeitherNullNorUndefined<T>(value: T): value is T & {} {
@@ -140,4 +146,18 @@ export const buildGlobPattern = (targetUri: Uri, pattern?: string) => {
   pathParts.push(pattern ?? "");
 
   return pathParts.join("/");
+};
+
+export const getDeepLinkPrefix = () => {
+  if (process.env.VSCODE_PID) {
+    return VSCODE_PREFIX;
+  }
+  return CURSOR_PREFIX;
+};
+
+export const getDeepLinkAccessTokenParam = () => {
+  if (process.env.VSCODE_PID) {
+    return ACCESS_TOKEN_REQUESTED_BY_VSCE_SEARCH_PARAM;
+  }
+  return ACCESS_TOKEN_REQUESTED_BY_CURSOR_SEARCH_PARAM;
 };

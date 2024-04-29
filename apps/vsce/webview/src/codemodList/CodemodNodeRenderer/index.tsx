@@ -93,6 +93,7 @@ const getCodemodNodeRenderer =
                   ? progress
                   : null
               }
+              deepLinkPrefix={node.deepLinkPrefix}
               focused={focused}
               queued={node.queued}
               icon={node.icon}

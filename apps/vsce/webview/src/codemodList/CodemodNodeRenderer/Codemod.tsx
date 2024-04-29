@@ -25,6 +25,7 @@ const renderActionButtons = (
   permalink: CodemodItemNode["permalink"],
   codemodInProgress: boolean,
   queued: boolean,
+  deepLinkPrefix: string,
   label: string,
   argumentsExpanded: boolean,
 ) => {
@@ -42,7 +43,7 @@ const renderActionButtons = (
       e.stopPropagation();
 
       navigator.clipboard.writeText(
-        `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
+        `${deepLinkPrefix}codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
       );
       vscode.postMessage({
         kind: "webview.global.showInformationMessage",
@@ -162,6 +163,7 @@ const Codemod = ({
   label,
   progress,
   queued,
+  deepLinkPrefix,
   icon,
   screenWidth,
   focused,
@@ -218,6 +220,7 @@ const Codemod = ({
               permalink,
               progress !== null,
               queued,
+              deepLinkPrefix,
               label,
               argumentsExpanded,
             )}
