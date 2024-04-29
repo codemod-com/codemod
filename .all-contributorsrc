@@ -210,6 +210,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "diboune",
+      "name": "Mohamed Amine Diboune",
+      "avatar_url": "https://avatars.githubusercontent.com/u/60890389?v=4",
+      "profile": "https://github.com/diboune",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
