@@ -228,6 +228,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "ahmadsoliman",
+      "name": "Ahmad Soliman",
+      "avatar_url": "https://avatars.githubusercontent.com/u/3511001?v=4",
+      "profile": "https://www.toptal.com/resume/ahmad-soliman",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
