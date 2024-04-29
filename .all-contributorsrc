@@ -200,6 +200,16 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "jonathangiardino",
+      "name": "Jonathan Giardino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/47124762?v=4",
+      "profile": "http://jonathangiardino.com",
+      "contributions": [
+        "code",
+        "bug"
+      ]
     }
   ],
   "contributorsPerLine": 7,
