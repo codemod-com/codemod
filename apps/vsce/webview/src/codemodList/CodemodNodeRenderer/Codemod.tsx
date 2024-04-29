@@ -2,6 +2,7 @@ import cn from "classnames";
 import areEqual from "fast-deep-equal";
 import { memo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import type { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../src/constants";
 import type { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
 import CustomPopover from "../../shared/CustomPopover";
 import type { CodemodHash } from "../../shared/types";
@@ -25,7 +26,7 @@ const renderActionButtons = (
   permalink: CodemodItemNode["permalink"],
   codemodInProgress: boolean,
   queued: boolean,
-  deepLinkPrefix: string,
+  deepLinkPrefix: typeof CURSOR_PREFIX | typeof VSCODE_PREFIX,
   label: string,
   argumentsExpanded: boolean,
 ) => {
