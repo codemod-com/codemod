@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "name": "react-native/74/remove-alert-action",
   "engine": "jscodeshift",
@@ -8,7 +8,8 @@
     "from": [["react-native", "<", "0.74.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration", "react-native"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react-native/74/remove-alert-action"
   },
-  "include": ["**/*.js", "**/*.ts"]
+  "include": ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx"]
 }
