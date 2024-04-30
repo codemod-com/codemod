@@ -12,7 +12,7 @@ import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
 import { vercelStegaSplit } from "@vercel/stega";
 import Link from "next/link";
-import { Fragment } from "react";
+import { Fragment, type ReactNode } from "react";
 import VerifiedBadge from "../Registry/VerifiedBadge";
 import {
   getAutomationFrameworkTitles,
@@ -39,6 +39,18 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     image: getFilterIcon(frameworkIcons, framework),
   }));
 
+  const frameworksDescription =
+    !frameworks.length ? null : frameworks.length === 1 ? (
+      capitalize(frameworks[0]!.name!)
+    ) : (
+      <ul className="list-disc body-s">
+        {frameworks.map(({ name, image }) => (
+          <li className="body-s" key={name}>
+            {capitalize(name)}
+          </li>
+        ))}
+      </ul>
+    );
   const authorIcons = getFilterSection("author", data?.filterIconDictionary);
 
   const authorImage = getFilterIcon(authorIcons, author);
@@ -211,16 +223,16 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           </div>
 
           <div className="mt-6 flex items-center gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
-            {frameworks.map(({ name: framework }) => (
-              <Fragment key={framework}>
+            {frameworks.length ? (
+              <>
                 <InfoCard
-                  value={capitalize(framework)}
+                  value={frameworksDescription}
                   label="Made for"
                   icon="/icons/badge-info.svg"
                 />
                 <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />
-              </Fragment>
-            ))}
+              </>
+            ) : null}
             {data?.currentVersion?.updatedAt && (
               <InfoCard
                 value={new Date(data?.currentVersion?.updatedAt).toLocaleString(
@@ -427,7 +439,7 @@ export function InfoCard({
   value,
 }: {
   label: string;
-  value: string;
+  value: ReactNode;
   icon?: string;
 }) {
   return (
