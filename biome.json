@@ -121,7 +121,8 @@
       ".vscode",
       "generated",
       "*.py",
-      "./apps/ai/**"
+      "./apps/ai/**",
+      ".all-contributorsrc"
     ]
   },
   "organizeImports": {
