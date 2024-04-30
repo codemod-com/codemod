@@ -551,6 +551,8 @@ const AssistantTab = ({
     );
   }
 
+  const modGpt = useModGPT();
+
   return (
     <Tabs
       value={activeTab}
@@ -611,7 +613,7 @@ const AssistantTab = ({
         onScroll={handleScroll}
         ref={scrollContainerRef}
       >
-        <Chat />
+        <Chat modGpt={modGpt}/>
         {!isSignedIn && <SignInRequired />}
       </TabsContent>
       <TabsContent
