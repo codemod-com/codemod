@@ -7,6 +7,7 @@ from dataclasses import dataclass
 openai.api_key = os.getenv('OPENAI_API_KEY')
 openai_client = openai.OpenAI()
 
+@dataclass
 class CmdArgs:
   codemod_engine: str = 'jscodeshift'
   llm_engine: str = 'gpt-4-turbo-preview'
