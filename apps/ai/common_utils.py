@@ -3,14 +3,8 @@ import os
 import uuid
 import subprocess
 
-import configs
-
 def gen_uid():
   return str(uuid.uuid4())
-
-def log(message):
-  if configs.cmd_args.debug:
-    print(message)
 
 def remove(f):
   os.system(f'rm -rf "{f}"')
@@ -32,7 +26,9 @@ def load_source(path):
 def format_source(source_path):
   return subprocess.run(["tsfmt", "-r", f'"{source_path}"'], capture_output=True)
 
+def normalize_source(s):
+  norm_s = s.replace('"', '\'').replace(';', '').replace(',', '')
+  return re.sub(r"\s+", "", norm_s)
+
 def is_same_sources(src, dst):
-  def normalize_source(s):
-    return re.sub(r"\s+", "", s.replace('"', '\'').replace(';', '').replace(',', ''))
   return normalize_source(src) == normalize_source(dst)

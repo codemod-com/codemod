@@ -6,8 +6,10 @@ import asyncio
 
 def generate_draft_codemod(before, after, codemod_path, prompts_thread, llm_engine, codemod_engine):
   common_utils.remove(codemod_path)
-  prompts_thread.append(configs.get_codemod_engine(codemod_engine).get_initial_prompt(before, after))
-  return llm_utils.clean_llm_output(llm_utils.send_prompt_to_model(codemod_alternatives=None, prompts_thread=prompts_thread, llm_engine=llm_engine, codemod_engine=codemod_engine))
+  initial_prompt = configs.get_codemod_engine(codemod_engine).get_initial_prompt(before, after)
+  prompts_thread.append(initial_prompt)
+  llm_output = llm_utils.send_prompt_to_model(codemod_alternatives=None, prompts_thread=prompts_thread, llm_engine=llm_engine, codemod_engine=codemod_engine)
+  return llm_utils.clean_llm_output(llm_output)
 
 def get_compiler_errors(codemod_path, codemod_engine):
   if codemod_engine == 'jscodeshift':
@@ -16,15 +18,12 @@ def get_compiler_errors(codemod_path, codemod_engine):
 
 async def attempt_error_correction(before_source, after_source, actual_after_path, compiler_errors, runtime_errors, codemod_alternatives, prompts_thread, llm_engine, codemod_engine, logger):
   if runtime_errors:
-    common_utils.log("try to fix runtime error")
     await logger({"execution_status":'in-progress', "message": 'Attempting to fix runtime errors...'})
     prompt = codemod_utils.get_runtime_error_correction_prompt(runtime_errors)
   elif compiler_errors:
-    common_utils.log("try to fix compiler error")
     await logger({"execution_status":'in-progress', "message": 'Attempting to fix compiler errors...'})
     prompt = codemod_utils.get_type_syntax_correction_prompt(compiler_errors, codemod_alternatives[-1], codemod_engine=codemod_engine)
   else:
-    common_utils.log("try to fix unexpected output")
     await logger({"execution_status":'in-progress', "message": 'Attempting to fix unexpected output...'})
     prompt = codemod_utils.get_not_expected_output_prompt(before_source, after_source, actual_after_path)
   prompts_thread.append(prompt)
@@ -63,9 +62,9 @@ async def generate_codemod(before_source, after_source, uid, max_correction_atte
     codemod_alternatives = [codemod]
 
     for i in range(max_correction_attempts):
-        common_utils.log("iteration: "+str(i))
         await logger({"execution_status": 'in-progress', "message": f'Attempt #{i+1} to refine the draft codemod...'})
         # apply the codemod
+        actual_after_path = f'actual.{codemod_path}'
         is_same, exec_errors, compiler_errors = test_generated_codemod(before_source, after_source, codemod_path, codemod_engine)
         if is_same:
           if i == 0:
@@ -73,10 +72,11 @@ async def generate_codemod(before_source, after_source, uid, max_correction_atte
           else:
             await logger({"execution_status": 'finished', "message": f'Attempt #{i+1} corrected the codemod.'})
           # The actual output is the same as the expected one. We are done!
+          common_utils.remove(codemod_path)
+          common_utils.remove(actual_after_path)
           return codemod
         else:
           # find out which error occurred and try to fix it
-          actual_after_path = f'actual.{codemod_path}'
           try:
             codemod = await attempt_error_correction(before_source,
                                               after_source, actual_after_path,
@@ -90,7 +90,6 @@ async def generate_codemod(before_source, after_source, uid, max_correction_atte
             common_utils.save_source(codemod, path=codemod_path)
             codemod_alternatives.append(codemod)
           except Exception as e:
-            print("Error in attempt_error_correction: "+str(e)+" for "+codemod_path)
             await logger({"execution_status": 'error', "message": f'An error occurred while attempting to refine the codemod.'})
 
     # if we reach here, we have used all the attempts
