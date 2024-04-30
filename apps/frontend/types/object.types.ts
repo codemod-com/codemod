@@ -223,7 +223,7 @@ export type AutomationResponse = {
   openedPrs: number;
   createdAt: string;
   updatedAt: string;
-  framework?: string;
+  frameworks: string[];
   versions: AutomationResponseVersion[];
 };
 
@@ -281,7 +281,7 @@ export type AutomationImportSchema = {
   automationStories?: AutomationStories;
   filterIconDictionary?: AutomationFilterIconDictionary;
   currentVersion?: AutomationResponseVersion;
-  framework?: string | null;
+  frameworks: string[];
 };
 
 export type AutomationStories = Array<{

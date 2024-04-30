@@ -34,17 +34,19 @@ export function getFormattedDescription(
   return formattedDescription;
 }
 
-export function getAutomationFramworkTitle(
+export function getAutomationFrameworkTitles(
   automation?: {
-    framework?: string | null;
+    frameworks: string[];
     applicability?: AutomationResponse["applicability"];
   } | null,
-) {
+): string[] {
   const fw =
-    automation?.framework || automation?.applicability?.from?.[0]?.[0] || "";
-  const framework = fw.replace(/@/g, "");
-  return framework;
+    automation?.frameworks ??
+    automation?.applicability?.from?.map(([framework]) => framework) ??
+    [];
+  return fw.map((fw) => fw.replace(/@/g, ""));
 }
+
 export function getAutomationPathname(slug: string) {
   return `/registry/${slug}`;
 }
