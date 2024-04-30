@@ -53,6 +53,29 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     data?.useCaseCategory?.toLocaleLowerCase() || "",
   );
 
+  const buildYourCodemodCard = data?.globalLabels?.cta?.link && (
+    <div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
+      {data?.globalLabels?.ctaTitle && (
+        <div className="relative z-10 flex flex-col gap-[12px]">
+          <p className="xs-heading">
+            {data?.globalLabels?.ctaTitle || "Build custom codemods"}
+          </p>
+          {data?.globalLabels?.ctaDescription && (
+            <p className="body-s">{data?.globalLabels?.ctaDescription}</p>
+          )}
+        </div>
+      )}
+      <img
+        className="pointer-events-none absolute left-0 top-[60px] -z-10 w-full"
+        alt="background illustration"
+        src="/illustration/planet.svg"
+      />
+      <LinkButton href={data?.globalLabels?.cta?.link} intent="primary">
+        {data?.globalLabels?.cta?.label || "Get started now"}
+      </LinkButton>
+    </div>
+  );
+
   return (
     <Section className="pt-[calc(var(--header-height)+24px)]">
       <div className="py-8">
@@ -385,36 +408,14 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
               ))}
             </div>
           )} */}
-          {data?.globalLabels?.cta?.link && (
-            <div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
-              {data?.globalLabels?.ctaTitle && (
-                <div className="relative z-10 flex flex-col gap-[12px]">
-                  <p className="xs-heading">
-                    {data?.globalLabels?.ctaTitle || "Build custom codemods"}
-                  </p>
-                  {data?.globalLabels?.ctaDescription && (
-                    <p className="body-s">
-                      {data?.globalLabels?.ctaDescription}
-                    </p>
-                  )}
-                </div>
-              )}
-              <img
-                className="pointer-events-none absolute left-0 top-[60px] -z-10 w-full"
-                alt="background illustration"
-                src="/illustration/planet.svg"
-              />
-              <LinkButton href={data?.globalLabels?.cta?.link} intent="primary">
-                {data?.globalLabels?.cta?.label || "Get started now"}
-              </LinkButton>
-            </div>
-          )}
+          <span className="hidden sm:block">{buildYourCodemodCard}</span>
         </aside>
         {description ? (
           <div className="[&_h1]:s-heading [&_h2]:xs-heading flex flex-col gap-4 lg:hidden [&_a]:underline">
             {description}
           </div>
         ) : null}
+        <span className="sm:hidden block">{buildYourCodemodCard}</span>
       </div>
     </Section>
   );
