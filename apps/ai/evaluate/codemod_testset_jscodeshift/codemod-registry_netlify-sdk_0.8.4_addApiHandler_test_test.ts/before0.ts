@@ -1,1 +1,0 @@
-integration.addHandler('some-function', async (event, context) => { });

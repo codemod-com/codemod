@@ -1,3 +1,0 @@
-const mapStateToProps = ({ a }) => ({
-    a,
-});

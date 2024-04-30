@@ -1,1 +1,0 @@
-import type { WithRouterProps } from 'react-router-dom';

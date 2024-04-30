@@ -1,1 +1,0 @@
-await client.enableBuildEventHandlers(siteId);

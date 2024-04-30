@@ -1,1 +1,0 @@
-integration.addApiHandler('some-function', async (event, context) => { });

@@ -1,1 +1,0 @@
-const NoPropsComponent: React.FC = () => <span>foo < /span>

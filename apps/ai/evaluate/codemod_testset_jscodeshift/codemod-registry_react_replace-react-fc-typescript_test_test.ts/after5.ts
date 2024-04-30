@@ -1,1 +1,0 @@
-const NoPropsComponent = () => <span>foo < /span>
