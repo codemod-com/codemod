@@ -12,10 +12,10 @@ export default {
         "2xl": "1400px",
       },
     },
-    maxHeight: {
-      "1/3": "33.3%",
-    },
     extend: {
+      maxHeight: {
+        "1/3": "33.3%",
+      },
       zIndex: {
         1: "1",
         // add 10,000 to avoid conflicts with other libraries

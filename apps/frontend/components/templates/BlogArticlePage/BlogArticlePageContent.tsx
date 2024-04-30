@@ -131,7 +131,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
 
         <div className="relative flex w-full">
           {/* Body */}
-          <div className="body-m relative max-w-full flex-1 lg:max-w-xl lg:pr-[68px]  xl:max-w-3xl">
+          <div className="body-m relative max-w-full flex-1 lg:max-w-xl lg:pr-[68px]  xl:max-w-3xl [&_p]:pb-3">
             {props?.body && (
               <>
                 <RichText

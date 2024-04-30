@@ -186,7 +186,6 @@ export default {
   ],
   theme: {
     ...defaultTheme,
-
     keyframes: {
       "accordion-down": {
         from: { height: "0" },
@@ -208,10 +207,10 @@ export default {
         "2xl": "1400px",
       },
     },
-    maxHeight: {
-      "1/3": "33.3%",
-    },
     extend: {
+      maxHeight: {
+        "1/3": "33.3%",
+      },
       colors: colorPalette,
       fontFamily: {
         regular: "var(--satoshi-regular)",
@@ -398,11 +397,6 @@ export default {
         "fade-out": "fade-out 200ms cubic-bezier(0.16, 1, 0.3, 1)",
         "slide-left": "slideLeft infinite 60s linear",
         "slide-right": "slideRight infinite 60s linear",
-      },
-      borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
         "accordion-down": {
