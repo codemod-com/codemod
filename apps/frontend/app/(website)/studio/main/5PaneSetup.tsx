@@ -1,4 +1,13 @@
 import ChevronRightSVG from "@/assets/icons/chevronright.svg";
+import {
+  ACCESS_TOKEN_COMMANDS,
+  ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+  CURSOR_PREFIX,
+  LEARN_KEY,
+  TWO_MINS_IN_MS,
+  VSCODE_PREFIX,
+} from "@/constants";
 import { cn } from "@/utils";
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities";
@@ -38,12 +47,13 @@ import { CodemodBuilder } from "@studio/main/CodemodBuilder";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import { openLink } from "@studio/utils/openLink";
+import { openIDELink, openLink } from "@studio/utils/openLink";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 // import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
+import { C } from "vitest/dist/reporters-xEmem8D4";
 import themeConfig from "../../../../tailwind.config";
 import Codemod from "./Codemod";
 import Header from "./Header";
@@ -82,37 +92,6 @@ const enginesConfig: Array<{
     disabled: true,
   },
 ];
-
-const LEARN_KEY = "learn";
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2 =
-  "accessTokenRequestedByVSCE";
-const ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY = "accessTokenRequestedByCLI";
-const ACCESS_TOKEN_COMMANDS = [
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1,
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2,
-  ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
-];
-const TWO_MINS_IN_MS = 2 * 60 * 1000;
-
-const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
-  const accessTokenEither = await getAccessToken({
-    clerkToken,
-  });
-
-  if (accessTokenEither.isLeft()) {
-    console.error(accessTokenEither.getLeft());
-    return;
-  }
-  const accessToken = accessTokenEither.get();
-
-  const vscodeUrl = new URL("vscode://codemod.codemod-vscode-extension/");
-  const searchParams = new URLSearchParams();
-
-  searchParams.set(SEARCH_PARAMS_KEYS.ACCESS_TOKEN, accessToken);
-  vscodeUrl.search = searchParams.toString();
-  openLink(vscodeUrl.toString());
-};
 
 const Main = () => {
   const { isSignedIn, getToken } = useAuth();
@@ -168,9 +147,7 @@ const Main = () => {
         return;
       }
       const timestamp =
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1) ??
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2) ??
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY);
+        ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
 
       if (
         timestamp === null ||
@@ -192,7 +169,12 @@ const Main = () => {
           iv,
         });
       } else {
-        await routeUserToVSCodeWithAccessToken(clerkToken);
+        await openIDELink(
+          clerkToken,
+          localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY)
+            ? CURSOR_PREFIX
+            : VSCODE_PREFIX,
+        );
       }
       ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
     })();
@@ -222,9 +204,15 @@ const Main = () => {
             sessionId,
             iv,
           });
+          return;
         }
 
-        await routeUserToVSCodeWithAccessToken(clerkToken);
+        await openIDELink(
+          clerkToken,
+          command === ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY
+            ? CURSOR_PREFIX
+            : VSCODE_PREFIX,
+        );
       })();
       return;
     }

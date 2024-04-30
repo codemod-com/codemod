@@ -4,7 +4,7 @@ import * as t from "io-ts";
 import type { CodemodEntry } from "../codemods/types";
 import type { RootState } from "../data";
 import type { CodemodHash } from "../packageJsonAnalyzer/types";
-import { buildHash, capitalize } from "../utilities";
+import { buildHash, capitalize, getDeepLinkPrefix } from "../utilities";
 
 interface CodemodNodeHashDigestBrand {
   readonly __CodemodNodeHashDigest: unique symbol;
@@ -83,6 +83,7 @@ export const buildCodemodNode = (
     queued: queued,
     icon: codemod.verified ? "certified" : "community",
     permalink: null,
+    deepLinkPrefix: getDeepLinkPrefix(),
     args,
   } as const;
 };
