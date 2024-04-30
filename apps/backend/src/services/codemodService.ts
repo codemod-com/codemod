@@ -23,6 +23,7 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
 type LongCodemodIndoDetails = {
   frameworks: string[];
   useCaseCategory: string | null | undefined;
+  frameworkVersion: string | null | undefined;
 };
 
 export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
@@ -160,8 +161,12 @@ export class CodemodService {
           .filter((tag) => tag.aliases.some((t) => codemod.tags.includes(t)))
           .map((tag) => tag.title);
 
+        const frameworkVersionRegEx = /\/(\d+(\.\d+)*)(\/|$)/;
+        const versionMatch = codemod.name.match(frameworkVersionRegEx);
+
         return {
           ...codemod,
+          frameworkVersion: versionMatch ? versionMatch[1] : null,
           frameworks,
           useCaseCategory: useCaseCategory ?? "",
         };
@@ -258,8 +263,12 @@ export class CodemodService {
       .filter((tag) => tag.aliases.some((t) => codemod.tags.includes(t)))
       .map((tag) => tag.title);
 
+    const frameworkVersionRegEx = /\/(\d+(\.\d+)*)(\/|$)/;
+    const versionMatch = codemod.name.match(frameworkVersionRegEx);
+
     return {
       ...codemod,
+      frameworkVersion: versionMatch ? versionMatch[1] : null,
       frameworks,
       useCaseCategory: useCaseCategory ?? "",
     };
