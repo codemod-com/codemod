@@ -1,3 +1,4 @@
+import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
@@ -113,19 +114,15 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
   IV: "iv" as const,
 });
 
+type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
+
 type InitialState = Readonly<{
   engine: KnownEngines;
   beforeSnippet: string;
   afterSnippet: string;
   codemodSource: string;
   codemodName: string | null;
-  command:
-    | "learn"
-    | "accessTokenRequested"
-    | "accessTokenRequestedByCLI"
-    | "accessTokenRequestedByVSCE"
-    | "accessTokenRequestedByCURSOR"
-    | null;
+  command: "learn" | AccessTokenCommands | null;
 }>;
 
 const decodeNullable = (value: string | null): string | null => {
