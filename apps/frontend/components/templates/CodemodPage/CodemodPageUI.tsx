@@ -12,9 +12,10 @@ import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
 import { vercelStegaSplit } from "@vercel/stega";
 import Link from "next/link";
+import { Fragment } from "react";
 import VerifiedBadge from "../Registry/VerifiedBadge";
 import {
-  getAutomationFramworkTitle,
+  getAutomationFrameworkTitles,
   getFilterIcon,
   getFilterSection,
 } from "../Registry/helpers";
@@ -26,8 +27,6 @@ export interface CodemodPageProps {
 }
 
 export default function CodemodPageUI({ data, description }: CodemodPageProps) {
-  const framework = getAutomationFramworkTitle(data);
-
   const { cleaned: author } = vercelStegaSplit(`${data?.author}`);
 
   const frameworkIcons = getFilterSection(
@@ -35,7 +34,11 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     data?.filterIconDictionary,
   );
 
-  const frameworkImage = getFilterIcon(frameworkIcons, framework);
+  const frameworks = getAutomationFrameworkTitles(data).map((framework) => ({
+    name: framework,
+    image: getFilterIcon(frameworkIcons, framework),
+  }));
+
   const authorIcons = getFilterSection("author", data?.filterIconDictionary);
 
   const authorImage = getFilterIcon(authorIcons, author);
@@ -71,47 +74,50 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
               )}
               <>
-                {framework && (
-                  <Link
-                    href={`/registry?${
-                      REGISTRY_FILTER_TYPES.framework
-                    }=${framework.toLowerCase()}`}
-                    prefetch
-                  >
-                    <Tag intent="default">
-                      <>
-                        {frameworkImage?.image.light && (
-                          <SanityImage
-                            maxWidth={20}
-                            image={frameworkImage.image.light}
-                            alt={frameworkImage.image.light.alt}
-                            elProps={{
-                              width: 20,
-                              height: 20,
-                              className: "h-5 w-5 dark:hidden",
-                            }}
-                          />
-                        )}
+                {frameworks.map(
+                  ({ name: framework, image: frameworkImage }) => (
+                    <Link
+                      key={framework}
+                      href={`/registry?${
+                        REGISTRY_FILTER_TYPES.framework
+                      }=${framework.toLowerCase()}`}
+                      prefetch
+                    >
+                      <Tag intent="default">
+                        <>
+                          {frameworkImage?.image.light && (
+                            <SanityImage
+                              maxWidth={20}
+                              image={frameworkImage.image.light}
+                              alt={frameworkImage.image.light.alt}
+                              elProps={{
+                                width: 20,
+                                height: 20,
+                                className: "h-5 w-5 dark:hidden",
+                              }}
+                            />
+                          )}
 
-                        {frameworkImage?.image.dark && (
-                          <SanityImage
-                            maxWidth={20}
-                            image={frameworkImage.image.dark}
-                            alt={frameworkImage.image.dark.alt}
-                            elProps={{
-                              width: 20,
-                              height: 20,
-                              className: "hidden h-5 w-5 dark:inline",
-                            }}
-                          />
-                        )}
-                      </>
+                          {frameworkImage?.image.dark && (
+                            <SanityImage
+                              maxWidth={20}
+                              image={frameworkImage.image.dark}
+                              alt={frameworkImage.image.dark.alt}
+                              elProps={{
+                                width: 20,
+                                height: 20,
+                                className: "hidden h-5 w-5 dark:inline",
+                              }}
+                            />
+                          )}
+                        </>
 
-                      <span className="capitalize">
-                        {capitalize(framework)}
-                      </span>
-                    </Tag>
-                  </Link>
+                        <span className="capitalize">
+                          {capitalize(framework)}
+                        </span>
+                      </Tag>
+                    </Link>
+                  ),
                 )}
               </>
               {data?.useCaseCategory && (
@@ -182,16 +188,16 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           </div>
 
           <div className="mt-6 flex items-center gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
-            {framework && (
-              <InfoCard
-                value={capitalize(framework)}
-                label="Made for"
-                icon="/icons/badge-info.svg"
-              />
-            )}
-            {framework && (
-              <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />
-            )}
+            {frameworks.map(({ name: framework }) => (
+              <Fragment key={framework}>
+                <InfoCard
+                  value={capitalize(framework)}
+                  label="Made for"
+                  icon="/icons/badge-info.svg"
+                />
+                <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />
+              </Fragment>
+            ))}
             {data?.currentVersion?.updatedAt && (
               <InfoCard
                 value={new Date(data?.currentVersion?.updatedAt).toLocaleString(

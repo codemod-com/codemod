@@ -9,7 +9,7 @@ import type { RegistryCardData } from "@/types/object.types";
 import { capitalize, unslugify } from "@/utils/strings";
 import VerifiedBadge from "./VerifiedBadge";
 import {
-  getAutomationFramworkTitle,
+  getAutomationFrameworkTitles,
   getAutomationPathname,
   getFilterIcon,
   getFilterSection,
@@ -21,8 +21,6 @@ export default function RegistrySectionCard(
     onFilter: (key?: string | null, value?: string | null) => void;
   },
 ) {
-  const framework = getAutomationFramworkTitle(props);
-
   const formattedDescription = getFormattedDescription(
     props.shortDescription || "",
   );
@@ -31,10 +29,11 @@ export default function RegistrySectionCard(
     REGISTRY_FILTER_TYPES.framework,
     props.filterIconDictionary,
   );
-  const frameworkImage = getFilterIcon(
-    frameworkIcons,
-    getAutomationFramworkTitle(props),
-  );
+
+  const frameworks = getAutomationFrameworkTitles(props).map((framework) => ({
+    name: framework,
+    image: getFilterIcon(frameworkIcons, framework),
+  }));
 
   const authorIcons = getFilterSection("author", props.filterIconDictionary);
   const authorImage = getFilterIcon(authorIcons, props.author);
@@ -74,11 +73,13 @@ export default function RegistrySectionCard(
       <div className="flex w-full flex-col gap-m lg:flex-row lg:justify-between">
         <div className="flex items-center gap-xs">
           {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
-          {framework && (
+          {frameworks.map(({ name: framework, image: frameworkImage }) => (
             <button
+              key={framework}
               onClick={() =>
                 props.onFilter?.(REGISTRY_FILTER_TYPES.framework, framework)
               }
+              type="button"
             >
               <Tag intent="default">
                 <>
@@ -111,7 +112,7 @@ export default function RegistrySectionCard(
                 <span>{capitalize(framework)}</span>
               </Tag>
             </button>
-          )}
+          ))}
           {props.useCaseCategory && (
             <button
               onClick={() =>

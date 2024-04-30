@@ -9,7 +9,7 @@ import { SanityLink } from "../../shared/SanityLink";
 import Tag from "../../shared/Tag";
 import VerifiedBadge from "./VerifiedBadge";
 import {
-  getAutomationFramworkTitle,
+  getAutomationFrameworkTitles,
   getAutomationPathname,
   getFilterIcon,
   getFilterSection,
@@ -17,8 +17,6 @@ import {
 } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
-  const framework = getAutomationFramworkTitle(props);
-
   const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
@@ -31,10 +29,11 @@ export default function RegistryCard(props: RegistryCardData) {
     REGISTRY_FILTER_TYPES.framework,
     props.filterIconDictionary,
   );
-  const frameworkImage = getFilterIcon(
-    frameworkIcons,
-    getAutomationFramworkTitle(props),
-  );
+
+  const frameworks = getAutomationFrameworkTitles(props).map((framework) => ({
+    name: framework,
+    image: getFilterIcon(frameworkIcons, framework),
+  }));
 
   const authorIcons = getFilterSection("author", props.filterIconDictionary);
   const authorImage = getFilterIcon(authorIcons, author);
@@ -77,20 +76,16 @@ export default function RegistryCard(props: RegistryCardData) {
         {/* tags */}
         <div className="flex items-center gap-xs">
           {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
-          {framework && (
+          {frameworks.map(({ name: framework, image: frameworkImage }) => (
             <button
+              key={framework}
               onLoad={() =>
-                prefetchFilterChange(
-                  REGISTRY_FILTER_TYPES.framework,
-                  getAutomationFramworkTitle(props),
-                )
+                prefetchFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
               }
               onClick={() =>
-                handleFilterChange(
-                  REGISTRY_FILTER_TYPES.framework,
-                  getAutomationFramworkTitle(props),
-                )
+                handleFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
               }
+              type="button"
             >
               <Tag intent="default">
                 <>
@@ -124,7 +119,7 @@ export default function RegistryCard(props: RegistryCardData) {
                 <span>{capitalize(framework)}</span>
               </Tag>
             </button>
-          )}
+          ))}
           {props.useCaseCategory && (
             <button
               onClick={() =>

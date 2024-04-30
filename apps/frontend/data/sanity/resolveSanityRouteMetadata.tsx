@@ -1,7 +1,7 @@
 import type { Metadata, ResolvingMetadata } from "next";
 
 import {
-  getAutomationFramworkTitle,
+  getAutomationFrameworkTitles,
   getFilterIcon,
   getFilterSection,
 } from "@/components/templates/Registry/helpers";
@@ -106,7 +106,10 @@ export async function resolveSanityRouteMetadata(
     data as CodemodPagePayload;
   const { department, location } = data as Job;
 
-  const automationFrom = getAutomationFramworkTitle(data as CodemodPagePayload);
+  // @TODO
+  const automationFrom =
+    getAutomationFrameworkTitles(data as CodemodPagePayload)[0] ?? "";
+
   const fSectionFrom = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     filterIconDictionary,
