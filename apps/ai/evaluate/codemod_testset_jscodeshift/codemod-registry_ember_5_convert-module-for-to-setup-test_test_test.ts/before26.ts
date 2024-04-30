@@ -1,1 +1,0 @@
-import { moduleFor, skip, test } from 'ember-qunit';

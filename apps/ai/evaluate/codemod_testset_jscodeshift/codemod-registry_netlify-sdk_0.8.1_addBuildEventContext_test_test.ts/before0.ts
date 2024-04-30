@@ -1,3 +1,0 @@
-integration.addBuildContext("onPreBuild", () => {
-    //FOO
-});
