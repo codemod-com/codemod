@@ -3,8 +3,8 @@
 import { openLink } from "@/utils";
 import type { ReactNode } from "react";
 import { type ExternalToast, toast } from "sonner";
-import Button from "./Button";
 import { VSCODE_PREFIX } from "../../../../constants";
+import Button from "./Button";
 
 type RunCTAButtonProps = {
   href: string;
