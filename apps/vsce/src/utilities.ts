@@ -4,8 +4,8 @@ import * as t from "io-ts";
 import { Project } from "ts-morph";
 import { Uri, type Webview } from "vscode";
 import {
-  ACCESS_TOKEN_REQUESTED_BY_CURSOR_SEARCH_PARAM,
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_SEARCH_PARAM,
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY,
   CURSOR_PREFIX,
   VSCODE_PREFIX,
 } from "./constants";
@@ -157,7 +157,7 @@ export const getDeepLinkPrefix = () => {
 
 export const getDeepLinkAccessTokenParam = () => {
   if (process.env.VSCODE_PID) {
-    return ACCESS_TOKEN_REQUESTED_BY_VSCE_SEARCH_PARAM;
+    return ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY;
   }
-  return ACCESS_TOKEN_REQUESTED_BY_CURSOR_SEARCH_PARAM;
+  return ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY;
 };
