@@ -23,6 +23,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
       // read from cache only if there is no newer remote file
       if (
         remoteCodemodLastModified !== null &&
+        localCodemodLastModified !== null &&
         localCodemodLastModified > remoteCodemodLastModified
       ) {
         const tDataOut = await this._ifs.promises.readFile(path);
@@ -42,11 +43,19 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
     return buffer;
   }
 
-  async __getLocalFileLastModified(path: string): Promise<number> {
-    const stats = await this._ifs.promises.stat(path);
-    return stats.mtime.getTime();
+  private async __getLocalFileLastModified(
+    path: string,
+  ): Promise<number | null> {
+    try {
+      const stats = await this._ifs.promises.stat(path);
+      return stats.mtime.getTime();
+    } catch (e) {
+      return null;
+    }
   }
-  async __getRemoteFileLastModified(url: string): Promise<number | null> {
+  private async __getRemoteFileLastModified(
+    url: string,
+  ): Promise<number | null> {
     let response: AxiosResponse;
 
     try {
