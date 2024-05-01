@@ -14,9 +14,8 @@ import { notFound } from "next/navigation";
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const res = await fetchWithTimeout(
-    `https://backend.codemod.com/codemods/list`,
-  );
+  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const res = await fetchWithTimeout(`${baseUrl}/list`);
   const allAutomations = res.status === 200 ? await res.json() : [];
   return allAutomations.map((automation) => ({ codemod: automation.slug }));
 }
