@@ -291,11 +291,6 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                     className: "flex items-center gap-xs",
                   }}
                 />
-              </div>
-            )}
-            {data?.currentVersion?.vsCodeLink && (
-              <div className="flex flex-col gap-xs">
-                <p className="body-s">{"Cursor extension"}</p>
                 <RunCTAButton
                   href={data.currentVersion.vsCodeLink.replace(
                     VSCODE_PREFIX,
@@ -304,7 +299,15 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   title={"Run in Cursor"}
                   toastMessage="Opening Cursor..."
                   toastOptions={{
-                    icon: <Icon name="cursor-ide" className="h-5 w-5" />,
+                    icon: (
+                      <img
+                        src="/icons/cursor-ide.svg"
+                        width={30}
+                        height={30}
+                        alt="cursor-ide-svg"
+                        style={{ marginLeft: "0.2rem" }}
+                      />
+                    ),
                     className: "flex items-center gap-xs",
                   }}
                 />
