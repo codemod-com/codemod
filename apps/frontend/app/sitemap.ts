@@ -39,10 +39,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
   );
+  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
 
-  const res = await fetchWithTimeout(
-    `https://backend.codemod.com/codemods/list`,
-  );
+  const res = await fetchWithTimeout(`${baseUrl}/list`);
   const allAutomations: AutomationAPIListResponse[] =
     res.status === 200 ? await res.json() : [];
 
