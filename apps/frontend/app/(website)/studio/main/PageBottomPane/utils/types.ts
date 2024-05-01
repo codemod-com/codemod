@@ -2,7 +2,6 @@ import type { KnownEngines } from "@codemod-com/utilities";
 import type { useCodeDiff } from "@studio/main/JSCodeshiftRender";
 import type { VisibilityOptions } from "@studio/types/options";
 import type { ValueOf } from "next/constants";
-import type React from "react";
 import type { MutableRefObject, ReactNode } from "react";
 import type { ImperativePanelHandle } from "react-resizable-panels";
 

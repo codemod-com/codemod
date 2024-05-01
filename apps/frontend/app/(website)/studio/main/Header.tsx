@@ -1,11 +1,12 @@
 import AuthButtons from "@auth/AuthButtons";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
-import { Backspace as BackspaceIcon } from "@phosphor-icons/react";
-import { Link as LinkIcon } from "@phosphor-icons/react";
+import {
+  Backspace as BackspaceIcon,
+  Link as LinkIcon,
+} from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { CodemodLogo } from "@studio/icons/CodemodLogo";
-import { CodemodBuilder } from "@studio/main/CodemodBuilder";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { DownloadZip } from "./DownloadZip";
