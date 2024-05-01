@@ -14,8 +14,7 @@ describe("react/remove-forward-ref", () => {
 		`;
 
     const OUTPUT = `
-			const MyInput = props => {
-				const { ref } = props;
+			const MyInput = ({ ref, ...props }) => {
 				return null;
 			};
 		`;
@@ -43,8 +42,7 @@ describe("react/remove-forward-ref", () => {
 		`;
 
     const OUTPUT = `
-			const MyInput = function A(props) {
-				const { ref } = props;
+			const MyInput = function A({ref, ...props}) {
 				return null;
 			};
 		`;
@@ -72,8 +70,7 @@ describe("react/remove-forward-ref", () => {
 		`;
 
     const OUTPUT = `
-			const MyInput = function MyInput(props) {
-				const { ref } = props;
+			const MyInput = function MyInput({ref, ...props}) {
 				return null;
 			};
 		`;
@@ -104,8 +101,7 @@ describe("react/remove-forward-ref", () => {
     const OUTPUT = `
 			import type { X } from "react";
 			import { type Y } from 'react';
-			const MyInput = function MyInput(props) {
-				const { ref } = props;
+			const MyInput = function MyInput({ref, ...props}) {
 				return null;
 			};
 		`;
@@ -134,8 +130,7 @@ describe("react/remove-forward-ref", () => {
 
     const OUTPUT = `
 		    import { useState } from 'react';
-			const MyInput = function MyInput(props) {
-				const { ref } = props;
+			const MyInput = function MyInput({ref, ...props}) {
 				return null;
 			};
 		`;
@@ -191,8 +186,7 @@ describe("react/remove-forward-ref", () => {
 		`;
 
     const OUTPUT = `
-			const MyInput = function MyInput(props) {
-				const { ref } = props;
+			const MyInput = function MyInput({ref, ...props}) {
 				return <input ref={ref} onChange={props.onChange} />
 			};
 		`;
@@ -222,8 +216,7 @@ describe("react/remove-forward-ref", () => {
 
     const OUTPUT = `
 			type Props = { a: 1 };
-			const MyInput = (props: Props & { ref: React.RefObject<HTMLInputElement>; }) => {
-				const { ref } = props;
+			const MyInput = ({ref, ...props}: Props & { ref: React.RefObject<HTMLInputElement>; }) => {
 				return null;
 			};
 		`;
@@ -247,16 +240,14 @@ describe("react/remove-forward-ref", () => {
 				myProps: Props,
 				myRef: React.ForwardedRef<HTMLButtonElement>
 			  ) {
-
 				return null;
 			  });
 		`;
 
     const OUTPUT = `
 			const MyComponent = function Component(
-				myProps: Props & { ref: React.RefObject<HTMLButtonElement>; }
+				{ref: myRef, ...myProps}: Props & { ref: React.RefObject<HTMLButtonElement>; }
 			) {
-        const { ref: myRef } = myProps;
 				return null;
 			};
 		`;
@@ -267,7 +258,6 @@ describe("react/remove-forward-ref", () => {
     };
 
     const actualOutput = transform(fileInfo, buildApi("tsx"));
-    console.log(actualOutput, "???");
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),
