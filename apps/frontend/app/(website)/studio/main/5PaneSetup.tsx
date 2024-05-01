@@ -47,7 +47,7 @@ import { CodemodBuilder } from "@studio/main/CodemodBuilder";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import { openIDELink, openLink } from "@studio/utils/openLink";
+import { openIDELink } from "@studio/utils/openIDELink";
 import Image from "next/image";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";

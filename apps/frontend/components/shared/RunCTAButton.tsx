@@ -1,5 +1,6 @@
 "use client";
 
+import { openLink } from "@/utils";
 import type { ReactNode } from "react";
 import { type ExternalToast, toast } from "sonner";
 import Button from "./Button";
@@ -26,9 +27,10 @@ export default function RunCTAButton({
         if (toastMessage) {
           toast(toastMessage, toastOptions);
         }
+        openLink(href);
       }}
     >
-      <a href={href}>{title}</a>
+      {title}
     </Button>
   );
 }
