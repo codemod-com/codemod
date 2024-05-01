@@ -71,9 +71,8 @@ describe("react/19/use-context-hook: useContext -> use", () => {
 		const theme = trpc.useContext();
 		`;
 
-      const output = `
-		const theme = trpc.useContext();
-		`;
+      // file is skipped
+      const output = undefined;
 
       const fileInfo: FileInfo = {
         path: "index.ts",
@@ -84,10 +83,7 @@ describe("react/19/use-context-hook: useContext -> use", () => {
         quote: "single",
       });
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 
@@ -192,17 +188,6 @@ describe("react/19/use-context-hook: useContext -> use", () => {
 			};
 		`;
 
-      const output = `
-			function Component({
-				appUrl,
-			  }: {
-				appUrl: string;
-			  }) {
-				const theme = trpc.useContext();
-				return <div />;
-			};
-		`;
-
       const fileInfo: FileInfo = {
         path: "index.ts",
         source: input,
@@ -212,10 +197,7 @@ describe("react/19/use-context-hook: useContext -> use", () => {
         quote: "single",
       });
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 });

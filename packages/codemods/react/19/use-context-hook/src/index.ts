@@ -8,6 +8,8 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  let isDirty = false;
+
   // Get default import from react
   const defaultReactImport =
     root
@@ -34,6 +36,7 @@ export default function transform(
       const newIdentifier = j.identifier.from({ name: "use" });
 
       identifierPath?.replace(newIdentifier);
+      isDirty = true;
     });
 
   // Get useContext import name
@@ -61,9 +64,11 @@ export default function transform(
         const newIdentifier = j.identifier.from({ name: "use" });
 
         path.replace(newIdentifier);
+
+        isDirty = true;
       }
     });
   }
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }
