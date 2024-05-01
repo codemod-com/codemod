@@ -1,9 +1,10 @@
 ---
 name: Report faulty codemod
 about: Report codemod incorrect output
-title: '[faulty output]'
+title: "[faulty output]"
 labels: invalid
 assignees: ''
+
 ---
 
 :warning::warning: Please do not include any proprietary code in the issue. :warning::warning:
