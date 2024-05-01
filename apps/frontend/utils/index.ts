@@ -12,3 +12,4 @@ export const anyElementExists = <T = string>(arrayA: T[], arrayB: T[]) =>
 export { cn };
 export * from "./getBlocksToc";
 export * from "./getImageProps";
+export * from "./openLink";
