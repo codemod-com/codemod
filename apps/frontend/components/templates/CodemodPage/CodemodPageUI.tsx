@@ -6,7 +6,11 @@ import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
-import { REGISTRY_FILTER_TYPES } from "@/constants";
+import {
+  CURSOR_PREFIX,
+  REGISTRY_FILTER_TYPES,
+  VSCODE_PREFIX,
+} from "@/constants";
 import type { CodemodPagePayload } from "@/types";
 import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
@@ -276,7 +280,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                     "VS Code extension"}
                 </p>
                 <RunCTAButton
-                  href={data?.currentVersion?.vsCodeLink}
+                  href={data.currentVersion.vsCodeLink}
                   title={
                     data.globalLabels?.vsCodeExtensionButtonLabel ||
                     "Run in VS Code"
@@ -284,6 +288,23 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   toastMessage="Opening Visual Studio Code..."
                   toastOptions={{
                     icon: <Icon name="vscode" className="h-5 w-5" />,
+                    className: "flex items-center gap-xs",
+                  }}
+                />
+              </div>
+            )}
+            {data?.currentVersion?.vsCodeLink && (
+              <div className="flex flex-col gap-xs">
+                <p className="body-s">{"Cursor extension"}</p>
+                <RunCTAButton
+                  href={data.currentVersion.vsCodeLink.replace(
+                    VSCODE_PREFIX,
+                    CURSOR_PREFIX,
+                  )}
+                  title={"Run in Cursor"}
+                  toastMessage="Opening Cursor..."
+                  toastOptions={{
+                    icon: <Icon name="cursor-ide" className="h-5 w-5" />,
                     className: "flex items-center gap-xs",
                   }}
                 />
