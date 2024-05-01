@@ -150,10 +150,10 @@ export const parseUnpublishBody = (input: unknown) =>
   parse(unpublishBodySchema, input);
 
 export const codemodRunBodySchema = object({
-  source: string(),
+  codemodSource: string(),
   codemodName: string(),
-  engine: union([literal("jscodeshift"), literal("ts-morph")]),
-  repo: string(),
+  codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
+  repoUrl: string(),
 });
 
 export const parseCodemodRunBody = (input: unknown) =>
