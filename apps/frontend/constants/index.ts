@@ -1,3 +1,15 @@
+import {
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY,
+} from "../../../constants";
+
+export {
+  VSCODE_PREFIX,
+  CURSOR_PREFIX,
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+} from "../../../constants";
+
 export const CUSTOMER_STORY_TAG = {
   value: "customer-stories",
   label: "Customer Stories",
@@ -10,3 +22,17 @@ export const REGISTRY_FILTER_TYPES = {
 } as const;
 
 export const STATIC_HEADER_ROUTES = ["/registry"];
+
+// For /studio
+export const LEARN_KEY = "learn";
+export const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_DEPRECATED =
+  "accessTokenRequested"; // For backwards-compatibility
+export const ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY =
+  "accessTokenRequestedByCLI";
+export const ACCESS_TOKEN_COMMANDS = [
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_DEPRECATED,
+  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
+] as const;
+export const TWO_MINS_IN_MS = 2 * 60 * 1000;

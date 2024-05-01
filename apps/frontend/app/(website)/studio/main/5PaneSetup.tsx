@@ -1,3 +1,12 @@
+import {
+  ACCESS_TOKEN_COMMANDS,
+  ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
+  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
+  CURSOR_PREFIX,
+  LEARN_KEY,
+  TWO_MINS_IN_MS,
+  VSCODE_PREFIX,
+} from "@/constants";
 import { cn } from "@/utils";
 import { useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities";
@@ -19,7 +28,7 @@ import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
-import { openLink } from "@studio/utils/openLink";
+import { openIDELink } from "@studio/utils/openIDELink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 // import toast from "react-hot-toast";
@@ -36,38 +45,7 @@ import {
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
-const LEARN_KEY = "learn";
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2 =
-  "accessTokenRequestedByVSCE";
-const ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY = "accessTokenRequestedByCLI";
-const ACCESS_TOKEN_COMMANDS = [
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1,
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2,
-  ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
-];
-const TWO_MINS_IN_MS = 2 * 60 * 1000;
-
-const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
-  const accessTokenEither = await getAccessToken({
-    clerkToken,
-  });
-
-  if (accessTokenEither.isLeft()) {
-    console.error(accessTokenEither.getLeft());
-    return;
-  }
-  const accessToken = accessTokenEither.get();
-
-  const vscodeUrl = new URL("vscode://codemod.codemod-vscode-extension/");
-  const searchParams = new URLSearchParams();
-
-  searchParams.set(SEARCH_PARAMS_KEYS.ACCESS_TOKEN, accessToken);
-  vscodeUrl.search = searchParams.toString();
-  openLink(vscodeUrl.toString());
-};
-
-export const Main = () => {
+const Main = () => {
   const { isSignedIn, getToken } = useAuth();
   const router = useRouter();
   const panelRefs: PanelsRefs = useRef({});
@@ -121,9 +99,7 @@ export const Main = () => {
         return;
       }
       const timestamp =
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1) ??
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2) ??
-        localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY);
+        ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
 
       if (
         timestamp === null ||
@@ -145,7 +121,12 @@ export const Main = () => {
           iv,
         });
       } else {
-        await routeUserToVSCodeWithAccessToken(clerkToken);
+        await openIDELink(
+          clerkToken,
+          localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY)
+            ? CURSOR_PREFIX
+            : VSCODE_PREFIX,
+        );
       }
       ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
     })();
@@ -175,9 +156,15 @@ export const Main = () => {
             sessionId,
             iv,
           });
+          return;
         }
 
-        await routeUserToVSCodeWithAccessToken(clerkToken);
+        await openIDELink(
+          clerkToken,
+          command === ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY
+            ? CURSOR_PREFIX
+            : VSCODE_PREFIX,
+        );
       })();
       return;
     }

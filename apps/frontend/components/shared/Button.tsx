@@ -15,7 +15,7 @@ export type Button = {
   intent: ButtonStyle;
   className?: string;
   arrow?: never;
-  icon?: IconName;
+  icon?: IconName | React.ReactElement;
   iconPosition?: "left" | "right";
   loading?: boolean;
   glow?: boolean;
@@ -132,7 +132,8 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         )}
         {...spreadableProps}
       >
-        {icon && iconPosition && iconPosition === "left" ? (
+        {typeof icon === "object" && icon}
+        {typeof icon === "string" && iconPosition && iconPosition === "left" ? (
           <Icon name={icon as IconName} className={disabledIconState} />
         ) : null}
         <span className={cx(loading ? "invisible" : "transition-opacity")}>
@@ -143,10 +144,12 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
             <Spinner />
           </span>
         ) : null}
-        {icon && iconPosition && iconPosition === "right" ? (
+        {typeof icon === "string" &&
+        iconPosition &&
+        iconPosition === "right" ? (
           <Icon name={icon as IconName} className={disabledIconState} />
         ) : null}
-        {icon && !iconPosition ? (
+        {typeof icon === "string" && !iconPosition ? (
           <Icon name={icon as IconName} className={disabledIconState} />
         ) : null}
         {arrow ? (
