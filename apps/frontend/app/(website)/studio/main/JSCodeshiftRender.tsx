@@ -68,7 +68,14 @@ export const useCodeDiff = () => {
     }
 
     postMessage(engine, content, inputSnippet);
-  }, [snippetBeforeHasOnlyWhitespaces, codemodSourceHasOnlyWhitespaces]);
+  }, [
+    engine,
+    inputSnippet,
+    content,
+    snippetBeforeHasOnlyWhitespaces,
+    codemodSourceHasOnlyWhitespaces,
+    postMessage,
+  ]);
 
   useEffect(() => {
     if (webWorkerState.kind === "LEFT") {
@@ -81,10 +88,12 @@ export const useCodeDiff = () => {
     setHasRuntimeErrors(false);
     setEvents(webWorkerState.events);
   }, [
-    codemodOutput.setContent,
-    webWorkerState,
-    setEvents,
-    setHasRuntimeErrors,
+    engine,
+    inputSnippet,
+    content,
+    snippetBeforeHasOnlyWhitespaces,
+    codemodSourceHasOnlyWhitespaces,
+    postMessage,
   ]);
 
   const onSelectionChange = useCallback(
