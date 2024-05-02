@@ -32,15 +32,54 @@ const MonacoDiffEditor = dynamic(
   },
 );
 
-export const useCodeDiff = () => {
+export const useCodemodOutputUpdate = () => {
+  const [webWorkerState, postMessage] = useWebWorker();
+  const codemodOutput = useCodemodOutputStore();
   const { setEvents, events } = useLogStore();
-  const { engine, inputSnippet, afterInputRanges } = useSnippetStore();
-
   const { setHasRuntimeErrors } = useModStore();
+  const { engine, inputSnippet } = useSnippetStore();
+  const { internalContent } = useModStore();
+  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
+  useEffect(() => {
+    postMessage(engine, internalContent ?? "", inputSnippet);
+    if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
+      codemodOutput.setContent("");
+      setHasRuntimeErrors(false);
+      setEvents([]);
+    }
+    if (webWorkerState.kind === "LEFT") {
+      codemodOutput.setContent(webWorkerState.error.message);
+      setHasRuntimeErrors(true);
+      setEvents([]);
+    } else {
+      codemodOutput.setContent(webWorkerState.output ?? "");
+      setHasRuntimeErrors(true);
+      setEvents(webWorkerState.events);
+    }
+  }, [
+    webWorkerState,
+    engine,
+    inputSnippet,
+    internalContent,
+    snippetBeforeHasOnlyWhitespaces,
+    codemodSourceHasOnlyWhitespaces,
+    postMessage,
+  ]);
+
+  const firstCodemodExecutionErrorEvent = events.find(
+    (e) => e.kind === "codemodExecutionError",
+  );
+
+  return {
+    firstCodemodExecutionErrorEvent,
+  };
+};
+export const useCodeDiff = () => {
+  const { inputSnippet, afterInputRanges } = useSnippetStore();
   const setRangeThunk = useRangesOnTarget();
   const { internalContent } = useModStore();
-  const [webWorkerState, postMessage] = useWebWorker();
 
   const codemodOutput = useCodemodOutputStore();
   const setActiveEventThunk = useSetActiveEventThunk();
@@ -54,48 +93,6 @@ export const useCodeDiff = () => {
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
-  const firstCodemodExecutionErrorEvent = events.find(
-    (e) => e.kind === "codemodExecutionError",
-  );
-
-  useEffect(() => {
-    if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
-      codemodOutput.setContent("");
-      setHasRuntimeErrors(false);
-      setEvents([]);
-
-      return;
-    }
-
-    postMessage(engine, content, inputSnippet);
-  }, [
-    engine,
-    inputSnippet,
-    content,
-    snippetBeforeHasOnlyWhitespaces,
-    codemodSourceHasOnlyWhitespaces,
-    postMessage,
-  ]);
-
-  useEffect(() => {
-    if (webWorkerState.kind === "LEFT") {
-      codemodOutput.setContent(webWorkerState.error.message);
-      setHasRuntimeErrors(true);
-      setEvents([]);
-      return;
-    }
-    codemodOutput.setContent(webWorkerState.output ?? "");
-    setHasRuntimeErrors(false);
-    setEvents(webWorkerState.events);
-  }, [
-    engine,
-    inputSnippet,
-    content,
-    snippetBeforeHasOnlyWhitespaces,
-    codemodSourceHasOnlyWhitespaces,
-    postMessage,
-  ]);
-
   const onSelectionChange = useCallback(
     (range: OffsetRange) => {
       setRangeThunk({
@@ -105,6 +102,8 @@ export const useCodeDiff = () => {
     },
     [setRangeThunk],
   );
+
+  const { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
 
   const onDebug = () => {
     firstCodemodExecutionErrorEvent?.hashDigest &&
