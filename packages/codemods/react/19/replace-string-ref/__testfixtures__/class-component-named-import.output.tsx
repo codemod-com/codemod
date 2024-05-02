@@ -1,3 +1,5 @@
+import { Component, PureComponent } from "react";
+
 class C extends Component {
   render() {
     return (

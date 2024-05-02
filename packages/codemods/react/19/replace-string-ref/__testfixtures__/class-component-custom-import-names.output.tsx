@@ -1,6 +1,6 @@
-import React from "react";
+import React1, { PureComponent as PureComponent1 } from "react";
 
-class C extends React.Component {
+class C extends React1.Component {
   render() {
     return (
       <div
@@ -12,7 +12,7 @@ class C extends React.Component {
   }
 }
 
-class C1 extends React.PureComponent {
+class C1 extends PureComponent1 {
   render() {
     return (
       <div

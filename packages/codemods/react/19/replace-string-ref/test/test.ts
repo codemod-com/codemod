@@ -21,7 +21,7 @@ const buildApi = (parser: string | undefined): API => ({
 });
 
 describe("react/19/replace-string-ref", () => {
-  it("Should replace refs in class components: default import", async () => {
+  it("Should replace string refs in class components: default import", async () => {
     const INPUT = await readFile(
       join(
         __dirname,
@@ -53,7 +53,7 @@ describe("react/19/replace-string-ref", () => {
     );
   });
 
-  it("Should replace refs in class components: named import", async () => {
+  it("Should replace string refs in class components: named import", async () => {
     const INPUT = await readFile(
       join(
         __dirname,
@@ -84,6 +84,39 @@ describe("react/19/replace-string-ref", () => {
       OUTPUT.replace(/\s/gm, ""),
     );
   });
+
+  it("Should replace string refs in class components: custom import names", async () => {
+    const INPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-custom-import-names.input.tsx",
+      ),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-custom-import-names.output.tsx",
+      ),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    assert.deepEqual(
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
+    );
+  });
+
   it("Should ignore functional components", async () => {
     const INPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/function-component.input.tsx"),

@@ -1,6 +1,6 @@
 import type { API, FileInfo, JSCodeshift, Options } from "jscodeshift";
 
-const REACT_CLASS_COMPONENT_SUPERCLASS = ["PureComponent", "Component"];
+const REACT_CLASS_COMPONENT_SUPERCLASS_NAMES = ["PureComponent", "Component"];
 
 const buildCallbackRef = (j: JSCodeshift, refName: string) =>
   j.jsxAttribute(
@@ -34,23 +34,65 @@ export default function transform(
 
   let isDirty = false;
 
-  const classComponentsCollection = root
+  const reactComponentNamedImportLocalNamesSet = new Set();
+  let reactDefaultImportName: string | null = null;
+
+  root
+    .find(j.ImportDeclaration, {
+      source: { value: "react" },
+    })
+    .forEach((path) => {
+      path.value.specifiers?.forEach((specifier) => {
+        // named import
+        if (
+          j.ImportSpecifier.check(specifier) &&
+          REACT_CLASS_COMPONENT_SUPERCLASS_NAMES.includes(
+            specifier.imported.name,
+          )
+        ) {
+          reactComponentNamedImportLocalNamesSet.add(specifier.local?.name);
+        }
+
+        // default and wildcard import
+        if (
+          j.ImportDefaultSpecifier.check(specifier) ||
+          j.ImportNamespaceSpecifier.check(specifier)
+        ) {
+          reactDefaultImportName = specifier.local?.name ?? null;
+        }
+      });
+    });
+
+  const reactComponentNamedImportLocalNames = [
+    ...reactComponentNamedImportLocalNamesSet,
+  ];
+
+  const classComponentCollection = root
     .find(j.ClassDeclaration)
     .filter((path) => {
-      const sup = path.value.superClass;
+      const superClass = path.value.superClass;
 
-      if (j.Identifier.check(sup)) {
-        return REACT_CLASS_COMPONENT_SUPERCLASS.includes(sup.name);
+      if (j.Identifier.check(superClass)) {
+        return [...reactComponentNamedImportLocalNames].includes(
+          superClass.name,
+        );
       }
 
-      if (j.MemberExpression.check(sup) && j.Identifier.check(sup.property)) {
-        return REACT_CLASS_COMPONENT_SUPERCLASS.includes(sup.property.name);
+      if (
+        j.MemberExpression.check(superClass) &&
+        j.Identifier.check(superClass.object) &&
+        superClass.object.name === reactDefaultImportName &&
+        j.Identifier.check(superClass.property)
+      ) {
+        return REACT_CLASS_COMPONENT_SUPERCLASS_NAMES.includes(
+          superClass.property.name,
+        );
       }
 
       return false;
     });
 
-  classComponentsCollection
+  classComponentCollection
     .find(j.JSXElement, {
       openingElement: {
         attributes: [
