@@ -1,4 +1,4 @@
-import { RUN_CODEMOD } from "@studio/constants";
+import { RUN_CODEMOD } from "@/utils/apis/endpoints";
 import { useUserSession } from "@studio/store/zustand/userSession";
 import { type ExecuteCodemodRequest, useAPI } from "./useAPI";
 import { useExecutionStatus } from "./useExecutionStatus";

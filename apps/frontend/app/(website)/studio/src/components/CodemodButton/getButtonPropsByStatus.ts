@@ -1,4 +1,4 @@
-import type { GetExecutionStatusResponse } from "@studio/api/getExecutionStatus";
+import type { GetExecutionStatusResponse } from "@/utils/apis/getExecutionStatus";
 
 type Status = GetExecutionStatusResponse["status"];
 export const getButtonPropsByStatus = (status: Status) => {

@@ -331,3 +331,17 @@ export type RegistryCardData = AutomationResponse & {
   verifiedTooltip?: string;
   filterIconDictionary?: AutomationFilterIconDictionary;
 };
+
+export type GithubRepository = {
+  id: number;
+  name: string;
+  full_name: string;
+  private: boolean;
+  html_url: string;
+  default_branch: string;
+  permissions: {
+    admin: boolean;
+    push: boolean;
+    pull: boolean;
+  };
+};
