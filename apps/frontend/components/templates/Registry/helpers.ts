@@ -60,6 +60,7 @@ export function getFilterSection(
   )?.filterValues;
 }
 
+export type FilterIcon = ReturnType<typeof getFilterIcon>;
 export function getFilterIcon(
   filterValues?: AutomationFilterType["filterValues"],
   id?: string,

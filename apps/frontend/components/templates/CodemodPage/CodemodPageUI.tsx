@@ -6,6 +6,10 @@ import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
+import { AuthorSection } from "@/components/templates/CodemodPage/AuthorSection";
+import { VCCodeShift } from "@/components/templates/CodemodPage/VCCodeShift";
+import { getCodemodCard } from "@/components/templates/CodemodPage/buildYourCodemodCard";
+import { getFrameworkCard } from "@/components/templates/CodemodPage/getFrameworkCard";
 import {
   CURSOR_PREFIX,
   REGISTRY_FILTER_TYPES,
@@ -16,7 +20,7 @@ import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
 import { vercelStegaSplit } from "@vercel/stega";
 import Link from "next/link";
-import { Fragment, type ReactNode } from "react";
+import type { ReactNode } from "react";
 import VerifiedBadge from "../Registry/VerifiedBadge";
 import {
   getAutomationFrameworkTitles,
@@ -38,6 +42,10 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     data?.filterIconDictionary,
   );
 
+  const authorHref = `/registry?${
+    REGISTRY_FILTER_TYPES.owner
+  }=${vercelStegaCleanAll(author)}`;
+
   const frameworks = getAutomationFrameworkTitles(data).map((framework) => ({
     name: framework,
     image: getFilterIcon(frameworkIcons, framework),
@@ -56,9 +64,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
       </ul>
     );
   const authorIcons = getFilterSection("author", data?.filterIconDictionary);
-
   const authorImage = getFilterIcon(authorIcons, author);
-
+  const buildYourCodemodCard = getCodemodCard(data);
+  const frameworkCards = frameworks.map(getFrameworkCard);
   const categoryIcons = getFilterSection(
     "category",
     data?.filterIconDictionary,
@@ -67,29 +75,6 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
   const categoryImage = getFilterIcon(
     categoryIcons,
     data?.useCaseCategory?.toLocaleLowerCase() || "",
-  );
-
-  const buildYourCodemodCard = data?.globalLabels?.cta?.link && (
-    <div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
-      {data?.globalLabels?.ctaTitle && (
-        <div className="relative z-10 flex flex-col gap-[12px]">
-          <p className="xs-heading">
-            {data?.globalLabels?.ctaTitle || "Build custom codemods"}
-          </p>
-          {data?.globalLabels?.ctaDescription && (
-            <p className="body-s">{data?.globalLabels?.ctaDescription}</p>
-          )}
-        </div>
-      )}
-      <img
-        className="pointer-events-none absolute left-0 top-[60px] -z-10 w-full"
-        alt="background illustration"
-        src="/illustration/planet.svg"
-      />
-      <LinkButton href={data?.globalLabels?.cta?.link} intent="primary">
-        {data?.globalLabels?.cta?.label || "Get started now"}
-      </LinkButton>
-    </div>
   );
 
   return (
@@ -112,53 +97,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
               {data?.verified && (
                 <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
               )}
-              <>
-                {frameworks.map(
-                  ({ name: framework, image: frameworkImage }) => (
-                    <Link
-                      key={framework}
-                      href={`/registry?${
-                        REGISTRY_FILTER_TYPES.framework
-                      }=${framework.toLowerCase()}`}
-                      prefetch
-                    >
-                      <Tag intent="default">
-                        <>
-                          {frameworkImage?.image.light && (
-                            <SanityImage
-                              maxWidth={20}
-                              image={frameworkImage.image.light}
-                              alt={frameworkImage.image.light.alt}
-                              elProps={{
-                                width: 20,
-                                height: 20,
-                                className: "h-5 w-5 dark:hidden",
-                              }}
-                            />
-                          )}
-
-                          {frameworkImage?.image.dark && (
-                            <SanityImage
-                              maxWidth={20}
-                              image={frameworkImage.image.dark}
-                              alt={frameworkImage.image.dark.alt}
-                              elProps={{
-                                width: 20,
-                                height: 20,
-                                className: "hidden h-5 w-5 dark:inline",
-                              }}
-                            />
-                          )}
-                        </>
-
-                        <span className="capitalize">
-                          {capitalize(framework)}
-                        </span>
-                      </Tag>
-                    </Link>
-                  ),
-                )}
-              </>
+              <>{frameworkCards}</>
               {data?.useCaseCategory && (
                 <Link
                   href={`/registry?${
@@ -175,48 +114,11 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             </div>
             {/* Attribution */}
             {data?.author && (
-              <Link
-                href={`/registry?${
-                  REGISTRY_FILTER_TYPES.owner
-                }=${vercelStegaCleanAll(data?.author)}`}
-                className="rounded-sm focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark"
-                prefetch
-              >
-                <div className="flex items-center gap-xs">
-                  <span className="body-s-medium font-medium">by</span>
-
-                  <>
-                    {authorImage?.image.light && (
-                      <SanityImage
-                        maxWidth={20}
-                        image={authorImage.image.light}
-                        alt={authorImage.image.light.alt}
-                        elProps={{
-                          width: 20,
-                          height: 20,
-                          className: "h-5 w-5 dark:hidden",
-                        }}
-                      />
-                    )}
-
-                    {authorImage?.image.dark && (
-                      <SanityImage
-                        maxWidth={20}
-                        image={authorImage.image.dark}
-                        alt={authorImage.image.dark.alt}
-                        elProps={{
-                          width: 20,
-                          height: 20,
-                          className: "hidden h-5 w-5 dark:inline",
-                        }}
-                      />
-                    )}
-                  </>
-                  <span className="body-s-medium font-medium">
-                    {data?.author}
-                  </span>
-                </div>
-              </Link>
+              <AuthorSection
+                author={data?.author}
+                href={authorHref}
+                authorImage={authorImage}
+              />
             )}
           </div>
 
@@ -286,44 +188,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
               </div>
             )}
             {data?.currentVersion?.vsCodeLink && (
-              <div className="flex flex-col gap-xs">
-                <p className="body-s">
-                  {data.globalLabels?.vsCodeExtensionTitle ||
-                    "VS Code extension"}
-                </p>
-                <RunCTAButton
-                  href={data.currentVersion.vsCodeLink}
-                  title={
-                    data.globalLabels?.vsCodeExtensionButtonLabel ||
-                    "Run in VS Code"
-                  }
-                  toastMessage="Opening Visual Studio Code..."
-                  toastOptions={{
-                    icon: <Icon name="vscode" className="h-5 w-5" />,
-                    className: "flex items-center gap-xs",
-                  }}
-                />
-                <RunCTAButton
-                  href={data.currentVersion.vsCodeLink.replace(
-                    VSCODE_PREFIX,
-                    CURSOR_PREFIX,
-                  )}
-                  title={"Run in Cursor"}
-                  toastMessage="Opening Cursor..."
-                  toastOptions={{
-                    icon: (
-                      <img
-                        src="/icons/cursor-ide.svg"
-                        width={30}
-                        height={30}
-                        alt="cursor-ide-svg"
-                        style={{ marginLeft: "0.2rem" }}
-                      />
-                    ),
-                    className: "flex items-center gap-xs",
-                  }}
-                />
-              </div>
+              <VCCodeShift {...data} currentVersion={data.currentVersion} />
             )}
 
             {data?.currentVersion?.codemodStudioExampleLink && (
