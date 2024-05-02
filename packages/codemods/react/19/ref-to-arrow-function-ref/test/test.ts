@@ -21,13 +21,21 @@ const buildApi = (parser: string | undefined): API => ({
 });
 
 describe("react/19/ref-to-arrow-function", () => {
-  it("test #1", async () => {
+  it("Should replace refs in class components: default import", async () => {
     const INPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/fixture1.input.tsx"),
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-default-import.input.tsx",
+      ),
       "utf-8",
     );
     const OUTPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/fixture1.output.tsx"),
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-default-import.output.tsx",
+      ),
       "utf-8",
     );
 
@@ -43,5 +51,53 @@ describe("react/19/ref-to-arrow-function", () => {
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),
     );
+  });
+
+  it("Should replace refs in class components: named import", async () => {
+    const INPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-named-import.input.tsx",
+      ),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/class-component-named-import.output.tsx",
+      ),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    assert.deepEqual(
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
+    );
+  });
+  it("Should ignore functional components", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/function-component.input.tsx"),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    assert.deepEqual(actualOutput, undefined);
   });
 });

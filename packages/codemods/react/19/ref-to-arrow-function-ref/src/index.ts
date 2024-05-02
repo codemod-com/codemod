@@ -1,4 +1,29 @@
-import type { API, FileInfo, Options } from "jscodeshift";
+import type { API, FileInfo, JSCodeshift, Options } from "jscodeshift";
+
+const REACT_CLASS_COMPONENT_SUPERCLASS = ["PureComponent", "Component"];
+
+const buildCallbackRef = (j: JSCodeshift, refName: string) =>
+  j.jsxAttribute(
+    j.jsxIdentifier("ref"),
+    j.jsxExpressionContainer(
+      j.arrowFunctionExpression(
+        [j.jsxIdentifier("ref")],
+        j.blockStatement([
+          j.expressionStatement(
+            j.assignmentExpression(
+              "=",
+              j.memberExpression(
+                j.memberExpression(j.thisExpression(), j.identifier("refs")),
+                j.identifier(refName),
+              ),
+              j.identifier("ref"),
+            ),
+          ),
+        ]),
+      ),
+    ),
+  );
+
 export default function transform(
   file: FileInfo,
   api: API,
@@ -7,19 +32,25 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
-  // Helper function to preserve comments
-  function replaceWithComments(path, newNode) {
-    // If the original node had comments, add them to the new node
-    if (path.node.comments) {
-      newNode.comments = path.node.comments;
-    }
+  let isDirty = false;
 
-    // Replace the node
-    j(path).replaceWith(newNode);
-  }
+  const classComponentsCollection = root
+    .find(j.ClassDeclaration)
+    .filter((path) => {
+      const sup = path.value.superClass;
 
-  // Find JSX elements with ref attribute
-  root
+      if (j.Identifier.check(sup)) {
+        return REACT_CLASS_COMPONENT_SUPERCLASS.includes(sup.name);
+      }
+
+      if (j.MemberExpression.check(sup) && j.Identifier.check(sup.property)) {
+        return REACT_CLASS_COMPONENT_SUPERCLASS.includes(sup.property.name);
+      }
+
+      return false;
+    });
+
+  classComponentsCollection
     .find(j.JSXElement, {
       openingElement: {
         attributes: [
@@ -34,55 +65,21 @@ export default function transform(
       },
     })
     .forEach((path) => {
-      // Get the ref name
-      const refName = path.node.openingElement.attributes.find(
-        (attr) => attr.name.name === "ref",
-      ).value.value;
+      path.value.openingElement.attributes =
+        path.value.openingElement.attributes?.map((attribute) => {
+          if (
+            j.JSXAttribute.check(attribute) &&
+            attribute.name.name === "ref" &&
+            j.StringLiteral.check(attribute.value)
+          ) {
+            isDirty = true;
 
-      // Create new ref attribute
-      const newRefAttr = j.jsxAttribute(
-        j.jsxIdentifier("ref"),
-        j.jsxExpressionContainer(
-          j.arrowFunctionExpression(
-            [j.jsxIdentifier("ref")],
-            j.blockStatement([
-              j.expressionStatement(
-                j.assignmentExpression(
-                  "=",
-                  j.memberExpression(
-                    j.memberExpression(
-                      j.thisExpression(),
-                      j.identifier("refs"),
-                    ),
-                    j.identifier(refName),
-                  ),
-                  j.identifier("ref"),
-                ),
-              ),
-            ]),
-          ),
-        ),
-      );
+            return buildCallbackRef(j, attribute.value.value);
+          }
 
-      // Replace old ref attribute with new one
-      const newAttributes = path.node.openingElement.attributes.map((attr) =>
-        attr.name.name === "ref" ? newRefAttr : attr,
-      );
-      const newOpeningElement = j.jsxOpeningElement(
-        path.node.openingElement.name,
-        newAttributes,
-        path.node.openingElement.selfClosing,
-      );
-      const newElement = j.jsxElement(
-        newOpeningElement,
-        path.node.closingElement,
-        path.node.children,
-        path.node.selfClosing,
-      );
-
-      // Replace old element with new one, preserving comments
-      replaceWithComments(path, newElement);
+          return attribute;
+        });
     });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }
