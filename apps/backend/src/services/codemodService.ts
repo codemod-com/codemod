@@ -3,7 +3,7 @@ import {
   type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { Codemod, Prisma, PrismaClient } from "@prisma/client";
+import type { Codemod, Prisma, PrismaClient, Tag } from "@prisma/client";
 import Fuse from "fuse.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
@@ -18,6 +18,24 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   }
 
   return result;
+};
+const getFrameworkVersion = (codemodName: string) => {
+  return codemodName.match(/(\d+(?:\.\d+)*)/)?.[0];
+};
+
+const getFrameworks = (frameworkTags: Tag[], codemodTags: string[]) => {
+  return frameworkTags
+    .filter((tag) => tag.aliases.some((t) => codemodTags.includes(t)))
+    .map((tag) => tag.title);
+};
+
+const getUseCaseCategory = (
+  useCaseCategoryTags: Tag[],
+  codemodTags: string[],
+) => {
+  return useCaseCategoryTags.find((tag) =>
+    tag.aliases.some((t) => codemodTags.includes(t)),
+  )?.title;
 };
 
 type LongCodemodIndoDetails = {
@@ -153,25 +171,17 @@ export class CodemodService {
 
     const data: LongCodemodInfo[] = await Promise.all(
       codemods.map(async (codemod) => {
-        let frameworkVersion = null;
-        const match = codemod.name.match(/(\d+(?:\.\d+)*)/);
-        if (match) {
-          frameworkVersion = match[1];
-        }
+        const { name, tags } = codemod;
 
-        const useCaseCategory = useCaseCategoryTags.find((tag) =>
-          tag.aliases.some((t) => codemod.tags.includes(t)),
-        )?.title;
-
-        const frameworks = frameworkTags
-          .filter((tag) => tag.aliases.some((t) => codemod.tags.includes(t)))
-          .map((tag) => tag.title);
+        const frameworkVersion = getFrameworkVersion(name);
+        const frameworks = getFrameworks(frameworkTags, tags);
+        const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
         return {
           ...codemod,
           frameworks,
           frameworkVersion,
-          useCaseCategory: useCaseCategory ?? "",
+          useCaseCategory,
         };
       }),
     );
@@ -258,26 +268,17 @@ export class CodemodService {
       where: { classification: "framework" },
     });
 
-    let frameworkVersion = null;
-    const match = codemod.name.match(/(\d+(?:\.\d+)*)/);
-    if (match) {
-      frameworkVersion = match[1];
-    }
+    const { name, tags } = codemod;
 
-    const useCaseCategory = useCaseCategoryTags.find((tag) =>
-      tag.aliases.some((t) => codemod.tags.includes(t)),
-    )?.title;
-
-    const frameworks = frameworkTags
-      .filter((tag) => tag.aliases.some((t) => codemod.tags.includes(t)))
-      .map((tag) => tag.title);
+    const frameworkVersion = getFrameworkVersion(name);
+    const frameworks = getFrameworks(frameworkTags, tags);
+    const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
     return {
       ...codemod,
-
       frameworks,
       frameworkVersion,
-      useCaseCategory: useCaseCategory ?? "",
+      useCaseCategory,
     };
   }
 
