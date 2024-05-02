@@ -1,7 +1,9 @@
 "use client";
 
+import { openLink } from "@/utils";
 import type { ReactNode } from "react";
 import { type ExternalToast, toast } from "sonner";
+import { VSCODE_PREFIX } from "../../../../constants";
 import Button from "./Button";
 
 type RunCTAButtonProps = {
@@ -20,15 +22,28 @@ export default function RunCTAButton({
   return (
     <Button
       iconPosition="left"
-      icon="noborder-vscode"
+      icon={
+        href.startsWith(VSCODE_PREFIX) ? (
+          "noborder-vscode"
+        ) : (
+          <img
+            src="/icons/cursor-ide.svg"
+            width={20}
+            height={20}
+            alt="cursor-ide-svg"
+            style={{ marginLeft: "-1rem" }}
+          />
+        )
+      }
       intent="secondary"
       onClick={() => {
         if (toastMessage) {
           toast(toastMessage, toastOptions);
         }
+        openLink(href);
       }}
     >
-      <a href={href}>{title}</a>
+      {title}
     </Button>
   );
 }

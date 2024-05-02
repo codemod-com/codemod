@@ -1,174 +1,146 @@
 import { type SimpleGit, simpleGit } from "simple-git";
+import type { CodemodMetadata } from "../jobs/runCodemod";
+import { axiosRequest, parseGithubRepoUrl } from "../util";
 
-import axios from "axios";
-import gh from "parse-github-url";
+const BASE_URL = "https://api.github.com";
 
-import type {
-  Assignee,
-  CreatePRParams,
-  GithubRepository,
-  Issue,
-  ListPRParams,
-  NewIssueParams,
-  PullRequest,
-  SourceControlProvider,
-} from "./SourceControl.js";
-
-type Repository = {
-  owner: string;
-  name: string;
+type PullRequestResponse = {
+  html_url: string;
 };
 
-class InvalidGithubUrlError extends Error {}
-class ParseGithubUrlError extends Error {}
-class GitIsNoInitializedError extends Error {}
+class GitIsNotInitializedError extends Error {}
+class GithubProviderCloneRepositoryError extends Error {}
+class GithubProviderCreateBranchError extends Error {}
+class GithubProviderCommitChangesError extends Error {}
+class GithubProviderPushChangesError extends Error {}
+class GithubProviderCreatePullRequestError extends Error {}
 
-function parseGithubRepoUrl(url: string): Repository {
-  try {
-    const { owner, name } = gh(url) ?? {};
-
-    if (!owner || !name) {
-      throw new InvalidGithubUrlError("Missing owner or name");
-    }
-
-    return { owner, name };
-  } catch (e) {
-    if (e instanceof InvalidGithubUrlError) {
-      throw e;
-    }
-
-    const errorMessage = e instanceof Error ? e.message : String(e);
-    throw new ParseGithubUrlError(errorMessage);
-  }
-}
-
-export class GithubProvider implements SourceControlProvider {
-  private __git: SimpleGit | null = null;
-  private readonly __repo: string;
-  private readonly __baseUrl: string;
+export class GithubProviderService {
+  private readonly __base: string;
   private readonly __authHeader: string;
-  private readonly __repoPath: string;
+  private readonly __codemodMetadata: CodemodMetadata;
+  private readonly __currentBranch: string;
+  private __pullRequestResponse: PullRequestResponse | null;
+  private __git: SimpleGit | null;
 
-  constructor(oAuthToken: string, repo: string) {
-    const { name } = parseGithubRepoUrl(repo);
-    this.__repoPath = `./resources/repos/${name}`;
-    this.__baseUrl = "https://api.github.com";
-    this.__repo = repo;
-    this.__authHeader = `Bearer ${oAuthToken}`;
+  constructor(codemodMetadata: CodemodMetadata) {
+    const { codemodName } = codemodMetadata;
+
+    this.__git = null;
+    this.__base = "main";
+    this.__pullRequestResponse = null;
+    this.__authHeader = `Bearer ${codemodMetadata.token}`;
+    this.__currentBranch = `codemod-${codemodName.toLowerCase()}-${Date.now()}`;
+    this.__codemodMetadata = codemodMetadata;
   }
 
-  public get ownerName() {
-    const { owner } = parseGithubRepoUrl(this.__repo);
-    return owner;
+  public get pullRequestResponse(): PullRequestResponse | null {
+    return this.__pullRequestResponse;
   }
 
-  public get repoName() {
-    const { name } = parseGithubRepoUrl(this.__repo);
-    return name;
-  }
+  public async cloneRepository(path: string): Promise<void> {
+    try {
+      const git = simpleGit();
 
-  private get __repoUrl() {
-    const { owner, name } = parseGithubRepoUrl(this.__repo);
+      const { repoUrl } = this.__codemodMetadata;
+      const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
 
-    return `${this.__baseUrl}/repos/${owner}/${name}`;
-  }
+      await git.clone(`https://github.com/${authorName}/${repoName}.git`, path);
 
-  async createIssue(params: NewIssueParams): Promise<Issue> {
-    const res = await axios.post(`${this.__repoUrl}/issues`, params, {
-      headers: {
-        Authorization: this.__authHeader,
-      },
-    });
+      this.__git = simpleGit(path);
+    } catch (error) {
+      const { message } = error as Error;
 
-    return res.data;
-  }
-
-  async createPullRequest(params: CreatePRParams): Promise<PullRequest> {
-    const res = await axios.post(`${this.__repoUrl}/pulls`, params, {
-      headers: {
-        Authorization: this.__authHeader,
-        Accept: "application/vnd.github+json",
-      },
-    });
-
-    return res.data;
-  }
-
-  async getPullRequests(params: ListPRParams): Promise<PullRequest[]> {
-    const queryParams = Object.entries(params).reduce<Record<string, string>>(
-      (acc, [key, value]) => {
-        if (value) {
-          acc[key] = value;
-        }
-
-        return acc;
-      },
-      {},
-    );
-
-    const query = new URLSearchParams(queryParams).toString();
-
-    const res = await axios.get(`${this.__repoUrl}/pulls?${query}`, {
-      headers: {
-        Authorization: this.__authHeader,
-      },
-    });
-
-    return res.data;
-  }
-
-  async getAssignees(): Promise<Assignee[]> {
-    const res = await axios.get(`${this.__repoUrl}/assignees`, {
-      headers: {
-        Authorization: this.__authHeader,
-      },
-    });
-
-    return res.data;
-  }
-
-  async getUserRepositories(): Promise<GithubRepository[]> {
-    const res = await axios.get("https://api.github.com/user/repos", {
-      headers: {
-        Authorization: this.__authHeader,
-      },
-    });
-
-    return res.data;
-  }
-
-  async cloneRepository(): Promise<void> {
-    const { owner, name } = parseGithubRepoUrl(this.__repo);
-    const repoUrl = `https://github.com/${owner}/${name}.git`;
-
-    const git = simpleGit();
-
-    await git.clone(repoUrl, this.__repoPath);
-    this.__git = simpleGit(this.__repoPath);
-  }
-
-  async createBranch(branchName: string): Promise<void> {
-    if (!this.__git) {
-      throw new GitIsNoInitializedError();
+      throw new GithubProviderCloneRepositoryError(
+        `Cannot clone GitHub repository! Reason: ${message}`,
+      );
     }
-
-    await this.__git.checkoutLocalBranch(branchName);
   }
 
-  async commitChanges(message: string): Promise<void> {
-    if (!this.__git) {
-      throw new GitIsNoInitializedError();
-    }
+  public async createBranch(): Promise<void> {
+    try {
+      if (!this.__git) {
+        throw new GitIsNotInitializedError("Git client is not initialized!");
+      }
 
-    await this.__git.add("./*");
-    await this.__git.commit(message);
+      await this.__git.checkoutLocalBranch(this.__currentBranch);
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new GithubProviderCreateBranchError(
+        `Cannot create GitHub branch! Reason: ${message}`,
+      );
+    }
   }
 
-  async pushChanges(branchName: string): Promise<void> {
-    if (!this.__git) {
-      throw new GitIsNoInitializedError();
-    }
+  public async commitChanges(): Promise<void> {
+    try {
+      if (!this.__git) {
+        throw new GitIsNotInitializedError("Git client is not initialized!");
+      }
 
-    await this.__git.push("origin", branchName);
+      const { repoUrl, codemodName, codemodEngine } = this.__codemodMetadata;
+      const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
+
+      const message = `${codemodName}: applied changes for [${authorName}/${repoName}] repo, using ${codemodEngine} engine!`;
+
+      await this.__git.add("./*");
+      await this.__git.commit(message);
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new GithubProviderCommitChangesError(
+        `Cannot commit changes to branch! Reason: ${message}`,
+      );
+    }
+  }
+
+  public async pushChanges(): Promise<void> {
+    try {
+      if (!this.__git) {
+        throw new GitIsNotInitializedError("Git client is not initialized!");
+      }
+
+      await this.__git.push("origin", this.__currentBranch);
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new GithubProviderPushChangesError(
+        `Cannot push changes to branch! Reason: ${message}`,
+      );
+    }
+  }
+
+  public async createPullRequest(): Promise<void> {
+    try {
+      const { repoUrl, codemodName } = this.__codemodMetadata;
+      const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
+
+      const url = `${BASE_URL}/repos/${authorName}/${repoName}/pulls`;
+
+      const title = `[${codemodName}]: Codemod changes for ${authorName}/${repoName}.`;
+      const body = `Changes applied with ${codemodName} codemod.`;
+
+      this.__pullRequestResponse = await axiosRequest<PullRequestResponse>(
+        url,
+        "post",
+        {
+          title,
+          body,
+          head: this.__currentBranch,
+          base: this.__base,
+        },
+        {
+          Authorization: this.__authHeader,
+          Accept: "application/vnd.github+json",
+        },
+      );
+    } catch (error) {
+      const { message } = error as Error;
+
+      throw new GithubProviderCreatePullRequestError(
+        `Cannot create pull request! Reason: ${message}`,
+      );
+    }
   }
 }

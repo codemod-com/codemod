@@ -2,6 +2,7 @@ import cn from "classnames";
 import areEqual from "fast-deep-equal";
 import { memo, useState } from "react";
 import "react-toastify/dist/ReactToastify.css";
+import type { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../src/constants";
 import type { CodemodNode } from "../../../../src/selectors/selectCodemodTree";
 import CustomPopover from "../../shared/CustomPopover";
 import type { CodemodHash } from "../../shared/types";
@@ -25,6 +26,7 @@ const renderActionButtons = (
   permalink: CodemodItemNode["permalink"],
   codemodInProgress: boolean,
   queued: boolean,
+  deepLinkPrefix: typeof CURSOR_PREFIX | typeof VSCODE_PREFIX,
   label: string,
   argumentsExpanded: boolean,
 ) => {
@@ -42,7 +44,7 @@ const renderActionButtons = (
       e.stopPropagation();
 
       navigator.clipboard.writeText(
-        `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
+        `${deepLinkPrefix}codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
       );
       vscode.postMessage({
         kind: "webview.global.showInformationMessage",
@@ -162,6 +164,7 @@ const Codemod = ({
   label,
   progress,
   queued,
+  deepLinkPrefix,
   icon,
   screenWidth,
   focused,
@@ -218,6 +221,7 @@ const Codemod = ({
               permalink,
               progress !== null,
               queued,
+              deepLinkPrefix,
               label,
               argumentsExpanded,
             )}

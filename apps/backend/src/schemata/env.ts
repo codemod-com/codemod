@@ -13,6 +13,7 @@ import {
 } from "valibot";
 
 export const environmentSchema = object({
+  NODE_ENV: string(),
   PORT: coerce(number(), (input) => Number(input)),
   DATA: optional(string()),
   X_CODEMOD_ACCESS_TOKEN: optional(string()),
@@ -47,9 +48,9 @@ export const environmentSchema = object({
   CLERK_SECRET_KEY: optional(string()),
   CLERK_JWT_KEY: optional(string()),
   REPLICATE_API_KEY: optional(string()),
-  REDIS_HOST: optional(string()),
-  REDIS_PORT: optional(string()),
-  TASK_MANAGER_QUEUE_NAME: optional(string()),
+  REDIS_HOST: string(),
+  REDIS_PORT: string(),
+  TASK_MANAGER_QUEUE_NAME: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;

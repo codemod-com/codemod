@@ -1,0 +1,292 @@
+TYPE: Printable, PROPERTIES: loc
+TYPE: SourceLocation, PROPERTIES: start,end,source
+TYPE: Node inherits from Printable, PROPERTIES: type,comments
+TYPE: Comment inherits from Printable, PROPERTIES: value,leading,trailing
+TYPE: Position, PROPERTIES: line,column
+TYPE: File inherits from Node, PROPERTIES: type,program,name
+TYPE: Program inherits from Node, PROPERTIES: type,body,directives,interpreter
+TYPE: Statement inherits from Node, PROPERTIES: 
+TYPE: Function inherits from Node, PROPERTIES: id,params,body,generator,async,expression,defaults,rest,returnType,typeParameters,predicate
+TYPE: Expression inherits from Node, PROPERTIES: 
+TYPE: Pattern inherits from Node, PROPERTIES: 
+TYPE: Identifier inherits from Expression, Pattern, PROPERTIES: type,name,optional,typeAnnotation
+TYPE: BlockStatement inherits from Statement, PROPERTIES: type,body,directives
+TYPE: EmptyStatement inherits from Statement, PROPERTIES: type
+TYPE: ExpressionStatement inherits from Statement, PROPERTIES: type,expression
+TYPE: IfStatement inherits from Statement, PROPERTIES: type,test,consequent,alternate
+TYPE: LabeledStatement inherits from Statement, PROPERTIES: type,label,body
+TYPE: BreakStatement inherits from Statement, PROPERTIES: type,label
+TYPE: ContinueStatement inherits from Statement, PROPERTIES: type,label
+TYPE: WithStatement inherits from Statement, PROPERTIES: type,object,body
+TYPE: SwitchStatement inherits from Statement, PROPERTIES: type,discriminant,cases,lexical
+TYPE: SwitchCase inherits from Node, PROPERTIES: type,test,consequent
+TYPE: ReturnStatement inherits from Statement, PROPERTIES: type,argument
+TYPE: ThrowStatement inherits from Statement, PROPERTIES: type,argument
+TYPE: TryStatement inherits from Statement, PROPERTIES: type,block,handler,handlers,guardedHandlers,finalizer
+TYPE: CatchClause inherits from Node, PROPERTIES: type,param,guard,body
+TYPE: WhileStatement inherits from Statement, PROPERTIES: type,test,body
+TYPE: DoWhileStatement inherits from Statement, PROPERTIES: type,body,test
+TYPE: ForStatement inherits from Statement, PROPERTIES: type,init,test,update,body
+TYPE: Declaration inherits from Statement, PROPERTIES: 
+TYPE: VariableDeclaration inherits from Declaration, PROPERTIES: type,kind,declarations
+TYPE: ForInStatement inherits from Statement, PROPERTIES: type,left,right,body
+TYPE: DebuggerStatement inherits from Statement, PROPERTIES: type
+TYPE: FunctionDeclaration inherits from Function, Declaration, PROPERTIES: type,id
+TYPE: FunctionExpression inherits from Function, Expression, PROPERTIES: type
+TYPE: VariableDeclarator inherits from Node, PROPERTIES: type,id,init
+TYPE: ThisExpression inherits from Expression, PROPERTIES: type
+TYPE: ArrayExpression inherits from Expression, PROPERTIES: type,elements
+TYPE: ObjectExpression inherits from Expression, PROPERTIES: type,properties
+TYPE: Property inherits from Node, PROPERTIES: type,kind,key,value,method,shorthand,computed,decorators
+TYPE: Literal inherits from Expression, PROPERTIES: type,value
+TYPE: SequenceExpression inherits from Expression, PROPERTIES: type,expressions
+TYPE: UnaryExpression inherits from Expression, PROPERTIES: type,operator,argument,prefix
+TYPE: BinaryExpression inherits from Expression, PROPERTIES: type,operator,left,right
+TYPE: AssignmentExpression inherits from Expression, PROPERTIES: type,operator,left,right
+TYPE: ChainElement inherits from Node, PROPERTIES: optional
+TYPE: MemberExpression inherits from Expression, ChainElement, PROPERTIES: type,object,property,computed
+TYPE: UpdateExpression inherits from Expression, PROPERTIES: type,operator,argument,prefix
+TYPE: LogicalExpression inherits from Expression, PROPERTIES: type,operator,left,right
+TYPE: ConditionalExpression inherits from Expression, PROPERTIES: type,test,consequent,alternate
+TYPE: NewExpression inherits from Expression, PROPERTIES: type,callee,arguments,typeArguments
+TYPE: CallExpression inherits from Expression, ChainElement, PROPERTIES: type,callee,arguments,typeArguments
+TYPE: RestElement inherits from Pattern, PROPERTIES: type,argument,typeAnnotation
+TYPE: TypeAnnotation inherits from Node, PROPERTIES: type,typeAnnotation
+TYPE: TSTypeAnnotation inherits from Node, PROPERTIES: type,typeAnnotation
+TYPE: SpreadElementPattern inherits from Pattern, PROPERTIES: type,argument
+TYPE: ArrowFunctionExpression inherits from Function, Expression, PROPERTIES: type,id,body,generator
+TYPE: ForOfStatement inherits from Statement, PROPERTIES: type,left,right,body,await
+TYPE: YieldExpression inherits from Expression, PROPERTIES: type,argument,delegate
+TYPE: GeneratorExpression inherits from Expression, PROPERTIES: type,body,blocks,filter
+TYPE: ComprehensionBlock inherits from Node, PROPERTIES: type,left,right,each
+TYPE: ComprehensionExpression inherits from Expression, PROPERTIES: type,body,blocks,filter
+TYPE: ObjectProperty inherits from Node, PROPERTIES: shorthand,type,key,value,accessibility,computed
+TYPE: PropertyPattern inherits from Pattern, PROPERTIES: type,key,pattern,computed
+TYPE: ObjectPattern inherits from Pattern, PROPERTIES: type,properties,typeAnnotation,decorators
+TYPE: ArrayPattern inherits from Pattern, PROPERTIES: type,elements
+TYPE: SpreadElement inherits from Node, PROPERTIES: type,argument
+TYPE: AssignmentPattern inherits from Pattern, PROPERTIES: type,left,right
+TYPE: MethodDefinition inherits from Declaration, PROPERTIES: type,kind,key,value,computed,static,decorators
+TYPE: ClassPropertyDefinition inherits from Declaration, PROPERTIES: type,definition
+TYPE: ClassProperty inherits from Declaration, PROPERTIES: type,key,computed,value,static,typeAnnotation,variance,access
+TYPE: StaticBlock inherits from Declaration, PROPERTIES: type,body
+TYPE: ClassBody inherits from Declaration, PROPERTIES: type,body
+TYPE: ClassDeclaration inherits from Declaration, PROPERTIES: type,id,body,superClass,typeParameters,superTypeParameters,implements
+TYPE: ClassExpression inherits from Expression, PROPERTIES: type,id,body,superClass,typeParameters,superTypeParameters,implements
+TYPE: Super inherits from Expression, PROPERTIES: type
+TYPE: Specifier inherits from Node, PROPERTIES: 
+TYPE: ModuleSpecifier inherits from Specifier, PROPERTIES: local,id,name
+TYPE: ImportSpecifier inherits from ModuleSpecifier, PROPERTIES: type,imported
+TYPE: ImportDefaultSpecifier inherits from ModuleSpecifier, PROPERTIES: type
+TYPE: ImportNamespaceSpecifier inherits from ModuleSpecifier, PROPERTIES: type
+TYPE: ImportDeclaration inherits from Declaration, PROPERTIES: type,specifiers,source,importKind,assertions
+TYPE: ExportNamedDeclaration inherits from Declaration, PROPERTIES: type,declaration,specifiers,source,assertions
+TYPE: ExportSpecifier inherits from ModuleSpecifier, PROPERTIES: type,exported
+TYPE: ExportDefaultDeclaration inherits from Declaration, PROPERTIES: type,declaration
+TYPE: ExportAllDeclaration inherits from Declaration, PROPERTIES: type,source,exported,assertions
+TYPE: TaggedTemplateExpression inherits from Expression, PROPERTIES: type,tag,quasi
+TYPE: TemplateLiteral inherits from Expression, PROPERTIES: type,quasis,expressions
+TYPE: TemplateElement inherits from Node, PROPERTIES: type,value,tail
+TYPE: MetaProperty inherits from Expression, PROPERTIES: type,meta,property
+TYPE: AwaitExpression inherits from Expression, PROPERTIES: type,argument,all
+TYPE: SpreadProperty inherits from Node, PROPERTIES: type,argument
+TYPE: SpreadPropertyPattern inherits from Pattern, PROPERTIES: type,argument
+TYPE: ImportExpression inherits from Expression, PROPERTIES: type,source
+TYPE: ChainExpression inherits from Expression, PROPERTIES: type,expression
+TYPE: OptionalCallExpression inherits from CallExpression, PROPERTIES: type,optional
+TYPE: OptionalMemberExpression inherits from MemberExpression, PROPERTIES: type,optional
+TYPE: Decorator inherits from Node, PROPERTIES: type,expression
+TYPE: PrivateName inherits from Expression, Pattern, PROPERTIES: type,id
+TYPE: ClassPrivateProperty inherits from ClassProperty, PROPERTIES: type,key,value
+TYPE: ImportAttribute inherits from Node, PROPERTIES: type,key,value
+TYPE: RecordExpression inherits from Expression, PROPERTIES: type,properties
+TYPE: ObjectMethod inherits from Node, Function, PROPERTIES: type,kind,key,params,body,computed,generator,async,accessibility,decorators
+TYPE: TupleExpression inherits from Expression, PROPERTIES: type,elements
+TYPE: ModuleExpression inherits from Node, PROPERTIES: type,body
+TYPE: JSXAttribute inherits from Node, PROPERTIES: type,name,value
+TYPE: JSXIdentifier inherits from Identifier, PROPERTIES: type,name
+TYPE: JSXNamespacedName inherits from Node, PROPERTIES: type,namespace,name
+TYPE: JSXExpressionContainer inherits from Expression, PROPERTIES: type,expression
+TYPE: JSXElement inherits from Expression, PROPERTIES: type,openingElement,closingElement,children,name,selfClosing,attributes
+TYPE: JSXFragment inherits from Expression, PROPERTIES: type,openingFragment,closingFragment,children
+TYPE: JSXMemberExpression inherits from MemberExpression, PROPERTIES: type,object,property,computed
+TYPE: JSXSpreadAttribute inherits from Node, PROPERTIES: type,argument
+TYPE: JSXEmptyExpression inherits from Node, PROPERTIES: type
+TYPE: JSXText inherits from Literal, PROPERTIES: type,value,raw
+TYPE: JSXSpreadChild inherits from Node, PROPERTIES: type,expression
+TYPE: JSXOpeningElement inherits from Node, PROPERTIES: type,name,attributes,selfClosing
+TYPE: JSXClosingElement inherits from Node, PROPERTIES: type,name
+TYPE: JSXOpeningFragment inherits from Node, PROPERTIES: type
+TYPE: JSXClosingFragment inherits from Node, PROPERTIES: type
+TYPE: TypeParameterDeclaration inherits from Node, PROPERTIES: type,params
+TYPE: TSTypeParameterDeclaration inherits from Declaration, PROPERTIES: type,params
+TYPE: TypeParameterInstantiation inherits from Node, PROPERTIES: type,params
+TYPE: TSTypeParameterInstantiation inherits from Node, PROPERTIES: type,params
+TYPE: ClassImplements inherits from Node, PROPERTIES: type,id,superClass,typeParameters
+TYPE: TSType inherits from Node, PROPERTIES: 
+TYPE: TSHasOptionalTypeParameterInstantiation, PROPERTIES: typeParameters
+TYPE: TSExpressionWithTypeArguments inherits from TSType, TSHasOptionalTypeParameterInstantiation, PROPERTIES: type,expression
+TYPE: Flow inherits from Node, PROPERTIES: 
+TYPE: FlowType inherits from Flow, PROPERTIES: 
+TYPE: AnyTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: EmptyTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: MixedTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: VoidTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: SymbolTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: NumberTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: BigIntTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: NumberLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type,value,raw
+TYPE: NumericLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type,value,raw
+TYPE: BigIntLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type,value,raw
+TYPE: StringTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: StringLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type,value,raw
+TYPE: BooleanTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: BooleanLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type,value,raw
+TYPE: NullableTypeAnnotation inherits from FlowType, PROPERTIES: type,typeAnnotation
+TYPE: NullLiteralTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: NullTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: ThisTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: ExistsTypeAnnotation inherits from FlowType, PROPERTIES: type
+TYPE: ExistentialTypeParam inherits from FlowType, PROPERTIES: type
+TYPE: FunctionTypeAnnotation inherits from FlowType, PROPERTIES: type,params,returnType,rest,typeParameters
+TYPE: FunctionTypeParam inherits from Node, PROPERTIES: type,name,typeAnnotation,optional
+TYPE: ArrayTypeAnnotation inherits from FlowType, PROPERTIES: type,elementType
+TYPE: ObjectTypeAnnotation inherits from FlowType, PROPERTIES: type,properties,indexers,callProperties,inexact,exact,internalSlots
+TYPE: ObjectTypeProperty inherits from Node, PROPERTIES: type,key,value,optional,variance
+TYPE: ObjectTypeSpreadProperty inherits from Node, PROPERTIES: type,argument
+TYPE: ObjectTypeIndexer inherits from Node, PROPERTIES: type,id,key,value,variance,static
+TYPE: ObjectTypeCallProperty inherits from Node, PROPERTIES: type,value,static
+TYPE: ObjectTypeInternalSlot inherits from Node, PROPERTIES: type,id,value,optional,static,method
+TYPE: Variance inherits from Node, PROPERTIES: type,kind
+TYPE: QualifiedTypeIdentifier inherits from Node, PROPERTIES: type,qualification,id
+TYPE: GenericTypeAnnotation inherits from FlowType, PROPERTIES: type,id,typeParameters
+TYPE: MemberTypeAnnotation inherits from FlowType, PROPERTIES: type,object,property
+TYPE: IndexedAccessType inherits from FlowType, PROPERTIES: type,objectType,indexType
+TYPE: OptionalIndexedAccessType inherits from FlowType, PROPERTIES: type,objectType,indexType,optional
+TYPE: UnionTypeAnnotation inherits from FlowType, PROPERTIES: type,types
+TYPE: IntersectionTypeAnnotation inherits from FlowType, PROPERTIES: type,types
+TYPE: TypeofTypeAnnotation inherits from FlowType, PROPERTIES: type,argument
+TYPE: TypeParameter inherits from FlowType, PROPERTIES: type,name,variance,bound,default
+TYPE: InterfaceTypeAnnotation inherits from FlowType, PROPERTIES: type,body,inherits from
+TYPE: InterfaceExtends inherits from Node, PROPERTIES: type,id,typeParameters
+TYPE: InterfaceDeclaration inherits from Declaration, PROPERTIES: type,id,typeParameters,body,inherits from
+TYPE: DeclareInterface inherits from InterfaceDeclaration, PROPERTIES: type
+TYPE: TypeAlias inherits from Declaration, PROPERTIES: type,id,typeParameters,right
+TYPE: DeclareTypeAlias inherits from TypeAlias, PROPERTIES: type
+TYPE: OpaqueType inherits from Declaration, PROPERTIES: type,id,typeParameters,impltype,supertype
+TYPE: DeclareOpaqueType inherits from OpaqueType, PROPERTIES: type,impltype
+TYPE: TypeCastExpression inherits from Expression, PROPERTIES: type,expression,typeAnnotation
+TYPE: TupleTypeAnnotation inherits from FlowType, PROPERTIES: type,types
+TYPE: DeclareVariable inherits from Statement, PROPERTIES: type,id
+TYPE: DeclareFunction inherits from Statement, PROPERTIES: type,id,predicate
+TYPE: FlowPredicate inherits from Flow, PROPERTIES: 
+TYPE: DeclareClass inherits from InterfaceDeclaration, PROPERTIES: type
+TYPE: DeclareModule inherits from Statement, PROPERTIES: type,id,body
+TYPE: DeclareModuleExports inherits from Statement, PROPERTIES: type,typeAnnotation
+TYPE: DeclareExportDeclaration inherits from Declaration, PROPERTIES: type,default,declaration,specifiers,source
+TYPE: ExportBatchSpecifier inherits from Specifier, PROPERTIES: type
+TYPE: DeclareExportAllDeclaration inherits from Declaration, PROPERTIES: type,source
+TYPE: InferredPredicate inherits from FlowPredicate, PROPERTIES: type
+TYPE: DeclaredPredicate inherits from FlowPredicate, PROPERTIES: type,value
+TYPE: EnumDeclaration inherits from Declaration, PROPERTIES: type,id,body
+TYPE: EnumBooleanBody, PROPERTIES: type,members,explicitType
+TYPE: EnumNumberBody, PROPERTIES: type,members,explicitType
+TYPE: EnumStringBody, PROPERTIES: type,members,explicitType
+TYPE: EnumSymbolBody, PROPERTIES: type,members
+TYPE: EnumBooleanMember, PROPERTIES: type,id,init
+TYPE: EnumNumberMember, PROPERTIES: type,id,init
+TYPE: EnumStringMember, PROPERTIES: type,id,init
+TYPE: EnumDefaultedMember, PROPERTIES: type,id
+TYPE: ExportDeclaration inherits from Declaration, PROPERTIES: type,default,declaration,specifiers,source
+TYPE: Block inherits from Comment, PROPERTIES: type
+TYPE: Line inherits from Comment, PROPERTIES: type
+TYPE: Noop inherits from Statement, PROPERTIES: type
+TYPE: DoExpression inherits from Expression, PROPERTIES: type,body
+TYPE: BindExpression inherits from Expression, PROPERTIES: type,object,callee
+TYPE: ParenthesizedExpression inherits from Expression, PROPERTIES: type,expression
+TYPE: ExportNamespaceSpecifier inherits from Specifier, PROPERTIES: type,exported
+TYPE: ExportDefaultSpecifier inherits from Specifier, PROPERTIES: type,exported
+TYPE: CommentBlock inherits from Comment, PROPERTIES: type
+TYPE: CommentLine inherits from Comment, PROPERTIES: type
+TYPE: Directive inherits from Node, PROPERTIES: type,value
+TYPE: DirectiveLiteral inherits from Node, Expression, PROPERTIES: type,value
+TYPE: InterpreterDirective inherits from Node, PROPERTIES: type,value
+TYPE: StringLiteral inherits from Literal, PROPERTIES: type,value,extra
+TYPE: NumericLiteral inherits from Literal, PROPERTIES: type,value,raw,extra
+TYPE: BigIntLiteral inherits from Literal, PROPERTIES: type,value,extra
+TYPE: DecimalLiteral inherits from Literal, PROPERTIES: type,value,extra
+TYPE: NullLiteral inherits from Literal, PROPERTIES: type,value
+TYPE: BooleanLiteral inherits from Literal, PROPERTIES: type,value
+TYPE: RegExpLiteral inherits from Literal, PROPERTIES: type,pattern,flags,value,extra,regex
+TYPE: ClassMethod inherits from Declaration, Function, PROPERTIES: type,key,kind,body,access,computed,static,abstract,accessibility,decorators,definite,optional,override,readonly
+TYPE: ClassPrivateMethod inherits from Declaration, Function, PROPERTIES: type,key,kind,body,access,computed,static,abstract,accessibility,decorators,definite,optional,override,readonly
+TYPE: TSHasOptionalTypeAnnotation, PROPERTIES: typeAnnotation
+TYPE: ClassAccessorProperty inherits from Declaration, TSHasOptionalTypeAnnotation, PROPERTIES: type,key,value,computed,static,abstract,accessibility,decorators,definite,optional,override,readonly
+TYPE: RestProperty inherits from Node, PROPERTIES: type,argument
+TYPE: ForAwaitStatement inherits from Statement, PROPERTIES: type,left,right,body
+TYPE: Import inherits from Expression, PROPERTIES: type
+TYPE: V8IntrinsicIdentifier inherits from Expression, PROPERTIES: type,name
+TYPE: TopicReference inherits from Expression, PROPERTIES: type
+TYPE: TSQualifiedName inherits from Node, PROPERTIES: type,left,right
+TYPE: TSTypeReference inherits from TSType, TSHasOptionalTypeParameterInstantiation, PROPERTIES: type,typeName
+TYPE: TSHasOptionalTypeParameters, PROPERTIES: typeParameters
+TYPE: TSAsExpression inherits from Expression, Pattern, PROPERTIES: type,expression,typeAnnotation,extra
+TYPE: TSTypeCastExpression inherits from Expression, PROPERTIES: type,expression,typeAnnotation
+TYPE: TSSatisfiesExpression inherits from Expression, Pattern, PROPERTIES: type,expression,typeAnnotation
+TYPE: TSNonNullExpression inherits from Expression, Pattern, PROPERTIES: type,expression
+TYPE: TSAnyKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSBigIntKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSBooleanKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSNeverKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSNullKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSNumberKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSObjectKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSStringKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSSymbolKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSUndefinedKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSUnknownKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSVoidKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSIntrinsicKeyword inherits from TSType, PROPERTIES: type
+TYPE: TSThisType inherits from TSType, PROPERTIES: type
+TYPE: TSArrayType inherits from TSType, PROPERTIES: type,elementType
+TYPE: TSLiteralType inherits from TSType, PROPERTIES: type,literal
+TYPE: TSUnionType inherits from TSType, PROPERTIES: type,types
+TYPE: TSIntersectionType inherits from TSType, PROPERTIES: type,types
+TYPE: TSConditionalType inherits from TSType, PROPERTIES: type,checkType,inherits fromType,trueType,falseType
+TYPE: TSInferType inherits from TSType, PROPERTIES: type,typeParameter
+TYPE: TSTypeParameter inherits from Identifier, PROPERTIES: type,name,constraint,default
+TYPE: TSParenthesizedType inherits from TSType, PROPERTIES: type,typeAnnotation
+TYPE: TSFunctionType inherits from TSType, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation, PROPERTIES: type,parameters
+TYPE: TSConstructorType inherits from TSType, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation, PROPERTIES: type,parameters
+TYPE: TSDeclareFunction inherits from Declaration, TSHasOptionalTypeParameters, PROPERTIES: type,declare,async,generator,id,params,returnType
+TYPE: TSDeclareMethod inherits from Declaration, TSHasOptionalTypeParameters, PROPERTIES: type,async,generator,params,abstract,accessibility,static,computed,optional,key,kind,access,decorators,returnType
+TYPE: TSMappedType inherits from TSType, PROPERTIES: type,readonly,typeParameter,optional,typeAnnotation
+TYPE: TSTupleType inherits from TSType, PROPERTIES: type,elementTypes
+TYPE: TSNamedTupleMember inherits from TSType, PROPERTIES: type,label,optional,elementType
+TYPE: TSRestType inherits from TSType, PROPERTIES: type,typeAnnotation
+TYPE: TSOptionalType inherits from TSType, PROPERTIES: type,typeAnnotation
+TYPE: TSIndexedAccessType inherits from TSType, PROPERTIES: type,objectType,indexType
+TYPE: TSTypeOperator inherits from TSType, PROPERTIES: type,operator,typeAnnotation
+TYPE: TSIndexSignature inherits from Declaration, TSHasOptionalTypeAnnotation, PROPERTIES: type,parameters,readonly
+TYPE: TSPropertySignature inherits from Declaration, TSHasOptionalTypeAnnotation, PROPERTIES: type,key,computed,readonly,optional,initializer
+TYPE: TSMethodSignature inherits from Declaration, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation, PROPERTIES: type,key,computed,optional,parameters
+TYPE: TSTypePredicate inherits from TSTypeAnnotation, TSType, PROPERTIES: type,parameterName,typeAnnotation,asserts
+TYPE: TSCallSignatureDeclaration inherits from Declaration, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation, PROPERTIES: type,parameters
+TYPE: TSConstructSignatureDeclaration inherits from Declaration, TSHasOptionalTypeParameters, TSHasOptionalTypeAnnotation, PROPERTIES: type,parameters
+TYPE: TSEnumMember inherits from Node, PROPERTIES: type,id,initializer
+TYPE: TSTypeQuery inherits from TSType, PROPERTIES: type,exprName
+TYPE: TSImportType inherits from TSType, TSHasOptionalTypeParameterInstantiation, PROPERTIES: type,argument,qualifier
+TYPE: TSTypeLiteral inherits from TSType, PROPERTIES: type,members
+TYPE: TSTypeAssertion inherits from Expression, Pattern, PROPERTIES: type,typeAnnotation,expression,extra
+TYPE: TSInstantiationExpression inherits from Expression, TSHasOptionalTypeParameterInstantiation, PROPERTIES: type,expression
+TYPE: TSEnumDeclaration inherits from Declaration, PROPERTIES: type,id,const,declare,members,initializer
+TYPE: TSTypeAliasDeclaration inherits from Declaration, TSHasOptionalTypeParameters, PROPERTIES: type,id,declare,typeAnnotation
+TYPE: TSModuleBlock inherits from Node, PROPERTIES: type,body
+TYPE: TSModuleDeclaration inherits from Declaration, PROPERTIES: type,id,declare,global,body
+TYPE: TSImportEqualsDeclaration inherits from Declaration, PROPERTIES: type,id,isExport,moduleReference
+TYPE: TSExternalModuleReference inherits from Declaration, PROPERTIES: type,expression
+TYPE: TSExportAssignment inherits from Statement, PROPERTIES: type,expression
+TYPE: TSNamespaceExportDeclaration inherits from Declaration, PROPERTIES: type,id
+TYPE: TSInterfaceBody inherits from Node, PROPERTIES: type,body
+TYPE: TSInterfaceDeclaration inherits from Declaration, TSHasOptionalTypeParameters, PROPERTIES: type,id,declare,inherits from,body
+TYPE: TSParameterProperty inherits from Pattern, PROPERTIES: type,accessibility,readonly,parameter

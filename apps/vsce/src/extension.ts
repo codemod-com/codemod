@@ -42,7 +42,11 @@ import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
 import { buildTelemetryLogger } from "./telemetry/logger";
 import { VscodeTelemetryReporter } from "./telemetry/reporter";
-import { buildHash, isNeitherNullNorUndefined } from "./utilities";
+import {
+  buildHash,
+  getDeepLinkAccessTokenParam,
+  isNeitherNullNorUndefined,
+} from "./utilities";
 
 export enum SEARCH_PARAMS_KEYS {
   ENGINE = "engine",
@@ -95,7 +99,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
         searchParams.set(
           SEARCH_PARAMS_KEYS.COMMAND,
-          "accessTokenRequestedByVSCE",
+          getDeepLinkAccessTokenParam(),
         );
 
         const url = new URL(CODEMOD_STUDIO_URL);
@@ -210,7 +214,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
       searchParams.set(
         SEARCH_PARAMS_KEYS.COMMAND,
-        "accessTokenRequestedByVSCE",
+        getDeepLinkAccessTokenParam(),
       );
 
       const url = new URL(CODEMOD_STUDIO_URL);
@@ -902,7 +906,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
             searchParams.set(
               SEARCH_PARAMS_KEYS.COMMAND,
-              "accessTokenRequestedByVSCE",
+              getDeepLinkAccessTokenParam(),
             );
 
             const url = new URL(CODEMOD_STUDIO_URL);

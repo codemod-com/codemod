@@ -15,7 +15,7 @@ import Fastify, {
   type FastifyPluginCallback,
   type RouteHandlerMethod,
 } from "fastify";
-import Redis from "ioredis";
+import Redis, { type RedisOptions } from "ioredis";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -68,6 +68,10 @@ import {
 import type { TelemetryEvents } from "./telemetry.js";
 import { unpublishHandler } from "./unpublishHandler.js";
 import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
+
+export enum TaskManagerJobs {
+  CODEMOD_RUN = "CODEMOD_RUN",
+}
 
 const getSourceControlProvider = (
   provider: "github",
@@ -214,17 +218,14 @@ const clerkClient = areClerkKeysSet(environment)
     })
   : null;
 
-const queue = new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
-  connection: {
-    host: String(environment.REDIS_HOST),
-    port: Number(environment.REDIS_PORT),
-  },
-});
-
 const redis = new Redis({
   host: String(environment.REDIS_HOST),
   port: Number(environment.REDIS_PORT),
   maxRetriesPerRequest: null,
+});
+
+const queue = new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
+  connection: redis,
 });
 
 const wrapRequestHandlerMethod =
@@ -772,23 +773,16 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       return reply.code(401).send();
     }
 
-    const { source, engine, repo, codemodName } = parseCodemodRunBody(
-      request.body,
-    );
+    const { codemodName, codemodSource, codemodEngine, repoUrl } =
+      parseCodemodRunBody(request.body);
 
-    let job: Job | null = null;
-    try {
-      job = await queue.add("codemodRun", {
-        userId,
-        source,
-        engine,
-        repo,
-        codemodName,
-      });
-    } catch (error) {
-      console.error(error);
-      throw new Error("Cannot add task to the queue.");
-    }
+    const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
+      codemodName,
+      codemodSource,
+      codemodEngine,
+      userId,
+      repoUrl,
+    });
 
     reply.type("application/json").code(200);
     return { success: true, codemodRunId: job.id };
@@ -807,18 +801,18 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
     const { jobId } = parseCodemodStatusParams(request.params);
 
-    let status: string | null = null;
-    try {
-      status = await redis.get(`job:${jobId}:status`);
-    } catch (error) {
-      console.error(error);
-      throw new Error("Cannot get codemodRun status from Redis cache.");
-    }
-
-    const result = JSON.parse(status as string);
-
+    const data = await redis.get(`job-${jobId}::status`);
     reply.type("application/json").code(200);
-    return { result };
+    return {
+      success: true,
+      result: data
+        ? (JSON.parse(data) as {
+            status: string;
+            message: string;
+            link?: string;
+          })
+        : null,
+    };
   });
 
   done();

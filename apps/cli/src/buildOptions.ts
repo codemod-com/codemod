@@ -21,7 +21,7 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
       description: "Respond with JSON",
       default: DEFAULT_USE_JSON,
     })
-    .option("no-cache", {
+    .option("noCache", {
       type: "boolean",
       description: "Disable cache for HTTP(S) requests",
       default: DEFAULT_NO_CACHE,

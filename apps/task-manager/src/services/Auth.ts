@@ -4,24 +4,24 @@ export class AuthError extends Error {}
 
 const USER_ID_REGEX = /^[a-z0-9_]+$/i;
 
-export class Auth {
+export class AuthService {
   private readonly __authHeader: string;
+
   constructor(authKey: string) {
     if (!authKey) {
       throw new AuthError("Invalid auth key provided.");
     }
-
     this.__authHeader = `Bearer ${authKey}`;
   }
 
-  async getOAuthToken(userId: string, provider: "github"): Promise<string> {
+  async getAuthToken(userId: string): Promise<string> {
     try {
       if (!USER_ID_REGEX.test(userId)) {
         throw new AuthError("Invalid userId.");
       }
 
       const result = await axios.get(
-        `https://api.clerk.dev/v1/users/${userId}/oauth_access_tokens/${provider}`,
+        `https://api.clerk.dev/v1/users/${userId}/oauth_access_tokens/github`,
         {
           headers: {
             Authorization: this.__authHeader,
@@ -36,13 +36,11 @@ export class Auth {
       }
 
       return token;
-    } catch (e) {
-      const errorMessage = isAxiosError<{ message: string }>(e)
-        ? e.response?.data.message
-        : (e as Error).message;
+    } catch (error) {
+      const { message } = error as Error;
 
       throw new AuthError(
-        `Failed to retrieve OAuth token for ${provider}. Reason: ${errorMessage}`,
+        `Failed to retrieve OAuth token for GitHub. Reason: ${message}`,
       );
     }
   }
