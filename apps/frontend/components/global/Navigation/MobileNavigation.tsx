@@ -84,6 +84,7 @@ export function MobileDropdown({
               <span className="flex items-center gap-2">
                 <TechLogo
                   className="text-black dark:text-white"
+                  pathClassName="dark:fill-white"
                   name={"github"}
                 />
                 <span className="">{"Star us"}</span>
