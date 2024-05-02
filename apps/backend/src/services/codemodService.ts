@@ -22,6 +22,7 @@ const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
 
 type LongCodemodIndoDetails = {
   frameworks: string[];
+  frameworkVersion: string | null | undefined;
   useCaseCategory: string | null | undefined;
 };
 
@@ -152,6 +153,12 @@ export class CodemodService {
 
     const data: LongCodemodInfo[] = await Promise.all(
       codemods.map(async (codemod) => {
+        let frameworkVersion = null;
+        const match = codemod.name.match(/(\d+(?:\.\d+)*)/);
+        if (match) {
+          frameworkVersion = match[1];
+        }
+
         const useCaseCategory = useCaseCategoryTags.find((tag) =>
           tag.aliases.some((t) => codemod.tags.includes(t)),
         )?.title;
@@ -163,6 +170,7 @@ export class CodemodService {
         return {
           ...codemod,
           frameworks,
+          frameworkVersion,
           useCaseCategory: useCaseCategory ?? "",
         };
       }),
@@ -250,6 +258,12 @@ export class CodemodService {
       where: { classification: "framework" },
     });
 
+    let frameworkVersion = null;
+    const match = codemod.name.match(/(\d+(?:\.\d+)*)/);
+    if (match) {
+      frameworkVersion = match[1];
+    }
+
     const useCaseCategory = useCaseCategoryTags.find((tag) =>
       tag.aliases.some((t) => codemod.tags.includes(t)),
     )?.title;
@@ -260,7 +274,9 @@ export class CodemodService {
 
     return {
       ...codemod,
+
       frameworks,
+      frameworkVersion,
       useCaseCategory: useCaseCategory ?? "",
     };
   }
