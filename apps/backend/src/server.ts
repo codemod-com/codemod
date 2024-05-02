@@ -47,10 +47,9 @@ import {
   parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
-  parseSendChatBody 
+  parseSendChatBody,
   parseSendMessageBody,
   parseValidateIntentParams,
-  parseValidateIntentParamsnParams,
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
