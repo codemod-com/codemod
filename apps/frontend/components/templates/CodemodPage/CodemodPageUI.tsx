@@ -97,7 +97,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
               {data?.verified && (
                 <VerifiedBadge content="Regularly tested and maintained by our engineers and codemod expert community." />
               )}
-              <>{frameworkCards}</>
+              {frameworkCards}
               {data?.useCaseCategory && (
                 <Link
                   href={`/registry?${
