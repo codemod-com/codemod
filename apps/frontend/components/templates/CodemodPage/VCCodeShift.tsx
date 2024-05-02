@@ -8,9 +8,7 @@ export const VCCodeShift = (
     Required<Pick<CodemodPagePayload, "currentVersion">>,
 ) => (
   <div className="flex flex-col gap-xs">
-    <p className="body-s">
-      {data.globalLabels?.vsCodeExtensionTitle || "VS Code extension"}
-    </p>
+    <p className="body-s">IDE extension</p>
     <RunCTAButton
       href={data.currentVersion.vsCodeLink}
       title={data.globalLabels?.vsCodeExtensionButtonLabel || "Run in VS Code"}
