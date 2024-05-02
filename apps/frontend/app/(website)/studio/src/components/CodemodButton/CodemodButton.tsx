@@ -1,5 +1,6 @@
+import type { GithubRepository } from "@/types/object.types";
+import getGHBranches from "@/utils/apis/getGHBranches";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
-import getGHBranches from "@studio/api/getGHBranches";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useHandleCodemodRun } from "@studio/components/CodemodButton/useHandleCodemodRun";
 import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/useOpenRepoModalAfterSignIn";
@@ -8,7 +9,6 @@ import { mockData } from "@studio/hooks/useAPI";
 import { useAuth } from "@studio/hooks/useAuth";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
-import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
@@ -71,15 +71,15 @@ export const CodemodButton = () => {
         if (token === null) {
           return;
         }
-        const branchesOrError = await getGHBranches({
+        const branches = await getGHBranches({
           repo: selectedRepository,
           token,
         });
-        if (branchesOrError.isLeft()) {
-          console.error(branchesOrError.getLeft());
-        } else {
-          setBranchesToShow(branchesOrError.get().slice());
+        if (branches === null) {
+          return;
         }
+
+        setBranchesToShow(branches.slice());
       };
       // @TODO remove the code below when integrated with backend
       setBranchesToShow(mockData.branches.data);
