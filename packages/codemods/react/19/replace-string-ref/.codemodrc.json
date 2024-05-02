@@ -2,7 +2,7 @@
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "version": "1.0.0",
   "private": false,
-  "name": "ref-to-arrow-function",
+  "name": "replace-string-ref",
   "engine": "jscodeshift",
   "meta": {
     "tags": ["react", "migration"]

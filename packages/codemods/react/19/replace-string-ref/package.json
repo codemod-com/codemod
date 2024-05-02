@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/codemod-react-19-ref-to-arrow-function",
+  "name": "@codemod-com/codemod-react-19-replace-string-ref",
   "author": "codemod",
   "dependencies": {},
   "devDependencies": {

@@ -20,7 +20,7 @@ const buildApi = (parser: string | undefined): API => ({
   },
 });
 
-describe("react/19/ref-to-arrow-function", () => {
+describe("react/19/replace-string-ref", () => {
   it("Should replace refs in class components: default import", async () => {
     const INPUT = await readFile(
       join(
