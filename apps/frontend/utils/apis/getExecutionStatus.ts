@@ -1,7 +1,6 @@
+import apiClient from "@/utils/apis/client";
 import type { AxiosError } from "axios";
-import { GET_EXECUTION_STATUS } from "../constants";
-import { Either } from "../utils/Either";
-import apiClient from "./client";
+import { GET_EXECUTION_STATUS } from "./endpoints";
 
 type GetExecutionStatusResponse = Readonly<{
   status: "progress" | "done" | "idle";
@@ -18,9 +17,7 @@ type GetExecutionStatusRequest = Readonly<{
 const getExecutionStatus = async ({
   executionId,
   token,
-}: GetExecutionStatusRequest): Promise<
-  Either<Error, GetExecutionStatusResponse>
-> => {
+}: GetExecutionStatusRequest): Promise<GetExecutionStatusResponse | null> => {
   try {
     const res = await apiClient.post<GetExecutionStatusResponse>(
       GET_EXECUTION_STATUS,
@@ -34,10 +31,11 @@ const getExecutionStatus = async ({
       },
     );
 
-    return Either.right(res.data);
+    return res.data ?? null;
   } catch (e) {
     const err = e as AxiosError<{ message?: string }>;
-    return Either.left(new Error(err.response?.data.message ?? err.message));
+    console.error(err.response?.data.message ?? err.message);
+    return null;
   }
 };
 

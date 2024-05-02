@@ -1,7 +1,7 @@
 import Input from "@/components/shared/Input";
+import type { GithubRepository } from "@/types/object.types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
-import type { GithubRepository } from "be-types";
 import { matchSorter } from "match-sorter";
 
 import {

@@ -1,4 +1,4 @@
-import apiClient from "./client";
+import apiClient from "@/utils/apis/client";
 
 type GetCodeDiffResponse = {
   before: string;

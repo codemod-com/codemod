@@ -1,8 +1,7 @@
+import type { GithubRepository } from "@/types/object.types";
+import apiClient from "@/utils/apis/client";
 import type { AxiosError } from "axios";
-import type { GithubRepository } from "be-types";
-import { GH_BRANCH_LIST } from "../constants";
-import { Either } from "../utils/Either";
-import apiClient from "./client";
+import { GH_BRANCH_LIST } from "./endpoints";
 
 type GetGHBranchesResponse = Readonly<string[]>;
 
@@ -14,7 +13,7 @@ type GetGHBranchesRequest = Readonly<{
 const getGHBranches = async ({
   repo,
   token,
-}: GetGHBranchesRequest): Promise<Either<Error, GetGHBranchesResponse>> => {
+}: GetGHBranchesRequest): Promise<GetGHBranchesResponse | null> => {
   try {
     const res = await apiClient.post<GetGHBranchesResponse>(
       GH_BRANCH_LIST,
@@ -26,10 +25,11 @@ const getGHBranches = async ({
       },
     );
 
-    return Either.right(res.data);
+    return res.data ?? null;
   } catch (e) {
     const err = e as AxiosError<{ message?: string }>;
-    return Either.left(new Error(err.response?.data.message ?? err.message));
+    console.error(err.response?.data.message ?? err.message);
+    return null;
   }
 };
 
