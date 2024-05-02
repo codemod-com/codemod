@@ -4151,6 +4151,30 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/react/19/ref-to-arrow-function-ref:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.5.1(vitest@1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.4.5)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.4.5
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
+
   packages/codemods/react/19/remove-context-provider:
     devDependencies:
       '@codemod-com/utilities':
