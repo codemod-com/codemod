@@ -1,7 +1,7 @@
-import type { GithubRepository } from "@/types/object.types";
 import apiClient from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities/src/schemata/codemodConfigSchema";
+import type { GithubRepository } from "be-types";
 
 export const mockData = {
   repositories: {

@@ -1,6 +1,6 @@
-import type { GithubRepository } from "@/types/object.types";
 import apiClient from "@/utils/apis/client";
 import type { AxiosError } from "axios";
+import type { GithubRepository } from "be-types";
 import { GH_BRANCH_LIST } from "./endpoints";
 
 type GetGHBranchesResponse = Readonly<string[]>;

@@ -1,4 +1,3 @@
-import type { GithubRepository } from "@/types/object.types";
 import getGHBranches from "@/utils/apis/getGHBranches";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
@@ -9,6 +8,7 @@ import { mockData } from "@studio/hooks/useAPI";
 import { useAuth } from "@studio/hooks/useAuth";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
+import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
