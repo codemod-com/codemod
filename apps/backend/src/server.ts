@@ -127,6 +127,12 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     handleProcessExit(0);
   });
 
+  const ALLOWED_ORIGINS = [
+    /^https?:\/\/.*-codemod\.vercel\.app$/,
+    /^https?:\/\/localhost(:\d+)?$/,
+    /^https?:\/\/codemod\.com$/,
+  ];
+
   await fastify.register(cors, {
     origin: (origin, cb) => {
       if (!origin) {
@@ -134,9 +140,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
         return;
       }
 
-      const hostname = new URL(origin).hostname.replace(/^www\./, "");
-
-      if (hostname === "localhost" || hostname === "codemod.com") {
+      if (ALLOWED_ORIGINS.some((or) => or.test(origin))) {
         cb(null, true);
         return;
       }
