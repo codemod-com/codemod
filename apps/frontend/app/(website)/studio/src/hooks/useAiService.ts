@@ -1,4 +1,6 @@
+import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useEffect, useRef, useState } from "react";
 
 type ExecutionStatus =
   | "closed"
@@ -13,9 +15,6 @@ type WSResponse = {
   message: string;
   codemod?: string;
 };
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useEffect, useRef, useState } from "react";
 
 export const useAiService = () => {
   const [codemod, setCodemod] = useState<string | null>(null);

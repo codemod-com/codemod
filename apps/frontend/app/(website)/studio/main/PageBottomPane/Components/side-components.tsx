@@ -7,7 +7,6 @@ import type { Void } from "@studio/types/transformations";
 import { debounce } from "@studio/utils/debounce";
 import { isNil } from "@studio/utils/isNil";
 import { isVisible } from "@studio/utils/visibility";
-import type React from "react";
 import type { PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ASTViewer from "../../ASTViewer";

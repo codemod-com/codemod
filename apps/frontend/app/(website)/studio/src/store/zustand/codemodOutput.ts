@@ -3,8 +3,8 @@ import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
-import { buildRanges } from "@studio/utils/tree";
 import type { RangeCommand } from "@studio/utils/tree";
+import { buildRanges } from "@studio/utils/tree";
 import create from "zustand";
 
 type CodemodOutputState = {

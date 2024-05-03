@@ -1,4 +1,3 @@
-import ChevronRightSVG from "@/assets/icons/chevronright.svg";
 import {
   ACCESS_TOKEN_COMMANDS,
   ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
@@ -9,26 +8,14 @@ import {
   VSCODE_PREFIX,
 } from "@/constants";
 import { cn } from "@/utils";
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@clerk/nextjs";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
 import getAccessToken from "@studio/api/getAccessToken";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
-import Text from "@studio/components/Text";
 import InsertExampleButton from "@studio/components/button/InsertExampleButton";
-import Chat from "@studio/components/chatbot/Chat";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@studio/components/ui/alert-dialog";
-import { Button } from "@studio/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -36,62 +23,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@studio/components/ui/tabs";
-import { UserIcon } from "@studio/icons/User";
-import { CodemodBuilder } from "@studio/main/CodemodBuilder";
+import { AssistantTab } from "@studio/main/PaneLayout";
+import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
+import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
-import { TabNames, useViewStore } from "@studio/store/zustand/view";
 import { openIDELink } from "@studio/utils/openIDELink";
-import Image from "next/image";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef } from "react";
 // import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
-import { C } from "vitest/dist/reporters-xEmem8D4";
-import themeConfig from "../../../../tailwind.config";
 import Codemod from "./Codemod";
 import Header from "./Header";
 import Layout from "./Layout";
-import LiveIcon from "./LiveIcon";
-import Table from "./Log/Table";
 import {
-  AstSection,
   BoundResizePanel,
   CodeSnippets,
-  type PanelData,
   type PanelsRefs,
   ResizablePanelsIndices,
   ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
-
-const enginesConfig: Array<{
-  label: string;
-  disabled: boolean;
-  value: KnownEngines | "piranha";
-}> = [
-  {
-    label: "jscodeshift",
-    value: "jscodeshift",
-    disabled: false,
-  },
-  {
-    label: "ts-morph [beta]",
-    value: "ts-morph",
-    disabled: false,
-  },
-  {
-    label: "piranha (alpha)",
-    value: "piranha",
-    disabled: true,
-  },
-];
 
 const Main = () => {
   const { isSignedIn, getToken } = useAuth();
@@ -407,208 +359,6 @@ const Main = () => {
         </Layout.Content>
       </Layout>
     </>
-  );
-};
-
-function SignInRequired() {
-  const theme = useTheme();
-  const router = useRouter();
-  const signUserIn = () => {
-    router.push("/auth/sign-in");
-  };
-
-  return (
-    <div className="grid h-full absolute top-0 bottom-0 w-full">
-      <div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />
-      <section
-        className={
-          "flex items-center flex-col gap-3 p-4 w-60 text-lg relative rounded-lg place-self-center border border-solid bg-background border-gray-200 dark:border-gray-700"
-        }
-        style={{
-          backgroundImage:
-            "linear-gradient(0deg, rgba(187, 252, 3, 0.3) 0, rgb(83 35 130 / 0%) 70%)",
-        }}
-      >
-        <UserIcon
-          stroke={
-            theme.isDark
-              ? themeConfig.theme.extend.colors["gray-bg-light"]
-              : themeConfig.theme.extend.colors["gray-dark"]
-          }
-        />
-        <p className="font-bold text-lg">Sign in required</p>
-        <p className="font-normal text-sm text-center">
-          Sign in to use AI assistant to build codemod
-        </p>
-        <Button
-          onClick={signUserIn}
-          className="flex w-full text-white gap-2 items-center"
-        >
-          Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />
-        </Button>
-      </section>
-    </div>
-  );
-}
-
-const LoginWarningModal = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    setIsOpen(isFromCLI && isLoaded && !isSignedIn);
-  }, [isFromCLI, isSignedIn, isLoaded]);
-
-  return (
-    <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Unlock AI&apos;s full potential</AlertDialogTitle>
-        </AlertDialogHeader>
-
-        <p>
-          Sign in to Codemod & let AI automatically create your codemod.
-          Alternatively, proceed to Codemod Studio & create your codemod with
-          non-AI tools.
-        </p>
-
-        <AlertDialogFooter>
-          <AlertDialogCancel asChild>
-            <Button variant="secondary">Proceed without AI</Button>
-          </AlertDialogCancel>
-          <AlertDialogAction asChild>
-            <SignInButton>
-              <Button>Sign in</Button>
-            </SignInButton>
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  );
-};
-
-const AssistantTab = ({
-  panelRefs,
-  beforePanel,
-  afterPanel,
-}: {
-  panelRefs: PanelsRefs;
-  beforePanel: PanelData;
-  afterPanel: PanelData;
-}) => {
-  const { activeTab } = useViewStore();
-  const { engine } = useSnippetStore();
-
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const savedScrollPositionRef = useRef<number>(0);
-  const { isSignedIn } = useAuth();
-  const [showBuildPanel, setShowBuildPanel] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem("feature-builder") === "true") {
-      setShowBuildPanel(true);
-    }
-  }, []);
-
-  const { setActiveTab } = useViewStore();
-
-  const handleOnClick = useCallback(
-    (newActiveTab: TabNames) => {
-      setActiveTab(newActiveTab);
-    },
-    [setActiveTab],
-  );
-
-  useEffect(() => {
-    if (activeTab === TabNames.MODGPT && scrollContainerRef.current !== null) {
-      scrollContainerRef.current.scrollTop = savedScrollPositionRef.current;
-    }
-  }, [activeTab]);
-
-  const handleScroll = () => {
-    if (activeTab === TabNames.MODGPT && scrollContainerRef.current !== null) {
-      savedScrollPositionRef.current = scrollContainerRef.current.scrollTop;
-    }
-  };
-
-  if (engine === "ts-morph") {
-    return (
-      <div className="flex h-full w-full items-center justify-center">
-        <Text>The Assistant is not yet available for TS-Morph codemods.</Text>
-      </div>
-    );
-  }
-
-  return (
-    <Tabs
-      value={activeTab}
-      className="h-full w-full"
-      onValueChange={(value: string) => {
-        handleOnClick(value as TabNames);
-      }}
-    >
-      <TabsList
-        className={cn("absolute h-[2.5rem] w-full rounded-none z-1", {
-          "z-[100]": isSignedIn,
-        })}
-      >
-        <TabsTrigger className="flex-1" value={TabNames.MODGPT}>
-          Chat
-        </TabsTrigger>
-        {showBuildPanel && (
-          <TabsTrigger className="flex-1" value={TabNames.INFERRER}>
-            Builder
-          </TabsTrigger>
-        )}
-        <TabsTrigger className="flex-1" value={TabNames.AST}>
-          AST
-        </TabsTrigger>
-        <TabsTrigger className="flex-1" value={TabNames.DEBUG}>
-          <LiveIcon />
-          Debug
-        </TabsTrigger>
-      </TabsList>
-
-      <TabsContent
-        className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
-        value={TabNames.INFERRER}
-        onScroll={handleScroll}
-        ref={scrollContainerRef}
-      >
-        <CodemodBuilder />
-      </TabsContent>
-
-      <TabsContent
-        className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
-        value={TabNames.AST}
-        onScroll={handleScroll}
-        ref={scrollContainerRef}
-      >
-        <PanelGroup direction="horizontal">
-          <AstSection
-            panels={[beforePanel, afterPanel]}
-            engine={engine}
-            panelRefs={panelRefs}
-          />
-        </PanelGroup>
-      </TabsContent>
-
-      <TabsContent
-        className="scrollWindow mt-0 h-full overflow-y-auto bg-gray-bg-light pt-[2.5rem] dark:bg-gray-darker"
-        value={TabNames.MODGPT}
-        onScroll={handleScroll}
-        ref={scrollContainerRef}
-      >
-        <Chat />
-        {!isSignedIn && <SignInRequired />}
-      </TabsContent>
-      <TabsContent
-        className="mt-0 h-full pt-[2.5rem] overflow-auto"
-        value={TabNames.DEBUG}
-      >
-        <Table />
-      </TabsContent>
-    </Tabs>
   );
 };
 
