@@ -19,7 +19,6 @@ export class GithubProviderService {
   private readonly __base: string;
   private readonly __codemodMetadata: CodemodMetadata;
   private readonly __currentBranch: string;
-  private __pullRequestResponse: PullRequestResponse | null;
   private __git: SimpleGit | null;
 
   constructor(codemodMetadata: CodemodMetadata) {
@@ -27,25 +26,25 @@ export class GithubProviderService {
 
     this.__git = null;
     this.__base = "main";
-    this.__pullRequestResponse = null;
     this.__currentBranch = `codemod-${codemodName.toLowerCase()}-${Date.now()}`;
     this.__codemodMetadata = codemodMetadata;
   }
 
-  public get pullRequestResponse(): PullRequestResponse | null {
-    return this.__pullRequestResponse;
-  }
-
   public async cloneRepository(path: string): Promise<void> {
     try {
-      const { repoUrl, token } = this.__codemodMetadata;
+      const { repoUrl, token, branch } = this.__codemodMetadata;
       const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
 
       const url = `https://${token}@github.com/${authorName}/${repoName}.git`;
 
       const git = simpleGit();
       await git.clone(url, path);
+
       this.__git = simpleGit(path);
+
+      if (branch) {
+        await this.__git.checkout(branch);
+      }
     } catch (error) {
       const { message } = error as Error;
 
@@ -109,7 +108,7 @@ export class GithubProviderService {
     }
   }
 
-  public async createPullRequest(): Promise<void> {
+  public async createPullRequest(): Promise<string> {
     try {
       const { repoUrl, codemodName } = this.__codemodMetadata;
       const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
@@ -119,7 +118,7 @@ export class GithubProviderService {
       const title = `[${codemodName}]: Codemod changes for ${authorName}/${repoName}.`;
       const body = `Changes applied with ${codemodName} codemod.`;
 
-      this.__pullRequestResponse = await axiosRequest<PullRequestResponse>(
+      const pullRequestResponse = await axiosRequest<PullRequestResponse>(
         url,
         "post",
         {
@@ -133,6 +132,8 @@ export class GithubProviderService {
           Accept: "application/vnd.github+json",
         },
       );
+
+      return pullRequestResponse.html_url;
     } catch (error) {
       const { message } = error as Error;
 
