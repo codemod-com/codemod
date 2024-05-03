@@ -63,7 +63,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
     let mainFileName: string | null = null;
     let descriptionMdBuffer: Buffer | null = null;
 
-    for await (const multipartFile of request.files()) {
+    for await (const multipartFile of request.files({
+      limits: { fileSize: 1024 * 1024 * 100 },
+    })) {
       const buffer = await multipartFile.toBuffer();
 
       if (multipartFile.fieldname === ".codemodrc.json") {
