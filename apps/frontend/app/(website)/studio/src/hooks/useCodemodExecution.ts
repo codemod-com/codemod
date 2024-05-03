@@ -1,6 +1,10 @@
 import { RUN_CODEMOD } from "@/utils/apis/endpoints";
 import { useUserSession } from "@studio/store/zustand/userSession";
-import { type ExecuteCodemodRequest, useAPI } from "./useAPI";
+import {
+  type ExecuteCodemodRequest,
+  type ExecuteCodemodResponse,
+  useAPI,
+} from "./useAPI";
 import { useExecutionStatus } from "./useExecutionStatus";
 
 export const useCodemodExecution = () => {
@@ -9,18 +13,19 @@ export const useCodemodExecution = () => {
   const codemodRunStatus = useExecutionStatus(codemodExecutionId);
   const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
-  const onCodemodRun = async (request: ExecuteCodemodRequest) => {
+  const onCodemodRun = async (
+    request: ExecuteCodemodRequest,
+  ): Promise<void> => {
     try {
-      const { data } = await runCodemod<
-        { codemodExecutionId: string },
-        ExecuteCodemodRequest
-      >(request);
+      const { codemodRunId, success } = (
+        await runCodemod<ExecuteCodemodResponse, ExecuteCodemodRequest>(request)
+      ).data;
 
-      const { codemodExecutionId } = data;
-      // @TODO
-      setCodemodExecutionId(Math.random().toString());
+      if (!success) {
+        return;
+      }
 
-      return data;
+      setCodemodExecutionId(codemodRunId);
     } catch (e) {}
   };
 

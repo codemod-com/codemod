@@ -59,7 +59,7 @@ export const parseCreateIssueParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const createIssueBodySchema = object({
-  repo: string(),
+  repoUrl: string(),
   title: string(),
   body: string(),
 });
@@ -71,17 +71,7 @@ export const parseGetUserRepositoriesParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const getRepoBranchesBodySchema = object({
-  id: number(),
-  name: string(),
-  full_name: string(),
-  private: boolean(),
-  html_url: string(),
-  default_branch: string(),
-  permissions: object({
-    admin: boolean(),
-    push: boolean(),
-    pull: boolean(),
-  }),
+  repoUrl: string(),
 });
 
 export const parseGetRepoBranchesBody = (input: unknown) =>
@@ -173,6 +163,8 @@ export const codemodRunBodySchema = object({
   codemodName: string(),
   codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
   repoUrl: string(),
+  branch: optional(string()),
+  targetPath: optional(string()),
 });
 
 export const parseCodemodRunBody = (input: unknown) =>

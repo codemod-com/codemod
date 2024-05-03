@@ -24,8 +24,8 @@ export const useOpenRepoModalAfterSignIn = (
   } = useModal();
 
   const getRepositories = async () => {
-    const repositories = ((await getRepos()) as any).repositories.data;
-    setRepositoriesToShow(repositories);
+    const ghRepos = (await getRepos()).data;
+    setRepositoriesToShow(ghRepos);
   };
   const { retrievePendingAction, hasPendingAction } = useUserSession();
 

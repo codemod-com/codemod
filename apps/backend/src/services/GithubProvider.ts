@@ -43,10 +43,9 @@ export class GithubProvider implements SourceControlProvider {
   private readonly __baseUrl: string;
   private readonly __authHeader: string;
 
-  constructor(oAuthToken: string, repo: string | null) {
+  constructor(oAuthToken: string, repoUrl: string | null) {
     this.__baseUrl = "https://api.github.com";
-    this.__repo = repo;
-
+    this.__repo = repoUrl;
     this.__authHeader = `Bearer ${oAuthToken}`;
   }
 

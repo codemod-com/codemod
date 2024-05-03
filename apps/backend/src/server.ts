@@ -78,11 +78,11 @@ export enum TaskManagerJobs {
 const getSourceControlProvider = (
   provider: "github",
   oAuthToken: string,
-  repo: string | null,
+  repoUrl: string | null,
 ) => {
   switch (provider) {
     case "github": {
-      return new GithubProvider(oAuthToken, repo);
+      return new GithubProvider(oAuthToken, repoUrl);
     }
   }
 };
@@ -541,7 +541,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
     const { provider } = parseCreateIssueParams(request.params);
 
-    const { repo, title, body } = parseCreateIssueBody(request.body);
+    const { repoUrl, title, body } = parseCreateIssueBody(request.body);
 
     const accessToken = getCustomAccessToken(environment, request.headers);
 
@@ -560,7 +560,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     const sourceControlProvider = getSourceControlProvider(
       provider,
       oAuthToken,
-      repo,
+      repoUrl,
     );
 
     const result = await sourceControl.createIssue(sourceControlProvider, {
@@ -788,14 +788,14 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       }
 
       const { provider } = parseGetRepoBranchesParams(request.params);
-      const repo = parseGetRepoBranchesBody(request.body);
+      const { repoUrl } = parseGetRepoBranchesBody(request.body);
 
       const oAuthToken = await auth.getOAuthToken(userId, provider);
 
       const sourceControlProvider = getSourceControlProvider(
         provider,
         oAuthToken,
-        repo.full_name,
+        repoUrl,
       );
 
       const result = await sourceControl.getBranches(sourceControlProvider);

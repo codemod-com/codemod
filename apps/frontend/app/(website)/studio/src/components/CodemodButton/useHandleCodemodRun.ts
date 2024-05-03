@@ -18,15 +18,17 @@ export const useHandleCodemodRun = (
       selectedRepository === undefined ||
       selectedBranch === undefined ||
       internalContent === null ||
-      !isCodemodSourceNotEmpty
+      !isCodemodSourceNotEmpty ||
+      !(engine === "jscodeshift" || engine === "ts-morph") // other engines are not supported by backend API
     ) {
       return;
     }
 
     await onCodemodRun({
-      engine,
-      target: selectedRepository.full_name,
-      source: internalContent,
+      codemodEngine: engine,
+      repoUrl: selectedRepository.html_url,
+      codemodSource: internalContent,
+      codemodName: "untitled", // UI for codemod name is missing
       branch: selectedBranch,
       targetPath: targetPathInput === "" ? undefined : targetPathInput,
     });
