@@ -60,6 +60,8 @@ export class GithubProviderService {
       if (!this.__git) {
         throw new GitIsNotInitializedError("Git client is not initialized!");
       }
+
+      await this.__git.checkoutLocalBranch(this.__currentBranch);
     } catch (error) {
       const { message } = error as Error;
 
@@ -121,10 +123,10 @@ export class GithubProviderService {
         url,
         "post",
         {
-          title,
-          body,
           head: this.__currentBranch,
           base: this.__base,
+          title,
+          body,
         },
         {
           Authorization: `Bearer ${this.__codemodMetadata.token}`,
