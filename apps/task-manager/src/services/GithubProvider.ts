@@ -41,11 +41,11 @@ export class GithubProviderService {
       const { repoUrl, token } = this.__codemodMetadata;
       const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
 
-      const config = [`http.extraHeader=Authorization: token ${token}`];
+      const url = `https://${token}@github.com/${authorName}/${repoName}.git`;
 
-      const git = simpleGit({ config });
-      await git.clone(`https://github.com/${authorName}/${repoName}.git`, path);
-      this.__git = simpleGit(path, { config });
+      const git = simpleGit();
+      await git.clone(url, path);
+      this.__git = simpleGit(path);
     } catch (error) {
       const { message } = error as Error;
 
