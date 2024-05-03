@@ -2,16 +2,112 @@ import * as fs from "node:fs";
 import { join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+  type KnownEngines,
   codemodNameRegex,
   doubleQuotify,
   execPromise,
+  getCodemodProjectFiles,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import FormData from "form-data";
+import inquirer from "inquirer";
 import { publish } from "../apis.js";
 import { getCurrentUserData } from "../utils.js";
+
+// @TODO copy pasted from `init.ts`
+const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
+  "jscodeshift",
+  "ts-morph",
+  "filemod",
+  "ast-grep",
+];
+
+type License = "MIT" | "Apache 2.0";
+const LICENSE_CHOICES: License[] = ["MIT", "Apache 2.0"];
+
+const getCodemodRcContent = async (source: string): Promise<Buffer | null> => {
+  try {
+    return await fs.promises.readFile(join(source, ".codemodrc.json"));
+  } catch (e) {
+    console.info("Unable to locate .codemodrc.json");
+    return null;
+  }
+};
+
+const getDescriptionMd = async (source: string): Promise<Buffer | null> => {
+  try {
+    return await fs.promises.readFile(join(source, "README.md"));
+  } catch (e) {
+    console.info("Unable to locate .codemodrc.json");
+    return null;
+  }
+};
+
+type CodemodRcAnswers = {
+  name: string;
+  engine: KnownEngines;
+  license: License;
+  version: string;
+  buildInput: string;
+};
+
+// @TODO copy pasted from `init.ts`
+const getCodemodRcAnswers = async (): Promise<CodemodRcAnswers> =>
+  await inquirer.prompt([
+    {
+      type: "input",
+      name: "name",
+      message: "Provide a name for your codemod:",
+    },
+    {
+      type: "input",
+      name: "version",
+      message: "Specify codemod version:",
+    },
+    {
+      type: "input",
+      name: "buildInput",
+      message: "Specify build input:",
+    },
+    {
+      type: "list",
+      name: "engine",
+      message: "Select a codemod engine you want to build your codemod with:",
+      pageSize: CODEMOD_ENGINE_CHOICES.length,
+      choices: CODEMOD_ENGINE_CHOICES,
+    },
+    {
+      type: "list",
+      name: "license",
+      message: "Select a license you want to include with your codemod:",
+      pageSize: LICENSE_CHOICES.length,
+      choices: LICENSE_CHOICES,
+    },
+  ]);
+
+const getDescriptionMdAnswers = async (): Promise<{ description: string }> =>
+  await inquirer.prompt([
+    {
+      type: "editor",
+      name: "description",
+      message: "Provider codemod description",
+      template: "Test 123",
+    },
+  ]);
+
+/**
+ * If codemodrc file is missing, user is prompted to input codemod data, instead of
+ */
+const getCodemodRcFromAnswers = async (
+  answers: CodemodRcAnswers,
+  username: string,
+) =>
+  Buffer.from(
+    await getCodemodProjectFiles({ ...answers, username })[".codemodrc.json"],
+    "utf-8",
+  );
 
 export const handlePublishCliCommand = async (
   printer: PrinterBlueprint,
@@ -32,18 +128,12 @@ export const handlePublishCliCommand = async (
 
   const formData = new FormData();
 
-  let codemodRcData: string;
-  try {
-    const codemodRcBuf = await fs.promises.readFile(
-      join(source, ".codemodrc.json"),
-    );
-    formData.append(".codemodrc.json", codemodRcBuf);
-    codemodRcData = codemodRcBuf.toString("utf-8");
-  } catch (err) {
-    throw new Error(
-      "Could not find the .codemodrc.json file in the codemod directory. Please configure your codemod first.",
-    );
-  }
+  const codemodRcBuf =
+    (await getCodemodRcContent(source)) ??
+    (await getCodemodRcFromAnswers(await getCodemodRcAnswers(), username));
+
+  formData.append(".codemodrc.json", codemodRcBuf);
+  const codemodRcData = codemodRcBuf.toString("utf-8");
 
   const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
@@ -86,7 +176,7 @@ export const handlePublishCliCommand = async (
         errorOnMissing = `Please create the main "rules.toml" file first.`;
         break;
       default:
-        globSearchPattern = "dist/index.cjs";
+        globSearchPattern = "index.cjs";
         actualMainFileName = "index.cjs";
         if (codemodRc.build?.input) {
           const inputFiles = await glob(codemodRc.build.input, {
@@ -160,14 +250,11 @@ export const handlePublishCliCommand = async (
     formData.append(actualMainFileName, mainFileBuf);
   }
 
-  try {
-    const descriptionMdBuf = await fs.promises.readFile(
-      join(source, "README.md"),
-    );
-    formData.append("description.md", descriptionMdBuf);
-  } catch {
-    //
-  }
+  const descriptionMdBuf =
+    // (await getDescriptionMd(source)) ??
+    Buffer.from((await getDescriptionMdAnswers()).description, "utf-8");
+
+  formData.append("description.md", descriptionMdBuf);
 
   const publishSpinner = printer.withLoaderMessage(
     chalk.cyan(

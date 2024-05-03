@@ -12,6 +12,8 @@ export interface ProjectDownloadInput {
   cases?: { before: string; after: string }[];
   username: string | null;
   tags?: string[];
+  version?: string;
+  buildInput?: string;
 }
 
 type FixtureInputFile = `__testfixtures__/fixture${number}.input.ts`;
@@ -298,18 +300,31 @@ const codemodRc = ({
   name,
   engine,
   tags,
-}: Pick<ProjectDownloadInput, "name" | "engine" | "tags">) => {
+  version,
+  buildInput,
+}: Pick<
+  ProjectDownloadInput,
+  "name" | "engine" | "tags" | "version" | "buildInput"
+>) => {
   const finalName = changeCase.kebabCase(name);
 
   return beautify(`
     {
       "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "version": "1.0.0",
+      "version": ${version ? `"${version}"` : "1.0.0"},
       "private": false,
       "name": "${finalName}",
       "engine": "${engine}",
       "meta": {
         "tags": ${tags?.length ? JSON.stringify(tags) : "[]"}
+      }${
+        buildInput
+          ? `,
+      "build": {
+        "input": "${buildInput}"
+      }
+      `
+          : ""
       }
     }
 	`);
