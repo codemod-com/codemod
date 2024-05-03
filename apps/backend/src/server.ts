@@ -777,7 +777,7 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       return reply.code(401).send();
     }
 
-    const { codemodName, codemodSource, codemodEngine, repoUrl } =
+    const { codemodName, codemodSource, codemodEngine, repoUrl, branch } =
       parseCodemodRunBody(request.body);
 
     const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
@@ -786,6 +786,7 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       codemodEngine,
       userId,
       repoUrl,
+      branch,
     });
 
     reply.type("application/json").code(200);
@@ -812,8 +813,9 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       result: data
         ? (JSON.parse(data) as {
             status: string;
-            message: string;
+            message?: string;
             link?: string;
+            progress?: { processed: number; total: number };
           })
         : null,
     };

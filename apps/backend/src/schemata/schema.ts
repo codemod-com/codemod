@@ -154,6 +154,7 @@ export const codemodRunBodySchema = object({
   codemodName: string(),
   codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
   repoUrl: string(),
+  branch: optional(string()),
 });
 
 export const parseCodemodRunBody = (input: unknown) =>

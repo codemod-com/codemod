@@ -1,6 +1,7 @@
 import Redis, { type RedisOptions } from "ioredis";
 import type { CodemodMetadata } from "../jobs/runCodemod";
 import { environment } from "../util";
+import type { ExecutionProgress } from "./CodemodRunner";
 
 const { REDIS_HOST, REDIS_PORT, NODE_ENV } = environment;
 
@@ -15,31 +16,27 @@ export type RedisValueData = {
 };
 
 export class RedisService {
-  private readonly __options: RedisOptions;
   private readonly __redis: Redis;
   private __codemodMetadata: CodemodMetadata | null;
 
   constructor(host: string, port: string) {
-    this.__codemodMetadata = null;
-    this.__options = {
+    this.__redis = new Redis({
       host: String(host),
       port: Number(port),
       maxRetriesPerRequest: null,
-    };
-    this.__redis = new Redis(
-      NODE_ENV === "development"
-        ? this.__options
-        : { ...this.__options, tls: {} },
-    );
+    });
+    this.__codemodMetadata = null;
   }
 
   public async set({
     status,
     message,
+    progress,
     link,
   }: {
     status: string;
-    message: string;
+    message?: string;
+    progress?: ExecutionProgress;
     link?: string;
   }): Promise<void> {
     try {
@@ -47,10 +44,26 @@ export class RedisService {
         throw new RedisKeyMissedError("Status key is missing!");
       }
 
-      await this.__redis.set(
-        this.__statusKey,
-        JSON.stringify({ status, message, link }),
-      );
+      const value: {
+        status: string;
+        message?: string;
+        progress?: ExecutionProgress;
+        link?: string;
+      } = { status };
+
+      if (message) {
+        value.message = message;
+      }
+
+      if (progress) {
+        value.progress = progress;
+      }
+
+      if (link) {
+        value.link = link;
+      }
+
+      await this.__redis.set(this.__statusKey, JSON.stringify(value));
     } catch (error) {
       const { message } = error as Error;
 

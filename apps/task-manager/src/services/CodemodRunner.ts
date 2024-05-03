@@ -8,6 +8,11 @@ enum CodemodRunnerStatus {
   ERROR = "error",
 }
 
+export type ExecutionProgress = {
+  processed: number;
+  total: number;
+};
+
 export class CodemodRunnerService {
   private readonly __sourcePath: string;
   private readonly __targetPath: string;
@@ -16,10 +21,10 @@ export class CodemodRunnerService {
   private __status: CodemodRunnerStatus;
 
   constructor(sourcePath: string, targetPath: string) {
+    this.__command = "npx";
+    this.__process = null;
     this.__sourcePath = sourcePath;
     this.__targetPath = targetPath;
-    this.__process = null;
-    this.__command = "npx";
     this.__status = CodemodRunnerStatus.FINISHED;
   }
 
@@ -38,33 +43,31 @@ export class CodemodRunnerService {
 
         this.__status = CodemodRunnerStatus.IN_PROGRESS;
 
-        this.__process.stdout.on("data", this.stdOutHandler);
-        this.__process.stderr.on("data", this.stdErrHandler);
+        this.__process.stdout.on("data", this.__stdOutHandler);
+        this.__process.stderr.on("data", this.__stdErrHandler);
 
         this.__process.on(
           "close",
-          async (code) => await this.onCloseHandler(code, resolve, reject),
+          async (code) => await this.__onCloseHandler(code, resolve, reject),
         );
       }
     });
   }
 
-  private async stdOutHandler(data: unknown): Promise<void> {
-    const message = (data as any)
-      .toString()
-      .trim()
-      .match(/Processed \d+ files out of \d+/)[0];
+  private async __stdOutHandler(data: Buffer): Promise<void> {
+    const message = data?.toString().trim();
 
     console.log(`[status]: executing codemod ${message}`);
+    const progress = this.__extractStdOutProgress(message);
 
     await redis.set({
       status: "progress",
-      message,
+      progress,
     });
   }
 
-  private async stdErrHandler(data: unknown): Promise<void> {
-    const message = (data as any).toString().trim();
+  private async __stdErrHandler(data: Buffer): Promise<void> {
+    const message = data?.toString().trim();
 
     console.error(`[error]: error executing codemod ${message}`);
 
@@ -74,7 +77,7 @@ export class CodemodRunnerService {
     });
   }
 
-  private async onCloseHandler(
+  private async __onCloseHandler(
     code: number | null,
     resolve: (value: void | PromiseLike<void>) => void,
     reject: (reason?: unknown) => void,
@@ -108,5 +111,22 @@ export class CodemodRunnerService {
         break;
       }
     }
+  }
+  private __extractStdOutProgress(
+    message: string | undefined,
+  ): ExecutionProgress | undefined {
+    if (message === undefined) {
+      return undefined;
+    }
+
+    const match = message.match(/Processed (\d+) files out of (\d+)/);
+
+    if (match && match.length >= 3) {
+      const processed = Number(match[1]);
+      const total = Number(match[2]);
+      return { processed, total };
+    }
+
+    return undefined;
   }
 }
