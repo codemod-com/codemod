@@ -17,7 +17,6 @@ class GithubProviderCreatePullRequestError extends Error {}
 
 export class GithubProviderService {
   private readonly __base: string;
-  private readonly __authHeader: string;
   private readonly __codemodMetadata: CodemodMetadata;
   private readonly __currentBranch: string;
   private __pullRequestResponse: PullRequestResponse | null;
@@ -29,7 +28,6 @@ export class GithubProviderService {
     this.__git = null;
     this.__base = "main";
     this.__pullRequestResponse = null;
-    this.__authHeader = `Bearer ${codemodMetadata.token}`;
     this.__currentBranch = `codemod-${codemodName.toLowerCase()}-${Date.now()}`;
     this.__codemodMetadata = codemodMetadata;
   }
@@ -40,14 +38,15 @@ export class GithubProviderService {
 
   public async cloneRepository(path: string): Promise<void> {
     try {
-      const git = simpleGit();
-
-      const { repoUrl } = this.__codemodMetadata;
+      const { repoUrl, token } = this.__codemodMetadata;
       const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
 
-      await git.clone(`https://github.com/${authorName}/${repoName}.git`, path);
+      const config = [`http.extraHeader=AUTHORIZATION: token ${token}`];
+      const url = `https://${token}:x-oauth-basic@github.com/${authorName}/${repoName}.git`;
 
-      this.__git = simpleGit(path);
+      const git = simpleGit({ config });
+      await git.clone(url, path);
+      this.__git = simpleGit(path, { config });
     } catch (error) {
       const { message } = error as Error;
 
@@ -62,8 +61,6 @@ export class GithubProviderService {
       if (!this.__git) {
         throw new GitIsNotInitializedError("Git client is not initialized!");
       }
-
-      await this.__git.checkoutLocalBranch(this.__currentBranch);
     } catch (error) {
       const { message } = error as Error;
 
@@ -131,7 +128,7 @@ export class GithubProviderService {
           base: this.__base,
         },
         {
-          Authorization: this.__authHeader,
+          Authorization: `Bearer ${this.__codemodMetadata.token}`,
           Accept: "application/vnd.github+json",
         },
       );
