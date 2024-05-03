@@ -54,7 +54,7 @@ export class CodemodRunnerService {
     });
   }
 
-  private async __stdOutHandler(data: Buffer): Promise<void> {
+  private __stdOutHandler = async (data: Buffer): Promise<void> => {
     const message = data?.toString().trim();
 
     console.log(`[status]: executing codemod ${message}`);
@@ -64,9 +64,9 @@ export class CodemodRunnerService {
       status: "progress",
       progress,
     });
-  }
+  };
 
-  private async __stdErrHandler(data: Buffer): Promise<void> {
+  private __stdErrHandler = async (data: Buffer): Promise<void> => {
     const message = data?.toString().trim();
 
     console.error(`[error]: error executing codemod ${message}`);
@@ -75,13 +75,13 @@ export class CodemodRunnerService {
       status: "error",
       message,
     });
-  }
+  };
 
-  private async __onCloseHandler(
+  private __onCloseHandler = async (
     code: number | null,
     resolve: (value: void | PromiseLike<void>) => void,
     reject: (reason?: unknown) => void,
-  ): Promise<void> {
+  ): Promise<void> => {
     switch (code) {
       case 0: {
         console.log("[status]: codemod executed");
@@ -111,10 +111,11 @@ export class CodemodRunnerService {
         break;
       }
     }
-  }
-  private __extractStdOutProgress(
+  };
+
+  private __extractStdOutProgress = (
     message: string | undefined,
-  ): ExecutionProgress | undefined {
+  ): ExecutionProgress | undefined => {
     if (message === undefined) {
       return undefined;
     }
@@ -128,5 +129,5 @@ export class CodemodRunnerService {
     }
 
     return undefined;
-  }
+  };
 }

@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/task-manager",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "scripts": {
     "build": "node esbuild.config.js",
     "start": "node build/worker.js"
