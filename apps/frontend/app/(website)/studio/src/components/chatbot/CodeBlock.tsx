@@ -3,12 +3,18 @@
 
 import { cn } from "@/utils";
 import { useTheme } from "@context/useTheme";
-import { Check as CheckIcon, Copy as CopyIcon } from "@phosphor-icons/react";
+import {
+  ArrowArcRight as ArrowArcRightIcon,
+  Check as CheckIcon,
+  Copy as CopyIcon,
+} from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { useModStore } from "../../store/zustand/mod";
+import { prettify } from "../../utils/prettify";
 
 interface Props {
   language: string;
@@ -17,13 +23,19 @@ interface Props {
 
 const CodeBlock: FC<Props> = ({ language, value }) => {
   const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
+  const { setContent } = useModStore();
   const { isDark } = useTheme();
 
-  const onCopy = () => {
+  const onCopyToClipboard = () => {
     if (isCopied) {
       return;
     }
     copy(value);
+  };
+
+  const onCopyToCodemodPanel = () => {
+    const prettified = prettify(value);
+    setContent(prettified);
   };
 
   return (
@@ -46,10 +58,20 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
             variant="ghost"
             size="icon"
             className="text-md hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
-            onClick={onCopy}
+            onClick={onCopyToClipboard}
           >
             {isCopied ? <CheckIcon /> : <CopyIcon />}
-            <span className="sr-only">Copy code</span>
+            <span className="sr-only">Copy to clipboard</span>
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-md hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+            onClick={onCopyToCodemodPanel}
+          >
+            {<ArrowArcRightIcon />}
+            <span className="sr-only">Copy to Codemod panel</span>
           </Button>
         </div>
       </div>
