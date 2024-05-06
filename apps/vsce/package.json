@@ -187,18 +187,7 @@
           "when": "editorIsOpen"
         }
       ],
-      "editor/context": [
-        {
-          "command": "codemod.sendAsBeforeSnippet",
-          "when": "editorHasSelection",
-          "group": "9_cutcopypaste"
-        },
-        {
-          "command": "codemod.sendAsAfterSnippet",
-          "when": "editorHasSelection",
-          "group": "9_cutcopypaste"
-        }
-      ],
+      "editor/context": [],
       "explorer/context": [
         {
           "command": "codemod.executeAsCodemod",

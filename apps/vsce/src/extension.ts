@@ -750,53 +750,53 @@ export async function activate(context: vscode.ExtensionContext) {
     }),
   );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.sendAsBeforeSnippet", async () => {
-      const { activeTextEditor } = vscode.window;
+  // context.subscriptions.push(
+  //   vscode.commands.registerCommand("codemod.sendAsBeforeSnippet", async () => {
+  //     const { activeTextEditor } = vscode.window;
 
-      if (!activeTextEditor) {
-        console.error(
-          "No active text editor, sendAsBeforeSnippet will not be executed",
-        );
-        return;
-      }
+  //     if (!activeTextEditor) {
+  //       console.error(
+  //         "No active text editor, sendAsBeforeSnippet will not be executed",
+  //       );
+  //       return;
+  //     }
 
-      const selection = activeTextEditor.selection;
-      const text = activeTextEditor.document.getText(selection);
+  //     const selection = activeTextEditor.selection;
+  //     const text = activeTextEditor.document.getText(selection);
 
-      const beforeSnippet = Buffer.from(text).toString("base64url");
+  //     const beforeSnippet = Buffer.from(text).toString("base64url");
 
-      const uri = vscode.Uri.parse(
-        `${CODEMOD_STUDIO_URL}?beforeSnippet=${beforeSnippet}`,
-      );
+  //     const uri = vscode.Uri.parse(
+  //       `${CODEMOD_STUDIO_URL}?beforeSnippet=${beforeSnippet}`,
+  //     );
 
-      await vscode.env.openExternal(uri);
-    }),
-  );
+  //     await vscode.env.openExternal(uri);
+  //   }),
+  // );
 
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.sendAsAfterSnippet", async () => {
-      const { activeTextEditor } = vscode.window;
+  // context.subscriptions.push(
+  //   vscode.commands.registerCommand("codemod.sendAsAfterSnippet", async () => {
+  //     const { activeTextEditor } = vscode.window;
 
-      if (!activeTextEditor) {
-        console.error(
-          "No active text editor, sendAsAfterSnippet will not be executed",
-        );
-        return;
-      }
+  //     if (!activeTextEditor) {
+  //       console.error(
+  //         "No active text editor, sendAsAfterSnippet will not be executed",
+  //       );
+  //       return;
+  //     }
 
-      const selection = activeTextEditor.selection;
-      const text = activeTextEditor.document.getText(selection);
+  //     const selection = activeTextEditor.selection;
+  //     const text = activeTextEditor.document.getText(selection);
 
-      const afterSnippet = Buffer.from(text).toString("base64url");
+  //     const afterSnippet = Buffer.from(text).toString("base64url");
 
-      const uri = vscode.Uri.parse(
-        `${CODEMOD_STUDIO_URL}?afterSnippet=${afterSnippet}`,
-      );
+  //     const uri = vscode.Uri.parse(
+  //       `${CODEMOD_STUDIO_URL}?afterSnippet=${afterSnippet}`,
+  //     );
 
-      await vscode.env.openExternal(uri);
-    }),
-  );
+  //     await vscode.env.openExternal(uri);
+  //   }),
+  // );
 
   context.subscriptions.push(
     vscode.workspace.registerTextDocumentContentProvider(
