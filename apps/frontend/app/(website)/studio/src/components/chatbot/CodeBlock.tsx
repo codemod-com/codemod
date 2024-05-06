@@ -52,12 +52,14 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           },
         )}
       >
-        <span className="text-xs lowercase">{language}</span>
+        <span className="text-xs text-primary-light dark:text-primary-dark lowercase">
+          {language}
+        </span>
         <div className="flex items-center space-x-1">
           <Button
             variant="ghost"
             size="icon"
-            className="text-md hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+            className="text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
             onClick={onCopyToClipboard}
           >
             {isCopied ? <CheckIcon /> : <CopyIcon />}
@@ -67,7 +69,7 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-md hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
+            className="text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
             onClick={onCopyToCodemodPanel}
           >
             {<ArrowArcRightIcon />}
