@@ -79,14 +79,6 @@
       {
         "command": "codemod.executeCodemodWithinPath",
         "title": "Codemod: Execute Codemod On Path"
-      },
-      {
-        "command": "codemod.sendAsBeforeSnippet",
-        "title": "Codemod: Send as Before Snippet to the Codemod Studio"
-      },
-      {
-        "command": "codemod.sendAsAfterSnippet",
-        "title": "Codemod: Send as After Snippet to the Codemod Studio"
       }
     ],
     "configuration": {
