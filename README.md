@@ -121,6 +121,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/diboune"><img src="https://avatars.githubusercontent.com/u/60890389?v=4?s=100" width="100px;" alt="Mohamed Amine Diboune"/><br /><sub><b>Mohamed Amine Diboune</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=diboune" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/siffogh"><img src="https://avatars.githubusercontent.com/u/4761023?v=4?s=100" width="100px;" alt="Seif Ghezala"/><br /><sub><b>Seif Ghezala</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=siffogh" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://www.toptal.com/resume/ahmad-soliman"><img src="https://avatars.githubusercontent.com/u/3511001?v=4?s=100" width="100px;" alt="Ahmad Soliman"/><br /><sub><b>Ahmad Soliman</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=ahmadsoliman" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/ml"><img src="https://avatars.githubusercontent.com/u/1509?v=4?s=100" width="100px;" alt="Maciej Lotkowski"/><br /><sub><b>Maciej Lotkowski</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/issues?q=author%3Aml" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
