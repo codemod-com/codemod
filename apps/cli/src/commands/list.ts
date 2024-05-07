@@ -29,12 +29,14 @@ export const handleListNamesCommand = async (
   let prettified = configObjects.map(
     ({ name, verified: _, tags: tagsArray, engine, author, slug }) => {
       const tags = tagsArray.join(", ");
+      const nameWithRegistryLink = terminalLink(
+        name,
+        `https://codemod.com/registry/${slug}`,
+      );
 
       if (search && (name === search || tagsArray.includes(search))) {
         return {
-          name: chalk.bold.cyan(
-            terminalLink(name, `https://codemod.com/registry/${slug}`),
-          ),
+          name: chalk.bold.cyan(nameWithRegistryLink),
           tags: chalk.bold.cyan(tags),
           engine: chalk.bold.cyan(engine),
           author: chalk.bold.cyan(author),
@@ -42,7 +44,7 @@ export const handleListNamesCommand = async (
       }
 
       return {
-        name: terminalLink(name, `https://codemod.com/registry/${slug}`),
+        name: nameWithRegistryLink,
         tags,
         engine,
         author,
