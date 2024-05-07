@@ -54,9 +54,9 @@ export const CodemodButton = () => {
     setSelectedBranch(branchesToShow.find((name) => name === branch));
 
   const handleCodemodRun = useHandleCodemodRun(
+    codemodNameInput,
     selectedRepository,
     selectedBranch,
-    targetPathInput,
   );
 
   const onRunCodemod = async () => {

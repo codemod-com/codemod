@@ -4,9 +4,9 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import type { GithubRepository } from "be-types";
 
 export const useHandleCodemodRun = (
+  codemodName: string,
   selectedRepository: GithubRepository | undefined,
   selectedBranch: string | undefined,
-  targetPathInput: string,
 ) => {
   const { onCodemodRun } = useCodemodExecution();
   const { engine } = useSnippetStore();
@@ -28,9 +28,8 @@ export const useHandleCodemodRun = (
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
       codemodSource: internalContent,
-      codemodName: "untitled", // UI for codemod name is missing
+      codemodName,
       branch: selectedBranch,
-      targetPath: targetPathInput === "" ? undefined : targetPathInput,
     });
   };
 };
