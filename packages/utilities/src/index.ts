@@ -57,6 +57,11 @@ export {
   type KnownEngines,
   type PiranhaLanguage,
 } from "./schemata/codemodConfigSchema.js";
+export {
+  codemodRunBodySchema,
+  validateCodemodStatusParamsSchema,
+  type CodemodRunResponse,
+} from "./schemata/codemodRunSchema.js";
 export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
 export {
   JOB_KIND,

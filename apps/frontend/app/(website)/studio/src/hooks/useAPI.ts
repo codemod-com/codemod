@@ -1,20 +1,6 @@
 import apiClient from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
 
-export type ExecuteCodemodRequest = {
-  codemodEngine: "jscodeshift" | "ts-morph"; // other engines are not supported by backend API
-  codemodSource: string;
-  codemodName: string;
-  repoUrl: string;
-  branch?: string; // not supported by backend API
-  targetPath?: string; // not supported by backend API
-};
-
-export type ExecuteCodemodResponse = {
-  success: boolean;
-  codemodRunId: string;
-};
-
 export const useAPI = <T>(endpoint: string) => {
   const { getToken } = useAuth();
   const getHeaders = async () => ({
