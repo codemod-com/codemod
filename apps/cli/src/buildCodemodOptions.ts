@@ -130,7 +130,7 @@ export const buildSourcedCodemodOptions = async (
     ).names;
 
     const spinner = printer.withLoaderMessage(
-      chalk.cyan(`Downloading ${subCodemodsNames.length} recipe codemods...`),
+      chalk.cyan(`Downloading recipe (${subCodemodsNames.length} codemods)`),
     );
 
     const codemods = await Promise.all(
