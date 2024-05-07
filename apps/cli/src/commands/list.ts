@@ -1,6 +1,7 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { doubleQuotify } from "@codemod-com/utilities";
 import columnify from "columnify";
+import terminalLink from "terminal-link";
 import { getCodemodList } from "../apis.js";
 
 export const handleListNamesCommand = async (
@@ -26,12 +27,14 @@ export const handleListNamesCommand = async (
   }
 
   let prettified = configObjects.map(
-    ({ name, verified: _, tags: tagsArray, engine, author }) => {
+    ({ name, verified: _, tags: tagsArray, engine, author, slug }) => {
       const tags = tagsArray.join(", ");
 
       if (search && (name === search || tagsArray.includes(search))) {
         return {
-          name: chalk.bold.cyan(name),
+          name: chalk.bold.cyan(
+            terminalLink(name, `https://codemod.com/registry/${slug}`),
+          ),
           tags: chalk.bold.cyan(tags),
           engine: chalk.bold.cyan(engine),
           author: chalk.bold.cyan(author),
@@ -39,7 +42,7 @@ export const handleListNamesCommand = async (
       }
 
       return {
-        name,
+        name: terminalLink(name, `https://codemod.com/registry/${slug}`),
         tags,
         engine,
         author,
