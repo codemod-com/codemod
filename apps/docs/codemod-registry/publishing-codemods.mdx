@@ -28,16 +28,38 @@ Codemod platform currently supports the following codemod engines: [`ast-grep`](
 
 ## Required codemod package structure
 
-To make your codemod package compatible with Codemod platform, it needs to have a `.codemodrc.json` configuration file in the project root.
+To make your codemod package compatible with Codemod platform, it needs to have a `.codemodrc.json` configuration file in the project root and conform to one of the structures, depending on the codemod engine used.
+
+### JavaScript engines (filemod, jscodeshift, ts-morph)
 
 ```bash
 ├── dist
-│   ├── index.cjs # this is the default path for the built codemod file. when someone runs your codemod, this file will be executed.
+│   ├── index.cjs # built codemod file. when someone runs your codemod, this file will be executed.
 ├── src
-│   ├── index.ts # this is the default path for the codemod's entry point file.
+│   ├── index.ts # the default path for the codemod's entry point file.
 │   ├── ...
 ├── .codemodrc.json # contains the codemod configuration
 └── README.md # must contain a short description and examples, such as in the example at the bottom of this page
+```
+
+### Ast-grep
+
+See how to build your first rule at [ast-grep documentation](https://ast-grep.github.io/guide/rule-config.html).
+
+```bash
+├── src
+│   ├── rule.yaml # ast-grep rule file.
+├── .codemodrc.json # should contain "engine" field set to "ast-grep"
+└── README.md
+```
+
+### Recipe
+
+Recipes don't really have to contain input file, just the .codemodrc.json with codemod names that are included in the recipe specified under appropriate key.
+
+```bash
+├── .codemodrc.json # should contain "engine" field set to "recipe" and "names" field with an ordered array of codemod names that will be executed.
+└── README.md
 ```
 
 <AccordionGroup>
