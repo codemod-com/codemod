@@ -99,6 +99,9 @@ export const selectCodemodTree = (
   executionQueue: ReadonlyArray<CodemodHash>,
 ) => {
   const codemods = Object.values(state.codemod.entities) as CodemodEntry[];
+  if (codemods.length === 0) {
+    return null;
+  }
   codemods.sort((a, b) => a.name.localeCompare(b.name));
   const { executionPaths, searchPhrase } = state.codemodDiscoveryView;
 

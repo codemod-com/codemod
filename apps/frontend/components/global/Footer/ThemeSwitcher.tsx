@@ -7,45 +7,18 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
-  const { setTheme } = useTheme();
-  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
-
-  function toggleTheme() {
-    const newTheme = currentTheme === "dark" ? "light" : "dark";
-    setCurrentTheme(newTheme);
-    setTheme(newTheme, true);
-  }
-
-  useEffect(() => {
-    const darkMatcher = window.matchMedia("(prefers-color-scheme: dark)");
-    const storedTheme = localStorage.getItem("theme") as
-      | "light"
-      | "dark"
-      | null;
-    setCurrentTheme(storedTheme || darkMatcher.matches ? "dark" : "light");
-    darkMatcher.onchange = () => {
-      if (storedTheme) return;
-      const _theme = storedTheme || darkMatcher.matches ? "dark" : "light";
-      setCurrentTheme(_theme);
-      setTheme(_theme);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  const { toggleTheme, theme } = useTheme();
 
   const darkVariants = {
     initial: { x: "-200%", y: "60%" },
     animate:
-      currentTheme === "dark"
-        ? { x: "-50%", y: "0%" }
-        : { x: "-200%", y: "60%" },
+      theme === "dark" ? { x: "-50%", y: "0%" } : { x: "-200%", y: "60%" },
   };
 
   const lightVariants = {
     initial: { x: "200%", y: "60%" },
     animate:
-      currentTheme === "light"
-        ? { x: "-50%", y: "0%" }
-        : { x: "200%", y: "60%" },
+      theme === "light" ? { x: "-50%", y: "0%" } : { x: "200%", y: "60%" },
   };
   return (
     <button
