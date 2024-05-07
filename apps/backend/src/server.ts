@@ -5,7 +5,10 @@ import type { OutgoingHttpHeaders } from "node:http";
 import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { PostHogSender } from "@codemod-com/telemetry";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  type CodemodRunResponse,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -805,31 +808,38 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.post("/codemodRun", async (request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
+  instance.post(
+    "/codemodRun",
+    async (request, reply): Promise<CodemodRunResponse> => {
+      if (!auth) {
+        throw new Error("This endpoint requires auth configuration.");
+      }
 
-    const { userId } = getAuth(request);
+      const { userId } = getAuth(request);
 
-    if (!userId) {
-      return reply.code(401).send();
-    }
+      if (!userId) {
+        return reply.code(401).send();
+      }
 
-    const { codemodName, codemodSource, codemodEngine, repoUrl } =
-      parseCodemodRunBody(request.body);
+      const { codemodName, codemodSource, codemodEngine, repoUrl } =
+        parseCodemodRunBody(request.body);
 
-    const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-      codemodName,
-      codemodSource,
-      codemodEngine,
-      userId,
-      repoUrl,
-    });
+      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
+        codemodName,
+        codemodSource,
+        codemodEngine,
+        userId,
+        repoUrl,
+      });
 
-    reply.type("application/json").code(200);
-    return { success: true, codemodRunId: job.id };
-  });
+      if (!job.id) {
+        return reply.code(500).send();
+      }
+
+      reply.type("application/json").code(200);
+      return { success: true, codemodRunId: job.id };
+    },
+  );
 
   instance.get("/codemodRun/status/:jobId", async (request, reply) => {
     if (!auth) {

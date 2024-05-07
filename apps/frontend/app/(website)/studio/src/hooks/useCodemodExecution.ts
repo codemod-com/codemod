@@ -1,11 +1,11 @@
 import { RUN_CODEMOD } from "@/utils/apis/endpoints";
 import { useUserSession } from "@studio/store/zustand/userSession";
-import {
-  type ExecuteCodemodRequest,
-  type ExecuteCodemodResponse,
-  useAPI,
-} from "./useAPI";
+import { useAPI } from "./useAPI";
 import { useExecutionStatus } from "./useExecutionStatus";
+import type {
+  CodemodRunResponse,
+  codemodRunBodySchema,
+} from "@codemod-com/utilities";
 
 export const useCodemodExecution = () => {
   const { codemodExecutionId, setCodemodExecutionId } = useUserSession();
@@ -14,11 +14,13 @@ export const useCodemodExecution = () => {
   const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
   const onCodemodRun = async (
-    request: ExecuteCodemodRequest,
+    request: typeof codemodRunBodySchema,
   ): Promise<void> => {
     try {
       const { codemodRunId, success } = (
-        await runCodemod<ExecuteCodemodResponse, ExecuteCodemodRequest>(request)
+        await runCodemod<CodemodRunResponse, typeof codemodRunBodySchema>(
+          request,
+        )
       ).data;
 
       if (!success) {
