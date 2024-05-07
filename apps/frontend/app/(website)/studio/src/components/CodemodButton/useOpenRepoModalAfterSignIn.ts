@@ -1,9 +1,9 @@
-import type { GithubRepository } from "@/types/object.types";
 import { GH_REPO_LIST } from "@/utils/apis/endpoints";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useAuth } from "@studio/hooks/useAuth";
 import { useModal } from "@studio/hooks/useModal";
 import { useUserSession } from "@studio/store/zustand/userSession";
+import type { GithubRepository } from "be-types";
 import { pipe } from "ramda";
 import { type Dispatch, type SetStateAction, useEffect } from "react";
 

@@ -1,7 +1,7 @@
-import type { GithubRepository } from "@/types/object.types";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
+import type { GithubRepository } from "be-types";
 
 export const useHandleCodemodRun = (
   selectedRepository: GithubRepository | undefined,

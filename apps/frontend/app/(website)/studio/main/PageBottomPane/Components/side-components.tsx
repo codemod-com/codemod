@@ -7,8 +7,7 @@ import type { Void } from "@studio/types/transformations";
 import { debounce } from "@studio/utils/debounce";
 import { isNil } from "@studio/utils/isNil";
 import { isVisible } from "@studio/utils/visibility";
-import type React from "react";
-import type { PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ASTViewer from "../../ASTViewer";
 import Layout from "../../Layout";
@@ -92,7 +91,7 @@ export const AstSection = ({
   engine: KnownEngines;
 }) => {
   return panels.filter(isVisible).map((panel, i, { length }) => (
-    <>
+    <React.Fragment key={panel.relatedAST}>
       <BoundResizePanel
         className="h-full"
         panelRefs={panelRefs}
@@ -107,9 +106,9 @@ export const AstSection = ({
         <ContentViewer type={panel.type} engine={engine} />
       </BoundResizePanel>
       {i !== length - 1 && isVisible(panels[i + 1]) && (
-        <ResizeHandle direction="horizontal" />
+        <ResizeHandle key={`resize-handle-${i}`} direction="horizontal" />
       )}
-    </>
+    </React.Fragment>
   ));
 };
 

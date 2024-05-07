@@ -11,6 +11,7 @@ export type CodemodMetadata = {
   codemodSource: string;
   codemodEngine: string;
   repoUrl: string;
+  branch?: string;
 };
 
 export async function runCodemodJob(
@@ -20,11 +21,12 @@ export async function runCodemodJob(
     redis.codemodMetadata = codemodMetadata;
 
     console.log("[status]: waiting for execution to start");
-
     await redis.set({
       status: "progress",
       message: "waiting for execution to start",
     });
+
+    console.log("[status]: creating source and repo folders");
 
     const fs = new FileSystemService(codemodMetadata);
     await fs.createFolders();
@@ -32,34 +34,45 @@ export async function runCodemodJob(
 
     const { sourcePath, targetPath } = fs;
 
-    console.log("[status]: fetching repo");
-
+    console.log("[status]: cloning repo");
     await redis.set({
       status: "progress",
-      message: "fetching repo",
+      message: "cloning repo",
     });
 
     const gh = new GithubProviderService(codemodMetadata);
     await gh.cloneRepository(targetPath);
     await gh.createBranch();
 
+    console.log("[status]: applying the codemod");
+
     const cr = new CodemodRunnerService(sourcePath, targetPath);
     await cr.run(codemodMetadata);
 
+    console.log("[status]: committing and pushing changes");
+    await redis.set({
+      status: "progress",
+      message: "committing and pushing changes",
+    });
+
     await gh.commitChanges();
     await gh.pushChanges();
-    await gh.createPullRequest();
 
-    const link = gh.pullRequestResponse?.html_url;
+    console.log("[status]: creating a pull request");
+    await redis.set({
+      status: "progress",
+      message: "creating a pull request",
+    });
 
-    console.log("[status]: codemod successfully applied");
+    const link = await gh.createPullRequest();
 
+    console.log("[status]: pull request successfully created");
     await redis.set({
       status: "done",
-      message: `codemod successfully applied`,
       link,
     });
 
+    console.log("[status]: deleting source and repo folders");
     await fs.deleteFolders();
   } catch (error) {
     const { message } = error as Error;

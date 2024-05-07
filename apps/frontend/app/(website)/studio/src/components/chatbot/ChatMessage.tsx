@@ -76,6 +76,9 @@ const ChatMessage = ({ message }: Props) => {
               p({ children }) {
                 return <p className="mb-2 last:mb-0">{children}</p>;
               },
+              pre({ children }) {
+                return <pre className="bg-transparent">{children}</pre>;
+              },
               code({ inline, className, children, ...others }) {
                 if (message.role === "user") {
                   return <p className="mb-2 last:mb-0">{children}</p>;

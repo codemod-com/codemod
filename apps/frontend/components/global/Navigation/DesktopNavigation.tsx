@@ -100,7 +100,11 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
             outlineRefs.current[items.length] = el as HTMLDivElement;
           }}
         >
-          <TechLogo className="text-black dark:text-white" name={"github"} />
+          <TechLogo
+            className="text-black dark:text-white"
+            pathClassName="dark:fill-white"
+            name={"github"}
+          />
           <span className="">{"Star us"}</span>
         </span>
       </NavigationLink>
