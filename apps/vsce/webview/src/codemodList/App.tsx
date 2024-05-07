@@ -3,6 +3,7 @@ import areEqual from "fast-deep-equal";
 import { memo, useMemo } from "react";
 import type { PanelGroupStorage } from "react-resizable-panels";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
+import LoadingRegistry from "../LoadingRegistry";
 import { PanelGroup } from "../shared/Panel";
 import SearchBar from "../shared/SearchBar";
 import { vscode } from "../shared/utilities/vscode";
@@ -49,12 +50,15 @@ export const App = memo(
               setSearchPhrase={setSearchPhrase}
               placeholder="Search codemods..."
             />
-            <TreeView
-              screenWidth={props.screenWidth}
-              tree={props.codemodTree}
-              rootPath={props.rootPath}
-              autocompleteItems={props.autocompleteItems}
-            />
+            {props.codemodTree === null ? (
+              <LoadingRegistry />
+            ) : (
+              <TreeView
+                screenWidth={props.screenWidth}
+                tree={props.codemodTree}
+                autocompleteItems={props.autocompleteItems}
+              />
+            )}
           </PanelGroup>
         </main>
       </>
