@@ -24,6 +24,7 @@ export const CodemodButton = () => {
   const [branchesToShow, setBranchesToShow] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>();
   const [targetPathInput, setTargetPathInput] = useState<string>("");
+  const [codemodNameInput, setCodemodNameInput] = useState<string>("Untitled");
 
   const { codemodRunStatus, onCodemodRunCancel } = useCodemodExecution();
 
@@ -100,6 +101,8 @@ export const CodemodButton = () => {
         selectedBranch={selectedBranch}
         targetPathInput={targetPathInput}
         setTargetPathInput={setTargetPathInput}
+        codemodNameInput={codemodNameInput}
+        setCodemodNameInput={setCodemodNameInput}
         onRunCodemod={onRunCodemod}
       />
       <ProgressBar codemodRunStatus={codemodRunStatus} />

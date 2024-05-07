@@ -1,9 +1,9 @@
-import Input from "@/components/shared/Input";
 import type { GithubRepository } from "@/types/object.types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
 import { matchSorter } from "match-sorter";
 
+import Input from "@/components/shared/Input";
 import {
   Combobox,
   ComboboxItem,
@@ -24,6 +24,8 @@ export type RepositoryModalProps = {
   branchesToShow: string[];
   selectBranch: ToVoid<string>;
   selectedBranch?: string;
+  codemodNameInput: string;
+  setCodemodNameInput: ToVoid<string>;
   targetPathInput: string;
   setTargetPathInput: ToVoid<string>;
   onRunCodemod: VoidFunction;
@@ -37,8 +39,10 @@ export const RepositoryModal = ({
   branchesToShow,
   selectBranch,
   selectedBranch,
-  targetPathInput,
-  setTargetPathInput,
+  // targetPathInput,
+  // setTargetPathInput,
+  codemodNameInput,
+  setCodemodNameInput,
   onRunCodemod,
 }: RepositoryModalProps) => {
   const [repoValueToFilterBy, setRepoValueToFilterBy] =
@@ -81,6 +85,17 @@ export const RepositoryModal = ({
   return isRepositoryModalShown ? (
     <Modal onClose={hideRepositoryModal} centered transparent={false}>
       <h2 className="text-center p-2">Run Codemod on Github branch</h2>
+
+      <div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
+        <p className="text-center text-xs">Codemod name (required)</p>
+        <Input
+          type="text"
+          value={codemodNameInput}
+          placeholder="JS to TS codemod"
+          onChange={(event: any) => setCodemodNameInput(event.target.value)}
+        />
+      </div>
+
       <div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
         <RadixSelect.Root
           value={selectedRepository?.full_name}
@@ -234,7 +249,7 @@ export const RepositoryModal = ({
         </div>
       )}
 
-      {selectedRepository && selectedBranch && (
+      {/* {selectedRepository && selectedBranch && (
         <div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
           <p className="text-center text-xs">Target path (optional)</p>
           <Input
@@ -244,7 +259,7 @@ export const RepositoryModal = ({
             onChange={(event: any) => setTargetPathInput(event.target.value)}
           />
         </div>
-      )}
+      )} */}
 
       <Button
         className="m-3 text-amber-50"
