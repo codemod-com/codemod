@@ -6,7 +6,6 @@ export const codemodRunBodySchema = object({
   codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
   repoUrl: string(),
   branch: optional(string()),
-  targetPath: optional(string()),
 });
 
 export type CodemodRunResponse = { success: boolean; codemodRunId: string };
