@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for ModGTP Backend
+name: CI/CD Pipeline for ModGPT Backend
 
 on:
   push:
@@ -97,6 +97,7 @@ jobs:
                 exit 1
             fi
 
+            sudo docker compose down modgpt-backend-service
             sudo docker compose pull modgpt-backend-service
             sudo docker compose up -d modgpt-backend-service
           '
