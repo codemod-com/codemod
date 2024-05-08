@@ -1,0 +1,31 @@
+{
+  "name": "mod-gpt",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node src/server.ts",
+    "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node --watch src/server.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "ai": "^3.1.2",
+    "chatgpt": "5.2.5",
+    "dotenv": "^16.4.5",
+    "fastify": "4.25.1",
+    "openai-edge": "1.2.2",
+    "replicate": "0.25.2",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "valibot": "^0.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.10.5",
+    "fastify-plugin": "4.5.1",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.9.5"
+  }
+}
