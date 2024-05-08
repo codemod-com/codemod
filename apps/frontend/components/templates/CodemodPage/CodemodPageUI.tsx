@@ -77,6 +77,8 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
     data?.useCaseCategory?.toLocaleLowerCase() || "",
   );
 
+  const currentVersion = data?.versions[0];
+
   return (
     <Section className="pt-[calc(var(--header-height)+24px)]">
       <div className="py-8">
@@ -139,9 +141,9 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />
               </>
             ) : null}
-            {data?.currentVersion?.updatedAt && (
+            {currentVersion?.updatedAt && (
               <InfoCard
-                value={new Date(data?.currentVersion?.updatedAt).toLocaleString(
+                value={new Date(currentVersion?.updatedAt).toLocaleString(
                   "en-us",
                   {
                     month: "short",
@@ -187,41 +189,41 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                 />
               </div>
             )}
-            {data?.currentVersion?.vsCodeLink && (
-              <VCCodeShift {...data} currentVersion={data.currentVersion} />
+            {currentVersion?.vsCodeLink && (
+              <VCCodeShift {...data} currentVersion={currentVersion} />
             )}
 
-            {data?.currentVersion?.codemodStudioExampleLink && (
+            {currentVersion?.codemodStudioExampleLink && (
               <div className="flex flex-col gap-xs">
                 <p className="body-s">
-                  {data.globalLabels?.codemodStudioExampleTitle ||
+                  {data?.globalLabels?.codemodStudioExampleTitle ||
                     "Codemod Studio"}
                 </p>
                 <Button arrow intent="secondary">
-                  <a href={data?.currentVersion?.codemodStudioExampleLink}>
-                    {data.globalLabels?.codemodStudioExampleButtonLabel ||
+                  <a href={currentVersion?.codemodStudioExampleLink}>
+                    {data?.globalLabels?.codemodStudioExampleButtonLabel ||
                       "Run in Codemod Studio"}
                   </a>
                 </Button>
               </div>
             )}
 
-            {data?.currentVersion?.testProjectCommand && (
+            {currentVersion?.testProjectCommand && (
               <div className="flex flex-col gap-xs">
                 <p className="body-s">
-                  {data.globalLabels?.textProjectTitle || "Example Project"}
+                  {data?.globalLabels?.textProjectTitle || "Example Project"}
                 </p>
                 <Snippet
                   variant="secondary"
-                  command={data?.currentVersion?.testProjectCommand}
+                  command={currentVersion?.testProjectCommand}
                 />
               </div>
             )}
-            {data?.currentVersion?.sourceRepo && (
+            {currentVersion?.sourceRepo && (
               <div className="flex flex-col gap-xs">
                 <div className="flex items-center">
                   <p className="body-s">
-                    {data.globalLabels?.sourceRepoTitle || "Repository"}
+                    {data?.globalLabels?.sourceRepoTitle || "Repository"}
                   </p>
                   {/* <div className="flex gap-2">
                     <img src="/icons/star.svg" alt="GitHub icon" />
@@ -241,11 +243,11 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
                   />
                   <a
                     target="_blank"
-                    href={data?.currentVersion?.sourceRepo}
+                    href={currentVersion?.sourceRepo}
                     className="truncate underline"
                     rel="noreferrer"
                   >
-                    {data?.currentVersion?.sourceRepo}
+                    {currentVersion?.sourceRepo}
                   </a>
                 </div>
               </div>
@@ -262,21 +264,20 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             <span className="h-px w-full bg-border-light dark:bg-border-dark" />
             <div className="flex items-center gap-s">
               <InfoCard
-                value={String(data?.currentVersion?.totalTimeSaved)}
+                value={String(currentVersion?.totalTimeSaved)}
                 label="Total runs"
               />
               <span className="h-[36px] w-[2px] bg-border-light dark:bg-border-dark" />
               <InfoCard
-                value={String(data?.currentVersion?.version)}
+                value={String(currentVersion?.version)}
                 label="Version"
               />
             </div>
             <div className="flex flex-wrap gap-2">
-              {(data?.currentVersion?.tags?.filter(Boolean).length || 0) >
-                0 && (
+              {(currentVersion?.tags?.filter(Boolean).length || 0) > 0 && (
                 <>
                   <span className="h-px w-full bg-border-light dark:bg-border-dark" />
-                  {data?.currentVersion?.tags?.filter(Boolean).map((label) => (
+                  {currentVersion?.tags?.filter(Boolean).map((label) => (
                     <Link prefetch key={label} href={`/registry?q=${label}`}>
                       <Tag key={label}>{label}</Tag>
                     </Link>
