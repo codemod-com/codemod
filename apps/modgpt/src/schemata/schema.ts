@@ -13,6 +13,7 @@ const engineSchema = union([
   literal("claude-instant-1.2"),
   literal("replit-code-v1-3b"),
   literal("gpt-4-with-chroma"),
+  literal("gpt-4"),
 ]);
 
 export const sendChatBodySchema = object({
