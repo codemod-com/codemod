@@ -97,6 +97,6 @@ jobs:
                 exit 1
             fi
 
-            sudo docker compose pull codemod-backend
-            sudo docker compose up -d codemod-backend
+            sudo docker compose pull codemod-backend-service
+            sudo docker compose up -d codemod-backend-service
           '
