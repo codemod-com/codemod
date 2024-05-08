@@ -1,7 +1,7 @@
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI } from "chatgpt";
 import "dotenv/config";
-import Fastify from "fastify";
+import Fastify, { type FastifyInstance, type FastifyRequest } from "fastify";
 import * as openAiEdge from "openai-edge";
 import { ClaudeService } from "./claudeService";
 import { ReplicateService } from "./replicateService";
