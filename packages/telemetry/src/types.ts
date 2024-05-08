@@ -11,5 +11,13 @@ export type TelemetrySender<Event extends BaseEvent> = {
     event: Event,
     optionOverrides?: Partial<TelemetrySenderOptions>,
   ): void;
+  /**
+   * @description Sends event without redacting event properties.
+   * Use only when event does not contain sensitive data
+   */
+  sendDangerousEvent(
+    event: Event,
+    optionOverrides?: Partial<TelemetrySenderOptions>,
+  ): void;
   dispose(): Promise<unknown>;
 };

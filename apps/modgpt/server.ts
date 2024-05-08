@@ -14,7 +14,6 @@ const environment = {
   REPLICATE_API_KEY: process.env.REPLICATE_API_KEY,
 };
 
-console.log(" process.env", environment);
 const COMPLETION_PARAMS = {
   top_p: 0.1,
   temperature: 0.2,

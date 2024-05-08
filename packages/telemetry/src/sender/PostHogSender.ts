@@ -19,7 +19,6 @@ export class PostHogSender<Event extends BaseEvent>
       { host: "https://app.posthog.com" },
     );
   }
-
   public dispose(): Promise<unknown> {
     return this.__telemetryClient.shutdown();
   }
@@ -28,28 +27,39 @@ export class PostHogSender<Event extends BaseEvent>
     event: Event,
     // allow to override distinctId and cloudRole in the sendEvent method directly
     optionsOverrides?: Partial<TelemetrySenderOptions>,
+    isDangerous = false,
   ): Promise<void> {
-    const { kind, ...properties } = event;
+    const { kind, ...rawProperties } = event;
 
     const distinctId =
       optionsOverrides?.distinctId ?? this.__options.distinctId;
     const cloudRole = optionsOverrides?.cloudRole ?? this.__options.cloudRole;
 
-    const redactedProperties = Object.entries(properties).reduce<
-      Record<string, string>
-    >((properties, [key, value]) => {
-      properties[key] = redactFilePaths(String(value));
+    const properties = isDangerous
+      ? rawProperties
+      : Object.entries(rawProperties).reduce<Record<string, string>>(
+          (properties, [key, value]) => {
+            properties[key] = redactFilePaths(String(value));
 
-      return properties;
-    }, {});
+            return properties;
+          },
+          {},
+        );
 
     this.__telemetryClient?.capture({
       distinctId,
       event: `codemod.${cloudRole}.${kind}`,
       properties: {
         cloudRole: cloudRole,
-        ...redactedProperties,
+        ...properties,
       },
     });
+  }
+
+  public async sendDangerousEvent(
+    event: Event,
+    optionsOverrides?: Partial<TelemetrySenderOptions>,
+  ): Promise<void> {
+    return this.sendEvent(event, optionsOverrides, true);
   }
 }
