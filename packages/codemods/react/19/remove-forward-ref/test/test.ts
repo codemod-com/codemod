@@ -4,6 +4,34 @@ import { describe, it } from "vitest";
 import transform from "../src/index.js";
 
 describe("react/remove-forward-ref", () => {
+  it("Unwraps the render function: callee is member expression", () => {
+    const INPUT = `
+			import * as React from 'react';
+
+			const MyInput = React.forwardRef((props, ref) => {
+					return null;
+			});
+		`;
+
+    const OUTPUT = `
+			const MyInput = ({ ref, ...props }) => {
+				return null;
+			};
+		`;
+
+    const fileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
+
+    assert.deepEqual(
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
+    );
+  });
+
   it("Unwraps the render function: render function is ArrowFunctionExpression", () => {
     const INPUT = `
 			import { forwardRef } from 'react';
