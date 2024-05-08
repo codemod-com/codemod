@@ -1,3 +1,4 @@
+import fastifyCors from "@fastify/cors";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI } from "chatgpt";
 import "dotenv/config";
@@ -39,15 +40,13 @@ const fastify: FastifyInstance = Fastify({
 });
 
 // Disable CORS
-fastify.register(require("@fastify/cors"), () => false);
+fastify.register(fastifyCors, { origin: false });
 
-// Define the types for the incoming request body
 interface ChatRequestBody {
   messages: { role: string; content: string }[];
   engine: string;
 }
 
-// This interface extends the generic FastifyRequest to include your specific body type
 interface ChatRequest
   extends FastifyRequest<{
     Body: ChatRequestBody;

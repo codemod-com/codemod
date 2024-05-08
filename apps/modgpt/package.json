@@ -6,8 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node --loader ts-node/esm --experimental-specifier-resolution=node server.ts",
-    "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node --watch server.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node --watch server.ts"
   },
   "keywords": [],
   "author": "",
