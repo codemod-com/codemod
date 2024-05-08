@@ -5,8 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node server.ts",
-    "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node --watch server.ts"
+    "start": "node --loader ts-node/esm --experimental-specifier-resolution=node src/server.ts",
+    "dev": "node --loader ts-node/esm --experimental-specifier-resolution=node --watch src/server.ts"
   },
   "keywords": [],
   "author": "",
