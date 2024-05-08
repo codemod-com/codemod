@@ -178,7 +178,7 @@ export const handleRunCliCommand = async (
         }
       }
 
-      telemetry.sendEvent({
+      telemetry.sendDangerousEvent({
         kind: "codemodExecuted",
         codemodName,
         executionId: runSettings.caseHashDigest.toString("base64url"),
@@ -194,6 +194,7 @@ export const handleRunCliCommand = async (
         kind: "error",
         message: `Error while running the codemod:\n${error.message}`,
       });
+
       telemetry.sendEvent({
         kind: "failedToExecuteCommand",
         commandName: "codemod.executeCodemod",
