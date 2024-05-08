@@ -16,11 +16,8 @@ import {
 } from "valibot";
 
 const engineSchema = union([
-  literal("gpt-4"),
   literal("claude-2.0"),
   literal("claude-instant-1.2"),
-  literal("replit-code-v1-3b"),
-  literal("gpt-4-with-chroma"),
 ]);
 
 const clientIdentifierSchema = union([
@@ -49,7 +46,7 @@ export const sendChatBodySchema = object({
       name: optional(string()),
     }),
   ),
-  engine: optional(engineSchema, "gpt-4"),
+  engine: engineSchema,
 });
 
 export const parseSendChatBody = (input: unknown) =>
