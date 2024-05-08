@@ -63,15 +63,14 @@ export const createIssue = async (
   onFail: () => Promise<void>,
 ): Promise<{ status: number; html_url: string | null }> => {
   // call API to create Github Issue
-  const codemodRegistryRepo = "https://github.com/codemod-com/codemod";
+  const codemodRegistryRepoUrl = "https://github.com/codemod-com/codemod";
 
-  // TODO point to backend.codemod.com
   const result = await axios.post(
     "https://backend.codemod.com/sourceControl/github/issues",
     {
       title,
       body,
-      repo: codemodRegistryRepo,
+      repoUrl: codemodRegistryRepoUrl,
     },
     {
       headers: {

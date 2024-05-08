@@ -79,6 +79,14 @@
       {
         "command": "codemod.executeCodemodWithinPath",
         "title": "Codemod: Execute Codemod On Path"
+      },
+      {
+        "command": "codemod.sendAsBeforeSnippet",
+        "title": "Codemod: Send as Before Snippet to the Codemod Studio"
+      },
+      {
+        "command": "codemod.sendAsAfterSnippet",
+        "title": "Codemod: Send as After Snippet to the Codemod Studio"
       }
     ],
     "configuration": {
@@ -187,7 +195,18 @@
           "when": "editorIsOpen"
         }
       ],
-      "editor/context": [],
+      "editor/context": [
+        {
+          "command": "codemod.sendAsBeforeSnippet",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste"
+        },
+        {
+          "command": "codemod.sendAsAfterSnippet",
+          "when": "editorHasSelection",
+          "group": "9_cutcopypaste"
+        }
+      ],
       "explorer/context": [
         {
           "command": "codemod.executeAsCodemod",

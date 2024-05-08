@@ -1,11 +1,11 @@
-import { useAuth } from "@clerk/clerk-react";
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
-} from "@studio/api/getExecutionStatus";
+} from "@/utils/apis/getExecutionStatus";
+import { useAuth } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
 export const useExecutionStatus = (
-  executionId: string,
+  executionId: string | null,
 ): GetExecutionStatusResponse | null => {
   const [executionStatus, setExecutionStatus] =
     useState<GetExecutionStatusResponse | null>(null);
@@ -13,7 +13,7 @@ export const useExecutionStatus = (
 
   useEffect(() => {
     const handler = async () => {
-      if (!executionId) {
+      if (executionId === null) {
         return;
       }
 
@@ -23,16 +23,15 @@ export const useExecutionStatus = (
         return;
       }
 
-      const executionStatusOrError = await getExecutionStatus({
+      const executionStatus = await getExecutionStatus({
         executionId,
         token,
       });
-
-      if (executionStatusOrError.isLeft()) {
-        console.error(executionStatusOrError.getLeft());
-      } else {
-        setExecutionStatus(executionStatusOrError.get());
+      if (executionStatus === null) {
+        return;
       }
+
+      setExecutionStatus(executionStatus);
     };
     handler();
   }, [executionId, getToken]);
