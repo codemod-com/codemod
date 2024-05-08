@@ -307,6 +307,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@ariakit/react':
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@18.2.0)(react@18.2.0)
       '@artsy/fresnel':
         specifier: ^7.1.4
         version: 7.1.4(react@18.2.0)
@@ -367,6 +370,9 @@ importers:
       '@radix-ui/react-label':
         specifier: ^2.0.2
         version: 2.0.2(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@radix-ui/react-progress':
+        specifier: ^1.0.3
+        version: 1.0.3(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-select':
         specifier: ^1.2.2
         version: 1.2.2(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
@@ -493,6 +499,9 @@ importers:
       lucide-react:
         specifier: ^0.265.0
         version: 0.265.0(react@18.2.0)
+      match-sorter:
+        specifier: ^6.3.4
+        version: 6.3.4
       monaco-editor:
         specifier: ^0.36.1
         version: 0.36.1
@@ -4898,6 +4907,34 @@ packages:
       web-streams-polyfill: 3.3.3
     transitivePeerDependencies:
       - encoding
+    dev: false
+
+  /@ariakit/core@0.4.6:
+    resolution: {integrity: sha512-L2WIZZlxDs611m3YLSv2xvJyQrkkVQJlxn8Y4DlI1G65VLTEH7hysw3RYUNdXsl0gP6S20id3zBMJCHT9BCRcg==}
+    dev: false
+
+  /@ariakit/react-core@0.4.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-2Ca327IzSOxQEd3gEr59JJj0y8fXDMLYd+948wyOzIsk2/yoTnA4+R7Vhs361w3KzOjBQM44KmnNL7ckBMtT0w==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/core': 0.4.6
+      '@floating-ui/dom': 1.6.3
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+      use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /@ariakit/react@0.4.6(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-7lZQew9n+nxswgJ5aL87xo42I+t3A8gWzaxIIZY+c58SLCASh1IdDkGLhGPcyhmXWRIjs/8L1h6cMbRMEBrtJQ==}
+    peerDependencies:
+      react: ^17.0.0 || ^18.0.0
+      react-dom: ^17.0.0 || ^18.0.0
+    dependencies:
+      '@ariakit/react-core': 0.4.6(react-dom@18.2.0)(react@18.2.0)
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /@artsy/fresnel@7.1.4(react@18.2.0):
@@ -10831,6 +10868,28 @@ packages:
       react-dom: 18.2.0(react@18.2.0)
     dev: false
 
+  /@radix-ui/react-progress@1.0.3(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-5G6Om/tYSxjSeEdrb1VfKkfZfn/1IlPWd731h2RfPuSbIfNUgfqAwbKfJCg/PP6nuUCTrYzalwHSpSinoWoCag==}
+    peerDependencies:
+      '@types/react': '*'
+      '@types/react-dom': '*'
+      react: ^16.8 || ^17.0 || ^18.0
+      react-dom: ^16.8 || ^17.0 || ^18.0
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      '@types/react-dom':
+        optional: true
+    dependencies:
+      '@babel/runtime': 7.24.4
+      '@radix-ui/react-context': 1.0.1(@types/react@18.2.55)(react@18.2.0)
+      '@radix-ui/react-primitive': 1.0.3(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
+      '@types/react': 18.2.55
+      '@types/react-dom': 18.2.25
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
   /@radix-ui/react-roving-focus@1.0.4(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-2mUg5Mgcu001VkGy+FfzZyzbmuUWzgWkj3rvv4yu+mLw03+mTzbxZHvfcGyFp2b8EkQeMkpRQ5FiA2Vr2O6TeQ==}
     peerDependencies:
@@ -15105,7 +15164,7 @@ packages:
     engines: {node: ^10 || ^12 || >=14}
     hasBin: true
     peerDependencies:
-      postcss: 8.4.35
+      postcss: ^8.1.0
     dependencies:
       browserslist: 4.23.0
       caniuse-lite: 1.0.30001612
@@ -20923,6 +20982,13 @@ packages:
     resolution: {integrity: sha512-Z1NL3Tb1M9wH4XESsCDEksWoKTdlUafKc4pt0GRwjUyXaCFZ+dc3g2erqB6zm3szA2IUSi7VnPI+o/9jnxh9hw==}
     dev: false
 
+  /match-sorter@6.3.4:
+    resolution: {integrity: sha512-jfZW7cWS5y/1xswZo8VBOdudUiSd9nifYRWphc9M5D/ee4w4AoXLgBEdRbgVaxbMuagBPeUC5y2Hi8DO6o9aDg==}
+    dependencies:
+      '@babel/runtime': 7.24.4
+      remove-accents: 0.5.0
+    dev: false
+
   /md5-o-matic@0.1.1:
     resolution: {integrity: sha512-QBJSFpsedXUl/Lgs4ySdB2XCzUEcJ3ujpbagdZCkRaYIaC0kFnID8jhc84KEiVv6dNFtIrmW7bqow0lDxgJi6A==}
     dev: false
@@ -23476,7 +23542,7 @@ packages:
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
     peerDependencies:
-      postcss: 8.4.35
+      postcss: ^8.0.0
     dependencies:
       postcss: 8.4.35
       postcss-value-parser: 4.2.0
@@ -23487,7 +23553,7 @@ packages:
     resolution: {integrity: sha512-dDLF8pEO191hJMtlHFPRa8xsizHaM82MLfNkUHdUtVEV3tgTp5oj+8qbEqYM57SLfc74KSbw//4SeJma2LRVIw==}
     engines: {node: ^12 || ^14 || >= 16}
     peerDependencies:
-      postcss: 8.4.35
+      postcss: ^8.4.21
     dependencies:
       camelcase-css: 2.0.1
       postcss: 8.4.35
@@ -23496,7 +23562,7 @@ packages:
     resolution: {integrity: sha512-bSVhyJGL00wMVoPUzAVAnbEoWyqRxkjv64tUl427SKnPrENtq6hJwUojroMz2VB+Q1edmi4IfrAPpami5VVgMQ==}
     engines: {node: '>= 14'}
     peerDependencies:
-      postcss: 8.4.35
+      postcss: '>=8.0.9'
       ts-node: '>=9.0.0'
     peerDependenciesMeta:
       postcss:
@@ -23512,7 +23578,7 @@ packages:
     resolution: {integrity: sha512-2HFAvNLBfEFQn9x4XZsOrsTdzJCqiTyOK3TCDafZlY0c4LQztybL73e26X3dHg2i3jwc700M6cTLLthCmAgAVw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
-      postcss: 8.4.35
+      postcss: ^8.2.8
       tailwindcss: ^3.0.0
     dependencies:
       postcss: 8.4.35
@@ -23523,7 +23589,7 @@ packages:
     resolution: {integrity: sha512-mEp4xPMi5bSWiMbsgoPfcP74lsWLHkQbZc3sY+jWYd65CUwXrUaTp0fmNpa01ZcETKlIgUdFN/MpS2xZtqL9dQ==}
     engines: {node: '>=12.0'}
     peerDependencies:
-      postcss: 8.4.35
+      postcss: ^8.2.14
     dependencies:
       postcss: 8.4.35
       postcss-selector-parser: 6.0.16
@@ -25040,6 +25106,10 @@ packages:
       '@types/mdast': 3.0.15
       mdast-util-to-hast: 12.3.0
       unified: 10.1.2
+    dev: false
+
+  /remove-accents@0.5.0:
+    resolution: {integrity: sha512-8g3/Otx1eJaVD12e31UbJj1YzdtVvzH85HV7t+9MJYk/u3XmkOUJ5Ys9wQrf9PCPK8+xn4ymzqYCiZl6QWKn+A==}
     dev: false
 
   /repeat-string@1.6.1:
