@@ -1,3 +1,4 @@
+export * from "./constants.js";
 export { debounce } from "./functions/debounce.js";
 export {
   backtickify,
@@ -20,8 +21,14 @@ export {
 } from "./functions/validationMethods.js";
 export {
   getCodemodProjectFiles,
+  isAstGrepProjectFiles,
+  isJavaScriptProjectFiles,
+  isTypeScriptProjectFiles,
+  type AstGrepProjectFiles,
   type CodemodProjectOutput,
+  type JavaScriptProjectFiles,
   type ProjectDownloadInput,
+  type TypeScriptProjectFiles,
 } from "./package-boilerplate.js";
 export {
   buildApi,
@@ -69,4 +76,3 @@ export { CaseReadingService } from "./services/case/caseReadingService.js";
 export { CaseWritingService } from "./services/case/caseWritingService.js";
 export { FileWatcher } from "./services/case/fileWatcher.js";
 export { TarService } from "./services/tar.js";
-export * from "./constants.js";
