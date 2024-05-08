@@ -3,9 +3,10 @@ import RunCTAButton from "@/components/shared/RunCTAButton";
 import { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../../constants";
 
 import type { CodemodPagePayload } from "@/types";
+import type { AutomationResponseVersion } from "@/types/object.types";
 export const VCCodeShift = (
   data: CodemodPagePayload &
-    Required<Pick<CodemodPagePayload, "currentVersion">>,
+    Required<{ currentVersion: AutomationResponseVersion }>,
 ) => (
   <div className="flex flex-col gap-xs">
     <p className="body-s">IDE extension</p>

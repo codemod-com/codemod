@@ -280,7 +280,7 @@ export type AutomationImportSchema = {
   updatedAt: string;
   automationStories?: AutomationStories;
   filterIconDictionary?: AutomationFilterIconDictionary;
-  currentVersion?: AutomationResponseVersion;
+  versions: AutomationResponseVersion[];
   frameworks: string[];
 };
 
