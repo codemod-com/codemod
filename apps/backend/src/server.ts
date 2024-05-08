@@ -780,7 +780,7 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get(
+  instance.post(
     "/sourceControl/:provider/repo/branches",
     async (request, reply) => {
       if (!auth) {
