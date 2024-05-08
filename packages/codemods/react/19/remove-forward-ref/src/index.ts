@@ -100,12 +100,56 @@ export default function transform(file: FileInfo, api: API) {
 
   let isDirty = false;
 
+  let reactForwardRefImportLocalName: string | null = null;
+  let reactDefaultImportName: string | null = null;
+
   root
-    .find(j.CallExpression, {
-      callee: {
-        type: "Identifier",
-        name: "forwardRef",
-      },
+    .find(j.ImportDeclaration, {
+      source: { value: "react" },
+    })
+    .forEach((path) => {
+      path.value.specifiers?.forEach((specifier) => {
+        // named import
+        if (
+          j.ImportSpecifier.check(specifier) &&
+          specifier.imported.name === "forwardRef"
+        ) {
+          reactForwardRefImportLocalName = specifier.local?.name ?? null;
+        }
+
+        // default and wildcard import
+        if (
+          j.ImportDefaultSpecifier.check(specifier) ||
+          j.ImportNamespaceSpecifier.check(specifier)
+        ) {
+          reactDefaultImportName = specifier.local?.name ?? null;
+        }
+      });
+    });
+
+  root
+    .find(j.CallExpression)
+    .filter((path) => {
+      const { callee } = path.value;
+
+      if (
+        j.Identifier.check(callee) &&
+        callee.name === reactForwardRefImportLocalName
+      ) {
+        return true;
+      }
+
+      if (
+        j.MemberExpression.check(callee) &&
+        j.Identifier.check(callee.object) &&
+        callee.object.name === reactDefaultImportName &&
+        j.Identifier.check(callee.property) &&
+        callee.property.name === "forwardRef"
+      ) {
+        return true;
+      }
+
+      return false;
     })
     .replaceWith((callExpressionPath) => {
       const originalCallExpression = callExpressionPath.value;
@@ -233,7 +277,7 @@ export default function transform(file: FileInfo, api: API) {
         const specifiersWithoutForwardRef =
           specifiers?.filter(
             (s) =>
-              j.ImportSpecifier.check(s) && s.imported.name !== "forwardRef",
+              !j.ImportSpecifier.check(s) || s.imported.name !== "forwardRef",
           ) ?? [];
 
         if (specifiersWithoutForwardRef.length === 0) {
@@ -246,5 +290,3 @@ export default function transform(file: FileInfo, api: API) {
 
   return isDirty ? root.toSource() : undefined;
 }
-
-transform satisfies Transform;

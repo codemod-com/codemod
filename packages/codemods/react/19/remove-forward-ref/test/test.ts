@@ -6,14 +6,16 @@ import transform from "../src/index.js";
 describe("react/remove-forward-ref", () => {
   it("Unwraps the render function: callee is member expression", () => {
     const INPUT = `
-			import * as React from 'react';
+			import * as React1 from 'react';
 
-			const MyInput = React.forwardRef((props, ref) => {
+			const MyInput = React1.forwardRef((props, ref) => {
 					return null;
 			});
 		`;
 
     const OUTPUT = `
+     import * as React1 from 'react';
+     
 			const MyInput = ({ ref, ...props }) => {
 				return null;
 			};
@@ -34,9 +36,9 @@ describe("react/remove-forward-ref", () => {
 
   it("Unwraps the render function: render function is ArrowFunctionExpression", () => {
     const INPUT = `
-			import { forwardRef } from 'react';
+			import { forwardRef as forwardRef2 } from 'react';
 
-			const MyInput = forwardRef((props, ref) => {
+			const MyInput = forwardRef2((props, ref) => {
 					return null;
 			});
 		`;
