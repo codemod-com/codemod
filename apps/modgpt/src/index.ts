@@ -123,7 +123,7 @@ fastify.post<ChatRequest>("/sendChat", async (request, reply) => {
 const start = async () => {
   try {
     await fastify.listen({ port: PORT, host: "0.0.0.0" });
-    console.log(`[ModGPT]: Server is running at PORT: ß${PORT}`);
+    console.log(`[ModGPT]: Server is running at PORT: ${PORT}`);
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
