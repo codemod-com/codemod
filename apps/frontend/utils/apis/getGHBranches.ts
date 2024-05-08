@@ -6,18 +6,18 @@ import { GH_BRANCH_LIST } from "./endpoints";
 type GetGHBranchesResponse = Readonly<string[]>;
 
 type GetGHBranchesRequest = Readonly<{
-  repo: GithubRepository;
+  repoUrl: string;
   token: string;
 }>;
 
 const getGHBranches = async ({
-  repo,
+  repoUrl,
   token,
 }: GetGHBranchesRequest): Promise<GetGHBranchesResponse | null> => {
   try {
     const res = await apiClient.post<GetGHBranchesResponse>(
       GH_BRANCH_LIST,
-      repo,
+      { repoUrl },
       {
         headers: {
           Authorization: `Bearer ${token}`,

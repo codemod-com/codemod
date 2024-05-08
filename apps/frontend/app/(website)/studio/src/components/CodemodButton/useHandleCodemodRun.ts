@@ -4,9 +4,9 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import type { GithubRepository } from "be-types";
 
 export const useHandleCodemodRun = (
+  codemodName: string,
   selectedRepository: GithubRepository | undefined,
   selectedBranch: string | undefined,
-  targetPathInput: string,
 ) => {
   const { onCodemodRun } = useCodemodExecution();
   const { engine } = useSnippetStore();
@@ -18,17 +18,18 @@ export const useHandleCodemodRun = (
       selectedRepository === undefined ||
       selectedBranch === undefined ||
       internalContent === null ||
-      !isCodemodSourceNotEmpty
+      !isCodemodSourceNotEmpty ||
+      !(engine === "jscodeshift" || engine === "ts-morph") // other engines are not supported by backend API
     ) {
       return;
     }
 
     await onCodemodRun({
-      engine,
-      target: selectedRepository.full_name,
-      source: internalContent,
+      codemodEngine: engine,
+      repoUrl: selectedRepository.html_url,
+      codemodSource: internalContent,
+      codemodName,
       branch: selectedBranch,
-      targetPath: targetPathInput === "" ? undefined : targetPathInput,
     });
   };
 };

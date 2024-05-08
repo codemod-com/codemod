@@ -4,7 +4,6 @@ import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useHandleCodemodRun } from "@studio/components/CodemodButton/useHandleCodemodRun";
 import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/useOpenRepoModalAfterSignIn";
 import { Button } from "@studio/components/ui/button";
-import { mockData } from "@studio/hooks/useAPI";
 import { useAuth } from "@studio/hooks/useAuth";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
@@ -18,13 +17,14 @@ export const CodemodButton = () => {
 
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
-  >(mockData.repositories.data); // @TODO initialize it with empty array when integrated with backend
+  >([]);
   const [selectedRepository, setSelectedRepository] =
     useState<GithubRepository>();
 
   const [branchesToShow, setBranchesToShow] = useState<string[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<string>();
   const [targetPathInput, setTargetPathInput] = useState<string>("");
+  const [codemodNameInput, setCodemodNameInput] = useState<string>("Untitled");
 
   const { codemodRunStatus, onCodemodRunCancel } = useCodemodExecution();
 
@@ -46,11 +46,6 @@ export const CodemodButton = () => {
 
   const { text, hintText } = getButtonPropsByStatus(status);
 
-  const onRunCodemod = async () => {
-    await handleCodemodRun();
-    hideRepositoryModal();
-  };
-
   const selectRepository = (name: GithubRepository["full_name"]) =>
     setSelectedRepository(
       repositoriesToShow.find((repo) => repo.full_name === name),
@@ -59,33 +54,38 @@ export const CodemodButton = () => {
     setSelectedBranch(branchesToShow.find((name) => name === branch));
 
   const handleCodemodRun = useHandleCodemodRun(
+    codemodNameInput,
     selectedRepository,
     selectedBranch,
-    targetPathInput,
   );
 
-  useEffect(() => {
-    if (selectedRepository) {
-      const getBranches = async () => {
-        const token = await getToken();
-        if (token === null) {
-          return;
-        }
-        const branches = await getGHBranches({
-          repo: selectedRepository,
-          token,
-        });
-        if (branches === null) {
-          return;
-        }
+  const onRunCodemod = async () => {
+    await handleCodemodRun();
+    hideRepositoryModal();
+  };
 
-        setBranchesToShow(branches.slice());
-      };
-      // @TODO remove the code below when integrated with backend
-      setBranchesToShow(mockData.branches.data);
-      // @TODO uncomment the code below when integrated with backend
-      // getBranches();
+  useEffect(() => {
+    if (!selectedRepository) {
+      return;
     }
+
+    const getBranches = async () => {
+      const token = await getToken();
+      if (token === null) {
+        return;
+      }
+      const branches = await getGHBranches({
+        repoUrl: selectedRepository.html_url,
+        token,
+      });
+      if (branches === null) {
+        return;
+      }
+
+      setBranchesToShow(branches.slice());
+    };
+
+    getBranches();
   }, [getToken, selectedRepository]);
 
   return (
@@ -101,6 +101,8 @@ export const CodemodButton = () => {
         selectedBranch={selectedBranch}
         targetPathInput={targetPathInput}
         setTargetPathInput={setTargetPathInput}
+        codemodNameInput={codemodNameInput}
+        setCodemodNameInput={setCodemodNameInput}
         onRunCodemod={onRunCodemod}
       />
       <ProgressBar codemodRunStatus={codemodRunStatus} />
