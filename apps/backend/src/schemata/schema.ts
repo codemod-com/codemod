@@ -1,4 +1,8 @@
 import {
+  codemodRunBodySchema,
+  validateCodemodStatusParamsSchema,
+} from "@codemod-com/utilities";
+import {
   array,
   boolean,
   coerce,
@@ -59,7 +63,7 @@ export const parseCreateIssueParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const createIssueBodySchema = object({
-  repo: string(),
+  repoUrl: string(),
   title: string(),
   body: string(),
 });
@@ -68,6 +72,15 @@ export const parseCreateIssueBody = (input: unknown) =>
   parse(createIssueBodySchema, input);
 
 export const parseGetUserRepositoriesParams = (input: unknown) =>
+  parse(providerSchema, input);
+
+export const getRepoBranchesBodySchema = object({
+  repoUrl: string(),
+});
+
+export const parseGetRepoBranchesBody = (input: unknown) =>
+  parse(getRepoBranchesBodySchema, input);
+export const parseGetRepoBranchesParams = (input: unknown) =>
   parse(providerSchema, input);
 
 export const getCodemodsQuerySchema = object({
@@ -149,20 +162,8 @@ export const unpublishBodySchema = object({
 export const parseUnpublishBody = (input: unknown) =>
   parse(unpublishBodySchema, input);
 
-export const codemodRunBodySchema = object({
-  codemodSource: string(),
-  codemodName: string(),
-  codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
-  repoUrl: string(),
-  branch: optional(string()),
-});
-
 export const parseCodemodRunBody = (input: unknown) =>
   parse(codemodRunBodySchema, input);
-
-export const validateCodemodStatusParamsSchema = object({
-  jobId: string(),
-});
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);

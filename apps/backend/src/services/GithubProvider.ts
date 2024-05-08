@@ -3,6 +3,7 @@ import gh from "parse-github-url";
 import type {
   Assignee,
   CreatePRParams,
+  GithubContent,
   GithubRepository,
   Issue,
   ListPRParams,
@@ -42,10 +43,9 @@ export class GithubProvider implements SourceControlProvider {
   private readonly __baseUrl: string;
   private readonly __authHeader: string;
 
-  constructor(oAuthToken: string, repo: string | null) {
+  constructor(oAuthToken: string, repoUrl: string | null) {
     this.__baseUrl = "https://api.github.com";
-    this.__repo = repo;
-
+    this.__repo = repoUrl;
     this.__authHeader = `Bearer ${oAuthToken}`;
   }
 
@@ -114,6 +114,29 @@ export class GithubProvider implements SourceControlProvider {
         Authorization: this.__authHeader,
       },
     });
+
+    return res.data;
+  }
+
+  async getBranches(): Promise<string[]> {
+    const res = await axios.get(`${this.__repoUrl}/branches`, {
+      headers: {
+        Authorization: this.__authHeader,
+      },
+    });
+
+    return res.data;
+  }
+
+  async getRepoContents(branchName: string): Promise<GithubContent[]> {
+    const res = await axios.get(
+      `${this.__repoUrl}/contents?ref=${branchName}`,
+      {
+        headers: {
+          Authorization: this.__authHeader,
+        },
+      },
+    );
 
     return res.data;
   }

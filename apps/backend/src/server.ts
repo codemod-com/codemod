@@ -5,7 +5,10 @@ import type { OutgoingHttpHeaders } from "node:http";
 import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { PostHogSender } from "@codemod-com/telemetry";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  type CodemodRunResponse,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -43,6 +46,8 @@ import {
   parseCreateIssueParams,
   parseDiffCreationBody,
   parseGetCodeDiffParams,
+  parseGetRepoBranchesBody,
+  parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
   parseSendChatBody,
@@ -76,11 +81,11 @@ export enum TaskManagerJobs {
 const getSourceControlProvider = (
   provider: "github",
   oAuthToken: string,
-  repo: string | null,
+  repoUrl: string | null,
 ) => {
   switch (provider) {
     case "github": {
-      return new GithubProvider(oAuthToken, repo);
+      return new GithubProvider(oAuthToken, repoUrl);
     }
   }
 };
@@ -127,6 +132,11 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     handleProcessExit(0);
   });
 
+  fastify.addHook("onRequest", (request, reply, done) => {
+    reply.header("Access-Control-Allow-Origin", "false");
+    done();
+  });
+
   const ALLOWED_ORIGINS = [
     /^https?:\/\/.*-codemod\.vercel\.app$/,
     /^https?:\/\/localhost(:\d+)?$/,
@@ -153,7 +163,12 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
       "x-clerk-auth-reason",
       "x-clerk-auth-message",
     ],
-    allowedHeaders: [X_CODEMOD_ACCESS_TOKEN, "Content-Type", "Authorization"],
+    allowedHeaders: [
+      X_CODEMOD_ACCESS_TOKEN,
+      "Content-Type",
+      "Authorization",
+      "access-control-allow-origin",
+    ],
   } satisfies FastifyCorsOptions);
 
   await fastify.register(fastifyRateLimit, {
@@ -533,7 +548,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
     const { provider } = parseCreateIssueParams(request.params);
 
-    const { repo, title, body } = parseCreateIssueBody(request.body);
+    const { repoUrl, title, body } = parseCreateIssueBody(request.body);
 
     const accessToken = getCustomAccessToken(environment, request.headers);
 
@@ -552,7 +567,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     const sourceControlProvider = getSourceControlProvider(
       provider,
       oAuthToken,
-      repo,
+      repoUrl,
     );
 
     const result = await sourceControl.createIssue(sourceControlProvider, {
@@ -760,38 +775,76 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       const result = await sourceControl.getUserRepositories(
         sourceControlProvider,
       );
+      reply.type("application/json").code(200);
+      return result;
+    },
+  );
+
+  instance.post(
+    "/sourceControl/:provider/repo/branches",
+    async (request, reply) => {
+      if (!auth) {
+        throw new Error("This endpoint requires auth configuration.");
+      }
+
+      // getting userId from clerk directly should be safe
+      const { userId } = getAuth(request);
+
+      if (!userId) {
+        return reply.code(401).send();
+      }
+
+      const { provider } = parseGetRepoBranchesParams(request.params);
+      const { repoUrl } = parseGetRepoBranchesBody(request.body);
+
+      const oAuthToken = await auth.getOAuthToken(userId, provider);
+
+      const sourceControlProvider = getSourceControlProvider(
+        provider,
+        oAuthToken,
+        repoUrl,
+      );
+
+      const result = await sourceControl.getBranches(sourceControlProvider);
 
       reply.type("application/json").code(200);
       return result;
     },
   );
 
-  instance.post("/codemodRun", async (request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
+  instance.post(
+    "/codemodRun",
+    async (request, reply): Promise<CodemodRunResponse> => {
+      if (!auth) {
+        throw new Error("This endpoint requires auth configuration.");
+      }
 
-    const { userId } = getAuth(request);
+      const { userId } = getAuth(request);
 
-    if (!userId) {
-      return reply.code(401).send();
-    }
+      if (!userId) {
+        return reply.code(401).send();
+      }
 
-    const { codemodName, codemodSource, codemodEngine, repoUrl, branch } =
-      parseCodemodRunBody(request.body);
+      const { codemodName, codemodSource, codemodEngine, repoUrl, branch } =
+        parseCodemodRunBody(request.body);
 
-    const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-      codemodName,
-      codemodSource,
-      codemodEngine,
-      userId,
-      repoUrl,
-      branch,
-    });
+      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
+        codemodName,
+        codemodSource,
+        codemodEngine,
+        userId,
+        repoUrl,
+        branch,
+      });
 
-    reply.type("application/json").code(200);
-    return { success: true, codemodRunId: job.id };
-  });
+      if (!job.id) {
+        return reply.code(500).send();
+      }
+
+      reply.type("application/json").code(200);
+      return { success: true, codemodRunId: job.id };
+    },
+  );
 
   instance.get("/codemodRun/status/:jobId", async (request, reply) => {
     if (!auth) {

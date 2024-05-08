@@ -52,12 +52,23 @@ export type GithubRepository = {
   };
 };
 
+export type GithubContent = {
+  name: string;
+  path: string;
+  type: "file" | "dir";
+  size: number;
+  url: string;
+  download_url: string | null;
+};
+
 export interface SourceControlProvider {
   createIssue(params: NewIssueParams): Promise<Issue>;
   createPullRequest(params: CreatePRParams): Promise<PullRequest>;
   getPullRequests(params: ListPRParams): Promise<PullRequest[]>;
   getAssignees(): Promise<Assignee[]>;
+  getBranches(): Promise<string[]>;
   getUserRepositories(): Promise<GithubRepository[]>;
+  getRepoContents(branchName: string): Promise<GithubContent[]>;
 }
 
 // biome-ignore lint/complexity/noStaticOnlyClass: reason?
@@ -120,6 +131,25 @@ export class SourceControl {
   ): Promise<GithubRepository[]> {
     try {
       return await provider.getUserRepositories();
+    } catch (e) {
+      throw SourceControlError.parse(e);
+    }
+  }
+
+  async getBranches(provider: SourceControlProvider): Promise<string[]> {
+    try {
+      return await provider.getBranches();
+    } catch (e) {
+      throw SourceControlError.parse(e);
+    }
+  }
+
+  async getRepoContents(
+    provider: SourceControlProvider,
+    branchName: string,
+  ): Promise<GithubContent[]> {
+    try {
+      return await provider.getRepoContents(branchName);
     } catch (e) {
       throw SourceControlError.parse(e);
     }
