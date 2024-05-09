@@ -69,6 +69,7 @@ jobs:
           else
             pnpm test
           fi
+        shell: bash
         env:
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
 
