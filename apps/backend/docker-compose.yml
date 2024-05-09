@@ -37,9 +37,6 @@ services:
       PEPPER: ${PEPPER}
       SIGNATURE_PRIVATE_KEY: ${SIGNATURE_PRIVATE_KEY}
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
-    depends_on:
-      - database
-      - redis
     ports:
       - '8081:8081'
     networks:
