@@ -4,6 +4,7 @@ import {
   coerce,
   number,
   object,
+  optional,
   parse,
   string,
 } from "valibot";
@@ -14,6 +15,11 @@ export const environmentSchema = object({
   OPEN_AI_API_KEY: string(),
   CLAUDE_API_KEY: string(),
   REPLICATE_API_KEY: string(),
+  CLERK_DISABLED: optional(string()),
+  CLERK_PUBLISH_KEY: optional(string()),
+  CLERK_SECRET_KEY: optional(string()),
+  CLERK_JWT_KEY: optional(string()),
+  X_CODEMOD_ACCESS_TOKEN: optional(string()),
 });
 
 export type Environment = Output<typeof environmentSchema>;
