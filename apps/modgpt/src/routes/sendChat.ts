@@ -54,7 +54,7 @@ export const getSendChatPath = (instance: Instance) =>
       return reply.code(400).send();
     }
 
-    let completion: string | ChatMessage | null;
+    let completion: string | ChatMessage | null = null;
     try {
       if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
         completion = await claudeService.complete(engine, messages[0].content);
