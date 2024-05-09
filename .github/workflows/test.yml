@@ -16,7 +16,7 @@ jobs:
       matrix:
         include:
           - os: macos-latest
-            db_required: true
+            db_required: false
           - os: ubuntu-latest
             db_required: true
           - os: windows-latest
@@ -36,14 +36,14 @@ jobs:
         with:
           version: 9
 
+      - name: Install dependencies
+        run: pnpm install
+
       - name: Start database
         uses: cloudposse/github-action-docker-compose-test-run@main
         with:
           file: docker-compose.yml
           service: database
-
-      - name: Install dependencies
-        run: pnpm install
 
       - name: Generate prisma types
         run: pnpm --filter @codemod-com/backend db:generate
@@ -68,7 +68,3 @@ jobs:
           fi
         env:
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
-
-      - name: Close database
-        if: matrix.db_required
-        run: docker-compose down
