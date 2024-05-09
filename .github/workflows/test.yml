@@ -37,7 +37,7 @@ jobs:
 
       - name: Install latest docker-compose (MacOS)
         if: matrix.os == 'macos-latest'
-        run: sudo brew install docker-compose
+        run: brew install docker-compose
 
       - name: Install modules
         uses: pnpm/action-setup@v2
