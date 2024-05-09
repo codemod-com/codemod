@@ -39,11 +39,13 @@ jobs:
             - name: Install latest docker-compose
               if: matrix.os == 'ubuntu-latest'
               run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
+
             - name: Start database
               if: matrix.os == 'ubuntu-latest'
               run: docker-compose up -d database
 
             - name: Apply database migrations
+              if: matrix.os == 'ubuntu-latest'
               run: pnpm --filter @codemod-com/backend db:migrate:apply
               env:
                 DATABASE_URI: postgresql://postgres:postgres@localhost:5432/codemod
