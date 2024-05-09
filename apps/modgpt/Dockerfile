@@ -6,6 +6,7 @@ RUN npm install -g pnpm
 
 COPY ./package.json ./turbo.json ./pnpm-workspace.yaml ./pnpm-lock.yaml /app/
 COPY ./apps/modgpt/package.json /app/apps/modgpt/
+
 COPY ./packages/tsconfig /app/packages/tsconfig/
 COPY ./packages/utilities /app/packages/utilities/
 COPY ./packages/filemod /app/packages/filemod/
@@ -16,15 +17,15 @@ COPY ./apps/modgpt/tsconfig.json /app/apps/modgpt/
 COPY ./apps/modgpt/esbuild.config.js /app/apps/modgpt/
 COPY ./apps/modgpt/src /app/apps/modgpt/src/
 
-RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities
-RUN pnpm build --filter @codemod-com/modgpt
+RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/modgpt
 
 FROM node:20-alpine3.16
 
 WORKDIR /app
 
-COPY --from=builder /app/apps/modgpt/build /app
+COPY --from=builder /app/apps/modgpt/build /app/build
+COPY --from=builder /app/apps/modgpt/package.json /app
 
-CMD ["pnpm", "run", "start"]
+CMD ["node", "build/index.js"]
 
 EXPOSE 8082

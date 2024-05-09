@@ -4,7 +4,7 @@ import {
   type PrismaClient,
   type TokenMetadata,
   type TokenRevocation,
-} from "@prisma/client";
+} from "../../prisma/client";
 import {
   type EncryptedTokenMetadata,
   type KeyIvPair,

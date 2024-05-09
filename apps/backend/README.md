@@ -1,32 +1,70 @@
 # Backend
 
-The backend for the Codemod.com products.
+This is the backend for Codemod.com products.
 
-## Developing locally
+## Local Development
 
-This project uses Node.js and PNPM. Provide an Open AI API Key as the `OPEN_AI_API_KEY` environment variable.
+This project utilizes Node.js, PNPM, Fastify, and Prisma ORM. Ensure to provide necessary environment variables which can be found in `.env.example` or `docker-compose.yml`.
 
-    pnpm install
+### Setting Up Environment
 
-### Building and executing
+To set up the database and Redis:
 
-    pnpm build:ncc
-    OPEN_AI_API_KEY=sk PORT=8081 pnpm start:ncc
+```bash
+docker-compose up -d
+```
 
-### Watching
+To generate the Prisma client:
 
-    OPEN_AI_API_KEY=sk PORT=8081 pnpm watch
+```bash
+pnpm --filter backend db:generate
+```
 
-## Developing with Docker
+### Building and Running
 
-    docker compose build
-    docker compose up
+To build the application:
 
-## Linting
+```bash
+pnpm --filter backend build
+```
 
-    pnpm lint:eslint:write
-    pnpm lint:prettier:write
+To start the server application:
 
-## Creating the DATA environment variable
+```bash
+pnpm --filter backend start
+```
 
-    pnpm ts-node --esm gzipData.ts
+### Development with Docker
+
+To run the backend with Docker:
+
+```bash
+docker-compose up -d && docker-compose -f apps/backend/docker-compose.yml up --build
+```
+
+### Testing
+
+To run unit tests:
+
+```bash
+docker-compose up -d database && pnpm --filter backend test
+```
+
+### Seeds & Migrations
+
+To run the seeder script:
+
+```bash
+docker-compose up -d database && pnpm --filter backend db:seed
+```
+To generate a new migration:
+
+```bash
+docker-compose up -d database && pnpm --filter backend db:migrate:generate
+```
+
+To apply migrations:
+
+```bash
+docker-compose up -d database && pnpm --filter backend db:migrate:apply
+```
