@@ -31,9 +31,13 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install latest docker-compose
-        if: matrix.db_required
+      - name: Install latest docker-compose (Ubuntu)
+        if: matrix.os == 'ubuntu-latest'
         run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
+
+      - name: Install latest docker-compose (MacOS)
+        if: matrix.os == 'macos-latest'
+        run: sudo brew install docker-compose
 
       - name: Install modules
         uses: pnpm/action-setup@v2
