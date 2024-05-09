@@ -1,7 +1,7 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { getAuth } from "@clerk/fastify";
 import { OpenAIStream } from "ai";
-import { ChatGPTAPI } from "chatgpt";
+import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import type { FastifyPluginCallback } from "fastify";
 import * as openAiEdge from "openai-edge";
 import { areClerkKeysSet, environment } from "../dev-utils/configs";
@@ -54,7 +54,7 @@ export const getSendChatPath = (instance: Instance) =>
       return reply.code(400).send();
     }
 
-    let completion: string | null;
+    let completion: string | ChatMessage | null;
     try {
       if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
         completion = await claudeService.complete(engine, messages[0].content);
