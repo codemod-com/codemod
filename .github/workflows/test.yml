@@ -31,31 +31,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install latest docker-compose (Ubuntu)
+      - name: Install latest docker-compose
         if: matrix.os == 'ubuntu-latest'
         run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
-
-      - name: Install latest docker-compose (MacOS)
-        if: matrix.os == 'macos-latest'
-        run: brew install docker-compose
-
-      - name: Create Docker config directory if it doesn't exist
-        if: matrix.os == 'macos-latest'
-        run: mkdir -p ~/.docker
-
-      - name: Create or modify Docker config to include CLI plugin path
-        if: matrix.os == 'macos-latest'
-        run: |
-          CONFIG_FILE=~/.docker/config.json
-          if [ ! -f "$CONFIG_FILE" ]; then
-            echo '{"cliPluginsExtraDirs": ["/opt/homebrew/lib/docker/cli-plugins"]}' > $CONFIG_FILE
-          else
-            jq '.cliPluginsExtraDirs = ["/opt/homebrew/lib/docker/cli-plugins"]' $CONFIG_FILE > temp.json && mv temp.json $CONFIG_FILE
-          fi
-
-      - name: Verify Docker Compose setup
-        if: matrix.os == 'macos-latest'
-        run: docker compose version
 
       - name: Install modules
         uses: pnpm/action-setup@v2
