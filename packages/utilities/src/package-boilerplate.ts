@@ -9,31 +9,74 @@ export interface ProjectDownloadInput {
   engine: KnownEngines | "tsmorph";
 
   license?: "MIT" | "Apache 2.0";
+  vanillaJs?: boolean;
+  version?: string;
   cases?: { before: string; after: string }[];
   username: string | null;
   tags?: string[];
 }
 
-type FixtureInputFile = `__testfixtures__/fixture${number}.input.ts`;
-type FixtureOutputFile = `__testfixtures__/fixture${number}.output.ts`;
-export type CodemodProjectOutput = {
-  "test/test.ts": string;
+type FixtureInputFile = `__testfixtures__/fixture${number}.input.js`;
+type FixtureOutputFile = `__testfixtures__/fixture${number}.output.js`;
+
+type FixtureInputFileTypeScript = `__testfixtures__/fixture${number}.input.ts`;
+type FixtureOutputFileTypeScript =
+  `__testfixtures__/fixture${number}.output.ts`;
+
+export type CodemodProjectOutput =
+  | JavaScriptProjectFiles
+  | TypeScriptProjectFiles
+  | AstGrepProjectFiles;
+type BaseProjectFiles = {
   LICENSE: string;
   "README.md": string;
-  "vitest.config.ts": string;
-  "package.json": string;
-  "tsconfig.json": string;
   ".codemodrc.json": string;
+};
+type JsProjectAdditionalFiles = {
+  "package.json": string;
   ".gitignore": string;
+};
+export type JavaScriptProjectFiles = BaseProjectFiles &
+  JsProjectAdditionalFiles & {
+    "src/index.js": string;
+    "test/test.js": string;
+    "vitest.config.js": string;
+    [key: FixtureInputFile]: string;
+    [key: FixtureOutputFile]: string;
+  };
+export type TypeScriptProjectFiles = BaseProjectFiles &
+  JsProjectAdditionalFiles & {
+    "src/index.ts": string;
+    "test/test.ts": string;
+    "vitest.config.ts": string;
+    "tsconfig.json": string;
+    [key: FixtureInputFileTypeScript]: string;
+    [key: FixtureOutputFileTypeScript]: string;
+  };
+export type AstGrepProjectFiles = {
+  "src/rule.yaml": string;
+};
 
-  [key: FixtureInputFile]: string;
-  [key: FixtureOutputFile]: string;
-} & ({ "src/index.ts": string } | { "src/rule.yaml": string });
+export function isJavaScriptProjectFiles(
+  files: CodemodProjectOutput,
+): files is JavaScriptProjectFiles {
+  return "src/index.js" in files;
+}
+export function isTypeScriptProjectFiles(
+  files: CodemodProjectOutput,
+): files is TypeScriptProjectFiles {
+  return "src/index.ts" in files;
+}
+export function isAstGrepProjectFiles(
+  files: CodemodProjectOutput,
+): files is AstGrepProjectFiles {
+  return "src/rule.yaml" in files;
+}
 
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
   js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const readme = ({ name, cases }: ProjectDownloadInput) => {
+const readme = ({ name, cases, vanillaJs }: ProjectDownloadInput) => {
   return `# ${changeCase.sentenceCase(name)}
 
 ## Description
@@ -43,13 +86,13 @@ ${cases?.map(({ before, after }) => {
   return `
 ### Before
 
-\`\`\`ts
+\`\`\`${vanillaJs ? "js" : "ts"}
 ${beautify(before)}
 \`\`\`
 
 ### After
 
-\`\`\`ts
+\`\`\`${vanillaJs ? "js" : "ts"}
 ${beautify(after)}
 \`\`\`
 `;
@@ -298,13 +341,14 @@ const codemodRc = ({
   name,
   engine,
   tags,
-}: Pick<ProjectDownloadInput, "name" | "engine" | "tags">) => {
+  version,
+}: Pick<ProjectDownloadInput, "name" | "engine" | "tags" | "version">) => {
   const finalName = changeCase.kebabCase(name);
 
   return beautify(`
     {
       "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "version": "1.0.0",
+      "version": "${version ?? "1.0.0"}",
       "private": false,
       "name": "${finalName}",
       "engine": "${engine}",
@@ -520,27 +564,35 @@ const testBody = ({
   return body;
 };
 
-export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
+export function getCodemodProjectFiles(
+  input: ProjectDownloadInput,
+): CodemodProjectOutput;
+export function getCodemodProjectFiles(
+  input: ProjectDownloadInput &
+    ({ engine: Exclude<KnownEngines, "ast-grep"> } | { vanillaJs: false }),
+): TypeScriptProjectFiles;
+export function getCodemodProjectFiles(
+  input: ProjectDownloadInput & { vanillaJs: true },
+): JavaScriptProjectFiles;
+export function getCodemodProjectFiles(
+  input: ProjectDownloadInput & { engine: "ast-grep" },
+): AstGrepProjectFiles;
+export function getCodemodProjectFiles(input: ProjectDownloadInput) {
   let mainFileBoilerplate: string;
-  let filename: "src/index.ts" | "src/rule.yaml";
 
   switch (input.engine) {
     case "jscodeshift":
       mainFileBoilerplate = emptyJsCodeShiftBoilerplate;
-      filename = "src/index.ts";
       break;
     case "tsmorph":
     case "ts-morph":
       mainFileBoilerplate = emptyTsMorphBoilerplate;
-      filename = "src/index.ts";
       break;
     case "filemod":
       mainFileBoilerplate = emptyFilemodBoilerplate;
-      filename = "src/index.ts";
       break;
     case "ast-grep":
       mainFileBoilerplate = emptyAstGrepBoilerplate;
-      filename = "src/rule.yaml";
       break;
     default:
       throw new Error(`Unknown engine: ${input.engine}`);
@@ -550,32 +602,64 @@ export const getCodemodProjectFiles = (input: ProjectDownloadInput) => {
     ? beautify(input.codemodBody)
     : mainFileBoilerplate;
 
-  const files: CodemodProjectOutput = {
-    [filename]: mainFileContent,
-    "test/test.ts": testBody(input),
-    LICENSE: license(input),
-    "README.md": readme(input),
-    "vitest.config.ts": vitestConfig(),
-    "package.json": packageJson(input),
-    "tsconfig.json": tsconfigJson(),
-    ".codemodrc.json": codemodRc(input),
-    ".gitignore": "node_modules\ndist",
-    // Cast is needed because typescript apparently does not understand that filename is one of the required
-    // keys in the original type and throws error.
-  } as CodemodProjectOutput;
+  let files: CodemodProjectOutput;
+  if (input.engine === "ast-grep") {
+    files = {
+      LICENSE: license(input),
+      "README.md": readme(input),
+      ".codemodrc.json": codemodRc(input),
+      "src/rule.yaml": mainFileContent,
+    };
+  } else if (input.vanillaJs) {
+    files = {
+      LICENSE: license(input),
+      "README.md": readme(input),
+      ".codemodrc.json": codemodRc(input),
+      "package.json": packageJson(input),
+      ".gitignore": "node_modules\ndist",
+      "src/index.js": mainFileContent,
+      "test/test.js": testBody(input),
+      "vitest.config.js": vitestConfig(),
+    };
+  } else {
+    files = {
+      LICENSE: license(input),
+      "README.md": readme(input),
+      ".codemodrc.json": codemodRc(input),
+      "package.json": packageJson(input),
+      ".gitignore": "node_modules\ndist",
+      "src/index.ts": mainFileContent,
+      "test/test.ts": testBody(input),
+      "vitest.config.ts": vitestConfig(),
+      "tsconfig.json": tsconfigJson(),
+    };
+  }
 
   if (input.cases) {
     for (let i = 0; i < input.cases.length; i++) {
       // biome-ignore lint: cases[i] is defined
       const { before, after } = input.cases[i]!;
 
-      files[`__testfixtures__/fixture${i + 1}.input.ts`] = beautify(before);
-      files[`__testfixtures__/fixture${i + 1}.output.ts`] = beautify(after);
+      if (input.vanillaJs) {
+        (files as JavaScriptProjectFiles)[
+          `__testfixtures__/fixture${i + 1}.input.js`
+        ] = beautify(before);
+        (files as JavaScriptProjectFiles)[
+          `__testfixtures__/fixture${i + 1}.output.js`
+        ] = beautify(after);
+      } else {
+        (files as TypeScriptProjectFiles)[
+          `__testfixtures__/fixture${i + 1}.input.ts`
+        ] = beautify(before);
+        (files as TypeScriptProjectFiles)[
+          `__testfixtures__/fixture${i + 1}.output.ts`
+        ] = beautify(after);
+      }
     }
   }
 
   return files;
-};
+}
 
 export const emptyJsCodeShiftBoilerplate = beautify(`
 import type { API, FileInfo, Options } from "jscodeshift";

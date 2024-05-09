@@ -231,13 +231,24 @@ export const executeMainThread = async () => {
       "init",
       "initialize a codemod package",
       (y) =>
-        buildGlobalOptions(y).option("no-prompt", {
-          alias: "y",
-          type: "boolean",
-          description: "skip all prompts and use default values",
-        }),
+        buildGlobalOptions(y)
+          .option("target", {
+            alias: "t",
+            type: "string",
+            description: "Path to init codemod in",
+          })
+          .option("no-prompt", {
+            alias: "y",
+            type: "boolean",
+            description: "skip all prompts and use default values",
+          }),
       async (args) =>
-        executeCliCommand(() => handleInitCliCommand(printer, args.noPrompt)),
+        executeCliCommand(() =>
+          handleInitCliCommand({
+            printer,
+            noPrompt: args.noPrompt,
+          }),
+        ),
     );
 
   if (slicedArgv.length === 0) {
