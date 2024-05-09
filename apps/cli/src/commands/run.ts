@@ -232,20 +232,27 @@ export const handleRunCliCommand = async (
       `${new Date().toISOString()}-error.log`,
     );
 
-    await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
-      recursive: true,
-    });
-    await fs.promises.writeFile(
-      logsPath,
-      executionErrors
-        .map(
-          (e) =>
-            `Error at ${e.filePath}${
-              e.codemodName ? ` (${e.codemodName})` : ""
-            }:\n${e.message}`,
-        )
-        .join("\n\n"),
-    );
+    try {
+      await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
+        recursive: true,
+      });
+      await fs.promises.writeFile(
+        logsPath,
+        executionErrors
+          .map(
+            (e) =>
+              `Error at ${e.filePath}${
+                e.codemodName ? ` (${e.codemodName})` : ""
+              }:\n${e.message}`,
+          )
+          .join("\n\n"),
+      );
+    } catch (err) {
+      printer.printConsoleMessage(
+        "error",
+        `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
+      );
+    }
 
     printer.printConsoleMessage(
       "error",
