@@ -40,14 +40,14 @@ jobs:
             - name: Generate prisma types
               run: pnpm --filter @codemod-com/backend db:generate
 
-            - name: Start Docker Compose
+            - name: Start database
               if: matrix.os == 'ubuntu-latest'
               run: docker-compose -f apps/backend/docker-compose.yml up -d database
 
             - name: Apply database migrations
               run: pnpm --filter @codemod-com/backend db:migrate:apply
               env:
-                DATABASE_URI: postgresql://postgres:postgres@database:5432/codemod?schema=public
+                DATABASE_URI: postgresql://postgres:postgres@localhost:5432/codemod
 
             - name: Build necessary packages
               run: pnpm build --filter codemod
@@ -62,3 +62,7 @@ jobs:
                     pnpm test
                   fi
               shell: bash
+
+            - name: Close database
+              if: matrix.os == 'ubuntu-latest'
+              run: docker-compose -f apps/backend/docker-compose.yml down database
