@@ -48,7 +48,7 @@ jobs:
               if: matrix.os == 'ubuntu-latest'
               run: pnpm --filter @codemod-com/backend db:migrate:apply
               env:
-                DATABASE_URI: postgresql://postgres:postgres@localhost:5432/codemod
+                DATABASE_URI: ${{ secrets.DATABASE_URI }}
 
             - name: Build necessary packages
               run: pnpm build --filter codemod
@@ -62,6 +62,8 @@ jobs:
                   else
                     pnpm test
                   fi
+              env:
+                DATABASE_URI: ${{ secrets.DATABASE_URI }}
               shell: bash
 
             - name: Close database
