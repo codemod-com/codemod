@@ -44,16 +44,6 @@ jobs:
               if: matrix.os == 'ubuntu-latest'
               run: docker-compose -f apps/backend/docker-compose.yml up -d database
 
-            - name: Wait for database to become ready
-              run: |
-                echo "Waiting for database to become ready..."
-                until pnpm db:ping; do
-                  echo "Database is not ready yet..."
-                  sleep 5
-                done
-              env:
-                DATABASE_URI: postgresql://postgres:postgres@database:5432/codemod?schema=public
-
             - name: Apply database migrations
               run: pnpm --filter @codemod-com/backend db:migrate:apply
               env:
