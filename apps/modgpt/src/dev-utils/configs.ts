@@ -1,4 +1,7 @@
-import { type Environment, parseEnvironment } from "./schemata/env.js";
+import { type Environment, parseEnvironment } from "../schemata/env";
+
+export const environment = parseEnvironment(process.env);
+const { NODE_ENV, PORT } = environment;
 
 export const areClerkKeysSet = (
   environment: Environment,
@@ -21,4 +24,4 @@ export const areClerkKeysSet = (
   );
 };
 
-export const environment = parseEnvironment(process.env);
+export const isDevelopment = NODE_ENV === "development";
