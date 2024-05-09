@@ -1,8 +1,8 @@
 {
   "name": "@codemod-com/backend",
-  "version": "0.0.100",
+  "version": "0.0.101",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "pnpmnode esbuild.config.js",
     "start": "node build/index.js",
     "test": "vitest --run",
     "db:seed": "tsx prisma/seed.ts",
