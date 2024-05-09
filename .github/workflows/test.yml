@@ -33,16 +33,15 @@ jobs:
             - name: Install dependencies
               run: pnpm install
 
-            - name: Install latest docker-compose
-              if: matrix.os == 'ubuntu-latest'
-              run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
-
             - name: Generate prisma types
               run: pnpm --filter @codemod-com/backend db:generate
 
+            - name: Install latest docker-compose
+              if: matrix.os == 'ubuntu-latest'
+              run: sudo curl -SL https://github.com/docker/compose/releases/download/v2.24.7/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
             - name: Start database
               if: matrix.os == 'ubuntu-latest'
-              run: docker-compose -f apps/backend/docker-compose.yml up -d database
+              run: docker-compose up -d database
 
             - name: Apply database migrations
               run: pnpm --filter @codemod-com/backend db:migrate:apply
@@ -65,4 +64,4 @@ jobs:
 
             - name: Close database
               if: matrix.os == 'ubuntu-latest'
-              run: docker-compose -f apps/backend/docker-compose.yml down database
+              run: docker-compose down database

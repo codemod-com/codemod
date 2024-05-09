@@ -1,23 +1,5 @@
 version: '3.9'
 services:
-  database:
-    image: 'postgres:16'
-    environment:
-      POSTGRES_USER: 'postgres'
-      POSTGRES_PASSWORD: 'postgres'
-      POSTGRES_DB: 'codemod'
-    ports:
-      - '5432:5432'
-    networks:
-      - codemod-local-network
-
-  redis:
-    image: redis:latest
-    ports:
-      - "6379:6379"
-    networks:
-      - codemod-local-network
-
   codemod-backend:
     build:
       context: ../..
@@ -40,8 +22,8 @@ services:
     ports:
       - '8081:8081'
     networks:
-      - codemod-local-network
+      - codemod-network
 
 networks:
-  codemod-local-network:
+  codemod-network:
     driver: bridge

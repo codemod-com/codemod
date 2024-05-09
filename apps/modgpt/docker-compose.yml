@@ -16,8 +16,8 @@ services:
     ports:
       - '8082:8082'
     networks:
-      - codemod-local-network
+      - codemod-network
 
 networks:
-  codemod-local-network:
+  codemod-network:
     driver: bridge
