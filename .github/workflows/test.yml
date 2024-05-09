@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Check out Git repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Use Node.js 20
         uses: actions/setup-node@v3
@@ -36,18 +36,17 @@ jobs:
         with:
           version: 9
 
+      - name: Start database
+        uses: cloudposse/github-action-docker-compose-test-run@main
+        with:
+          file: docker-compose.yml
+          service: database
+
       - name: Install dependencies
         run: pnpm install
 
       - name: Generate prisma types
         run: pnpm --filter @codemod-com/backend db:generate
-
-      - name: Start database
-      - uses: hoverkraft-tech/compose-action@v1.5.1
-        with:
-          compose-file: "docker-compose.yml"
-          services: |
-            database
 
       - name: Apply database migrations
         if: matrix.db_required
