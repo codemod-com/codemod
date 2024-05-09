@@ -1,4 +1,5 @@
 import {
+  type LiteralSchema,
   array,
   literal,
   object,
@@ -7,14 +8,14 @@ import {
   string,
   union,
 } from "valibot";
+import { engines, roles } from "../dev-utils/consts";
 
-const engineSchema = union([
-  literal("claude-2.0"),
-  literal("claude-instant-1.2"),
-  literal("replit-code-v1-3b"),
-  literal("gpt-4-with-chroma"),
-  literal("gpt-4"),
-]);
+const engine = union(
+  engines.map((role) => literal(role)) as LiteralSchema<string>[],
+);
+const role = union(
+  roles.map((role) => literal(role)) as LiteralSchema<string>[],
+);
 
 export const sendChatBodySchema = object({
   messages: array(
@@ -24,7 +25,7 @@ export const sendChatBodySchema = object({
       name: optional(string()),
     }),
   ),
-  engine: engineSchema,
+  engine,
 });
 
 export const parseSendChatBody = (input: unknown) =>

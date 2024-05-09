@@ -13,6 +13,7 @@ export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),
   OPEN_AI_API_KEY: string(),
   CLAUDE_API_KEY: string(),
+  NODE_ENV: string(),
   REPLICATE_API_KEY: string(),
   CLERK_DISABLED: optional(string()),
   CLERK_PUBLISH_KEY: optional(string()),
