@@ -42,7 +42,7 @@ jobs:
 
             - name: Start Docker Compose
               if: matrix.os == 'ubuntu-latest'
-              run: apps/backend/docker-compose up -d database
+              run: docker-compose -f apps/backend/docker-compose.yml up -d database
 
             - name: Wait for database to become ready
               run: |
