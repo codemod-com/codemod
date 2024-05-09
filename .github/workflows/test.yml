@@ -62,7 +62,7 @@ jobs:
           if [[ ${{ matrix.os }} == "windows-latest" ]]; then
             pnpm test:win
           elif [[ ${{ matrix.os }} == "macos-latest" ]]; then
-            pnpm test
+            pnpm test --filter=!@codemod-com/backend
           else
             pnpm test
           fi
