@@ -7,9 +7,15 @@ esbuild
     minify: true,
     platform: "node",
     outfile: "build/index.js",
-    external: ["@prisma/client", "pg-hstore", "@codemod-com/utilities"],
     banner: {
-      js: `import { createRequire } from 'module';\nconst require = createRequire(import.meta.url);`,
+      js: `
+      import { createRequire } from 'module';
+      import { fileURLToPath, URL } from 'url';
+      import path from 'path';
+      const require = createRequire(import.meta.url);
+      const __filename = fileURLToPath(import.meta.url);
+      const __dirname = path.dirname(__filename);
+      `,
     },
     format: "esm",
   })

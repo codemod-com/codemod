@@ -10,7 +10,6 @@ import {
 } from "valibot";
 
 export const environmentSchema = object({
-  NODE_ENV: string(),
   PORT: coerce(number(), (input) => Number(input)),
   OPEN_AI_API_KEY: string(),
   CLAUDE_API_KEY: string(),

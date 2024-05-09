@@ -1,5 +1,5 @@
 import type { CodemodConfig } from "@codemod-com/utilities";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../../prisma/client";
 
 export const prisma = new PrismaClient();
 
