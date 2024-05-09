@@ -11,7 +11,6 @@ import {
   buildApi,
   executeFilemod,
 } from "@codemod-com/filemod";
-import type { OperationMessage } from "@codemod-com/printer";
 import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
 import { type FileSystemAdapter, glob } from "fast-glob";
@@ -25,6 +24,10 @@ import { unified } from "unified";
 import { filter } from "unist-util-filter";
 import { visit } from "unist-util-visit";
 import type { FileCommand } from "./fileCommands.js";
+import type {
+  CodemodExecutionErrorCallback,
+  PrinterMessageCallback,
+} from "./schemata/callbacks.js";
 
 const parseMdx = (data: string) =>
   fromMarkdown(data, {
@@ -52,11 +55,12 @@ export type Dependencies = Readonly<{
 
 export const runRepomod = async (
   fileSystem: FileSystem,
-  filemod: Filemod<Dependencies, Record<string, unknown>>,
+  filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string },
   target: string,
   disablePrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
-  onPrinterMessage: (message: OperationMessage) => void,
+  onPrinterMessage: PrinterMessageCallback,
+  onCodemodError: CodemodExecutionErrorCallback,
 ): Promise<readonly FileCommand[]> => {
   const buildPathHashDigest = (path: string) =>
     createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
@@ -187,17 +191,14 @@ export const runRepomod = async (
 
       onPrinterMessage({
         kind: "progress",
+        codemodName: filemod.name,
         processedFileNumber: processedPathHashDigests.size,
         totalFileNumber: totalPathHashDigests.size,
         processedFileName: command.path,
       });
     },
     onError: (path, message) => {
-      onPrinterMessage({
-        kind: "error",
-        path,
-        message,
-      });
+      onCodemodError({ codemodName: filemod.name, filePath: path, message });
     },
   };
 

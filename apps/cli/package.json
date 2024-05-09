@@ -35,20 +35,21 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
+    "@types/cli-progress": "^3.11.5",
     "@types/columnify": "^1.5.4",
     "@types/inquirer": "^9.0.7",
     "@types/node": "18.11.9",
     "@types/yargs": "^17.0.13",
     "@vitest/coverage-v8": "^1.0.1",
-    "exponential-backoff": "^3.1.1",
-    "inquirer": "^9.2.16",
-    "keytar": "^7.9.0",
     "axios": "^1.6.8",
     "columnify": "^1.6.0",
     "cosmiconfig": "^8.3.6",
     "esbuild": "^0.17.14",
+    "exponential-backoff": "^3.1.1",
     "fast-glob": "^3.3.2",
     "form-data": "^4.0.0",
+    "inquirer": "^9.2.16",
+    "keytar": "^7.9.0",
     "memfs": "^4.6.0",
     "prettier": "^3.2.5",
     "terminal-link": "^3.0.0",
@@ -83,6 +84,7 @@
     "access": "public"
   },
   "dependencies": {
+    "cli-progress": "^3.12.0",
     "keytar": "^7.9.0",
     "prettier": "^3.2.5"
   }

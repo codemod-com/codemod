@@ -6,8 +6,9 @@ import {
   type WorkerThreadMessage,
   decodeWorkerThreadMessage,
 } from "@codemod-com/printer";
-import type { ArgumentRecord } from "@codemod-com/utilities";
+import { type ArgumentRecord, sleep } from "@codemod-com/utilities";
 import type { FormattedFileCommand } from "./fileCommands.js";
+import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
 export class WorkerThreadManager {
   private __finished = false;
@@ -33,6 +34,7 @@ export class WorkerThreadManager {
     codemodSource: string,
     disablePrettier: boolean,
     safeArgumentRecord: ArgumentRecord,
+    private readonly onCodemodError: CodemodExecutionErrorCallback,
   ) {
     for (let i = 0; i < __workerCount; ++i) {
       this.__idleWorkerIds.push(i);
@@ -128,11 +130,13 @@ export class WorkerThreadManager {
     await this.__work();
   }
 
-  private __finish(): void {
+  private async __finish(): Promise<void> {
     for (const worker of this.__workers) {
       worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
     }
 
+    // Let progress bar do its thing
+    await sleep(100);
     this.__onPrinterMessage({
       kind: "finish",
     });
@@ -154,10 +158,9 @@ export class WorkerThreadManager {
           await this.__onCommand(command);
         }
       } else if (workerThreadMessage.kind === "error") {
-        this.__onPrinterMessage({
-          kind: "error",
+        this.onCodemodError({
           message: workerThreadMessage.message,
-          path: workerThreadMessage.path,
+          filePath: workerThreadMessage.path ?? "",
         });
       }
 
