@@ -13,7 +13,7 @@ import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
 export const CodemodButton = () => {
-  const { getToken } = useAuth();
+  const { getToken, isSignedIn } = useAuth();
 
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
@@ -111,7 +111,13 @@ export const CodemodButton = () => {
         size="xs"
         variant="outline"
         className="flex gap-1"
-        hint={<p className="font-normal">{hintText}</p>}
+        hint={
+          <p className="font-normal">
+            {isSignedIn
+              ? hintText
+              : "You need to sign in to run codemod on Github repository."}
+          </p>
+        }
       >
         <CheckIcon />
         {text}
