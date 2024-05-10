@@ -36,7 +36,7 @@ import { PanelGroup } from "react-resizable-panels";
 import { useExecutionStatus } from "../src/hooks/useExecutionStatus";
 import { useUserSession } from "../src/store/zustand/userSession";
 import Codemod from "./Codemod";
-import { Header } from "./Header";
+import { Header } from "./Header/Header";
 import Layout from "./Layout";
 import {
   BoundResizePanel,

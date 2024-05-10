@@ -1,4 +1,4 @@
-import AuthButtons from "@studio/auth/AuthButtons";
+import AuthButtons from "@auth/AuthButtons";
 import { Button } from "@studio/components/ui/button";
 import { CodemodLogo } from "@studio/icons/CodemodLogo";
 
@@ -13,7 +13,7 @@ export const TopBar = () => {
           <CodemodLogo />
         </a>
       </Button>
-      <AuthButtons />
+      <AuthButtons variant="studio" />
     </div>
   );
 };
