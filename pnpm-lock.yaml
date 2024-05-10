@@ -215,9 +215,6 @@ importers:
 
   apps/cli:
     dependencies:
-      cli-progress:
-        specifier: ^3.12.0
-        version: 3.12.0
       keytar:
         specifier: ^7.9.0
         version: 7.9.0
@@ -261,6 +258,9 @@ importers:
       axios:
         specifier: ^1.6.8
         version: 1.6.8
+      cli-progress:
+        specifier: ^3.12.0
+        version: 3.12.0
       columnify:
         specifier: ^1.6.0
         version: 1.6.0
