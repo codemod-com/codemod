@@ -5,7 +5,7 @@ import { GET_EXECUTION_STATUS } from "./endpoints";
 type Result =
   | {
       status: "progress" | "error";
-      message: string;
+      message: string; // internal events (crating folders, cloning repo, creating pull request etc..) | error messages
     }
   | {
       status: "executing codemod";

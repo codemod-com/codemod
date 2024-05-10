@@ -1,28 +1,29 @@
-import type { GetExecutionStatusResponse } from "@/utils/apis/getExecutionStatus";
+type Status = "progress" | "error" | "executing codemod" | "done";
 
-type Status = GetExecutionStatusResponse["status"];
-export const getButtonPropsByStatus = (status: Status) => {
+const defaultResponse = {
+  text: "Run on Github",
+  hintText:
+    "This runs Codemod on your Github branch and push a commit with changes.",
+};
+export const getButtonPropsByStatus = (status: Status | null) => {
+  if (status === null) {
+    return defaultResponse;
+  }
   switch (status) {
-    case "done":
-    case "idle": {
-      return {
-        text: "Run on Github",
-        hintText:
-          "This runs Codemod on your Github branch and push a commit with changes.",
-      };
-    }
     case "progress": {
       return {
-        text: "Stop",
-        hintText: "Terminate current codemod run",
+        text: "Preparing...",
+        hintText: "Codemod will soon run on your Github branch.",
+      };
+    }
+    case "executing codemod": {
+      return {
+        text: "Codemod Running...",
+        hintText: "Codemod is running on your Github branch.",
       };
     }
     default: {
-      return {
-        text: "Run on Github",
-        hintText:
-          "This runs Codemod on your Github branch and push a commit with changes.",
-      };
+      return defaultResponse;
     }
   }
 };

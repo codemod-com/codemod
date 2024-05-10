@@ -1,19 +1,18 @@
+import type { GetExecutionStatusResponse } from "@/utils/apis/getExecutionStatus";
 import Text from "@studio/components/Text";
 import { Progress } from "@studio/components/ui/progress";
 import type { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 
 export type ProgressBarProps = {
-  codemodRunStatus: ReturnType<typeof useCodemodExecution>["codemodRunStatus"];
+  codemodRunStatus: GetExecutionStatusResponse;
 };
 export const ProgressBar = ({ codemodRunStatus }: ProgressBarProps) => {
   const progressInfo =
-    codemodRunStatus?.status === "progress"
-      ? codemodRunStatus.progressInfo
+    codemodRunStatus?.result?.status === "executing codemod"
+      ? codemodRunStatus?.result.progress
       : null;
 
-  const isFetchingRepo =
-    codemodRunStatus?.status === "progress" &&
-    codemodRunStatus.progressInfo === null;
+  const isFetchingRepo = codemodRunStatus?.result?.status === "progress";
   const fetchingRepositoryText = (
     <Text heading="span" size="sm" color="black" className="mr-3 text-center">
       Fetching repository...

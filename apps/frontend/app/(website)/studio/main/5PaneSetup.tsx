@@ -31,10 +31,7 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { openIDELink } from "@studio/utils/openIDELink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
-import { useExecutionStatus } from "../src/hooks/useExecutionStatus";
-import { useUserSession } from "../src/store/zustand/userSession";
 import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
 import Layout from "./Layout";
@@ -56,40 +53,10 @@ const Main = () => {
 
   const { engine, setEngine } = useSnippetStore();
   const { isDark } = useTheme();
-  const { codemodExecutionId } = useUserSession();
-  const executionStatus = useExecutionStatus(codemodExecutionId);
 
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
-
-  useEffect(() => {
-    if (executionStatus === null) {
-      return;
-    }
-
-    const { result, success } = executionStatus;
-
-    if (!success || result === null) {
-      return;
-    }
-
-    const { status, message } = result;
-
-    if (status === "done") {
-      toast.success(
-        result === null
-          ? message
-          : `${message}\nGo to ${result.link} to see the results.`,
-        { duration: 6000 },
-      );
-    }
-    if (status === "progress") {
-      toast(message, {
-        icon: "🚧",
-      });
-    }
-  }, [executionStatus]);
 
   const snippetStore = useSnippetStore();
 

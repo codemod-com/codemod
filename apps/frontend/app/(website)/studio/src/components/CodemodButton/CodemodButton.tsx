@@ -1,4 +1,4 @@
-import { getYes } from "@/utils";
+import { getTestToken } from "@/utils";
 import getGHBranches from "@/utils/apis/getGHBranches";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
@@ -40,12 +40,13 @@ export const CodemodButton = () => {
     "openRepoModal",
   );
 
-  const status = codemodRunStatus?.status ?? "idle";
+  const onClick = codemodRunStatus?.result?.status
+    ? onCodemodRunCancel
+    : showRepoModalToSignedUser;
 
-  const onClick =
-    status === "progress" ? onCodemodRunCancel : showRepoModalToSignedUser;
-
-  const { text, hintText } = getButtonPropsByStatus(status);
+  const { text, hintText } = getButtonPropsByStatus(
+    codemodRunStatus?.result?.status ?? null,
+  );
 
   const selectRepository = (name: GithubRepository["full_name"]) =>
     setSelectedRepository(
@@ -77,7 +78,7 @@ export const CodemodButton = () => {
       }
       const branches = await getGHBranches({
         repoUrl: selectedRepository.html_url,
-        token: getYes(),
+        token: getTestToken(),
       });
       if (branches === null) {
         return;
@@ -106,7 +107,9 @@ export const CodemodButton = () => {
         setCodemodNameInput={setCodemodNameInput}
         onRunCodemod={onRunCodemod}
       />
-      <ProgressBar codemodRunStatus={codemodRunStatus} />
+      {codemodRunStatus !== null && (
+        <ProgressBar codemodRunStatus={codemodRunStatus} />
+      )}
       <Button
         onClick={onClick}
         size="xs"
@@ -118,6 +121,10 @@ export const CodemodButton = () => {
               ? hintText
               : "You need to sign in to run codemod on Github repository."}
           </p>
+        }
+        disabled={
+          codemodRunStatus?.result?.status === "executing codemod" ||
+          codemodRunStatus?.result?.status === "progress"
         }
       >
         <CheckIcon />

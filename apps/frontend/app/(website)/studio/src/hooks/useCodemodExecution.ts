@@ -20,13 +20,17 @@ export const useCodemodExecution = () => {
           request,
         )
       ).data;
+      console.log("HEY! ", codemodRunId, success);
 
       if (!success) {
         return;
       }
 
       setCodemodExecutionId(codemodRunId);
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+      console.log("HEY!", e);
+    }
   };
 
   const onCodemodRunCancel = async () => {

@@ -1,3 +1,4 @@
+import { getTestToken } from "@/utils";
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
 } from "@/utils/apis/getExecutionStatus";
@@ -16,22 +17,34 @@ export const useExecutionStatus = (
       if (executionId === null) {
         return;
       }
+      console.log("executionId: ", executionId);
 
       const token = await getToken();
 
       if (token === null) {
         return;
       }
+      const intervalId = setInterval(async () => {
+        const executionStatus = await getExecutionStatus({
+          executionId,
+          token: getTestToken(),
+        });
+        console.log("STATUS: ", executionStatus);
 
-      const executionStatus = await getExecutionStatus({
-        executionId,
-        token,
-      });
-      if (executionStatus === null) {
-        return;
-      }
+        if (executionStatus === null) {
+          clearInterval(intervalId);
+          return;
+        }
 
-      setExecutionStatus(executionStatus);
+        setExecutionStatus(executionStatus);
+        if (
+          !executionStatus.success ||
+          executionStatus.result?.status === "done" ||
+          executionStatus.result?.status === "error"
+        ) {
+          clearInterval(intervalId);
+        }
+      }, 500);
     };
     handler();
   }, [executionId, getToken]);
