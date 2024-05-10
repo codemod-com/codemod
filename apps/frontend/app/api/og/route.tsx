@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { capitalize } from "@/utils/strings";
 import { ImageResponse } from "next/og";
 import Automation from "./templates/Automation";
@@ -65,7 +66,7 @@ const RegistryTemplate = ({ title }) => {
   return (
     <Registry
       title={title}
-      imageUrl={`${process.env.NEXT_PUBLIC_BASE_URL}/registry.png`}
+      imageUrl={`${env.NEXT_PUBLIC_BASE_URL}/registry.png`}
     />
   );
 };
