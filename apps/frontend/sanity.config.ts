@@ -10,13 +10,13 @@ import { muxInput } from "sanity-plugin-mux-input";
 import { structureTool } from "sanity/structure";
 
 import StudioLogo from "@/components/shared/StudioLogo";
-import config from "@/config";
+import publicConfig from "@/config";
 
 export default defineConfig({
-  basePath: config.sanity.studioUrl,
-  projectId: config.sanity.projectId,
-  dataset: config.sanity.dataset,
-  title: config.siteName,
+  basePath: publicConfig.sanity.studioUrl,
+  projectId: publicConfig.sanity.projectId,
+  dataset: publicConfig.sanity.dataset,
+  title: publicConfig.siteName,
   icon: StudioLogo,
   schema: {
     types: schemas,
@@ -111,7 +111,7 @@ export default defineConfig({
     }),
     media(),
     codeInput(),
-    visionTool({ defaultApiVersion: config.sanity.apiVersion }),
+    visionTool({ defaultApiVersion: publicConfig.sanity.apiVersion }),
     muxInput({ mp4_support: "standard" }),
   ],
   tools: (tools) => {

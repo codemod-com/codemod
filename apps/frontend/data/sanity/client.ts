@@ -1,11 +1,11 @@
-import config from "@/config";
+import publicConfig from "@/config";
 import { type ClientPerspective, createClient } from "@sanity/client/stega";
 import createImageUrlBuilder from "@sanity/image-url";
 
 const clientConfig = {
-  projectId: config.sanity.projectId,
-  dataset: config.sanity.dataset,
-  apiVersion: config.sanity.apiVersion,
+  projectId: publicConfig.sanity.projectId,
+  dataset: publicConfig.sanity.dataset,
+  apiVersion: publicConfig.sanity.apiVersion,
   useCdn: process.env.NODE_ENV === "production",
   perspective: "published" as ClientPerspective,
 };
@@ -13,7 +13,7 @@ const clientConfig = {
 export const client = createClient({
   ...clientConfig,
   stega: {
-    studioUrl: config.sanity.studioUrl,
+    studioUrl: publicConfig.sanity.studioUrl,
     // logger: console,
   },
 });

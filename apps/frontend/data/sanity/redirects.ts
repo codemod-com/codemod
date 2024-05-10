@@ -1,5 +1,5 @@
-import config from "@/config";
 import { client } from "@/data/sanity/client";
+import { env } from "@/env";
 import { groq } from "next-sanity";
 
 export type RedirectSetting = {
@@ -9,7 +9,7 @@ export type RedirectSetting = {
 };
 
 const sanityClient = client.withConfig({
-  token: config.sanity.token,
+  token: env.SANITY_API_TOKEN,
   perspective: "published",
   useCdn: true,
   stega: false,

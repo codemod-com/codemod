@@ -1,4 +1,3 @@
-import config from "@/config";
 import type { MetadataRoute } from "next";
 import { groq } from "next-sanity";
 
@@ -10,7 +9,7 @@ import type { AutomationAPIListResponse } from "@/types/object.types";
 import { pathToAbsUrl } from "@/utils/urls";
 
 const sanityClient = client.withConfig({
-  token: config.sanity.token,
+  token: env.SANITY_API_TOKEN,
   perspective: "published",
   useCdn: false,
   stega: false,
