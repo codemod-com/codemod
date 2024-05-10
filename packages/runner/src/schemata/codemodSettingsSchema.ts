@@ -19,7 +19,7 @@ const codemodEngineSchema = union([
 export const codemodSettingsSchema = object({
   _: array(string()),
   source: optional(string()),
-  codemodEngine: optional(codemodEngineSchema),
+  engine: optional(codemodEngineSchema),
 });
 
 export type CodemodSettings =
@@ -33,7 +33,7 @@ export type CodemodSettings =
   | Readonly<{
       kind: "runSourced";
       source: string;
-      codemodEngine: Output<typeof codemodEngineSchema> | null;
+      engine: Output<typeof codemodEngineSchema> | null;
     }>;
 
 export const parseCodemodSettings = (input: unknown): CodemodSettings => {
@@ -51,7 +51,7 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
     return {
       kind: "runSourced",
       source,
-      codemodEngine: codemodSettings.codemodEngine ?? null,
+      engine: codemodSettings.engine ?? null,
     };
   }
 

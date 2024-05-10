@@ -4,6 +4,7 @@ import { transformAutomation } from "@/components/templates/Registry/helpers";
 import { fetchWithTimeout, loadCodemod } from "@/data/codemod/loaders";
 import { loadAutomationPage } from "@/data/sanity/loadQuery";
 import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMetadata";
+import { env } from "@/env";
 import type { RouteProps } from "@/types";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
 import { cx } from "cva";
@@ -14,7 +15,7 @@ import { notFound } from "next/navigation";
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
-  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const res = await fetchWithTimeout(`${baseUrl}/list`);
   const allAutomations = res.status === 200 ? await res.json() : [];
   return allAutomations.map((automation) => ({ codemod: automation.slug }));
