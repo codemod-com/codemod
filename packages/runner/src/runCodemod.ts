@@ -166,19 +166,6 @@ export const runCodemod = async (
     throw new Error("Piranha not supported");
   }
 
-  const pathsAreEmpty = () =>
-    onPrinterMessage({
-      kind: "console",
-      consoleKind: "error",
-      message: chalk.yellow(
-        `No files to process were found in ${
-          flowSettings.target
-            ? "specified target directory"
-            : "current working directory"
-        }...`,
-      ),
-    });
-
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {
@@ -305,10 +292,6 @@ export const runCodemod = async (
       onlyFiles: true,
     });
 
-    if (newPaths.length === 0) {
-      return pathsAreEmpty();
-    }
-
     const fileCommands = await buildFileCommands(
       fileMap,
       newPaths,
@@ -349,10 +332,6 @@ export const runCodemod = async (
 
     const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
 
-    if (globPaths.length === 0) {
-      return pathsAreEmpty();
-    }
-
     const fileCommands = await runRepomod(
       fileSystem,
       {
@@ -385,14 +364,11 @@ export const runCodemod = async (
     onPrinterMessage,
   );
 
-  const pathGeneratorInitializer = () =>
-    buildPathGlobGenerator(fileSystem, flowSettings, patterns);
-
-  if (await isGeneratorEmpty(pathGeneratorInitializer)) {
-    return pathsAreEmpty();
-  }
-
-  const pathGenerator = pathGeneratorInitializer();
+  const pathGenerator = buildPathGlobGenerator(
+    fileSystem,
+    flowSettings,
+    patterns,
+  );
 
   const { engine } = codemod;
 
