@@ -153,7 +153,7 @@ export const handleRunCliCommand = async (
     { deps: string[]; affectedFiles: string[] }
   > = {};
 
-  await runner.run(
+  const executionErrors = await runner.run(
     async (codemod, filePaths) => {
       let codemodName = "Standalone codemod (from user machine)";
 
@@ -221,6 +221,56 @@ export const handleRunCliCommand = async (
         `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
           "base64url",
         )}`,
+      ),
+    );
+  }
+
+  if (executionErrors && executionErrors.length > 0) {
+    const logsPath = join(
+      configurationDirectoryPath,
+      "logs",
+      `${new Date().toISOString()}-error.log`,
+    );
+
+    try {
+      await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
+        recursive: true,
+      });
+      await fs.promises.writeFile(
+        logsPath,
+        executionErrors
+          .map(
+            (e) =>
+              `Error at ${e.filePath}${
+                e.codemodName ? ` (${e.codemodName})` : ""
+              }:\n${e.message}`,
+          )
+          .join("\n\n"),
+      );
+    } catch (err) {
+      printer.printConsoleMessage(
+        "error",
+        `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
+      );
+    }
+
+    printer.printConsoleMessage(
+      "error",
+      chalk(
+        "Certain files failed to be correctly processed by the codemod execution:",
+        `\n${executionErrors
+          .slice(0, 5)
+          .map(
+            (e) => `${e.filePath} ${e.codemodName ? `(${e.codemodName})` : ""}`,
+          )
+          .join("\n")
+          .concat(
+            executionErrors.length > 5
+              ? `\n...and ${executionErrors.length - 5} more`
+              : "",
+          )}`,
+        "\nPlease check the logs for more information at",
+        chalk.bold(logsPath),
       ),
     );
   }
