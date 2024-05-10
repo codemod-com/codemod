@@ -14,7 +14,7 @@ export {
   buildHash,
   streamToString,
 } from "./functions/hash.js";
-export { execPromise } from "./functions/node.js";
+export { execPromise, isGeneratorEmpty } from "./functions/node.js";
 export {
   assertsNeitherNullOrUndefined,
   isNeitherNullNorUndefined,
