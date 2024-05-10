@@ -1,7 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
+import { chalk } from "@codemod-com/printer";
+import {
+  type ArgumentRecord,
+  type FileSystem,
+  isGeneratorEmpty,
+} from "@codemod-com/utilities";
 import { type FileSystemAdapter, glob, globStream } from "fast-glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
@@ -166,11 +171,25 @@ export const runCodemod = async (
     throw new Error("Piranha not supported");
   }
 
+  const pathsAreEmpty = () =>
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "error",
+      message: chalk.yellow(
+        `No files to process were found in ${
+          flowSettings.target
+            ? "specified target directory"
+            : "current working directory"
+        }...`,
+      ),
+    });
+
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {
         const commands: FormattedFileCommand[] = [];
 
+        // biome-ignore lint: assertion is correct
         const subCodemod = codemod.codemods[i]!;
 
         await runCodemod(
@@ -227,6 +246,7 @@ export const runCodemod = async (
     const deletedPaths: string[] = [];
 
     for (let i = 0; i < codemod.codemods.length; ++i) {
+      // biome-ignore lint: assertion is correct
       const subCodemod = codemod.codemods[i]!;
 
       const commands: FormattedFileCommand[] = [];
@@ -292,6 +312,10 @@ export const runCodemod = async (
       onlyFiles: true,
     });
 
+    if (newPaths.length === 0) {
+      return pathsAreEmpty();
+    }
+
     const fileCommands = await buildFileCommands(
       fileMap,
       newPaths,
@@ -332,6 +356,10 @@ export const runCodemod = async (
 
     const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
 
+    if (globPaths.length === 0) {
+      return pathsAreEmpty();
+    }
+
     const fileCommands = await runRepomod(
       fileSystem,
       {
@@ -364,11 +392,14 @@ export const runCodemod = async (
     onPrinterMessage,
   );
 
-  const pathGenerator = buildPathGlobGenerator(
-    fileSystem,
-    flowSettings,
-    patterns,
-  );
+  const pathGeneratorInitializer = () =>
+    buildPathGlobGenerator(fileSystem, flowSettings, patterns);
+
+  if (await isGeneratorEmpty(pathGeneratorInitializer)) {
+    return pathsAreEmpty();
+  }
+
+  const pathGenerator = pathGeneratorInitializer();
 
   const { engine } = codemod;
 
