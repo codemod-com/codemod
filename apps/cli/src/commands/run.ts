@@ -79,7 +79,7 @@ export const handleRunCliCommand = async (
       hashDigest: createHash("ripemd160")
         .update(codemodSettings.source)
         .digest(),
-      safeArgumentRecord: buildSafeArgumentRecord(codemod, flowSettings),
+      safeArgumentRecord: buildSafeArgumentRecord(codemod, args),
     });
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
@@ -115,7 +115,7 @@ export const handleRunCliCommand = async (
     codemods.push({
       ...codemod,
       hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-      safeArgumentRecord: buildSafeArgumentRecord(codemod, flowSettings),
+      safeArgumentRecord: buildSafeArgumentRecord(codemod, args),
     });
   } else {
     const { preCommitCodemods } = await loadRepositoryConfiguration();
