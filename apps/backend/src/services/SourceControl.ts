@@ -66,7 +66,7 @@ export interface SourceControlProvider {
   createPullRequest(params: CreatePRParams): Promise<PullRequest>;
   getPullRequests(params: ListPRParams): Promise<PullRequest[]>;
   getAssignees(): Promise<Assignee[]>;
-  getBranches(): Promise<string[]>;
+  getBranches(): Promise<any[]>;
   getUserRepositories(): Promise<GithubRepository[]>;
   getRepoContents(branchName: string): Promise<GithubContent[]>;
 }

@@ -1,3 +1,4 @@
+import type { GithubBranch } from "@codemod-com/utilities/dist/schemata/types.js";
 import axios from "axios";
 import gh from "parse-github-url";
 import type {
@@ -118,7 +119,7 @@ export class GithubProvider implements SourceControlProvider {
     return res.data;
   }
 
-  async getBranches(): Promise<string[]> {
+  async getBranches(): Promise<GithubBranch[]> {
     const res = await axios.get(`${this.__repoUrl}/branches`, {
       headers: {
         Authorization: this.__authHeader,

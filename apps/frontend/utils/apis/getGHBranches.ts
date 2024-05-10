@@ -1,9 +1,9 @@
 import apiClient from "@/utils/apis/client";
+import type { GithubBranch } from "@codemod-com/utilities/dist/schemata/types";
 import type { AxiosError } from "axios";
-import type { GithubRepository } from "be-types";
 import { GH_BRANCH_LIST } from "./endpoints";
 
-type GetGHBranchesResponse = Readonly<string[]>;
+type GetGHBranchesResponse = Readonly<GithubBranch[]>;
 
 type GetGHBranchesRequest = Readonly<{
   repoUrl: string;
