@@ -2,14 +2,14 @@ import "server-only";
 
 import { groq } from "next-sanity";
 
-import config from "@/config";
 import { client } from "@/data/sanity/client";
+import { env } from "@/env";
 
 // Used in `generateStaticParams`
 export function generateStaticPaths(types: string[]) {
   return client
     .withConfig({
-      token: config.sanity.token,
+      token: env.SANITY_API_TOKEN,
       perspective: "published",
       useCdn: false,
       stega: false,
