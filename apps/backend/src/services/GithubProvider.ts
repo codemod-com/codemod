@@ -1,4 +1,3 @@
-import type { GithubBranch } from "@codemod-com/utilities/dist/schemata/types.js";
 import axios, { type AxiosResponse } from "axios";
 import gh from "parse-github-url";
 import type {
@@ -155,7 +154,7 @@ export class GithubProvider implements SourceControlProvider {
 
   private __getBranches = async (
     page: string,
-  ): Promise<AxiosResponse<GithubBranch[]>> => {
+  ): Promise<AxiosResponse<string[]>> => {
     return await axios.get(
       `${this.__repoUrl}/branches?per_page=${PER_PAGE}&page=${page}`,
       {
@@ -166,7 +165,7 @@ export class GithubProvider implements SourceControlProvider {
     );
   };
 
-  async getBranches(): Promise<GithubBranch[]> {
+  async getBranches(): Promise<string[]> {
     return await withPagination(this.__getBranches);
   }
 
