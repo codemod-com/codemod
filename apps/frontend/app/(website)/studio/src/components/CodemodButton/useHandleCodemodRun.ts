@@ -24,12 +24,14 @@ export const useHandleCodemodRun = (
       return;
     }
 
-    await onCodemodRun({
+    const request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
       codemodSource: internalContent,
       codemodName,
       branch: selectedBranch,
-    });
+    };
+
+    await onCodemodRun(request);
   };
 };
