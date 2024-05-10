@@ -1,10 +1,12 @@
-import { mkdir, unlink, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { existsSync } from "node:fs";
+import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import { dirname, extname, join, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type KnownEngines,
   type ProjectDownloadInput,
   doubleQuotify,
+  execPromise,
   getCodemodProjectFiles,
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
@@ -21,10 +23,13 @@ const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
 type License = "MIT" | "Apache 2.0";
 const LICENSE_CHOICES: License[] = ["MIT", "Apache 2.0"];
 
-export const handleInitCliCommand = async (
-  printer: PrinterBlueprint,
-  noPrompt?: boolean,
-) => {
+export const handleInitCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  noPrompt?: boolean;
+  path?: [string, string];
+}) => {
+  const { printer, noPrompt = false, path } = options;
+
   // TODO:
   // const tags = await getTagsList();
   // const TAGS_CHOICES = tags.map((tag) => ({
@@ -39,8 +44,63 @@ export const handleInitCliCommand = async (
     typescript: boolean;
     git: boolean;
     npm: boolean;
+    path?: string;
   } | null = null;
-  if (!noPrompt) {
+
+  if (path) {
+    const defaultedAnswers = {
+      typescript: extname(path[1]) === ".ts",
+      git: false,
+      npm: false,
+    };
+
+    const askedAnswers = await inquirer.prompt<{
+      name: string;
+      engine: KnownEngines;
+      license: License;
+      path: string;
+    }>([
+      {
+        type: "input",
+        name: "name",
+        message: "Please provide a name for your codemod:",
+      },
+      {
+        type: "list",
+        name: "engine",
+        message: "What engine was used to build your codemod?",
+        pageSize: CODEMOD_ENGINE_CHOICES.length,
+        choices: CODEMOD_ENGINE_CHOICES,
+      },
+      {
+        type: "list",
+        name: "license",
+        message:
+          "What kind of license do you want to include with your codemod?",
+        pageSize: LICENSE_CHOICES.length,
+        choices: LICENSE_CHOICES,
+      },
+      {
+        type: "input",
+        name: "path",
+        message: "Confirm path where you want to initiate a package",
+        default: path[0],
+      },
+      // TODO:
+      // {
+      // 	type: "list",
+      // 	name: "tags",
+      // 	message: "Optionally select tags for your codemod:",
+      // 	pageSize: TAGS_CHOICES.length,
+      // 	choices: TAGS_CHOICES,
+      // },
+    ]);
+
+    answers = {
+      ...defaultedAnswers,
+      ...askedAnswers,
+    };
+  } else if (!noPrompt) {
     answers = await inquirer.prompt([
       {
         type: "input",
@@ -98,6 +158,7 @@ export const handleInitCliCommand = async (
         name: answers.name,
         license: answers.license,
         username: userData?.user.username ?? null,
+        vanillaJs: !answers.typescript,
         // TODO:
         // tags
       }
@@ -110,9 +171,15 @@ export const handleInitCliCommand = async (
         // tags
       };
 
-  const files = getCodemodProjectFiles(downloadInput);
+  const files = getCodemodProjectFiles({
+    ...downloadInput,
+    codemodBody: path
+      ? await readFile(resolve(path[0], path[1]), "utf-8")
+      : undefined,
+  });
 
-  const codemodBaseDir = join(process.cwd(), downloadInput.name);
+  const codemodBaseDir =
+    answers?.path ?? join(process.cwd(), downloadInput.name);
 
   const created: string[] = [];
   for (const [path, content] of Object.entries(files)) {
@@ -120,12 +187,14 @@ export const handleInitCliCommand = async (
 
     try {
       await mkdir(dirname(filePath), { recursive: true });
-      await writeFile(filePath, content);
-      created.push(path);
+      if (!existsSync(filePath)) {
+        await writeFile(filePath, content);
+        created.push(path);
+      }
     } catch (err) {
       printer.printConsoleMessage(
         "error",
-        chalk.red(
+        chalk(
           "Failed to write file",
           `${chalk.bold(path)}:`,
           `${(err as Error).message}.`,
@@ -149,6 +218,36 @@ export const handleInitCliCommand = async (
     "info",
     chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
   );
+
+  if (answers?.git) {
+    try {
+      await execPromise("git init", { cwd: codemodBaseDir });
+    } catch (err) {
+      printer.printConsoleMessage(
+        "error",
+        `Failed to initialize git repository:\n${(err as Error).message}.`,
+      );
+    }
+  }
+
+  if (answers?.npm) {
+    try {
+      await execPromise("pnpm i", { cwd: codemodBaseDir });
+    } catch (err) {
+      try {
+        await execPromise("npm i", { cwd: codemodBaseDir });
+      } catch (err) {
+        printer.printConsoleMessage(
+          "error",
+          `Failed to install npm dependencies:\n${(err as Error).message}.`,
+        );
+      }
+    }
+  }
+
+  if (path) {
+    return codemodBaseDir;
+  }
 
   const isJsCodemod =
     answers?.engine === "jscodeshift" ||
@@ -188,4 +287,6 @@ export const handleInitCliCommand = async (
     "https://docs.codemod.com",
   )} or type ${chalk.bold(doubleQuotify("codemod --help"))}.`;
   printer.printConsoleMessage("info", chalk.cyan(otherGuidelinesText));
+
+  return codemodBaseDir;
 };

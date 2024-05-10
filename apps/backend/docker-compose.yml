@@ -1,39 +1,29 @@
 version: '3.9'
 services:
-    studio-database:
-        image: 'postgres:16'
-        environment:
-            POSTGRES_USER: 'postgres'
-            POSTGRES_PASSWORD: 'postgres'
-            POSTGRES_DB: 'studio'
-        ports:
-            - '5432:5432'
-        networks:
-            - 'codemod-local-network'
-    db-test:
-        image: 'postgres:16'
-        environment:
-            POSTGRES_USER: 'postgres'
-            POSTGRES_PASSWORD: 'postgres'
-            POSTGRES_DB: 'test'
-        ports:
-            - '5432:5432'
-        networks:
-            - 'codemod-local-network'
-    backend:
-        build:
-            context: ../..
-            dockerfile: apps/backend/development.Dockerfile
-        environment:
-            PORT: '8081'
-            CLERK_DISABLED: 'true'
-            DATABASE_URI: 'postgres://postgres:postgres@studio-database:5432/studio'
-        ports:
-            - '8081:8081'
-        networks:
-            - 'codemod-local-network'
-        volumes:
-            - ./src:/app/backend/src
+  codemod-backend:
+    build:
+      context: ../..
+      dockerfile: apps/backend/Dockerfile
+    environment:
+      PORT: 8081
+      DATABASE_URI: postgresql://postgres:postgres@database:5432/codemod?schema=public
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      X_CODEMOD_ACCESS_TOKEN: ${X_CODEMOD_ACCESS_TOKEN}
+      CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
+      CLERK_JWT_KEY: ${CLERK_JWT_KEY}
+      CLERK_PUBLISH_KEY: ${CLERK_PUBLISH_KEY}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      TASK_MANAGER_QUEUE_NAME: ${TASK_MANAGER_QUEUE_NAME}
+      PEPPER: ${PEPPER}
+      SIGNATURE_PRIVATE_KEY: ${SIGNATURE_PRIVATE_KEY}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY}
+    ports:
+      - '8081:8081'
+    networks:
+      - codemod-network
 
 networks:
-    codemod-local-network:
+  codemod-network:
+    driver: bridge

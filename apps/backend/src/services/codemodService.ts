@@ -3,8 +3,8 @@ import {
   type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { Codemod, Prisma, PrismaClient, Tag } from "@prisma/client";
 import Fuse from "fuse.js";
+import type { Codemod, Prisma, PrismaClient, Tag } from "../../prisma/client";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];

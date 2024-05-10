@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Tester</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+    <h1>Test Chat Interface</h1>
+    <form id="chatForm">
+        <div id="messagesContainer" class="message">
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role">
+                    <option value="system">System</option>
+                    <option value="user">User</option>
+                    <option value="assistant">Assistant</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="content">Content:</label>
+                <textarea id="content" name="content" required>Hello</textarea>
+            </div>
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input id="name" type="text" name="name">
+            </div>
+        </div>
+        <button type="button" onclick="addMessage()">Add Next Message</button>
+        <div class="form-group">
+            <label for="engine">Engine:</label>
+            <select id="engine">
+                <option value="gpt-4">GPT-4</option>
+                <option value="claude-2.0">Claude 2.0</option>
+                <option value="claude-instant-1.2">Claude Instant 1.2</option>
+                <option value="replit-code-v1-3b">Replit Code V1-3B</option>
+                <option value="gpt-4-with-chroma">GPT-4 with Chroma</option>
+            </select>
+        </div>
+        <button type="submit" class="submit-btn">Send Chat</button>
+    </form>
+    <textarea id="output" disabled></textarea>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

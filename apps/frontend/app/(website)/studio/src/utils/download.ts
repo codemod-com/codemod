@@ -1,6 +1,7 @@
 import {
   type ProjectDownloadInput,
   getCodemodProjectFiles,
+  isTypeScriptProjectFiles,
 } from "@codemod-com/utilities/src/package-boilerplate";
 import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
@@ -14,7 +15,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
   }
 
   // Pre-built file
-  if ("src/index.ts" in files) {
+  if (isTypeScriptProjectFiles(files)) {
     await initSwc();
     const { code: compiled } = await transform(files["src/index.ts"], {
       minify: true,

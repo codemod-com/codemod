@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import { join } from "node:path";
+import { basename, dirname, join, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   codemodNameRegex,
@@ -10,8 +10,10 @@ import {
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import FormData from "form-data";
+import inquirer from "inquirer";
 import { publish } from "../apis.js";
 import { getCurrentUserData } from "../utils.js";
+import { handleInitCliCommand } from "./init.js";
 
 export const handlePublishCliCommand = async (
   printer: PrinterBlueprint,
@@ -25,26 +27,91 @@ export const handlePublishCliCommand = async (
     );
   }
 
-  const {
-    user: { username },
-    token,
-  } = userData;
+  const { token } = userData;
 
   const formData = new FormData();
 
-  let codemodRcData: string;
+  let codemodRcBuf: Buffer;
   try {
-    const codemodRcBuf = await fs.promises.readFile(
-      join(source, ".codemodrc.json"),
-    );
-    formData.append(".codemodrc.json", codemodRcBuf);
-    codemodRcData = codemodRcBuf.toString("utf-8");
+    codemodRcBuf = await fs.promises.readFile(join(source, ".codemodrc.json"));
   } catch (err) {
-    throw new Error(
-      "Could not find the .codemodrc.json file in the codemod directory. Please configure your codemod first.",
-    );
+    const { init } = await inquirer.prompt<{
+      init: boolean;
+    }>({
+      type: "confirm",
+      name: "init",
+      message:
+        "Could not find the .codemodrc.json file in the codemod directory. Would you like to initialize the codemod configuration now?",
+    });
+
+    if (!init) {
+      throw new Error(
+        "To publish your codemod, please configure it first by running `codemod init` in the codemod directory.",
+      );
+    }
+
+    // Attempting to find index file to change the questions slightly
+    let mainFilePath: string | undefined;
+
+    const isSourceAFile = await fs.promises
+      .lstat(source)
+      .then((pathStat) => pathStat.isFile());
+
+    if (isSourceAFile) {
+      // biome-ignore lint: If source is a file, we define source as a directory that this file is in
+      source = dirname(source);
+      mainFilePath = basename(source);
+    } else {
+      const { mainPath } = await inquirer.prompt<{
+        mainPath: string;
+      }>({
+        type: "input",
+        name: "mainPath",
+        message:
+          "If there is a main codemod file, please provide the relative path leading to it, e.g. `src/index.ts`.",
+        default: "empty",
+      });
+
+      if (mainPath !== "empty") {
+        mainFilePath = mainPath;
+      }
+    }
+
+    const resultPath = await handleInitCliCommand({
+      printer,
+      path: [source, mainFilePath ?? "index.ts"],
+    });
+
+    if (!mainFilePath) {
+      printer.printConsoleMessage(
+        "info",
+        "Codemod initialization has been completed, however no main file was provided. Consider adjusting the main file for the codemod to become meaningful first.",
+      );
+      return;
+    }
+
+    if (!resultPath) {
+      throw new Error(
+        "Unexpected error, codemod package initialization has been canceled.",
+      );
+    }
+
+    // biome-ignore lint: If user changed the directory where he wants the `codemod init` to put its results, we continue execution as if this was a source
+    source = resultPath;
+
+    try {
+      codemodRcBuf = await fs.promises.readFile(
+        join(resultPath, ".codemodrc.json"),
+      );
+    } catch (err) {
+      throw new Error(
+        "Unexpected error, codemodrc file could not be found after codemod package initialization has been completed.",
+      );
+    }
   }
 
+  formData.append(".codemodrc.json", codemodRcBuf);
+  const codemodRcData = codemodRcBuf.toString("utf-8");
   const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
   if (codemodRc.engine === "recipe") {

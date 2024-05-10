@@ -13,12 +13,12 @@ import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import { OpenAIStream } from "ai";
-import { type Job, Queue } from "bullmq";
+import { Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
   type RouteHandlerMethod,
 } from "fastify";
-import Redis, { type RedisOptions } from "ioredis";
+import Redis from "ioredis";
 import * as openAiEdge from "openai-edge";
 import { buildSafeChromaService } from "./chroma.js";
 import { ClaudeService } from "./claudeService.js";
@@ -237,15 +237,19 @@ const clerkClient = areClerkKeysSet(environment)
     })
   : null;
 
-const redis = new Redis({
-  host: String(environment.REDIS_HOST),
-  port: Number(environment.REDIS_PORT),
-  maxRetriesPerRequest: null,
-});
+const redis = environment.REDIS_HOST
+  ? new Redis({
+      host: String(environment.REDIS_HOST),
+      port: Number(environment.REDIS_PORT),
+      maxRetriesPerRequest: null,
+    })
+  : null;
 
-const queue = new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
-  connection: redis,
-});
+const queue = redis
+  ? new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
+      connection: redis,
+    })
+  : null;
 
 const wrapRequestHandlerMethod =
   <T>(handler: CustomHandler<T>): RouteHandlerMethod =>
@@ -819,6 +823,10 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
         throw new Error("This endpoint requires auth configuration.");
       }
 
+      if (!queue) {
+        throw new Error("Queue service is not running.");
+      }
+
       const { userId } = getAuth(request);
 
       if (!userId) {
@@ -849,6 +857,10 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/codemodRun/status/:jobId", async (request, reply) => {
     if (!auth) {
       throw new Error("This endpoint requires auth configuration.");
+    }
+
+    if (!redis) {
+      throw new Error("Redis service is not running.");
     }
 
     const { userId } = getAuth(request);
