@@ -1,32 +1,47 @@
 import type { Codemod } from "@codemod-com/runner";
 import { type ArgumentRecord, doubleQuotify } from "@codemod-com/utilities";
+import { safeParseArgument } from "@codemod-com/utilities/dist/schemata/argumentRecordSchema";
 
 export const buildSafeArgumentRecord = (
   codemod: Codemod,
-  argumentRecord: ArgumentRecord,
+  rawArgumentRecord: Record<string, unknown>,
 ): ArgumentRecord => {
   if (codemod.source === "standalone") {
     // no checks performed for local codemods
     // b/c no source of truth for the arguments
-    return argumentRecord;
+    return Object.entries(rawArgumentRecord).reduce<ArgumentRecord>(
+      (acc, [key, value]) => {
+        const maybeArgument = safeParseArgument(value);
+
+        if (maybeArgument.success) {
+          acc[key] = maybeArgument.output;
+        }
+
+        return acc;
+      },
+      {},
+    );
   }
 
   const safeArgumentRecord: ArgumentRecord = {};
 
   const missing: typeof codemod.arguments = [];
   codemod.arguments.forEach((descriptor) => {
-    const unsafeValue = argumentRecord[descriptor.name];
+    const maybeArgument = safeParseArgument(rawArgumentRecord[descriptor.name]);
 
     if (
+      !maybeArgument.success &&
       descriptor.required &&
-      unsafeValue === undefined &&
       descriptor.default === undefined
     ) {
       missing.push(descriptor);
     }
 
-    if (unsafeValue !== undefined && typeof unsafeValue === descriptor.kind) {
-      safeArgumentRecord[descriptor.name] = unsafeValue;
+    if (
+      maybeArgument.success &&
+      typeof maybeArgument.output === descriptor.kind
+    ) {
+      safeArgumentRecord[descriptor.name] = maybeArgument.output;
     } else if (descriptor.default !== undefined) {
       safeArgumentRecord[descriptor.name] = descriptor.default;
     }
