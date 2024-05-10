@@ -5,6 +5,9 @@ import getExecutionStatus, {
 import { useAuth } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
+// use global var, because we need to keep state even if this hook is rendered in multiple different components
+let listeningExecutionId: string | null = null;
+
 export const useExecutionStatus = (
   executionId: string | null,
 ): GetExecutionStatusResponse | null => {
@@ -13,6 +16,14 @@ export const useExecutionStatus = (
   const { getToken } = useAuth();
 
   useEffect(() => {
+    if (executionId !== null && listeningExecutionId === executionId) {
+      return;
+    }
+
+    listeningExecutionId = executionId;
+
+    let intervalId: number | null = null;
+
     const handler = async () => {
       if (executionId === null) {
         return;
@@ -24,7 +35,7 @@ export const useExecutionStatus = (
       if (token === null) {
         return;
       }
-      const intervalId = setInterval(async () => {
+      intervalId = window.setInterval(async () => {
         const executionStatus = await getExecutionStatus({
           executionId,
           token: getTestToken(),
@@ -32,21 +43,29 @@ export const useExecutionStatus = (
         console.log("STATUS: ", executionStatus);
 
         if (executionStatus === null) {
-          clearInterval(intervalId);
+          if (intervalId !== null) {
+            clearInterval(intervalId);
+          }
           return;
         }
 
         setExecutionStatus(executionStatus);
         if (
-          !executionStatus.success ||
-          executionStatus.result?.status === "done" ||
-          executionStatus.result?.status === "error"
+          (!executionStatus.success ||
+            executionStatus.result?.status === "done" ||
+            executionStatus.result?.status === "error") &&
+          intervalId !== null
         ) {
           clearInterval(intervalId);
         }
       }, 500);
     };
     handler();
+    return () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
+    };
   }, [executionId, getToken]);
 
   return executionStatus;
