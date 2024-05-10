@@ -2,11 +2,22 @@ import apiClient from "@/utils/apis/client";
 import type { AxiosError } from "axios";
 import { GET_EXECUTION_STATUS } from "./endpoints";
 
+type Result =
+  | {
+      status: "progress" | "error";
+      message: string;
+    }
+  | {
+      status: "executing codemod";
+      progress: { processed: number; total: number };
+    }
+  | {
+      status: "done";
+      link: string; // PR Link
+    };
+
 type GetExecutionStatusResponse = Readonly<{
-  // status: "progress" | "done" | "idle";
-  // statusMessage: string; // "waiting for execution to start" | "fetching repo" | "processing files: 100/1000"
-  // progressInfo: { processed: number; total: number } | null;
-  result: { status: string; message: string; link?: string } | null; // link to Github branch / PR created by the execution
+  result: Result | null;
   success: boolean;
 }>;
 
