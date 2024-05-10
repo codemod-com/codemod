@@ -236,6 +236,7 @@ export const executeMainThread = async () => {
             alias: "t",
             type: "string",
             description: "Path to init codemod in",
+            default: process.cwd(),
           })
           .option("no-prompt", {
             alias: "y",
@@ -247,6 +248,7 @@ export const executeMainThread = async () => {
           handleInitCliCommand({
             printer,
             noPrompt: args.noPrompt,
+            target: args.target,
           }),
         ),
     );
@@ -257,5 +259,4 @@ export const executeMainThread = async () => {
   }
 
   argvObject.parse();
-  // exit();
 };
