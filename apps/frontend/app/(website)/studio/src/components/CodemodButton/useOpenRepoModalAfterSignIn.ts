@@ -1,6 +1,6 @@
+import { useAuth } from "@/app/auth/useAuth";
 import { GH_REPO_LIST } from "@/utils/apis/endpoints";
 import { useAPI } from "@studio/hooks/useAPI";
-import { useAuth } from "@studio/hooks/useAuth";
 import { useModal } from "@studio/hooks/useModal";
 import { useUserSession } from "@studio/store/zustand/userSession";
 import type { GithubRepository } from "be-types";

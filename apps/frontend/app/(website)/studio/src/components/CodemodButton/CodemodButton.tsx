@@ -1,3 +1,4 @@
+import { useAuth } from "@/app/auth/useAuth";
 import { getTestToken } from "@/utils";
 import getGHBranches from "@/utils/apis/getGHBranches";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
@@ -5,7 +6,6 @@ import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useHandleCodemodRun } from "@studio/components/CodemodButton/useHandleCodemodRun";
 import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/useOpenRepoModalAfterSignIn";
 import { Button } from "@studio/components/ui/button";
-import { useAuth } from "@studio/hooks/useAuth";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import type { GithubRepository } from "be-types";

@@ -1,4 +1,4 @@
-import { useAuth } from "@studio/hooks/useAuth";
+import { useAuth } from "@/app/auth/useAuth";
 import type { PendingAction } from "@studio/store/zustand/userSession";
 import type { ToVoid } from "@studio/types/transformations";
 
