@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/automations/eslint-to-biome-migrate-rules/",
+      "destination": "/registry/biome-migrate-rules",
+      "permanent": false
+    }
+  ]
+}
