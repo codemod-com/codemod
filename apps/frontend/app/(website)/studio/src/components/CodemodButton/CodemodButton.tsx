@@ -10,6 +10,7 @@ import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
@@ -27,7 +28,7 @@ export const CodemodButton = () => {
   const [targetPathInput, setTargetPathInput] = useState<string>("");
   const [codemodNameInput, setCodemodNameInput] = useState<string>("Untitled");
 
-  const { codemodRunStatus, onCodemodRunCancel } = useCodemodExecution();
+  const { codemodRunStatus } = useCodemodExecution();
 
   const {
     showModalWithRepositories,
@@ -40,18 +41,17 @@ export const CodemodButton = () => {
     "openRepoModal",
   );
 
-  const onClick = codemodRunStatus?.result?.status
-    ? onCodemodRunCancel
-    : showRepoModalToSignedUser;
-
   const { text, hintText } = getButtonPropsByStatus(
     codemodRunStatus?.result?.status ?? null,
   );
 
-  const selectRepository = (name: GithubRepository["full_name"]) =>
+  const selectRepository = (name: GithubRepository["full_name"]) => {
+    setBranchesToShow([]);
     setSelectedRepository(
       repositoriesToShow.find((repo) => repo.full_name === name),
     );
+  };
+
   const selectBranch = (branch: string) =>
     setSelectedBranch(branchesToShow.find((name) => name === branch));
 
@@ -90,6 +90,19 @@ export const CodemodButton = () => {
     getBranches();
   }, [getToken, selectedRepository]);
 
+  useEffect(() => {
+    if (codemodRunStatus?.result?.status === "error") {
+      console.log(
+        codemodRunStatus.result.status,
+        codemodRunStatus.result.message,
+      );
+      toast.error(codemodRunStatus.result.message, {
+        position: "top-center",
+        duration: 12000,
+      });
+    }
+  }, [codemodRunStatus?.result]);
+
   return (
     <>
       <RepositoryModal
@@ -111,7 +124,7 @@ export const CodemodButton = () => {
         <ProgressBar codemodRunStatus={codemodRunStatus} />
       )}
       <Button
-        onClick={onClick}
+        onClick={showRepoModalToSignedUser}
         size="xs"
         variant="outline"
         className="flex gap-1"

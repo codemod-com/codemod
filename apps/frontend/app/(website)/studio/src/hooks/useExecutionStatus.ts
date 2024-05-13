@@ -28,7 +28,6 @@ export const useExecutionStatus = (
       if (executionId === null) {
         return;
       }
-      console.log("executionId: ", executionId);
 
       const token = await getToken();
 
@@ -40,7 +39,7 @@ export const useExecutionStatus = (
           executionId,
           token: getTestToken(),
         });
-        console.log("STATUS: ", executionStatus);
+        console.log("STATUS: ", executionStatus?.result?.status);
 
         if (executionStatus === null) {
           if (intervalId !== null) {

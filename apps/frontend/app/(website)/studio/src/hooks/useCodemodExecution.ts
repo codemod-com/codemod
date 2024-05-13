@@ -20,7 +20,6 @@ export const useCodemodExecution = () => {
           request,
         )
       ).data;
-      console.log("HEY! ", codemodRunId, success);
 
       if (!success) {
         return;
@@ -29,7 +28,6 @@ export const useCodemodExecution = () => {
       setCodemodExecutionId(codemodRunId);
     } catch (e) {
       console.error(e);
-      console.log("HEY!", e);
     }
   };
 
