@@ -17,7 +17,7 @@ import type { Message } from "ai";
 import { useChat } from "ai/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { flushSync } from "react-dom";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { useCFSStore } from "../../store/zustand/CFS";
 import { useModStore } from "../../store/zustand/mod";
 
