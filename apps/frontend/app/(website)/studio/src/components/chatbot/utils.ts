@@ -1,4 +1,4 @@
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 const errorResponses = {
   400: "The request you made could not be completed.",
