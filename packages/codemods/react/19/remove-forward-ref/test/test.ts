@@ -263,6 +263,35 @@ describe("react/remove-forward-ref", () => {
     );
   });
 
+  it("Typescript: reuses forwardRef typeArguments when type literals are used", () => {
+    const INPUT = `
+			import { forwardRef } from 'react';
+			type Props = { a: 1 };
+			
+			const MyInput = forwardRef<RefValueType, { a: string }>((props, ref) => {
+					return null;
+			});
+		`;
+
+    const OUTPUT = `
+			type Props = { a: 1 };
+			const MyInput = ({ref, ...props}: { a: string } & { ref: React.RefObject<RefValueType>; }) => {
+				return null;
+			};
+		`;
+
+    const fileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    assert.deepEqual(
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
+    );
+  });
+
   it("Typescript: reuses wrapped function type arguments", () => {
     const INPUT = `
 			import { forwardRef } from 'react';
