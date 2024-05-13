@@ -6,19 +6,19 @@ import type {
   FunctionExpression,
   Identifier,
   JSCodeshift,
+  TSTypeLiteral,
   TSTypeReference,
-  Transform,
 } from "jscodeshift";
 
 // Props & { ref: React.RefObject<Ref>}
 const buildPropsAndRefIntersectionTypeAnnotation = (
   j: JSCodeshift,
-  propType: TSTypeReference,
-  refType: TSTypeReference,
+  propType: TSTypeReference | TSTypeLiteral | null,
+  refType: TSTypeReference | TSTypeLiteral | null,
 ) =>
   j.tsTypeAnnotation(
     j.tsIntersectionType([
-      propType,
+      propType === null ? j.tsUnknownKeyword() : propType,
       j.tsTypeLiteral([
         j.tsPropertySignature.from({
           key: j.identifier("ref"),
@@ -28,7 +28,9 @@ const buildPropsAndRefIntersectionTypeAnnotation = (
                 j.identifier("React"),
                 j.identifier("RefObject"),
               ),
-              typeParameters: j.tsTypeParameterInstantiation([refType]),
+              typeParameters: j.tsTypeParameterInstantiation([
+                refType === null ? j.tsUnknownKeyword() : refType,
+              ]),
             }),
           ),
         }),
@@ -54,7 +56,6 @@ const buildRefAndPropsObjectPattern = (
 // React.ForwardedRef<HTMLButtonElement> => HTMLButtonElement
 const getRefTypeFromRefArg = (j: JSCodeshift, refArg: Identifier) => {
   const typeReference = refArg.typeAnnotation?.typeAnnotation;
-
   if (
     !j.TSTypeReference.check(typeReference) ||
     !j.TSQualifiedName.check(typeReference.typeName)
@@ -180,7 +181,6 @@ export default function transform(file: FileInfo, api: API) {
       const refArgName = refArg.name;
 
       const propsArgTypeReference = propsArg.typeAnnotation?.typeAnnotation;
-
       // remove refArg
       renderFunction.params.splice(1, 1);
 
@@ -213,8 +213,8 @@ export default function transform(file: FileInfo, api: API) {
        */
 
       if (
-        j.TSTypeReference.check(propsArgTypeReference) &&
-        j.TSTypeReference.check(refArgTypeReference) &&
+        (j.TSTypeReference.check(propsArgTypeReference) ||
+          j.TSTypeLiteral.check(propsArgTypeReference)) &&
         renderFunction.params?.[0] &&
         "typeAnnotation" in renderFunction.params[0]
       ) {

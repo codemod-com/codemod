@@ -293,4 +293,35 @@ describe("react/remove-forward-ref", () => {
       OUTPUT.replace(/\s/gm, ""),
     );
   });
+
+  it("Typescript: props use type literal", () => {
+    const INPUT = `
+			import { forwardRef } from 'react';
+			const MyComponent = forwardRef(function Component(
+				myProps: { a: 1 },
+				myRef
+			  ) {
+				return null;
+			  });
+		`;
+
+    const OUTPUT = `
+			const MyComponent = function Component(
+				{ref: myRef, ...myProps}: { a: 1 } & { ref: React.RefObject<unknown>; }
+			) {
+				return null;
+			};
+		`;
+
+    const fileInfo = {
+      path: "index.js",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    assert.deepEqual(
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
+    );
+  });
 });
