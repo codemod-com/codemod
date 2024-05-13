@@ -25,10 +25,12 @@ const LICENSE_CHOICES: License[] = ["MIT", "Apache 2.0"];
 
 export const handleInitCliCommand = async (options: {
   printer: PrinterBlueprint;
+  target: string;
   noPrompt?: boolean;
-  path?: [string, string];
+  // assumed to be relative to target
+  mainFilePath?: string;
 }) => {
-  const { printer, noPrompt = false, path } = options;
+  const { printer, noPrompt = false, target, mainFilePath } = options;
 
   // TODO:
   // const tags = await getTagsList();
@@ -47,9 +49,11 @@ export const handleInitCliCommand = async (options: {
     path?: string;
   } | null = null;
 
-  if (path) {
+  // We provide main file path when user attempts to publish a non-compatible codemod package.
+  // This is the only way we get inside of this conditional
+  if (mainFilePath) {
     const defaultedAnswers = {
-      typescript: extname(path[1]) === ".ts",
+      typescript: extname(mainFilePath) === ".ts",
       git: false,
       npm: false,
     };
@@ -84,7 +88,7 @@ export const handleInitCliCommand = async (options: {
         type: "input",
         name: "path",
         message: "Confirm path where you want to initiate a package",
-        default: path[0],
+        default: target,
       },
       // TODO:
       // {
@@ -171,12 +175,26 @@ export const handleInitCliCommand = async (options: {
         // tags
       };
 
-  const files = getCodemodProjectFiles({
-    ...downloadInput,
-    codemodBody: path
-      ? await readFile(resolve(path[0], path[1]), "utf-8")
-      : undefined,
-  });
+  if (mainFilePath) {
+    try {
+      downloadInput.codemodBody = await readFile(
+        resolve(target, mainFilePath),
+        "utf-8",
+      );
+    } catch (err) {
+      printer.printConsoleMessage(
+        "error",
+        chalk(
+          "Failed to read provided main file at",
+          `${chalk.bold(mainFilePath)}:`,
+          `${(err as Error).message}.`,
+          "Aborting codemod creation...",
+        ),
+      );
+    }
+  }
+
+  const files = getCodemodProjectFiles(downloadInput);
 
   const codemodBaseDir =
     answers?.path ?? join(process.cwd(), downloadInput.name);
@@ -245,7 +263,7 @@ export const handleInitCliCommand = async (options: {
     }
   }
 
-  if (path) {
+  if (mainFilePath) {
     return codemodBaseDir;
   }
 

@@ -3,7 +3,7 @@ import * as queryStore from "@sanity/react-loader";
 import { draftMode } from "next/headers";
 import type { QueryParams } from "sanity";
 
-import config from "@/config";
+import { env } from "@/env";
 import type {
   BlogIndexPayload,
   NotFoundPayload,
@@ -17,7 +17,6 @@ import type {
 } from "@/types/object.types";
 import {
   AUTOMATION_PAGE_QUERY,
-  AUTOMATION_STORIES,
   NOT_FOUND_DOC_QUERY,
   ROUTE_QUERY,
   buildBlogIndexQuery,
@@ -28,7 +27,7 @@ let serverClientSet = false;
 
 function initClient() {
   const serverClient = client.withConfig({
-    token: config.sanity.token,
+    token: env.SANITY_API_TOKEN,
     stega: {
       enabled: draftMode().isEnabled,
     },

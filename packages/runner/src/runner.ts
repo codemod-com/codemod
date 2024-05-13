@@ -4,7 +4,11 @@ import {
   type FormattedFileCommand,
   modifyFileSystemUponCommand,
 } from "./fileCommands.js";
-import { type PrinterMessageCallback, runCodemod } from "./runCodemod.js";
+import { runCodemod } from "./runCodemod.js";
+import type {
+  CodemodExecutionError,
+  PrinterMessageCallback,
+} from "./schemata/callbacks.js";
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
@@ -35,6 +39,8 @@ export class Runner {
     handleCommand?: (command: FormattedFileCommand) => Promise<void> | void,
     onPrinterMessage?: PrinterMessageCallback,
   ) {
+    const executionErrors: CodemodExecutionError[] = [];
+
     for (const codemod of this._codemods) {
       try {
         let surfaceAgnosticCaseService: SurfaceAgnosticCaseService | null =
@@ -69,6 +75,7 @@ export class Runner {
           },
           onPrinterMessage ?? (() => {}),
           codemod.safeArgumentRecord,
+          (error) => executionErrors.push(error),
         );
 
         if (surfaceAgnosticCaseService) {
@@ -84,6 +91,8 @@ export class Runner {
         await onFailure?.(error);
       }
     }
+
+    return executionErrors;
   }
 
   protected async _handleCommand(command: FormattedFileCommand): Promise<void> {

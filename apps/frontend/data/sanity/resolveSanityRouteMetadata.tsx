@@ -5,8 +5,9 @@ import {
   getFilterIcon,
   getFilterSection,
 } from "@/components/templates/Registry/helpers";
-import config from "@/config";
+import publicConfig from "@/config";
 import { REGISTRY_FILTER_TYPES } from "@/constants";
+import { env } from "@/env";
 import {
   type BasicPageDocumentPayload,
   type BlogArticlePayload,
@@ -89,7 +90,7 @@ export async function resolveSanityRouteMetadata(
   const seo = data?.seo;
 
   if (!seo) {
-    return { title: config.siteName };
+    return { title: publicConfig.siteName };
   }
 
   const parent = await parentPromise;
@@ -98,7 +99,7 @@ export async function resolveSanityRouteMetadata(
     seo?.title ||
     capitalize((data as CodemodPagePayload)?.automationName) ||
     data.title ||
-    config.siteName;
+    publicConfig.siteName;
 
   const canonicalUrl = seo?.canonicalUrl || pathToAbsUrl(data.pathname);
 
@@ -173,7 +174,7 @@ export async function resolveSanityRouteMetadata(
     : // Then default to generated image
       ogQueryString
       ? {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/og?${ogQueryString}`,
+          url: `${env.NEXT_PUBLIC_BASE_URL}/api/og?${ogQueryString}`,
           width: 1200,
         }
       : parent.openGraph?.images;

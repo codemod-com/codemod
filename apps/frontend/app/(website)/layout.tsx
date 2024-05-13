@@ -4,7 +4,7 @@ import { draftMode } from "next/headers";
 
 import GlobalLayout from "@/components/global/GlobalLayout";
 import GlobalLayoutPreview from "@/components/global/GlobalLayoutPreview";
-import config from "@/config";
+import publicConfig from "@/config";
 import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
@@ -17,9 +17,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const { data } = await loadGlobalData(GLOBAL_QUERY);
 
   return {
-    title: config.siteName,
+    title: publicConfig.siteName,
     openGraph: {
-      title: config.siteName,
+      title: publicConfig.siteName,
       images: !data?.fallbackOGImage
         ? undefined
         : getOgImages(data.fallbackOGImage),

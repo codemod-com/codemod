@@ -15,6 +15,10 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
       type: "boolean",
       description: "Disable telemetry",
     })
+    .option("clientIdentifier", {
+      type: "string",
+      description: "Telemetry client ID",
+    })
     .option("json", {
       alias: "j",
       type: "boolean",

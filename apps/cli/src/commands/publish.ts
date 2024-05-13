@@ -79,7 +79,8 @@ export const handlePublishCliCommand = async (
 
     const resultPath = await handleInitCliCommand({
       printer,
-      path: [source, mainFilePath ?? "index.ts"],
+      target: source,
+      mainFilePath: mainFilePath ?? "index.ts",
     });
 
     if (!mainFilePath) {
