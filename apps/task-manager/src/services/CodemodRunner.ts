@@ -61,7 +61,7 @@ export class CodemodRunnerService {
     const progress = this.__extractStdOutProgress(message);
 
     await redis.set({
-      status: "progress",
+      status: "executing codemod",
       progress,
     });
   };
@@ -87,7 +87,7 @@ export class CodemodRunnerService {
         console.log("[status]: codemod executed");
 
         await redis.set({
-          status: "progress",
+          status: "executing codemod",
           message: "codemod executed",
         });
 
