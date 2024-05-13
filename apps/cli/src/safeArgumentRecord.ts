@@ -1,6 +1,10 @@
 import type { Codemod } from "@codemod-com/runner";
-import { type ArgumentRecord, doubleQuotify } from "@codemod-com/utilities";
-import { safeParseArgument } from "@codemod-com/utilities/dist/schemata/argumentRecordSchema";
+import {
+  type Argument,
+  type ArgumentRecord,
+  doubleQuotify,
+  safeParseArgument,
+} from "@codemod-com/utilities";
 
 export const buildSafeArgumentRecord = (
   codemod: Codemod,
@@ -25,34 +29,83 @@ export const buildSafeArgumentRecord = (
 
   const safeArgumentRecord: ArgumentRecord = {};
 
-  const missing: typeof codemod.arguments = [];
-  codemod.arguments.forEach((descriptor) => {
-    const maybeArgument = safeParseArgument(rawArgumentRecord[descriptor.name]);
+  const invalid: ((typeof codemod.arguments)[number] & { err: string })[] = [];
+
+  const validateArg = (
+    descriptor: (typeof codemod.arguments)[number],
+    arg: unknown,
+  ) => {
+    const maybeArgument = safeParseArgument(arg);
 
     if (
       !maybeArgument.success &&
       descriptor.required &&
       descriptor.default === undefined
     ) {
-      missing.push(descriptor);
+      invalid.push({ ...descriptor, err: "required but missing" });
+      return false;
+    }
+
+    if (!maybeArgument.success) {
+      return false;
+    }
+
+    if (descriptor.kind === "enum") {
+      if (!descriptor.options.includes(maybeArgument.output)) {
+        invalid.push({
+          ...descriptor,
+          err: `incorrect value. Valid options: ${descriptor.options.join(
+            ",",
+          )}`,
+        });
+      } else {
+        safeArgumentRecord[descriptor.name] = maybeArgument.output;
+      }
+
+      return true;
     }
 
     if (
-      maybeArgument.success &&
+      // biome-ignore lint: incorrect warning
       typeof maybeArgument.output === descriptor.kind
     ) {
       safeArgumentRecord[descriptor.name] = maybeArgument.output;
     } else if (descriptor.default !== undefined) {
       safeArgumentRecord[descriptor.name] = descriptor.default;
     }
+
+    return true;
+  };
+
+  codemod.arguments.forEach((descriptor) => {
+    if (Array.isArray(descriptor.kind)) {
+      let isValid = false;
+
+      for (const kind of descriptor.kind) {
+        const valid = validateArg(
+          { ...descriptor, kind } as any,
+          rawArgumentRecord[descriptor.name],
+        );
+
+        if (valid) {
+          isValid = true;
+          break;
+        }
+      }
+
+      return;
+    }
+
+    return validateArg(descriptor, rawArgumentRecord[descriptor.name]);
   });
 
-  if (missing.length > 0) {
-    const missingString = `- ${missing
-      .map(({ kind, name }) => `${doubleQuotify(name)} (${kind})`)
+  if (invalid.length > 0) {
+    const missingString = `- ${invalid
+      .map(({ kind, name, err }) => `${doubleQuotify(name)} (${kind}) - ${err}`)
       .join("\n- ")}`;
+
     throw new Error(
-      `Missing required arguments:\n\n${missingString}\n\nPlease provide them as "--<arg-name> <value>".`,
+      `Invalid arguments:\n${missingString}\n\nPlease provide missing values as "--<arg-name> <value>" or make sure the provided values are valid.`,
     );
   }
 

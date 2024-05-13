@@ -19,6 +19,8 @@ export const argumentSchema = union([
 
 export const argumentRecordSchema = record(string(), argumentSchema);
 
+export type Argument = Output<typeof argumentSchema>;
+
 export type ArgumentRecord = Output<typeof argumentRecordSchema>;
 
 export const safeParseArgument = (input: unknown) =>
