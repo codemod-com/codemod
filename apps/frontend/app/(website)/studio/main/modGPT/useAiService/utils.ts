@@ -23,7 +23,6 @@ export const useInitialMss = () => {
       return setInitialMessages([]);
     }
   }, []);
-  console.log({ initialMessages });
   return initialMessages;
 };
 
@@ -38,7 +37,6 @@ export const useSaveMssgsToLocalStorage = ({
 
     const frozenMessages = messages.map((message) => freezeMessage(message));
 
-    console.log({ frozenMessages });
     try {
       localStorage.setItem("frozenMessages", JSON.stringify(frozenMessages));
     } catch (error) {

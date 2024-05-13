@@ -23,7 +23,7 @@ export const useCodemodAI = ({
     websocket.onmessage = async (event) => {
       const data = JSON.parse(event.data) as MessageToWs;
       if (data.codemod) {
-        setCanAddMessages(true); // Enable button when codemod is received
+        setCanAddMessages(true);
         setWsMessage({
           codemod: data.codemod,
           content: `\`\`\`ts ${data.codemod}\`\`\``,
@@ -40,9 +40,9 @@ export const useCodemodAI = ({
     websocket.onerror = (error) => console.log("WebSocket Error:", error);
     setWs(websocket);
 
-    // return () => {
-    // 	websocket.close();
-    // };
+    return () => {
+      websocket.close();
+    };
   }, []);
 
   const startIterativeCodemodGeneration = () => {
@@ -53,7 +53,7 @@ export const useCodemodAI = ({
         after,
       });
       ws.send(messageToSend);
-      setCanAddMessages(false); // Disable button after sending message
+      setCanAddMessages(false);
     }
   };
 
