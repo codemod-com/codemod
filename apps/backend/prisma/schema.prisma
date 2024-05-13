@@ -19,28 +19,29 @@ datasource db {
 }
 
 model Codemod {
-  id               Int              @id @default(autoincrement())
-  slug             String           @unique @db.VarChar(255)
-  shortDescription String?          @db.Text
-  tags             String[]         @default([])
-  engine           String?          @db.VarChar(255)
+  id               Int                @id @default(autoincrement())
+  slug             String             @unique @db.VarChar(255)
+  shortDescription String?            @db.Text
+  tags             String[]           @default([])
+  engine           String?            @db.VarChar(255)
   /// [ApplicabilityCriteria]
   applicability    Json?
   /// [Arguments]
   arguments        Json?
-  name             String           @unique @db.VarChar(255)
-  featured         Boolean          @default(false)
-  verified         Boolean          @default(false)
+  name             String             @unique @db.VarChar(255)
+  featured         Boolean            @default(false)
+  verified         Boolean            @default(false)
   private          Boolean
-  author           String           @db.VarChar(255)
+  author           String             @db.VarChar(255)
   versions         CodemodVersion[]
-  amountOfUses     Int              @default(0)
-  totalTimeSaved   Int              @default(0)
-  openedPrs        Int              @default(0)
+  amountOfUses     Int                @default(0)
+  totalTimeSaved   Int                @default(0)
+  openedPrs        Int                @default(0)
   // Synced from Sanity
-  labels           String[]         @default([])
-  createdAt        DateTime         @default(now())
-  updatedAt        DateTime         @default(now()) @updatedAt
+  labels           String[]           @default([])
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @default(now()) @updatedAt
+  CodemodTelemetry CodemodTelemetry[]
 }
 
 model CodemodVersion {
@@ -113,4 +114,13 @@ model CodeDiff {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
+}
+
+model CodemodTelemetry {
+  id        Int      @id @default(autoincrement())
+  status    String   @unique @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  codemodId Int
+  codemod   Codemod  @relation(fields: [codemodId], references: [id], onDelete: Cascade)
 }

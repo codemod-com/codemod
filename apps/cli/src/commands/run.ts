@@ -21,6 +21,7 @@ import {
 import { AxiosError } from "axios";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
+import { createCodemodTelemetryEvent } from "../apis.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import type { buildRunOptions } from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
@@ -184,8 +185,10 @@ export const handleRunCliCommand = async (
         executionId: runSettings.caseHashDigest.toString("base64url"),
         fileCount: filePaths.length,
       });
+
+      await createCodemodTelemetryEvent({ codemodName, status: "success" });
     },
-    (error) => {
+    async (error) => {
       if (!(error instanceof Error)) {
         return;
       }

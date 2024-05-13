@@ -154,3 +154,22 @@ export const createCodeDiff = async (body: {
 
   return res.data;
 };
+
+type CreateCodemodTelemetryEvent = {
+  codemodName: string;
+  status: string;
+};
+export const createCodemodTelemetryEvent = async (body: {
+  codemodName: string;
+  status: string;
+}): Promise<CreateCodeDiffResponse> => {
+  const res = await Axios.post<CreateCodeDiffResponse>(
+    "https://backend.codemod.com/telemetry/codemod",
+    {
+      codemodName: body.codemodName,
+      status: body.status,
+    },
+  );
+
+  return res.data;
+};

@@ -42,6 +42,7 @@ import { ReplicateService } from "./replicateService.js";
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,
+  parseCodemodTelemetryBody,
   parseCreateIssueBody,
   parseCreateIssueParams,
   parseDiffCreationBody,
@@ -583,6 +584,27 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     return result;
   });
 
+  instance.post("/telemetry/codemod", async (request, reply) => {
+    const { codemodName, status } = parseCodemodTelemetryBody(request.body);
+
+    const codemod = await prisma.codemod.findFirst({
+      where: { name: codemodName },
+    });
+
+    if (!codemod) {
+      return reply
+        .code(404)
+        .send({ error: "Codemod not found!", success: false });
+    }
+
+    await prisma.codemodTelemetry.create({
+      data: {
+        codemodId: codemod.id,
+        status,
+      },
+    });
+  });
+
   done();
 };
 
@@ -884,6 +906,37 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
           })
         : null,
     };
+  });
+
+  instance.post("/telemetry/codemod", async (request, reply) => {
+    if (!auth) {
+      throw new Error("This endpoint requires auth configuration.");
+    }
+
+    const { userId } = getAuth(request);
+
+    if (!userId) {
+      return reply.code(401).send();
+    }
+
+    const { codemodName, status } = parseCodemodTelemetryBody(request.body);
+
+    const codemod = await prisma.codemod.findFirst({
+      where: { name: codemodName },
+    });
+
+    if (!codemod) {
+      return reply
+        .code(404)
+        .send({ error: "Codemod not found!", success: false });
+    }
+
+    await prisma.codemodTelemetry.create({
+      data: {
+        codemodId: codemod.id,
+        status,
+      },
+    });
   });
 
   done();

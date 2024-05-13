@@ -42,6 +42,7 @@ type LongCodemodIndoDetails = {
   frameworks: string[];
   frameworkVersion: string | null | undefined;
   useCaseCategory: string | null | undefined;
+  totalRuns: number;
 };
 
 export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
@@ -177,8 +178,16 @@ export class CodemodService {
         const frameworks = getFrameworks(frameworkTags, tags);
         const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
+        const totalRuns = await this.prisma.codemodTelemetry.count({
+          where: {
+            codemodId: codemod.id,
+            status: "success",
+          },
+        });
+
         return {
           ...codemod,
+          totalRuns,
           frameworks,
           frameworkVersion,
           useCaseCategory,
@@ -274,8 +283,16 @@ export class CodemodService {
     const frameworks = getFrameworks(frameworkTags, tags);
     const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
+    const totalRuns = await this.prisma.codemodTelemetry.count({
+      where: {
+        codemodId: codemod.id,
+        status: "success",
+      },
+    });
+
     return {
       ...codemod,
+      totalRuns,
       frameworks,
       frameworkVersion,
       useCaseCategory,

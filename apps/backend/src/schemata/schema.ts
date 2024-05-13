@@ -168,3 +168,18 @@ export const parseCodemodRunBody = (input: unknown) =>
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);
+
+export const codemodTelemetry = object({
+  codemodName: string(),
+  status: string(),
+});
+
+export const parseCodemodTelemetryBody = (input: unknown) =>
+  parse(codemodTelemetry, input);
+
+export const getCodemodTelemetrySchema = object({
+  codemodName: string(),
+});
+
+export const parseGetCodemodTelemetrySchemaParams = (input: unknown) =>
+  parse(getCodemodTelemetrySchema, input);
