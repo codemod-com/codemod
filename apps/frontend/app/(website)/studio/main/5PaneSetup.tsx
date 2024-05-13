@@ -31,10 +31,9 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { openIDELink } from "@studio/utils/openIDELink";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
-// import toast from "react-hot-toast";
 import { PanelGroup } from "react-resizable-panels";
 import Codemod from "./Codemod";
-import Header from "./Header";
+import { Header } from "./Header/Header";
 import Layout from "./Layout";
 import {
   BoundResizePanel,
@@ -53,39 +52,11 @@ const Main = () => {
     useSnippetsPanels({ panelRefs });
 
   const { engine, setEngine } = useSnippetStore();
-  const { toggleTheme, isDark } = useTheme();
-  // const executionId = "id"; // TODO: replace it with real id
-  // const executionStatus = useExecutionStatus(executionId) ?? {
-  // 	// TODO: Remove dummy data
-  // 	status: "progress",
-  // 	statusMessage: "processed 100 files",
-  // 	result: null,
-  // 	progressInfo: { processed: 100, total: 300 },
-  // };
+  const { isDark } = useTheme();
 
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
-
-  // useEffect(() => {
-  // 	if (executionStatus === null) {
-  // 		return;
-  // 	}
-  // 	const { status, statusMessage, result } = executionStatus;
-  // 	if (status === "done") {
-  // 		toast.success(
-  // 			result === null
-  // 				? statusMessage
-  // 				: `${statusMessage}\nGo to ${result.link} to see the results.`,
-  // 			{ duration: 6000 },
-  // 		);
-  // 	}
-  // 	if (status === "progress") {
-  // 		toast(statusMessage, {
-  // 			icon: "🚧",
-  // 		});
-  // 	}
-  // }, [executionStatus]);
 
   const snippetStore = useSnippetStore();
 

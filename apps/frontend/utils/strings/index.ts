@@ -70,3 +70,6 @@ export function insertMergeTags(
     return mergeTags[key.trim()] || "";
   });
 }
+
+export const FEATURE_FLAG_QUERY_KEY = "ff";
+export const CODEMOD_RUN_FEATURE_FLAG = "codemod-run";

@@ -1,19 +1,31 @@
-import { useAuth } from "@clerk/clerk-react";
+import { getTestToken } from "@/utils";
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
-} from "@studio/api/getExecutionStatus";
+} from "@/utils/apis/getExecutionStatus";
+import { useAuth } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 
+// use global var, because we need to keep state even if this hook is rendered in multiple different components
+let listeningExecutionId: string | null = null;
+
 export const useExecutionStatus = (
-  executionId: string,
+  executionId: string | null,
 ): GetExecutionStatusResponse | null => {
   const [executionStatus, setExecutionStatus] =
     useState<GetExecutionStatusResponse | null>(null);
   const { getToken } = useAuth();
 
   useEffect(() => {
+    if (executionId !== null && listeningExecutionId === executionId) {
+      return;
+    }
+
+    listeningExecutionId = executionId;
+
+    let intervalId: number | null = null;
+
     const handler = async () => {
-      if (!executionId) {
+      if (executionId === null) {
         return;
       }
 
@@ -22,19 +34,37 @@ export const useExecutionStatus = (
       if (token === null) {
         return;
       }
+      intervalId = window.setInterval(async () => {
+        const executionStatus = await getExecutionStatus({
+          executionId,
+          token: getTestToken(),
+        });
+        console.log("STATUS: ", executionStatus?.result?.status);
 
-      const executionStatusOrError = await getExecutionStatus({
-        executionId,
-        token,
-      });
+        if (executionStatus === null) {
+          if (intervalId !== null) {
+            clearInterval(intervalId);
+          }
+          return;
+        }
 
-      if (executionStatusOrError.isLeft()) {
-        console.error(executionStatusOrError.getLeft());
-      } else {
-        setExecutionStatus(executionStatusOrError.get());
-      }
+        setExecutionStatus(executionStatus);
+        if (
+          (!executionStatus.success ||
+            executionStatus.result?.status === "done" ||
+            executionStatus.result?.status === "error") &&
+          intervalId !== null
+        ) {
+          clearInterval(intervalId);
+        }
+      }, 500);
     };
     handler();
+    return () => {
+      if (intervalId !== null) {
+        clearInterval(intervalId);
+      }
+    };
   }, [executionId, getToken]);
 
   return executionStatus;
