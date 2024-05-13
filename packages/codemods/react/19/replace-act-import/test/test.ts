@@ -172,4 +172,29 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
       );
     });
   });
+
+  it("should handle wildcard re-export from test-utils", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/re-export.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/re-export.output.js"),
+      "utf-8",
+    );
+
+    const fileInfo: FileInfo = {
+      path: "index.ts",
+      source: INPUT,
+    };
+
+    const actualOutput = transform(fileInfo, buildApi("js"), {
+      quote: "single",
+    });
+
+    assert.deepEqual(
+      actualOutput?.replace(/\W/gm, ""),
+      OUTPUT.replace(/\W/gm, ""),
+    );
+  });
 });
