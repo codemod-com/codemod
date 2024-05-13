@@ -36,6 +36,36 @@ describe("react/19/use-context-hook: useContext -> use", () => {
       );
     });
 
+    it("should replace useContext with use: mixed import", async () => {
+      const input = `
+    	import React, { useContext } from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		const theme = useContext(ThemeContext);
+		`;
+
+      const output = `
+    	import React, { use } from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		const theme = use(ThemeContext);
+		`;
+
+      const fileInfo: FileInfo = {
+        path: "index.ts",
+        source: input,
+      };
+
+      const actualOutput = transform(fileInfo, buildApi("js"), {
+        quote: "single",
+      });
+
+      assert.deepEqual(
+        actualOutput?.replace(/\W/gm, ""),
+        output.replace(/\W/gm, ""),
+      );
+    });
+
     it("should replace React.useContext with use", async () => {
       const input = `
     	import React from "react";
