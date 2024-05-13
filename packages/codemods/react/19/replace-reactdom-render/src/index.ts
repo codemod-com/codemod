@@ -79,7 +79,6 @@ export default function transform(
 
       isDirty = true;
       const body = root.get().node.program.body;
-      body.push(createRoot, render);
 
       const importStatement = j.importDeclaration(
         [j.importSpecifier(j.identifier("createRoot"))],
@@ -87,7 +86,8 @@ export default function transform(
       );
       body.unshift(importStatement);
 
-      j(path).remove();
+      path.parent.replace(createRoot);
+      path.parent.insertAfter(render);
     });
 
   if (isDirty) {
