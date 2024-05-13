@@ -89,7 +89,21 @@ export const argumentsSchema = array(
         kind: literal("enum"),
         options: array(argumentSchema),
         required: optional(boolean(), false),
-        default: optional(boolean()),
+        default: optional(argumentSchema),
+      }),
+      object({
+        name: string(),
+        kind: array(
+          union([
+            literal("string"),
+            literal("number"),
+            literal("boolean"),
+            literal("enum"),
+          ]),
+        ),
+        options: array(argumentSchema),
+        required: optional(boolean(), false),
+        default: optional(argumentSchema),
       }),
     ],
     "Invalid arguments definition.",

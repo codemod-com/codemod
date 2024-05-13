@@ -10,5 +10,19 @@
   },
   "applicability": {
     "from": [["react", "<=", "18"]]
-  }
+  },
+  "arguments": [
+    {
+      "name": "one",
+      "kind": "enum",
+      "options": ["a", "b", 1],
+      "required": true
+    },
+    {
+      "name": "two",
+      "kind": ["enum", "boolean"],
+      "options": ["a", "c"],
+      "required": true
+    }
+  ]
 }
