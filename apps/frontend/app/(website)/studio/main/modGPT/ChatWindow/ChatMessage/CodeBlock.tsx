@@ -10,11 +10,11 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
+import { useModStore } from "@studio/store/zustand/mod";
+import { prettify } from "@studio/utils/prettify";
 import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { useModStore } from "../../store/zustand/mod";
-import { prettify } from "../../utils/prettify";
 
 interface Props {
   language: string;
@@ -26,17 +26,18 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
   const { setContent } = useModStore();
   const { isDark } = useTheme();
 
-  const onCopyToClipboard = () => {
-    if (isCopied) {
-      return;
+  const handleCopyToClipboard = () => {
+    if (!isCopied) {
+      copy(value);
     }
-    copy(value);
   };
 
-  const onCopyToCodemodPanel = () => {
-    const prettified = prettify(value);
-    setContent(prettified);
+  const handleCopyToCodemodPanel = () => {
+    setContent(prettify(value));
   };
+
+  const buttonClass =
+    "text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0";
 
   return (
     <div
@@ -47,9 +48,7 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
       <div
         className={cn(
           "flex w-full items-center justify-between rounded-lg border-b bg-background px-6 py-2 pr-4",
-          {
-            "text-zinc-100": isDark,
-          },
+          { "text-zinc-100": isDark },
         )}
       >
         <span className="text-xs text-primary-light dark:text-primary-dark lowercase">
@@ -59,20 +58,19 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           <Button
             variant="ghost"
             size="icon"
-            className="text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
-            onClick={onCopyToClipboard}
+            className={buttonClass}
+            onClick={handleCopyToClipboard}
           >
             {isCopied ? <CheckIcon /> : <CopyIcon />}
             <span className="sr-only">Copy to clipboard</span>
           </Button>
-
           <Button
             variant="ghost"
             size="icon"
-            className="text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0"
-            onClick={onCopyToCodemodPanel}
+            className={buttonClass}
+            onClick={handleCopyToCodemodPanel}
           >
-            {<ArrowArcRightIcon />}
+            <ArrowArcRightIcon />
             <span className="sr-only">Copy to Codemod panel</span>
           </Button>
         </div>
@@ -90,9 +88,7 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
         }}
         codeTagProps={{
           className: "sm:text-xs",
-          style: {
-            fontFamily: "var(--font-mono)",
-          },
+          style: { fontFamily: "var(--font-mono)" },
         }}
       >
         {value}

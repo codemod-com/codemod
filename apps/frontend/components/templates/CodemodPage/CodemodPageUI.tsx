@@ -53,7 +53,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
 
   const frameworksDescription =
     !frameworks.length ? null : frameworks.length === 1 ? (
-      capitalize(frameworks[0]!.name!)
+      capitalize(frameworks[0]?.name!)
     ) : (
       <ul className="list-disc body-s">
         {frameworks.map(({ name, image }) => (

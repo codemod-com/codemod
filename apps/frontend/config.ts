@@ -1,3 +1,4 @@
+export const isDevelopment = process.env.NODE_ENV === "development";
 const config = {
   sanity: {
     projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "",

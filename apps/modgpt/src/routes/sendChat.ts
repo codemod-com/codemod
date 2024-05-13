@@ -104,6 +104,7 @@ async function pushStreamToReply(
     response.end();
     return;
   }
+  console.log("value", value);
   response.write(value);
   await pushStreamToReply(reader, response);
 }

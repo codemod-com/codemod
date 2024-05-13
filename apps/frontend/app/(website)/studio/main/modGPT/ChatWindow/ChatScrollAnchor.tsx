@@ -4,7 +4,9 @@ interface ChatScrollAnchorProps {
   trackVisibility?: boolean;
 }
 
-const ChatScrollAnchor = ({ trackVisibility }: ChatScrollAnchorProps) => {
+export const ChatScrollAnchor = ({
+  trackVisibility,
+}: ChatScrollAnchorProps) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -37,5 +39,3 @@ const ChatScrollAnchor = ({ trackVisibility }: ChatScrollAnchorProps) => {
 };
 
 ChatScrollAnchor.displayName = "ChatScrollAnchor";
-
-export default ChatScrollAnchor;

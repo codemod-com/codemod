@@ -2,6 +2,7 @@
   "name": "@codemod-com/frontend",
   "private": true,
   "scripts": {
+    "dev:ai": "cd ../modgpt && npm run start & cd ../../../ee && uvicorn app:app & npm run dev",
     "build": "next build",
     "dev": "next",
     "format": "npx prettier --write . --ignore-path .gitignore",

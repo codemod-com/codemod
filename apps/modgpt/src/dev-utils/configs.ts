@@ -1,5 +1,6 @@
 import { type Environment, parseEnvironment } from "../schemata/env";
 
+console.log("process.env", process.env);
 export const environment = parseEnvironment(process.env);
 const { NODE_ENV, PORT } = environment;
 

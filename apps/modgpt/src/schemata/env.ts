@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import {
   type Output,
   type ValiError,
@@ -8,7 +9,7 @@ import {
   parse,
   string,
 } from "valibot";
-
+dotenv.config();
 export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),
   OPEN_AI_API_KEY: string(),

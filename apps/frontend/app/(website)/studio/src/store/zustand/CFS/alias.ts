@@ -16,7 +16,7 @@ export type Aliases = Record<
   { value: string; updatedAt: number } | null
 >;
 
-export const useGetAliases = () => {
+export const useGetAliases = (): Aliases => {
   const codemodExecutionError = useCodemodExecutionError();
   const {
     internalContent,
@@ -65,14 +65,12 @@ export const useGetAliases = () => {
           updatedAt: afterRangeUpdatedAt,
         }
       : null,
-    ...(codemodExecutionError
+    $EXECUTION_ERROR: codemodExecutionError
       ? {
-          $EXECUTION_ERROR: {
-            value: codemodExecutionError,
-            updatedAt: rangesUpdatedAt,
-          },
+          value: codemodExecutionError,
+          updatedAt: rangesUpdatedAt,
         }
-      : {}),
+      : null,
   };
 };
 

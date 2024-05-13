@@ -8,9 +8,9 @@ import {
   SelectValue,
 } from "@studio/components/ui/select";
 import { useCFSStore } from "@studio/store/zustand/CFS";
-import { type Engine, LLM_ENGINES } from "../../store/zustand/CFS";
+import { type Engine, LLM_ENGINES } from "@studio/store/zustand/CFS";
 
-const EngineSelector = () => {
+export const EngineSelector = () => {
   const {
     AIAssistant: { engine },
     setEngine,
@@ -49,5 +49,3 @@ const EngineSelector = () => {
     </Select>
   );
 };
-
-export default EngineSelector;

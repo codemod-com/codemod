@@ -27,6 +27,7 @@
       "@/*": ["./*"],
       "@studio/main/*": ["./app/(website)/studio/main/*"],
       "@studio/*": ["./app/(website)/studio/src/*"],
+      "@chatbot/*": ["./app/(website)/studio/main/modGPT/*"],
       "tslib": ["node_modules/tslib"],
       "ts-morph": ["node_modules/ts-morph"],
       "@utils/*": ["./utils/*"],

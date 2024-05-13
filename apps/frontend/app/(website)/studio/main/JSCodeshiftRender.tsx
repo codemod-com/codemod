@@ -59,7 +59,11 @@ export const useCodemodOutputUpdate = () => {
       setEvents(webWorkerState.events);
     }
   }, [
-    webWorkerState,
+    // @ts-ignore
+    webWorkerState.error?.message,
+    webWorkerState.kind,
+    // @ts-ignore
+    webWorkerState.output,
     engine,
     inputSnippet,
     internalContent,
@@ -81,17 +85,15 @@ export const useCodeDiff = () => {
   const setRangeThunk = useRangesOnTarget();
   const { internalContent } = useModStore();
 
-  const codemodOutput = useCodemodOutputStore();
+  const { ranges, content } = useCodemodOutputStore();
   const setActiveEventThunk = useSetActiveEventThunk();
 
   const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
-  const content = internalContent ?? "";
-
   const { setActiveTab } = useViewStore();
 
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
+  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
   const onSelectionChange = useCallback(
     (range: OffsetRange) => {
@@ -119,9 +121,9 @@ export const useCodeDiff = () => {
   };
 
   const modifiedEditorProps = {
-    highlights: codemodOutput.ranges,
+    highlights: ranges,
     onSelectionChange,
-    value: codemodOutput.content ?? "",
+    value: content ?? "",
   };
 
   return {
