@@ -65,7 +65,7 @@
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
-    "prepublishOnly": "pnpm run build",
+    "prepublishOnly": "turbo run build --filter codemod",
     "postinstall": "node scripts/postinstall.js"
   },
   "engines": {
