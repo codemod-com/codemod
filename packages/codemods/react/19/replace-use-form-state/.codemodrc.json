@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.2",
   "name": "react/19/replace-use-form-state",
   "private": false,
   "engine": "jscodeshift",

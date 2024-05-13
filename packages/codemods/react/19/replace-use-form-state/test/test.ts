@@ -101,10 +101,6 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       join(__dirname, "..", "__testfixtures__/fixture4.input.js"),
       "utf-8",
     );
-    const OUTPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/fixture4.output.js"),
-      "utf-8",
-    );
 
     const fileInfo: FileInfo = {
       path: "index.ts",
@@ -115,10 +111,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       quote: "single",
     });
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
+    assert.deepEqual(actualOutput, undefined);
   });
 
   it("should add useActionState import in existing import clause if other imports are present", async () => {

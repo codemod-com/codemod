@@ -7,6 +7,8 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  let isDirty = false;
+
   const hooksToRemove = ["useMemo", "useCallback", "memo"];
 
   root.find(j.ImportDeclaration).forEach((path) => {
@@ -37,7 +39,10 @@ export default function transform(
           name: hook,
         },
       })
-      .replaceWith((path) => path.value.arguments[0]);
+      .replaceWith((path) => {
+        isDirty = true;
+        return path.value.arguments[0];
+      });
   });
 
   hooksToRemove.forEach((hook) => {
@@ -49,8 +54,11 @@ export default function transform(
           property: { name: hook },
         },
       })
-      .replaceWith((path) => path.value.arguments[0]);
+      .replaceWith((path) => {
+        isDirty = true;
+        return path.value.arguments[0];
+      });
   });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }

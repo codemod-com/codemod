@@ -1,8 +1,8 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "version": "1.0.2",
-  "name": "react/19/remove-context-provider",
   "private": false,
+  "name": "react/19/replace-reactdom-render",
   "engine": "jscodeshift",
   "meta": {
     "tags": ["react", "migration"]

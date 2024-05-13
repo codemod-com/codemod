@@ -95,18 +95,6 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-      const output = `
-		function App() {
-			const [theme, setTheme] = useState('light');
-
-			return (
-			  <Context value={theme}>
-				<Page />
-			  </Context>
-			);
-		  }
-		`;
-
       const fileInfo: FileInfo = {
         path: "index.ts",
         source: input,
@@ -114,10 +102,7 @@ describe("Context.Provider -> Context", () => {
 
       const actualOutput = transform(fileInfo, buildApi("js"));
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 
@@ -211,18 +196,6 @@ describe("Context.Provider -> Context", () => {
 		  }
 		`;
 
-      const output = `
-		function App({ url }: { url: string }) {
-			const [theme, setTheme] = useState<'light' | 'dark'>('light');
-
-			return (
-			  <Context value={theme}>
-				<Page />
-			  </Context>
-			);
-		  }
-		`;
-
       const fileInfo: FileInfo = {
         path: "index.ts",
         source: input,
@@ -230,10 +203,7 @@ describe("Context.Provider -> Context", () => {
 
       const actualOutput = transform(fileInfo, buildApi("tsx"));
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 });
