@@ -23,15 +23,11 @@ import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
 import { initGlobalNodeModules } from "./utils";
 
-export const executeMainThread = async () => {
-  const slicedArgv = hideBin(process.argv);
-
-  const argvObject = buildGlobalOptions(
-    yargs(slicedArgv).help().version(version),
-  );
-
-  const argv = await Promise.resolve(argvObject.argv);
-
+const initializeDependencies = async (argv: {
+  clientIdentifier: string | undefined;
+  json: boolean;
+  telemetryDisable: boolean | undefined;
+}) => {
   // client identifier is required to prevent duplicated tracking of events
   // we can specify that request is coming from the VSCE or other client
   const clientIdentifier =
@@ -81,30 +77,50 @@ export const executeMainThread = async () => {
     exit();
   };
 
-  process.on("SIGINT", exit);
+  return {
+    printer,
+    telemetryService,
+    exit,
+    executeCliCommand,
+  };
+};
+
+export const executeMainThread = async () => {
+  const slicedArgv = hideBin(process.argv);
+
+  const argvObject = buildGlobalOptions(
+    yargs(slicedArgv).help().version(version),
+  );
 
   argvObject
     .scriptName("codemod")
     .usage("Usage: <command> [options]")
-
     .command(
       "*",
       "runs a codemod or recipe",
       (y) => buildRunOptions(y),
-      async (args) =>
+      async (args) => {
+        const { printer, telemetryService, executeCliCommand } =
+          await initializeDependencies(args);
+
         executeCliCommand(() =>
           handleRunCliCommand(printer, args, telemetryService),
-        ),
+        );
+      },
     )
     // TODO: improve and remove the need for this command
     .command(
       "runOnPreCommit [files...]",
       "run pre-commit codemods against staged files passed positionally",
       (y) => buildRunOptions(y),
-      async (args) =>
-        executeCliCommand(() =>
+      async (args) => {
+        const { executeCliCommand, printer, telemetryService } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() =>
           handleRunCliCommand(printer, args, telemetryService),
-        ),
+        );
+      },
     )
     .command(
       ["list", "ls", "search"],
@@ -121,6 +137,9 @@ export const executeMainThread = async () => {
           }
         }
 
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
         return executeCliCommand(() =>
           handleListNamesCommand(printer, searchTerm),
         );
@@ -135,28 +154,47 @@ export const executeMainThread = async () => {
           type: "string",
           description: "path to the file to be learned",
         }),
-      async (args) =>
-        executeCliCommand(() =>
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() =>
           handleLearnCliCommand(printer, args.target ?? null),
-        ),
+        );
+      },
     )
     .command(
       "login",
       "logs in through authentication in the Codemod Studio",
       (y) => buildGlobalOptions(y),
-      async (args) => executeCliCommand(() => handleLoginCliCommand(printer)),
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() => handleLoginCliCommand(printer));
+      },
     )
     .command(
       "logout",
       "logs out",
       (y) => buildGlobalOptions(y),
-      async (args) => executeCliCommand(() => handleLogoutCliCommand(printer)),
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() => handleLogoutCliCommand(printer));
+      },
     )
     .command(
       "whoami",
       "prints the user data of currently logged in user",
       (y) => buildGlobalOptions(y),
-      async (args) => executeCliCommand(() => handleWhoAmICommand(printer)),
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() => handleWhoAmICommand(printer));
+      },
     )
     .command(
       "build",
@@ -168,6 +206,9 @@ export const executeMainThread = async () => {
           description: "path to the codemod to be built",
         }),
       async (args) => {
+        const { executeCliCommand, exit, printer } =
+          await initializeDependencies(args);
+
         await initGlobalNodeModules();
 
         try {
@@ -198,10 +239,14 @@ export const executeMainThread = async () => {
           type: "string",
           description: "path to the codemod to be published",
         }),
-      async (args) =>
-        executeCliCommand(() =>
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() =>
           handlePublishCliCommand(printer, args.source ?? process.cwd()),
-        ),
+        );
+      },
     )
     .command(
       "unpublish",
@@ -221,6 +266,9 @@ export const executeMainThread = async () => {
             "You must provide the name of the codemod to unpublish. Aborting...",
           );
         }
+
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
 
         return executeCliCommand(() =>
           handleUnpublishCliCommand(printer, lastArgument, args.force),
@@ -243,20 +291,26 @@ export const executeMainThread = async () => {
             type: "boolean",
             description: "skip all prompts and use default values",
           }),
-      async (args) =>
-        executeCliCommand(() =>
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() =>
           handleInitCliCommand({
             printer,
             noPrompt: args.noPrompt,
             target: args.target,
           }),
-        ),
+        );
+      },
     );
 
   if (slicedArgv.length === 0) {
-    argvObject.showHelp();
-    return;
+    return argvObject.showHelp();
   }
 
-  argvObject.parse();
+  const argv = await argvObject.parse();
+
+  const { exit } = await initializeDependencies(argv);
+  process.on("SIGINT", exit);
 };
