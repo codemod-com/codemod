@@ -11,7 +11,7 @@ import {
   string,
 } from "valibot";
 
-export const DEFAULT_EXCLUDE_PATTERNS = ["**/node_modules/**/*.*"];
+export const DEFAULT_EXCLUDE_PATTERNS = ["**/node_modules/**/*.*", "**/*.d.ts"];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_DISABLE_PRETTIER = false;
 export const DEFAULT_NO_CACHE = false;
