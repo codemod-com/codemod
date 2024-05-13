@@ -68,13 +68,13 @@ const extractMainScriptPath = async (
     onlyFiles: true,
   });
 
-  if (mainFiles.length === 0) {
+  if (!mainFiles[0]) {
     throw new Error(
       `Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
     );
   }
 
-  return mainFiles.at(0)!;
+  return mainFiles[0];
 };
 
 export const buildSourcedCodemodOptions = async (
@@ -88,13 +88,13 @@ export const buildSourcedCodemodOptions = async (
     .then((pathStat) => pathStat.isDirectory());
 
   if (!isDirectorySource) {
-    if (codemodOptions.codemodEngine === null) {
+    if (codemodOptions.engine === null) {
       throw new Error("--engine has to be defined when running local codemod");
     }
 
     return {
       source: "standalone",
-      engine: codemodOptions.codemodEngine,
+      engine: codemodOptions.engine,
       indexPath: codemodOptions.source,
     };
   }

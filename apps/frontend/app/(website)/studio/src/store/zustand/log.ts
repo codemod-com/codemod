@@ -1,5 +1,5 @@
 import type { Event } from "@studio/schemata/eventSchemata";
-import create from "zustand";
+import { create } from "zustand";
 import { TabNames, useViewStore } from "./view";
 
 type LogState = {

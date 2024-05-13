@@ -7,6 +7,8 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  let isDirty = false;
+
   root.findJSXElements().forEach((elementPath) => {
     const { value } = elementPath;
     const elements = [value.openingElement, value.closingElement];
@@ -29,9 +31,10 @@ export default function transform(
         propertyName === "Provider"
       ) {
         element.name = element.name.object;
+        isDirty = true;
       }
     });
   });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }

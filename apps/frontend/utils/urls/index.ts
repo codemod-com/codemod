@@ -1,4 +1,4 @@
-import config from "@/config";
+import publicConfig from "@/config";
 import { formatPath } from "@tinloof/sanity-web";
 
 export function isExternalUrl(url: string) {
@@ -11,7 +11,7 @@ export function pathToAbsUrl(path?: string): string | undefined {
   if (typeof path !== "string") return;
 
   return (
-    config.baseUrl +
+    publicConfig.baseUrl +
     // When creating absolute URLs, ensure the homepage doesn't have a trailing slash
     (path === "/" ? "" : formatPath(path))
   );

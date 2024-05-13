@@ -1,6 +1,6 @@
 import { isFile } from "@babel/types";
 import { INITIAL_STATE } from "@studio/store/getInitialState";
-import create from "zustand";
+import { create } from "zustand";
 
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { SnippetType } from "@studio/main/PageBottomPane";

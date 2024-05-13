@@ -116,7 +116,6 @@ export const formatText = async (
     const options = await getConfig(path);
     return await format(newData, options);
   } catch (err) {
-    console.log(err);
     return newData;
   }
 };

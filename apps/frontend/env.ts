@@ -14,10 +14,22 @@ export const env = createEnv({
       .default("development"),
     DUBCO_WORKSPACE_ID: z.string().optional(),
     DUBCO_API_TOKEN: z.string().optional(),
+    SANITY_API_TOKEN: z.string(),
+    SANITY_REVALIDATE_SECRET: z.string().optional(),
+    HUBSPOT_PORTAL_ID: z.string(),
+    HUBSPOT_JOB_FORM_ID: z.string(),
+    HUBSPOT_CONTACT_FORM_ID: z.string(),
+    HUBSPOT_NEWSLETTER_FORM_ID: z.string(),
   },
   client: {
     NEXT_PUBLIC_API_URL: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
+    NEXT_PUBLIC_SANITY_PROJECT_ID: z.string(),
+    NEXT_PUBLIC_SANITY_DATASET: z.string(),
+    NEXT_PUBLIC_SANITY_API_VERSION: z.string().optional(),
+    NEXT_PUBLIC_SITE_DOMAIN: z.string().optional(),
+    NEXT_PUBLIC_BASE_URL: z.string().optional(),
+    NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT: z.string(),
   },
 
   /**
@@ -31,5 +43,18 @@ export const env = createEnv({
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
+    SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,
+    SANITY_REVALIDATE_SECRET: process.env.SANITY_REVALIDATE_SECRET,
+    NEXT_PUBLIC_SANITY_PROJECT_ID: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID,
+    NEXT_PUBLIC_SANITY_DATASET: process.env.NEXT_PUBLIC_SANITY_DATASET,
+    NEXT_PUBLIC_SANITY_API_VERSION: process.env.NEXT_PUBLIC_SANITY_API_VERSION,
+    NEXT_PUBLIC_SITE_DOMAIN: process.env.NEXT_PUBLIC_SITE_DOMAIN,
+    NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
+    NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT:
+      process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT,
+    HUBSPOT_PORTAL_ID: process.env.HUBSPOT_PORTAL_ID,
+    HUBSPOT_JOB_FORM_ID: process.env.HUBSPOT_JOB_FORM_ID,
+    HUBSPOT_CONTACT_FORM_ID: process.env.HUBSPOT_CONTACT_FORM_ID,
+    HUBSPOT_NEWSLETTER_FORM_ID: process.env.HUBSPOT_NEWSLETTER_FORM_ID,
   },
 });

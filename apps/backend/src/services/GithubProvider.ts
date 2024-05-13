@@ -1,4 +1,5 @@
-import axios from "axios";
+import type { GithubBranch } from "@codemod-com/utilities/dist/schemata/types.js";
+import axios, { type AxiosResponse } from "axios";
 import gh from "parse-github-url";
 import type {
   Assignee,
@@ -38,6 +39,33 @@ function parseGithubRepoUrl(url: string): Repository {
     throw new ParseGithubUrlError(errorMessage);
   }
 }
+
+const withPagination = async (
+  paginatedRequest: (page: string) => Promise<AxiosResponse<any[]>>,
+) => {
+  const nextPattern = /(?<=<)([\S]*)(?=>; rel="Next")/i;
+  let nextPage: string | null = "1";
+  let data: any[] = [];
+
+  while (nextPage !== null) {
+    const response = await paginatedRequest(nextPage);
+    data = [...data, ...(response.data ?? [])];
+
+    const linkHeader = response.headers.link;
+
+    if (typeof linkHeader === "string" && linkHeader.includes(`rel=\"next\"`)) {
+      const nextUrl = linkHeader.match(nextPattern)?.[0];
+      nextPage = nextUrl ? new URL(nextUrl).searchParams.get("page") : null;
+    } else {
+      nextPage = null;
+    }
+  }
+
+  return data;
+};
+
+const PER_PAGE = 99;
+
 export class GithubProvider implements SourceControlProvider {
   private readonly __repo: string | null = null;
   private readonly __baseUrl: string;
@@ -108,24 +136,38 @@ export class GithubProvider implements SourceControlProvider {
     return res.data;
   }
 
-  async getUserRepositories(): Promise<GithubRepository[]> {
-    const res = await axios.get("https://api.github.com/user/repos", {
-      headers: {
-        Authorization: this.__authHeader,
+  private __getUserRepositories = async (
+    page: string,
+  ): Promise<AxiosResponse<GithubRepository[]>> => {
+    return await axios.get<GithubRepository[]>(
+      `https://api.github.com/user/repos?per_page=${PER_PAGE}&page=${page}`,
+      {
+        headers: {
+          Authorization: this.__authHeader,
+        },
       },
-    });
+    );
+  };
 
-    return res.data;
+  async getUserRepositories(): Promise<GithubRepository[]> {
+    return await withPagination(this.__getUserRepositories);
   }
 
-  async getBranches(): Promise<string[]> {
-    const res = await axios.get(`${this.__repoUrl}/branches`, {
-      headers: {
-        Authorization: this.__authHeader,
+  private __getBranches = async (
+    page: string,
+  ): Promise<AxiosResponse<GithubBranch[]>> => {
+    return await axios.get(
+      `${this.__repoUrl}/branches?per_page=${PER_PAGE}&page=${page}`,
+      {
+        headers: {
+          Authorization: this.__authHeader,
+        },
       },
-    });
+    );
+  };
 
-    return res.data;
+  async getBranches(): Promise<string[]> {
+    return await withPagination(this.__getBranches);
   }
 
   async getRepoContents(branchName: string): Promise<GithubContent[]> {

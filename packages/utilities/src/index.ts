@@ -14,7 +14,7 @@ export {
   buildHash,
   streamToString,
 } from "./functions/hash.js";
-export { execPromise } from "./functions/node.js";
+export { execPromise, isGeneratorEmpty, sleep } from "./functions/node.js";
 export {
   assertsNeitherNullOrUndefined,
   isNeitherNullNorUndefined,
@@ -43,7 +43,10 @@ export {
 } from "./registry.js";
 export {
   argumentRecordSchema,
+  argumentSchema,
   parseArgumentRecordSchema,
+  safeParseArgument,
+  type Argument,
   type ArgumentRecord,
 } from "./schemata/argumentRecordSchema.js";
 export {
@@ -64,12 +67,12 @@ export {
   type KnownEngines,
   type PiranhaLanguage,
 } from "./schemata/codemodConfigSchema.js";
+export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
 export {
   codemodRunBodySchema,
   validateCodemodStatusParamsSchema,
   type CodemodRunResponse,
 } from "./schemata/codemodRunSchema.js";
-export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
 export {
   JOB_KIND,
   parseSurfaceAgnosticJob,

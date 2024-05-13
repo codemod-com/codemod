@@ -32,7 +32,8 @@
       "ts-morph": ["node_modules/ts-morph"],
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
-      "@auth/*": ["./app/auth/*"]
+      "@auth/*": ["./app/auth/*"],
+      "be-types": ["../backend/types"]
     },
     "plugins": [{ "name": "next" }]
   },

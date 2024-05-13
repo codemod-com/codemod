@@ -1,12 +1,10 @@
-import config from "@/config";
+import publicConfig from "@/config";
 import createImageUrlBuilder from "@sanity/image-url";
 import type { Image } from "sanity";
 
-const { dataset, projectId } = config.sanity;
-
 export const imageBuilder = createImageUrlBuilder({
-  projectId: projectId || "",
-  dataset: dataset || "",
+  projectId: publicConfig.sanity.projectId ?? "",
+  dataset: publicConfig.sanity.dataset ?? "",
 });
 
 export const urlForImage = (source: Image | undefined) => {

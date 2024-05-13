@@ -5,7 +5,7 @@ import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import type { RangeCommand } from "@studio/utils/tree";
 import { buildRanges } from "@studio/utils/tree";
-import create from "zustand";
+import { create } from "zustand";
 
 type CodemodOutputState = {
   content: string | null;

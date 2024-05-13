@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import { headers } from "next/headers";
 import { type NextRequest, NextResponse } from "next/server";
 /**
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
   const email = formData.get("email")?.toString() || "no email provided";
 
   try {
-    const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${process.env.HUBSPOT_PORTAL_ID}`;
+    const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${env.HUBSPOT_PORTAL_ID}`;
 
     const fields = [
       {
@@ -43,7 +44,7 @@ export async function POST(req: NextRequest) {
     };
 
     const hubspotRes = await (
-      await submitForm(process.env.HUBSPOT_NEWSLETTER_FORM_ID!)
+      await submitForm(env.HUBSPOT_NEWSLETTER_FORM_ID)
     ).json();
 
     if (!hubspotRes?.inlineMessage) {

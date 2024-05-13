@@ -1,11 +1,12 @@
 import { readFile } from "node:fs/promises";
 import { relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import type {
-  OperationMessage,
-  WorkerThreadMessage,
-} from "@codemod-com/printer";
-import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
+import { chalk } from "@codemod-com/printer";
+import {
+  type ArgumentRecord,
+  type FileSystem,
+  isGeneratorEmpty,
+} from "@codemod-com/utilities";
 import { type FileSystemAdapter, glob, globStream } from "fast-glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
@@ -20,15 +21,15 @@ import {
 import { getTransformer, transpile } from "./getTransformer.js";
 import { astGrepLanguageToPatterns } from "./runAstgrepCodemod.js";
 import { type Dependencies, runRepomod } from "./runRepomod.js";
+import type {
+  CodemodExecutionErrorCallback,
+  PrinterMessageCallback,
+} from "./schemata/callbacks.js";
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
-
-export type PrinterMessageCallback = (
-  message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
-) => void;
 
 export const buildPatterns = async (
   flowSettings: FlowSettings,
@@ -164,16 +165,31 @@ export const runCodemod = async (
   onCommand: (command: FormattedFileCommand) => Promise<void>,
   onPrinterMessage: PrinterMessageCallback,
   safeArgumentRecord: ArgumentRecord,
+  onCodemodError: CodemodExecutionErrorCallback,
 ): Promise<void> => {
   if (codemod.engine === "piranha") {
     throw new Error("Piranha not supported");
   }
+
+  const pathsAreEmpty = () =>
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "error",
+      message: chalk.yellow(
+        `No files to process were found in ${
+          flowSettings.target
+            ? "specified target directory"
+            : "current working directory"
+        }...`,
+      ),
+    });
 
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {
         const commands: FormattedFileCommand[] = [];
 
+        // biome-ignore lint: assertion is correct
         const subCodemod = codemod.codemods[i]!;
 
         await runCodemod(
@@ -192,7 +208,7 @@ export const runCodemod = async (
             if (message.kind === "progress") {
               onPrinterMessage({
                 kind: "progress",
-                recipeCodemodName:
+                codemodName:
                   subCodemod.source === "package" ? subCodemod.name : undefined,
                 processedFileNumber:
                   message.totalFileNumber * i + message.processedFileNumber,
@@ -205,6 +221,7 @@ export const runCodemod = async (
             // if we are within a recipe
           },
           safeArgumentRecord,
+          onCodemodError,
         );
 
         for (const command of commands) {
@@ -229,6 +246,7 @@ export const runCodemod = async (
     const deletedPaths: string[] = [];
 
     for (let i = 0; i < codemod.codemods.length; ++i) {
+      // biome-ignore lint: assertion is correct
       const subCodemod = codemod.codemods[i]!;
 
       const commands: FormattedFileCommand[] = [];
@@ -252,6 +270,8 @@ export const runCodemod = async (
           if (message.kind === "progress") {
             onPrinterMessage({
               kind: "progress",
+              codemodName:
+                subCodemod.source === "package" ? subCodemod.name : undefined,
               processedFileNumber:
                 message.totalFileNumber * i + message.processedFileNumber,
               totalFileNumber:
@@ -264,6 +284,7 @@ export const runCodemod = async (
           // if we are within a recipe
         },
         safeArgumentRecord,
+        onCodemodError,
       );
 
       for (const command of commands) {
@@ -290,6 +311,10 @@ export const runCodemod = async (
       fs: mfs,
       onlyFiles: true,
     });
+
+    if (newPaths.length === 0) {
+      return pathsAreEmpty();
+    }
 
     const fileCommands = await buildFileCommands(
       fileMap,
@@ -331,13 +356,23 @@ export const runCodemod = async (
 
     const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
 
+    if (globPaths.length === 0) {
+      return pathsAreEmpty();
+    }
+
     const fileCommands = await runRepomod(
       fileSystem,
-      { ...transformer, includePatterns: globPaths, excludePatterns: [] },
+      {
+        ...transformer,
+        includePatterns: globPaths,
+        excludePatterns: [],
+        name: codemod.source === "package" ? codemod.name : undefined,
+      },
       flowSettings.target,
       flowSettings.raw,
       safeArgumentRecord,
       onPrinterMessage,
+      onCodemodError,
     );
 
     const commands = await buildFormattedFileCommands(fileCommands);
@@ -356,11 +391,15 @@ export const runCodemod = async (
     null,
     onPrinterMessage,
   );
-  const pathGenerator = buildPathGlobGenerator(
-    fileSystem,
-    flowSettings,
-    patterns,
-  );
+
+  const pathGeneratorInitializer = () =>
+    buildPathGlobGenerator(fileSystem, flowSettings, patterns);
+
+  if (await isGeneratorEmpty(pathGeneratorInitializer)) {
+    return pathsAreEmpty();
+  }
+
+  const pathGenerator = pathGeneratorInitializer();
 
   const { engine } = codemod;
 
@@ -380,6 +419,8 @@ export const runCodemod = async (
         if (message.kind === "progress") {
           onPrinterMessage({
             kind: "progress",
+            codemodName:
+              codemod.source === "package" ? codemod.name : undefined,
             processedFileNumber: message.processedFileNumber,
             totalFileNumber: message.totalFileNumber,
             processedFileName: message.processedFileName
@@ -413,6 +454,13 @@ export const runCodemod = async (
       transpiledSource,
       flowSettings.raw,
       safeArgumentRecord,
+      (error) => {
+        onCodemodError({
+          codemodName:
+            codemod.source === "package" ? codemod.name : "Local codemod",
+          ...error,
+        });
+      },
     );
   });
 };

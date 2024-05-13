@@ -36,6 +36,36 @@ describe("react/19/use-context-hook: useContext -> use", () => {
       );
     });
 
+    it("should replace useContext with use: mixed import", async () => {
+      const input = `
+    	import React, { useContext } from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		const theme = useContext(ThemeContext);
+		`;
+
+      const output = `
+    	import React, { use } from "react";
+    	import ThemeContext from "./ThemeContext";
+
+		const theme = use(ThemeContext);
+		`;
+
+      const fileInfo: FileInfo = {
+        path: "index.ts",
+        source: input,
+      };
+
+      const actualOutput = transform(fileInfo, buildApi("js"), {
+        quote: "single",
+      });
+
+      assert.deepEqual(
+        actualOutput?.replace(/\W/gm, ""),
+        output.replace(/\W/gm, ""),
+      );
+    });
+
     it("should replace React.useContext with use", async () => {
       const input = `
     	import React from "react";
@@ -71,9 +101,8 @@ describe("react/19/use-context-hook: useContext -> use", () => {
 		const theme = trpc.useContext();
 		`;
 
-      const output = `
-		const theme = trpc.useContext();
-		`;
+      // file is skipped
+      const output = undefined;
 
       const fileInfo: FileInfo = {
         path: "index.ts",
@@ -84,10 +113,7 @@ describe("react/19/use-context-hook: useContext -> use", () => {
         quote: "single",
       });
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 
@@ -192,17 +218,6 @@ describe("react/19/use-context-hook: useContext -> use", () => {
 			};
 		`;
 
-      const output = `
-			function Component({
-				appUrl,
-			  }: {
-				appUrl: string;
-			  }) {
-				const theme = trpc.useContext();
-				return <div />;
-			};
-		`;
-
       const fileInfo: FileInfo = {
         path: "index.ts",
         source: input,
@@ -212,10 +227,7 @@ describe("react/19/use-context-hook: useContext -> use", () => {
         quote: "single",
       });
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        output.replace(/\W/gm, ""),
-      );
+      assert.deepEqual(actualOutput, undefined);
     });
   });
 });

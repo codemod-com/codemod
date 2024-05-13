@@ -1,15 +1,15 @@
-import config from "@/config";
 import type { MetadataRoute } from "next";
 import { groq } from "next-sanity";
 
 import { fetchWithTimeout } from "@/data/codemod/loaders";
 import { client } from "@/data/sanity/client";
+import { env } from "@/env";
 import { PublishStatus } from "@/types";
 import type { AutomationAPIListResponse } from "@/types/object.types";
 import { pathToAbsUrl } from "@/utils/urls";
 
 const sanityClient = client.withConfig({
-  token: config.sanity.token,
+  token: env.SANITY_API_TOKEN,
   perspective: "published",
   useCdn: false,
   stega: false,
@@ -39,7 +39,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
   );
-  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
 
   const res = await fetchWithTimeout(`${baseUrl}/list`);
   const allAutomations: AutomationAPIListResponse[] =

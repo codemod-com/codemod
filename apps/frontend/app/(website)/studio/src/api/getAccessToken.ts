@@ -1,8 +1,8 @@
+import apiClient from "@/utils/apis/client";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import type { AxiosError } from "axios";
 import { BUILD_ACCESS_TOKEN } from "../constants";
 import { Either } from "../utils/Either";
-import apiClient from "./client";
 
 const X_CODEMODCOM_ACCESS_TOKEN = "x-codemod-access-token";
 const getAccessToken = async ({

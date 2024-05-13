@@ -1,3 +1,4 @@
+import { env } from "@/env";
 import type {
   AutomationAPISearchResponse,
   AutomationResponse,
@@ -21,7 +22,7 @@ export async function fetchWithTimeout(resource, options = {}) {
 }
 
 export async function loadCodemod(pathname: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
   try {
     // API is regularly unstable, handle timeout errors
@@ -51,7 +52,7 @@ export async function loadRegistryAPIData({
   searchParams: URLSearchParams;
   entriesPerPage: number;
 }): Promise<AutomationAPISearchResponse | null> {
-  const baseUrl = process.env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const registryIndexQuery = buildRegistryIndexDataQuery({
     pageNumber,
     entriesPerPage,

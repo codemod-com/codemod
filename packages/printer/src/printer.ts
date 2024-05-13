@@ -1,7 +1,8 @@
 import chalk from "chalk";
+import cliProgress from "cli-progress";
 import ora, { type Ora } from "ora";
 import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
-import type { OperationMessage } from "./schemata/messages.js";
+import type { OperationMessage, ProgressMessage } from "./schemata/messages.js";
 import type { WorkerThreadMessage } from "./schemata/workerThreadMessages.js";
 
 export type PrinterBlueprint = Readonly<{
@@ -16,6 +17,8 @@ export type PrinterBlueprint = Readonly<{
 }>;
 
 export class Printer implements PrinterBlueprint {
+  private progressBar: cliProgress.SingleBar | null = null;
+
   public constructor(public readonly __jsonOutput: boolean) {}
 
   public printMessage(
@@ -49,20 +52,11 @@ export class Printer implements PrinterBlueprint {
       }
 
       console.error(chalk.red(`\n${errorText}\n`));
+      return;
     }
 
     if (message.kind === "progress") {
-      console.log(
-        "%sProcessed %d files out of %d%s",
-        message.recipeCodemodName
-          ? chalk.bold(`(${message.recipeCodemodName})  `)
-          : "",
-        message.processedFileNumber,
-        message.totalFileNumber,
-        message.processedFileName
-          ? `: ${chalk.bold(message.processedFileName)}`
-          : "",
-      );
+      this.updateExecutionProgress(message);
     }
   }
 
@@ -81,6 +75,38 @@ export class Printer implements PrinterBlueprint {
     }
 
     return console[kind](message);
+  }
+
+  public updateExecutionProgress(message: ProgressMessage) {
+    if (!this.progressBar) {
+      this.progressBar = new cliProgress.SingleBar({
+        format: `Execution progress | ${chalk.cyan(
+          "{bar}",
+        )} | {percentage}% || {value}/{total} files || Current: {file} || Codemod: {codemod}`,
+        barCompleteChar: "\u2588",
+        barIncompleteChar: "\u2591",
+        hideCursor: true,
+      });
+
+      this.progressBar.start(message.totalFileNumber, 0);
+    }
+
+    this.progressBar.update(message.processedFileNumber, {
+      file: message.processedFileName
+        ? chalk.bold(message.processedFileName)
+        : "N/A",
+      codemod: message.codemodName
+        ? chalk.bold(message.codemodName)
+        : "Local codemod",
+    });
+
+    if (this.progressBar.getTotal() !== message.totalFileNumber) {
+      this.progressBar.setTotal(message.totalFileNumber);
+    }
+
+    if (this.progressBar.getProgress() === 1) {
+      this.progressBar.stop();
+    }
   }
 
   public withLoaderMessage(text: string): Ora {

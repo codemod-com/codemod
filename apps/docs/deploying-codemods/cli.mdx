@@ -74,7 +74,7 @@ When using the `codemod` command, Codemod CLI will attempt to run a codemod as l
 
 </AccordionGroup>
 
-### Available options:
+### Available options
 
 The following options can be used to change the default behavior of the Codemod CLI.
 
@@ -108,19 +108,21 @@ codemod [codemod name] -t [path]
 <ResponseField name="--source (-s)" type="string">
   Can be used to specify the path to the codemod package folder stored locally that you want to run using the Codemod CLI.
 
-```bash
-codemod -s [path]
-```
-<Accordion
-  title="Running codemods without .codemodrc.json"
->
-  By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. However, if your local codemod does not follow the [required package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), you will need to specify the codemod engine manually.
+  If your local codemod follows the recommended [codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), it will include a `.codemodrc.json` file. By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. Otherwise, you will need to specify the codemod engine manually.
 
-  You can do so by using the `--engine` option. See example below: 
-  ```bash
-    codemod -s [path] --engine jscodeshift
-  ```
-</Accordion>
+  <Tabs>
+    <Tab title="Codemods with `.codemodrc.json`">
+      ```bash
+      codemod -s [path]
+      ```
+    </Tab>
+    <Tab title="Codemods without `.codemodrc.json`">
+      ```bash
+      codemod -s [path] --engine jscodeshift
+      ```
+    </Tab>
+  </Tabs>
+
 </ResponseField>
 
 <ResponseField name="--raw (-r)" type="boolean" default="false">
@@ -189,24 +191,6 @@ codemod [codemod name] --telemetryDisable [true/false]
 
 </ResponseField>
 
-<ResponseField name="--help">
-  Can be used to show a list of all available commands and options for Codemod CLI.
-
-```bash
-codemod --help
-```
-
-</ResponseField>
-
-<ResponseField name="--version">
-  Can be used to show the currently active version of Codemod CLI.
-
-```bash
-codemod --version
-```
-
-</ResponseField>
-
 ## Generate codemod from file diff
 
 The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
@@ -266,3 +250,23 @@ The `publish` command can be used to [publish a codemod to the Codemod Registry]
 ```bash
 codemod publish
 ```
+
+## Help commands
+
+<ResponseField name="--help">
+  Can be used to show a list of all available commands and options for Codemod CLI.
+
+```bash
+codemod --help
+```
+
+</ResponseField>
+
+<ResponseField name="--version">
+  Can be used to show the currently active version of Codemod CLI.
+
+```bash
+codemod --version
+```
+
+</ResponseField>
