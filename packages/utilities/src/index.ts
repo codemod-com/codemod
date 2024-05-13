@@ -43,6 +43,7 @@ export {
 } from "./registry.js";
 export {
   argumentRecordSchema,
+  safeParseArgument,
   parseArgumentRecordSchema,
   type ArgumentRecord,
 } from "./schemata/argumentRecordSchema.js";

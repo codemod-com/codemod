@@ -1,6 +1,9 @@
 import type { Codemod } from "@codemod-com/runner";
-import { type ArgumentRecord, doubleQuotify } from "@codemod-com/utilities";
-import { safeParseArgument } from "@codemod-com/utilities/dist/schemata/argumentRecordSchema";
+import {
+  type ArgumentRecord,
+  doubleQuotify,
+  safeParseArgument,
+} from "@codemod-com/utilities";
 
 export const buildSafeArgumentRecord = (
   codemod: Codemod,
@@ -26,6 +29,7 @@ export const buildSafeArgumentRecord = (
   const safeArgumentRecord: ArgumentRecord = {};
 
   const missing: typeof codemod.arguments = [];
+  const invalid: typeof codemod.arguments = [];
   codemod.arguments.forEach((descriptor) => {
     const maybeArgument = safeParseArgument(rawArgumentRecord[descriptor.name]);
 
@@ -38,6 +42,14 @@ export const buildSafeArgumentRecord = (
     }
 
     if (
+      descriptor.kind === "enum" &&
+      maybeArgument.success &&
+      !descriptor.options.includes(maybeArgument.output)
+    ) {
+      invalid.push(descriptor);
+    }
+
+    if (
       maybeArgument.success &&
       typeof maybeArgument.output === descriptor.kind
     ) {
@@ -47,13 +59,26 @@ export const buildSafeArgumentRecord = (
     }
   });
 
+  let errMsg = "";
   if (missing.length > 0) {
     const missingString = `- ${missing
       .map(({ kind, name }) => `${doubleQuotify(name)} (${kind})`)
       .join("\n- ")}`;
-    throw new Error(
-      `Missing required arguments:\n\n${missingString}\n\nPlease provide them as "--<arg-name> <value>".`,
-    );
+    errMsg += `Missing required arguments:\n${missingString}\nPlease provide them as "--<arg-name> <value>".`;
+  }
+
+  if (invalid.length > 0) {
+    const invalidString = `- ${invalid
+      .map(({ kind, name }) => `${doubleQuotify(name)} (${kind})`)
+      .join("\n- ")}`;
+    if (errMsg.length > 0) {
+      errMsg += "\n\n";
+    }
+    errMsg += `Invalid arguments:\n${invalidString}\nPlease use one of the predefined values.`;
+  }
+
+  if (errMsg.length > 0) {
+    throw new Error(errMsg);
   }
 
   return safeArgumentRecord;

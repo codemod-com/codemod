@@ -18,6 +18,7 @@ import {
   union,
 } from "valibot";
 import { isNeitherNullNorUndefined } from "../functions/validationMethods.js";
+import { argumentSchema } from "./argumentRecordSchema.js";
 
 const getFirstValibotIssue = (issues: Issues) => {
   let reasonableError: string | undefined;
@@ -80,6 +81,13 @@ export const argumentsSchema = array(
       object({
         name: string(),
         kind: literal("boolean"),
+        required: optional(boolean(), false),
+        default: optional(boolean()),
+      }),
+      object({
+        name: string(),
+        kind: literal("enum"),
+        options: array(argumentSchema),
         required: optional(boolean(), false),
         default: optional(boolean()),
       }),
