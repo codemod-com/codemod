@@ -7,6 +7,16 @@ import * as utils from "./util.js";
 
 const TAR_SERVICE_PACK_RETURN = "archive";
 
+const CLERK_GET_USER_RETURN = {
+  username: "username",
+  primaryEmailAddressId: "123",
+  emailAddresses: [{ id: "123", emailAddress: "john.doe@gmail.com" }],
+  firstName: "John",
+  lastName: "Doe",
+};
+
+const MOCK_TIMESTAMP = "timestamp";
+
 const mocks = vi.hoisted(() => {
   const S3Client = vi.fn();
   S3Client.prototype.send = vi.fn();
@@ -32,9 +42,12 @@ const mocks = vi.hoisted(() => {
     },
     clerkClient: {
       users: {
-        getUser: vi.fn().mockImplementation(() => ({ username: "username" })),
+        getUser: vi.fn().mockImplementation(() => CLERK_GET_USER_RETURN),
         getOrganizationMembershipList: vi.fn().mockImplementation(() => []),
       },
+    },
+    axios: {
+      post: vi.fn().mockImplementation(() => ({})),
     },
     S3Client,
     TarService,
@@ -44,6 +57,10 @@ const mocks = vi.hoisted(() => {
 
 vi.mock("./db/prisma.js", async () => {
   return { prisma: mocks.prisma };
+});
+
+vi.mock("axios", async () => {
+  return { default: mocks.axios };
 });
 
 vi.mock("@aws-sdk/client-s3", async () => {
@@ -159,6 +176,10 @@ describe("/publish route", async () => {
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
 
+    mocks.prisma.codemod.upsert.mockImplementation(() => {
+      return { createdAt: { getTime: () => MOCK_TIMESTAMP } };
+    });
+
     const expectedCode = 200;
 
     const response = await supertest(fastify.server)
@@ -221,6 +242,25 @@ describe("/publish route", async () => {
     expect(clientInstance.send).toHaveBeenCalledWith(putObjectCommandInstance, {
       requestTimeout: 5000,
     });
+
+    expect(mocks.axios.post).toHaveBeenCalledOnce();
+    expect(mocks.axios.post).toHaveBeenCalledWith(
+      "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
+      {
+        codemod: {
+          name: codemodRcContents.name,
+          from: codemodRcContents.applicability?.from,
+          to: codemodRcContents.applicability?.to,
+          engine: codemodRcContents.engine,
+          publishedAt: MOCK_TIMESTAMP,
+        },
+        author: {
+          username: CLERK_GET_USER_RETURN.username,
+          name: `${CLERK_GET_USER_RETURN.firstName} ${CLERK_GET_USER_RETURN.lastName}`,
+          email: CLERK_GET_USER_RETURN.emailAddresses[0]?.emailAddress,
+        },
+      },
+    );
 
     expect(response.body).toEqual({ success: true });
   });
@@ -411,7 +451,10 @@ describe("/publish route", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
 
       mocks.prisma.codemod.upsert.mockImplementation(() => {
-        return { id: "id" };
+        return {
+          createdAt: { getTime: () => MOCK_TIMESTAMP },
+          id: "id",
+        };
       });
 
       const errorMsg = "Test error";
@@ -474,7 +517,7 @@ describe("/publish route", async () => {
 
     it("should delete the appropriate version from the database AND the codemod itself if no other versions exist", async () => {
       mocks.prisma.codemod.upsert.mockImplementation(() => {
-        return { id: "id" };
+        return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
       });
 
       const errorMsg = "Test error";
@@ -550,7 +593,7 @@ describe("/publish route", async () => {
         () => [{ organization: { slug: "org" } }],
       );
       mocks.prisma.codemod.upsert.mockImplementation(() => {
-        return { id: "id" };
+        return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
       });
       mocks.S3Client.prototype.send = vi.fn().mockImplementation(() => ({}));
 
