@@ -1,4 +1,3 @@
-import { getTestToken } from "@/utils";
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
 } from "@/utils/apis/getExecutionStatus";
@@ -37,7 +36,7 @@ export const useExecutionStatus = (
       intervalId = window.setInterval(async () => {
         const executionStatus = await getExecutionStatus({
           executionId,
-          token: getTestToken(),
+          token,
         });
         console.log("STATUS: ", executionStatus?.result?.status);
 
