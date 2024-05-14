@@ -213,8 +213,6 @@ importers:
 
   apps/backend/prisma/client: {}
 
-  apps/backend/prisma/client: {}
-
   apps/cli:
     dependencies:
       keytar:
@@ -4267,7 +4265,7 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)
 
-  packages/codemods/react/19/remove-memoization:
+  packages/codemods/react/19/remove-memoization-hooks:
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*
@@ -4283,10 +4281,10 @@ importers:
         version: 0.15.2(@babel/preset-env@7.24.4)
       ts-node:
         specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.12.7)(typescript@5.4.5)
+        version: 10.9.2(@types/node@20.12.7)(typescript@5.3.3)
       typescript:
         specifier: ^5.2.2
-        version: 5.4.5
+        version: 5.3.3
       vitest:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)
