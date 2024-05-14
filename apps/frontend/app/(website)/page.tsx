@@ -1,13 +1,13 @@
+import type { ResolvingMetadata } from "next";
+import dynamic from "next/dynamic";
+import { draftMode } from "next/headers";
+import { notFound } from "next/navigation";
+
+import { TokenBuilder } from "@/components/TokenBuilder";
 import { Page } from "@/components/templates/ModularPage/Page";
 import { loadModularPage } from "@/data/sanity";
 import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMetadata";
 import type { RouteProps } from "@/types";
-import type { ResolvingMetadata } from "next";
-
-import { ThemeProvider } from "@/app/context";
-import dynamic from "next/dynamic";
-import { draftMode } from "next/headers";
-import { notFound } from "next/navigation";
 
 const PagePreview = dynamic(
   () => import("@/components/templates/ModularPage/PagePreview"),
@@ -34,6 +34,9 @@ export default async function IndexRoute() {
   return draftMode().isEnabled ? (
     <PagePreview initial={initial} />
   ) : (
-    <Page data={initial.data!} />
+    <>
+      <TokenBuilder />
+      <Page data={initial.data!} />
+    </>
   );
 }
