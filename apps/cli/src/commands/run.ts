@@ -16,9 +16,11 @@ import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   TarService,
   doubleQuotify,
+  execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
@@ -30,6 +32,53 @@ import { handleInstallDependencies } from "../handleInstallDependencies.js";
 import { loadRepositoryConfiguration } from "../repositoryConfiguration.js";
 import { buildSafeArgumentRecord } from "../safeArgumentRecord.js";
 import { getConfigurationDirectoryPath } from "../utils.js";
+
+const checkFileTreeVersioning = async (target: string) => {
+  let force = true;
+
+  try {
+    const status = await execPromise("git status --porcelain", {
+      cwd: target,
+    });
+
+    if (status.stdout.trim()) {
+      const res = await inquirer.prompt<{ force: boolean }>({
+        type: "confirm",
+        name: "force",
+        message:
+          "Current git state contains uncommitted changes. Proceed anyway?",
+        default: false,
+      });
+
+      force = res.force;
+    }
+
+    if (status.stderr.trim()) {
+      const res = await inquirer.prompt<{ force: boolean }>({
+        type: "confirm",
+        name: "force",
+        message:
+          "Target folder is not tracked by git. Codemod changes might be irreversible. Proceed anyway?",
+        default: false,
+      });
+
+      force = res.force;
+    }
+  } catch (err) {
+    const res = await inquirer.prompt<{ force: boolean }>({
+      type: "confirm",
+      name: "force",
+      message: "Could not run git working tree check. Proceed anyway?",
+      default: false,
+    });
+
+    force = res.force;
+  }
+
+  if (!force) {
+    process.exit(0);
+  }
+};
 
 export const handleRunCliCommand = async (
   printer: PrinterBlueprint,
@@ -45,6 +94,8 @@ export const handleRunCliCommand = async (
   const codemodSettings = parseCodemodSettings(args);
   const flowSettings = parseFlowSettings(args);
   const runSettings = parseRunSettings(homedir(), args);
+
+  await checkFileTreeVersioning(flowSettings.target);
 
   const fileDownloadService = new FileDownloadService(
     args.noCache,
