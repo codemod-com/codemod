@@ -8,7 +8,9 @@ export const useAPI = <T>(endpoint: string) => {
   const getHeaders = async () => ({
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${(isDevelopment ? getTestToken : getToken)()}`,
+      Authorization: `Bearer ${await (isDevelopment
+        ? getTestToken
+        : getToken)()}`,
     },
   });
   return {
