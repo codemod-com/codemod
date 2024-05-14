@@ -12,7 +12,7 @@ export const codemodAiWsServer = isDevelopment
 
 const prodGptServer = shouldUseCodemodAi
   ? "https://backend.codemod.com/modgpt"
-  : process.env.NEXT_PUBLIC_BASE_URL;
+  : "https://backend.codemod.com";
 export const modGptServer = `${
   shouldUseCodemodAi ? "http://0.0.0.0:9999" : prodGptServer
 }/${SEND_CHAT}`;
