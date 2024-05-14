@@ -1,5 +1,3 @@
-import "dotenv/config";
-
 import { clerkPlugin } from "@clerk/fastify";
 import Fastify, {
   type FastifyInstance,

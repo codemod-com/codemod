@@ -4,7 +4,7 @@ import {
   Warning as WarningIcon,
 } from "@phosphor-icons/react";
 import { Label } from "@studio/components/ui/label";
-import EngineSelector from "./ModelSelector";
+import { EngineSelector } from "./ModelSelector";
 
 const WELCOME_SCREEN_ITEMS = [
   {
@@ -31,7 +31,7 @@ const WELCOME_SCREEN_ITEMS = [
   },
 ];
 
-const WelcomeScreen = () => (
+export const WelcomeScreen = () => (
   <div className="mx-auto flex h-full flex-col overflow-x-auto px-4 pb-[200px] pt-4">
     <div className="mb-10 ml-auto w-1/3">
       <EngineSelector />
@@ -57,5 +57,3 @@ const WelcomeScreen = () => (
 );
 
 WelcomeScreen.displayName = "WelcomeScreen";
-
-export default WelcomeScreen;
