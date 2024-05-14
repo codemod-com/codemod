@@ -103,7 +103,15 @@ export const CodemodButton = () => {
         () => {
           return (
             <span>
-              Success! Check out the changes <a href={result.link}>here</a>
+              Success! Check out the changes{" "}
+              <a
+                href={result.link}
+                target="_blank"
+                rel="noreferrer"
+                className="text-primary-light text-decoration-line"
+              >
+                here
+              </a>
             </span>
           );
         },
