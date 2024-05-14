@@ -63,7 +63,7 @@ export const handleListNamesCommand = async (
 
     printer.printConsoleMessage(
       "info",
-      chalk.bold.cyan("Here are the top search results:\n"),
+      chalk.bold.cyan("Here are the search results:\n"),
     );
   }
 
