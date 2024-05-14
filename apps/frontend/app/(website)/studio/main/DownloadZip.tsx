@@ -1,5 +1,5 @@
 import { cn } from "@/utils";
-import { useAuth, useSession } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
 import sendMessage from "@studio/api/sendMessage";
 import { Button } from "@studio/components/ui/button";
 import {
@@ -43,8 +43,7 @@ export const DownloadZip = () => {
   const snippetStore = useSnippetStore();
   const engine = snippetStore.engine;
 
-  const { session } = useSession();
-  const { getToken } = useAuth();
+  const { session, getToken } = useAuth();
 
   const handleClick = async () => {
     setIsDownloading(true);

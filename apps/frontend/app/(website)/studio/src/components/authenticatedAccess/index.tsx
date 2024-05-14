@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
 import type { ReactNode } from "react";
 
 type Props = {

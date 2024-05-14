@@ -1,4 +1,5 @@
 import { cn } from "@/utils";
+import { Loading } from "@studio/components/Loader";
 import { useWebWorker } from "@studio/hooks/useWebWorker";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
@@ -8,10 +9,11 @@ import { useLogStore } from "@studio/store/zustand/log";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import dynamic from "next/dynamic";
 import {
   type PropsWithChildren,
   type ReactNode,
+  Suspense,
+  lazy,
   useCallback,
   useEffect,
 } from "react";
@@ -24,12 +26,8 @@ import {
 } from "./PageBottomPane";
 import { useSnippet } from "./SnippetUI";
 
-const MonacoDiffEditor = dynamic(
+const MonacoDiffEditor = lazy(
   () => import("@studio/components/Snippet/MonacoDiffEditor"),
-  {
-    loading: () => <p>Loading...</p>,
-    ssr: false,
-  },
 );
 
 export const useCodemodOutputUpdate = () => {
@@ -159,18 +157,20 @@ export const DiffEditorWrapper = ({
       )}
     >
       <div className="relative flex h-full w-full flex-col">
-        <MonacoDiffEditor
-          renderSideBySide={type === "after"}
-          originalModelPath="original.tsx"
-          modifiedModelPath="modified.tsx"
-          options={{
-            readOnly: true,
-            originalEditable: true,
-          }}
-          loading={false}
-          originalEditorProps={originalEditorProps}
-          modifiedEditorProps={modifiedEditorProps}
-        />
+        <Suspense fallback={<Loading />}>
+          <MonacoDiffEditor
+            renderSideBySide={type === "after"}
+            originalModelPath="original.tsx"
+            modifiedModelPath="modified.tsx"
+            options={{
+              readOnly: true,
+              originalEditable: true,
+            }}
+            loading={false}
+            originalEditorProps={originalEditorProps}
+            modifiedEditorProps={modifiedEditorProps}
+          />
+        </Suspense>
       </div>
     </div>
   );

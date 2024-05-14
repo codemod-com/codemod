@@ -1,4 +1,4 @@
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -9,14 +9,13 @@ import {
   AlertDialogTitle,
 } from "@studio/components/ui/alert-dialog";
 import { Button } from "@studio/components/ui/button";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const LEARN_KEY = "learn";
 
 export const LoginWarningModal = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
+  const { isSignedIn, isLoaded, SignInButton, searchParams } = useAuth();
+  const isFromCLI = searchParams.get("command") === LEARN_KEY;
   const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     setIsOpen(isFromCLI && isLoaded && !isSignedIn);

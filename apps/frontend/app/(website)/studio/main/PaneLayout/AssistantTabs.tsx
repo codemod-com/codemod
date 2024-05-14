@@ -1,6 +1,7 @@
 import { cn } from "@/utils";
 import { useAiService } from "@chatbot/useAiService/useAiService";
-import { useAuth } from "@clerk/nextjs";
+
+import { useAuth } from "@auth/useAuth";
 import Text from "@studio/components/Text";
 import {
   Tabs,

@@ -1,16 +1,14 @@
+import { Loading } from "@studio/components/Loader";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useRanges } from "@studio/store/useRanges";
 import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { prettify } from "@studio/utils/prettify";
-import dynamic from "next/dynamic";
-import { useCallback } from "react";
+import { Suspense, lazy, useCallback } from "react";
 import type { SnippetType } from "./PageBottomPane";
+import("@studio/components/Snippet");
 
-const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
-  loading: () => <p>Loading...</p>,
-  ssr: false,
-});
+const CodeSnippet = lazy(() => import("@studio/components/Snippet"));
 
 type Props = {
   type: SnippetType;
@@ -61,15 +59,17 @@ const SnippetUI = ({ type }: Props) => {
   return (
     <div className="h-full overflow-hidden">
       <div className="h-full grow">
-        <CodeSnippet
-          highlights={ranges}
-          language="typescript"
-          onBlur={onSnippetBlur}
-          onChange={onSnippetChange}
-          onSelectionChange={handleSelectionChange}
-          path={`${type}Snippet.tsx`}
-          value={value}
-        />
+        <Suspense fallback={<Loading />}>
+          <CodeSnippet
+            highlights={ranges}
+            language="typescript"
+            onBlur={onSnippetBlur}
+            onChange={onSnippetChange}
+            onSelectionChange={handleSelectionChange}
+            path={`${type}Snippet.tsx`}
+            value={value}
+          />
+        </Suspense>
       </div>
     </div>
   );

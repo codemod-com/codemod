@@ -8,7 +8,8 @@ import {
   VSCODE_PREFIX,
 } from "@/constants";
 import { cn } from "@/utils";
-import { useAuth } from "@clerk/nextjs";
+
+import { useAuth } from "@auth/useAuth";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
 import getAccessToken from "@studio/api/getAccessToken";
@@ -29,7 +30,6 @@ import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { openIDELink } from "@studio/utils/openIDELink";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import Codemod from "./Codemod";
@@ -45,8 +45,8 @@ import {
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
 const Main = () => {
-  const { isSignedIn, getToken } = useAuth();
-  const router = useRouter();
+  const { getSignIn, isSignedIn, getToken } = useAuth();
+  const signIn = getSignIn();
   const panelRefs: PanelsRefs = useRef({});
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
@@ -149,8 +149,8 @@ const Main = () => {
       localStorage.setItem(command, new Date().getTime().toString());
     }
 
-    router.push("/auth/sign-in");
-  }, [getToken, isSignedIn, router]);
+    signIn();
+  }, [getToken, isSignedIn]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);

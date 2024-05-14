@@ -1,17 +1,13 @@
 import { useTheme } from "@/app/context";
 import ChevronRightSVG from "@/assets/icons/chevronright.svg";
 import themeConfig from "@/tailwind.config";
+import { useAuth } from "@auth/useAuth";
 import { Button } from "@studio/components/ui/button";
 import { UserIcon } from "@studio/icons/User";
-import Image from "next/image";
-import { useRouter } from "next/navigation";
 
 export function SignInRequired() {
   const theme = useTheme();
-  const router = useRouter();
-  const signUserIn = () => {
-    router.push("/auth/sign-in");
-  };
+  const signIn = useAuth().getSignIn();
 
   return (
     <div className="grid h-full absolute top-0 bottom-0 w-full">
@@ -37,10 +33,10 @@ export function SignInRequired() {
           Sign in to use AI assistant to build codemod
         </p>
         <Button
-          onClick={signUserIn}
+          onClick={signIn}
           className="flex w-full text-white gap-2 items-center"
         >
-          Sign in <Image src={ChevronRightSVG} className="w-1.5" alt="" />
+          Sign in <img src={ChevronRightSVG} className="w-1.5" alt="" />
         </Button>
       </section>
     </div>

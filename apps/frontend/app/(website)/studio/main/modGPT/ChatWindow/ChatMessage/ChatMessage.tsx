@@ -6,7 +6,6 @@ import { useTheme } from "@context/useTheme";
 // @see https://github.com/mckaywrigley/chatbot-ui/blob/main/components/Chat/ChatMessage.tsx
 import { CaretDown, CaretRight, User as UserIcon } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
-import Image from "next/image";
 import { type FC, memo, useState } from "react";
 import ReactMarkdown, { type Options } from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -74,7 +73,7 @@ export const ChatMessage = ({ message }: Props) => {
         {message.role === "user" ? (
           <UserIcon />
         ) : (
-          <Image src={CompanyLogoSVG} alt="Codemod Logo" />
+          <img src={CompanyLogoSVG} alt="Codemod Logo" />
         )}
       </div>
       <Button

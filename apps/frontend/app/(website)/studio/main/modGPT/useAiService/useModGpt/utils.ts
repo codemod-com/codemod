@@ -1,10 +1,5 @@
+import { useAuth } from "@auth/useAuth";
 import { buildCodemodFromLLMResponse } from "@chatbot/utils";
-import { useAuth } from "@clerk/nextjs";
-import {
-  freezeMessage,
-  parseFrozenMessages,
-  unfreezeMessage,
-} from "@studio/schemata/chatSchemata";
 import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
 import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
 import { type ModState, useModStore } from "@studio/store/zustand/mod";

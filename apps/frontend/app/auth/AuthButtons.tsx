@@ -1,17 +1,12 @@
 import WButton from "@/components/shared/Button";
-import {
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
 import { Button as SButton } from "@studio/components/ui/button";
 import { LogoutIcon } from "@studio/icons/LogoutIcon";
 import { useRouter } from "next/navigation";
 
 const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
+  const { SignOutButton, SignedIn, SignedOut, UserButton, useUser } = useAuth();
   const isStudio = variant === "studio";
   const router = useRouter();
   const { user } = useUser();

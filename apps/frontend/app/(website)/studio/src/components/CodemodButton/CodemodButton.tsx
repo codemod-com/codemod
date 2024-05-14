@@ -1,5 +1,5 @@
-import { useAuth } from "@/app/auth/useAuth";
 import { GH_BRANCH_LIST } from "@/utils/apis/endpoints";
+import { useAuth } from "@auth/useAuth";
 import type { GithubBranch } from "@codemod-com/utilities";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
