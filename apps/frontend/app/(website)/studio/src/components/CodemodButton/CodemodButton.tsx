@@ -1,5 +1,4 @@
 import { useAuth } from "@/app/auth/useAuth";
-import { getTestToken } from "@/utils";
 import getGHBranches from "@/utils/apis/getGHBranches";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
@@ -78,7 +77,7 @@ export const CodemodButton = () => {
       }
       const branches = await getGHBranches({
         repoUrl: selectedRepository.html_url,
-        token: getTestToken(),
+        token,
       });
       if (branches === null) {
         return;
