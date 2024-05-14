@@ -34,7 +34,7 @@ const MainPageContent = () => {
           playsInline
         >
           <source
-            src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-@studio/codemod-studio-quickstart.mp4"
+            src="https://github.com/codemod-com/codemod/raw/main/apps/docs/images/codemod-studio/codemod-studio-quickstart.mp4"
             type="video/mp4"
           />
           Your browser does not support the video tag.
