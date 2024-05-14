@@ -52,8 +52,16 @@ const checkFileTreeVersioning = async (target: string) => {
 
       force = res.force;
     }
+  } catch (err) {
+    if (!(err instanceof Error)) {
+      return;
+    }
 
-    if (status.stderr.trim()) {
+    if (
+      "stderr" in err &&
+      typeof err.stderr === "string" &&
+      err.stderr.trim().startsWith("fatal: not a git repository")
+    ) {
       const res = await inquirer.prompt<{ force: boolean }>({
         type: "confirm",
         name: "force",
@@ -63,8 +71,10 @@ const checkFileTreeVersioning = async (target: string) => {
       });
 
       force = res.force;
+
+      return;
     }
-  } catch (err) {
+
     const res = await inquirer.prompt<{ force: boolean }>({
       type: "confirm",
       name: "force",
