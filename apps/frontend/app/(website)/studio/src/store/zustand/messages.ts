@@ -49,7 +49,6 @@ export const useMessageStore = create<MessageStoreState>((set, get) => {
   }, [codemodAIMessage]);
 
   useEffect(() => {
-    console.log("messages", modGPTMessages, "lasModMss", lastMss);
     if (!lastMss?.content) return;
     const index = modGPTMessages.findIndex(({ id }) => id === lastMss.id);
     const updateMessages =
