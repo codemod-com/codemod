@@ -4,7 +4,7 @@ import {
   fixCodemodBlockNoDebugInfoPrompt,
 } from "@studio/store/zustand/CFS/prompts";
 import { useCodemodExecutionError } from "@studio/store/zustand/log";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 import { shouldUseCodemodAi } from "./config";
 
 const errorResponses = {
