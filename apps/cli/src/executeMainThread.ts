@@ -1,4 +1,4 @@
-import { Printer } from "@codemod-com/printer";
+import { Printer, boxen, chalk } from "@codemod-com/printer";
 import {
   NullSender,
   PostHogSender,
@@ -6,6 +6,7 @@ import {
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 import Axios from "axios";
+import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -22,6 +23,38 @@ import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
 import { initGlobalNodeModules } from "./utils";
+
+const checkLatestVersion = async () => {
+  try {
+    const latestCLIVersion = semver.coerce(
+      (await execPromise("npm view codemod version")).stdout.trim(),
+    )?.version;
+
+    if (latestCLIVersion && semver.gt(latestCLIVersion, version)) {
+      console.log(
+        boxen(
+          chalk(
+            "Update available",
+            chalk.dim(version),
+            ">",
+            chalk.green(latestCLIVersion),
+            "\n\nRun",
+            chalk.bold.cyan(doubleQuotify("npm i -g codemod@latest")),
+            "to upgrade",
+          ),
+          {
+            padding: 1,
+            textAlignment: "center",
+            borderColor: "yellowBright",
+            borderStyle: "round",
+          },
+        ),
+      );
+    }
+  } catch (err) {
+    // npm is not installed?
+  }
+};
 
 const initializeDependencies = async (argv: {
   clientIdentifier: string | undefined;
@@ -86,6 +119,8 @@ const initializeDependencies = async (argv: {
 };
 
 export const executeMainThread = async () => {
+  await checkLatestVersion();
+
   const slicedArgv = hideBin(process.argv);
 
   const argvObject = buildGlobalOptions(
