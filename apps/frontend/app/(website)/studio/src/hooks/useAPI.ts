@@ -1,3 +1,5 @@
+import { isDevelopment } from "@/config";
+import { getTestToken } from "@/utils";
 import apiClient from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
 
@@ -6,7 +8,7 @@ export const useAPI = <T>(endpoint: string) => {
   const getHeaders = async () => ({
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${await getToken()}`,
+      Authorization: `Bearer ${(isDevelopment ? getTestToken : getToken)()}`,
     },
   });
   return {

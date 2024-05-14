@@ -19,7 +19,7 @@ import {
   useState,
 } from "react";
 import { flushSync } from "react-dom";
-import { toast } from "react-hot-toast";
+import toast from "react-hot-toast";
 
 export const useHandlePrompt = ({
   append,

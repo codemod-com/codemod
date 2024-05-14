@@ -1,4 +1,5 @@
 export * from "./constants.js";
+export * from "./schemata/types.js";
 export { debounce } from "./functions/debounce.js";
 export {
   backtickify,
