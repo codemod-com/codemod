@@ -8,6 +8,7 @@ import {
 import { useRouter } from "next/navigation";
 
 export const useAuth = () => {
+  console.log("fix");
   const router = useRouter();
   const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
   const addRedirectAction = useRedirectWhenSigned();
