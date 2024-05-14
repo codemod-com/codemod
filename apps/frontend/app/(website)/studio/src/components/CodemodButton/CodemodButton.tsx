@@ -94,7 +94,7 @@ export const CodemodButton = () => {
     }
 
     if (result.status === "error") {
-      toast.error(result.message, {
+      toast(`❌ ${result.message}`, {
         position: "top-center",
         duration: 12000,
       });
