@@ -1,5 +1,6 @@
 import { useAuth } from "@/app/auth/useAuth";
-import getGHBranches from "@/utils/apis/getGHBranches";
+import { GH_BRANCH_LIST } from "@/utils/apis/endpoints";
+import type { GithubBranch } from "@codemod-com/utilities";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useHandleCodemodRun } from "@studio/components/CodemodButton/useHandleCodemodRun";
@@ -10,6 +11,7 @@ import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useAPI } from "../../hooks/useAPI";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
@@ -65,47 +67,55 @@ export const CodemodButton = () => {
     hideRepositoryModal();
   };
 
+  const { post: fetchGHBranches } = useAPI(GH_BRANCH_LIST);
+
   useEffect(() => {
     if (!selectedRepository) {
       return;
     }
 
     const getBranches = async () => {
-      const token = await getToken();
-      if (token === null) {
-        return;
-      }
-      const branches = await getGHBranches({
-        repoUrl: selectedRepository.html_url,
-        token,
-      });
-      if (branches === null) {
-        return;
-      }
+      const branches = (
+        await fetchGHBranches<GithubBranch[]>({
+          repoUrl: selectedRepository.html_url,
+        })
+      ).data;
 
       setBranchesToShow(branches.slice().map((branch) => branch.name));
     };
 
     getBranches();
-  }, [getToken, selectedRepository]);
+  }, [fetchGHBranches, selectedRepository]);
 
   useEffect(() => {
+    console.log(
+      codemodRunStatus?.result?.status,
+      codemodRunStatus?.result?.message,
+    );
+
     if (codemodRunStatus?.result?.status === "error") {
-      console.log(
-        codemodRunStatus.result.status,
-        codemodRunStatus.result.message,
-      );
       toast.error(codemodRunStatus.result.message, {
         position: "top-center",
         duration: 12000,
       });
+    } else if (codemodRunStatus?.result?.status === "done") {
+      toast.success(
+        `Success! Check out the changes at ${codemodRunStatus.result.link}.`,
+        {
+          position: "top-center",
+          duration: 12000,
+        },
+      );
     }
   }, [codemodRunStatus?.result]);
 
   return (
     <>
       <RepositoryModal
-        hideRepositoryModal={hideRepositoryModal}
+        hideRepositoryModal={() => {
+          hideRepositoryModal();
+          setSelectedRepository(undefined);
+        }}
         isRepositoryModalShown={isRepositoryModalShown}
         repositoriesToShow={repositoriesToShow}
         selectRepository={selectRepository}
