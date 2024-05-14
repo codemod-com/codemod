@@ -9,7 +9,7 @@ function cn(...inputs: ClassValue[]) {
 export const anyElementExists = <T = string>(arrayA: T[], arrayB: T[]) =>
   any(flip(includes)(arrayA), arrayB);
 
-export const getTestToken = () => localStorage.get("test-token");
+export const getTestToken = () => localStorage?.get("test-token");
 
 export { cn };
 export * from "./getBlocksToc";
