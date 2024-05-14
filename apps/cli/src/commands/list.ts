@@ -26,7 +26,7 @@ export const handleListNamesCommand = async (
     return;
   }
 
-  let prettified = configObjects.map(
+  const prettified = configObjects.map(
     ({ name, verified: _, tags: tagsArray, engine, author, slug }) => {
       const tags = tagsArray.join(", ");
       const nameWithRegistryLink = terminalLink(
@@ -53,8 +53,6 @@ export const handleListNamesCommand = async (
   );
 
   if (search) {
-    prettified = prettified.slice(0, 10);
-
     if (prettified.length === 0) {
       printer.printConsoleMessage(
         "info",
