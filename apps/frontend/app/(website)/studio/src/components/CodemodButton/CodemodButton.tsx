@@ -88,19 +88,25 @@ export const CodemodButton = () => {
   }, [fetchGHBranches, selectedRepository]);
 
   useEffect(() => {
-    console.log(
-      codemodRunStatus?.result?.status,
-      codemodRunStatus?.result?.message,
-    );
+    const result = codemodRunStatus?.result;
+    if (!result) {
+      return;
+    }
 
-    if (codemodRunStatus?.result?.status === "error") {
-      toast.error(codemodRunStatus.result.message, {
+    if (result.status === "error") {
+      toast.error(result.message, {
         position: "top-center",
         duration: 12000,
       });
-    } else if (codemodRunStatus?.result?.status === "done") {
+    } else if (result.status === "done") {
       toast.success(
-        `Success! Check out the changes at ${codemodRunStatus.result.link}.`,
+        () => {
+          return (
+            <span>
+              Success! Check out the changes <a href={result.link}>here</a>
+            </span>
+          );
+        },
         {
           position: "top-center",
           duration: 12000,
