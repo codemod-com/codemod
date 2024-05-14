@@ -6,23 +6,30 @@ import {
   useUserSession,
 } from "@studio/store/zustand/userSession";
 import { type FunctionComponent, useState } from "react";
+import { identity } from "ramda";
+
+export let isSignedIn = false;
+export let setIsSignedIn = (b: boolean) => isSignedIn = b;
+
+
+export let isLoaded = true;
+export let setIsLoaded = (b: boolean) => isLoaded = b;
 
 export const useAuth = () => {
   const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
   const addRedirectAction = useRedirectWhenSigned();
-  const [isLoaded, setIsLoaded] = useState(true);
-  const [isSignedIn, setIsSignedIn] = useState(false);
   const router = { push: () => {} }; // Mock router
   const session = {}; // Mock session object
+  console.log({isSignedIn})
   const clerk = { getToken: () => "mock-token" }; // Mock Clerk functionality
   const searchParams = new Map(); // Mock search parameters
   const signIn = () => setIsSignedIn(true);
-  const signOut = () => setIsSignedIn(false);
+  const signOut = identity;
   const SignIn = (...props: any[]) => (
     <Button {...{ onClick: signIn, ...props }} />
   );
   const SignOut = (...props: any[]) => (
-    <Button {...{ onClick: signOut, ...props }} />
+    <Button {...{ onClick: identity, ...props }} />
   );
   return {
     orgId: "test-org-id",
@@ -49,12 +56,7 @@ export const useAuth = () => {
     getSignIn:
       ({
         withPendingAction,
-      }: { withPendingAction?: PendingAction } | undefined = {}) =>
-      () => {
-        resetPendingActions();
-        if (withPendingAction) addPendingActionsWhenSigned(withPendingAction);
-        router.push();
-      },
+      }: { withPendingAction?: PendingAction } | undefined = {}) => signIn,
   };
 };
 

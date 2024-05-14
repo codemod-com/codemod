@@ -3,7 +3,6 @@
 import UserAuthStorage from "@auth/AuthStorage";
 import { Label } from "@studio/components/ui/label";
 import New5PaneSetup from "./5PaneSetup";
-import { useInputs } from "./useInputs";
 
 const MainPageContent = () => {
   const isMobile =
@@ -12,7 +11,6 @@ const MainPageContent = () => {
       navigator.userAgent,
     );
 
-  useInputs();
 
   if (isMobile) {
     return (

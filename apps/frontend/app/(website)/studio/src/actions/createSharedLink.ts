@@ -1,7 +1,10 @@
 "use server";
 
-import { env } from "@/env";
-
+// import { env } from "@/env";
+const env = {
+  DUBCO_WORKSPACE_ID: '',
+  DUBCO_API_TOKEN: ''
+}
 type CreateSharedLinkResponse = Readonly<{
   id: string;
   domain: string;
@@ -72,12 +75,12 @@ export const createSharedLink = async (
     const studioTag = tags.find((tag) => tag.name === destination);
 
     const response = await fetch(
-      `https://api.dub.co/links?workspaceId=${env.DUBCO_WORKSPACE_ID}`,
+      `https://api.dub.co/links?workspaceId=${env?.DUBCO_WORKSPACE_ID}`,
       {
         method: "post",
         headers: {
           "Content-Type": "application/json",
-          authorization: `Bearer ${env.DUBCO_API_TOKEN}`,
+          authorization: `Bearer ${env?.DUBCO_API_TOKEN}`,
         },
         body: JSON.stringify({
           url: body.url,

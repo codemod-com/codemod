@@ -19,9 +19,7 @@ import {
   useUserSession,
 } from "@studio/store/zustand/userSession";
 import { useRouter, useSearchParams } from "next/navigation";
-import { FunctionComponent, PureComponent } from "react";
 export { useAuth, withSession } from "@auth/useAuthDev";
-
 // export { withSession }  from "@clerk/nextjs";
 // export const useAuth = () => {
 //   const router = useRouter();

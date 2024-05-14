@@ -43,8 +43,11 @@ import {
   ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
+import { useInputs } from "@studio/main/useInputs";
 
 const Main = () => {
+
+  useInputs();
   const { getSignIn, isSignedIn, getToken } = useAuth();
   const signIn = getSignIn();
   const panelRefs: PanelsRefs = useRef({});

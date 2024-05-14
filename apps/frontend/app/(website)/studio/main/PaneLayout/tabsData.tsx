@@ -33,6 +33,7 @@ export const useTabs = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
+  console.log({isSignedIn})
   const aiAssistantData = useAiService();
   const tabs = [
     {
