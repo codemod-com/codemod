@@ -1,8 +1,12 @@
-import { argumentRecordSchema } from "@codemod-com/utilities";
+import {
+  argumentRecordSchema,
+  engineOptionsSchema,
+} from "@codemod-com/utilities";
 import {
   type Output,
   boolean,
   literal,
+  nullable,
   object,
   parse,
   string,
@@ -21,6 +25,7 @@ const mainThreadMessageSchema = union([
     ]),
     disablePrettier: boolean(),
     safeArgumentRecord: argumentRecordSchema,
+    engineOptions: nullable(engineOptionsSchema),
   }),
   object({
     kind: literal("exit"),
