@@ -1,7 +1,7 @@
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
 } from "@/utils/apis/getExecutionStatus";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 // use global var, because we need to keep state even if this hook is rendered in multiple different components
