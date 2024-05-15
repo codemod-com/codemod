@@ -45,14 +45,14 @@ const getUseCaseCategory = (
   )?.title;
 };
 
-type LongCodemodIndoDetails = {
+type GeneratedCodemodData = {
   frameworks: string[];
   frameworkVersion: string | null | undefined;
   useCaseCategory: string | null | undefined;
-  totalRuns: number;
+  totalRuns?: number;
 };
 
-export type LongCodemodInfo = Codemod & LongCodemodIndoDetails;
+export type FullCodemodInfo = Codemod & GeneratedCodemodData;
 
 export type Filter = {
   id: string;
@@ -79,7 +79,7 @@ export class CodemodService {
     size: number,
   ): Promise<{
     total: number;
-    data: LongCodemodInfo[];
+    data: FullCodemodInfo[];
     filters: Filter[];
     page: number;
     size: number;
@@ -177,21 +177,16 @@ export class CodemodService {
       where: { classification: "framework" },
     });
 
-    const data: LongCodemodInfo[] = await Promise.all(
+    const data: FullCodemodInfo[] = await Promise.all(
       codemods.map(async (codemod) => {
         const { name, tags } = codemod;
 
         const frameworkVersion = getFrameworkVersion(name);
         const frameworks = getFrameworks(frameworkTags, tags);
         const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
-        const totalRuns =
-          (await posthog.getCodemodTotalRuns(
-            name.toLowerCase().replaceAll(" ", "-"),
-          )) ?? 0;
 
         return {
           ...codemod,
-          totalRuns,
           frameworks,
           frameworkVersion,
           useCaseCategory,
@@ -255,7 +250,7 @@ export class CodemodService {
     return { total, data, filters, page, size };
   }
 
-  public async getCodemodBySlug(slug: string): Promise<LongCodemodInfo> {
+  public async getCodemodBySlug(slug: string): Promise<FullCodemodInfo> {
     const codemod = await this.prisma.codemod.findFirst({
       where: {
         slug,
@@ -287,10 +282,9 @@ export class CodemodService {
     const frameworks = getFrameworks(frameworkTags, tags);
     const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
-    const totalRuns =
-      (await posthog.getCodemodTotalRuns(
-        name.toLowerCase().replaceAll(" ", "-"),
-      )) ?? 0;
+    const totalRuns = await posthog.getCodemodTotalRuns(
+      name.toLowerCase().replaceAll(" ", "-"),
+    );
 
     return {
       ...codemod,
