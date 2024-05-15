@@ -27,7 +27,7 @@ import { initGlobalNodeModules } from "./utils";
 const checkLatestVersion = async () => {
   try {
     const npmViewOutput = (
-      await execPromise("npm view codemod version", { timeout: 5 })
+      await execPromise("npm view codemod version", { timeout: 3000 })
     ).stdout.trim();
     const latestCLIVersion = semver.coerce(npmViewOutput)?.version;
 
