@@ -503,6 +503,7 @@ const testBody = ({
   if (engine === "ts-morph" || engine === "tsmorph") {
     body = beautify(`
         import { describe, it } from 'vitest';
+        import { readFile } from 'node:fs/promises';
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
@@ -536,7 +537,7 @@ const testBody = ({
           ${cases?.map((_, i) => {
             return beautify(
               `
-              it('test #${i + 1}', () => {
+              it('test #${i + 1}', async () => {
                 const INPUT = await readFile('../__testfixtures__/fixture${
                   i + 1
                 }.input.ts', 'utf-8');
@@ -545,8 +546,8 @@ const testBody = ({
                 }.output.ts', 'utf-8');
 
                 const { actual, expected } = transform(
-                  beforeText,
-                  afterText,
+                  INPUT,
+                  OUTPUT,
                   'index.tsx',
                 );
 
