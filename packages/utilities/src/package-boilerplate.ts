@@ -502,6 +502,8 @@ const testBody = ({
 
   if (engine === "ts-morph" || engine === "tsmorph") {
     body = beautify(`
+        import { describe, it } from 'vitest';
+        import { readFile } from 'node:fs/promises';
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
@@ -518,12 +520,12 @@ const testBody = ({
 
           const actualSourceFile = project.createSourceFile(path, beforeText);
 
-          const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, '');
+          const actual = handleSourceFile(actualSourceFile)?.replace(/\\s/gm, '');
 
           const expected = project
             .createSourceFile(\`expected\${extname(path)}\`, afterText)
             .getFullText()
-            .replace(/\s/gm, '');
+            .replace(/\\s/gm, '');
 
           return {
             actual,
@@ -535,7 +537,7 @@ const testBody = ({
           ${cases?.map((_, i) => {
             return beautify(
               `
-              it('test #${i + 1}', () => {
+              it('test #${i + 1}', async () => {
                 const INPUT = await readFile('../__testfixtures__/fixture${
                   i + 1
                 }.input.ts', 'utf-8');
@@ -544,8 +546,8 @@ const testBody = ({
                 }.output.ts', 'utf-8');
 
                 const { actual, expected } = transform(
-                  beforeText,
-                  afterText,
+                  INPUT,
+                  OUTPUT,
                   'index.tsx',
                 );
 
@@ -758,9 +760,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 	}
 
 	sourceFile
-		.getDescendantsOfKind(SyntaxKind.CallExpression)
-		.flatMap((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
-		.filter((id) => id.getText() === "name")
+		.getDescendantsOfKind(SyntaxKind.Identifier)
+		.filter((id) => id.getText() === "toReplace")
 		.forEach((id) => {
 			id.replaceWithText("replacement");
 		});
