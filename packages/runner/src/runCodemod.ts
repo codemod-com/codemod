@@ -4,6 +4,7 @@ import type { Filemod } from "@codemod-com/filemod";
 import { chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
+  type EngineOptions,
   type FileSystem,
   isGeneratorEmpty,
 } from "@codemod-com/utilities";
@@ -165,6 +166,7 @@ export const runCodemod = async (
   onCommand: (command: FormattedFileCommand) => Promise<void>,
   onPrinterMessage: PrinterMessageCallback,
   safeArgumentRecord: ArgumentRecord,
+  engineOptions: EngineOptions | null,
   onCodemodError: CodemodExecutionErrorCallback,
 ): Promise<void> => {
   if (codemod.engine === "piranha") {
@@ -221,6 +223,7 @@ export const runCodemod = async (
             // if we are within a recipe
           },
           safeArgumentRecord,
+          engineOptions,
           onCodemodError,
         );
 
@@ -284,6 +287,7 @@ export const runCodemod = async (
           // if we are within a recipe
         },
         safeArgumentRecord,
+        engineOptions,
         onCodemodError,
       );
 
@@ -454,6 +458,7 @@ export const runCodemod = async (
       transpiledSource,
       flowSettings.raw,
       safeArgumentRecord,
+      engineOptions,
       (error) => {
         onCodemodError({
           codemodName:

@@ -68,6 +68,7 @@ describe("runJscodeshiftCodemod", () => {
       oldData,
       false,
       {},
+      null,
       (consoleKind, message) => {
         messages.push([consoleKind, message]);
       },

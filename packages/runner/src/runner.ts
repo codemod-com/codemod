@@ -1,4 +1,8 @@
-import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
+import type {
+  ArgumentRecord,
+  EngineOptions,
+  FileSystem,
+} from "@codemod-com/utilities";
 import type { Codemod } from "./codemod.js";
 import {
   type FormattedFileCommand,
@@ -16,6 +20,7 @@ import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseServic
 export type CodemodToRun = Codemod & {
   safeArgumentRecord: ArgumentRecord;
   hashDigest?: Buffer;
+  engineOptions: EngineOptions | null;
 };
 
 export class Runner {
@@ -75,6 +80,7 @@ export class Runner {
           },
           onPrinterMessage ?? (() => {}),
           codemod.safeArgumentRecord,
+          codemod.engineOptions,
           (error) => executionErrors.push(error),
         );
 

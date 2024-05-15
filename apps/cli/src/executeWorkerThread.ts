@@ -67,6 +67,7 @@ const messageHandler = async (m: unknown) => {
             message.data,
             initializationMessage.disablePrettier,
             initializationMessage.safeArgumentRecord,
+            initializationMessage.engineOptions,
             consoleCallback,
           );
           break;

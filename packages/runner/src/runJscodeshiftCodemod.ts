@@ -1,7 +1,7 @@
 import { extname } from "node:path";
 import vm from "node:vm";
 import type { ConsoleKind } from "@codemod-com/printer";
-import type { ArgumentRecord } from "@codemod-com/utilities";
+import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
 import jscodeshift, { type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
 import { getAdapterByExtname } from "./adapters/index.js";
@@ -75,6 +75,7 @@ export const runJscodeshiftCodemod = (
   oldData: string,
   disablePrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
+  engineOptions: Extract<EngineOptions, { engine: "jscodeshift" }> | null,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
   const commands: FileCommand[] = [];
@@ -90,7 +91,7 @@ export const runJscodeshiftCodemod = (
     });
   };
 
-  const api = buildApi("tsx");
+  const api = buildApi(engineOptions?.parser ?? "tsx");
 
   const transformFn = adapter !== null ? adapter(transform) : transform;
 
