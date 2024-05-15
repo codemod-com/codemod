@@ -9,7 +9,7 @@ export const useAPI = <T>(endpoint: string) => {
     return {
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${getTestToken()}`,
+        Authorization: `Bearer ${token}`,
       },
     };
   };
