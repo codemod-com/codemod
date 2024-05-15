@@ -71,7 +71,7 @@ jobs:
             echo "Latest image version: $LATEST_IMAGE_VERSION"
 
             cd nginx/
-            sed -i "s|codemod-backend:[0-9]+\.[0-9]+\.[0-9]+|codemod-backend:$LATEST_IMAGE_VERSION|g" docker-compose.yml
+            sed -i -E "s|(codemod-backend:)[0-9]+\.[0-9]+\.[0-9]+|\1$LATEST_IMAGE_VERSION|g" docker-compose.yml
             if [ $? -eq 0 ]; then
               echo "Image version updated successfully in docker-compose.yml."
             else
