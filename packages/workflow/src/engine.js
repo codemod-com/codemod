@@ -1,4 +1,3 @@
-import { AsyncLocalStorage } from "node:async_hooks";
 import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
@@ -20,29 +19,6 @@ import {
 } from "./contexts.js";
 import { cloneRepository, switchBranch } from "./git.js";
 import { clc } from "./helpers.js";
-// const { tsx: astGrepTsx } = require("@ast-grep/napi");
-// const path = require("node:path");
-// const fg = require("fast-glob");
-// const fs = require("node:fs/promises");
-// const { identity, flattenDeep } = require("lodash");
-// const { createHash } = require("node:crypto");
-// const { PLazy } = require("./PLazy.js");
-// const { cloneRepository, switchBranch } = require("./git.js");
-// const {
-//   cwdContext,
-//   getRepositoriesContext,
-//   getRepositoryContext,
-//   repositoriesContext,
-//   repositoryContext,
-//   fileContext,
-//   getCwdContext,
-//   getFileContext,
-//   astGrepNodeContext,
-//   getAstGrepNodeContext,
-//   getContextsSnapshot,
-// } = require("./contexts");
-// const { mapValues } = require("lodash");
-// const { clc } = require("./helpers");
 
 const parseRepositories = (repos) => {
   if (typeof repos === "string") {
@@ -237,13 +213,15 @@ const constructAstGrep =
         const contents = (await fs.readFile(file)).toString();
         const ast = astGrepTsx.parse(contents);
         const root = ast.root();
-        const node = root.find(grep);
-        if (node && cb) {
-          await astGrepNodeContext.run(
-            { node, contents },
-            cb,
-            callback ? helpersWithoutWrapper : helpers,
-          );
+        const nodes = root.findAll(grep);
+        for (const node of nodes) {
+          if (cb) {
+            await astGrepNodeContext.run(
+              { node, contents },
+              cb,
+              callback ? helpersWithoutWrapper : helpers,
+            );
+          }
         }
       });
 
@@ -536,52 +514,3 @@ export const astGrep = initAstGrep();
 export const jsFiles = initJsFiles();
 export const branches = initBranches();
 export const repositories = initRepositories();
-
-// (async () => {
-//   // await repositories`https://github.com/codemod-com/codemod`
-//   //   .branches`brach1`.jsFiles('**/*.ts', async ({ astGrep }) => {
-//   //   await astGrep('console.log($A)');
-//   // });
-//   // await repositories`https://github.com/codemod-com/codemod`.branches`brach1`
-//   //   .jsFiles`**/*.ts`.astGrep`console.log($A)`.replaceWith`console.error($A)`;
-//   // const accessFromHere = await repositories(
-//   //   'https://github.com/codemod-com/codemod,https://github.com/codemod-com/react-codemod',
-//   //   async ({ branches }) => {
-//   //     console.log('callback');
-//   //     await branches('branch1, branch2');
-//   //   }
-//   // );
-//   // await accessFromHere.branches('branch1, branch2');
-//   // await repositories`https://github.com/codemod-com/codemod`.branches(
-//   //   'branch1',
-//   //   async ({ jsFiles }) => {
-//   //     await jsFiles`**/*.ts`.astGrep`console.log($A)`
-//   //       .replaceWith`console.info($A)`;
-//   //   }
-//   // );
-//   // await repositories('https://github.com/codemod-com/codemod')
-//   //   .branches('branch1')
-//   //   .jsFiles('**/*.ts')
-//   //   .astGrep('console.log($A)', ({ replaceWith }) =>
-//   //     replaceWith('console.errt($A)')
-//   //   );
-//   // await repositories('https://github.com/codemod-com/codemod', async () => {
-//   //   // console.log(repositoryContext.getStore());
-//   //   // await jsFiles('**/*.ts', async ({ astGrep }) => {
-//   //   //   await astGrep`console.log($A)`.replaceWith`console.error($A)`;
-//   //   // });
-//   //   // await jsFiles`**/*.ts`.astGrep`console.log($A)`
-//   //   //   .replaceWith`console.test($A)`;
-//   //   await jsFiles('**/*.ts', async ({ astGrep }) => {
-//   //     // await astGrep`console.log($A)`.replaceWith`console.error($A)`;
-//   //     await astGrep('console.log($A)', ({ replaceWith }) =>
-//   //       replaceWith('console.error($A)')
-//   //     );
-//   //   });
-//   // });
-//   // await repositories`https://github.com/codemod-com/codemod`.branches`branch1`
-//   //   .jsFiles`**/*.ts`.astGrep`console.log($A)`
-//   //   .replaceWith`console.error($A)`;
-//   await repositories`https://github.com/codemod-com/codemod`.branches`branch1`
-//     .jsFiles`**/*.ts`.astGrep`console.log($A)`.replaceWith`console.error($A)`;
-// })();

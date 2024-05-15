@@ -4,7 +4,6 @@ import {
   getFileContext,
   jsFiles,
   migrate,
-  repositories,
 } from "@codemod-com/workflow";
 import { identity } from "lodash";
 
@@ -14,19 +13,20 @@ migrate("sample migration", () => {
     //   .replaceWith`console.error($A)`;
     // console.error(files);
     const codeOccurencies = await jsFiles`**/*.ts`.astGrep`console.log($A)`.map(
-      async () => {
+      () => {
         const { file } = getFileContext();
         const { node } = getAstGrepNodeContext();
         if (node) {
+          const range = node.range();
           return {
-            file,
+            file: `${file}:${range.start.line + 1}:${range.start.column + 1}`,
             code: node.text(),
-            ...node.range().start,
           };
         }
       },
     );
 
     console.log(codeOccurencies.filter(identity));
+    console.log("done");
   });
 });
