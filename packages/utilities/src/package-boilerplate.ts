@@ -520,12 +520,12 @@ const testBody = ({
 
           const actualSourceFile = project.createSourceFile(path, beforeText);
 
-          const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, '');
+          const actual = handleSourceFile(actualSourceFile)?.replace(/\\s/gm, '');
 
           const expected = project
             .createSourceFile(\`expected\${extname(path)}\`, afterText)
             .getFullText()
-            .replace(/\s/gm, '');
+            .replace(/\\s/gm, '');
 
           return {
             actual,
@@ -760,9 +760,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 	}
 
 	sourceFile
-		.getDescendantsOfKind(SyntaxKind.CallExpression)
-		.flatMap((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
-		.filter((id) => id.getText() === "name")
+		.getDescendantsOfKind(SyntaxKind.Identifier)
+		.filter((id) => id.getText() === "toReplace")
 		.forEach((id) => {
 			id.replaceWithText("replacement");
 		});
