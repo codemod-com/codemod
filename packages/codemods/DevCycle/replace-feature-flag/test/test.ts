@@ -17,12 +17,12 @@ const transform = (beforeText: string, afterText: string, path: string) => {
 
   const actualSourceFile = project.createSourceFile(path, beforeText);
 
-  const actual = handleSourceFile(actualSourceFile)?.replace(/s/gm, "");
+  const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, "");
 
   const expected = project
     .createSourceFile(`expected${extname(path)}`, afterText)
     .getFullText()
-    .replace(/s/gm, "");
+    .replace(/\s/gm, "");
 
   return {
     actual,

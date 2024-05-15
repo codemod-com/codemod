@@ -10,9 +10,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
   }
 
   sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .flatMap((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
-    .filter((id) => id.getText() === "name")
+    .getDescendantsOfKind(SyntaxKind.Identifier)
+    .filter((id) => id.getText() === "toReplace")
     .forEach((id) => {
       id.replaceWithText("replacement");
     });
