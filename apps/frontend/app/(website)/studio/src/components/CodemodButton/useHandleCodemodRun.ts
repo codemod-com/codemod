@@ -6,7 +6,7 @@ import type { GithubRepository } from "be-types";
 export const useHandleCodemodRun = (
   codemodName: string,
   selectedRepository: GithubRepository | undefined,
-  selectedBranch: string | undefined,
+  selectedBranch: { name: string } | undefined,
 ) => {
   const { onCodemodRun } = useCodemodExecution();
   const { engine } = useSnippetStore();
@@ -29,7 +29,7 @@ export const useHandleCodemodRun = (
       repoUrl: selectedRepository.html_url,
       codemodSource: internalContent,
       codemodName,
-      branch: selectedBranch,
+      branch: selectedBranch.name,
     };
 
     await onCodemodRun(request);

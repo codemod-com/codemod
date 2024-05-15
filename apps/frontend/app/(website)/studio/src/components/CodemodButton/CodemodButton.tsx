@@ -21,8 +21,8 @@ export const CodemodButton = () => {
   const [selectedRepository, setSelectedRepository] =
     useState<GithubRepository>();
 
-  const [branchesToShow, setBranchesToShow] = useState<string[]>([]);
-  const [selectedBranch, setSelectedBranch] = useState<string>();
+  const [branchesToShow, setBranchesToShow] = useState<{ name: string }[]>([]);
+  const [selectedBranch, setSelectedBranch] = useState<{ name: string }>();
   const [targetPathInput, setTargetPathInput] = useState<string>("");
   const [codemodNameInput, setCodemodNameInput] = useState<string>("Untitled");
 
@@ -51,7 +51,7 @@ export const CodemodButton = () => {
   };
 
   const selectBranch = (branch: string) =>
-    setSelectedBranch(branchesToShow.find((name) => name === branch));
+    setSelectedBranch(branchesToShow.find(({ name }) => name === branch));
 
   const handleCodemodRun = useHandleCodemodRun(
     codemodNameInput,
@@ -78,7 +78,7 @@ export const CodemodButton = () => {
         })
       ).data;
 
-      setBranchesToShow(branches.slice().map((branch) => branch.name));
+      setBranchesToShow(branches);
     };
 
     getBranches();
