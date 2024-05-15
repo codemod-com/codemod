@@ -5,13 +5,6 @@ import {
 } from "@codemod-com/utilities";
 import Fuse from "fuse.js";
 import type { Codemod, Prisma, PrismaClient, Tag } from "../../prisma/client";
-import { environment } from "../util";
-import { PostHogService } from "./PostHogService";
-
-const posthog = new PostHogService(
-  environment.POSTHOG_API_KEY ?? "",
-  environment.POSTHOG_PROJECT_ID ?? "",
-);
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];
@@ -282,13 +275,8 @@ export class CodemodService {
     const frameworks = getFrameworks(frameworkTags, tags);
     const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
-    const totalRuns = await posthog.getCodemodTotalRuns(
-      name.toLowerCase().replaceAll(" ", "-"),
-    );
-
     return {
       ...codemod,
-      totalRuns,
       frameworks,
       frameworkVersion,
       useCaseCategory,
