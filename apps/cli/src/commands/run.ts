@@ -22,6 +22,7 @@ import { AxiosError } from "axios";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
+import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
 import type { buildRunOptions } from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
 import { buildPrinterMessageUponCommand } from "../fileCommands.js";
@@ -74,14 +75,19 @@ export const handleRunCliCommand = async (
       codemodDownloader,
     );
 
+    const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
+
     codemods.push({
       ...codemod,
       hashDigest: createHash("ripemd160")
         .update(codemodSettings.source)
         .digest(),
       safeArgumentRecord: await buildSafeArgumentRecord(codemod, args),
+      engineOptions,
     });
-  } else if (codemodSettings.kind === "runNamed") {
+  }
+  else
+  if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
       codemod = await codemodDownloader.download(nameOrPath);
@@ -112,10 +118,13 @@ export const handleRunCliCommand = async (
       throw new Error(`Error while downloading codemod ${name}: ${error}`);
     }
 
+    const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
+
     codemods.push({
       ...codemod,
       hashDigest: createHash("ripemd160").update(codemod.name).digest(),
       safeArgumentRecord: await buildSafeArgumentRecord(codemod, args),
+      engineOptions,
     });
   } else {
     const { preCommitCodemods } = await loadRepositoryConfiguration();
@@ -123,12 +132,15 @@ export const handleRunCliCommand = async (
     for (const preCommitCodemod of preCommitCodemods) {
       if (preCommitCodemod.source === "package") {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
+        const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
+
         codemods.push({
           ...codemod,
           safeArgumentRecord: await buildSafeArgumentRecord(
             codemod,
             preCommitCodemod.arguments,
           ),
+          engineOptions,
         });
       }
     }
