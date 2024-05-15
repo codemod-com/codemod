@@ -259,8 +259,9 @@ describe("/publish route", async () => {
           publishedAt: MOCK_TIMESTAMP,
         },
         author: {
-          name: `${CLERK_GET_USER_RETURN.firstName} ${CLERK_GET_USER_RETURN.lastName} (@${CLERK_GET_USER_RETURN.username})`,
-          email: `Get in touch with them at ${CLERK_GET_USER_RETURN.emailAddresses[0]?.emailAddress}`,
+          username: CLERK_GET_USER_RETURN.username,
+          name: `${CLERK_GET_USER_RETURN.firstName} ${CLERK_GET_USER_RETURN.lastName}`,
+          email: CLERK_GET_USER_RETURN.emailAddresses[0]?.emailAddress,
         },
       },
     );

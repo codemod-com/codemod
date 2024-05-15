@@ -357,14 +357,6 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
     }
 
     if (latestVersion === null) {
-      const userFullName = `${firstName} ${lastName}`.trim();
-      const displayName = userFullName
-        ? `${userFullName} (@${username})`
-        : username;
-      const userEmail =
-        emailAddresses.find((e) => e.id === primaryEmailAddressId)
-          ?.emailAddress ?? null;
-
       try {
         await axios.post(
           "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
@@ -379,10 +371,11 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
               publishedAt: createdAtTimestamp,
             },
             author: {
-              name: displayName,
-              email: userEmail
-                ? `Get in touch with them at ${userEmail}`
-                : null,
+              username,
+              name: `${firstName} ${lastName}`.trim() || null,
+              email:
+                emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                  ?.emailAddress ?? null,
             },
           },
         );
