@@ -288,14 +288,14 @@ export const handleInitCliCommand = async (options: {
   )} to run the codemod on current working directory (or specify a target using ${chalk.yellow(
     "--target",
   )} option).`;
-  printer.printConsoleMessage("info", chalk.cyan(howToRunText, "cyan"));
+  printer.printConsoleMessage("info", chalk.cyan(howToRunText));
 
   let publishText = `Run ${chalk.bold(
     doubleQuotify("codemod publish"),
   )} to publish the codemod to the Codemod registry.`;
   if (isJsCodemod) {
     publishText += chalk.yellow(
-      "NOTE: Your codemod has to be built using the build command",
+      " NOTE: Your codemod has to be built using the build command",
     );
   }
   printer.printConsoleMessage("info", chalk.cyan(publishText));
