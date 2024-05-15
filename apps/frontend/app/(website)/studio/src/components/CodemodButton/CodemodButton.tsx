@@ -102,7 +102,12 @@ export const CodemodButton = () => {
         position: "top-center",
         duration: 12000,
       });
-    } else if (result.status === "done") {
+    } else if (result.status === "done" && result.link === null) {
+      toast(() => <span>❌ Codemod did not result in any changes.</span>, {
+        position: "top-center",
+        duration: 12000,
+      });
+    } else if (result.status === "done" && result.link) {
       toast.success(
         () => {
           return (
