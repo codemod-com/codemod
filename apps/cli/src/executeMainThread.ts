@@ -1,3 +1,5 @@
+import "./validateEnv";
+
 import { Printer, boxen, chalk } from "@codemod-com/printer";
 import {
   NullSender,
