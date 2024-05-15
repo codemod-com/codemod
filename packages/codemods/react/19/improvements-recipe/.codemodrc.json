@@ -13,6 +13,6 @@
     "tags": ["migration"]
   },
   "applicability": {
-    "from": [["react", "<=", "18"]]
+    "from": [["react", "<=", "19"]]
   }
 }
