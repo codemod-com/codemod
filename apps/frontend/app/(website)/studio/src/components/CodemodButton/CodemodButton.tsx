@@ -7,6 +7,7 @@ import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/us
 import { Button } from "@studio/components/ui/button";
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
+import { useModal } from "@studio/hooks/useModal";
 import type { GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -29,15 +30,21 @@ export const CodemodButton = () => {
   const { codemodRunStatus } = useCodemodExecution();
 
   const {
-    showModalWithRepositories,
-    hideRepositoryModal,
-    isRepositoryModalShown,
-  } = useOpenRepoModalAfterSignIn(setRepositoriesToShow);
+    showModal: showRepositoryModal,
+    hideModal: hideRepositoryModal,
+    isModalShown: isRepositoryModalShown,
+  } = useModal();
 
-  const showRepoModalToSignedUser = useEnsureUserSigned(
-    showModalWithRepositories,
-    "openRepoModal",
-  );
+  // const {
+  //   showModalWithRepositories,
+  //   hideRepositoryModal,
+  //   isRepositoryModalShown,
+  // } = useOpenRepoModalAfterSignIn(setRepositoriesToShow);
+  //
+  // const showRepoModalToSignedUser = useEnsureUserSigned(
+  //   showModalWithRepositories,
+  //   "openRepoModal",
+  // );
 
   const { text, hintText } = getButtonPropsByStatus(
     codemodRunStatus?.result?.status ?? null,
@@ -144,7 +151,7 @@ export const CodemodButton = () => {
         <ProgressBar codemodRunStatus={codemodRunStatus} />
       )}
       <Button
-        onClick={showRepoModalToSignedUser}
+        onClick={showRepositoryModal}
         size="xs"
         variant="outline"
         className="flex gap-1"
