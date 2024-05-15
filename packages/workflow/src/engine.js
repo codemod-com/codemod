@@ -7,8 +7,10 @@ import * as fg from "fast-glob";
 import { flattenDeep, identity, mapValues } from "lodash";
 import { PLazy } from "./PLazy.js";
 import {
+  astGrepNodeContext,
   cwdContext,
   fileContext,
+  getAstGrepNodeContext,
   getCwdContext,
   getFileContext,
   getRepositoriesContext,
@@ -17,6 +19,7 @@ import {
   repositoryContext,
 } from "./contexts.js";
 import { cloneRepository, switchBranch } from "./git.js";
+import { clc } from "./helpers.js";
 // const { tsx: astGrepTsx } = require("@ast-grep/napi");
 // const path = require("node:path");
 // const fg = require("fast-glob");
@@ -178,8 +181,48 @@ const constructReplaceWith =
     return promise;
   };
 
-const constructAstGrep =
+const constructMap =
   (record) =>
+  (context = noContextFn) =>
+  (callback) => {
+    const wrapWithContextAndReturnPromise = async (cb) => {
+      const response = [];
+      await context(async (...args) => {
+        const result = await cb(...args);
+        response.push(result);
+        return result;
+      });
+
+      return response;
+    };
+
+    const helpers = mapValues(
+      record,
+      (value) =>
+        (...args) =>
+          value(wrapWithContextAndReturnPromise)(...args),
+    );
+
+    const helpersWithoutWrapper = mapValues(
+      record,
+      (value) =>
+        (...args) =>
+          value()(...args),
+    );
+
+    const promise = new PLazy((resolve, reject) => {
+      wrapWithContextAndReturnPromise(callback).then(resolve).catch(reject);
+    });
+
+    Object.keys(helpers).forEach((key) => {
+      promise[key] = helpers[key];
+    });
+
+    return promise;
+  };
+
+const constructAstGrep =
+  (children) =>
   (context = noContextFn) =>
   (queryOrCallback, maybeCallback) => {
     const query = queryOrCallback;
@@ -208,14 +251,14 @@ const constructAstGrep =
     };
 
     const helpers = mapValues(
-      record,
+      children,
       (value) =>
         (...args) =>
           value(wrapWithContextAndReturnPromise)(...args),
     );
 
     const helpersWithoutWrapper = mapValues(
-      record,
+      children,
       (value) =>
         (...args) =>
           value()(...args),
@@ -474,8 +517,12 @@ const constructRepositories =
     return promise;
   };
 
+const initMap = constructMap({});
 const initReplaceWith = constructReplaceWith({});
-const initAstGrep = constructAstGrep({ replaceWith: initReplaceWith });
+const initAstGrep = constructAstGrep({
+  replaceWith: initReplaceWith,
+  map: initMap,
+});
 const initJsFiles = constructJsFiles({ astGrep: initAstGrep });
 const initBranches = constructBranches({ jsFiles: initJsFiles });
 
