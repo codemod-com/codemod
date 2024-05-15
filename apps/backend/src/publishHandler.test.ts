@@ -249,8 +249,12 @@ describe("/publish route", async () => {
       {
         codemod: {
           name: codemodRcContents.name,
-          from: codemodRcContents.applicability?.from,
-          to: codemodRcContents.applicability?.to,
+          from: codemodRcContents.applicability?.from?.map((tuple) =>
+            tuple.join(" "),
+          ),
+          to: codemodRcContents.applicability?.to?.map((tuple) =>
+            tuple.join(" "),
+          ),
           engine: codemodRcContents.engine,
           publishedAt: MOCK_TIMESTAMP,
         },
@@ -552,10 +556,6 @@ describe("/publish route", async () => {
         })
         .expect("Content-Type", "application/json; charset=utf-8")
         .expect(expectedCode);
-
-      const hashDigest = createHash("ripemd160")
-        .update(codemodRcContents.name)
-        .digest("base64url");
 
       const clientInstance = mocks.S3Client.mock.instances[0];
 

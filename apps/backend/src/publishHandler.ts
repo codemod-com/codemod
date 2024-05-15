@@ -356,28 +356,32 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       });
     }
 
-    try {
-      await axios.post(
-        "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
-        {
-          codemod: {
-            name,
-            from: codemodRc.applicability?.from,
-            to: codemodRc.applicability?.to,
-            engine: codemodRc.engine,
-            publishedAt: createdAtTimestamp,
+    if (latestVersion === null) {
+      try {
+        await axios.post(
+          "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
+          {
+            codemod: {
+              name,
+              from: codemodRc.applicability?.from?.map((tuple) =>
+                tuple.join(" "),
+              ),
+              to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
+              engine: codemodRc.engine,
+              publishedAt: createdAtTimestamp,
+            },
+            author: {
+              username,
+              name: `${firstName} ${lastName}`.trim() || null,
+              email:
+                emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                  ?.emailAddress ?? null,
+            },
           },
-          author: {
-            username,
-            name: `${firstName} ${lastName}`.trim() || "unknown",
-            email:
-              emailAddresses.find((e) => e.id === primaryEmailAddressId)
-                ?.emailAddress ?? "unknown",
-          },
-        },
-      );
-    } catch (err) {
-      console.error("Failed calling Zapier hook:", err);
+        );
+      } catch (err) {
+        console.error("Failed calling Zapier hook:", err);
+      }
     }
 
     return reply.code(200).send({ success: true });
