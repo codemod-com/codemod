@@ -106,7 +106,9 @@ export const handleRunCliCommand = async (
   const flowSettings = parseFlowSettings(args);
   const runSettings = parseRunSettings(homedir(), args);
 
-  await checkFileTreeVersioning(flowSettings.target);
+  if (!runSettings.dryRun) {
+    await checkFileTreeVersioning(flowSettings.target);
+  }
 
   const fileDownloadService = new FileDownloadService(
     args.noCache,

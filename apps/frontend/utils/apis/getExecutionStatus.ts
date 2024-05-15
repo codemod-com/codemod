@@ -1,7 +1,5 @@
-import { isDevelopment } from "@/config";
 import apiClient from "@/utils/apis/client";
 import type { AxiosError } from "axios";
-import { getTestToken } from "..";
 import { GET_EXECUTION_STATUS } from "./endpoints";
 
 type Result =
@@ -37,7 +35,7 @@ const getExecutionStatus = async ({
       GET_EXECUTION_STATUS(executionId),
       {
         headers: {
-          Authorization: `Bearer ${isDevelopment ? getTestToken() : token}`,
+          Authorization: `Bearer ${token}`,
         },
       },
     );

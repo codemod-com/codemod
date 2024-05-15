@@ -440,19 +440,20 @@ const testBody = ({
   name,
   cases,
   engine,
-}: Pick<ProjectDownloadInput, "name" | "engine" | "cases">) => {
+  vanillaJs,
+}: Pick<ProjectDownloadInput, "name" | "engine" | "cases" | "vanillaJs">) => {
   let body = "";
 
   if (engine === "jscodeshift") {
     body = beautify(`
         import { describe, it } from 'vitest';
-        import jscodeshift, { API } from 'jscodeshift';
+        import jscodeshift${vanillaJs ? "" : ", { type API }"} from 'jscodeshift';
         import transform from '../src/index.js';
         import assert from 'node:assert';
         import { readFile } from 'node:fs/promises';
         import { join } from 'node:path';
 
-        const buildApi = (parser: string | undefined): API => ({
+        const buildApi = (parser: string | undefined)${vanillaJs ? "" : ": API"} => ({
           j: parser ? jscodeshift.withParser(parser) : jscodeshift,
           jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
           stats: () => {
@@ -473,10 +474,10 @@ const testBody = ({
               `it('test #${i + 1}', async () => {
                 const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
                   i + 1
-                }.input.ts'), 'utf-8');
+                }.input.${vanillaJs ? "js" : "ts"}'), 'utf-8');
                 const OUTPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
                   i + 1
-                }.output.ts'), 'utf-8');
+                }.output.${vanillaJs ? "js" : "ts"}'), 'utf-8');
 
                 const actualOutput = transform(
                   {
@@ -501,6 +502,8 @@ const testBody = ({
 
   if (engine === "ts-morph" || engine === "tsmorph") {
     body = beautify(`
+        import { describe, it } from 'vitest';
+        import { readFile } from 'node:fs/promises';
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
@@ -517,12 +520,12 @@ const testBody = ({
 
           const actualSourceFile = project.createSourceFile(path, beforeText);
 
-          const actual = handleSourceFile(actualSourceFile)?.replace(/\s/gm, '');
+          const actual = handleSourceFile(actualSourceFile)?.replace(/\\s/gm, '');
 
           const expected = project
             .createSourceFile(\`expected\${extname(path)}\`, afterText)
             .getFullText()
-            .replace(/\s/gm, '');
+            .replace(/\\s/gm, '');
 
           return {
             actual,
@@ -534,7 +537,7 @@ const testBody = ({
           ${cases?.map((_, i) => {
             return beautify(
               `
-              it('test #${i + 1}', () => {
+              it('test #${i + 1}', async () => {
                 const INPUT = await readFile('../__testfixtures__/fixture${
                   i + 1
                 }.input.ts', 'utf-8');
@@ -543,8 +546,8 @@ const testBody = ({
                 }.output.ts', 'utf-8');
 
                 const { actual, expected } = transform(
-                  beforeText,
-                  afterText,
+                  INPUT,
+                  OUTPUT,
                   'index.tsx',
                 );
 
@@ -598,6 +601,15 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
       throw new Error(`Unknown engine: ${input.engine}`);
   }
 
+  if (!input.cases || input.cases.length === 0) {
+    input.cases = [
+      {
+        before: `const toReplace = "hello";`,
+        after: `const replacement = "hello";`,
+      },
+    ];
+  }
+
   const mainFileContent = input.codemodBody
     ? beautify(input.codemodBody)
     : mainFileBoilerplate;
@@ -635,26 +647,24 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
     };
   }
 
-  if (input.cases) {
-    for (let i = 0; i < input.cases.length; i++) {
-      // biome-ignore lint: cases[i] is defined
-      const { before, after } = input.cases[i]!;
+  for (let i = 0; i < input.cases.length; i++) {
+    // biome-ignore lint: cases[i] is defined
+    const { before, after } = input.cases[i]!;
 
-      if (input.vanillaJs) {
-        (files as JavaScriptProjectFiles)[
-          `__testfixtures__/fixture${i + 1}.input.js`
-        ] = beautify(before);
-        (files as JavaScriptProjectFiles)[
-          `__testfixtures__/fixture${i + 1}.output.js`
-        ] = beautify(after);
-      } else {
-        (files as TypeScriptProjectFiles)[
-          `__testfixtures__/fixture${i + 1}.input.ts`
-        ] = beautify(before);
-        (files as TypeScriptProjectFiles)[
-          `__testfixtures__/fixture${i + 1}.output.ts`
-        ] = beautify(after);
-      }
+    if (input.vanillaJs) {
+      (files as JavaScriptProjectFiles)[
+        `__testfixtures__/fixture${i + 1}.input.js`
+      ] = beautify(before);
+      (files as JavaScriptProjectFiles)[
+        `__testfixtures__/fixture${i + 1}.output.js`
+      ] = beautify(after);
+    } else {
+      (files as TypeScriptProjectFiles)[
+        `__testfixtures__/fixture${i + 1}.input.ts`
+      ] = beautify(before);
+      (files as TypeScriptProjectFiles)[
+        `__testfixtures__/fixture${i + 1}.output.ts`
+      ] = beautify(after);
     }
   }
 
@@ -662,25 +672,44 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
 }
 
 export const emptyJsCodeShiftBoilerplate = beautify(`
-import type { API, FileInfo, Options } from "jscodeshift";
+// BUILT WITH https://codemod.studio
 
-export default function transformer(
-	file: FileInfo,
-	api: API,
-	options: Options,
-) {
-	const j = api.jscodeshift;
-	const root = j(file.source);
+import type { FileInfo, API, Options } from "jscodeshift";
+export default function transform(
+  file: FileInfo,
+  api: API,
+  options?: Options
+): string | undefined {
+  const j = api.jscodeshift;
+  const root = j(file.source);
 
-	root
-		.find(j.CallExpression, {
-			callee: { name: "name" },
-		})
-		.forEach((path) => {
-      path.node.callee.name = "replacement";
-    });
+  // Helper function to preserve comments when replacing nodes
+  function replaceWithComments(path, newNode) {
+    // If the original node had comments, add them to the new node
+    if (path.node.comments) {
+      newNode.comments = path.node.comments;
+    }
 
-	return root.toSource(options);
+    // Replace the node
+    j(path).replaceWith(newNode);
+  }
+
+  // Find all variable declarations
+  root.find(j.VariableDeclarator).forEach((path) => {
+    // Ensure the node is an Identifier and its name is 'toReplace'
+    if (
+      path.node.id.type === "Identifier" &&
+      path.node.id.name === "toReplace"
+    ) {
+      // Create a new Identifier with the name 'replacement'
+      const newId = j.identifier("replacement");
+
+      // Replace the old Identifier with the new one, preserving comments
+      replaceWithComments(path.get("id"), newId);
+    }
+  });
+
+  return root.toSource();
 }
 `);
 
@@ -731,9 +760,8 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 	}
 
 	sourceFile
-		.getDescendantsOfKind(SyntaxKind.CallExpression)
-		.flatMap((ce) => ce.getDescendantsOfKind(SyntaxKind.Identifier))
-		.filter((id) => id.getText() === "name")
+		.getDescendantsOfKind(SyntaxKind.Identifier)
+		.filter((id) => id.getText() === "toReplace")
 		.forEach((id) => {
 			id.replaceWithText("replacement");
 		});
