@@ -112,15 +112,17 @@ export const handleLearnCliCommand = async (
     return;
   }
 
-  const path = filePath ?? (await findLastlyModifiedFile());
+  const dirtyPath = filePath ?? (await findLastlyModifiedFile());
 
-  if (path === null) {
+  if (dirtyPath === null) {
     printer.printOperationMessage({
       kind: "error",
       message: "We could not find any modified file to run the command on.",
     });
     return;
   }
+
+  const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
 
   const fileExtension = getFileExtension(path);
 
@@ -183,7 +185,7 @@ export const handleLearnCliCommand = async (
   }
 
   const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
-  const sourceFile = getSourceFile(path, fileExtension);
+  const sourceFile = getSourceFile(dirtyPath, fileExtension);
 
   if (oldSourceFile === null || sourceFile === null) {
     printer.printOperationMessage({
