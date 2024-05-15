@@ -3,11 +3,16 @@ import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import type { GithubRepository } from "be-types";
 
-export const useHandleCodemodRun = (
-  codemodName: string,
-  selectedRepository: GithubRepository | undefined,
-  selectedBranch: { name: string } | undefined,
-) => {
+type Props = {
+  codemodName?: string;
+  selectedRepository: GithubRepository | undefined;
+  selectedBranch: { name: string } | undefined;
+};
+export const useHandleCodemodRun = ({
+  codemodName,
+  selectedRepository,
+  selectedBranch,
+}: Props) => {
   const { onCodemodRun } = useCodemodExecution();
   const { engine } = useSnippetStore();
   const { internalContent } = useModStore();
@@ -15,6 +20,7 @@ export const useHandleCodemodRun = (
 
   return async () => {
     if (
+      !codemodName ||
       selectedRepository === undefined ||
       selectedBranch === undefined ||
       internalContent === null ||

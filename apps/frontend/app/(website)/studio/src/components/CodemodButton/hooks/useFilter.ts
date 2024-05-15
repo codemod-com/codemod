@@ -9,7 +9,7 @@ export function useFilteredItems<T>(
 ) {
   return useMemo(() => {
     if (!filterValue) return items;
-    const matches = matchSorter(items, filterValue, { keys: [key] });
+    const matches = matchSorter(items, filterValue, { keys: [key as string] });
     if (selectedItem && !matches.includes(selectedItem)) {
       matches.push(selectedItem);
     }

@@ -18,6 +18,8 @@ export type ListPRParams = Readonly<{
   base: string | undefined;
 }>;
 
+export type GHBranch = Readonly<{ name: string }>;
+
 export type PullRequest = Readonly<{
   html_url: string;
   head: {

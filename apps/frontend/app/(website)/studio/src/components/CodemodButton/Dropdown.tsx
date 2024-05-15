@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import {
   Combobox,
   ComboboxItem,
@@ -5,35 +6,54 @@ import {
   ComboboxProvider,
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
+import { useFilteredItems } from "@studio/components/CodemodButton/hooks/useFilter";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "@studio/icons";
-import { startTransition } from "react";
+import type { ToVoid } from "@studio/types/transformations";
+import { LoaderIcon } from "lucide-react";
+import { startTransition, useState } from "react";
 
-type DropdownSelectorProps = {
-  selectedRepository;
-  propName?: string;
-  selectRepository;
-  repoSelectorOpen;
-  setRepoSelectorOpen;
-  setRepoValueToFilterBy;
-  repoMatches;
+type DropdownSelectorProps<T> = {
+  selectedValue?: T;
+  propName: keyof T;
+  onSelect?: ToVoid<string>;
+  items: T[];
+  placeholder: string;
+  isDisabled?: boolean;
+  isLoading?: boolean;
 };
 
-export const DropdownSelector = ({
-  selectedRepository,
+export const DropdownSelector = <T,>({
+  selectedValue,
   propName,
-  selectRepository,
-  repoSelectorOpen,
-  setRepoSelectorOpen,
-  setRepoValueToFilterBy,
-  repoMatches,
-}: DropdownSelectorProps) => {
+  onSelect,
+  items,
+  placeholder,
+  isDisabled = false,
+  isLoading = false,
+}: DropdownSelectorProps<T>) => {
+  const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
+  const [valueToFilterBy, setValueToFilterBy] = useState<string>();
+
+  const filteredElements = useFilteredItems(
+    items,
+    valueToFilterBy,
+    selectedValue,
+    propName,
+  );
+
   return (
-    <div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
+    <div
+      className={cn(
+        "flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0",
+        isDisabled && "invisible",
+      )}
+    >
       <RadixSelect.Root
-        value={propName ? selectedRepository?.[propName] : selectedRepository}
-        onValueChange={selectRepository}
+        value={selectedValue?.[propName] as string}
+        onValueChange={onSelect}
         open={repoSelectorOpen}
         onOpenChange={setRepoSelectorOpen}
+        disabled={isDisabled}
       >
         <ComboboxProvider
           open={repoSelectorOpen}
@@ -42,15 +62,18 @@ export const DropdownSelector = ({
           includesBaseElement={false}
           setValue={(value) => {
             startTransition(() => {
-              setRepoValueToFilterBy(value);
+              setValueToFilterBy(value);
             });
           }}
         >
           <RadixSelect.Trigger
             aria-label="Language"
-            className="select flex items-center"
+            className={cn(
+              "select flex w-full",
+              repoSelectorOpen && "invisible",
+            )}
           >
-            <RadixSelect.Value placeholder="Select a repository (required)" />
+            <RadixSelect.Value placeholder={placeholder} />
             <RadixSelect.Icon className="select-icon ml-1">
               <ChevronUpDownIcon />
             </RadixSelect.Icon>
@@ -63,14 +86,14 @@ export const DropdownSelector = ({
             sideOffset={4}
             alignOffset={-16}
           >
-            <div className="combobox-wrapper">
+            <div className="combobox-wrapper w-full">
               <div className="combobox-icon">
                 <SearchIcon />
               </div>
               <Combobox
                 autoSelect
-                placeholder="Search repositories"
-                className="combobox"
+                placeholder="Search"
+                className="combobox w-full"
                 // Ariakit's Combobox manually triggers a blur event on virtually
                 // blurred items, making them work as if they had actual DOM
                 // focus. These blur events might happen after the corresponding
@@ -86,17 +109,17 @@ export const DropdownSelector = ({
                 }}
               />
             </div>
-            <ComboboxList className="listbox">
-              {repoMatches.map((item) => (
+            <ComboboxList className="listbox w-full">
+              {filteredElements.map((item, i) => (
                 <RadixSelect.Item
-                  key={propName ? item[propName] : item}
-                  value={propName ? item[propName] : item}
+                  key={item?.[propName] as string}
+                  value={item?.[propName] as string}
                   asChild
                   className="item"
                 >
                   <ComboboxItem>
                     <RadixSelect.ItemText>
-                      {propName ? item[propName] : item}
+                      {item?.[propName] as string}
                     </RadixSelect.ItemText>
                     <RadixSelect.ItemIndicator className="item-indicator">
                       <CheckIcon />
