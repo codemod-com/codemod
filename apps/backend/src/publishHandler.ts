@@ -8,6 +8,7 @@ import {
   isNeitherNullNorUndefined,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
+import axios from "axios";
 import * as semver from "semver";
 import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
@@ -48,7 +49,13 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
         .send({ error: "User id was not found", success: false });
     }
 
-    const { username } = await clerkClient.users.getUser(userId);
+    const {
+      username,
+      primaryEmailAddressId,
+      emailAddresses,
+      firstName,
+      lastName,
+    } = await clerkClient.users.getUser(userId);
     const orgs = await clerkClient.users.getOrganizationMembershipList({
       userId,
     });
@@ -249,8 +256,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       }
     }
 
+    let createdAtTimestamp: number;
     try {
-      await prisma.codemod.upsert({
+      const result = await prisma.codemod.upsert({
         where: {
           name,
         },
@@ -284,6 +292,8 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
           },
         },
       });
+
+      createdAtTimestamp = result.createdAt.getTime();
     } catch (err) {
       console.error("Failed writing codemod to the database:", err);
       return reply.code(500).send({
@@ -344,6 +354,34 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
         error: `Failed publishing to S3: ${(err as Error).message}`,
         success: false,
       });
+    }
+
+    if (latestVersion === null) {
+      try {
+        await axios.post(
+          "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
+          {
+            codemod: {
+              name,
+              from: codemodRc.applicability?.from?.map((tuple) =>
+                tuple.join(" "),
+              ),
+              to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
+              engine: codemodRc.engine,
+              publishedAt: createdAtTimestamp,
+            },
+            author: {
+              username,
+              name: `${firstName} ${lastName}`.trim() || null,
+              email:
+                emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                  ?.emailAddress ?? null,
+            },
+          },
+        );
+      } catch (err) {
+        console.error("Failed calling Zapier hook:", err);
+      }
     }
 
     return reply.code(200).send({ success: true });
