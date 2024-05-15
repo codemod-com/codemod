@@ -1,4 +1,3 @@
-import { useAuth } from "@/app/auth/useAuth";
 import { GH_BRANCH_LIST } from "@/utils/apis/endpoints";
 import type { GithubBranch } from "@codemod-com/utilities";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
@@ -16,8 +15,6 @@ import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
 export const CodemodButton = () => {
-  const { getToken, isSignedIn } = useAuth();
-
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
@@ -151,13 +148,7 @@ export const CodemodButton = () => {
         size="xs"
         variant="outline"
         className="flex gap-1"
-        hint={
-          <p className="font-normal">
-            {isSignedIn
-              ? hintText
-              : "You need to sign in to run codemod on Github repository."}
-          </p>
-        }
+        hint={<p className="font-normal">{hintText}</p>}
         disabled={
           codemodRunStatus?.result?.status === "executing codemod" ||
           codemodRunStatus?.result?.status === "progress"
