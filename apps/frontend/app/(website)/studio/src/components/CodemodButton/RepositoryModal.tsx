@@ -25,7 +25,6 @@ export const RepositoryModal = ({
   repositoriesToShow,
   areReposLoading,
 }: RepositoryModalProps) => {
-  console.log({ areReposLoading });
   const [selectedRepository, setSelectedRepository] =
     useState<GithubRepository>();
   const selectRepository = (name: GithubRepository["full_name"]) => {
