@@ -256,7 +256,7 @@ export const executeMainThread = async () => {
             )}`,
           });
 
-          exit();
+          return exit();
         }
 
         const { handleBuildCliCommand } = await import("./commands/build.js");
@@ -296,14 +296,18 @@ export const executeMainThread = async () => {
       async (args) => {
         const lastArgument = args._.length > 1 ? String(args._.at(-1)) : null;
 
-        if (!lastArgument) {
-          throw new Error(
-            "You must provide the name of the codemod to unpublish. Aborting...",
-          );
-        }
-
-        const { executeCliCommand, printer } =
+        const { executeCliCommand, printer, exit } =
           await initializeDependencies(args);
+
+        if (!lastArgument) {
+          printer.printOperationMessage({
+            kind: "error",
+            message:
+              "You must provide the name of the codemod to unpublish. Aborting...",
+          });
+
+          return exit();
+        }
 
         return executeCliCommand(() =>
           handleUnpublishCliCommand(printer, lastArgument, args.force),
@@ -346,6 +350,8 @@ export const executeMainThread = async () => {
 
   const argv = await argvObject.parse();
 
-  const { exit } = await initializeDependencies(argv);
-  process.on("SIGINT", exit);
+  {
+    const { exit } = await initializeDependencies(argv);
+    process.on("SIGINT", exit);
+  }
 };
