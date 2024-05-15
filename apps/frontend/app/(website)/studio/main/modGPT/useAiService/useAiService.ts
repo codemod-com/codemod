@@ -8,14 +8,14 @@ import {
 import { useEffect, useState } from "react";
 
 export const useAiService = () => {
-  const initialMessages = useInitialMss();
+  // const initialMessages = useInitialMss();
 
   const [messages, setMessages] = useState<LLMMessage[]>([]);
   const [canAddMessages, setCanAddMessages] = useState(true);
 
-  useEffect(() => {
-    setMessages(initialMessages);
-  }, [initialMessages]);
+  // useEffect(() => {
+  //   setMessages(initialMessages);
+  // }, [initialMessages]);
 
   const {
     isLoading,
@@ -23,7 +23,7 @@ export const useAiService = () => {
     setMessages: setModGPTMessages,
     append: appendModGPTMessages,
     ...restMod
-  } = useModGPT({ initialMessages });
+  } = useModGPT({ initialMessages: [] });
 
   const { wsMessage: codemodAIMessage, startIterativeCodemodGeneration } =
     useCodemodAI({
@@ -56,12 +56,12 @@ export const useAiService = () => {
     setMessages(updateMessages);
   }, [lastMss?.content]);
 
-  useSaveMssgsToLocalStorage({ messages, isLoading });
+  // useSaveMssgsToLocalStorage({ messages, isLoading });
 
   return {
     isLoading,
     messages,
-    setMessages: setModGPTMessages,
+    setMessages,
     append: appendModGPTMessages,
     startIterativeCodemodGeneration,
     canAddMessages,
