@@ -64,13 +64,22 @@ export async function runCodemodJob(
       message: "creating a pull request",
     });
 
-    const link = await gh.createPullRequest();
-
-    console.log("[status]: pull request successfully created");
-    await redis.set({
-      status: "done",
-      link,
-    });
+    try {
+      const link = await gh.createPullRequest();
+      console.log("[status]: pull request successfully created");
+      await redis.set({
+        status: "done",
+        link,
+      });
+    } catch (err) {
+      console.log(
+        "[status]: pull request cannot be created because codemod doesn't result in any changes.",
+      );
+      await redis.set({
+        status: "done",
+        link: null,
+      });
+    }
 
     console.log("[status]: deleting source and repo folders");
     await fs.deleteFolders();
