@@ -282,7 +282,9 @@ export class CodemodService {
     const frameworks = getFrameworks(frameworkTags, tags);
     const useCaseCategory = getUseCaseCategory(useCaseCategoryTags, tags);
 
-    const totalRuns = await posthog.getCodemodTotalRuns(name.toLowerCase());
+    const totalRuns = await posthog.getCodemodTotalRuns(
+      name.toLowerCase().replaceAll(" ", "-"),
+    );
 
     return {
       ...codemod,
