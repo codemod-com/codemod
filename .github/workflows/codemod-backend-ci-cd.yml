@@ -67,7 +67,7 @@ jobs:
 
             aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
 
-            LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_AI_SERVICE_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
+            LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_CODEMOD_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
             echo "Latest image version: $LATEST_IMAGE_VERSION"
 
             cd nginx/
