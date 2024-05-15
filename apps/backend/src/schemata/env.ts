@@ -45,6 +45,8 @@ export const environmentSchema = object({
   REDIS_HOST: optional(string()),
   REDIS_PORT: optional(string()),
   TASK_MANAGER_QUEUE_NAME: optional(string()),
+  POSTHOG_API_KEY: optional(string()),
+  POSTHOG_PROJECT_ID: optional(string()),
 });
 
 export type Environment = Output<typeof environmentSchema>;

@@ -11,10 +11,6 @@ export const areClerkKeysSet = (
   CLERK_SECRET_KEY: string;
   CLERK_JWT_KEY: string;
 } => {
-  if (environment.CLERK_DISABLED === "true") {
-    return false;
-  }
-
   return (
     environment.CLERK_PUBLISH_KEY !== undefined &&
     environment.CLERK_SECRET_KEY !== undefined &&
