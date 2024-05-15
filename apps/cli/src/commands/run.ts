@@ -85,9 +85,7 @@ export const handleRunCliCommand = async (
       safeArgumentRecord: await buildSafeArgumentRecord(codemod, args),
       engineOptions,
     });
-  }
-  else
-  if (codemodSettings.kind === "runNamed") {
+  } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
       codemod = await codemodDownloader.download(nameOrPath);
