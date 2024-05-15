@@ -10,12 +10,6 @@ export const getButtonPropsByStatus = (status: Status | null) => {
     return defaultResponse;
   }
   switch (status) {
-    case "progress": {
-      return {
-        text: "Preparing...",
-        hintText: "Codemod will soon run on your Github branch.",
-      };
-    }
     case "executing codemod": {
       return {
         text: "Codemod Running...",
