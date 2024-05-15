@@ -105,7 +105,6 @@ export const CodemodButton = () => {
         position: "top-center",
         duration: 12000,
       });
-      codemodrun;
     } else if (result.status === "done") {
       toast.success(
         () => {
