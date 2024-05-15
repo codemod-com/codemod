@@ -18,6 +18,7 @@ const mainThreadMessageSchema = union([
       literal("jscodeshift"),
       literal("ts-morph"),
       literal("ast-grep"),
+      literal("workflow"),
     ]),
     disablePrettier: boolean(),
     safeArgumentRecord: argumentRecordSchema,

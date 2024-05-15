@@ -18,6 +18,7 @@ import {
   doubleQuotify,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
+import { isWorkflowFile, runWorkflowFile } from "@codemod-com/workflow";
 import { AxiosError } from "axios";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
@@ -39,6 +40,16 @@ export const handleRunCliCommand = async (
   const nameOrPath = String(args._.at(-1));
 
   if (existsSync(nameOrPath)) {
+    try {
+      if (await isWorkflowFile(nameOrPath)) {
+        await runWorkflowFile(nameOrPath);
+        return;
+      }
+    } catch (e: any) {
+      console.error(e);
+      console.log(e?.stack);
+      return;
+    }
     args.source = nameOrPath;
   }
 

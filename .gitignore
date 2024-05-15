@@ -32,3 +32,6 @@ yarn-debug.log*
 
 # Backend
 build
+
+# Workflow
+.cache
