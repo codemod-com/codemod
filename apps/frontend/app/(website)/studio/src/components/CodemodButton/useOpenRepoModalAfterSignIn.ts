@@ -1,5 +1,5 @@
-import { useAuth } from "@/app/auth/useAuth";
 import { GH_REPO_LIST } from "@/utils/apis/endpoints";
+import { useAuth } from "@clerk/nextjs";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useModal } from "@studio/hooks/useModal";
 import { useUserSession } from "@studio/store/zustand/userSession";
