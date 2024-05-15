@@ -1,5 +1,4 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { CODEMOD_HOME_PAGE_URL } from "@codemod-com/utilities";
 import { backOff } from "exponential-backoff";
 import keytar from "keytar";
 import { confirmUserLoggedIn, generateUserLoginIntent } from "../apis.js";
@@ -13,7 +12,7 @@ const routeUserToStudioForLogin = (
   iv: string,
 ) => {
   const success = openURL(
-    `${CODEMOD_HOME_PAGE_URL}?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
+    `${process.env.CODEMOD_HOME_PAGE_URL}?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
   );
   if (!success) {
     printer.printOperationMessage({

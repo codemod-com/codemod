@@ -11,7 +11,7 @@ export const validateAccessToken = async (
   accessToken: string,
 ): Promise<ValidateTokenResponse> => {
   const res = await Axios.post<ValidateTokenResponse>(
-    "https://backend.codemod.com/validateAccessToken",
+    `${process.env.BACKEND_URL}/validateAccessToken`,
     {},
     {
       headers: {
@@ -28,7 +28,7 @@ export const publish = async (
   accessToken: string,
   formData: FormData,
 ): Promise<void> => {
-  await Axios.post("https://backend.codemod.com/publish", formData, {
+  await Axios.post(`${process.env.BACKEND_URL}/publish`, formData, {
     headers: {
       [X_CODEMOD_ACCESS_TOKEN]: accessToken,
       "Content-Type": "multipart/form-data",
@@ -42,7 +42,7 @@ export const unpublish = async (
   name: string,
 ): Promise<void> => {
   await Axios.post(
-    "https://backend.codemod.com/unpublish",
+    `${process.env.BACKEND_URL}/unpublish`,
     { name },
     {
       headers: {
@@ -54,7 +54,7 @@ export const unpublish = async (
 };
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-  await Axios.delete("https://backend.codemod.com/revokeToken", {
+  await Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
     headers: {
       [X_CODEMOD_ACCESS_TOKEN]: accessToken,
     },
@@ -66,7 +66,7 @@ export const getCodemodDownloadURI = async (
   name: string,
   accessToken?: string,
 ): Promise<string> => {
-  const url = new URL("https://backend.codemod.com/codemods/downloadLink");
+  const url = new URL(`${process.env.BACKEND_URL}/codemods/downloadLink`);
   if (name) {
     url.searchParams.set("name", name);
   }
@@ -94,7 +94,7 @@ export const getCodemodList = async (options?: {
     headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
   }
 
-  const url = new URL("https://backend.codemod.com/codemods/list");
+  const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);
   if (search) {
     url.searchParams.set("search", search);
   }
@@ -114,7 +114,7 @@ type UserLoginIntentResponse = {
 export const generateUserLoginIntent =
   async (): Promise<UserLoginIntentResponse> => {
     const res = await Axios.post<UserLoginIntentResponse>(
-      "https://backend.codemod.com/intents",
+      `${process.env.BACKEND_URL}/intents`,
       {},
     );
 
@@ -129,7 +129,7 @@ export const confirmUserLoggedIn = async (
   iv: string,
 ): Promise<string> => {
   const res = await Axios.get<ConfirmUserLoggedInResponse>(
-    `https://backend.codemod.com/intents/${sessionId}?iv=${iv}`,
+    `${process.env.BACKEND_URL}/intents/${sessionId}?iv=${iv}`,
   );
 
   return res.data.token;
@@ -144,7 +144,7 @@ export const createCodeDiff = async (body: {
   afterSnippet: string;
 }): Promise<CreateCodeDiffResponse> => {
   const res = await Axios.post<CreateCodeDiffResponse>(
-    "https://backend.codemod.com/diffs",
+    `${process.env.BACKEND_URL}/diffs`,
     {
       before: body.beforeSnippet,
       after: body.afterSnippet,

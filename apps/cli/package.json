@@ -64,6 +64,7 @@
   },
   "scripts": {
     "build": "node ./build.js",
+    "build:local": "node ./build.js --local",
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
