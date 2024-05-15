@@ -38,7 +38,6 @@ export const useExecutionStatus = (
           executionId,
           token,
         });
-        console.log("STATUS: ", executionStatus?.result?.status);
 
         if (executionStatus === null) {
           if (intervalId !== null) {
