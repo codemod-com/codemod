@@ -72,6 +72,7 @@
 	color: hsl(204 4% 0%);
 	outline: 2px solid transparent;
 	outline-offset: 2px;
+	width: 100%;
 }
 
 .combobox::placeholder {
