@@ -502,6 +502,7 @@ const testBody = ({
 
   if (engine === "ts-morph" || engine === "tsmorph") {
     body = beautify(`
+        import { describe, it } from 'vitest';
         import { handleSourceFile } from '../src/index.js';
         import { Project } from 'ts-morph';
         import assert from 'node:assert';
