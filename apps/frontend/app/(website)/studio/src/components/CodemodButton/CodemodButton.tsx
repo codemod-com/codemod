@@ -95,33 +95,35 @@ export const CodemodButton = () => {
         position: "top-center",
         duration: 12000,
       });
-    } else if (result.status === "done" && result.link === null) {
-      toast(() => <span>❌ Codemod did not result in any changes.</span>, {
-        position: "top-center",
-        duration: 12000,
-      });
-    } else if (result.status === "done" && result.link) {
-      toast.success(
-        () => {
-          return (
-            <span>
-              Success! Check out the changes{" "}
-              <a
-                href={result.link}
-                target="_blank"
-                rel="noreferrer"
-                className="text-primary-light text-decoration-line"
-              >
-                here
-              </a>
-            </span>
-          );
-        },
-        {
+    } else if (result.status === "done") {
+      if (result.link) {
+        toast.success(
+          () => {
+            return (
+              <span>
+                Success! Check out the changes{" "}
+                <a
+                  href={result.link}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-primary-light text-decoration-line"
+                >
+                  here
+                </a>
+              </span>
+            );
+          },
+          {
+            position: "top-center",
+            duration: 12000,
+          },
+        );
+      } else {
+        toast(() => <span>❌ Codemod did not result in any changes.</span>, {
           position: "top-center",
           duration: 12000,
-        },
-      );
+        });
+      }
     }
   }, [codemodRunStatus?.result]);
 
