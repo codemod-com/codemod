@@ -22,11 +22,9 @@ export class GithubProviderService {
   private __git: SimpleGit | null;
 
   constructor(codemodMetadata: CodemodMetadata) {
-    const { codemodName } = codemodMetadata;
-
     this.__git = null;
     this.__base = "main";
-    this.__currentBranch = `codemod-${codemodName.toLowerCase()}-${Date.now()}`;
+    this.__currentBranch = `codemod-${Date.now()}`;
     this.__codemodMetadata = codemodMetadata;
   }
 
