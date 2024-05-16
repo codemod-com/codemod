@@ -3,10 +3,11 @@ import { ProgressBar } from "@studio/components/CodemodButton/ProgressBar";
 import { useCodemodStatusToast } from "@studio/components/CodemodButton/hooks/useCodemodStatusToast";
 import { useOpenRepoModalAfterSignIn } from "@studio/components/CodemodButton/hooks/useOpenRepoModalAfterSignIn";
 import { Button } from "@studio/components/ui/button";
-import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
+import { useUserSession } from "@studio/store/zustand/userSession";
 import type { GHBranch, GithubRepository } from "be-types";
 import { useState } from "react";
+import { useExecutionStatus } from "../../hooks/useExecutionStatus";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
@@ -29,7 +30,8 @@ export const CodemodButton = () => {
     "openRepoModal",
   );
 
-  const { codemodRunStatus } = useCodemodExecution();
+  const { codemodExecutionId } = useUserSession();
+  const codemodRunStatus = useExecutionStatus(codemodExecutionId);
   const { text, hintText } = getButtonPropsByStatus(
     codemodRunStatus?.result?.status ?? null,
   );

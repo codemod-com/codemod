@@ -34,7 +34,12 @@ export const RepositoryModal = ({
     );
   };
 
-  const { selectedBranch, selectBranch } = useBranchLogic({
+  const {
+    setSelectedBranch,
+    selectedBranch,
+    selectBranch,
+    isFetching: areBranchesLoading,
+  } = useBranchLogic({
     branchesToShow,
     setBranchesToShow,
     selectedRepository,
@@ -55,6 +60,8 @@ export const RepositoryModal = ({
   const handleButtonClick = () => {
     onRunCodemod();
     setSelectedRepository(undefined);
+    setSelectedBranch(undefined);
+    setCodemodNameInput("");
     hideRepositoryModal();
   };
 
@@ -94,6 +101,7 @@ export const RepositoryModal = ({
 
       <DropdownSelector
         isLoading={areReposLoading}
+        loadingMessage="Fetching repos"
         items={repositoriesToShow}
         placeholder="Select a repository (required)"
         onSelect={selectRepository}
@@ -102,7 +110,9 @@ export const RepositoryModal = ({
       />
 
       <DropdownSelector
+        isLoading={areBranchesLoading}
         items={branchesToShow}
+        loadingMessage="Fetching branches"
         placeholder="Select a branch (required)"
         onSelect={selectBranch}
         selectedValue={selectedBranch}

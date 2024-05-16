@@ -20,6 +20,7 @@ type DropdownSelectorProps<T> = {
   placeholder: string;
   isDisabled?: boolean;
   isLoading?: boolean;
+  loadingMessage?: string;
 };
 
 export const DropdownSelector = <T,>({
@@ -30,6 +31,7 @@ export const DropdownSelector = <T,>({
   placeholder,
   isDisabled = false,
   isLoading = false,
+  loadingMessage = "Fetching",
 }: DropdownSelectorProps<T>) => {
   const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
   const [valueToFilterBy, setValueToFilterBy] = useState<string>();
@@ -44,9 +46,11 @@ export const DropdownSelector = <T,>({
   if (isLoading)
     return (
       <div className="p-4 flex justify-center items-center">
-        <LoaderIcon className="spinner" /> Fetching{" "}
+        <LoaderIcon className="spinner mr-2" />
+        {loadingMessage}
       </div>
     );
+
   return (
     <div
       className={cn(

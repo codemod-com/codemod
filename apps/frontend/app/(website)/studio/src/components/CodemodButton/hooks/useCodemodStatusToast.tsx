@@ -1,18 +1,19 @@
 import type { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
+import type { useExecutionStatus } from "../../../hooks/useExecutionStatus";
+
+const baseToastOptions: Parameters<typeof toast>[1] = {
+  position: "top-center",
+  duration: 12000,
+};
 
 export const useCodemodStatusToast = (
-  codemodRunStatus: ReturnType<typeof useCodemodExecution>["codemodRunStatus"],
+  codemodRunStatus: ReturnType<typeof useExecutionStatus>,
 ) => {
   useEffect(() => {
     const { result } = codemodRunStatus ?? {};
     if (!result) return;
-
-    const baseToastOptions: Parameters<typeof toast>[1] = {
-      position: "top-center",
-      duration: 12000,
-    };
 
     if (result.status === "error") {
       toast(<span>{`❌ ${result.message}`}</span>, baseToastOptions);
@@ -30,7 +31,7 @@ export const useCodemodStatusToast = (
           </a>
         </span>
       ) : (
-        <span>❌ Codemod did not result in any changes.</span>
+        <span>Codemod did not result in any changes.</span>
       );
 
       toast[result.link ? "success" : "error"](message, baseToastOptions);

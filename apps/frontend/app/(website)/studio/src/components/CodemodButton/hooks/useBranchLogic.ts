@@ -14,6 +14,7 @@ export const useBranchLogic = ({
   selectedRepository,
 }: UseBranchLogicProps) => {
   const [selectedBranch, setSelectedBranch] = useState<GHBranch>();
+  const [areBranchesLoading, setAreBranchesLoading] = useState(false);
 
   const { post: fetchGHBranches } = useAPI(GH_BRANCH_LIST);
 
@@ -24,6 +25,7 @@ export const useBranchLogic = ({
     }
 
     const getBranches = async () => {
+      setAreBranchesLoading(true);
       const branches = (
         await fetchGHBranches<GHBranch[]>({
           repoUrl: selectedRepository.html_url,
@@ -31,6 +33,7 @@ export const useBranchLogic = ({
       ).data;
 
       setBranchesToShow(branches);
+      setAreBranchesLoading(false);
     };
 
     getBranches();
@@ -44,5 +47,7 @@ export const useBranchLogic = ({
   return {
     selectedBranch,
     selectBranch,
+    isFetching: areBranchesLoading,
+    setSelectedBranch,
   };
 };
