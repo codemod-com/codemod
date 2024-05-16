@@ -41,6 +41,12 @@ export const DropdownSelector = <T,>({
     propName,
   );
 
+  if (isLoading)
+    return (
+      <div className="p-4 flex justify-center items-center">
+        <LoaderIcon className="spinner" /> Fetching{" "}
+      </div>
+    );
   return (
     <div
       className={cn(
