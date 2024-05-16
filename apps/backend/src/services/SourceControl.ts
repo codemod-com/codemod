@@ -18,7 +18,25 @@ export type ListPRParams = Readonly<{
   base: string | undefined;
 }>;
 
-export type GHBranch = Readonly<{ name: string }>;
+interface GithubCommit {
+  sha: string;
+  url: string;
+}
+
+interface GithubRequiredStatusChecks {
+  enforcement_level: string;
+  contexts: string[];
+}
+
+export type GHBranch = Readonly<{
+  name: string;
+  commit: GithubCommit;
+  protected: boolean;
+  protection: {
+    enabled: boolean;
+    required_status_checks: GithubRequiredStatusChecks;
+  };
+}>;
 
 export type PullRequest = Readonly<{
   html_url: string;
