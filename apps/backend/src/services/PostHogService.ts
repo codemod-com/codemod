@@ -1,6 +1,6 @@
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 
-export class CodemodNotFoundError extends Error {}
+export class PostHogCodemodNotFoundError extends Error {}
 
 export class PostHogService {
   private readonly __authHeader: string;
@@ -11,14 +11,15 @@ export class PostHogService {
     this.__projectId = projectId;
   }
 
-  async getCodemodTotalRuns(codemodName: string): Promise<number> {
+  async getCodemodTotalRuns(): Promise<Array<{ slug: string; runs: number }>> {
     try {
       const { data } = await axios.post(
         `https://app.posthog.com/api/projects/${this.__projectId}/query/`,
         {
           query: {
             kind: "HogQLQuery",
-            query: `SELECT COUNT() FROM events WHERE (properties.codemodName = '${codemodName}' AND (event = 'codemod.CLI.codemodExecuted' OR event = 'codemod.VSCE.codemodExecuted'))`,
+            query:
+              "select properties.codemodName, count(*) from events where event in ('codemod.CLI.codemodExecuted', 'codemod.VSCE.codemodExecuted') group by properties.codemodName",
           },
         },
         {
@@ -28,11 +29,22 @@ export class PostHogService {
         },
       );
 
-      const totalRuns = data?.results[0][0] ?? 0;
+      const result = data?.results?.map((value: [string, number]) => ({
+        slug: value[0]
+          .replaceAll(" (from user machine)", "")
+          .replaceAll("/", "-"),
+        runs: value[1],
+      }));
 
-      return totalRuns;
+      return result;
     } catch (error) {
-      throw new CodemodNotFoundError();
+      const errorMessage = isAxiosError<{ message: string }>(error)
+        ? error.response?.data.message
+        : (error as Error).message;
+
+      throw new PostHogCodemodNotFoundError(
+        `Failed to retrieve events. Reason: ${errorMessage}`,
+      );
     }
   }
 }
