@@ -68,13 +68,7 @@ export class CodemodRunnerService {
 
   private __stdErrHandler = async (data: Buffer): Promise<void> => {
     const message = data?.toString().trim();
-
     console.error(`[error]: error executing codemod ${message}`);
-
-    await redis.set({
-      status: "error",
-      message,
-    });
   };
 
   private __onCloseHandler = async (
