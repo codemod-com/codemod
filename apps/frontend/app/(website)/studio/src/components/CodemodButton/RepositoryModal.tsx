@@ -35,6 +35,7 @@ export const RepositoryModal = ({
   };
 
   const {
+    setSelectedBranch,
     selectedBranch,
     selectBranch,
     isFetching: areBranchesLoading,
@@ -59,6 +60,8 @@ export const RepositoryModal = ({
   const handleButtonClick = () => {
     onRunCodemod();
     setSelectedRepository(undefined);
+    setSelectedBranch(undefined);
+    setCodemodNameInput("");
     hideRepositoryModal();
   };
 

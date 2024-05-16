@@ -48,5 +48,6 @@ export const useBranchLogic = ({
     selectedBranch,
     selectBranch,
     isFetching: areBranchesLoading,
+    setSelectedBranch,
   };
 };
