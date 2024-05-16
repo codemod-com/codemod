@@ -42,7 +42,6 @@ type GeneratedCodemodData = {
   frameworks: string[];
   frameworkVersion: string | null | undefined;
   useCaseCategory: string | null | undefined;
-  totalRuns?: number;
 };
 
 export type FullCodemodInfo = Codemod & GeneratedCodemodData;
