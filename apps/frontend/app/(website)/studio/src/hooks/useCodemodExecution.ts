@@ -5,12 +5,10 @@ import type {
 } from "@codemod-com/utilities";
 import { useUserSession } from "@studio/store/zustand/userSession";
 import { useAPI } from "./useAPI";
-import { useExecutionStatus } from "./useExecutionStatus";
 
 export const useCodemodExecution = () => {
   const { codemodExecutionId, setCodemodExecutionId } = useUserSession();
 
-  const codemodRunStatus = useExecutionStatus(codemodExecutionId);
   const { post: runCodemod } = useAPI(RUN_CODEMOD);
 
   const onCodemodRun = async (request: any): Promise<void> => {
@@ -40,7 +38,7 @@ export const useCodemodExecution = () => {
   return {
     onCodemodRun,
     onCodemodRunCancel,
-    codemodRunStatus,
+
     codemodExecutionId,
   };
 };

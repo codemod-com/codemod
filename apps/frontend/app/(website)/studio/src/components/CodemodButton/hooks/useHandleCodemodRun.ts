@@ -1,13 +1,18 @@
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
-import type { GithubRepository } from "be-types";
+import type { GHBranch, GithubRepository } from "be-types";
 
-export const useHandleCodemodRun = (
-  codemodName: string,
-  selectedRepository: GithubRepository | undefined,
-  selectedBranch: string | undefined,
-) => {
+type Props = {
+  codemodName?: string;
+  selectedRepository: GithubRepository | undefined;
+  selectedBranch: GHBranch | undefined;
+};
+export const useHandleCodemodRun = ({
+  codemodName,
+  selectedRepository,
+  selectedBranch,
+}: Props) => {
   const { onCodemodRun } = useCodemodExecution();
   const { engine } = useSnippetStore();
   const { internalContent } = useModStore();
@@ -15,6 +20,7 @@ export const useHandleCodemodRun = (
 
   return async () => {
     if (
+      !codemodName ||
       selectedRepository === undefined ||
       selectedBranch === undefined ||
       internalContent === null ||
@@ -29,7 +35,7 @@ export const useHandleCodemodRun = (
       repoUrl: selectedRepository.html_url,
       codemodSource: internalContent,
       codemodName,
-      branch: selectedBranch,
+      branch: selectedBranch.name,
     };
 
     await onCodemodRun(request);
