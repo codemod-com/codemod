@@ -1,12 +1,12 @@
 import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
-import type { GithubRepository } from "be-types";
+import type { GHBranch, GithubRepository } from "be-types";
 
 type Props = {
   codemodName?: string;
   selectedRepository: GithubRepository | undefined;
-  selectedBranch: { name: string } | undefined;
+  selectedBranch: GHBranch | undefined;
 };
 export const useHandleCodemodRun = ({
   codemodName,
