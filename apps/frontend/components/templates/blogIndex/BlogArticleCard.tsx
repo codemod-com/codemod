@@ -11,17 +11,17 @@ type BlogArticleCardProps = BlogArticleCardData & {
 };
 
 export default function BlogArticleCard(props: BlogArticleCardProps) {
-  const link = {
+  let link = {
     _type: "link",
     href: props.pathname,
   } as LinkData;
-  const isCustomerStory = props._type === "blog.customerStory";
-  const authorNames = props.authors
+  let isCustomerStory = props._type === "blog.customerStory";
+  let authorNames = props.authors
     ?.map((author) => author?.name)
     .join(", ")
     .replace(/, ([^,]*)$/, " and $1");
-  const hasMoreThan3Authors = Number(props.authors?.length) > 3;
-  const renderedAuthors = hasMoreThan3Authors
+  let hasMoreThan3Authors = Number(props.authors?.length) > 3;
+  let renderedAuthors = hasMoreThan3Authors
     ? props.authors?.slice(0, 2)
     : props.authors;
 

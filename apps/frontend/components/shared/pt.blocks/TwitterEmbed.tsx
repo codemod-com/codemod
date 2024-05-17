@@ -3,8 +3,8 @@ import { getTweetId } from "@/utils/ids";
 import React from "react";
 import { Tweet } from "react-tweet";
 
-export const TwitterEmbed = (props: TwitterEmbedBlock) => {
-  const tweetID = getTweetId(props.url || "");
+export let TwitterEmbed = (props: TwitterEmbedBlock) => {
+  let tweetID = getTweetId(props.url || "");
   return tweetID ? <Tweet id={tweetID} /> : null;
 };
 

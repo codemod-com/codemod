@@ -12,7 +12,7 @@ type Props = {
   className?: string;
 };
 
-const Panel = ({ children, className }: Props) => (
+let Panel = ({ children, className }: Props) => (
   <div
     className={cn("rounded bg-gray-lighter p-2 dark:bg-gray-dark", className)}
   >
@@ -30,9 +30,9 @@ type ResizablePanelProps = {
   className?: string;
 } & PanelProps;
 
-const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
+let ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
   (props, ref) => {
-    const { children, defaultSize, minSize, collapsible, className, ...rest } =
+    let { children, defaultSize, minSize, collapsible, className, ...rest } =
       props;
     return (
       <RResizablePanel

@@ -6,8 +6,8 @@ import { useQuery } from "@/data/sanity/useQuery";
 import type { NotFoundPayload } from "@/types";
 import { NotFoundHero } from "./NotFoundHero";
 
-export const NotFoundPreview = ({ initial }) => {
-  const { data } = useQuery<NotFoundPayload | null>(
+export let NotFoundPreview = ({ initial }) => {
+  let { data } = useQuery<NotFoundPayload | null>(
     NOT_FOUND_DOC_QUERY,
     {
       locale: "en",

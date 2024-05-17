@@ -7,9 +7,9 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export function SignInRequired() {
-  const theme = useTheme();
-  const router = useRouter();
-  const signUserIn = () => {
+  let theme = useTheme();
+  let router = useRouter();
+  let signUserIn = () => {
     router.push("/auth/sign-in");
   };
 

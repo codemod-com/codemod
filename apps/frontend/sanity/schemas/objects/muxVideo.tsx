@@ -1,6 +1,6 @@
 import Icon from "@/components/shared/Icon";
 
-export const muxVideo = {
+export let muxVideo = {
   type: "object",
   name: "muxVideo",
   title: "Video",
@@ -41,7 +41,7 @@ export const muxVideo = {
       title: "caption",
     },
     prepare(selection) {
-      const { title } = selection;
+      let { title } = selection;
       return {
         title: title,
         media: <Icon name="play" />,

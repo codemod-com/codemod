@@ -3,7 +3,7 @@ import { TextInput } from "@sanity/ui";
 
 import React from "react";
 
-export const settings = {
+export let settings = {
   name: "settings",
   title: "Settings",
   type: "document",
@@ -94,9 +94,9 @@ export const settings = {
 };
 
 function ArrayInput({ members, ...props }: any) {
-  const [search, setSearch] = React.useState("");
+  let [search, setSearch] = React.useState("");
 
-  const filteredMembers = !search
+  let filteredMembers = !search
     ? members
     : members?.filter(
         (member: any) =>

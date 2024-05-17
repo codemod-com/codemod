@@ -24,7 +24,7 @@ import {
 } from "./PageBottomPane";
 import { useSnippet } from "./SnippetUI";
 
-const MonacoDiffEditor = dynamic(
+let MonacoDiffEditor = dynamic(
   () => import("@studio/components/Snippet/MonacoDiffEditor"),
   {
     loading: () => <p>Loading...</p>,
@@ -32,15 +32,15 @@ const MonacoDiffEditor = dynamic(
   },
 );
 
-export const useCodemodOutputUpdate = () => {
-  const [webWorkerState, postMessage] = useWebWorker();
-  const codemodOutput = useCodemodOutputStore();
-  const { setEvents, events } = useLogStore();
-  const { setHasRuntimeErrors } = useModStore();
-  const { engine, inputSnippet } = useSnippetStore();
-  const { internalContent } = useModStore();
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+export let useCodemodOutputUpdate = () => {
+  let [webWorkerState, postMessage] = useWebWorker();
+  let codemodOutput = useCodemodOutputStore();
+  let { setEvents, events } = useLogStore();
+  let { setHasRuntimeErrors } = useModStore();
+  let { engine, inputSnippet } = useSnippetStore();
+  let { internalContent } = useModStore();
+  let snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  let codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
   useEffect(() => {
     postMessage(engine, internalContent ?? "", inputSnippet);
@@ -72,7 +72,7 @@ export const useCodemodOutputUpdate = () => {
     postMessage,
   ]);
 
-  const firstCodemodExecutionErrorEvent = events.find(
+  let firstCodemodExecutionErrorEvent = events.find(
     (e) => e.kind === "codemodExecutionError",
   );
 
@@ -80,22 +80,22 @@ export const useCodemodOutputUpdate = () => {
     firstCodemodExecutionErrorEvent,
   };
 };
-export const useCodeDiff = () => {
-  const { inputSnippet, afterInputRanges } = useSnippetStore();
-  const setRangeThunk = useRangesOnTarget();
-  const { internalContent } = useModStore();
+export let useCodeDiff = () => {
+  let { inputSnippet, afterInputRanges } = useSnippetStore();
+  let setRangeThunk = useRangesOnTarget();
+  let { internalContent } = useModStore();
 
-  const { ranges, content } = useCodemodOutputStore();
-  const setActiveEventThunk = useSetActiveEventThunk();
+  let { ranges, content } = useCodemodOutputStore();
+  let setActiveEventThunk = useSetActiveEventThunk();
 
-  const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
+  let { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
-  const { setActiveTab } = useViewStore();
+  let { setActiveTab } = useViewStore();
 
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+  let snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  let codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
-  const onSelectionChange = useCallback(
+  let onSelectionChange = useCallback(
     (range: OffsetRange) => {
       setRangeThunk({
         target: "CODEMOD_OUTPUT",
@@ -105,22 +105,22 @@ export const useCodeDiff = () => {
     [setRangeThunk],
   );
 
-  const { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
+  let { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
 
-  const onDebug = () => {
+  let onDebug = () => {
     firstCodemodExecutionErrorEvent?.hashDigest &&
       setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest);
     setActiveTab(TabNames.DEBUG);
   };
 
-  const originalEditorProps = {
+  let originalEditorProps = {
     highlights: afterInputRanges,
     onSelectionChange: handleSelectionChange,
     onChange: onSnippetChange,
     value,
   };
 
-  const modifiedEditorProps = {
+  let modifiedEditorProps = {
     highlights: ranges,
     onSelectionChange,
     value: content ?? "",
@@ -141,7 +141,7 @@ export type LiveCodemodResultProps = Pick<
   "originalEditorProps" | "modifiedEditorProps"
 >;
 
-export const DiffEditorWrapper = ({
+export let DiffEditorWrapper = ({
   originalEditorProps,
   modifiedEditorProps,
   type,
@@ -176,7 +176,7 @@ export const DiffEditorWrapper = ({
   );
 };
 
-const CodeSnippedPanel = ({
+let CodeSnippedPanel = ({
   children,
   header,
   className,

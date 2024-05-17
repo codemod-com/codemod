@@ -1,7 +1,7 @@
 import { STARTER_SNIPPET } from "@studio/store/getInitialState";
 import { injectCFSOutputToCodemod } from "../../../utils/injectCFSOutputToCodemod";
 
-const generateCodemodNamePrompt = (codemod: string) => `
+let generateCodemodNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
 Come up with a precise, detailed variable name to be used for the following jscodeshift codemod below. 
 Variable name should start with "handle". 
@@ -12,7 +12,7 @@ ${codemod}
 `;
 
 // msw/2/name-of-mod
-const generateCodemodHumanNamePrompt = (codemod: string) => `
+let generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
 Come up with a precise name to be used for the following jscodeshift codemod below.
 If the codemod is aimed at making any changes to a particular framework or library, the format
@@ -26,7 +26,7 @@ ${codemod}
 \`\`\`
 `;
 
-const autoGenerateCodemodPrompt = `
+let autoGenerateCodemodPrompt = `
 Below, you are provided with "Before" and "After" code snippets.
 The code snippets are written in JavaScript or TypeScript language.
 
@@ -115,7 +115,7 @@ Make sure the codemod you generate, FULLY and EXACTLY transforms the "Before" co
 
 // fixBlock V1
 // @TODO add ability to include debug info/ts-error text
-const fixCodemodBlockNoDebugInfoPrompt = `
+let fixCodemodBlockNoDebugInfoPrompt = `
   Your codemod has error(s). 
 	
   This code block of the codemod contains error(s). 
@@ -138,7 +138,7 @@ interface ProcessPromptResponseStrategy {
   getCodemodFromLLMResponse(prevCodemod: string, responseText: string): string;
 }
 
-const overwriteAll = {
+let overwriteAll = {
   getCodemodFromLLMResponse: (
     prevCodemod: string,
     responseText: string,
@@ -149,7 +149,7 @@ const overwriteAll = {
     ).replace("{%COMMENT%}", ""),
 };
 
-const insertAtTheTop = {
+let insertAtTheTop = {
   getCodemodFromLLMResponse: (
     prevCodemod: string,
     responseText: string,
@@ -157,7 +157,7 @@ const insertAtTheTop = {
   ): string => injectCFSOutputToCodemod(prevCodemod, responseText) ?? "",
 };
 
-const promptStrategies: Readonly<
+let promptStrategies: Readonly<
   Record<PromptPresetKind, ProcessPromptResponseStrategy>
 > = {
   autoGenerateCodemod: overwriteAll,

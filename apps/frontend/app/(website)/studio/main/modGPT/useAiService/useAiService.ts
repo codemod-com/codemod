@@ -7,17 +7,17 @@ import {
 } from "@chatbot/useAiService/utils";
 import { useEffect, useState } from "react";
 
-export const useAiService = () => {
+export let useAiService = () => {
   // const initialMessages = useInitialMss();
 
-  const [messages, setMessages] = useState<LLMMessage[]>([]);
-  const [canAddMessages, setCanAddMessages] = useState(true);
+  let [messages, setMessages] = useState<LLMMessage[]>([]);
+  let [canAddMessages, setCanAddMessages] = useState(true);
 
   // useEffect(() => {
   //   setMessages(initialMessages);
   // }, [initialMessages]);
 
-  const {
+  let {
     isLoading,
     messages: modGPTMessages,
     setMessages: setModGPTMessages,
@@ -25,14 +25,14 @@ export const useAiService = () => {
     ...restMod
   } = useModGPT({ initialMessages: [] });
 
-  const { wsMessage: codemodAIMessage, startIterativeCodemodGeneration } =
+  let { wsMessage: codemodAIMessage, startIterativeCodemodGeneration } =
     useCodemodAI({
       messages,
       canAddMessages,
       setCanAddMessages,
     });
 
-  const lastMss = modGPTMessages?.at(-1);
+  let lastMss = modGPTMessages?.at(-1);
 
   useEffect(() => {
     if (!codemodAIMessage) return;
@@ -48,8 +48,8 @@ export const useAiService = () => {
 
   useEffect(() => {
     if (!lastMss?.content) return;
-    const index = messages.findIndex(({ id }) => id === lastMss.id);
-    const updateMessages =
+    let index = messages.findIndex(({ id }) => id === lastMss.id);
+    let updateMessages =
       index > -1
         ? () => messages.with(index, lastMss)
         : (m: LLMMessage[]) => [...m, lastMss];

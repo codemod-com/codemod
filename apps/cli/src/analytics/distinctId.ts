@@ -1,53 +1,53 @@
-import { randomBytes } from "node:crypto";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { join } from "node:path";
-import { getConfigurationDirectoryPath, getCurrentUserData } from "../utils";
+import { randomBytes } from 'node:crypto';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { getConfigurationDirectoryPath, getCurrentUserData } from '../utils';
 
 /**
  * We need to assign unique identifier for users that are not signed in for correct telemetry tracking
  */
 
-const getDistinctId = async (configurationDirectoryPath: string) => {
-  try {
-    const sessionContent = await readFile(
-      join(configurationDirectoryPath, "session.json"),
-      "utf-8",
-    );
+let getDistinctId = async (configurationDirectoryPath: string) => {
+	try {
+		let sessionContent = await readFile(
+			join(configurationDirectoryPath, 'session.json'),
+			'utf-8',
+		);
 
-    return JSON.parse(sessionContent).id;
-  } catch (e) {
-    return null;
-  }
+		return JSON.parse(sessionContent).id;
+	} catch (e) {
+		return null;
+	}
 };
 
-const generateDistinctId = async (configurationDirectoryPath: string) => {
-  await mkdir(configurationDirectoryPath, { recursive: true });
+let generateDistinctId = async (configurationDirectoryPath: string) => {
+	await mkdir(configurationDirectoryPath, { recursive: true });
 
-  const id = randomBytes(16).toString("hex");
-  await writeFile(
-    join(configurationDirectoryPath, "session.json"),
-    JSON.stringify({ id }),
-  );
+	let id = randomBytes(16).toString('hex');
+	await writeFile(
+		join(configurationDirectoryPath, 'session.json'),
+		JSON.stringify({ id }),
+	);
 
-  return id;
+	return id;
 };
 
-const getUserDistinctId = async (): Promise<string> => {
-  const configurationDirectoryPath = getConfigurationDirectoryPath();
+let getUserDistinctId = async (): Promise<string> => {
+	let configurationDirectoryPath = getConfigurationDirectoryPath();
 
-  const userData = await getCurrentUserData();
+	let userData = await getCurrentUserData();
 
-  if (userData !== null) {
-    return userData.user.userId;
-  }
+	if (userData !== null) {
+		return userData.user.userId;
+	}
 
-  const distinctId = await getDistinctId(configurationDirectoryPath);
+	let distinctId = await getDistinctId(configurationDirectoryPath);
 
-  if (distinctId !== null) {
-    return distinctId;
-  }
+	if (distinctId !== null) {
+		return distinctId;
+	}
 
-  return await generateDistinctId(configurationDirectoryPath);
+	return await generateDistinctId(configurationDirectoryPath);
 };
 
 export { getDistinctId, generateDistinctId, getUserDistinctId };

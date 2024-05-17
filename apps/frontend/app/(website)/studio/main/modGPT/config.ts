@@ -6,7 +6,7 @@ import {
 import { isServer } from "@studio/config";
 import { SEND_CHAT } from "@studio/constants";
 
-export const shouldUseCodemodAi = isServer
+export let shouldUseCodemodAi = isServer
   ? false
   : new URLSearchParams(window.location.search)
       .get(FEATURE_FLAG_QUERY_KEY)
@@ -14,13 +14,13 @@ export const shouldUseCodemodAi = isServer
       .includes(CODEMOD_AI_FEATURE_FLAG);
 
 if (shouldUseCodemodAi) console.info("Experimental AI services active");
-export const codemodAiWsServer = isDevelopment
+export let codemodAiWsServer = isDevelopment
   ? "ws://127.0.0.1:8000/ws"
   : "wss://backend.codemod.com/ws";
 
-const prodGptServer = shouldUseCodemodAi
+let prodGptServer = shouldUseCodemodAi
   ? "https://backend.codemod.com/modgpt"
   : "https://backend.codemod.com";
-export const modGptServer = `${
+export let modGptServer = `${
   shouldUseCodemodAi ? "http://0.0.0.0:9999" : prodGptServer
 }/${SEND_CHAT}`;

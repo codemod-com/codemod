@@ -8,15 +8,15 @@ type Props = {
   selectedRepository: GithubRepository | undefined;
   selectedBranch: GHBranch | undefined;
 };
-export const useHandleCodemodRun = ({
+export let useHandleCodemodRun = ({
   codemodName,
   selectedRepository,
   selectedBranch,
 }: Props) => {
-  const { onCodemodRun } = useCodemodExecution();
-  const { engine } = useSnippetStore();
-  const { internalContent } = useModStore();
-  const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
+  let { onCodemodRun } = useCodemodExecution();
+  let { engine } = useSnippetStore();
+  let { internalContent } = useModStore();
+  let isCodemodSourceNotEmpty = internalContent?.trim() !== "";
 
   return async () => {
     if (
@@ -30,7 +30,7 @@ export const useHandleCodemodRun = ({
       return;
     }
 
-    const request = {
+    let request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
       codemodSource: await transpileTs(internalContent),

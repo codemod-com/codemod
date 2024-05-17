@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 
-export const useScrollToBottomDetector = (container: Element | null) => {
-  const [isAtBottom, setIsAtBottom] = useState(false);
+export let useScrollToBottomDetector = (container: Element | null) => {
+  let [isAtBottom, setIsAtBottom] = useState(false);
   useEffect(() => {
     if (container === null) {
       return undefined;
     }
 
-    const handleScroll = () => {
-      const chatPanel =
+    let handleScroll = () => {
+      let chatPanel =
         document.getElementsByClassName("chatPanel")?.[0] ?? null;
-      const scrollOffset =
+      let scrollOffset =
         container.scrollHeight -
         container.clientHeight -
         (chatPanel?.clientHeight ?? 0);

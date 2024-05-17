@@ -21,7 +21,7 @@ type TreeNode = {
   end: number;
 };
 
-const Tree = ({
+let Tree = ({
   node,
   selectedNode,
   selectionStart = 0,
@@ -29,9 +29,9 @@ const Tree = ({
   initialCollapseState = "collapsed",
   onClick,
 }: Props) => {
-  const [open, setIsOpen] = useState(initialCollapseState === "open");
+  let [open, setIsOpen] = useState(initialCollapseState === "open");
 
-  const containsSelectedNode =
+  let containsSelectedNode =
     !!selectedNode &&
     node.start <= selectedNode.start &&
     node.end >= selectedNode.end;
@@ -44,8 +44,8 @@ const Tree = ({
     setIsOpen(initialCollapseState === "open");
   }, [initialCollapseState]);
 
-  const isSelected = selectedNode?.id === node.id;
-  const label = (
+  let isSelected = selectedNode?.id === node.id;
+  let label = (
     <Text
       className="cursor-pointer"
       color={isSelected ? "text-cyan-500" : undefined}

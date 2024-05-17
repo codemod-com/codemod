@@ -3,9 +3,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import type { ReactNode } from "react";
 
-const clerkPubKey = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
+let clerkPubKey = env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY;
 
-const AuthProvider = ({ children }: { children: ReactNode }) => {
+let AuthProvider = ({ children }: { children: ReactNode }) => {
   // const { isDark } = useTheme();
   // const theme = useMemo(() => (isDark ? dark : undefined), [isDark]);
   if (!clerkPubKey) {

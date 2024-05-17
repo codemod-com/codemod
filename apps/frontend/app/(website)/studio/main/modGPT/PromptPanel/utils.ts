@@ -1,9 +1,9 @@
-export const insertValue = (
+export let insertValue = (
   textArea: HTMLTextAreaElement,
   input: string,
   value: string,
 ) => {
-  const startPos = textArea.selectionStart;
+  let startPos = textArea.selectionStart;
   return `${input.substring(0, startPos)} ${value} ${input.substring(
     startPos,
   )}`;

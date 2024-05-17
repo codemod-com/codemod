@@ -2,7 +2,7 @@ import { defineType } from "sanity";
 import { icon } from "./icon";
 import { link } from "./link";
 
-export const styledCta = defineType({
+export let styledCta = defineType({
   name: "styledCta",
   title: "CTA",
   icon: link.icon,

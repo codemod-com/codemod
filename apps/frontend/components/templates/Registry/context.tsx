@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState } from "react";
 
-const SidebarContext = createContext<{
+let SidebarContext = createContext<{
   mobileOpen: boolean;
   desktopOpen: boolean;
   toggleSidebar: () => void;
@@ -12,11 +12,11 @@ const SidebarContext = createContext<{
   toggleSidebar: () => {},
 });
 
-export const SidebarProvider = ({ children }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const [desktopOpen, setDesktopOpen] = useState(true);
+export let SidebarProvider = ({ children }) => {
+  let [mobileOpen, setMobileOpen] = useState(false);
+  let [desktopOpen, setDesktopOpen] = useState(true);
 
-  const toggleSidebar = () => {
+  let toggleSidebar = () => {
     setMobileOpen(!mobileOpen);
     setDesktopOpen(!desktopOpen);
   };
@@ -28,7 +28,7 @@ export const SidebarProvider = ({ children }) => {
   );
 };
 
-export const useSidebar = () => {
-  const { desktopOpen, mobileOpen, toggleSidebar } = useContext(SidebarContext);
+export let useSidebar = () => {
+  let { desktopOpen, mobileOpen, toggleSidebar } = useContext(SidebarContext);
   return { desktopOpen, mobileOpen, toggleSidebar };
 };

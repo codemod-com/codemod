@@ -1,12 +1,12 @@
-import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, test } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert/strict';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, test } from 'vitest';
+import transform from '../src/index.js';
 
-describe("react-native v074 migrate to fireIntervalSeconds", () => {
-  test("common use case", async () => {
-    const input = `
+describe('react-native v074 migrate to fireIntervalSeconds', () => {
+	test('common use case', async () => {
+		let input = `
     PushNotificationIOS.scheduleLocalNotification({
         repeatInterval: 'minute',
     });
@@ -15,7 +15,7 @@ describe("react-native v074 migrate to fireIntervalSeconds", () => {
     });
 		`;
 
-    const output = `
+		let output = `
     PushNotificationIOS.scheduleLocalNotification({
         fireIntervalSeconds: 60,
     });
@@ -24,18 +24,18 @@ describe("react-native v074 migrate to fireIntervalSeconds", () => {
     });
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		let actualOutput = transform(fileInfo, buildApi('js'), {
+			quote: 'single',
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\s/gm, ""),
-      output.replace(/\s/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\s/gm, ''),
+			output.replace(/\s/gm, ''),
+		);
+	});
 });

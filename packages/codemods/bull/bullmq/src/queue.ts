@@ -1,35 +1,37 @@
-import type { ASTPath } from "jscodeshift";
-import { getBullImportDeclaration } from "./get-import-declaration.js";
-import type { ModifyFunction } from "./types.js";
+import type { ASTPath } from 'jscodeshift';
+import { getBullImportDeclaration } from './get-import-declaration.js';
+import type { ModifyFunction } from './types.js';
 
-export const replaceQueueOpts: ModifyFunction = (root, j) => {
-  const bullImportDeclaration = getBullImportDeclaration(root, j);
+export let replaceQueueOpts: ModifyFunction = (root, j) => {
+	let bullImportDeclaration = getBullImportDeclaration(root, j);
 
-  if (!bullImportDeclaration) {
-    return;
-  }
+	if (!bullImportDeclaration) {
+		return;
+	}
 
-  const queueExpression = root.find(j.NewExpression, {
-    callee: {
-      type: "Identifier",
-      name: "Queue",
-    },
-  });
+	let queueExpression = root.find(j.NewExpression, {
+		callee: {
+			type: 'Identifier',
+			name: 'Queue',
+		},
+	});
 
-  if (!queueExpression.length) {
-    return;
-  }
+	if (!queueExpression.length) {
+		return;
+	}
 
-  queueExpression
-    .find(j.Identifier, (id) => id.name === "createClient")
-    .forEach((id) => {
-      // any path
-      const parentPath = id.parentPath as ASTPath;
+	queueExpression
+		.find(j.Identifier, (id) => id.name === 'createClient')
+		.forEach((id) => {
+			// any path
+			let parentPath = id.parentPath as ASTPath;
 
-      if (typeof parentPath.replace === "function") {
-        parentPath.replace(
-          j.stringLiteral("connection: { host: redis.host, port: redis.port }"),
-        );
-      }
-    });
+			if (typeof parentPath.replace === 'function') {
+				parentPath.replace(
+					j.stringLiteral(
+						'connection: { host: redis.host, port: redis.port }',
+					),
+				);
+			}
+		});
 };

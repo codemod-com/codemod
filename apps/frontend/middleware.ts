@@ -6,8 +6,8 @@ import { getRedirect } from "@/data/sanity/redirects";
 //   OLD_STUDIO_HOSTNAME,
 // } from "@codemod-com/utilities";
 
-const CODEMOD_STUDIO_URL = "https://codemod.com/studio";
-const OLD_STUDIO_HOSTNAME = "codemod.studio";
+let CODEMOD_STUDIO_URL = "https://codemod.com/studio";
+let OLD_STUDIO_HOSTNAME = "codemod.studio";
 
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -17,9 +17,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(CODEMOD_STUDIO_URL));
   }
 
-  const pathname = request.nextUrl.pathname;
+  let pathname = request.nextUrl.pathname;
   // @TODO fix sanity in middleware error
-  const redirect = await getRedirect(pathname);
+  let redirect = await getRedirect(pathname);
 
   if (redirect) {
     return NextResponse.redirect(new URL(redirect.destination, request.url), {
@@ -28,7 +28,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-export const config = {
+export let config = {
   matcher: [
     "/((?!api|_next/static|_next/image|favicon.ico|manage|blocks|favicons|fonts|images|studio-docs).*)",
   ],

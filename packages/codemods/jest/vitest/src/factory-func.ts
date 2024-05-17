@@ -22,33 +22,31 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from "jscodeshift";
-import type { Collection } from "jscodeshift";
+import type core from 'jscodeshift';
+import type { Collection } from 'jscodeshift';
 
-export const addFactoryFunctionToMock = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
+export let addFactoryFunctionToMock = <T,>(
+	root: Collection<T>,
+	j: core.JSCodeshift,
 ) => {
-  root
-    .find(j.CallExpression, {
-      callee: {
-        object: { type: "Identifier", name: "jest" },
-        property: { type: "Identifier", name: "setMock" },
-      },
-    })
-    .forEach((path) => {
-      const { arguments: args } = path.value;
+	root.find(j.CallExpression, {
+		callee: {
+			object: { type: 'Identifier', name: 'jest' },
+			property: { type: 'Identifier', name: 'setMock' },
+		},
+	}).forEach((path) => {
+		let { arguments: args } = path.value;
 
-      if (args.length < 2) {
-        return;
-      }
+		if (args.length < 2) {
+			return;
+		}
 
-      const moduleExport = args[1];
+		let moduleExport = args[1];
 
-      if (moduleExport.type !== "ObjectExpression") {
-        return;
-      }
+		if (moduleExport.type !== 'ObjectExpression') {
+			return;
+		}
 
-      args[1] = j.arrowFunctionExpression([], moduleExport);
-    });
+		args[1] = j.arrowFunctionExpression([], moduleExport);
+	});
 };

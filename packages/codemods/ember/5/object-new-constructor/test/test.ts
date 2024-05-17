@@ -1,12 +1,12 @@
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("ember 5 object-new-constructor", () => {
-  it("basic", () => {
-    const INPUT = `
+describe('ember 5 object-new-constructor', () => {
+	it('basic', () => {
+		let INPUT = `
 		let obj1 = new EmberObject();
 		let obj2 = new EmberObject({ prop: 'value' });
 
@@ -14,7 +14,7 @@ describe("ember 5 object-new-constructor", () => {
 		let foo = new Foo({ bar: 123 });
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		let obj1 = EmberObject.create();
 		let obj2 = EmberObject.create({ prop: 'value' });
 		
@@ -22,16 +22,16 @@ describe("ember 5 object-new-constructor", () => {
 		let foo = new Foo({ bar: 123 });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

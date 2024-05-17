@@ -16,7 +16,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const nonce = headers().get("x-nonce") ?? undefined;
+  let nonce = headers().get("x-nonce") ?? undefined;
   // test
   return (
     <html lang="en" className={cx(globalFontsVariables, "scroll-smooth light")}>

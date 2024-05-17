@@ -1,17 +1,17 @@
-import { type CustomHandler, UnauthorizedError } from "../customHandler.js";
+import { type CustomHandler, UnauthorizedError } from '../customHandler.js';
 
-export const revokeTokenHandler: CustomHandler<{
-  success: true;
+export let revokeTokenHandler: CustomHandler<{
+	success: true;
 }> = async (dependencies) => {
-  const accessToken = dependencies.getAccessToken();
-  if (accessToken === null) {
-    throw new UnauthorizedError();
-  }
+	let accessToken = dependencies.getAccessToken();
+	if (accessToken === null) {
+		throw new UnauthorizedError();
+	}
 
-  await dependencies.tokenService.revokeToken(
-    accessToken,
-    BigInt(dependencies.now()),
-  );
+	await dependencies.tokenService.revokeToken(
+		accessToken,
+		BigInt(dependencies.now()),
+	);
 
-  return { success: true };
+	return { success: true };
 };

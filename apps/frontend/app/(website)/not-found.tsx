@@ -4,7 +4,7 @@ import { loadNotFound } from "@/data/sanity/loadQuery";
 import { draftMode } from "next/headers";
 
 export default async function FourOhFour() {
-  const data = await loadNotFound("en");
+  let data = await loadNotFound("en");
 
   return draftMode().isEnabled ? (
     <NotFoundPreview initial={data} />

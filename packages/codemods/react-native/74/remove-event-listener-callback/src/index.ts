@@ -26,56 +26,56 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options } from "jscodeshift";
+import type { API, FileInfo, Options } from 'jscodeshift';
 export default function transform(
-  file: FileInfo,
-  api: API,
-  options?: Options,
+	file: FileInfo,
+	api: API,
+	options?: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
-  const root = j(file.source);
+	let j = api.jscodeshift;
+	let root = j(file.source);
 
-  const declarationsToRemove = [] as string[];
+	let declarationsToRemove = [] as string[];
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        object: {
-          name: "PushNotificationIOS",
-        },
-        property: {
-          name: "removeEventListener",
-        },
-      },
-    })
-    .forEach((path) => {
-      // Check if the second argument is a function
-      if (path.node.arguments[1]) {
-        if (j.Identifier.check(path.node.arguments[1])) {
-          declarationsToRemove.push(path.node.arguments[1]?.name);
-        }
-        // Remove the second argument
-        path.node.arguments.pop();
-      }
-    });
+	root.find(j.CallExpression, {
+		callee: {
+			object: {
+				name: 'PushNotificationIOS',
+			},
+			property: {
+				name: 'removeEventListener',
+			},
+		},
+	}).forEach((path) => {
+		// Check if the second argument is a function
+		if (path.node.arguments[1]) {
+			if (j.Identifier.check(path.node.arguments[1])) {
+				declarationsToRemove.push(path.node.arguments[1]?.name);
+			}
+			// Remove the second argument
+			path.node.arguments.pop();
+		}
+	});
 
-  // Remove declarations if they are not used anywhere else
-  declarationsToRemove
-    .filter((variable) => {
-      const isUsed = !!root
-        .find(j.Identifier, { name: variable })
-        .filter((path) => {
-          return (
-            !j.VariableDeclarator.check(path.parent?.value) ||
-            path.parent?.value.id.name !== variable
-          );
-        }).length;
+	// Remove declarations if they are not used anywhere else
+	declarationsToRemove
+		.filter((variable) => {
+			let isUsed = !!root
+				.find(j.Identifier, { name: variable })
+				.filter((path) => {
+					return (
+						!j.VariableDeclarator.check(path.parent?.value) ||
+						path.parent?.value.id.name !== variable
+					);
+				}).length;
 
-      return !isUsed;
-    })
-    .forEach((variable) => {
-      root.find(j.VariableDeclarator, { id: { name: variable } }).remove();
-    });
+			return !isUsed;
+		})
+		.forEach((variable) => {
+			root.find(j.VariableDeclarator, {
+				id: { name: variable },
+			}).remove();
+		});
 
-  return root.toSource();
+	return root.toSource();
 }

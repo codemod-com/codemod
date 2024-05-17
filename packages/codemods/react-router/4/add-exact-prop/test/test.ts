@@ -1,12 +1,12 @@
-import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert/strict';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("react-router v4 add-exact-prop", () => {
-  it("should add exact prop", async () => {
-    const input = `
+describe('react-router v4 add-exact-prop', () => {
+	it('should add exact prop', async () => {
+		let input = `
 		import { Route, Router, Switch } from 'react-router-dom';
 
 		const MyApp = () => (
@@ -21,7 +21,7 @@ describe("react-router v4 add-exact-prop", () => {
 		);
 		`;
 
-    const output = `
+		let output = `
 		import { Route, Router, Switch } from 'react-router-dom';
 
 		const MyApp = () => (
@@ -36,18 +36,18 @@ describe("react-router v4 add-exact-prop", () => {
 		);
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		let actualOutput = transform(fileInfo, buildApi('js'), {
+			quote: 'single',
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      output.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			output.replace(/\W/gm, ''),
+		);
+	});
 });

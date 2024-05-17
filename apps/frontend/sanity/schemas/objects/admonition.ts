@@ -1,7 +1,7 @@
 import AdmonitionRenderer from "@/sanity/lib/components/AdmonitionRenderer";
 import { icon } from "./icon";
 
-export const admonition = {
+export let admonition = {
   name: "admonition",
   title: "admonition",
   type: "object",

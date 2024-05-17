@@ -27,88 +27,91 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root.findJSXElements("NavLink").forEach((path) => {
-    const attrs = path.value.openingElement.attributes;
+	root.findJSXElements('NavLink').forEach((path) => {
+		let attrs = path.value.openingElement.attributes;
 
-    if (!attrs) {
-      return;
-    }
+		if (!attrs) {
+			return;
+		}
 
-    const [classNameAttr] = attrs.filter((a) =>
-      "name" in a ? a.name.name === "className" : false,
-    );
+		let [classNameAttr] = attrs.filter((a) =>
+			'name' in a ? a.name.name === 'className' : false,
+		);
 
-    if (
-      !classNameAttr ||
-      !("value" in classNameAttr) ||
-      !classNameAttr.value ||
-      !("value" in classNameAttr.value) ||
-      !classNameAttr.value.value
-    ) {
-      return;
-    }
+		if (
+			!classNameAttr ||
+			!('value' in classNameAttr) ||
+			!classNameAttr.value ||
+			!('value' in classNameAttr.value) ||
+			!classNameAttr.value.value
+		) {
+			return;
+		}
 
-    const [activeClassNameAttr] = attrs.filter((a) =>
-      "name" in a ? a.name.name === "activeClassName" : false,
-    );
+		let [activeClassNameAttr] = attrs.filter((a) =>
+			'name' in a ? a.name.name === 'activeClassName' : false,
+		);
 
-    if (
-      !activeClassNameAttr ||
-      !("value" in activeClassNameAttr) ||
-      !activeClassNameAttr.value ||
-      !("value" in activeClassNameAttr.value)
-    ) {
-      return;
-    }
+		if (
+			!activeClassNameAttr ||
+			!('value' in activeClassNameAttr) ||
+			!activeClassNameAttr.value ||
+			!('value' in activeClassNameAttr.value)
+		) {
+			return;
+		}
 
-    const idx = attrs.findIndex((a) =>
-      "name" in a ? a.name.name === "activeClassName" : false,
-    );
+		let idx = attrs.findIndex((a) =>
+			'name' in a ? a.name.name === 'activeClassName' : false,
+		);
 
-    // remove activeclass name
-    attrs.splice(idx, 1);
+		// remove activeclass name
+		attrs.splice(idx, 1);
 
-    const propertyNode = j.property(
-      "init",
-      j.literal("isActive"),
-      j.identifier("isActive"),
-    );
+		let propertyNode = j.property(
+			'init',
+			j.literal('isActive'),
+			j.identifier('isActive'),
+		);
 
-    const arrFuncBody = j.binaryExpression(
-      "+",
-      j.literal(classNameAttr.value.value),
-      j.conditionalExpression(
-        j.identifier("isActive"),
-        j.literal(` ${activeClassNameAttr.value.value}`),
-        j.literal(""),
-      ),
-    );
+		let arrFuncBody = j.binaryExpression(
+			'+',
+			j.literal(classNameAttr.value.value),
+			j.conditionalExpression(
+				j.identifier('isActive'),
+				j.literal(` ${activeClassNameAttr.value.value}`),
+				j.literal(''),
+			),
+		);
 
-    classNameAttr.value = j.jsxExpressionContainer(
-      j.arrowFunctionExpression([j.objectPattern([propertyNode])], arrFuncBody),
-    );
+		classNameAttr.value = j.jsxExpressionContainer(
+			j.arrowFunctionExpression(
+				[j.objectPattern([propertyNode])],
+				arrFuncBody,
+			),
+		);
 
-    dirtyFlag = true;
-  });
+		dirtyFlag = true;
+	});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

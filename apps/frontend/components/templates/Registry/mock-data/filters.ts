@@ -1,1 +1,1 @@
-export const DEFAULT_FILTER_LENGTH = 5;
+export let DEFAULT_FILTER_LENGTH = 5;

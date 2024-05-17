@@ -2,7 +2,7 @@ import Text from "@studio/components/Text";
 import { Button } from "@studio/components/ui/button";
 import type { WarningTextsProps } from "../";
 
-export const WarningTexts = ({
+export let WarningTexts = ({
   snippetBeforeHasOnlyWhitespaces,
   firstCodemodExecutionErrorEvent,
   onDebug,

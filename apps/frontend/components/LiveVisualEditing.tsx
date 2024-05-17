@@ -8,11 +8,11 @@ import { client } from "@/data/sanity/client";
 import { useEffect } from "react";
 
 // Always enable stega in Live Mode
-const stegaClient = client.withConfig({ stega: true });
+let stegaClient = client.withConfig({ stega: true });
 
 export default function LiveVisualEditing() {
   useLiveMode({ client: stegaClient });
-  const pathname = usePathname();
+  let pathname = usePathname();
 
   useEffect(() => {
     if (window === parent) {

@@ -28,6 +28,6 @@ Changes: move the code from JavaScript to TypeScript
 */
 
 // https://github.com/benjamn/recast/blob/master/lib/options.ts
-export const printOptions = {
-  quote: "single",
+export let printOptions = {
+	quote: 'single',
 };

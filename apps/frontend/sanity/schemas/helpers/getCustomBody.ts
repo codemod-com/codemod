@@ -1,6 +1,6 @@
 import { defineArrayMember } from "sanity";
 import { admonition } from "../objects/admonition";
-const STYLE_LABELS = {
+let STYLE_LABELS = {
   h2: "Section heading",
   h3: "Sub-section",
   h4: "H4",
@@ -19,7 +19,7 @@ export function getCustomBody({
   blockTypes?: string[];
   inlineBlockTypes?: string[];
 } = {}) {
-  const availableStyles =
+  let availableStyles =
     styles === false
       ? []
       : styles === true

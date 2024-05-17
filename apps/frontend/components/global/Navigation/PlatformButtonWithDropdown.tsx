@@ -5,9 +5,9 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 export default function PlatformButtonWithDropdown() {
-  const [open, setOpen] = useState(false);
-  const router = useRouter();
-  const pathname = usePathname();
+  let [open, setOpen] = useState(false);
+  let router = useRouter();
+  let pathname = usePathname();
 
   function handleMouseEnter(event: React.MouseEvent) {
     event.preventDefault();

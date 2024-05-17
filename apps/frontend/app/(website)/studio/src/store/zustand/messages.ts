@@ -24,18 +24,18 @@ export type MessageStoreState = {
   updateLastMessage: (content: string) => void;
 };
 
-export const useMessageStore = create<MessageStoreState>((set, get) => {
-  const [messages, setMessages] = useState([]);
+export let useMessageStore = create<MessageStoreState>((set, get) => {
+  let [messages, setMessages] = useState([]);
 
-  const {
+  let {
     messages: modGPTMessages,
     setMessages: setModGPTMessages,
     append: appendModGPTMessages,
   } = useModGPT();
 
-  const { wsMessage: codemodAIMessage } = useCodemodAI();
+  let { wsMessage: codemodAIMessage } = useCodemodAI();
 
-  const lastMss = modGPTMessages?.at(-1);
+  let lastMss = modGPTMessages?.at(-1);
 
   useEffect(() => {
     if (!codemodAIMessage) return;
@@ -50,8 +50,8 @@ export const useMessageStore = create<MessageStoreState>((set, get) => {
 
   useEffect(() => {
     if (!lastMss?.content) return;
-    const index = modGPTMessages.findIndex(({ id }) => id === lastMss.id);
-    const updateMessages =
+    let index = modGPTMessages.findIndex(({ id }) => id === lastMss.id);
+    let updateMessages =
       index > -1
         ? () => modGPTMessages.with(index, lastMss)
         : (m) => [...m, lastMss];

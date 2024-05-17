@@ -1,7 +1,7 @@
-import styles from "./InfiniteProgress.module.css";
+import styles from './InfiniteProgress.module.css';
 
-export const InfiniteProgress = () => (
-  <div className={styles.progressContainer}>
-    <div className={styles.progress} />
-  </div>
+export let InfiniteProgress = () => (
+	<div className={styles.progressContainer}>
+		<div className={styles.progress} />
+	</div>
 );

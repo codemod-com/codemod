@@ -13,7 +13,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadJobListingPage(`/careers/${props.params.path}`);
+  let initialData = await loadJobListingPage(`/careers/${props.params.path}`);
 
   if (!initialData?.data) return notFound();
 
@@ -21,7 +21,7 @@ export async function generateMetadata(
 }
 
 export default async function Job(props: RouteProps) {
-  const initial = await loadJobListingPage(`/careers/${props.params.path}`);
+  let initial = await loadJobListingPage(`/careers/${props.params.path}`);
 
   if (!initial?.data) return notFound();
 
@@ -38,8 +38,8 @@ export default async function Job(props: RouteProps) {
 }
 
 export async function generateStaticParams() {
-  const jobs = await client.fetch(groq`*[_type == 'job']`);
-  const paths = jobs.map((job: any) => ({
+  let jobs = await client.fetch(groq`*[_type == 'job']`);
+  let paths = jobs.map((job: any) => ({
     path: job.pathname.current.replace("/careers/", ""),
   }));
 

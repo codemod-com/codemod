@@ -147,15 +147,15 @@ function PageCTADouble(props: PageCtaDouble) {
 function PageCtaDoubleBlock(
   props: PageCtaDouble & { position: "left" | "right" },
 ) {
-  const title =
+  let title =
     props.position === "left"
       ? props.leftSectionTitle
       : props.rightSectionTitle;
-  const paragraph =
+  let paragraph =
     props.position === "left"
       ? props.leftSectionParagraph
       : props.rightSectionParagraph;
-  const cta =
+  let cta =
     props.position === "left" ? props.leftSectionCta : props.rightSectionCta;
 
   return (
@@ -194,10 +194,10 @@ function PageCtaDoubleBlock(
 }
 
 function PageCtaTriple(props: PageCtaTriple) {
-  const titleLine1 = props.splitPattern
+  let titleLine1 = props.splitPattern
     ? props.title.split(props.splitPattern)[0] + props.splitPattern
     : props.title;
-  const titleLine2 = props.splitPattern
+  let titleLine2 = props.splitPattern
     ? props.title.split(props.splitPattern)[1]
     : "";
   return (
