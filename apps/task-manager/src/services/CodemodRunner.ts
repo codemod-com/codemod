@@ -60,10 +60,12 @@ export class CodemodRunnerService {
     console.log(`[status]: executing codemod ${message}`);
     const progress = this.__extractStdOutProgress(message);
 
-    await redis.set({
-      status: "executing codemod",
-      progress,
-    });
+    if (progress) {
+      await redis.set({
+        status: "executing codemod",
+        progress,
+      });
+    }
   };
 
   private __stdErrHandler = async (data: Buffer): Promise<void> => {
@@ -71,10 +73,12 @@ export class CodemodRunnerService {
 
     console.error(`[error]: error executing codemod ${message}`);
 
-    await redis.set({
-      status: "error",
-      message,
-    });
+    if (message) {
+      await redis.set({
+        status: "error",
+        message,
+      });
+    }
   };
 
   private __onCloseHandler = async (
