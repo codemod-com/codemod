@@ -8,15 +8,15 @@ type UseBranchLogicProps = {
   setBranchesToShow: React.Dispatch<React.SetStateAction<GHBranch[]>>;
   selectedRepository?: GithubRepository;
 };
-export const useBranchLogic = ({
+export let useBranchLogic = ({
   branchesToShow,
   setBranchesToShow,
   selectedRepository,
 }: UseBranchLogicProps) => {
-  const [selectedBranch, setSelectedBranch] = useState<GHBranch>();
-  const [areBranchesLoading, setAreBranchesLoading] = useState(false);
+  let [selectedBranch, setSelectedBranch] = useState<GHBranch>();
+  let [areBranchesLoading, setAreBranchesLoading] = useState(false);
 
-  const { post: fetchGHBranches } = useAPI(GH_BRANCH_LIST);
+  let { post: fetchGHBranches } = useAPI(GH_BRANCH_LIST);
 
   useEffect(() => {
     if (!selectedRepository) {
@@ -24,9 +24,9 @@ export const useBranchLogic = ({
       return;
     }
 
-    const getBranches = async () => {
+    let getBranches = async () => {
       setAreBranchesLoading(true);
-      const branches = (
+      let branches = (
         await fetchGHBranches<GHBranch[]>({
           repoUrl: selectedRepository.html_url,
         })
@@ -39,8 +39,8 @@ export const useBranchLogic = ({
     getBranches();
   }, [selectedRepository]);
 
-  const selectBranch = (branchName: string) => {
-    const branch = branchesToShow.find(({ name }) => name === branchName);
+  let selectBranch = (branchName: string) => {
+    let branch = branchesToShow.find(({ name }) => name === branchName);
     setSelectedBranch(branch);
   };
 

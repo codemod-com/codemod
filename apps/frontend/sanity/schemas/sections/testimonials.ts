@@ -1,6 +1,6 @@
 import { defineSection } from "@tinloof/sanity-studio";
 
-export const testimonials = defineSection({
+export let testimonials = defineSection({
   title: "Testimonials",
   name: "section.testimonials",
   type: "object",

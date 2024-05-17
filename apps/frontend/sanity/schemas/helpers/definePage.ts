@@ -14,7 +14,7 @@ type PageDefinition = Omit<DocumentDefinition, "options"> & {
 };
 
 export default function definePage(schema: PageDefinition) {
-  const groups = uniqBy(
+  let groups = uniqBy(
     [
       {
         name: "content",

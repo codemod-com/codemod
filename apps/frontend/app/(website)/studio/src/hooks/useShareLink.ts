@@ -3,9 +3,9 @@ import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { deflate } from "pako";
 
-export const useShareLink = () => {
-  const { engine, inputSnippet, afterSnippet } = useSnippetStore();
-  const { internalContent } = useModStore();
+export let useShareLink = () => {
+  let { engine, inputSnippet, afterSnippet } = useSnippetStore();
+  let { internalContent } = useModStore();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
   // 	try {
@@ -51,15 +51,15 @@ export const useShareLink = () => {
   // 	}
   // };
 
-  const getURL = (): URL | null => {
+  let getURL = (): URL | null => {
     try {
       if (internalContent === null) {
         throw new Error("codemod content not found");
       }
 
-      const codemodName = "untitled";
+      let codemodName = "untitled";
 
-      const input = JSON.stringify({
+      let input = JSON.stringify({
         v: 1, // version
         e: engine,
         n: codemodName,
@@ -68,9 +68,9 @@ export const useShareLink = () => {
         c: internalContent ?? "",
       }); //satisfies ShareableCodemod);
 
-      const uint8array = deflate(input, { level: 9 });
+      let uint8array = deflate(input, { level: 9 });
 
-      const output = window
+      let output = window
         .btoa(
           Array.from(uint8array, (uint8) => String.fromCodePoint(uint8)).join(
             "",
@@ -80,11 +80,11 @@ export const useShareLink = () => {
         .replaceAll("/", "_")
         .replaceAll("+", "-");
 
-      const searchParams = new URLSearchParams({
+      let searchParams = new URLSearchParams({
         [SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD]: output,
       });
 
-      const url = new URL(window.location.href);
+      let url = new URL(window.location.href);
       url.search = searchParams.toString();
 
       return url;

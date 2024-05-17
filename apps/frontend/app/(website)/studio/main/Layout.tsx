@@ -10,7 +10,7 @@ type Props = {
   children?: ReactNode;
 };
 
-const Layout = ({ children }: Props) => (
+let Layout = ({ children }: Props) => (
   <div className="flex h-[100vh] w-[100vw] flex-col overflow-hidden bg-gray-lighter dark:bg-gray-darker">
     {children}
   </div>
@@ -36,7 +36,7 @@ Layout.Header = (({ children }) => (
 )) as FC<Props>;
 Layout.Header.displayName = "LayoutHeader";
 
-const Column = ({ children }: Props) => (
+let Column = ({ children }: Props) => (
   <Panel
     className="flex h-full flex-col gap-2 overflow-hidden dark:bg-gray-dark"
     collapsible
@@ -75,9 +75,9 @@ type ResizablePanelProps = {
   className?: string;
 } & PanelProps;
 
-const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
+let ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
   (props, ref) => {
-    const { children, defaultSize, minSize, collapsible, className, ...rest } =
+    let { children, defaultSize, minSize, collapsible, className, ...rest } =
       props;
     return (
       <Panel

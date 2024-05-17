@@ -15,19 +15,19 @@ export type MuxVideoProps = Omit<VideoProps, "mp4Url" | "webmUrl"> & {
 };
 
 export default function MuxVideo({ video, ...videoProps }: MuxVideoProps) {
-  const { playbackId, resolution } = video ?? {};
+  let { playbackId, resolution } = video ?? {};
 
   if (!playbackId || !resolution) {
     return null;
   }
 
-  const mp4Url = vercelStegaSplit(
+  let mp4Url = vercelStegaSplit(
     `https://stream.mux.com/${playbackId}/${
       resolution === "SD" ? "medium" : "high"
     }.mp4`,
   ).cleaned as string;
 
-  const webmUrl = vercelStegaSplit(
+  let webmUrl = vercelStegaSplit(
     `https://stream.mux.com/${playbackId}/${
       resolution === "SD" ? "medium" : "high"
     }.webm`,
@@ -69,9 +69,9 @@ function Video({
   replay,
   ...props
 }: VideoProps) {
-  const [appeared, setAppeared] = React.useState(false);
-  const { ref, inView } = useInView();
-  const video = useRef<HTMLVideoElement>(null);
+  let [appeared, setAppeared] = React.useState(false);
+  let { ref, inView } = useInView();
+  let video = useRef<HTMLVideoElement>(null);
   useEffect(() => {
     if (inView) {
       setAppeared(true);
@@ -110,8 +110,8 @@ function Video({
   );
 }
 
-const Controls = ({ video }: { video: React.RefObject<HTMLVideoElement> }) => {
-  const [isPaused, setIsPaused] = useState(
+let Controls = ({ video }: { video: React.RefObject<HTMLVideoElement> }) => {
+  let [isPaused, setIsPaused] = useState(
     !video.current?.autoplay || !!video.current?.paused,
   );
 

@@ -20,7 +20,7 @@ type SelectProps = {
 
 export default function Dropdown({ label, options, error }: SelectProps) {
   // Temporary state to manage the selected option - lift this to parent component
-  const [selected, setSelected] = React.useState<Option | null>(null);
+  let [selected, setSelected] = React.useState<Option | null>(null);
 
   return (
     <DropdownMenu.Root>

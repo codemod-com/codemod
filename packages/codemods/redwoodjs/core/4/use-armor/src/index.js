@@ -25,46 +25,44 @@ Changes to the original file: add the options parameter
 */
 
 export default function transform(file, api, options) {
-  const j = api.jscodeshift;
-  const ast = j(file.source);
+	let j = api.jscodeshift;
+	let ast = j(file.source);
 
-  // Within createGraphQLHandler, look for the `depthLimitOptions` option and replace it with `armorConfig`
-  // and the original value of `maxDepth`
-  ast
-    .find(j.CallExpression, {
-      callee: { name: "createGraphQLHandler" },
-    })
-    .forEach((path) => {
-      const props = path.value.arguments[0].properties.filter(
-        (p) => p.key.name === "depthLimitOptions",
-      );
+	// Within createGraphQLHandler, look for the `depthLimitOptions` option and replace it with `armorConfig`
+	// and the original value of `maxDepth`
+	ast.find(j.CallExpression, {
+		callee: { name: 'createGraphQLHandler' },
+	}).forEach((path) => {
+		let props = path.value.arguments[0].properties.filter(
+			(p) => p.key.name === 'depthLimitOptions',
+		);
 
-      if (props.length > 0) {
-        const [prop] = props;
+		if (props.length > 0) {
+			let [prop] = props;
 
-        prop.key.name = "armorConfig";
+			prop.key.name = 'armorConfig';
 
-        const val = prop.value.properties[0].value.value;
+			let val = prop.value.properties[0].value.value;
 
-        const newValue = j.objectExpression([
-          j.objectProperty(
-            j.identifier("maxDepth"),
-            j.objectExpression([
-              j.objectProperty(
-                j.identifier("n"),
-                j.numericLiteral(val),
-                false,
-                false,
-              ),
-            ]),
-            false,
-            false,
-          ),
-        ]);
+			let newValue = j.objectExpression([
+				j.objectProperty(
+					j.identifier('maxDepth'),
+					j.objectExpression([
+						j.objectProperty(
+							j.identifier('n'),
+							j.numericLiteral(val),
+							false,
+							false,
+						),
+					]),
+					false,
+					false,
+				),
+			]);
 
-        prop.value = newValue;
-      }
-    });
+			prop.value = newValue;
+		}
+	});
 
-  return ast.toSource(options);
+	return ast.toSource(options);
 }

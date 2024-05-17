@@ -3,22 +3,22 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import type { useExecutionStatus } from "../../../hooks/useExecutionStatus";
 
-const baseToastOptions: Parameters<typeof toast>[1] = {
+let baseToastOptions: Parameters<typeof toast>[1] = {
   position: "top-center",
   duration: 12000,
 };
 
-export const useCodemodStatusToast = (
+export let useCodemodStatusToast = (
   codemodRunStatus: ReturnType<typeof useExecutionStatus>,
 ) => {
   useEffect(() => {
-    const { result } = codemodRunStatus ?? {};
+    let { result } = codemodRunStatus ?? {};
     if (!result) return;
 
     if (result.status === "error") {
       toast(<span>{`❌ ${result.message}`}</span>, baseToastOptions);
     } else if (result.status === "done") {
-      const message = result.link ? (
+      let message = result.link ? (
         <span>
           Success! Check out the changes{" "}
           <a

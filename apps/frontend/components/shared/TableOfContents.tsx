@@ -27,7 +27,7 @@ function throttle(func, delay) {
   };
 }
 
-const TableOfContents = ({
+let TableOfContents = ({
   outlines,
   title,
   children,
@@ -40,63 +40,63 @@ const TableOfContents = ({
   variant?: "default" | "sidebar";
   title: string;
 }>) => {
-  const [activeHeadingIndex, setActiveHeadingIndex] = useState(0);
-  const [tYAmount, setTYAmount] = useState({ solid: 0, shadow: 0 });
-  const router = useRouter();
-  const outlineRefs = useRef<HTMLDivElement[]>([]);
-  const tocRef = useRef<HTMLDivElement | null>(null);
+  let [activeHeadingIndex, setActiveHeadingIndex] = useState(0);
+  let [tYAmount, setTYAmount] = useState({ solid: 0, shadow: 0 });
+  let router = useRouter();
+  let outlineRefs = useRef<HTMLDivElement[]>([]);
+  let tocRef = useRef<HTMLDivElement | null>(null);
 
-  const scrollToPt = (ptId: string) => {
-    const ptElem = document.getElementById(ptId);
+  let scrollToPt = (ptId: string) => {
+    let ptElem = document.getElementById(ptId);
     ptElem?.scrollIntoView({
       behavior: "smooth",
     });
   };
 
-  const updateTyAmount = useCallback(
+  let updateTyAmount = useCallback(
     (index, type: "solid" | "shadow") => {
-      const tocRect = tocRef.current?.getBoundingClientRect();
-      const selectedOutlineRect =
+      let tocRect = tocRef.current?.getBoundingClientRect();
+      let selectedOutlineRect =
         outlineRefs.current[index]?.getBoundingClientRect();
-      const yDiff = selectedOutlineRect?.top! - tocRect?.top!;
+      let yDiff = selectedOutlineRect?.top! - tocRect?.top!;
       setTYAmount({ ...tYAmount, [type]: yDiff });
     },
     [tYAmount],
   );
 
   useEffect(() => {
-    const activeIndex =
+    let activeIndex =
       outlines?.findIndex(
         (item) =>
           getPtComponentId(item as any) === window?.location?.hash?.slice(1),
       ) ?? -1;
     setActiveHeadingIndex(activeIndex === -1 ? 0 : activeIndex);
-    const ptId = getPtComponentId(outlines[activeIndex] as any);
+    let ptId = getPtComponentId(outlines[activeIndex] as any);
     scrollToPt(ptId);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const handleClick = (item: BlocksBody, index: number) => {
-    const ptId = getPtComponentId(item as any);
+  let handleClick = (item: BlocksBody, index: number) => {
+    let ptId = getPtComponentId(item as any);
     scrollToPt(ptId);
     setActiveHeadingIndex(index);
     router.replace(`#${ptId}`);
     updateTyAmount(index, "solid");
   };
 
-  const toPlainTextCapitalized = (block: BlocksBody) => {
+  let toPlainTextCapitalized = (block: BlocksBody) => {
     return capitalize(toPlainText(block).toLocaleLowerCase());
   };
 
-  const onScroll = useCallback(() => {
+  let onScroll = useCallback(() => {
     let index = 0;
-    for (const heading of outlines || []) {
-      const headingElement = document.getElementById(
+    for (let heading of outlines || []) {
+      let headingElement = document.getElementById(
         `${getPtComponentId(heading.block as any)}`,
       );
       if (headingElement) {
-        const rect = headingElement.getBoundingClientRect();
+        let rect = headingElement.getBoundingClientRect();
         if (rect.top >= 0 && rect.top <= 300) {
           window.history.replaceState(
             null,

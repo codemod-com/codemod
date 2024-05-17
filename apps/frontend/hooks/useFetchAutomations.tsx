@@ -11,7 +11,7 @@ export function useFetchAutomations({
   preview?: boolean;
   initial?: RegistryCardData[] | null | undefined;
 }) {
-  const [data, setData] = useState<{
+  let [data, setData] = useState<{
     data: RegistryCardData[] | null | undefined;
     filters: AutomationFilter[];
     page: number;
@@ -25,7 +25,7 @@ export function useFetchAutomations({
     total: 0,
   });
 
-  const [loaderState, setQueryState] = useState<
+  let [loaderState, setQueryState] = useState<
     "idle" | "loading" | "error" | "success"
   >("idle");
 
@@ -53,7 +53,7 @@ export function useFetchAutomations({
 
       return;
     }
-    const res = await fetch(`/api/load-codemods`, {
+    let res = await fetch(`/api/load-codemods`, {
       method: "POST",
       body: JSON.stringify({
         pageNumber: 1,
@@ -62,7 +62,7 @@ export function useFetchAutomations({
       }),
     });
 
-    const automationList = await res.json();
+    let automationList = await res.json();
 
     if (res.status === 200) {
       setQueryState("success");

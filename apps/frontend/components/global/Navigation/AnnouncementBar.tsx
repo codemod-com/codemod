@@ -9,7 +9,7 @@ type AnnouncementBarProps = {
 };
 
 export default function AnnouncementBar({ data }: AnnouncementBarProps) {
-  const [dismissed, setDismissed] = useState(false);
+  let [dismissed, setDismissed] = useState(false);
 
   return !dismissed ? (
     <div className="flex w-full justify-center bg-accent">
@@ -24,7 +24,7 @@ export default function AnnouncementBar({ data }: AnnouncementBarProps) {
           <button
             className="absolute right-[20px] top-1/2 -translate-y-1/2 transform cursor-pointer lg:right-m"
             onClick={() => {
-              const headerHeight = getComputedStyle(
+              let headerHeight = getComputedStyle(
                 document.documentElement,
                 null,
               ).getPropertyValue("--header-height");

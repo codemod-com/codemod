@@ -11,7 +11,7 @@ type ModalProps = Readonly<{
   transparent: boolean;
 }>;
 
-const Modal = ({
+let Modal = ({
   children,
   onClose,
   width,
@@ -19,7 +19,7 @@ const Modal = ({
   centered,
   transparent,
 }: ModalProps) => {
-  const upperDivClassName = cn(
+  let upperDivClassName = cn(
     "overflow-x-hidden flex overflow-y-auto fixed inset-0 z-[10000] outline-none focus:outline-none",
     centered && "justify-center",
     "items-center",
@@ -27,7 +27,7 @@ const Modal = ({
     !transparent && "bg-black bg-opacity-60",
   );
 
-  const lowerDivClassName = cn(
+  let lowerDivClassName = cn(
     {
       [width ?? "w-auto"]: !transparent,
     },

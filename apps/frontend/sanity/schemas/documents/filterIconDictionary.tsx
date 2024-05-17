@@ -9,7 +9,7 @@ import defineSchema from "../helpers/defineSchema";
 import { icon } from "../objects/icon";
 import { logoFields } from "../shared/logoFields";
 
-export const filterIconDictionary = defineSchema({
+export let filterIconDictionary = defineSchema({
   name: "filterIconDictionary",
   title: "Filter Icons",
   type: "document",

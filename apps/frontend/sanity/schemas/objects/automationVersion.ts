@@ -1,7 +1,7 @@
 import { defineType } from "sanity";
 import { automationApplicability } from "../shared/automationApplicability";
 
-export const automationVersion = defineType({
+export let automationVersion = defineType({
   name: "automationVersion",
   title: "Codemod Version",
   type: "object",

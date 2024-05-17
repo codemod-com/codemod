@@ -21,7 +21,7 @@ import {
 import { flushSync } from "react-dom";
 import toast from "react-hot-toast";
 
-export const useHandlePrompt = ({
+export let useHandlePrompt = ({
   append,
   id,
   isLoading,
@@ -34,17 +34,17 @@ export const useHandlePrompt = ({
   ReturnType<typeof useChat>,
   "append" | "isLoading" | "setMessages"
 >) => {
-  const { command } = useModStore();
-  const executedCommand = useRef(false);
-  const { getToken, isSignedIn } = useAuth();
-  const aliases = useGetAliases();
-  const handleSelectPrompt = async (value: string) => {
-    const t = await getToken();
+  let { command } = useModStore();
+  let executedCommand = useRef(false);
+  let { getToken, isSignedIn } = useAuth();
+  let aliases = useGetAliases();
+  let handleSelectPrompt = async (value: string) => {
+    let t = await getToken();
     flushSync(() => {
       setToken(t);
     });
 
-    const aliasesAppliedValue = applyAliases(value, aliases);
+    let aliasesAppliedValue = applyAliases(value, aliases);
     await append({
       id,
       content: aliasesAppliedValue,
@@ -53,7 +53,7 @@ export const useHandlePrompt = ({
     });
   };
 
-  const shouldApplyPrompt = [
+  let shouldApplyPrompt = [
     isSignedIn &&
       command === "learn" &&
       aliases.$BEFORE !== null &&
@@ -79,11 +79,11 @@ export const useHandlePrompt = ({
   ]);
 };
 
-export const useModMssTimestamps = ({ messages }: { messages: Message[] }) => {
-  const [modMssTimestamps, setModMssTimestamps] = useState<
+export let useModMssTimestamps = ({ messages }: { messages: Message[] }) => {
+  let [modMssTimestamps, setModMssTimestamps] = useState<
     Record<number, Message>
   >({});
-  const newMessage = messages?.at(-1);
+  let newMessage = messages?.at(-1);
 
   useEffect(() => {
     setModMssTimestamps((ct) => ({
@@ -94,12 +94,12 @@ export const useModMssTimestamps = ({ messages }: { messages: Message[] }) => {
   return modMssTimestamps;
 };
 
-export const getHeadersWithAuth = (token: string | null) => ({
+export let getHeadersWithAuth = (token: string | null) => ({
   "Content-Type": "application/json",
   Authorization: token ? `Bearer ${token}` : "",
 });
 
-export const onFinish =
+export let onFinish =
   ({
     command,
     setCurrentCommand,
@@ -116,7 +116,7 @@ export const onFinish =
 
     setCurrentCommand(null);
 
-    const codemodSourceCode = buildCodemodFromLLMResponse(content);
+    let codemodSourceCode = buildCodemodFromLLMResponse(content);
 
     if (codemodSourceCode !== null) {
       setContent(codemodSourceCode);

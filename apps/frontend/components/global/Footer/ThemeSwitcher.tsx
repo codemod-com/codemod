@@ -7,15 +7,15 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
-  const { toggleTheme, theme } = useTheme();
+  let { toggleTheme, theme } = useTheme();
 
-  const darkVariants = {
+  let darkVariants = {
     initial: { x: "-200%", y: "60%" },
     animate:
       theme === "dark" ? { x: "-50%", y: "0%" } : { x: "-200%", y: "60%" },
   };
 
-  const lightVariants = {
+  let lightVariants = {
     initial: { x: "200%", y: "60%" },
     animate:
       theme === "light" ? { x: "-50%", y: "0%" } : { x: "200%", y: "60%" },

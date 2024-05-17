@@ -27,90 +27,89 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
-  const root = j(file.source);
+	let j = api.jscodeshift;
+	let root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "RedwoodProvider" } },
-    })
-    .forEach((path) => {
-      const hasChild = path.value.children?.filter((c) =>
-        "openingElement" in c && "name" in c.openingElement.name
-          ? c.openingElement.name.name === "AuthProvider"
-          : false,
-      ).length;
+	root.find(j.JSXElement, {
+		openingElement: { name: { name: 'RedwoodProvider' } },
+	}).forEach((path) => {
+		let hasChild = path.value.children?.filter((c) =>
+			'openingElement' in c && 'name' in c.openingElement.name
+				? c.openingElement.name.name === 'AuthProvider'
+				: false,
+		).length;
 
-      if (hasChild) {
-        return;
-      }
+		if (hasChild) {
+			return;
+		}
 
-      const newComp = j.jsxElement(
-        j.jsxOpeningElement(j.jsxIdentifier("AuthProvider"), [], false),
-        j.jsxClosingElement(j.jsxIdentifier("AuthProvider")),
-        path.value.children,
-      );
+		let newComp = j.jsxElement(
+			j.jsxOpeningElement(j.jsxIdentifier('AuthProvider'), [], false),
+			j.jsxClosingElement(j.jsxIdentifier('AuthProvider')),
+			path.value.children,
+		);
 
-      path.value.children = [j.jsxText("\n  "), newComp, j.jsxText("\n  ")];
+		path.value.children = [j.jsxText('\n  '), newComp, j.jsxText('\n  ')];
 
-      root
-        .find(j.JSXElement, {
-          openingElement: { name: { name: "RedwoodApolloProvider" } },
-        })
-        .forEach((path) => {
-          const useAuthAttr = j.jsxAttribute(
-            j.jsxIdentifier("useAuth"),
-            j.jsxExpressionContainer(j.identifier("useAuth")),
-          );
+		root.find(j.JSXElement, {
+			openingElement: { name: { name: 'RedwoodApolloProvider' } },
+		}).forEach((path) => {
+			let useAuthAttr = j.jsxAttribute(
+				j.jsxIdentifier('useAuth'),
+				j.jsxExpressionContainer(j.identifier('useAuth')),
+			);
 
-          const { attributes } = path.value.openingElement;
+			let { attributes } = path.value.openingElement;
 
-          if (attributes) {
-            attributes.push(useAuthAttr);
+			if (attributes) {
+				attributes.push(useAuthAttr);
 
-            dirtyFlag = true;
-          }
-        });
+				dirtyFlag = true;
+			}
+		});
 
-      const authImport = root.find(j.ImportDeclaration, {
-        source: { value: "./auth" },
-      });
+		let authImport = root.find(j.ImportDeclaration, {
+			source: { value: './auth' },
+		});
 
-      if (authImport.length > 0) {
-        return;
-      }
+		if (authImport.length > 0) {
+			return;
+		}
 
-      const importDecl = j.importDeclaration(
-        [
-          j.importSpecifier(
-            j.identifier("AuthProvider"),
-            j.identifier("AuthProvider"),
-          ),
-          j.importSpecifier(j.identifier("useAuth"), j.identifier("useAuth")),
-        ],
-        j.stringLiteral("./auth"),
-      );
+		let importDecl = j.importDeclaration(
+			[
+				j.importSpecifier(
+					j.identifier('AuthProvider'),
+					j.identifier('AuthProvider'),
+				),
+				j.importSpecifier(
+					j.identifier('useAuth'),
+					j.identifier('useAuth'),
+				),
+			],
+			j.stringLiteral('./auth'),
+		);
 
-      const body = root.get().value.program.body;
-      body.unshift(importDecl);
+		let body = root.get().value.program.body;
+		body.unshift(importDecl);
 
-      dirtyFlag = true;
-    });
+		dirtyFlag = true;
+	});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

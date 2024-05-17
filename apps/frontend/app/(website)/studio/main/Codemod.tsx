@@ -7,27 +7,27 @@ import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
 import { prettify } from "../src/utils/prettify";
 
-const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
+let CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
   loading: () => <p>Loading...</p>,
   ssr: false,
 });
 
-const Codemod = () => {
-  const editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
-  const { internalContent, ranges, setContent } = useModStore();
-  const activeEvent = useSelectActiveEvent();
-  const setRangeThunk = useRangesOnTarget();
+let Codemod = () => {
+  let editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
+  let { internalContent, ranges, setContent } = useModStore();
+  let activeEvent = useSelectActiveEvent();
+  let setRangeThunk = useRangesOnTarget();
 
-  const content = internalContent ?? "";
+  let content = internalContent ?? "";
 
-  const onBlur = () => {
-    const prettified = prettify(content);
+  let onBlur = () => {
+    let prettified = prettify(content);
     if (prettified !== content) {
       setContent(prettified);
     }
   };
 
-  const onKeyUp = useCallback(
+  let onKeyUp = useCallback(
     (event: monaco.IKeyboardEvent) => {
       if (event.code === "Escape") {
         return;
@@ -41,7 +41,7 @@ const Codemod = () => {
     [setRangeThunk],
   );
 
-  const handleSelectionChange = useCallback(
+  let handleSelectionChange = useCallback(
     (range: OffsetRange) => {
       setRangeThunk({
         target: "CODEMOD_INPUT",
@@ -56,13 +56,13 @@ const Codemod = () => {
       return;
     }
 
-    const model = editor.current.getModel();
+    let model = editor.current.getModel();
 
     if (model === null) {
       return;
     }
 
-    const startPosition = model.getPositionAt(
+    let startPosition = model.getPositionAt(
       activeEvent.codemodSourceRange.start,
     );
 

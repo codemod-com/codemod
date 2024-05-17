@@ -2,7 +2,7 @@ import { isUnique } from "@/sanity/lib/utils";
 import { TagIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const blogTag = defineType({
+export let blogTag = defineType({
   name: "blog.tag",
   title: "Blog tag",
   type: "document",

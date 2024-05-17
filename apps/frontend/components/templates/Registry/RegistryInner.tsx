@@ -11,9 +11,9 @@ export type RegistryIndexProps = {
 };
 
 export default function RegistryInner({ data }: RegistryIndexProps) {
-  const { desktopOpen } = useSidebar();
+  let { desktopOpen } = useSidebar();
 
-  const gridVariants = {
+  let gridVariants = {
     open: {
       x: `var(--sidebar-open-x)`,
       width: `var(--sidebar-open-width)`,

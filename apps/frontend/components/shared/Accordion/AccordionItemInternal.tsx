@@ -24,7 +24,7 @@ export default function AccordionItemInternal({
   variant = "faq",
   children,
 }: AccordionItemInternalProps) {
-  const contentRef = useRef<HTMLDivElement>(null);
+  let contentRef = useRef<HTMLDivElement>(null);
 
   return (
     <div

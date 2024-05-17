@@ -1,7 +1,7 @@
 import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
 
 /** @type {import('next').NextConfig} */
-const nextConfig = {
+let nextConfig = {
   webpack: (config, { isServer, webpack }) => {
     if (!isServer) {
       config.plugins.push(

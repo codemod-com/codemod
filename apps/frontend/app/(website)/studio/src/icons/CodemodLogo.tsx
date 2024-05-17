@@ -1,4 +1,4 @@
-export const CodemodLogo = () => (
+export let CodemodLogo = () => (
   <svg
     width="133"
     height="22"

@@ -4,7 +4,7 @@ import type { FileParseResult, ParseError } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 
 function useTreeNode(astOutput: FileParseResult | ParseError | null) {
-  const res = useMemo(() => {
+  let res = useMemo(() => {
     if (!isFile(astOutput)) {
       return null;
     }

@@ -26,26 +26,24 @@ Changes to the original file: added options
 */
 
 export default function transform(file, api, options) {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        object: {
-          name: "Seq",
-        },
+	root.find(j.CallExpression, {
+		callee: {
+			object: {
+				name: 'Seq',
+			},
 
-        property: {
-          name: "of",
-        },
-      },
-    })
-    .replaceWith((path) => {
-      const args = path.value.arguments;
-      return j.callExpression(j.identifier("Seq"), [j.arrayExpression(args)]);
-    });
+			property: {
+				name: 'of',
+			},
+		},
+	}).replaceWith((path) => {
+		let args = path.value.arguments;
+		return j.callExpression(j.identifier('Seq'), [j.arrayExpression(args)]);
+	});
 
-  return root.toSource(options);
+	return root.toSource(options);
 }

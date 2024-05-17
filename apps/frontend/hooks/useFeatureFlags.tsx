@@ -1,11 +1,11 @@
 import { FEATURE_FLAG_QUERY_KEY } from "@/utils/strings";
 import { useState } from "react";
 
-const useFeatureFlags = () => {
-  const [features] = useState(() => {
-    const urlParams = new URLSearchParams(window.location.search);
+let useFeatureFlags = () => {
+  let [features] = useState(() => {
+    let urlParams = new URLSearchParams(window.location.search);
 
-    const featureFlags = urlParams.get(FEATURE_FLAG_QUERY_KEY) ?? "";
+    let featureFlags = urlParams.get(FEATURE_FLAG_QUERY_KEY) ?? "";
     return featureFlags.split(",");
   });
 

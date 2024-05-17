@@ -1,7 +1,7 @@
 import LinkButton from "@/components/shared/LinkButton";
 import type { CodemodPagePayload } from "@/types";
 
-export const getCodemodCard = (data: CodemodPagePayload | null) =>
+export let getCodemodCard = (data: CodemodPagePayload | null) =>
   data?.globalLabels?.cta?.link && (
     <div className="relative flex w-full flex-col gap-s overflow-clip rounded-[8px] border border-border-light p-s dark:border-border-dark">
       {data?.globalLabels?.ctaTitle && (
