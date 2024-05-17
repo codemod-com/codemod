@@ -87,27 +87,12 @@ export class CodemodService {
 
     if (search) {
       searchAndFilterClauses.push({
-        OR: [
-          {
-            name: {
-              contains: search,
-              mode: "insensitive" as Prisma.QueryMode,
-            },
-          },
-          {
-            shortDescription: {
-              contains: search,
-              mode: "insensitive" as Prisma.QueryMode,
-            },
-          },
-          {
-            author: {
-              contains: search,
-              mode: "insensitive" as Prisma.QueryMode,
-            },
-          },
-          { tags: { has: search } },
-        ],
+        _relevance: {
+          fields: ["name", "shortDescription", "author"],
+          search,
+          sort: "desc",
+        },
+        OR: [{ tags: { has: search } }],
       });
     }
 
@@ -146,7 +131,17 @@ export class CodemodService {
     const [codemods, total] = await Promise.all([
       this.prisma.codemod.findMany({
         where: whereClause,
-        orderBy: [{ featured: "desc" }, { createdAt: "desc" }],
+        orderBy: [
+          {
+            _relevance: {
+              fields: ["name", "shortDescription", "author"],
+              search,
+              sort: "desc",
+            },
+          },
+          { featured: "desc" },
+          { createdAt: "desc" },
+        ],
         skip: (page - 1) * size,
         take: size,
         include: {

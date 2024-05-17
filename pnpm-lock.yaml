@@ -81,8 +81,8 @@ importers:
         specifier: 9.0.1
         version: 9.0.1
       '@prisma/client':
-        specifier: 5.10.2
-        version: 5.10.2(prisma@5.13.0)
+        specifier: 5.14.0
+        version: 5.14.0(prisma@5.14.0)
       '@types/tar':
         specifier: ^6.1.11
         version: 6.1.13
@@ -118,7 +118,7 @@ importers:
         version: 5.4.1
       langchain:
         specifier: 0.0.209
-        version: 0.0.209(@aws-sdk/client-s3@3.556.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(axios@1.6.8)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)
+        version: 0.0.209(@aws-crypto/sha256-js@3.0.0)(@aws-sdk/client-s3@3.556.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(axios@1.6.8)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(fast-xml-parser@4.2.5)(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)
       openai:
         specifier: 4.23.0
         version: 4.23.0
@@ -132,11 +132,11 @@ importers:
         specifier: ^8.11.3
         version: 8.11.5
       prisma:
-        specifier: ^5.10.2
-        version: 5.13.0
+        specifier: ^5.14.0
+        version: 5.14.0
       prisma-json-types-generator:
         specifier: ^3.0.4
-        version: 3.0.4(prisma@5.13.0)(typescript@5.3.3)
+        version: 3.0.4(prisma@5.14.0)(typescript@5.3.3)
       replicate:
         specifier: 0.25.2
         version: 0.25.2
@@ -860,7 +860,7 @@ importers:
         version: link:../../packages/utilities
       '@reduxjs/toolkit':
         specifier: ^1.9.5
-        version: 1.9.7(react-redux@8.1.3(react@18.2.0)(redux@4.2.1))(react@18.2.0)
+        version: 1.9.7(react-redux@8.1.3(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(redux@4.2.1))(react@18.2.0)
       '@vscode/vsce':
         specifier: ^2.22.0
         version: 2.26.0
@@ -7954,8 +7954,8 @@ packages:
       preact: ^10.4.0
       vite: '>=2.0.0'
 
-  '@prisma/client@5.10.2':
-    resolution: {integrity: sha512-ef49hzB2yJZCvM5gFHMxSFL9KYrIP9udpT5rYo0CsHD4P9IKj473MbhU1gjKKftiwWBTIyrt9jukprzZXazyag==}
+  '@prisma/client@5.14.0':
+    resolution: {integrity: sha512-akMSuyvLKeoU4LeyBAUdThP/uhVP3GuLygFE3MlYzaCb3/J8SfsYBE5PkaFuLuVpLyA6sFoW+16z/aPhNAESqg==}
     engines: {node: '>=16.13'}
     peerDependencies:
       prisma: '*'
@@ -7966,17 +7966,20 @@ packages:
   '@prisma/debug@5.13.0':
     resolution: {integrity: sha512-699iqlEvzyCj9ETrXhs8o8wQc/eVW+FigSsHpiskSFydhjVuwTJEfj/nIYqTaWFYuxiWQRfm3r01meuW97SZaQ==}
 
+  '@prisma/debug@5.14.0':
+    resolution: {integrity: sha512-iq56qBZuFfX3fCxoxT8gBX33lQzomBU0qIUaEj1RebsKVz1ob/BVH1XSBwwwvRVtZEV1b7Fxx2eVu34Ge/mg3w==}
+
   '@prisma/debug@5.9.1':
     resolution: {integrity: sha512-yAHFSFCg8KVoL0oRUno3m60GAjsUKYUDkQ+9BA2X2JfVR3kRVSJFc/GpQ2fSORi4pSHZR9orfM4UC9OVXIFFTA==}
 
-  '@prisma/engines-version@5.13.0-23.b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b':
-    resolution: {integrity: sha512-AyUuhahTINGn8auyqYdmxsN+qn0mw3eg+uhkp8zwknXYIqoT3bChG4RqNY/nfDkPvzWAPBa9mrDyBeOnWSgO6A==}
+  '@prisma/engines-version@5.14.0-25.e9771e62de70f79a5e1c604a2d7c8e2a0a874b48':
+    resolution: {integrity: sha512-ip6pNkRo1UxWv+6toxNcYvItNYaqQjXdFNGJ+Nuk2eYtRoEdoF13wxo7/jsClJFFenMPVNVqXQDV0oveXnR1cA==}
 
-  '@prisma/engines@5.13.0':
-    resolution: {integrity: sha512-hIFLm4H1boj6CBZx55P4xKby9jgDTeDG0Jj3iXtwaaHmlD5JmiDkZhh8+DYWkTGchu+rRF36AVROLnk0oaqhHw==}
+  '@prisma/engines@5.14.0':
+    resolution: {integrity: sha512-lgxkKZ6IEygVcw6IZZUlPIfLQ9hjSYAtHjZ5r64sCLDgVzsPFCi2XBBJgzPMkOQ5RHzUD4E/dVdpn9+ez8tk1A==}
 
-  '@prisma/fetch-engine@5.13.0':
-    resolution: {integrity: sha512-Yh4W+t6YKyqgcSEB3odBXt7QyVSm0OQlBSldQF2SNXtmOgMX8D7PF/fvH6E6qBCpjB/yeJLy/FfwfFijoHI6sA==}
+  '@prisma/fetch-engine@5.14.0':
+    resolution: {integrity: sha512-VrheA9y9DMURK5vu8OJoOgQpxOhas3qF0IBHJ8G/0X44k82kc8E0w98HCn2nhnbOOMwbWsJWXfLC2/F8n5u0gQ==}
 
   '@prisma/generator-helper@5.13.0':
     resolution: {integrity: sha512-i+53beJ0dxkDrkHdsXxmeMf+eVhyhOIpL0SdBga8vwe0qHPrAIJ/lpuT/Hj0y5awTmq40qiUEmhXwCEuM/Z17w==}
@@ -7984,8 +7987,8 @@ packages:
   '@prisma/generator-helper@5.9.1':
     resolution: {integrity: sha512-WMdEUPpPYxUGruRQM6e6IVTWXFjt1hHdF/m2TO7pWxhPo7/ZeoTOF9fH8JsvVSV78DYLOQkx9osjFLXZu447Kw==}
 
-  '@prisma/get-platform@5.13.0':
-    resolution: {integrity: sha512-B/WrQwYTzwr7qCLifQzYOmQhZcFmIFhR81xC45gweInSUn2hTEbfKUPd2keAog+y5WI5xLAFNJ3wkXplvSVkSw==}
+  '@prisma/get-platform@5.14.0':
+    resolution: {integrity: sha512-/yAyBvcEjRv41ynZrhdrPtHgk47xLRRq/o5eWGcUpBJ1YrUZTYB8EoPiopnP7iQrMATK8stXQdPOoVlrzuTQZw==}
 
   '@radix-ui/number@1.0.1':
     resolution: {integrity: sha512-T5gIdVO2mmPW3NNhjNgEP3cqMXjXL9UbO0BzWcXfvdBs+BohbQxvd/K5hSVKmn9/lbTdsQVKbUcP5WLCwvUbBg==}
@@ -14769,8 +14772,8 @@ packages:
       prisma: ^5.1
       typescript: ^5.1
 
-  prisma@5.13.0:
-    resolution: {integrity: sha512-kGtcJaElNRAdAGsCNykFSZ7dBKpL14Cbs+VaQ8cECxQlRPDjBlMHNFYeYt0SKovAVy2Y65JXQwB3A5+zIQwnTg==}
+  prisma@5.14.0:
+    resolution: {integrity: sha512-gCNZco7y5XtjrnQYeDJTiVZmT/ncqCr5RY1/Cf8X2wgLRmyh9ayPAGBNziI4qEE4S6SxCH5omQLVo9lmURaJ/Q==}
     engines: {node: '>=16.13'}
     hasBin: true
 
@@ -15667,14 +15670,14 @@ packages:
   serialize-javascript@6.0.2:
     resolution: {integrity: sha512-Saa1xPByTTq2gdeFZYLLo+RFE35NHZkAbqZeWNd3BpzppeVisAqpDjcp8dyf6uIvEqJRd46jemmyA4iFIeVk8g==}
 
-  seroval-plugins@1.0.5:
-    resolution: {integrity: sha512-8+pDC1vOedPXjKG7oz8o+iiHrtF2WswaMQJ7CKFpccvSYfrzmvKY9zOJWCg+881722wIHfwkdnRmiiDm9ym+zQ==}
+  seroval-plugins@1.0.7:
+    resolution: {integrity: sha512-GO7TkWvodGp6buMEX9p7tNyIkbwlyuAWbI6G9Ec5bhcm7mQdu3JOK1IXbEUwb3FVzSc363GraG/wLW23NSavIw==}
     engines: {node: '>=10'}
     peerDependencies:
       seroval: ^1.0
 
-  seroval@1.0.5:
-    resolution: {integrity: sha512-TM+Z11tHHvQVQKeNlOUonOWnsNM+2IBwZ4vwoi4j3zKzIpc5IDw8WPwCfcc8F17wy6cBcJGbZbFOR0UCuTZHQA==}
+  seroval@1.0.7:
+    resolution: {integrity: sha512-n6ZMQX5q0Vn19Zq7CIKNIo7E75gPkGCFUEqDpa8jgwpYr/vScjqnQ6H09t1uIiZ0ZSK0ypEGvrYK2bhBGWsGdw==}
     engines: {node: '>=10'}
 
   server-only@0.0.1:
@@ -20065,7 +20068,7 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@langchain/community@0.0.51(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)':
+  '@langchain/community@0.0.51(@aws-crypto/sha256-js@3.0.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)':
     dependencies:
       '@langchain/core': 0.1.59
       '@langchain/openai': 0.0.28
@@ -20076,6 +20079,7 @@ snapshots:
       zod: 3.22.3
       zod-to-json-schema: 3.23.0(zod@3.22.3)
     optionalDependencies:
+      '@aws-crypto/sha256-js': 3.0.0
       '@aws-sdk/credential-provider-node': 3.556.0
       '@smithy/eventstream-codec': 2.2.0
       '@smithy/protocol-http': 3.3.0
@@ -20461,28 +20465,30 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@prisma/client@5.10.2(prisma@5.13.0)':
+  '@prisma/client@5.14.0(prisma@5.14.0)':
     optionalDependencies:
-      prisma: 5.13.0
+      prisma: 5.14.0
 
   '@prisma/debug@5.13.0': {}
 
+  '@prisma/debug@5.14.0': {}
+
   '@prisma/debug@5.9.1': {}
 
-  '@prisma/engines-version@5.13.0-23.b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b': {}
+  '@prisma/engines-version@5.14.0-25.e9771e62de70f79a5e1c604a2d7c8e2a0a874b48': {}
 
-  '@prisma/engines@5.13.0':
+  '@prisma/engines@5.14.0':
     dependencies:
-      '@prisma/debug': 5.13.0
-      '@prisma/engines-version': 5.13.0-23.b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b
-      '@prisma/fetch-engine': 5.13.0
-      '@prisma/get-platform': 5.13.0
+      '@prisma/debug': 5.14.0
+      '@prisma/engines-version': 5.14.0-25.e9771e62de70f79a5e1c604a2d7c8e2a0a874b48
+      '@prisma/fetch-engine': 5.14.0
+      '@prisma/get-platform': 5.14.0
 
-  '@prisma/fetch-engine@5.13.0':
+  '@prisma/fetch-engine@5.14.0':
     dependencies:
-      '@prisma/debug': 5.13.0
-      '@prisma/engines-version': 5.13.0-23.b9a39a7ee606c28e3455d0fd60e78c3ba82b1a2b
-      '@prisma/get-platform': 5.13.0
+      '@prisma/debug': 5.14.0
+      '@prisma/engines-version': 5.14.0-25.e9771e62de70f79a5e1c604a2d7c8e2a0a874b48
+      '@prisma/get-platform': 5.14.0
 
   '@prisma/generator-helper@5.13.0':
     dependencies:
@@ -20492,9 +20498,9 @@ snapshots:
     dependencies:
       '@prisma/debug': 5.9.1
 
-  '@prisma/get-platform@5.13.0':
+  '@prisma/get-platform@5.14.0':
     dependencies:
-      '@prisma/debug': 5.13.0
+      '@prisma/debug': 5.14.0
 
   '@radix-ui/number@1.0.1':
     dependencies:
@@ -21027,7 +21033,7 @@ snapshots:
       react: 18.2.0
       react-redux: 7.2.9(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
 
-  '@reduxjs/toolkit@1.9.7(react-redux@8.1.3(react@18.2.0)(redux@4.2.1))(react@18.2.0)':
+  '@reduxjs/toolkit@1.9.7(react-redux@8.1.3(@types/react-dom@18.2.25)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(redux@4.2.1))(react@18.2.0)':
     dependencies:
       immer: 9.0.21
       redux: 4.2.1
@@ -26761,10 +26767,10 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  langchain@0.0.209(@aws-sdk/client-s3@3.556.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(axios@1.6.8)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0):
+  langchain@0.0.209(@aws-crypto/sha256-js@3.0.0)(@aws-sdk/client-s3@3.556.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(axios@1.6.8)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(fast-xml-parser@4.2.5)(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0):
     dependencies:
       '@anthropic-ai/sdk': 0.9.1
-      '@langchain/community': 0.0.51(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)
+      '@langchain/community': 0.0.51(@aws-crypto/sha256-js@3.0.0)(@aws-sdk/credential-provider-node@3.556.0)(@smithy/eventstream-codec@2.2.0)(@smithy/protocol-http@3.3.0)(@smithy/signature-v4@2.3.0)(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(pg@8.11.5)(replicate@0.25.2)(ws@8.16.0)
       '@langchain/core': 0.1.59
       '@langchain/openai': 0.0.28
       binary-extensions: 2.3.0
@@ -26787,6 +26793,7 @@ snapshots:
       axios: 1.6.8
       cheerio: 1.0.0-rc.12
       chromadb: 1.7.2(openai@4.23.0)
+      fast-xml-parser: 4.2.5
       ignore: 5.3.1
       ioredis: 5.4.1
       jsdom: 23.2.0
@@ -28992,16 +28999,16 @@ snapshots:
       clsx: 2.1.1
       react: 18.2.0
 
-  prisma-json-types-generator@3.0.4(prisma@5.13.0)(typescript@5.3.3):
+  prisma-json-types-generator@3.0.4(prisma@5.14.0)(typescript@5.3.3):
     dependencies:
       '@prisma/generator-helper': 5.9.1
-      prisma: 5.13.0
+      prisma: 5.14.0
       tslib: 2.6.2
       typescript: 5.3.3
 
-  prisma@5.13.0:
+  prisma@5.14.0:
     dependencies:
-      '@prisma/engines': 5.13.0
+      '@prisma/engines': 5.14.0
 
   prismjs@1.27.0: {}
 
@@ -30223,11 +30230,11 @@ snapshots:
     dependencies:
       randombytes: 2.1.0
 
-  seroval-plugins@1.0.5(seroval@1.0.5):
+  seroval-plugins@1.0.7(seroval@1.0.7):
     dependencies:
-      seroval: 1.0.5
+      seroval: 1.0.7
 
-  seroval@1.0.5: {}
+  seroval@1.0.7: {}
 
   server-only@0.0.1: {}
 
@@ -30408,8 +30415,8 @@ snapshots:
   solid-js@1.8.17:
     dependencies:
       csstype: 3.1.3
-      seroval: 1.0.5
-      seroval-plugins: 1.0.5(seroval@1.0.5)
+      seroval: 1.0.7
+      seroval-plugins: 1.0.7(seroval@1.0.7)
 
   solid-swr-store@0.10.7(solid-js@1.8.17)(swr-store@0.10.6):
     dependencies:

@@ -1,7 +1,8 @@
 generator client {
-  provider   = "prisma-client-js"
-  engineType = "binary"
-  output     = "./client"
+  provider        = "prisma-client-js"
+  engineType      = "binary"
+  output          = "./client"
+  previewFeatures = ["fullTextSearch"]
 }
 
 generator json {
