@@ -4,10 +4,9 @@ const a = {
     defaultValue: "string",
     isDefaulted: true
 }.value;
-
 const b = {
     key: "simple-case",
-    value: "string",
+    value: "string1",
     defaultValue: "string",
     isDefaulted: true
 }['isDefaulted'];

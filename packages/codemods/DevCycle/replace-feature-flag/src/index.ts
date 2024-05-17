@@ -1,5 +1,7 @@
 import {
   Node,
+  ObjectLiteralElement,
+  type ObjectLiteralExpression,
   type PropertyAssignment,
   type SourceFile,
   SyntaxKind,
@@ -31,6 +33,30 @@ export type Options = {
 //     propertyAccessed = dp.getArgumentExpression()?.getFullText() ?? null;
 //   }
 // };
+
+const getPropertyValueAsText = (
+  ole: ObjectLiteralExpression,
+  propertyName: string,
+) => {
+  const property = ole.getProperty(propertyName);
+
+  if (!Node.isPropertyAssignment(property)) {
+    return null;
+  }
+
+  const propertyValue = property.getInitializer();
+
+  if (
+    !Node.isStringLiteral(propertyValue) &&
+    !Node.isNumericLiteral(propertyValue) &&
+    !Node.isTrueLiteral(propertyValue) &&
+    !Node.isFalseLiteral(propertyValue)
+  ) {
+    return null;
+  }
+
+  return propertyValue.getFullText();
+};
 
 export function handleSourceFile(
   sourceFile: SourceFile,
@@ -66,29 +92,28 @@ export function handleSourceFile(
       if (Node.isPropertyAccessExpression(parent)) {
         const nameNode = parent.getNameNode();
 
-        console.log(nameNode.getFullText(), "??");
+        if (!Node.isIdentifier(nameNode)) {
+          return;
+        }
 
-        if (Node.isIdentifier(nameNode)) {
-          let property: PropertyAssignment | undefined;
+        const text = getPropertyValueAsText(ole, nameNode.getText());
 
-          ole.getProperties().forEach((p) => {
-            if (
-              Node.isPropertyAssignment(p) &&
-              Node.isIdentifier(p.getNameNode()) &&
-              p.getNameNode().getText() === nameNode.getText()
-            ) {
-              property = p;
-            }
-          });
+        if (text !== null) {
+          parent.replaceWithText(text);
+        }
+      }
 
-          const propertyValue =
-            property !== undefined ? property.getInitializer() : null;
+      if (!parent.wasForgotten() && Node.isElementAccessExpression(parent)) {
+        const arg = parent.getArgumentExpression();
 
-          const text = propertyValue?.getFullText() ?? null;
+        if (!Node.isStringLiteral(arg)) {
+          return;
+        }
 
-          if (text !== null) {
-            parent.replaceWithText(text);
-          }
+        const text = getPropertyValueAsText(ole, arg.getLiteralText());
+
+        if (text !== null) {
+          parent.replaceWithText(text);
         }
       }
     });
