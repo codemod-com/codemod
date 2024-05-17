@@ -10,7 +10,7 @@ import {
 } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
 import { TabNames } from "@studio/store/zustand/view";
-import { type ReactNode, memo } from "react";
+import type { ReactNode } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import { Chat } from "../modGPT";
 
@@ -70,7 +70,7 @@ export const useTabs = ({
           <LiveIcon /> Debug
         </>
       ),
-      content: memo(Table),
+      content: <Table />,
     },
   ];
 
