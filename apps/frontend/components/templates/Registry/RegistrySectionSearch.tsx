@@ -8,13 +8,13 @@ type Props = {
   onSearch: (key: string, value: string) => void;
 };
 
-const RegistrySectionSearch = ({ placeholder, onSearch }: Props) => {
-  const inputWrapperRef = React.useRef<HTMLInputElement>(null);
-  const router = useRouter();
+let RegistrySectionSearch = ({ placeholder, onSearch }: Props) => {
+  let inputWrapperRef = React.useRef<HTMLInputElement>(null);
+  let router = useRouter();
 
   useEffect(() => {
     function handleFocus(event: KeyboardEvent) {
-      const input = inputWrapperRef.current?.querySelector("input");
+      let input = inputWrapperRef.current?.querySelector("input");
       if (event.metaKey && event.key === "k") {
         event.preventDefault();
         input?.focus();
@@ -27,13 +27,13 @@ const RegistrySectionSearch = ({ placeholder, onSearch }: Props) => {
     };
   }, [router]);
 
-  const [searchInput, setSearchInput] = useState("");
+  let [searchInput, setSearchInput] = useState("");
   return (
-    <div className="flex w-full flex-1 items-center gap-3">
+    (<div className="flex w-full flex-1 items-center gap-3">
       <div
         ref={inputWrapperRef}
         onClick={() => {
-          const input = inputWrapperRef.current?.querySelector("input");
+          let input = inputWrapperRef.current?.querySelector("input");
           input?.focus();
         }}
         className="w-full"
@@ -53,7 +53,7 @@ const RegistrySectionSearch = ({ placeholder, onSearch }: Props) => {
           value={searchInput}
         />
       </div>
-    </div>
+    </div>)
   );
 };
 

@@ -2,7 +2,7 @@ import type { YoutubeVideoBlock } from "@/types/object.types";
 import getYouTubeID from "get-youtube-id";
 
 export default function YoutubeVideo(props: YoutubeVideoBlock) {
-  const youtubeId = getYouTubeID(props.youtubeUrl || "");
+  let youtubeId = getYouTubeID(props.youtubeUrl || "");
   if (!youtubeId) return null;
   return (
     <iframe

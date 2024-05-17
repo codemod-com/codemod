@@ -1,4 +1,4 @@
 declare module '*.txt?raw' {
-	const value: string;
+	let value: string;
 	export default value;
 }

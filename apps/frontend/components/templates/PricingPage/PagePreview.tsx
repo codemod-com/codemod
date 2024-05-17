@@ -17,8 +17,8 @@ type Props = {
 };
 
 export default function PricingPagePreview(props: Props) {
-  const { params, initial } = props;
-  const { data } = useQuery<PricingPagePayload | null>(
+  let { params, initial } = props;
+  let { data } = useQuery<PricingPagePayload | null>(
     PRICING_PAGE_QUERY,
     params,
     {

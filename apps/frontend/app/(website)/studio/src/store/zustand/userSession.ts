@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { ToVoid } from "../../types/transformations";
 
-export const pendingActions = [
+export let pendingActions = [
   "openRepoModal",
   "redirectToStudio",
   "redirectToRegister",
@@ -24,12 +24,12 @@ export type UserSessionStore = UserSessionGet & {
   resetPendingActions: VoidFunction;
 };
 
-const buildDefaultUserSession = (): UserSessionGet => ({
+let buildDefaultUserSession = (): UserSessionGet => ({
   pendingActionsWhenSigned: [],
   codemodExecutionId: null,
 });
 
-export const useUserSession = create<UserSessionStore>()(
+export let useUserSession = create<UserSessionStore>()(
   persist(
     (set, get) => ({
       ...buildDefaultUserSession(),
@@ -37,7 +37,7 @@ export const useUserSession = create<UserSessionStore>()(
         set({ codemodExecutionId });
       },
       setPendingActions: (actions: PendingAction[]) => {
-        const uniqActions = uniq(actions);
+        let uniqActions = uniq(actions);
         set({ pendingActionsWhenSigned: uniqActions });
       },
       hasPendingAction: (action: PendingAction) =>
@@ -45,11 +45,11 @@ export const useUserSession = create<UserSessionStore>()(
       addPendingActionsWhenSigned: (action: PendingAction) =>
         get().setPendingActions(get().pendingActionsWhenSigned.concat(action)),
       retrievePendingAction: (action: PendingAction) => {
-        const {
+        let {
           pendingActionsWhenSigned,
           setPendingActions: setPendingAction,
         } = get();
-        const hasAction = pendingActionsWhenSigned.includes(action);
+        let hasAction = pendingActionsWhenSigned.includes(action);
         if (hasAction)
           setPendingAction(without([action], pendingActionsWhenSigned));
         return hasAction;

@@ -28,7 +28,7 @@ import FatalErrorPage from 'src/pages/FatalErrorPage';
 
 import './index.css';
 
-const App = () => (
+let App = () => (
 	<FatalErrorBoundary page={FatalErrorPage}>
 		<RedwoodProvider titleTemplate="%PageTitle | %AppTitle">
 			<AuthProvider>

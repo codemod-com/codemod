@@ -52,7 +52,7 @@ import sections from "./sections";
 //Shared Objects
 import { publishStatusField } from "./shared/publishStatusField";
 
-const schemas = [
+let schemas = [
   // Documents
   page,
   pricing,

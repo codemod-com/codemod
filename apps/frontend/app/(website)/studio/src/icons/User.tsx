@@ -1,4 +1,4 @@
-export const UserIcon = ({ stroke }: { stroke: string }) => (
+export let UserIcon = ({ stroke }: { stroke: string }) => (
   <svg
     width="18"
     height="20"

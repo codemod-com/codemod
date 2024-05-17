@@ -11,7 +11,7 @@ type CheckboxProps = {
   tooltipContent?: string;
 };
 
-const Checkbox = ({
+let Checkbox = ({
   onChange,
   checked,
   label,

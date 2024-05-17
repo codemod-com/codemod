@@ -1,12 +1,12 @@
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("ember 5 fpe-computed", () => {
-  it("basic", () => {
-    const INPUT = `
+describe('ember 5 fpe-computed', () => {
+	it('basic', () => {
+		let INPUT = `
 		import EmberObject from '@ember/object';
 
         let Person = EmberObject.extend({
@@ -30,7 +30,7 @@ describe("ember 5 fpe-computed", () => {
         client.get('fullName'); // 'Betty Fuller'
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { computed } from '@ember/object';
         import EmberObject from '@ember/object';
 
@@ -55,16 +55,16 @@ describe("ember 5 fpe-computed", () => {
         client.get('fullName'); // 'Betty Fuller'
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

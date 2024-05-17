@@ -3,7 +3,7 @@ import { cx } from "cva";
 
 type ExtraExtension = "top-left" | "top-right" | "bottom-left" | "bottom-right";
 
-const GradientBorderBox = ({
+let GradientBorderBox = ({
   children,
   sides,
   dots,
@@ -27,15 +27,15 @@ const GradientBorderBox = ({
     extraExtension?: ExtraExtension[];
   };
 }) => {
-  const sidesDefaults = { top: true, right: true, bottom: true, left: true };
-  const dotsDefaults = { tr: true, br: true, bl: true, tl: true };
-  const dotsToRender = { ...dotsDefaults, ...dots };
-  const sidesToRender = { ...sidesDefaults, ...sides };
-  const extendDefaults = {
+  let sidesDefaults = { top: true, right: true, bottom: true, left: true };
+  let dotsDefaults = { tr: true, br: true, bl: true, tl: true };
+  let dotsToRender = { ...dotsDefaults, ...dots };
+  let sidesToRender = { ...sidesDefaults, ...sides };
+  let extendDefaults = {
     orientation: "horizontal",
     corners: { tr: false, br: false, bl: false, tl: false },
   };
-  const extendToRender = { ...extendDefaults, ...extend };
+  let extendToRender = { ...extendDefaults, ...extend };
   return (
     <div className={classNames("relative max-w-fit", className)}>
       {extendToRender.corners.br && (

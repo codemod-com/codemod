@@ -1,17 +1,17 @@
 import type { Node } from "@babel/types";
 import type { TreeNode } from "@studio/components/Tree";
 
-const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
-  const { type } = babelAstNode;
+let mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
+  let { type } = babelAstNode;
 
-  const keys = Object.keys(babelAstNode);
-  const children: Node[] = [];
+  let keys = Object.keys(babelAstNode);
+  let children: Node[] = [];
 
   keys.forEach((key) => {
     if (["tokens", "loc"].includes(key)) {
       return;
     }
-    const child: Node | Node[] = (
+    let child: Node | Node[] = (
       babelAstNode as unknown as Record<string, Node | Node[]>
     )[key] as Node | Node[];
 
@@ -22,7 +22,7 @@ const mapBabelASTToRenderableTree = (babelAstNode: Node): TreeNode => {
     }
   });
 
-  const mappedNode = {
+  let mappedNode = {
     id: `${type}_${babelAstNode.start}_${babelAstNode.end}`,
     actualNode: babelAstNode,
     label: type,

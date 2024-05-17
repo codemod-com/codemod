@@ -1,7 +1,7 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
 import { type Output, object, parse, string } from "valibot";
 
-const stateSchema = object({
+let stateSchema = object({
   engine: knownEnginesSchema,
   beforeSnippet: string(),
   afterSnippet: string(),
@@ -10,4 +10,4 @@ const stateSchema = object({
 
 export type State = Output<typeof stateSchema>;
 
-export const parseState = (input: unknown) => parse(stateSchema, input);
+export let parseState = (input: unknown) => parse(stateSchema, input);

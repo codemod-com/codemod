@@ -9,22 +9,22 @@ export function buildRegistryIndexDataQuery({
   searchParams: URLSearchParams;
   pageNumber: number;
 }) {
-  const sParams = new URLSearchParams(searchParams || "");
-  const q = sParams.get("q") || "";
-  const useCase = sParams.get(REGISTRY_FILTER_TYPES.useCase) || "";
-  const framework = sParams.get(REGISTRY_FILTER_TYPES.framework) || "";
-  const author = sParams.get(REGISTRY_FILTER_TYPES.owner) || "";
-  const verified = sParams.get("verified");
+  let sParams = new URLSearchParams(searchParams || "");
+  let q = sParams.get("q") || "";
+  let useCase = sParams.get(REGISTRY_FILTER_TYPES.useCase) || "";
+  let framework = sParams.get(REGISTRY_FILTER_TYPES.framework) || "";
+  let author = sParams.get(REGISTRY_FILTER_TYPES.owner) || "";
+  let verified = sParams.get("verified");
 
-  const filters = [
+  let filters = [
     q && `search=${q}`,
     useCase && `category=${useCase}`,
     author && `author=${author}`,
     framework && `framework=${framework}`,
     verified && `verified=${verified}`,
   ];
-  const filtersString = filters.filter(Boolean).join("&");
-  const queryString = `${filtersString}&page=${pageNumber}&size=${entriesPerPage}`;
+  let filtersString = filters.filter(Boolean).join("&");
+  let queryString = `${filtersString}&page=${pageNumber}&size=${entriesPerPage}`;
 
   return queryString;
 }

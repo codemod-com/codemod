@@ -4,12 +4,12 @@ interface useCopyToClipboardProps {
   timeout?: number;
 }
 
-export const useCopyToClipboard = ({
+export let useCopyToClipboard = ({
   timeout = 2000,
 }: useCopyToClipboardProps) => {
-  const [isCopied, setIsCopied] = useState(false);
+  let [isCopied, setIsCopied] = useState(false);
 
-  const copy = (value: string) => {
+  let copy = (value: string) => {
     if (
       typeof window === "undefined" ||
       !navigator.clipboard?.writeText ||

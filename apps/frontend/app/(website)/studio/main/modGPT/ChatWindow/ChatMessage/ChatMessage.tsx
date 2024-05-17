@@ -13,7 +13,7 @@ import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
 import CodeBlock from "./CodeBlock";
 
-const MemoizedReactMarkdown: FC<Options> = memo(
+let MemoizedReactMarkdown: FC<Options> = memo(
   ReactMarkdown,
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children &&
@@ -24,14 +24,14 @@ interface Props {
   message: LLMMessage;
 }
 
-const Paragraph = ({ children }) => (
+let Paragraph = ({ children }) => (
   <p className="mb-2 last:mb-0">{children}</p>
 );
-const Preformatted = ({ children }) => (
+let Preformatted = ({ children }) => (
   <pre className="bg-transparent">{children}</pre>
 );
 
-const CodeContent = ({ inline, className, children, message, ...others }) => {
+let CodeContent = ({ inline, className, children, message, ...others }) => {
   if (message.role === "user") {
     return <Paragraph>{children}</Paragraph>;
   }
@@ -51,18 +51,18 @@ const CodeContent = ({ inline, className, children, message, ...others }) => {
   }
 
   return (
-    <CodeBlock
+    (<CodeBlock
       key={Math.random()}
       language="typescript" // TODO: support multiple languages in the future
       value={String(children).replace(/\n$/, "")}
       {...others}
-    />
+    />)
   );
 };
 
-export const ChatMessage = ({ message }: Props) => {
-  const [collapsed, setCollapsed] = useState(message.role === "user");
-  const { isDark } = useTheme();
+export let ChatMessage = ({ message }: Props) => {
+  let [collapsed, setCollapsed] = useState(message.role === "user");
+  let { isDark } = useTheme();
 
   return (
     <div className={cn("group relative mb-4 flex")}>

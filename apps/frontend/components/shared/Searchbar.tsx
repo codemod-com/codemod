@@ -30,7 +30,7 @@ export default function Searchbar({
   keydownHandler = () => {},
   id,
 }: SearchbarProps) {
-  const ref = useRef<HTMLInputElement>(null);
+  let ref = useRef<HTMLInputElement>(null);
   useDebounce(
     () => {
       onSearch(query);
@@ -39,7 +39,7 @@ export default function Searchbar({
     [query],
   );
 
-  const handleSearch = (searchQuery: string) => {
+  let handleSearch = (searchQuery: string) => {
     onChange?.();
     setQuery(searchQuery);
   };

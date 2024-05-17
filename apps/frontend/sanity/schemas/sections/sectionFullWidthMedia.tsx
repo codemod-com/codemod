@@ -2,7 +2,7 @@ import Icon from "@/components/shared/Icon";
 import { defineSection } from "@tinloof/sanity-studio";
 import { imageWithAltField } from "../shared/imageWithAltField";
 
-export const sectionFullWidthMedia = defineSection({
+export let sectionFullWidthMedia = defineSection({
   title: "Full Width Media",
   name: "section.fullWidthMedia",
   type: "object",
@@ -65,7 +65,7 @@ export const sectionFullWidthMedia = defineSection({
               image: "image",
             },
             prepare(selection) {
-              const { title, isVideo, image } = selection;
+              let { title, isVideo, image } = selection;
               return {
                 title: title,
                 media: isVideo ? <Icon name="play" /> : image,
@@ -83,7 +83,7 @@ export const sectionFullWidthMedia = defineSection({
       media: "media",
     },
     prepare(selection) {
-      const { title, subtitle, media } = selection;
+      let { title, subtitle, media } = selection;
       return {
         title: title,
         subtitle: subtitle,

@@ -1,4 +1,4 @@
-const dynamic_favicon = `const favicon = document.querySelector('link[rel="icon"]')
+let dynamic_favicon = `const favicon = document.querySelector('link[rel="icon"]')
 
 document.addEventListener("visibilitychange", () => {
   

@@ -18,9 +18,9 @@ export default function Snippet({
   onCopy,
   toastText = "Copied command to clipboard",
 }: SnippetProps) {
-  const [copied, setCopied] = useState(false);
+  let [copied, setCopied] = useState(false);
 
-  const handleCopy = () => {
+  let handleCopy = () => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(command);
     }

@@ -17,7 +17,7 @@ export type RepositoryModalProps = {
   areReposLoading: boolean;
 };
 
-export const RepositoryModal = ({
+export let RepositoryModal = ({
   setBranchesToShow,
   branchesToShow,
   hideRepositoryModal,
@@ -25,16 +25,16 @@ export const RepositoryModal = ({
   repositoriesToShow,
   areReposLoading,
 }: RepositoryModalProps) => {
-  const [selectedRepository, setSelectedRepository] =
+  let [selectedRepository, setSelectedRepository] =
     useState<GithubRepository>();
-  const selectRepository = (name: GithubRepository["full_name"]) => {
+  let selectRepository = (name: GithubRepository["full_name"]) => {
     setBranchesToShow([]);
     setSelectedRepository(
       repositoriesToShow.find((repo) => repo.full_name === name),
     );
   };
 
-  const {
+  let {
     setSelectedBranch,
     selectedBranch,
     selectBranch,
@@ -45,19 +45,19 @@ export const RepositoryModal = ({
     selectedRepository,
   });
 
-  const [codemodNameInput, setCodemodNameInput] = useState<string>();
+  let [codemodNameInput, setCodemodNameInput] = useState<string>();
 
-  const handleCodemodRun = useHandleCodemodRun({
+  let handleCodemodRun = useHandleCodemodRun({
     codemodName: codemodNameInput,
     selectedRepository,
     selectedBranch,
   });
 
-  const onRunCodemod = async () => {
+  let onRunCodemod = async () => {
     await handleCodemodRun();
   };
 
-  const handleButtonClick = () => {
+  let handleButtonClick = () => {
     onRunCodemod();
     setSelectedRepository(undefined);
     setSelectedBranch(undefined);
@@ -65,7 +65,7 @@ export const RepositoryModal = ({
     hideRepositoryModal();
   };
 
-  const renderHint = () => {
+  let renderHint = () => {
     if (!selectedRepository) {
       return "Select repository to run the codemod";
     }
@@ -78,7 +78,7 @@ export const RepositoryModal = ({
     return null;
   };
 
-  const isButtonDisabled = [
+  let isButtonDisabled = [
     selectedRepository,
     selectedBranch,
     codemodNameInput,

@@ -5,14 +5,14 @@ type GetCodeDiffResponse = {
   after: string;
 };
 
-export const getCodeDiff = async (body: {
+export let getCodeDiff = async (body: {
   diffId: string;
   iv: string;
 }): Promise<GetCodeDiffResponse | null> => {
-  const { diffId, iv } = body;
+  let { diffId, iv } = body;
 
   try {
-    const res = await apiClient.get<GetCodeDiffResponse>(
+    let res = await apiClient.get<GetCodeDiffResponse>(
       `diffs/${diffId}?iv=${iv}`,
     );
 

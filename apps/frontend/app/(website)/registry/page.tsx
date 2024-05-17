@@ -7,13 +7,13 @@ import type { Metadata, ResolvingMetadata } from "next";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-export const dynamic = "force-dynamic";
+export let dynamic = "force-dynamic";
 
 export async function generateMetadata(
   props,
   parent: ResolvingMetadata,
 ): Promise<Metadata | null> {
-  const initialData = await loadRegistryIndex();
+  let initialData = await loadRegistryIndex();
   if (!initialData?.data) return notFound();
 
   return resolveSanityRouteMetadata(initialData.data, parent);
@@ -26,7 +26,7 @@ export default async function RegistryIndexRoute({
   params: { locale: string; tag?: string };
   searchParams: URLSearchParams;
 }) {
-  const [initialSanityData, automationPayload] = await Promise.all([
+  let [initialSanityData, automationPayload] = await Promise.all([
     loadRegistryIndex(),
     loadRegistryAPIData({
       pageNumber: 1,

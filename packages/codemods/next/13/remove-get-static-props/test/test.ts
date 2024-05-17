@@ -1,40 +1,40 @@
-import assert, { deepStrictEqual } from "node:assert";
-import { buildApi, executeFilemod } from "@codemod-com/filemod";
-import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
-import jscodeshift from "jscodeshift";
-import type { DirectoryJSON } from "memfs";
-import { Volume, createFsFromVolume } from "memfs";
-import { describe, it } from "vitest";
-import { transform as jscodeshiftTransform, repomod } from "../src/index.js";
+import assert, { deepStrictEqual } from 'node:assert';
+import { buildApi, executeFilemod } from '@codemod-com/filemod';
+import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
+import jscodeshift from 'jscodeshift';
+import type { DirectoryJSON } from 'memfs';
+import { Volume, createFsFromVolume } from 'memfs';
+import { describe, it } from 'vitest';
+import { transform as jscodeshiftTransform, repomod } from '../src/index.js';
 
-const globalOptions = {
-  buildLegacyCtxUtilAbsolutePath: "/opt/project/hooks/buildLegacyCtx.tsx",
+let globalOptions = {
+	buildLegacyCtxUtilAbsolutePath: '/opt/project/hooks/buildLegacyCtx.tsx',
 };
 
-const transform = async (json: DirectoryJSON) => {
-  const volume = Volume.fromJSON(json);
+let transform = async (json: DirectoryJSON) => {
+	let volume = Volume.fromJSON(json);
 
-  const fs = createFsFromVolume(volume);
+	let fs = createFsFromVolume(volume);
 
-  const unifiedFileSystem = buildUnifiedFileSystem(fs);
-  const pathApi = buildPathAPI("/");
+	let unifiedFileSystem = buildUnifiedFileSystem(fs);
+	let pathApi = buildPathAPI('/');
 
-  const api = buildApi<{
-    jscodeshift: typeof jscodeshift;
-  }>(
-    unifiedFileSystem,
-    () => ({
-      jscodeshift,
-    }),
-    pathApi,
-  );
+	let api = buildApi<{
+		jscodeshift: typeof jscodeshift;
+	}>(
+		unifiedFileSystem,
+		() => ({
+			jscodeshift,
+		}),
+		pathApi,
+	);
 
-  return executeFilemod(api, repomod, "/", globalOptions, {});
+	return executeFilemod(api, repomod, '/', globalOptions, {});
 };
 
-describe("next 13 remove-get-static-props", () => {
-  it("should build correct file", async () => {
-    const A_CONTENT = `
+describe('next 13 remove-get-static-props', () => {
+	it('should build correct file', async () => {
+		let A_CONTENT = `
 		export async function getServerSideProps(ctx) {
 			const users = await promise;
 			return { props: { users } };
@@ -45,12 +45,12 @@ describe("next 13 remove-get-static-props", () => {
 		}
 		`;
 
-    const [upsertBuildLegacyCtxUtilCommand, upsertFileCommand] =
-      await transform({
-        "/opt/project/pages/a.tsx": A_CONTENT,
-      });
+		let [upsertBuildLegacyCtxUtilCommand, upsertFileCommand] =
+			await transform({
+				'/opt/project/pages/a.tsx': A_CONTENT,
+			});
 
-    const expectedResult = `
+		let expectedResult = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetServerSidePropsContext } from "next";
@@ -81,38 +81,38 @@ describe("next 13 remove-get-static-props", () => {
 		}
 		`;
 
-    deepStrictEqual(upsertBuildLegacyCtxUtilCommand?.kind, "upsertFile");
-    deepStrictEqual(
-      upsertBuildLegacyCtxUtilCommand.path,
-      "/opt/project/hooks/buildLegacyCtx.tsx",
-    );
+		deepStrictEqual(upsertBuildLegacyCtxUtilCommand?.kind, 'upsertFile');
+		deepStrictEqual(
+			upsertBuildLegacyCtxUtilCommand.path,
+			'/opt/project/hooks/buildLegacyCtx.tsx',
+		);
 
-    deepStrictEqual(upsertFileCommand?.kind, "upsertFile");
-    deepStrictEqual(upsertFileCommand.path, "/opt/project/pages/a.tsx");
+		deepStrictEqual(upsertFileCommand?.kind, 'upsertFile');
+		deepStrictEqual(upsertFileCommand.path, '/opt/project/pages/a.tsx');
 
-    deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
-      expectedResult.replace(/\s/gm, ""),
-    );
-  });
+		deepStrictEqual(
+			upsertFileCommand.data.replace(/\s/gm, ''),
+			expectedResult.replace(/\s/gm, ''),
+		);
+	});
 
-  it("should not remove anything if getStaticProps", () => {
-    const INPUT = `
+	it('should not remove anything if getStaticProps', () => {
+		let INPUT = `
 			export default function Component() {
 	          }
 	      `;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(actualOutput, undefined);
-  });
+		assert.deepEqual(actualOutput, undefined);
+	});
 
-  it("should create an additional function if getStaticProps is present", () => {
-    const INPUT = `
+	it('should create an additional function if getStaticProps is present', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 
@@ -124,7 +124,7 @@ describe("next 13 remove-get-static-props", () => {
 	          }
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -160,19 +160,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should create an additional function if getStaticProps returns an Identifier", () => {
-    const INPUT = `
+	it('should create an additional function if getStaticProps returns an Identifier', () => {
+		let INPUT = `
 			export async function getStaticProps(context: GetStaticPropsContext) {
 				const users = await promise(context.params);
 				const res = { props: { users } };
@@ -183,7 +183,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 			import { headers, cookies } from "next/headers";	
 			import { GetStaticPropsContext } from "next";
@@ -227,20 +227,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace props nested props properly", () => {
-    const INPUT = `
+	it('should replace props nested props properly', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const allPosts = await promise;
 				return { props: { allPosts } };
@@ -251,7 +251,7 @@ describe("next 13 remove-get-static-props", () => {
 	          }
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 			import { headers, cookies } from "next/headers";	
 			import { GetStaticPropsContext } from "next";
@@ -284,19 +284,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should create additional functions if getStaticProps is present", () => {
-    const INPUT = `
+	it('should create additional functions if getStaticProps is present', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				const groups = await anotherPromise;
@@ -309,7 +309,7 @@ describe("next 13 remove-get-static-props", () => {
 	          }
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -346,20 +346,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when props are not destructured", () => {
-    const INPUT = `
+	it('should inject data fetching function when props are not destructured', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				return { props: { users } };
@@ -373,7 +373,7 @@ describe("next 13 remove-get-static-props", () => {
 			
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -405,19 +405,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when export keyword is used", () => {
-    const INPUT = `
+	it('should inject data fetching function when export keyword is used', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				return { props: { a } };
 			}
@@ -430,7 +430,7 @@ describe("next 13 remove-get-static-props", () => {
 			
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -460,19 +460,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when export keyword is used 2", () => {
-    const INPUT = `
+	it('should inject data fetching function when export keyword is used 2', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				return { props: { a } };
 			}
@@ -484,7 +484,7 @@ describe("next 13 remove-get-static-props", () => {
 			export default SingleAppPage;
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -514,19 +514,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when Page has 0 args", () => {
-    const INPUT = `
+	it('should inject data fetching function when Page has 0 args', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				sideEffect();
 				return { props: { a } };
@@ -540,7 +540,7 @@ describe("next 13 remove-get-static-props", () => {
 			
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -572,19 +572,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when Page component has implicit return", () => {
-    const INPUT = `
+	it('should inject data fetching function when Page component has implicit return', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				return { props: { users } };
@@ -595,7 +595,7 @@ describe("next 13 remove-get-static-props", () => {
 			export default Home;
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -627,19 +627,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when Page component has implicit return 2", () => {
-    const INPUT = `
+	it('should inject data fetching function when Page component has implicit return 2', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				return { props: { users } };
@@ -650,7 +650,7 @@ describe("next 13 remove-get-static-props", () => {
 			export default Home;
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -682,19 +682,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should inject data fetching function when Page component is functionexpression", () => {
-    const INPUT = `
+	it('should inject data fetching function when Page component is functionexpression', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				return { props: { users } };
@@ -707,7 +707,7 @@ describe("next 13 remove-get-static-props", () => {
 			export default AppPage;
 	    `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -739,19 +739,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should add data hooks on the top level of the component ", () => {
-    const INPUT = `
+	it('should add data hooks on the top level of the component ', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				const users = await promise;
 				const groups = await anotherPromise;
@@ -767,7 +767,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -805,20 +805,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should add generated code after import statements", () => {
-    const INPUT = `
+	it('should add generated code after import statements', () => {
+		let INPUT = `
 			import x from "y";
 			export async function getStaticProps() {
 				const users = await promise;
@@ -835,7 +835,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -875,20 +875,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work with arrow functions", () => {
-    const INPUT = `
+	it('should work with arrow functions', () => {
+		let INPUT = `
 			import x from "y";
 			export const getStaticProps = async () => {
 				const users = await promise;
@@ -905,7 +905,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -945,20 +945,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work with hooks that have multiple return statements", () => {
-    const INPUT = `
+	it('should work with hooks that have multiple return statements', () => {
+		let INPUT = `
 			import x from "y";
 			export const getStaticProps =  async () => {
 				const users = await promise;
@@ -979,7 +979,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1028,19 +1028,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should not duplicate revalidate prop", () => {
-    const INPUT = `
+	it('should not duplicate revalidate prop', () => {
+		let INPUT = `
 			import x from "y";
 			
 			export const getStaticProps = async () => {
@@ -1062,7 +1062,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1111,20 +1111,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it('should add dynamic="force-static" if a page implements getStaticProps', () => {
-    const INPUT = `
+	it('should add dynamic="force-static" if a page implements getStaticProps', () => {
+		let INPUT = `
 			
 		export const getStaticProps = async () => {
 			return { props: {}, revalidate: 1 }
@@ -1135,7 +1135,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1167,20 +1167,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT?.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT?.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace getServerSideProps", () => {
-    const INPUT = `
+	it('should replace getServerSideProps', () => {
+		let INPUT = `
 			export async function getServerSideProps() {
 				const res = await fetch(\`https://...\`);
 				const projects = await res.json();
@@ -1199,7 +1199,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetServerSidePropsContext } from "next";
@@ -1238,20 +1238,20 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should handle getStaticPaths", () => {
-    const INPUT = `
+	it('should handle getStaticPaths', () => {
+		let INPUT = `
 			import PostLayout from '@/components/post-layout';
 
 			export async function getStaticPaths() {
@@ -1273,7 +1273,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1323,19 +1323,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should transform fallback property correctly 2", () => {
-    const INPUT = `
+	it('should transform fallback property correctly 2', () => {
+		let INPUT = `
 			import PostLayout from '@/components/post-layout';
 
 			export async function getStaticPaths() {
@@ -1357,7 +1357,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1407,19 +1407,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should transform fallback property correctly", () => {
-    const INPUT = `
+	it('should transform fallback property correctly', () => {
+		let INPUT = `
 			import PostLayout from '@/components/post-layout';
 
 			export async function getStaticPaths() {
@@ -1441,7 +1441,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1491,19 +1491,19 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should move the default export to the bottom of the file", () => {
-    const INPUT = `
+	it('should move the default export to the bottom of the file', () => {
+		let INPUT = `
 			import PostLayout from '@/components/post-layout';
 
 			export default function Post({ post }) {
@@ -1525,7 +1525,7 @@ describe("next 13 remove-get-static-props", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1575,20 +1575,20 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should wrap original getStaticProps when at least one of returnStatement argument is not ObjectExpression", () => {
-    const INPUT = `
+	it('should wrap original getStaticProps when at least one of returnStatement argument is not ObjectExpression', () => {
+		let INPUT = `
 			export async function getStaticProps() {
 				return fetchData();
 			}
@@ -1598,7 +1598,7 @@ describe("next 13 remove-get-static-props", () => {
 	          }
 	      `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 		import { buildLegacyCtx } from "/opt/project/hooks/buildLegacyCtx.tsx";
 		import { headers, cookies } from "next/headers";	
 		import { GetStaticPropsContext } from "next";
@@ -1639,14 +1639,14 @@ describe("next 13 remove-get-static-props", () => {
 			export const dynamic = "force-static";
 		`;
 
-    const actualOutput = jscodeshiftTransform(
-      jscodeshift.withParser("tsx"),
-      INPUT,
-      globalOptions,
-    );
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = jscodeshiftTransform(
+			jscodeshift.withParser('tsx'),
+			INPUT,
+			globalOptions,
+		);
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

@@ -26,12 +26,12 @@ type GetExecutionStatusRequest = Readonly<{
   executionId: string;
 }>;
 
-const getExecutionStatus = async ({
+let getExecutionStatus = async ({
   executionId,
   token,
 }: GetExecutionStatusRequest): Promise<GetExecutionStatusResponse | null> => {
   try {
-    const res = await apiClient.get<GetExecutionStatusResponse>(
+    let res = await apiClient.get<GetExecutionStatusResponse>(
       GET_EXECUTION_STATUS(executionId),
       {
         headers: {
@@ -42,7 +42,7 @@ const getExecutionStatus = async ({
 
     return res.data ?? null;
   } catch (e) {
-    const err = e as AxiosError<{ message?: string }>;
+    let err = e as AxiosError<{ message?: string }>;
     console.error(err.response?.data.message ?? err.message);
     return null;
   }

@@ -1,7 +1,7 @@
-import { render } from "react-dom";
+import { render } from 'react-dom';
 
-const fn = () => {
-  if (true) {
-    render(<Component />, theNode);
-  }
+let fn = () => {
+	if (true) {
+		render(<Component />, theNode);
+	}
 };

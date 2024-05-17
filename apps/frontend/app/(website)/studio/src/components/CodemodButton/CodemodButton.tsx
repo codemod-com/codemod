@@ -11,28 +11,28 @@ import { useExecutionStatus } from "../../hooks/useExecutionStatus";
 import { RepositoryModal } from "./RepositoryModal";
 import { getButtonPropsByStatus } from "./getButtonPropsByStatus";
 
-export const CodemodButton = () => {
-  const [repositoriesToShow, setRepositoriesToShow] = useState<
+export let CodemodButton = () => {
+  let [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
 
-  const [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
+  let [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
 
-  const {
+  let {
     showModalWithRepositories,
     hideRepositoryModal,
     isRepositoryModalShown,
     areReposLoading,
   } = useOpenRepoModalAfterSignIn(setRepositoriesToShow);
 
-  const showRepoModalToSignedUser = useEnsureUserSigned(
+  let showRepoModalToSignedUser = useEnsureUserSigned(
     showModalWithRepositories,
     "openRepoModal",
   );
 
-  const { codemodExecutionId } = useUserSession();
-  const codemodRunStatus = useExecutionStatus(codemodExecutionId);
-  const { text, hintText } = getButtonPropsByStatus(
+  let { codemodExecutionId } = useUserSession();
+  let codemodRunStatus = useExecutionStatus(codemodExecutionId);
+  let { text, hintText } = getButtonPropsByStatus(
     codemodRunStatus?.result?.status ?? null,
   );
 

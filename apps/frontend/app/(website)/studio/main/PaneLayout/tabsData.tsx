@@ -18,7 +18,7 @@ export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
 export type TabHeader = { value: string; name: ReactNode };
 export type TabContent = TabHeader & { content: ReactNode };
 
-export const useTabs = ({
+export let useTabs = ({
   beforePanel,
   afterPanel,
   isSignedIn = false,
@@ -33,8 +33,8 @@ export const useTabs = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
-  const aiAssistantData = useAiService();
-  const tabs = [
+  let aiAssistantData = useAiService();
+  let tabs = [
     {
       value: TabNames.MODGPT,
       name: "ModGPT",

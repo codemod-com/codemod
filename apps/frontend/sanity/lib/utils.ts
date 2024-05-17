@@ -2,12 +2,12 @@ import publicConfig from "@/config";
 import createImageUrlBuilder from "@sanity/image-url";
 import type { Image } from "sanity";
 
-export const imageBuilder = createImageUrlBuilder({
+export let imageBuilder = createImageUrlBuilder({
   projectId: publicConfig.sanity.projectId ?? "",
   dataset: publicConfig.sanity.dataset ?? "",
 });
 
-export const urlForImage = (source: Image | undefined) => {
+export let urlForImage = (source: Image | undefined) => {
   // Ensure that source image contains a valid reference
   if (!source?.asset?._ref) {
     return undefined;
@@ -23,16 +23,16 @@ export function urlForOpenGraphImage(image: Image | undefined) {
 // Note: this assumes that every document that has a slug field
 // have it on the `slug` field at the root
 export async function isUnique(slug, context) {
-  const { document, getClient } = context;
-  const client = getClient({ apiVersion: "2023-06-21" });
-  const id = document._id.replace(/^drafts\./, "");
-  const params = {
+  let { document, getClient } = context;
+  let client = getClient({ apiVersion: "2023-06-21" });
+  let id = document._id.replace(/^drafts\./, "");
+  let params = {
     draft: `drafts.${id}`,
     published: id,
     slug,
   };
-  const query = `*[!(_id in [$draft, $published]) && pathname.current == $slug]`;
-  const result = await client.fetch(query, params);
+  let query = `*[!(_id in [$draft, $published]) && pathname.current == $slug]`;
+  let result = await client.fetch(query, params);
 
   return result.length === 0;
 }

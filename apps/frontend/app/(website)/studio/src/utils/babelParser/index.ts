@@ -1,17 +1,17 @@
 import { type ParseError, parse } from "@babel/parser";
 import tsxParserOptions from "./parserOptions";
 
-const parseCode = (code: string) => parse(code, tsxParserOptions);
+let parseCode = (code: string) => parse(code, tsxParserOptions);
 
 type FileParseResult = ReturnType<typeof parseCode>;
 
-const isParseError = (err: unknown): err is ParseError =>
+let isParseError = (err: unknown): err is ParseError =>
   typeof err === "object" &&
   err !== null &&
   Object.hasOwn(err, "code") &&
   Object.hasOwn(err, "reasonCode");
 
-const parseSnippet = (snippet: string) => {
+let parseSnippet = (snippet: string) => {
   if (snippet.trim() === "") {
     return null;
   }

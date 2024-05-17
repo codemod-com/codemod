@@ -1,14 +1,14 @@
 import React from "react";
 import { PortableTextInput, type PortableTextInputProps } from "sanity";
 
-const onPaste: PortableTextInputProps["onPaste"] = (data) => {
-  const text = data.event.clipboardData.getData("text/plain") || "";
+let onPaste: PortableTextInputProps["onPaste"] = (data) => {
+  let text = data.event.clipboardData.getData("text/plain") || "";
 
   function isTable(data) {
     if (!data || typeof data !== "string") return false;
-    const rows = data?.split("\n");
+    let rows = data?.split("\n");
     if (Number(rows?.length) < 2) return false;
-    const columns = rows?.[0]?.split("\t");
+    let columns = rows?.[0]?.split("\t");
     if (!columns || columns.length < 2) return false;
     return rows.slice(1).every((row) => {
       return row.split("\t").length === columns.length;
@@ -38,7 +38,7 @@ const onPaste: PortableTextInputProps["onPaste"] = (data) => {
   }
 };
 
-const CustomPTEditor = (props: PortableTextInputProps) => {
+let CustomPTEditor = (props: PortableTextInputProps) => {
   return <PortableTextInput {...props} onPaste={onPaste} />;
 };
 

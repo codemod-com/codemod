@@ -37,24 +37,24 @@ export default function FilterSection(
     placeholders?: RegistryIndexPayload["placeholders"];
   },
 ) {
-  const [showAllFilters, setShowAllFilters] = useState(false);
-  const [searchValue, setSearchValue] = useState("");
-  const search = useSearchParams();
-  const searchParams = useMemo(() => new URLSearchParams(search), [search]);
-  const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
-  const [availableFilters, setAvailableFilters] = useState(
+  let [showAllFilters, setShowAllFilters] = useState(false);
+  let [searchValue, setSearchValue] = useState("");
+  let search = useSearchParams();
+  let searchParams = useMemo(() => new URLSearchParams(search), [search]);
+  let { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
+  let [availableFilters, setAvailableFilters] = useState(
     getFilteredFilters(props.values),
   );
 
   useEffect(() => {
-    const activeFilter = searchParams.get(props.id);
+    let activeFilter = searchParams.get(props.id);
     if (activeFilter) {
       setAvailableFilters(getFilteredFilters(props.values, activeFilter));
     } else {
       setAvailableFilters(getFilteredFilters(props.values));
     }
   }, [props.values, searchParams, props.id]);
-  const filterIcons = getFilterSection(props.id, props.filterIconDictionary);
+  let filterIcons = getFilterSection(props.id, props.filterIconDictionary);
 
   return (
     <div className="grid w-full flex-col items-start gap-3">

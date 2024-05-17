@@ -32,37 +32,37 @@ import {
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
-const Main = () => {
-  const panelRefs: PanelsRefs = useRef({});
-  const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
+let Main = () => {
+  let panelRefs: PanelsRefs = useRef({});
+  let { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  const { engine, setEngine } = useSnippetStore();
-  const { isDark } = useTheme();
+  let { engine, setEngine } = useSnippetStore();
+  let { isDark } = useTheme();
 
-  const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
+  let onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
 
-  const snippetStore = useSnippetStore();
+  let snippetStore = useSnippetStore();
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+    let searchParams = new URLSearchParams(window.location.search);
+    let command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
     if (command === LEARN_KEY) {
       (async () => {
         try {
-          const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
+          let engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
             "jscodeshift") as KnownEngines;
-          const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+          let diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+          let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           if (!engine || !diffId || !iv) {
             return;
           }
 
-          const snippets = await getCodeDiff({ diffId, iv });
+          let snippets = await getCodeDiff({ diffId, iv });
 
           if (!snippets) {
             return;
@@ -79,7 +79,7 @@ const Main = () => {
     }
   }, [snippetStore]);
 
-  const codemodHeader = (
+  let codemodHeader = (
     <Panel.Header className="h-[30px]">
       <Panel.HeaderTab>
         <Panel.HeaderTitle className="h-full">
@@ -123,7 +123,7 @@ const Main = () => {
     </Panel.Header>
   );
 
-  const beforeAfterBottomPanels = (
+  let beforeAfterBottomPanels = (
     <>
       <CodeSnippets
         codeDiff={codeDiff}
@@ -147,7 +147,7 @@ const Main = () => {
     </>
   );
 
-  const outputBottomPanel = (
+  let outputBottomPanel = (
     <CodeSnippets
       codeDiff={codeDiff}
       onlyAfterHidden={onlyAfterHidden}

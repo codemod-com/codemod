@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-const BlogIndexPreview = dynamic(
+let BlogIndexPreview = dynamic(
   () => import("@/components/templates/blogIndex/BlogIndexPreview"),
 );
 
@@ -19,7 +19,7 @@ export async function generateMetadata(
   },
   parent: ResolvingMetadata,
 ): Promise<Metadata | null> {
-  const initialData = await loadBlogIndex({
+  let initialData = await loadBlogIndex({
     pageNumber: 1,
     pathParam: params.tag,
   });
@@ -33,7 +33,7 @@ export default async function BlogIndexRoute({
 }: {
   params: { locale: string; tag?: string };
 }) {
-  const initialSanityData = await loadBlogIndex({
+  let initialSanityData = await loadBlogIndex({
     pageNumber: 1,
     pathParam: params.tag,
   });

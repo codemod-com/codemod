@@ -16,9 +16,9 @@ type PreviewRouteProps = {
 };
 
 export default function PagePreview(props: PreviewRouteProps) {
-  const { initial } = props;
+  let { initial } = props;
 
-  const { data } = useQuery<ModularPagePayload | null>(
+  let { data } = useQuery<ModularPagePayload | null>(
     PAGE_QUERY,
     {
       pathname: initial.data?.pathname,
