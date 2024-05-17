@@ -50,28 +50,56 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
           "Downloading the",
           chalk.bold(doubleQuotify(name)),
           "codemod",
-          this._cacheDisabled ? "" : "(using cache)",
         ),
       );
     }
 
     // download codemod
-    try {
-      const userData = await getCurrentUserData();
-      const s3DownloadLink = await getCodemodDownloadURI(name, userData?.token);
-      const localCodemodPath = join(directoryPath, "codemod.tar.gz");
+    const userData = await getCurrentUserData();
 
-      const buffer = await this._fileDownloadService.download(
+    let s3DownloadLink: string;
+    try {
+      s3DownloadLink = await getCodemodDownloadURI(name, userData?.token);
+    } catch (err) {
+      spinner?.fail();
+      throw new Error(`Error getting download link for codemod:\n${err}`);
+    }
+    const localCodemodPath = join(directoryPath, "codemod.tar.gz");
+
+    let downloadResult: Awaited<
+      ReturnType<FileDownloadServiceBlueprint["download"]>
+    >;
+    try {
+      downloadResult = await this._fileDownloadService.download(
         s3DownloadLink,
         localCodemodPath,
       );
-
-      await this._tarService.unpack(directoryPath, buffer);
-      spinner?.succeed();
     } catch (err) {
       spinner?.fail();
-      throw err;
+      throw new Error(`Error downloading codemod:\n${err}`);
     }
+
+    const { data, cacheUsed, cacheReason } = downloadResult;
+
+    try {
+      await this._tarService.unpack(directoryPath, data);
+    } catch (err) {
+      spinner?.fail();
+      throw new Error(`Error unpacking codemod:\n${err}`);
+    }
+
+    spinner?.succeed();
+
+    this.__printer.printConsoleMessage(
+      "info",
+      chalk.cyan(
+        cacheUsed
+          ? "Successfully used cache to retrieve the codemod"
+          : `Downloaded the codemod from the registry without using cache: ${chalk.yellow(
+              cacheReason,
+            )}`,
+      ),
+    );
 
     let config: CodemodConfig;
     try {
