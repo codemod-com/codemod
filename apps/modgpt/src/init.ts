@@ -1,8 +1,9 @@
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import { clerkPlugin } from "@clerk/fastify";
+import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, { type FastifyPluginCallback } from "fastify";
-import { environment, isDevelopment } from "./dev-utils/configs";
+import type { FastifyPluginCallback } from "fastify";
+import { environment } from "./dev-utils/configs";
 import { corsOptions } from "./dev-utils/cors";
 import { fastify } from "./fastifyInstance";
 
@@ -53,6 +54,12 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   });
 
   await fastify.register(fastifyMultipart);
+
+  await fastify.register(clerkPlugin, {
+    publishableKey: environment.CLERK_PUBLISH_KEY,
+    secretKey: environment.CLERK_SECRET_KEY,
+    jwtKey: environment.CLERK_JWT_KEY,
+  });
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);
