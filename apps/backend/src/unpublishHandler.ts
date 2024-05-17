@@ -80,7 +80,7 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
     ].filter(isNeitherNullNorUndefined);
 
     if (environment.VERIFIED_PUBLISHERS.includes(username)) {
-      allowedNamespaces.push("codemod-com", "codemod.com");
+      allowedNamespaces.push("codemod-com", "codemod");
     }
 
     if (!allowedNamespaces.includes(codemod.author)) {

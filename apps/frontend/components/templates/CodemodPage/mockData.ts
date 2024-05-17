@@ -17,7 +17,7 @@ export const mock = {
   featured: false,
   verified: true,
   private: false,
-  author: "codemod.com",
+  author: "codemod",
   amountOfUses: 0,
   totalTimeSaved: 0,
   openedPrs: 0,
