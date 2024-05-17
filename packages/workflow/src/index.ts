@@ -1,4 +1,4 @@
-export * from "./engine.js";
+export * from "./compose.js";
 
 export * from "./isWorkflowFile.js";
 

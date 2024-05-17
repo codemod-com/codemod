@@ -3,8 +3,6 @@ import type { SgNode } from "@ast-grep/napi";
 
 import { invariant } from "ts-invariant";
 
-export const stackContext = new AsyncLocalStorage<{ entrypoint?: string }>();
-
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
 
 export const registerContext = <T>(name: string, ctx: AsyncLocalStorage<T>) => {
@@ -92,11 +90,5 @@ export const getRepositoriesContext = () => {
 export const getDescribeContext = () => {
   const repo = describeContext.getStore();
   invariant(repo, "No describe context found");
-  return repo;
-};
-
-export const getStackContext = () => {
-  const repo = stackContext.getStore();
-  invariant(repo, "No stack context found");
   return repo;
 };

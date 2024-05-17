@@ -130,15 +130,18 @@ export const spawn = (
           return;
         }
 
-        // console.error(stdout.join('\n'));
-        // console.error(stderr.join('\n'));
-        reject(
-          new Error(
-            `Failed to execute command "${cmd} ${args.join(
-              " ",
-            )}" with code ${code}`,
-          ),
-        );
+        if (code) {
+          console.error(stdout.join("\n"));
+          console.error(stderr.join("\n"));
+          reject(
+            new Error(
+              `Failed to execute command "${cmd} ${args.join(
+                " ",
+              )}" with code ${code}`,
+            ),
+          );
+          return;
+        }
       }
       resolve({ stdout, stderr, error: caughtError, kill });
     });

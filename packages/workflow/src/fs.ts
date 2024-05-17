@@ -3,8 +3,6 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as fg from "fast-glob";
-import { mapValues } from "lodash";
-import { PLazy } from "./PLazy";
 import { cwdContext, fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
@@ -178,95 +176,3 @@ export const isDirectory = async (dir: string) => {
     return false;
   }
 };
-
-// const noContextFn = <T extends (...args: any) => ReturnType<T>>(cb: T) => cb();
-
-// export const constructJsFiles =
-//   (children) =>
-//   (context = noContextFn) =>
-//   (globsOrCallback, maybeCallback) => {
-//     const rawGlobs = globsOrCallback;
-//     const callback =
-//       typeof globsOrCallback === "function" ? globsOrCallback : maybeCallback;
-//     const globs = parseRepositories(rawGlobs);
-
-//     const wrapWithContextAndReturnPromise = async (cb) => {
-//       await context(() =>
-//         Promise.all(
-//           globs.map(async (glob) => {
-//             const { cwd } = getCwdContext();
-//             const files = await fg.glob(glob, {
-//               cwd,
-//               onlyFiles: true,
-//               ignore: [
-//                 "**/node_modules/**",
-//                 "**/.git/**",
-//                 "**/dist/**",
-//                 "**/build/**",
-//               ],
-//             });
-
-//             if (cb) {
-//               for (const file of files) {
-//                 await fileContext.run(
-//                   { file: path.join(cwd, file) },
-//                   (...args) => {
-//                     // Remote execution should be here
-//                     // if (cb) {
-//                     //   console.log('remote run:');
-//                     //   console.log(getContextsSnapshot());
-//                     //   console.log(cb.toString());
-//                     // }
-//                     return cb(...args);
-//                   },
-//                   callback ? helpersWithoutWrapper : helpers,
-//                 );
-//               }
-//             }
-
-//             return Promise.resolve(helpers);
-//           }),
-//         ),
-//       );
-
-//       return helpers;
-//     };
-
-//     const helpers = mapValues(
-//       children,
-//       (value) =>
-//         (...args) =>
-//           value(wrapWithContextAndReturnPromise)(...args),
-//     );
-
-//     const helpersWithoutWrapper = mapValues(
-//       children,
-//       (value) =>
-//         (...args) =>
-//           value()(...args),
-//     );
-
-//     const promise = new PLazy((resolve, reject) => {
-//       if (callback) {
-//         // This case will be lazy loading, need to revert it back later somehow
-//         // For example, detect if function has arguments
-//         // Revert comment for next 3 lines
-//         callback(helpers)
-//           .then(() => resolve(helpers))
-//           .catch(reject);
-//         //   console.log(callback.toString());
-//         // and remove next:
-//         // wrapWithContextAndReturnPromise(callback)
-//         //   .then(() => resolve(helpers))
-//         //   .catch(reject);
-//       } else {
-//         wrapWithContextAndReturnPromise(callback).then(resolve).catch(reject);
-//       }
-//     });
-
-//     Object.keys(helpers).forEach((key) => {
-//       promise[key] = helpers[key];
-//     });
-
-//     return promise;
-//   };
