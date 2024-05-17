@@ -1,21 +1,14 @@
 import { type SourceFile, SyntaxKind, ts } from "ts-morph";
 import { DVC } from "./dvc.js";
 
-const { factory } = ts;
-type SDKDescriptor = {
-  getKeyArgument: <T>(args: T[]) => T;
-  isSDKMethod: (name: string) => boolean;
-};
-
-type VariableType = "string" | "boolean" | "number" | "JSON";
+type VariableType = "String" | "Boolean" | "Number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
 
-type Options = {
+export type Options = {
   key: string;
   value: VariableValue;
   type: VariableType;
   aliases?: Record<string, string>;
-  sdkDescriptor: SDKDescriptor;
 };
 
 // const replaceObjects = (sourceFile: SourceFile, options: Options) => {
@@ -33,23 +26,31 @@ type Options = {
 //   }
 // };
 
-export function handleSourceFile(sourceFile: SourceFile): string | undefined {
-  const options = {
-    key: "simple-case",
-    type: "string",
-    value: "string",
-  } as const;
-
+export function handleSourceFile(
+  sourceFile: SourceFile,
+  options: Options,
+): string | undefined {
   const matcher = DVC.getMatcher(options.key);
 
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter(matcher)
-    .forEach((ce) => {
+  sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((ce) => {
+    const match = matcher(ce);
+
+    if (match === null) {
+      return;
+    }
+
+    if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
       ce.getParent()?.replaceWithText(
-        DVC.getReplacer(options.key, options.type, options.value),
+        DVC.getReplacer(options.key, options.type, options.value, match.name),
       );
-    });
+
+      return;
+    }
+
+    ce.replaceWithText(
+      DVC.getReplacer(options.key, options.type, options.value, match.name),
+    );
+  });
 
   return sourceFile.getFullText();
 }

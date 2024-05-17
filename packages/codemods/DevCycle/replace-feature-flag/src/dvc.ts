@@ -1,6 +1,6 @@
 import { type CallExpression, Node, printNode, ts } from "ts-morph";
 
-type VariableType = "string" | "boolean" | "number" | "JSON";
+type VariableType = "String" | "Boolean" | "Number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
 
 const { factory } = ts;
@@ -31,13 +31,13 @@ const getCEExpressionName = (ce: CallExpression): string | null => {
 
 const getTypeLiteral = (type: VariableType, value: VariableValue) => {
   switch (type) {
-    case "string": {
+    case "String": {
       return factory.createStringLiteral(value.toString());
     }
-    case "number": {
+    case "Number": {
       return factory.createNumericLiteral(Number(value));
     }
-    case "boolean": {
+    case "Boolean": {
       return value === "true" ? factory.createTrue() : factory.createFalse();
     }
     case "JSON": {
@@ -53,7 +53,7 @@ const getTypeLiteral = (type: VariableType, value: VariableValue) => {
   }
 };
 
-const getReplacerNode = (
+const getVariableReplacerNode = (
   key: string,
   type: VariableType,
   value: VariableValue,
@@ -81,28 +81,66 @@ const getReplacerNode = (
   );
 };
 
+const getVariableValueReplacerNode = (
+  key: string,
+  type: VariableType,
+  value: VariableValue,
+) => {
+  return getTypeLiteral(type, value);
+};
+
+type MatchedMethod = {
+  name: string;
+};
+
 export const DVC = {
-  getMatcher: (keyName: string) => (ce: CallExpression) => {
-    const name = getCEExpressionName(ce);
+  getMatcher:
+    (keyName: string) =>
+    (ce: CallExpression): MatchedMethod | null => {
+      const name = getCEExpressionName(ce);
 
-    if (!names.includes(name ?? "")) {
-      return false;
-    }
+      if (name === null || !names.includes(name)) {
+        return null;
+      }
 
-    const args = ce.getArguments();
-    const keyArg = args.length === 3 ? args[1] : args[0];
+      const args = ce.getArguments();
+      const keyArg = args.length === 3 ? args[1] : args[0];
 
-    const declarations =
-      (Node.isIdentifier(keyArg) &&
-        keyArg
+      if (Node.isIdentifier(keyArg)) {
+        const maybeVariableDeclaration = keyArg
           .getDefinitions()
-          ?.map((d) => d.getNode().getParent()?.getFullText())) ??
-      [];
+          ?.at(0)
+          ?.getNode()
+          ?.getParent();
 
-    console.log(...declarations, "DECLAR");
+        if (Node.isVariableDeclaration(maybeVariableDeclaration)) {
+          const maybeStringLiteral = maybeVariableDeclaration.getInitializer();
 
-    return Node.isStringLiteral(keyArg) && keyArg.getLiteralText() === keyName;
+          if (
+            Node.isStringLiteral(maybeStringLiteral) &&
+            maybeStringLiteral.getLiteralText() === keyName
+          ) {
+            return { name };
+          }
+        }
+      }
+
+      if (Node.isStringLiteral(keyArg) && keyArg.getLiteralText() === keyName) {
+        return { name };
+      }
+
+      return null;
+    },
+  getReplacer: (
+    key: string,
+    type: VariableType,
+    value: VariableValue,
+    name: string,
+  ) => {
+    const node = ["variableValue", "useVariableValue"].includes(name)
+      ? getVariableValueReplacerNode(key, type, value)
+      : getVariableReplacerNode(key, type, value);
+
+    return printNode(node);
   },
-  getReplacer: (key: string, type: VariableType, value: VariableValue) => () =>
-    printNode(getReplacerNode(key, type, value)),
 };

@@ -1,18 +1,20 @@
-const simpleCaseValue = {
+const a = {
   key: "simple-case",
   value: "string",
   defaultValue: "string",
-  isDefaulted: true,
-}.value;
-const simpleCase = {
-  key: "simple-case",
-  value: "string",
-  defaultValue: "string",
-  isDefaulted: true,
+  isDefaulted: true
 };
-const isDefaulted = {
+const b = "string";
+const c = {
   key: "simple-case",
   value: "string",
   defaultValue: "string",
-  isDefaulted: true,
-}.isDefaulted;
+  isDefaulted: true
+};
+const d = {
+  key: "simple-case",
+  value: "string",
+  defaultValue: "string",
+  isDefaulted: true
+};
+const e = "string";
