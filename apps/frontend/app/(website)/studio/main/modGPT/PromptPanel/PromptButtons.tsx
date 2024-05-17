@@ -7,7 +7,7 @@ type PromptButtonsProps = {
   handleSubmit: (value: string) => void;
 };
 
-export const PromptButtons = ({
+export let PromptButtons = ({
   promptsList,
   handleSubmit,
   children,

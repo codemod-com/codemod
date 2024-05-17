@@ -1,12 +1,12 @@
-import assert from "node:assert/strict";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert/strict';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("react-router v4 remove-with-props", () => {
-  it("Should replace withProps HOC", async () => {
-    const input = `
+describe('react-router v4 remove-with-props', () => {
+	it('Should replace withProps HOC', async () => {
+		let input = `
 		import withProps from 'recompose/withProps';
 		import Dashboard from './Dashboard';
 
@@ -20,7 +20,7 @@ describe("react-router v4 remove-with-props", () => {
 		};
 		`;
 
-    const output = `
+		let output = `
 		import withProps from 'recompose/withProps';
 		import Dashboard from './Dashboard';
 
@@ -38,18 +38,18 @@ describe("react-router v4 remove-with-props", () => {
 		};
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: input,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: input,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
-      quote: "single",
-    });
+		let actualOutput = transform(fileInfo, buildApi('js'), {
+			quote: 'single',
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      output.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			output.replace(/\W/gm, ''),
+		);
+	});
 });

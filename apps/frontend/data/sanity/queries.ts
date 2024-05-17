@@ -1,7 +1,7 @@
 import { CUSTOMER_STORY_TAG, REGISTRY_FILTER_TYPES } from "@/constants";
 import { groq } from "next-sanity";
 
-export const REGISTRY_CARD_FRAGMENT = groq`
+export let REGISTRY_CARD_FRAGMENT = groq`
 _id,
 _type,
 automationName,
@@ -15,7 +15,7 @@ verifiedTooltip,
 "pathname": pathname.current,
 `;
 
-const MUX_VIDEO_FRAGMENT = groq`
+let MUX_VIDEO_FRAGMENT = groq`
     {
         asset->{
             "resolution": data.max_stored_resolution,
@@ -24,7 +24,7 @@ const MUX_VIDEO_FRAGMENT = groq`
     }
 `;
 
-const FULL_WIDTH_MEDIA_FRAGMENT = groq`
+let FULL_WIDTH_MEDIA_FRAGMENT = groq`
     ...,
     mediaTabs[]{
         ...,
@@ -36,7 +36,7 @@ const FULL_WIDTH_MEDIA_FRAGMENT = groq`
     },
 `;
 
-const SECTIONS_FRAGMENT = groq`
+let SECTIONS_FRAGMENT = groq`
     ...,
     _type == "section.features" => {
         ...,
@@ -63,7 +63,7 @@ const SECTIONS_FRAGMENT = groq`
     },
 `;
 
-const PT_BLOCK_FRAGMENT = groq`
+let PT_BLOCK_FRAGMENT = groq`
     ...,
    _type == "muxVideoWithCaption" => {
         ...,
@@ -72,19 +72,19 @@ const PT_BLOCK_FRAGMENT = groq`
    },
 `;
 
-const FILTER_ICON_DICTONARY_FRAGMENT = groq`
+let FILTER_ICON_DICTONARY_FRAGMENT = groq`
 *[_type == "filterIconDictionary"][0]
 `;
 
-export const NAVIGATION_QUERY = groq`
+export let NAVIGATION_QUERY = groq`
     *[_type == "navigation"][0]
 `;
 
-export const FOOTER_QUERY = groq`
+export let FOOTER_QUERY = groq`
     *[_type == "footer"][0]
 `;
 
-export const PAGE_QUERY = groq`*[_type == "page" && pathname.current == $pathname][0]{
+export let PAGE_QUERY = groq`*[_type == "page" && pathname.current == $pathname][0]{
     ...,
     'pathname': pathname.current,
     sections {
@@ -95,7 +95,7 @@ export const PAGE_QUERY = groq`*[_type == "page" && pathname.current == $pathnam
     }
 }`;
 
-export const CONTACT_PAGE_QUERY = groq`*[_type == "contact"][0] {
+export let CONTACT_PAGE_QUERY = groq`*[_type == "contact"][0] {
     ...,
     sections {
         ${SECTIONS_FRAGMENT}
@@ -105,7 +105,7 @@ export const CONTACT_PAGE_QUERY = groq`*[_type == "contact"][0] {
     }
 }`;
 
-export const PRICING_PAGE_QUERY = groq`*[_type == 'pricingPage'][0]{
+export let PRICING_PAGE_QUERY = groq`*[_type == 'pricingPage'][0]{
     ...,
     sections {
         ${SECTIONS_FRAGMENT}
@@ -115,14 +115,14 @@ export const PRICING_PAGE_QUERY = groq`*[_type == 'pricingPage'][0]{
     }
 }`;
 
-export const ABOUT_PAGE_QUERY = groq`*[_type == 'about'][0]{
+export let ABOUT_PAGE_QUERY = groq`*[_type == 'about'][0]{
     ...,
     cta-> {
         ...
     }
 }`;
 
-export const CAREERS_PAGE_QUERY = groq`*[_type == 'careers'][0]{
+export let CAREERS_PAGE_QUERY = groq`*[_type == 'careers'][0]{
     ...,
     "jobs": *[_type == "job" && active == true][] {
         ...
@@ -132,7 +132,7 @@ export const CAREERS_PAGE_QUERY = groq`*[_type == 'careers'][0]{
     }
 }`;
 
-export const JOB_QUERY = groq`*[_type == 'job' && pathname.current == $pathname][0]{
+export let JOB_QUERY = groq`*[_type == 'job' && pathname.current == $pathname][0]{
     ...,
     "globalLabels": *[_type == "globalLabels"][0].careers,
     relatedPositions[]-> {
@@ -140,7 +140,7 @@ export const JOB_QUERY = groq`*[_type == 'job' && pathname.current == $pathname]
     }
 }`;
 
-export const TEXT_PAGE_QUERY = groq`
+export let TEXT_PAGE_QUERY = groq`
     *[_type == 'textPage' && pathname.current == $pathname][0] {
         ...,
         'pathname': pathname.current,
@@ -148,7 +148,7 @@ export const TEXT_PAGE_QUERY = groq`
     }
     `;
 
-export const ROUTE_QUERY = groq`
+export let ROUTE_QUERY = groq`
   *[pathname.current == $pathname][0] {
     'routeData': {
       ...,
@@ -157,7 +157,7 @@ export const ROUTE_QUERY = groq`
   }
 `;
 
-const SIDEBAR_FRAGMENT = groq`
+let SIDEBAR_FRAGMENT = groq`
 ...,
 "features": features[]-> {
   ...,
@@ -170,7 +170,7 @@ showArticleCta == true => {
 
 `;
 
-export const BLOG_ARTICLE_QUERY = groq`
+export let BLOG_ARTICLE_QUERY = groq`
   *[_type in ["blog.article", "blog.customerStory"] && pathname.current == $pathname][0] {
     ...,
     "globalLabels": *[_type == "globalLabels"][0].blog,
@@ -208,7 +208,7 @@ export const BLOG_ARTICLE_QUERY = groq`
   }
 `;
 
-export const AUTOMATION_STORIES = groq`
+export let AUTOMATION_STORIES = groq`
 *[_type == "blog.customerStory" && defined(automationTags) && 
   count(automationTags[@ in $aTags]) > 0] 
   | score(automationTags match $aTags)
@@ -220,7 +220,7 @@ export const AUTOMATION_STORIES = groq`
   }[0..1]
   `;
 
-export const AUTOMATION_PAGE_QUERY = groq`
+export let AUTOMATION_PAGE_QUERY = groq`
 {
 "filterIconDictionary": ${FILTER_ICON_DICTONARY_FRAGMENT},
 "globalLabels": *[_type == "globalLabels"][0].codemodPage,
@@ -244,11 +244,11 @@ export function buildBlogIndexQuery({
   sortBy?: string;
   sortOrder?: string;
 }) {
-  const tag = pathParam;
-  const pageStart = infiniteLoading ? 0 : entriesPerPage * (pageNumber - 1);
-  const pageEnd = entriesPerPage * pageNumber;
-  const isCustomerStory = pathParam === CUSTOMER_STORY_TAG.value;
-  const filters = [
+  let tag = pathParam;
+  let pageStart = infiniteLoading ? 0 : entriesPerPage * (pageNumber - 1);
+  let pageEnd = entriesPerPage * pageNumber;
+  let isCustomerStory = pathParam === CUSTOMER_STORY_TAG.value;
+  let filters = [
     // customer story filter
     isCustomerStory ? `_type == "blog.customerStory"` : null,
     // tags filter
@@ -264,12 +264,12 @@ export function buildBlogIndexQuery({
         ? `!(_id in *[_type == "blog.tag" && slug.current == "${tag}"].featuredPosts[]->_id)`
         : `!(_id in ^.featuredPosts[]->_id )`,
   ];
-  const filtersString = filters.filter(Boolean).join(" && ");
-  const orderFragment = `order(${sortBy ?? "_createdAt"} ${
+  let filtersString = filters.filter(Boolean).join(" && ");
+  let orderFragment = `order(${sortBy ?? "_createdAt"} ${
     sortOrder ?? "desc"
   })`;
 
-  const featuredPosts = isCustomerStory
+  let featuredPosts = isCustomerStory
     ? `"featuredPosts": featuredCustomerStories[]-> {
       ${BLOG_ARTICLE_CARD_FRAGMENT}
     },`
@@ -316,7 +316,7 @@ export function buildRegistryIndexQuery() {
     `;
 }
 
-export const BLOG_ARTICLE_CARD_FRAGMENT = groq`
+export let BLOG_ARTICLE_CARD_FRAGMENT = groq`
 ...,
 "pathname": pathname.current,
 "preamble": select(
@@ -332,7 +332,7 @@ export const BLOG_ARTICLE_CARD_FRAGMENT = groq`
 },
 `;
 
-export const NOT_FOUND_DOC_QUERY = groq`
+export let NOT_FOUND_DOC_QUERY = groq`
   *[_type == 'notFound'][0] {
     ...,
     footerCta-> {
@@ -341,7 +341,7 @@ export const NOT_FOUND_DOC_QUERY = groq`
   }
 `;
 
-export const GLOBAL_QUERY = groq`
+export let GLOBAL_QUERY = groq`
     {
       "navigation": ${NAVIGATION_QUERY},
       "fallbackOGImage": *[_type == "settings"][0].fallbackOgImage,

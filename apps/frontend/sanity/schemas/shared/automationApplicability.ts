@@ -1,4 +1,4 @@
-export const automationApplicability = {
+export let automationApplicability = {
   name: "applicability",
   title: "Applicability",
   readOnly: true,

@@ -1,4 +1,4 @@
-export const twitterEmbed = {
+export let twitterEmbed = {
   type: "object",
   name: "twitterEmbed",
   title: "Twitter Embed",

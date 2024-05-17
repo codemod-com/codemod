@@ -26,38 +26,36 @@ Changes to the original file: added the options parameter
 */
 
 export default function transform(file, api, options) {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  const isCompatRouteImportFound = root.find(j.ImportDeclaration, {
-    source: { value: "react-router-dom-v5-compat" },
-  }).length;
+	let isCompatRouteImportFound = root.find(j.ImportDeclaration, {
+		source: { value: 'react-router-dom-v5-compat' },
+	}).length;
 
-  if (!isCompatRouteImportFound) {
-    let computedImport = j.importDeclaration(
-      [j.importSpecifier(j.identifier("useParams"))],
-      j.literal("react-router-dom-v5-compat"),
-    );
+	if (!isCompatRouteImportFound) {
+		let computedImport = j.importDeclaration(
+			[j.importSpecifier(j.identifier('useParams'))],
+			j.literal('react-router-dom-v5-compat'),
+		);
 
-    let body = root.get().value.program.body;
-    body.unshift(computedImport);
-  }
+		let body = root.get().value.program.body;
+		body.unshift(computedImport);
+	}
 
-  root
-    .find(j.VariableDeclarator, {
-      init: { object: { name: "props" }, property: { name: "match" } },
-    })
-    .forEach((path) => {
-      const newDecl = j.variableDeclaration("const", [
-        j.variableDeclarator(
-          j.identifier("params"),
-          j.callExpression(j.identifier("useParams"), []),
-        ),
-      ]);
+	root.find(j.VariableDeclarator, {
+		init: { object: { name: 'props' }, property: { name: 'match' } },
+	}).forEach((path) => {
+		let newDecl = j.variableDeclaration('const', [
+			j.variableDeclarator(
+				j.identifier('params'),
+				j.callExpression(j.identifier('useParams'), []),
+			),
+		]);
 
-      path.parent.replace(newDecl);
-    });
+		path.parent.replace(newDecl);
+	});
 
-  return root.toSource(options);
+	return root.toSource(options);
 }

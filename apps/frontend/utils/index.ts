@@ -6,10 +6,10 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const anyElementExists = <T = string>(arrayA: T[], arrayB: T[]) =>
+export let anyElementExists = <T = string>(arrayA: T[], arrayB: T[]) =>
   any(flip(includes)(arrayA), arrayB);
 
-export const getTestToken = () => localStorage?.getItem("test-token");
+export let getTestToken = () => localStorage?.getItem("test-token");
 
 export { cn };
 export * from "./getBlocksToc";

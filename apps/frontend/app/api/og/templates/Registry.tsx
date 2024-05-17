@@ -5,7 +5,7 @@ type Props = {
   imageUrl: string;
 };
 
-const Registry = (props: Props) => {
+let Registry = (props: Props) => {
   return (
     <div
       style={{

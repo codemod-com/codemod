@@ -14,8 +14,8 @@ type Props = {
 };
 
 export default function JobListingPagePreview(props: Props) {
-  const { params, initial } = props;
-  const { data } = useQuery<Job | null>(JOB_QUERY, params, {
+  let { params, initial } = props;
+  let { data } = useQuery<Job | null>(JOB_QUERY, params, {
     initial,
   });
 

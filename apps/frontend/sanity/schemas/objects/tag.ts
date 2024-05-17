@@ -1,7 +1,7 @@
 import { LinkIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const tag = defineType({
+export let tag = defineType({
   name: "tag",
   title: "Tag",
   type: "document",

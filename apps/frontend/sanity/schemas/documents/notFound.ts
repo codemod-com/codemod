@@ -2,7 +2,7 @@ import { AccessDeniedIcon } from "@sanity/icons";
 import { definePathname } from "@tinloof/sanity-studio";
 import { defineType } from "sanity";
 
-export const notFound = defineType({
+export let notFound = defineType({
   name: "notFound",
   title: "Not Found (404) Page",
   type: "document",

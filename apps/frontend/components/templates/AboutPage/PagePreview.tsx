@@ -15,8 +15,8 @@ type Props = {
 };
 
 export default function AboutPagePreview(props: Props) {
-  const { params, initial } = props;
-  const { data } = useQuery<AboutPagePayload | null>(ABOUT_PAGE_QUERY, params, {
+  let { params, initial } = props;
+  let { data } = useQuery<AboutPagePayload | null>(ABOUT_PAGE_QUERY, params, {
     initial,
   });
 

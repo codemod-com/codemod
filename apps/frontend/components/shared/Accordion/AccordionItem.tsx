@@ -19,7 +19,7 @@ export default function AccordionItem({
   variant = "faq",
   children,
 }: AccordionItemProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  let [isOpen, setIsOpen] = useState(false);
 
   return (
     <AccordionItemInternal

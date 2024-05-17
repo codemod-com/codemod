@@ -27,23 +27,23 @@ type NavigationProps = {
 };
 
 export default function Navigation({ data }: NavigationProps) {
-  const pathname = usePathname();
+  let pathname = usePathname();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [hasMounted, setHasMounted] = useState(false);
-  const renderMobileMenu = useExitAnimation(mobileMenuOpen);
-  const [isStaticHeader, setIsStaticHeader] = useState(
+  let [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  let [hasMounted, setHasMounted] = useState(false);
+  let renderMobileMenu = useExitAnimation(mobileMenuOpen);
+  let [isStaticHeader, setIsStaticHeader] = useState(
     STATIC_HEADER_ROUTES.includes(pathname),
   );
-  const handleTriggerClick = (value: boolean) => {
+  let handleTriggerClick = (value: boolean) => {
     setMobileMenuOpen(value);
   };
 
-  const [isBgSolid, setIsBgSolid] = useState(false);
-  const headerRef = useRef<HTMLDivElement>(null);
-  const { y } = useWindowScroll();
+  let [isBgSolid, setIsBgSolid] = useState(false);
+  let headerRef = useRef<HTMLDivElement>(null);
+  let { y } = useWindowScroll();
 
-  const headerHeight = headerRef.current?.offsetHeight || 0;
+  let headerHeight = headerRef.current?.offsetHeight || 0;
 
   useEffect(() => {
     setMobileMenuOpen(false);

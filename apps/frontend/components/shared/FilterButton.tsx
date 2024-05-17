@@ -21,7 +21,7 @@ type FilterButton = {
 type FilterButtonProps = FilterButton &
   React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-const filterButtonVariant = cva(
+let filterButtonVariant = cva(
   [
     "relative flex py-[6px] rounded-[4px] font-medium transition-colors group disabled:text-tertiary-light disabled:bg-emphasis-light dark:disabled:text-tertiary-dark dark:disabled:bg-emphasis-dark focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark body-s-medium",
     "text-primary-light dark:text-primary-dark",

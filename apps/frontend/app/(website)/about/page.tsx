@@ -12,7 +12,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadAboutPage("/about");
+  let initialData = await loadAboutPage("/about");
 
   if (!initialData?.data) return notFound();
 
@@ -20,7 +20,7 @@ export async function generateMetadata(
 }
 
 export default async function About() {
-  const initial = await loadAboutPage("/about");
+  let initial = await loadAboutPage("/about");
 
   if (!initial?.data) return notFound();
 

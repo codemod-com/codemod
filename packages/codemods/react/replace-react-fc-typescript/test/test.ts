@@ -21,45 +21,45 @@ OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 Changes to the original file: changed tests structure
 */
 
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("replace-react-fc-typescript", () => {
-  it("should replace react fc", () => {
-    const INPUT = `
+describe('replace-react-fc-typescript', () => {
+	it('should replace react fc', () => {
+		let INPUT = `
 			type Props2 = { id: number };
 			export const MyComponent2: React.FC<Props2> = (props) => {
 			  return <span>{props.id}</span>
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			type Props2 = { id: number };
 			export const MyComponent2 = (props: Props2) => {
 			  return <span>{props.id}</span>
 			}
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace inline props definitions", () => {
-    const INPUT = `
+	it('should replace inline props definitions', () => {
+		let INPUT = `
 		export const MyComponent4: React.FC<{ inlineProp: number, disabled?: boolean }> = (props) => <span>foo</span>
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			export const MyComponent4 = (
 				props: {
 				  inlineProp: number,
@@ -68,26 +68,26 @@ describe("replace-react-fc-typescript", () => {
 			  ) => <span>foo</span>
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace generics", () => {
-    const INPUT = `
+	it('should replace generics', () => {
+		let INPUT = `
 			type GenericsProps<T extends any> = { config: T }
 			export const MyComponentWithGenerics: React.FC<GenericsProps<string>> = (props) => <span>{props.config}</span>
 			export const MyComponentWithGenerics2: React.FC<GenericsProps<{ text: string }>> = ({ config: { text }}) => <span>{text}</span>
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			type GenericsProps<T extends any> = { config: T }
 			export const MyComponentWithGenerics = (props: GenericsProps<string>) => <span>{props.config}</span>
 			export const MyComponentWithGenerics2 = (
@@ -97,41 +97,41 @@ describe("replace-react-fc-typescript", () => {
 			) => <span>{text}</span>
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace props defined with intersection", () => {
-    const INPUT = `
+	it('should replace props defined with intersection', () => {
+		let INPUT = `
 			const WithIntersection: React.FC<Props1 & Props2> = ({ id, ...restProps }) => <span>{id}</span>
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			const WithIntersection = ( { id, ...restProps }: Props1 & Props2 ) => <span>{id}</span>
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace props defined with intersection", () => {
-    const INPUT = `
+	it('should replace props defined with intersection', () => {
+		let INPUT = `
 			import React from 'react';
 			import { OtherComponent } from "./other-component";
 
@@ -144,7 +144,7 @@ describe("replace-react-fc-typescript", () => {
 			WithComponentIntersection.OtherComponent = OtherComponent;
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import React from 'react';
 			import { OtherComponent } from "./other-component";
 
@@ -155,41 +155,41 @@ describe("replace-react-fc-typescript", () => {
 			WithComponentIntersection.OtherComponent = OtherComponent;
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work even with no props", () => {
-    const INPUT = `
+	it('should work even with no props', () => {
+		let INPUT = `
 			const NoPropsComponent: React.FC = () => <span>foo</span>
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			const NoPropsComponent = () => <span>foo</span>
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work with regular named functions", () => {
-    const INPUT = `
+	it('should work with regular named functions', () => {
+		let INPUT = `
 			import React from 'react'
 
 			interface Props { text: string }
@@ -198,7 +198,7 @@ describe("replace-react-fc-typescript", () => {
 			}
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import React from 'react'
 
 			interface Props { text: string }
@@ -207,20 +207,20 @@ describe("replace-react-fc-typescript", () => {
 			}
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work when you use a function that accepts a component definition", () => {
-    const INPUT = `
+	it('should work when you use a function that accepts a component definition', () => {
+		let INPUT = `
 			import React from 'react';
 			import { observer } from "mobx-react-lite";
 
@@ -230,7 +230,7 @@ describe("replace-react-fc-typescript", () => {
 			})
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import React from 'react';
 			import { observer } from 'mobx-react-lite';
 			
@@ -240,40 +240,40 @@ describe("replace-react-fc-typescript", () => {
 			});
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should work when using FC, FunctionComponent and SFC as a named export", () => {
-    const INPUT = `
+	it('should work when using FC, FunctionComponent and SFC as a named export', () => {
+		let INPUT = `
 			import React, { FC } from 'react'
 
 			const NamedExportComponent: FC<Props> = (props) => <span>foo</span>
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			import React, { FC } from 'react'
 
 			const NamedExportComponent = (props: Props) => <span>foo</span>
 		`;
 
-    const fileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

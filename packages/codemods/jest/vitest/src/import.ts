@@ -22,43 +22,43 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from "jscodeshift";
-import type { Collection, ImportDeclaration } from "jscodeshift";
+import type core from 'jscodeshift';
+import type { Collection, ImportDeclaration } from 'jscodeshift';
 
-export const addImport = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
-  declaration: ImportDeclaration,
+export let addImport = <T,>(
+	root: Collection<T>,
+	j: core.JSCodeshift,
+	declaration: ImportDeclaration,
 ) => {
-  const existingImports = root.find(j.ImportDeclaration);
-  if (existingImports.length > 0) {
-    const firstImport = existingImports.at(0);
-    const firstImportNode = firstImport.nodes()[0];
-    if (firstImportNode?.comments) {
-      declaration.comments = firstImportNode.comments;
-      firstImportNode.comments = null;
-    }
+	let existingImports = root.find(j.ImportDeclaration);
+	if (existingImports.length > 0) {
+		let firstImport = existingImports.at(0);
+		let firstImportNode = firstImport.nodes()[0];
+		if (firstImportNode?.comments) {
+			declaration.comments = firstImportNode.comments;
+			firstImportNode.comments = null;
+		}
 
-    firstImport.insertBefore(declaration);
-    return;
-  }
+		firstImport.insertBefore(declaration);
+		return;
+	}
 
-  const firstNode = root.find(j.Program).get("body", 0).node;
-  const { comments } = firstNode;
-  if (comments?.length) {
-    const comment = comments[0];
+	let firstNode = root.find(j.Program).get('body', 0).node;
+	let { comments } = firstNode;
+	if (comments?.length) {
+		let comment = comments[0];
 
-    // Only move comments that look like file-level comments. Ignore
-    // line-level and JSDoc-style comments because these probably belong
-    // to the first node, rather than the file.
-    if (
-      (comment.type === "Block" || comment.type === "CommentBlock") &&
-      !comment.value.startsWith("*")
-    ) {
-      declaration.comments = comments;
-      firstNode.comments = null;
-    }
-  }
+		// Only move comments that look like file-level comments. Ignore
+		// line-level and JSDoc-style comments because these probably belong
+		// to the first node, rather than the file.
+		if (
+			(comment.type === 'Block' || comment.type === 'CommentBlock') &&
+			!comment.value.startsWith('*')
+		) {
+			declaration.comments = comments;
+			firstNode.comments = null;
+		}
+	}
 
-  root.get("program", "body").unshift(declaration);
+	root.get('program', 'body').unshift(declaration);
 };

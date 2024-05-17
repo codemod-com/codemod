@@ -6,14 +6,14 @@ type Props = {
   children?: ReactNode;
 };
 
-const tooltipProps = {
+let tooltipProps = {
   "data-tip-disable": false,
   "data-tooltip-content": "Sign in to use ModGPT",
   "data-tooltip-id": "button-tooltip",
 };
 
-const AuthenticatedAccess = ({ children }: Props) => {
-  const { isSignedIn } = useAuth();
+let AuthenticatedAccess = ({ children }: Props) => {
+  let { isSignedIn } = useAuth();
 
   if (isSignedIn) {
     return <>{children}</>;

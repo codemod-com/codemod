@@ -27,260 +27,280 @@ SOFTWARE.
 Changes to the original file: add any typings in places where the compiler complained, nullability checks, imports using node protocol
 */
 
-import { writeFileSync } from "node:fs";
-import { basename } from "node:path";
+import { writeFileSync } from 'node:fs';
+import { basename } from 'node:path';
 import type {
-  API,
-  Collection,
-  FileInfo,
-  ImportDefaultSpecifier,
-  JSCodeshift,
-  JSXAttribute,
-  Options,
-} from "jscodeshift";
+	API,
+	Collection,
+	FileInfo,
+	ImportDefaultSpecifier,
+	JSCodeshift,
+	JSXAttribute,
+	Options,
+} from 'jscodeshift';
 
 function findAndReplaceProps(
-  j: JSCodeshift,
-  root: Collection,
-  tagName: string,
+	j: JSCodeshift,
+	root: Collection,
+	tagName: string,
 ) {
-  const layoutToStyle: Record<string, Record<string, string> | null> = {
-    intrinsic: { maxWidth: "100%", height: "auto" },
-    responsive: { width: "100%", height: "auto" },
-    fill: null,
-    fixed: null,
-  };
-  const layoutToSizes: Record<string, string | null> = {
-    intrinsic: null,
-    responsive: "100vw",
-    fill: "100vw",
-    fixed: null,
-  };
-  root
-    .find(j.JSXElement)
-    .filter(
-      (el) =>
-        el.value.openingElement.name &&
-        el.value.openingElement.name.type === "JSXIdentifier" &&
-        el.value.openingElement.name.name === tagName,
-    )
-    .forEach((el) => {
-      let layout = "intrinsic";
-      let objectFit = null;
-      let objectPosition = null;
-      let styleExpProps: any[] = [];
-      let sizesAttr: JSXAttribute | null = null;
-      const attributes = el.node.openingElement.attributes?.filter((a) => {
-        if (a.type !== "JSXAttribute") {
-          return true;
-        }
+	let layoutToStyle: Record<string, Record<string, string> | null> = {
+		intrinsic: { maxWidth: '100%', height: 'auto' },
+		responsive: { width: '100%', height: 'auto' },
+		fill: null,
+		fixed: null,
+	};
+	let layoutToSizes: Record<string, string | null> = {
+		intrinsic: null,
+		responsive: '100vw',
+		fill: '100vw',
+		fixed: null,
+	};
+	root.find(j.JSXElement)
+		.filter(
+			(el) =>
+				el.value.openingElement.name &&
+				el.value.openingElement.name.type === 'JSXIdentifier' &&
+				el.value.openingElement.name.name === tagName,
+		)
+		.forEach((el) => {
+			let layout = 'intrinsic';
+			let objectFit = null;
+			let objectPosition = null;
+			let styleExpProps: any[] = [];
+			let sizesAttr: JSXAttribute | null = null;
+			let attributes = el.node.openingElement.attributes?.filter((a) => {
+				if (a.type !== 'JSXAttribute') {
+					return true;
+				}
 
-        if (a.name.name === "layout" && a.value && "value" in a.value) {
-          layout = String(a.value.value);
-          return false;
-        }
-        if (a.name.name === "objectFit" && a.value && "value" in a.value) {
-          objectFit = String(a.value.value);
-          return false;
-        }
-        if (a.name.name === "objectPosition" && a.value && "value" in a.value) {
-          objectPosition = String(a.value.value);
-          return false;
-        }
-        if (a.name.name === "lazyBoundary") {
-          return false;
-        }
-        if (a.name.name === "lazyRoot") {
-          return false;
-        }
+				if (a.name.name === 'layout' && a.value && 'value' in a.value) {
+					layout = String(a.value.value);
+					return false;
+				}
+				if (
+					a.name.name === 'objectFit' &&
+					a.value &&
+					'value' in a.value
+				) {
+					objectFit = String(a.value.value);
+					return false;
+				}
+				if (
+					a.name.name === 'objectPosition' &&
+					a.value &&
+					'value' in a.value
+				) {
+					objectPosition = String(a.value.value);
+					return false;
+				}
+				if (a.name.name === 'lazyBoundary') {
+					return false;
+				}
+				if (a.name.name === 'lazyRoot') {
+					return false;
+				}
 
-        if (a.name.name === "style") {
-          if (
-            a.value?.type === "JSXExpressionContainer" &&
-            a.value.expression.type === "ObjectExpression"
-          ) {
-            styleExpProps = a.value.expression.properties;
-          } else if (
-            a.value?.type === "JSXExpressionContainer" &&
-            a.value.expression.type === "Identifier"
-          ) {
-            styleExpProps = [
-              j.spreadElement(j.identifier(a.value.expression.name)),
-            ];
-          } else {
-            console.warn("Unknown style attribute value detected", a.value);
-          }
-          return false;
-        }
-        if (a.name.name === "sizes") {
-          sizesAttr = a;
-          return false;
-        }
-        if (a.name.name === "lazyBoundary") {
-          return false;
-        }
-        if (a.name.name === "lazyRoot") {
-          return false;
-        }
-        return true;
-      });
+				if (a.name.name === 'style') {
+					if (
+						a.value?.type === 'JSXExpressionContainer' &&
+						a.value.expression.type === 'ObjectExpression'
+					) {
+						styleExpProps = a.value.expression.properties;
+					} else if (
+						a.value?.type === 'JSXExpressionContainer' &&
+						a.value.expression.type === 'Identifier'
+					) {
+						styleExpProps = [
+							j.spreadElement(
+								j.identifier(a.value.expression.name),
+							),
+						];
+					} else {
+						console.warn(
+							'Unknown style attribute value detected',
+							a.value,
+						);
+					}
+					return false;
+				}
+				if (a.name.name === 'sizes') {
+					sizesAttr = a;
+					return false;
+				}
+				if (a.name.name === 'lazyBoundary') {
+					return false;
+				}
+				if (a.name.name === 'lazyRoot') {
+					return false;
+				}
+				return true;
+			});
 
-      if (layout === "fill") {
-        attributes?.push(j.jsxAttribute(j.jsxIdentifier("fill")));
-      }
+			if (layout === 'fill') {
+				attributes?.push(j.jsxAttribute(j.jsxIdentifier('fill')));
+			}
 
-      const sizes = layoutToSizes[layout];
-      if (sizes && !sizesAttr) {
-        sizesAttr = j.jsxAttribute(j.jsxIdentifier("sizes"), j.literal(sizes));
-      }
+			let sizes = layoutToSizes[layout];
+			if (sizes && !sizesAttr) {
+				sizesAttr = j.jsxAttribute(
+					j.jsxIdentifier('sizes'),
+					j.literal(sizes),
+				);
+			}
 
-      if (sizesAttr) {
-        attributes?.push(sizesAttr);
-      }
+			if (sizesAttr) {
+				attributes?.push(sizesAttr);
+			}
 
-      let style = layoutToStyle[layout];
-      if (style || objectFit || objectPosition) {
-        if (!style) {
-          style = {};
-        }
-        if (objectFit) {
-          style.objectFit = objectFit;
-        }
-        if (objectPosition) {
-          style.objectPosition = objectPosition;
-        }
-        Object.entries(style).forEach(([key, value]) => {
-          styleExpProps.push(
-            j.objectProperty(j.identifier(key), j.stringLiteral(value)),
-          );
-        });
-        const styleAttribute = j.jsxAttribute(
-          j.jsxIdentifier("style"),
-          j.jsxExpressionContainer(j.objectExpression(styleExpProps)),
-        );
-        attributes?.push(styleAttribute);
-      }
+			let style = layoutToStyle[layout];
+			if (style || objectFit || objectPosition) {
+				if (!style) {
+					style = {};
+				}
+				if (objectFit) {
+					style.objectFit = objectFit;
+				}
+				if (objectPosition) {
+					style.objectPosition = objectPosition;
+				}
+				Object.entries(style).forEach(([key, value]) => {
+					styleExpProps.push(
+						j.objectProperty(
+							j.identifier(key),
+							j.stringLiteral(value),
+						),
+					);
+				});
+				let styleAttribute = j.jsxAttribute(
+					j.jsxIdentifier('style'),
+					j.jsxExpressionContainer(j.objectExpression(styleExpProps)),
+				);
+				attributes?.push(styleAttribute);
+			}
 
-      // TODO: should we add `alt=""` attribute?
-      // We should probably let the use it manually.
+			// TODO: should we add `alt=""` attribute?
+			// We should probably let the use it manually.
 
-      j(el).replaceWith(
-        j.jsxElement(
-          j.jsxOpeningElement(
-            el.node.openingElement.name,
-            attributes,
-            el.node.openingElement.selfClosing,
-          ),
-          el.node.closingElement,
-          el.node.children,
-        ),
-      );
-    });
+			j(el).replaceWith(
+				j.jsxElement(
+					j.jsxOpeningElement(
+						el.node.openingElement.name,
+						attributes,
+						el.node.openingElement.selfClosing,
+					),
+					el.node.closingElement,
+					el.node.children,
+				),
+			);
+		});
 }
 
 function nextConfigTransformer(
-  j: JSCodeshift,
-  root: Collection,
-  dryRun: boolean,
+	j: JSCodeshift,
+	root: Collection,
+	dryRun: boolean,
 ) {
-  root.find(j.ObjectExpression).forEach((objectExpressionPath) => {
-    const LOADERS = ["imgix", "cloudinary", "akamai"];
+	root.find(j.ObjectExpression).forEach((objectExpressionPath) => {
+		let LOADERS = ['imgix', 'cloudinary', 'akamai'];
 
-    const imagesObjectPropertyPaths = j(objectExpressionPath).find(
-      j.ObjectProperty,
-      {
-        key: {
-          type: "Identifier",
-          name: "images",
-        },
-      },
-    );
+		let imagesObjectPropertyPaths = j(objectExpressionPath).find(
+			j.ObjectProperty,
+			{
+				key: {
+					type: 'Identifier',
+					name: 'images',
+				},
+			},
+		);
 
-    const loaderTypeStringLiteralsPaths = imagesObjectPropertyPaths
-      .map((objectPropertyPath) =>
-        j(objectPropertyPath)
-          .find(j.ObjectProperty, {
-            key: {
-              type: "Identifier",
-              name: "loader",
-            },
-          })
-          .paths(),
-      )
-      .map((objectPropertyPath) =>
-        j(objectPropertyPath).find(j.StringLiteral).paths(),
-      )
-      .filter(
-        (stringLiteralPath, i) =>
-          i === 0 && LOADERS.includes(stringLiteralPath.value.value),
-      );
+		let loaderTypeStringLiteralsPaths = imagesObjectPropertyPaths
+			.map((objectPropertyPath) =>
+				j(objectPropertyPath)
+					.find(j.ObjectProperty, {
+						key: {
+							type: 'Identifier',
+							name: 'loader',
+						},
+					})
+					.paths(),
+			)
+			.map((objectPropertyPath) =>
+				j(objectPropertyPath).find(j.StringLiteral).paths(),
+			)
+			.filter(
+				(stringLiteralPath, i) =>
+					i === 0 && LOADERS.includes(stringLiteralPath.value.value),
+			);
 
-    const pathObjectPropertyPaths = imagesObjectPropertyPaths.map(
-      (objectPropertyPath) =>
-        j(objectPropertyPath)
-          .find(j.ObjectProperty, {
-            key: {
-              type: "Identifier",
-              name: "path",
-            },
-          })
-          .paths(),
-    );
+		let pathObjectPropertyPaths = imagesObjectPropertyPaths.map(
+			(objectPropertyPath) =>
+				j(objectPropertyPath)
+					.find(j.ObjectProperty, {
+						key: {
+							type: 'Identifier',
+							name: 'path',
+						},
+					})
+					.paths(),
+		);
 
-    const loaderType = loaderTypeStringLiteralsPaths.nodes()[0]?.value;
-    const pathPrefix = pathObjectPropertyPaths
-      .map((objectPropertyPath) =>
-        j(objectPropertyPath).find(j.StringLiteral).paths(),
-      )
-      .filter((_, i) => i === 0)
-      .nodes()[0]?.value;
+		let loaderType = loaderTypeStringLiteralsPaths.nodes()[0]?.value;
+		let pathPrefix = pathObjectPropertyPaths
+			.map((objectPropertyPath) =>
+				j(objectPropertyPath).find(j.StringLiteral).paths(),
+			)
+			.filter((_, i) => i === 0)
+			.nodes()[0]?.value;
 
-    if (!loaderType || !pathPrefix) {
-      return;
-    }
+		if (!loaderType || !pathPrefix) {
+			return;
+		}
 
-    const filename = `./${loaderType}-loader.js`;
+		let filename = `./${loaderType}-loader.js`;
 
-    loaderTypeStringLiteralsPaths.replaceWith(() => j.stringLiteral("custom"));
+		loaderTypeStringLiteralsPaths.replaceWith(() =>
+			j.stringLiteral('custom'),
+		);
 
-    pathObjectPropertyPaths.remove();
+		pathObjectPropertyPaths.remove();
 
-    j(objectExpressionPath)
-      .find(j.ObjectProperty, {
-        key: {
-          type: "Identifier",
-          name: "images",
-        },
-      })
-      .forEach((objectPropertyPath) => {
-        j(objectPropertyPath)
-          .find(j.ObjectExpression)
-          .filter((_, i) => i === 0)
-          .replaceWith((objectExpressionPath) => {
-            const objectExpression = objectExpressionPath.value;
+		j(objectExpressionPath)
+			.find(j.ObjectProperty, {
+				key: {
+					type: 'Identifier',
+					name: 'images',
+				},
+			})
+			.forEach((objectPropertyPath) => {
+				j(objectPropertyPath)
+					.find(j.ObjectExpression)
+					.filter((_, i) => i === 0)
+					.replaceWith((objectExpressionPath) => {
+						let objectExpression = objectExpressionPath.value;
 
-            const properties = [
-              ...objectExpression.properties,
-              j.property(
-                "init",
-                j.identifier("loaderFile"),
-                j.literal(filename),
-              ),
-            ];
+						let properties = [
+							...objectExpression.properties,
+							j.property(
+								'init',
+								j.identifier('loaderFile'),
+								j.literal(filename),
+							),
+						];
 
-            return {
-              ...objectExpression,
-              properties,
-            };
-          });
-      });
+						return {
+							...objectExpression,
+							properties,
+						};
+					});
+			});
 
-    const normalizeSrc = `const normalizeSrc = (src) => src[0] === '/' ? src.slice(1) : src`;
+		let normalizeSrc = `const normalizeSrc = (src) => src[0] === '/' ? src.slice(1) : src`;
 
-    if (loaderType === "imgix" && !dryRun) {
-      writeFileSync(
-        filename,
-        `${normalizeSrc}
+		if (loaderType === 'imgix' && !dryRun) {
+			writeFileSync(
+				filename,
+				`${normalizeSrc}
 		export default function imgixLoader({ src, width, quality }) {
 			const url = new URL('${pathPrefix}' + normalizeSrc(src))
 			const params = url.searchParams
@@ -290,108 +310,108 @@ function nextConfigTransformer(
 			if (quality) { params.set('q', quality.toString()) }
 			return url.href
 		}`
-          .split("\n")
-          .map((l) => l.trim())
-          .join("\n"),
-      );
-    } else if (loaderType === "cloudinary" && !dryRun) {
-      writeFileSync(
-        filename,
-        `${normalizeSrc}
+					.split('\n')
+					.map((l) => l.trim())
+					.join('\n'),
+			);
+		} else if (loaderType === 'cloudinary' && !dryRun) {
+			writeFileSync(
+				filename,
+				`${normalizeSrc}
 		export default function cloudinaryLoader({ src, width, quality }) {
 			const params = ['f_auto', 'c_limit', 'w_' + width, 'q_' + (quality || 'auto')]
 			const paramsString = params.join(',') + '/'
 			return '${pathPrefix}' + paramsString + normalizeSrc(src)
 		}`
-          .split("\n")
-          .map((l) => l.trim())
-          .join("\n"),
-      );
-    } else if (loaderType === "akamai" && !dryRun) {
-      writeFileSync(
-        filename,
-        `${normalizeSrc}
+					.split('\n')
+					.map((l) => l.trim())
+					.join('\n'),
+			);
+		} else if (loaderType === 'akamai' && !dryRun) {
+			writeFileSync(
+				filename,
+				`${normalizeSrc}
 		export default function akamaiLoader({ src, width, quality }) {
 			return '${pathPrefix}' + normalizeSrc(src) + '?imwidth=' + width
 		}`
-          .split("\n")
-          .map((l) => l.trim())
-          .join("\n"),
-      );
-    }
-  });
+					.split('\n')
+					.map((l) => l.trim())
+					.join('\n'),
+			);
+		}
+	});
 
-  return root;
+	return root;
 }
 
 export default function transformer(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ) {
-  const name = basename(file.path);
-  const isConfig = name.startsWith("next.config.");
+	let name = basename(file.path);
+	let isConfig = name.startsWith('next.config.');
 
-  if (isConfig) {
-    const j = api.jscodeshift.withParser("tsx");
-    const root = j(file.source);
+	if (isConfig) {
+		let j = api.jscodeshift.withParser('tsx');
+		let root = j(file.source);
 
-    return nextConfigTransformer(j, root, Boolean(options.dryRun)).toSource();
-  }
+		return nextConfigTransformer(
+			j,
+			root,
+			Boolean(options.dryRun),
+		).toSource();
+	}
 
-  const j = api.jscodeshift;
-  const root = j(file.source);
+	let j = api.jscodeshift;
+	let root = j(file.source);
 
-  // Before: import Image from "next/legacy/image"
-  //  After: import Image from "next/image"
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: "next/legacy/image" },
-    })
-    .forEach((importDeclarationPath) => {
-      const defaultSpecifier = importDeclarationPath.node.specifiers?.find(
-        (node) => node.type === "ImportDefaultSpecifier",
-      ) as ImportDefaultSpecifier | undefined;
-      const tagName = defaultSpecifier?.local?.name;
+	// Before: import Image from "next/legacy/image"
+	//  After: import Image from "next/image"
+	root.find(j.ImportDeclaration, {
+		source: { value: 'next/legacy/image' },
+	}).forEach((importDeclarationPath) => {
+		let defaultSpecifier = importDeclarationPath.node.specifiers?.find(
+			(node) => node.type === 'ImportDefaultSpecifier',
+		) as ImportDefaultSpecifier | undefined;
+		let tagName = defaultSpecifier?.local?.name;
 
-      if (tagName) {
-        importDeclarationPath.node.source = j.stringLiteral("next/image");
+		if (tagName) {
+			importDeclarationPath.node.source = j.stringLiteral('next/image');
 
-        findAndReplaceProps(j, root, tagName);
-      }
-    });
-  // Before: const Image = await import("next/legacy/image")
-  //  After: const Image = await import("next/image")
-  root
-    .find(j.ImportExpression, {
-      source: { value: "next/legacy/image" },
-    })
-    .forEach((importExpressionPath) => {
-      importExpressionPath.node.source = j.stringLiteral("next/image");
-    });
+			findAndReplaceProps(j, root, tagName);
+		}
+	});
+	// Before: const Image = await import("next/legacy/image")
+	//  After: const Image = await import("next/image")
+	root.find(j.ImportExpression, {
+		source: { value: 'next/legacy/image' },
+	}).forEach((importExpressionPath) => {
+		importExpressionPath.node.source = j.stringLiteral('next/image');
+	});
 
-  // Before: const Image = require("next/legacy/image")
-  //  After: const Image = require("next/image")
-  root.find(j.CallExpression).forEach((requireExp) => {
-    if (
-      requireExp?.value?.callee?.type === "Identifier" &&
-      requireExp.value.callee.name === "require"
-    ) {
-      const firstArg = requireExp.value.arguments[0];
-      if (
-        firstArg &&
-        firstArg.type === "Literal" &&
-        firstArg.value === "next/legacy/image"
-      ) {
-        const tagName = requireExp?.parentPath?.value?.id?.name;
-        if (tagName) {
-          requireExp.value.arguments[0] = j.literal("next/image");
-          findAndReplaceProps(j, root, tagName);
-        }
-      }
-    }
-  });
+	// Before: const Image = require("next/legacy/image")
+	//  After: const Image = require("next/image")
+	root.find(j.CallExpression).forEach((requireExp) => {
+		if (
+			requireExp?.value?.callee?.type === 'Identifier' &&
+			requireExp.value.callee.name === 'require'
+		) {
+			let firstArg = requireExp.value.arguments[0];
+			if (
+				firstArg &&
+				firstArg.type === 'Literal' &&
+				firstArg.value === 'next/legacy/image'
+			) {
+				let tagName = requireExp?.parentPath?.value?.id?.name;
+				if (tagName) {
+					requireExp.value.arguments[0] = j.literal('next/image');
+					findAndReplaceProps(j, root, tagName);
+				}
+			}
+		}
+	});
 
-  // TODO: do the same transforms for dynamic imports
-  return root.toSource(options);
+	// TODO: do the same transforms for dynamic imports
+	return root.toSource(options);
 }

@@ -1,4 +1,4 @@
-export const TextHighlight = ({
+export let TextHighlight = ({
   text,
   highlight,
   className,
@@ -7,7 +7,7 @@ export const TextHighlight = ({
   highlight: string;
   className?: string;
 }) => {
-  const parts = text.split(new RegExp(`(${highlight})`, "gi"));
+  let parts = text.split(new RegExp(`(${highlight})`, "gi"));
 
   return (
     <span className={className}>

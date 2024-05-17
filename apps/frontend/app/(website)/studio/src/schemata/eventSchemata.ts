@@ -9,7 +9,7 @@ import {
 } from "valibot";
 import { offsetRangeSchema } from "./offsetRangeSchemata";
 
-export const eventSchema = union([
+export let eventSchema = union([
   object({
     hashDigest: string(),
     kind: literal("jscodeshiftApplyString"),

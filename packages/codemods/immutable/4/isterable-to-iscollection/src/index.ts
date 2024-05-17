@@ -1,26 +1,26 @@
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  let dirtyFlag = false;
+	let j = api.jscodeshift;
+	let root = j(file.source);
+	let dirtyFlag = false;
 
-  root.find(j.Identifier).forEach((path) => {
-    if (path.node.name === "isIterable") {
-      path.node.name = "isCollection";
-      dirtyFlag = true;
-    }
-  });
+	root.find(j.Identifier).forEach((path) => {
+		if (path.node.name === 'isIterable') {
+			path.node.name = 'isCollection';
+			dirtyFlag = true;
+		}
+	});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

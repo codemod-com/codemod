@@ -11,16 +11,16 @@ import { Button as SButton } from "@studio/components/ui/button";
 import { LogoutIcon } from "@studio/icons/LogoutIcon";
 import { useRouter } from "next/navigation";
 
-const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
-  const isStudio = variant === "studio";
-  const router = useRouter();
-  const { user } = useUser();
+let AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
+  let isStudio = variant === "studio";
+  let router = useRouter();
+  let { user } = useUser();
 
-  const signUserIn = () => {
+  let signUserIn = () => {
     router.push("/auth/sign-in");
   };
 
-  const Button = isStudio ? SButton : WButton;
+  let Button = isStudio ? SButton : WButton;
   return (
     <>
       <SignedOut>

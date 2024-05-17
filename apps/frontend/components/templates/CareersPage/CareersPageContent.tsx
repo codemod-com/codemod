@@ -67,7 +67,7 @@ function Job({
   index: number;
   count: number;
 }) {
-  const getSides = () => {
+  let getSides = () => {
     return {
       right: false,
       left: false,
@@ -76,7 +76,7 @@ function Job({
     };
   };
 
-  const { cleaned: href } = vercelStegaSplit(job?.pathname?.current || "");
+  let { cleaned: href } = vercelStegaSplit(job?.pathname?.current || "");
 
   return (
     <GradientBorderBox

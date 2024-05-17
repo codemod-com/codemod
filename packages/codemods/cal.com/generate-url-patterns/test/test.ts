@@ -1,110 +1,110 @@
-import { deepStrictEqual } from "node:assert";
-import { buildApi, executeFilemod } from "@codemod-com/filemod";
-import { buildPathAPI, buildUnifiedFileSystem } from "@codemod-com/utilities";
-import jscodeshift from "jscodeshift";
-import type { DirectoryJSON } from "memfs";
-import { Volume, createFsFromVolume } from "memfs";
-import { describe, it } from "vitest";
-import { repomod } from "../src/index.js";
+import { deepStrictEqual } from 'node:assert';
+import { buildApi, executeFilemod } from '@codemod-com/filemod';
+import { buildPathAPI, buildUnifiedFileSystem } from '@codemod-com/utilities';
+import jscodeshift from 'jscodeshift';
+import type { DirectoryJSON } from 'memfs';
+import { Volume, createFsFromVolume } from 'memfs';
+import { describe, it } from 'vitest';
+import { repomod } from '../src/index.js';
 
-const transform = async (
-  json: DirectoryJSON,
-  options: {
-    turboPath: string;
-    abTestMiddlewarePath: string;
-    middlewarePath: string;
-    generateAsPageGroup?: boolean;
-  },
+let transform = async (
+	json: DirectoryJSON,
+	options: {
+		turboPath: string;
+		abTestMiddlewarePath: string;
+		middlewarePath: string;
+		generateAsPageGroup?: boolean;
+	},
 ) => {
-  const volume = Volume.fromJSON(json);
+	let volume = Volume.fromJSON(json);
 
-  const fs = createFsFromVolume(volume);
+	let fs = createFsFromVolume(volume);
 
-  const unifiedFileSystem = buildUnifiedFileSystem(fs);
-  const pathApi = buildPathAPI("/");
+	let unifiedFileSystem = buildUnifiedFileSystem(fs);
+	let pathApi = buildPathAPI('/');
 
-  const api = buildApi<{ jscodeshift: typeof jscodeshift }>(
-    unifiedFileSystem,
-    () => ({
-      jscodeshift,
-    }),
-    pathApi,
-  );
+	let api = buildApi<{ jscodeshift: typeof jscodeshift }>(
+		unifiedFileSystem,
+		() => ({
+			jscodeshift,
+		}),
+		pathApi,
+	);
 
-  return executeFilemod(api, repomod, "/", options, {});
+	return executeFilemod(api, repomod, '/', options, {});
 };
 
 type ExternalFileCommand = Awaited<ReturnType<typeof transform>>[number];
 
-const removeWhitespaces = (
-  command: ExternalFileCommand,
-): ExternalFileCommand => {
-  if (command.kind !== "upsertFile") {
-    return command;
-  }
+let removeWhitespaces = (command: ExternalFileCommand): ExternalFileCommand => {
+	if (command.kind !== 'upsertFile') {
+		return command;
+	}
 
-  return {
-    ...command,
-    data: command.data.replace(/\s/gm, ""),
-  };
+	return {
+		...command,
+		data: command.data.replace(/\s/gm, ''),
+	};
 };
 
-describe("generate-url-patterns", () => {
-  it("should build correct files", async () => {
-    const [abTestMiddlewareTsCommand, middlewareTsCommand, turboJsonCommand] =
-      await transform(
-        {
-          "/opt/project/turbo.json": JSON.stringify({
-            globalEnv: ["OTHER_ENVVAR"],
-          }),
-          "/opt/project/abTestMiddleware.ts": `
+describe('generate-url-patterns', () => {
+	it('should build correct files', async () => {
+		let [abTestMiddlewareTsCommand, middlewareTsCommand, turboJsonCommand] =
+			await transform(
+				{
+					'/opt/project/turbo.json': JSON.stringify({
+						globalEnv: ['OTHER_ENVVAR'],
+					}),
+					'/opt/project/abTestMiddleware.ts': `
 					import { type X } from 'y';
 					const other = true;
 				`,
-          "/opt/project/middleware.ts": `
+					'/opt/project/middleware.ts': `
 					export const config = {
 						matcher: [
 							"otherPath", 
 						]
 					}
 				`,
-          "/opt/project/app/future/noSegment/page.tsx": "",
-          "/opt/project/app/future/dynamicSegment/[a]/page.tsx": "",
-          "/opt/project/app/future/dynamicSegment/[b]/[c]/page.tsx": "",
-          "/opt/project/app/future/catchAllDynamicSegments/[...d]/page.tsx": "",
-          "/opt/project/app/future/(someLayout)/optionalCatchAllDynamicSegments/[[...element]]/f/page.tsx":
-            "",
-        },
-        {
-          turboPath: "/opt/project/turbo.json",
-          abTestMiddlewarePath: "/opt/project/abTestMiddleware.ts",
-          middlewarePath: "/opt/project/middleware.ts",
-        },
-      );
+					'/opt/project/app/future/noSegment/page.tsx': '',
+					'/opt/project/app/future/dynamicSegment/[a]/page.tsx': '',
+					'/opt/project/app/future/dynamicSegment/[b]/[c]/page.tsx':
+						'',
+					'/opt/project/app/future/catchAllDynamicSegments/[...d]/page.tsx':
+						'',
+					'/opt/project/app/future/(someLayout)/optionalCatchAllDynamicSegments/[[...element]]/f/page.tsx':
+						'',
+				},
+				{
+					turboPath: '/opt/project/turbo.json',
+					abTestMiddlewarePath: '/opt/project/abTestMiddleware.ts',
+					middlewarePath: '/opt/project/middleware.ts',
+				},
+			);
 
-    const data = JSON.stringify({
-      globalEnv: [
-        "APP_ROUTER_CATCHALLDYNAMICSEGMENTS_D_ENABLED",
-        "APP_ROUTER_DYNAMICSEGMENT_A_ENABLED",
-        "APP_ROUTER_DYNAMICSEGMENT_B_C_ENABLED",
-        "APP_ROUTER_NOSEGMENT_ENABLED",
-        "APP_ROUTER_OPTIONALCATCHALLDYNAMICSEGMENTS_ELEMENT_F_ENABLED",
-        "OTHER_ENVVAR",
-      ],
-    });
+		let data = JSON.stringify({
+			globalEnv: [
+				'APP_ROUTER_CATCHALLDYNAMICSEGMENTS_D_ENABLED',
+				'APP_ROUTER_DYNAMICSEGMENT_A_ENABLED',
+				'APP_ROUTER_DYNAMICSEGMENT_B_C_ENABLED',
+				'APP_ROUTER_NOSEGMENT_ENABLED',
+				'APP_ROUTER_OPTIONALCATCHALLDYNAMICSEGMENTS_ELEMENT_F_ENABLED',
+				'OTHER_ENVVAR',
+			],
+		});
 
-    deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
-      kind: "upsertFile",
-      path: "/opt/project/turbo.json",
-      data,
-    });
+		deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
+			kind: 'upsertFile',
+			path: '/opt/project/turbo.json',
+			data,
+		});
 
-    deepStrictEqual(
-      removeWhitespaces(abTestMiddlewareTsCommand!),
-      removeWhitespaces({
-        kind: "upsertFile",
-        path: "/opt/project/abTestMiddleware.ts",
-        data: `import { type X } from 'y';
+		deepStrictEqual(
+			removeWhitespaces(abTestMiddlewareTsCommand!),
+			removeWhitespaces({
+				kind: 'upsertFile',
+				path: '/opt/project/abTestMiddleware.ts',
+				data: `import { type X } from 'y';
 				const other = true;
 
 				const ROUTES: [URLPattern, boolean][] = [
@@ -129,15 +129,15 @@ describe("generate-url-patterns", () => {
 					pathname
 				}), enabled]);
 `,
-      }),
-    );
+			}),
+		);
 
-    deepStrictEqual(
-      removeWhitespaces(middlewareTsCommand!),
-      removeWhitespaces({
-        kind: "upsertFile",
-        path: "/opt/project/middleware.ts",
-        data: `
+		deepStrictEqual(
+			removeWhitespaces(middlewareTsCommand!),
+			removeWhitespaces({
+				kind: 'upsertFile',
+				path: '/opt/project/middleware.ts',
+				data: `
 				export const config = {
 					matcher: [
 						"otherPath", 
@@ -158,49 +158,49 @@ describe("generate-url-patterns", () => {
 					]
 				}
 			`,
-      }),
-    );
-  });
+			}),
+		);
+	});
 
-  it("should support generateAsPageGroup option", async () => {
-    const [abTestMiddlewareTsCommand, turboJsonCommand] = await transform(
-      {
-        "/opt/project/turbo.json": JSON.stringify({
-          globalEnv: ["OTHER_ENVVAR"],
-        }),
-        "/opt/project/abTestMiddleware.ts": `
+	it('should support generateAsPageGroup option', async () => {
+		let [abTestMiddlewareTsCommand, turboJsonCommand] = await transform(
+			{
+				'/opt/project/turbo.json': JSON.stringify({
+					globalEnv: ['OTHER_ENVVAR'],
+				}),
+				'/opt/project/abTestMiddleware.ts': `
 					import { type X } from 'y';
 					const other = true;
 				`,
-        "/opt/project/app/future/top-level/page.tsx": "",
-        "/opt/project/app/future/top-level/a/page.tsx": "",
-        "/opt/project/app/future/top-level/b/page.tsx": "",
-        "/opt/project/app/future/top-level/a/b/page.tsx": "",
-      },
-      {
-        turboPath: "/opt/project/turbo.json",
-        abTestMiddlewarePath: "/opt/project/abTestMiddleware.ts",
-        middlewarePath: "/opt/project/middleware.ts",
-        generateAsPageGroup: true,
-      },
-    );
+				'/opt/project/app/future/top-level/page.tsx': '',
+				'/opt/project/app/future/top-level/a/page.tsx': '',
+				'/opt/project/app/future/top-level/b/page.tsx': '',
+				'/opt/project/app/future/top-level/a/b/page.tsx': '',
+			},
+			{
+				turboPath: '/opt/project/turbo.json',
+				abTestMiddlewarePath: '/opt/project/abTestMiddleware.ts',
+				middlewarePath: '/opt/project/middleware.ts',
+				generateAsPageGroup: true,
+			},
+		);
 
-    const data = JSON.stringify({
-      globalEnv: ["APP_ROUTER_TOP_LEVEL_ENABLED", "OTHER_ENVVAR"],
-    });
+		let data = JSON.stringify({
+			globalEnv: ['APP_ROUTER_TOP_LEVEL_ENABLED', 'OTHER_ENVVAR'],
+		});
 
-    deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
-      kind: "upsertFile",
-      path: "/opt/project/turbo.json",
-      data,
-    });
+		deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
+			kind: 'upsertFile',
+			path: '/opt/project/turbo.json',
+			data,
+		});
 
-    deepStrictEqual(
-      removeWhitespaces(abTestMiddlewareTsCommand!),
-      removeWhitespaces({
-        kind: "upsertFile",
-        path: "/opt/project/abTestMiddleware.ts",
-        data: `import { type X } from 'y';
+		deepStrictEqual(
+			removeWhitespaces(abTestMiddlewareTsCommand!),
+			removeWhitespaces({
+				kind: 'upsertFile',
+				path: '/opt/project/abTestMiddleware.ts',
+				data: `import { type X } from 'y';
 				const other = true;
 
 				const ROUTES: [URLPattern, boolean][] = [
@@ -211,7 +211,7 @@ describe("generate-url-patterns", () => {
 				].map(([pathname, enabled]) => [new URLPattern({
 					pathname
 				}), enabled]);`,
-      }),
-    );
-  });
+			}),
+		);
+	});
 });

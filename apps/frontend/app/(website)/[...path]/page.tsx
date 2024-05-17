@@ -15,7 +15,7 @@ import type { ResolvingMetadata } from "next";
 import { groq } from "next-sanity";
 import { notFound } from "next/navigation";
 
-const PagePreview = dynamic(
+let PagePreview = dynamic(
   () => import("@/components/templates/ModularPage/PagePreview"),
 );
 
@@ -23,7 +23,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadSanityPageByRouteProps(props);
+  let initialData = await loadSanityPageByRouteProps(props);
 
   if (!initialData?.data) return notFound();
 
@@ -31,7 +31,7 @@ export async function generateMetadata(
 }
 
 export default async function DynamicRoute(props: RouteProps) {
-  const initial = await loadSanityPageByRouteProps(props);
+  let initial = await loadSanityPageByRouteProps(props);
 
   if (!initial.data) {
     notFound();
@@ -69,11 +69,11 @@ export default async function DynamicRoute(props: RouteProps) {
 }
 
 export async function generateStaticParams() {
-  const pages = await client.fetch(
+  let pages = await client.fetch(
     groq`*[_type in ['modularPage', 'textPage', 'blog.article', 'blog.customerStory']]`,
   );
 
-  const paths = pages.map((page: any) => ({
+  let paths = pages.map((page: any) => ({
     path: page.pathname.current.split("/").filter(Boolean),
   }));
 

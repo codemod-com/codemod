@@ -27,26 +27,26 @@ SOFTWARE.
 Changes to the original file: added options
 */
 
-import type { MemberExpression, Transform } from "jscodeshift";
+import type { MemberExpression, Transform } from 'jscodeshift';
 
-const transform: Transform = (file, api, options) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  const collections = root.find(j.CallExpression, {
-    callee: {
-      type: "MemberExpression",
-      property: {
-        type: "Identifier",
-        name: "toJS",
-      },
-    },
-  });
+let transform: Transform = (file, api, options) => {
+	let j = api.jscodeshift;
+	let root = j(file.source);
+	let collections = root.find(j.CallExpression, {
+		callee: {
+			type: 'MemberExpression',
+			property: {
+				type: 'Identifier',
+				name: 'toJS',
+			},
+		},
+	});
 
-  collections.replaceWith(
-    (path) => (path.node.callee as MemberExpression).object,
-  );
+	collections.replaceWith(
+		(path) => (path.node.callee as MemberExpression).object,
+	);
 
-  return root.toSource(options);
+	return root.toSource(options);
 };
 
 export default transform;

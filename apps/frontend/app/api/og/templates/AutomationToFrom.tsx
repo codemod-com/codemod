@@ -7,7 +7,7 @@ type Props = {
   automationTo: { framework: string; image: string };
 };
 
-const AutomationToFrom = (props: Props) => {
+let AutomationToFrom = (props: Props) => {
   return (
     <div
       style={{

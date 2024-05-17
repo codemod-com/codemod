@@ -5,8 +5,8 @@ import { DownloadZip } from "../DownloadZip";
 import { TopBar } from "./TopBar";
 import { HeaderButtons } from "./headerButtons";
 
-export const Header = () => {
-  const ffs = useFeatureFlags();
+export let Header = () => {
+  let ffs = useFeatureFlags();
 
   return (
     <>

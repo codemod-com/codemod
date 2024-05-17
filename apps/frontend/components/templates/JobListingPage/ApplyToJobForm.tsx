@@ -17,7 +17,7 @@ export default function ApplyToJobForm({
   jobTitle: string;
   privacyPolicy?: { label?: string; href?: string };
 }) {
-  const { formState, handleSubmit, formRef } = useFormSubmission();
+  let { formState, handleSubmit, formRef } = useFormSubmission();
 
   switch (formState) {
     case "idle":

@@ -12,18 +12,18 @@ import {
   useModMssTimestamps,
 } from "./utils";
 
-export const useModGPT = ({
+export let useModGPT = ({
   initialMessages,
   id,
 }: { initialMessages: Message[]; id?: string }) => {
-  const { command, setCurrentCommand, setContent } = useModStore();
-  const {
+  let { command, setCurrentCommand, setContent } = useModStore();
+  let {
     AIAssistant: { engine },
   } = useCFSStore();
 
-  const [token, setToken] = useState<string | null>(null);
+  let [token, setToken] = useState<string | null>(null);
 
-  const chat = useChat({
+  let chat = useChat({
     api: modGptServer,
     initialMessages,
     id,
@@ -37,8 +37,8 @@ export const useModGPT = ({
 
   useHandlePrompt({ ...chat, id, setToken });
 
-  const modMssTimestamps = useModMssTimestamps({ messages: chat.messages });
-  const handleStop = useCallback(() => {
+  let modMssTimestamps = useModMssTimestamps({ messages: chat.messages });
+  let handleStop = useCallback(() => {
     setCurrentCommand(null);
     stop();
   }, [setCurrentCommand, stop]);

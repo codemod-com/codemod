@@ -28,7 +28,7 @@ export default function SectionExample(props: TestiomonialsProps) {
     };
   }
 
-  const getSides = (index: number) => {
+  let getSides = (index: number) => {
     return {
       right: true,
       left: index === 1,
@@ -37,7 +37,7 @@ export default function SectionExample(props: TestiomonialsProps) {
     };
   };
 
-  const getMobileSides = (index: number) => {
+  let getMobileSides = (index: number) => {
     return {
       right: true,
       left: true,

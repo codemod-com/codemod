@@ -5,7 +5,7 @@ type Props = {
   authors: { name: string; image: string }[];
 };
 
-const BlogArticle = (props: Props) => {
+let BlogArticle = (props: Props) => {
   return (
     <div
       style={{

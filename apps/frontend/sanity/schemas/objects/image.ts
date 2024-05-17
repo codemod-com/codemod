@@ -1,7 +1,7 @@
 import { defineType } from "sanity";
 import { imageWithAltField } from "../shared/imageWithAltField";
 
-export const imageBlock = defineType({
+export let imageBlock = defineType({
   type: "object",
   name: "imageBlock",
   title: "Image",

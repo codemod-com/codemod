@@ -1,13 +1,13 @@
-import { deepStrictEqual } from "node:assert";
-import vm from "node:vm";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { buildVmConsole } from "../src/buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "../src/consoleOverride.js";
+import { deepStrictEqual } from 'node:assert';
+import vm from 'node:vm';
+import type { ConsoleKind } from '@codemod-com/printer';
+import { describe, it } from 'vitest';
+import { buildVmConsole } from '../src/buildVmConsole.js';
+import { CONSOLE_OVERRIDE } from '../src/consoleOverride.js';
 
-describe("console", () => {
-  it("should pick the console statements from the VM", async () => {
-    const codeToExecute = `
+describe('console', () => {
+	it('should pick the console statements from the VM', async () => {
+		let codeToExecute = `
             // bindings
 			${CONSOLE_OVERRIDE}
 
@@ -20,31 +20,31 @@ describe("console", () => {
 			console.warn('%d warn %s', 6, 'test');
         `;
 
-    const messages: [ConsoleKind, string][] = [];
+		let messages: [ConsoleKind, string][] = [];
 
-    const customCallback = (kind: ConsoleKind, message: string) => {
-      messages.push([kind, message]);
-    };
+		let customCallback = (kind: ConsoleKind, message: string) => {
+			messages.push([kind, message]);
+		};
 
-    const exports = {};
+		let exports = {};
 
-    const context = vm.createContext({
-      module: {
-        exports,
-      },
-      exports,
-      __CODEMODCOM__console__: buildVmConsole(customCallback),
-    });
+		let context = vm.createContext({
+			module: {
+				exports,
+			},
+			exports,
+			__CODEMODCOM__console__: buildVmConsole(customCallback),
+		});
 
-    await vm.runInContext(codeToExecute, context);
+		await vm.runInContext(codeToExecute, context);
 
-    deepStrictEqual(messages, [
-      ["debug", "1 debug test"],
-      ["error", "2 error test"],
-      ["log", "3 log test"],
-      ["info", "4 info test"],
-      ["trace", "5 trace test"],
-      ["warn", "6 warn test"],
-    ]);
-  });
+		deepStrictEqual(messages, [
+			['debug', '1 debug test'],
+			['error', '2 error test'],
+			['log', '3 log test'],
+			['info', '4 info test'],
+			['trace', '5 trace test'],
+			['warn', '6 warn test'],
+		]);
+	});
 });

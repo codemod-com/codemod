@@ -2,16 +2,16 @@ import { useEffect, useLayoutEffect, useState } from "react";
 
 export type Theme = "light" | "dark";
 
-const isBrowserSchemeDark = () =>
+let isBrowserSchemeDark = () =>
   window.matchMedia?.("(prefers-color-scheme: dark)").matches;
 
-export const useTheme = () => {
-  const [theme, _setTheme] = useState<Theme>();
-  const oppositeTheme = theme === "light" ? "dark" : "light";
+export let useTheme = () => {
+  let [theme, _setTheme] = useState<Theme>();
+  let oppositeTheme = theme === "light" ? "dark" : "light";
 
   useLayoutEffect(() => {
-    const storedTheme = localStorage.getItem("theme");
-    const foundTheme = (storedTheme ??
+    let storedTheme = localStorage.getItem("theme");
+    let foundTheme = (storedTheme ??
       (isBrowserSchemeDark() ? "dark" : "light")) as Theme;
     setTheme(foundTheme, true);
   }, []);
@@ -26,7 +26,7 @@ export const useTheme = () => {
       return;
     }
   }, [theme]);
-  const setTheme = (newTheme: Theme, store = false): void => {
+  let setTheme = (newTheme: Theme, store = false): void => {
     _setTheme(newTheme);
     store ? localStorage.setItem("theme", newTheme) : null;
   };

@@ -2,7 +2,7 @@ import publicConfig from "@/config";
 import { formatPath } from "@tinloof/sanity-web";
 
 export function isExternalUrl(url: string) {
-  const regex =
+  let regex =
     /^((http|https):\/\/)?[a-zA-Z0-9]+([-\.]{1}[a-zA-Z0-9]+)*\.[a-zA-Z0-9-]{2,}(:[0-9]{1,5})?(\/.*)?$/;
   return regex.test(url);
 }

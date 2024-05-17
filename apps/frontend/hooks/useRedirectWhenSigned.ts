@@ -3,10 +3,10 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useLocation } from "react-use";
 
-export const useRedirectWhenSigned = () => {
-  const router = useRouter();
-  const location = useLocation();
-  const {
+export let useRedirectWhenSigned = () => {
+  let router = useRouter();
+  let location = useLocation();
+  let {
     retrievePendingAction,
     resetPendingActions,
     addPendingActionsWhenSigned,
@@ -19,7 +19,7 @@ export const useRedirectWhenSigned = () => {
       router.push("/studio");
     }
   }, []);
-  const { pathname } = location;
+  let { pathname } = location;
   return () =>
     pathname?.includes("studio")
       ? addPendingActionsWhenSigned("redirectToStudio")

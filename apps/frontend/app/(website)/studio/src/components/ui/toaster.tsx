@@ -11,7 +11,7 @@ import {
 import { useToast } from "@studio/components/ui/use-toast";
 
 export function Toaster() {
-  const { toasts } = useToast();
+  let { toasts } = useToast();
 
   return (
     <ToastProvider>
