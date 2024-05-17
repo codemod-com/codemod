@@ -4223,6 +4223,10 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/react/19/improvements-recipe: {}
+
+  packages/codemods/react/19/migration-recipe: {}
+
   packages/codemods/react/19/remove-context-provider:
     devDependencies:
       '@codemod-com/utilities':
