@@ -56,7 +56,7 @@ export const useExecutionStatus = (
         ) {
           clearInterval(intervalId);
         }
-      }, 100);
+      }, 1000);
     };
     handler();
     return () => {
