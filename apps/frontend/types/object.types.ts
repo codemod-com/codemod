@@ -245,7 +245,8 @@ export type AutomationResponseVersion = {
   amountOfUses: number;
   totalTimeSaved: number;
   openedPrs: number;
-  bucketLink: string;
+  s3Bucket: string;
+  s3UploadKey: string;
   useCaseCategory?: string;
   tags: string[];
   codemodId: number;
@@ -275,12 +276,15 @@ export type AutomationImportSchema = {
   author: string;
   amountOfUses: number;
   totalTimeSaved: number;
+  totalRuns: number;
+  versions: AutomationResponseVersion[];
   openedPrs: number;
   createdAt: string;
   updatedAt: string;
   automationStories?: AutomationStories;
   filterIconDictionary?: AutomationFilterIconDictionary;
-  currentVersion?: AutomationResponseVersion;
+  // It's empty in response
+  currentVersion?: Record<string, unknown>;
   frameworks: string[];
 };
 
