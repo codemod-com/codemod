@@ -20,15 +20,16 @@ const transform = (
     },
   });
 
-  const actualSourceFile = project.createSourceFile(path, beforeText);
-  project.createSourceFile(
-    join(__dirname, "..", "__testfixtures__/common.ts"),
-    common,
+  const actualSourceFile = project.createSourceFile(
+    join(path, "fixture1.input.ts"),
+    beforeText,
   );
+
+  project.createSourceFile(join(path, "common.ts"), common);
 
   const actual = handleSourceFile(actualSourceFile);
 
-  console.log(actual, "????");
+  console.log(join(path, "common.ts"), "????");
 
   const expected = project
     .createSourceFile(`expected${extname(path)}`, afterText)
@@ -57,7 +58,12 @@ describe("replace-feature-flag", () => {
       "utf-8",
     );
 
-    const { actual, expected } = transform(INPUT, OUTPUT, COMMON, "index.tsx");
+    const { actual, expected } = transform(
+      INPUT,
+      OUTPUT,
+      COMMON,
+      join(__dirname, "..", "__testfixtures__/"),
+    );
 
     assert.deepEqual(actual, expected);
   });

@@ -92,6 +92,15 @@ export const DVC = {
     const args = ce.getArguments();
     const keyArg = args.length === 3 ? args[1] : args[0];
 
+    const declarations =
+      (Node.isIdentifier(keyArg) &&
+        keyArg
+          .getDefinitions()
+          ?.map((d) => d.getNode().getParent()?.getFullText())) ??
+      [];
+
+    console.log(...declarations, "DECLAR");
+
     return Node.isStringLiteral(keyArg) && keyArg.getLiteralText() === keyName;
   },
   getReplacer: (key: string, type: VariableType, value: VariableValue) => () =>
