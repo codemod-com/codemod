@@ -24,16 +24,17 @@ export const useExecutionStatus = (
     let intervalId: number | null = null;
 
     const handler = async () => {
-      if (executionId === null) {
-        return;
-      }
-
-      const token = await getToken();
-
-      if (token === null) {
-        return;
-      }
       intervalId = window.setInterval(async () => {
+        if (executionId === null) {
+          return;
+        }
+
+        const token = await getToken();
+
+        if (token === null) {
+          return;
+        }
+
         const executionStatus = await getExecutionStatus({
           executionId,
           token,
@@ -55,7 +56,7 @@ export const useExecutionStatus = (
         ) {
           clearInterval(intervalId);
         }
-      }, 500);
+      }, 100);
     };
     handler();
     return () => {
