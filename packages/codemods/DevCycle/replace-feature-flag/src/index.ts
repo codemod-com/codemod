@@ -1,4 +1,10 @@
-import { type SourceFile, SyntaxKind, ts } from "ts-morph";
+import {
+  Node,
+  type PropertyAssignment,
+  type SourceFile,
+  SyntaxKind,
+  ts,
+} from "ts-morph";
 import { DVC } from "./dvc.js";
 
 type VariableType = "String" | "Boolean" | "Number" | "JSON";
@@ -51,6 +57,41 @@ export function handleSourceFile(
       DVC.getReplacer(options.key, options.type, options.value, match.name),
     );
   });
+
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
+    .forEach((ole) => {
+      const parent = ole.getParent();
+
+      if (Node.isPropertyAccessExpression(parent)) {
+        const nameNode = parent.getNameNode();
+
+        console.log(nameNode.getFullText(), "??");
+
+        if (Node.isIdentifier(nameNode)) {
+          let property: PropertyAssignment | undefined;
+
+          ole.getProperties().forEach((p) => {
+            if (
+              Node.isPropertyAssignment(p) &&
+              Node.isIdentifier(p.getNameNode()) &&
+              p.getNameNode().getText() === nameNode.getText()
+            ) {
+              property = p;
+            }
+          });
+
+          const propertyValue =
+            property !== undefined ? property.getInitializer() : null;
+
+          const text = propertyValue?.getFullText() ?? null;
+
+          if (text !== null) {
+            parent.replaceWithText(text);
+          }
+        }
+      }
+    });
 
   return sourceFile.getFullText();
 }

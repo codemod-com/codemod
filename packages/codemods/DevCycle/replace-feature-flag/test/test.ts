@@ -70,4 +70,43 @@ describe("replace-feature-flag", () => {
       OUTPUT?.replace(/\s/gm, ""),
     );
   });
+
+  it("Should refactor objects", async () => {
+    const OUTPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/object-literal-refactor.output.ts",
+      ),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "object-literal-refactor.input.ts": await readFile(
+        join(
+          __dirname,
+          "..",
+          "__testfixtures__/object-literal-refactor.input.ts",
+        ),
+        "utf-8",
+      ),
+    };
+
+    const stringOptions = {
+      key: "simple-case",
+      type: "String",
+      value: "string",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "object-literal-refactor.input.ts",
+      stringOptions,
+    );
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
 });
