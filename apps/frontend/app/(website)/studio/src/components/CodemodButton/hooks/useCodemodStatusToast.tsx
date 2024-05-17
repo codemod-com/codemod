@@ -25,7 +25,7 @@ export const useCodemodStatusToast = (
             href={result.link}
             target="_blank"
             rel="noreferrer"
-            className="text-primary-light text-decoration-line"
+            className="font-bold underline text-blue-600"
           >
             here
           </a>
