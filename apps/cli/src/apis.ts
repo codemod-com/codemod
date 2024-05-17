@@ -77,6 +77,7 @@ export const getCodemodDownloadURI = async (
   }
 
   const res = await Axios.get<{ link: string }>(url.toString(), {
+    headers,
     timeout: 10000,
   });
 
