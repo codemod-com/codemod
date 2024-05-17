@@ -29,6 +29,7 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "sourceMap": true,
-    "allowJs": true
+    "allowJs": true,
+    "pretty": true
   }
 }
