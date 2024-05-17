@@ -3,32 +3,48 @@ import type { FileSystem } from "@codemod-com/utilities";
 import axios, { isAxiosError, type AxiosResponse } from "axios";
 
 export type FileDownloadServiceBlueprint = Readonly<{
-  download(url: string, path: string): Promise<Buffer>;
+  cacheDisabled: boolean;
+
+  download(
+    url: string,
+    path: string,
+  ): Promise<{ data: Buffer; cacheUsed: boolean; cacheReason: string }>;
 }>;
 
 export class FileDownloadService implements FileDownloadServiceBlueprint {
   public constructor(
-    protected readonly _disableCache: boolean,
+    public readonly cacheDisabled: boolean,
     protected readonly _ifs: FileSystem,
     protected readonly _printer: PrinterBlueprint,
   ) {}
 
-  public async download(url: string, path: string): Promise<Buffer> {
-    if (!this._disableCache) {
+  public async download(
+    url: string,
+    path: string,
+  ): Promise<{ data: Buffer; cacheUsed: boolean; cacheReason: string }> {
+    let cacheReason = "Cache was disabled manually";
+
+    if (!this.cacheDisabled) {
       const localCodemodLastModified =
         await this.__getLocalFileLastModified(path);
       const remoteCodemodLastModified =
         await this.__getRemoteFileLastModified(url);
 
-      // read from cache only if there is no newer remote file
-      if (
-        remoteCodemodLastModified !== null &&
-        localCodemodLastModified !== null &&
+      if (localCodemodLastModified === null) {
+        cacheReason = "Local codemod was not found";
+      } else if (remoteCodemodLastModified === null) {
+        cacheReason = "Codemod required access permissions";
+      } else if (
+        // read from cache only if there is no newer remote file
         localCodemodLastModified > remoteCodemodLastModified
       ) {
         const tDataOut = await this._ifs.promises.readFile(path);
 
-        return Buffer.from(tDataOut);
+        return {
+          data: Buffer.from(tDataOut),
+          cacheUsed: true,
+          cacheReason: "Cache was enabled",
+        };
       }
     }
 
@@ -40,7 +56,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 
     await this._ifs.promises.writeFile(path, buffer);
 
-    return buffer;
+    return { data: buffer, cacheUsed: false, cacheReason };
   }
 
   private async __getLocalFileLastModified(
@@ -70,12 +86,10 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
       const status = error.response?.status;
 
       if (status === 403) {
-        throw new Error(
-          `Could not make a request to ${url}: request forbidden`,
-        );
+        return null;
       }
 
-      throw new Error(`Could not make a request to ${url}`);
+      return null;
     }
 
     const lastModified = response.headers["last-modified"];

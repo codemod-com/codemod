@@ -287,9 +287,16 @@ const wrapRequestHandlerMethod =
       const userOrganizations =
         await clerkClient.users.getOrganizationMembershipList({ userId });
       const userAllowedNamespaces = [
-        user.username,
         ...userOrganizations.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
+
+      if (user.username) {
+        userAllowedNamespaces.push(user.username);
+
+        if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
+          userAllowedNamespaces.push("codemod-com", "codemod.com");
+        }
+      }
 
       return {
         user,
