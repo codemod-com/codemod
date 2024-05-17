@@ -14,17 +14,17 @@ export function getFormattedDescription(
   description: string,
   returnNonMatching = false,
 ) {
-  const _description = description.match(/##\s?Description([^#]*)##/i)?.[1];
+  let _description = description.match(/##\s?Description([^#]*)##/i)?.[1];
 
   if (returnNonMatching) {
-    const nonMatching = description
+    let nonMatching = description
       .replace(_description || "", "")
       .replace(/description##/i, "")
       .trim();
     return nonMatching;
   }
 
-  const formattedDescription =
+  let formattedDescription =
     _description
       ?.replace(
         /`([^`]+)`/g,
@@ -40,7 +40,7 @@ export function getAutomationFrameworkTitles(
     applicability?: AutomationResponse["applicability"];
   } | null,
 ): string[] {
-  const fw =
+  let fw =
     automation?.frameworks ??
     automation?.applicability?.from?.map(([framework]) => framework) ??
     [];
@@ -65,7 +65,7 @@ export function getFilterIcon(
   filterValues?: AutomationFilterType["filterValues"],
   id?: string,
 ) {
-  const currentFilter = filterValues?.find(
+  let currentFilter = filterValues?.find(
     (filterValue) => filterValue.filterValue === id,
   );
 
@@ -79,18 +79,18 @@ export function getFilterIcon(
 }
 
 export async function getInitialAutomations(slugs?: string[]) {
-  const defaults = [
+  let defaults = [
     "next-13-remove-get-static-props",
     "react-replace-react-fc-typescript",
     "biome-migrate-rules",
     "ember-5-object-new-constructor",
   ];
-  const pathNames = slugs && slugs.length > 0 ? slugs : defaults;
+  let pathNames = slugs && slugs.length > 0 ? slugs : defaults;
 
-  const automations = (
+  let automations = (
     await Promise.all(
       pathNames.map(async (pathName) => {
-        const automation = await loadCodemod(pathName);
+        let automation = await loadCodemod(pathName);
         if ("error" in automation) return null;
         return automation;
       }),
@@ -124,13 +124,13 @@ export function transformAutomation(
     globalLabels?: GlobalLabels["codemodPage"];
   },
 ): CodemodPagePayload {
-  const _currentVersion = automation.versions[automation.versions.length - 1];
+  let _currentVersion = automation.versions[automation.versions.length - 1];
   if (_currentVersion) {
     _currentVersion.applicability = convertAutomationApplicability(
       _currentVersion?.applicability,
     );
   }
-  const currentVersion = _currentVersion;
+  let currentVersion = _currentVersion;
 
   return {
     ...automation,

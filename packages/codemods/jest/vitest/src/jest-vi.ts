@@ -22,71 +22,71 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import type core from "jscodeshift";
-import type { Collection } from "jscodeshift";
+import type core from 'jscodeshift';
+import type { Collection } from 'jscodeshift';
 
-const apiNamesRecord: Record<string, string> = {
-  createMockFromModule: "importMock",
-  deepUnmock: "unmock",
-  genMockFromModule: "importMock",
-  requireActual: "importActual",
-  requireMock: "importMock",
-  setMock: "mock",
+let apiNamesRecord: Record<string, string> = {
+	createMockFromModule: 'importMock',
+	deepUnmock: 'unmock',
+	genMockFromModule: 'importMock',
+	requireActual: 'importActual',
+	requireMock: 'importMock',
+	setMock: 'mock',
 };
-const apiNamesToMakeAsync = [
-  "genMockFromModule",
-  "createMockFromModule",
-  "requireActual",
-  "requireMock",
+let apiNamesToMakeAsync = [
+	'genMockFromModule',
+	'createMockFromModule',
+	'requireActual',
+	'requireMock',
 ];
 
 // Replace `jest` with `vi`
-export const replaceJestObjectWithVi = <T>(
-  root: Collection<T>,
-  j: core.JSCodeshift,
+export let replaceJestObjectWithVi = <T,>(
+	root: Collection<T>,
+	j: core.JSCodeshift,
 ): void => {
-  root
-    .find(j.MemberExpression, {
-      object: { type: "Identifier", name: "jest" },
-    })
-    .forEach((path) => {
-      if (!j.Identifier.check(path.node.property)) {
-        return;
-      }
+	root.find(j.MemberExpression, {
+		object: { type: 'Identifier', name: 'jest' },
+	}).forEach((path) => {
+		if (!j.Identifier.check(path.node.property)) {
+			return;
+		}
 
-      const propertyName = path.node.property.name;
+		let propertyName = path.node.property.name;
 
-      if (propertyName === "enableAutomock") {
-        throw new Error(
-          `The automocking API "${propertyName}" is not supported in vitest.\nSee https://vitest.dev/guide/migration.html`,
-        );
-      }
+		if (propertyName === 'enableAutomock') {
+			throw new Error(
+				`The automocking API "${propertyName}" is not supported in vitest.\nSee https://vitest.dev/guide/migration.html`,
+			);
+		}
 
-      if (propertyName === "disableAutomock") {
-        j(path.parentPath).remove();
-        return;
-      }
+		if (propertyName === 'disableAutomock') {
+			j(path.parentPath).remove();
+			return;
+		}
 
-      if (apiNamesRecord[propertyName]) {
-        path.node.property.name = apiNamesRecord[propertyName]!;
-      }
+		if (apiNamesRecord[propertyName]) {
+			path.node.property.name = apiNamesRecord[propertyName]!;
+		}
 
-      if (apiNamesToMakeAsync.includes(propertyName)) {
-        // Add await to the call expression
-        j(path.parentPath).replaceWith((path) => j.awaitExpression(path.value));
+		if (apiNamesToMakeAsync.includes(propertyName)) {
+			// Add await to the call expression
+			j(path.parentPath).replaceWith((path) =>
+				j.awaitExpression(path.value),
+			);
 
-        // Add async to the function
-        let parentPath = path.parentPath;
-        while (
-          !["FunctionExpression", "ArrowFunctionExpression"].includes(
-            parentPath.value.type,
-          )
-        ) {
-          parentPath = parentPath.parentPath;
-        }
-        parentPath.value.async = true;
-      }
+			// Add async to the function
+			let parentPath = path.parentPath;
+			while (
+				!['FunctionExpression', 'ArrowFunctionExpression'].includes(
+					parentPath.value.type,
+				)
+			) {
+				parentPath = parentPath.parentPath;
+			}
+			parentPath.value.async = true;
+		}
 
-      path.node.object = j.identifier("vi");
-    });
+		path.node.object = j.identifier('vi');
+	});
 };

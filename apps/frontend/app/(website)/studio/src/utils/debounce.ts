@@ -1,4 +1,4 @@
-export const debounce = <T, R>(callback: (...args: T[]) => R, ms: number) => {
+export let debounce = <T, R>(callback: (...args: T[]) => R, ms: number) => {
   let timeout: ReturnType<typeof setTimeout> | null = null;
 
   return (...args: T[]) => {

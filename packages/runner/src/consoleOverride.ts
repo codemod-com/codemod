@@ -1,4 +1,4 @@
-export const CONSOLE_OVERRIDE = `
+export let CONSOLE_OVERRIDE = `
 console.debug = (data, ...args) => {
     __CODEMODCOM__console__('debug', data, ...args);
 };

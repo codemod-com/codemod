@@ -3,7 +3,7 @@ import { DownloadZip } from "../DownloadZip";
 import { TopBar } from "./TopBar";
 import { HeaderButtons } from "./headerButtons";
 
-export const Header = () => {
+export let Header = () => {
   return (
     <>
       <TopBar />

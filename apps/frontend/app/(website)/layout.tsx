@@ -9,12 +9,12 @@ import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
 
-const LiveVisualEditing = dynamic(
+let LiveVisualEditing = dynamic(
   () => import("@/components/LiveVisualEditing"),
 );
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { data } = await loadGlobalData(GLOBAL_QUERY);
+  let { data } = await loadGlobalData(GLOBAL_QUERY);
 
   return {
     title: publicConfig.siteName,
@@ -32,7 +32,7 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const globalData = await loadGlobalData(GLOBAL_QUERY);
+  let globalData = await loadGlobalData(GLOBAL_QUERY);
 
   return (
     <>

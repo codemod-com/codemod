@@ -16,14 +16,14 @@ type CodeSnippetsProps = {
   onlyAfterHidden: boolean;
   codeDiff: ReturnType<typeof useCodeDiff>;
 };
-export const CodeSnippets = ({
+export let CodeSnippets = ({
   panels,
   children,
   codeDiff,
   panelRefs,
 }: PropsWithChildren<CodeSnippetsProps>) => {
-  const snippetPanels = panels.map((panelData, index, arr) => {
-    const {
+  let snippetPanels = panels.map((panelData, index, arr) => {
+    let {
       snippetData: {
         snippet,
         getExtras,
@@ -31,7 +31,7 @@ export const CodeSnippets = ({
         ...codeSnippedPanel
       },
     } = panelData;
-    const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
+    let Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
     return (
       <>
         <CodeSnippedPanel

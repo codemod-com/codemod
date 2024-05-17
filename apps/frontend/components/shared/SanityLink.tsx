@@ -10,14 +10,14 @@ export interface SanityLinkProps extends ComponentProps<"a"> {
   scroll?: boolean;
 }
 
-export const SanityLink = forwardRef<
+export let SanityLink = forwardRef<
   HTMLAnchorElement,
   React.PropsWithChildren<SanityLinkProps>
 >(function SanityLink(props, ref) {
-  const { link, ...rest } = props;
-  const href = link.href || "";
-  const { cleaned } = vercelStegaSplit(href);
-  const isExternal = isExternalUrl(cleaned);
+  let { link, ...rest } = props;
+  let href = link.href || "";
+  let { cleaned } = vercelStegaSplit(href);
+  let isExternal = isExternalUrl(cleaned);
 
   if (!href) {
     return (

@@ -1,107 +1,109 @@
-import type { Filemod } from "@codemod-com/filemod";
+import type { Filemod } from '@codemod-com/filemod';
 
 type Dependencies = Record<string, never>;
 type State = {
-  oldNamespace: string;
-  newNamespace: string;
-  keys: ReadonlyArray<string>;
-  map: Map<string, string>;
+	oldNamespace: string;
+	newNamespace: string;
+	keys: ReadonlyArray<string>;
+	map: Map<string, string>;
 };
 
-export const repomod: Filemod<Dependencies, State> = {
-  includePatterns: ["**/locales/**/*.json"],
-  excludePatterns: ["**/node_modules/**"],
-  initializeState: async (options) => {
-    const oldNamespace = options.oldNamespace;
-    const newNamespace = options.newNamespace;
-    const keys = options.keys;
+export let repomod: Filemod<Dependencies, State> = {
+	includePatterns: ['**/locales/**/*.json'],
+	excludePatterns: ['**/node_modules/**'],
+	initializeState: async (options) => {
+		let oldNamespace = options.oldNamespace;
+		let newNamespace = options.newNamespace;
+		let keys = options.keys;
 
-    return {
-      oldNamespace: typeof oldNamespace === "string" ? oldNamespace : "common",
-      newNamespace: typeof newNamespace === "string" ? newNamespace : "new",
-      keys: typeof keys === "string" ? keys.split(",") : [],
-      map: new Map(),
-    };
-  },
-  handleFile: async (api, path, options, state) => {
-    if (state === null) {
-      return [];
-    }
+		return {
+			oldNamespace:
+				typeof oldNamespace === 'string' ? oldNamespace : 'common',
+			newNamespace:
+				typeof newNamespace === 'string' ? newNamespace : 'new',
+			keys: typeof keys === 'string' ? keys.split(',') : [],
+			map: new Map(),
+		};
+	},
+	handleFile: async (api, path, options, state) => {
+		if (state === null) {
+			return [];
+		}
 
-    const basename = api.getBasename(path);
+		let basename = api.getBasename(path);
 
-    if (basename !== `${state.oldNamespace}.json`) {
-      return [];
-    }
+		if (basename !== `${state.oldNamespace}.json`) {
+			return [];
+		}
 
-    try {
-      const dirname = api.getDirname(path);
-      const newPath = api.joinPaths(dirname, `${state.newNamespace}.json`);
+		try {
+			let dirname = api.getDirname(path);
+			let newPath = api.joinPaths(dirname, `${state.newNamespace}.json`);
 
-      const json = await api.readFile(path);
-      const data = JSON.parse(json);
+			let json = await api.readFile(path);
+			let data = JSON.parse(json);
 
-      for (const key of state.keys) {
-        const value = data[key];
+			for (let key of state.keys) {
+				let value = data[key];
 
-        if (typeof value !== "string") {
-          continue;
-        }
+				if (typeof value !== 'string') {
+					continue;
+				}
 
-        state?.map.set(`${newPath}:${key}`, value);
-      }
+				state?.map.set(`${newPath}:${key}`, value);
+			}
 
-      return [
-        {
-          kind: "upsertFile",
-          path: newPath,
-          options,
-        },
-      ];
-    } catch {
-      return [];
-    }
-  },
-  handleData: async (_, path, oldData, ___, state) => {
-    if (state === null) {
-      return { kind: "noop" };
-    }
+			return [
+				{
+					kind: 'upsertFile',
+					path: newPath,
+					options,
+				},
+			];
+		} catch {
+			return [];
+		}
+	},
+	handleData: async (_, path, oldData, ___, state) => {
+		if (state === null) {
+			return { kind: 'noop' };
+		}
 
-    const record: Record<string, string> = {};
+		let record: Record<string, string> = {};
 
-    try {
-      const oldRecord = JSON.parse(oldData);
+		try {
+			let oldRecord = JSON.parse(oldData);
 
-      for (const [key, value] of Object.entries(oldRecord)) {
-        record[key] = String(value);
-      }
-    } catch {
-      /* empty */
-    }
+			for (let [key, value] of Object.entries(oldRecord)) {
+				record[key] = String(value);
+			}
+		} catch {
+			/* empty */
+		}
 
-    let i = 0;
+		let i = 0;
 
-    for (const key of state.keys) {
-      const value = state.map.get(`${path}:${key}`);
+		for (let key of state.keys) {
+			let value = state.map.get(`${path}:${key}`);
 
-      if (value === undefined) {
-        continue;
-      }
+			if (value === undefined) {
+				continue;
+			}
 
-      record[key] = value;
-      ++i;
-    }
+			record[key] = value;
+			++i;
+		}
 
-    if (i === 0) {
-      return { kind: "noop" };
-    }
+		if (i === 0) {
+			return { kind: 'noop' };
+		}
 
-    const newData = JSON.stringify(record);
+		let newData = JSON.stringify(record);
 
-    return {
-      kind: "upsertData",
-      path,
-      data: newData,
-    };
-  },
+		return {
+			kind: 'upsertData',
+			path,
+			data: newData,
+		};
+	},
 };

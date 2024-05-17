@@ -3,7 +3,7 @@ import RunCTAButton from "@/components/shared/RunCTAButton";
 import { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../../constants";
 
 import type { CodemodPagePayload } from "@/types";
-export const VCCodeShift = (
+export let VCCodeShift = (
   data: CodemodPagePayload &
     Required<Pick<CodemodPagePayload, "currentVersion">>,
 ) => (

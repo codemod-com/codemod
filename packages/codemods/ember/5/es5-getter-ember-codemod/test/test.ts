@@ -1,12 +1,12 @@
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("ember 5 es5-getter-ember-codemod", () => {
-  it("does-not-transform-full-path-ts", () => {
-    const INPUT = `
+describe('ember 5 es5-getter-ember-codemod', () => {
+	it('does-not-transform-full-path-ts', () => {
+		let INPUT = `
         class Thing {
             doesNotTransform() {
               this.get('foo.bar.baz');
@@ -18,7 +18,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Thing {
             doesNotTransform() {
               this.get('foo.bar.baz');
@@ -30,21 +30,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("does-not-transform-full-path", () => {
-    const INPUT = `
+	it('does-not-transform-full-path', () => {
+		let INPUT = `
         this.get('foo.bar.baz');
 
         let model = Object.create({foo: { bar: 'baz' }});
@@ -52,7 +52,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         model.get('foo.bar');
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         this.get('foo.bar.baz');
 
         let model = Object.create({foo: { bar: 'baz' }});
@@ -60,21 +60,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         model.get('foo.bar');
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("does-not-transform-http-stubs", () => {
-    const INPUT = `
+	it('does-not-transform-http-stubs', () => {
+		let INPUT = `
         this.get('foo/:id', (schema, { params }) => {
         });
         
@@ -83,7 +83,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         });
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         this.get('foo/:id', (schema, { params }) => {
         });
         
@@ -92,21 +92,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         });
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("get-on-ember-object-ts", () => {
-    const INPUT = `
+	it('get-on-ember-object-ts', () => {
+		let INPUT = `
         class Things {
             objectLookup() {
               let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });
@@ -136,7 +136,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Things {
             objectLookup() {
               let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });
@@ -166,21 +166,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("get-on-ember-object", () => {
-    const INPUT = `
+	it('get-on-ember-object', () => {
+		let INPUT = `
         let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });
 
         chancancode.get('fullName');
@@ -200,7 +200,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         controller.get('foo-bar');
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         let chancancode = Person.create({ firstName: 'Godfrey', lastName: 'Chan' });
 
         chancancode.get('fullName');
@@ -220,21 +220,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         controller['foo-bar'];
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("get-on-this-expression-ts", () => {
-    const INPUT = `
+	it('get-on-this-expression-ts', () => {
+		let INPUT = `
         import Object from '@ember/object';
         import { computed } from '@ember-decorators/object';
         
@@ -258,7 +258,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         import Object from '@ember/object';
         import { computed } from '@ember-decorators/object';
         
@@ -282,21 +282,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("get-on-this-expression", () => {
-    const INPUT = `
+	it('get-on-this-expression', () => {
+		let INPUT = `
         import Object from '@ember/object';
         import { computed } from '@ember-decorators/object';
         
@@ -320,7 +320,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         import Object from '@ember/object';
         import { computed } from '@ember-decorators/object';
         
@@ -344,21 +344,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("getProperties-on-ember-object-ts", () => {
-    const INPUT = `
+	it('getProperties-on-ember-object-ts', () => {
+		let INPUT = `
         class Thing {
             getPropertiesMethod(chancancode) {
               let { firstName, lastName, fullName } = chancancode.getProperties(
@@ -386,7 +386,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Thing {
             getPropertiesMethod(chancancode) {
               let { firstName, lastName, fullName } = chancancode;
@@ -406,21 +406,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("getProperties-on-ember-object", () => {
-    const INPUT = `
+	it('getProperties-on-ember-object', () => {
+		let INPUT = `
         class Thing {
             getPropertiesMethod(chancancode) {
               let { firstName, lastName, fullName } = chancancode.getProperties(
@@ -448,7 +448,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Thing {
             getPropertiesMethod(chancancode) {
               let { firstName, lastName, fullName } = chancancode;
@@ -468,21 +468,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("standalone-ember-get-ts", () => {
-    const INPUT = `
+	it('standalone-ember-get-ts', () => {
+		let INPUT = `
         import Ember from 'ember';
         import { set, get } from '@ember/object'
         
@@ -500,7 +500,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         let bar = get(obj, 'bar');
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         import Ember from 'ember';
         import { set, get } from '@ember/object'
         
@@ -518,21 +518,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         let bar = get(obj, 'bar');
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("standalone-ember-get", () => {
-    const INPUT = `
+	it('standalone-ember-get', () => {
+		let INPUT = `
         import Ember from 'ember';
         import { set, get } from '@ember/object'
         
@@ -550,7 +550,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         let bar = get(obj, 'bar');
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         import Ember from 'ember';
         import { set, get } from '@ember/object'
         
@@ -568,21 +568,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
         let bar = get(obj, 'bar');
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("this-dot-getProperties-ts", () => {
-    const INPUT = `
+	it('this-dot-getProperties-ts', () => {
+		let INPUT = `
         class Thing {
             thisDotGetPropertiesMethod() {
               let { foo, bar, baz } = this.getProperties('foo', 'bar', 'baz');
@@ -606,7 +606,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Thing {
             thisDotGetPropertiesMethod() {
               let { foo, bar, baz } = this;
@@ -626,21 +626,21 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.ts",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("ts"));
+		let actualOutput = transform(fileInfo, buildApi('ts'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("this-dot-getProperties", () => {
-    const INPUT = `
+	it('this-dot-getProperties', () => {
+		let INPUT = `
         class Thing {
             thisDotGetPropertiesMethod() {
               let { foo, bar, baz } = this.getProperties('foo', 'bar', 'baz');
@@ -664,7 +664,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
 		`;
 
-    const OUTPUT = `
+		let OUTPUT = `
         class Thing {
             thisDotGetPropertiesMethod() {
               let { foo, bar, baz } = this;
@@ -684,16 +684,16 @@ describe("ember 5 es5-getter-ember-codemod", () => {
           }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

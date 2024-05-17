@@ -34,7 +34,7 @@ export type PromptPanelProps = Pick<
 };
 
 export function PromptPanel(props: PromptPanelProps) {
-  const {
+  let {
     id,
     isLoading,
     stop,
@@ -47,26 +47,26 @@ export function PromptPanel(props: PromptPanelProps) {
     startIterativeCodemodGeneration,
     canAddMessages,
   } = props;
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [expandedHelper, setExpandedHelper] = useState(true);
-  const { getToken, isSignedIn } = useAuth();
-  const aliases = useGetAliases();
-  const promptsList = usePrompts(aliases);
-  const aliasList = getOrderedAliasList(aliases);
+  let textAreaRef = useRef<HTMLTextAreaElement>(null);
+  let [expandedHelper, setExpandedHelper] = useState(true);
+  let { getToken, isSignedIn } = useAuth();
+  let aliases = useGetAliases();
+  let promptsList = usePrompts(aliases);
+  let aliasList = getOrderedAliasList(aliases);
 
-  const handleSubmit = async (value: string) => {
+  let handleSubmit = async (value: string) => {
     if (!isLoading) {
-      const token = await getToken();
+      let token = await getToken();
       flushSync(() => setToken(token));
-      const aliasesAppliedValue = applyAliases(value, aliases);
+      let aliasesAppliedValue = applyAliases(value, aliases);
       await append({ id, content: aliasesAppliedValue, role: "user" });
     }
   };
 
-  const handleInsertValue = (value: string) => {
-    const textArea = textAreaRef.current;
+  let handleInsertValue = (value: string) => {
+    let textArea = textAreaRef.current;
     if (textArea) {
-      const updatedInput = insertValue(textArea, input, value);
+      let updatedInput = insertValue(textArea, input, value);
       setInput(updatedInput);
       textArea.focus();
     }

@@ -3,7 +3,7 @@ import { Button } from "@studio/components/ui/button";
 import { useAiService } from "@studio/hooks/useAiService";
 import type { PropsWithChildren } from "react";
 
-const InternalButton = ({
+let InternalButton = ({
   children,
   onClick,
   disabled = false,
@@ -19,15 +19,15 @@ const InternalButton = ({
   </Button>
 );
 
-const statusColors = {
+let statusColors = {
   error: "text-red-700",
   closed: "text-red-700",
   "in-progress": "text-blue-600",
   ready: "text-green-700",
   finished: "text-blue-600",
 };
-export const CodemodBuilder = () => {
-  const {
+export let CodemodBuilder = () => {
+  let {
     messageHistory,
     applyCodemod,
     codemod,
@@ -35,15 +35,15 @@ export const CodemodBuilder = () => {
     sendSnippets,
     startOver,
   } = useAiService();
-  const statusColor = wsStatus ? statusColors[wsStatus] : "";
-  const status = (
+  let statusColor = wsStatus ? statusColors[wsStatus] : "";
+  let status = (
     <div>
       <div>
         Status <strong className={cn(statusColor)}>{wsStatus}</strong>
       </div>
     </div>
   );
-  const header =
+  let header =
     wsStatus === "finished" ? (
       <InternalButton onClick={startOver}> Start over</InternalButton>
     ) : (
@@ -58,7 +58,7 @@ export const CodemodBuilder = () => {
       </div>
     );
 
-  const history = messageHistory.map((item, i) => (
+  let history = messageHistory.map((item, i) => (
     <div key={item.message + i} className="pt-5">
       <p>
         <strong>action log: </strong>
@@ -67,7 +67,7 @@ export const CodemodBuilder = () => {
     </div>
   ));
 
-  const applyCodemodButton = codemod && (
+  let applyCodemodButton = codemod && (
     <div>
       <InternalButton onClick={applyCodemod}>Apply codemod</InternalButton>
     </div>

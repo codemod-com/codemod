@@ -2,7 +2,7 @@ import type { useCodemodAI } from "@chatbot/useAiService/codemodAI/useCodemodAI"
 import { Button } from "@studio/components/ui/button";
 import React from "react";
 
-export const WebSocketButton = ({
+export let WebSocketButton = ({
   handleButtonClick,
   canAddMessages,
 }: {

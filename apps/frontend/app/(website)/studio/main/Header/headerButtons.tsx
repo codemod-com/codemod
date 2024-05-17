@@ -11,13 +11,13 @@ type ButtonProps = {
   disabled: boolean;
 };
 
-export const HeaderButtons = () => {
-  const { setInput, setOutput } = useSnippetStore();
-  const { setContent } = useModStore();
-  const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
-  const { getShareLink } = usePublicLinkSharing();
+export let HeaderButtons = () => {
+  let { setInput, setOutput } = useSnippetStore();
+  let { setContent } = useModStore();
+  let { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
+  let { getShareLink } = usePublicLinkSharing();
 
-  const buttonsData = [
+  let buttonsData = [
     {
       hintText: "Clear all inputs",
       onClick: () => {

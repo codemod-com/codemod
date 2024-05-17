@@ -125,13 +125,13 @@ function createDefaultComponents(
       underline: (props) => <u>{props.children}</u>,
       code: ({ children }) => <code className="inline-code">{children}</code>,
       admonition: (props) => {
-        const hasIcon = !!props.value.icon.replace(/standard/i, "");
+        let hasIcon = !!props.value.icon.replace(/standard/i, "");
 
-        const innerLink = (props?.children as any[])?.find(
+        let innerLink = (props?.children as any[])?.find(
           (c) => c?.props?.markType === "link",
         );
 
-        const hasLink = !!innerLink;
+        let hasLink = !!innerLink;
         return (
           <span
             className={cx(
@@ -186,7 +186,7 @@ function createDefaultComponents(
   };
 }
 
-export const RichText = ({
+export let RichText = ({
   value = [],
   components: customComponents,
   fieldName,
@@ -197,8 +197,8 @@ export const RichText = ({
   scrollBelowHeader?: boolean;
   usage?: "default" | "textPage";
 }) => {
-  const defaultComponents = createDefaultComponents(fieldName, usage);
-  const components: PortableTextComponents = {
+  let defaultComponents = createDefaultComponents(fieldName, usage);
+  let components: PortableTextComponents = {
     ...defaultComponents,
     ...(customComponents || {}),
     marks: {
@@ -206,7 +206,7 @@ export const RichText = ({
       link: (props) => {
         if (!props.value) return <>{props.children}</>;
 
-        const isExternal = isExternalUrl(props.value.href);
+        let isExternal = isExternalUrl(props.value.href);
         return (
           <NavigationLink inline {...props.value}>
             <span

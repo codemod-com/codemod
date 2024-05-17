@@ -17,8 +17,8 @@ export default function MobileFilterComponent({
   automationFilters?: RegistryIndexPayload["automationFilters"];
   filterIconDictionary?: RegistryIndexPayload["filterIconDictionary"];
 }) {
-  const { mobileOpen, toggleSidebar } = useSidebar();
-  const { toggleFilters } = useRegistryFilters();
+  let { mobileOpen, toggleSidebar } = useSidebar();
+  let { toggleFilters } = useRegistryFilters();
 
   return (
     <div className="block lg:hidden">

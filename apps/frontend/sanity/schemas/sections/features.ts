@@ -1,7 +1,7 @@
 import { BlockContentIcon, StarIcon } from "@sanity/icons";
 import { defineSection } from "@tinloof/sanity-studio";
 
-export const features = defineSection({
+export let features = defineSection({
   title: "Features Section",
   name: "section.features",
   type: "object",
@@ -91,7 +91,7 @@ export const features = defineSection({
       features: "features",
     },
     prepare(selection) {
-      const { features } = selection;
+      let { features } = selection;
       return {
         title: "Features Section",
         subtitle: `${features?.length || "0"} feature${

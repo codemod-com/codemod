@@ -70,8 +70,8 @@ export async function loadSanityPageByRouteProps({
     pathname = `/${path}`;
   }
 
-  const routeData = await loadRoute(pathname);
-  const documentType = routeData.data?.routeData._type;
+  let routeData = await loadRoute(pathname);
+  let documentType = routeData.data?.routeData._type;
 
   switch (documentType) {
     case "modularPage":

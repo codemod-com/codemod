@@ -27,9 +27,9 @@ export default forwardRef(function Select(
   }: SelectProps,
   ref: ForwardedRef<HTMLSelectElement>,
 ) {
-  const [value, setValue] = useState(_value);
+  let [value, setValue] = useState(_value);
 
-  const onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+  let onChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setValue(e.target.value);
     if (_onChange) {
       _onChange(e);

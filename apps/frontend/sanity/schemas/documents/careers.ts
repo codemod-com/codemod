@@ -1,7 +1,7 @@
 import { definePathname } from "@tinloof/sanity-studio";
 import definePage from "../helpers/definePage";
 
-export const careers = definePage({
+export let careers = definePage({
   name: "careers",
   title: "Careers page",
   type: "document",

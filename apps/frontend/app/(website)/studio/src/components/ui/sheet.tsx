@@ -4,18 +4,18 @@ import { type VariantProps, cva } from "class-variance-authority";
 import { X } from "lucide-react";
 import * as React from "react";
 
-const Sheet = SheetPrimitive.Root;
+let Sheet = SheetPrimitive.Root;
 
-const SheetTrigger = SheetPrimitive.Trigger;
+let SheetTrigger = SheetPrimitive.Trigger;
 
-const SheetClose = SheetPrimitive.Close;
+let SheetClose = SheetPrimitive.Close;
 
-const SheetPortal = ({ ...props }: SheetPrimitive.DialogPortalProps) => (
+let SheetPortal = ({ ...props }: SheetPrimitive.DialogPortalProps) => (
   <SheetPrimitive.Portal {...props} />
 );
 SheetPortal.displayName = SheetPrimitive.Portal.displayName;
 
-const SheetOverlay = React.forwardRef<
+let SheetOverlay = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
@@ -30,7 +30,7 @@ const SheetOverlay = React.forwardRef<
 ));
 SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
-const sheetVariants = cva(
+let sheetVariants = cva(
   "fixed z-50 gap-4 bg-background p-6 shadow-lg transition ease-in-out data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
   {
     variants: {
@@ -53,7 +53,7 @@ interface SheetContentProps
   extends React.ComponentPropsWithoutRef<typeof SheetPrimitive.Content>,
     VariantProps<typeof sheetVariants> {}
 
-const SheetContent = React.forwardRef<
+let SheetContent = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Content>,
   SheetContentProps
 >(({ side = "right", className, children, ...props }, ref) => (
@@ -74,7 +74,7 @@ const SheetContent = React.forwardRef<
 ));
 SheetContent.displayName = SheetPrimitive.Content.displayName;
 
-const SheetHeader = ({
+let SheetHeader = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -88,7 +88,7 @@ const SheetHeader = ({
 );
 SheetHeader.displayName = "SheetHeader";
 
-const SheetFooter = ({
+let SheetFooter = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
@@ -102,7 +102,7 @@ const SheetFooter = ({
 );
 SheetFooter.displayName = "SheetFooter";
 
-const SheetTitle = React.forwardRef<
+let SheetTitle = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(({ className, ...props }, ref) => (
@@ -114,7 +114,7 @@ const SheetTitle = React.forwardRef<
 ));
 SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
-const SheetDescription = React.forwardRef<
+let SheetDescription = React.forwardRef<
   React.ElementRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(({ className, ...props }, ref) => (

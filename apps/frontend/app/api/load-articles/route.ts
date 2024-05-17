@@ -2,9 +2,9 @@ import { loadBlogIndex } from "@/data/sanity/loadQuery";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body = await req.json();
   try {
-    const sanityRes = await loadBlogIndex({
+    let sanityRes = await loadBlogIndex({
       pageNumber: body.pageNumber,
       pathParam: body.pathParam,
     });

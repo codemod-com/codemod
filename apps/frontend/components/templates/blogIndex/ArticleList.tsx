@@ -15,13 +15,13 @@ export default function ArticleList({
   initial: (BlogIndexPayload & { entriesPerPage?: number }) | null;
   pathParam?: string;
 }) {
-  const [nextPage, setPage] = useState(2);
-  const { data, loaderState, loadMore } = useLoadMoreArticles({
+  let [nextPage, setPage] = useState(2);
+  let { data, loaderState, loadMore } = useLoadMoreArticles({
     pageNumber: nextPage,
     pathParam,
   });
-  const articles = data?.entries || initial?.entries;
-  const totalPageCount =
+  let articles = data?.entries || initial?.entries;
+  let totalPageCount =
     initial?.entriesCount && initial?.entriesPerPage
       ? Math.ceil(initial?.entriesCount / initial?.entriesPerPage)
       : 1;

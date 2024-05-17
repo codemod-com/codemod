@@ -21,7 +21,7 @@ import { downloadProject } from "@studio/utils/download";
 import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
 
-export const generateCodemodHumanNamePrompt = (codemod: string) => `
+export let generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
 Come up with a precise name to be used for the following jscodeshift codemod below.
 If the codemod is aimed at making any changes to a particular framework or library, the format
@@ -35,26 +35,26 @@ ${codemod}
 \`\`\`
 `;
 
-export const DownloadZip = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+export let DownloadZip = () => {
+  let [isOpen, setIsOpen] = useState(false);
+  let [isDownloading, setIsDownloading] = useState(false);
 
-  const modStore = useModStore();
-  const snippetStore = useSnippetStore();
-  const engine = snippetStore.engine;
+  let modStore = useModStore();
+  let snippetStore = useSnippetStore();
+  let engine = snippetStore.engine;
 
-  const { session } = useSession();
-  const { getToken } = useAuth();
+  let { session } = useSession();
+  let { getToken } = useAuth();
 
-  const handleClick = async () => {
+  let handleClick = async () => {
     setIsDownloading(true);
     if (!modStore.internalContent) {
       return;
     }
 
-    const token = await getToken();
+    let token = await getToken();
 
-    const humanCodemodName = await getHumanCodemodName(
+    let humanCodemodName = await getHumanCodemodName(
       modStore.internalContent,
       token,
     );
@@ -127,7 +127,7 @@ export const DownloadZip = () => {
 };
 
 function InstructionsContent({ pm }: { pm: "pnpm" | "npm" }) {
-  const npxDialect = useMemo(() => {
+  let npxDialect = useMemo(() => {
     if (pm === "pnpm") {
       return "pnpm dlx";
     }
@@ -145,7 +145,7 @@ function InstructionsContent({ pm }: { pm: "pnpm" | "npm" }) {
 }
 
 export function CopyTerminalCommands({ text }: { text: string }) {
-  const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
+  let { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
 
   return (
     <div className="flex items-center justify-between rounded-md bg-secondary p-2 text-secondary-foreground">
@@ -188,7 +188,7 @@ async function getHumanCodemodName(
     let codemodName = "";
     if (token !== null) {
       // Ask LLM to come up with a name for the given codemod
-      const codemodNameOrError = await sendMessage({
+      let codemodNameOrError = await sendMessage({
         message: generateCodemodHumanNamePrompt(codemod),
         token,
       });

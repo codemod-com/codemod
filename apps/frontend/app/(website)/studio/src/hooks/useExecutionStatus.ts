@@ -7,12 +7,12 @@ import { useEffect, useState } from "react";
 // use global var, because we need to keep state even if this hook is rendered in multiple different components
 let listeningExecutionId: string | null = null;
 
-export const useExecutionStatus = (
+export let useExecutionStatus = (
   executionId: string | null,
 ): GetExecutionStatusResponse | null => {
-  const [executionStatus, setExecutionStatus] =
+  let [executionStatus, setExecutionStatus] =
     useState<GetExecutionStatusResponse | null>(null);
-  const { getToken } = useAuth();
+  let { getToken } = useAuth();
 
   useEffect(() => {
     if (executionId !== null && listeningExecutionId === executionId) {
@@ -23,19 +23,19 @@ export const useExecutionStatus = (
 
     let intervalId: number | null = null;
 
-    const handler = async () => {
+    let handler = async () => {
       intervalId = window.setInterval(async () => {
         if (executionId === null) {
           return;
         }
 
-        const token = await getToken();
+        let token = await getToken();
 
         if (token === null) {
           return;
         }
 
-        const executionStatus = await getExecutionStatus({
+        let executionStatus = await getExecutionStatus({
           executionId,
           token,
         });

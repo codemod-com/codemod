@@ -11,8 +11,8 @@ export type BlogIndexProps = {
 };
 
 export default function BlogIndex({ data, pathParam }: BlogIndexProps) {
-  const { collectionTitle, cta, entries, emptyStateText } = data ?? {};
-  const hasEntries = !!data?.entries?.length;
+  let { collectionTitle, cta, entries, emptyStateText } = data ?? {};
+  let hasEntries = !!data?.entries?.length;
 
   return (
     <>

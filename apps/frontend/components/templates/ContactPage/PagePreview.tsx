@@ -14,8 +14,8 @@ type Props = {
 };
 
 export default function ContactPagePreview(props: Props) {
-  const { params, initial } = props;
-  const { data } = useQuery<ContactPagePayload | null>(
+  let { params, initial } = props;
+  let { data } = useQuery<ContactPagePayload | null>(
     CONTACT_PAGE_QUERY,
     params,
     {

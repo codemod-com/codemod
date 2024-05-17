@@ -5,11 +5,11 @@ import { WarningTexts } from "@studio/main/PageBottomPane/Components/WarningText
 import { inferVisibilities } from "@studio/main/PageBottomPane/utils/inferVisibilites";
 import { useEffect } from "react";
 
-export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
-  const { beforePanel, afterPanel, outputPanel } = panelsData;
-  const codeDiff = useCodeDiff();
-  const warnings = WarningTexts(codeDiff);
-  const afterWithMessages = {
+export let useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
+  let { beforePanel, afterPanel, outputPanel } = panelsData;
+  let codeDiff = useCodeDiff();
+  let warnings = WarningTexts(codeDiff);
+  let afterWithMessages = {
     ...afterPanel,
     visibilityOptions: useToggleVisibility(),
     snippetData: {
@@ -17,7 +17,7 @@ export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
       warnings,
     },
   };
-  const { onlyAfterHidden } = inferVisibilities({
+  let { onlyAfterHidden } = inferVisibilities({
     beforePanel,
     afterPanel: afterWithMessages,
     outputPanel,

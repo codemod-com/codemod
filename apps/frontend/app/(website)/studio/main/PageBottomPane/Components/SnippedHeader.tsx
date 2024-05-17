@@ -3,7 +3,7 @@ import type { HeaderProps } from "../utils/types";
 import Pane from "@studio/components/Panel";
 import { VisibilityIcon } from "@studio/icons/VisibilityIcon";
 
-export const SnippetHeader = ({
+export let SnippetHeader = ({
   isCollapsed = false,
   ondblclick = console.log,
   title,

@@ -6,13 +6,13 @@ import { Progress } from "@studio/components/ui/progress";
 export type ProgressBarProps = {
   codemodRunStatus: GetExecutionStatusResponse;
 };
-export const ProgressBar = ({ codemodRunStatus }: ProgressBarProps) => {
-  const progressInfo =
+export let ProgressBar = ({ codemodRunStatus }: ProgressBarProps) => {
+  let progressInfo =
     codemodRunStatus?.result?.status === "executing codemod"
       ? codemodRunStatus?.result.progress
       : null;
 
-  const progressInfoBar =
+  let progressInfoBar =
     progressInfo !== null ? (
       <div className="flex flex-col items-center justify-center w-80">
         <Progress

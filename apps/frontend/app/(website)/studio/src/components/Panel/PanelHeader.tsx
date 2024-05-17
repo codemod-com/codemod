@@ -6,7 +6,7 @@ type PanelHeaderProps = PropsWithChildren<{
   className?: string;
 }>;
 
-const PanelHeader = ({ children, className }: PanelHeaderProps) => (
+let PanelHeader = ({ children, className }: PanelHeaderProps) => (
   <div className={cn("panel_panel_header", className)}>{children}</div>
 );
 
@@ -19,7 +19,7 @@ type PanelTabProps = {
   ondblclick?: () => void;
   borderBottom?: boolean;
 };
-const PanelTab = ({
+let PanelTab = ({
   children,
   className,
   active,
@@ -28,7 +28,7 @@ const PanelTab = ({
   borderBottom = true,
   onClick: onTabClick,
 }: PanelTabProps) => {
-  const classNames = cn(
+  let classNames = cn(
     "panel_panel_tab",
     borderBottom && "border-b",
     inactive && "panel_panel_tab_inactive",
@@ -43,7 +43,7 @@ const PanelTab = ({
   );
 };
 
-const PanelTitle = ({ children }: PanelHeaderProps) => (
+let PanelTitle = ({ children }: PanelHeaderProps) => (
   <Text className="panel_panel_title" isTitle size="lg">
     {children}
   </Text>

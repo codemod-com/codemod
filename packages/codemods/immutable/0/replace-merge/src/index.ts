@@ -28,75 +28,75 @@ Changes to the original file: added options
 */
 
 import type {
-  ASTPath,
-  CallExpression,
-  JSCodeshift,
-  MemberExpression,
-  ObjectExpression,
-  Transform,
-} from "jscodeshift";
+	ASTPath,
+	CallExpression,
+	JSCodeshift,
+	MemberExpression,
+	ObjectExpression,
+	Transform,
+} from 'jscodeshift';
 
 class Handler {
-  private j: JSCodeshift;
-  private path: ASTPath<CallExpression>;
-  private argumentsMatch: boolean;
+	private j: JSCodeshift;
+	private path: ASTPath<CallExpression>;
+	private argumentsMatch: boolean;
 
-  constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
-    this.j = j;
-    this.path = path;
-    this.argumentsMatch = this.checkArgumentContract();
-  }
+	constructor(j: JSCodeshift, path: ASTPath<CallExpression>) {
+		this.j = j;
+		this.path = path;
+		this.argumentsMatch = this.checkArgumentContract();
+	}
 
-  checkArgumentContract() {
-    const node = this.path.node;
+	checkArgumentContract() {
+		let node = this.path.node;
 
-    if (node.arguments.length !== 1) {
-      return false;
-    }
+		if (node.arguments.length !== 1) {
+			return false;
+		}
 
-    return true;
-  }
+		return true;
+	}
 
-  transform() {
-    if (!this.argumentsMatch) {
-      return;
-    }
+	transform() {
+		if (!this.argumentsMatch) {
+			return;
+		}
 
-    const baseObject = (this.path.node.callee as MemberExpression).object;
-    const argument = this.path.node.arguments[0] as any;
-    let newArgument: any[] = [this.j.spreadElement(argument)];
+		let baseObject = (this.path.node.callee as MemberExpression).object;
+		let argument = this.path.node.arguments[0] as any;
+		let newArgument: any[] = [this.j.spreadElement(argument)];
 
-    if (argument.type === "ObjectExpression") {
-      const objectArgument = argument as ObjectExpression;
+		if (argument.type === 'ObjectExpression') {
+			let objectArgument = argument as ObjectExpression;
 
-      newArgument = [...objectArgument.properties];
-    }
+			newArgument = [...objectArgument.properties];
+		}
 
-    this.path.replace(
-      this.j.objectExpression([
-        this.j.spreadElement(baseObject),
-        ...newArgument,
-      ]),
-    );
-  }
+		this.path.replace(
+			this.j.objectExpression([
+				this.j.spreadElement(baseObject),
+				...newArgument,
+			]),
+		);
+	}
 }
 
-const transform: Transform = (file, api, options) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  const collections = root.find(j.CallExpression, {
-    callee: {
-      type: "MemberExpression",
-      property: {
-        type: "Identifier",
-        name: "merge",
-      },
-    },
-  });
+let transform: Transform = (file, api, options) => {
+	let j = api.jscodeshift;
+	let root = j(file.source);
+	let collections = root.find(j.CallExpression, {
+		callee: {
+			type: 'MemberExpression',
+			property: {
+				type: 'Identifier',
+				name: 'merge',
+			},
+		},
+	});
 
-  collections.forEach((path) => new Handler(j, path).transform());
+	collections.forEach((path) => new Handler(j, path).transform());
 
-  return root.toSource(options);
+	return root.toSource(options);
 };
 
 export default transform;

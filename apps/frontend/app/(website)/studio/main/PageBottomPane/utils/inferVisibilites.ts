@@ -1,7 +1,7 @@
 import type { BottomPanelData } from "@studio/main/PageBottomPane/utils/types";
 import { isVisible } from "@studio/utils/visibility";
 
-export const inferVisibilities = ({
+export let inferVisibilities = ({
   beforePanel,
   afterPanel,
   outputPanel,

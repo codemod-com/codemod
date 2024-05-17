@@ -5,15 +5,15 @@ import { loadRegistryAPIData } from "@/data/codemod/loaders";
 import type { SectionRegistryProps } from "@/types/section.types";
 
 export default async function SectionRegistry(props: SectionRegistryProps) {
-  const automations = await getInitialAutomations(props.initialAutomationSlugs);
+  let automations = await getInitialAutomations(props.initialAutomationSlugs);
 
-  const data = await loadRegistryAPIData({
+  let data = await loadRegistryAPIData({
     pageNumber: 1,
     searchParams: new URLSearchParams(),
     entriesPerPage: 1,
   });
 
-  const filter = data?.filters?.find((f) => f.id === props.automationFilter);
+  let filter = data?.filters?.find((f) => f.id === props.automationFilter);
 
   return (
     <Section className="w-full py-20">

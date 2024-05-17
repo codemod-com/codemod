@@ -8,14 +8,14 @@ function promiseState<T>(p: Promise<T>) {
   return () => state;
 }
 
-const getPrettier = promiseState(import("prettier/standalone"));
-const getPrettierParserTypeScript = promiseState(
+let getPrettier = promiseState(import("prettier/standalone"));
+let getPrettierParserTypeScript = promiseState(
   import("prettier/parser-typescript"),
 );
 
-export const prettify = (text: string): string => {
-  const prettier = getPrettier();
-  const prettierParserTypeScript = getPrettierParserTypeScript();
+export let prettify = (text: string): string => {
+  let prettier = getPrettier();
+  let prettierParserTypeScript = getPrettierParserTypeScript();
 
   if (prettier === undefined || prettierParserTypeScript === undefined) {
     return text;

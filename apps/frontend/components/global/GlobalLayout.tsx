@@ -15,7 +15,7 @@ export default function GlobalLayout({
   className?: string;
   children: any;
 }) {
-  const hideMenu = useHideMenu();
+  let hideMenu = useHideMenu();
   return (
     <div
       className={cn(
