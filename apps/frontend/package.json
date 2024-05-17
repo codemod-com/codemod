@@ -2,6 +2,7 @@
   "name": "@codemod-com/frontend",
   "private": true,
   "scripts": {
+    "dev:ai": "cd ../modgpt && npm run start & cd ../../../ee && uvicorn app:app & npm run dev",
     "build": "next build",
     "dev": "next",
     "format": "npx prettier --write . --ignore-path .gitignore",
@@ -28,7 +29,7 @@
     "@babel/preset-env": "^7.1.6",
     "@babel/types": "7.21.2",
     "@clerk/clerk-react": "4.30.3",
-    "@clerk/nextjs": "4.29.3",
+    "@clerk/nextjs": "5.0.9",
     "@clerk/themes": "1.7.10",
     "@codemod-com/utilities": "workspace:*",
     "@hookform/resolvers": "^3.3.2",

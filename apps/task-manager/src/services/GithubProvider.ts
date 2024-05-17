@@ -22,11 +22,9 @@ export class GithubProviderService {
   private __git: SimpleGit | null;
 
   constructor(codemodMetadata: CodemodMetadata) {
-    const { codemodName } = codemodMetadata;
-
     this.__git = null;
     this.__base = "main";
-    this.__currentBranch = `codemod-${codemodName.toLowerCase()}-${Date.now()}`;
+    this.__currentBranch = `codemod-${Date.now()}`;
     this.__codemodMetadata = codemodMetadata;
   }
 
@@ -110,7 +108,7 @@ export class GithubProviderService {
 
   public async createPullRequest(): Promise<string> {
     try {
-      const { repoUrl, codemodName } = this.__codemodMetadata;
+      const { repoUrl, codemodName, branch } = this.__codemodMetadata;
       const { authorName, repoName } = parseGithubRepoUrl(repoUrl);
 
       const url = `${BASE_URL}/repos/${authorName}/${repoName}/pulls`;
@@ -123,7 +121,7 @@ export class GithubProviderService {
         "post",
         {
           head: this.__currentBranch,
-          base: this.__base,
+          base: branch ?? this.__base,
           title,
           body,
         },

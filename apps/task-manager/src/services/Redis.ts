@@ -12,7 +12,7 @@ export class RedisKeyMissedError extends Error {}
 export type RedisValueData = {
   status: string;
   message: string;
-  link?: string;
+  link?: string | null;
 };
 
 export class RedisService {
@@ -37,7 +37,7 @@ export class RedisService {
     status: string;
     message?: string;
     progress?: ExecutionProgress;
-    link?: string;
+    link?: string | null;
   }): Promise<void> {
     try {
       if (!this.__statusKey) {
@@ -48,7 +48,7 @@ export class RedisService {
         status: string;
         message?: string;
         progress?: ExecutionProgress;
-        link?: string;
+        link?: string | null;
       } = { status };
 
       if (message) {

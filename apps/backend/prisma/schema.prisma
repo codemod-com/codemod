@@ -33,6 +33,7 @@ model Codemod {
   verified         Boolean          @default(false)
   private          Boolean
   author           String           @db.VarChar(255)
+  totalRuns        Int              @default(0)
   versions         CodemodVersion[]
   amountOfUses     Int              @default(0)
   totalTimeSaved   Int              @default(0)

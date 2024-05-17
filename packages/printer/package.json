@@ -1,7 +1,7 @@
 {
   "name": "@codemod-com/printer",
   "author": "Codemod, Inc.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Printer abstraction used in Codemod.com ecosystem",
   "type": "module",
   "main": "./dist/index.js",
@@ -31,6 +31,7 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
+    "boxen": "^7.1.1",
     "chalk": "^5.3.0",
     "ora": "^8.0.1",
     "prettier": "^3.2.5",

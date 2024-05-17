@@ -2,7 +2,6 @@ import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
-import { CODEMOD_STUDIO_URL } from "@codemod-com/utilities";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
@@ -83,7 +82,7 @@ const createCodemodStudioURL = ({
   iv: string;
 }): string | null => {
   try {
-    const url = new URL(CODEMOD_STUDIO_URL);
+    const url = new URL(process.env.CODEMOD_STUDIO_URL);
     const searchParams = new URLSearchParams([
       [UrlParamKeys.Engine, engine],
       [UrlParamKeys.DiffId, diffId],
@@ -113,15 +112,17 @@ export const handleLearnCliCommand = async (
     return;
   }
 
-  const path = filePath ?? (await findLastlyModifiedFile());
+  const dirtyPath = filePath ?? (await findLastlyModifiedFile());
 
-  if (path === null) {
+  if (dirtyPath === null) {
     printer.printOperationMessage({
       kind: "error",
       message: "We could not find any modified file to run the command on.",
     });
     return;
   }
+
+  const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
 
   const fileExtension = getFileExtension(path);
 
@@ -184,7 +185,7 @@ export const handleLearnCliCommand = async (
   }
 
   const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
-  const sourceFile = getSourceFile(path, fileExtension);
+  const sourceFile = getSourceFile(dirtyPath, fileExtension);
 
   if (oldSourceFile === null || sourceFile === null) {
     printer.printOperationMessage({

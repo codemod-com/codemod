@@ -1,5 +1,7 @@
 import { env } from "./env";
 
+export const isDevelopment = process.env.NODE_ENV === "development";
+
 const publicConfig = {
   sanity: {
     projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "",

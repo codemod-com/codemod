@@ -4,12 +4,15 @@ import { useAuth } from "@clerk/nextjs";
 
 export const useAPI = <T>(endpoint: string) => {
   const { getToken } = useAuth();
-  const getHeaders = async () => ({
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${getTestToken()}`,
-    },
-  });
+  const getHeaders = async () => {
+    const token = await getToken();
+    return {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    };
+  };
   return {
     get: async <U = T>() =>
       await apiClient.get<U>(endpoint, await getHeaders()),

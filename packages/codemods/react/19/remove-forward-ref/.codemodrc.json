@@ -1,11 +1,12 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.1",
+  "version": "1.0.5",
   "private": false,
   "name": "react/19/remove-forward-ref",
   "description": "Codemod to remove React.forwardRef function that will be deprecated in next major React release",
   "engine": "jscodeshift",
   "meta": {
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/remove-forward-ref",
     "tags": ["react", "migration"]
   },
   "applicability": {

@@ -7,7 +7,7 @@ import type { Void } from "@studio/types/transformations";
 import { debounce } from "@studio/utils/debounce";
 import { isNil } from "@studio/utils/isNil";
 import { isVisible } from "@studio/utils/visibility";
-import React, { type PropsWithChildren } from "react";
+import React, { memo, type PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import ASTViewer from "../../ASTViewer";
 import Layout from "../../Layout";
@@ -81,7 +81,7 @@ export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
   </Layout.ResizablePanel>
 );
 
-export const AstSection = ({
+const AstSectionBase = ({
   panels,
   panelRefs,
   engine,
@@ -122,3 +122,5 @@ export const ShowPanelTile = ({
     <span className="hidden_panel_indicator_text">{header}</span>
   </div>
 );
+
+export const AstSection = memo(AstSectionBase);

@@ -6,7 +6,11 @@ import {
   type WorkerThreadMessage,
   decodeWorkerThreadMessage,
 } from "@codemod-com/printer";
-import { type ArgumentRecord, sleep } from "@codemod-com/utilities";
+import {
+  type ArgumentRecord,
+  type EngineOptions,
+  sleep,
+} from "@codemod-com/utilities";
 import type { FormattedFileCommand } from "./fileCommands.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
@@ -34,6 +38,7 @@ export class WorkerThreadManager {
     codemodSource: string,
     disablePrettier: boolean,
     safeArgumentRecord: ArgumentRecord,
+    engineOptions: EngineOptions | null,
     private readonly onCodemodError: CodemodExecutionErrorCallback,
   ) {
     for (let i = 0; i < __workerCount; ++i) {
@@ -55,6 +60,7 @@ export class WorkerThreadManager {
         codemodSource,
         disablePrettier,
         safeArgumentRecord,
+        engineOptions,
       } satisfies MainThreadMessage);
 
       this.__workers.push(worker);

@@ -21,80 +21,62 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
+      - name: Read version from package.json
+        id: get_version
+        run: |
+          VERSION=$(cat apps/modgpt/package.json | jq -r '.version')
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+
       - name: Login to Amazon ECR
         run: |
           aws ecr get-login-password --region ${{ secrets.AWS_REGION }} | docker login --username AWS --password-stdin ${{ secrets.ECR_REGISTRY }}
 
       - name: Check latest image version in ECR
         id: check_version
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY_MODGPT_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
         run: |
-          VERSION=$(cat apps/modgpt/package.json | jq -r '.version')
-          LATEST_ECR_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_MODGPT_BACKEND_NAME --region $AWS_REGION --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          LATEST_ECR_VERSION=$(aws ecr describe-images --repository-name ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }} --region ${{ secrets.AWS_REGION }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
           if [ "$VERSION" == "$LATEST_ECR_VERSION" ]; then
             echo "::set-output name=should_deploy::false"
-            exit 0
           else
             echo "::set-output name=should_deploy::true"
           fi
 
       - name: Build Docker image
         if: steps.check_version.outputs.should_deploy == 'true'
-        env:
-          ECR_REPOSITORY_MODGPT_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
         run: |
-          docker build -f apps/modgpt/Dockerfile --no-cache --progress=plain -t $ECR_REPOSITORY_MODGPT_BACKEND_NAME .
-
-      - name: Tag Docker image
-        if: steps.check_version.outputs.should_deploy == 'true'
-        env:
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY_MODGPT_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
-        run: |
-          VERSION=$(cat apps/modgpt/package.json | jq -r '.version')
-          docker tag $ECR_REPOSITORY_MODGPT_BACKEND_NAME:latest $ECR_REGISTRY/$ECR_REPOSITORY_MODGPT_BACKEND_NAME:$VERSION
+          docker build -f apps/modgpt/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}:$VERSION .
 
       - name: Push Docker image to Amazon ECR
         if: steps.check_version.outputs.should_deploy == 'true'
-        env:
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY_MODGPT_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
         run: |
-          VERSION=$(cat apps/modgpt/package.json | jq -r '.version')
-          docker push $ECR_REGISTRY/$ECR_REPOSITORY_MODGPT_BACKEND_NAME:$VERSION
+          docker push ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}:$VERSION
+
+      - name: Decode SSH Key
+        run: echo "${{ secrets.AWS_SSH_KEY }}" | base64 --decode > private_key.pem
+
+      - name: Set file permissions
+        run: chmod 600 private_key.pem
 
       - name: Deploy to EC2
         if: steps.check_version.outputs.should_deploy == 'true'
-        env:
-          AWS_SSH_KEY: ${{ secrets.AWS_SSH_KEY }}
-          AWS_EC2_HOST: ${{ secrets.AWS_EC2_HOST }}
-          AWS_EC2_USER_NAME: ${{ secrets.AWS_EC2_USER_NAME }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
-          ECR_REPOSITORY_MODGPT_BACKEND_NAME: ${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
         run: |
-          echo "$AWS_SSH_KEY" > private_key.pem
-          chmod 600 private_key.pem
-          ssh -o StrictHostKeyChecking=no -i private_key.pem $AWS_EC2_USER_NAME@$AWS_EC2_HOST '
-            export AWS_REGION='"$AWS_REGION"'
-            export ECR_REGISTRY='"$ECR_REGISTRY"'
-            export ECR_REPOSITORY_MODGPT_BACKEND_NAME='"$ECR_REPOSITORY_MODGPT_BACKEND_NAME"'
+          ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.AWS_EC2_USER_NAME }}@${{ secrets.AWS_EC2_HOST }} '
+            export AWS_REGION=${{ secrets.AWS_REGION }}
+            export ECR_REGISTRY=${{ secrets.ECR_REGISTRY }}
+            export ECR_REPOSITORY_MODGPT_BACKEND_NAME=${{ secrets.ECR_REPOSITORY_MODGPT_BACKEND_NAME }}
+
             aws ecr get-login-password --region $AWS_REGION | sudo docker login --username AWS --password-stdin $ECR_REGISTRY
 
             LATEST_IMAGE_VERSION=$(aws ecr describe-images --repository-name $ECR_REPOSITORY_MODGPT_BACKEND_NAME --region $AWS_REGION --query "sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]" --output text)
             echo "Latest image version: $LATEST_IMAGE_VERSION"
 
             cd nginx/
-            sed -i "s|modgpt-backend:[^[:space:]]*|modgpt-backend:$LATEST_IMAGE_VERSION|g" docker-compose.yml
+            sed -i "s|modgpt-backend:[0-9]+\.[0-9]+\.[0-9]+|modgpt-backend:$LATEST_IMAGE_VERSION|g" docker-compose.yml
             if [ $? -eq 0 ]; then
-                echo "Image version updated successfully in docker-compose.yml."
+              echo "Image version updated successfully in docker-compose.yml."
             else
-                echo "Failed to update image version in docker-compose.yml."
-                exit 1
+              echo "Failed to update image version in docker-compose.yml."
+              exit 1
             fi
 
             sudo docker compose down modgpt-backend-service

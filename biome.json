@@ -126,6 +126,14 @@
     ]
   },
   "organizeImports": {
-    "ignore": ["node_modules", "dist", "build", ".next", ".vscode", "build-ncc"]
+    "ignore": [
+      "node_modules",
+      "dist",
+      "build",
+      ".next",
+      ".vscode",
+      "build-ncc",
+      "**/__testfixtures__/**"
+    ]
   }
 }

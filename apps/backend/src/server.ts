@@ -56,6 +56,7 @@ import {
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
+import { PostHogService } from "./services/PostHogService.js";
 import { SourceControl } from "./services/SourceControl.js";
 import {
   CodemodNotFoundError,
@@ -286,9 +287,16 @@ const wrapRequestHandlerMethod =
       const userOrganizations =
         await clerkClient.users.getOrganizationMembershipList({ userId });
       const userAllowedNamespaces = [
-        user.username,
         ...userOrganizations.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
+
+      if (user.username) {
+        userAllowedNamespaces.push(user.username);
+
+        if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
+          userAllowedNamespaces.push("codemod-com", "codemod.com");
+        }
+      }
 
       return {
         user,

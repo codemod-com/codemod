@@ -1,4 +1,5 @@
 export * from "./constants.js";
+export * from "./schemata/types.js";
 export { debounce } from "./functions/debounce.js";
 export {
   backtickify,
@@ -80,6 +81,11 @@ export {
 } from "./schemata/surfaceAgnosticJobSchema.js";
 export { type FileSystem } from "./schemata/types.js";
 export { type ValidateTokenResponse } from "./schemata/validateTokenResponse.js";
+export {
+  type EngineOptions,
+  engineOptionsSchema,
+  parseEngineOptions,
+} from "./schemata/engineOptionsSchema.js";
 export { CaseReadingService } from "./services/case/caseReadingService.js";
 export { CaseWritingService } from "./services/case/caseWritingService.js";
 export { FileWatcher } from "./services/case/fileWatcher.js";

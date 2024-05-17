@@ -1,8 +1,7 @@
-import { getTestToken } from "@/utils";
 import getExecutionStatus, {
   type GetExecutionStatusResponse,
 } from "@/utils/apis/getExecutionStatus";
-import { useAuth } from "@clerk/clerk-react";
+import { useAuth } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 
 // use global var, because we need to keep state even if this hook is rendered in multiple different components
@@ -25,21 +24,21 @@ export const useExecutionStatus = (
     let intervalId: number | null = null;
 
     const handler = async () => {
-      if (executionId === null) {
-        return;
-      }
-
-      const token = await getToken();
-
-      if (token === null) {
-        return;
-      }
       intervalId = window.setInterval(async () => {
+        if (executionId === null) {
+          return;
+        }
+
+        const token = await getToken();
+
+        if (token === null) {
+          return;
+        }
+
         const executionStatus = await getExecutionStatus({
           executionId,
-          token: getTestToken(),
+          token,
         });
-        console.log("STATUS: ", executionStatus?.result?.status);
 
         if (executionStatus === null) {
           if (intervalId !== null) {
@@ -57,7 +56,7 @@ export const useExecutionStatus = (
         ) {
           clearInterval(intervalId);
         }
-      }, 500);
+      }, 1000);
     };
     handler();
     return () => {

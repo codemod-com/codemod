@@ -1,4 +1,4 @@
-import { Printer } from "@codemod-com/printer";
+import { Printer, boxen, chalk } from "@codemod-com/printer";
 import {
   NullSender,
   PostHogSender,
@@ -6,6 +6,7 @@ import {
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
 import Axios from "axios";
+import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
@@ -22,6 +23,39 @@ import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
 import { initGlobalNodeModules } from "./utils";
+
+const checkLatestVersion = async () => {
+  try {
+    const npmViewOutput = (
+      await execPromise("npm view codemod version", { timeout: 3000 })
+    ).stdout.trim();
+    const latestCLIVersion = semver.coerce(npmViewOutput)?.version;
+
+    if (latestCLIVersion && semver.gt(latestCLIVersion, version)) {
+      console.log(
+        boxen(
+          chalk(
+            "Update available",
+            chalk.dim(version),
+            ">",
+            chalk.green(latestCLIVersion),
+            "\n\nRun",
+            chalk.bold.cyan(doubleQuotify("npm i -g codemod@latest")),
+            "to upgrade",
+          ),
+          {
+            padding: 1,
+            textAlignment: "center",
+            borderColor: "yellowBright",
+            borderStyle: "round",
+          },
+        ),
+      );
+    }
+  } catch (err) {
+    // npm is not installed?
+  }
+};
 
 const initializeDependencies = async (argv: {
   clientIdentifier: string | undefined;
@@ -86,6 +120,8 @@ const initializeDependencies = async (argv: {
 };
 
 export const executeMainThread = async () => {
+  await checkLatestVersion();
+
   const slicedArgv = hideBin(process.argv);
 
   const argvObject = buildGlobalOptions(
@@ -221,7 +257,7 @@ export const executeMainThread = async () => {
             )}`,
           });
 
-          exit();
+          return exit();
         }
 
         const { handleBuildCliCommand } = await import("./commands/build.js");
@@ -261,14 +297,18 @@ export const executeMainThread = async () => {
       async (args) => {
         const lastArgument = args._.length > 1 ? String(args._.at(-1)) : null;
 
-        if (!lastArgument) {
-          throw new Error(
-            "You must provide the name of the codemod to unpublish. Aborting...",
-          );
-        }
-
-        const { executeCliCommand, printer } =
+        const { executeCliCommand, printer, exit } =
           await initializeDependencies(args);
+
+        if (!lastArgument) {
+          printer.printOperationMessage({
+            kind: "error",
+            message:
+              "You must provide the name of the codemod to unpublish. Aborting...",
+          });
+
+          return exit();
+        }
 
         return executeCliCommand(() =>
           handleUnpublishCliCommand(printer, lastArgument, args.force),
@@ -311,6 +351,8 @@ export const executeMainThread = async () => {
 
   const argv = await argvObject.parse();
 
-  const { exit } = await initializeDependencies(argv);
-  process.on("SIGINT", exit);
+  {
+    const { exit } = await initializeDependencies(argv);
+    process.on("SIGINT", exit);
+  }
 };

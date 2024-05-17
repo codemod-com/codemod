@@ -1,9 +1,10 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.4",
   "name": "react/19/replace-act-import",
   "private": false,
   "engine": "jscodeshift",
   "meta": {
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/replace-act-import",
     "tags": ["react", "migration"]
   },
   "applicability": {

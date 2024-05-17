@@ -59,23 +59,25 @@
 	align-items: center;
 	padding: 0.25rem;
 	padding-bottom: 0px;
-	min-width: 200px;
+	margin-top: -40px;
+	margin-left: 12px;
+	width: fit-content;
 }
 
 .combobox {
 	height: 2.5rem;
 	appearance: none;
 	border-radius: 0.25rem;
-	background-color: hsl(204 4% 0% / 0.05);
 	padding-right: 0.5rem;
 	padding-left: 1.75rem;
 	color: hsl(204 4% 0%);
 	outline: 2px solid transparent;
 	outline-offset: 2px;
+	width: 500px;
 }
 
 .combobox::placeholder {
-	color: hsl(204 4% 0% / 0.6);
+	color: hsl(0, 0%, 0%);
 }
 
 @media (min-width: 640px) {
@@ -83,6 +85,19 @@
 		height: 2.25rem;
 		font-size: 15px;
 	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.spinner {
+	animation: spin 3s linear infinite;
 }
 
 .combobox-icon {

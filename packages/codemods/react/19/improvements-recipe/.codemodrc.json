@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "react/19/improvements-recipe",
+  "version": "1.0.0",
+  "private": false,
+  "engine": "recipe",
+  "names": [
+    "react/19/remove-context-provider",
+    "react/19/remove-forward-ref",
+    "react/19/use-context-hook"
+  ],
+  "meta": {
+    "tags": ["migration"]
+  },
+  "applicability": {
+    "from": [["react", "<=", "19"]]
+  }
+}
