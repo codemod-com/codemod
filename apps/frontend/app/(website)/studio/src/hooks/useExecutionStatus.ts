@@ -42,6 +42,7 @@ export const useExecutionStatus = (
 
         if (executionStatus === null) {
           if (intervalId !== null) {
+            setExecutionStatus(null);
             clearInterval(intervalId);
           }
           return;
@@ -54,6 +55,7 @@ export const useExecutionStatus = (
             executionStatus.result?.status === "error") &&
           intervalId !== null
         ) {
+          setExecutionStatus(null);
           clearInterval(intervalId);
         }
       }, 1000);
@@ -61,6 +63,7 @@ export const useExecutionStatus = (
     handler();
     return () => {
       if (intervalId !== null) {
+        setExecutionStatus(null);
         clearInterval(intervalId);
       }
     };
