@@ -13,7 +13,7 @@ export type RangeCommand =
       ranges: ReadonlyArray<TreeNode | OffsetRange>;
     }>;
 
-export const buildRanges = (
+export let buildRanges = (
   rootNode: TreeNode | null,
   rangeCommand: RangeCommand,
 ): ReadonlyArray<TreeNode | OffsetRange> => {
@@ -56,10 +56,10 @@ function findClosestParentWithinRange(
     res = tree;
   }
 
-  const children = tree.children ?? [];
+  let children = tree.children ?? [];
 
   for (let i = 0; i < children.length; i += 1) {
-    const node =
+    let node =
       children[i] && findClosestParentWithinRange(children[i], start, end);
 
     if (node) {
@@ -70,7 +70,7 @@ function findClosestParentWithinRange(
   return res;
 }
 
-export const isNode = (node: unknown): node is Node => {
+export let isNode = (node: unknown): node is Node => {
   return (
     typeof node === "object" &&
     node !== null &&
@@ -79,7 +79,7 @@ export const isNode = (node: unknown): node is Node => {
   );
 };
 
-const getNodeHash = ({ type, start, end }: Node): string =>
+let getNodeHash = ({ type, start, end }: Node): string =>
   `${type}_${start}_${end}`;
 
 export { findClosestParentWithinRange, getNodeHash };

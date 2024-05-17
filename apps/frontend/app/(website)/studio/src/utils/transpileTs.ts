@@ -1,8 +1,8 @@
 import initSwc, { transform } from "@swc/wasm-web";
 
-export const transpileTs = async (input: string) => {
+export let transpileTs = async (input: string) => {
   await initSwc();
-  const { code } = await transform(input, {
+  let { code } = await transform(input, {
     minify: true,
     module: { type: "commonjs" },
     jsc: {

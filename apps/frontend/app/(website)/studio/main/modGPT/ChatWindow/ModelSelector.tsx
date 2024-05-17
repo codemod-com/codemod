@@ -10,17 +10,17 @@ import {
 import { useCFSStore } from "@studio/store/zustand/CFS";
 import { type Engine, LLM_ENGINES } from "@studio/store/zustand/CFS";
 
-export const EngineSelector = () => {
-  const {
+export let EngineSelector = () => {
+  let {
     AIAssistant: { engine },
     setEngine,
   } = useCFSStore();
 
-  const handleEngineChange = (e: Engine) => {
+  let handleEngineChange = (e: Engine) => {
     setEngine(e);
   };
 
-  const { isDark } = useTheme();
+  let { isDark } = useTheme();
   return (
     <Select onValueChange={handleEngineChange} value={engine}>
       <SelectTrigger className="flex w-full select-none items-center font-semibold">

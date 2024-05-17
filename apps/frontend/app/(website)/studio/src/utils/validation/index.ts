@@ -4,5 +4,5 @@ export * from "./rules";
 
 export type ValidationRule = (value: string) => string;
 
-export const validateValue = (value: string, rule: ValidationRule): string =>
+export let validateValue = (value: string, rule: ValidationRule): string =>
   rule(value);

@@ -8,21 +8,21 @@ import BlogArticle from "./templates/BlogArticle";
 import Job from "./templates/Job";
 import Registry from "./templates/Registry";
 
-export const runtime = "edge";
+export let runtime = "edge";
 
-const BaseTemplate = ({ title }) => {
+let BaseTemplate = ({ title }) => {
   return <Base title={title} />;
 };
 
-const DynamicTemplate = ({ searchParams }) => {
-  const type = searchParams.get("type");
-  const title = searchParams.get("title");
-  const jobLocation = searchParams.get("jobLocation");
-  const jobDepartment = searchParams.get("jobDepartment");
-  const blogAuthors = searchParams.get("blogAuthors");
-  const automationAuthor = searchParams.get("automationAuthor");
-  const automationFrom = searchParams.get("automationFrom");
-  const automationTo = searchParams.get("automationTo");
+let DynamicTemplate = ({ searchParams }) => {
+  let type = searchParams.get("type");
+  let title = searchParams.get("title");
+  let jobLocation = searchParams.get("jobLocation");
+  let jobDepartment = searchParams.get("jobDepartment");
+  let blogAuthors = searchParams.get("blogAuthors");
+  let automationAuthor = searchParams.get("automationAuthor");
+  let automationFrom = searchParams.get("automationFrom");
+  let automationTo = searchParams.get("automationTo");
 
   return type === "blog.article" || type === "blog.customerStory" ? (
     <BlogArticle
@@ -62,7 +62,7 @@ const DynamicTemplate = ({ searchParams }) => {
     <BaseTemplate title={title} />
   );
 };
-const RegistryTemplate = ({ title }) => {
+let RegistryTemplate = ({ title }) => {
   return (
     <Registry
       title={title}
@@ -72,9 +72,9 @@ const RegistryTemplate = ({ title }) => {
 };
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
+  let { searchParams } = new URL(request.url);
 
-  const fontDataPromises = [
+  let fontDataPromises = [
     fetch(new URL("../../../fonts/Satoshi-Bold.ttf", import.meta.url)).then(
       (res) => res.arrayBuffer(),
     ),
@@ -86,19 +86,19 @@ export async function GET(request: Request) {
     ),
   ];
 
-  const [fontDataBold, fontDataMedium, fontDataRegular] =
+  let [fontDataBold, fontDataMedium, fontDataRegular] =
     await Promise.all(fontDataPromises);
 
-  const title = searchParams.get("title");
-  const type = searchParams.get("type") || "";
+  let title = searchParams.get("title");
+  let type = searchParams.get("type") || "";
 
-  const isDynamicTemplate = [
+  let isDynamicTemplate = [
     "blog.article",
     "blog.customerStory",
     "job",
     "automation",
   ].includes(type);
-  const isRegistryTemplate = type === "registryIndex";
+  let isRegistryTemplate = type === "registryIndex";
 
   return new ImageResponse(
     isRegistryTemplate ? (

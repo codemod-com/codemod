@@ -1,8 +1,8 @@
 import type { TreeNode } from "@studio/components/Tree";
 import type React from "react";
 
-const useScrollNodeIntoView = () => {
-  const scrollIntoView = async (
+let useScrollNodeIntoView = () => {
+  let scrollIntoView = async (
     node: TreeNode | null,
     treeRef: React.RefObject<HTMLDivElement | null>,
   ) => {
@@ -11,7 +11,7 @@ const useScrollNodeIntoView = () => {
     }
     // delay to make the animation smoother
     await delay(200);
-    const foundElem = document.getElementById(
+    let foundElem = document.getElementById(
       `${node.label}-${node.start}-${node.end}`,
     );
 
@@ -25,7 +25,7 @@ const useScrollNodeIntoView = () => {
   return scrollIntoView;
 };
 
-const delay = async (ms: number) =>
+let delay = async (ms: number) =>
   new Promise((resolve) => {
     setTimeout(resolve, ms);
   });

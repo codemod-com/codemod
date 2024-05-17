@@ -3,7 +3,7 @@ import { defineType } from "sanity";
 
 import sections from "../sections";
 
-export const sectionsBody = defineType({
+export let sectionsBody = defineType({
   name: "sectionsBody",
   title: "Sections",
   type: "array",

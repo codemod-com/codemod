@@ -10,7 +10,7 @@ export default function Collapsible(props: {
   title?: string;
   content?: PortableTextBlock[];
 }) {
-  const [isOpen, setIsOpen] = useState(false);
+  let [isOpen, setIsOpen] = useState(false);
   return (
     <div className="my-10 w-full rounded-lg border-l-[4px] border-tertiary-light bg-emphasis-light px-m py-s last:mb-0 dark:border-tertiary-dark/10 dark:bg-emphasis-dark">
       <button

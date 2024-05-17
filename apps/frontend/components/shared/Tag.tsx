@@ -9,7 +9,7 @@ type TagProps = {
   iconOnly?: boolean;
 };
 
-const tagVariant = cva(
+let tagVariant = cva(
   [
     "rounded-[4px] px-xs py-xxs font-medium border-[1px] flex items-center gap-xxs transition-colors",
   ],

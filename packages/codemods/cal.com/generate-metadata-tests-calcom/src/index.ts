@@ -1,7 +1,7 @@
-import { parse, sep } from "node:path";
-import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
+import { parse, sep } from 'node:path';
+import type { Filemod, HandleData, HandleFile } from '@codemod-com/filemod';
 
-export const buildData = (appPath: string) => `
+export let buildData = (appPath: string) => `
 	import { expect } from "@playwright/test";
 
 	import { test } from "../lib/fixtures";
@@ -76,86 +76,86 @@ export const buildData = (appPath: string) => `
 type Dependencies = Record<string, never>;
 
 type State = {
-  testPath: string | null;
+	testPath: string | null;
 };
 
-const initializeState: Filemod<Dependencies, State>["initializeState"] = async (
-  options,
+let initializeState: Filemod<Dependencies, State>['initializeState'] = async (
+	options,
 ) => ({
-  testPath: typeof options.testPath === "string" ? options.testPath : null,
+	testPath: typeof options.testPath === 'string' ? options.testPath : null,
 });
 
-const handleFile: HandleFile<Dependencies, State> = async (
-  api,
-  path,
-  options,
-  state,
+let handleFile: HandleFile<Dependencies, State> = async (
+	api,
+	path,
+	options,
+	state,
 ) => {
-  if (state === null || state.testPath === null) {
-    return [];
-  }
+	if (state === null || state.testPath === null) {
+		return [];
+	}
 
-  const parsedPath = parse(path);
-  const directoryNames = parsedPath.dir.split(sep);
-  const endsWithPages =
-    directoryNames.length > 0 &&
-    directoryNames.lastIndexOf("pages") === directoryNames.length - 1;
+	let parsedPath = parse(path);
+	let directoryNames = parsedPath.dir.split(sep);
+	let endsWithPages =
+		directoryNames.length > 0 &&
+		directoryNames.lastIndexOf('pages') === directoryNames.length - 1;
 
-  const nameIsIndex = parsedPath.name === "index";
+	let nameIsIndex = parsedPath.name === 'index';
 
-  if (endsWithPages && nameIsIndex) {
-    return [];
-  }
+	if (endsWithPages && nameIsIndex) {
+		return [];
+	}
 
-  const pagesIndex = directoryNames.lastIndexOf("pages");
+	let pagesIndex = directoryNames.lastIndexOf('pages');
 
-  const paths = directoryNames.slice(pagesIndex + 1);
+	let paths = directoryNames.slice(pagesIndex + 1);
 
-  if (!nameIsIndex) {
-    paths.push(parsedPath.name);
-  }
+	if (!nameIsIndex) {
+		paths.push(parsedPath.name);
+	}
 
-  const appPath = api.joinPaths(...paths);
+	let appPath = api.joinPaths(...paths);
 
-  paths[paths.length - 1] += ".e2e.ts";
+	paths[paths.length - 1] += '.e2e.ts';
 
-  const newPath = api.joinPaths(state.testPath, ...paths);
+	let newPath = api.joinPaths(state.testPath, ...paths);
 
-  return [
-    {
-      kind: "upsertFile",
-      path: newPath,
-      options: {
-        ...options,
-        appPath,
-      },
-    },
-  ];
+	return [
+		{
+			kind: 'upsertFile',
+			path: newPath,
+			options: {
+				...options,
+				appPath,
+			},
+		},
+	];
 };
 
-const handleData: HandleData<Dependencies, State> = async (
-  _,
-  path,
-  __,
-  options,
+let handleData: HandleData<Dependencies, State> = async (
+	_,
+	path,
+	__,
+	options,
 ) => {
-  const appPath = typeof options.appPath === "string" ? options.appPath : null;
+	let appPath = typeof options.appPath === 'string' ? options.appPath : null;
 
-  if (appPath === null) {
-    return { kind: "noop" };
-  }
+	if (appPath === null) {
+		return { kind: 'noop' };
+	}
 
-  return {
-    kind: "upsertData",
-    path,
-    data: buildData(appPath),
-  };
+	return {
+		kind: 'upsertData',
+		path,
+		data: buildData(appPath),
+	};
 };
 
-export const repomod: Filemod<Dependencies, State> = {
-  includePatterns: ["**/pages/**/*.{js,jsx,ts,tsx}"],
-  excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
-  initializeState,
-  handleFile,
-  handleData,
+export let repomod: Filemod<Dependencies, State> = {
+	includePatterns: ['**/pages/**/*.{js,jsx,ts,tsx}'],
+	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	initializeState,
+	handleFile,
+	handleData,
 };

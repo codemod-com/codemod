@@ -2,7 +2,7 @@ import { UserIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 import { imageWithAltField } from "../shared/imageWithAltField";
 
-export const blogAuthor = defineType({
+export let blogAuthor = defineType({
   name: "blog.author",
   title: "Blog Author",
   type: "document",

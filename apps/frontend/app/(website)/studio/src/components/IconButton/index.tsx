@@ -7,7 +7,7 @@ type Props = ButtonHTMLAttributes<HTMLButtonElement> & {
   isActive?: boolean;
 };
 
-const IconButton = ({ children, tooltip, isActive, ...restProps }: Props) => (
+let IconButton = ({ children, tooltip, isActive, ...restProps }: Props) => (
   <>
     <button
       className={cn(

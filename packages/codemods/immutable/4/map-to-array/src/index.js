@@ -25,36 +25,34 @@ Changes to the original file: added options
 */
 
 export default function transform(file, api, options) {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        object: { callee: { name: "Map" } },
-        property: { name: "toArray" },
-      },
-    })
-    .forEach((path) => {
-      const args = path.value.callee.object.arguments;
-      const newNode = j.callExpression(
-        j.memberExpression(
-          j.callExpression(
-            j.memberExpression(
-              j.callExpression(j.identifier("Map"), args),
-              j.identifier("toList"),
-              false,
-            ),
-            [],
-          ),
-          j.identifier("toArray"),
-          false,
-        ),
-        [],
-      );
-      j(path).replaceWith(newNode);
-    });
+	root.find(j.CallExpression, {
+		callee: {
+			object: { callee: { name: 'Map' } },
+			property: { name: 'toArray' },
+		},
+	}).forEach((path) => {
+		let args = path.value.callee.object.arguments;
+		let newNode = j.callExpression(
+			j.memberExpression(
+				j.callExpression(
+					j.memberExpression(
+						j.callExpression(j.identifier('Map'), args),
+						j.identifier('toList'),
+						false,
+					),
+					[],
+				),
+				j.identifier('toArray'),
+				false,
+			),
+			[],
+		);
+		j(path).replaceWith(newNode);
+	});
 
-  return root.toSource(options);
+	return root.toSource(options);
 }

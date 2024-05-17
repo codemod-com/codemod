@@ -11,8 +11,8 @@ type PreviewRouteProps = {
   initial: QueryResponseInitial<TextPagePayload | null>;
 };
 export default function TextPagePreview(props: PreviewRouteProps) {
-  const { initial } = props;
-  const { data } = useQuery<TextPagePayload | null>(
+  let { initial } = props;
+  let { data } = useQuery<TextPagePayload | null>(
     TEXT_PAGE_QUERY,
     {
       pathname: initial.data?.pathname,

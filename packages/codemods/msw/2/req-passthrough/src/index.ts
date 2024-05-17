@@ -1,263 +1,269 @@
-import type { ParameterDeclaration, SourceFile } from "ts-morph";
+import type { ParameterDeclaration, SourceFile } from 'ts-morph';
 import {
-  type ArrowFunction,
-  type BindingElement,
-  type Block,
-  type CallExpression,
-  type FunctionExpression,
-  type ImportSpecifier,
-  SyntaxKind,
-} from "ts-morph";
+	type ArrowFunction,
+	type BindingElement,
+	type Block,
+	type CallExpression,
+	type FunctionExpression,
+	type ImportSpecifier,
+	SyntaxKind,
+} from 'ts-morph';
 
 function addNamedImportDeclaration(
-  sourceFile: SourceFile,
-  moduleSpecifier: string,
-  name: string,
+	sourceFile: SourceFile,
+	moduleSpecifier: string,
+	name: string,
 ): ImportSpecifier {
-  const importDeclaration =
-    sourceFile.getImportDeclaration(moduleSpecifier) ??
-    sourceFile.addImportDeclaration({ moduleSpecifier });
+	let importDeclaration =
+		sourceFile.getImportDeclaration(moduleSpecifier) ??
+		sourceFile.addImportDeclaration({ moduleSpecifier });
 
-  const existing = importDeclaration
-    .getNamedImports()
-    .find((specifier) => specifier.getName() === name);
+	let existing = importDeclaration
+		.getNamedImports()
+		.find((specifier) => specifier.getName() === name);
 
-  return existing ?? importDeclaration.addNamedImport({ name });
+	return existing ?? importDeclaration.addNamedImport({ name });
 }
 
 function getImportDeclarationAlias(
-  sourceFile: SourceFile,
-  moduleSpecifier: string,
-  name: string,
+	sourceFile: SourceFile,
+	moduleSpecifier: string,
+	name: string,
 ) {
-  const importDeclaration = sourceFile.getImportDeclaration(moduleSpecifier);
-  if (!importDeclaration) {
-    return null;
-  }
+	let importDeclaration = sourceFile.getImportDeclaration(moduleSpecifier);
+	if (!importDeclaration) {
+		return null;
+	}
 
-  const namedImport = importDeclaration
-    .getNamedImports()
-    .find((specifier) => specifier.getName() === name);
+	let namedImport = importDeclaration
+		.getNamedImports()
+		.find((specifier) => specifier.getName() === name);
 
-  if (!namedImport) {
-    return null;
-  }
+	if (!namedImport) {
+		return null;
+	}
 
-  return namedImport.getAliasNode()?.getText() || namedImport.getName();
+	return namedImport.getAliasNode()?.getText() || namedImport.getName();
 }
 
 function replaceDestructureAliases(bindingEl: BindingElement) {
-  const directIds = bindingEl.getChildrenOfKind(SyntaxKind.Identifier);
+	let directIds = bindingEl.getChildrenOfKind(SyntaxKind.Identifier);
 
-  const [nameNode, aliasNode] = directIds;
+	let [nameNode, aliasNode] = directIds;
 
-  if (!nameNode || !aliasNode) {
-    return;
-  }
+	if (!nameNode || !aliasNode) {
+		return;
+	}
 
-  if (directIds.length === 2) {
-    aliasNode
-      .findReferencesAsNodes()
-      .forEach((ref) => ref.replaceWithText(nameNode.getText()));
-  }
+	if (directIds.length === 2) {
+		aliasNode
+			.findReferencesAsNodes()
+			.forEach((ref) => ref.replaceWithText(nameNode.getText()));
+	}
 }
 
 function replaceReferences(
-  codeBlock: SourceFile | Block | ArrowFunction | FunctionExpression,
-  replaced: string[],
-  callerName: string | undefined,
+	codeBlock: SourceFile | Block | ArrowFunction | FunctionExpression,
+	replaced: string[],
+	callerName: string | undefined,
 ) {
-  let didReplace = false;
+	let didReplace = false;
 
-  codeBlock
-    .getDescendantsOfKind(SyntaxKind.PropertyAccessExpression)
-    .forEach((accessExpr) => {
-      if (
-        replaced.includes(accessExpr.getName()) &&
-        accessExpr.getChildrenOfKind(SyntaxKind.Identifier)[0]?.getText() ===
-          callerName
-      ) {
-        const accessed = accessExpr
-          .getChildrenOfKind(SyntaxKind.Identifier)
-          .at(-1)
-          ?.getText();
-        if (!accessed) {
-          throw new Error("Could not find accessed identifier");
-        }
+	codeBlock
+		.getDescendantsOfKind(SyntaxKind.PropertyAccessExpression)
+		.forEach((accessExpr) => {
+			if (
+				replaced.includes(accessExpr.getName()) &&
+				accessExpr
+					.getChildrenOfKind(SyntaxKind.Identifier)[0]
+					?.getText() === callerName
+			) {
+				let accessed = accessExpr
+					.getChildrenOfKind(SyntaxKind.Identifier)
+					.at(-1)
+					?.getText();
+				if (!accessed) {
+					throw new Error('Could not find accessed identifier');
+				}
 
-        didReplace = true;
-        accessExpr.replaceWithText(accessed);
-      }
-    });
+				didReplace = true;
+				accessExpr.replaceWithText(accessed);
+			}
+		});
 
-  codeBlock
-    .getDescendantsOfKind(SyntaxKind.ObjectBindingPattern)
-    .forEach((bindingPattern) => {
-      const toReplaceFromBinding: string[] = [];
+	codeBlock
+		.getDescendantsOfKind(SyntaxKind.ObjectBindingPattern)
+		.forEach((bindingPattern) => {
+			let toReplaceFromBinding: string[] = [];
 
-      bindingPattern
-        .getDescendantsOfKind(SyntaxKind.BindingElement)
-        .forEach((bindingEl) => {
-          const destructuredReplaced = bindingEl
-            .getDescendantsOfKind(SyntaxKind.Identifier)
-            .find((d) => replaced.includes(d.getText()));
-          if (destructuredReplaced) {
-            replaceDestructureAliases(bindingEl);
+			bindingPattern
+				.getDescendantsOfKind(SyntaxKind.BindingElement)
+				.forEach((bindingEl) => {
+					let destructuredReplaced = bindingEl
+						.getDescendantsOfKind(SyntaxKind.Identifier)
+						.find((d) => replaced.includes(d.getText()));
+					if (destructuredReplaced) {
+						replaceDestructureAliases(bindingEl);
 
-            toReplaceFromBinding.push(bindingEl.getText());
-          }
-        });
+						toReplaceFromBinding.push(bindingEl.getText());
+					}
+				});
 
-      if (toReplaceFromBinding.length) {
-        didReplace = true;
+			if (toReplaceFromBinding.length) {
+				didReplace = true;
 
-        bindingPattern?.replaceWithText(
-          bindingPattern
-            .getText()
-            .replace(
-              new RegExp(
-                `(,\\s*)?(${toReplaceFromBinding.join("|")})+(\\s*,)?`,
-                "g",
-              ),
-              (fullMatch, p1, _p2, p3) => {
-                if (fullMatch && ![p1, p3].includes(fullMatch)) return "";
-                return fullMatch;
-              },
-            ),
-        );
+				bindingPattern?.replaceWithText(
+					bindingPattern
+						.getText()
+						.replace(
+							new RegExp(
+								`(,\\s*)?(${toReplaceFromBinding.join('|')})+(\\s*,)?`,
+								'g',
+							),
+							(fullMatch, p1, _p2, p3) => {
+								if (fullMatch && ![p1, p3].includes(fullMatch))
+									return '';
+								return fullMatch;
+							},
+						),
+				);
 
-        if (
-          !bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier).length
-        ) {
-          bindingPattern
-            .getAncestors()
-            .find((a) => a.getKind() === SyntaxKind.VariableDeclaration)
-            ?.asKindOrThrow(SyntaxKind.VariableDeclaration)
-            .remove();
-        } else {
-          bindingPattern.formatText();
-        }
-      }
-    });
+				if (
+					!bindingPattern.getDescendantsOfKind(SyntaxKind.Identifier)
+						.length
+				) {
+					bindingPattern
+						.getAncestors()
+						.find(
+							(a) =>
+								a.getKind() === SyntaxKind.VariableDeclaration,
+						)
+						?.asKindOrThrow(SyntaxKind.VariableDeclaration)
+						.remove();
+				} else {
+					bindingPattern.formatText();
+				}
+			}
+		});
 
-  return didReplace;
+	return didReplace;
 }
 
 function isMSWCall(sourceFile: SourceFile, callExpr: CallExpression) {
-  const httpCallerName = getImportDeclarationAlias(sourceFile, "msw", "http");
-  const graphqlCallerName = getImportDeclarationAlias(
-    sourceFile,
-    "msw",
-    "graphql",
-  );
+	let httpCallerName = getImportDeclarationAlias(sourceFile, 'msw', 'http');
+	let graphqlCallerName = getImportDeclarationAlias(
+		sourceFile,
+		'msw',
+		'graphql',
+	);
 
-  const identifiers =
-    callExpr
-      .getChildrenOfKind(SyntaxKind.PropertyAccessExpression)
-      .at(0)
-      ?.getChildrenOfKind(SyntaxKind.Identifier) ?? [];
+	let identifiers =
+		callExpr
+			.getChildrenOfKind(SyntaxKind.PropertyAccessExpression)
+			.at(0)
+			?.getChildrenOfKind(SyntaxKind.Identifier) ?? [];
 
-  const caller = identifiers.at(0);
+	let caller = identifiers.at(0);
 
-  if (!caller) {
-    return false;
-  }
+	if (!caller) {
+		return false;
+	}
 
-  const method = identifiers.at(1) ?? caller;
+	let method = identifiers.at(1) ?? caller;
 
-  const methodText = method.getText();
+	let methodText = method.getText();
 
-  const isHttpCall =
-    caller.getText() === httpCallerName &&
-    // This is what would be cool to get through inferring the type via
-    // typeChecker/langServer/diagnostics etc, for example
-    [
-      "all",
-      "get",
-      "post",
-      "put",
-      "patch",
-      "delete",
-      "head",
-      "options",
-    ].includes(methodText);
+	let isHttpCall =
+		caller.getText() === httpCallerName &&
+		// This is what would be cool to get through inferring the type via
+		// typeChecker/langServer/diagnostics etc, for example
+		[
+			'all',
+			'get',
+			'post',
+			'put',
+			'patch',
+			'delete',
+			'head',
+			'options',
+		].includes(methodText);
 
-  const isGraphQLCall =
-    caller.getText() === graphqlCallerName &&
-    ["query", "mutation"].includes(methodText);
+	let isGraphQLCall =
+		caller.getText() === graphqlCallerName &&
+		['query', 'mutation'].includes(methodText);
 
-  return isHttpCall || isGraphQLCall;
+	return isHttpCall || isGraphQLCall;
 }
 
 function getCallbackData(
-  expression: CallExpression,
+	expression: CallExpression,
 ):
-  | [
-      Block | FunctionExpression | ArrowFunction,
-      ReadonlyArray<ParameterDeclaration>,
-      FunctionExpression | ArrowFunction,
-    ]
-  | null {
-  const mockCallback = expression.getArguments().at(1) ?? null;
+	| [
+			Block | FunctionExpression | ArrowFunction,
+			ReadonlyArray<ParameterDeclaration>,
+			FunctionExpression | ArrowFunction,
+	  ]
+	| null {
+	let mockCallback = expression.getArguments().at(1) ?? null;
 
-  if (mockCallback === null) {
-    return null;
-  }
+	if (mockCallback === null) {
+		return null;
+	}
 
-  const cbParams = mockCallback.getChildrenOfKind(SyntaxKind.Parameter);
+	let cbParams = mockCallback.getChildrenOfKind(SyntaxKind.Parameter);
 
-  const syntaxCb =
-    mockCallback.asKind(SyntaxKind.ArrowFunction) ??
-    mockCallback.asKind(SyntaxKind.FunctionExpression) ??
-    null;
+	let syntaxCb =
+		mockCallback.asKind(SyntaxKind.ArrowFunction) ??
+		mockCallback.asKind(SyntaxKind.FunctionExpression) ??
+		null;
 
-  if (syntaxCb === null) {
-    return null;
-  }
+	if (syntaxCb === null) {
+		return null;
+	}
 
-  const callbackBody =
-    mockCallback.getChildrenOfKind(SyntaxKind.Block).at(0) ?? syntaxCb;
+	let callbackBody =
+		mockCallback.getChildrenOfKind(SyntaxKind.Block).at(0) ?? syntaxCb;
 
-  return [callbackBody, cbParams, syntaxCb];
+	return [callbackBody, cbParams, syntaxCb];
 }
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
-  return (
-    sourceFile
-      .getImportDeclarations()
-      .find((decl) =>
-        decl.getModuleSpecifier().getLiteralText().startsWith("msw"),
-      ) !== undefined
-  );
+	return (
+		sourceFile
+			.getImportDeclarations()
+			.find((decl) =>
+				decl.getModuleSpecifier().getLiteralText().startsWith('msw'),
+			) !== undefined
+	);
 }
 
 // https://mswjs.io/docs/migrations/1.x-to-2.x/#reqpassthrough
 export function handleSourceFile(sourceFile: SourceFile): string | undefined {
-  if (!shouldProcessFile(sourceFile)) {
-    return undefined;
-  }
+	if (!shouldProcessFile(sourceFile)) {
+		return undefined;
+	}
 
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter((callExpr) => isMSWCall(sourceFile, callExpr))
-    .forEach((expression) => {
-      const callbackData = getCallbackData(expression);
-      if (callbackData === null) {
-        return;
-      }
+	sourceFile
+		.getDescendantsOfKind(SyntaxKind.CallExpression)
+		.filter((callExpr) => isMSWCall(sourceFile, callExpr))
+		.forEach((expression) => {
+			let callbackData = getCallbackData(expression);
+			if (callbackData === null) {
+				return;
+			}
 
-      const [callbackBody, callbackParams] = callbackData;
-      const [reqParam] = callbackParams;
+			let [callbackBody, callbackParams] = callbackData;
+			let [reqParam] = callbackParams;
 
-      const didReplacePassthrough = replaceReferences(
-        callbackBody,
-        ["passthrough"],
-        reqParam?.getText(),
-      );
-      if (didReplacePassthrough) {
-        addNamedImportDeclaration(sourceFile, "msw", "passthrough");
-      }
-    });
+			let didReplacePassthrough = replaceReferences(
+				callbackBody,
+				['passthrough'],
+				reqParam?.getText(),
+			);
+			if (didReplacePassthrough) {
+				addNamedImportDeclaration(sourceFile, 'msw', 'passthrough');
+			}
+		});
 
-  return sourceFile.getFullText();
+	return sourceFile.getFullText();
 }

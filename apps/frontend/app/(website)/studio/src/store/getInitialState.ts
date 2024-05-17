@@ -7,7 +7,7 @@ import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 import { parseState } from "../schemata/stateSchemata";
 
-export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
+export let BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
     const { data } = state;
     return {
         data,
@@ -15,7 +15,7 @@ export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
 }
  `;
 
-export const AFTER_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state: State) {
+export let AFTER_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state: State) {
     const { data } = state;
     return {
         data,
@@ -23,7 +23,7 @@ export const AFTER_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state: State
 }
 `;
 
-export const DEFAULT_FIND_REPLACE_EXPRESSION = `
+export let DEFAULT_FIND_REPLACE_EXPRESSION = `
 root.find(j.FunctionDeclaration, {
     id: {
         name: 'mapStateToProps',
@@ -58,7 +58,7 @@ root.find(j.FunctionDeclaration, {
     });
 });`;
 
-export const STARTER_SNIPPET = `// BELOW IS A SAMPLE CODEMOD. BUILD YOUR OWN:
+export let STARTER_SNIPPET = `// BELOW IS A SAMPLE CODEMOD. BUILD YOUR OWN:
 // 1. INPUT: Fill out the Before and After editors with sample code snippets as test fixtures.
 // 2. AI: In the ModGPT tab on the left, click the button: "Build a codemod to transform before to after"
 // 3. OUTPUT: Let AI generate your codemod. Once generated, copy and paste it here.
@@ -79,7 +79,7 @@ export default function transform(
     return root.toSource();
 };`;
 
-export const TSMORPH_STARTER_SNIPPET = `
+export let TSMORPH_STARTER_SNIPPET = `
 import { SourceFile, EmitHint } from "ts-morph";
 
 export const handleSourceFile = (
@@ -89,7 +89,7 @@ export const handleSourceFile = (
 }
 `;
 
-export const buildDefaultCodemodSource = (engine: KnownEngines) => {
+export let buildDefaultCodemodSource = (engine: KnownEngines) => {
   if (engine === "jscodeshift") {
     return prettify(
       STARTER_SNIPPET.replace(
@@ -102,7 +102,7 @@ export const buildDefaultCodemodSource = (engine: KnownEngines) => {
   return TSMORPH_STARTER_SNIPPET;
 };
 
-export const SEARCH_PARAMS_KEYS = Object.freeze({
+export let SEARCH_PARAMS_KEYS = Object.freeze({
   ENGINE: "engine" as const,
   DIFF_ID: "diffId" as const,
   CODEMOD_SOURCE: "codemodSource" as const,
@@ -125,7 +125,7 @@ type InitialState = Readonly<{
   command: "learn" | AccessTokenCommands | null;
 }>;
 
-const decodeNullable = (value: string | null): string | null => {
+let decodeNullable = (value: string | null): string | null => {
   if (value === null) {
     return value;
   }
@@ -137,7 +137,7 @@ const decodeNullable = (value: string | null): string | null => {
   }
 };
 
-export const getInitialState = (): InitialState => {
+export let getInitialState = (): InitialState => {
   {
     if (typeof window === "undefined") {
       return {
@@ -150,26 +150,26 @@ export const getInitialState = (): InitialState => {
       };
     }
 
-    const searchParams = new URLSearchParams(window.location.search);
+    let searchParams = new URLSearchParams(window.location.search);
 
-    const csc = searchParams.get(
+    let csc = searchParams.get(
       SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD,
     );
 
     if (csc !== null) {
       try {
-        const encryptedString = window.atob(
+        let encryptedString = window.atob(
           csc.replaceAll("-", "+").replaceAll("_", "/"),
         );
 
-        const numberArray = Array.from(encryptedString)
+        let numberArray = Array.from(encryptedString)
           .map((character) => character.codePointAt(0))
           .filter(isNeitherNullNorUndefined);
 
-        const uint8Array = Uint8Array.from(numberArray);
+        let uint8Array = Uint8Array.from(numberArray);
 
-        const decryptedString = inflate(uint8Array, { to: "string" });
-        const shareableCodemod = parseShareableCodemod(
+        let decryptedString = inflate(uint8Array, { to: "string" });
+        let shareableCodemod = parseShareableCodemod(
           JSON.parse(decryptedString),
         );
 
@@ -186,20 +186,20 @@ export const getInitialState = (): InitialState => {
       }
     }
 
-    const engine = decodeNullable(
+    let engine = decodeNullable(
       searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
     ) as KnownEngines;
-    const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-    const codemodSource = decodeNullable(
+    let diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+    let codemodSource = decodeNullable(
       searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
     );
-    const codemodName = decodeNullable(
+    let codemodName = decodeNullable(
       searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
     );
 
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+    let command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
-    const someSearchParamsSet = [
+    let someSearchParamsSet = [
       engine,
       diffId,
       codemodSource,
@@ -222,27 +222,27 @@ export const getInitialState = (): InitialState => {
     }
   }
 
-  const stringifiedState = localStorage.getItem("state");
+  let stringifiedState = localStorage.getItem("state");
 
   if (stringifiedState !== null) {
     try {
-      const state = parseState(JSON.parse(stringifiedState));
+      let state = parseState(JSON.parse(stringifiedState));
 
-      const everyValueIsEmpty = [
+      let everyValueIsEmpty = [
         state.afterSnippet,
         state.beforeSnippet,
         state.codemodSource,
       ].every((s) => s === "");
 
-      const beforeSnippet = everyValueIsEmpty
+      let beforeSnippet = everyValueIsEmpty
         ? BEFORE_SNIPPET_DEFAULT_CODE
         : state.beforeSnippet;
 
-      const afterSnippet = everyValueIsEmpty
+      let afterSnippet = everyValueIsEmpty
         ? AFTER_SNIPPET_DEFAULT_CODE
         : state.afterSnippet;
 
-      const codemodSource = everyValueIsEmpty
+      let codemodSource = everyValueIsEmpty
         ? buildDefaultCodemodSource(state.engine)
         : state.codemodSource;
 
@@ -271,4 +271,4 @@ export const getInitialState = (): InitialState => {
 
 // I don't like this being a global variable
 // TODO pass this as a dependency when initializing redux
-export const INITIAL_STATE = getInitialState();
+export let INITIAL_STATE = getInitialState();

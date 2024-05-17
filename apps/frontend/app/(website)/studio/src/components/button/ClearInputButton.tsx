@@ -7,9 +7,9 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 
 type Props = { className?: string };
 
-const ClearInputButton = ({ className }: Props) => {
-  const { setContent } = useModStore();
-  const { setInput, setOutput } = useSnippetStore();
+let ClearInputButton = ({ className }: Props) => {
+  let { setContent } = useModStore();
+  let { setInput, setOutput } = useSnippetStore();
 
   return (
     <Tooltip

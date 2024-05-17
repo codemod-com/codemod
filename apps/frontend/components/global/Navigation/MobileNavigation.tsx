@@ -23,11 +23,11 @@ export function MobileDropdown({
   navigationCtas,
   closeFn,
 }: MobileNavigationProps) {
-  const [currentTheme, setCurrentTheme] = useState("light" as "light" | "dark");
-  const isDarkMode = currentTheme === "dark";
-  const pathname = usePathname();
+  let [currentTheme, setCurrentTheme] = useState("light" as "light" | "dark");
+  let isDarkMode = currentTheme === "dark";
+  let pathname = usePathname();
 
-  const animationVariants = {
+  let animationVariants = {
     initial: {
       opacity: 0,
       y: -4,
@@ -47,10 +47,10 @@ export function MobileDropdown({
   };
 
   useEffect(() => {
-    const darkMatcher = window.matchMedia("(prefers-color-scheme: dark)");
-    const storedTheme = localStorage.getItem("theme") as "light" | "dark";
+    let darkMatcher = window.matchMedia("(prefers-color-scheme: dark)");
+    let storedTheme = localStorage.getItem("theme") as "light" | "dark";
 
-    const theme = storedTheme || darkMatcher.matches ? "dark" : "light";
+    let theme = storedTheme || darkMatcher.matches ? "dark" : "light";
 
     setCurrentTheme(theme);
   }, []);

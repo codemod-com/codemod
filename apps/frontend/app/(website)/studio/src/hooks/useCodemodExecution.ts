@@ -6,14 +6,14 @@ import type {
 import { useUserSession } from "@studio/store/zustand/userSession";
 import { useAPI } from "./useAPI";
 
-export const useCodemodExecution = () => {
-  const { codemodExecutionId, setCodemodExecutionId } = useUserSession();
+export let useCodemodExecution = () => {
+  let { codemodExecutionId, setCodemodExecutionId } = useUserSession();
 
-  const { post: runCodemod } = useAPI(RUN_CODEMOD);
+  let { post: runCodemod } = useAPI(RUN_CODEMOD);
 
-  const onCodemodRun = async (request: any): Promise<void> => {
+  let onCodemodRun = async (request: any): Promise<void> => {
     try {
-      const { codemodRunId, success } = (
+      let { codemodRunId, success } = (
         await runCodemod<CodemodRunResponse, typeof codemodRunBodySchema>(
           request,
         )
@@ -29,7 +29,7 @@ export const useCodemodExecution = () => {
     }
   };
 
-  const onCodemodRunCancel = async () => {
+  let onCodemodRunCancel = async () => {
     // @TODO add ability to cancel current run
 
     setCodemodExecutionId(null);

@@ -1,3 +1,3 @@
-const C = () => {
-  return <div ref="refName" />;
+let C = () => {
+	return <div ref="refName" />;
 };

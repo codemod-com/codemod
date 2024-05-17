@@ -1,12 +1,12 @@
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("next 13 comment-deletable-files", () => {
-  it("should not add a comment if a file basename does not start with _app / _document / _error", async () => {
-    const INPUT = `
+describe('next 13 comment-deletable-files', () => {
+	it('should not add a comment if a file basename does not start with _app / _document / _error', async () => {
+		let INPUT = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -18,18 +18,18 @@ describe("next 13 comment-deletable-files", () => {
 			}
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "_other.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: '_other.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
 
-    assert.deepEqual(actualOutput, undefined);
-  });
+		assert.deepEqual(actualOutput, undefined);
+	});
 
-  it("should add a comment if a file basename starts with _app", async () => {
-    const INPUT = `
+	it('should add a comment if a file basename starts with _app', async () => {
+		let INPUT = `
 			import { useRouter } from 'next/router';
 
 			export function Component() {
@@ -40,7 +40,7 @@ describe("next 13 comment-deletable-files", () => {
 				}
 			}
 		`;
-    const OUTPUT = `
+		let OUTPUT = `
             /*This file should be deleted. Please migrate its contents to appropriate files*/
 			import { useRouter } from 'next/router';
 
@@ -53,16 +53,16 @@ describe("next 13 comment-deletable-files", () => {
 			}
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "_app.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: '_app.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

@@ -8,7 +8,7 @@ type ExecutionStatus =
   | "in-progress"
   | "error"
   | "finished";
-const aiWsUrl = "ws://127.0.0.1:8000/ws";
+let aiWsUrl = "ws://127.0.0.1:8000/ws";
 
 type WSResponse = {
   execution_status: ExecutionStatus;
@@ -16,34 +16,34 @@ type WSResponse = {
   codemod?: string;
 };
 
-export const useAiService = () => {
-  const [codemod, setCodemod] = useState<string | null>(null);
-  const [messageHistory, setMessageHistory] = useState<WSResponse[]>([]);
-  const [message, setMessage] = useState<string | null>(null);
-  const [wsStatus, setWsStatus] = useState<ExecutionStatus | null>("closed");
-  const { inputSnippet, afterSnippet } = useSnippetStore();
-  const { setContent } = useModStore();
+export let useAiService = () => {
+  let [codemod, setCodemod] = useState<string | null>(null);
+  let [messageHistory, setMessageHistory] = useState<WSResponse[]>([]);
+  let [message, setMessage] = useState<string | null>(null);
+  let [wsStatus, setWsStatus] = useState<ExecutionStatus | null>("closed");
+  let { inputSnippet, afterSnippet } = useSnippetStore();
+  let { setContent } = useModStore();
 
-  const startOver = () => {
+  let startOver = () => {
     setCodemod(null);
     setMessageHistory([]);
     setMessage(null);
     setWsStatus("ready");
   };
-  const applyCodemod = () => codemod && setContent(JSON.stringify(codemod));
+  let applyCodemod = () => codemod && setContent(JSON.stringify(codemod));
 
-  const socketRef = useRef<WebSocket | null>(null);
+  let socketRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
     socketRef.current = new WebSocket(aiWsUrl);
-    const socket = socketRef.current as WebSocket;
+    let socket = socketRef.current as WebSocket;
 
     socket.onopen = () => {
       setWsStatus("ready");
     };
 
     socket.onmessage = (event) => {
-      const data = JSON.parse(event.data) as WSResponse;
+      let data = JSON.parse(event.data) as WSResponse;
       setWsStatus(data.execution_status);
       console.log({ data }, data.codemod);
       setMessageHistory((prev) => [...prev, data]);
@@ -68,9 +68,9 @@ export const useAiService = () => {
     };
   }, []);
 
-  const sendSnippets = () => {
+  let sendSnippets = () => {
     if (socketRef.current?.readyState === WebSocket.OPEN) {
-      const data = { input: inputSnippet, after: afterSnippet };
+      let data = { input: inputSnippet, after: afterSnippet };
       socketRef.current.send(JSON.stringify(data));
     } else {
       console.error("WebSocket is not open.");

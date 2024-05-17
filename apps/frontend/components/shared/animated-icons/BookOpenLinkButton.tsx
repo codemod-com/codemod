@@ -26,13 +26,13 @@ export default function BookOpenLinkButton({
   hideExternalIcon,
   ...props
 }: LinkButtonProps) {
-  const { cleaned } = vercelStegaSplit(props?.href || "");
+  let { cleaned } = vercelStegaSplit(props?.href || "");
 
-  const disabledIconState = cx(
+  let disabledIconState = cx(
     loading ? "invisible opacity-0 transition-opacity" : "transition-opacity",
   );
-  const isDisabled = props?.["data-disabled"] === 1;
-  const [play, setPlay] = useState(false);
+  let isDisabled = props?.["data-disabled"] === 1;
+  let [play, setPlay] = useState(false);
   return (
     <div onMouseEnter={() => setPlay(true)} onMouseLeave={() => setPlay(false)}>
       <SanityLink

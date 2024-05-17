@@ -6,32 +6,32 @@ import { proxifyJSCodeshift } from "./proxy";
 
 describe("proxy", () => {
   it("should report the correct number of proxy events", () => {
-    const eventManager = new EventManager();
-    const proxyEvents: Event[] = [];
+    let eventManager = new EventManager();
+    let proxyEvents: Event[] = [];
 
-    const onProxifiedCollectionSpy = vi.fn();
-    const onProxifiedPathSpy = vi.fn();
+    let onProxifiedCollectionSpy = vi.fn();
+    let onProxifiedPathSpy = vi.fn();
 
-    const j = proxifyJSCodeshift(
+    let j = proxifyJSCodeshift(
       jscodeshift.withParser("tsx"),
       eventManager,
       onProxifiedCollectionSpy,
       onProxifiedPathSpy,
     );
 
-    const fileCollection = j("const i = j;\nlet k = 3;");
+    let fileCollection = j("const i = j;\nlet k = 3;");
 
-    const identifierCollection = fileCollection.find(j.Identifier);
+    let identifierCollection = fileCollection.find(j.Identifier);
 
     identifierCollection.replaceWith(() => j.identifier("t"));
 
-    const variableDeclaratorCollection = fileCollection.find(
+    let variableDeclaratorCollection = fileCollection.find(
       j.VariableDeclarator,
     );
 
     variableDeclaratorCollection.remove();
 
-    const source = fileCollection.toSource();
+    let source = fileCollection.toSource();
 
     expect(source).toBe("");
     expect(proxyEvents.length).toBe(0);

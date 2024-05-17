@@ -1,7 +1,7 @@
 import { LinkIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const link = defineType({
+export let link = defineType({
   name: "link",
   title: "Link",
   icon: LinkIcon,

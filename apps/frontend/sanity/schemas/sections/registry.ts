@@ -2,7 +2,7 @@ import FilterIconPicker from "@/sanity/lib/components/FilterIconPicker";
 import { BookIcon } from "@sanity/icons";
 import { defineSection } from "@tinloof/sanity-studio";
 
-export const registry = defineSection({
+export let registry = defineSection({
   title: "Registry Section",
   name: "section.registry",
   type: "object",

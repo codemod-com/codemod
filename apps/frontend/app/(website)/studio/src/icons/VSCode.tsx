@@ -1,4 +1,4 @@
-export const VSCodeIcon = () => (
+export let VSCodeIcon = () => (
   <svg
     width="20"
     height="20"

@@ -8,7 +8,7 @@ import { PublishStatus } from "@/types";
 import type { AutomationAPIListResponse } from "@/types/object.types";
 import { pathToAbsUrl } from "@/utils/urls";
 
-const sanityClient = client.withConfig({
+let sanityClient = client.withConfig({
   token: env.SANITY_API_TOKEN,
   perspective: "published",
   useCdn: false,
@@ -20,7 +20,7 @@ type SanityRoute = {
   lastModified: string | null;
 };
 
-const SITEMAP_QUERY = groq`
+let SITEMAP_QUERY = groq`
   *[
     (pathname.current != null && publishStatus == "${PublishStatus.public}")
   ] {
@@ -30,7 +30,7 @@ const SITEMAP_QUERY = groq`
 `;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const publicSanityRoutes = await sanityClient.fetch<SanityRoute[] | null>(
+  let publicSanityRoutes = await sanityClient.fetch<SanityRoute[] | null>(
     SITEMAP_QUERY,
     {},
     {
@@ -39,10 +39,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       },
     },
   );
-  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  let baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
 
-  const res = await fetchWithTimeout(`${baseUrl}/list`);
-  const allAutomations: AutomationAPIListResponse[] =
+  let res = await fetchWithTimeout(`${baseUrl}/list`);
+  let allAutomations: AutomationAPIListResponse[] =
     res.status === 200 ? await res.json() : [];
 
   return (

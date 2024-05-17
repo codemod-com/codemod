@@ -39,7 +39,7 @@ export default function PricingSection({ data }: PricingPageProps) {
 }
 
 function PricePlanCard(props: Plan) {
-  const { cleaned: title } = vercelStegaSplit(props.title || "");
+  let { cleaned: title } = vercelStegaSplit(props.title || "");
   return (
     <div className="flex min-h-[500px] flex-1 flex-col rounded-[8px] border border-border-light p-l lg:min-h-[600px] dark:border-border-dark">
       <div className="mb-s flex items-center gap-s">

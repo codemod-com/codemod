@@ -7,7 +7,7 @@ import type {
 /**
  * Exports to be used in client-only or components that render both server and client
  */
-export const useQuery = <
+export let useQuery = <
   QueryResponseResult = unknown,
   QueryResponseError = unknown,
 >(
@@ -15,7 +15,7 @@ export const useQuery = <
   params?: QueryParams,
   options?: UseQueryOptionsDefinedInitial<QueryResponseResult>,
 ) => {
-  const snapshot = queryStore.useQuery<QueryResponseResult, QueryResponseError>(
+  let snapshot = queryStore.useQuery<QueryResponseResult, QueryResponseError>(
     query,
     params,
     options,

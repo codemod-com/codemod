@@ -1,6 +1,6 @@
 import { PanelResizeHandle } from "react-resizable-panels";
 
-const ResizeHandle = ({
+let ResizeHandle = ({
   className = "",
   id,
   direction,

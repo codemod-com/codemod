@@ -22,15 +22,15 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("next 14 next-og-import", () => {
-  it("should migrate viewport metadata to viewport export.", () => {
-    const INPUT = `
+describe('next 14 next-og-import', () => {
+	it('should migrate viewport metadata to viewport export.', () => {
+		let INPUT = `
 			export const metadata = {
 				title: 'My App',
 				themeColor: 'dark',
@@ -40,7 +40,7 @@ describe("next 14 next-og-import", () => {
 			}
         `;
 
-    const OUTPUT = `
+		let OUTPUT = `
 			export const metadata = {
 				title: 'My App',
 			}
@@ -51,16 +51,16 @@ describe("next 14 next-og-import", () => {
 			}
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

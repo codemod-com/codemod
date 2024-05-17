@@ -27,44 +27,44 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  let dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "IndexRoute" } },
-    })
-    .forEach((path) => {
-      if ("name" in path.value.openingElement.name) {
-        path.value.openingElement.name.name = "Route";
-        dirtyFlag = true;
-      }
+	root.find(j.JSXElement, {
+		openingElement: { name: { name: 'IndexRoute' } },
+	}).forEach((path) => {
+		if ('name' in path.value.openingElement.name) {
+			path.value.openingElement.name.name = 'Route';
+			dirtyFlag = true;
+		}
 
-      const attrs = path.value.openingElement.attributes;
+		let attrs = path.value.openingElement.attributes;
 
-      if (attrs) {
-        attrs.unshift(j.jsxAttribute(j.jsxIdentifier("path"), j.literal("/")));
-        attrs.unshift(j.jsxAttribute(j.jsxIdentifier("exact"), null));
+		if (attrs) {
+			attrs.unshift(
+				j.jsxAttribute(j.jsxIdentifier('path'), j.literal('/')),
+			);
+			attrs.unshift(j.jsxAttribute(j.jsxIdentifier('exact'), null));
 
-        dirtyFlag = true;
-      }
-    });
+			dirtyFlag = true;
+		}
+	});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { cn } from "@/utils";
 
-const Progress = React.forwardRef<
+let Progress = React.forwardRef<
   React.ElementRef<typeof ProgressPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof ProgressPrimitive.Root>
 >(({ className, value, ...props }, ref) => (

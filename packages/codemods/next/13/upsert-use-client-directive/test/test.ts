@@ -1,40 +1,40 @@
-import { deepStrictEqual } from "node:assert";
-import { Project } from "ts-morph";
-import { describe, it } from "vitest";
-import { handleSourceFile } from "../src/index.js";
+import { deepStrictEqual } from 'node:assert';
+import { Project } from 'ts-morph';
+import { describe, it } from 'vitest';
+import { handleSourceFile } from '../src/index.js';
 
-const transform = (
-  beforeText: string,
-  afterText: string,
-  extension: ".js" | ".tsx",
+let transform = (
+	beforeText: string,
+	afterText: string,
+	extension: '.js' | '.tsx',
 ) => {
-  const project = new Project({
-    useInMemoryFileSystem: true,
-    skipFileDependencyResolution: true,
-    compilerOptions: {
-      allowJs: true,
-    },
-  });
+	let project = new Project({
+		useInMemoryFileSystem: true,
+		skipFileDependencyResolution: true,
+		compilerOptions: {
+			allowJs: true,
+		},
+	});
 
-  const actualSourceFile = project.createSourceFile(
-    `actual${extension}`,
-    beforeText,
-  );
-  const actual = handleSourceFile(actualSourceFile);
+	let actualSourceFile = project.createSourceFile(
+		`actual${extension}`,
+		beforeText,
+	);
+	let actual = handleSourceFile(actualSourceFile);
 
-  const expected = project
-    .createSourceFile(`expected${extension}`, afterText)
-    .getFullText();
+	let expected = project
+		.createSourceFile(`expected${extension}`, afterText)
+		.getFullText();
 
-  return {
-    actual,
-    expected,
-  };
+	return {
+		actual,
+		expected,
+	};
 };
 
-describe("next 13 upsert-client-directive", () => {
-  it("should not rewrite the file", () => {
-    const beforeText = `
+describe('next 13 upsert-client-directive', () => {
+	it('should not rewrite the file', () => {
+		let beforeText = `
             'use client';
 
             export default function Page() {
@@ -42,12 +42,12 @@ describe("next 13 upsert-client-directive", () => {
             }
 		`;
 
-    const { actual } = transform(beforeText, beforeText, ".tsx");
-    deepStrictEqual(actual, undefined);
-  });
+		let { actual } = transform(beforeText, beforeText, '.tsx');
+		deepStrictEqual(actual, undefined);
+	});
 
-  it("should upsert the 'use client' directive when React hooks are used", () => {
-    const beforeText = `
+	it("should upsert the 'use client' directive when React hooks are used", () => {
+		let beforeText = `
             import { useState } from 'react';
 
             export default function Page() {
@@ -57,7 +57,7 @@ describe("next 13 upsert-client-directive", () => {
             }
 		`;
 
-    const afterText = `'use client';
+		let afterText = `'use client';
 
             import { useState } from 'react';
 
@@ -68,34 +68,34 @@ describe("next 13 upsert-client-directive", () => {
             }
 		`;
 
-    const { actual, expected } = transform(beforeText, afterText, ".tsx");
-    deepStrictEqual(actual, expected);
-  });
+		let { actual, expected } = transform(beforeText, afterText, '.tsx');
+		deepStrictEqual(actual, expected);
+	});
 
-  it("should not upsert the 'use client' directive when fetch is used", () => {
-    const beforeText = `
+	it("should not upsert the 'use client' directive when fetch is used", () => {
+		let beforeText = `
             export default async function Page() {
                 return fetch('http://example.com);
             }
 		`;
 
-    const { actual } = transform(beforeText, beforeText, ".tsx");
-    deepStrictEqual(actual, undefined);
-  });
+		let { actual } = transform(beforeText, beforeText, '.tsx');
+		deepStrictEqual(actual, undefined);
+	});
 
-  it("should not upsert the 'use client' directive when fetch is used", () => {
-    const beforeText = `
+	it("should not upsert the 'use client' directive when fetch is used", () => {
+		let beforeText = `
             export default async function Page() {
                 return fetch('http://example.com);
             }
 		`;
 
-    const { actual } = transform(beforeText, beforeText, ".tsx");
-    deepStrictEqual(actual, undefined);
-  });
+		let { actual } = transform(beforeText, beforeText, '.tsx');
+		deepStrictEqual(actual, undefined);
+	});
 
-  it("should upsert the 'use client' directive when an event handler is used", () => {
-    const beforeText = `
+	it("should upsert the 'use client' directive when an event handler is used", () => {
+		let beforeText = `
             export default async function Page() {
                 return <div onClick={null}>
                     TEST
@@ -103,7 +103,7 @@ describe("next 13 upsert-client-directive", () => {
             }
 		`;
 
-    const afterText = `'use client';
+		let afterText = `'use client';
 
             export default async function Page() {
                 return <div onClick={null}>
@@ -112,7 +112,7 @@ describe("next 13 upsert-client-directive", () => {
             }
 		`;
 
-    const { actual, expected } = transform(beforeText, afterText, ".tsx");
-    deepStrictEqual(actual, expected);
-  });
+		let { actual, expected } = transform(beforeText, afterText, '.tsx');
+		deepStrictEqual(actual, expected);
+	});
 });

@@ -1,36 +1,36 @@
-import { basename } from "node:path";
-import type { API, FileInfo, Transform } from "jscodeshift";
+import { basename } from 'node:path';
+import type { API, FileInfo, Transform } from 'jscodeshift';
 
 export default function transform(file: FileInfo, api: API) {
-  const baseName = basename(file.path);
+	let baseName = basename(file.path);
 
-  if (
-    !baseName.startsWith("_document") &&
-    !baseName.startsWith("_app") &&
-    !baseName.startsWith("_error")
-  ) {
-    return undefined;
-  }
+	if (
+		!baseName.startsWith('_document') &&
+		!baseName.startsWith('_app') &&
+		!baseName.startsWith('_error')
+	) {
+		return undefined;
+	}
 
-  const { j } = api;
+	let { j } = api;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  root.find(j.Program).forEach((programPath) => {
-    const program = programPath.value;
+	root.find(j.Program).forEach((programPath) => {
+		let program = programPath.value;
 
-    const comments = program.comments ?? [];
+		let comments = program.comments ?? [];
 
-    comments.push(
-      j.commentBlock(
-        "This file should be deleted. Please migrate its contents to appropriate files",
-      ),
-    );
+		comments.push(
+			j.commentBlock(
+				'This file should be deleted. Please migrate its contents to appropriate files',
+			),
+		);
 
-    program.comments = comments;
-  });
+		program.comments = comments;
+	});
 
-  return root.toSource();
+	return root.toSource();
 }
 
 transform satisfies Transform;

@@ -6,16 +6,16 @@ type ButtonWithOnClickTextChangeProps = {
   textChangeDuration: number;
 } & ButtonProps;
 
-const ButtonWithOnClickTextChange = ({
+let ButtonWithOnClickTextChange = ({
   children,
   clickedText,
   textChangeDuration,
   onClick,
   ...rest
 }: ButtonWithOnClickTextChangeProps) => {
-  const [text, setText] = useState(children);
-  const onButtonClick: MouseEventHandler<HTMLButtonElement> = (event) => {
-    const returnVal = onClick?.(event);
+  let [text, setText] = useState(children);
+  let onButtonClick: MouseEventHandler<HTMLButtonElement> = (event) => {
+    let returnVal = onClick?.(event);
     Promise.resolve(returnVal)
       .then(() => {
         setText(clickedText);

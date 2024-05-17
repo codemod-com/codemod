@@ -1,7 +1,7 @@
 import type { VisibilityOptions } from "@studio/types/options";
 import { isNil } from "@studio/utils/isNil";
 
-export const isVisible = (
+export let isVisible = (
   visibility?:
     | {
         visibilityOptions?: VisibilityOptions;
@@ -15,7 +15,7 @@ export const isVisible = (
       : "isVisible" in visibility
         ? visibility.isVisible
         : true;
-export const alwaysVisible: VisibilityOptions = {
+export let alwaysVisible: VisibilityOptions = {
   isVisible: true,
   show: () => {},
   hide: () => {},

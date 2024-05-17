@@ -2,38 +2,38 @@
 import { useState } from "react";
 import { InfoCard } from "../CodemodPageUI";
 
-export const LineChart = ({ data, svgWidth = 140, svgHeight = 50 }) => {
+export let LineChart = ({ data, svgWidth = 140, svgHeight = 50 }) => {
   // Calculate the maximum value in the data array
-  const maxValue = Math.max(...data);
+  let maxValue = Math.max(...data);
 
   // Calculate the scaling factor for the y-axis
-  const scaleY = svgHeight / maxValue;
+  let scaleY = svgHeight / maxValue;
 
   // Calculate the x-coordinate spacing between points
-  const pointSpacing = svgWidth / (data.length - 1);
+  let pointSpacing = svgWidth / (data.length - 1);
 
   // Generate SVG path for the line chart
   let path = `M0,${svgHeight - data[0] * scaleY}`;
   for (let i = 1; i < data.length; i++) {
-    const x = i * pointSpacing;
-    const y = svgHeight - data[i] * scaleY;
+    let x = i * pointSpacing;
+    let y = svgHeight - data[i] * scaleY;
     path += ` L${x},${y}`;
   }
 
   // MOCK DATA
-  const dates = getPastDates(data.length);
+  let dates = getPastDates(data.length);
 
-  const latestData = data[data.length - 1];
-  const [currentHoveredData, setHoveredData] = useState(latestData);
-  const [currentDate, setCurrentDate] = useState<string | null>(null);
-  const [width, setWidth] = useState(0);
+  let latestData = data[data.length - 1];
+  let [currentHoveredData, setHoveredData] = useState(latestData);
+  let [currentDate, setCurrentDate] = useState<string | null>(null);
+  let [width, setWidth] = useState(0);
 
-  const handleMouseMove = (event) => {
+  let handleMouseMove = (event) => {
     if (event.target.getAttribute("data-dot-indicator") === "true") return;
 
-    const rect = event.target.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const dataIndex = Math.round(((data.length - 1) * mouseX) / svgWidth);
+    let rect = event.target.getBoundingClientRect();
+    let mouseX = event.clientX - rect.left;
+    let dataIndex = Math.round(((data.length - 1) * mouseX) / svgWidth);
 
     setHoveredData(data[dataIndex]);
     setCurrentDate(
@@ -46,7 +46,7 @@ export const LineChart = ({ data, svgWidth = 140, svgHeight = 50 }) => {
     setWidth(svgWidth - mouseX);
   };
 
-  const areaPath = `${path} L${svgWidth},${svgHeight} L0,${svgHeight} Z`;
+  let areaPath = `${path} L${svgWidth},${svgHeight} L0,${svgHeight} Z`;
 
   return (
     <>
@@ -138,11 +138,11 @@ export const LineChart = ({ data, svgWidth = 140, svgHeight = 50 }) => {
 };
 
 function getPastDates(n: number): Date[] {
-  const dates: Date[] = [];
-  const today = new Date();
+  let dates: Date[] = [];
+  let today = new Date();
 
   for (let i = 0; i < n; i++) {
-    const pastDate = new Date(today);
+    let pastDate = new Date(today);
     pastDate.setDate(today.getDate() - i);
     dates.push(pastDate);
   }

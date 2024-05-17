@@ -31,7 +31,7 @@ export default function NavigationLink(
   }
 
   if (isButton(props)) {
-    const { children, ...buttonProps } = props;
+    let { children, ...buttonProps } = props;
     delete buttonProps.asButton;
 
     return (
@@ -43,10 +43,10 @@ export default function NavigationLink(
       </button>
     );
   }
-  const { href, children, hideExternalIcon, inline, ...linkProps } = props;
-  const { cleaned } = vercelStegaSplit(props?.href || "");
-  const isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
-  const spreadProps = { ...props };
+  let { href, children, hideExternalIcon, inline, ...linkProps } = props;
+  let { cleaned } = vercelStegaSplit(props?.href || "");
+  let isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
+  let spreadProps = { ...props };
   delete props.asButton;
   delete spreadProps.textStyle;
   delete spreadProps.hideExternalIcon;

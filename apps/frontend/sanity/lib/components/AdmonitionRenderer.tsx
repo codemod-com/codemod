@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 
-const AdmonitionRenderer = (props) => {
+let AdmonitionRenderer = (props) => {
   let admonitionColor = {} as CSSProperties;
   switch (props.value.variant) {
     case "success":
