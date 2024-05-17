@@ -2,7 +2,7 @@ import { useCodemodExecution } from "@studio/hooks/useCodemodExecution";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import type { GHBranch, GithubRepository } from "be-types";
-
+import { transpileTs } from "../../../utils/transpileTs";
 type Props = {
   codemodName?: string;
   selectedRepository: GithubRepository | undefined;
@@ -33,7 +33,7 @@ export const useHandleCodemodRun = ({
     const request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
-      codemodSource: internalContent,
+      codemodSource: await transpileTs(internalContent),
       codemodName,
       branch: selectedBranch.name,
     };
