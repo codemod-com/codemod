@@ -73,3 +73,4 @@ export function insertMergeTags(
 
 export const FEATURE_FLAG_QUERY_KEY = "ff";
 export const CODEMOD_RUN_FEATURE_FLAG = "codemod-run";
+export const CODEMOD_AI_FEATURE_FLAG = "codemod-ai";
