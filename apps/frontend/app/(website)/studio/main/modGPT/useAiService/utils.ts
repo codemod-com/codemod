@@ -6,15 +6,15 @@ import {
 import type { Message } from "ai";
 import { useEffect, useState } from "react";
 
-export const useInitialMss = () => {
-  const [initialMessages, setInitialMessages] = useState<Message[]>([]);
+export let useInitialMss = () => {
+  let [initialMessages, setInitialMessages] = useState<Message[]>([]);
   useEffect(() => {
-    const stringifiedFrozenMessages = localStorage?.getItem("frozenMessages");
+    let stringifiedFrozenMessages = localStorage?.getItem("frozenMessages");
     try {
       if (!stringifiedFrozenMessages) {
         return setInitialMessages([]);
       }
-      const messagesToSet = parseFrozenMessages(
+      let messagesToSet = parseFrozenMessages(
         JSON.parse(stringifiedFrozenMessages),
       ).map(unfreezeMessage);
       return setInitialMessages(messagesToSet);
@@ -26,7 +26,7 @@ export const useInitialMss = () => {
   return initialMessages;
 };
 
-export const useSaveMssgsToLocalStorage = ({
+export let useSaveMssgsToLocalStorage = ({
   isLoading,
   messages,
 }: { isLoading: boolean; messages: Message[] }) => {
@@ -35,7 +35,7 @@ export const useSaveMssgsToLocalStorage = ({
       return;
     }
 
-    const frozenMessages = messages.map((message) => freezeMessage(message));
+    let frozenMessages = messages.map((message) => freezeMessage(message));
 
     try {
       localStorage.setItem("frozenMessages", JSON.stringify(frozenMessages));

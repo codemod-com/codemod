@@ -24,55 +24,55 @@ SOFTWARE.
 */
 
 import type {
-  CallExpression,
-  ObjectExpression,
-  Property,
-  Transform,
-} from "jscodeshift";
+	CallExpression,
+	ObjectExpression,
+	Property,
+	Transform,
+} from 'jscodeshift';
 
-const hasValidArguments = (callExpression: CallExpression) => {
-  return (
-    callExpression.arguments.length === 1 &&
-    callExpression.arguments[0] &&
-    callExpression.arguments[0].type === "ObjectExpression"
-  );
+let hasValidArguments = (callExpression: CallExpression) => {
+	return (
+		callExpression.arguments.length === 1 &&
+		callExpression.arguments[0] &&
+		callExpression.arguments[0].type === 'ObjectExpression'
+	);
 };
 
-const transform: Transform = (file, api) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  const collections = root.find(j.CallExpression, {
-    callee: {
-      type: "Identifier",
-      name: "fromJS",
-    },
-  });
+let transform: Transform = (file, api) => {
+	let j = api.jscodeshift;
+	let root = j(file.source);
+	let collections = root.find(j.CallExpression, {
+		callee: {
+			type: 'Identifier',
+			name: 'fromJS',
+		},
+	});
 
-  collections.forEach((path) => {
-    if (hasValidArguments(path.node)) {
-      const objectExpression = path.node.arguments[0] as ObjectExpression;
+	collections.forEach((path) => {
+		if (hasValidArguments(path.node)) {
+			let objectExpression = path.node.arguments[0] as ObjectExpression;
 
-      objectExpression.properties.forEach((p) => {
-        const property = p as Property;
+			objectExpression.properties.forEach((p) => {
+				let property = p as Property;
 
-        if (property.value.type === "Literal") {
-          const literal = property.value as any;
+				if (property.value.type === 'Literal') {
+					let literal = property.value as any;
 
-          if (literal.raw) {
-            return;
-          }
-        }
+					if (literal.raw) {
+						return;
+					}
+				}
 
-        property.value = j.callExpression(j.identifier("fromJS"), [
-          property.value as any,
-        ]);
-      });
+				property.value = j.callExpression(j.identifier('fromJS'), [
+					property.value as any,
+				]);
+			});
 
-      path.replace(objectExpression);
-    }
-  });
+			path.replace(objectExpression);
+		}
+	});
 
-  return root.toSource();
+	return root.toSource();
 };
 
 export default transform;

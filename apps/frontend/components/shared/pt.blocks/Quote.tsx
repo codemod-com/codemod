@@ -1,7 +1,7 @@
 import type { QuoteProps } from "@/types/object.types";
 import { SanityImage } from "../SanityImage";
 
-export const Quote = (props: QuoteProps) => {
+export let Quote = (props: QuoteProps) => {
   return (
     <blockquote className="mt-4 border-l-2 border-black pl-6">
       {props.image && (

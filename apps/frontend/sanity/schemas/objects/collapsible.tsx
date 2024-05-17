@@ -1,7 +1,7 @@
 import { ThLargeIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const collapsible = defineType({
+export let collapsible = defineType({
   name: "collapsible",
   title: "Collapsible",
   type: "object",

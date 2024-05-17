@@ -17,9 +17,9 @@ export default function DesktopFilters({
   automationFilters?: RegistryIndexPayload["automationFilters"];
   filterIconDictionary?: RegistryIndexPayload["filterIconDictionary"];
 }) {
-  const { desktopOpen } = useSidebar();
+  let { desktopOpen } = useSidebar();
 
-  const sidebarVariants = {
+  let sidebarVariants = {
     open: {
       x: "0%",
       opacity: 1,

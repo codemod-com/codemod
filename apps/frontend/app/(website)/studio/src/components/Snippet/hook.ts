@@ -29,11 +29,11 @@ type EditorProps = {
   ): void;
 };
 
-const findMatches = (
+let findMatches = (
   str: string,
   regex: RegExp,
 ): { start: number; end: number }[] => {
-  const matches: { start: number; end: number }[] = [];
+  let matches: { start: number; end: number }[] = [];
   let match: RegExpExecArray | null;
   while ((match = regex.exec(str)) !== null) {
     matches.push({
@@ -44,29 +44,29 @@ const findMatches = (
   return matches;
 };
 
-const getLinkDecorations = (
+let getLinkDecorations = (
   editor: monaco.editor.IStandaloneCodeEditor,
   links: Link[],
 ) => {
-  const result: monaco.editor.IModelDeltaDecoration[] = [];
+  let result: monaco.editor.IModelDeltaDecoration[] = [];
 
-  const text = editor.getValue();
-  const model = editor.getModel();
+  let text = editor.getValue();
+  let model = editor.getModel();
 
   if (!model) {
     return [];
   }
 
   links.forEach((link) => {
-    const ranges = findMatches(text, link.regex);
+    let ranges = findMatches(text, link.regex);
 
     ranges.forEach((range) => {
       // @TODO move this to helper
-      const startPos = model.getPositionAt(range.start);
-      const endPos = model.getPositionAt(range.end);
+      let startPos = model.getPositionAt(range.start);
+      let endPos = model.getPositionAt(range.end);
 
-      const monacoRange = monaco.Range.fromPositions(startPos, endPos);
-      const linkDecoration = {
+      let monacoRange = monaco.Range.fromPositions(startPos, endPos);
+      let linkDecoration = {
         range: monacoRange,
         options: {
           isWholeLine: false,
@@ -81,7 +81,7 @@ const getLinkDecorations = (
   return result;
 };
 
-export const useEditor = (
+export let useEditor = (
   editor: monaco.editor.IStandaloneCodeEditor | null,
   {
     highlights,
@@ -97,14 +97,14 @@ export const useEditor = (
   }: EditorProps,
   mounted: boolean,
 ) => {
-  const [renderFinished, setRenderFinished] = useState(false);
-  const decorationsIdRef = useRef<string[]>();
-  const didChangeCursorSelectionRef = useRef<monaco.IDisposable>();
-  const didChangeModelContentRef = useRef<monaco.IDisposable>();
-  const didBlurEditorWidgetRef = useRef<monaco.IDisposable>();
-  const mouseDownRef = useRef<monaco.IDisposable>();
-  const keyUpRef = useRef<monaco.IDisposable>();
-  const preventTriggerChangeEvent = useRef<boolean | null>(null);
+  let [renderFinished, setRenderFinished] = useState(false);
+  let decorationsIdRef = useRef<string[]>();
+  let didChangeCursorSelectionRef = useRef<monaco.IDisposable>();
+  let didChangeModelContentRef = useRef<monaco.IDisposable>();
+  let didBlurEditorWidgetRef = useRef<monaco.IDisposable>();
+  let mouseDownRef = useRef<monaco.IDisposable>();
+  let keyUpRef = useRef<monaco.IDisposable>();
+  let preventTriggerChangeEvent = useRef<boolean | null>(null);
   /**
    * Selection change handler
    */
@@ -120,11 +120,11 @@ export const useEditor = (
         if (source !== "mouse") {
           return;
         }
-        const startPos = selection.getStartPosition();
-        const endPos = selection.getEndPosition();
+        let startPos = selection.getStartPosition();
+        let endPos = selection.getEndPosition();
 
-        const startOffset = editor.getModel()?.getOffsetAt(startPos);
-        const endOffset = editor.getModel()?.getOffsetAt(endPos);
+        let startOffset = editor.getModel()?.getOffsetAt(startPos);
+        let endOffset = editor.getModel()?.getOffsetAt(endPos);
 
         if (startOffset === undefined || endOffset === undefined) {
           return;
@@ -169,26 +169,26 @@ export const useEditor = (
    * Mouse down handelr
    */
   useEffect(() => {
-    const model = editor?.getModel() ?? null;
+    let model = editor?.getModel() ?? null;
 
     if (onClick === undefined || editor === null || model === null) {
       return;
     }
 
-    const onMouseDownHandler = (e: monaco.editor.IEditorMouseEvent) => {
-      const { position } = e.target;
+    let onMouseDownHandler = (e: monaco.editor.IEditorMouseEvent) => {
+      let { position } = e.target;
 
       if (!position) {
         return;
       }
 
-      const offset = editor.getModel()?.getOffsetAt(position);
+      let offset = editor.getModel()?.getOffsetAt(position);
 
       if (offset) {
         onClick(offset);
       }
 
-      const word = model.getWordAtPosition(position);
+      let word = model.getWordAtPosition(position);
 
       if (word === null || links === undefined) {
         return;
@@ -206,7 +206,7 @@ export const useEditor = (
   }, [editor, onClick, links]);
 
   useEffect(() => {
-    const model = editor?.getModel() ?? null;
+    let model = editor?.getModel() ?? null;
 
     if (onKeyUp === undefined || editor === null || model === null) {
       return;
@@ -214,13 +214,13 @@ export const useEditor = (
 
     keyUpRef.current?.dispose();
     keyUpRef.current = editor.onKeyUp((e) => {
-      const position = editor.getPosition();
+      let position = editor.getPosition();
 
       if (position === null) {
         return;
       }
 
-      const offset = model.getOffsetAt(position);
+      let offset = model.getOffsetAt(position);
 
       onKeyUp({ offset, event: e });
     });
@@ -235,7 +235,7 @@ export const useEditor = (
       return;
     }
 
-    const startPosition = editor.getModel()?.getPositionAt(startOffset);
+    let startPosition = editor.getModel()?.getPositionAt(startOffset);
 
     if (startPosition === undefined) {
       return;
@@ -252,18 +252,18 @@ export const useEditor = (
    */
 
   useEffect(() => {
-    const model = editor?.getModel() ?? null;
+    let model = editor?.getModel() ?? null;
 
     if (editor === null || model === null) {
       return;
     }
 
-    const highlightDecorations: monaco.editor.IModelDeltaDecoration[] = [];
+    let highlightDecorations: monaco.editor.IModelDeltaDecoration[] = [];
 
     highlights.forEach((highlight) => {
-      const startPosition = model.getPositionAt(highlight.start);
-      const endPosition = model.getPositionAt(highlight.end);
-      const range = monaco.Range.fromPositions(startPosition, endPosition);
+      let startPosition = model.getPositionAt(highlight.start);
+      let endPosition = model.getPositionAt(highlight.end);
+      let range = monaco.Range.fromPositions(startPosition, endPosition);
 
       highlightDecorations.push({
         range,
@@ -274,9 +274,9 @@ export const useEditor = (
       });
     });
 
-    const linkDecorations = getLinkDecorations(editor, links ?? []);
+    let linkDecorations = getLinkDecorations(editor, links ?? []);
 
-    const allDecorations = [
+    let allDecorations = [
       ...highlightDecorations,
       ...linkDecorations,
       ...(decorations ?? []),
@@ -298,13 +298,13 @@ export const useEditor = (
    * Value setter
    */
   useEffect(() => {
-    const model = editor?.getModel() ?? null;
+    let model = editor?.getModel() ?? null;
 
     if (editor === null || model === null || value === editor.getValue()) {
       return;
     }
 
-    const prevCursorPosition = editor.getPosition();
+    let prevCursorPosition = editor.getPosition();
 
     if (prevCursorPosition === null) {
       return;

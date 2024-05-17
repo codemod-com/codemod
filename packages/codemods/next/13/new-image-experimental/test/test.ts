@@ -26,14 +26,14 @@ SOFTWARE.
 Changes to the original input and output variables that were incorporated from https://github.com/vercel/next.js/pull/45970: formatting
 */
 
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("new-image-experimental", () => {
-  const INPUT = `
+describe('new-image-experimental', () => {
+	let INPUT = `
 		const withPwa = (opts) => {
 			// no-op but image this adds props
 			return opts
@@ -46,7 +46,7 @@ describe("new-image-experimental", () => {
 		  })
 	`;
 
-  const OUTPUT = `
+	let OUTPUT = `
 		const withPwa = (opts) => {
 			// no-op but image this adds props
 			return opts
@@ -59,35 +59,35 @@ describe("new-image-experimental", () => {
 		  })
 	`;
 
-  it("should replace next.config.ts with the tsx parser", () => {
-    const fileInfo: FileInfo = {
-      path: "next.config.ts",
-      source: INPUT,
-    };
+	it('should replace next.config.ts with the tsx parser', () => {
+		let fileInfo: FileInfo = {
+			path: 'next.config.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
-      dryRun: true,
-    });
+		let actualOutput = transform(fileInfo, buildApi('tsx'), {
+			dryRun: true,
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 
-  it("should replace next.config.ts with the recast parser", () => {
-    const fileInfo: FileInfo = {
-      path: "next.config.ts",
-      source: INPUT,
-    };
+	it('should replace next.config.ts with the recast parser', () => {
+		let fileInfo: FileInfo = {
+			path: 'next.config.ts',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi(undefined), {
-      dryRun: true,
-    });
+		let actualOutput = transform(fileInfo, buildApi(undefined), {
+			dryRun: true,
+		});
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

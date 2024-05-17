@@ -21,22 +21,22 @@ interface Props {
   value: string;
 }
 
-const CodeBlock: FC<Props> = ({ language, value }) => {
-  const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
-  const { setContent } = useModStore();
-  const { isDark } = useTheme();
+let CodeBlock: FC<Props> = ({ language, value }) => {
+  let { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
+  let { setContent } = useModStore();
+  let { isDark } = useTheme();
 
-  const handleCopyToClipboard = () => {
+  let handleCopyToClipboard = () => {
     if (!isCopied) {
       copy(value);
     }
   };
 
-  const handleCopyToCodemodPanel = () => {
+  let handleCopyToCodemodPanel = () => {
     setContent(prettify(value));
   };
 
-  const buttonClass =
+  let buttonClass =
     "text-md text-primary-light dark:text-primary-dark hover:bg-background focus-visible:ring-1 focus-visible:ring-slate-700 focus-visible:ring-offset-0";
 
   return (

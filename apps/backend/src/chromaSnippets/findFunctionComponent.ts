@@ -1,4 +1,4 @@
-export const findFunctionComponent = `
+export let findFunctionComponent = `
 SNIPPET_DESCRIPTION:
 Finds Page component function; 
 Finds the FunctionDeclaration or ArrowFunctionExpression that is exported by default;

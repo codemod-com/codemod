@@ -1,35 +1,35 @@
-import * as vscode from "vscode";
+import * as vscode from 'vscode';
 
-export const getConfiguration = () => {
-  const configuration = vscode.workspace.getConfiguration("codemod");
+export let getConfiguration = () => {
+	let configuration = vscode.workspace.getConfiguration('codemod');
 
-  const workerThreadCount = configuration.get<number>("workerThreadCount") ?? 4;
+	let workerThreadCount = configuration.get<number>('workerThreadCount') ?? 4;
 
-  const includePatterns = configuration.get<string[]>("include") ?? [
-    "**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}",
-  ];
-  const excludePatterns = configuration.get<string[]>("exclude") ?? [
-    "**/node_modules/**/*.*",
-  ];
+	let includePatterns = configuration.get<string[]>('include') ?? [
+		'**/*.*{ts,tsx,js,jsx,mjs,cjs,mdx,json}',
+	];
+	let excludePatterns = configuration.get<string[]>('exclude') ?? [
+		'**/node_modules/**/*.*',
+	];
 
-  const formatWithPrettier =
-    configuration.get<boolean>("formatWithPrettier") ?? false;
+	let formatWithPrettier =
+		configuration.get<boolean>('formatWithPrettier') ?? false;
 
-  return {
-    workerThreadCount,
-    includePatterns,
-    excludePatterns,
-    formatWithPrettier,
-  };
+	return {
+		workerThreadCount,
+		includePatterns,
+		excludePatterns,
+		formatWithPrettier,
+	};
 };
 
-export const setConfigurationProperty = async (
-  propertyName: string,
-  value: unknown,
-  configurationTarget: vscode.ConfigurationTarget,
+export let setConfigurationProperty = async (
+	propertyName: string,
+	value: unknown,
+	configurationTarget: vscode.ConfigurationTarget,
 ) => {
-  const configuration = vscode.workspace.getConfiguration("codemod");
+	let configuration = vscode.workspace.getConfiguration('codemod');
 
-  return configuration.update(propertyName, value, configurationTarget);
+	return configuration.update(propertyName, value, configurationTarget);
 };
 export type Configuration = ReturnType<typeof getConfiguration>;

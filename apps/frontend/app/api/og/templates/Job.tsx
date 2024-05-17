@@ -6,7 +6,7 @@ type Props = {
   department: string;
 };
 
-const Job = (props: Props) => {
+let Job = (props: Props) => {
   return (
     <div
       style={{

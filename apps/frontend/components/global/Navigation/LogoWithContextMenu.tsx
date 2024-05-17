@@ -11,9 +11,9 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 export default function LogoWithContextMenu() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  let router = useRouter();
+  let pathname = usePathname();
+  let [open, setOpen] = useState(false);
   let pressTimer: NodeJS.Timeout;
 
   function handleTouchStart(event: React.TouchEvent) {
@@ -31,7 +31,7 @@ export default function LogoWithContextMenu() {
     if (pressTimer) clearTimeout(pressTimer);
   }
 
-  const copyToClipboard = (svg: string) => {
+  let copyToClipboard = (svg: string) => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(svg);
     }

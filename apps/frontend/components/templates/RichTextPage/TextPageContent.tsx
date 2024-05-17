@@ -5,11 +5,11 @@ import getBlocksToc from "@/utils/getBlocksToc";
 import { getParagraphId } from "@/utils/ids";
 import type { PortableTextReactComponents } from "@portabletext/react";
 
-const textPagePtComponents: Partial<PortableTextReactComponents> = {};
+let textPagePtComponents: Partial<PortableTextReactComponents> = {};
 
 export default function TextPageContent(props: TextPagePayload) {
-  const toc = getBlocksToc(props.body);
-  const hasToc = !!toc?.length;
+  let toc = getBlocksToc(props.body);
+  let hasToc = !!toc?.length;
 
   return (
     <div className="flex w-full flex-col lg:flex-row">

@@ -31,14 +31,14 @@ export default function LinkButton({
   hideExternalIcon,
   ...props
 }: LinkButtonProps) {
-  const { cleaned } = vercelStegaSplit(props?.href || "");
+  let { cleaned } = vercelStegaSplit(props?.href || "");
 
-  const isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
+  let isExternal = hideExternalIcon ? false : isExternalUrl(cleaned);
 
-  const disabledIconState = cx(
+  let disabledIconState = cx(
     loading ? "invisible opacity-0 transition-opacity" : "transition-opacity",
   );
-  const isDisabled = props?.["data-disabled"] === 1;
+  let isDisabled = props?.["data-disabled"] === 1;
 
   return (
     <SanityLink

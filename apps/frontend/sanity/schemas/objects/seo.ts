@@ -1,7 +1,7 @@
 import { InputWithCharacterCount } from "@/sanity/lib/components/InputWithCharacterCount";
 import { defineType } from "sanity";
 
-export const seo = defineType({
+export let seo = defineType({
   name: "seo",
   title: "SEO",
   type: "object",

@@ -1,8 +1,8 @@
 import type { Monaco } from "@monaco-editor/react";
 import { monaco } from "@studio/customMonaco";
 
-const LANG_ID = "promptLang";
-const tokens = [
+let LANG_ID = "promptLang";
+let tokens = [
   "BEFORE",
   "AFTER",
   "CODEMOD",
@@ -10,16 +10,16 @@ const tokens = [
   "HIGHLIGHTED_IN_AFTER",
 ];
 
-const getAutocompleteOptions = (
+let getAutocompleteOptions = (
   model: monaco.editor.ITextModel,
   token: monaco.Position,
 ): monaco.languages.CompletionItem[] => {
-  const wordAtPosition = model.getWordAtPosition(token);
+  let wordAtPosition = model.getWordAtPosition(token);
   if (!wordAtPosition) {
     return [];
   }
 
-  const range = new monaco.Range(
+  let range = new monaco.Range(
     token.lineNumber,
     wordAtPosition.startColumn,
     token.lineNumber,
@@ -35,7 +35,7 @@ const getAutocompleteOptions = (
   }));
 };
 
-const register = (m: Monaco) => {
+let register = (m: Monaco) => {
   m.languages.register({
     id: LANG_ID,
   });

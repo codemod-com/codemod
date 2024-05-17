@@ -1,7 +1,7 @@
 import Icon from "@/components/shared/Icon";
 import { defineType } from "sanity";
 
-export const youtubeVideo = defineType({
+export let youtubeVideo = defineType({
   type: "object",
   name: "youtubeVideo",
   title: "YouTube Video",
@@ -24,7 +24,7 @@ export const youtubeVideo = defineType({
       title: "caption",
     },
     prepare(selection) {
-      const { title } = selection;
+      let { title } = selection;
       return {
         title: title,
         media: <Icon name="youtube" />,

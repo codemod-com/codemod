@@ -3,7 +3,7 @@ import { ThListIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 import { icon, logo } from "../objects/icon";
 
-const SUBMENUS = [
+let SUBMENUS = [
   { title: "Product", value: "product" },
   { title: "Company", value: "company" },
   { title: "Legal", value: "legal" },
@@ -76,7 +76,7 @@ export default defineType({
               submenu: "submenu",
             },
             prepare({ submenu }) {
-              const title = SUBMENUS.find(
+              let title = SUBMENUS.find(
                 (item) => item.value === submenu,
               )?.title;
               return {

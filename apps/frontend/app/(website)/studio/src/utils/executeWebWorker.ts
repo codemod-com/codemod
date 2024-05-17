@@ -1,9 +1,9 @@
 import type { Event } from "@studio/schemata/eventSchemata";
 
-export const executeWebWorker = async (content: string, input: string) => {
+export let executeWebWorker = async (content: string, input: string) => {
   return new Promise<[Event[], string | null | undefined]>(
     (resolve, reject) => {
-      const worker = new Worker(new URL("./webworker.ts", import.meta.url), {
+      let worker = new Worker(new URL("./webworker.ts", import.meta.url), {
         type: "module",
       });
       worker.postMessage({
@@ -20,7 +20,7 @@ export const executeWebWorker = async (content: string, input: string) => {
       };
 
       worker.onerror = (ee) => {
-        const error: Error =
+        let error: Error =
           ee.error instanceof Error ? ee.error : Error(String(ee.error));
         reject(error);
       };

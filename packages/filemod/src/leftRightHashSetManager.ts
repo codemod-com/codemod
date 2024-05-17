@@ -1,103 +1,106 @@
 export class LeftRightHashSetManager<L extends string, R extends string> {
-  private __set = new Set<string>();
+	private __set = new Set<string>();
 
-  public constructor(set: ReadonlySet<string>) {
-    this.__set = new Set(set);
-  }
+	public constructor(set: ReadonlySet<string>) {
+		this.__set = new Set(set);
+	}
 
-  public getSetValues(): IterableIterator<string> {
-    return this.__set.values();
-  }
+	public getSetValues(): IterableIterator<string> {
+		return this.__set.values();
+	}
 
-  public buildByRightHashes(
-    rightHashes: Set<R>,
-  ): LeftRightHashSetManager<L, R> {
-    const set = new Set<string>();
+	public buildByRightHashes(
+		rightHashes: Set<R>,
+	): LeftRightHashSetManager<L, R> {
+		let set = new Set<string>();
 
-    this.__set.forEach((leftRightHash) => {
-      const rightHash = leftRightHash.slice(leftRightHash.length / 2) as R;
+		this.__set.forEach((leftRightHash) => {
+			let rightHash = leftRightHash.slice(leftRightHash.length / 2) as R;
 
-      if (!rightHashes.has(rightHash)) {
-        return;
-      }
+			if (!rightHashes.has(rightHash)) {
+				return;
+			}
 
-      set.add(leftRightHash);
-    });
+			set.add(leftRightHash);
+		});
 
-    return new LeftRightHashSetManager<L, R>(set);
-  }
+		return new LeftRightHashSetManager<L, R>(set);
+	}
 
-  public getLeftHashes(): ReadonlySet<L> {
-    const set = new Set<L>();
+	public getLeftHashes(): ReadonlySet<L> {
+		let set = new Set<L>();
 
-    this.__set.forEach((leftRightHash) => {
-      const leftHash = leftRightHash.slice(0, leftRightHash.length / 2) as L;
+		this.__set.forEach((leftRightHash) => {
+			let leftHash = leftRightHash.slice(
+				0,
+				leftRightHash.length / 2,
+			) as L;
 
-      set.add(leftHash);
-    });
+			set.add(leftHash);
+		});
 
-    return set;
-  }
+		return set;
+	}
 
-  public getRightHashes(): ReadonlySet<R> {
-    const rightHashes = new Set<R>();
+	public getRightHashes(): ReadonlySet<R> {
+		let rightHashes = new Set<R>();
 
-    this.__set.forEach((leftRightHash) => {
-      const rightHash = leftRightHash.slice(leftRightHash.length / 2) as R;
+		this.__set.forEach((leftRightHash) => {
+			let rightHash = leftRightHash.slice(leftRightHash.length / 2) as R;
 
-      rightHashes.add(rightHash);
-    });
+			rightHashes.add(rightHash);
+		});
 
-    return rightHashes;
-  }
+		return rightHashes;
+	}
 
-  public getRightHashesByLeftHash(leftHash: L): ReadonlySet<R> {
-    const rightHashes = new Set<R>();
+	public getRightHashesByLeftHash(leftHash: L): ReadonlySet<R> {
+		let rightHashes = new Set<R>();
 
-    this.__set.forEach((leftRightHash) => {
-      if (!leftRightHash.startsWith(leftHash)) {
-        return;
-      }
+		this.__set.forEach((leftRightHash) => {
+			if (!leftRightHash.startsWith(leftHash)) {
+				return;
+			}
 
-      const rightHash = leftRightHash.slice(leftHash.length);
+			let rightHash = leftRightHash.slice(leftHash.length);
 
-      rightHashes.add(rightHash as R);
-    });
+			rightHashes.add(rightHash as R);
+		});
 
-    return rightHashes;
-  }
+		return rightHashes;
+	}
 
-  public upsert(leftHash: L, rightHash: R): void {
-    const hash = this.#buildLeftRightHash(leftHash, rightHash);
+	public upsert(leftHash: L, rightHash: R): void {
+		let hash = this.#buildLeftRightHash(leftHash, rightHash);
 
-    this.__set.add(hash);
-  }
+		this.__set.add(hash);
+	}
 
-  public delete(leftHash: L, rightHash: R): boolean {
-    const hash = this.#buildLeftRightHash(leftHash, rightHash);
+	public delete(leftHash: L, rightHash: R): boolean {
+		let hash = this.#buildLeftRightHash(leftHash, rightHash);
 
-    return this.__set.delete(hash);
-  }
+		return this.__set.delete(hash);
+	}
 
-  public deleteRightHash(rightHash: R): void {
-    const deletableHashes: string[] = [];
+	public deleteRightHash(rightHash: R): void {
+		let deletableHashes: string[] = [];
 
-    for (const leftRightHash of this.__set.keys()) {
-      if (leftRightHash.endsWith(rightHash)) {
-        deletableHashes.push(leftRightHash);
-      }
-    }
+		for (let leftRightHash of this.__set.keys()) {
+			if (leftRightHash.endsWith(rightHash)) {
+				deletableHashes.push(leftRightHash);
+			}
+		}
 
-    for (const hash of deletableHashes) {
-      this.__set.delete(hash);
-    }
-  }
+		for (let hash of deletableHashes) {
+			this.__set.delete(hash);
+		}
+	}
 
-  public clear(): void {
-    this.__set.clear();
-  }
+	public clear(): void {
+		this.__set.clear();
+	}
 
-  #buildLeftRightHash(leftHash: L, rightHash: R): string {
-    return `${leftHash}${rightHash}`;
-  }
+	#buildLeftRightHash(leftHash: L, rightHash: R): string {
+		return `${leftHash}${rightHash}`;
+	}
 }

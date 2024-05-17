@@ -2,7 +2,7 @@ import { DocumentIcon } from "@sanity/icons";
 import { definePathname } from "@tinloof/sanity-studio";
 import definePage from "../helpers/definePage";
 
-export const textPage = definePage({
+export let textPage = definePage({
   name: "textPage",
   title: "Text page",
   type: "document",

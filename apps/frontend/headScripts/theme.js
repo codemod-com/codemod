@@ -1,4 +1,4 @@
-const themeScript = `!(function () {
+let themeScript = `!(function () {
   try {
     var documentElement = document.documentElement,
       classList = documentElement.classList;

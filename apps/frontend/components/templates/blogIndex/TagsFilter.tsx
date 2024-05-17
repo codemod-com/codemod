@@ -23,14 +23,14 @@ export default function TagsFilter({
     return null;
   }
 
-  const currentTag = pathParam || "blog";
+  let currentTag = pathParam || "blog";
 
-  const defaultOption: FilterOption = {
+  let defaultOption: FilterOption = {
     value: "blog",
     label: defaultFilterTitle,
   };
-  const customerStory: FilterOption = CUSTOMER_STORY_TAG;
-  const renderedOptions = [
+  let customerStory: FilterOption = CUSTOMER_STORY_TAG;
+  let renderedOptions = [
     defaultOption,
     customerStory,
     ...(tags

@@ -3,7 +3,7 @@ import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
-export const useCodemodAI = ({
+export let useCodemodAI = ({
   messages,
   canAddMessages,
   setCanAddMessages,
@@ -12,16 +12,16 @@ export const useCodemodAI = ({
   canAddMessages: boolean;
   setCanAddMessages: Dispatch<SetStateAction<boolean>>;
 }) => {
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  const [wsMessage, setWsMessage] = useState<MessageFromWs>();
-  const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
+  let [ws, setWs] = useState<WebSocket | null>(null);
+  let [wsMessage, setWsMessage] = useState<MessageFromWs>();
+  let { inputSnippet: before, afterSnippet: after } = useSnippetStore();
 
   useEffect(() => {
     if (!shouldUseCodemodAi) return;
-    const websocket = new WebSocket(codemodAiWsServer);
+    let websocket = new WebSocket(codemodAiWsServer);
     websocket.onopen = () => console.info("WebSocket connection established");
     websocket.onmessage = async (event) => {
-      const data = JSON.parse(event.data) as MessageToWs;
+      let data = JSON.parse(event.data) as MessageToWs;
       if (data.codemod) {
         setCanAddMessages(true);
         setWsMessage({
@@ -45,9 +45,9 @@ export const useCodemodAI = ({
     };
   }, []);
 
-  const startIterativeCodemodGeneration = () => {
+  let startIterativeCodemodGeneration = () => {
     if (ws && ws.readyState === WebSocket.OPEN && canAddMessages) {
-      const messageToSend = JSON.stringify({
+      let messageToSend = JSON.stringify({
         previous_context: messages,
         before,
         after,

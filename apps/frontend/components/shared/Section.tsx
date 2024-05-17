@@ -6,7 +6,7 @@ type Props = {
   fullWidth?: boolean;
 };
 
-const Section = (props: Props) => {
+let Section = (props: Props) => {
   return (
     <section
       className={classnames(

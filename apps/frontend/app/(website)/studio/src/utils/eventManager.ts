@@ -8,10 +8,10 @@ export class EventManager {
   public pushEvent<T>(
     event: [T] extends [Omit<Event, "hashDigest">] ? T : never,
   ): number {
-    const hashDigest: string = crypto.randomUUID();
+    let hashDigest: string = crypto.randomUUID();
 
     // @ts-expect-error
-    const newEvent: Event = {
+    let newEvent: Event = {
       ...event,
       hashDigest,
     };
@@ -25,10 +25,10 @@ export class EventManager {
     event: [T] extends [Omit<Event, "hashDigest">] ? T : never,
     index: number,
   ): void {
-    const hashDigest: string = crypto.randomUUID();
+    let hashDigest: string = crypto.randomUUID();
 
     // @ts-expect-error
-    const newEvent: Event = {
+    let newEvent: Event = {
       ...event,
       hashDigest,
     };

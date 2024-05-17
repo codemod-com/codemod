@@ -22,32 +22,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("next 14 next-og-import", () => {
-  it("should move transform import from server to og", () => {
-    const INPUT = `
+describe('next 14 next-og-import', () => {
+	it('should move transform import from server to og', () => {
+		let INPUT = `
             import { ImageResponse } from 'next/server';
         `;
 
-    const OUTPUT = `
+		let OUTPUT = `
             import { ImageResponse } from 'next/og';
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

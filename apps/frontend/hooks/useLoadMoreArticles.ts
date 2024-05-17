@@ -2,15 +2,15 @@ import type { BlogIndexPayload } from "@/types";
 import { useState } from "react";
 
 export function useLoadMoreArticles({ pageNumber, pathParam }) {
-  const [data, setData] = useState<BlogIndexPayload | null>();
-  const [loaderState, setQueryState] = useState<
+  let [data, setData] = useState<BlogIndexPayload | null>();
+  let [loaderState, setQueryState] = useState<
     "idle" | "loading" | "error" | "success"
   >("idle");
 
   async function loadMore() {
     setQueryState("loading");
 
-    const res = await fetch(`/api/load-articles`, {
+    let res = await fetch(`/api/load-articles`, {
       method: "POST",
       body: JSON.stringify({
         pageNumber,
@@ -18,7 +18,7 @@ export function useLoadMoreArticles({ pageNumber, pathParam }) {
       }),
     });
 
-    const data = await res.json();
+    let data = await res.json();
 
     if (res.status === 200) {
       setQueryState("success");

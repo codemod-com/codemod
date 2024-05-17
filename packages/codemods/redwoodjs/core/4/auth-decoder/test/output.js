@@ -30,7 +30,7 @@ import { db } from 'src/lib/db';
 import { logger } from 'src/lib/logger';
 import services from 'src/services/**/*.{js,ts}';
 
-export const handler = createGraphQLHandler({
+export let handler = createGraphQLHandler({
 	authDecoder: authDecoder,
 	loggerConfig: { logger, options: {} },
 	directives,
