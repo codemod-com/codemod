@@ -160,14 +160,14 @@ export const handleRunCliCommand = async (
         ) {
           printer.printConsoleMessage(
             "error",
-            chalk.white(
-              "The specified command or codemod name could not be recognized.\n",
-              "To view available commands, execute",
-              `${chalk.bold(doubleQuotify("codemod --help"))}.\n`,
-              "To see a list of existing codemods, run",
-              `${chalk.bold(doubleQuotify("codemod search"))}`,
+            chalk.red(
+              "The specified command or codemod name could not be recognized.",
+              "\nTo view available commands, execute",
+              `${chalk.yellow.bold(doubleQuotify("codemod --help"))}.`,
+              "\nTo see a list of existing codemods, run",
+              `${chalk.yellow.bold(doubleQuotify("codemod search"))}`,
               "or",
-              `${chalk.bold(doubleQuotify("codemod list"))}`,
+              `${chalk.yellow.bold(doubleQuotify("codemod list"))}`,
               "with a query representing the codemod you are looking for.",
             ),
           );
