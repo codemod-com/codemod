@@ -372,7 +372,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
             },
             author: {
               username,
-              name: `${firstName} ${lastName}`.trim() || null,
+              name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
               email:
                 emailAddresses.find((e) => e.id === primaryEmailAddressId)
                   ?.emailAddress ?? null,
