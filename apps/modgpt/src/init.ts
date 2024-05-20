@@ -1,4 +1,3 @@
-import { clerkPlugin } from "@clerk/fastify";
 import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -54,12 +53,6 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   });
 
   await fastify.register(fastifyMultipart);
-
-  await fastify.register(clerkPlugin, {
-    publishableKey: environment.CLERK_PUBLISH_KEY,
-    secretKey: environment.CLERK_SECRET_KEY,
-    jwtKey: environment.CLERK_JWT_KEY,
-  });
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);

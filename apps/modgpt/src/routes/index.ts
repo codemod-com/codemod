@@ -27,6 +27,18 @@ export const protectedRoutes: FastifyPluginCallback = (
   _opts,
   done,
 ) => {
+  if (areClerkKeysSet(environment)) {
+    const clerkOptions = {
+      publishableKey: environment.CLERK_PUBLISH_KEY,
+      secretKey: environment.CLERK_SECRET_KEY,
+      jwtKey: environment.CLERK_JWT_KEY,
+    };
+
+    instance.register(clerkPlugin, clerkOptions);
+  } else {
+    console.warn("No Clerk keys set. Authentication is disabled.");
+  }
+
   if (!isDevelopment) getSendChatPath(fastify);
   done();
 };
