@@ -109,4 +109,36 @@ describe("replace-feature-flag", () => {
       OUTPUT?.replace(/\s/gm, ""),
     );
   });
+
+  it.only("Should refactor references", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/references-refactor.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "references-refactor.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/references-refactor.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const stringOptions = {
+      key: "simple-case",
+      type: "String",
+      value: "string",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "references-refactor.input.ts",
+      stringOptions,
+    );
+
+    console.log(transformed, "???");
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
 });

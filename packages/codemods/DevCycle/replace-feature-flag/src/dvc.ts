@@ -141,6 +141,6 @@ export const DVC = {
       ? getVariableValueReplacerNode(key, type, value)
       : getVariableReplacerNode(key, type, value);
 
-    return printNode(node);
+    return node;
   },
 };

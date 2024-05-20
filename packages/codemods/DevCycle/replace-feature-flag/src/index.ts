@@ -1,10 +1,18 @@
 import {
+  type CallExpression,
+  type Expression,
+  type FalseLiteral,
+  LiteralLikeNode,
   Node,
+  type NumericLiteral,
   ObjectLiteralElement,
   type ObjectLiteralExpression,
   type PropertyAssignment,
   type SourceFile,
+  type StringLiteral,
   SyntaxKind,
+  type TrueLiteral,
+  printNode,
   ts,
 } from "ts-morph";
 import { DVC } from "./dvc.js";
@@ -19,22 +27,19 @@ export type Options = {
   aliases?: Record<string, string>;
 };
 
-// const replaceObjects = (sourceFile: SourceFile, options: Options) => {
-//   sourceFile
-//     .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
-//     .forEach(() => {});
-//   let propertyAccessed = null;
+export const wrapWithMarker = (node: any) => {
+  return ts.factory.createCallExpression(
+    ts.factory.createIdentifier("__CODEMOD__"),
+    undefined,
+    [node],
+  );
+};
 
-//   if (Node.isPropertyAccessExpression(dp)) {
-//     propertyAccessed = dp.getNameNode()?.getFullText() ?? null;
-//   }
+export const unwrap = (node: CallExpression) => {
+  return node.getArguments().at(0);
+};
 
-//   if (Node.isElementAccessExpression(dp)) {
-//     propertyAccessed = dp.getArgumentExpression()?.getFullText() ?? null;
-//   }
-// };
-
-const getPropertyValueAsText = (
+export const getPropertyValueAsText = (
   ole: ObjectLiteralExpression,
   propertyName: string,
 ) => {
@@ -58,12 +63,94 @@ const getPropertyValueAsText = (
   return propertyValue.getFullText();
 };
 
+const isLiteral = (
+  node: Node,
+): node is StringLiteral | NumericLiteral | TrueLiteral | FalseLiteral =>
+  Node.isStringLiteral(node) ||
+  Node.isNumericLiteral(node) ||
+  Node.isTrueLiteral(node) ||
+  Node.isFalseLiteral(node);
+
+const isTruthy = (node: Node) => {
+  return Node.isTrueLiteral(node);
+};
+
+const repeatCallback = (
+  callback: (...args: any[]) => void,
+  N: number,
+): void => {
+  if (typeof callback !== "function") {
+    throw new TypeError("The first argument must be a function");
+  }
+
+  if (typeof N !== "number" || N < 0 || !Number.isInteger(N)) {
+    throw new TypeError("The second argument must be a non-negative integer");
+  }
+
+  for (let i = 0; i < N; i++) {
+    callback();
+  }
+};
+
+const simplifyAmpersandExpression = (left: Expression, right: Expression) => {
+  if (!isLiteral(left)) {
+    return;
+  }
+
+  console.log(
+    left.getFullText(),
+    right.getFullText(),
+    "simplifyAmpersandExpression???",
+  );
+  return isTruthy(left) ? right : left;
+};
+
+const simplifyBarBarExpression = (left: Expression, right: Expression) => {
+  if (!isLiteral(left)) {
+    return;
+  }
+
+  return isTruthy(left) ? left : right;
+};
+
+const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
+  sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
+    if (be.wasForgotten()) {
+      return;
+    }
+
+    const left = be.getLeft();
+    const right = be.getRight();
+    const op = be.getOperatorToken();
+
+    if (op.getKind() === SyntaxKind.BarBarToken) {
+      const node = simplifyBarBarExpression(left, right);
+
+      if (node) {
+        be.replaceWithText(node.getFullText());
+      }
+    }
+
+    // true &&
+    // @TODO we can check for other truthy
+    else if (op.getKind() === SyntaxKind.AmpersandAmpersandToken) {
+      const node = simplifyAmpersandExpression(left, right);
+
+      if (node) {
+        be.replaceWithText(node.getFullText());
+      }
+    }
+  });
+};
 export function handleSourceFile(
   sourceFile: SourceFile,
   options: Options,
 ): string | undefined {
   const matcher = DVC.getMatcher(options.key);
 
+  /**
+   * Replace SDK calls
+   */
   sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((ce) => {
     const match = matcher(ce);
 
@@ -73,17 +160,33 @@ export function handleSourceFile(
 
     if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
       ce.getParent()?.replaceWithText(
-        DVC.getReplacer(options.key, options.type, options.value, match.name),
+        printNode(
+          wrapWithMarker(
+            DVC.getReplacer(
+              options.key,
+              options.type,
+              options.value,
+              match.name,
+            ),
+          ),
+        ),
       );
 
       return;
     }
 
     ce.replaceWithText(
-      DVC.getReplacer(options.key, options.type, options.value, match.name),
+      printNode(
+        wrapWithMarker(
+          DVC.getReplacer(options.key, options.type, options.value, match.name),
+        ),
+      ),
     );
   });
 
+  /**
+   * Refactor member expressions
+   */
   sourceFile
     .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
     .forEach((ole) => {
@@ -117,6 +220,53 @@ export function handleSourceFile(
         }
       }
     });
+
+  /**
+   * Refactor references
+   */
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
+    .forEach((ce) => {
+      const vd = ce.getFirstAncestorByKind(SyntaxKind.VariableDeclaration);
+
+      if (vd === undefined) {
+        return;
+      }
+
+      const nameNode = vd.getNameNode();
+
+      if (!Node.isIdentifier(nameNode)) {
+        return;
+      }
+
+      nameNode.findReferencesAsNodes().forEach((ref) => {
+        const replacer = unwrap(ce);
+
+        if (replacer === undefined) {
+          return;
+        }
+
+        ref.replaceWithText(replacer.getFullText());
+      });
+    });
+
+  /**
+   * Evaluate logical expressions
+   */
+
+  repeatCallback(() => {
+    evaluateLogicalExpressions(sourceFile);
+    sourceFile
+      .getDescendantsOfKind(SyntaxKind.ParenthesizedExpression)
+      .forEach((pe) => {
+        const expression = pe.getExpression();
+
+        if (isLiteral(expression)) {
+          pe.replaceWithText(String(expression?.getLiteralValue()));
+        }
+      });
+  }, 3);
 
   return sourceFile.getFullText();
 }
