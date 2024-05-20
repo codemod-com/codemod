@@ -205,7 +205,7 @@ function BlockVariantCard({
   type: "logo" | "icon";
 }) {
   return (
-    <BlockVariantCardWrapper
+    (<BlockVariantCardWrapper
       tone="transparent"
       data-has-asset={!!icon}
       padding={2}
@@ -238,6 +238,6 @@ function BlockVariantCard({
         )}
       </div>
       <Text size={0}>{addSpaceBeforeCapitalLetters(icon)}</Text>
-    </BlockVariantCardWrapper>
+    </BlockVariantCardWrapper>)
   );
 }
