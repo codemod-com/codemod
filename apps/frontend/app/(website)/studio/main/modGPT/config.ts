@@ -22,5 +22,5 @@ const prodGptServer = shouldUseCodemodAi
   ? "https://backend.codemod.com/modgpt"
   : "https://backend.codemod.com";
 export const modGptServer = `${
-  shouldUseCodemodAi ? "http://0.0.0.0:9999" : prodGptServer
+  isDevelopment ? "http://0.0.0.0:9999" : prodGptServer
 }/${SEND_CHAT}`;
