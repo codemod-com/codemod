@@ -215,6 +215,9 @@ importers:
 
   apps/cli:
     dependencies:
+      esbuild:
+        specifier: ^0.17.14
+        version: 0.17.19
       keytar:
         specifier: ^7.9.0
         version: 7.9.0
@@ -270,9 +273,6 @@ importers:
       cosmiconfig:
         specifier: ^8.3.6
         version: 8.3.6(typescript@5.2.2)
-      esbuild:
-        specifier: ^0.17.14
-        version: 0.17.19
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
