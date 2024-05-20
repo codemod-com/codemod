@@ -1,6 +1,8 @@
-# React 18 migrate to create root
+# Replace reactDOM render
 
 ## Description
+
+Replaces usages of `ReactDom.render()` with `createRoot(node).render()`.
 
 ## Examples
 
