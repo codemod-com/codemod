@@ -1,4 +1,4 @@
-![Codemod](https://raw.githubusercontent.com/codemod-com/docs/main/static/img/github/codemod-billboard.png)
+![Codemod](https://raw.githubusercontent.com/codemod-com/codemod/main/apps/docs/images/misc/codemod-billboard.png)
 
 <p align="center">
   <br />
@@ -33,7 +33,7 @@ The `list` command can be used to list all codemods available in the [Codemod Re
 
     codemod [codemod-name]
 
-#### Example:
+#### Example
 
     codemod next/13/app-router-recipe
 
