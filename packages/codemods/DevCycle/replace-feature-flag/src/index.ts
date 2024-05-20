@@ -2,12 +2,10 @@ import {
   type CallExpression,
   type Expression,
   type FalseLiteral,
-  LiteralLikeNode,
   Node,
   type NumericLiteral,
-  ObjectLiteralElement,
   type ObjectLiteralExpression,
-  type PropertyAssignment,
+  type PrefixUnaryExpression,
   type SourceFile,
   type StringLiteral,
   SyntaxKind,
@@ -114,6 +112,7 @@ const simplifyBarBarExpression = (left: Expression, right: Expression) => {
 };
 
 const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
+  console.log(sourceFile.getFullText(), "TEXT ON STEP:");
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     if (be.wasForgotten()) {
       return;
@@ -142,6 +141,36 @@ const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
     }
   });
 };
+
+const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
+  if (pue.wasForgotten()) {
+    return;
+  }
+
+  let count = 1;
+  let operand = pue.getOperand();
+
+  while (
+    Node.isPrefixUnaryExpression(operand) &&
+    operand.compilerNode.operator === ts.SyntaxKind.ExclamationToken
+  ) {
+    operand = operand.getOperand();
+    count++;
+  }
+
+  if (!isLiteral(operand)) {
+    return;
+  }
+
+  const isSame = count % 2 === 0;
+  const newLiteral = isSame ? isTruthy(operand) : !isTruthy(operand);
+  const replacement = ts.factory.createLiteralTypeNode(
+    newLiteral ? ts.factory.createTrue() : ts.factory.createFalse(),
+  );
+
+  pue.replaceWithText(printNode(replacement));
+};
+
 export function handleSourceFile(
   sourceFile: SourceFile,
   options: Options,
@@ -253,50 +282,14 @@ export function handleSourceFile(
 
   /**
    * Refactor unary operators
-   *
-   *
    */
 
   sourceFile
     .getDescendantsOfKind(SyntaxKind.PrefixUnaryExpression)
-    .forEach((pue) => {
-      if (pue.wasForgotten()) {
-        return;
-      }
-
-      let operand = pue.getOperand();
-      let count = 0;
-
-      while (Node.isPrefixUnaryExpression(operand)) {
-        operand = operand.getOperand();
-        count++;
-      }
-
-      if (!isLiteral(operand)) {
-        return;
-      }
-
-      const isSame = count % 2 === 0;
-      console.log(isSame, operand.getText());
-
-      if (isSame) {
-        pue.replaceWithText(
-          printNode(
-            isTruthy(operand)
-              ? ts.factory.createTrue()
-              : ts.factory.createFalse(),
-          ),
-        );
-      } else {
-        pue.replaceWithText(
-          printNode(
-            isTruthy(operand)
-              ? ts.factory.createFalse()
-              : ts.factory.createTrue(),
-          ),
-        );
-      }
-    });
+    .filter((pue) => {
+      return pue.compilerNode.operator === SyntaxKind.ExclamationToken;
+    })
+    .forEach(simplifyPrefixUnaryExpression);
 
   /**
    * Evaluate logical expressions
