@@ -252,6 +252,53 @@ export function handleSourceFile(
     });
 
   /**
+   * Refactor unary operators
+   *
+   *
+   */
+
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.PrefixUnaryExpression)
+    .forEach((pue) => {
+      if (pue.wasForgotten()) {
+        return;
+      }
+
+      let operand = pue.getOperand();
+      let count = 0;
+
+      while (Node.isPrefixUnaryExpression(operand)) {
+        operand = operand.getOperand();
+        count++;
+      }
+
+      if (!isLiteral(operand)) {
+        return;
+      }
+
+      const isSame = count % 2 === 0;
+      console.log(isSame, operand.getText());
+
+      if (isSame) {
+        pue.replaceWithText(
+          printNode(
+            isTruthy(operand)
+              ? ts.factory.createTrue()
+              : ts.factory.createFalse(),
+          ),
+        );
+      } else {
+        pue.replaceWithText(
+          printNode(
+            isTruthy(operand)
+              ? ts.factory.createFalse()
+              : ts.factory.createTrue(),
+          ),
+        );
+      }
+    });
+
+  /**
    * Evaluate logical expressions
    */
 

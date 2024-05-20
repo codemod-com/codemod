@@ -8,7 +8,8 @@ if(a === "string") {
 
 const b = a + "other string";
 
-
+const d = !!false;
+const f = !!!true;
 const y = (false || (isDefaulted)) && (x && !!simpleCaseValue);
 // const y = (false || (true)) && (x && !!true);
 // const y = true && (x && true)
