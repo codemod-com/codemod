@@ -78,7 +78,7 @@ export function jsFiles(
 
   const promise = new PLazy<Helpers>((resolve, reject) => {
     if (callback) {
-      const voidOrPromise = callback(wrapHelpers(helpers, context));
+      const voidOrPromise = context(callback);
       if (voidOrPromise instanceof Promise) {
         voidOrPromise
           .then(() => resolve(wrapHelpers(helpers, context)))

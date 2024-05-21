@@ -9,3 +9,5 @@ export * from "./contexts.js";
 export * from "./git/git.js";
 
 export * from "./astGrep/astGrep.js";
+
+export * from "./jsFiles.js";
