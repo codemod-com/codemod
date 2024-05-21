@@ -112,6 +112,40 @@ describe("replace-feature-flag", () => {
     );
   });
 
+  it.only("Should refactor variable references", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/references-refactor.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "references-refactor.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/references-refactor.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const boolOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "references-refactor.input.ts",
+      boolOptions,
+    );
+
+    console.log(transformed);
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
   it("Should refactor javascript", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/javascript.output.js"),

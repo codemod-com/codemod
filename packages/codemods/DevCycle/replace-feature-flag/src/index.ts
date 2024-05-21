@@ -198,6 +198,11 @@ interface Provider {
 
 const getProvider = (provider: Providers) => PROVIDERS[provider];
 
+/**
+ * Replaces Provider method calls with return value of the call
+ * wraps the return value with __CODEMOD_LITERAL__ to distinguish it from other literals
+ * useVariable(user, 'key', true) ===> __CODEMOD_LITERAL__({...})
+ */
 const replaceSDKMethodCalls = (
   sourceFile: SourceFile,
   options: Options,
@@ -223,11 +228,17 @@ const replaceSDKMethodCalls = (
   });
 };
 
+/**
+ * Simplifies property access on object literals with static properties
+ *
+ * {a: 1}.a ===> 1;
+ *
+ * {a: 1}['a'] ===> 1;
+ */
 const refactorMemberExpressions = (sourceFile: SourceFile) => {
   getCodemodLiteral(sourceFile).forEach((ce) => {
     const parent = ce.getParent();
-
-    const ole = ce.getArguments().at(0);
+    const ole = getCodemodLiteralValue(ce);
 
     if (!Node.isObjectLiteralExpression(ole)) {
       return;
@@ -263,11 +274,27 @@ const refactorMemberExpressions = (sourceFile: SourceFile) => {
   });
 };
 
+/**
+ * Finds variable assignments and replaces its references with variable value.
+ * Removes variable declaration.
+ *
+ * const a = __CODEMOD_LITERAL__(true);
+ *
+ * if(a) {
+ *   console.log(a);
+ * }
+ *
+ * ===>
+ *
+ * if(__CODEMOD_LITERAL__(true)) {
+ *   console.log(__CODEMOD_LITERAL__(true);)
+ * }
+ */
 const refactorReferences = (sourceFile: SourceFile) => {
   getCodemodLiteral(sourceFile).forEach((ce) => {
-    const vd = ce.getFirstAncestorByKind(SyntaxKind.VariableDeclaration);
+    const vd = ce.getParent();
 
-    if (vd === undefined) {
+    if (!Node.isVariableDeclaration(vd)) {
       return;
     }
 
@@ -392,8 +419,11 @@ export function handleSourceFile(
 
   repeatCallback(() => {
     replaceSDKMethodCalls(sourceFile, options, provider);
+    // console.log("replaceSDKMethodCalls", sourceFile.getFullText());
     refactorMemberExpressions(sourceFile);
+    // console.log("refactorMemberExpressions", sourceFile.getFullText());
     refactorReferences(sourceFile);
+    // console.log("refactorReferences", sourceFile.getFullText());
     simplifyUnaryExpressions(sourceFile);
     evaluateBinaryExpressions(sourceFile);
 

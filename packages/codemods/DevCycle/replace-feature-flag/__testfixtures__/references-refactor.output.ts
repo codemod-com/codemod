@@ -1,4 +1,8 @@
-const a = "string";
+const var3 = true + 'some value';
 
-const b = true;
+const var4 = true;
+const var5 = var3;
+
+const var6 =  var5 + 'somevalue';
+
 

@@ -1,14 +1,9 @@
+const var2 = useVariableValue(user, 'simple-case', true);
+const var3 = useVariableValue(user, 'simple-case', true) + 'some value';
 
-const isDefaulted = __CODEMOD__(true);
-const simpleCaseValue = __CODEMOD__(false);
+const var4 = var2;
+const var5 = var3;
 
-const testCase2 = ((true && false) || (isDefaulted && !simpleCaseValue)) && true;
+const var6 =  var5 + 'somevalue';
 
 
-if(true) {
-    console.log('hahaha');
-}
-
-if(false) {
-    console.log('not')
-}
