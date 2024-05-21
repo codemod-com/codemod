@@ -30,15 +30,12 @@ ${styles.map(({ name, value }) => `  ${name}: ${value};`).join("\n")}
 migrate("React Styles to CSS Modules", () => {
   describe("sample", async () => {
     // For every file that matches the pattern, we will run the callback
-    await jsFiles(
-      "packages/workflow/samples/react-styles-to-css-modules/ButtonBefore.tsx",
-      async ({ astGrep }) => {
-        const css = await extractCSS();
-        console.log(css);
-        // Later we can save css to a file
-        // Update JS file with import from CSS file
-        // Replace styles with className
-      },
-    );
+    await jsFiles("ButtonBefore.tsx", async ({ astGrep }) => {
+      const css = await extractCSS();
+      console.log(css);
+      // Later we can save css to a file
+      // Update JS file with import from CSS file
+      // Replace styles with className
+    });
   });
 });
