@@ -2,15 +2,10 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { getAuth } from "@clerk/fastify";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
-import type { FastifyPluginCallback } from "fastify";
 import * as openAiEdge from "openai-edge";
-import {
-  areClerkKeysSet,
-  clerkApplied,
-  environment,
-} from "../dev-utils/configs";
+import { clerkApplied, environment } from "../dev-utils/configs";
 import { isDevelopment } from "../dev-utils/configs";
-import { corsDisableHeaders, getCorsDisabledHeaders } from "../dev-utils/cors";
+import { corsDisableHeaders } from "../dev-utils/cors";
 import type { Instance } from "../fastifyInstance";
 import { parseSendChatBody } from "../schemata/schema";
 import { ClaudeService } from "../services/claudeService";
