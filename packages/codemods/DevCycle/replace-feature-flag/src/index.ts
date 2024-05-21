@@ -95,11 +95,6 @@ const simplifyAmpersandExpression = (left: Expression, right: Expression) => {
     return;
   }
 
-  console.log(
-    left.getFullText(),
-    right.getFullText(),
-    "simplifyAmpersandExpression???",
-  );
   return isTruthy(left) ? right : left;
 };
 
@@ -112,7 +107,6 @@ const simplifyBarBarExpression = (left: Expression, right: Expression) => {
 };
 
 const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
-  console.log(sourceFile.getFullText(), "TEXT ON STEP:");
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     if (be.wasForgotten()) {
       return;
@@ -217,9 +211,16 @@ export function handleSourceFile(
    * Refactor member expressions
    */
   sourceFile
-    .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
-    .forEach((ole) => {
-      const parent = ole.getParent();
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
+    .forEach((ce) => {
+      const parent = ce.getParent();
+
+      const ole = ce.getArguments().at(0);
+
+      if (!Node.isObjectLiteralExpression(ole)) {
+        return;
+      }
 
       if (Node.isPropertyAccessExpression(parent)) {
         const nameNode = parent.getNameNode();
@@ -231,11 +232,11 @@ export function handleSourceFile(
         const text = getPropertyValueAsText(ole, nameNode.getText());
 
         if (text !== null) {
-          parent.replaceWithText(text);
+          parent.replaceWithText(`__CODEMOD__(${text})`);
         }
       }
 
-      if (!parent.wasForgotten() && Node.isElementAccessExpression(parent)) {
+      if (!parent?.wasForgotten() && Node.isElementAccessExpression(parent)) {
         const arg = parent.getArgumentExpression();
 
         if (!Node.isStringLiteral(arg)) {
@@ -245,7 +246,7 @@ export function handleSourceFile(
         const text = getPropertyValueAsText(ole, arg.getLiteralText());
 
         if (text !== null) {
-          parent.replaceWithText(text);
+          parent.replaceWithText(`__CODEMOD__(${text})`);
         }
       }
     });
@@ -276,7 +277,7 @@ export function handleSourceFile(
           return;
         }
 
-        ref.replaceWithText(replacer.getFullText());
+        ref.replaceWithText(`__CODEMOD__(${replacer.getFullText()})`);
       });
     });
 
@@ -290,6 +291,28 @@ export function handleSourceFile(
       return pue.compilerNode.operator === SyntaxKind.ExclamationToken;
     })
     .forEach(simplifyPrefixUnaryExpression);
+
+  /**
+   * Evaluate binary expressions
+   */
+
+  sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
+    const left = be.getLeft();
+    const right = be.getRight();
+
+    const unwrappedLeft = Node.isCallExpression(left) ? unwrap(left) : left;
+    const unwrappedRight = Node.isCallExpression(right) ? unwrap(right) : right;
+
+    const op = be.getOperatorToken();
+
+    if (op.getKind() === SyntaxKind.EqualsEqualsEqualsToken) {
+      if (isLiteral(unwrappedLeft) && isLiteral(unwrappedRight)) {
+        const isSame =
+          unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue();
+        be.replaceWithText(isSame ? "true" : "false");
+      }
+    }
+  });
 
   /**
    * Evaluate logical expressions
@@ -307,6 +330,50 @@ export function handleSourceFile(
         }
       });
   }, 3);
+
+  /**
+   * Refactor if statements
+   */
+  sourceFile.getDescendantsOfKind(SyntaxKind.IfStatement).forEach((ifs) => {
+    const expression = ifs.getExpression();
+
+    const unwrapped = Node.isCallExpression(expression)
+      ? unwrap(expression)
+      : expression;
+
+    if (Node.isTrueLiteral(unwrapped)) {
+      ifs.replaceWithText(
+        ifs
+          .getThenStatement()
+          .getDescendantStatements()
+          .reduce((acc, s) => {
+            acc += s.getFullText();
+            return acc;
+          }, ""),
+      );
+    } else if (Node.isFalseLiteral(unwrapped)) {
+      ifs.remove();
+    }
+  });
+
+  /**
+   * Refactor conditional expressions
+   */
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.ConditionalExpression)
+    .forEach((ce) => {
+      const condition = ce.getCondition();
+
+      const unwrapped = Node.isCallExpression(condition)
+        ? unwrap(condition)
+        : condition;
+
+      if (Node.isTrueLiteral(unwrapped)) {
+        ce.replaceWithText(ce.getWhenTrue().getFullText());
+      } else if (Node.isFalseLiteral(unwrapped)) {
+        ce.replaceWithText(ce.getWhenFalse().getFullText());
+      }
+    });
 
   return sourceFile.getFullText();
 }

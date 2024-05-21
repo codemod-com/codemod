@@ -112,30 +112,31 @@ describe("replace-feature-flag", () => {
 
   it.only("Should refactor references", async () => {
     const OUTPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/references-refactor.output.ts"),
+      join(__dirname, "..", "__testfixtures__/javascript.output.js"),
       "utf-8",
     );
 
     const projectFiles = {
-      "references-refactor.input.ts": await readFile(
-        join(__dirname, "..", "__testfixtures__/references-refactor.input.ts"),
+      "javascript.input.js": await readFile(
+        join(__dirname, "..", "__testfixtures__/javascript.input.js"),
         "utf-8",
       ),
     };
 
-    const stringOptions = {
+    const booleanFlagOptions = {
       key: "simple-case",
-      type: "String",
-      value: "string",
+      type: "Boolean",
+      value: "true",
     } as const;
 
     const transformed = transform(
       projectFiles,
-      "references-refactor.input.ts",
-      stringOptions,
+      "javascript.input.js",
+      booleanFlagOptions,
     );
 
-    console.log(transformed, "???");
+    console.log("Transformed:", transformed);
+
     assert.deepEqual(
       transformed?.replace(/\s/gm, ""),
       OUTPUT?.replace(/\s/gm, ""),
