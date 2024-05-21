@@ -277,6 +277,12 @@ const refactorReferences = (sourceFile: SourceFile) => {
       return;
     }
 
+    const references = nameNode.findReferencesAsNodes();
+
+    if (references.length === 0) {
+      return;
+    }
+
     nameNode.findReferencesAsNodes().forEach((ref) => {
       const replacer = getCodemodLiteralValue(ce);
 

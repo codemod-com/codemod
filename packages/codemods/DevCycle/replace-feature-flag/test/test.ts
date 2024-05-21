@@ -55,8 +55,9 @@ describe("replace-feature-flag", () => {
 
     const stringOptions = {
       key: "simple-case",
-      type: "String",
+      type: "string",
       value: "string",
+      provider: "DevCycle",
     } as const;
 
     const transformed = transform(
@@ -94,8 +95,9 @@ describe("replace-feature-flag", () => {
 
     const stringOptions = {
       key: "simple-case",
-      type: "String",
+      type: "string",
       value: "string",
+      provider: "DevCycle",
     } as const;
 
     const transformed = transform(
@@ -110,7 +112,7 @@ describe("replace-feature-flag", () => {
     );
   });
 
-  it.only("Should refactor references", async () => {
+  it("Should refactor javascript", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/javascript.output.js"),
       "utf-8",
@@ -135,8 +137,6 @@ describe("replace-feature-flag", () => {
       "javascript.input.js",
       booleanFlagOptions,
     );
-
-    console.log("Transformed:", transformed);
 
     assert.deepEqual(
       transformed?.replace(/\s/gm, ""),
