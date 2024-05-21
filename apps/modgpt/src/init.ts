@@ -1,8 +1,9 @@
+import { clerkPlugin } from "@clerk/fastify";
 import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
-import { environment, isDevelopment } from "./dev-utils/configs";
+import { clerkApplied, environment, isDevelopment } from "./dev-utils/configs";
 import { corsOptions, getCorsDisabledHeaders } from "./dev-utils/cors";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -47,6 +48,20 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     reply.header("Access-Control-Allow-Origin", "false");
     done();
   });
+
+  if (!isDevelopment && clerkApplied) {
+    const clerkOptions = {
+      publishableKey: environment.CLERK_PUBLISH_KEY,
+      secretKey: environment.CLERK_SECRET_KEY,
+      jwtKey: environment.CLERK_JWT_KEY,
+    };
+
+    fastify.register(clerkPlugin, clerkOptions);
+  } else {
+    if (!clerkApplied)
+      console.warn("No Clerk keys set. Authentication is disabled.");
+    if (isDevelopment) console.info("ENV set to development");
+  }
 
   await fastify.register(cors, corsOptions);
 
