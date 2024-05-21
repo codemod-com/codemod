@@ -24,4 +24,5 @@ export const areClerkKeysSet = (
   );
 };
 
+export const clerkApplied = areClerkKeysSet(environment);
 export const isDevelopment = NODE_ENV === "development";

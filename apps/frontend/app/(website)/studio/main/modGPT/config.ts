@@ -8,7 +8,7 @@ import { SEND_CHAT } from "@studio/constants";
 
 export const shouldUseCodemodAi = isServer
   ? false
-  : new URLSearchParams(window.location.search)
+  : new URLSearchParams(window?.location.search)
       .get(FEATURE_FLAG_QUERY_KEY)
       ?.split(",")
       .includes(CODEMOD_AI_FEATURE_FLAG);
@@ -22,5 +22,5 @@ const prodGptServer = shouldUseCodemodAi
   ? "https://backend.codemod.com/modgpt"
   : "https://backend.codemod.com";
 export const modGptServer = `${
-  isDevelopment ? "http://0.0.0.0:9999" : prodGptServer
+  isDevelopment ? "http://0.0.0.0:8082" : prodGptServer
 }/${SEND_CHAT}`;

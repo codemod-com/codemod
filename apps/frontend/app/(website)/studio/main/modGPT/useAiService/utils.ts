@@ -31,7 +31,7 @@ export const useSaveMssgsToLocalStorage = ({
   messages,
 }: { isLoading: boolean; messages: Message[] }) => {
   useEffect(() => {
-    if (isLoading || messages.length === 0) {
+    if (isLoading) {
       return;
     }
 

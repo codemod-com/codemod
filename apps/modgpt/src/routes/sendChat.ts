@@ -4,10 +4,14 @@ import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import type { FastifyPluginCallback } from "fastify";
 import * as openAiEdge from "openai-edge";
-import { areClerkKeysSet, environment } from "../dev-utils/configs";
+import {
+  areClerkKeysSet,
+  clerkApplied,
+  environment,
+} from "../dev-utils/configs";
 import { isDevelopment } from "../dev-utils/configs";
-import { getCorsDisabledHeaders } from "../dev-utils/cors";
-import { type Instance, fastify } from "../fastifyInstance";
+import { corsDisableHeaders, getCorsDisabledHeaders } from "../dev-utils/cors";
+import type { Instance } from "../fastifyInstance";
 import { parseSendChatBody } from "../schemata/schema";
 import { ClaudeService } from "../services/claudeService";
 import { ReplicateService } from "../services/replicateService";
@@ -23,10 +27,6 @@ const COMPLETION_PARAMS = {
   model: "gpt-4",
 };
 
-const headers = isDevelopment
-  ? getCorsDisabledHeaders(fastify)
-  : { "Access-Control-Allow-Origin": "false" };
-
 const chatGptApi = new ChatGPTAPI({
   apiKey: OPEN_AI_API_KEY,
   completionParams: COMPLETION_PARAMS,
@@ -39,14 +39,16 @@ const openAiEdgeApi = new openAiEdge.OpenAIApi(
 
 export const getSendChatPath = (instance: Instance) =>
   instance.post("/sendChat", async (request, reply) => {
-    if (!isDevelopment && areClerkKeysSet(environment)) {
+    if (!isDevelopment && clerkApplied) {
       const { userId } = getAuth(request);
       if (!userId) {
         reply.code(401).send();
         return;
       }
     } else {
-      console.warn("No Clerk keys set. Authentication is disabled.");
+      if (!clerkApplied)
+        console.warn("No Clerk keys set. Authentication is disabled.");
+      if (isDevelopment) console.info("ENV set to development");
     }
 
     const { messages, engine } = parseSendChatBody(request.body);
@@ -75,6 +77,10 @@ export const getSendChatPath = (instance: Instance) =>
           })),
           stream: true,
         });
+        const headers = isDevelopment
+          ? corsDisableHeaders
+          : { "Access-Control-Allow-Origin": "false" };
+
         const stream = OpenAIStream(response);
         reply.raw.writeHead(200, headers);
         reply.hijack();

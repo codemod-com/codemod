@@ -10,8 +10,6 @@ interface Props {
 }
 
 export const ChatMessages = ({ messages }: Props) => {
-  const { setContent } = useModStore();
-
   if (!messages.length) {
     return null;
   }
@@ -31,18 +29,6 @@ export const ChatMessages = ({ messages }: Props) => {
         .map((message, index) => (
           <div key={index}>
             <ChatMessage message={message} />
-
-            {message.codemod && (
-              <Button
-                variant={"solid"}
-                disabled={false}
-                color={"primary"}
-                className={"w-full"}
-                onClick={() => message.codemod && setContent(message.codemod)}
-              >
-                Use codemod
-              </Button>
-            )}
 
             {index < messages.length - 1 && (
               <Separator className="my-4 md:my-8" />

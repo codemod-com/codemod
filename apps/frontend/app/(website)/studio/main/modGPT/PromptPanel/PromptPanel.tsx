@@ -31,6 +31,7 @@ export type PromptPanelProps = Pick<
     typeof useAiService
   >["startIterativeCodemodGeneration"];
   canAddMessages: ReturnType<typeof useAiService>["canAddMessages"];
+  resetMessages: ReturnType<typeof useAiService>["resetMessages"];
 };
 
 export function PromptPanel(props: PromptPanelProps) {
@@ -46,6 +47,7 @@ export function PromptPanel(props: PromptPanelProps) {
     setToken,
     startIterativeCodemodGeneration,
     canAddMessages,
+    resetMessages,
   } = props;
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [expandedHelper, setExpandedHelper] = useState(true);
@@ -104,7 +106,7 @@ export function PromptPanel(props: PromptPanelProps) {
           input={input}
           setInput={setInput}
           isLoading={isLoading}
-          onReset={() => setMessages([])}
+          onReset={resetMessages}
         />
       </div>
     </div>
