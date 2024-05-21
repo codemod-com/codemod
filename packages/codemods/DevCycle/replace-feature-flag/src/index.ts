@@ -17,14 +17,19 @@ import { DVC } from "./dvc.js";
 
 const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
-type VariableType = "String" | "Boolean" | "Number" | "JSON";
+type VariableType = "string" | "boolean" | "number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
+type Providers = "DevCycle" | "OpenFeature";
+
+const PROVIDERS: Record<Providers, Provider> = {
+  DevCycle: DVC,
+};
 
 export type Options = {
   key: string;
   value: VariableValue;
   type: VariableType;
-  aliases?: Record<string, string>;
+  provider: Providers;
 };
 
 export const buildCodemodLiteral = (node: any) => {
@@ -175,15 +180,31 @@ const getReplacementText = (provider: any, options: Options, name: string) => {
   );
 };
 
-export function handleSourceFile(
+const getCodemodLiteral = (sourceFile: SourceFile) => {
+  return sourceFile
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter((ce) => ce.getExpression().getText() === CODEMOD_LITERAL);
+};
+
+interface Provider {
+  getMatcher: (key: string) => (ce: CallExpression) => { name: string } | null;
+  getReplacer: (
+    key: string,
+    type: VariableType,
+    value: VariableValue,
+    name: string,
+  ) => string;
+}
+
+const getProvider = (provider: Providers) => PROVIDERS[provider];
+
+const replaceSDKMethodCalls = (
   sourceFile: SourceFile,
   options: Options,
-): string | undefined {
-  const matcher = DVC.getMatcher(options.key);
+  provider: Provider,
+) => {
+  const matcher = provider.getMatcher(options.key);
 
-  /**
-   * Replace SDK calls
-   */
   sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((ce) => {
     const match = matcher(ce);
 
@@ -200,96 +221,84 @@ export function handleSourceFile(
 
     ce.replaceWithText(replacementText);
   });
+};
 
-  /**
-   * Refactor member expressions
-   */
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
-    .forEach((ce) => {
-      const parent = ce.getParent();
+const refactorMemberExpressions = (sourceFile: SourceFile) => {
+  getCodemodLiteral(sourceFile).forEach((ce) => {
+    const parent = ce.getParent();
 
-      const ole = ce.getArguments().at(0);
+    const ole = ce.getArguments().at(0);
 
-      if (!Node.isObjectLiteralExpression(ole)) {
-        return;
-      }
+    if (!Node.isObjectLiteralExpression(ole)) {
+      return;
+    }
 
-      if (Node.isPropertyAccessExpression(parent)) {
-        const nameNode = parent.getNameNode();
-
-        if (!Node.isIdentifier(nameNode)) {
-          return;
-        }
-
-        const text = getPropertyValueAsText(ole, nameNode.getText());
-
-        if (text !== null) {
-          parent.replaceWithText(`__CODEMOD__(${text})`);
-        }
-      }
-
-      if (!parent?.wasForgotten() && Node.isElementAccessExpression(parent)) {
-        const arg = parent.getArgumentExpression();
-
-        if (!Node.isStringLiteral(arg)) {
-          return;
-        }
-
-        const text = getPropertyValueAsText(ole, arg.getLiteralText());
-
-        if (text !== null) {
-          parent.replaceWithText(`__CODEMOD__(${text})`);
-        }
-      }
-    });
-
-  /**
-   * Refactor references
-   */
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
-    .forEach((ce) => {
-      const vd = ce.getFirstAncestorByKind(SyntaxKind.VariableDeclaration);
-
-      if (vd === undefined) {
-        return;
-      }
-
-      const nameNode = vd.getNameNode();
+    if (Node.isPropertyAccessExpression(parent)) {
+      const nameNode = parent.getNameNode();
 
       if (!Node.isIdentifier(nameNode)) {
         return;
       }
 
-      nameNode.findReferencesAsNodes().forEach((ref) => {
-        const replacer = getCodemodLiteralValue(ce);
+      const text = getPropertyValueAsText(ole, nameNode.getText());
 
-        if (replacer === undefined) {
-          return;
-        }
+      if (text !== null) {
+        parent.replaceWithText(`${CODEMOD_LITERAL}(${text})`);
+      }
+    }
 
-        ref.replaceWithText(`__CODEMOD__(${replacer.getFullText()})`);
-      });
+    if (!parent?.wasForgotten() && Node.isElementAccessExpression(parent)) {
+      const arg = parent.getArgumentExpression();
+
+      if (!Node.isStringLiteral(arg)) {
+        return;
+      }
+
+      const text = getPropertyValueAsText(ole, arg.getLiteralText());
+
+      if (text !== null) {
+        parent.replaceWithText(`${CODEMOD_LITERAL}(${text})`);
+      }
+    }
+  });
+};
+
+const refactorReferences = (sourceFile: SourceFile) => {
+  getCodemodLiteral(sourceFile).forEach((ce) => {
+    const vd = ce.getFirstAncestorByKind(SyntaxKind.VariableDeclaration);
+
+    if (vd === undefined) {
+      return;
+    }
+
+    const nameNode = vd.getNameNode();
+
+    if (!Node.isIdentifier(nameNode)) {
+      return;
+    }
+
+    nameNode.findReferencesAsNodes().forEach((ref) => {
+      const replacer = getCodemodLiteralValue(ce);
+
+      if (replacer === undefined) {
+        return;
+      }
+
+      ref.replaceWithText(`${CODEMOD_LITERAL}(${replacer.getFullText()})`);
     });
+  });
+};
 
-  /**
-   * Refactor unary operators
-   */
-
+const simplifyUnaryExpressions = (sourceFile: SourceFile) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.PrefixUnaryExpression)
     .filter((pue) => {
       return pue.compilerNode.operator === SyntaxKind.ExclamationToken;
     })
     .forEach(simplifyPrefixUnaryExpression);
+};
 
-  /**
-   * Evaluate binary expressions
-   */
-
+const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     const left = be.getLeft();
     const right = be.getRight();
@@ -311,22 +320,35 @@ export function handleSourceFile(
       }
     }
   });
+};
 
-  /**
-   * Evaluate logical expressions
-   */
+const removeUselessParenthesis = (sourceFile: SourceFile) => {
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.ParenthesizedExpression)
+    .forEach((pe) => {
+      const expression = pe.getExpression();
+
+      if (isLiteral(expression)) {
+        pe.replaceWithText(String(expression?.getLiteralValue()));
+      }
+    });
+};
+
+export function handleSourceFile(
+  sourceFile: SourceFile,
+  options: Options,
+): string | undefined {
+  const provider = getProvider(options.provider);
+
+  replaceSDKMethodCalls(sourceFile, options, provider);
+  refactorMemberExpressions(sourceFile);
+  refactorReferences(sourceFile);
+  simplifyUnaryExpressions(sourceFile);
+  evaluateBinaryExpressions(sourceFile);
 
   repeatCallback(() => {
     evaluateLogicalExpressions(sourceFile);
-    sourceFile
-      .getDescendantsOfKind(SyntaxKind.ParenthesizedExpression)
-      .forEach((pe) => {
-        const expression = pe.getExpression();
-
-        if (isLiteral(expression)) {
-          pe.replaceWithText(String(expression?.getLiteralValue()));
-        }
-      });
+    removeUselessParenthesis(sourceFile);
   }, 3);
 
   /**
@@ -377,24 +399,21 @@ export function handleSourceFile(
    * Unwrap all literals
    */
 
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
-    .forEach((ce) => {
-      if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
-        ce.getParent()?.replaceWithText(
-          getCodemodLiteralValue(ce)?.getFullText() ?? "",
-        );
-        return;
-      }
-
-      console.log(
-        ce.getParent()?.getKindName(),
-        getCodemodLiteralValue(ce)?.getFullText(),
-        "??",
+  getCodemodLiteral(sourceFile).forEach((ce) => {
+    if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
+      ce.getParent()?.replaceWithText(
+        getCodemodLiteralValue(ce)?.getFullText() ?? "",
       );
-      ce.replaceWithText(getCodemodLiteralValue(ce)?.getFullText() ?? "");
-    });
+      return;
+    }
+
+    console.log(
+      ce.getParent()?.getKindName(),
+      getCodemodLiteralValue(ce)?.getFullText(),
+      "??",
+    );
+    ce.replaceWithText(getCodemodLiteralValue(ce)?.getFullText() ?? "");
+  });
 
   return sourceFile.getFullText();
 }

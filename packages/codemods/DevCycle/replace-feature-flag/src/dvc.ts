@@ -1,6 +1,6 @@
-import { type CallExpression, Node, printNode, ts } from "ts-morph";
+import { type CallExpression, Node, ts } from "ts-morph";
 
-type VariableType = "String" | "Boolean" | "Number" | "JSON";
+type VariableType = "string" | "boolean" | "number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
 
 const { factory } = ts;
@@ -31,13 +31,13 @@ const getCEExpressionName = (ce: CallExpression): string | null => {
 
 const getTypeLiteral = (type: VariableType, value: VariableValue) => {
   switch (type) {
-    case "String": {
+    case "string": {
       return factory.createStringLiteral(value.toString());
     }
-    case "Number": {
+    case "number": {
       return factory.createNumericLiteral(Number(value));
     }
-    case "Boolean": {
+    case "boolean": {
       return value === "true" ? factory.createTrue() : factory.createFalse();
     }
     case "JSON": {

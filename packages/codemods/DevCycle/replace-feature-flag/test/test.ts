@@ -125,8 +125,9 @@ describe("replace-feature-flag", () => {
 
     const booleanFlagOptions = {
       key: "simple-case",
-      type: "Boolean",
+      type: "boolean",
       value: "true",
+      provider: "DevCycle",
     } as const;
 
     const transformed = transform(
