@@ -15,6 +15,8 @@ import {
 } from "ts-morph";
 import { DVC } from "./dvc.js";
 
+const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
+
 type VariableType = "String" | "Boolean" | "Number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
 
@@ -25,15 +27,15 @@ export type Options = {
   aliases?: Record<string, string>;
 };
 
-export const wrapWithMarker = (node: any) => {
+export const buildCodemodLiteral = (node: any) => {
   return ts.factory.createCallExpression(
-    ts.factory.createIdentifier("__CODEMOD__"),
+    ts.factory.createIdentifier(CODEMOD_LITERAL),
     undefined,
     [node],
   );
 };
 
-export const unwrap = (node: CallExpression) => {
+export const getCodemodLiteralValue = (node: CallExpression) => {
   return node.getArguments().at(0);
 };
 
@@ -165,6 +167,14 @@ const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
   pue.replaceWithText(printNode(replacement));
 };
 
+const getReplacementText = (provider: any, options: Options, name: string) => {
+  return printNode(
+    buildCodemodLiteral(
+      provider.getReplacer(options.key, options.type, options.value, name),
+    ),
+  );
+};
+
 export function handleSourceFile(
   sourceFile: SourceFile,
   options: Options,
@@ -180,31 +190,15 @@ export function handleSourceFile(
     if (match === null) {
       return;
     }
+    const replacementText = getReplacementText(DVC, options, match.name);
+    const parent = ce.getParent();
 
-    if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
-      ce.getParent()?.replaceWithText(
-        printNode(
-          wrapWithMarker(
-            DVC.getReplacer(
-              options.key,
-              options.type,
-              options.value,
-              match.name,
-            ),
-          ),
-        ),
-      );
-
+    if (parent?.getKind() === SyntaxKind.ExpressionStatement) {
+      parent.replaceWithText(replacementText);
       return;
     }
 
-    ce.replaceWithText(
-      printNode(
-        wrapWithMarker(
-          DVC.getReplacer(options.key, options.type, options.value, match.name),
-        ),
-      ),
-    );
+    ce.replaceWithText(replacementText);
   });
 
   /**
@@ -271,7 +265,7 @@ export function handleSourceFile(
       }
 
       nameNode.findReferencesAsNodes().forEach((ref) => {
-        const replacer = unwrap(ce);
+        const replacer = getCodemodLiteralValue(ce);
 
         if (replacer === undefined) {
           return;
@@ -300,8 +294,12 @@ export function handleSourceFile(
     const left = be.getLeft();
     const right = be.getRight();
 
-    const unwrappedLeft = Node.isCallExpression(left) ? unwrap(left) : left;
-    const unwrappedRight = Node.isCallExpression(right) ? unwrap(right) : right;
+    const unwrappedLeft = Node.isCallExpression(left)
+      ? getCodemodLiteralValue(left)
+      : left;
+    const unwrappedRight = Node.isCallExpression(right)
+      ? getCodemodLiteralValue(right)
+      : right;
 
     const op = be.getOperatorToken();
 
@@ -338,7 +336,7 @@ export function handleSourceFile(
     const expression = ifs.getExpression();
 
     const unwrapped = Node.isCallExpression(expression)
-      ? unwrap(expression)
+      ? getCodemodLiteralValue(expression)
       : expression;
 
     if (Node.isTrueLiteral(unwrapped)) {
@@ -365,7 +363,7 @@ export function handleSourceFile(
       const condition = ce.getCondition();
 
       const unwrapped = Node.isCallExpression(condition)
-        ? unwrap(condition)
+        ? getCodemodLiteralValue(condition)
         : condition;
 
       if (Node.isTrueLiteral(unwrapped)) {
@@ -373,6 +371,29 @@ export function handleSourceFile(
       } else if (Node.isFalseLiteral(unwrapped)) {
         ce.replaceWithText(ce.getWhenFalse().getFullText());
       }
+    });
+
+  /**
+   * Unwrap all literals
+   */
+
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter((ce) => ce.getExpression().getText() === "__CODEMOD__")
+    .forEach((ce) => {
+      if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
+        ce.getParent()?.replaceWithText(
+          getCodemodLiteralValue(ce)?.getFullText() ?? "",
+        );
+        return;
+      }
+
+      console.log(
+        ce.getParent()?.getKindName(),
+        getCodemodLiteralValue(ce)?.getFullText(),
+        "??",
+      );
+      ce.replaceWithText(getCodemodLiteralValue(ce)?.getFullText() ?? "");
     });
 
   return sourceFile.getFullText();
