@@ -135,9 +135,6 @@ export type WebviewResponse =
       } | null;
     }>
   | Readonly<{
-      kind: "webview.main.signOut";
-    }>
-  | Readonly<{
       kind:
         | "webview.main.setCodemodRunsPanelGroupSettings"
         | "webview.main.setCodemodDiscoveryPanelGroupSettings";

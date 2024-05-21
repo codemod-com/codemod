@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-  CODEMOD_STUDIO_URL,
   PIRANHA_LANGUAGES,
   piranhaLanguageSchema,
 } from "@codemod-com/utilities";
@@ -22,14 +21,9 @@ import { FileSystemUtilities } from "./components/fileSystemUtilities";
 import { JobManager } from "./components/jobManager";
 import { type Command, MessageBus, MessageKind } from "./components/messageBus";
 import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
-import { GlobalStateTokenStorage, UserService } from "./components/userService";
 import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
-import {
-  MainViewProvider,
-  createIssue,
-  validateAccessToken,
-} from "./components/webview/MainProvider";
+import { MainViewProvider } from "./components/webview/MainProvider";
 import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
@@ -42,11 +36,7 @@ import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
 import { buildTelemetryLogger } from "./telemetry/logger";
 import { VscodeTelemetryReporter } from "./telemetry/reporter";
-import {
-  buildHash,
-  getDeepLinkAccessTokenParam,
-  isNeitherNullNorUndefined,
-} from "./utilities";
+import { buildHash, isNeitherNullNorUndefined } from "./utilities";
 
 export enum SEARCH_PARAMS_KEYS {
   ENGINE = "engine",
@@ -57,7 +47,6 @@ export enum SEARCH_PARAMS_KEYS {
   COMMAND = "command",
   COMPRESSED_SHAREABLE_CODEMOD = "c",
   CODEMOD_HASH_DIGEST = "chd",
-  ACCESS_TOKEN = "accessToken",
 }
 
 const messageBus = new MessageBus();
@@ -69,47 +58,10 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const { store } = await buildStore(context.workspaceState);
 
-  const globalStateTokenStorage = new GlobalStateTokenStorage(
-    context.globalState,
-  );
-  const userService = new UserService(globalStateTokenStorage);
-
-  const accessToken = userService.getLinkedToken();
   let distinctId = await getDistinctId(context);
 
   if (distinctId === null) {
     distinctId = await generateDistinctId(context);
-  }
-
-  if (accessToken !== null) {
-    const userData = await validateAccessToken(accessToken);
-
-    const signedIn = userData !== null;
-
-    vscode.commands.executeCommand("setContext", "codemod.signedIn", signedIn);
-
-    if (!signedIn) {
-      userService.unlinkCodemodComUserAccount();
-      const decision = await vscode.window.showInformationMessage(
-        "You are signed out because your session has expired.",
-        "Do you want to sign in again?",
-      );
-      if (decision === "Do you want to sign in again?") {
-        const searchParams = new URLSearchParams();
-
-        searchParams.set(
-          SEARCH_PARAMS_KEYS.COMMAND,
-          getDeepLinkAccessTokenParam(),
-        );
-
-        const url = new URL(CODEMOD_STUDIO_URL);
-        url.search = searchParams.toString();
-
-        vscode.commands.executeCommand("codemod.redirect", url);
-      }
-    }
-
-    distinctId = userData?.userId ?? "AnonymousUser";
   }
 
   const configurationContainer = buildContainer(getConfiguration());
@@ -158,7 +110,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const mainViewProvider = new MainViewProvider(
     context,
-    userService,
     engineService,
     messageBus,
     rootUri,
@@ -204,50 +155,6 @@ export async function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand(
         "workbench.action.openSettings",
         "Codemod",
-      );
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.signIn", () => {
-      const searchParams = new URLSearchParams();
-
-      searchParams.set(
-        SEARCH_PARAMS_KEYS.COMMAND,
-        getDeepLinkAccessTokenParam(),
-      );
-
-      const url = new URL(CODEMOD_STUDIO_URL);
-      url.search = searchParams.toString();
-
-      vscode.commands.executeCommand("codemod.redirect", url);
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.signOut", () => {
-      userService.unlinkCodemodComUserAccount();
-      vscode.commands.executeCommand("setContext", "codemod.signedIn", false);
-      store.dispatch(
-        actions.setToaster({
-          toastId: "signOut",
-          containerId: "primarySidebarToastContainer",
-          content: "Signed out",
-          autoClose: 3000,
-        }),
-      );
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.handleSignedInUser", () => {
-      store.dispatch(
-        actions.setToaster({
-          toastId: "handleSignedInUser",
-          containerId: "primarySidebarToastContainer",
-          content: "Already signed-in",
-          autoClose: 5000,
-        }),
       );
     }),
   );
@@ -765,7 +672,6 @@ export async function activate(context: vscode.ExtensionContext) {
         const codemodHashDigest = urlParams.get(
           SEARCH_PARAMS_KEYS.CODEMOD_HASH_DIGEST,
         );
-        const accessToken = urlParams.get(SEARCH_PARAMS_KEYS.ACCESS_TOKEN);
         const state = store.getState();
 
         const [hash, casesString] = uri.toString().split("/").reverse();
@@ -841,98 +747,6 @@ export async function activate(context: vscode.ExtensionContext) {
             actions.setFocusedCodemodHashDigest(
               codemodHashDigest as unknown as CodemodNodeHashDigest,
             ),
-          );
-        } else if (accessToken !== null) {
-          const routeUserToStudioToAuthenticate = async () => {
-            const result = await vscode.window.showErrorMessage(
-              "Invalid access token. Try signing in again.",
-              { modal: true },
-              "Sign in with Github",
-            );
-
-            if (result !== "Sign in with Github") {
-              return;
-            }
-
-            const searchParams = new URLSearchParams();
-
-            searchParams.set(
-              SEARCH_PARAMS_KEYS.COMMAND,
-              getDeepLinkAccessTokenParam(),
-            );
-
-            const url = new URL(CODEMOD_STUDIO_URL);
-            url.search = searchParams.toString();
-
-            vscode.commands.executeCommand("codemod.redirect", url);
-          };
-
-          vscode.commands.executeCommand(
-            "workbench.view.extension.codemodViewId",
-          );
-
-          const valid = await validateAccessToken(accessToken);
-          if (valid) {
-            userService.linkCodemodComUserAccount(accessToken);
-            vscode.commands.executeCommand(
-              "setContext",
-              "codemod.signedIn",
-              true,
-            );
-            store.dispatch(
-              actions.setToaster({
-                toastId: "signIn",
-                containerId: "primarySidebarToastContainer",
-                content: "Successfully signed in",
-                autoClose: 3000,
-              }),
-            );
-          } else {
-            await routeUserToStudioToAuthenticate();
-            return;
-          }
-
-          const sourceControlState = state.sourceControl;
-
-          if (sourceControlState.kind !== "ISSUE_CREATION_WAITING_FOR_AUTH") {
-            return;
-          }
-
-          const onSuccess = () => {
-            store.dispatch(
-              actions.setSourceControlTabProps({
-                kind: "IDLENESS",
-              }),
-            );
-            store.dispatch(actions.setActiveTabId("codemodRuns"));
-          };
-
-          const onFail = async () => {
-            userService.unlinkCodemodComUserAccount();
-            store.dispatch(
-              actions.setSourceControlTabProps({
-                kind: "ISSUE_CREATION_WAITING_FOR_AUTH",
-                title: sourceControlState.title,
-                body: sourceControlState.body,
-              }),
-            );
-            await routeUserToStudioToAuthenticate();
-          };
-
-          store.dispatch(
-            actions.setSourceControlTabProps({
-              kind: "WAITING_FOR_ISSUE_CREATION_API_RESPONSE",
-              title: sourceControlState.title,
-              body: sourceControlState.body,
-            }),
-          );
-
-          await createIssue(
-            sourceControlState.title,
-            sourceControlState.body,
-            accessToken,
-            onSuccess,
-            onFail,
           );
         }
       },
