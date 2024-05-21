@@ -132,7 +132,7 @@ const getCodemodNodeRenderer =
                     <p className={styles.progressStatusLabel}>
                       {progress.progressKind === "finite"
                         ? `Processed ${progress.processedFileNumber} / ${progress.totalFileNumber} files`
-                        : "Processing all files..."}
+                        : "Executing codemod..."}
                     </p>
 
                     {renderProgressBar(progress)}
