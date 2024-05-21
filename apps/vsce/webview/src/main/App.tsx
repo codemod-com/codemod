@@ -1,22 +1,14 @@
-import {
-  VSCodeButton,
-  VSCodePanelTab,
-  VSCodePanelView,
-  VSCodePanels,
-} from "@vscode/webview-ui-toolkit/react";
+import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import type { ActiveTabId } from "../../../src/persistedState/codecs";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
-import CreateIssue from "../CreateIssue";
 import { App as CodemodList } from "../codemodList/App";
-import { CommunityTab } from "../communityTab/CommunityTab";
 import { useTheme } from "../shared/Snippet/useTheme";
 import type { WebviewMessage } from "../shared/types";
 import { vscode } from "../shared/utilities/vscode";
-import { CodemodRuns } from "./CodemodRuns";
 
 const toastContainerProps = {
   pauseOnHover: false,
@@ -147,74 +139,15 @@ function App() {
 
   return (
     <main className="App" ref={ref}>
-      <VSCodePanels
-        activeid={mainWebviewViewProps.activeTabId}
-        onChange={(e) => {
-          const newValue =
-            (e as unknown as { detail: HTMLElement | null }).detail?.id ?? null;
-
-          if (newValue === null) {
-            return;
-          }
-
-          if (newValue !== mainWebviewViewProps.activeTabId) {
-            handlePanelTabClick(newValue as ActiveTabId);
-          }
-        }}
-        className="h-full w-full vscode-panels"
-      >
-        <VSCodePanelTab className="vscode-tab" id={"codemods"}>
-          Codemods
-        </VSCodePanelTab>
-        <VSCodePanelTab className="vscode-tab" id={"codemodRuns"}>
-          Codemod Runs
-        </VSCodePanelTab>
-        <VSCodePanelTab className="vscode-tab" id={"community"}>
-          Community
-        </VSCodePanelTab>
-        <VSCodePanelTab className="vscode-tab" id={"sourceControl"}>
-          Report Issue
-        </VSCodePanelTab>
-
-        <VSCodePanelView
-          className="vscode-panel-view h-full w-full"
-          id="codemodsView"
-        >
-          {mainWebviewViewProps.activeTabId === "codemods" ? (
-            <CodemodList screenWidth={screenWidth} {...mainWebviewViewProps} />
-          ) : null}
-          <ToastContainer
-            {...toastContainerProps}
-            containerId="codemodListToastContainer"
-            position="bottom-right"
-            theme={theme === "vs-light" ? "light" : "dark"}
-          />
-        </VSCodePanelView>
-        <VSCodePanelView
-          className="vscode-panel-view h-full w-full"
-          id="codemodRunsView"
-        >
-          {mainWebviewViewProps.activeTabId === "codemodRuns" ? (
-            <CodemodRuns screenWidth={screenWidth} {...mainWebviewViewProps} />
-          ) : null}
-        </VSCodePanelView>
-        <VSCodePanelView
-          className="vscode-panel-view h-full w-full"
-          id="communityView"
-        >
-          {mainWebviewViewProps.activeTabId === "community" ? (
-            <CommunityTab />
-          ) : null}
-        </VSCodePanelView>
-        <VSCodePanelView
-          className="vscode-panel-view h-full w-full"
-          id="createIssueView"
-        >
-          {mainWebviewViewProps.activeTabId === "sourceControl" ? (
-            <CreateIssue {...mainWebviewViewProps} />
-          ) : null}
-        </VSCodePanelView>
-      </VSCodePanels>
+      {mainWebviewViewProps.activeTabId === "codemods" ? (
+        <CodemodList screenWidth={screenWidth} {...mainWebviewViewProps} />
+      ) : null}
+      <ToastContainer
+        {...toastContainerProps}
+        containerId="codemodListToastContainer"
+        position="bottom-right"
+        theme={theme === "vs-light" ? "light" : "dark"}
+      />
       <ToastContainer
         {...toastContainerProps}
         containerId="primarySidebarToastContainer"
