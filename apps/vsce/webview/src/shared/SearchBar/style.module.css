@@ -1,11 +1,15 @@
+.container {
+  padding-top: 0.5rem;
+}
+
 .container:focus {
-	outline: none;
+  outline: none;
 }
 
 .container::part(start) {
-	margin-inline-start: 2px;
+  margin-inline-start: 2px;
 }
 
 .container::part(control) {
-	padding: 0 4px;
+  padding: 0 4px;
 }
