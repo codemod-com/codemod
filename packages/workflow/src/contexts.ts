@@ -2,6 +2,7 @@ import { AsyncLocalStorage } from "node:async_hooks";
 import type { SgNode } from "@ast-grep/napi";
 
 import { invariant } from "ts-invariant";
+import { noContextFn } from "./helpers";
 
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
 
@@ -10,12 +11,24 @@ export const registerContext = <T>(name: string, ctx: AsyncLocalStorage<T>) => {
   return ctx;
 };
 
+export type AstGrepNodeContext = {
+  node: SgNode;
+  contents: string;
+};
+
+export const parentContext = new AsyncLocalStorage<(...args: any[]) => any>();
+
+export const getParentContext = () => {
+  const fn = parentContext.getStore();
+  if (!fn) {
+    return noContextFn;
+  }
+  return fn;
+};
+
 export const astGrepNodeContext = registerContext(
   "astGrepNodeContext",
-  new AsyncLocalStorage<{
-    node?: SgNode;
-    contents: string;
-  }>(),
+  new AsyncLocalStorage<AstGrepNodeContext>(),
 );
 export const describeContext = registerContext(
   "describeContext",

@@ -1,6 +1,6 @@
 import * as colors from "colors-cli";
-import { flattenDeep, identity } from "lodash";
-import { getRepositoriesContext } from "./contexts";
+import { flattenDeep, identity, mapValues } from "lodash";
+import { getRepositoriesContext, parentContext } from "./contexts";
 
 export const clc = {
   blueBright: (text: string) => colors.blue_bt(text),
@@ -34,6 +34,7 @@ export const logger = (message: string) => {
       console.warn(`${clc.yellow("WARN")} ${message} - ${warning}`),
   };
 };
+
 export const parseRepositories = (
   repos: string | Readonly<string[]> | ((...args: any[]) => Promise<void>),
 ) => {
@@ -54,9 +55,35 @@ export const parseRepositories = (
     ),
   ).filter(identity);
 };
-export type MapChildren<Type> = {
-  // @ts-ignore
-  [Property in keyof Type]: ReturnType<Type[Property]>;
+
+export const parseMultistring = (repos: string | readonly string[]) => {
+  if (typeof repos === "string") {
+    return repos
+      .split(/[\n,; ]/)
+      .map((repository) => repository.trim())
+      .filter(identity);
+  }
+
+  return flattenDeep(
+    repos.map((repository) =>
+      repository.split(/[\n, ;]/).map((repository) => repository.trim()),
+    ),
+  ).filter(identity);
 };
+
+export type MapChildren<Type extends Record<string, (...args: any[]) => any>> =
+  {
+    [Property in keyof Type]: ReturnType<Type[Property]>;
+  };
+
 export const noContextFn = <T extends (...args: any) => ReturnType<T>>(cb: T) =>
   cb();
+export const wrapHelpers = <C, H>(helpers: H, context: C): H =>
+  mapValues(
+    // @ts-ignore
+    helpers,
+    (value: any) =>
+      (...args: any[]) =>
+        // @ts-ignore
+        parentContext.run(context, () => value(...args)),
+  ) as any;

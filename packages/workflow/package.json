@@ -27,6 +27,7 @@
     "@sindresorhus/slugify": "^2.2.1",
     "colors-cli": "^1.0.33",
     "filenamify": "^6.0.0",
+    "simple-git": "^3.24.0",
     "tree-kill": "^1.2.2",
     "ts-import": "4.0.0-beta.10",
     "ts-invariant": "^0.10.3"
