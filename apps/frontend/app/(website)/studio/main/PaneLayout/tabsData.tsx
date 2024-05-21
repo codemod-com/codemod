@@ -9,6 +9,7 @@ import {
   type PanelsRefs,
 } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
+import { useModStore } from "@studio/store/zustand/mod";
 import { TabNames } from "@studio/store/zustand/view";
 import type { ReactNode } from "react";
 import { PanelGroup } from "react-resizable-panels";
@@ -33,7 +34,8 @@ export const useTabs = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
-  const aiAssistantData = useAiService();
+  const { setContent } = useModStore();
+  const aiAssistantData = useAiService({ setCodemod: setContent });
   const tabs = [
     {
       value: TabNames.MODGPT,

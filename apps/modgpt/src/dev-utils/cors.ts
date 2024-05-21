@@ -8,7 +8,7 @@ const ALLOWED_ORIGINS = [
   /^https?:\/\/codemod\.com$/,
 ];
 
-const corsDisableHeaders = {
+export const corsDisableHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Methods": "*",
   "Access-Control-Allow-Headers": "*",
@@ -18,7 +18,6 @@ export const getCorsDisabledHeaders = (fastify: FastifyInstance) => {
   fastify.options("/sendChat", (request, reply) => {
     reply.status(204).headers(corsDisableHeaders).send();
   });
-  return corsDisableHeaders;
 };
 
 const X_CODEMOD_ACCESS_TOKEN = (

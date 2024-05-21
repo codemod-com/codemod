@@ -6,16 +6,26 @@ import {
   useSaveMssgsToLocalStorage,
 } from "@chatbot/useAiService/utils";
 import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 
-export const useAiService = () => {
-  // const initialMessages = useInitialMss();
+const showCodemodCopiedToast = () =>
+  toast("Codemod copied to the right pane", {
+    position: "top-center",
+    duration: 12000,
+  });
+export const useAiService = ({
+  setCodemod,
+}: {
+  setCodemod: (content: string) => void;
+}) => {
+  const initialMessages = useInitialMss();
 
   const [messages, setMessages] = useState<LLMMessage[]>([]);
   const [canAddMessages, setCanAddMessages] = useState(true);
 
-  // useEffect(() => {
-  //   setMessages(initialMessages);
-  // }, [initialMessages]);
+  useEffect(() => {
+    setMessages(initialMessages);
+  }, [initialMessages]);
 
   const {
     isLoading,
@@ -32,33 +42,53 @@ export const useAiService = () => {
       setCanAddMessages,
     });
 
-  const lastMss = modGPTMessages?.at(-1);
+  const lastModGptMss = modGPTMessages?.at(-1);
+  const lastMss = messages?.at(-1);
 
   useEffect(() => {
     if (!codemodAIMessage) return;
-    setMessages((m) => [...m, codemodAIMessage]);
+
+    const updateMessages =
+      lastMss?.role === "assistant"
+        ? () =>
+            messages.with(-1, {
+              ...lastMss,
+              content: `${lastMss.content}\n\n${codemodAIMessage.content}`,
+            })
+        : (m: LLMMessage[]) => [...m, codemodAIMessage];
+    setMessages(updateMessages);
+
     if (codemodAIMessage.codemod) {
+      showCodemodCopiedToast();
       appendModGPTMessages({
         name: "app",
         role: "user",
-        content: `This is a codemod generated: ${codemodAIMessage.codemod}. Briefly explain. List item by item. Be very concise, I will add additional questions if needed. Start with "here\'s a breakdown of the codemod"`,
+        content: `This is a codemod generated: ${codemodAIMessage.codemod}. Remember it. Reply with just a single sentence - asking if a user wants to know more about generated codemod"`,
       });
+      setCodemod(codemodAIMessage.codemod);
     }
   }, [codemodAIMessage]);
 
   useEffect(() => {
-    if (!lastMss?.content) return;
-    const index = messages.findIndex(({ id }) => id === lastMss.id);
+    if (!lastModGptMss?.content) return;
+
+    const index = messages.findIndex(({ id }) => id === lastModGptMss.id);
     const updateMessages =
       index > -1
-        ? () => messages.with(index, lastMss)
-        : (m: LLMMessage[]) => [...m, lastMss];
+        ? () => messages.with(index, lastModGptMss)
+        : (m: LLMMessage[]) => [...m, lastModGptMss];
     setMessages(updateMessages);
-  }, [lastMss?.content]);
+  }, [lastModGptMss?.content]);
 
-  // useSaveMssgsToLocalStorage({ messages, isLoading });
+  const resetMessages = () => {
+    setMessages([]);
+    localStorage.removeItem("frozenMessages");
+  };
+
+  useSaveMssgsToLocalStorage({ messages, isLoading });
 
   return {
+    resetMessages,
     isLoading,
     messages,
     setMessages,

@@ -32,7 +32,7 @@ export const parseEnvironment = (input: unknown) => {
     throw new Error(
       `Invalid environment: ${(err as ValiError).issues
         .map((i) => i.path?.map((p) => p.key).join("."))
-        .join(", ") + ' input: ' + JSON.stringify(input)}`,
+        .join(", ")}`,
     );
   }
 };
