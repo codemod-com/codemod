@@ -63,7 +63,6 @@ export const buildArguments = (
 
   args.push("--json");
 
-  args.push("--dry");
   args.push("--output", buildCrossplatformArg(storageUri.fsPath));
   args.push(...codemodArguments);
   args.push("--clientIdentifier", buildCrossplatformArg("VSCE"));
