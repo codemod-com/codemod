@@ -1,3 +1,3 @@
-import { type FastifyPluginCallback } from "fastify";
+import type { FastifyPluginCallback } from "fastify";
 
 export type Instance = Parameters<FastifyPluginCallback>[0];
