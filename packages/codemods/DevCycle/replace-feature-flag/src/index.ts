@@ -1,20 +1,18 @@
 import {
   type CallExpression,
   type Expression,
-  type FalseLiteral,
   Node,
-  type NumericLiteral,
   type ObjectLiteralExpression,
   type PrefixUnaryExpression,
   type SourceFile,
-  type StringLiteral,
   SyntaxKind,
-  type TrueLiteral,
   printNode,
   ts,
 } from "ts-morph";
-import { DVC } from "./dvc.js";
-import { Statsig } from "./statsig.js";
+import { DevCycle, Statsig } from "./providers/index.js";
+import { getLiteralText, isLiteral } from "./utils.js";
+import { isTruthy } from "./utils.js";
+import { repeatCallback } from "./utils.js";
 
 const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
@@ -23,7 +21,7 @@ type VariableValue = string | boolean | number | Record<string, unknown>;
 type Providers = "DevCycle" | "OpenFeature" | "Statsig";
 
 const PROVIDERS: Record<Providers, Provider> = {
-  DevCycle: DVC,
+  DevCycle: DevCycle,
   Statsig,
 };
 
@@ -50,6 +48,10 @@ export const getPropertyValueAsText = (
   ole: ObjectLiteralExpression,
   propertyName: string,
 ) => {
+  if (ole.wasForgotten()) {
+    return;
+  }
+
   const property = ole.getProperty(propertyName);
 
   if (!Node.isPropertyAssignment(property)) {
@@ -68,41 +70,6 @@ export const getPropertyValueAsText = (
   }
 
   return propertyValue.getFullText();
-};
-
-const isLiteral = (
-  node: Node,
-): node is StringLiteral | NumericLiteral | TrueLiteral | FalseLiteral =>
-  Node.isStringLiteral(node) ||
-  Node.isNumericLiteral(node) ||
-  Node.isTrueLiteral(node) ||
-  Node.isFalseLiteral(node) ||
-  Node.isObjectLiteralExpression(node);
-
-const isTruthy = (node: Node) => {
-  return (
-    Node.isTrueLiteral(node) ||
-    (Node.isStringLiteral(node) && node.getLiteralText() !== "") ||
-    (Node.isNumericLiteral(node) && node.getLiteralText() !== "0") ||
-    Node.isObjectLiteralExpression(node)
-  );
-};
-
-const repeatCallback = (
-  callback: (...args: any[]) => void,
-  N: number,
-): void => {
-  if (typeof callback !== "function") {
-    throw new TypeError("The first argument must be a function");
-  }
-
-  if (typeof N !== "number" || N < 0 || !Number.isInteger(N)) {
-    throw new TypeError("The second argument must be a non-negative integer");
-  }
-
-  for (let i = 0; i < N; i++) {
-    callback();
-  }
 };
 
 const simplifyAmpersandExpression = (left: Expression, right: Expression) => {
@@ -273,7 +240,15 @@ const refactorMemberExpressions = (sourceFile: SourceFile) => {
         return;
       }
 
-      const text = getPropertyValueAsText(ole, nameNode.getText());
+      const propertyName = nameNode.getText();
+
+      // if property does not exists on the object, remove the whole statement
+      if (ole.getProperty(propertyName) === undefined) {
+        parent.getFirstAncestorByKind(SyntaxKind.ExpressionStatement)?.remove();
+        return;
+      }
+
+      const text = getPropertyValueAsText(ole, propertyName);
 
       if (text !== null) {
         parent.replaceWithText(`${CODEMOD_LITERAL}(${text})`);
@@ -399,9 +374,7 @@ const removeUselessParenthesis = (sourceFile: SourceFile) => {
         : expression;
 
       if (isLiteral(unwrapped)) {
-        pe.replaceWithText(
-          `${CODEMOD_LITERAL}(${String(unwrapped?.getLiteralValue())})`,
-        );
+        pe.replaceWithText(`${CODEMOD_LITERAL}(${getLiteralText(unwrapped)})`);
       } else if (Node.isParenthesizedExpression(unwrapped)) {
         pe.replaceWithText(unwrapped.getFullText());
       }
@@ -450,6 +423,24 @@ const refactorConditionalExpressions = (sourceFile: SourceFile) => {
     });
 };
 
+const removeCodemodLiteralWrapper = (sourceFile: SourceFile) => {
+  getCodemodLiteral(sourceFile).forEach((ce) => {
+    if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
+      ce.getParent()?.replaceWithText(
+        getCodemodLiteralValue(ce)?.getFullText() ?? "",
+      );
+      return;
+    }
+    const literal = getCodemodLiteralValue(ce);
+
+    const text = Node.isObjectLiteralExpression(literal)
+      ? `(${literal.getFullText()})`
+      : literal?.getFullText() ?? "";
+
+    ce.replaceWithText(text);
+  });
+};
+
 export function handleSourceFile(
   sourceFile: SourceFile,
   options: Options,
@@ -475,18 +466,8 @@ export function handleSourceFile(
 
     refactorIfStatements(sourceFile);
     refactorConditionalExpressions(sourceFile);
+    removeCodemodLiteralWrapper(sourceFile);
   }, 5);
-
-  getCodemodLiteral(sourceFile).forEach((ce) => {
-    if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
-      ce.getParent()?.replaceWithText(
-        getCodemodLiteralValue(ce)?.getFullText() ?? "",
-      );
-      return;
-    }
-
-    ce.replaceWithText(getCodemodLiteralValue(ce)?.getFullText() ?? "");
-  });
 
   return sourceFile.getFullText();
 }

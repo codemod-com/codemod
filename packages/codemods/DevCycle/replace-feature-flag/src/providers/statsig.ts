@@ -1,6 +1,6 @@
 import { type CallExpression, Node, ts } from "ts-morph";
-import { getCEExpressionName } from "./utils.js";
-import { buildLiteral } from "./utils.js";
+import { getCEExpressionName } from "../utils.js";
+import { buildLiteral } from "../utils.js";
 
 export type VariableType = "string" | "boolean" | "number" | "JSON";
 export type VariableValue = string | boolean | number | Record<string, unknown>;

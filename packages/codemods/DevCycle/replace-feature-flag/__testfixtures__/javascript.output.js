@@ -21,9 +21,6 @@ console.log(dvcClient.variable(user, SIMPLE_CASE, true).value)
 
 console.log(true)
 
-// function hello() {
-//     console.log("HELLO")
-//     dvcClient.variable(user, "simple-case", true).onUpdate((value) => {
-//         heroText.innerHTML = value
-//     })
-// }
+function hello() {
+    console.log("HELLO")
+}

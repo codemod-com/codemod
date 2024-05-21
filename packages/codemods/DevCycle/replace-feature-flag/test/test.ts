@@ -240,7 +240,7 @@ describe("replace-feature-flag", () => {
     );
   });
 
-  it("Should refactor javascript", async () => {
+  it.only("Should refactor javascript", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/javascript.output.js"),
       "utf-8",
@@ -266,13 +266,14 @@ describe("replace-feature-flag", () => {
       booleanFlagOptions,
     );
 
+    console.log(transformed, "???");
     assert.deepEqual(
       transformed?.replace(/\s/gm, ""),
       OUTPUT?.replace(/\s/gm, ""),
     );
   });
 
-  it.only("Should support statsig provider", async () => {
+  it("Should support statsig provider", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/statsig.output.js"),
       "utf-8",

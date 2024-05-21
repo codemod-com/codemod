@@ -1,4 +1,5 @@
 import { type CallExpression, Node, ts } from "ts-morph";
+import { buildLiteral, getCEExpressionName } from "../utils.js";
 
 type VariableType = "string" | "boolean" | "number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
@@ -13,46 +14,6 @@ const names = [
   "useVariableValue",
 ];
 
-const getCEExpressionName = (ce: CallExpression): string | null => {
-  const expr = ce.getExpression();
-
-  // x.method()
-  if (Node.isPropertyAccessExpression(expr)) {
-    return expr.getName();
-  }
-
-  // method()
-  if (Node.isIdentifier(expr)) {
-    return expr.getText();
-  }
-
-  return null;
-};
-
-const getTypeLiteral = (type: VariableType, value: VariableValue) => {
-  switch (type) {
-    case "string": {
-      return factory.createStringLiteral(value.toString());
-    }
-    case "number": {
-      return factory.createNumericLiteral(Number(value));
-    }
-    case "boolean": {
-      return value === "true" ? factory.createTrue() : factory.createFalse();
-    }
-    case "JSON": {
-      return factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier("JSON"),
-          factory.createIdentifier("parse"),
-        ),
-        undefined,
-        [factory.createStringLiteral(value.toString())],
-      );
-    }
-  }
-};
-
 const getVariableReplacerNode = (
   key: string,
   type: VariableType,
@@ -66,11 +27,11 @@ const getVariableReplacerNode = (
       ),
       factory.createPropertyAssignment(
         factory.createIdentifier("value"),
-        getTypeLiteral(type, value),
+        buildLiteral(type, value),
       ),
       factory.createPropertyAssignment(
         factory.createIdentifier("defaultValue"),
-        getTypeLiteral(type, value),
+        buildLiteral(type, value),
       ),
       factory.createPropertyAssignment(
         factory.createIdentifier("isDefaulted"),
@@ -86,14 +47,14 @@ const getVariableValueReplacerNode = (
   type: VariableType,
   value: VariableValue,
 ) => {
-  return getTypeLiteral(type, value);
+  return buildLiteral(type, value);
 };
 
 type MatchedMethod = {
   name: string;
 };
 
-export const DVC = {
+export const DevCycle = {
   getMatcher:
     (keyName: string) =>
     (ce: CallExpression): MatchedMethod | null => {
