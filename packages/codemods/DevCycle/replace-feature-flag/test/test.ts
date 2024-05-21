@@ -271,4 +271,36 @@ describe("replace-feature-flag", () => {
       OUTPUT?.replace(/\s/gm, ""),
     );
   });
+
+  it.only("Should support statsig provider", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/statsig.output.js"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "statsig.input.js": await readFile(
+        join(__dirname, "..", "__testfixtures__/statsig.input.js"),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "the-gate",
+      type: "boolean",
+      value: "true",
+      provider: "Statsig",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "statsig.input.js",
+      booleanFlagOptions,
+    );
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
 });

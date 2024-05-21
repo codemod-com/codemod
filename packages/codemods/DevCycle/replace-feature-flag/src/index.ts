@@ -14,15 +14,17 @@ import {
   ts,
 } from "ts-morph";
 import { DVC } from "./dvc.js";
+import { Statsig } from "./statsig.js";
 
 const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
 type VariableType = "string" | "boolean" | "number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
-type Providers = "DevCycle" | "OpenFeature";
+type Providers = "DevCycle" | "OpenFeature" | "Statsig";
 
 const PROVIDERS: Record<Providers, Provider> = {
   DevCycle: DVC,
+  Statsig,
 };
 
 export type Options = {
@@ -236,7 +238,7 @@ const replaceSDKMethodCalls = (
     if (match === null) {
       return;
     }
-    const replacementText = getReplacementText(DVC, options, match.name);
+    const replacementText = getReplacementText(provider, options, match.name);
     const parent = ce.getParent();
 
     if (parent?.getKind() === SyntaxKind.ExpressionStatement) {
