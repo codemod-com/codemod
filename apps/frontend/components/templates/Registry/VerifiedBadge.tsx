@@ -36,9 +36,7 @@ export default function VerifiedBadge({
               "group-hover:pointer-events-auto group-hover:visible group-hover:-translate-y-2 group-hover:opacity-100",
             )}
           >
-            <h5 className="body-s-medium pb-1 font-medium">
-              Codemod.com verified
-            </h5>
+            <h5 className="body-s-medium pb-1 font-medium">Codemod verified</h5>
             <p className="body-s font-regular">{content}</p>
           </div>
         )}

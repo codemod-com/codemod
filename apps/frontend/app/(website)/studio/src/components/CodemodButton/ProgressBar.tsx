@@ -12,15 +12,14 @@ export const ProgressBar = ({ codemodRunStatus }: ProgressBarProps) => {
       ? codemodRunStatus?.result.progress
       : null;
 
-  const progressInfoBar =
-    progressInfo !== null ? (
-      <div className="flex flex-col items-center justify-center w-80">
-        <Progress
-          className="border-2 border-solid border-primary"
-          value={(progressInfo.processed / progressInfo.total) * 100}
-        />
-      </div>
-    ) : null;
+  const progressInfoBar = progressInfo ? (
+    <div className="flex flex-col items-center justify-center w-80">
+      <Progress
+        className="border-2 border-solid border-primary"
+        value={(progressInfo.processed / progressInfo.total) * 100}
+      />
+    </div>
+  ) : null;
 
   return codemodRunStatus?.result?.status === "progress" ? (
     <Text

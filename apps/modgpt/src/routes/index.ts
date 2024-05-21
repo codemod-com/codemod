@@ -1,24 +1,17 @@
 import { clerkPlugin } from "@clerk/fastify";
-import Fastify, {
-  type FastifyInstance,
-  type FastifyPluginCallback,
-} from "fastify";
-import {
-  areClerkKeysSet,
-  environment,
-  isDevelopment,
-} from "../dev-utils/configs";
-import { fastify } from "../fastifyInstance";
+import type { FastifyPluginCallback } from "fastify";
+import { clerkApplied, environment, isDevelopment } from "../dev-utils/configs";
+import { corsDisableHeaders } from "../dev-utils/cors";
 import { getRootPath } from "./root";
 import { getSendChatPath } from "./sendChat";
 import { getVersionPath } from "./version";
 
 const noop = (x: unknown) => undefined;
 export const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
-  [getRootPath, getVersionPath, isDevelopment ? getSendChatPath : noop].forEach(
-    (f) => f(fastify),
-  );
-
+  [getRootPath, getVersionPath].forEach((f) => f(instance));
+  instance.options("/sendChat", (request, reply) => {
+    reply.status(204).headers(corsDisableHeaders).send();
+  });
   done();
 };
 
@@ -27,7 +20,7 @@ export const protectedRoutes: FastifyPluginCallback = (
   _opts,
   done,
 ) => {
-  if (areClerkKeysSet(environment)) {
+  if (clerkApplied) {
     const clerkOptions = {
       publishableKey: environment.CLERK_PUBLISH_KEY,
       secretKey: environment.CLERK_SECRET_KEY,
@@ -36,9 +29,11 @@ export const protectedRoutes: FastifyPluginCallback = (
 
     instance.register(clerkPlugin, clerkOptions);
   } else {
-    console.warn("No Clerk keys set. Authentication is disabled.");
+    if (!clerkApplied)
+      console.warn("No Clerk keys set. Authentication is disabled.");
+    // if (isDevelopment) console.info("ENV set to development");
   }
 
-  if (!isDevelopment) getSendChatPath(fastify);
+  if (!isDevelopment) getSendChatPath(instance);
   done();
 };

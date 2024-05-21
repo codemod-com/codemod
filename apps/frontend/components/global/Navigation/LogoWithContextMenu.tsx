@@ -144,7 +144,7 @@ export default function LogoWithContextMenu() {
           </DropdownMenu.Group>
 
           <div className="body-s-medium pt-s font-medium text-secondary-light dark:text-secondary-dark">
-            Platforms
+            Platform
           </div>
           <DropdownMenu.Group className="pt-s">
             <DropdownMenu.Item asChild>
@@ -160,7 +160,7 @@ export default function LogoWithContextMenu() {
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
               <a
-                href="https://codemod.com/migrations/"
+                href="https://codemod.com/registry/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"

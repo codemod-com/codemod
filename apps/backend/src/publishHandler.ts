@@ -245,12 +245,12 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       arguments: codemodRc.arguments,
     };
 
-    let isVerified = namespace === "codemod.com" || namespace === "codemod-com";
+    let isVerified = namespace === "Codemod" || namespace === "codemod-com";
     let author = namespace;
     if (!author) {
       if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
         isVerified = true;
-        author = "codemod.com";
+        author = "Codemod";
       } else {
         author = username;
       }
@@ -372,7 +372,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
             },
             author: {
               username,
-              name: `${firstName} ${lastName}`.trim() || null,
+              name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
               email:
                 emailAddresses.find((e) => e.id === primaryEmailAddressId)
                   ?.emailAddress ?? null,

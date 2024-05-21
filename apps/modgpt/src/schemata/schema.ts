@@ -21,11 +21,11 @@ export const sendChatBodySchema = object({
   messages: array(
     object({
       content: string(),
-      role: union([literal("system"), literal("user"), literal("assistant")]),
+      role: string(),
       name: optional(string()),
     }),
   ),
-  engine,
+  engine: string(),
 });
 
 export const parseSendChatBody = (input: unknown) =>

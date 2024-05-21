@@ -23,6 +23,7 @@ const ChatBase = ({
     setToken,
     canAddMessages,
     startIterativeCodemodGeneration,
+    resetMessages,
   },
   className,
   isSignedIn,
@@ -37,6 +38,7 @@ const ChatBase = ({
       />
       <PromptPanel
         id={id}
+        resetMessages={resetMessages}
         isLoading={isLoading}
         stop={handleStop}
         append={append}

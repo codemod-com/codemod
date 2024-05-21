@@ -1,16 +1,19 @@
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 import { environment, isDevelopment } from "./dev-utils/configs";
-import { corsOptions } from "./dev-utils/cors";
-import { fastify } from "./fastifyInstance";
+import { corsOptions, getCorsDisabledHeaders } from "./dev-utils/cors";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;
   if (Number.isNaN(port)) {
     throw new Error(`Invalid port ${port}`);
   }
+
+  const fastify = Fastify({
+    logger: true,
+  });
 
   const handleProcessExit = (code: 0 | 1) => {
     fastify.close();

@@ -13,13 +13,12 @@ export const WebSocketButton = ({
 }) => {
   return (
     <Button
-      variant="destructive"
       size="sm"
-      className="group my-0 h-8 whitespace-nowrap !py-0 text-xs font-bold"
+      className="group my-0 h-8 whitespace-nowrap !py-0 text-xs font-bold bg-accent"
       onClick={handleButtonClick}
       disabled={!canAddMessages}
     >
-      Iterative codemod build
+      Generate codemod with AI
     </Button>
   );
 };
