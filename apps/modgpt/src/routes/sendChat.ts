@@ -7,7 +7,7 @@ import * as openAiEdge from "openai-edge";
 import { areClerkKeysSet, environment } from "../dev-utils/configs";
 import { isDevelopment } from "../dev-utils/configs";
 import { getCorsDisabledHeaders } from "../dev-utils/cors";
-import { type Instance, fastify } from "../fastifyInstance";
+import { type Instance } from "../fastifyInstance";
 import { parseSendChatBody } from "../schemata/schema";
 import { ClaudeService } from "../services/claudeService";
 import { ReplicateService } from "../services/replicateService";

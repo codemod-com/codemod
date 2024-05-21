@@ -8,7 +8,6 @@ import {
   environment,
   isDevelopment,
 } from "../dev-utils/configs";
-import { fastify } from "../fastifyInstance";
 import { getRootPath } from "./root";
 import { getSendChatPath } from "./sendChat";
 import { getVersionPath } from "./version";
@@ -16,7 +15,7 @@ import { getVersionPath } from "./version";
 const noop = (x: unknown) => undefined;
 export const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   [getRootPath, getVersionPath, isDevelopment ? getSendChatPath : noop].forEach(
-    (f) => f(fastify),
+    (f) => f(instance),
   );
 
   done();
@@ -39,6 +38,6 @@ export const protectedRoutes: FastifyPluginCallback = (
     console.warn("No Clerk keys set. Authentication is disabled.");
   }
 
-  if (!isDevelopment) getSendChatPath(fastify);
+  if (!isDevelopment) getSendChatPath(instance);
   done();
 };
