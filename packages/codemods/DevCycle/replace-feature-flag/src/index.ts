@@ -286,6 +286,8 @@ const refactorReferences = (sourceFile: SourceFile) => {
 
       ref.replaceWithText(`${CODEMOD_LITERAL}(${replacer.getFullText()})`);
     });
+
+    vd.remove();
   });
 };
 
@@ -334,26 +336,7 @@ const removeUselessParenthesis = (sourceFile: SourceFile) => {
     });
 };
 
-export function handleSourceFile(
-  sourceFile: SourceFile,
-  options: Options,
-): string | undefined {
-  const provider = getProvider(options.provider);
-
-  replaceSDKMethodCalls(sourceFile, options, provider);
-  refactorMemberExpressions(sourceFile);
-  refactorReferences(sourceFile);
-  simplifyUnaryExpressions(sourceFile);
-  evaluateBinaryExpressions(sourceFile);
-
-  repeatCallback(() => {
-    evaluateLogicalExpressions(sourceFile);
-    removeUselessParenthesis(sourceFile);
-  }, 3);
-
-  /**
-   * Refactor if statements
-   */
+const refactorIfStatements = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.IfStatement).forEach((ifs) => {
     const expression = ifs.getExpression();
 
@@ -375,10 +358,9 @@ export function handleSourceFile(
       ifs.remove();
     }
   });
+};
 
-  /**
-   * Refactor conditional expressions
-   */
+const refactorConditionalExpressions = (sourceFile: SourceFile) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.ConditionalExpression)
     .forEach((ce) => {
@@ -394,10 +376,29 @@ export function handleSourceFile(
         ce.replaceWithText(ce.getWhenFalse().getFullText());
       }
     });
+};
 
-  /**
-   * Unwrap all literals
-   */
+export function handleSourceFile(
+  sourceFile: SourceFile,
+  options: Options,
+): string | undefined {
+  const provider = getProvider(options.provider);
+
+  repeatCallback(() => {
+    replaceSDKMethodCalls(sourceFile, options, provider);
+    refactorMemberExpressions(sourceFile);
+    refactorReferences(sourceFile);
+    simplifyUnaryExpressions(sourceFile);
+    evaluateBinaryExpressions(sourceFile);
+
+    repeatCallback(() => {
+      evaluateLogicalExpressions(sourceFile);
+      removeUselessParenthesis(sourceFile);
+    }, 3);
+
+    refactorIfStatements(sourceFile);
+    refactorConditionalExpressions(sourceFile);
+  }, 2);
 
   getCodemodLiteral(sourceFile).forEach((ce) => {
     if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
@@ -407,11 +408,6 @@ export function handleSourceFile(
       return;
     }
 
-    console.log(
-      ce.getParent()?.getKindName(),
-      getCodemodLiteralValue(ce)?.getFullText(),
-      "??",
-    );
     ce.replaceWithText(getCodemodLiteralValue(ce)?.getFullText() ?? "");
   });
 
