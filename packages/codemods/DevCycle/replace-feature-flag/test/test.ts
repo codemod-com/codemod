@@ -138,8 +138,6 @@ describe("replace-feature-flag", () => {
       boolOptions,
     );
 
-    console.log(transformed);
-
     assert.deepEqual(
       transformed?.replace(/\s/gm, ""),
       OUTPUT?.replace(/\s/gm, ""),
@@ -169,6 +167,38 @@ describe("replace-feature-flag", () => {
     const transformed = transform(
       projectFiles,
       "unary.input.ts",
+      booleanFlagOptions,
+    );
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
+  it("Should refactor binary expressions", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/binary-expressions.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "binary-expressions.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/binary-expressions.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "binary-expressions.input.ts",
       booleanFlagOptions,
     );
 

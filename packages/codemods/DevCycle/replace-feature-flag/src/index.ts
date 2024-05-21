@@ -127,20 +127,24 @@ const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
 
     const left = be.getLeft();
     const right = be.getRight();
+
+    const unwrappedLeft = Node.isCallExpression(left)
+      ? getCodemodLiteralValue(left)
+      : left;
+    const unwrappedRight = Node.isCallExpression(right)
+      ? getCodemodLiteralValue(right)
+      : right;
+
     const op = be.getOperatorToken();
 
     if (op.getKind() === SyntaxKind.BarBarToken) {
-      const node = simplifyBarBarExpression(left, right);
+      const node = simplifyBarBarExpression(unwrappedLeft, unwrappedRight);
 
       if (node) {
         be.replaceWithText(node.getFullText());
       }
-    }
-
-    // true &&
-    // @TODO we can check for other truthy
-    else if (op.getKind() === SyntaxKind.AmpersandAmpersandToken) {
-      const node = simplifyAmpersandExpression(left, right);
+    } else if (op.getKind() === SyntaxKind.AmpersandAmpersandToken) {
+      const node = simplifyAmpersandExpression(unwrappedLeft, unwrappedRight);
 
       if (node) {
         be.replaceWithText(node.getFullText());
@@ -165,12 +169,16 @@ const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
     count++;
   }
 
-  if (!isLiteral(operand)) {
+  const unwrapped = Node.isCallExpression(operand)
+    ? getCodemodLiteralValue(operand)
+    : operand;
+
+  if (!isLiteral(unwrapped)) {
     return;
   }
 
   const isSame = count % 2 === 0;
-  const booleanValue = isSame ? isTruthy(operand) : !isTruthy(operand);
+  const booleanValue = isSame ? isTruthy(unwrapped) : !isTruthy(unwrapped);
   const replacement = ts.factory.createLiteralTypeNode(
     booleanValue ? ts.factory.createTrue() : ts.factory.createFalse(),
   );
@@ -330,6 +338,12 @@ const refactorReferences = (sourceFile: SourceFile) => {
   });
 };
 
+/**
+ * Simplifies prefix unary expression with exclamation token and literal
+ *
+ * !!!false ===> true
+ * !!"string" ===> true
+ */
 const simplifyUnaryExpressions = (sourceFile: SourceFile) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.PrefixUnaryExpression)
@@ -339,6 +353,12 @@ const simplifyUnaryExpressions = (sourceFile: SourceFile) => {
     .forEach(simplifyPrefixUnaryExpression);
 };
 
+/**
+ * Simplifies binary expressions
+ *
+ *  true && x ===> true
+ *  false && x ===> false
+ */
 const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     const left = be.getLeft();
@@ -367,10 +387,21 @@ const removeUselessParenthesis = (sourceFile: SourceFile) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.ParenthesizedExpression)
     .forEach((pe) => {
+      if (pe.wasForgotten()) {
+        return;
+      }
       const expression = pe.getExpression();
 
-      if (isLiteral(expression)) {
-        pe.replaceWithText(String(expression?.getLiteralValue()));
+      const unwrapped = Node.isCallExpression(expression)
+        ? getCodemodLiteralValue(expression)
+        : expression;
+
+      if (isLiteral(unwrapped)) {
+        pe.replaceWithText(
+          `${CODEMOD_LITERAL}(${String(unwrapped?.getLiteralValue())})`,
+        );
+      } else if (Node.isParenthesizedExpression(unwrapped)) {
+        pe.replaceWithText(unwrapped.getFullText());
       }
     });
 };
@@ -431,16 +462,18 @@ export function handleSourceFile(
     refactorReferences(sourceFile);
     // console.log("refactorReferences", sourceFile.getFullText());
     simplifyUnaryExpressions(sourceFile);
+
+    // console.log("simplifyUnaryExpressions", sourceFile.getFullText());
     evaluateBinaryExpressions(sourceFile);
 
-    repeatCallback(() => {
-      evaluateLogicalExpressions(sourceFile);
-      removeUselessParenthesis(sourceFile);
-    }, 3);
+    evaluateLogicalExpressions(sourceFile);
+
+    removeUselessParenthesis(sourceFile);
+    // console.log("evaluateLogicalExpressions", sourceFile.getFullText());
 
     refactorIfStatements(sourceFile);
     refactorConditionalExpressions(sourceFile);
-  }, 2);
+  }, 5);
 
   getCodemodLiteral(sourceFile).forEach((ce) => {
     if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
