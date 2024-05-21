@@ -176,6 +176,38 @@ describe("replace-feature-flag", () => {
     );
   });
 
+  it("Should refactor logical expressions", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/logical-expressions.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "logical-expressions.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/logical-expressions.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "logical-expressions.input.ts",
+      booleanFlagOptions,
+    );
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
   it("Should refactor binary expressions", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/binary-expressions.output.ts"),

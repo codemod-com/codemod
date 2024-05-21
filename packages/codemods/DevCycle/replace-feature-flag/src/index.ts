@@ -119,6 +119,12 @@ const simplifyBarBarExpression = (left: Expression, right: Expression) => {
   return isTruthy(left) ? left : right;
 };
 
+/**
+ * Simplifies logical expressions
+ *
+ *  true && x ===> true
+ *  false && x ===> false
+ */
 const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     if (be.wasForgotten()) {
@@ -353,12 +359,6 @@ const simplifyUnaryExpressions = (sourceFile: SourceFile) => {
     .forEach(simplifyPrefixUnaryExpression);
 };
 
-/**
- * Simplifies binary expressions
- *
- *  true && x ===> true
- *  false && x ===> false
- */
 const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     const left = be.getLeft();
