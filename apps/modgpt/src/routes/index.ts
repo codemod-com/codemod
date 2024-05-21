@@ -27,7 +27,7 @@ export const protectedRoutes: FastifyPluginCallback = (
   _opts,
   done,
 ) => {
-  if (areClerkKeysSet(environment)) {
+  if (!isDevelopment && areClerkKeysSet(environment)) {
     const clerkOptions = {
       publishableKey: environment.CLERK_PUBLISH_KEY,
       secretKey: environment.CLERK_SECRET_KEY,
