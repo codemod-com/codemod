@@ -112,7 +112,7 @@ describe("replace-feature-flag", () => {
     );
   });
 
-  it.only("Should refactor variable references", async () => {
+  it("Should refactor variable references", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/references-refactor.output.ts"),
       "utf-8",
@@ -139,6 +139,38 @@ describe("replace-feature-flag", () => {
     );
 
     console.log(transformed);
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
+  it("Should refactor prefix unary expressions", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/unary.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "unary.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/unary.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "unary.input.ts",
+      booleanFlagOptions,
+    );
 
     assert.deepEqual(
       transformed?.replace(/\s/gm, ""),

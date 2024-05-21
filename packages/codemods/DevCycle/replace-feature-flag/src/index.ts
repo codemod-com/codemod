@@ -74,10 +74,16 @@ const isLiteral = (
   Node.isStringLiteral(node) ||
   Node.isNumericLiteral(node) ||
   Node.isTrueLiteral(node) ||
-  Node.isFalseLiteral(node);
+  Node.isFalseLiteral(node) ||
+  Node.isObjectLiteralExpression(node);
 
 const isTruthy = (node: Node) => {
-  return Node.isTrueLiteral(node);
+  return (
+    Node.isTrueLiteral(node) ||
+    (Node.isStringLiteral(node) && node.getLiteralText() !== "") ||
+    (Node.isNumericLiteral(node) && node.getLiteralText() !== "0") ||
+    Node.isObjectLiteralExpression(node)
+  );
 };
 
 const repeatCallback = (
@@ -164,9 +170,9 @@ const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
   }
 
   const isSame = count % 2 === 0;
-  const newLiteral = isSame ? isTruthy(operand) : !isTruthy(operand);
+  const booleanValue = isSame ? isTruthy(operand) : !isTruthy(operand);
   const replacement = ts.factory.createLiteralTypeNode(
-    newLiteral ? ts.factory.createTrue() : ts.factory.createFalse(),
+    booleanValue ? ts.factory.createTrue() : ts.factory.createFalse(),
   );
 
   pue.replaceWithText(printNode(replacement));
