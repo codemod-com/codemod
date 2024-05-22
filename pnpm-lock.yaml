@@ -213,9 +213,6 @@ importers:
 
   apps/cli:
     dependencies:
-      esbuild:
-        specifier: ^0.17.14
-        version: 0.17.19
       keytar:
         specifier: ^7.9.0
         version: 7.9.0
@@ -271,6 +268,9 @@ importers:
       cosmiconfig:
         specifier: ^8.3.6
         version: 8.3.6(typescript@5.2.2)
+      esbuild:
+        specifier: ^0.17.14
+        version: 0.17.19
       exponential-backoff:
         specifier: ^3.1.1
         version: 3.1.1
@@ -4629,6 +4629,24 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
+
+  packages/codemods/vue/3/render-function-api:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+      typescript:
+        specifier: 5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
 
   packages/filemod:
     devDependencies:
