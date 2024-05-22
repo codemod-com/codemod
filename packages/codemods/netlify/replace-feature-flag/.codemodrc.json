@@ -1,0 +1,29 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.0",
+  "private": false,
+  "name": "netlify/replace-feature-flag",
+  "engine": "ts-morph",
+  "meta": {
+    "tags": ["netlify", "feature-flag"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/netlify/replace-feature-flag"
+  },
+  "arguments": [
+    {
+      "name": "type",
+      "kind": "enum",
+      "options": ["boolean", "string", "number", "JSON"],
+      "required": true
+    },
+    {
+      "name": "value",
+      "kind": "string",
+      "required": true
+    },
+    {
+      "name": "key",
+      "kind": "string",
+      "required": true
+    }
+  ]
+}
