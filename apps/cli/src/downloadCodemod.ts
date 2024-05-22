@@ -3,6 +3,7 @@ import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
+import type { CodemodDownloadLinkResponse } from "@codemod-com/utilities";
 import {
   type CodemodConfig,
   doubleQuotify,
@@ -11,8 +12,12 @@ import {
 import type { TarService } from "@codemod-com/utilities";
 import inquirer from "inquirer";
 import type { Ora } from "ora";
+import semver from "semver";
 import { getCodemodDownloadURI } from "./apis.js";
-import type { FileDownloadServiceBlueprint } from "./fileDownloadService.js";
+import {
+  FileDownloadService,
+  type FileDownloadServiceBlueprint,
+} from "./fileDownloadService.js";
 import { getCurrentUserData } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
@@ -26,7 +31,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
   public constructor(
     private readonly __printer: PrinterBlueprint,
     private readonly __configurationDirectoryPath: string,
-    protected readonly _cacheDisabled: boolean,
+    protected readonly _cacheEnabled: boolean,
     protected readonly _fileDownloadService: FileDownloadServiceBlueprint,
     protected readonly _tarService: TarService,
   ) {}
@@ -58,9 +63,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     // download codemod
     const userData = await getCurrentUserData();
 
-    let s3DownloadLink: string;
+    let linkResponse: CodemodDownloadLinkResponse;
     try {
-      s3DownloadLink = await getCodemodDownloadURI(name, userData?.token);
+      linkResponse = await getCodemodDownloadURI(name, userData?.token);
     } catch (err) {
       spinner?.fail();
       throw new Error(`Error getting download link for codemod:\n${err}`);
@@ -70,9 +75,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     let downloadResult: Awaited<
       ReturnType<FileDownloadServiceBlueprint["download"]>
     >;
+
     try {
       downloadResult = await this._fileDownloadService.download(
-        s3DownloadLink,
+        linkResponse.link,
         localCodemodPath,
       );
     } catch (err) {
@@ -96,9 +102,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       chalk.cyan(
         cacheUsed
           ? "Successfully used cache to retrieve the codemod"
-          : `Downloaded the codemod from the registry without using cache: ${chalk.yellow(
-              cacheReason,
-            )}`,
+          : chalk(
+              "Downloaded the codemod from the registry without using cache",
+              `(${chalk.yellow(cacheReason)})`,
+            ),
       ),
     );
 
@@ -108,6 +115,37 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
     } catch (err) {
       throw new Error(`Error parsing config for codemod ${name}: ${err}`);
+    }
+
+    if (
+      this._fileDownloadService.cacheEnabled &&
+      semver.gt(linkResponse.version, config.version)
+    ) {
+      const { update } = await inquirer.prompt({
+        name: "update",
+        type: "confirm",
+        default: false,
+        message: chalk.yellow(
+          "Newer version of",
+          chalk.cyan(name),
+          "codemod is available.",
+          "Do you want to download the newest version?",
+        ),
+      });
+
+      if (update) {
+        return new CodemodDownloader(
+          this.__printer,
+          this.__configurationDirectoryPath,
+          false,
+          new FileDownloadService(
+            false,
+            this._fileDownloadService._ifs,
+            this._fileDownloadService._printer,
+          ),
+          this._tarService,
+        ).download(name, disableSpinner);
+      }
     }
 
     if (config.engine === "ast-grep") {

@@ -1,4 +1,5 @@
 import type {
+  CodemodDownloadLinkResponse,
   CodemodListResponse,
   ValidateTokenResponse,
 } from "@codemod-com/utilities";
@@ -65,7 +66,7 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 export const getCodemodDownloadURI = async (
   name: string,
   accessToken?: string,
-): Promise<string> => {
+): Promise<CodemodDownloadLinkResponse> => {
   const url = new URL(`${process.env.BACKEND_URL}/codemods/downloadLink`);
   if (name) {
     url.searchParams.set("name", name);
@@ -76,12 +77,12 @@ export const getCodemodDownloadURI = async (
     headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
   }
 
-  const res = await Axios.get<{ link: string }>(url.toString(), {
+  const res = await Axios.get<CodemodDownloadLinkResponse>(url.toString(), {
     headers,
     timeout: 10000,
   });
 
-  return res.data.link;
+  return res.data;
 };
 
 export const getCodemodList = async (options?: {

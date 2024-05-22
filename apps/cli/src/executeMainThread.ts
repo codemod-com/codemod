@@ -139,7 +139,7 @@ export const executeMainThread = async () => {
         const { printer, telemetryService, executeCliCommand } =
           await initializeDependencies(args);
 
-        executeCliCommand(() =>
+        return executeCliCommand(() =>
           handleRunCliCommand(printer, args, telemetryService),
         );
       },
@@ -185,7 +185,7 @@ export const executeMainThread = async () => {
       "learn",
       "exports the current `git diff` in a file to before/after panels in the Codemod Studio",
       (y) =>
-        buildGlobalOptions(y).option("target", {
+        y.option("target", {
           alias: "t",
           type: "string",
           description: "path to the file to be learned",

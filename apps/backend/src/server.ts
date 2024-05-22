@@ -40,6 +40,7 @@ import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
 import {
+  getCodemodLatestVersionQuerySchema,
   parseCodemodRunBody,
   parseCodemodStatusParams,
   parseCreateIssueBody,
@@ -412,6 +413,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     "/codemods/downloadLink",
     wrapRequestHandlerMethod(getCodemodDownloadLink),
   );
+
   instance.get(
     "/codemods/list",
     wrapRequestHandlerMethod(getCodemodsListHandler),

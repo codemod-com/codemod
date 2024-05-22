@@ -23,6 +23,7 @@ export * from "./schemata/codemodSettingsSchema.js";
 export * from "./schemata/flowSettingsSchema.js";
 export * from "./schemata/runArgvSettingsSchema.js";
 
+export { getTransformer, transpile } from "./getTransformer.js";
 export { type Codemod } from "./codemod.js";
 export { buildPathsGlob, buildPatterns, runCodemod } from "./runCodemod.js";
 export { Runner, type CodemodToRun } from "./runner.js";

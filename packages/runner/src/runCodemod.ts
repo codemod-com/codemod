@@ -36,10 +36,11 @@ export const buildPatterns = async (
   flowSettings: FlowSettings,
   codemod: Codemod,
   filemod: Filemod<Dependencies, Record<string, unknown>> | null,
-  onPrinterMessage: PrinterMessageCallback,
+  onPrinterMessage?: PrinterMessageCallback,
 ): Promise<{
   include: string[];
   exclude: string[];
+  reason?: string;
 }> => {
   const formatFunc = (pattern: string) => {
     if (pattern.startsWith("**")) {
@@ -56,26 +57,34 @@ export const buildPatterns = async (
   const excludePatterns = flowSettings.exclude ?? [];
   const formattedExclude = excludePatterns.map(formatFunc);
 
-  const files = flowSettings.files;
+  const { files } = flowSettings;
 
   if (files) {
     return {
       include: files,
       exclude: formattedExclude,
+      reason: "Using files option from settings",
     };
   }
 
-  let patterns = flowSettings.include ?? codemod.include;
+  let reason: string | undefined;
+  let patterns: string[] | undefined = undefined;
+  if (flowSettings.include) {
+    reason = "Using paths provided by user via options";
+  } else if (codemod.include) {
+    reason = "Using paths provided by codemod settings";
+  }
 
   // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
   if (codemod.engine === "ast-grep") {
     if (patterns) {
-      onPrinterMessage({
+      patterns = undefined;
+      reason = "Ignoring include/exclude patterns for ast-grep codemod";
+      onPrinterMessage?.({
         kind: "console",
         consoleKind: "log",
-        message: "Ignoring include/exclude patterns for ast-grep codemod",
+        message: reason,
       });
-      patterns = undefined;
     }
 
     try {
@@ -89,6 +98,7 @@ export const buildPatterns = async (
   }
 
   if (!patterns) {
+    reason = "Using default include patterns based on the engine";
     if (codemod.engine === "filemod" && filemod !== null) {
       patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
     } else if (
@@ -109,6 +119,7 @@ export const buildPatterns = async (
   return {
     include: formattedInclude,
     exclude: formattedExclude,
+    reason,
   };
 };
 
@@ -182,7 +193,7 @@ export const runCodemod = async (
           flowSettings.target
             ? "specified target directory"
             : "current working directory"
-        }...`,
+        }. Exiting...`,
       ),
     });
 

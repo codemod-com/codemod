@@ -4,22 +4,27 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type PrinterBlueprint, boxen, chalk } from "@codemod-com/printer";
 import {
   type CodemodToRun,
   Runner,
+  buildPatterns,
+  getTransformer,
   parseCodemodSettings,
   parseFlowSettings,
   parseRunSettings,
+  transpile,
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   TarService,
+  capitalize,
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import columnify from "columnify";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
@@ -110,11 +115,7 @@ export const handleRunCliCommand = async (
     await checkFileTreeVersioning(flowSettings.target);
   }
 
-  const fileDownloadService = new FileDownloadService(
-    args.noCache,
-    fs,
-    printer,
-  );
+  const fileDownloadService = new FileDownloadService(args.cache, fs, printer);
 
   const tarService = new TarService(fs);
 
@@ -123,7 +124,7 @@ export const handleRunCliCommand = async (
   const codemodDownloader = new CodemodDownloader(
     printer,
     configurationDirectoryPath,
-    args.noCache,
+    args.cache,
     fileDownloadService,
     tarService,
   );
@@ -226,6 +227,67 @@ export const handleRunCliCommand = async (
     string,
     { deps: string[]; affectedFiles: string[] }
   > = {};
+
+  if (codemods.length === 1) {
+    // biome-ignore lint: assertion is correct
+    const codemod = codemods[0]!;
+
+    // biome-ignore lint: types don't matter here
+    let transformer: any = null;
+
+    if (codemod.engine === "filemod") {
+      const codemodSource = await readFile(codemod.indexPath, {
+        encoding: "utf8",
+      });
+
+      const transpiledSource = codemod.indexPath.endsWith(".ts")
+        ? transpile(codemodSource.toString())
+        : codemodSource.toString();
+
+      transformer = getTransformer(transpiledSource);
+    }
+
+    const { include, exclude, reason } = await buildPatterns(
+      flowSettings,
+      codemod,
+      transformer,
+    );
+
+    const patternsColumns = columnify(
+      Array.from({
+        length: Math.max(include.length, exclude.length),
+      }).map(() => ({
+        include: chalk.bold.green(include.shift() ?? ""),
+        exclude: chalk.bold.red(exclude.shift() ?? ""),
+      })),
+      {
+        headingTransform: (heading) => chalk.bold(capitalize(heading)),
+        minWidth: 15,
+      },
+    );
+
+    printer.printConsoleMessage(
+      "info",
+      boxen(
+        chalk.cyan(
+          "Running with the following configuration:",
+          `\n\n${chalk.yellow.bold(reason ?? "")}\n${patternsColumns}\n`,
+          chalk.yellow(
+            !flowSettings.install ? "\nDependency installation disabled" : "",
+          ),
+          chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+          chalk.yellow(flowSettings.raw ? "\nFile formatting disabled" : ""),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    );
+  }
 
   const executionErrors = await runner.run(
     async (codemod, filePaths) => {
@@ -349,7 +411,7 @@ export const handleRunCliCommand = async (
     );
   }
 
-  if (!runSettings.dryRun && !flowSettings.skipInstall) {
+  if (!runSettings.dryRun && flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
       depsToInstall,
     )) {

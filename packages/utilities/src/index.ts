@@ -68,7 +68,10 @@ export {
   type KnownEngines,
   type PiranhaLanguage,
 } from "./schemata/codemodConfigSchema.js";
-export { type CodemodListResponse } from "./schemata/codemodListResponse.js";
+export type {
+  CodemodListResponse,
+  CodemodDownloadLinkResponse,
+} from "./schemata/apiResponses.js";
 export {
   codemodRunBodySchema,
   validateCodemodStatusParamsSchema,
