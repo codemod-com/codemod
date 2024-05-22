@@ -1,0 +1,5 @@
+id: orjson.dumps-add-UTC_Z
+language: python
+rule:
+  pattern: "orjson.dumps($A)"
+fix: "orjson.dumps($A, option=orjson.OPT_UTC_Z)"

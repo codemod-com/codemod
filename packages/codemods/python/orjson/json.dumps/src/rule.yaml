@@ -1,0 +1,5 @@
+id: json-dumps-orjson
+language: python
+rule:
+  pattern: "json.dumps($A)"
+fix: "orjson.dumps($A).decode()"

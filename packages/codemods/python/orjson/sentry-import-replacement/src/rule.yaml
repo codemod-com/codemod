@@ -1,0 +1,5 @@
+id: sentry-import-replacement
+language: python
+rule:
+  pattern: "from sentry.utils import json"
+fix: "import json"
