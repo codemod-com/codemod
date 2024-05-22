@@ -18,7 +18,8 @@
     }
   ],
   "meta": {
-    "tags": ["react", "migration"]
+    "tags": ["react", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/prop-types-typescript"
   },
   "include": ["**/*.js", "**/*.ts"]
 }
