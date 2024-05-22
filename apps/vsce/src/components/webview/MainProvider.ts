@@ -141,6 +141,7 @@ export class MainViewProvider implements WebviewViewProvider {
       this.__postMessage({
         kind: "webview.global.codemodExecutionHalted",
       });
+      commands.executeCommand("workbench.view.scm");
     });
 
     this.__messageBus.subscribe(MessageKind.executeCodemodSet, () => {
