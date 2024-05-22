@@ -1337,6 +1337,21 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/devcycle/replace-feature-flag:
+    devDependencies:
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      ts-morph:
+        specifier: ^22.0.0
+        version: 22.0.0
+      typescript:
+        specifier: 5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
+
   packages/codemods/ember/5/app-controller-router-props:
     devDependencies:
       '@codemod-com/utilities':
@@ -2888,6 +2903,21 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
+
+  packages/codemods/netlify/replace-feature-flag:
+    devDependencies:
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      ts-morph:
+        specifier: ^22.0.0
+        version: 22.0.0
+      typescript:
+        specifier: 5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
 
   packages/codemods/next-i18next/copy-keys:
     devDependencies:
