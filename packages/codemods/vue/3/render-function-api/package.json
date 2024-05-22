@@ -1,19 +1,18 @@
 {
-  "name": "codemod",
-  "author": "",
+  "name": "@codemod-com/vue-render-function-api",
+  "version": "1.0.0",
   "dependencies": {},
   "devDependencies": {
-    "@types/node": "20.9.0",
-    "typescript": "5.2.2",
-    "vitest": "^1.0.1",
+    "@types/node": "^20.12.3",
+    "@types/jscodeshift": "^0.11.10",
     "jscodeshift": "^0.15.1",
-    "@types/jscodeshift": "^0.11.10"
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1"
   },
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
-  "license": "MIT",
-  "files": ["README.md", ".codemodrc.json", "./dist/index.cjs"],
+  "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
   "type": "module"
 }
