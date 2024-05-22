@@ -1,4 +1,4 @@
-const isDefaulted = __CODEMOD_LITERAL__(true);
+const isDefaulted = useVariableValue(user, 'simple-case', true);
 const simpleCaseValue = __CODEMOD_LITERAL__(false);
 
 const testCase1 = (false || isDefaulted) && simpleCaseValue;
@@ -10,4 +10,3 @@ const testCase4 = ((false && x) || (isDefaulted && !!simpleCaseValue)) && (x || 
 const testCase5 = (true || false) && ((false && true) || (true && false)) && isDefaulted;
 const testCase6 = (!false && true) || (!true && false);
 const testCase7 = (!(true || false) && (!!false || !!true));
-const testCase8 = y === 0 || false

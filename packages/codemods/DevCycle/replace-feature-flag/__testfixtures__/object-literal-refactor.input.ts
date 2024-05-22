@@ -1,9 +1,5 @@
-const a = __CODEMOD_LITERAL__({
-    key: "simple-case",
-    value: "string",
-    defaultValue: "string",
-    isDefaulted: true
-}).value;
+
+const a = useVariableValue(user, 'simple-case', 'string1');
 const b = __CODEMOD_LITERAL__({
     key: "simple-case",
     value: "string1",
