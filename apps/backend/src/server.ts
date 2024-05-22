@@ -40,7 +40,6 @@ import { validationHandler } from "./handlers/validationHandler.js";
 import { publishHandler } from "./publishHandler.js";
 import { ReplicateService } from "./replicateService.js";
 import {
-  getCodemodLatestVersionQuerySchema,
   parseCodemodRunBody,
   parseCodemodStatusParams,
   parseCreateIssueBody,
@@ -57,7 +56,6 @@ import {
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
-import { PostHogService } from "./services/PostHogService.js";
 import { SourceControl } from "./services/SourceControl.js";
 import {
   CodemodNotFoundError,

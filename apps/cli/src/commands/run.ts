@@ -6,6 +6,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { type PrinterBlueprint, boxen, chalk } from "@codemod-com/printer";
 import {
+  type CodemodSettings,
   type CodemodToRun,
   Runner,
   buildPatterns,
@@ -129,7 +130,13 @@ export const handleRunCliCommand = async (
     tarService,
   );
 
-  const codemods: CodemodToRun[] = [];
+  let codemodDefinition:
+    | {
+        kind: Exclude<CodemodSettings["kind"], "runOnPreCommit">;
+        codemod: CodemodToRun;
+      }
+    | { kind: "runOnPreCommit"; codemods: CodemodToRun[] }
+    | null = null;
 
   if (codemodSettings.kind === "runSourced") {
     const codemod = await buildSourcedCodemodOptions(
@@ -141,14 +148,21 @@ export const handleRunCliCommand = async (
 
     const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
 
-    codemods.push({
-      ...codemod,
-      hashDigest: createHash("ripemd160")
-        .update(codemodSettings.source)
-        .digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
-      engineOptions,
-    });
+    codemodDefinition = {
+      kind: codemodSettings.kind,
+      codemod: {
+        ...codemod,
+        hashDigest: createHash("ripemd160")
+          .update(codemodSettings.source)
+          .digest(),
+        safeArgumentRecord: await buildSafeArgumentRecord(
+          codemod,
+          args,
+          printer,
+        ),
+        engineOptions,
+      },
+    };
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
@@ -182,15 +196,23 @@ export const handleRunCliCommand = async (
 
     const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
 
-    codemods.push({
-      ...codemod,
-      hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
-      engineOptions,
-    });
+    codemodDefinition = {
+      kind: codemodSettings.kind,
+      codemod: {
+        ...codemod,
+        hashDigest: createHash("ripemd160").update(nameOrPath).digest(),
+        safeArgumentRecord: await buildSafeArgumentRecord(
+          codemod,
+          args,
+          printer,
+        ),
+        engineOptions,
+      },
+    };
   } else {
     const { preCommitCodemods } = await loadRepositoryConfiguration();
 
+    const codemods: CodemodToRun[] = [];
     for (const preCommitCodemod of preCommitCodemods) {
       if (preCommitCodemod.source === "package") {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
@@ -206,10 +228,23 @@ export const handleRunCliCommand = async (
           engineOptions,
         });
       }
+
+      codemodDefinition = {
+        kind: codemodSettings.kind,
+        codemods,
+      };
     }
   }
 
-  const runner = new Runner(codemods, fs, runSettings, flowSettings);
+  if (!codemodDefinition) {
+    throw new Error("Codemod definition could not be resolved.");
+  }
+
+  const codemodsToRun =
+    codemodDefinition.kind === "runOnPreCommit"
+      ? codemodDefinition.codemods
+      : [codemodDefinition.codemod];
+  const runner = new Runner(codemodsToRun, fs, runSettings, flowSettings);
 
   if (runSettings.dryRun) {
     printer.printConsoleMessage(
@@ -228,9 +263,8 @@ export const handleRunCliCommand = async (
     { deps: string[]; affectedFiles: string[] }
   > = {};
 
-  if (codemods.length === 1) {
-    // biome-ignore lint: assertion is correct
-    const codemod = codemods[0]!;
+  if (codemodDefinition.kind !== "runOnPreCommit") {
+    const { codemod } = codemodDefinition;
 
     // biome-ignore lint: types don't matter here
     let transformer: any = null;
