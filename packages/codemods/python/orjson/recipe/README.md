@@ -1,18 +1,17 @@
-This recipe is a set of codemods that will upgrade your project from using `mocha` to `vitest`.
+This recipe is a set of codemods that will upgrade json to orjson in your python projects.
 
 The recipe includes the following codemods:
 
--   [migrate-configuration](https://github.com/codemod-com/codemod-registry/tree/main/codemods/mocha/vitest/migrate-configuration)
--   [migrate-tests](https://github.com/codemod-com/codemod-registry/tree/main/codemods/mocha/vitest/migrate-tests)
+-   [python/orjson/json.dumps](https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/json.dumps)
+-   [python/orjson/json.load](https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/json.load)
+-   [python/orjson/json.loads](https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/json.loads)
+-   [python/orjson/dumps-add-UTC_Z](https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/orjson.dumps-add-UTC_Z)
+-   [python/orjson/sentry-import-replacement](https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/sentry-import-replacement)
 
-NOTE: if you are not using vitest default `.spec.*` or `.test.*` file names, then you won't be able to run your tests upon migrating. To mitigate this and add your own set of globs, create `vite.config.ts` file in the root of your project and add the following configuration, replacing `**/test/*.ts` with your own globs:
+```python
+import orjson
 
-```ts
-import { configDefaults, defineConfig } from 'vitest/config';
-
-export default defineConfig({
-	test: {
-		include: [...configDefaults.include, '**/test/*.ts'],
-	},
-});
+raw_data = orjson.loads(dist_matched_artifact_index_release_file.file.getfile().read())
+orjson.dumps(content_as_json, option=orjson.OPT_UTC_Z)
+raw_data = orjson.loads(data)
 ```
