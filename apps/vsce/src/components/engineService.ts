@@ -201,8 +201,8 @@ type ExecuteCodemodMessage = Message &
   }>;
 
 const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
-const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 5000;
-const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 100;
+const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 2500;
+const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 200;
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
   const url = new URL("https://backend.codemod.com/codemods/list");

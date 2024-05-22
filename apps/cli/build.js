@@ -66,5 +66,7 @@ build({
     "coffee-script",
     "squirrelly",
     "twing",
+    "@ast-grep/napi",
+    "@codemod-com/workflow",
   ],
 });
