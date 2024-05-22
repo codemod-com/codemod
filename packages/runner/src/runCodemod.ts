@@ -186,6 +186,17 @@ export const runCodemod = async (
       ),
     });
 
+  if (codemod.engine === "workflow") {
+    const codemodSource = await readFile(codemod.indexPath, {
+      encoding: "utf8",
+    });
+    const transpiledSource = codemod.indexPath.endsWith(".ts")
+      ? transpile(codemodSource.toString())
+      : codemodSource.toString();
+    console.log(transpiledSource);
+    return;
+  }
+
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {

@@ -6,8 +6,14 @@ export * from "./codemod.js";
 
 export * from "./contexts.js";
 
-export * from "./git/git.js";
+import { git } from "./git/git.js";
 
-export * from "./astGrep/astGrep.js";
+import { astGrep } from "./astGrep/astGrep.js";
 
-export * from "./jsFiles.js";
+import { jsFiles } from "./jsFiles.js";
+
+export { git, astGrep, jsFiles };
+
+export const api = { git, astGrep, jsFiles };
+
+export type Api = typeof api;

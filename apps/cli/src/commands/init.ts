@@ -18,6 +18,7 @@ const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
   "ts-morph",
   "filemod",
   "ast-grep",
+  "workflow",
 ];
 
 type License = "MIT" | "Apache 2.0";
