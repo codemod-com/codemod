@@ -6,7 +6,7 @@
     "@types/node": "20.9.0",
     "typescript": "5.2.2",
     "vitest": "^1.0.1",
-    "ts-morph": "^20.0.0"
+    "ts-morph": "^22.0.0"
   },
   "scripts": {
     "test": "vitest run",

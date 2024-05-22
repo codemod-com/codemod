@@ -6,7 +6,7 @@ import {
   printNode,
   ts,
 } from "ts-morph";
-import type { Options, Provider, ProviderKind } from "./types.js";
+import type { Options, Provider } from "./types.js";
 import {
   CODEMOD_LITERAL,
   type Literal,

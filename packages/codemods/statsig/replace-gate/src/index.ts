@@ -8,6 +8,7 @@ import type {
   VariableType,
   VariableValue,
 } from "../../../replace-feature-flag-core/src/types.js";
+
 import {
   buildLiteral,
   getCEExpressionName,
@@ -49,7 +50,7 @@ type MatchedMethod = {
   name: string;
 };
 
-export const Statsig: Provider = {
+export const provider: Provider = {
   getMatcher:
     (keyName: string) =>
     (ce: CallExpression): MatchedMethod | null => {
@@ -87,5 +88,5 @@ export function handleSourceFile(
   sourceFile: SourceFile,
   options: Omit<Options, "provider">,
 ): string | undefined {
-  return handleSourceFileCore(sourceFile, { ...options, provider: Statsig });
+  return handleSourceFileCore(sourceFile, { ...options, provider: provider });
 }
