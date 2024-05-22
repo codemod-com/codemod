@@ -3,12 +3,7 @@ import { sep } from "node:path";
 import * as t from "io-ts";
 import { Project } from "ts-morph";
 import { Uri, type Webview } from "vscode";
-import {
-  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
-  ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY,
-  CURSOR_PREFIX,
-  VSCODE_PREFIX,
-} from "./constants";
+import { CURSOR_PREFIX, VSCODE_PREFIX } from "./constants";
 import type { _ExplorerNode } from "./persistedState/explorerNodeCodec";
 
 export function isNeitherNullNorUndefined<T>(value: T): value is T & {} {
@@ -153,11 +148,4 @@ export const getDeepLinkPrefix = () => {
     return VSCODE_PREFIX;
   }
   return CURSOR_PREFIX;
-};
-
-export const getDeepLinkAccessTokenParam = () => {
-  if (process.env.VSCODE_PID) {
-    return ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY;
-  }
-  return ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY;
 };

@@ -13,6 +13,7 @@ import { version } from "../package.json";
 import { getUserDistinctId } from "./analytics/distinctId";
 import type { TelemetryEvent } from "./analytics/telemetry";
 import { buildGlobalOptions, buildRunOptions } from "./buildOptions.js";
+import { handleBuildCliCommand } from "./commands/build";
 import { handleInitCliCommand } from "./commands/init";
 import { handleLearnCliCommand } from "./commands/learn";
 import { handleListNamesCommand } from "./commands/list";
@@ -22,7 +23,6 @@ import { handlePublishCliCommand } from "./commands/publish";
 import { handleRunCliCommand } from "./commands/run";
 import { handleUnpublishCliCommand } from "./commands/unpublish";
 import { handleWhoAmICommand } from "./commands/whoami";
-import { initGlobalNodeModules } from "./utils";
 
 const checkLatestVersion = async () => {
   try {
@@ -234,7 +234,7 @@ export const executeMainThread = async () => {
     )
     .command(
       "build",
-      "build the JavaScript engine codemod (requires global esbuild installation)",
+      "build the JavaScript engine codemod",
       (y) =>
         buildGlobalOptions(y).option("source", {
           alias: "s",
@@ -242,25 +242,8 @@ export const executeMainThread = async () => {
           description: "path to the codemod to be built",
         }),
       async (args) => {
-        const { executeCliCommand, exit, printer } =
+        const { executeCliCommand, printer } =
           await initializeDependencies(args);
-
-        await initGlobalNodeModules();
-
-        try {
-          await execPromise("esbuild --version");
-        } catch (error) {
-          printer.printOperationMessage({
-            kind: "error",
-            message: `To build packages using codemod CLI, esbuild has to be globally installed using your package manager. Please run ${doubleQuotify(
-              "npm i -g esbuild",
-            )}`,
-          });
-
-          return exit();
-        }
-
-        const { handleBuildCliCommand } = await import("./commands/build.js");
 
         return executeCliCommand(() =>
           handleBuildCliCommand(printer, args.source ?? process.cwd()),

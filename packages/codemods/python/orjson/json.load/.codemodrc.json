@@ -1,0 +1,10 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "Converts json.load to orjson.loads",
+  "engine": "ast-grep",
+  "meta": {
+    "tags": ["python", "json", "orjson", "sentry"]
+  }
+}

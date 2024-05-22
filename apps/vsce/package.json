@@ -42,16 +42,6 @@
         "icon": "$(settings-gear)"
       },
       {
-        "command": "codemod.signIn",
-        "title": "Sign in",
-        "icon": "$(sign-in)"
-      },
-      {
-        "command": "codemod.handleSignedInUser",
-        "title": "Signed in",
-        "icon": "$(accounts-view-bar-icon)"
-      },
-      {
         "command": "codemod.clearOutputFiles",
         "title": "Codemod: clear output files"
       },
@@ -148,16 +138,6 @@
         {
           "command": "codemod.showCodemodSettings",
           "when": "view == codemodMainView",
-          "group": "navigation"
-        },
-        {
-          "command": "codemod.signIn",
-          "when": "view == codemodMainView && !codemod.signedIn",
-          "group": "navigation"
-        },
-        {
-          "command": "codemod.handleSignedInUser",
-          "when": "view == codemodMainView && codemod.signedIn",
           "group": "navigation"
         }
       ],

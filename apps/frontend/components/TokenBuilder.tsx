@@ -6,15 +6,11 @@ import { useEffect } from "react";
 import {
   ACCESS_TOKEN_COMMANDS,
   ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
-  ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY,
-  CURSOR_PREFIX,
   TWO_MINS_IN_MS,
-  VSCODE_PREFIX,
 } from "@/constants";
 import { useAuth, useUser } from "@clerk/nextjs";
 import getAccessToken from "@studio/api/getAccessToken";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { openIDELink } from "@studio/utils/openIDELink";
 
 export const TokenBuilder = () => {
   const { getToken } = useAuth();
@@ -52,13 +48,6 @@ export const TokenBuilder = () => {
           sessionId,
           iv,
         });
-      } else {
-        await openIDELink(
-          clerkToken,
-          localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY)
-            ? CURSOR_PREFIX
-            : VSCODE_PREFIX,
-        );
       }
       ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
     })();
@@ -94,13 +83,6 @@ export const TokenBuilder = () => {
           });
           return;
         }
-
-        await openIDELink(
-          clerkToken,
-          command === ACCESS_TOKEN_REQUESTED_BY_CURSOR_STORAGE_KEY
-            ? CURSOR_PREFIX
-            : VSCODE_PREFIX,
-        );
       })();
       return;
     }

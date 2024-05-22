@@ -1,3 +1,4 @@
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
 import {
   type Argument,
@@ -10,6 +11,7 @@ import inquirer from "inquirer";
 export const buildSafeArgumentRecord = async (
   codemod: Codemod,
   rawArgumentRecord: Record<string, unknown>,
+  printer: PrinterBlueprint,
 ): Promise<ArgumentRecord> => {
   if (codemod.source === "standalone") {
     // no checks performed for local codemods
@@ -31,6 +33,7 @@ export const buildSafeArgumentRecord = async (
   const safeArgumentRecord: ArgumentRecord = {};
 
   let invalid: ((typeof codemod.arguments)[number] & { err: string })[] = [];
+  const defaulted: string[] = [];
 
   const validateArg = (
     descriptor: (typeof codemod.arguments)[number],
@@ -54,11 +57,7 @@ export const buildSafeArgumentRecord = async (
         return false;
       }
 
-      if (!maybeArgument.success) {
-        return false;
-      }
-
-      if (descriptor.kind === "enum") {
+      if (maybeArgument.success && descriptor.kind === "enum") {
         if (!descriptor.options.includes(maybeArgument.output)) {
           if (!skipInvalidFlagging) {
             invalid.push({
@@ -76,7 +75,7 @@ export const buildSafeArgumentRecord = async (
         return true;
       }
 
-      if (descriptor.kind === "boolean") {
+      if (maybeArgument.success && descriptor.kind === "boolean") {
         if (
           maybeArgument.output === "true" ||
           maybeArgument.output === "false"
@@ -95,7 +94,7 @@ export const buildSafeArgumentRecord = async (
         return true;
       }
 
-      if (descriptor.kind === "number") {
+      if (maybeArgument.success && descriptor.kind === "number") {
         const numArg = Number(maybeArgument.output);
         if (Number.isNaN(numArg) || !Number.isFinite(numArg)) {
           if (!skipInvalidFlagging) {
@@ -110,6 +109,7 @@ export const buildSafeArgumentRecord = async (
       }
 
       if (
+        maybeArgument.success &&
         descriptor.kind === "string" &&
         typeof maybeArgument.output === "string"
       ) {
@@ -126,11 +126,13 @@ export const buildSafeArgumentRecord = async (
       }
 
       if (
+        maybeArgument.success &&
         // biome-ignore lint: incorrect warning
         typeof maybeArgument.output === descriptor.kind
       ) {
         safeArgumentRecord[descriptor.name] = maybeArgument.output;
       } else if (descriptor.default !== undefined) {
+        defaulted.push(descriptor.name);
         safeArgumentRecord[descriptor.name] = descriptor.default;
       }
 
@@ -228,6 +230,26 @@ export const buildSafeArgumentRecord = async (
 
     throw new Error(
       `Invalid arguments:\n${invalidString}\n\nMake sure provided values are correct.`,
+    );
+  }
+
+  if (Object.keys(safeArgumentRecord).length > 0) {
+    printer.printConsoleMessage(
+      "info",
+      chalk.cyan(
+        "\nUsing following arguments:\n-",
+        chalk.bold(
+          Object.entries(safeArgumentRecord)
+            .map(([key, value]) =>
+              chalk(
+                `${key}:`,
+                value,
+                defaulted.includes(key) ? chalk.grey("(default value)") : "",
+              ),
+            )
+            .join("\n- "),
+        ),
+      ),
     );
   }
 

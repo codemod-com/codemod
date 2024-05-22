@@ -247,6 +247,25 @@
       "contributions": [
         "bug"
       ]
+    },
+    {
+      "login": "jahredhope",
+      "name": "Jahred Hope",
+      "avatar_url": "https://avatars.githubusercontent.com/u/13903378?v=4",
+      "profile": "http://jahred.me",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arshcodemod",
+      "name": "arshcodemod",
+      "avatar_url": "https://avatars.githubusercontent.com/u/167029627?v=4",
+      "profile": "https://github.com/arshcodemod",
+      "contributions": [
+        "doc",
+        "talk"
+      ]
     }
   ],
   "contributorsPerLine": 7,

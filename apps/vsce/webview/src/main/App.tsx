@@ -1,14 +1,11 @@
-import { VSCodeButton } from "@vscode/webview-ui-toolkit/react";
 import { useEffect, useRef, useState } from "react";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import type { ActiveTabId } from "../../../src/persistedState/codecs";
 import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
 import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
 import { App as CodemodList } from "../codemodList/App";
 import { useTheme } from "../shared/Snippet/useTheme";
 import type { WebviewMessage } from "../shared/types";
-import { vscode } from "../shared/utilities/vscode";
 
 const toastContainerProps = {
   pauseOnHover: false,
@@ -78,50 +75,6 @@ function App() {
       resizeObserver.disconnect();
     };
   }, []);
-
-  const toaster = mainWebviewViewProps?.toaster ?? null;
-
-  useEffect(() => {
-    if (toaster === null) {
-      return;
-    }
-
-    const { content, ...toasterProps } = toaster;
-    let componentToRender = null;
-
-    if (toasterProps.toastId === "handleSignedInUser") {
-      componentToRender = (
-        <div className="toasterComponent">
-          <p>{content}</p>
-          <VSCodeButton
-            appearance="secondary"
-            onClick={() => {
-              toast.dismiss(toasterProps.toastId);
-              vscode.postMessage({
-                kind: "webview.main.signOut",
-              });
-            }}
-          >
-            Sign out
-          </VSCodeButton>
-        </div>
-      );
-    }
-    toast(componentToRender ?? content, toasterProps);
-
-    // remove the current toaster props from Redux state
-    vscode.postMessage({
-      kind: "webview.main.setToaster",
-      value: null,
-    });
-  }, [toaster]);
-
-  const handlePanelTabClick = (id: ActiveTabId) => {
-    vscode.postMessage({
-      kind: "webview.main.setActiveTabId",
-      activeTabId: id,
-    });
-  };
 
   if (mainWebviewViewProps === null) {
     return (
