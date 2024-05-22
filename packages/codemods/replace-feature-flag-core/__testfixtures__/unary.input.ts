@@ -1,4 +1,4 @@
-const var1 = !!useVariableValue(user, 'simple-case', true);
+const var1 = !!useFlag(user, 'simple-case', true);
 const var2 = !!!true;
 const var3 = !false;
 const var4 = !!false;

@@ -1,4 +1,4 @@
-const isDefaulted = useVariableValue(user, 'simple-case', true);
+const isDefaulted = useFlag(user, 'simple-case', true);
 const simpleCaseValue = __CODEMOD_LITERAL__(false);
 
 const testCase1 = (false || isDefaulted) && simpleCaseValue;

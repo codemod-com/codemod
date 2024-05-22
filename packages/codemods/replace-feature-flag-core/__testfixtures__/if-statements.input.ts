@@ -1,4 +1,4 @@
-const isDefaulted = useVariableValue(user, 'simple-case', true);
+const isDefaulted = useFlag(user, 'simple-case', true);
 
 if (isDefaulted) {
   const a = b;
