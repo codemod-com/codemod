@@ -398,9 +398,13 @@ const refactorConditionalExpressions = (sourceFile: SourceFile) => {
         ? getCodemodLiteralValue(condition)
         : condition;
 
-      if (Node.isTrueLiteral(unwrapped)) {
+      if (!isLiteral(unwrapped)) {
+        return;
+      }
+
+      if (isTruthy(unwrapped)) {
         ce.replaceWithText(ce.getWhenTrue().getText());
-      } else if (Node.isFalseLiteral(unwrapped)) {
+      } else {
         ce.replaceWithText(ce.getWhenFalse().getText());
       }
     });

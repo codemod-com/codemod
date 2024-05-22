@@ -275,6 +275,46 @@ describe("replace-feature-flag", () => {
     );
   });
 
+  it("Should refactor conditional expressions", async () => {
+    const OUTPUT = await readFile(
+      join(
+        __dirname,
+        "..",
+        "__testfixtures__/conditional-expressions.output.ts",
+      ),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "conditional-expressions.input.ts": await readFile(
+        join(
+          __dirname,
+          "..",
+          "__testfixtures__/conditional-expressions.input.ts",
+        ),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "conditional-expressions.input.ts",
+      booleanFlagOptions,
+    );
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
   it("Should refactor javascript", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/javascript.output.js"),
