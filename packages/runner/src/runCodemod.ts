@@ -22,6 +22,7 @@ import {
 import { getTransformer, transpile } from "./getTransformer.js";
 import { astGrepLanguageToPatterns } from "./runAstgrepCodemod.js";
 import { type Dependencies, runRepomod } from "./runRepomod.js";
+import { runWorkflowCodemod } from "./runWorkflowCodemod.js";
 import type {
   CodemodExecutionErrorCallback,
   PrinterMessageCallback,
@@ -193,7 +194,12 @@ export const runCodemod = async (
     const transpiledSource = codemod.indexPath.endsWith(".ts")
       ? transpile(codemodSource.toString())
       : codemodSource.toString();
-    console.log(transpiledSource);
+    runWorkflowCodemod(
+      transpiledSource,
+      false,
+      safeArgumentRecord,
+      console.log,
+    );
     return;
   }
 

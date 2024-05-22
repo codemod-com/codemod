@@ -1,21 +1,17 @@
-import { extname } from "node:path";
 import vm from "node:vm";
 import astGrep from "@ast-grep/napi";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord } from "@codemod-com/utilities";
+import workflow from "@codemod-com/workflow";
 import { nullish, parse, string } from "valibot";
-import { getAdapterByExtname } from "./adapters/index.js";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
-import type { FileCommand } from "./fileCommands.js";
 
-const transform = (
+const transform = async (
   codemodSource: string,
-  oldPath: string,
-  oldData: string,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
-): string | undefined | null => {
+) => {
   const codeToExecute = `
 		${CONSOLE_OVERRIDE}
 
@@ -26,29 +22,18 @@ const transform = (
 
 		new Function(...keys, __CODEMOD_SOURCE__).apply(null, values);
 
-		const handleSourceFile = typeof __module__.exports === 'function'
+		const workflow = typeof __module__.exports === 'function'
 			? __module__.exports
 			: __module__.exports.__esModule &&
-			typeof __module__.exports.default === 'function'
-			? __module__.exports.default
+			typeof __module__.exports.workflow === 'function'
+			? __module__.exports.workflow
 			: typeof __module__.exports.handleSourceFile === 'function'
-			? __module__.exports.handleSourceFile
+			? __module__.exports.workflow
 			: null;
 
 		const { api } = require('@codemod-com/workflow');
-        console.log(api);
 
-		// const project = new Project({
-		// 	useInMemoryFileSystem: true,
-		// 	skipFileDependencyResolution: true,
-		// 	compilerOptions: {
-		// 		allowJs: true,
-		// 	},
-		// });
-	
-		// const sourceFile = project.createSourceFile(__CODEMODCOM__oldPath, __CODEMODCOM__oldData);
-
-		// handleSourceFile(sourceFile, __CODEMODCOM__argumentRecord);
+		workflow(api);
 	`;
 
   const exports = Object.freeze({});
@@ -58,8 +43,6 @@ const transform = (
       exports,
     }),
     exports,
-    __CODEMODCOM__oldPath: oldPath,
-    __CODEMODCOM__oldData: oldData,
     __CODEMODCOM__argumentRecord: safeArgumentRecord,
     __CODEMODCOM__console__: buildVmConsole(consoleCallback),
     __CODEMOD_SOURCE__: codemodSource,
@@ -67,45 +50,22 @@ const transform = (
       if (name === "@ast-grep/napi") {
         return astGrep;
       }
+      if (name === "@codemod-com/workflow") {
+        return workflow;
+      }
     },
   });
-
   const value = vm.runInContext(codeToExecute, context, { timeout: 30000 });
-
-  return parse(nullish(string()), value);
+  if (value instanceof Promise) {
+    await value;
+  }
 };
 
-export const runWorkflowCodemod = (
+export const runWorkflowCodemod = async (
   codemodSource: string,
-  oldPath: string,
-  oldData: string,
   disablePrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
-): readonly FileCommand[] => {
-  const adapter = getAdapterByExtname(extname(oldPath));
-
-  const transformFn = adapter !== null ? adapter(transform) : transform;
-
-  const newData = transformFn(
-    codemodSource,
-    oldPath,
-    oldData,
-    safeArgumentRecord,
-    consoleCallback,
-  );
-
-  if (typeof newData !== "string" || oldData === newData) {
-    return [];
-  }
-
-  return [
-    {
-      kind: "updateFile",
-      oldPath,
-      oldData,
-      newData,
-      formatWithPrettier: !disablePrettier,
-    },
-  ];
+) => {
+  await transform(codemodSource, safeArgumentRecord, consoleCallback);
 };
