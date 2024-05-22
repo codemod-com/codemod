@@ -5,6 +5,6 @@
   "name": "Add OPT_UTC_Z to orjson.dumps",
   "engine": "ast-grep",
   "meta": {
-    "tags": []
+    "tags": ["python", "json", "orjson", "sentry"]
   }
 }
