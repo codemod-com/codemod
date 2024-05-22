@@ -3431,6 +3431,8 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/python/orjson/recipe: {}
+
   packages/codemods/react-native/74/migrate-to-fire-interval-seconds:
     devDependencies:
       '@codemod-com/utilities':

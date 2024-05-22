@@ -2,9 +2,10 @@
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "version": "1.0.0",
   "private": false,
-  "name": "Converts Sentry json import to orjson",
+  "name": "python/orjson/sentry-import-replacement",
   "engine": "ast-grep",
   "meta": {
-    "tags": ["python", "json", "orjson", "sentry"]
+    "tags": ["python", "json", "orjson", "sentry"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/python/orjson/sentry-import-replacement"
   }
 }
