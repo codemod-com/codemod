@@ -29,6 +29,7 @@ build({
   define: argv.includes("--local") ? localEnvs : prodEnvs,
   external: [
     "esbuild",
+    "@ast-grep/napi",
     "keytar",
     "prettier",
     // Workaround for @vue/compiler-sfc dynamic require
@@ -66,7 +67,5 @@ build({
     "coffee-script",
     "squirrelly",
     "twing",
-    "@ast-grep/napi",
-    "@codemod-com/workflow",
   ],
 });
