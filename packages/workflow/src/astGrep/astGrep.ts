@@ -20,17 +20,18 @@ type AstGrepHelpers = typeof astGrepHelpers;
 
 /**
  *
- * @param query Some description here
+ * @param query It could be a string, string literal or NapiConfig object for ast-grep
  * @example
  * ### Pass parameter as string
  * ```ts
  *   await astGrep("import React from 'react'");
  * ```
  * @example
+ * ### Pass parameter as string literal
  * ```ts
  *   await astGrep`import React from 'react'`;
  * ```
- * @example asdasd
+ * @example
  * ### Pass parameter as NapiConfig [see ast-grep documentation](https://ast-grep.github.io/guide/rule-config.html)
  * ```ts
  *   await astGrep`import React from 'react'`;

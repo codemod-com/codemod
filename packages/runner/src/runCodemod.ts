@@ -194,7 +194,7 @@ export const runCodemod = async (
     const transpiledSource = codemod.indexPath.endsWith(".ts")
       ? transpile(codemodSource.toString())
       : codemodSource.toString();
-    runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
     return;
   }
 

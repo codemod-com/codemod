@@ -71,9 +71,6 @@ export const directories = async (
 ) => {
   const { cwd } = getCwdContext();
   const dirs = await fg.glob(pattern, { cwd, onlyDirectories: true });
-  // await Promise.all(
-  //   dirs.map((dir) => cwdContext.run({ cwd: path.join(cwd, dir) }, cb))
-  // );
   for (const dir of dirs) {
     await cwdContext.run({ cwd: path.join(cwd, dir) }, cb);
   }
@@ -85,10 +82,6 @@ export const files = async (
 ) => {
   const { cwd } = getCwdContext();
   const files = await fg.glob(pattern, { cwd, onlyFiles: true });
-  // console.log({ files });
-  // await Promise.all(
-  //   files.map((file) => fileContext.run({ file: path.join(cwd, file) }, cb))
-  // );
   for (const file of files) {
     await fileContext.run({ file: path.join(cwd, file) }, cb);
   }
@@ -104,22 +97,6 @@ export const jsonFiles = async <T>(
   const files = await fg.glob(pattern, { cwd, onlyFiles: true });
   await cb({
     update: async (updater: T | ((input: T) => T | Promise<T>)) => {
-      // await Promise.all(
-      //   files.map(async (file) => {
-      //     const filepath = path.join(cwd, file);
-      //     if (typeof updater === 'function') {
-      //       const contents = JSON.parse(await fs.readFile(filepath, 'utf-8'));
-      //       // @ts-ignore
-      //       const updatedContents = (await updater(contents)) as T;
-      //       await fs.writeFile(
-      //         filepath,
-      //         JSON.stringify(updatedContents, null, 2)
-      //       );
-      //     } else {
-      //       await fs.writeFile(filepath, JSON.stringify(updater, null, 2));
-      //     }
-      //   })
-      // );
       for (const file of files) {
         const filepath = path.join(cwd, file);
         if (typeof updater === "function") {
@@ -137,34 +114,6 @@ export const jsonFiles = async <T>(
     },
   });
 };
-
-// export const jsFiles = async <T>(
-//   pattern: string | string[],
-//   cb: (args: {
-//     update: (updater: T | ((input: T) => T | Promise<T>)) => Promise<void>;
-//   }) => Promise<void>
-// ) => {
-//   const { cwd } = getCwdContext();
-//   const files = await fg.glob(pattern, { cwd, onlyFiles: true });
-//   await cb({
-//     astGrep: async (updater: T | ((input: T) => T | Promise<T>)) => {
-//       for (const file of files) {
-//         const filepath = path.join(cwd, file);
-//         if (typeof updater === 'function') {
-//           const contents = JSON.parse(await fs.readFile(filepath, 'utf-8'));
-//           // @ts-ignore
-//           const updatedContents = (await updater(contents)) as T;
-//           await fs.writeFile(
-//             filepath,
-//             JSON.stringify(updatedContents, null, 2)
-//           );
-//         } else {
-//           await fs.writeFile(filepath, JSON.stringify(updater, null, 2));
-//         }
-//       }
-//     },
-//   });
-// };
 
 export const isDirectory = async (dir: string) => {
   try {

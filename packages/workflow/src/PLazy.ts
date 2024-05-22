@@ -53,8 +53,7 @@ export class PLazy<ValueType> extends Promise<ValueType> {
       | null
       | undefined,
   ) {
-    // TODO: Use `??=` when targeting Node.js 16.
-    this.#promise = this.#promise || new Promise<ValueType>(this.#executor);
+    this.#promise ??= new Promise<ValueType>(this.#executor);
     return this.#promise.then(onFulfilled, onRejected);
   }
 

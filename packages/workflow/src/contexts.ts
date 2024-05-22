@@ -74,10 +74,8 @@ export const getAstGrepNodeContext = () => {
 
 export const getCwdContext = () => {
   const cwd = cwdContext.getStore();
-  if (!cwd) {
-    return { cwd: process.cwd() };
-  }
-  return cwd;
+
+  return cwd ?? { cwd: process.cwd() };
 };
 
 export const getFileContext = () => {
