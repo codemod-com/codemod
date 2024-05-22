@@ -3,7 +3,7 @@ import type { CallExpression, ts } from "ts-morph";
 export type VariableType = "string" | "boolean" | "number" | "JSON";
 export type VariableValue = string | boolean | number | Record<string, unknown>;
 
-export type ProviderKind = "DevCycle" | "Statsig";
+export type ProviderKind = "DevCycle" | "Statsig" | "Netlify";
 
 export type Provider = {
   getMatcher: (key: string) => (ce: CallExpression) => { name: string } | null;
@@ -12,7 +12,7 @@ export type Provider = {
     type: VariableType,
     value: VariableValue,
     name: string,
-  ) => ts.Node;
+  ) => ts.Node | null;
 };
 
 export type Options = {

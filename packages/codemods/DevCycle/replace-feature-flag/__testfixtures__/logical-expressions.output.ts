@@ -7,3 +7,4 @@ const testCase4 = false;
 const testCase5 =  false;
 const testCase6 = true;
 const testCase7 = false;
+const testCase8 = y === 0;

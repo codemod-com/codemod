@@ -6,7 +6,7 @@ import {
   printNode,
   ts,
 } from "ts-morph";
-import { DevCycle, Statsig } from "./providers/index.js";
+import { DevCycle, Netlify, Statsig } from "./providers/index.js";
 import type { Options, Provider, ProviderKind } from "./types.js";
 import {
   CODEMOD_LITERAL,
@@ -27,6 +27,7 @@ import {
 const PROVIDERS: Record<ProviderKind, Provider> = {
   DevCycle: DevCycle,
   Statsig,
+  Netlify,
 };
 
 const simplifyAmpersandExpression = (left: Literal, right: Node) =>
@@ -140,8 +141,9 @@ const replaceSDKMethodCalls = (
   sourceFile: SourceFile,
   options: Options,
   provider: Provider,
-) => {
+): boolean => {
   const matcher = provider.getMatcher(options.key);
+  let replaced = false;
 
   sourceFile.getDescendantsOfKind(SyntaxKind.CallExpression).forEach((ce) => {
     const match = matcher(ce);
@@ -149,16 +151,22 @@ const replaceSDKMethodCalls = (
     if (match === null) {
       return;
     }
+
     const replacementText = getReplacementText(provider, options, match.name);
     const parent = ce.getParent();
 
     if (parent?.getKind() === SyntaxKind.ExpressionStatement) {
+      replaced = true;
+
       parent.replaceWithText(replacementText);
       return;
     }
 
     ce.replaceWithText(replacementText);
+    replaced = true;
   });
+
+  return replaced;
 };
 
 /**
@@ -257,6 +265,22 @@ const refactorReferences = (sourceFile: SourceFile) => {
         return;
       }
 
+      // we cannot directly replace shorthand property, e.g { a, b, c } with literal
+      const parent = ref.getParent();
+
+      if (Node.isShorthandPropertyAssignment(parent)) {
+        const propertyAssignment = ts.factory.createPropertyAssignment(
+          ts.factory.createIdentifier(ref.getText()),
+          ts.factory.createNumericLiteral(
+            `${CODEMOD_LITERAL}(${replacer.getFullText()})`,
+          ),
+        );
+
+        parent.replaceWithText(printNode(propertyAssignment));
+        return;
+      }
+
+      // @TODO
       ref.replaceWithText(`${CODEMOD_LITERAL}(${replacer.getFullText()})`);
     });
 
@@ -414,8 +438,13 @@ export function handleSourceFile(
 ): string | undefined {
   const provider = getProvider(options.provider);
 
+  const replaced = replaceSDKMethodCalls(sourceFile, options, provider);
+
+  if (!replaced) {
+    return undefined;
+  }
+
   repeatCallback(() => {
-    replaceSDKMethodCalls(sourceFile, options, provider);
     // console.log("replaceSDKMethodCalls", sourceFile.getFullText());
     refactorMemberExpressions(sourceFile);
     // console.log("refactorMemberExpressions", sourceFile.getFullText());

@@ -93,7 +93,7 @@ export const isTruthy = (node: Literal) => {
 };
 
 export const repeatCallback = (
-  callback: (...args: unknown[]) => void,
+  callback: (abort: () => void) => void,
   N: number,
 ): void => {
   if (typeof callback !== "function") {
@@ -104,8 +104,16 @@ export const repeatCallback = (
     throw new TypeError("The second argument must be a non-negative integer");
   }
 
-  for (let i = 0; i < N; i++) {
-    callback();
+  let shouldContinue = true;
+  let i = 0;
+
+  const abort = () => {
+    shouldContinue = false;
+  };
+
+  while (i < N && shouldContinue) {
+    callback(abort);
+    i++;
   }
 };
 export const getCodemodLiterals = (sourceFile: SourceFile) => {
