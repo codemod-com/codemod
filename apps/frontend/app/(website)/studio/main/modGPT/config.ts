@@ -25,7 +25,7 @@ export const shouldUseModService = isServer
 if (shouldUseCodemodAi) console.info("Experimental AI service active");
 if (shouldUseModService) console.info("Experimental mogGPT service active");
 
-export const codemodAiWsServer = !isDevelopment
+export const codemodAiWsServer = isDevelopment
   ? "ws://127.0.0.1:8000/ws"
   : "wss://backend.codemod.com/ws";
 
@@ -34,5 +34,5 @@ const prodGptServer = shouldUseModService
   : "https://backend.codemod.com";
 
 export const modGptServer = `${
-  !isDevelopment ? "http://0.0.0.0:8082" : prodGptServer
+  isDevelopment ? "http://0.0.0.0:8082" : prodGptServer
 }/${SEND_CHAT}`;
