@@ -3,7 +3,6 @@ import astGrep from "@ast-grep/napi";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord } from "@codemod-com/utilities";
 import workflow from "@codemod-com/workflow";
-import { nullish, parse, string } from "valibot";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 
