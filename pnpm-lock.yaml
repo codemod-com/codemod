@@ -240,7 +240,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
-      '@codemodcom/workflow':
+      '@codemod.com/workflow':
         specifier: workspace:*
         version: link:../../packages/workflow
       '@types/cli-progress':
@@ -4637,6 +4637,21 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/valibot/0.30.0:
+    devDependencies:
+      '@codemod.com/workflow':
+        specifier: workspace:*
+        version: link:../../../workflow
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      typescript:
+        specifier: 5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
+
   packages/codemods/vue/3/render-function-api:
     devDependencies:
       '@types/jscodeshift':
@@ -4745,7 +4760,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities
-      '@codemodcom/workflow':
+      '@codemod.com/workflow':
         specifier: workspace:*
         version: link:../workflow
       '@svgr/hast-util-to-babel-ast':

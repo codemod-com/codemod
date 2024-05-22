@@ -67,6 +67,6 @@ build({
     "squirrelly",
     "twing",
     "@ast-grep/napi",
-    "@codemodcom/workflow",
+    "@codemod.com/workflow",
   ],
 });

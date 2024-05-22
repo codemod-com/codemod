@@ -1,4 +1,4 @@
-import type { Api } from "@codemodcom/workflow";
+import type { Api } from "@codemod.com/workflow";
 
 export async function workflow({ jsFiles }: Api) {
   await jsFiles("**/*.{ts,tsx,js,jsx,mjs,cjs}")
