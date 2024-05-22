@@ -63,7 +63,6 @@ const transform = async (
 
 export const runWorkflowCodemod = async (
   codemodSource: string,
-  disablePrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
 ) => {
