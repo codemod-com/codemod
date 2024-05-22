@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/workflow",
+  "name": "@cm/workflow",
   "author": "Codemod, Inc.",
   "version": "0.0.1",
   "description": "Workflow Engine for Codemod",
