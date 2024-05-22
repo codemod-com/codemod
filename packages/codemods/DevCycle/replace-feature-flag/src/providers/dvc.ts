@@ -1,8 +1,6 @@
 import { type CallExpression, Node, ts } from "ts-morph";
+import type { Provider, VariableType, VariableValue } from "../types.js";
 import { buildLiteral, getCEExpressionName } from "../utils.js";
-
-type VariableType = "string" | "boolean" | "number" | "JSON";
-type VariableValue = string | boolean | number | Record<string, unknown>;
 
 const { factory } = ts;
 
@@ -54,7 +52,7 @@ type MatchedMethod = {
   name: string;
 };
 
-export const DevCycle = {
+export const DevCycle: Provider = {
   getMatcher:
     (keyName: string) =>
     (ce: CallExpression): MatchedMethod | null => {

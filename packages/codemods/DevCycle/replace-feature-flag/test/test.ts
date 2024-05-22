@@ -3,7 +3,8 @@ import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { IndentationText, Project } from "ts-morph";
 import { describe, it } from "vitest";
-import { type Options, handleSourceFile } from "../src/index.js";
+import { handleSourceFile } from "../src/index.js";
+import type { Options } from "../src/types.js";
 
 const transform = (
   projectFiles: Record<string, string>,

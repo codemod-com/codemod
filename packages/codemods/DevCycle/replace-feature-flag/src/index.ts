@@ -1,8 +1,5 @@
 import {
-  type CallExpression,
-  type Expression,
   Node,
-  type ObjectLiteralExpression,
   type PrefixUnaryExpression,
   type SourceFile,
   SyntaxKind,
@@ -10,90 +7,33 @@ import {
   ts,
 } from "ts-morph";
 import { DevCycle, Statsig } from "./providers/index.js";
+import type { Options, Provider, ProviderKind } from "./types.js";
 import {
+  CODEMOD_LITERAL,
+  type Literal,
+  buildCodemodLiteral,
   getBlockText,
+  getCodemodLiteralValue,
+  getCodemodLiterals,
   getLiteralText,
+  getPropertyValueAsText,
   isCodemodLiteral,
   isLiteral,
   isPrimitiveLiteral,
+  isTruthy,
+  repeatCallback,
 } from "./utils.js";
-import { isTruthy } from "./utils.js";
-import { repeatCallback } from "./utils.js";
-import { getCodemodLiterals } from "./utils.js";
 
-export const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
-
-type VariableType = "string" | "boolean" | "number" | "JSON";
-type VariableValue = string | boolean | number | Record<string, unknown>;
-type Providers = "DevCycle" | "OpenFeature" | "Statsig";
-
-const PROVIDERS: Record<Providers, Provider> = {
+const PROVIDERS: Record<ProviderKind, Provider> = {
   DevCycle: DevCycle,
   Statsig,
 };
 
-export type Options = {
-  key: string;
-  value: VariableValue;
-  type: VariableType;
-  provider: Providers;
-};
+const simplifyAmpersandExpression = (left: Literal, right: Node) =>
+  isTruthy(left) ? right : left;
 
-export const buildCodemodLiteral = (node: any) => {
-  return ts.factory.createCallExpression(
-    ts.factory.createIdentifier(CODEMOD_LITERAL),
-    undefined,
-    [node],
-  );
-};
-
-export const getCodemodLiteralValue = (node: CallExpression) => {
-  return node.getArguments().at(0);
-};
-
-export const getPropertyValueAsText = (
-  ole: ObjectLiteralExpression,
-  propertyName: string,
-) => {
-  if (ole.wasForgotten()) {
-    return;
-  }
-
-  const property = ole.getProperty(propertyName);
-
-  if (!Node.isPropertyAssignment(property)) {
-    return null;
-  }
-
-  const propertyValue = property.getInitializer();
-
-  if (
-    !Node.isStringLiteral(propertyValue) &&
-    !Node.isNumericLiteral(propertyValue) &&
-    !Node.isTrueLiteral(propertyValue) &&
-    !Node.isFalseLiteral(propertyValue)
-  ) {
-    return null;
-  }
-
-  return propertyValue.getFullText();
-};
-
-const simplifyAmpersandExpression = (left: Expression, right: Expression) => {
-  if (!isLiteral(left)) {
-    return;
-  }
-
-  return isTruthy(left) ? right : left;
-};
-
-const simplifyBarBarExpression = (left: Expression, right: Expression) => {
-  if (!isLiteral(left)) {
-    return;
-  }
-
-  return isTruthy(left) ? left : right;
-};
+const simplifyBarBarExpression = (left: Literal, right: Node) =>
+  isTruthy(left) ? left : right;
 
 /**
  * Simplifies logical expressions
@@ -118,20 +58,23 @@ const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
       ? getCodemodLiteralValue(right)
       : right;
 
+    if (!isLiteral(unwrappedLeft) || unwrappedRight === undefined) {
+      return;
+    }
+
     const op = be.getOperatorToken();
 
     if (op.getKind() === SyntaxKind.BarBarToken) {
-      const node = simplifyBarBarExpression(unwrappedLeft, unwrappedRight);
-
-      if (node) {
-        be.replaceWithText(node.getFullText());
-      }
+      be.replaceWithText(
+        simplifyBarBarExpression(unwrappedLeft, unwrappedRight).getFullText(),
+      );
     } else if (op.getKind() === SyntaxKind.AmpersandAmpersandToken) {
-      const node = simplifyAmpersandExpression(unwrappedLeft, unwrappedRight);
-
-      if (node) {
-        be.replaceWithText(node.getFullText());
-      }
+      be.replaceWithText(
+        simplifyAmpersandExpression(
+          unwrappedLeft,
+          unwrappedRight,
+        ).getFullText(),
+      );
     }
   });
 };
@@ -169,25 +112,24 @@ const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
   pue.replaceWithText(printNode(replacement));
 };
 
-const getReplacementText = (provider: any, options: Options, name: string) => {
+const getReplacementText = (
+  provider: Provider,
+  options: Options,
+  name: string,
+) => {
   return printNode(
     buildCodemodLiteral(
-      provider.getReplacer(options.key, options.type, options.value, name),
+      provider.getReplacer(
+        options.key,
+        options.type,
+        options.value,
+        name,
+      ) as ts.Expression,
     ),
   );
 };
 
-interface Provider {
-  getMatcher: (key: string) => (ce: CallExpression) => { name: string } | null;
-  getReplacer: (
-    key: string,
-    type: VariableType,
-    value: VariableValue,
-    name: string,
-  ) => string;
-}
-
-const getProvider = (provider: Providers) => PROVIDERS[provider];
+const getProvider = (provider: ProviderKind) => PROVIDERS[provider];
 
 /**
  * Replaces Provider method calls with return value of the call

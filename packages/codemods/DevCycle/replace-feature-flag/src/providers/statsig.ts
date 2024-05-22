@@ -1,16 +1,14 @@
 import { type CallExpression, Node, ts } from "ts-morph";
+import type { Provider, VariableType, VariableValue } from "../types.js";
 import { getCEExpressionName } from "../utils.js";
 import { buildLiteral } from "../utils.js";
-
-export type VariableType = "string" | "boolean" | "number" | "JSON";
-export type VariableValue = string | boolean | number | Record<string, unknown>;
 
 const { factory } = ts;
 
 const names = ["checkGate", "useGate"];
 
 const getVariableReplacerNode = (
-  key: string,
+  _: string,
   type: VariableType,
   value: VariableValue,
 ) => {
@@ -41,7 +39,7 @@ type MatchedMethod = {
   name: string;
 };
 
-export const Statsig = {
+export const Statsig: Provider = {
   getMatcher:
     (keyName: string) =>
     (ce: CallExpression): MatchedMethod | null => {

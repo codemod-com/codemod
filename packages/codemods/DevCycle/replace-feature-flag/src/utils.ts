@@ -12,12 +12,11 @@ import {
   type TrueLiteral,
   ts,
 } from "ts-morph";
-import { CODEMOD_LITERAL } from "./index.js";
-import type { VariableType, VariableValue } from "./providers/statsig.js";
-
-const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
+import type { VariableType, VariableValue } from "./types.js";
 
 const { factory } = ts;
+
+export const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
 export const getCEExpressionName = (ce: CallExpression): string | null => {
   const expr = ce.getExpression();
@@ -58,13 +57,13 @@ export const buildLiteral = (type: VariableType, value: VariableValue) => {
   }
 };
 
-type PrimitiveLiteral =
+export type PrimitiveLiteral =
   | StringLiteral
   | NumericLiteral
   | TrueLiteral
   | FalseLiteral;
 
-type Literal = PrimitiveLiteral | ObjectLiteralExpression;
+export type Literal = PrimitiveLiteral | ObjectLiteralExpression;
 
 export const isLiteral = (node: Node | undefined): node is Literal =>
   isPrimitiveLiteral(node) || Node.isObjectLiteralExpression(node);
@@ -94,7 +93,7 @@ export const isTruthy = (node: Literal) => {
 };
 
 export const repeatCallback = (
-  callback: (...args: any[]) => void,
+  callback: (...args: unknown[]) => void,
   N: number,
 ): void => {
   if (typeof callback !== "function") {
@@ -117,6 +116,45 @@ export const getCodemodLiterals = (sourceFile: SourceFile) => {
 
 export const getBlockText = (node: Statement) =>
   node.getDescendantStatements().reduce((acc, s) => {
+    // biome-ignore lint/style/noParameterAssign: acc assignment is ok
     acc += s.getFullText();
     return acc;
   }, "");
+
+export const buildCodemodLiteral = (node: ts.Expression) => {
+  return ts.factory.createCallExpression(
+    ts.factory.createIdentifier(CODEMOD_LITERAL),
+    undefined,
+    [node],
+  );
+};
+export const getCodemodLiteralValue = (node: CallExpression) => {
+  return node.getArguments().at(0);
+};
+export const getPropertyValueAsText = (
+  ole: ObjectLiteralExpression,
+  propertyName: string,
+) => {
+  if (ole.wasForgotten()) {
+    return;
+  }
+
+  const property = ole.getProperty(propertyName);
+
+  if (!Node.isPropertyAssignment(property)) {
+    return null;
+  }
+
+  const propertyValue = property.getInitializer();
+
+  if (
+    !Node.isStringLiteral(propertyValue) &&
+    !Node.isNumericLiteral(propertyValue) &&
+    !Node.isTrueLiteral(propertyValue) &&
+    !Node.isFalseLiteral(propertyValue)
+  ) {
+    return null;
+  }
+
+  return propertyValue.getFullText();
+};
