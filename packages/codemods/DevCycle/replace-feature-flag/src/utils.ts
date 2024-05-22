@@ -1,14 +1,21 @@
 import {
+  type Block,
   type CallExpression,
   type FalseLiteral,
   Node,
   type NumericLiteral,
   type ObjectLiteralExpression,
+  type SourceFile,
+  type Statement,
   type StringLiteral,
+  SyntaxKind,
   type TrueLiteral,
   ts,
 } from "ts-morph";
+import { CODEMOD_LITERAL } from "./index.js";
 import type { VariableType, VariableValue } from "./providers/statsig.js";
+
+const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
 const { factory } = ts;
 
@@ -51,33 +58,41 @@ export const buildLiteral = (type: VariableType, value: VariableValue) => {
   }
 };
 
-type Literal =
+type PrimitiveLiteral =
   | StringLiteral
   | NumericLiteral
   | TrueLiteral
-  | FalseLiteral
-  | ObjectLiteralExpression;
+  | FalseLiteral;
+
+type Literal = PrimitiveLiteral | ObjectLiteralExpression;
 
 export const isLiteral = (node: Node | undefined): node is Literal =>
+  isPrimitiveLiteral(node) || Node.isObjectLiteralExpression(node);
+
+export const isPrimitiveLiteral = (
+  node: Node | undefined,
+): node is PrimitiveLiteral =>
   Node.isStringLiteral(node) ||
   Node.isNumericLiteral(node) ||
   Node.isTrueLiteral(node) ||
-  Node.isFalseLiteral(node) ||
-  Node.isObjectLiteralExpression(node);
+  Node.isFalseLiteral(node);
 
 export const getLiteralText = (node: Literal) =>
   Node.isObjectLiteralExpression(node)
     ? node.getFullText()
     : String(node.getLiteralValue());
 
-export const isTruthy = (node: Literal) => {
+export const isCodemodLiteral = (node: Node): node is CallExpression => {
   return (
-    Node.isTrueLiteral(node) ||
-    (Node.isStringLiteral(node) && node.getLiteralText() !== "") ||
-    (Node.isNumericLiteral(node) && node.getLiteralText() !== "0") ||
-    Node.isObjectLiteralExpression(node)
+    Node.isCallExpression(node) &&
+    node.getExpression().getText() === CODEMOD_LITERAL
   );
 };
+
+export const isTruthy = (node: Literal) => {
+  return "getLiteralValue" in node ? Boolean(node.getLiteralValue()) : true;
+};
+
 export const repeatCallback = (
   callback: (...args: any[]) => void,
   N: number,
@@ -94,3 +109,14 @@ export const repeatCallback = (
     callback();
   }
 };
+export const getCodemodLiterals = (sourceFile: SourceFile) => {
+  return sourceFile
+    .getDescendantsOfKind(SyntaxKind.CallExpression)
+    .filter((ce) => ce.getExpression().getText() === CODEMOD_LITERAL);
+};
+
+export const getBlockText = (node: Statement) =>
+  node.getDescendantStatements().reduce((acc, s) => {
+    acc += s.getFullText();
+    return acc;
+  }, "");

@@ -10,11 +10,18 @@ import {
   ts,
 } from "ts-morph";
 import { DevCycle, Statsig } from "./providers/index.js";
-import { getLiteralText, isLiteral } from "./utils.js";
+import {
+  getBlockText,
+  getLiteralText,
+  isCodemodLiteral,
+  isLiteral,
+  isPrimitiveLiteral,
+} from "./utils.js";
 import { isTruthy } from "./utils.js";
 import { repeatCallback } from "./utils.js";
+import { getCodemodLiterals } from "./utils.js";
 
-const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
+export const CODEMOD_LITERAL = "__CODEMOD_LITERAL__";
 
 type VariableType = "string" | "boolean" | "number" | "JSON";
 type VariableValue = string | boolean | number | Record<string, unknown>;
@@ -103,10 +110,11 @@ const evaluateLogicalExpressions = (sourceFile: SourceFile) => {
     const left = be.getLeft();
     const right = be.getRight();
 
-    const unwrappedLeft = Node.isCallExpression(left)
+    const unwrappedLeft = isCodemodLiteral(left)
       ? getCodemodLiteralValue(left)
       : left;
-    const unwrappedRight = Node.isCallExpression(right)
+
+    const unwrappedRight = isCodemodLiteral(right)
       ? getCodemodLiteralValue(right)
       : right;
 
@@ -144,7 +152,7 @@ const simplifyPrefixUnaryExpression = (pue: PrefixUnaryExpression) => {
     count++;
   }
 
-  const unwrapped = Node.isCallExpression(operand)
+  const unwrapped = isCodemodLiteral(operand)
     ? getCodemodLiteralValue(operand)
     : operand;
 
@@ -167,12 +175,6 @@ const getReplacementText = (provider: any, options: Options, name: string) => {
       provider.getReplacer(options.key, options.type, options.value, name),
     ),
   );
-};
-
-const getCodemodLiteral = (sourceFile: SourceFile) => {
-  return sourceFile
-    .getDescendantsOfKind(SyntaxKind.CallExpression)
-    .filter((ce) => ce.getExpression().getText() === CODEMOD_LITERAL);
 };
 
 interface Provider {
@@ -225,7 +227,7 @@ const replaceSDKMethodCalls = (
  * {a: 1}['a'] ===> 1;
  */
 const refactorMemberExpressions = (sourceFile: SourceFile) => {
-  getCodemodLiteral(sourceFile).forEach((ce) => {
+  getCodemodLiterals(sourceFile).forEach((ce) => {
     const parent = ce.getParent();
     const ole = getCodemodLiteralValue(ce);
 
@@ -263,7 +265,6 @@ const refactorMemberExpressions = (sourceFile: SourceFile) => {
       }
 
       const text = getPropertyValueAsText(ole, arg.getLiteralText());
-
       if (text !== null) {
         parent.replaceWithText(`${CODEMOD_LITERAL}(${text})`);
       }
@@ -288,7 +289,7 @@ const refactorMemberExpressions = (sourceFile: SourceFile) => {
  * }
  */
 const refactorReferences = (sourceFile: SourceFile) => {
-  getCodemodLiteral(sourceFile).forEach((ce) => {
+  getCodemodLiterals(sourceFile).forEach((ce) => {
     const vd = ce.getParent();
 
     if (!Node.isVariableDeclaration(vd)) {
@@ -336,26 +337,37 @@ const simplifyUnaryExpressions = (sourceFile: SourceFile) => {
     .forEach(simplifyPrefixUnaryExpression);
 };
 
+/**
+ * Replaces useless eqeqeq and eqeq binary expressions
+ *
+ * true === true ===> true
+ *
+ * true === false
+ */
 const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.BinaryExpression).forEach((be) => {
     const left = be.getLeft();
     const right = be.getRight();
 
-    const unwrappedLeft = Node.isCallExpression(left)
+    const unwrappedLeft = isCodemodLiteral(left)
       ? getCodemodLiteralValue(left)
       : left;
-    const unwrappedRight = Node.isCallExpression(right)
+    const unwrappedRight = isCodemodLiteral(right)
       ? getCodemodLiteralValue(right)
       : right;
 
     const op = be.getOperatorToken();
 
-    if (op.getKind() === SyntaxKind.EqualsEqualsEqualsToken) {
-      if (isLiteral(unwrappedLeft) && isLiteral(unwrappedRight)) {
-        const isSame =
-          unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue();
-        be.replaceWithText(isSame ? "true" : "false");
-      }
+    if (
+      op.getKind() === SyntaxKind.EqualsEqualsEqualsToken &&
+      isPrimitiveLiteral(unwrappedLeft) &&
+      isPrimitiveLiteral(unwrappedRight)
+    ) {
+      be.replaceWithText(
+        String(
+          unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue(),
+        ),
+      );
     }
   });
 };
@@ -367,9 +379,10 @@ const removeUselessParenthesis = (sourceFile: SourceFile) => {
       if (pe.wasForgotten()) {
         return;
       }
+
       const expression = pe.getExpression();
 
-      const unwrapped = Node.isCallExpression(expression)
+      const unwrapped = isCodemodLiteral(expression)
         ? getCodemodLiteralValue(expression)
         : expression;
 
@@ -381,29 +394,33 @@ const removeUselessParenthesis = (sourceFile: SourceFile) => {
     });
 };
 
+/**
+ * Replaces if statements with single literal in condition.
+ *
+ * if(true) { x } ===> x
+ * if(false) { x } ===> void
+ */
 const refactorIfStatements = (sourceFile: SourceFile) => {
   sourceFile.getDescendantsOfKind(SyntaxKind.IfStatement).forEach((ifs) => {
     const expression = ifs.getExpression();
 
-    const unwrapped = Node.isCallExpression(expression)
+    const unwrapped = isCodemodLiteral(expression)
       ? getCodemodLiteralValue(expression)
       : expression;
 
     if (Node.isTrueLiteral(unwrapped)) {
-      ifs.replaceWithText(
-        ifs
-          .getThenStatement()
-          .getDescendantStatements()
-          .reduce((acc, s) => {
-            acc += s.getFullText();
-            return acc;
-          }, ""),
-      );
+      ifs.replaceWithText(getBlockText(ifs.getThenStatement()));
     } else if (Node.isFalseLiteral(unwrapped)) {
       ifs.remove();
     }
   });
 };
+
+/**
+ * Replaces conditional statements with single literal in condition
+ *
+ * const a = true ? x : y; ===> const a = x;
+ */
 
 const refactorConditionalExpressions = (sourceFile: SourceFile) => {
   sourceFile
@@ -411,20 +428,25 @@ const refactorConditionalExpressions = (sourceFile: SourceFile) => {
     .forEach((ce) => {
       const condition = ce.getCondition();
 
-      const unwrapped = Node.isCallExpression(condition)
+      const unwrapped = isCodemodLiteral(condition)
         ? getCodemodLiteralValue(condition)
         : condition;
 
       if (Node.isTrueLiteral(unwrapped)) {
-        ce.replaceWithText(ce.getWhenTrue().getFullText());
+        ce.replaceWithText(ce.getWhenTrue().getText());
       } else if (Node.isFalseLiteral(unwrapped)) {
-        ce.replaceWithText(ce.getWhenFalse().getFullText());
+        ce.replaceWithText(ce.getWhenFalse().getText());
       }
     });
 };
 
+/**
+ * Removes codemod literal wrapper function
+ *
+ * __CODEMOD_LITERAL(true) ===> true
+ */
 const removeCodemodLiteralWrapper = (sourceFile: SourceFile) => {
-  getCodemodLiteral(sourceFile).forEach((ce) => {
+  getCodemodLiterals(sourceFile).forEach((ce) => {
     if (ce.getParent()?.getKind() === SyntaxKind.ExpressionStatement) {
       ce.getParent()?.replaceWithText(
         getCodemodLiteralValue(ce)?.getFullText() ?? "",
@@ -433,9 +455,12 @@ const removeCodemodLiteralWrapper = (sourceFile: SourceFile) => {
     }
     const literal = getCodemodLiteralValue(ce);
 
-    const text = Node.isObjectLiteralExpression(literal)
-      ? `(${literal.getFullText()})`
-      : literal?.getFullText() ?? "";
+    const text =
+      Node.isObjectLiteralExpression(literal) &&
+      !Node.isVariableDeclaration(ce.getParent()) &&
+      !Node.isCallExpression(ce.getParent())
+        ? `(${literal.getFullText()})`
+        : literal?.getFullText() ?? "";
 
     ce.replaceWithText(text);
   });
@@ -466,8 +491,8 @@ export function handleSourceFile(
 
     refactorIfStatements(sourceFile);
     refactorConditionalExpressions(sourceFile);
-    removeCodemodLiteralWrapper(sourceFile);
   }, 5);
 
+  removeCodemodLiteralWrapper(sourceFile);
   return sourceFile.getFullText();
 }
