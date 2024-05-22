@@ -19,5 +19,5 @@ export type Options = {
   key: string;
   value: VariableValue;
   type: VariableType;
-  provider: ProviderKind;
+  provider: Provider;
 };

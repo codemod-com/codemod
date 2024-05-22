@@ -6,7 +6,6 @@ import {
   printNode,
   ts,
 } from "ts-morph";
-import { DevCycle, Netlify, Statsig } from "./providers/index.js";
 import type { Options, Provider, ProviderKind } from "./types.js";
 import {
   CODEMOD_LITERAL,
@@ -23,12 +22,6 @@ import {
   isTruthy,
   repeatCallback,
 } from "./utils.js";
-
-const PROVIDERS: Record<ProviderKind, Provider> = {
-  DevCycle: DevCycle,
-  Statsig,
-  Netlify,
-};
 
 const simplifyAmpersandExpression = (left: Literal, right: Node) =>
   isTruthy(left) ? right : left;
@@ -129,8 +122,6 @@ const getReplacementText = (
     ),
   );
 };
-
-const getProvider = (provider: ProviderKind) => PROVIDERS[provider];
 
 /**
  * Replaces Provider method calls with return value of the call
@@ -440,7 +431,7 @@ export function handleSourceFile(
   sourceFile: SourceFile,
   options: Options,
 ): string | undefined {
-  const provider = getProvider(options.provider);
+  const { provider } = options;
 
   const replaced = replaceSDKMethodCalls(sourceFile, options, provider);
 
