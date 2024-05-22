@@ -61,21 +61,19 @@ export function astGrep(
 ) {
   const innerParentContext = getParentContext();
 
-  const grep =
-    typeof query === "object"
-      ? Array.isArray(query)
-        ? (query.join("") as string)
-        : (query as NapiConfig)
-      : query;
+  let grep: string | NapiConfig = query as string;
+  if (typeof query === "object") {
+    grep = Array.isArray(query) ? query.join("") : (query as NapiConfig);
+  }
 
   const context = async (cb?: any) => {
     await innerParentContext(async () => {
       const { file } = getFileContext();
-      const contents = (await fs.readFile(file)).toString();
-      const ast = astGrepTsx.parse(contents);
-      const root = ast.root();
-      const nodes = root.findAll(grep);
+      const contents = await fs.readFile(file, { encoding: "utf-8" });
+
+      const nodes = astGrepTsx.parse(contents).root().findAll(grep);
       const astContext = { contents } as AstGrepNodeContext;
+
       for (const node of nodes) {
         if (cb) {
           astContext.node = node;
@@ -87,6 +85,7 @@ export function astGrep(
         }
       }
     });
+
     return wrapHelpers(astGrepHelpers, context);
   };
 

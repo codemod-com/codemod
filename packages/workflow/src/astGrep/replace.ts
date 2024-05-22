@@ -25,6 +25,7 @@ export function replace(
   const context = async (cb?: any) => {
     await innerParentContext(async () => {
       const astGrepNodeContext = getAstGrepNodeContext();
+
       if (astGrepNodeContext.node) {
         const text = replacement.replace(
           /(\$\$)?\$([A-Z]+)/gm,
@@ -40,6 +41,7 @@ export function replace(
             return astGrepNodeContext.node?.getMatch(varName)?.text() || "";
           },
         );
+
         const transformed =
           astGrepNodeContext.contents.substring(
             0,
@@ -49,15 +51,19 @@ export function replace(
           astGrepNodeContext.contents.substring(
             astGrepNodeContext.node?.range().end.index || 0,
           );
+
         const { file } = getFileContext();
         astGrepNodeContext.contents = transformed;
+
         await fs.writeFile(file, transformed);
         console.log(`${clc.blueBright("FILE")} ${file}`);
       }
     });
+
     if (cb) {
       await innerParentContext(() => cb());
     }
+
     return helpersWithContext;
   };
 

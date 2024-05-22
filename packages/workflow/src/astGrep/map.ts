@@ -14,6 +14,7 @@ export function map<
 
   const context = async (cb: any) => {
     const response = [] as RETURN[];
+
     await innerParentContext(async () => {
       const result = await cb(wrapHelpers(helpers, context));
       response.push(result);

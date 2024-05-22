@@ -64,6 +64,7 @@ export function clone(
             }),
           ),
         );
+
         return wrapHelpers(helpers, context);
       }),
     );

@@ -7,6 +7,8 @@ import { cwdContext, fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
 
+// A description why we are doing it this way would be nice to have.
+// Is this dependency injection? Why do we need it that way?
 const filenamify = async (a: string) => {
   const module =
     // biome-ignore lint/security/noGlobalEval: <explanation>
@@ -16,9 +18,9 @@ const filenamify = async (a: string) => {
 };
 
 const slugify = async (a: string) => {
-  type Slugiy = typeof import("@sindresorhus/slugify");
+  type Slugify = typeof import("@sindresorhus/slugify");
   // biome-ignore lint/security/noGlobalEval: <explanation>
-  const module = ((await eval('import("@sindresorhus/slugify")')) as Slugiy)
+  const module = ((await eval('import("@sindresorhus/slugify")')) as Slugify)
     .default;
   return module(a);
 };

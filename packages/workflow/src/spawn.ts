@@ -39,20 +39,25 @@ export const spawn = (
       filterEnv,
       ...execOptions
     } = miscOptions;
+
     const env = pickBy(
       { ...process.env, ...execOptions?.env, FORCE_COLOR: "" },
       (value, key) => filterEnv?.(key, value) ?? true,
     );
+
     const proc = childProcess.spawn(cmd, args, {
       ...execOptions,
       cwd,
       env,
     });
+
     const pid = proc.pid as number;
     const stderr = [] as string[];
     const stdout = [] as string[];
+
     let caughtError: Error;
     let killed = false;
+
     const kill = doNotKill
       ? () => {
           killed = true;
@@ -62,6 +67,7 @@ export const spawn = (
           proc.stderr.destroy();
         }
       : noop;
+
     proc.stdout.on("data", (data) => {
       const chunk = data.toString();
       stdout.push(chunk);
@@ -89,6 +95,7 @@ export const spawn = (
         }
       }
     });
+
     proc.stderr.on("data", (data) => {
       const chunk = data.toString();
       stderr.push(chunk);
@@ -113,10 +120,12 @@ export const spawn = (
         }
       }
     });
+
     proc.on("error", (error) => {
       // console.log(error);
       caughtError = error;
     });
+
     proc.on("close", (code) => {
       if (!doNotThrowError) {
         if (caughtError) {

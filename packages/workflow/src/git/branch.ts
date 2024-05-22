@@ -34,7 +34,9 @@ export function branch(
       branches.map((branchName) =>
         innerParentContext(async () => {
           const repo = getRepositoryContext().repository;
+
           await switchBranch(branchName);
+
           await repositoryContext.run(
             { repository: repo, branch: branchName },
             () =>

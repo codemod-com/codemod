@@ -20,10 +20,8 @@ export const parentContext = new AsyncLocalStorage<(...args: any[]) => any>();
 
 export const getParentContext = () => {
   const fn = parentContext.getStore();
-  if (!fn) {
-    return noContextFn;
-  }
-  return fn;
+
+  return fn ?? noContextFn;
 };
 
 export const astGrepNodeContext = registerContext(
