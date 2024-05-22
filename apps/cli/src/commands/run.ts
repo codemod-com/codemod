@@ -145,7 +145,7 @@ export const handleRunCliCommand = async (
       hashDigest: createHash("ripemd160")
         .update(codemodSettings.source)
         .digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args),
+      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
       engineOptions,
     });
   } else if (codemodSettings.kind === "runNamed") {
@@ -184,7 +184,7 @@ export const handleRunCliCommand = async (
     codemods.push({
       ...codemod,
       hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args),
+      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
       engineOptions,
     });
   } else {
@@ -200,6 +200,7 @@ export const handleRunCliCommand = async (
           safeArgumentRecord: await buildSafeArgumentRecord(
             codemod,
             preCommitCodemod.arguments,
+            printer,
           ),
           engineOptions,
         });
