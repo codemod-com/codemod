@@ -1,0 +1,1 @@
+orjson.dumps(content_as_json, option=orjson.OPT_UTC_Z)

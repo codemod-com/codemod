@@ -1,5 +1,4 @@
 import type { ValidateTokenResponse } from "@codemod-com/utilities";
-import { CODEMOD_STUDIO_URL } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "fast-glob";
@@ -14,14 +13,12 @@ import {
 } from "vscode";
 import type { Store } from "../../data";
 import { actions } from "../../data/slice";
-import { SEARCH_PARAMS_KEYS } from "../../extension";
 import { createIssueResponseCodec } from "../../github/types";
 import { relativeToAbsolutePath } from "../../selectors/selectCodemodTree";
 import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
 import { buildGlobPattern } from "../../utilities";
 import type { EngineService } from "../engineService";
 import { type MessageBus, MessageKind } from "../messageBus";
-import type { UserService } from "../userService";
 import { WebviewResolver } from "./WebviewResolver";
 import type {
   CodemodHash,
@@ -109,27 +106,6 @@ export const createIssue = async (
   };
 };
 
-const routeUserToStudioToAuthenticate = async () => {
-  const result = await window.showInformationMessage(
-    "To report issues, sign in to Codemod.com.",
-    { modal: true },
-    "Sign in with Github",
-  );
-
-  if (result !== "Sign in with Github") {
-    return;
-  }
-
-  const searchParams = new URLSearchParams();
-
-  searchParams.set(SEARCH_PARAMS_KEYS.COMMAND, "accessTokenRequestedByVSCE");
-
-  const url = new URL(CODEMOD_STUDIO_URL);
-  url.search = searchParams.toString();
-
-  commands.executeCommand("codemod.redirect", url);
-};
-
 export class MainViewProvider implements WebviewViewProvider {
   private __view: WebviewView | null = null;
   private __webviewResolver: WebviewResolver;
@@ -140,7 +116,6 @@ export class MainViewProvider implements WebviewViewProvider {
 
   constructor(
     context: ExtensionContext,
-    private readonly __userService: UserService,
     private readonly __engineService: EngineService,
     private readonly __messageBus: MessageBus,
     private readonly __rootUri: Uri | null,
@@ -340,10 +315,6 @@ export class MainViewProvider implements WebviewViewProvider {
       this.__store.dispatch(actions.setToaster(message.value));
     }
 
-    if (message.kind === "webview.main.signOut") {
-      commands.executeCommand("codemod.signOut");
-    }
-
     if (message.kind === "webview.global.flipSelectedExplorerNode") {
       this.__store.dispatch(
         actions.flipSelectedExplorerNode([
@@ -466,53 +437,6 @@ export class MainViewProvider implements WebviewViewProvider {
       this.__store.dispatch(
         actions.collapseChangeExplorerPanel(message.collapsed),
       );
-    }
-
-    if (message.kind === "webview.sourceControl.createIssue") {
-      const accessToken = this.__userService.getLinkedToken();
-
-      const { title, body } = message.data;
-
-      if (accessToken === null) {
-        this.__store.dispatch(
-          actions.setSourceControlTabProps({
-            kind: "ISSUE_CREATION_WAITING_FOR_AUTH",
-            title,
-            body,
-          }),
-        );
-        await routeUserToStudioToAuthenticate();
-        return;
-      }
-
-      // call API to create Github Issue
-      const onSuccess = () => {
-        this.__store.dispatch(
-          actions.setSourceControlTabProps({ kind: "IDLENESS" }),
-        );
-        this.__store.dispatch(actions.setActiveTabId("codemodRuns"));
-      };
-
-      const onFail = async () => {
-        this.__userService.unlinkCodemodComUserAccount();
-        this.__store.dispatch(
-          actions.setSourceControlTabProps({
-            kind: "ISSUE_CREATION_WAITING_FOR_AUTH",
-            title,
-            body,
-          }),
-        );
-        await routeUserToStudioToAuthenticate();
-      };
-
-      this.__store.dispatch(
-        actions.setSourceControlTabProps({
-          kind: "WAITING_FOR_ISSUE_CREATION_API_RESPONSE",
-          title,
-          body,
-        }),
-      );
-      await createIssue(title, body, accessToken, onSuccess, onFail);
     }
 
     if (message.kind === "webview.global.setCodemodArgumentsPopupHashDigest") {
