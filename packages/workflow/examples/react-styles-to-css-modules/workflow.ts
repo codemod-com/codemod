@@ -1,4 +1,4 @@
-import { astGrep, describe, jsFiles, migrate } from "@codemod-com/workflow";
+import { astGrep, describe, jsFiles, migrate } from "@codemodcom/workflow";
 import { kebabCase } from "lodash";
 
 const extractCSS = async () => {
