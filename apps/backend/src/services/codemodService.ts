@@ -292,7 +292,7 @@ export class CodemodService {
         ) => Promise<string>)
       | null,
     allowedNamespaces?: string[],
-  ): Promise<{ link: string }> {
+  ): Promise<{ link: string; version: string }> {
     const codemod = await this.prisma.codemod.findFirst({
       where: {
         name,
@@ -330,7 +330,7 @@ export class CodemodService {
       );
     }
 
-    return { link: downloadLink };
+    return { link: downloadLink, version: latestVersion.version };
   }
 
   public async getCodemodsList(

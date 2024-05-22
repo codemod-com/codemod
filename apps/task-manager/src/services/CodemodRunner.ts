@@ -38,7 +38,7 @@ export class CodemodRunnerService {
           `--source='${this.__sourcePath}'`,
           `--target='${this.__targetPath}'`,
           `--codemodEngine='${codemodEngine}'`,
-          "--skip-install",
+          "--no-install",
         ]);
 
         this.__status = CodemodRunnerStatus.IN_PROGRESS;

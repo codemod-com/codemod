@@ -1,9 +1,9 @@
 import {
+  DEFAULT_CACHE,
   DEFAULT_DISABLE_PRETTIER,
   DEFAULT_DRY_RUN,
   DEFAULT_EXCLUDE_PATTERNS,
-  DEFAULT_NO_CACHE,
-  DEFAULT_SKIP_INSTALL,
+  DEFAULT_INSTALL,
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
@@ -25,10 +25,10 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
       description: "Respond with JSON",
       default: DEFAULT_USE_JSON,
     })
-    .option("noCache", {
+    .option("cache", {
       type: "boolean",
       description: "Disable cache for HTTP(S) requests",
-      default: DEFAULT_NO_CACHE,
+      default: DEFAULT_CACHE,
     });
 
 type RunArgvOptions = Awaited<
@@ -84,11 +84,11 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
         description: "Perform a dry run",
         default: DEFAULT_DRY_RUN,
       })
-      .option("skip-install", {
+      .option("install", {
         type: "boolean",
         description:
           "Disable packages installation for the codemod run if there is `deps` field declared in its configuration.",
-        default: DEFAULT_SKIP_INSTALL,
+        default: DEFAULT_INSTALL,
       }),
   );
 };

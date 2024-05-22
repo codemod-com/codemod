@@ -4,22 +4,28 @@ import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type PrinterBlueprint, boxen, chalk } from "@codemod-com/printer";
 import {
+  type CodemodSettings,
   type CodemodToRun,
   Runner,
+  buildPatterns,
+  getTransformer,
   parseCodemodSettings,
   parseFlowSettings,
   parseRunSettings,
+  transpile,
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   TarService,
+  capitalize,
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import columnify from "columnify";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
@@ -110,11 +116,7 @@ export const handleRunCliCommand = async (
     await checkFileTreeVersioning(flowSettings.target);
   }
 
-  const fileDownloadService = new FileDownloadService(
-    args.noCache,
-    fs,
-    printer,
-  );
+  const fileDownloadService = new FileDownloadService(args.cache, fs, printer);
 
   const tarService = new TarService(fs);
 
@@ -123,12 +125,18 @@ export const handleRunCliCommand = async (
   const codemodDownloader = new CodemodDownloader(
     printer,
     configurationDirectoryPath,
-    args.noCache,
+    args.cache,
     fileDownloadService,
     tarService,
   );
 
-  const codemods: CodemodToRun[] = [];
+  let codemodDefinition:
+    | {
+        kind: Exclude<CodemodSettings["kind"], "runOnPreCommit">;
+        codemod: CodemodToRun;
+      }
+    | { kind: "runOnPreCommit"; codemods: CodemodToRun[] }
+    | null = null;
 
   if (codemodSettings.kind === "runSourced") {
     const codemod = await buildSourcedCodemodOptions(
@@ -140,14 +148,21 @@ export const handleRunCliCommand = async (
 
     const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
 
-    codemods.push({
-      ...codemod,
-      hashDigest: createHash("ripemd160")
-        .update(codemodSettings.source)
-        .digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
-      engineOptions,
-    });
+    codemodDefinition = {
+      kind: codemodSettings.kind,
+      codemod: {
+        ...codemod,
+        hashDigest: createHash("ripemd160")
+          .update(codemodSettings.source)
+          .digest(),
+        safeArgumentRecord: await buildSafeArgumentRecord(
+          codemod,
+          args,
+          printer,
+        ),
+        engineOptions,
+      },
+    };
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
@@ -181,15 +196,23 @@ export const handleRunCliCommand = async (
 
     const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
 
-    codemods.push({
-      ...codemod,
-      hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-      safeArgumentRecord: await buildSafeArgumentRecord(codemod, args, printer),
-      engineOptions,
-    });
+    codemodDefinition = {
+      kind: codemodSettings.kind,
+      codemod: {
+        ...codemod,
+        hashDigest: createHash("ripemd160").update(nameOrPath).digest(),
+        safeArgumentRecord: await buildSafeArgumentRecord(
+          codemod,
+          args,
+          printer,
+        ),
+        engineOptions,
+      },
+    };
   } else {
     const { preCommitCodemods } = await loadRepositoryConfiguration();
 
+    const codemods: CodemodToRun[] = [];
     for (const preCommitCodemod of preCommitCodemods) {
       if (preCommitCodemod.source === "package") {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
@@ -205,10 +228,23 @@ export const handleRunCliCommand = async (
           engineOptions,
         });
       }
+
+      codemodDefinition = {
+        kind: codemodSettings.kind,
+        codemods,
+      };
     }
   }
 
-  const runner = new Runner(codemods, fs, runSettings, flowSettings);
+  if (!codemodDefinition) {
+    throw new Error("Codemod definition could not be resolved.");
+  }
+
+  const codemodsToRun =
+    codemodDefinition.kind === "runOnPreCommit"
+      ? codemodDefinition.codemods
+      : [codemodDefinition.codemod];
+  const runner = new Runner(codemodsToRun, fs, runSettings, flowSettings);
 
   if (runSettings.dryRun) {
     printer.printConsoleMessage(
@@ -226,6 +262,66 @@ export const handleRunCliCommand = async (
     string,
     { deps: string[]; affectedFiles: string[] }
   > = {};
+
+  if (codemodDefinition.kind !== "runOnPreCommit") {
+    const { codemod } = codemodDefinition;
+
+    // biome-ignore lint: types don't matter here
+    let transformer: any = null;
+
+    if (codemod.engine === "filemod") {
+      const codemodSource = await readFile(codemod.indexPath, {
+        encoding: "utf8",
+      });
+
+      const transpiledSource = codemod.indexPath.endsWith(".ts")
+        ? transpile(codemodSource.toString())
+        : codemodSource.toString();
+
+      transformer = getTransformer(transpiledSource);
+    }
+
+    const { include, exclude, reason } = await buildPatterns(
+      flowSettings,
+      codemod,
+      transformer,
+    );
+
+    const patternsColumns = columnify(
+      Array.from({
+        length: Math.max(include.length, exclude.length),
+      }).map(() => ({
+        include: chalk.bold.green(include.shift() ?? ""),
+        exclude: chalk.bold.red(exclude.shift() ?? ""),
+      })),
+      {
+        headingTransform: (heading) => chalk.bold(capitalize(heading)),
+        minWidth: 15,
+      },
+    );
+
+    printer.printConsoleMessage(
+      "info",
+      boxen(
+        chalk.cyan(
+          "Running with the following configuration:",
+          `\n\n${chalk.yellow.bold(reason ?? "")}\n${patternsColumns}\n`,
+          chalk.yellow(
+            !flowSettings.install ? "\nDependency installation disabled" : "",
+          ),
+          chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+          chalk.yellow(flowSettings.raw ? "\nFile formatting disabled" : ""),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    );
+  }
 
   const executionErrors = await runner.run(
     async (codemod, filePaths) => {
@@ -349,7 +445,7 @@ export const handleRunCliCommand = async (
     );
   }
 
-  if (!runSettings.dryRun && !flowSettings.skipInstall) {
+  if (!runSettings.dryRun && flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
       depsToInstall,
     )) {
