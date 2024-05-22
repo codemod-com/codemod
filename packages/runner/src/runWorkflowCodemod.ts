@@ -2,7 +2,7 @@ import vm from "node:vm";
 import astGrep from "@ast-grep/napi";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord } from "@codemod-com/utilities";
-import workflow from "@codemod-com/workflow";
+import workflow from "@codemodcom/workflow";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 
@@ -30,7 +30,7 @@ const transform = async (
 			? __module__.exports.workflow
 			: null;
 
-		const { api } = require('@codemod-com/workflow');
+		const { api } = require('@codemodcom/workflow');
 
 		workflow(api);
 	`;
@@ -49,7 +49,7 @@ const transform = async (
       if (name === "@ast-grep/napi") {
         return astGrep;
       }
-      if (name === "@codemod-com/workflow") {
+      if (name === "@codemodcom/workflow") {
         return workflow;
       }
     },

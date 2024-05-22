@@ -240,7 +240,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
-      '@codemod-com/workflow':
+      '@codemodcom/workflow':
         specifier: workspace:*
         version: link:../../packages/workflow
       '@types/cli-progress':
@@ -4745,7 +4745,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities
-      '@codemod-com/workflow':
+      '@codemodcom/workflow':
         specifier: workspace:*
         version: link:../workflow
       '@svgr/hast-util-to-babel-ast':
