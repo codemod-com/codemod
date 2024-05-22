@@ -7,6 +7,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "private": false,
   "files": [
     "./dist",
     "!**/*.test.js",
