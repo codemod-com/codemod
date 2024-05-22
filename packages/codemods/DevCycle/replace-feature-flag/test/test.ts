@@ -241,6 +241,40 @@ describe("replace-feature-flag", () => {
     );
   });
 
+  it("Should refactor if statements", async () => {
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/if-statements.output.ts"),
+      "utf-8",
+    );
+
+    const projectFiles = {
+      "if-statements.input.ts": await readFile(
+        join(__dirname, "..", "__testfixtures__/if-statements.input.ts"),
+        "utf-8",
+      ),
+    };
+
+    const booleanFlagOptions = {
+      key: "simple-case",
+      type: "boolean",
+      value: "true",
+      provider: "DevCycle",
+    } as const;
+
+    const transformed = transform(
+      projectFiles,
+      "if-statements.input.ts",
+      booleanFlagOptions,
+    );
+
+    console.log(transformed, "???");
+
+    assert.deepEqual(
+      transformed?.replace(/\s/gm, ""),
+      OUTPUT?.replace(/\s/gm, ""),
+    );
+  });
+
   it("Should refactor javascript", async () => {
     const OUTPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/javascript.output.js"),

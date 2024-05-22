@@ -1,5 +1,4 @@
 import {
-  type Block,
   type CallExpression,
   type FalseLiteral,
   Node,
@@ -122,12 +121,14 @@ export const getCodemodLiterals = (sourceFile: SourceFile) => {
     .filter((ce) => ce.getExpression().getText() === CODEMOD_LITERAL);
 };
 
-export const getBlockText = (node: Statement) =>
-  node.getDescendantStatements().reduce((acc, s) => {
-    // biome-ignore lint/style/noParameterAssign: acc assignment is ok
-    acc += s.getFullText();
-    return acc;
-  }, "");
+export const getBlockText = (node: Statement) => {
+  const fullText = node.getFullText();
+
+  const idx1 = fullText.indexOf("{");
+  const idx2 = fullText.lastIndexOf("}");
+
+  return fullText.slice(idx1 + 1, idx2);
+};
 
 export const buildCodemodLiteral = (node: ts.Expression) => {
   return ts.factory.createCallExpression(
