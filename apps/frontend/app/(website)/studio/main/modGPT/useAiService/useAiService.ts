@@ -42,11 +42,9 @@ export const useAiService = ({
       setCanAddMessages,
     });
 
-  console.log({ codemodAIMessage });
   const lastModGptMss = modGPTMessages?.at(-1);
   const lastMss = messages?.at(-1);
 
-  console.log({ lastMss, lastModGptMss });
   useEffect(() => {
     if (!codemodAIMessage) return;
 
