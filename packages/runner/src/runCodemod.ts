@@ -22,6 +22,7 @@ import {
 import { getTransformer, transpile } from "./getTransformer.js";
 import { astGrepLanguageToPatterns } from "./runAstgrepCodemod.js";
 import { type Dependencies, runRepomod } from "./runRepomod.js";
+import { runWorkflowCodemod } from "./runWorkflowCodemod.js";
 import type {
   CodemodExecutionErrorCallback,
   PrinterMessageCallback,
@@ -185,6 +186,17 @@ export const runCodemod = async (
         }...`,
       ),
     });
+
+  if (codemod.engine === "workflow") {
+    const codemodSource = await readFile(codemod.indexPath, {
+      encoding: "utf8",
+    });
+    const transpiledSource = codemod.indexPath.endsWith(".ts")
+      ? transpile(codemodSource.toString())
+      : codemodSource.toString();
+    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+    return;
+  }
 
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {

@@ -89,6 +89,8 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.disablePrettier,
           );
           break;
+        case "workflow":
+          throw new Error("Workflow engine is not supported in worker threads");
         default:
           throw new Error(
             `Unknown codemod engine: ${initializationMessage.codemodEngine}`,

@@ -9,7 +9,7 @@ import esbuild from "esbuild";
 import { glob } from "fast-glob";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
-const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph"];
+const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
 export const handleBuildCliCommand = async (
   _printer: PrinterBlueprint,

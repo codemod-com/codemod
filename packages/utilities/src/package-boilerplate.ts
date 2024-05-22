@@ -408,6 +408,10 @@ const packageJson = ({
     packages = `
       "@codemod-com/filemod": "^2.0.0"
     `;
+  } else if (engine === "workflow") {
+    packages = `
+      "@codemod-com/workflow": "^0.0.1"
+    `;
   }
 
   return beautify(`
@@ -597,6 +601,9 @@ export function getCodemodProjectFiles(input: ProjectDownloadInput) {
     case "ast-grep":
       mainFileBoilerplate = emptyAstGrepBoilerplate;
       break;
+    case "workflow":
+      mainFileBoilerplate = emptyWorkflowBoilerplate;
+      break;
     default:
       throw new Error(`Unknown engine: ${input.engine}`);
   }
@@ -747,7 +754,7 @@ rule:
 fix: DATA_DIR="/new/path/to/resources"
 `);
 
-export const emptyTsMorphBoilerplate = beautify(`;
+export const emptyTsMorphBoilerplate = beautify(`
 import { type SourceFile, SyntaxKind } from "ts-morph";
 
 function shouldProcessFile(sourceFile: SourceFile): boolean {
@@ -767,5 +774,15 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 		});
 
 	return sourceFile.getFullText();
+}
+`);
+
+export const emptyWorkflowBoilerplate = beautify(`
+import type { Api } from "@codemod-com/workflow";
+
+export async function workflow({ jsFiles }: Api) {
+  await jsFiles("**/*.ts")
+    .astGrep("console.log($A)")
+    .replace("console.error($A)");
 }
 `);

@@ -159,6 +159,7 @@ const knownEngines = [
   literal("filemod"),
   literal("ts-morph"),
   literal("ast-grep"),
+  literal("workflow"),
 ];
 export const knownEnginesSchema = union(
   knownEngines,
