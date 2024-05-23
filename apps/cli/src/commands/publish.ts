@@ -12,7 +12,7 @@ import { glob } from "fast-glob";
 import FormData from "form-data";
 import inquirer from "inquirer";
 import { publish } from "../apis.js";
-import { getCurrentUserData } from "../utils.js";
+import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
 
 export const handlePublishCliCommand = async (
@@ -182,46 +182,17 @@ export const handlePublishCliCommand = async (
           "Please make sure your codemod can be built correctly.";
     }
 
-    const locateMainFile = async () => {
-      const mainFiles = await glob(
-        codemodRc.build?.output ?? globSearchPattern,
-        {
-          absolute: true,
-          ignore: ["**/node_modules/**"],
-          cwd: source,
-          onlyFiles: true,
-        },
-      );
+    const spinner = printer.withLoaderMessage(
+      chalk.cyan("Rebuilding the codemod before publishing..."),
+    );
 
-      return mainFiles.at(0);
-    };
-
-    let mainFilePath = await locateMainFile();
-    if (mainFilePath === undefined) {
-      const spinner = printer.withLoaderMessage(
-        chalk.cyan(
-          "Could not find the main file of the codemod. Trying to build...",
-        ),
-      );
-
-      try {
-        // Try to build the codemod anyways, and if after build there is still no main file
-        // or the process throws - throw an error
-        await execPromise("codemod build", { cwd: source });
-
-        mainFilePath = await locateMainFile();
-        spinner.succeed();
-        // Likely meaning that the "codemod build" command succeeded, but the file was still not found in output
-        if (mainFilePath === undefined) {
-          throw new Error();
-        }
-      } catch (error) {
-        spinner.fail();
-        throw new Error(
-          `Could not find the main file of the codemod. ${errorOnMissing}`,
-        );
-      }
-    }
+    const mainFilePath = await rebuildCodemodFallback({
+      globPattern: codemodRc.build?.output ?? globSearchPattern,
+      source,
+      errorText: `Could not find the main file of the codemod. ${errorOnMissing}`,
+      onSuccess: () => spinner.succeed(),
+      onFail: () => spinner.fail(),
+    });
 
     const mainFileBuf = await fs.promises.readFile(mainFilePath);
 

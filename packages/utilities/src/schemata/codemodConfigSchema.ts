@@ -1,3 +1,4 @@
+import semver from "semver";
 import {
   type Input,
   type Issues,
@@ -131,13 +132,20 @@ export const piranhaLanguageSchema = union(
 export type PiranhaLanguage = Output<typeof piranhaLanguageSchema>;
 
 // Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
-const semVerRegex =
-  /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
 
 const versionUnion = union(
   [literal("<"), literal(">"), literal("="), literal("<="), literal(">=")],
   "Invalid version range operator.",
 );
+
+const semVerValidationFunc = (val: string) =>
+  !!semver.valid(val) ||
+  val === "*" ||
+  val === "latest" ||
+  val === "next" ||
+  val === "canary" ||
+  val === "beta" ||
+  val === "alpha";
 
 const getLibraryVersionTupleValidator = (msg: string) =>
   tuple(
@@ -146,7 +154,9 @@ const getLibraryVersionTupleValidator = (msg: string) =>
       versionUnion,
       union([
         // react < 18.0.2 (preferred)
-        string([regex(semVerRegex, "Invalid semver.")]),
+        string([
+          custom(semVerValidationFunc, `"version" has to be a valid semver.`),
+        ]),
         // react < 18 (for example, when no latest version of a given major is out yet)
         string([regex(/^\d+$/)]),
       ]),
@@ -177,7 +187,9 @@ export type AllEngines = Output<typeof allEnginesSchema>;
 const configJsonBaseSchema = object({
   name: string(`"name" of the codemod has to be a string.`),
   description: optional(string(`"description" has to be a string.`)),
-  version: string([regex(semVerRegex, `"version" has to be a valid semver.`)]),
+  version: string([
+    custom(semVerValidationFunc, `"version" has to be a valid semver.`),
+  ]),
   engine: allEnginesSchema,
   // We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
   // just as npm does.
@@ -226,8 +238,7 @@ const configJsonBaseSchema = object({
             return true;
           }
 
-          // e.g. vitest@2.0.0
-          return semVerRegex.test(version);
+          return semVerValidationFunc(version);
         }, `"deps" has to be an array of valid strings. E.g. libraryToAdd@2.0.0, libraryToAdd or -libraryToRemove`),
       ]),
       `"deps" has to be an array of strings.`,
