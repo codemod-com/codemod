@@ -10,11 +10,7 @@
     "vitest": "^1.0.1",
     "@vitest/coverage-v8": "^1.0.1"
   },
-  "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest watch",
-    "coverage": "vitest run --coverage"
-  },
+  "scripts": {},
   "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
   "type": "module"
 }
