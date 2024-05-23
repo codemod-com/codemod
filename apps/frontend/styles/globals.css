@@ -210,3 +210,8 @@ h6[class*="heading"] a {
   letter-spacing: inherit;
   line-height: inherit;
 }
+
+/* Cutomize Clerk components */
+.cl-userButtonPopoverActionButton {
+  color: inherit;
+}
