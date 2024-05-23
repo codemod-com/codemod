@@ -17,7 +17,8 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
   const { user } = useUser();
 
   const signUserIn = () => {
-    router.push("/auth/sign-in");
+    const queryParams = new URLSearchParams({ variant }).toString();
+    router.push(`/auth/sign-in?${queryParams}`);
   };
 
   const Button = isStudio ? SButton : WButton;
