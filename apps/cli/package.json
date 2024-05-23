@@ -59,7 +59,8 @@
     "typescript": "5.2.2",
     "valibot": "^0.24.1",
     "vitest": "^1.0.1",
-    "yargs": "^17.6.2"
+    "yargs": "^17.6.2",
+    "@ast-grep/cli": "^0.22.3"
   },
   "scripts": {
     "build": "node ./build.js",

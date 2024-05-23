@@ -14,6 +14,7 @@ const codemodEngineSchema = union([
   literal("filemod"),
   literal("ts-morph"),
   literal("ast-grep"),
+  literal("workflow"),
 ]);
 
 export const codemodSettingsSchema = object({

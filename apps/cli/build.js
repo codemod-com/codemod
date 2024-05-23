@@ -68,5 +68,6 @@ build({
     "twing",
     "@ast-grep/napi",
     "@codemod.com/workflow",
+    "@ast-grep/cli",
   ],
 });

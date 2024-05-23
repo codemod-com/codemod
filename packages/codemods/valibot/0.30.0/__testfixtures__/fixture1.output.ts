@@ -1,1 +1,1 @@
-const replacement = "hello";
+const Schema = v.pipe(v.string(), v.email());

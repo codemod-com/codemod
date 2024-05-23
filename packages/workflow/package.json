@@ -35,6 +35,7 @@
     "filenamify": "^6.0.0",
     "simple-git": "^3.24.0",
     "tree-kill": "^1.2.2",
-    "ts-invariant": "^0.10.3"
+    "ts-invariant": "^0.10.3",
+    "@ast-grep/cli": "^0.22.3"
   }
 }

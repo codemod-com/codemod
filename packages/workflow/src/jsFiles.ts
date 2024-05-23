@@ -30,7 +30,7 @@ export function jsFiles(
 ) {
   const innerParentContext = getParentContext();
 
-  const globs = parseMultistring(rawGlobs);
+  const globs = parseMultistring(rawGlobs, /[\n; ]/);
 
   const context = async (cb?: any) => {
     await innerParentContext(() =>

@@ -56,10 +56,13 @@ export const parseRepositories = (
   ).filter(identity);
 };
 
-export const parseMultistring = (repos: string | readonly string[]) => {
+export const parseMultistring = (
+  repos: string | readonly string[],
+  split = /[\n,; ]/,
+) => {
   if (typeof repos === "string") {
     return repos
-      .split(/[\n,; ]/)
+      .split(split)
       .map((repository) => repository.trim())
       .filter(identity);
   }
