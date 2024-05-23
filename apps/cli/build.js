@@ -30,6 +30,7 @@ build({
   external: [
     "esbuild",
     "@ast-grep/napi",
+    "@ast-grep/cli",
     "keytar",
     "prettier",
     // Workaround for @vue/compiler-sfc dynamic require

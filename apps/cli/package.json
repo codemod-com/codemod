@@ -59,8 +59,7 @@
     "typescript": "5.2.2",
     "valibot": "^0.24.1",
     "vitest": "^1.0.1",
-    "yargs": "^17.6.2",
-    "@ast-grep/cli": "^0.22.3"
+    "yargs": "^17.6.2"
   },
   "scripts": {
     "build": "node ./build.js",
@@ -82,6 +81,7 @@
     "access": "public"
   },
   "dependencies": {
+    "@ast-grep/cli": "^0.22.3",
     "@ast-grep/napi": "^0.22.3",
     "esbuild": "^0.17.14",
     "keytar": "^7.9.0",
