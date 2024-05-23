@@ -213,6 +213,9 @@ importers:
 
   apps/cli:
     dependencies:
+      '@ast-grep/napi':
+        specifier: ^0.22.3
+        version: 0.22.3
       esbuild:
         specifier: ^0.17.14
         version: 0.17.19
