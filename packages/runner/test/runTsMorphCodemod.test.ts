@@ -28,7 +28,7 @@ describe("runTsMorphCodemod", () => {
       codemodSource,
       "index.ts",
       "",
-      false,
+      true,
       {},
       (consoleKind, message) => {
         messages.push([consoleKind, message]);
