@@ -133,7 +133,8 @@
       ".next",
       ".vscode",
       "build-ncc",
-      "**/__testfixtures__/**"
+      "**/__testfixtures__/**",
+      "packages/codemods/**"
     ]
   }
 }
