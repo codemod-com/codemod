@@ -5,6 +5,6 @@
   "name": "valibot/0.30.0",
   "engine": "workflow",
   "meta": {
-    "tags": []
+    "tags": ["valibot", "0.30.0"]
   }
 }

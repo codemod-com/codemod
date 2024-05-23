@@ -161,7 +161,8 @@ const constructIs = ({
   };
 };
 
-export async function workflow({ jsFiles }: Api) {
+export async function workflow({ jsFiles, contexts }: Api) {
+  console.log(contexts.getCwdContext());
   await jsFiles(async ({ astGrep, addImport, removeImport }) => {
     const importStar = (
       await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
