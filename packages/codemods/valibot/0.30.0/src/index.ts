@@ -266,7 +266,13 @@ export async function workflow({ jsFiles, contexts }: Api) {
         removeImport(`import { ${from} } from "valibot"`);
         addImport(`import { ${to} } from "valibot"`);
       }
-      await astGrep(from).replace(to);
+      await astGrep(from).replace(() => to);
+      await astGrep({
+        rule: {
+          regex: from,
+          kind: "type_identifier",
+        },
+      }).replace(() => to);
     }
 
     // object/tuple fixes
