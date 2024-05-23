@@ -56,7 +56,6 @@ import {
 } from "./schemata/schema.js";
 import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
-import { PostHogService } from "./services/PostHogService.js";
 import { SourceControl } from "./services/SourceControl.js";
 import {
   CodemodNotFoundError,
@@ -412,6 +411,7 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     "/codemods/downloadLink",
     wrapRequestHandlerMethod(getCodemodDownloadLink),
   );
+
   instance.get(
     "/codemods/list",
     wrapRequestHandlerMethod(getCodemodsListHandler),

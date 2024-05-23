@@ -139,7 +139,7 @@ export const executeMainThread = async () => {
         const { printer, telemetryService, executeCliCommand } =
           await initializeDependencies(args);
 
-        executeCliCommand(() =>
+        return executeCliCommand(() =>
           handleRunCliCommand(printer, args, telemetryService),
         );
       },
@@ -161,7 +161,7 @@ export const executeMainThread = async () => {
     .command(
       ["list", "ls", "search"],
       "lists all the codemods & recipes in the public registry. can be used to search by name and tags",
-      (y) => buildGlobalOptions(y),
+      (y) => y,
       async (args) => {
         const searchTerm = args._.length > 1 ? String(args._.at(-1)) : null;
 
@@ -185,7 +185,7 @@ export const executeMainThread = async () => {
       "learn",
       "exports the current `git diff` in a file to before/after panels in the Codemod Studio",
       (y) =>
-        buildGlobalOptions(y).option("target", {
+        y.option("target", {
           alias: "t",
           type: "string",
           description: "path to the file to be learned",
@@ -202,7 +202,7 @@ export const executeMainThread = async () => {
     .command(
       "login",
       "logs in through authentication in the Codemod Studio",
-      (y) => buildGlobalOptions(y),
+      (y) => y,
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -213,7 +213,7 @@ export const executeMainThread = async () => {
     .command(
       "logout",
       "logs out",
-      (y) => buildGlobalOptions(y),
+      (y) => y,
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -224,7 +224,7 @@ export const executeMainThread = async () => {
     .command(
       "whoami",
       "prints the user data of currently logged in user",
-      (y) => buildGlobalOptions(y),
+      (y) => y,
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -236,7 +236,7 @@ export const executeMainThread = async () => {
       "build",
       "build the JavaScript engine codemod",
       (y) =>
-        buildGlobalOptions(y).option("source", {
+        y.option("source", {
           alias: "s",
           type: "string",
           description: "path to the codemod to be built",
@@ -254,7 +254,7 @@ export const executeMainThread = async () => {
       "publish",
       "publish the codemod to Codemod Registry",
       (y) =>
-        buildGlobalOptions(y).option("source", {
+        y.option("source", {
           type: "string",
           description: "path to the codemod to be published",
         }),
@@ -271,7 +271,7 @@ export const executeMainThread = async () => {
       "unpublish",
       "unpublish previously published codemod from Codemod Registry",
       (y) =>
-        buildGlobalOptions(y).option("force", {
+        y.option("force", {
           type: "boolean",
           alias: "f",
           boolean: true,
@@ -302,7 +302,7 @@ export const executeMainThread = async () => {
       "init",
       "initialize a codemod package",
       (y) =>
-        buildGlobalOptions(y)
+        y
           .option("target", {
             alias: "t",
             type: "string",

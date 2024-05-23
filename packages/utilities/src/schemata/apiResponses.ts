@@ -10,3 +10,8 @@ export type CodemodListResponse = {
   arguments: Arguments;
   updatedAt: Date;
 }[];
+
+export type CodemodDownloadLinkResponse = {
+  link: string;
+  version: string;
+};

@@ -14,8 +14,8 @@ import {
 export const DEFAULT_EXCLUDE_PATTERNS = ["**/node_modules/**/*.*", "**/*.d.ts"];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_DISABLE_PRETTIER = false;
-export const DEFAULT_NO_CACHE = false;
-export const DEFAULT_SKIP_INSTALL = false;
+export const DEFAULT_CACHE = true;
+export const DEFAULT_INSTALL = true;
 export const DEFAULT_USE_JSON = false;
 export const DEFAULT_THREAD_COUNT = 4;
 export const DEFAULT_DRY_RUN = false;
@@ -26,10 +26,8 @@ export const flowSettingsSchema = object({
   target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
   files: optional(array(string())),
   raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
-  "no-cache": optional(boolean(), DEFAULT_NO_CACHE),
-  noCache: optional(boolean(), DEFAULT_NO_CACHE),
-  "skip-install": optional(boolean(), DEFAULT_SKIP_INSTALL),
-  skipInstall: optional(boolean(), DEFAULT_SKIP_INSTALL),
+  cache: optional(boolean(), DEFAULT_CACHE),
+  install: optional(boolean(), DEFAULT_INSTALL),
   json: optional(boolean(), DEFAULT_USE_JSON),
   threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });

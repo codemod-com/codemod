@@ -3,7 +3,9 @@ import type { FileSystem } from "@codemod-com/utilities";
 import axios, { isAxiosError, type AxiosResponse } from "axios";
 
 export type FileDownloadServiceBlueprint = Readonly<{
-  cacheDisabled: boolean;
+  cacheEnabled: boolean;
+  readonly _ifs: FileSystem;
+  readonly _printer: PrinterBlueprint;
 
   download(
     url: string,
@@ -13,37 +15,34 @@ export type FileDownloadServiceBlueprint = Readonly<{
 
 export class FileDownloadService implements FileDownloadServiceBlueprint {
   public constructor(
-    public readonly cacheDisabled: boolean,
-    protected readonly _ifs: FileSystem,
-    protected readonly _printer: PrinterBlueprint,
+    public cacheEnabled: boolean,
+    public readonly _ifs: FileSystem,
+    public readonly _printer: PrinterBlueprint,
   ) {}
 
   public async download(
     url: string,
     path: string,
   ): Promise<{ data: Buffer; cacheUsed: boolean; cacheReason: string }> {
-    let cacheReason = "Cache was disabled manually";
+    let cacheReason = "cache was disabled manually";
 
-    if (!this.cacheDisabled) {
+    if (this.cacheEnabled) {
       const localCodemodLastModified =
         await this.__getLocalFileLastModified(path);
       const remoteCodemodLastModified =
         await this.__getRemoteFileLastModified(url);
 
       if (localCodemodLastModified === null) {
-        cacheReason = "Local codemod was not found";
+        cacheReason = "local codemod was not found";
       } else if (remoteCodemodLastModified === null) {
-        cacheReason = "Codemod required access permissions";
-      } else if (
-        // read from cache only if there is no newer remote file
-        localCodemodLastModified > remoteCodemodLastModified
-      ) {
+        cacheReason = "codemod required access permissions";
+      } else {
         const tDataOut = await this._ifs.promises.readFile(path);
 
         return {
           data: Buffer.from(tDataOut),
           cacheUsed: true,
-          cacheReason: "Cache was enabled",
+          cacheReason: "cache was enabled",
         };
       }
     }

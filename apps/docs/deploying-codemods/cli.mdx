@@ -144,11 +144,11 @@ codemod [codemod name] --no-cache
   <Tip>Disabling cache can ensure you are getting the freshest results. While keeping the cache enabled can help you save bandwidth and time for repetitive use of the same codemods.</Tip>
 </ResponseField>
 
-<ResponseField name="--skip-install" type="boolean" default="false">
+<ResponseField name="--no-install" type="boolean" default="false">
   Can be used to disable dependencies installation after codemod run.
 
 ```bash
-codemod [codemod name] --skip-install
+codemod [codemod name] --no-install
 ```
 
   <Warning>Some codemods may install or remove dependencies after running.
