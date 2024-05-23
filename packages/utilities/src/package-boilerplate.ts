@@ -410,7 +410,7 @@ const packageJson = ({
     `;
   } else if (engine === "workflow") {
     packages = `
-      "@codemod-com/workflow": "^0.0.1"
+      "@codemod.com/workflow": "^0.0.1"
     `;
   }
 
@@ -778,7 +778,7 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 `);
 
 export const emptyWorkflowBoilerplate = beautify(`
-import type { Api } from "@codemod-com/workflow";
+import type { Api } from "@codemod.com/workflow";
 
 export async function workflow({ jsFiles }: Api) {
   await jsFiles("**/*.ts")

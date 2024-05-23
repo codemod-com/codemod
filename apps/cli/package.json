@@ -35,7 +35,7 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod-com/workflow": "workspace:*",
+    "@codemod.com/workflow": "workspace:*",
     "@types/cli-progress": "^3.11.5",
     "@types/columnify": "^1.5.4",
     "@types/inquirer": "^9.0.7",
@@ -59,7 +59,8 @@
     "typescript": "5.2.2",
     "valibot": "^0.24.1",
     "vitest": "^1.0.1",
-    "yargs": "^17.6.2"
+    "yargs": "^17.6.2",
+    "@ast-grep/cli": "^0.22.3"
   },
   "scripts": {
     "build": "node ./build.js",

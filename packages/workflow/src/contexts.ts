@@ -44,7 +44,10 @@ export const cwdContext = registerContext(
 );
 export const fileContext = registerContext(
   "fileContext",
-  new AsyncLocalStorage<{ file: string }>(),
+  new AsyncLocalStorage<{
+    file: string;
+    importsUpdates: { type: "add" | "remove"; import: string }[];
+  }>(),
 );
 export const repositoryContext = registerContext(
   "repositoryContext",

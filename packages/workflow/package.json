@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/workflow",
+  "name": "@codemod.com/workflow",
   "author": "Codemod, Inc.",
   "version": "0.0.1",
   "description": "Workflow Engine for Codemod",
@@ -7,6 +7,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "sideEffects": false,
+  "private": false,
   "files": [
     "./dist",
     "!**/*.test.js",
@@ -22,6 +23,11 @@
   },
   "keywords": [],
   "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/codemod-com/codemod.git",
+    "directory": "packages/workflow"
+  },
   "dependencies": {
     "@ast-grep/napi": "^0.22.3",
     "@sindresorhus/slugify": "^2.2.1",
@@ -29,6 +35,7 @@
     "filenamify": "^6.0.0",
     "simple-git": "^3.24.0",
     "tree-kill": "^1.2.2",
-    "ts-invariant": "^0.10.3"
+    "ts-invariant": "^0.10.3",
+    "@ast-grep/cli": "^0.22.3"
   }
 }

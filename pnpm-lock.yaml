@@ -228,6 +228,9 @@ importers:
         specifier: ^3.2.5
         version: 3.2.5
     devDependencies:
+      '@ast-grep/cli':
+        specifier: ^0.22.3
+        version: 0.22.3
       '@codemod-com/filemod':
         specifier: workspace:*
         version: link:../../packages/filemod
@@ -243,7 +246,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
-      '@codemod-com/workflow':
+      '@codemod.com/workflow':
         specifier: workspace:*
         version: link:../../packages/workflow
       '@types/cli-progress':
@@ -4664,6 +4667,21 @@ importers:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.12.7)(jsdom@23.2.0)(terser@5.30.4)
 
+  packages/codemods/valibot/0.30.0:
+    devDependencies:
+      '@codemod.com/workflow':
+        specifier: workspace:*
+        version: link:../../../workflow
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      typescript:
+        specifier: 5.2.2
+        version: 5.2.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
+
   packages/codemods/vue/3/render-function-api:
     devDependencies:
       '@types/jscodeshift':
@@ -4772,7 +4790,7 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../utilities
-      '@codemod-com/workflow':
+      '@codemod.com/workflow':
         specifier: workspace:*
         version: link:../workflow
       '@svgr/hast-util-to-babel-ast':
@@ -4948,6 +4966,9 @@ importers:
 
   packages/workflow:
     dependencies:
+      '@ast-grep/cli':
+        specifier: ^0.22.3
+        version: 0.22.3
       '@ast-grep/napi':
         specifier: ^0.22.3
         version: 0.22.3
@@ -5013,6 +5034,53 @@ packages:
 
   '@asamuzakjp/dom-selector@2.0.2':
     resolution: {integrity: sha512-x1KXOatwofR6ZAYzXRBL5wrdV0vwNxlTCK9NCuLqAzQYARqGcvFwiJA6A1ERuh+dgeA4Dxm3JBYictIes+SqUQ==}
+
+  '@ast-grep/cli-darwin-arm64@0.22.3':
+    resolution: {integrity: sha512-eEO1cfHLHodhFa4votdjS/zTWgQO1jWByRBum4y+aFLyv5PLkILZdrWYsSmNztQTCZ74lrRIgnafGLflIFYm6Q==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@ast-grep/cli-darwin-x64@0.22.3':
+    resolution: {integrity: sha512-OYnVoRMdBn8COrY2vacsstSiHfg331LCm2qjkVMG6xdRBhoocn6aUjavtG2PjJmMX4qbXINxZtaDVz6drxQMDg==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@ast-grep/cli-linux-arm64-gnu@0.22.3':
+    resolution: {integrity: sha512-ZbNoh3LByG9mFh3C37pXL67v7lKX6WtARFnMUK9tKoMLVLDiMYF8hoiCRE/GY4VvxWDJZi94woOB4CSgCLJTJA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ast-grep/cli-linux-x64-gnu@0.22.3':
+    resolution: {integrity: sha512-41bSSUbrOZhmx2z2V/bTXopbEmSA0wWXcNwTSkOTKZH/DvnG/Y6W+naXOez6B78g6hlNHksEmSmII5fblhpW1A==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ast-grep/cli-win32-arm64-msvc@0.22.3':
+    resolution: {integrity: sha512-6WGDaY5JaSPiEzrOxNRu0ak3PkS8yoQ/hmcT687sZVgMbjf/RbBS8wM3jOdDqO41YdneZOZ3Jh9hXo9jyqAuNg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@ast-grep/cli-win32-ia32-msvc@0.22.3':
+    resolution: {integrity: sha512-/aFY1rep0pGkGNBYEdATJwd+0BeIegKL60ocSqnuHSuat89q/ru+aDaiFZgMi/mwBGfrn4v+g+sTdRPUYB9W8w==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@ast-grep/cli-win32-x64-msvc@0.22.3':
+    resolution: {integrity: sha512-AtgZtk5RfHOBr0jFae9jMdHex/8IZPhHXZ8LWEia5Pn96G/uNlO6GnnFJZmDl9NuuwazpRl6Ox4E4uCOOKCtpQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@ast-grep/cli@0.22.3':
+    resolution: {integrity: sha512-NdFOfoKfQK4fkqA9YKNasmN8c2OptRmb12wVtPMK2yhIlKOB7rNvIf9Iq+ld8BKuauXw2pxlEr8KgCyMDrp2Gg==}
+    engines: {node: '>= 12.0.0'}
+    hasBin: true
 
   '@ast-grep/napi-darwin-arm64@0.22.3':
     resolution: {integrity: sha512-BD2uyj9UVii04G6YivQArwoeUvOhMFU+MHw5kbLdc0IBncAru65qOg/I6D/ggEAZIgfyw8e2b6ch4ywbIhMnZw==}
@@ -17535,6 +17603,39 @@ snapshots:
       bidi-js: 1.0.3
       css-tree: 2.3.1
       is-potential-custom-element-name: 1.0.1
+
+  '@ast-grep/cli-darwin-arm64@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-darwin-x64@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-linux-arm64-gnu@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-linux-x64-gnu@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-win32-arm64-msvc@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-win32-ia32-msvc@0.22.3':
+    optional: true
+
+  '@ast-grep/cli-win32-x64-msvc@0.22.3':
+    optional: true
+
+  '@ast-grep/cli@0.22.3':
+    dependencies:
+      detect-libc: 2.0.3
+    optionalDependencies:
+      '@ast-grep/cli-darwin-arm64': 0.22.3
+      '@ast-grep/cli-darwin-x64': 0.22.3
+      '@ast-grep/cli-linux-arm64-gnu': 0.22.3
+      '@ast-grep/cli-linux-x64-gnu': 0.22.3
+      '@ast-grep/cli-win32-arm64-msvc': 0.22.3
+      '@ast-grep/cli-win32-ia32-msvc': 0.22.3
+      '@ast-grep/cli-win32-x64-msvc': 0.22.3
 
   '@ast-grep/napi-darwin-arm64@0.22.3':
     optional: true

@@ -41,7 +41,7 @@
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod-com/workflow": "workspace:*",
+    "@codemod.com/workflow": "workspace:*",
     "@svgr/hast-util-to-babel-ast": "^7.0.0",
     "@vue/compiler-sfc": "^3.4.21",
     "fast-glob": "^3.3.2",

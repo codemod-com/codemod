@@ -2,7 +2,12 @@ import { PLazy } from "../PLazy.js";
 import { getAstGrepNodeContext, getParentContext } from "../contexts.js";
 import { wrapHelpers } from "../helpers.js";
 
-const helpers = { getNode: () => getAstGrepNodeContext().node };
+const helpers = {
+  getNode: () => getAstGrepNodeContext().node,
+  getMatch: (m: string) => getAstGrepNodeContext().node.getMatch(m),
+  getMultipleMatches: (m: string) =>
+    getAstGrepNodeContext().node.getMultipleMatches(m),
+};
 
 type Helpers = typeof helpers;
 
