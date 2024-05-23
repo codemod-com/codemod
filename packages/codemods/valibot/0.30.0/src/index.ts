@@ -184,6 +184,41 @@ export async function workflow({ jsFiles }: Api) {
     const isSchema = constructIs({ importStar, namedImports, keys: SCHEMAS });
     const isAction = constructIs({ importStar, namedImports, keys: ACTIONS });
     const isImported = constructIsImported({ importStar, namedImports });
+    const isObject = constructIs({
+      importStar,
+      namedImports,
+      keys: ["object"],
+    });
+    const isTuple = constructIs({
+      importStar,
+      namedImports,
+      keys: ["tuple"],
+    });
+    const isUnknown = constructIs({
+      importStar,
+      namedImports,
+      keys: ["unknown"],
+    });
+    const isNever = constructIs({
+      importStar,
+      namedImports,
+      keys: ["never"],
+    });
+    const isMerge = constructIs({
+      importStar,
+      namedImports,
+      keys: ["merge"],
+    });
+    const isBrand = constructIs({
+      importStar,
+      namedImports,
+      keys: ["brand"],
+    });
+    const isTransform = constructIs({
+      importStar,
+      namedImports,
+      keys: ["transform"],
+    });
 
     // v.pipe support
     const pipeFixes = (
@@ -229,42 +264,6 @@ export async function workflow({ jsFiles }: Api) {
       if (!isImported(from)) continue;
       renames.push({ replace: from, with: to });
     }
-
-    const isObject = constructIs({
-      importStar,
-      namedImports,
-      keys: ["object"],
-    });
-    const isTuple = constructIs({
-      importStar,
-      namedImports,
-      keys: ["tuple"],
-    });
-    const isUnknown = constructIs({
-      importStar,
-      namedImports,
-      keys: ["unknown"],
-    });
-    const isNever = constructIs({
-      importStar,
-      namedImports,
-      keys: ["never"],
-    });
-    const isMerge = constructIs({
-      importStar,
-      namedImports,
-      keys: ["merge"],
-    });
-    const isBrand = constructIs({
-      importStar,
-      namedImports,
-      keys: ["brand"],
-    });
-    const isTransform = constructIs({
-      importStar,
-      namedImports,
-      keys: ["transform"],
-    });
 
     // object/tuple fixes
     const objectOrTupleFixes = (
