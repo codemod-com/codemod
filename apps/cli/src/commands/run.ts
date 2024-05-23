@@ -300,12 +300,22 @@ export const handleRunCliCommand = async (
       },
     );
 
+    let runningCodemodVersion = "";
+    if ("version" in codemodDefinition.codemod) {
+      runningCodemodVersion += `@${codemodDefinition.codemod.version}`;
+    }
+    if (args.source) {
+      runningCodemodVersion += " (local)";
+    }
+
     printer.printConsoleMessage(
       "info",
       boxen(
         chalk.cyan(
           "Running with the following configuration:",
-          `\n\n${chalk.yellow.bold(reason ?? "")}\n${patternsColumns}\n`,
+          `\n\nCodemod:`,
+          chalk.bold(`${nameOrPath}${runningCodemodVersion}`),
+          `\n${chalk.yellow.bold(reason ?? "")}\n${patternsColumns}\n`,
           chalk.yellow(
             !flowSettings.install ? "\nDependency installation disabled" : "",
           ),

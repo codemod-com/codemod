@@ -155,6 +155,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
         return {
           source: "package",
           name,
+          version: config.version,
           engine: config.engine,
           include: config.include,
           indexPath: yamlPath,
@@ -179,6 +180,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       return {
         source: "package",
         name,
+        version: config.version,
         engine: config.engine,
         include: config.include,
         directoryPath,
@@ -196,6 +198,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       return {
         source: "package",
         name,
+        version: config.version,
         engine: config.engine,
         include: config.include,
         indexPath,
@@ -236,6 +239,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       return {
         source: "package",
         name,
+        version: config.version,
         engine: config.engine,
         include: config.include,
         codemods,

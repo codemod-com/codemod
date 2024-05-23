@@ -4,6 +4,7 @@ export type Codemod =
   | Readonly<{
       source: "package";
       name: string;
+      version: string;
       include?: string[];
       engine: "recipe";
       directoryPath: string;
@@ -13,6 +14,7 @@ export type Codemod =
   | Readonly<{
       source: "package";
       name: string;
+      version: string;
       include?: string[];
       engine: KnownEngines;
       directoryPath: string;
@@ -22,6 +24,7 @@ export type Codemod =
   | Readonly<{
       source: "package";
       name: string;
+      version: string;
       include?: string[];
       engine: "piranha";
       directoryPath: string;

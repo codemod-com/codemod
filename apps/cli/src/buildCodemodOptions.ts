@@ -9,12 +9,14 @@ import {
   type FileSystem,
   allEnginesSchema,
   doubleQuotify,
+  execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "fast-glob";
 import { object, parse } from "valibot";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
+import { rebuildCodemodFallback } from "./utils.js";
 
 const extractEngine = async (
   fs: FileSystem,
@@ -38,6 +40,7 @@ const extractEngine = async (
 };
 
 const extractMainScriptPath = async (
+  printer: PrinterBlueprint,
   codemodRc: CodemodConfig,
   source: string,
 ) => {
@@ -62,19 +65,11 @@ const extractMainScriptPath = async (
       errorOnMissing = `Did you forget to run "codemod build"?`;
   }
 
-  const mainFiles = await glob(codemodRc.build?.output ?? globSearchPattern, {
-    absolute: true,
-    cwd: source,
-    onlyFiles: true,
+  return rebuildCodemodFallback({
+    globPattern: codemodRc.build?.output ?? globSearchPattern,
+    source,
+    errorText: `Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
   });
-
-  if (!mainFiles[0]) {
-    throw new Error(
-      `Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
-    );
-  }
-
-  return mainFiles[0];
 };
 
 export const buildSourcedCodemodOptions = async (
@@ -173,6 +168,7 @@ export const buildSourcedCodemodOptions = async (
     return {
       source: "package",
       name: codemodConfig.name,
+      version: codemodConfig.version,
       engine: "recipe",
       directoryPath: codemodOptions.source,
       arguments: codemodConfig.arguments,
@@ -181,6 +177,7 @@ export const buildSourcedCodemodOptions = async (
   }
 
   const mainScriptPath = await extractMainScriptPath(
+    printer,
     codemodConfig,
     codemodOptions.source,
   );
@@ -189,6 +186,7 @@ export const buildSourcedCodemodOptions = async (
     source: "package",
     engine,
     name: codemodConfig.name,
+    version: codemodConfig.version,
     indexPath: mainScriptPath,
     arguments: codemodConfig.arguments,
     directoryPath: codemodOptions.source,
