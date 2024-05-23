@@ -123,9 +123,10 @@ export function jsFiles(
                                   currentImports.imports.includes(namedImport)
                                 ) {
                                   modified = true;
-                                  currentImports.imports.filter(
-                                    (imp) => imp !== namedImport,
-                                  );
+                                  currentImports.imports =
+                                    currentImports.imports.filter(
+                                      (imp) => imp !== namedImport,
+                                    );
                                 }
                               }
                             }

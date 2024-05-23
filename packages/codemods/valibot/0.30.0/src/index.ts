@@ -163,7 +163,7 @@ const constructIs = ({
 
 export async function workflow({ jsFiles }: Api) {
   await jsFiles(
-    "packages/codemods/valibot/0.30.0/__testfixtures__/fixture1.input.ts",
+    "**/fixture5.input.ts",
     async ({ astGrep, addImport, removeImport }) => {
       const importStar = (
         await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
@@ -291,6 +291,7 @@ export async function workflow({ jsFiles }: Api) {
         ) {
           if (object && !object.startsWith(`${importStar}.`)) {
             addImport(`import { ${object}WithRest } from "valibot"`);
+            removeImport(`import { ${object} } from "valibot"`);
           }
 
           return `${object}WithRest(${argument}, ${schema.text()})`;
@@ -305,16 +306,32 @@ export async function workflow({ jsFiles }: Api) {
 
         let objectOrTuple: string | undefined;
         let looseOrStrict: string | undefined;
+        const removeImports = [] as string[];
 
-        if (isObject(object)) objectOrTuple = "Object";
-        if (isTuple(object)) objectOrTuple = "Tuple";
-        if (isUnknown(schema?.child(0)?.text())) looseOrStrict = "loose";
-        if (isNever(schema?.child(0)?.text())) looseOrStrict = "strict";
+        if (isObject(object)) {
+          objectOrTuple = "Object";
+          removeImports.push("object");
+        }
+        if (isTuple(object)) {
+          objectOrTuple = "Tuple";
+          removeImports.push("tuple");
+        }
+        if (isUnknown(schema?.child(0)?.text())) {
+          looseOrStrict = "loose";
+          removeImports.push("unknown");
+        }
+        if (isNever(schema?.child(0)?.text())) {
+          looseOrStrict = "strict";
+          removeImports.push("never");
+        }
 
         if (objectOrTuple && looseOrStrict) {
           if (!importStar) {
             addImport(
               `import { ${looseOrStrict}${objectOrTuple} } from "valibot"`,
+            );
+            removeImport(
+              `import { ${removeImports.join(", ")} } from "valibot"`,
             );
           }
 
