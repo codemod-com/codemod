@@ -27,7 +27,8 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
     })
     .option("cache", {
       type: "boolean",
-      description: "Disable cache for HTTP(S) requests",
+      description:
+        "Enable cache for HTTP(S) requests. Disable it using --no-cache",
       default: DEFAULT_CACHE,
     });
 
