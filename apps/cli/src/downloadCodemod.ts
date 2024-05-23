@@ -189,7 +189,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     if (
       config.engine === "jscodeshift" ||
       config.engine === "filemod" ||
-      config.engine === "ts-morph"
+      config.engine === "ts-morph" ||
+      config.engine === "workflow"
     ) {
       const indexPath = join(directoryPath, "index.cjs");
 
