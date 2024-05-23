@@ -1,0 +1,1 @@
+const { data } = useLazyAsyncData('/api/test', { deep: true })
