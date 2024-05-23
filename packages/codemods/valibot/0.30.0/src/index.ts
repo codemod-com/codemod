@@ -162,7 +162,7 @@ const constructIs = ({
 };
 
 export async function workflow({ jsFiles }: Api) {
-  await jsFiles("**/fixture1.input.ts", async ({ astGrep }) => {
+  await jsFiles("**/*.{js,jsx,ts,tsx,cjs,mjs}", async ({ astGrep }) => {
     const importStar = (
       await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
         getMatch("IMPORT")?.text(),
