@@ -191,7 +191,7 @@ export function astGrep<
       } else {
         const contents = await fs.readFile(file, { encoding: "utf-8" });
 
-        const nodes = astGrepTsx.parse(contents).root().findAll(grep);
+        const nodes = astGrepTsx.parse(contents).root().findAll(grep).reverse();
         const astContext = { contents } as AstGrepNodeContext;
 
         for (const node of nodes) {

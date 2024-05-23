@@ -83,7 +83,10 @@ export const files = async (
   const { cwd } = getCwdContext();
   const files = await fg.glob(pattern, { cwd, onlyFiles: true });
   for (const file of files) {
-    await fileContext.run({ file: path.join(cwd, file) }, cb);
+    await fileContext.run(
+      { file: path.join(cwd, file), importsUpdates: [] },
+      cb,
+    );
   }
 };
 

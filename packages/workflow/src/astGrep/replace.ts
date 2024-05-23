@@ -8,55 +8,87 @@ import {
 import { clc, wrapHelpers } from "../helpers.js";
 import { map } from "./map.js";
 
+const callbackHelpers = {
+  getNode: () => getAstGrepNodeContext().node,
+  getMatch: (m: string) => getAstGrepNodeContext().node.getMatch(m),
+  getMultipleMatches: (m: string) =>
+    getAstGrepNodeContext().node.getMultipleMatches(m),
+};
+
 const helpers = { map };
 
 type Helpers = typeof helpers;
 
 export function replace(
+  callback: (
+    helpers: typeof callbackHelpers,
+  ) => Promise<string | undefined> | string | undefined,
+): PLazy<Helpers> & Helpers;
+export function replace(
   rawReplacement: string | Readonly<string[]>,
+): PLazy<Helpers> & Helpers;
+export function replace(
+  replacementOrCallback:
+    | string
+    | Readonly<string[]>
+    | ((
+        helpers: typeof callbackHelpers,
+      ) => Promise<string | undefined> | string | undefined),
 ): PLazy<Helpers> & Helpers {
   const innerParentContext = getParentContext();
 
-  const replacement =
-    typeof rawReplacement === "string"
-      ? rawReplacement
-      : rawReplacement.join("");
+  let replacement: string | undefined;
+  if (typeof replacementOrCallback === "string") {
+    replacement = replacementOrCallback;
+  } else if (Array.isArray(replacementOrCallback)) {
+    replacement = replacementOrCallback.join("");
+  }
+
+  const callback =
+    typeof replacementOrCallback === "function"
+      ? replacementOrCallback
+      : undefined;
 
   const context = async (cb?: any) => {
     await innerParentContext(async () => {
-      const astGrepNodeContext = getAstGrepNodeContext();
+      const { node, contents } = getAstGrepNodeContext();
 
-      if (astGrepNodeContext.node) {
+      if (callback) {
+        replacement = await callback(wrapHelpers(callbackHelpers, context));
+      }
+
+      if (replacement) {
         const text = replacement.replace(
           /(\$\$)?\$([A-Z]+)/gm,
           // @ts-ignore
           (match, isMultiMatch, varName) => {
             if (isMultiMatch) {
-              return astGrepNodeContext.node
+              return node
                 ?.getMultipleMatches(varName)
                 .map((n) => n.text())
                 .join(" ");
             }
 
-            return astGrepNodeContext.node?.getMatch(varName)?.text() || "";
+            return node.getMatch(varName)?.text() || "";
           },
         );
 
+        const range = node.range();
+
         const transformed =
-          astGrepNodeContext.contents.substring(
-            0,
-            astGrepNodeContext.node?.range().start.index,
-          ) +
+          contents.substring(0, range.start.index) +
           text +
-          astGrepNodeContext.contents.substring(
-            astGrepNodeContext.node?.range().end.index || 0,
-          );
+          contents.substring(range.end.index || 0);
 
         const { file } = getFileContext();
-        astGrepNodeContext.contents = transformed;
+        getAstGrepNodeContext().contents = transformed;
 
         await fs.writeFile(file, transformed);
-        console.log(`${clc.blueBright("FILE")} ${file}`);
+        console.log(
+          `${clc.blueBright("FILE")} ${file}:${range.start.line + 1}:${
+            range.start.column + 1
+          }\n  ${clc.red(node.text())}\n  ${clc.green(text)}`,
+        );
       }
     });
 

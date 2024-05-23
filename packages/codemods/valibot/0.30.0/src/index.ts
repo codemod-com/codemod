@@ -161,80 +161,75 @@ const constructIs = ({
   };
 };
 
-export async function workflow({ jsFiles, contexts }: Api) {
-  await jsFiles("**/*.{js,jsx,ts,tsx,cjs,mjs}", async ({ astGrep }) => {
-    const importStar = (
-      await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
-        getMatch("IMPORT")?.text(),
-      )
-    ).shift();
+export async function workflow({ jsFiles }: Api) {
+  await jsFiles(
+    "packages/codemods/valibot/0.30.0/__testfixtures__/fixture1.input.ts",
+    async ({ astGrep, addImport, removeImport }) => {
+      const importStar = (
+        await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
+          getMatch("IMPORT")?.text(),
+        )
+      ).shift();
 
-    const namedImports = (
-      await astGrep`import { $$$IMPORTS } from "valibot"`.map(
-        ({ getMultipleMatches }) =>
-          getMultipleMatches("IMPORTS")
-            .filter((node) => node.kind() === "import_specifier")
-            .map((node) => node.text()),
-      )
-    ).reduce((allImports, imports) => {
-      allImports.push(...imports);
-      return allImports;
-    }, [] as string[]);
+      const namedImports = (
+        await astGrep`import { $$$IMPORTS } from "valibot"`.map(
+          ({ getMultipleMatches }) =>
+            getMultipleMatches("IMPORTS")
+              .filter((node) => node.kind() === "import_specifier")
+              .map((node) => node.text()),
+        )
+      ).reduce((allImports, imports) => {
+        allImports.push(...imports);
+        return allImports;
+      }, [] as string[]);
 
-    const isSchema = constructIs({ importStar, namedImports, keys: SCHEMAS });
-    const isAction = constructIs({ importStar, namedImports, keys: ACTIONS });
-    const isImported = constructIsImported({ importStar, namedImports });
-    const isObject = constructIs({
-      importStar,
-      namedImports,
-      keys: ["object"],
-    });
-    const isTuple = constructIs({
-      importStar,
-      namedImports,
-      keys: ["tuple"],
-    });
-    const isUnknown = constructIs({
-      importStar,
-      namedImports,
-      keys: ["unknown"],
-    });
-    const isNever = constructIs({
-      importStar,
-      namedImports,
-      keys: ["never"],
-    });
-    const isMerge = constructIs({
-      importStar,
-      namedImports,
-      keys: ["merge"],
-    });
-    const isBrand = constructIs({
-      importStar,
-      namedImports,
-      keys: ["brand"],
-    });
-    const isTransform = constructIs({
-      importStar,
-      namedImports,
-      keys: ["transform"],
-    });
-    const isOptional = constructIs({
-      importStar,
-      namedImports,
-      keys: ["optional"],
-    });
+      const isSchema = constructIs({ importStar, namedImports, keys: SCHEMAS });
+      const isAction = constructIs({ importStar, namedImports, keys: ACTIONS });
+      const isImported = constructIsImported({ importStar, namedImports });
+      const isObject = constructIs({
+        importStar,
+        namedImports,
+        keys: ["object"],
+      });
+      const isTuple = constructIs({
+        importStar,
+        namedImports,
+        keys: ["tuple"],
+      });
+      const isUnknown = constructIs({
+        importStar,
+        namedImports,
+        keys: ["unknown"],
+      });
+      const isNever = constructIs({
+        importStar,
+        namedImports,
+        keys: ["never"],
+      });
+      const isMerge = constructIs({
+        importStar,
+        namedImports,
+        keys: ["merge"],
+      });
+      const isBrand = constructIs({
+        importStar,
+        namedImports,
+        keys: ["brand"],
+      });
+      const isTransform = constructIs({
+        importStar,
+        namedImports,
+        keys: ["transform"],
+      });
 
-    // v.pipe support
-    const pipeFixes = (
-      await astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`.map(
-        ({ getMatch, getMultipleMatches, getNode }) => {
+      // v.pipe support
+      await astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`.replace(
+        ({ getMatch, getMultipleMatches }) => {
           const schema = getMatch("SCHEMA")?.text();
           const rest = getMultipleMatches("REST").map((node) => node.text());
           const actions = getMultipleMatches("ACTIONS").filter(
             (node) => node.kind() !== ",",
           );
-          const pipeMethod = importStar ? "v.pipe" : "pipe";
 
           if (
             isSchema(schema) &&
@@ -246,95 +241,92 @@ export async function workflow({ jsFiles, contexts }: Api) {
               );
             })
           ) {
+            const pipeMethod = importStar ? `${importStar}.pipe` : "pipe";
+
+            if (!importStar) {
+              addImport(`import { pipe } from "valibot"`);
+            }
+
             const replacement = `${pipeMethod}(${schema}(${rest.join(
               " ",
             )}), ${actions.map((node) => node.text())})`;
 
-            return { replace: getNode().text(), with: replacement };
+            return replacement;
           }
         },
-      )
-    ).filter((replacement) => !!replacement) as {
-      replace: string;
-      with: string;
-    }[];
+      );
 
-    // simple renames
-    const renames = [] as { replace: string; with: string }[];
-    for (const [from, to] of [
-      ...(importStar
-        ? RENAMES.map(([f, t]) => [`${importStar}.${f}`, `${importStar}.${t}`])
-        : []),
-      ...RENAMES,
-    ]) {
-      if (!isImported(from)) continue;
-      renames.push({ replace: from, with: to });
-    }
+      // simple renames
+      for (const [from, to] of [
+        ...(importStar
+          ? RENAMES.map(([f, t]) => [
+              `${importStar}.${f}`,
+              `${importStar}.${t}`,
+            ])
+          : []),
+        ...RENAMES,
+      ]) {
+        if (!isImported(from)) continue;
+        if (!from.startsWith(`${importStar}.`)) {
+          removeImport(`import { ${from} } from "valibot"`);
+          addImport(`import { ${to} } from "valibot"`);
+        }
+        await astGrep(from).replace(to);
+      }
 
-    // object/tuple fixes
-    const objectOrTupleFixes = (
-      await astGrep`$OBJECT($ARGUMENT, $SCHEMA)`.map(
-        ({ getMatch, getNode }) => {
-          const object = getMatch("OBJECT")?.text();
-          const argument = getMatch("ARGUMENT")?.text();
-          const schema = getMatch("SCHEMA");
+      // object/tuple fixes
+      await astGrep`$OBJECT($ARGUMENT, $SCHEMA)`.replace(({ getMatch }) => {
+        const object = getMatch("OBJECT")?.text();
+        const argument = getMatch("ARGUMENT")?.text();
+        const schema = getMatch("SCHEMA");
 
-          if (
-            (isObject(object) || isTuple(object)) &&
-            schema?.kind() === "call_expression" &&
-            isSchema(schema.child(0)?.text()) &&
-            !(
-              isUnknown(schema.child(0)?.text()) ||
-              isNever(schema.child(0)?.text())
-            )
-          ) {
-            return {
-              replace: getNode().text(),
-              with: `${object}WithRest(${argument}, ${schema.text()})`,
-            };
+        if (
+          (isObject(object) || isTuple(object)) &&
+          schema?.kind() === "call_expression" &&
+          isSchema(schema.child(0)?.text()) &&
+          !(
+            isUnknown(schema.child(0)?.text()) ||
+            isNever(schema.child(0)?.text())
+          )
+        ) {
+          if (object && !object.startsWith(`${importStar}.`)) {
+            addImport(`import { ${object}WithRest } from "valibot"`);
           }
-        },
-      )
-    ).filter((replacement) => !!replacement) as {
-      replace: string;
-      with: string;
-    }[];
 
-    // loose and strict object/tuple fixes
-    const looseOrStrictFixes = (
-      await astGrep`$OBJECT($ARGUMENT, $SCHEMA)`.map(
-        ({ getMatch, getNode }) => {
-          const object = getMatch("OBJECT")?.text();
-          const argument = getMatch("ARGUMENT")?.text();
-          const schema = getMatch("SCHEMA");
+          return `${object}WithRest(${argument}, ${schema.text()})`;
+        }
+      });
 
-          let objectOrTuple: string | undefined;
-          let looseOrStrict: string | undefined;
+      // loose and strict object/tuple fixes
+      await astGrep`$OBJECT($ARGUMENT, $SCHEMA)`.replace(({ getMatch }) => {
+        const object = getMatch("OBJECT")?.text();
+        const argument = getMatch("ARGUMENT")?.text();
+        const schema = getMatch("SCHEMA");
 
-          if (isObject(object)) objectOrTuple = "Object";
-          if (isTuple(object)) objectOrTuple = "Tuple";
-          if (isUnknown(schema?.child(0)?.text())) looseOrStrict = "loose";
-          if (isNever(schema?.child(0)?.text())) looseOrStrict = "strict";
+        let objectOrTuple: string | undefined;
+        let looseOrStrict: string | undefined;
 
-          if (objectOrTuple && looseOrStrict) {
-            return {
-              replace: getNode().text(),
-              with: `${
-                importStar ? `${importStar}.` : ""
-              }${looseOrStrict}${objectOrTuple}(${argument})`,
-            };
+        if (isObject(object)) objectOrTuple = "Object";
+        if (isTuple(object)) objectOrTuple = "Tuple";
+        if (isUnknown(schema?.child(0)?.text())) looseOrStrict = "loose";
+        if (isNever(schema?.child(0)?.text())) looseOrStrict = "strict";
+
+        if (objectOrTuple && looseOrStrict) {
+          if (!importStar) {
+            addImport(
+              `import { ${looseOrStrict}${objectOrTuple} } from "valibot"`,
+            );
           }
-        },
-      )
-    ).filter((replacement) => !!replacement) as {
-      replace: string;
-      with: string;
-    }[];
 
-    // object merging
-    const objectMerging = (
-      await astGrep`$MERGE([$$$OBJECTS])`.map(
-        ({ getMultipleMatches, getNode, getMatch }) => {
+          return `${
+            importStar ? `${importStar}.` : ""
+          }${looseOrStrict}${objectOrTuple}(${argument})`;
+        }
+      });
+
+      // object merging
+      await astGrep`$MERGE([$$$OBJECTS])`.replace(
+        ({ getMultipleMatches, getMatch }) => {
           const merge = getMatch("MERGE")?.text();
           const objects = getMultipleMatches("OBJECTS").map((node) => {
             if (node.kind() === ",") {
@@ -345,57 +337,31 @@ export async function workflow({ jsFiles, contexts }: Api) {
           });
 
           if (isMerge(merge)) {
-            return {
-              replace: getNode().text(),
-              with: `${
-                importStar ? `${importStar}.` : ""
-              }object({${objects.join(" ")}})`,
-            };
+            if (!importStar) {
+              addImport(`import { object } from "valibot"`);
+            }
+            return `${importStar ? `${importStar}.` : ""}object({${objects.join(
+              " ",
+            )}})`;
           }
         },
-      )
-    ).filter((replacement) => !!replacement) as {
-      replace: string;
-      with: string;
-    }[];
+      );
 
-    // brand and transform fixes
-    const brandOrTransform = (
-      await astGrep`$BRAND($SCHEMA, $ARGUMENT)`.map(({ getMatch, getNode }) => {
+      // brand and transform fixes
+      await astGrep`$BRAND($SCHEMA, $ARGUMENT)`.replace(({ getMatch }) => {
         const brand = getMatch("BRAND")?.text();
         const schema = getMatch("SCHEMA")?.text();
         const argument = getMatch("ARGUMENT")?.text();
 
         if (isBrand(brand) || isTransform(brand)) {
-          return {
-            replace: getNode().text(),
-            with: `${
-              importStar ? `${importStar}.` : ""
-            }pipe(${schema}, ${brand}(${argument}))`,
-          };
+          if (!importStar) {
+            addImport(`import { pipe } from "valibot"`);
+          }
+          return `${
+            importStar ? `${importStar}.` : ""
+          }pipe(${schema}, ${brand}(${argument}))`;
         }
-      })
-    ).filter((replacement) => !!replacement) as {
-      replace: string;
-      with: string;
-    }[];
-
-    if (
-      pipeFixes.length ||
-      objectOrTupleFixes.length ||
-      looseOrStrictFixes.length ||
-      objectMerging.length ||
-      brandOrTransform.length
-    ) {
-      console.log({
-        file: contexts.getFileContext().file,
-        pipeFixes,
-        renames,
-        objectOrTupleFixes,
-        looseOrStrictFixes,
-        objectMerging,
-        brandOrTransform,
       });
-    }
-  });
+    },
+  );
 }

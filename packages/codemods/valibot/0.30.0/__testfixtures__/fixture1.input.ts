@@ -1,8 +1,8 @@
 import * as v from "valibot";
-import { string, email, toCustom } from "valibot";
-import { pipe } from "valibot";
+import { email, toCustom } from "valibot";
+import { object, tuple, string, unknown, never } from "valibot";
 
-const Schema1 = v.string([v.email()]);
+const Schema1 = string([email()]);
 
 const Schema2 = string("asd", [email()]);
 
@@ -24,13 +24,13 @@ v.object({
   other: v.union([v.string([v.decimal()]), v.number()]),
 });
 
-const ObjectSchema = v.object({ key: v.string() }, v.null_());
-const TupleSchema = v.tuple([v.string()], v.null_());
+const ObjectSchema = object({ key: v.string() }, v.null_());
+const TupleSchema = tuple([v.string()], v.null_());
 
-const LooseObjectSchema = v.object({ key: v.string() }, v.unknown());
-const LooseTupleSchema = v.tuple([v.string()], v.unknown());
-const StrictObjectSchema = v.object({ key: v.string() }, v.never());
-const StrictTupleSchema = v.tuple([v.string()], v.never());
+const LooseObjectSchema = object({ key: string() }, unknown());
+const LooseTupleSchema = tuple([string()], unknown());
+const StrictObjectSchema = object({ key: string() }, never());
+const StrictTupleSchema = tuple([string()], never());
 
 const MergedObject = v.merge([ObjectSchema1, ObjectSchema2]);
 
