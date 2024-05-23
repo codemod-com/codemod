@@ -396,7 +396,7 @@ export const runCodemod = async (
         name: codemod.source === "package" ? codemod.name : undefined,
       },
       flowSettings.target,
-      flowSettings.raw,
+      flowSettings.format,
       safeArgumentRecord,
       onPrinterMessage,
       onCodemodError,
@@ -479,7 +479,7 @@ export const runCodemod = async (
       codemod.indexPath,
       engine,
       transpiledSource,
-      flowSettings.raw,
+      flowSettings.format,
       safeArgumentRecord,
       engineOptions,
       (error) => {

@@ -13,7 +13,7 @@ import {
 
 export const DEFAULT_EXCLUDE_PATTERNS = ["**/node_modules/**/*.*", "**/*.d.ts"];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
-export const DEFAULT_DISABLE_PRETTIER = false;
+export const DEFAULT_ENABLE_PRETTIER = true;
 export const DEFAULT_CACHE = true;
 export const DEFAULT_INSTALL = true;
 export const DEFAULT_USE_JSON = false;
@@ -25,7 +25,7 @@ export const flowSettingsSchema = object({
   exclude: optional(array(string())),
   target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
   files: optional(array(string())),
-  raw: optional(boolean(), DEFAULT_DISABLE_PRETTIER),
+  format: optional(boolean(), DEFAULT_ENABLE_PRETTIER),
   cache: optional(boolean(), DEFAULT_CACHE),
   install: optional(boolean(), DEFAULT_INSTALL),
   json: optional(boolean(), DEFAULT_USE_JSON),

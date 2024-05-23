@@ -65,7 +65,7 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.disablePrettier,
+            initializationMessage.enablePrettier,
             initializationMessage.safeArgumentRecord,
             initializationMessage.engineOptions,
             consoleCallback,
@@ -76,7 +76,7 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.disablePrettier,
+            initializationMessage.enablePrettier,
             initializationMessage.safeArgumentRecord,
             consoleCallback,
           );
@@ -86,7 +86,7 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.codemodPath,
             message.path,
             message.data,
-            initializationMessage.disablePrettier,
+            initializationMessage.enablePrettier,
           );
           break;
         case "workflow":

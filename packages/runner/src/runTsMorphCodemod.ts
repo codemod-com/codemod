@@ -78,7 +78,7 @@ export const runTsMorphCodemod = (
   codemodSource: string,
   oldPath: string,
   oldData: string,
-  disablePrettier: boolean,
+  formatWithPrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
@@ -104,7 +104,7 @@ export const runTsMorphCodemod = (
       oldPath,
       oldData,
       newData,
-      formatWithPrettier: !disablePrettier,
+      formatWithPrettier,
     },
   ];
 };
