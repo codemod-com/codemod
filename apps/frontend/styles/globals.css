@@ -212,6 +212,6 @@ h6[class*="heading"] a {
 }
 
 /* Cutomize Clerk components */
-.cl-userButtonPopoverActionButton {
+.cl-userButtonPopoverActionButton, .cl-userButtonPopoverActionButton:hover {
   color: inherit;
 }
