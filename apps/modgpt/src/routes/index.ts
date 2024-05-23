@@ -6,7 +6,6 @@ import { getRootPath } from "./root";
 import { getSendChatPath } from "./sendChat";
 import { getVersionPath } from "./version";
 
-const noop = (x: unknown) => undefined;
 export const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   [getRootPath, getVersionPath].forEach((f) => f(instance));
   instance.options("/sendChat", (request, reply) => {
@@ -34,6 +33,6 @@ export const protectedRoutes: FastifyPluginCallback = (
     // if (isDevelopment) console.info("ENV set to development");
   }
 
-  if (!isDevelopment) getSendChatPath(instance);
+  getSendChatPath(instance);
   done();
 };
