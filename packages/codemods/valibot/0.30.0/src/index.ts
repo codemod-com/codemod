@@ -161,7 +161,7 @@ const constructIs = ({
   };
 };
 
-export async function workflow({ jsFiles }: Api) {
+export async function workflow({ jsFiles, contexts }: Api) {
   await jsFiles("**/*.{js,jsx,ts,tsx,cjs,mjs}", async ({ astGrep }) => {
     const importStar = (
       await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
@@ -219,6 +219,11 @@ export async function workflow({ jsFiles }: Api) {
       namedImports,
       keys: ["transform"],
     });
+    const isOptional = constructIs({
+      importStar,
+      namedImports,
+      keys: ["optional"],
+    });
 
     // v.pipe support
     const pipeFixes = (
@@ -233,6 +238,7 @@ export async function workflow({ jsFiles }: Api) {
 
           if (
             isSchema(schema) &&
+            actions.length &&
             actions.every((node) => {
               return (
                 node.kind() === "call_expression" &&
@@ -374,13 +380,22 @@ export async function workflow({ jsFiles }: Api) {
       with: string;
     }[];
 
-    console.log({
-      pipeFixes,
-      renames,
-      objectOrTupleFixes,
-      looseOrStrictFixes,
-      objectMerging,
-      brandOrTransform,
-    });
+    if (
+      pipeFixes.length ||
+      objectOrTupleFixes.length ||
+      looseOrStrictFixes.length ||
+      objectMerging.length ||
+      brandOrTransform.length
+    ) {
+      console.log({
+        file: contexts.getFileContext().file,
+        pipeFixes,
+        renames,
+        objectOrTupleFixes,
+        looseOrStrictFixes,
+        objectMerging,
+        brandOrTransform,
+      });
+    }
   });
 }

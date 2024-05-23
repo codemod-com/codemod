@@ -32,7 +32,7 @@ const transform = async (
 
 		const { api } = require('@codemod.com/workflow');
 
-		workflow(api);
+		promise = workflow(api);
 	`;
 
   const exports = Object.freeze({});
@@ -53,10 +53,11 @@ const transform = async (
         return workflow;
       }
     },
+    promise: undefined,
   });
-  const value = vm.runInContext(codeToExecute, context, { timeout: 30000 });
-  if (value instanceof Promise) {
-    await value;
+  vm.runInContext(codeToExecute, context, { timeout: 30000 });
+  if (context.promise) {
+    await context.promise;
   }
 };
 
