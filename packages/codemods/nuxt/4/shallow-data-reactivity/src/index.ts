@@ -1,9 +1,9 @@
-import type { FileInfo, API, Options } from 'jscodeshift';
+import type { API, FileInfo, Options } from "jscodeshift";
 
 export default function transform(
   file: FileInfo,
   api: API,
-  options ? : Options,
+  options?: Options,
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
@@ -21,32 +21,34 @@ export default function transform(
 
   // List of functions to modify
   const functionsToModify = [
-    'useFetch',
-    'useAsyncData',
-    'useLazyAsyncData',
-    'useLazyFetch',
+    "useFetch",
+    "useAsyncData",
+    "useLazyAsyncData",
+    "useLazyFetch",
   ];
 
   functionsToModify.forEach((funcName) => {
     // Find all calls to the function
-    root.find(j.CallExpression, {
-      callee: {
-        type: 'Identifier',
-        name: funcName,
-      },
-    }).forEach((path) => {
-      // Check if the second argument is missing
-      if (path.node.arguments.length === 1) {
-        // Add the second argument
-        const newArg = j.objectExpression([
-          j.property('init', j.identifier('deep'), j.literal(true)),
-        ]);
-        path.node.arguments.push(newArg);
+    root
+      .find(j.CallExpression, {
+        callee: {
+          type: "Identifier",
+          name: funcName,
+        },
+      })
+      .forEach((path) => {
+        // Check if the second argument is missing
+        if (path.node.arguments.length === 1) {
+          // Add the second argument
+          const newArg = j.objectExpression([
+            j.property("init", j.identifier("deep"), j.literal(true)),
+          ]);
+          path.node.arguments.push(newArg);
 
-        // Replace the node with the new node, preserving comments
-        replaceWithComments(path, path.node);
-      }
-    });
+          // Replace the node with the new node, preserving comments
+          replaceWithComments(path, path.node);
+        }
+      });
   });
 
   return root.toSource();
