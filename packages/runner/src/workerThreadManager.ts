@@ -36,7 +36,7 @@ export class WorkerThreadManager {
     codemodPath: string,
     codemodEngine: "ts-morph" | "jscodeshift" | "ast-grep",
     codemodSource: string,
-    disablePrettier: boolean,
+    enablePrettier: boolean,
     safeArgumentRecord: ArgumentRecord,
     engineOptions: EngineOptions | null,
     private readonly onCodemodError: CodemodExecutionErrorCallback,
@@ -58,7 +58,7 @@ export class WorkerThreadManager {
         codemodPath,
         codemodEngine,
         codemodSource,
-        disablePrettier,
+        enablePrettier,
         safeArgumentRecord,
         engineOptions,
       } satisfies MainThreadMessage);

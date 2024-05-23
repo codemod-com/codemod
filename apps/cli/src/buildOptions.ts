@@ -1,7 +1,7 @@
 import {
   DEFAULT_CACHE,
-  DEFAULT_DISABLE_PRETTIER,
   DEFAULT_DRY_RUN,
+  DEFAULT_ENABLE_PRETTIER,
   DEFAULT_EXCLUDE_PATTERNS,
   DEFAULT_INSTALL,
   DEFAULT_THREAD_COUNT,
@@ -27,7 +27,8 @@ export const buildGlobalOptions = <T>(y: Argv<T>) =>
     })
     .option("cache", {
       type: "boolean",
-      description: "Disable cache for HTTP(S) requests",
+      description:
+        "Enable cache for HTTP(S) requests. Disable it using --no-cache",
       default: DEFAULT_CACHE,
     });
 
@@ -66,11 +67,11 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
         description:
           'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod", "ast-grep"',
       })
-      .option("raw", {
-        alias: "r",
+      .option("format", {
         type: "boolean",
-        description: "Disable formatting output with Prettier",
-        default: DEFAULT_DISABLE_PRETTIER,
+        description:
+          "Enable formatting output with Prettier. Disable it using --no-format",
+        default: DEFAULT_ENABLE_PRETTIER,
       })
       .option("threads", {
         alias: "n",
@@ -87,7 +88,7 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       .option("install", {
         type: "boolean",
         description:
-          "Disable packages installation for the codemod run if there is `deps` field declared in its configuration.",
+          "Enable packages installation for the codemod run if there is `deps` field declared in its configuration. Disable it using --no-install",
         default: DEFAULT_INSTALL,
       }),
   );

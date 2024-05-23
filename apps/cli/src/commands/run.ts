@@ -320,7 +320,9 @@ export const handleRunCliCommand = async (
             !flowSettings.install ? "\nDependency installation disabled" : "",
           ),
           chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
-          chalk.yellow(flowSettings.raw ? "\nFile formatting disabled" : ""),
+          chalk.yellow(
+            !flowSettings.format ? "\nFile formatting disabled" : "",
+          ),
         ),
         {
           padding: 2,

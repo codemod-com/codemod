@@ -24,7 +24,7 @@ const mainThreadMessageSchema = union([
       literal("ast-grep"),
       literal("workflow"),
     ]),
-    disablePrettier: boolean(),
+    enablePrettier: boolean(),
     safeArgumentRecord: argumentRecordSchema,
     engineOptions: nullable(engineOptionsSchema),
   }),

@@ -84,7 +84,7 @@ export const runAstGrepCodemod = async (
   rulesPath: string,
   oldPath: string,
   oldData: string,
-  disablePrettier: boolean,
+  formatWithPrettier: boolean,
 ): Promise<readonly FileCommand[]> => {
   try {
     // Use `which` command to check if the command is available
@@ -137,7 +137,7 @@ export const runAstGrepCodemod = async (
     oldPath,
     oldData,
     newData,
-    formatWithPrettier: !disablePrettier,
+    formatWithPrettier,
   });
 
   return commands;

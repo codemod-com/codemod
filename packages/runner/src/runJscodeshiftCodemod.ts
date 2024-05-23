@@ -73,7 +73,7 @@ export const runJscodeshiftCodemod = (
   codemodSource: string,
   oldPath: string,
   oldData: string,
-  disablePrettier: boolean,
+  formatWithPrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
   engineOptions: Extract<EngineOptions, { engine: "jscodeshift" }> | null,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
@@ -87,7 +87,7 @@ export const runJscodeshiftCodemod = (
       kind: "createFile",
       newPath,
       newData,
-      formatWithPrettier: !disablePrettier,
+      formatWithPrettier,
     });
   };
 
@@ -137,7 +137,7 @@ export const runJscodeshiftCodemod = (
     oldPath,
     oldData: oldData,
     newData,
-    formatWithPrettier: !disablePrettier,
+    formatWithPrettier,
   });
 
   return commands;
