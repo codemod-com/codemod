@@ -68,7 +68,6 @@ const addNamedImport = (
         s.local?.name === importSpecifier.imported.name,
     ) === -1
   ) {
-    console.log("HERE???");
     importDeclaration.specifiers?.push(importSpecifier);
   }
 
