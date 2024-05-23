@@ -1,4 +1,81 @@
-import type { API, FileInfo, Options } from "jscodeshift";
+import type {
+  API,
+  Collection,
+  FileInfo,
+  JSCodeshift,
+  Options,
+} from "jscodeshift";
+
+const findMethodCalls = (
+  j: JSCodeshift,
+  root: Collection<any>,
+  methodName: string,
+  namedImportLocalName: string,
+  defaultImportName: string,
+) =>
+  root.find(j.CallExpression).filter((path) => {
+    const { callee } = path.value;
+
+    if (j.Identifier.check(callee) && callee.name === namedImportLocalName) {
+      return true;
+    }
+
+    if (
+      j.MemberExpression.check(callee) &&
+      j.Identifier.check(callee.object) &&
+      callee.object.name === defaultImportName &&
+      j.Identifier.check(callee.property) &&
+      callee.property.name === methodName
+    ) {
+      return true;
+    }
+
+    return false;
+  });
+
+const getImportDeclaration = (
+  j: JSCodeshift,
+  root: Collection<any>,
+  importName: string,
+) =>
+  root
+    .find(j.ImportDeclaration, {
+      source: { value: importName },
+    })
+    .paths()
+    .at(0)?.node;
+
+const buildImportDeclaration = (j: JSCodeshift, sourceName: string) => {
+  return j.importDeclaration([], j.literal(sourceName));
+};
+
+const addNamedImport = (
+  j: JSCodeshift,
+  root: Collection<any>,
+  importName: string,
+  sourceName: string,
+) => {
+  const existingImportDeclaration = getImportDeclaration(j, root, sourceName);
+  const importDeclaration =
+    existingImportDeclaration ?? buildImportDeclaration(j, sourceName);
+
+  const importSpecifier = j.importSpecifier(j.identifier(importName));
+
+  if (
+    importDeclaration.specifiers?.findIndex(
+      (s) =>
+        importSpecifier.imported &&
+        s.local?.name === importSpecifier.imported.name,
+    ) === -1
+  ) {
+    importDeclaration.specifiers?.push(importSpecifier);
+  }
+
+  if (!existingImportDeclaration) {
+    const body = root.get().node.program.body;
+    body.unshift(importDeclaration);
+  }
+};
 
 export default function transform(
   file: FileInfo,
@@ -8,7 +85,8 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
-  let reactDomRenderNamedImportLocalName: string | null = null;
+  const reactNamedImportNamesToLocalNamesMap = new Map<string, string>();
+
   let reactDomDefaultImportName: string | null = null;
 
   let isDirty = false;
@@ -19,11 +97,11 @@ export default function transform(
     .forEach((path) => {
       path.value.specifiers?.forEach((specifier) => {
         // named import
-        if (
-          j.ImportSpecifier.check(specifier) &&
-          specifier.imported.name === "render"
-        ) {
-          reactDomRenderNamedImportLocalName = specifier.local?.name ?? null;
+        if (j.ImportSpecifier.check(specifier)) {
+          reactNamedImportNamesToLocalNamesMap.set(
+            specifier.imported.name,
+            specifier.local?.name ?? "",
+          );
         }
 
         // default and wildcard import
@@ -36,62 +114,61 @@ export default function transform(
       });
     });
 
-  root
-    .find(j.CallExpression)
-    .filter((path) => {
-      const { callee } = path.value;
+  /**
+   * replace ReactDOM.hydrate
+   */
 
-      if (
-        j.Identifier.check(callee) &&
-        callee.name === reactDomRenderNamedImportLocalName
-      ) {
-        return true;
-      }
+  findMethodCalls(
+    j,
+    root,
+    "hydrate",
+    reactNamedImportNamesToLocalNamesMap.get("hydrate") ?? "",
+    reactDomDefaultImportName ?? "",
+  ).forEach((path) => {
+    const args = path.value.arguments;
 
-      if (
-        j.MemberExpression.check(callee) &&
-        j.Identifier.check(callee.object) &&
-        callee.object.name === reactDomDefaultImportName &&
-        j.Identifier.check(callee.property) &&
-        callee.property.name === "render"
-      ) {
-        return true;
-      }
+    const hydrateRoot = j.expressionStatement(
+      j.callExpression(j.identifier("hydrateRoot"), [args[1], args[0]]),
+    );
 
-      return false;
-    })
-    .forEach((path) => {
-      const args = path.value.arguments;
+    isDirty = true;
 
-      const createRoot = j.variableDeclaration("const", [
-        j.variableDeclarator(
-          j.identifier("root"),
-          j.callExpression(j.identifier("createRoot"), [args[1]]),
-        ),
-      ]);
+    addNamedImport(j, root, "hydrateRoot", "react-dom/client");
+    path.parent.replace(hydrateRoot);
+  });
 
-      const render = j.expressionStatement(
-        j.callExpression(
-          j.memberExpression(j.identifier("root"), j.identifier("render")),
-          [args[0]],
-        ),
-      );
+  /**
+   * replace ReactDOM.render
+   */
+  findMethodCalls(
+    j,
+    root,
+    "render",
+    reactNamedImportNamesToLocalNamesMap.get("render") ?? "",
+    reactDomDefaultImportName ?? "",
+  ).forEach((path) => {
+    const args = path.value.arguments;
 
-      isDirty = true;
-      const body = root.get().node.program.body;
+    const createRoot = j.variableDeclaration("const", [
+      j.variableDeclarator(
+        j.identifier("root"),
+        j.callExpression(j.identifier("createRoot"), [args[1]]),
+      ),
+    ]);
 
-      const importStatement = j.importDeclaration(
-        [j.importSpecifier(j.identifier("createRoot"))],
-        j.literal("react-dom/client"),
-      );
-      body.unshift(importStatement);
+    const render = j.expressionStatement(
+      j.callExpression(
+        j.memberExpression(j.identifier("root"), j.identifier("render")),
+        [args[0]],
+      ),
+    );
 
-      path.parent.replace(createRoot);
-      path.parent.insertAfter(render);
-    });
+    isDirty = true;
+    addNamedImport(j, root, "createRoot", "react-dom/client");
 
-  if (isDirty) {
-  }
+    path.parent.replace(createRoot);
+    path.parent.insertAfter(render);
+  });
 
   return isDirty ? root.toSource() : undefined;
 }

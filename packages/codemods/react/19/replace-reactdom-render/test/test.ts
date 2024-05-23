@@ -68,4 +68,54 @@ describe("react/19/replace-reactdom-render", () => {
       OUTPUT.replace(/W/gm, ""),
     );
   });
+
+  it("replace reactdom.hydrate with hydrateRoot and replace imports: nested", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/hydrate.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/hydrate.output.js"),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    assert.deepEqual(
+      actualOutput?.replace(/W/gm, ""),
+      OUTPUT.replace(/W/gm, ""),
+    );
+  });
+
+  it("should not add react-dom/client if it already exists", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/import.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/import.output.js"),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
+
+    console.log(actualOutput, "???");
+
+    assert.deepEqual(
+      actualOutput?.replace(/W/gm, ""),
+      OUTPUT.replace(/W/gm, ""),
+    );
+  });
 });
