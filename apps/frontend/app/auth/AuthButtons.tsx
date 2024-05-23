@@ -21,6 +21,15 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
   };
 
   const Button = isStudio ? SButton : WButton;
+  const additionalOAuthScopes = {
+    github: [
+      "metadata:read",
+      "read:org",
+      "pull_requests:write",
+      "repo",
+      "write:discussion",
+    ],
+  };
   return (
     <>
       <SignedOut>
@@ -36,7 +45,10 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
       </SignedOut>
       <SignedIn>
         <div className="flex items-center gap-2">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton
+            afterSignOutUrl={isStudio ? "/studio" : "/"}
+            // userProfileProps={{ additionalOAuthScopes }}
+          />
           {isStudio ? user?.firstName : ""}
           <SignOutButton>
             <Button
