@@ -33,7 +33,8 @@
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
-      "be-types": ["../backend/types"]
+      "be-types": ["../backend/types"],
+      "@shared/*": ["../shared/*"]
     },
     "plugins": [{ "name": "next" }]
   },

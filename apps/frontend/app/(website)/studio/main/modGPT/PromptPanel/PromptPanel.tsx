@@ -5,65 +5,43 @@ import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
 import { insertValue } from "@chatbot/PromptPanel/utils";
 import { shouldUseCodemodAi } from "@chatbot/config";
 import type { useAiService } from "@chatbot/useAiService/useAiService";
+import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList, usePrompts } from "@chatbot/utils";
 import { useAuth } from "@clerk/nextjs";
-import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
+import { useGetAliases } from "@studio/store/zustand/CFS/alias";
 import type { UseChatHelpers } from "ai/react";
-import { type Dispatch, type SetStateAction, useRef, useState } from "react";
-import { flushSync } from "react-dom";
+import { useRef, useState } from "react";
 import { PromptForm } from "./PromptForm";
 import { ScrollToBottomButton } from "./ScrollToBottomButton";
 
 export type PromptPanelProps = Pick<
   UseChatHelpers,
-  | "append"
-  | "isLoading"
-  | "reload"
-  | "messages"
-  | "stop"
-  | "input"
-  | "setInput"
-  | "setMessages"
+  "isLoading" | "reload" | "messages" | "stop" | "input" | "setInput"
 > & {
-  id?: string;
-  setToken: Dispatch<SetStateAction<string | null>>;
+  handleSubmit: ReturnType<typeof useModGptSubmit>;
   startIterativeCodemodGeneration: ReturnType<
     typeof useAiService
   >["startIterativeCodemodGeneration"];
-  canAddMessages: ReturnType<typeof useAiService>["canAddMessages"];
   resetMessages: ReturnType<typeof useAiService>["resetMessages"];
 };
 
 export function PromptPanel(props: PromptPanelProps) {
   const {
-    id,
+    handleSubmit,
     isLoading,
     stop,
-    append,
     input,
     setInput,
-    setMessages,
     messages,
-    setToken,
     startIterativeCodemodGeneration,
-    canAddMessages,
     resetMessages,
   } = props;
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
   const [expandedHelper, setExpandedHelper] = useState(true);
-  const { getToken, isSignedIn } = useAuth();
+  const { isSignedIn } = useAuth();
   const aliases = useGetAliases();
   const promptsList = usePrompts(aliases);
   const aliasList = getOrderedAliasList(aliases);
-
-  const handleSubmit = async (value: string) => {
-    if (!isLoading) {
-      const token = await getToken();
-      flushSync(() => setToken(token));
-      const aliasesAppliedValue = applyAliases(value, aliases);
-      await append({ id, content: aliasesAppliedValue, role: "user" });
-    }
-  };
 
   const handleInsertValue = (value: string) => {
     const textArea = textAreaRef.current;
@@ -89,7 +67,7 @@ export function PromptPanel(props: PromptPanelProps) {
             {shouldUseCodemodAi && (
               <WebSocketButton
                 handleButtonClick={startIterativeCodemodGeneration}
-                canAddMessages={canAddMessages}
+                isLoading={isLoading}
               />
             )}
           </PromptButtons>

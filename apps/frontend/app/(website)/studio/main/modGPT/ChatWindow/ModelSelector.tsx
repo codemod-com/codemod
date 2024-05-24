@@ -1,5 +1,6 @@
 import { cn } from "@/utils";
 import { useTheme } from "@context/useTheme";
+import { type LLMEngine, llmEngines } from "@shared/consts";
 import {
   Select,
   SelectContent,
@@ -8,7 +9,6 @@ import {
   SelectValue,
 } from "@studio/components/ui/select";
 import { useCFSStore } from "@studio/store/zustand/CFS";
-import { type Engine, LLM_ENGINES } from "@studio/store/zustand/CFS";
 
 export const EngineSelector = () => {
   const {
@@ -16,7 +16,7 @@ export const EngineSelector = () => {
     setEngine,
   } = useCFSStore();
 
-  const handleEngineChange = (e: Engine) => {
+  const handleEngineChange = (e: LLMEngine) => {
     setEngine(e);
   };
 
@@ -34,7 +34,7 @@ export const EngineSelector = () => {
         <SelectValue placeholder={engine} />
       </SelectTrigger>
       <SelectContent>
-        {LLM_ENGINES.map((e) => (
+        {llmEngines.map((e) => (
           <SelectItem
             key={e}
             value={e}

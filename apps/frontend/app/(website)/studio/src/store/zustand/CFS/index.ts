@@ -1,17 +1,8 @@
 import type { SendMessageResponse } from "@studio/api/sendMessage";
 import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
 import { create } from "zustand";
+import type { LLMEngine } from "../../../../../../../../shared/consts";
 import type { PromptPreset } from "./prompts";
-
-export const LLM_ENGINES = [
-  "gpt-4",
-  "claude-2.0",
-  "claude-instant-1.2",
-  "replit-code-v1-3b",
-  "gpt-4-with-chroma",
-] as const;
-
-export type Engine = (typeof LLM_ENGINES)[number];
 
 // @TODO move to separate slice after demo
 export type AIAssistantState = Readonly<{
@@ -23,7 +14,7 @@ export type AIAssistantState = Readonly<{
   codemodHasRuntimeErrors: boolean;
   selectedPreset: PromptPreset | null;
   open: boolean;
-  engine: Engine;
+  engine: LLMEngine;
 }>;
 
 const AIAssistantInitialState = {
@@ -43,7 +34,7 @@ export type CFSStateValues = {
 };
 
 export type CFSStateSetters = {
-  setEngine: (engine: Engine) => void;
+  setEngine: (engine: LLMEngine) => void;
 };
 
 export type CFSState = CFSStateValues & CFSStateSetters;
@@ -54,6 +45,6 @@ export const defaultState: CFSStateValues = {
 
 export const useCFSStore = create<CFSState>((set, get) => ({
   ...defaultState,
-  setEngine: (engine: Engine) =>
+  setEngine: (engine: LLMEngine) =>
     set((state) => ({ AIAssistant: { ...state.AIAssistant, engine } })),
 }));
