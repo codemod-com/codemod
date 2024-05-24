@@ -19,9 +19,6 @@ export const useModGptSubmit = ({
       const token = await getToken();
       flushSync(() => setToken(token));
       const aliasesAppliedValue = applyAliases(value, aliases);
-      console.log({
-        aliasesAppliedValue,
-      });
       await append({ id, content: aliasesAppliedValue, role: "user" });
     }
   };
