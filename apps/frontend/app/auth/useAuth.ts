@@ -11,8 +11,9 @@ export const useAuth = () => {
   const router = useRouter();
   const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
   const addRedirectAction = useRedirectWhenSigned();
+  const clerk = useClerk();
   return {
-    ...useClerk(),
+    ...clerk,
     getSignIn:
       ({
         withPendingAction,

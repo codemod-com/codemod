@@ -6,8 +6,8 @@ import {
   ComboboxProvider,
 } from "@ariakit/react";
 import * as RadixSelect from "@radix-ui/react-select";
-import { useFilteredItems } from "@studio/components/CodemodButton/hooks/useFilter";
 import { CheckIcon, ChevronUpDownIcon, SearchIcon } from "@studio/icons";
+import { useFilteredItems } from "@studio/main/GHRun/hooks/useFilter";
 import type { ToVoid } from "@studio/types/transformations";
 import { LoaderIcon } from "lucide-react";
 import { startTransition, useState } from "react";

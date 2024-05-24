@@ -3,7 +3,6 @@ import Tree, { type TreeNode } from "@studio/components/Tree";
 import useScrollNodeIntoView from "@studio/hooks/useScrollNodeIntoView";
 import { useCallback, useEffect, useRef } from "react";
 
-import type { SnippetType } from "@studio/main/PageBottomPane";
 import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
 import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import {
@@ -14,10 +13,6 @@ import {
 
 type Props = {
   type: "before" | "after" | "output";
-};
-
-export const useSnippetRootNode = (type: SnippetType) => {
-  const { rootNode } = useCodemodOutputStore();
 };
 const ASTViewer = ({ type }: Props) => {
   const ASTTreeRef = useRef<HTMLDivElement>(null);

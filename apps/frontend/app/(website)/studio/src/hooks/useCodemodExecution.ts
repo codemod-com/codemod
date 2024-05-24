@@ -1,8 +1,8 @@
-import { RUN_CODEMOD } from "@/utils/apis/endpoints";
 import type {
   CodemodRunResponse,
   codemodRunBodySchema,
 } from "@codemod-com/utilities";
+import { RUN_CODEMOD } from "@shared/endpoints";
 import { useUserSession } from "@studio/store/zustand/userSession";
 import { useAPI } from "./useAPI";
 

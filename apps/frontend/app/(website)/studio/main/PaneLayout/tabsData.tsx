@@ -1,7 +1,7 @@
 import { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
+import LiveIcon from "@studio/icons/LiveIcon";
 import { CodemodBuilder } from "@studio/main/CodemodBuilder";
-import LiveIcon from "@studio/main/LiveIcon";
 import Table from "@studio/main/Log/Table";
 import {
   AstSection,
@@ -20,21 +20,7 @@ export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
 export type TabHeader = { value: string; name: ReactNode };
 export type TabContent = TabHeader & { content: ReactNode };
 
-export const useTabs = ({
-  beforePanel,
-  afterPanel,
-  isSignedIn = false,
-  showBuildPanel,
-  engine,
-  panelRefs,
-}: {
-  showBuildPanel: boolean;
-  isSignedIn?: boolean;
-  engine: KnownEngines;
-  panelRefs: PanelsRefs;
-  beforePanel: PanelData;
-  afterPanel: PanelData;
-}) => {
+const ChatTab = ({ isSignedIn }: { isSignedIn: boolean }) => {
   const { setContent } = useModStore();
   const {
     AIAssistant: { engine: llmEngine },
@@ -44,21 +30,31 @@ export const useTabs = ({
     setCodemod: setContent,
     engine: llmEngine,
   });
+  return <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />;
+};
+export const getTabsData = ({
+  beforePanel,
+  afterPanel,
+  isSignedIn = false,
+  engine,
+  panelRefs,
+}: {
+  isSignedIn?: boolean;
+  engine: KnownEngines;
+  panelRefs: PanelsRefs;
+  beforePanel: PanelData;
+  afterPanel: PanelData;
+}) => {
   const tabs = [
     {
       value: TabNames.MODGPT,
       name: "ModGPT",
       content: (
         <>
-          <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />
+          <ChatTab isSignedIn={isSignedIn} />
           {!isSignedIn && <SignInRequired />}
         </>
       ),
-    },
-    showBuildPanel && {
-      value: TabNames.INFERRER,
-      name: "Builder",
-      content: <CodemodBuilder />,
     },
     {
       value: TabNames.AST,

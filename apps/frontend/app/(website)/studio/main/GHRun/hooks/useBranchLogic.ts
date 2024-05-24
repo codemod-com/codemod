@@ -1,5 +1,5 @@
+import { GH_BRANCH_LIST } from "@shared/endpoints";
 import { useAPI } from "@studio/hooks/useAPI";
-import { GH_BRANCH_LIST } from "@utils/apis/endpoints";
 import type { GHBranch, GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 

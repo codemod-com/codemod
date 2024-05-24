@@ -1,8 +1,8 @@
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
+import { GH_REPO_LIST } from "@shared/endpoints";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useModal } from "@studio/hooks/useModal";
 import { useUserSession } from "@studio/store/zustand/userSession";
-import { GH_REPO_LIST } from "@utils/apis/endpoints";
 import type { GithubRepository } from "be-types";
 import { pipe } from "ramda";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";

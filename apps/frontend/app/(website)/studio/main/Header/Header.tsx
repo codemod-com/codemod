@@ -1,6 +1,6 @@
 import useFeatureFlags from "@/hooks/useFeatureFlags";
 import { CODEMOD_RUN_FEATURE_FLAG } from "@/utils/strings";
-import { CodemodButton } from "@studio/components/CodemodButton";
+import { CodemodButton } from "app/(website)/studio/main/GHRun";
 import { DownloadZip } from "../DownloadZip";
 import { TopBar } from "./TopBar";
 import { HeaderButtons } from "./headerButtons";

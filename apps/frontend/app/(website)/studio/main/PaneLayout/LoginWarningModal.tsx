@@ -1,4 +1,5 @@
-import { SignInButton, useAuth } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
+import { SignInButton } from "@clerk/nextjs";
 import {
   AlertDialog,
   AlertDialogAction,

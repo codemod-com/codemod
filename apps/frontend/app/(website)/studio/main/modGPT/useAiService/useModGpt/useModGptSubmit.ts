@@ -1,4 +1,4 @@
-import { useAuth } from "@clerk/nextjs";
+import { useAuth } from "@auth/useAuth";
 import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
 import type { UseChatHelpers } from "ai/react/dist";
 import type { Dispatch, SetStateAction } from "react";

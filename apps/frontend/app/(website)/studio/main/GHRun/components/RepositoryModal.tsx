@@ -1,9 +1,9 @@
 import Input from "@/components/shared/Input";
-import { DropdownSelector } from "@studio/components/CodemodButton/Dropdown";
-import { useBranchLogic } from "@studio/components/CodemodButton/hooks/useBranchLogic";
-import { useHandleCodemodRun } from "@studio/components/CodemodButton/hooks/useHandleCodemodRun";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
+import { DropdownSelector } from "@studio/main/GHRun/components/Dropdown";
+import { useBranchLogic } from "@studio/main/GHRun/hooks/useBranchLogic";
+import { useHandleCodemodRun } from "@studio/main/GHRun/hooks/useHandleCodemodRun";
 import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { type SetStateAction, useState } from "react";

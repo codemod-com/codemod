@@ -1,8 +1,8 @@
 import apiClient from "@/utils/apis/client";
+import { GET_EXECUTION_STATUS } from "@shared/endpoints";
 import type { AxiosError } from "axios";
-import { GET_EXECUTION_STATUS } from "./endpoints";
 
-type Result =
+export type Result =
   | {
       status: "progress" | "error";
       message: string; // internal events (crating folders, cloning repo, creating pull request etc..) | error messages
@@ -22,14 +22,15 @@ type GetExecutionStatusResponse = Readonly<{
 }>;
 
 type GetExecutionStatusRequest = Readonly<{
-  token: string;
-  executionId: string;
+  token?: string | null;
+  executionId?: string | null;
 }>;
 
 const getExecutionStatus = async ({
   executionId,
   token,
 }: GetExecutionStatusRequest): Promise<GetExecutionStatusResponse | null> => {
+  if (!token || !executionId) return null;
   try {
     const res = await apiClient.get<GetExecutionStatusResponse>(
       GET_EXECUTION_STATUS(executionId),
