@@ -5,42 +5,47 @@ import {
   useInitialMss,
   useSaveMssgsToLocalStorage,
 } from "@chatbot/useAiService/utils";
+import type { LLMEngine } from "@shared/consts";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 const showCodemodCopiedToast = () =>
-  toast("Codemod copied to the right pane", {
+  toast.success("Codemod copied to the right pane", {
     position: "top-center",
     duration: 12000,
   });
 export const useAiService = ({
   setCodemod,
+  engine,
 }: {
   setCodemod: (content: string) => void;
+  engine: LLMEngine;
 }) => {
   const initialMessages = useInitialMss();
 
   const [messages, setMessages] = useState<LLMMessage[]>([]);
-  const [canAddMessages, setCanAddMessages] = useState(true);
 
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages]);
 
   const {
-    isLoading,
+    isLoading: modGptLoading,
+    modGptSubmit,
     messages: modGPTMessages,
     setMessages: setModGPTMessages,
     append: appendModGPTMessages,
     ...restMod
-  } = useModGPT({ initialMessages: [] });
+  } = useModGPT({ initialMessages: [], engine });
 
-  const { wsMessage: codemodAIMessage, startIterativeCodemodGeneration } =
-    useCodemodAI({
-      messages,
-      canAddMessages,
-      setCanAddMessages,
-    });
+  const {
+    wsMessage: codemodAIMessage,
+    startIterativeCodemodGeneration,
+    serviceBusy,
+  } = useCodemodAI({
+    messages,
+    engine,
+  });
 
   const lastModGptMss = modGPTMessages?.at(-1);
   const lastMss = messages?.at(-1);
@@ -85,16 +90,16 @@ export const useAiService = ({
     localStorage.removeItem("frozenMessages");
   };
 
+  const isLoading = serviceBusy || modGptLoading;
   useSaveMssgsToLocalStorage({ messages, isLoading });
 
   return {
+    ...restMod,
     resetMessages,
     isLoading,
     messages,
     setMessages,
-    append: appendModGPTMessages,
+    modGptSubmit,
     startIterativeCodemodGeneration,
-    canAddMessages,
-    ...restMod,
   };
 };

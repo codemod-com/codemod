@@ -11,19 +11,15 @@ type Props = {
 
 const ChatBase = ({
   aiProps: {
-    id,
     isLoading,
     handleStop,
-    append,
     reload,
     messages,
     input,
     setInput,
-    setMessages,
-    setToken,
-    canAddMessages,
     startIterativeCodemodGeneration,
     resetMessages,
+    modGptSubmit,
   },
   className,
   isSignedIn,
@@ -37,18 +33,14 @@ const ChatBase = ({
         className={className}
       />
       <PromptPanel
-        id={id}
+        handleSubmit={modGptSubmit}
         resetMessages={resetMessages}
         isLoading={isLoading}
         stop={handleStop}
-        append={append}
         reload={reload}
         messages={messages}
         input={input}
         setInput={setInput}
-        setMessages={setMessages}
-        setToken={setToken}
-        canAddMessages={canAddMessages}
         startIterativeCodemodGeneration={startIterativeCodemodGeneration}
       />
     </>

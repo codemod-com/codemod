@@ -9,6 +9,7 @@ import {
   type PanelsRefs,
 } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
+import { useCFSStore } from "@studio/store/zustand/CFS";
 import { useModStore } from "@studio/store/zustand/mod";
 import { TabNames } from "@studio/store/zustand/view";
 import type { ReactNode } from "react";
@@ -35,7 +36,14 @@ export const useTabs = ({
   afterPanel: PanelData;
 }) => {
   const { setContent } = useModStore();
-  const aiAssistantData = useAiService({ setCodemod: setContent });
+  const {
+    AIAssistant: { engine: llmEngine },
+  } = useCFSStore();
+
+  const aiAssistantData = useAiService({
+    setCodemod: setContent,
+    engine: llmEngine,
+  });
   const tabs = [
     {
       value: TabNames.MODGPT,

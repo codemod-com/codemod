@@ -1,20 +1,20 @@
 import { codemodAiWsServer, shouldUseCodemodAi } from "@chatbot/config";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
+import type { LLMEngine } from "@shared/consts";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 
 export const useCodemodAI = ({
   messages,
-  canAddMessages,
-  setCanAddMessages,
+  engine,
 }: {
   messages: LLMMessage[];
-  canAddMessages: boolean;
-  setCanAddMessages: Dispatch<SetStateAction<boolean>>;
+  engine: LLMEngine;
 }) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
   const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
+  const [serviceBusy, setServiceBusy] = useState(true);
 
   useEffect(() => {
     if (!shouldUseCodemodAi) return;
@@ -23,7 +23,7 @@ export const useCodemodAI = ({
     websocket.onmessage = async (event) => {
       const data = JSON.parse(event.data) as MessageToWs;
       if (data.codemod) {
-        setCanAddMessages(true);
+        setServiceBusy(true);
         setWsMessage({
           codemod: data.codemod,
           content: `\`\`\`ts ${data.codemod}\`\`\``,
@@ -46,20 +46,21 @@ export const useCodemodAI = ({
   }, []);
 
   const startIterativeCodemodGeneration = () => {
-    if (ws && ws.readyState === WebSocket.OPEN && canAddMessages) {
+    if (ws && ws.readyState === WebSocket.OPEN && serviceBusy) {
       const messageToSend = JSON.stringify({
+        config: { llm_engine: engine },
         previous_context: messages,
         before,
         after,
       });
       ws.send(messageToSend);
-      setCanAddMessages(false);
+      setServiceBusy(false);
     }
   };
 
   return {
     startIterativeCodemodGeneration,
     wsMessage,
-    canAddMessages,
+    serviceBusy,
   };
 };
