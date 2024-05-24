@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { clerkPlugin, getAuth } from "@clerk/fastify";
+import { getAuth } from "@clerk/fastify";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import * as openAiEdge from "openai-edge";
@@ -31,20 +31,10 @@ const replicateService = new ReplicateService(REPLICATE_API_KEY);
 const openAiEdgeApi = new openAiEdge.OpenAIApi(
   new OpenAIConfiguration({ apiKey: OPEN_AI_API_KEY }),
 );
-let isRegistered = false;
+
 export const getSendChatPath = (instance: Instance) =>
   instance.post("/sendChat", async (request, reply) => {
     if (!isDevelopment && clerkApplied) {
-      const clerkOptions = {
-        publishableKey: environment.CLERK_PUBLISH_KEY,
-        secretKey: environment.CLERK_SECRET_KEY,
-        jwtKey: environment.CLERK_JWT_KEY,
-      };
-
-      if (!isRegistered) {
-        instance.register(clerkPlugin, clerkOptions);
-        isRegistered = true;
-      }
       const { userId } = getAuth(request);
       if (!userId) {
         reply.code(401).send();

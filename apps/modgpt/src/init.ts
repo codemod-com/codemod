@@ -16,6 +16,20 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     logger: true,
   });
 
+  if (!isDevelopment && clerkApplied) {
+    const clerkOptions = {
+      publishableKey: environment.CLERK_PUBLISH_KEY,
+      secretKey: environment.CLERK_SECRET_KEY,
+      jwtKey: environment.CLERK_JWT_KEY,
+    };
+
+    fastify.register(clerkPlugin, clerkOptions);
+  } else {
+    if (!clerkApplied)
+      console.warn("No Clerk keys set. Authentication is disabled.");
+    if (isDevelopment) console.info("ENV set to development");
+  }
+
   const handleProcessExit = (code: 0 | 1) => {
     fastify.close();
 
