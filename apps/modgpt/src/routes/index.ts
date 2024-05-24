@@ -19,7 +19,7 @@ export const protectedRoutes: FastifyPluginCallback = (
   _opts,
   done,
 ) => {
-  if (clerkApplied) {
+  if (!isDevelopment && clerkApplied) {
     const clerkOptions = {
       publishableKey: environment.CLERK_PUBLISH_KEY,
       secretKey: environment.CLERK_SECRET_KEY,
@@ -30,7 +30,7 @@ export const protectedRoutes: FastifyPluginCallback = (
   } else {
     if (!clerkApplied)
       console.warn("No Clerk keys set. Authentication is disabled.");
-    // if (isDevelopment) console.info("ENV set to development");
+    if (isDevelopment) console.info("ENV set to development");
   }
 
   getSendChatPath(instance);

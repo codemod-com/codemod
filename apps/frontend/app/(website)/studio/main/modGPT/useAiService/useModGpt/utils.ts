@@ -79,48 +79,7 @@ export const useHandlePrompt = ({
   ]);
 };
 
-export const useModMssTimestamps = ({ messages }: { messages: Message[] }) => {
-  const [modMssTimestamps, setModMssTimestamps] = useState<
-    Record<number, Message>
-  >({});
-  const newMessage = messages?.at(-1);
-
-  useEffect(() => {
-    setModMssTimestamps((ct) => ({
-      ...ct,
-      [Date.now().toString()]: newMessage,
-    }));
-  }, [newMessage?.id]);
-  return modMssTimestamps;
-};
-
 export const getHeadersWithAuth = (token: string | null) => ({
   "Content-Type": "application/json",
   Authorization: token ? `Bearer ${token}` : "",
 });
-
-export const onFinish =
-  ({
-    command,
-    setCurrentCommand,
-    setContent,
-  }: {
-    command: string | null;
-    setCurrentCommand: ModState["setCurrentCommand"];
-    setContent: ModState["setContent"];
-  }) =>
-  ({ content }: { content: string }) => {
-    if (command !== "learn") {
-      return;
-    }
-
-    setCurrentCommand(null);
-
-    const codemodSourceCode = buildCodemodFromLLMResponse(content);
-
-    if (codemodSourceCode !== null) {
-      setContent(codemodSourceCode);
-
-      toast.success("Auto-updated codemod based on AI response.");
-    }
-  };
