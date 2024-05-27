@@ -97,7 +97,7 @@ export const useAiService = ({
   return {
     ...restMod,
     resetMessages,
-    isLoading,
+    isLoading: false,
     messages,
     setMessages,
     modGptSubmit,

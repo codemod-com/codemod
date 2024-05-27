@@ -16,7 +16,7 @@ export const WebSocketButton = ({
       size="sm"
       className="group my-0 h-8 whitespace-nowrap !py-0 text-xs font-bold bg-accent"
       onClick={handleButtonClick}
-      disabled={!isLoading}
+      disabled={isLoading}
     >
       Generate codemod with AI
     </Button>

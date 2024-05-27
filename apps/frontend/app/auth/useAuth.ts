@@ -1,4 +1,5 @@
 import { useRedirectWhenSigned } from "@/hooks/useRedirectWhenSigned";
+import { devToken, isDevelopment } from "@chatbot/config";
 import { useAuth as useClerk } from "@clerk/nextjs";
 import { authUrl } from "@studio/config";
 import {
@@ -12,8 +13,10 @@ export const useAuth = () => {
   const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
   const addRedirectAction = useRedirectWhenSigned();
   const clerk = useClerk();
+  const getToken = isDevelopment ? () => devToken : clerk.getToken;
   return {
     ...clerk,
+    getToken,
     getSignIn:
       ({
         withPendingAction,
