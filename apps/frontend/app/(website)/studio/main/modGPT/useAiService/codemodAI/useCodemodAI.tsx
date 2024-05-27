@@ -86,6 +86,11 @@ export const useCodemodAI = ({
 
   const startIterativeCodemodGeneration = () => {
     if (ws && before && after && isWsConnected && !serviceBusy) {
+      setWsMessage({
+        content: `Generate codemod with AI`,
+        role: "assistant",
+        id: Date.now().toString(),
+      });
       const messageToSend = {
         config: { llm_engine: engine },
         previous_context: messages,
