@@ -45,7 +45,7 @@ export const handleInitCliCommand = async (options: {
     engine: KnownEngines;
     license: License;
     typescript: boolean;
-    git: boolean;
+    gitUrl: string;
     npm: boolean;
     path?: string;
   } | null = null;
@@ -55,7 +55,7 @@ export const handleInitCliCommand = async (options: {
   if (mainFilePath) {
     const defaultedAnswers = {
       typescript: extname(mainFilePath) === ".ts",
-      git: false,
+      gitUrl: false,
       npm: false,
     };
 
@@ -63,6 +63,7 @@ export const handleInitCliCommand = async (options: {
       name: string;
       engine: KnownEngines;
       license: License;
+      gitUrl: string;
       path: string;
     }>([
       {
@@ -84,6 +85,12 @@ export const handleInitCliCommand = async (options: {
           "What kind of license do you want to include with your codemod?",
         pageSize: LICENSE_CHOICES.length,
         choices: LICENSE_CHOICES,
+      },
+      {
+        type: "input",
+        name: "gitUrl",
+        message:
+          "Is there a git repository URL you want to associate with this codemod?",
       },
       {
         type: "input",
@@ -111,6 +118,9 @@ export const handleInitCliCommand = async (options: {
         type: "input",
         name: "name",
         message: "Provide a name for your codemod:",
+        validate: (input) => {
+          return input === "" ? "Name cannot be empty." : true;
+        },
       },
       {
         type: "list",
@@ -141,10 +151,10 @@ export const handleInitCliCommand = async (options: {
         default: true,
       },
       {
-        type: "confirm",
-        name: "git",
-        message: "Do you want to initialize an empty git repository?",
-        default: false,
+        type: "input",
+        name: "gitUrl",
+        message:
+          "Is there a git repository URL you want to associate with this codemod?",
       },
       {
         type: "confirm",
@@ -164,6 +174,7 @@ export const handleInitCliCommand = async (options: {
         license: answers.license,
         username: userData?.user.username ?? null,
         vanillaJs: !answers.typescript,
+        gitUrl: answers.gitUrl,
         // TODO:
         // tags
       }
@@ -238,13 +249,23 @@ export const handleInitCliCommand = async (options: {
     chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
   );
 
-  if (answers?.git) {
+  if (answers?.gitUrl) {
     try {
       await execPromise("git init", { cwd: codemodBaseDir });
     } catch (err) {
+      //
+    }
+
+    try {
+      await execPromise(`git remote add origin ${answers.gitUrl}`, {
+        cwd: codemodBaseDir,
+      });
+    } catch (err) {
       printer.printConsoleMessage(
         "error",
-        `Failed to initialize git repository:\n${(err as Error).message}.`,
+        `Failed to initialize a git package with provided repository link:\n${
+          (err as Error).message
+        }.`,
       );
     }
   }
