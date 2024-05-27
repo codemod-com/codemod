@@ -142,10 +142,12 @@ export const buildPatterns = async (
   let reason: string | undefined;
   let patterns: string[] | undefined = undefined;
   if (flowSettings.include) {
-    reason = "Using paths provided by user via options";
+    reason =
+      "Using paths provided by user via options (combined with engine defaults)";
     patterns = flowSettings.include;
   } else if (codemod.include) {
-    reason = "Using paths provided by codemod settings";
+    reason =
+      "Using paths provided by codemod settings (combined with engine defaults)";
     patterns = codemod.include;
   }
 
