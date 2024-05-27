@@ -1,5 +1,8 @@
 {
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
+  "files": {
+    "ignore": ["**/__testfixtures__/**"]
+  },
   "linter": {
     "ignore": [
       "./packages",
@@ -122,7 +125,8 @@
       "generated",
       "*.py",
       "./apps/ai/**",
-      ".all-contributorsrc"
+      ".all-contributorsrc",
+      "**/__testfixtures__/**"
     ]
   },
   "organizeImports": {
