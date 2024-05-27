@@ -70,7 +70,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     } catch (err) {
       spinner?.fail();
       throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data.error ??
+        (err as AxiosError<{ error: string }>).response?.data?.error ??
           "Error getting download link for codemod",
       );
     }
@@ -88,7 +88,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     } catch (err) {
       spinner?.fail();
       throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data.error ??
+        (err as AxiosError<{ error: string }>).response?.data?.error ??
           "Error downloading codemod from the registry",
       );
     }
