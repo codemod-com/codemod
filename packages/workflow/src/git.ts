@@ -75,10 +75,8 @@ export const cloneRepository = async (
     cwd.cwd = tmpDir;
   }
 
-  console.log({ tmpDir });
-
   if (await isDirectory(tmpDir)) {
-    console.log("Directory already exists, skipping clone, implement checkout");
+    console.log(`Directory ${tmpDir} already exists, skipping clone`);
     const remoteDefaultBranch = await getDefaultBranchFromRemote(repositoryUrl);
     const remoteDefaultBranchHash =
       remoteDefaultBranch &&
