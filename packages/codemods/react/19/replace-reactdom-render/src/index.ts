@@ -115,6 +115,41 @@ export default function transform(
     });
 
   /**
+   * replace unmountComponentAtNode
+   */
+
+  findMethodCalls(
+    j,
+    root,
+    "unmountComponentAtNode",
+    reactNamedImportNamesToLocalNamesMap.get("unmountComponentAtNode") ?? "",
+    reactDomDefaultImportName ?? "",
+  ).forEach((path) => {
+    const args = path.value.arguments;
+
+    const createRoot = j.variableDeclaration("const", [
+      j.variableDeclarator(
+        j.identifier("root"),
+        j.callExpression(j.identifier("createRoot"), [args[0]]),
+      ),
+    ]);
+
+    const unmount = j.expressionStatement(
+      j.callExpression(
+        j.memberExpression(j.identifier("root"), j.identifier("unmount")),
+        [],
+      ),
+    );
+
+    addNamedImport(j, root, "createRoot", "react-dom/client");
+
+    path.parent.replace(createRoot);
+    path.parent.insertAfter(unmount);
+
+    isDirty = true;
+  });
+
+  /**
    * replace ReactDOM.hydrate
    */
 

@@ -111,7 +111,29 @@ describe("react/19/replace-reactdom-render", () => {
       buildApi("tsx"),
     );
 
-    console.log(actualOutput, "???");
+    assert.deepEqual(
+      actualOutput?.replace(/W/gm, ""),
+      OUTPUT.replace(/W/gm, ""),
+    );
+  });
+
+  it("should replace reactdom.unmountComponentAtNode with root.unmount()", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/unmount.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/unmount.output.js"),
+      "utf-8",
+    );
+
+    const actualOutput = transform(
+      {
+        path: "index.js",
+        source: INPUT,
+      },
+      buildApi("tsx"),
+    );
 
     assert.deepEqual(
       actualOutput?.replace(/W/gm, ""),
