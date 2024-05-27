@@ -127,6 +127,10 @@ export const executeMainThread = async () => {
     yargs(slicedArgv).help().version(false),
   );
 
+  if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
+    return console.log(version);
+  }
+
   argvObject
     .scriptName("codemod")
     .usage("Usage: <command> [options]")
@@ -332,10 +336,6 @@ export const executeMainThread = async () => {
   }
 
   const argv = await argvObject.parse();
-
-  if (argv.version) {
-    return console.log(version);
-  }
 
   {
     const { exit } = await initializeDependencies(argv);
