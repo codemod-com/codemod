@@ -28,56 +28,60 @@ export const useCodemodAI = ({
       }`,
     );
   };
-  useEffect(() => {
-    let websocket: Socket;
+
+  const onConnect = () => {
+    console.info("WebSocket connection established");
+  };
+  const onDisconnect = () => {
+    console.info("WebSocket connection ended");
+    setIsWsConnected(false);
+  };
+
+  const wsCleanup = () => {
+    ws?.off("connect", onConnect);
+    ws?.off("disconnect", onDisconnect);
+    ws?.off("message", onMessage);
+    ws?.off("error", handleError);
+    setIsWsConnected(false);
+    setServiceBusy(false);
+  };
+
+  const onMessage = (data: MessageToWs) => {
+    if (data.error || data.execution_status === "error") {
+      handleError(data.error || "server crashed");
+    } else if (data.codemod) {
+      setWsMessage({
+        codemod: data.codemod,
+        content: `\`\`\`ts ${data.codemod}\`\`\``,
+        role: "assistant",
+        id: Date.now().toString(),
+      });
+      setServiceBusy(false);
+    } else {
+      setWsMessage({
+        content: data.message,
+        role: "assistant",
+        id: Date.now().toString(),
+      });
+    }
+  };
+
+  const handleWebsocketConnection = async () => {
     if (!shouldUseCodemodAi) return;
     setIsWsConnected(true);
-    const onConnect = () => {
-      console.info("WebSocket connection established");
-    };
-    const onDisconnect = () => {
-      console.info("WebSocket connection ended");
-      setIsWsConnected(false);
-    };
+    const websocket = io(codemodAiWsServer, {
+      auth: { token: await getToken() },
+    });
+    websocket.on("connect", onConnect);
+    websocket.on("disconnect", onDisconnect);
+    websocket.on("message", onMessage);
+    websocket.on("error", handleError);
+    setWs(websocket);
+  };
 
-    const onMessage = (data: MessageToWs) => {
-      if (data.error || data.execution_status === "error") {
-        handleError(data.error || "server crashed");
-      } else if (data.codemod) {
-        setWsMessage({
-          codemod: data.codemod,
-          content: `\`\`\`ts ${data.codemod}\`\`\``,
-          role: "assistant",
-          id: Date.now().toString(),
-        });
-        setServiceBusy(false);
-      } else {
-        setWsMessage({
-          content: data.message,
-          role: "assistant",
-          id: Date.now().toString(),
-        });
-      }
-    };
-
-    const handleWebsocketConnection = async () => {
-      console.log("handleWebsocketConnection");
-      const websocket = io(codemodAiWsServer, {
-        auth: { token: await getToken() },
-      });
-      websocket.on("connect", onConnect);
-      websocket.on("disconnect", onDisconnect);
-      websocket.on("message", onMessage);
-      websocket.on("error", handleError);
-      setWs(websocket);
-    };
+  useEffect(() => {
     handleWebsocketConnection();
-    return () => {
-      websocket?.off("connect", onConnect);
-      websocket?.off("disconnect", onDisconnect);
-      websocket?.off("message", onMessage);
-      websocket?.off("error", handleError);
-    };
+    return wsCleanup;
   }, []);
 
   const startIterativeCodemodGeneration = () => {
@@ -94,6 +98,11 @@ export const useCodemodAI = ({
   };
 
   return {
+    stopCodemodAi: () => {
+      ws?.disconnect();
+      wsCleanup();
+      handleWebsocketConnection();
+    },
     startIterativeCodemodGeneration,
     wsMessage,
     serviceBusy,

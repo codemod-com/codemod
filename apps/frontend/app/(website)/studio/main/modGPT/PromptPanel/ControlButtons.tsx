@@ -15,7 +15,7 @@ export const ControlButtons: React.FC<ControlButtonsProps> = ({
   expandedHelper,
   toggleHelper,
 }) => (
-  <div className="flex h-10 items-center justify-center">
+  <div className="flex h-10 items-center justify-center m-2">
     {isLoading && (
       <Button variant="outline" onClick={stop} className="bg-background">
         <StopIcon className="mr-2" />
