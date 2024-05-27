@@ -1,4 +1,5 @@
 import { resolve } from "node:path";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type Output,
   array,
@@ -21,6 +22,7 @@ export const DEFAULT_THREAD_COUNT = 4;
 export const DEFAULT_DRY_RUN = false;
 
 export const flowSettingsSchema = object({
+  _: array(string()),
   include: optional(array(string())),
   exclude: optional(array(string())),
   target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
@@ -39,12 +41,32 @@ export type FlowSettings = Omit<
   exclude: string[];
 };
 
-export const parseFlowSettings = (input: unknown): FlowSettings => {
+export const parseFlowSettings = (
+  input: unknown,
+  printer: PrinterBlueprint,
+): FlowSettings => {
   const flowSettings = parse(flowSettingsSchema, input);
+
+  const positionalPassedTarget = flowSettings._.at(1);
+  const argTarget = flowSettings.target;
+
+  let target: string;
+  if (positionalPassedTarget && argTarget) {
+    printer.printConsoleMessage(
+      "info",
+      chalk.yellow(
+        "Both positional and argument target options are passed. Defaulting to the argument target option...",
+      ),
+    );
+
+    target = argTarget;
+  } else {
+    target = positionalPassedTarget ?? argTarget;
+  }
 
   return {
     ...flowSettings,
-    target: resolve(flowSettings.target),
+    target: resolve(target),
     exclude: (flowSettings.exclude ?? []).concat(DEFAULT_EXCLUDE_PATTERNS),
   };
 };
