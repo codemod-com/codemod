@@ -1,3 +1,4 @@
+import { existsSync } from "node:fs";
 import {
   type Output,
   array,
@@ -46,24 +47,22 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
     };
   }
 
-  const source = codemodSettings.source;
+  const nameOrPath = codemodSettings._.at(0);
 
-  if (source) {
+  if (!nameOrPath) {
+    throw new Error("Codemod to run was not specified!");
+  }
+
+  if (existsSync(nameOrPath) || codemodSettings.source) {
     return {
       kind: "runSourced",
-      source,
+      source: codemodSettings.source ?? nameOrPath,
       engine: codemodSettings.engine ?? null,
     };
   }
 
-  const codemodName = codemodSettings._.at(-1);
-
-  if (!codemodName) {
-    throw new Error("Codemod to run was not specified!");
-  }
-
   return {
     kind: "runNamed",
-    name: codemodName,
+    name: nameOrPath,
   };
 };

@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
-import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -19,19 +18,17 @@ import {
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   TarService,
-  capitalize,
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import columnify from "columnify";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
-import type { buildRunOptions } from "../buildOptions.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
 import { buildPrinterMessageUponCommand } from "../fileCommands.js";
 import { FileDownloadService } from "../fileDownloadService.js";
@@ -85,7 +82,8 @@ const checkFileTreeVersioning = async (target: string) => {
     const res = await inquirer.prompt<{ force: boolean }>({
       type: "confirm",
       name: "force",
-      message: "Could not run git working tree check. Proceed anyway?",
+      message:
+        "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
       default: false,
     });
 
@@ -99,17 +97,11 @@ const checkFileTreeVersioning = async (target: string) => {
 
 export const handleRunCliCommand = async (
   printer: PrinterBlueprint,
-  args: Awaited<ReturnType<ReturnType<typeof buildRunOptions>>["argv"]>,
+  args: GlobalArgvOptions & RunArgvOptions,
   telemetry: TelemetrySender<TelemetryEvent>,
 ) => {
-  const nameOrPath = String(args._.at(-1));
-
-  if (existsSync(nameOrPath)) {
-    args.source = nameOrPath;
-  }
-
   const codemodSettings = parseCodemodSettings(args);
-  const flowSettings = parseFlowSettings(args);
+  const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
 
   if (!runSettings.dryRun) {
@@ -166,7 +158,7 @@ export const handleRunCliCommand = async (
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
-      codemod = await codemodDownloader.download(nameOrPath);
+      codemod = await codemodDownloader.download(codemodSettings.name);
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
@@ -200,7 +192,7 @@ export const handleRunCliCommand = async (
       kind: codemodSettings.kind,
       codemod: {
         ...codemod,
-        hashDigest: createHash("ripemd160").update(nameOrPath).digest(),
+        hashDigest: createHash("ripemd160").update(codemod.name).digest(),
         safeArgumentRecord: await buildSafeArgumentRecord(
           codemod,
           args,
@@ -287,35 +279,36 @@ export const handleRunCliCommand = async (
       transformer,
     );
 
-    const patternsColumns = columnify(
-      Array.from({
-        length: Math.max(include.length, exclude.length),
-      }).map(() => ({
-        include: chalk.bold.green(include.shift() ?? ""),
-        exclude: chalk.bold.red(exclude.shift() ?? ""),
-      })),
-      {
-        headingTransform: (heading) => chalk.bold(capitalize(heading)),
-        minWidth: 15,
-      },
-    );
-
     let runningCodemodVersion = "";
-    if ("version" in codemodDefinition.codemod) {
+    let runningCodemodName = "";
+    const isRunningFromLocal = codemodSettings.kind === "runSourced";
+
+    if (codemodDefinition.codemod.source !== "standalone") {
       runningCodemodVersion += `@${codemodDefinition.codemod.version}`;
-    }
-    if (args.source) {
-      runningCodemodVersion += " (local)";
+      runningCodemodName = codemodDefinition.codemod.name;
+    } else {
+      runningCodemodVersion += " (standalone)";
+      runningCodemodName = codemodDefinition.codemod.indexPath;
     }
 
     printer.printConsoleMessage(
       "info",
       boxen(
         chalk.cyan(
-          "Running with the following configuration:",
-          `\n\nCodemod:`,
-          chalk.bold(`${nameOrPath}${runningCodemodVersion}`),
-          `\n${chalk.yellow.bold(reason ?? "")}\n${patternsColumns}\n`,
+          `Codemod:`,
+          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+          isRunningFromLocal
+            ? chalk.bold("\nRunning from local filesystem")
+            : "",
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+          "\n",
+          chalk.yellow(reason ? `\n${reason}` : ""),
+          chalk.green("\nIncluded patterns:"),
+          chalk.green.bold(include.join(", ") ?? ""),
+          chalk.red("\nExcluded patterns:"),
+          chalk.red.bold(exclude.join(", ") ?? ""),
+          "\n",
           chalk.yellow(
             !flowSettings.install ? "\nDependency installation disabled" : "",
           ),
