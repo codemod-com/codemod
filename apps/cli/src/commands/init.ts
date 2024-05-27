@@ -70,6 +70,7 @@ export const handleInitCliCommand = async (options: {
         type: "input",
         name: "name",
         message: "Please provide a name for your codemod:",
+        validate: (input) => (input === "" ? "Name cannot be empty." : true),
       },
       {
         type: "list",
@@ -118,9 +119,7 @@ export const handleInitCliCommand = async (options: {
         type: "input",
         name: "name",
         message: "Provide a name for your codemod:",
-        validate: (input) => {
-          return input === "" ? "Name cannot be empty." : true;
-        },
+        validate: (input) => (input === "" ? "Name cannot be empty." : true),
       },
       {
         type: "list",
