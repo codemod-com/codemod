@@ -34,18 +34,6 @@ const openAiEdgeApi = new openAiEdge.OpenAIApi(
 
 export const getSendChatPath = (instance: Instance) =>
   instance.post("/sendChat", async (request, reply) => {
-    if (!isDevelopment && clerkApplied) {
-      const { userId } = getAuth(request);
-      if (!userId) {
-        reply.code(401).send();
-        return;
-      }
-    } else {
-      if (!clerkApplied)
-        console.warn("No Clerk keys set. Authentication is disabled.");
-      if (isDevelopment) console.info("ENV set to development");
-    }
-
     const { messages, engine } = parseSendChatBody(request.body);
     if (!messages[0]) {
       return reply.code(400).send();

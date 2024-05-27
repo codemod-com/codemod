@@ -60,7 +60,7 @@ const checkLatestVersion = async () => {
 const initializeDependencies = async (argv: {
   clientIdentifier: string | undefined;
   json: boolean;
-  telemetryDisable: boolean | undefined;
+  telemetry: boolean;
 }) => {
   // client identifier is required to prevent duplicated tracking of events
   // we can specify that request is coming from the VSCE or other client
@@ -75,13 +75,12 @@ const initializeDependencies = async (argv: {
 
   const printer = new Printer(argv.json);
 
-  const telemetryService: TelemetrySender<TelemetryEvent> =
-    argv.telemetryDisable
-      ? new NullSender()
-      : new PostHogSender({
-          cloudRole: clientIdentifier,
-          distinctId: await getUserDistinctId(),
-        });
+  const telemetryService: TelemetrySender<TelemetryEvent> = argv.telemetry
+    ? new PostHogSender({
+        cloudRole: clientIdentifier,
+        distinctId: await getUserDistinctId(),
+      })
+    : new NullSender();
 
   const exit = async () => {
     // appInsights telemetry client uses batches to send telemetry.
@@ -125,8 +124,12 @@ export const executeMainThread = async () => {
   const slicedArgv = hideBin(process.argv);
 
   const argvObject = buildGlobalOptions(
-    yargs(slicedArgv).help().version(version),
+    yargs(slicedArgv).help().version(false),
   );
+
+  if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
+    return console.log(version);
+  }
 
   argvObject
     .scriptName("codemod")

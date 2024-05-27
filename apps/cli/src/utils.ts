@@ -1,7 +1,6 @@
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type ValidateTokenResponse,
   execPromise,

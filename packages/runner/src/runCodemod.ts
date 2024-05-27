@@ -1,11 +1,12 @@
 import { readFile } from "node:fs/promises";
-import { relative } from "node:path";
+import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
 import { chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type EngineOptions,
   type FileSystem,
+  getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
 } from "@codemod-com/utilities";
 import { type FileSystemAdapter, glob, globStream } from "fast-glob";
@@ -27,7 +28,10 @@ import type {
   CodemodExecutionErrorCallback,
   PrinterMessageCallback,
 } from "./schemata/callbacks.js";
-import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import {
+  DEFAULT_EXCLUDE_PATTERNS,
+  type FlowSettings,
+} from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
 
@@ -44,26 +48,93 @@ export const buildPatterns = async (
   reason?: string;
 }> => {
   const formatFunc = (pattern: string) => {
-    if (pattern.startsWith("**")) {
-      return pattern;
+    let formattedPattern = pattern;
+
+    if (pattern.startsWith("**") || pattern.startsWith("/")) {
+      formattedPattern = pattern;
+    } else {
+      formattedPattern = `**/${pattern}`;
     }
 
-    if (pattern.startsWith("/")) {
-      return `**${pattern}`;
+    if (formattedPattern.endsWith("/")) {
+      return join(formattedPattern, "**/*.*");
     }
 
-    return `**/${pattern}`;
+    return formattedPattern;
   };
 
   const excludePatterns = flowSettings.exclude ?? [];
-  const formattedExclude = excludePatterns.map(formatFunc);
+  let formattedExclude = excludePatterns.map(formatFunc);
+
+  // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
+  // Instead we just use the utils function to get the root gitignore if it exists. Otherwise, just ignore
+
+  // const gitIgnorePaths = await glob("**/.gitignore", {
+  //   cwd: flowSettings.target,
+  //   ignore: formattedExclude,
+  //   absolute: true,
+  // });
+
+  // let gitIgnored: string[] = [];
+  // if (gitIgnorePaths.length > 0) {
+  //   for (const gitIgnorePath of gitIgnorePaths) {
+  //     const gitIgnoreContents = await readFile(gitIgnorePath, "utf-8");
+  //     gitIgnored = gitIgnored.concat(
+  //       await Promise.all(
+  //         gitIgnoreContents
+  //           .split("\n")
+  //           .map((line) => line.trim())
+  //           .filter((line) => line.length > 0 && !line.startsWith("#"))
+  //           .map(async (line) => {
+  //             const path = join(dirname(gitIgnorePath), line);
+
+  //             try {
+  //               const stat = await lstat(path);
+
+  //               if (stat.isDirectory()) {
+  //                 return `${path}/**/*.*`;
+  //               }
+  //             } catch (err) {
+  //               //
+  //             }
+
+  //             return path;
+  //           }),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  const { rootPath } = await getProjectRootPathAndPackageManager(
+    flowSettings.target,
+    true,
+  );
+
+  if (rootPath !== null) {
+    try {
+      const gitIgnoreContents = await readFile(
+        join(rootPath, ".gitignore"),
+        "utf-8",
+      );
+
+      const gitIgnored = gitIgnoreContents
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0 && !line.startsWith("#"))
+        .map(formatFunc);
+
+      formattedExclude = formattedExclude.concat(gitIgnored);
+    } catch (err) {
+      //
+    }
+  }
 
   const { files } = flowSettings;
 
   if (files) {
     return {
       include: files,
-      exclude: formattedExclude,
+      exclude: [...new Set(formattedExclude)],
       reason: "Using files option from settings",
     };
   }
@@ -71,9 +142,13 @@ export const buildPatterns = async (
   let reason: string | undefined;
   let patterns: string[] | undefined = undefined;
   if (flowSettings.include) {
-    reason = "Using paths provided by user via options";
+    reason =
+      "Using paths provided by user via options (combined with engine defaults)";
+    patterns = flowSettings.include;
   } else if (codemod.include) {
-    reason = "Using paths provided by codemod settings";
+    reason =
+      "Using paths provided by codemod settings (combined with engine defaults)";
+    patterns = codemod.include;
   }
 
   // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
@@ -100,26 +175,44 @@ export const buildPatterns = async (
 
   if (!patterns) {
     reason = "Using default include patterns based on the engine";
-    if (codemod.engine === "filemod" && filemod !== null) {
-      patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
-    } else if (
-      codemod.engine === "jscodeshift" ||
-      codemod.engine === "ts-morph"
-    ) {
-      patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-    }
-
-    if (!patterns) {
-      patterns = ["**/*"];
-    }
+    patterns = ["**/*"];
   }
 
+  let engineDefaultPatterns = ["**/*"];
+
+  if (codemod.engine === "filemod" && filemod !== null) {
+    engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
+  } else if (
+    codemod.engine === "jscodeshift" ||
+    codemod.engine === "ts-morph"
+  ) {
+    engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+  }
+
+  engineDefaultPatterns = engineDefaultPatterns.filter(
+    (p) => !formattedExclude.includes(p),
+  );
+
   // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-  const formattedInclude = patterns.map(formatFunc);
+  const formattedInclude = patterns
+    .map(formatFunc)
+    .concat(engineDefaultPatterns);
+
+  const exclude = formattedExclude.filter((p) => {
+    // remove from excluded patterns if user is trying to override default exclude
+    if (DEFAULT_EXCLUDE_PATTERNS.includes(p)) {
+      return !formattedInclude.includes(p);
+    }
+
+    return true;
+  });
+
+  // remove everything that was excluded from the included patterns
+  const include = formattedInclude.filter((p) => !exclude.includes(p));
 
   return {
-    include: formattedInclude,
-    exclude: formattedExclude,
+    include: [...new Set(include)],
+    exclude: [...new Set(exclude)],
     reason,
   };
 };
@@ -334,6 +427,7 @@ export const runCodemod = async (
       absolute: true,
       cwd: flowSettings.target,
       ignore: paths.exclude,
+      dot: true,
       // @ts-expect-error type inconsistency
       fs: mfs,
       onlyFiles: true,

@@ -82,17 +82,21 @@ The following options can be used to change the default behavior of the Codemod 
   Can be used to specify the files to be targeted by the codemod.
 
 ```bash
-codemod [codemod name] -i "[glob pattern]"
+codemod [codemod name] -i "certain_file" -i "entire_folder/" -i "*.js"
 ```
+
+<Warning>Folders should be defined with a trailing slash, for example `node_modules/`. Every other entry will be treated as a file. We don't check whether the paths under a certain glob pattern are directories or not for performance reasons.</Warning>
 
 </ResponseField>
 
-<ResponseField name="--exclude (-e)" type="glob pattern" default="**/node_modules/**/*.*">
+<ResponseField name="--exclude (-e)" type="glob pattern" default="'node_modules/', 'dist/', 'build/', '.next/'">
   While running a codemod, you may want to prevent changes from occurring to specific parts of your project. The `--exclude` option can be used to specify a glob pattern of the files to be ignored by the codemod.
 
 ```bash
-codemod [codemod name] -e "[glob pattern]"
+codemod [codemod name] -e "certain_file" -e "entire_folder/" -e "*.py"
 ```
+  
+<Note>By default, Codemod CLI would also look for your project's root `.gitignore` file and exclude the patterns defined in it. The trailing slash rule mentioned in `--include` command description also applies to the `--exclude` option.</Note>
 
 </ResponseField>
 
@@ -125,7 +129,16 @@ codemod [codemod name] -t [path]
 
 </ResponseField>
 
-<ResponseField name="--no-format" type="boolean" default="false">
+<ResponseField name="--dry (-d)" type="boolean">
+  Can be used to switch to dry run mode. Dry running codemods helps you see the changes the codemod will make without affecting the project files.
+
+```bash
+codemod [codemod name] --dry
+```
+
+</ResponseField>
+
+<ResponseField name="--no-format" type="boolean">
   Can be used to disable prettier formatting to the files affected by the codemod.
 
 ```bash
@@ -134,7 +147,7 @@ codemod [codemod name] --no-format
 
 </ResponseField>
 
-<ResponseField name="--no-cache" type="boolean" default="false">
+<ResponseField name="--no-cache" type="boolean">
   Can be used to disable caching downloaded codemod files.
 
 ```bash
@@ -144,7 +157,7 @@ codemod [codemod name] --no-cache
   <Tip>Disabling cache can ensure you are getting the freshest results. While keeping the cache enabled can help you save bandwidth and time for repetitive use of the same codemods.</Tip>
 </ResponseField>
 
-<ResponseField name="--no-install" type="boolean" default="false">
+<ResponseField name="--no-install" type="boolean">
   Can be used to disable dependencies installation after codemod run.
 
 ```bash
@@ -155,7 +168,16 @@ codemod [codemod name] --no-install
   This option allows you to disable that behavior and handle dependency upgrades manually.</Warning>
 </ResponseField>
 
-<ResponseField name="--json (-j)" type="boolean" default="false">
+<ResponseField name="--no-telemetry" type="boolean">
+  Can be used to disable CLI telemetry data collection.
+
+```bash
+codemod [codemod name] --no-telemetry
+```
+
+</ResponseField>
+
+<ResponseField name="--json (-j)" type="boolean">
   Can be used to switch the CLI responses to JSON format.
 
 ```bash
@@ -169,24 +191,6 @@ codemod [codemod name] --json
 
 ```bash
 codemod [codemod name] -n [number of threads]
-```
-
-</ResponseField>
-
-<ResponseField name="--dry (-d)" type="boolean" default="false">
-  Can be used to switch to dry run mode. Dry running codemods helps you see the changes the codemod will make without affecting the project files.
-
-```bash
-codemod [codemod name] --dry
-```
-
-</ResponseField>
-
-<ResponseField name="--telemetryDisable" type="boolean" default="false">
-  Can be used to disable CLI telemetry data collection.
-
-```bash
-codemod [codemod name] --telemetryDisable [true/false]
 ```
 
 </ResponseField>
@@ -260,9 +264,15 @@ codemod publish
 codemod --help
 ```
 
+You can also use this flag in combination with a particular CLI command to display usage information relevant to that command.
+
+```bash
+codemod login --help
+```
+
 </ResponseField>
 
-<ResponseField name="--version">
+<ResponseField name="--version (-v)">
   Can be used to show the currently active version of Codemod CLI.
 
 ```bash

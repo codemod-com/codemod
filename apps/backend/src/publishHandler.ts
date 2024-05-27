@@ -4,6 +4,7 @@ import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
   type CodemodConfig,
   TarService,
+  buildCodemodSlug,
   codemodNameRegex,
   isNeitherNullNorUndefined,
   parseCodemodConfig,
@@ -263,10 +264,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
           name,
         },
         create: {
-          slug: name
-            .replaceAll("@", "")
-            .split(/[\/ ,.-]/)
-            .join("-"),
+          slug: buildCodemodSlug(name),
           name,
           shortDescription: descriptionMdBuffer?.toString("utf-8"),
           tags: codemodRc.meta?.tags,

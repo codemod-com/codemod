@@ -1,37 +1,36 @@
-.idea
 .DS_Store
 
-node_modules
+node_modules/
+dist/
+build/
+out/
 
-dist
-build
-out
-
-.turbo
+.turbo/
 
 **.env
 
 # Extension
 .vscode-test/
 *.vsix
-.idea
+.idea/
 yarn-error.log
 .trunk
 
-apps/engine/package
-
 # Studio
-/.pnp
+.pnp
 .pnp.js
-/coverage
+coverage/
 npm-debug.log*
 yarn-debug.log*
-.eslintcache
-.next
-.vercel
+.eslintcache/
+.next/
+.vercel/
 
 # Backend
-build
+build/
 
 # Workflow
 .cache
+
+# CLI package
+apps/cli/package/

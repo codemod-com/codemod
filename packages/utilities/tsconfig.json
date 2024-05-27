@@ -6,7 +6,7 @@
     "moduleResolution": "nodenext",
     "types": ["node"],
     "baseUrl": ".",
-    "target": "es2015",
+    "target": "es2021",
     "declaration": true,
     "outDir": "./dist",
     "esModuleInterop": true,
