@@ -219,13 +219,13 @@ export default function transform(
   );
 
   root.find(j.CallExpression).forEach((path) => {
-    const name = matchMethod(path);
+    const match = matchMethod(path);
 
-    if (name === null) {
+    if (match === null) {
       return;
     }
 
-    const replaceMethod = replacementFunctions[name];
+    const replaceMethod = replacementFunctions[match];
 
     replaceMethod(j, root, path);
     isDirty = true;
