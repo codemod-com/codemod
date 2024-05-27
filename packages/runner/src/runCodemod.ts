@@ -49,10 +49,8 @@ export const buildPatterns = async (
   const formatFunc = (pattern: string) => {
     let formattedPattern = pattern;
 
-    if (pattern.startsWith("**")) {
+    if (pattern.startsWith("**") || pattern.startsWith("/")) {
       formattedPattern = pattern;
-    } else if (pattern.startsWith("/")) {
-      formattedPattern = `**${pattern}`;
     } else {
       formattedPattern = `**/${pattern}`;
     }
