@@ -85,7 +85,8 @@ const checkFileTreeVersioning = async (target: string) => {
     const res = await inquirer.prompt<{ force: boolean }>({
       type: "confirm",
       name: "force",
-      message: "Could not run git working tree check. Proceed anyway?",
+      message:
+        "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
       default: false,
     });
 
@@ -297,16 +298,20 @@ export const handleRunCliCommand = async (
       "info",
       boxen(
         chalk.cyan(
-          "Running with the following configuration:",
-          `\n\nCodemod:`,
+          `Codemod:`,
           chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
           isRunningFromLocal
             ? chalk.bold("\nRunning from local filesystem")
             : "",
-          chalk.bold(`\nTarget: ${flowSettings.target}`),
-          chalk.yellow.bold(`\n${reason ?? ""}`),
-          chalk.bold.green(`\nIncluded patterns: ${include.join(", ") ?? ""}`),
-          chalk.bold.red(`\nExcluded patterns: ${exclude.join(", ") ?? ""}`),
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+          "\n",
+          chalk.yellow(reason ? `\n${reason}` : ""),
+          chalk.green("\nIncluded patterns:"),
+          chalk.green.bold(include.join(", ") ?? ""),
+          chalk.red("\nExcluded patterns:"),
+          chalk.red.bold(exclude.join(", ") ?? ""),
+          "\n",
           chalk.yellow(
             !flowSettings.install ? "\nDependency installation disabled" : "",
           ),

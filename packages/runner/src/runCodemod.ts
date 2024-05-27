@@ -44,15 +44,21 @@ export const buildPatterns = async (
   reason?: string;
 }> => {
   const formatFunc = (pattern: string) => {
+    let formattedPattern = pattern;
+
     if (pattern.startsWith("**")) {
-      return pattern;
+      formattedPattern = pattern;
+    } else if (pattern.startsWith("/")) {
+      formattedPattern = `**${pattern}`;
+    } else {
+      formattedPattern = `**/${pattern}`;
     }
 
-    if (pattern.startsWith("/")) {
-      return `**${pattern}`;
+    if (!formattedPattern.includes(".")) {
+      formattedPattern = `${formattedPattern}/**/*.*`;
     }
 
-    return `**/${pattern}`;
+    return formattedPattern;
   };
 
   const excludePatterns = flowSettings.exclude ?? [];
@@ -68,12 +74,18 @@ export const buildPatterns = async (
     };
   }
 
+  let prioritized: "include" | "exclude" = "include";
+
   let reason: string | undefined;
   let patterns: string[] | undefined = undefined;
   if (flowSettings.include) {
     reason = "Using paths provided by user via options";
+    patterns = flowSettings.include;
+    prioritized = "include";
   } else if (codemod.include) {
     reason = "Using paths provided by codemod settings";
+    patterns = codemod.include;
+    prioritized = "include";
   }
 
   // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
@@ -96,6 +108,8 @@ export const buildPatterns = async (
     } catch (error) {
       //
     }
+
+    prioritized = "exclude";
   }
 
   if (!patterns) {
@@ -112,13 +126,23 @@ export const buildPatterns = async (
     if (!patterns) {
       patterns = ["**/*"];
     }
+
+    prioritized = "exclude";
   }
 
   // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
   const formattedInclude = patterns.map(formatFunc);
 
+  if (prioritized === "include") {
+    return {
+      include: formattedInclude,
+      exclude: formattedExclude.filter((p) => !formattedInclude.includes(p)),
+      reason,
+    };
+  }
+
   return {
-    include: formattedInclude,
+    include: formattedInclude.filter((p) => !formattedExclude.includes(p)),
     exclude: formattedExclude,
     reason,
   };

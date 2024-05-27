@@ -12,7 +12,12 @@ import {
   string,
 } from "valibot";
 
-export const DEFAULT_EXCLUDE_PATTERNS = ["**/node_modules/**/*.*", "**/*.d.ts"];
+export const DEFAULT_EXCLUDE_PATTERNS = [
+  "**/node_modules/**/*.*",
+  "**/*.d.ts",
+  "**/.next/**/*.*",
+  "**/dist/**/*.*",
+];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_ENABLE_PRETTIER = true;
 export const DEFAULT_CACHE = true;
@@ -25,7 +30,7 @@ export const flowSettingsSchema = object({
   _: array(string()),
   include: optional(array(string())),
   exclude: optional(array(string())),
-  target: optional(string(), DEFAULT_INPUT_DIRECTORY_PATH),
+  target: optional(string()),
   files: optional(array(string())),
   format: optional(boolean(), DEFAULT_ENABLE_PRETTIER),
   cache: optional(boolean(), DEFAULT_CACHE),
@@ -36,8 +41,9 @@ export const flowSettingsSchema = object({
 
 export type FlowSettings = Omit<
   Output<typeof flowSettingsSchema>,
-  "exclude"
+  "exclude" | "target"
 > & {
+  target: string;
   exclude: string[];
 };
 
@@ -61,7 +67,8 @@ export const parseFlowSettings = (
 
     target = argTarget;
   } else {
-    target = positionalPassedTarget ?? argTarget;
+    target =
+      positionalPassedTarget ?? argTarget ?? DEFAULT_INPUT_DIRECTORY_PATH;
   }
 
   return {
