@@ -1,6 +1,9 @@
 import * as changeCase from "change-case";
 import jsBeautify from "js-beautify";
-import type { KnownEngines } from "./schemata/codemodConfigSchema.js";
+import {
+  type KnownEngines,
+  parseCodemodConfig,
+} from "./schemata/codemodConfigSchema.js";
 
 const { js } = jsBeautify;
 export interface ProjectDownloadInput {
@@ -10,6 +13,7 @@ export interface ProjectDownloadInput {
 
   license?: "MIT" | "Apache 2.0";
   vanillaJs?: boolean;
+  gitUrl?: string;
   version?: string;
   cases?: { before: string; after: string }[];
   username: string | null;
@@ -342,21 +346,28 @@ const codemodRc = ({
   engine,
   tags,
   version,
-}: Pick<ProjectDownloadInput, "name" | "engine" | "tags" | "version">) => {
+  gitUrl,
+}: ProjectDownloadInput) => {
   const finalName = changeCase.kebabCase(name);
 
-  return beautify(`
-    {
-      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "version": "${version ?? "1.0.0"}",
-      "private": false,
-      "name": "${finalName}",
-      "engine": "${engine}",
-      "meta": {
-        "tags": ${tags?.length ? JSON.stringify(tags) : "[]"}
-      }
-    }
-	`);
+  const config = parseCodemodConfig({
+    $schema:
+      "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+    version: version ?? "1.0.0",
+    private: false,
+    name: finalName,
+    engine: engine,
+    meta: {
+      tags: tags?.length ? JSON.stringify(tags) : [],
+    },
+  });
+
+  if (gitUrl) {
+    // biome-ignore lint: config.meta is defined
+    config.meta!.git = gitUrl;
+  }
+
+  return beautify(JSON.stringify(config, null, 2));
 };
 
 const tsconfigJson = () => {
