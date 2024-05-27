@@ -2,16 +2,13 @@ import type {
   GHBranch,
   GithubRepository,
 } from "../../backend/src/services/SourceControl";
-import type {
-  GetExecutionStatusResponse,
-  Result,
-} from "../../frontend/utils/apis/getExecutionStatus";
 import {
   GET_EXECUTION_STATUS,
   GH_BRANCH_LIST,
   GH_REPO_LIST,
   RUN_CODEMOD,
 } from "../endpoints";
+import { CodemodRunStatus, GetExecutionStatusResponse, Result } from "../types";
 
 let isSuccess = true;
 const errorExecutionResult: Result = {
@@ -19,7 +16,7 @@ const errorExecutionResult: Result = {
   message: "error msg",
 };
 let executionResultsIndex = 0;
-const executionResults: Result[] = [
+const getExecutionResults = (): Result[] => [
   {
     status: "progress",
     message: "progress msg 1",
@@ -43,7 +40,7 @@ const executionResults: Result[] = [
   isSuccess
     ? {
         status: "done",
-        link: "www.google.com", // PR Link
+        link: "https://www.google.com", // PR Link
       }
     : errorExecutionResult,
 ];
@@ -52,7 +49,7 @@ export const mockGithubRepositories: GithubRepository[] = [
   {
     id: 1,
     name: "successRepo",
-    full_name: "mockUser/mockRepo1",
+    full_name: "mockUser/success",
     private: false,
     html_url: "success",
     default_branch: "main",
@@ -65,7 +62,7 @@ export const mockGithubRepositories: GithubRepository[] = [
   {
     id: 2,
     name: "failRepo",
-    full_name: "mockUser/mockRepo2",
+    full_name: "mockUser/fail",
     private: true,
     html_url: "fail",
     default_branch: "master",
@@ -104,22 +101,32 @@ export const mockGHBranches: GHBranch[] = [
 ];
 export const mockedGhRunEndpoints = {
   [GH_REPO_LIST]: {
-    get: (): GithubRepository[] => mockGithubRepositories,
+    get: (): { data: GithubRepository[] } => ({ data: mockGithubRepositories }),
   },
   [GH_BRANCH_LIST]: {
-    post: ({ repoUrl }: { repoUrl: string }): GHBranch[] => {
+    post: ({ repoUrl }: { repoUrl: string }): { data: GHBranch[] } => {
+      console.log({
+        repoUrl
+      })
       isSuccess = repoUrl === "success";
-      return mockGHBranches;
+      return {
+        data: mockGHBranches
+      }
     },
   },
   [RUN_CODEMOD]: {
-    post: () => ({ codemodRunId: 1, success: true }),
+    post: (): { data: CodemodRunStatus } => ({data: { codemodRunId: '1', success: true }}),
   },
   [GET_EXECUTION_STATUS("1")]: {
-    get: (): GetExecutionStatusResponse => {
+    get: (): { data: GetExecutionStatusResponse } => {
+      const index = executionResultsIndex;
+      console.log('in GET_EXECUTION_STATUS', {index})
+      executionResultsIndex = executionResultsIndex === getExecutionResults().length ? 0 : (executionResultsIndex+1)
       return {
-        result: executionResults[executionResultsIndex++] || null,
-        success: true,
+        data: {
+          result: getExecutionResults()[index] || null,
+          success: true,
+        }
       };
     },
   },

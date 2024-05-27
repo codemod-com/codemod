@@ -1,5 +1,4 @@
-import type { useExecutionStatus } from "@studio/main/GHRun/hooks/useExecutionStatus";
-import type { GetExecutionStatusResponse } from "@utils/apis/getExecutionStatus";
+import { GetExecutionStatusResponse } from "@shared/types";
 import toast from "react-hot-toast";
 
 const baseToastOptions: Parameters<typeof toast>[1] = {
@@ -11,7 +10,6 @@ export const showStatusToast = (
   result: GetExecutionStatusResponse["result"],
 ) => {
   if (!result) return;
-
   if (result.status === "error") {
     toast(<span>{`❌ ${result.message}`}</span>, baseToastOptions);
   } else if (result.status === "done") {

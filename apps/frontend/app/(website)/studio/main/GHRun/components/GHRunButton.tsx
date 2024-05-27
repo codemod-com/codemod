@@ -5,16 +5,19 @@ import { useExecutionStatus } from "@studio/main/GHRun";
 import { getButtonPropsByStatus } from "@studio/main/GHRun";
 import { ProgressBar } from "@studio/main/GHRun/components/ProgressBar";
 import { useOpenRepoModalAfterSignIn } from "@studio/main/GHRun/hooks/useOpenRepoModalAfterSignIn";
-import { useUserSession } from "@studio/store/zustand/userSession";
 import type { GHBranch, GithubRepository } from "be-types";
-import { useState } from "react";
+import { memo, useState } from "react";
 import { RepositoryModal } from "./RepositoryModal";
+import { useCodemodExecution } from "@gr-run/hooks/useCodemodExecution";
+import { useLocalStorage } from "@studio/hooks/useLocalStorage";
 
-export const CodemodButton = () => {
+export const GHRunButton = memo(() => {
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
 
+  const [codemodExecutionId, setCodemodExecutionId, clearExecutionId] =
+    useLocalStorage("codemodExecutionId");
   const [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
 
   const {
@@ -29,14 +32,21 @@ export const CodemodButton = () => {
     "openRepoModal",
   );
 
-  const { codemodExecutionId } = useUserSession();
-  const codemodRunStatus = useExecutionStatus(codemodExecutionId);
+  const codemodRunStatus = useExecutionStatus({
+    codemodExecutionId,
+    clearExecutionId,
+  });
   const status = codemodRunStatus?.result?.status ?? null;
   const { text, hintText } = getButtonPropsByStatus(status);
+  const { onCodemodRun } = useCodemodExecution({
+    codemodExecutionId,
+    setCodemodExecutionId,
+  });
 
   return (
     <>
       <RepositoryModal
+        onCodemodRun={onCodemodRun}
         branchesToShow={branchesToShow}
         setBranchesToShow={setBranchesToShow}
         hideRepositoryModal={hideRepositoryModal}
@@ -44,9 +54,7 @@ export const CodemodButton = () => {
         repositoriesToShow={repositoriesToShow}
         areReposLoading={areReposLoading}
       />
-      {codemodRunStatus !== null && (
-        <ProgressBar codemodRunStatus={codemodRunStatus} />
-      )}
+      {codemodRunStatus && <ProgressBar codemodRunStatus={codemodRunStatus} />}
       <Button
         onClick={showRepoModalToSignedUser}
         size="xs"
@@ -60,4 +68,6 @@ export const CodemodButton = () => {
       </Button>
     </>
   );
-};
+});
+
+GHRunButton.displayName = "GHRunButton";

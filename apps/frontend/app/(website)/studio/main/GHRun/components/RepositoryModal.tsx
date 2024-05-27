@@ -7,8 +7,10 @@ import { useHandleCodemodRun } from "@studio/main/GHRun/hooks/useHandleCodemodRu
 import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { type SetStateAction, useState } from "react";
+import { CodemodRunRequest } from "@shared/types";
 
 export type RepositoryModalProps = {
+  onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
   hideRepositoryModal: VoidFunction;
   isRepositoryModalShown: boolean;
   repositoriesToShow: GithubRepository[];
@@ -18,6 +20,7 @@ export type RepositoryModalProps = {
 };
 
 export const RepositoryModal = ({
+  onCodemodRun,
   setBranchesToShow,
   branchesToShow,
   hideRepositoryModal,
@@ -48,17 +51,14 @@ export const RepositoryModal = ({
   const [codemodNameInput, setCodemodNameInput] = useState<string>();
 
   const handleCodemodRun = useHandleCodemodRun({
+    onCodemodRun,
     codemodName: codemodNameInput,
     selectedRepository,
     selectedBranch,
   });
 
-  const onRunCodemod = async () => {
+  const handleButtonClick = async () => {
     await handleCodemodRun();
-  };
-
-  const handleButtonClick = () => {
-    onRunCodemod();
     setSelectedRepository(undefined);
     setSelectedBranch(undefined);
     setCodemodNameInput("");

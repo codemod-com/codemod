@@ -1,7 +1,7 @@
 import Text from "@studio/components/Text";
 import { Progress } from "@studio/components/ui/progress";
-import type { GetExecutionStatusResponse } from "@utils/apis/getExecutionStatus";
 import { capitalize } from "@utils/strings";
+import { GetExecutionStatusResponse } from "@shared/types";
 
 export type ProgressBarProps = {
   codemodRunStatus: GetExecutionStatusResponse;

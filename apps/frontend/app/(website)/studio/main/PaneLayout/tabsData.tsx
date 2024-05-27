@@ -1,7 +1,6 @@
 import { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import LiveIcon from "@studio/icons/LiveIcon";
-import { CodemodBuilder } from "@studio/main/CodemodBuilder";
 import Table from "@studio/main/Log/Table";
 import {
   AstSection,
