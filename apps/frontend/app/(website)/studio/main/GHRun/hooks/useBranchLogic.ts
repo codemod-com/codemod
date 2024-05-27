@@ -1,5 +1,5 @@
+import { GH_BRANCH_LIST } from "@shared/endpoints";
 import { useAPI } from "@studio/hooks/useAPI";
-import { GH_BRANCH_LIST } from "@utils/apis/endpoints";
 import type { GHBranch, GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 
@@ -16,7 +16,7 @@ export const useBranchLogic = ({
   const [selectedBranch, setSelectedBranch] = useState<GHBranch>();
   const [areBranchesLoading, setAreBranchesLoading] = useState(false);
 
-  const { post: fetchGHBranches } = useAPI(GH_BRANCH_LIST);
+  const { post: fetchGHBranches } = useAPI<GHBranch[]>(GH_BRANCH_LIST);
 
   useEffect(() => {
     if (!selectedRepository) {
@@ -27,7 +27,7 @@ export const useBranchLogic = ({
     const getBranches = async () => {
       setAreBranchesLoading(true);
       const branches = (
-        await fetchGHBranches<GHBranch[]>({
+        await fetchGHBranches({
           repoUrl: selectedRepository.html_url,
         })
       ).data;

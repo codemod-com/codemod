@@ -13,7 +13,7 @@ import {
   type TabContent,
   type TabHeader,
   type TabsWithContents,
-  useTabs,
+  getTabsData,
 } from "@studio/main/PaneLayout/tabsData";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
@@ -41,13 +41,6 @@ export const AssistantTab = ({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const savedScrollPositionRef = useRef<number>(0);
   const { isSignedIn } = useAuth();
-  const [showBuildPanel, setShowBuildPanel] = useState(false);
-
-  useEffect(() => {
-    if (localStorage.getItem("feature-builder") === "true") {
-      setShowBuildPanel(true);
-    }
-  }, []);
 
   const { setActiveTab } = useViewStore();
 
@@ -86,11 +79,10 @@ export const AssistantTab = ({
     </TabsContent>,
   ];
 
-  const tabsData = useTabs({
+  const tabsData = getTabsData({
     beforePanel,
     afterPanel,
     isSignedIn,
-    showBuildPanel,
     engine,
     panelRefs,
   })

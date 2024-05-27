@@ -5,19 +5,10 @@ const defaultResponse = {
   hintText:
     "This runs Codemod on your Github branch and push a commit with changes.",
 };
-export const getButtonPropsByStatus = (status: Status | null) => {
-  if (status === null) {
-    return defaultResponse;
-  }
-  switch (status) {
-    case "executing codemod": {
-      return {
+export const getButtonPropsByStatus = (status: Status | null) =>
+  status === "executing codemod"
+    ? {
         text: "Codemod Running...",
         hintText: "Codemod is running on your Github branch.",
-      };
-    }
-    default: {
-      return defaultResponse;
-    }
-  }
-};
+      }
+    : defaultResponse;

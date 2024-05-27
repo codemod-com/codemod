@@ -1,14 +1,16 @@
 import Input from "@/components/shared/Input";
-import { DropdownSelector } from "@studio/components/CodemodButton/Dropdown";
-import { useBranchLogic } from "@studio/components/CodemodButton/hooks/useBranchLogic";
-import { useHandleCodemodRun } from "@studio/components/CodemodButton/hooks/useHandleCodemodRun";
+import type { CodemodRunRequest } from "@shared/types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
+import { DropdownSelector } from "@studio/main/GHRun/components/Dropdown";
+import { useBranchLogic } from "@studio/main/GHRun/hooks/useBranchLogic";
+import { useHandleCodemodRun } from "@studio/main/GHRun/hooks/useHandleCodemodRun";
 import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { type SetStateAction, useState } from "react";
 
 export type RepositoryModalProps = {
+  onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
   hideRepositoryModal: VoidFunction;
   isRepositoryModalShown: boolean;
   repositoriesToShow: GithubRepository[];
@@ -18,6 +20,7 @@ export type RepositoryModalProps = {
 };
 
 export const RepositoryModal = ({
+  onCodemodRun,
   setBranchesToShow,
   branchesToShow,
   hideRepositoryModal,
@@ -48,17 +51,14 @@ export const RepositoryModal = ({
   const [codemodNameInput, setCodemodNameInput] = useState<string>();
 
   const handleCodemodRun = useHandleCodemodRun({
+    onCodemodRun,
     codemodName: codemodNameInput,
     selectedRepository,
     selectedBranch,
   });
 
-  const onRunCodemod = async () => {
+  const handleButtonClick = async () => {
     await handleCodemodRun();
-  };
-
-  const handleButtonClick = () => {
-    onRunCodemod();
     setSelectedRepository(undefined);
     setSelectedBranch(undefined);
     setCodemodNameInput("");

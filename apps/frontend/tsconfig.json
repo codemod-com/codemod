@@ -33,6 +33,7 @@
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
+      "@gr-run/*": ["./app/(website)/studio/main/GHRun/*"],
       "be-types": ["../backend/types"],
       "@shared/*": ["../shared/*"]
     },
