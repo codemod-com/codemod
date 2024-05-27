@@ -2,8 +2,9 @@
 
 ## Description
 
- - Replaces usages of `ReactDom.render()` with `createRoot(node).render()`.
- - Replaces usages of `ReactDom.hydrate()` with `hydrateRoot()`
+- Replaces usages of `ReactDom.render()` with `createRoot(node).render()`.
+- Replaces usages of `ReactDom.hydrate()` with `hydrateRoot()`
+- Replaces usages of `ReactDom.unmountComponentAtNode()` with `root.unmount()`
 
 ## Examples
 
