@@ -10,7 +10,8 @@ export function SignInRequired() {
   const theme = useTheme();
   const router = useRouter();
   const signUserIn = () => {
-    router.push("/auth/sign-in");
+    const queryParams = new URLSearchParams({ variant: "studio" }).toString();
+    router.push(`/auth/sign-in?${queryParams}`);
   };
 
   return (
