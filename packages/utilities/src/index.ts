@@ -20,6 +20,7 @@ export {
   assertsNeitherNullOrUndefined,
   isNeitherNullNorUndefined,
 } from "./functions/validationMethods.js";
+export { buildCodemodSlug } from "./functions/buildCodemodSlug.js";
 export {
   getCodemodProjectFiles,
   isAstGrepProjectFiles,
