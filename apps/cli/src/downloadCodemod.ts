@@ -66,7 +66,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     let linkResponse: CodemodDownloadLinkResponse;
     try {
-      console.log(1);
       linkResponse = await getCodemodDownloadURI(name, userData?.token);
     } catch (err) {
       spinner?.fail();
@@ -82,7 +81,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     >;
 
     try {
-      console.log(2);
       downloadResult = await this._fileDownloadService.download(
         linkResponse.link,
         localCodemodPath,
@@ -98,7 +96,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     const { data, cacheUsed, cacheReason } = downloadResult;
 
     try {
-      console.log(3);
       await this._tarService.unpack(directoryPath, data);
     } catch (err) {
       spinner?.fail();
