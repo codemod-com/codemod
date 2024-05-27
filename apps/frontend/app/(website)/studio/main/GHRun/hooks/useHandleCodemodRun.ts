@@ -1,8 +1,8 @@
+import type { CodemodRunRequest } from "@shared/types";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { transpileTs } from "@studio/utils/transpileTs";
 import type { GHBranch, GithubRepository } from "be-types";
-import { CodemodRunRequest } from "@shared/types";
 type Props = {
   onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
   codemodName?: string;

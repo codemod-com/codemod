@@ -1,9 +1,9 @@
 import { useAuth } from "@/app/auth/useAuth";
+import { GET_EXECUTION_STATUS } from "@shared/endpoints";
+import type { GetExecutionStatusResponse } from "@shared/types";
+import { useAPI } from "@studio/hooks/useAPI";
 import { useEffect, useState } from "react";
 import { showStatusToast } from "../utils";
-import { useAPI } from "@studio/hooks/useAPI";
-import { GET_EXECUTION_STATUS } from "@shared/endpoints";
-import { GetExecutionStatusResponse } from "@shared/types";
 
 export const useExecutionStatus = ({
   codemodExecutionId,
@@ -34,7 +34,7 @@ export const useExecutionStatus = ({
           response = (await getExecutionStatus<GetExecutionStatusResponse>())
             .data;
         } catch (e) {
-          let error;
+          let error: string;
           try {
             error = JSON.stringify(e);
           } catch {
@@ -43,7 +43,7 @@ export const useExecutionStatus = ({
           response = {
             result: {
               status: "error",
-              message: "server error: " + error,
+              message: `server error: ${error}`,
             },
             success: false,
           };

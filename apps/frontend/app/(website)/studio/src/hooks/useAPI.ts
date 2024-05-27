@@ -1,7 +1,7 @@
 import apiClient from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
 import { mockedEndpoints } from "@shared/mocks";
-import { AxiosResponse } from "axios";
+import type { AxiosResponse } from "axios";
 const shouldUseMocks =
   process.env.NODE_ENV === "development" && localStorage.getItem("useMocks");
 const mockified = (

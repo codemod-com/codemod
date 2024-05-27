@@ -1,4 +1,4 @@
-import { ToVoid } from "@studio/types/transformations";
+import type { ToVoid } from "@studio/types/transformations";
 import { useState } from "react";
 
 export const useLocalStorage = <T = string | null>(
