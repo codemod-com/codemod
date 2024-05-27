@@ -1,3 +1,4 @@
+import { buildCodemodSlug } from "@codemod-com/utilities";
 import axios, { isAxiosError } from "axios";
 
 export class PostHogCodemodNotFoundError extends Error {}
@@ -30,9 +31,8 @@ export class PostHogService {
       );
 
       const result = data?.results?.map((value: [string, number]) => ({
-        slug: value[0]
-          .replaceAll(" (from user machine)", "")
-          .replaceAll("/", "-"),
+        // @TODO add isLocal field to telemetry event, exclude local events from total runs
+        slug: buildCodemodSlug(value[0].replaceAll(" (from user machine)", "")),
         runs: value[1],
       }));
 
