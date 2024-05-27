@@ -14,6 +14,7 @@ import {
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
   "**/node_modules/**/*.*",
+  "**/*.d.ts",
   "**/.next/**/*.*",
   "**/dist/**/*.*",
   "**/build/**/*.*",
