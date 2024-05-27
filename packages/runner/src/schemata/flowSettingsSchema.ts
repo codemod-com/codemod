@@ -1,7 +1,5 @@
-import { readFile } from "node:fs/promises";
-import { dirname, join, resolve } from "node:path";
+import { resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { glob } from "fast-glob";
 import {
   type Output,
   array,
@@ -74,41 +72,9 @@ export const parseFlowSettings = async (
       positionalPassedTarget ?? argTarget ?? DEFAULT_INPUT_DIRECTORY_PATH;
   }
 
-  const targetAbs = resolve(target);
-
-  const gitIgnorePaths = await glob("**/.gitignore", {
-    cwd: targetAbs,
-    absolute: true,
-  });
-
-  let gitIgnored: string[] = [];
-  if (gitIgnorePaths.length > 0) {
-    printer.printConsoleMessage(
-      "info",
-      chalk.cyan(
-        "Found .gitignore file(s) in the target directory:",
-        `\n- ${gitIgnorePaths.join("\n- ")}`,
-        "Adding the ignored paths to the exclude list...",
-      ),
-    );
-
-    for (const gitIgnorePath of gitIgnorePaths) {
-      const gitIgnoreContents = await readFile(gitIgnorePath, "utf-8");
-      gitIgnored = gitIgnored.concat(
-        gitIgnoreContents
-          .split("\n")
-          .map((line) => line.trim())
-          .filter((line) => line.length > 0 && !line.startsWith("#"))
-          .map((line) => join(dirname(gitIgnorePath), line)),
-      );
-    }
-  }
-
   return {
     ...flowSettings,
-    target: targetAbs,
-    exclude: (flowSettings.exclude ?? [])
-      .concat(DEFAULT_EXCLUDE_PATTERNS)
-      .concat(gitIgnored),
+    target: resolve(target),
+    exclude: (flowSettings.exclude ?? []).concat(DEFAULT_EXCLUDE_PATTERNS),
   };
 };

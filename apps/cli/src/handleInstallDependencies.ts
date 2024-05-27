@@ -7,6 +7,7 @@ import {
   doubleQuotify,
   execPromise,
   extractLibNameAndVersion,
+  getProjectRootPathAndPackageManager,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import inquirer from "inquirer";
@@ -36,63 +37,9 @@ export const handleInstallDependencies = async (options: {
       return;
     }
 
-    let detectedPackageManager: PackageManager | null = null;
+    let { detectedPackageManager, rootPath } =
+      await getProjectRootPathAndPackageManager(target);
 
-    let rootPath: string | null = null;
-    try {
-      const { stdout } = await execPromise("git rev-parse --show-toplevel", {
-        cwd: target,
-      });
-      const output = stdout.trim();
-      if (output.length) {
-        rootPath = output;
-      }
-    } catch (error) {
-      //
-    }
-
-    // did not find root using git CLI. we can try to find it using .git directory
-    if (rootPath === null) {
-      let currentDir = target;
-
-      while (true) {
-        if (existsSync(join(currentDir, ".git"))) {
-          const packageJsonPath = join(currentDir, "package.json");
-          if (existsSync(packageJsonPath)) {
-            rootPath = currentDir;
-          }
-        }
-
-        if (rootPath) break;
-
-        const parentDir = dirname(currentDir);
-        if (parentDir === currentDir) break; // Reached the filesystem root
-        currentDir = parentDir;
-      }
-    }
-
-    // do lockfiles lookup and determine package manager, set rootPath if it's still null
-    let currentDir = target;
-
-    while (true) {
-      for (const lockFile of Object.keys(lockFilesToPmMap)) {
-        if (existsSync(join(currentDir, lockFile))) {
-          detectedPackageManager = lockFilesToPmMap[lockFile]!;
-          if (rootPath === null) {
-            rootPath = currentDir;
-          }
-          break;
-        }
-      }
-
-      if (rootPath) break;
-
-      const parentDir = dirname(currentDir);
-      if (parentDir === currentDir) break; // Reached the filesystem root
-      currentDir = parentDir;
-    }
-
-    // if rootPath is still null, set it to target
     if (rootPath === null) {
       printer.printConsoleMessage(
         "info",

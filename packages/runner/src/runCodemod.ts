@@ -6,6 +6,7 @@ import {
   type ArgumentRecord,
   type EngineOptions,
   type FileSystem,
+  getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
 } from "@codemod-com/utilities";
 import { type FileSystemAdapter, glob, globStream } from "fast-glob";
@@ -55,15 +56,78 @@ export const buildPatterns = async (
       formattedPattern = `**/${pattern}`;
     }
 
-    if (!formattedPattern.endsWith("**/*.*")) {
-      return [formattedPattern, join(formattedPattern, "**/*.*`")];
+    if (formattedPattern.endsWith("/")) {
+      return join(formattedPattern, "**/*.*");
     }
 
     return formattedPattern;
   };
 
   const excludePatterns = flowSettings.exclude ?? [];
-  const formattedExclude = excludePatterns.flatMap(formatFunc);
+  let formattedExclude = excludePatterns.map(formatFunc);
+
+  // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
+  // Instead we just use the utils function to get the root gitignore if it exists. Otherwise, just ignore
+
+  // const gitIgnorePaths = await glob("**/.gitignore", {
+  //   cwd: flowSettings.target,
+  //   ignore: formattedExclude,
+  //   absolute: true,
+  // });
+
+  // let gitIgnored: string[] = [];
+  // if (gitIgnorePaths.length > 0) {
+  //   for (const gitIgnorePath of gitIgnorePaths) {
+  //     const gitIgnoreContents = await readFile(gitIgnorePath, "utf-8");
+  //     gitIgnored = gitIgnored.concat(
+  //       await Promise.all(
+  //         gitIgnoreContents
+  //           .split("\n")
+  //           .map((line) => line.trim())
+  //           .filter((line) => line.length > 0 && !line.startsWith("#"))
+  //           .map(async (line) => {
+  //             const path = join(dirname(gitIgnorePath), line);
+
+  //             try {
+  //               const stat = await lstat(path);
+
+  //               if (stat.isDirectory()) {
+  //                 return `${path}/**/*.*`;
+  //               }
+  //             } catch (err) {
+  //               //
+  //             }
+
+  //             return path;
+  //           }),
+  //       ),
+  //     );
+  //   }
+  // }
+
+  const { rootPath } = await getProjectRootPathAndPackageManager(
+    flowSettings.target,
+    true,
+  );
+
+  if (rootPath !== null) {
+    try {
+      const gitIgnoreContents = await readFile(
+        join(rootPath, ".gitignore"),
+        "utf-8",
+      );
+
+      const gitIgnored = gitIgnoreContents
+        .split("\n")
+        .map((line) => line.trim())
+        .filter((line) => line.length > 0 && !line.startsWith("#"))
+        .map(formatFunc);
+
+      formattedExclude = formattedExclude.concat(gitIgnored);
+    } catch (err) {
+      //
+    }
+  }
 
   const { files } = flowSettings;
 
@@ -129,7 +193,7 @@ export const buildPatterns = async (
 
   // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
   const formattedInclude = patterns
-    .flatMap(formatFunc)
+    .map(formatFunc)
     .concat(engineDefaultPatterns);
 
   const exclude = formattedExclude.filter((p) => {

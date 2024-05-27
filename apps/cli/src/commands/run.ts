@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
-import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
@@ -19,24 +18,17 @@ import {
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   TarService,
-  capitalize,
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import columnify from "columnify";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
-import type {
-  GlobalArgvOptions,
-  RunArgvOptions,
-  buildGlobalOptions,
-  buildRunOptions,
-} from "../buildOptions.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
 import { buildPrinterMessageUponCommand } from "../fileCommands.js";
 import { FileDownloadService } from "../fileDownloadService.js";

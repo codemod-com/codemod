@@ -1,5 +1,4 @@
 export * from "./constants.js";
-export * from "./schemata/types.js";
 export { debounce } from "./functions/debounce.js";
 export {
   backtickify,
@@ -16,6 +15,10 @@ export {
   streamToString,
 } from "./functions/hash.js";
 export { execPromise, isGeneratorEmpty, sleep } from "./functions/node.js";
+export {
+  getProjectRootPathAndPackageManager,
+  type PackageManager,
+} from "./functions/projectRoot.js";
 export {
   assertsNeitherNullOrUndefined,
   isNeitherNullNorUndefined,
@@ -42,6 +45,10 @@ export {
   getUnifiedEntry,
   trimLicense,
 } from "./registry.js";
+export type {
+  CodemodDownloadLinkResponse,
+  CodemodListResponse,
+} from "./schemata/apiResponses.js";
 export {
   argumentRecordSchema,
   argumentSchema,
@@ -68,27 +75,24 @@ export {
   type KnownEngines,
   type PiranhaLanguage,
 } from "./schemata/codemodConfigSchema.js";
-export type {
-  CodemodListResponse,
-  CodemodDownloadLinkResponse,
-} from "./schemata/apiResponses.js";
 export {
   codemodRunBodySchema,
   validateCodemodStatusParamsSchema,
   type CodemodRunResponse,
 } from "./schemata/codemodRunSchema.js";
 export {
+  engineOptionsSchema,
+  parseEngineOptions,
+  type EngineOptions,
+} from "./schemata/engineOptionsSchema.js";
+export {
   JOB_KIND,
   parseSurfaceAgnosticJob,
   type SurfaceAgnosticJob,
 } from "./schemata/surfaceAgnosticJobSchema.js";
+export * from "./schemata/types.js";
 export { type FileSystem } from "./schemata/types.js";
 export { type ValidateTokenResponse } from "./schemata/validateTokenResponse.js";
-export {
-  type EngineOptions,
-  engineOptionsSchema,
-  parseEngineOptions,
-} from "./schemata/engineOptionsSchema.js";
 export { CaseReadingService } from "./services/case/caseReadingService.js";
 export { CaseWritingService } from "./services/case/caseWritingService.js";
 export { FileWatcher } from "./services/case/fileWatcher.js";
