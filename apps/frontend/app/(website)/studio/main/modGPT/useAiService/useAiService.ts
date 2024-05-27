@@ -39,6 +39,7 @@ export const useAiService = ({
   } = useModGPT({ initialMessages: [], engine });
 
   const {
+    setServiceBusy,
     wsMessage: codemodAIMessage,
     startIterativeCodemodGeneration,
     serviceBusy,
