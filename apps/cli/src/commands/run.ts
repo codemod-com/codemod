@@ -101,7 +101,7 @@ export const handleRunCliCommand = async (
   telemetry: TelemetrySender<TelemetryEvent>,
 ) => {
   const codemodSettings = parseCodemodSettings(args);
-  const flowSettings = await parseFlowSettings(args, printer);
+  const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
 
   if (!runSettings.dryRun) {

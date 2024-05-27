@@ -48,10 +48,10 @@ export type FlowSettings = Omit<
   exclude: string[];
 };
 
-export const parseFlowSettings = async (
+export const parseFlowSettings = (
   input: unknown,
   printer: PrinterBlueprint,
-): Promise<FlowSettings> => {
+): FlowSettings => {
   const flowSettings = parse(flowSettingsSchema, input);
 
   const positionalPassedTarget = flowSettings._.at(1);
