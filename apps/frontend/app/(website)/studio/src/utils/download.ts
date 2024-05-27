@@ -2,7 +2,7 @@ import {
   type ProjectDownloadInput,
   getCodemodProjectFiles,
   isTypeScriptProjectFiles,
-} from "@codemod-com/utilities/src/package-boilerplate";
+} from "@codemod-com/utilities";
 import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
 
