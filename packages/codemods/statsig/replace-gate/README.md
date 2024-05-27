@@ -82,6 +82,5 @@ console.log({
     isLoading: false,
     value: true
 })
-
 ```
 
