@@ -14,7 +14,7 @@ export const useCodemodAI = ({
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
   const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
-  const [serviceBusy, setServiceBusy] = useState(true);
+  const [serviceBusy, setServiceBusy] = useState(false);
 
   useEffect(() => {
     if (!shouldUseCodemodAi) return;
