@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { relative } from "node:path";
+import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
 import { chalk } from "@codemod-com/printer";
 import {
@@ -55,15 +55,15 @@ export const buildPatterns = async (
       formattedPattern = `**/${pattern}`;
     }
 
-    if (!formattedPattern.includes(".")) {
-      formattedPattern = `${formattedPattern}/**/*.*`;
+    if (!formattedPattern.endsWith("**/*.*")) {
+      return [formattedPattern, join(formattedPattern, "**/*.*`")];
     }
 
     return formattedPattern;
   };
 
   const excludePatterns = flowSettings.exclude ?? [];
-  const formattedExclude = excludePatterns.map(formatFunc);
+  const formattedExclude = excludePatterns.flatMap(formatFunc);
 
   const { files } = flowSettings;
 
@@ -129,7 +129,7 @@ export const buildPatterns = async (
 
   // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
   const formattedInclude = patterns
-    .map(formatFunc)
+    .flatMap(formatFunc)
     .concat(engineDefaultPatterns);
 
   const exclude = formattedExclude.filter((p) => {
@@ -361,6 +361,7 @@ export const runCodemod = async (
       absolute: true,
       cwd: flowSettings.target,
       ignore: paths.exclude,
+      dot: true,
       // @ts-expect-error type inconsistency
       fs: mfs,
       onlyFiles: true,

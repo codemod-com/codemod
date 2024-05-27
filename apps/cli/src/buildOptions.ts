@@ -84,6 +84,7 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "string",
       description:
         'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod", "ast-grep"',
+      hidden: true,
     })
     .option("format", {
       type: "boolean",

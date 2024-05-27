@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { glob } from "fast-glob";
 import {
@@ -98,7 +98,8 @@ export const parseFlowSettings = async (
         gitIgnoreContents
           .split("\n")
           .map((line) => line.trim())
-          .filter((line) => line.length > 0 && !line.startsWith("#")),
+          .filter((line) => line.length > 0 && !line.startsWith("#"))
+          .map((line) => join(dirname(gitIgnorePath), line)),
       );
     }
   }
