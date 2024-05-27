@@ -8,7 +8,11 @@ import {
   GH_REPO_LIST,
   RUN_CODEMOD,
 } from "../endpoints";
-import { CodemodRunStatus, GetExecutionStatusResponse, Result } from "../types";
+import type {
+  CodemodRunStatus,
+  GetExecutionStatusResponse,
+  Result,
+} from "../types";
 
 let isSuccess = true;
 const errorExecutionResult: Result = {
@@ -105,28 +109,29 @@ export const mockedGhRunEndpoints = {
   },
   [GH_BRANCH_LIST]: {
     post: ({ repoUrl }: { repoUrl: string }): { data: GHBranch[] } => {
-      console.log({
-        repoUrl
-      })
       isSuccess = repoUrl === "success";
       return {
-        data: mockGHBranches
-      }
+        data: mockGHBranches,
+      };
     },
   },
   [RUN_CODEMOD]: {
-    post: (): { data: CodemodRunStatus } => ({data: { codemodRunId: '1', success: true }}),
+    post: (): { data: CodemodRunStatus } => ({
+      data: { codemodRunId: "1", success: true },
+    }),
   },
   [GET_EXECUTION_STATUS("1")]: {
     get: (): { data: GetExecutionStatusResponse } => {
       const index = executionResultsIndex;
-      console.log('in GET_EXECUTION_STATUS', {index})
-      executionResultsIndex = executionResultsIndex === getExecutionResults().length ? 0 : (executionResultsIndex+1)
+      executionResultsIndex =
+        executionResultsIndex === getExecutionResults().length
+          ? 0
+          : executionResultsIndex + 1;
       return {
         data: {
           result: getExecutionResults()[index] || null,
           success: true,
-        }
+        },
       };
     },
   },
