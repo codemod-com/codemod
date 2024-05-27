@@ -10,6 +10,7 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import type { TarService } from "@codemod-com/utilities";
+import type { AxiosError } from "axios";
 import inquirer from "inquirer";
 import type { Ora } from "ora";
 import semver from "semver";
@@ -68,7 +69,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       linkResponse = await getCodemodDownloadURI(name, userData?.token);
     } catch (err) {
       spinner?.fail();
-      throw new Error(`Error getting download link for codemod:\n${err}`);
+      throw new Error(
+        (err as AxiosError<{ error: string }>).response?.data?.error ??
+          "Error getting download link for codemod",
+      );
     }
     const localCodemodPath = join(directoryPath, "codemod.tar.gz");
 
@@ -83,7 +87,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       );
     } catch (err) {
       spinner?.fail();
-      throw new Error(`Error downloading codemod:\n${err}`);
+      throw new Error(
+        (err as AxiosError<{ error: string }>).response?.data?.error ??
+          "Error downloading codemod from the registry",
+      );
     }
 
     const { data, cacheUsed, cacheReason } = downloadResult;
@@ -92,7 +99,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       await this._tarService.unpack(directoryPath, data);
     } catch (err) {
       spinner?.fail();
-      throw new Error(`Error unpacking codemod:\n${err}`);
+      throw new Error((err as Error).message ?? "Error unpacking codemod");
     }
 
     spinner?.succeed();

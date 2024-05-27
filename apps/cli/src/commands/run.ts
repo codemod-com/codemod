@@ -183,7 +183,9 @@ export const handleRunCliCommand = async (
         }
       }
 
-      throw new Error(`Error while downloading codemod ${name}: ${error}`);
+      throw new Error(
+        `Error while downloading codemod ${codemodSettings.name}: ${error}`,
+      );
     }
 
     const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
