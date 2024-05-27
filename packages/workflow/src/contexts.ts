@@ -1,5 +1,6 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { SgNode } from "@ast-grep/napi";
+import type MagicString from "magic-string";
 
 import { invariant } from "ts-invariant";
 import { noContextFn } from "./helpers";
@@ -13,7 +14,7 @@ export const registerContext = <T>(name: string, ctx: AsyncLocalStorage<T>) => {
 
 export type AstGrepNodeContext = {
   node: SgNode;
-  contents: string;
+  contents: MagicString;
 };
 
 export const parentContext = new AsyncLocalStorage<(...args: any[]) => any>();

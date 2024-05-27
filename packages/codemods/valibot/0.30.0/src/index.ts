@@ -112,6 +112,7 @@ const ACTIONS = [
   "url",
   "uuid",
   "value",
+  "forward",
 ];
 
 const RENAMES: [string, string][] = [
@@ -161,16 +162,16 @@ const constructIs = ({
   };
 };
 
-export async function workflow({ jsFiles, contexts }: Api) {
-  await jsFiles(async ({ astGrep, addImport, removeImport }) => {
+export async function workflow({ jsFiles }: Api) {
+  await jsFiles(async ({ astGrep, addImport, removeImport, getImports }) => {
     const importStar = (
-      await astGrep`import * as $IMPORT from "valibot"`.map(({ getMatch }) =>
-        getMatch("IMPORT")?.text(),
+      await getImports('import * as $IMPORT from "valibot"').map(
+        ({ getMatch }) => getMatch("IMPORT")?.text(),
       )
     ).shift();
 
     const namedImports = (
-      await astGrep`import { $$$IMPORTS } from "valibot"`.map(
+      await getImports('import { $$$IMPORTS } from "valibot"').map(
         ({ getMultipleMatches }) =>
           getMultipleMatches("IMPORTS")
             .filter((node) => node.kind() === "import_specifier")
@@ -188,6 +189,11 @@ export async function workflow({ jsFiles, contexts }: Api) {
       importStar,
       namedImports,
       keys: ["object"],
+    });
+    const isPipe = constructIs({
+      importStar,
+      namedImports,
+      keys: ["pipe"],
     });
     const isTuple = constructIs({
       importStar,
@@ -220,40 +226,6 @@ export async function workflow({ jsFiles, contexts }: Api) {
       keys: ["transform"],
     });
 
-    // v.pipe support
-    await astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`.replace(
-      ({ getMatch, getMultipleMatches }) => {
-        const schema = getMatch("SCHEMA")?.text();
-        const rest = getMultipleMatches("REST").map((node) => node.text());
-        const actions = getMultipleMatches("ACTIONS").filter(
-          (node) => node.kind() !== ",",
-        );
-
-        if (
-          isSchema(schema) &&
-          actions.length &&
-          actions.every((node) => {
-            return (
-              node.kind() === "call_expression" &&
-              isAction(node.child(0)?.text())
-            );
-          })
-        ) {
-          const pipeMethod = importStar ? `${importStar}.pipe` : "pipe";
-
-          if (!importStar) {
-            addImport(`import { pipe } from "valibot"`);
-          }
-
-          const replacement = `${pipeMethod}(${schema}(${rest.join(
-            " ",
-          )}), ${actions.map((node) => node.text())})`;
-
-          return replacement;
-        }
-      },
-    );
-
     // simple renames
     for (const [from, to] of [
       ...(importStar
@@ -265,6 +237,7 @@ export async function workflow({ jsFiles, contexts }: Api) {
       if (!from.startsWith(`${importStar}.`)) {
         removeImport(`import { ${from} } from "valibot"`);
         addImport(`import { ${to} } from "valibot"`);
+        namedImports.push(to);
       }
       await astGrep(from).replace(() => to);
       await astGrep({
@@ -280,7 +253,6 @@ export async function workflow({ jsFiles, contexts }: Api) {
       const object = getMatch("OBJECT")?.text();
       const argument = getMatch("ARGUMENT")?.text();
       const schema = getMatch("SCHEMA");
-
       if (
         (isObject(object) || isTuple(object)) &&
         schema?.kind() === "call_expression" &&
@@ -292,8 +264,8 @@ export async function workflow({ jsFiles, contexts }: Api) {
         if (object && !object.startsWith(`${importStar}.`)) {
           addImport(`import { ${object}WithRest } from "valibot"`);
           removeImport(`import { ${object} } from "valibot"`);
+          namedImports.push(`${object}WithRest`);
         }
-
         return `${object}WithRest(${argument}, ${schema.text()})`;
       }
     });
@@ -303,11 +275,9 @@ export async function workflow({ jsFiles, contexts }: Api) {
       const object = getMatch("OBJECT")?.text();
       const argument = getMatch("ARGUMENT")?.text();
       const schema = getMatch("SCHEMA");
-
       let objectOrTuple: string | undefined;
       let looseOrStrict: string | undefined;
       const removeImports = [] as string[];
-
       if (isObject(object)) {
         objectOrTuple = "Object";
         removeImports.push("object");
@@ -324,15 +294,14 @@ export async function workflow({ jsFiles, contexts }: Api) {
         looseOrStrict = "strict";
         removeImports.push("never");
       }
-
       if (objectOrTuple && looseOrStrict) {
         if (!importStar) {
           addImport(
             `import { ${looseOrStrict}${objectOrTuple} } from "valibot"`,
           );
           removeImport(`import { ${removeImports.join(", ")} } from "valibot"`);
+          namedImports.push(`${looseOrStrict}${objectOrTuple}`);
         }
-
         return `${
           importStar ? `${importStar}.` : ""
         }${looseOrStrict}${objectOrTuple}(${argument})`;
@@ -347,13 +316,12 @@ export async function workflow({ jsFiles, contexts }: Api) {
           if (node.kind() === ",") {
             return node.text();
           }
-
           return `...${node.text()}.entries`;
         });
-
         if (isMerge(merge)) {
           if (!importStar) {
             addImport(`import { object } from "valibot"`);
+            namedImports.push(`object`);
           }
           return `${importStar ? `${importStar}.` : ""}object({${objects.join(
             " ",
@@ -363,19 +331,85 @@ export async function workflow({ jsFiles, contexts }: Api) {
     );
 
     // brand and transform fixes
-    await astGrep`$BRAND($SCHEMA, $ARGUMENT)`.replace(({ getMatch }) => {
-      const brand = getMatch("BRAND")?.text();
-      const schema = getMatch("SCHEMA")?.text();
-      const argument = getMatch("ARGUMENT")?.text();
-
-      if (isBrand(brand) || isTransform(brand)) {
-        if (!importStar) {
-          addImport(`import { pipe } from "valibot"`);
+    let replaced = true;
+    while (replaced) {
+      replaced = false;
+      await astGrep`$BRAND($SCHEMA, $ARGUMENT)`.replace(({ getMatch }) => {
+        const brand = getMatch("BRAND")?.text();
+        const schema = getMatch("SCHEMA")?.text();
+        const argument = getMatch("ARGUMENT")?.text();
+        if (isBrand(brand) || isTransform(brand)) {
+          if (!importStar) {
+            addImport(`import { pipe } from "valibot"`);
+            namedImports.push(`pipe`);
+          }
+          replaced = true;
+          return `${
+            importStar ? `${importStar}.` : ""
+          }pipe(${schema}, ${brand}(${argument}))`;
         }
-        return `${
-          importStar ? `${importStar}.` : ""
-        }pipe(${schema}, ${brand}(${argument}))`;
-      }
-    });
+      });
+    }
+
+    // v.pipe support
+    await astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`.replace(
+      ({ getMatch, getMultipleMatches }) => {
+        const schema = getMatch("SCHEMA")?.text();
+        const rest = getMultipleMatches("REST")
+          .filter((node) => node.kind() !== ",")
+          .map((node) => node.text());
+        const actions = getMultipleMatches("ACTIONS").filter(
+          (node) => node.kind() !== ",",
+        );
+        if (
+          isSchema(schema) &&
+          actions.length &&
+          actions.every((node) => {
+            return (
+              node.kind() === "call_expression" &&
+              isAction(node.child(0)?.text())
+            );
+          })
+        ) {
+          const pipeMethod = importStar ? `${importStar}.pipe` : "pipe";
+          if (!importStar) {
+            addImport(`import { pipe } from "valibot"`);
+            namedImports.push(`pipe`);
+          }
+          const replacement = `${pipeMethod}(${schema}(${rest.join(
+            ", ",
+          )}), ${actions.map((node) => node.text()).join(", ")})`;
+          return replacement;
+        }
+      },
+    );
+
+    // merge nested pipes
+    replaced = true;
+    while (replaced) {
+      replaced = false;
+      await astGrep`$OUTERPIPE($INNERPIPE($$$ARGS), $$$REST)`.replace(
+        ({ getMatch, getMultipleMatches }) => {
+          const outerPipe = getMatch("OUTERPIPE")?.text();
+          const innerPipe = getMatch("INNERPIPE")?.text();
+          if (isPipe(outerPipe) && isPipe(innerPipe)) {
+            const importPipe = `${importStar ? `${importStar}.` : ""}pipe`;
+            if (!importStar) {
+              addImport(`import { pipe } from "valibot"`);
+              namedImports.push(`pipe`);
+            }
+            replaced = true;
+            return `${importPipe}(${[
+              ...getMultipleMatches("ARGS")
+                .filter((node) => node.kind() !== ",")
+                .map((node) => node.text()),
+              ...getMultipleMatches("REST")
+                .filter((node) => node.kind() !== ",")
+                .map((node) => node.text()),
+            ].join(", ")})`;
+          }
+        },
+      );
+    }
   });
 }

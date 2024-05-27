@@ -1,6 +1,3 @@
-# valibot/0.30.0
-
-## Description
 Updates valibot from 0.30.0 to 0.31.0
 
 ## Examples
@@ -181,4 +178,111 @@ const TransformedSchema = v.pipe(
   v.string(),
   v.transform((input) => input.length),
 );
+```
+
+### Before
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.string([v.toTrimmed(), v.url()]);
+```
+
+### After
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.pipe(v.string(), v.trim(), v.url());
+```
+
+### Before
+
+```ts
+import { string, url } from "valibot";
+
+const Schema = string([url()]);
+```
+
+### After
+
+```ts
+import { string, url, pipe } from "valibot";
+
+const Schema = pipe(string(), url());
+```
+
+### Before
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.transform(
+  v.brand(v.string(), "Name"),
+  (input) => input.length,
+);
+```
+
+### After
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.pipe(
+  v.string(),
+  v.brand("Name"),
+  v.transform((input) => input.length),
+);
+```
+
+### Before
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.object(
+  {
+    name: v.string(),
+    age: v.number(),
+  },
+  [
+    v.forward(
+      v.custom((i) => i.age > 18, "You must be over 18"),
+      ["age"],
+    ),
+  ],
+);
+```
+
+### After
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.pipe(
+  v.object({
+    name: v.string(),
+    age: v.number(),
+  }),
+  v.forward(
+    v.check((i) => i.age > 18, "You must be over 18"),
+    ["age"],
+  ),
+);
+```
+
+### Before
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.brand(v.string([v.url()]), "foo");
+```
+
+### After
+
+```ts
+import * as v from "valibot";
+
+const Schema = v.pipe(v.string(), v.url(), v.brand("foo"));
 ```

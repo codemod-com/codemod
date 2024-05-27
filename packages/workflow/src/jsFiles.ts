@@ -1,8 +1,9 @@
 import * as path from "node:path";
-import { type SgNode, tsx as astGrepTsx } from "@ast-grep/napi";
+import { type NapiConfig, type SgNode, ts as astGrepTsx } from "@ast-grep/napi";
 import * as fg from "fast-glob";
 import { PLazy } from "./PLazy.js";
 import { astGrep } from "./astGrep/astGrep.js";
+import { getImports } from "./astGrep/getImports.js";
 import {
   fileContext,
   getCwdContext,
@@ -13,6 +14,7 @@ import { parseMultistring, wrapHelpers } from "./helpers.js";
 
 const helpers = {
   astGrep,
+  getImports,
   addImport: (line: string) => {
     getFileContext().importsUpdates.push({ type: "add", import: line });
   },
@@ -95,18 +97,24 @@ export function jsFiles(
                       .filter((n) => n.kind() !== ",")
                       .map((n) => n.text()),
                   });
+                  const importRule: NapiConfig = {
+                    rule: {
+                      any: [
+                        { pattern: "import { $$$IMPORTS } from '$FROM'" },
+                        { pattern: 'import { $$$IMPORTS } from "$FROM"' },
+                      ],
+                    },
+                  };
 
                   if (importsUpdates.length) {
                     for (const { type, import: line } of importsUpdates) {
                       const namedImportsToChange = astGrepTsx
                         .parse(line)
                         .root()
-                        .findAll(`import { $$$IMPORTS } from "$FROM"`);
+                        .findAll(importRule);
                       for (const node of namedImportsToChange) {
                         const importChange = getImportInfo(node);
-                        await astGrep(
-                          `import { $$$IMPORTS } from "$FROM"`,
-                        ).replace(({ getNode }) => {
+                        await astGrep(importRule).replace(({ getNode }) => {
                           const currentImports = getImportInfo(getNode());
                           let modified = false;
                           if (currentImports.from === importChange.from) {
@@ -133,9 +141,9 @@ export function jsFiles(
                           }
 
                           if (modified) {
-                            return `import {${currentImports.imports.join(
+                            return `import { ${currentImports.imports.join(
                               ", ",
-                            )}} from "${currentImports.from}"`;
+                            )} } from "${currentImports.from}"`;
                           }
 
                           return undefined;

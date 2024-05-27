@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as util from "node:util";
 import { type NapiConfig, tsx as astGrepTsx } from "@ast-grep/napi";
+import MagicString from "magic-string";
 import { PLazy } from "../PLazy.js";
 import {
   type AstGrepNodeContext,
@@ -10,7 +11,7 @@ import {
   getFileContext,
   getParentContext,
 } from "../contexts.js";
-import { wrapHelpers } from "../helpers.js";
+import { clc, wrapHelpers } from "../helpers.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
 
@@ -192,7 +193,9 @@ export function astGrep<
         const contents = await fs.readFile(file, { encoding: "utf-8" });
 
         const nodes = astGrepTsx.parse(contents).root().findAll(grep).reverse();
-        const astContext = { contents } as AstGrepNodeContext;
+        const astContext = {
+          contents: new MagicString(contents),
+        } as AstGrepNodeContext;
 
         for (const node of nodes) {
           if (cb) {
@@ -203,6 +206,11 @@ export function astGrep<
               callback ? returnHelpers : wrapHelpers(returnHelpers, context),
             );
           }
+        }
+
+        if (astContext.contents.hasChanged()) {
+          await fs.writeFile(file, astContext.contents.toString());
+          console.log(`${clc.blueBright("FILE")} ${file}`);
         }
       }
     });

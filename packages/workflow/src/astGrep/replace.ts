@@ -1,11 +1,6 @@
-import * as fs from "node:fs/promises";
 import { PLazy } from "../PLazy.js";
-import {
-  getAstGrepNodeContext,
-  getFileContext,
-  getParentContext,
-} from "../contexts.js";
-import { clc, wrapHelpers } from "../helpers.js";
+import { getAstGrepNodeContext, getParentContext } from "../contexts.js";
+import { wrapHelpers } from "../helpers.js";
 import { map } from "./map.js";
 
 const callbackHelpers = {
@@ -51,7 +46,7 @@ export function replace(
 
   const context = async (cb?: any) => {
     await innerParentContext(async () => {
-      const { node, contents } = getAstGrepNodeContext();
+      const { node } = getAstGrepNodeContext();
 
       if (callback) {
         replacement = await callback(wrapHelpers(callbackHelpers, context));
@@ -75,19 +70,10 @@ export function replace(
 
         const range = node.range();
 
-        const transformed =
-          contents.substring(0, range.start.index) +
-          text +
-          contents.substring(range.end.index || 0);
-
-        const { file } = getFileContext();
-        getAstGrepNodeContext().contents = transformed;
-
-        await fs.writeFile(file, transformed);
-        console.log(
-          `${clc.blueBright("FILE")} ${file}:${range.start.line + 1}:${
-            range.start.column + 1
-          }\n  ${clc.red(node.text())}\n  ${clc.green(text)}`,
+        getAstGrepNodeContext().contents.update(
+          range.start.index,
+          range.end.index,
+          text,
         );
       }
     });
