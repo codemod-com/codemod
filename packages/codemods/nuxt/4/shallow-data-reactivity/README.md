@@ -17,3 +17,27 @@ const { data } = useFetch('/api/test')
 ```jsx
 const { data } = useFetch('/api/test', { deep: true })
 ```
+
+### Additional Feature
+
+This codemod ensures that any unique key of your data is always resolvable to the same data. For example, if you are using `useAsyncData` to fetch data related to a particular page, it should be changed to a key that uniquely matches that data. (`useFetch` should do this automatically for you.)
+
+### Example
+
+Code before transformation:
+
+```jsx
+const route = useRoute()
+const { data } = await useAsyncData(async () => {
+    return await $fetch(`/api/my-page/${route.params.slug}`)
+});
+```
+
+Code after transformation:
+
+```jsx
+const route = useRoute()
+const { data } = await useAsyncData(route.params.slug, async () => {
+    return await $fetch(`/api/my-page/${route.params.slug}`), { deep: true }
+});
+```
