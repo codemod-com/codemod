@@ -31,7 +31,12 @@ import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
-import type { buildRunOptions } from "../buildOptions.js";
+import type {
+  GlobalArgvOptions,
+  RunArgvOptions,
+  buildGlobalOptions,
+  buildRunOptions,
+} from "../buildOptions.js";
 import { CodemodDownloader } from "../downloadCodemod.js";
 import { buildPrinterMessageUponCommand } from "../fileCommands.js";
 import { FileDownloadService } from "../fileDownloadService.js";
@@ -100,7 +105,7 @@ const checkFileTreeVersioning = async (target: string) => {
 
 export const handleRunCliCommand = async (
   printer: PrinterBlueprint,
-  args: Awaited<ReturnType<ReturnType<typeof buildRunOptions>>["argv"]>,
+  args: GlobalArgvOptions & RunArgvOptions,
   telemetry: TelemetrySender<TelemetryEvent>,
 ) => {
   const codemodSettings = parseCodemodSettings(args);

@@ -27,7 +27,10 @@ import type {
   CodemodExecutionErrorCallback,
   PrinterMessageCallback,
 } from "./schemata/callbacks.js";
-import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import {
+  DEFAULT_EXCLUDE_PATTERNS,
+  type FlowSettings,
+} from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { WorkerThreadManager } from "./workerThreadManager.js";
 
@@ -69,23 +72,19 @@ export const buildPatterns = async (
   if (files) {
     return {
       include: files,
-      exclude: formattedExclude,
+      exclude: [...new Set(formattedExclude)],
       reason: "Using files option from settings",
     };
   }
-
-  let prioritized: "include" | "exclude" = "include";
 
   let reason: string | undefined;
   let patterns: string[] | undefined = undefined;
   if (flowSettings.include) {
     reason = "Using paths provided by user via options";
     patterns = flowSettings.include;
-    prioritized = "include";
   } else if (codemod.include) {
     reason = "Using paths provided by codemod settings";
     patterns = codemod.include;
-    prioritized = "include";
   }
 
   // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
@@ -108,42 +107,48 @@ export const buildPatterns = async (
     } catch (error) {
       //
     }
-
-    prioritized = "exclude";
   }
 
   if (!patterns) {
     reason = "Using default include patterns based on the engine";
-    if (codemod.engine === "filemod" && filemod !== null) {
-      patterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
-    } else if (
-      codemod.engine === "jscodeshift" ||
-      codemod.engine === "ts-morph"
-    ) {
-      patterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-    }
-
-    if (!patterns) {
-      patterns = ["**/*"];
-    }
-
-    prioritized = "exclude";
+    patterns = ["**/*"];
   }
+
+  let engineDefaultPatterns = ["**/*"];
+
+  if (codemod.engine === "filemod" && filemod !== null) {
+    engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
+  } else if (
+    codemod.engine === "jscodeshift" ||
+    codemod.engine === "ts-morph"
+  ) {
+    engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+  }
+
+  engineDefaultPatterns = engineDefaultPatterns.filter(
+    (p) => !formattedExclude.includes(p),
+  );
 
   // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
-  const formattedInclude = patterns.map(formatFunc);
+  const formattedInclude = patterns
+    .map(formatFunc)
+    .concat(engineDefaultPatterns);
 
-  if (prioritized === "include") {
-    return {
-      include: formattedInclude,
-      exclude: formattedExclude.filter((p) => !formattedInclude.includes(p)),
-      reason,
-    };
-  }
+  const exclude = formattedExclude.filter((p) => {
+    // remove from excluded patterns if user is trying to override default exclude
+    if (DEFAULT_EXCLUDE_PATTERNS.includes(p)) {
+      return !formattedInclude.includes(p);
+    }
+
+    return true;
+  });
+
+  // remove everything that was excluded from the included patterns
+  const include = formattedInclude.filter((p) => !exclude.includes(p));
 
   return {
-    include: formattedInclude.filter((p) => !formattedExclude.includes(p)),
-    exclude: formattedExclude,
+    include: [...new Set(include)],
+    exclude: [...new Set(exclude)],
     reason,
   };
 };

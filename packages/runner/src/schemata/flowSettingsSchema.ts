@@ -14,9 +14,9 @@ import {
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
   "**/node_modules/**/*.*",
-  "**/*.d.ts",
   "**/.next/**/*.*",
   "**/dist/**/*.*",
+  "**/build/**/*.*",
 ];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_ENABLE_PRETTIER = true;
@@ -25,6 +25,7 @@ export const DEFAULT_INSTALL = true;
 export const DEFAULT_USE_JSON = false;
 export const DEFAULT_THREAD_COUNT = 4;
 export const DEFAULT_DRY_RUN = false;
+export const DEFAULT_TELEMETRY = true;
 
 export const flowSettingsSchema = object({
   _: array(string()),
