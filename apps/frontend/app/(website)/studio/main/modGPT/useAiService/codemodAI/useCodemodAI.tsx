@@ -31,11 +31,9 @@ export const useCodemodAI = ({
   useEffect(() => {
     let websocket: Socket;
     if (!shouldUseCodemodAi) return;
-
+    setIsWsConnected(true);
     const onConnect = () => {
-      console.clear();
       console.info("WebSocket connection established");
-      setIsWsConnected(true);
     };
     const onDisconnect = () => {
       console.info("WebSocket connection ended");
@@ -67,7 +65,6 @@ export const useCodemodAI = ({
       const websocket = io(codemodAiWsServer, {
         auth: { token: await getToken() },
       });
-      console.log({ websocket });
       websocket.on("connect", onConnect);
       websocket.on("disconnect", onDisconnect);
       websocket.on("message", onMessage);
@@ -84,13 +81,6 @@ export const useCodemodAI = ({
   }, []);
 
   const startIterativeCodemodGeneration = () => {
-    console.log({
-      ws,
-      before,
-      after,
-      isWsConnected,
-      serviceBusy,
-    });
     if (ws && before && after && isWsConnected && !serviceBusy) {
       const messageToSend = {
         config: { llm_engine: engine },
@@ -98,16 +88,14 @@ export const useCodemodAI = ({
         before,
         after,
       };
-      console.log({ messageToSend });
       ws.emit("message", messageToSend);
       setServiceBusy(true);
     }
   };
 
   return {
-    setServiceBusy,
     startIterativeCodemodGeneration,
     wsMessage,
-    serviceBusy: false,
+    serviceBusy,
   };
 };

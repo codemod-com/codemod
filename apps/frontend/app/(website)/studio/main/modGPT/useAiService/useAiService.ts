@@ -39,7 +39,6 @@ export const useAiService = ({
   } = useModGPT({ initialMessages: [], engine });
 
   const {
-    setServiceBusy,
     wsMessage: codemodAIMessage,
     startIterativeCodemodGeneration,
     serviceBusy,
@@ -97,7 +96,7 @@ export const useAiService = ({
   return {
     ...restMod,
     resetMessages,
-    isLoading: false,
+    isLoading,
     messages,
     setMessages,
     modGptSubmit,
