@@ -344,6 +344,7 @@ export const runCodemod = async (
         );
 
         for (const command of commands) {
+          await onCommand(command);
           await modifyFileSystemUponCommand(fileSystem, runSettings, command);
         }
       }

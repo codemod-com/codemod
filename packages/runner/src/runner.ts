@@ -68,6 +68,12 @@ export class Runner {
           this._flowSettings,
           this._runSettings,
           async (command) => {
+            // we want to track modified files for recipes
+            if (codemod.engine === "recipe") {
+              await this._updateModifiedPaths(command);
+              return;
+            }
+
             await this._handleCommand(command);
 
             if (handleCommand) {
@@ -101,15 +107,21 @@ export class Runner {
     return executionErrors;
   }
 
+  protected async _updateModifiedPaths(
+    command: FormattedFileCommand,
+  ): Promise<void> {
+    if (this._runSettings.dryRun) {
+      return;
+    }
+
+    const modifiedAtPath =
+      "oldPath" in command ? command.oldPath : command.newPath;
+
+    this.__modifiedFilePaths.push(modifiedAtPath);
+  }
+
   protected async _handleCommand(command: FormattedFileCommand): Promise<void> {
     await modifyFileSystemUponCommand(this._fs, this._runSettings, command);
-
-    if (!this._runSettings.dryRun) {
-      if (command.kind === "createFile") {
-        this.__modifiedFilePaths.push(command.newPath);
-      } else {
-        this.__modifiedFilePaths.push(command.oldPath);
-      }
-    }
+    await this._updateModifiedPaths(command);
   }
 }
