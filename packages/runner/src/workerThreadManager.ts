@@ -6,11 +6,7 @@ import {
   type WorkerThreadMessage,
   decodeWorkerThreadMessage,
 } from "@codemod-com/printer";
-import {
-  type ArgumentRecord,
-  type EngineOptions,
-  sleep,
-} from "@codemod-com/utilities";
+import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
 import type { FormattedFileCommand } from "./fileCommands.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
@@ -84,6 +80,7 @@ export class WorkerThreadManager {
     const iteratorResult = await this.__pathGenerator.next();
 
     if (iteratorResult.done) {
+      this.__pullingPaths = false;
       return;
     }
 
@@ -95,7 +92,6 @@ export class WorkerThreadManager {
 
     this.__pullingPaths = true;
     await this.__pullNewPath();
-    this.__pullingPaths = false;
   }
 
   private async __work(): Promise<void> {
