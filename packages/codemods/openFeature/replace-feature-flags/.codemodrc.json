@@ -1,0 +1,23 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "version": "1.0.1",
+  "private": false,
+  "name": "openFeature/replace-feature-flag",
+  "engine": "ts-morph",
+  "meta": {
+    "tags": ["openFeature", "feature-flag"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/openFeature/replace-feature-flag"
+  },
+  "arguments": [
+    {
+      "name": "value",
+      "kind": "string",
+      "required": true
+    },
+    {
+      "name": "key",
+      "kind": "string",
+      "required": true
+    }
+  ]
+}
