@@ -1,4 +1,9 @@
-import type { Arguments, KnownEngines } from "@codemod-com/utilities";
+import type {
+  ArgumentRecord,
+  Arguments,
+  EngineOptions,
+  KnownEngines,
+} from "@codemod-com/utilities";
 
 export type Codemod =
   | Readonly<{
@@ -8,7 +13,7 @@ export type Codemod =
       include?: string[];
       engine: "recipe";
       directoryPath: string;
-      codemods: ReadonlyArray<Codemod>;
+      codemods: ReadonlyArray<CodemodToRun>;
       arguments: Arguments;
     }>
   | Readonly<{
@@ -36,3 +41,10 @@ export type Codemod =
       engine: KnownEngines;
       indexPath: string;
     }>;
+
+export type CodemodToRun = Codemod & {
+  codemodSource: "local" | "registry";
+  safeArgumentRecord: ArgumentRecord;
+  hashDigest?: Buffer;
+  engineOptions: EngineOptions | null;
+};

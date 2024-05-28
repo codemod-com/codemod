@@ -1,17 +1,10 @@
-import { readFile } from "node:fs/promises";
-import { boxen, chalk } from "@codemod-com/printer";
-import type {
-  ArgumentRecord,
-  EngineOptions,
-  FileSystem,
-} from "@codemod-com/utilities";
-import type { Codemod } from "./codemod.js";
+import type { FileSystem } from "@codemod-com/utilities";
+import type { CodemodToRun } from "./codemod.js";
 import {
   type FormattedFileCommand,
   modifyFileSystemUponCommand,
 } from "./fileCommands.js";
-import { getTransformer, transpile } from "./getTransformer.js";
-import { buildPatterns, runCodemod } from "./runCodemod.js";
+import { runCodemod } from "./runCodemod.js";
 import type {
   CodemodExecutionError,
   PrinterMessageCallback,
@@ -19,13 +12,6 @@ import type {
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
-
-export type CodemodToRun = Codemod & {
-  codemodSource: "local" | "registry";
-  safeArgumentRecord: ArgumentRecord;
-  hashDigest?: Buffer;
-  engineOptions: EngineOptions | null;
-};
 
 export class Runner {
   private __modifiedFilePaths: string[];
@@ -51,77 +37,6 @@ export class Runner {
     const executionErrors: CodemodExecutionError[] = [];
 
     for (const codemod of this._codemods) {
-      // biome-ignore lint: types don't matter here
-      let transformer: any = null;
-
-      if (codemod.engine === "filemod") {
-        const codemodSource = await readFile(codemod.indexPath, {
-          encoding: "utf8",
-        });
-
-        const transpiledSource = codemod.indexPath.endsWith(".ts")
-          ? transpile(codemodSource.toString())
-          : codemodSource.toString();
-
-        transformer = getTransformer(transpiledSource);
-      }
-
-      const { include, exclude, reason } = await buildPatterns(
-        this._flowSettings,
-        codemod,
-        transformer,
-      );
-
-      let runningCodemodVersion = "";
-      let runningCodemodName = "";
-
-      if (codemod.source !== "standalone") {
-        runningCodemodVersion += `@${codemod.version}`;
-        runningCodemodName = codemod.name;
-      } else {
-        runningCodemodVersion += " (standalone)";
-        runningCodemodName = codemod.indexPath;
-      }
-
-      onPrinterMessage?.({
-        kind: "console",
-        consoleKind: "info",
-        message: boxen(
-          chalk.cyan(
-            `Codemod:`,
-            chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-            codemod.codemodSource === "local"
-              ? chalk.bold("\nRunning from local filesystem")
-              : "",
-            "\nTarget:",
-            chalk.bold(this._flowSettings.target),
-            "\n",
-            chalk.yellow(reason ? `\n${reason}` : ""),
-            chalk.green("\nIncluded patterns:"),
-            chalk.green.bold(include.join(", ") ?? ""),
-            chalk.red("\nExcluded patterns:"),
-            chalk.red.bold(exclude.join(", ") ?? ""),
-            "\n",
-            chalk.yellow(
-              !this._flowSettings.install
-                ? "\nDependency installation disabled"
-                : "",
-            ),
-            chalk.yellow(`\nRunning in ${this._flowSettings.threads} threads`),
-            chalk.yellow(
-              !this._flowSettings.format ? "\nFile formatting disabled" : "",
-            ),
-          ),
-          {
-            padding: 2,
-            dimBorder: true,
-            textAlignment: "left",
-            borderColor: "blue",
-            borderStyle: "round",
-          },
-        ),
-      });
-
       try {
         let surfaceAgnosticCaseService: SurfaceAgnosticCaseService | null =
           null;

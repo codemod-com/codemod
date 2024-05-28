@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import { chalk } from "@codemod-com/printer";
+import { boxen, chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type EngineOptions,
@@ -14,7 +14,7 @@ import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
-import type { Codemod } from "./codemod.js";
+import type { Codemod, CodemodToRun } from "./codemod.js";
 import {
   type FormattedFileCommand,
   buildFormattedFileCommands,
@@ -265,7 +265,7 @@ async function* buildPathGlobGenerator(
 
 export const runCodemod = async (
   fileSystem: FileSystem,
-  codemod: Codemod,
+  codemod: CodemodToRun,
   flowSettings: FlowSettings,
   runSettings: RunSettings,
   onCommand: (command: FormattedFileCommand) => Promise<void>,
@@ -290,17 +290,6 @@ export const runCodemod = async (
         }. Exiting...`,
       ),
     });
-
-  if (codemod.engine === "workflow") {
-    const codemodSource = await readFile(codemod.indexPath, {
-      encoding: "utf8",
-    });
-    const transpiledSource = codemod.indexPath.endsWith(".ts")
-      ? transpile(codemodSource.toString())
-      : codemodSource.toString();
-    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
-    return;
-  }
 
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
@@ -454,6 +443,51 @@ export const runCodemod = async (
     return;
   }
 
+  let runningCodemodVersion = "";
+  let runningCodemodName = "";
+
+  if (codemod.source !== "standalone") {
+    runningCodemodVersion += `@${codemod.version}`;
+    runningCodemodName = codemod.name;
+  } else {
+    runningCodemodVersion += " (standalone)";
+    runningCodemodName = codemod.indexPath;
+  }
+
+  if (codemod.engine === "workflow") {
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "info",
+      message: boxen(
+        chalk.cyan(
+          `Codemod:`,
+          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+          codemod.codemodSource === "local"
+            ? chalk.bold("\nRunning from local filesystem")
+            : "",
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    });
+
+    const codemodSource = await readFile(codemod.indexPath, {
+      encoding: "utf8",
+    });
+    const transpiledSource = codemod.indexPath.endsWith(".ts")
+      ? transpile(codemodSource.toString())
+      : codemodSource.toString();
+    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+    return;
+  }
+
   const codemodSource = await readFile(codemod.indexPath, { encoding: "utf8" });
 
   const transpiledSource = codemod.indexPath.endsWith(".ts")
@@ -481,6 +515,44 @@ export const runCodemod = async (
     if (globPaths.length === 0) {
       return pathsAreEmpty();
     }
+
+    const { include, exclude, reason } = patterns;
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "info",
+      message: boxen(
+        chalk.cyan(
+          `Codemod:`,
+          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+          codemod.codemodSource === "local"
+            ? chalk.bold("\nRunning from local filesystem")
+            : "",
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+          "\n",
+          chalk.yellow(reason ? `\n${reason}` : ""),
+          chalk.green("\nIncluded patterns:"),
+          chalk.green.bold(include.join(", ") ?? ""),
+          chalk.red("\nExcluded patterns:"),
+          chalk.red.bold(exclude.join(", ") ?? ""),
+          "\n",
+          chalk.yellow(
+            !flowSettings.install ? "\nDependency installation disabled" : "",
+          ),
+          chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+          chalk.yellow(
+            !flowSettings.format ? "\nFile formatting disabled" : "",
+          ),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    });
 
     const fileCommands = await runRepomod(
       fileSystem,
@@ -524,6 +596,42 @@ export const runCodemod = async (
   const pathGenerator = pathGeneratorInitializer();
 
   const { engine } = codemod;
+
+  const { include, exclude, reason } = patterns;
+  onPrinterMessage({
+    kind: "console",
+    consoleKind: "info",
+    message: boxen(
+      chalk.cyan(
+        `Codemod:`,
+        chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+        codemod.codemodSource === "local"
+          ? chalk.bold("\nRunning from local filesystem")
+          : "",
+        "\nTarget:",
+        chalk.bold(flowSettings.target),
+        "\n",
+        chalk.yellow(reason ? `\n${reason}` : ""),
+        chalk.green("\nIncluded patterns:"),
+        chalk.green.bold(include.join(", ") ?? ""),
+        chalk.red("\nExcluded patterns:"),
+        chalk.red.bold(exclude.join(", ") ?? ""),
+        "\n",
+        chalk.yellow(
+          !flowSettings.install ? "\nDependency installation disabled" : "",
+        ),
+        chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+        chalk.yellow(!flowSettings.format ? "\nFile formatting disabled" : ""),
+      ),
+      {
+        padding: 2,
+        dimBorder: true,
+        textAlignment: "left",
+        borderColor: "blue",
+        borderStyle: "round",
+      },
+    ),
+  });
 
   await new Promise<void>((resolve) => {
     let timeout: NodeJS.Timeout | null = null;
