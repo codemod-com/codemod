@@ -1,3 +1,7 @@
+# Replace react fc typescript
+
+## Description
+
 This codemod removes `React.FC`, `React.FunctionComponent` and `React.SFC` and replaces the Props as the type of the unique argument in the component definition.
 
 This codemod supports:
