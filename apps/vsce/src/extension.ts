@@ -27,7 +27,6 @@ import { MainViewProvider } from "./components/webview/MainProvider";
 import { getConfiguration } from "./configuration";
 import { buildContainer } from "./container";
 import { buildStore } from "./data";
-import { HomeDirectoryService } from "./data/readHomeDirectoryCases";
 import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
 import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
@@ -763,8 +762,6 @@ export async function activate(context: vscode.ExtensionContext) {
   messageBus.publish({
     kind: MessageKind.bootstrapEngine,
   });
-
-  new HomeDirectoryService(messageBus, store, rootUri);
 
   messageBus.publish({
     kind: MessageKind.loadHomeDirectoryData,
