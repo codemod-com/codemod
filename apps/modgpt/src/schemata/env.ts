@@ -9,6 +9,7 @@ import {
   parse,
   string,
 } from "valibot";
+
 dotenv.config();
 export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),

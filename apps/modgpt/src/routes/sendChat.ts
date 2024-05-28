@@ -1,10 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import { getAuth } from "@clerk/fastify";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import * as openAiEdge from "openai-edge";
-import { clerkApplied, environment } from "../dev-utils/configs";
-import { isDevelopment } from "../dev-utils/configs";
+import { environment, isDevelopment } from "../dev-utils/configs";
 import { corsDisableHeaders } from "../dev-utils/cors";
 import type { Instance } from "../fastifyInstance";
 import { parseSendChatBody } from "../schemata/schema";
