@@ -1,7 +1,11 @@
 .root {
-  text-align: center;
   display: flex;
   flex-direction: column;
-  align-items: center;
   height: 100%;
+  margin-left: 1rem;
+}
+
+.text {
+  font-size: 1rem;
+  font-weight: 500;
 }
