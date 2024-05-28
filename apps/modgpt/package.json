@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/modgpt",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "type": "module",
   "scripts": {
     "build": "node esbuild.config.js",
@@ -10,7 +10,6 @@
   "author": "Codemod inc.",
   "license": "ISC",
   "dependencies": {
-    "@clerk/fastify": "0.6.27",
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.1.0",
     "@fastify/rate-limit": "9.0.1",
