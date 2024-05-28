@@ -146,8 +146,7 @@ export class WorkerThreadManager {
     }
 
     // Let progress bar do its thing
-    await sleep(100);
-    this.__pullingPaths = false;
+    // await sleep(100);
     this.__onPrinterMessage({
       kind: "finish",
     });
