@@ -22,6 +22,7 @@ export class WorkerThreadManager {
   private __filePaths: string[] = [];
   private __totalFileCount = 0;
   private __processedFileNumber = 0;
+  private __pullingPaths = false;
 
   public constructor(
     private readonly __workerCount: number,
@@ -92,7 +93,9 @@ export class WorkerThreadManager {
 
     await this.__work();
 
+    this.__pullingPaths = true;
     await this.__pullNewPath();
+    this.__pullingPaths = false;
   }
 
   private async __work(): Promise<void> {
@@ -105,7 +108,8 @@ export class WorkerThreadManager {
     if (filePath === undefined) {
       if (
         this.__totalFileCount !== null &&
-        this.__idleWorkerIds.length === this.__workerCount
+        this.__idleWorkerIds.length === this.__workerCount &&
+        this.__pullingPaths === false
       ) {
         this.__finished = true;
 
@@ -143,6 +147,7 @@ export class WorkerThreadManager {
 
     // Let progress bar do its thing
     await sleep(100);
+    this.__pullingPaths = false;
     this.__onPrinterMessage({
       kind: "finish",
     });
