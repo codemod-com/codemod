@@ -1,4 +1,4 @@
-# Replace reactDOM methods
+# Migration recipe
 
 ## Description
 
