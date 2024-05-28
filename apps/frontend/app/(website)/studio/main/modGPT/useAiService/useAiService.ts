@@ -35,6 +35,7 @@ export const useAiService = ({
     messages: modGPTMessages,
     setMessages: setModGPTMessages,
     append: appendModGPTMessages,
+    setToken,
     ...restMod
   } = useModGPT({ initialMessages: [], engine });
 
@@ -46,6 +47,7 @@ export const useAiService = ({
   } = useCodemodAI({
     messages,
     engine,
+    setToken,
   });
 
   const lastModGptMss = modGPTMessages?.at(-1);

@@ -3,6 +3,7 @@ import { codemodAiWsServer, shouldUseCodemodAi } from "@chatbot/config";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@shared/consts";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
+import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { type Socket, io } from "socket.io-client";
@@ -14,9 +15,11 @@ type MessageToSend = {
   after: string;
 };
 export const useCodemodAI = ({
+  setToken,
   messages,
   engine,
 }: {
+  setToken: ToVoid<string | null>;
   messages: LLMMessage[];
   engine: LLMEngine;
 }) => {
@@ -63,7 +66,9 @@ export const useCodemodAI = ({
     setServiceBusy(false);
   };
 
-  const onMessage = (data: MessageToWs) => {
+  const onMessage = async (data: MessageToWs) => {
+    const _token = await getToken();
+    setToken(_token);
     if (data.error || data.execution_status === "error") {
       handleError(data.error || "server crashed");
     } else if (data.codemod) {
@@ -112,11 +117,13 @@ export const useCodemodAI = ({
     return wsCleanup;
   }, []);
 
-  const startIterativeCodemodGeneration = () => {
+  const startIterativeCodemodGeneration = async () => {
     if (ws && before && after && isWsConnected && !serviceBusy) {
+      const _token = await getToken();
+      setToken(_token);
       setWsMessage({
         content: `Generate codemod with AI`,
-        role: "assistant",
+        role: "user",
         id: Date.now().toString(),
       });
       const messageToSend: MessageToSend = {
