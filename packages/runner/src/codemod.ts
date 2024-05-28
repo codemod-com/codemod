@@ -7,17 +7,19 @@ import type {
 
 export type Codemod =
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
       engine: "recipe";
       directoryPath: string;
-      codemods: ReadonlyArray<CodemodToRun>;
+      codemods: ReadonlyArray<Codemod>;
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
@@ -27,7 +29,8 @@ export type Codemod =
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
@@ -36,14 +39,14 @@ export type Codemod =
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "standalone";
+      bundleType: "standalone";
+      source: "local" | "registry";
       include?: string[];
       engine: KnownEngines;
       indexPath: string;
     }>;
 
 export type CodemodToRun = Codemod & {
-  codemodSource: "local" | "registry";
   safeArgumentRecord: ArgumentRecord;
   hashDigest?: Buffer;
   engineOptions: EngineOptions | null;

@@ -18,6 +18,7 @@ export class WorkerThreadManager {
   private __filePaths: string[] = [];
   private __totalFileCount = 0;
   private __processedFileNumber = 0;
+  private __noMorePaths = false;
 
   public constructor(
     private readonly __workerCount: number,
@@ -79,12 +80,10 @@ export class WorkerThreadManager {
     const iteratorResult = await this.__pathGenerator.next();
 
     if (iteratorResult.done) {
-      if (
-        this.__totalFileCount !== null &&
-        this.__idleWorkerIds.length === this.__workerCount
-      ) {
-        this.__finished = true;
-        this.__finish();
+      this.__noMorePaths = true;
+
+      if (this._getShouldFinish()) {
+        await this.__finish();
       }
 
       return;
@@ -143,6 +142,15 @@ export class WorkerThreadManager {
     });
   }
 
+  private _getShouldFinish() {
+    return (
+      this.__noMorePaths &&
+      this.__totalFileCount !== null &&
+      this.__processedFileNumber === this.__totalFileCount &&
+      this.__idleWorkerIds.length === this.__workerCount
+    );
+  }
+
   private __buildOnWorkerMessage(i: number) {
     return async (m: unknown): Promise<void> => {
       const workerThreadMessage = decodeWorkerThreadMessage(m);
@@ -173,6 +181,10 @@ export class WorkerThreadManager {
           ? resolve(workerThreadMessage.path)
           : null,
       });
+
+      if (this._getShouldFinish()) {
+        await this.__finish();
+      }
 
       this.__idleWorkerIds.push(i);
       await this.__work();

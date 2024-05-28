@@ -25,7 +25,7 @@ export type CodemodDownloaderBlueprint = Readonly<{
   download(
     name: string,
     disableSpinner?: boolean,
-  ): Promise<Codemod & { source: "package" }>;
+  ): Promise<Codemod & { bundleType: "package"; source: "registry" }>;
 }>;
 
 export class CodemodDownloader implements CodemodDownloaderBlueprint {
@@ -40,7 +40,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
   public async download(
     name: string,
     disableSpinner?: boolean,
-  ): Promise<Codemod & { source: "package" }> {
+  ): Promise<Codemod & { bundleType: "package"; source: "registry" }> {
     await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
     // make the codemod directory
@@ -160,7 +160,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
         const yamlPath = join(directoryPath, "rule.yaml");
 
         return {
-          source: "package",
+          bundleType: "package",
+          source: "registry",
           name,
           version: config.version,
           engine: config.engine,
@@ -185,7 +186,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       const rulesPath = join(directoryPath, "rules.toml");
 
       return {
-        source: "package",
+        bundleType: "package",
+        source: "registry",
         name,
         version: config.version,
         engine: config.engine,
@@ -204,7 +206,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       const indexPath = join(directoryPath, "index.cjs");
 
       return {
-        source: "package",
+        bundleType: "package",
+        source: "registry",
         name,
         version: config.version,
         engine: config.engine,
@@ -245,7 +248,8 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       }
 
       return {
-        source: "package",
+        bundleType: "package",
+        source: "registry",
         name,
         version: config.version,
         engine: config.engine,

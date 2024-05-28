@@ -141,7 +141,7 @@ export const handleRunCliCommand = async (
       kind: codemodSettings.kind,
       codemod: {
         ...codemod,
-        codemodSource: "local",
+        source: "local",
         hashDigest: createHash("ripemd160")
           .update(codemodSettings.source)
           .digest(),
@@ -192,7 +192,6 @@ export const handleRunCliCommand = async (
       kind: codemodSettings.kind,
       codemod: {
         ...codemod,
-        codemodSource: "registry",
         hashDigest: createHash("ripemd160").update(codemod.name).digest(),
         safeArgumentRecord: await buildSafeArgumentRecord(
           codemod,
@@ -213,7 +212,6 @@ export const handleRunCliCommand = async (
 
         codemods.push({
           ...codemod,
-          codemodSource: "registry",
           safeArgumentRecord: await buildSafeArgumentRecord(
             codemod,
             preCommitCodemod.arguments,
@@ -326,7 +324,7 @@ export const handleRunCliCommand = async (
     async (codemod, filePaths) => {
       let codemodName = "Standalone codemod (from user machine)";
 
-      if (codemod.source === "package") {
+      if (codemod.bundleType === "package") {
         if (codemodSettings.kind === "runSourced") {
           codemodName = `${codemod.name} (from user machine)`;
         } else {

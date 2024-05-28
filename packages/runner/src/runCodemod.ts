@@ -14,7 +14,7 @@ import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
-import type { Codemod, CodemodToRun } from "./codemod.js";
+import type { Codemod } from "./codemod.js";
 import {
   type FormattedFileCommand,
   buildFormattedFileCommands,
@@ -264,7 +264,7 @@ async function* buildPathGlobGenerator(
 
 export const runCodemod = async (
   fileSystem: FileSystem,
-  codemod: CodemodToRun,
+  codemod: Codemod,
   flowSettings: FlowSettings,
   runSettings: RunSettings,
   onCommand: (command: FormattedFileCommand) => Promise<void>,
@@ -311,7 +311,9 @@ export const runCodemod = async (
               onPrinterMessage({
                 kind: "progress",
                 codemodName:
-                  subCodemod.source === "package" ? subCodemod.name : undefined,
+                  subCodemod.bundleType === "package"
+                    ? subCodemod.name
+                    : undefined,
                 processedFileNumber:
                   message.totalFileNumber * i + message.processedFileNumber,
                 totalFileNumber:
@@ -377,7 +379,9 @@ export const runCodemod = async (
             onPrinterMessage({
               kind: "progress",
               codemodName:
-                subCodemod.source === "package" ? subCodemod.name : undefined,
+                subCodemod.bundleType === "package"
+                  ? subCodemod.name
+                  : undefined,
               processedFileNumber:
                 message.totalFileNumber * i + message.processedFileNumber,
               totalFileNumber:
@@ -428,7 +432,7 @@ export const runCodemod = async (
   let runningCodemodVersion = "";
   let runningCodemodName = "";
 
-  if (codemod.source !== "standalone") {
+  if (codemod.bundleType !== "standalone") {
     runningCodemodVersion += `@${codemod.version}`;
     runningCodemodName = codemod.name;
   } else {
@@ -444,7 +448,7 @@ export const runCodemod = async (
         chalk.cyan(
           `Codemod:`,
           chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-          codemod.codemodSource === "local"
+          codemod.source === "local"
             ? chalk.bold("\nRunning from local filesystem")
             : "",
           "\nTarget:",
@@ -506,7 +510,7 @@ export const runCodemod = async (
         chalk.cyan(
           `Codemod:`,
           chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-          codemod.codemodSource === "local"
+          codemod.source === "local"
             ? chalk.bold("\nRunning from local filesystem")
             : "",
           "\nTarget:",
@@ -542,7 +546,7 @@ export const runCodemod = async (
         ...transformer,
         includePatterns: globPaths,
         excludePatterns: [],
-        name: codemod.source === "package" ? codemod.name : undefined,
+        name: codemod.bundleType === "package" ? codemod.name : undefined,
       },
       flowSettings.target,
       flowSettings.format,
@@ -587,7 +591,7 @@ export const runCodemod = async (
       chalk.cyan(
         `Codemod:`,
         chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-        codemod.codemodSource === "local"
+        codemod.source === "local"
           ? chalk.bold("\nRunning from local filesystem")
           : "",
         "\nTarget:",
@@ -632,7 +636,7 @@ export const runCodemod = async (
           onPrinterMessage({
             kind: "progress",
             codemodName:
-              codemod.source === "package" ? codemod.name : undefined,
+              codemod.bundleType === "package" ? codemod.name : undefined,
             processedFileNumber: message.processedFileNumber,
             totalFileNumber: message.totalFileNumber,
             processedFileName: message.processedFileName
@@ -648,9 +652,9 @@ export const runCodemod = async (
         }
 
         if (message.kind === "finish") {
-          onPrinterMessage({
-            kind: "finish",
-          });
+          // onPrinterMessage({
+          //   kind: "finish",
+          // });
 
           resolve();
 
@@ -674,7 +678,7 @@ export const runCodemod = async (
       (error) => {
         onCodemodError({
           codemodName:
-            codemod.source === "package" ? codemod.name : "Local codemod",
+            codemod.bundleType === "package" ? codemod.name : "Local codemod",
           ...error,
         });
       },
