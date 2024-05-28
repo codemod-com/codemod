@@ -1,7 +1,7 @@
 import {
   type ChildProcessWithoutNullStreams,
-  spawn,
   execSync,
+  spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
@@ -25,7 +25,6 @@ import {
   buildCrossplatformArg,
   buildTypeCodec,
   isNeitherNullNorUndefined,
-  streamToString,
 } from "../utilities";
 import { buildArguments } from "./buildArguments";
 import { type Message, type MessageBus, MessageKind } from "./messageBus";
