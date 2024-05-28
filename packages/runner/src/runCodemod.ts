@@ -175,10 +175,10 @@ export const buildPatterns = async (
 
   if (!patterns) {
     reason = "Using default include patterns based on the engine";
-    patterns = ["**/*"];
+    patterns = [];
   }
 
-  let engineDefaultPatterns = ["**/*"];
+  let engineDefaultPatterns = ["**/*.*"];
 
   if (codemod.engine === "filemod" && filemod !== null) {
     engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
@@ -193,7 +193,6 @@ export const buildPatterns = async (
     (p) => !formattedExclude.includes(p),
   );
 
-  // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
   const formattedInclude = patterns
     .map(formatFunc)
     .concat(engineDefaultPatterns);
@@ -246,6 +245,9 @@ async function* buildPathGlobGenerator(
   },
 ): AsyncGenerator<string, void, unknown> {
   const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
+
+  console.log("include", patterns.include);
+  console.log("exclude", patterns.exclude);
 
   const stream = globStream(patterns.include, {
     absolute: true,
@@ -308,10 +310,6 @@ export const runCodemod = async (
             commands.push(command);
           },
           (message) => {
-            if (message.kind === "error") {
-              onPrinterMessage(message);
-            }
-
             if (message.kind === "progress") {
               onPrinterMessage({
                 kind: "progress",
@@ -324,8 +322,8 @@ export const runCodemod = async (
                 processedFileName: message.processedFileName,
               });
             }
-            // we are discarding any printer messages from subcodemods
-            // if we are within a recipe
+
+            onPrinterMessage(message);
           },
           safeArgumentRecord,
           engineOptions,
@@ -372,10 +370,6 @@ export const runCodemod = async (
           commands.push(command);
         },
         (message) => {
-          if (message.kind === "error") {
-            onPrinterMessage(message);
-          }
-
           if (message.kind === "progress") {
             onPrinterMessage({
               kind: "progress",
@@ -389,8 +383,7 @@ export const runCodemod = async (
             });
           }
 
-          // we are discarding any printer messages from subcodemods
-          // if we are within a recipe
+          onPrinterMessage(message);
         },
         safeArgumentRecord,
         engineOptions,
