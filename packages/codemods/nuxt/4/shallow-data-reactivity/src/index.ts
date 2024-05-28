@@ -59,10 +59,7 @@ export default function transform(
       },
     })
     .forEach((path) => {
-      console.log("UWU");
       const args = path.node.arguments;
-      // console.log(args);
-      // Ensure there is only one argument
       if (args[0].type === "ArrowFunctionExpression") {
         let slug = "";
         root
@@ -80,9 +77,9 @@ export default function transform(
         slug += ".params.slug";
 
         // Create the new arguments
-        const newArgs = j.identifier(slug);
+        const newArg = j.identifier(slug);
 
-        path.node.arguments.unshift(newArgs);
+        path.node.arguments.unshift(newArg);
 
         // Replace the node with the new node, preserving comments
         replaceWithComments(path, path.node);
