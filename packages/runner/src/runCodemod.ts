@@ -316,6 +316,7 @@ export const runCodemod = async (
           flowSettings,
           runSettings,
           async (command) => {
+            onCommand(command);
             commands.push(command);
           },
           (message) => {
