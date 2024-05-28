@@ -245,7 +245,7 @@ describe("/publish route", async () => {
 
     expect(mocks.axios.post).toHaveBeenCalledOnce();
     expect(mocks.axios.post).toHaveBeenCalledWith(
-      "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
+      "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
       {
         codemod: {
           name: codemodRcContents.name,
