@@ -357,7 +357,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
     if (latestVersion === null) {
       try {
         await axios.post(
-          "https://hooks.zapier.com/hooks/catch/18808280/3jxr8iu/",
+          "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
           {
             codemod: {
               name,
