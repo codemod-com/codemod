@@ -3,17 +3,14 @@ import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { type PrinterBlueprint, boxen, chalk } from "@codemod-com/printer";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type CodemodSettings,
   type CodemodToRun,
   Runner,
-  buildPatterns,
-  getTransformer,
   parseCodemodSettings,
   parseFlowSettings,
   parseRunSettings,
-  transpile,
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
@@ -144,6 +141,7 @@ export const handleRunCliCommand = async (
       kind: codemodSettings.kind,
       codemod: {
         ...codemod,
+        codemodSource: "local",
         hashDigest: createHash("ripemd160")
           .update(codemodSettings.source)
           .digest(),
@@ -194,6 +192,7 @@ export const handleRunCliCommand = async (
       kind: codemodSettings.kind,
       codemod: {
         ...codemod,
+        codemodSource: "registry",
         hashDigest: createHash("ripemd160").update(codemod.name).digest(),
         safeArgumentRecord: await buildSafeArgumentRecord(
           codemod,
@@ -214,6 +213,7 @@ export const handleRunCliCommand = async (
 
         codemods.push({
           ...codemod,
+          codemodSource: "registry",
           safeArgumentRecord: await buildSafeArgumentRecord(
             codemod,
             preCommitCodemod.arguments,
@@ -258,76 +258,68 @@ export const handleRunCliCommand = async (
   > = {};
 
   if (codemodDefinition.kind !== "runOnPreCommit") {
-    const { codemod } = codemodDefinition;
-
-    // biome-ignore lint: types don't matter here
-    let transformer: any = null;
-
-    if (codemod.engine === "filemod") {
-      const codemodSource = await readFile(codemod.indexPath, {
-        encoding: "utf8",
-      });
-
-      const transpiledSource = codemod.indexPath.endsWith(".ts")
-        ? transpile(codemodSource.toString())
-        : codemodSource.toString();
-
-      transformer = getTransformer(transpiledSource);
-    }
-
-    const { include, exclude, reason } = await buildPatterns(
-      flowSettings,
-      codemod,
-      transformer,
-    );
-
-    let runningCodemodVersion = "";
-    let runningCodemodName = "";
-    const isRunningFromLocal = codemodSettings.kind === "runSourced";
-
-    if (codemodDefinition.codemod.source !== "standalone") {
-      runningCodemodVersion += `@${codemodDefinition.codemod.version}`;
-      runningCodemodName = codemodDefinition.codemod.name;
-    } else {
-      runningCodemodVersion += " (standalone)";
-      runningCodemodName = codemodDefinition.codemod.indexPath;
-    }
-
-    printer.printConsoleMessage(
-      "info",
-      boxen(
-        chalk.cyan(
-          `Codemod:`,
-          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-          isRunningFromLocal
-            ? chalk.bold("\nRunning from local filesystem")
-            : "",
-          "\nTarget:",
-          chalk.bold(flowSettings.target),
-          "\n",
-          chalk.yellow(reason ? `\n${reason}` : ""),
-          chalk.green("\nIncluded patterns:"),
-          chalk.green.bold(include.join(", ") ?? ""),
-          chalk.red("\nExcluded patterns:"),
-          chalk.red.bold(exclude.join(", ") ?? ""),
-          "\n",
-          chalk.yellow(
-            !flowSettings.install ? "\nDependency installation disabled" : "",
-          ),
-          chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
-          chalk.yellow(
-            !flowSettings.format ? "\nFile formatting disabled" : "",
-          ),
-        ),
-        {
-          padding: 2,
-          dimBorder: true,
-          textAlignment: "left",
-          borderColor: "blue",
-          borderStyle: "round",
-        },
-      ),
-    );
+    // const { codemod } = codemodDefinition;
+    // // biome-ignore lint: types don't matter here
+    // let transformer: any = null;
+    // if (codemod.engine === "filemod") {
+    //   const codemodSource = await readFile(codemod.indexPath, {
+    //     encoding: "utf8",
+    //   });
+    //   const transpiledSource = codemod.indexPath.endsWith(".ts")
+    //     ? transpile(codemodSource.toString())
+    //     : codemodSource.toString();
+    //   transformer = getTransformer(transpiledSource);
+    // }
+    // const { include, exclude, reason } = await buildPatterns(
+    //   flowSettings,
+    //   codemod,
+    //   transformer,
+    // );
+    // let runningCodemodVersion = "";
+    // let runningCodemodName = "";
+    // const isRunningFromLocal = codemodSettings.kind === "runSourced";
+    // if (codemodDefinition.codemod.source !== "standalone") {
+    //   runningCodemodVersion += `@${codemodDefinition.codemod.version}`;
+    //   runningCodemodName = codemodDefinition.codemod.name;
+    // } else {
+    //   runningCodemodVersion += " (standalone)";
+    //   runningCodemodName = codemodDefinition.codemod.indexPath;
+    // }
+    // printer.printConsoleMessage(
+    //   "info",
+    //   boxen(
+    //     chalk.cyan(
+    //       `Codemod:`,
+    //       chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+    //       isRunningFromLocal
+    //         ? chalk.bold("\nRunning from local filesystem")
+    //         : "",
+    //       "\nTarget:",
+    //       chalk.bold(flowSettings.target),
+    //       "\n",
+    //       chalk.yellow(reason ? `\n${reason}` : ""),
+    //       chalk.green("\nIncluded patterns:"),
+    //       chalk.green.bold(include.join(", ") ?? ""),
+    //       chalk.red("\nExcluded patterns:"),
+    //       chalk.red.bold(exclude.join(", ") ?? ""),
+    //       "\n",
+    //       chalk.yellow(
+    //         !flowSettings.install ? "\nDependency installation disabled" : "",
+    //       ),
+    //       chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+    //       chalk.yellow(
+    //         !flowSettings.format ? "\nFile formatting disabled" : "",
+    //       ),
+    //     ),
+    //     {
+    //       padding: 2,
+    //       dimBorder: true,
+    //       textAlignment: "left",
+    //       borderColor: "blue",
+    //       borderStyle: "round",
+    //     },
+    //   ),
+    // );
   }
 
   const executionErrors = await runner.run(
