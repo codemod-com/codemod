@@ -40,10 +40,9 @@ export function getAutomationFrameworkTitles(
     applicability?: AutomationResponse["applicability"];
   } | null,
 ): string[] {
-  const fw =
-    automation?.frameworks ??
-    automation?.applicability?.from?.map(([framework]) => framework) ??
-    [];
+  const fw = automation?.frameworks?.length
+    ? automation.frameworks
+    : automation?.applicability?.from?.map(([framework]) => framework) ?? [];
   return fw.map((fw) => fw.replace(/@/g, ""));
 }
 
