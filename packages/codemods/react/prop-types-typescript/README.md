@@ -1,3 +1,7 @@
+# Prop-types typescript 
+
+## Description
+
 Codemod to convert React PropTypes to TypeScript types.
 
 -   Supports function and class components

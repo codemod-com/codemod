@@ -1,6 +1,11 @@
+# Replace act import
+
+## Description
+
 This codemod will replace the usages of `TestUtils.act()` to use `React.act()`, introduced in React v19.
 
-## Before
+## Examples
+### Before:
 
 ```ts
 import { act } from 'react-dom/test-utils';
@@ -8,7 +13,7 @@ import { act } from 'react-dom/test-utils';
 act();
 ```
 
-## After
+### After:
 
 ```ts
 import { act } from "react";
@@ -16,9 +21,7 @@ import { act } from "react";
 act();
 ```
 
-
-
-## Before
+### Before:
 
 ```ts
 import * as ReactDOMTestUtils from 'react-dom/test-utils';
@@ -26,7 +29,7 @@ import * as ReactDOMTestUtils from 'react-dom/test-utils';
 ReactDOMTestUtils.act();
 ```
 
-## After
+### After:
 
 ```ts
 import * as React from "react";

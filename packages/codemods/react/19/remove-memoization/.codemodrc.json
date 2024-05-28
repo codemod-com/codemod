@@ -1,14 +1,14 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "name": "react/19/remove-memoization",
   "private": false,
   "engine": "jscodeshift",
   "meta": {
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/remove-memoization",
-    "tags": ["react", "migration"]
+    "tags": ["react", "react-compiler", "react-forget", "migration"]
   },
   "applicability": {
-    "from": [["react", "<=", "18"]]
+    "from": [["react", ">=", "19"]]
   }
 }

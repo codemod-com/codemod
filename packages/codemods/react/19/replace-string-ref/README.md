@@ -1,12 +1,17 @@
+# Replace string ref
+
+## Description
+
 This codemod migrates string refs (deprecated) to callback refs.
 
-## Before
+## Examples
+### Before:
 
 ```ts
 < div ref = 'refName' / > ;
 ```
 
-## After
+### After:
 
 ```ts
 < div ref = { ref => this.refs.refName = ref }

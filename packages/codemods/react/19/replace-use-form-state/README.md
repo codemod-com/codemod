@@ -1,6 +1,11 @@
+# Replace use form state
+
+## Description
+
 This codemod will replace the usages of `useFormState()` to use `useActionState()`, introduced in React v19.
 
-## Before
+## Examples
+### Before:
 
 ```ts
 import { useFormState } from "react-dom";
@@ -20,7 +25,7 @@ function StatefulForm({}) {
 }
 ```
 
-## After
+### After:
 
 ```ts
 import { useActionState } from "react-dom";
@@ -40,9 +45,7 @@ function StatefulForm({}) {
 }
 ```
 
-
-
-## Before
+### Before:
 
 ```ts
 import * as ReactDOM from "react-dom";
@@ -53,7 +56,7 @@ function StatefulForm({}) {
 }
 ```
 
-## After
+### After:
 
 ```ts
 import * as ReactDOM from "react-dom";
