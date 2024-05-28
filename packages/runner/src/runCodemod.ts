@@ -246,9 +246,6 @@ async function* buildPathGlobGenerator(
 ): AsyncGenerator<string, void, unknown> {
   const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
 
-  console.log("include", patterns.include);
-  console.log("exclude", patterns.exclude);
-
   const stream = globStream(patterns.include, {
     absolute: true,
     cwd: flowSettings.target,

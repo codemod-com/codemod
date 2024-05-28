@@ -106,6 +106,7 @@ export class Printer implements PrinterBlueprint {
 
     if (this.progressBar.getProgress() === 1) {
       this.progressBar.stop();
+      this.progressBar = null;
     }
   }
 
