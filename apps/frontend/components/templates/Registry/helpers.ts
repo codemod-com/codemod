@@ -14,7 +14,9 @@ export function getFormattedDescription(
   description: string,
   returnNonMatching = false,
 ) {
-  const _description = description.match(/##\s?Description([^#]*)##/i)?.[1];
+  const _description = description
+    .match(/##\s?Description\s*(.*?)(\n\s*\n|##|$)/is)?.[1]
+    ?.trim();
 
   if (returnNonMatching) {
     const nonMatching = description
