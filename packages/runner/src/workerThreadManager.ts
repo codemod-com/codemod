@@ -18,7 +18,6 @@ export class WorkerThreadManager {
   private __filePaths: string[] = [];
   private __totalFileCount = 0;
   private __processedFileNumber = 0;
-  private __pullingPaths = false;
 
   public constructor(
     private readonly __workerCount: number,
@@ -80,7 +79,14 @@ export class WorkerThreadManager {
     const iteratorResult = await this.__pathGenerator.next();
 
     if (iteratorResult.done) {
-      this.__pullingPaths = false;
+      if (
+        this.__totalFileCount !== null &&
+        this.__idleWorkerIds.length === this.__workerCount
+      ) {
+        this.__finished = true;
+        this.__finish();
+      }
+
       return;
     }
 
@@ -90,7 +96,6 @@ export class WorkerThreadManager {
 
     await this.__work();
 
-    this.__pullingPaths = true;
     await this.__pullNewPath();
   }
 
@@ -102,16 +107,6 @@ export class WorkerThreadManager {
     const filePath = this.__filePaths.shift();
 
     if (filePath === undefined) {
-      if (
-        this.__totalFileCount !== null &&
-        this.__idleWorkerIds.length === this.__workerCount &&
-        this.__pullingPaths === false
-      ) {
-        this.__finished = true;
-
-        this.__finish();
-      }
-
       return;
     }
 

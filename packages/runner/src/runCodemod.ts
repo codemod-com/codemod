@@ -338,12 +338,18 @@ export const runCodemod = async (
 
     const mfs = createFsFromVolume(Volume.fromJSON({}));
 
-    const paths = await buildPatterns(
+    const patterns = await buildPatterns(
       flowSettings,
       codemod,
       null,
       onPrinterMessage,
     );
+
+    const paths = await buildPathsGlob(fileSystem, flowSettings, patterns);
+
+    if (paths.length === 0) {
+      return pathsAreEmpty();
+    }
 
     const fileMap = await buildFileMap(fileSystem, mfs, paths);
 
@@ -403,23 +409,9 @@ export const runCodemod = async (
       }
     }
 
-    const newPaths = await glob(paths.include, {
-      absolute: true,
-      cwd: flowSettings.target,
-      ignore: paths.exclude,
-      dot: true,
-      // @ts-expect-error type inconsistency
-      fs: mfs,
-      onlyFiles: true,
-    });
-
-    if (newPaths.length === 0) {
-      return pathsAreEmpty();
-    }
-
     const fileCommands = await buildFileCommands(
       fileMap,
-      newPaths,
+      paths,
       deletedPaths,
       mfs,
     );
