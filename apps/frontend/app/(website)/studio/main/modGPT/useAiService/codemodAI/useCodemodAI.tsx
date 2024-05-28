@@ -7,6 +7,12 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { type Socket, io } from "socket.io-client";
 
+type MessageToSend = {
+  config: { llm_engine: "gpt-4-turbo" | "gpt-4" | "gpt-4o" };
+  previous_context: LLMMessage[];
+  before: string;
+  after: string;
+};
 export const useCodemodAI = ({
   messages,
   engine,
@@ -14,12 +20,17 @@ export const useCodemodAI = ({
   messages: LLMMessage[];
   engine: LLMEngine;
 }) => {
-  const [ws, setWs] = useState<Socket | null>(null);
+  const [socket, setSocket] = useState<Socket | null>(null);
+  const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
   const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
+  const emitMessage = (message: MessageToSend) => {
+    ws?.send(JSON.stringify(message));
+    // socket?.emit("message", message);
+  };
   const handleError = (error: string | Record<string, unknown> | Event) => {
     setServiceBusy(false);
     toast.error(
@@ -37,11 +48,17 @@ export const useCodemodAI = ({
     setIsWsConnected(false);
   };
 
+  const socketCleanup = () => {
+    socket?.off("connect", onConnect);
+    socket?.off("disconnect", onDisconnect);
+    socket?.off("message", onMessage);
+    socket?.off("error", handleError);
+    setIsWsConnected(false);
+    setServiceBusy(false);
+  };
+
   const wsCleanup = () => {
-    ws?.off("connect", onConnect);
-    ws?.off("disconnect", onDisconnect);
-    ws?.off("message", onMessage);
-    ws?.off("error", handleError);
+    ws?.close();
     setIsWsConnected(false);
     setServiceBusy(false);
   };
@@ -66,7 +83,7 @@ export const useCodemodAI = ({
     }
   };
 
-  const handleWebsocketConnection = async () => {
+  const handleSocketConnection = async () => {
     if (!shouldUseCodemodAi) return;
     setIsWsConnected(true);
     const websocket = io(codemodAiWsServer, {
@@ -76,7 +93,18 @@ export const useCodemodAI = ({
     websocket.on("disconnect", onDisconnect);
     websocket.on("message", onMessage);
     websocket.on("error", handleError);
+    setSocket(websocket);
+  };
+
+  const handleWebsocketConnection = async () => {
+    if (!shouldUseCodemodAi) return;
+    const websocket = new WebSocket(codemodAiWsServer);
+    setIsWsConnected(true);
     setWs(websocket);
+    websocket.onopen = onConnect;
+    websocket.onmessage = (event) =>
+      onMessage(JSON.parse(event.data) as MessageToWs);
+    websocket.onerror = handleError;
   };
 
   useEffect(() => {
@@ -91,20 +119,20 @@ export const useCodemodAI = ({
         role: "assistant",
         id: Date.now().toString(),
       });
-      const messageToSend = {
+      const messageToSend: MessageToSend = {
         config: { llm_engine: engine },
         previous_context: messages,
         before,
         after,
       };
-      ws.emit("message", messageToSend);
+      emitMessage(messageToSend);
       setServiceBusy(true);
     }
   };
 
   return {
     stopCodemodAi: () => {
-      ws?.disconnect();
+      socket?.disconnect();
       wsCleanup();
       handleWebsocketConnection();
     },

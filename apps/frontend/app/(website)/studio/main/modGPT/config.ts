@@ -28,8 +28,8 @@ if (shouldUseCodemodAi) console.info("Experimental AI service active");
 if (shouldUseModService) console.info("Experimental mogGPT service active");
 
 export const codemodAiWsServer = isDevelopment
-  ? "ws://127.0.0.1:8000"
-  : "wss://backend.codemod.com";
+  ? "ws://127.0.0.1:8000/ws"
+  : "wss://backend.codemod.com/ws";
 
 const prodGptServer = shouldUseModService
   ? "https://backend.codemod.com/modgpt"
