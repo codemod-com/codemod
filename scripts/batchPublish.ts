@@ -21,10 +21,18 @@ const walkDirectory = async (dir: string, accumulator: string[]) => {
   }
 };
 
-// Publish
+// Main function to execute the script
 (async () => {
+  const args = process.argv.slice(2);
+  if (args.length === 0) {
+    console.error("Error: Please provide the target path as an argument.");
+    process.exit(1);
+  }
+
+  const targetPath = args[0];
   const accumulator: string[] = [];
-  await walkDirectory("../packages/codemods/react/19", accumulator);
+
+  await walkDirectory(targetPath, accumulator);
 
   for (let i = 0; i < accumulator.length; i++) {
     const dir = accumulator[i].replace(/(\s+)/g, "\\$1");
