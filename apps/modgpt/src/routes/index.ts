@@ -1,6 +1,4 @@
-import { clerkPlugin } from "@clerk/fastify";
 import type { FastifyPluginCallback } from "fastify";
-import { clerkApplied, environment, isDevelopment } from "../dev-utils/configs";
 import { corsDisableHeaders } from "../dev-utils/cors";
 import { getRootPath } from "./root";
 import { getSendChatPath } from "./sendChat";
