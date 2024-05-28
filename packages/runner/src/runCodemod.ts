@@ -262,6 +262,87 @@ async function* buildPathGlobGenerator(
   stream.emit("close");
 }
 
+function printRunSummary(
+  onPrinterMessage: PrinterMessageCallback,
+  codemod: Codemod,
+  flowSettings: FlowSettings,
+  patterns: Awaited<ReturnType<typeof buildPatterns>>,
+) {
+  let runningCodemodVersion = "";
+  let runningCodemodName = "";
+
+  if (codemod.bundleType !== "standalone") {
+    runningCodemodVersion += `@${codemod.version}`;
+    runningCodemodName = codemod.name;
+  } else {
+    runningCodemodVersion += " (standalone)";
+    runningCodemodName = codemod.indexPath;
+  }
+
+  if (codemod.engine === "workflow") {
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "info",
+      message: boxen(
+        chalk.cyan(
+          `Codemod:`,
+          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+          codemod.source === "local"
+            ? chalk.bold("\nRunning from local filesystem")
+            : "",
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    });
+
+    return;
+  }
+
+  const { include, exclude, reason } = patterns;
+  onPrinterMessage({
+    kind: "console",
+    consoleKind: "info",
+    message: boxen(
+      chalk.cyan(
+        `Codemod:`,
+        chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+        codemod.source === "local"
+          ? chalk.bold("\nRunning from local filesystem")
+          : "",
+        "\nTarget:",
+        chalk.bold(flowSettings.target),
+        "\n",
+        chalk.yellow(reason ? `\n${reason}` : ""),
+        chalk.green("\nIncluded patterns:"),
+        chalk.green.bold(include.join(", ") ?? ""),
+        chalk.red("\nExcluded patterns:"),
+        chalk.red.bold(exclude.join(", ") ?? ""),
+        "\n",
+        chalk.yellow(
+          !flowSettings.install ? "\nDependency installation disabled" : "",
+        ),
+        chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+        chalk.yellow(!flowSettings.format ? "\nFile formatting disabled" : ""),
+      ),
+      {
+        padding: 2,
+        dimBorder: true,
+        textAlignment: "left",
+        borderColor: "blue",
+        borderStyle: "round",
+      },
+    ),
+  });
+}
+
 export const runCodemod = async (
   fileSystem: FileSystem,
   codemod: Codemod,
@@ -429,39 +510,10 @@ export const runCodemod = async (
     return;
   }
 
-  let runningCodemodVersion = "";
-  let runningCodemodName = "";
-
-  if (codemod.bundleType !== "standalone") {
-    runningCodemodVersion += `@${codemod.version}`;
-    runningCodemodName = codemod.name;
-  } else {
-    runningCodemodVersion += " (standalone)";
-    runningCodemodName = codemod.indexPath;
-  }
-
   if (codemod.engine === "workflow") {
-    onPrinterMessage({
-      kind: "console",
-      consoleKind: "info",
-      message: boxen(
-        chalk.cyan(
-          `Codemod:`,
-          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-          codemod.source === "local"
-            ? chalk.bold("\nRunning from local filesystem")
-            : "",
-          "\nTarget:",
-          chalk.bold(flowSettings.target),
-        ),
-        {
-          padding: 2,
-          dimBorder: true,
-          textAlignment: "left",
-          borderColor: "blue",
-          borderStyle: "round",
-        },
-      ),
+    printRunSummary(onPrinterMessage, codemod, flowSettings, {
+      include: ["**/*.*"],
+      exclude: [],
     });
 
     const codemodSource = await readFile(codemod.indexPath, {
@@ -471,6 +523,7 @@ export const runCodemod = async (
       ? transpile(codemodSource.toString())
       : codemodSource.toString();
     await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+
     return;
   }
 
@@ -502,43 +555,7 @@ export const runCodemod = async (
       return pathsAreEmpty();
     }
 
-    const { include, exclude, reason } = patterns;
-    onPrinterMessage({
-      kind: "console",
-      consoleKind: "info",
-      message: boxen(
-        chalk.cyan(
-          `Codemod:`,
-          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-          codemod.source === "local"
-            ? chalk.bold("\nRunning from local filesystem")
-            : "",
-          "\nTarget:",
-          chalk.bold(flowSettings.target),
-          "\n",
-          chalk.yellow(reason ? `\n${reason}` : ""),
-          chalk.green("\nIncluded patterns:"),
-          chalk.green.bold(include.join(", ") ?? ""),
-          chalk.red("\nExcluded patterns:"),
-          chalk.red.bold(exclude.join(", ") ?? ""),
-          "\n",
-          chalk.yellow(
-            !flowSettings.install ? "\nDependency installation disabled" : "",
-          ),
-          chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
-          chalk.yellow(
-            !flowSettings.format ? "\nFile formatting disabled" : "",
-          ),
-        ),
-        {
-          padding: 2,
-          dimBorder: true,
-          textAlignment: "left",
-          borderColor: "blue",
-          borderStyle: "round",
-        },
-      ),
-    });
+    printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
 
     const fileCommands = await runRepomod(
       fileSystem,
@@ -583,41 +600,7 @@ export const runCodemod = async (
 
   const { engine } = codemod;
 
-  const { include, exclude, reason } = patterns;
-  onPrinterMessage({
-    kind: "console",
-    consoleKind: "info",
-    message: boxen(
-      chalk.cyan(
-        `Codemod:`,
-        chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
-        codemod.source === "local"
-          ? chalk.bold("\nRunning from local filesystem")
-          : "",
-        "\nTarget:",
-        chalk.bold(flowSettings.target),
-        "\n",
-        chalk.yellow(reason ? `\n${reason}` : ""),
-        chalk.green("\nIncluded patterns:"),
-        chalk.green.bold(include.join(", ") ?? ""),
-        chalk.red("\nExcluded patterns:"),
-        chalk.red.bold(exclude.join(", ") ?? ""),
-        "\n",
-        chalk.yellow(
-          !flowSettings.install ? "\nDependency installation disabled" : "",
-        ),
-        chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
-        chalk.yellow(!flowSettings.format ? "\nFile formatting disabled" : ""),
-      ),
-      {
-        padding: 2,
-        dimBorder: true,
-        textAlignment: "left",
-        borderColor: "blue",
-        borderStyle: "round",
-      },
-    ),
-  });
+  printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
 
   await new Promise<void>((resolve) => {
     let timeout: NodeJS.Timeout | null = null;

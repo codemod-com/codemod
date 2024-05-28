@@ -135,8 +135,6 @@ export class WorkerThreadManager {
       worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
     }
 
-    // Let progress bar do its thing
-    // await sleep(100);
     this.__onPrinterMessage({
       kind: "finish",
     });
