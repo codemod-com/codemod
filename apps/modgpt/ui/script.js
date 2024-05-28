@@ -35,7 +35,7 @@ form.onsubmit = async function (event) {
   const engine = document.getElementById("engine").value;
 
   try {
-    const response = await fetch("http://localhost:9999/sendChat", {
+    const response = await fetch("http://localhost:8082/sendChat", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

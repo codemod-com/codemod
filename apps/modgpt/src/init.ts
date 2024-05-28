@@ -1,4 +1,3 @@
-import { clerkPlugin } from "@clerk/fastify";
 import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
