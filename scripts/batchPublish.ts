@@ -24,13 +24,13 @@ const walkDirectory = async (dir: string, accumulator: string[]) => {
 // Publish
 (async () => {
   const accumulator: string[] = [];
-  await walkDirectory("../packages/codemods", accumulator);
+  await walkDirectory("../packages/codemods/react/19", accumulator);
 
   for (let i = 0; i < accumulator.length; i++) {
     const dir = accumulator[i].replace(/(\s+)/g, "\\$1");
 
     const { stderr, stdout } = await execPromise(
-      `./apps/cli/dist/index.cjs publish --source ${dir}`,
+      `codemod publish --source ${dir}`,
     );
 
     const output = stdout.trim();
