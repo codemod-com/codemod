@@ -1,10 +1,13 @@
 import {
+  type ChildProcess,
   type ChildProcessWithoutNullStreams,
+  exec,
   execSync,
   spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import * as readline from "node:readline";
 import axios from "axios";
 import * as E from "fp-ts/Either";
@@ -25,6 +28,7 @@ import {
   buildCrossplatformArg,
   buildTypeCodec,
   isNeitherNullNorUndefined,
+  streamToString,
 } from "../utilities";
 import { buildArguments } from "./buildArguments";
 import { type Message, type MessageBus, MessageKind } from "./messageBus";
@@ -304,6 +308,16 @@ export class EngineService {
     return buildCrossplatformArg(this.__codemodEngineRustExecutableUri.fsPath);
   }
 
+  private async __checkIfCodemodExists(childProcess: ChildProcess) {
+    if (childProcess.stdout === null) {
+      return false;
+    }
+
+    const output = await streamToString(childProcess.stdout);
+
+    return output.includes("/codemod");
+  }
+
   public async isCodemodEngineNodeLocated(): Promise<boolean> {
     const modulePaths = [];
     try {
@@ -318,13 +332,27 @@ export class EngineService {
     } catch (err) {
       console.log(err);
     }
+
     for (const path of modulePaths) {
-      if (existsSync(`${path}/codemod`)) {
-        return true;
+      try {
+        const pathExists = existsSync(join(path, "codemod"));
+        if (pathExists) {
+          return true;
+        }
+      } catch (err) {
+        console.log(err);
       }
     }
 
-    return false;
+    const childProcess1 = exec("where codemod", { timeout: 3000 });
+    const childProcess2 = exec("which codemod", { timeout: 3000 });
+
+    const [exists1, exists2] = await Promise.all([
+      this.__checkIfCodemodExists(childProcess1),
+      this.__checkIfCodemodExists(childProcess2),
+    ]);
+
+    return exists1 || exists2;
   }
 
   private async __fetchCodemods(): Promise<void> {
