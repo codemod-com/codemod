@@ -1,10 +1,10 @@
 import {
   type ChildProcessWithoutNullStreams,
-  exec,
+  execSync,
   spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import * as readline from "node:readline";
 import axios from "axios";
 import * as E from "fp-ts/Either";
@@ -12,13 +12,8 @@ import * as t from "io-ts";
 import prettyReporter from "io-ts-reporters";
 import { type FileSystem, Uri, commands, window, workspace } from "vscode";
 import type { Case } from "../cases/types";
-import {
-  type CodemodEntry,
-  type CodemodListResponse,
-  codemodListResponseCodec,
-} from "../codemods/types";
+import type { CodemodEntry, CodemodListResponse } from "../codemods/types";
 import type { Configuration } from "../configuration";
-import { CLI_NPM_LINK } from "../constants";
 import type { Container } from "../container";
 import type { Store } from "../data";
 import { actions } from "../data/slice";
@@ -30,7 +25,6 @@ import {
   buildCrossplatformArg,
   buildTypeCodec,
   isNeitherNullNorUndefined,
-  streamToString,
 } from "../utilities";
 import { buildArguments } from "./buildArguments";
 import { type Message, type MessageBus, MessageKind } from "./messageBus";
@@ -201,7 +195,7 @@ type ExecuteCodemodMessage = Message &
   }>;
 
 const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
-const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 2500;
+const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 1250;
 const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 200;
 
 export const getCodemodList = async (): Promise<CodemodListResponse> => {
@@ -311,43 +305,32 @@ export class EngineService {
   }
 
   public async isCodemodEngineNodeLocated(): Promise<boolean> {
-    const command = [
-      CODEMOD_ENGINE_NODE_COMMAND,
-      buildCrossplatformArg("--version"),
-    ].join(" ");
-
-    const childProcess = exec(command, { timeout: 3000 });
-
-    if (childProcess.stdout === null) {
-      return false;
+    const modulePaths = [];
+    try {
+      const path = execSync("npm root -g").toString().trim();
+      modulePaths.push(path);
+    } catch (err) {
+      console.log(err);
+    }
+    try {
+      const path = execSync("pnpm root -g").toString().trim();
+      modulePaths.push(path);
+    } catch (err) {
+      console.log(err);
+    }
+    for (const path of modulePaths) {
+      if (existsSync(`${path}/codemod`)) {
+        return true;
+      }
     }
 
-    const [latestVersion, userCLIVersion] = await Promise.all([
-      this.__fetchCLILatestVersion(),
-      streamToString(childProcess.stdout),
-    ]);
-
-    return userCLIVersion.startsWith(latestVersion);
-  }
-
-  private async __fetchCLILatestVersion(): Promise<string> {
-    const response = await axios.get(CLI_NPM_LINK);
-    const data = await response.data;
-    return data.version;
+    return false;
   }
 
   private async __fetchCodemods(): Promise<void> {
     try {
       const codemods = await getCodemodList();
-
-      const codemodListOrError = codemodListResponseCodec.decode(codemods);
-
-      if (codemodListOrError._tag === "Left") {
-        const report = prettyReporter.report(codemodListOrError);
-        throw new InvalidEngineResponseFormatError(report.join("\n"));
-      }
-
-      const codemodEntries = codemodListOrError.right.map(buildCodemodEntry);
+      const codemodEntries = codemods.map(buildCodemodEntry);
 
       this.__store.dispatch(actions.setCodemods(codemodEntries));
     } catch (e) {

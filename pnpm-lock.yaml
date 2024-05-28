@@ -211,8 +211,6 @@ importers:
         specifier: 1.1.0
         version: 1.1.0(@types/node@20.10.5)(jsdom@23.2.0)(terser@5.30.4)
 
-  apps/backend/prisma/client: {}
-
   apps/cli:
     dependencies:
       '@ast-grep/cli':
