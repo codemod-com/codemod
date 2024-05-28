@@ -69,10 +69,9 @@ export const useCodemodAI = ({
   const handleWebsocketConnection = async () => {
     if (!shouldUseCodemodAi) return;
     setIsWsConnected(true);
-    const websocket = io(codemodAiWsServer);
-    /*, {
+    const websocket = io(codemodAiWsServer, {
       auth: { token: await getToken() },
-    });*/
+    });
     websocket.on("connect", onConnect);
     websocket.on("disconnect", onDisconnect);
     websocket.on("message", onMessage);
