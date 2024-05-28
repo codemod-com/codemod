@@ -332,10 +332,13 @@ export class EngineService {
     } catch (err) {
       console.log(err);
     }
+    console.log("Sasha", " modulePaths ", modulePaths);
 
     for (const path of modulePaths) {
       try {
         const pathExists = existsSync(join(path, "codemod"));
+        console.log("Sasha", " pathExists ", path, pathExists);
+
         if (pathExists) {
           return true;
         }
@@ -352,13 +355,20 @@ export class EngineService {
       this.__checkIfCodemodExists(childProcess2),
     ]);
 
+    console.log("Sasha", " childProcess1 ", childProcess1);
+    console.log("Sasha", " childProcess2 ", childProcess2);
+
     return exists1 || exists2;
   }
 
   private async __fetchCodemods(): Promise<void> {
     try {
+      console.log("Sasha", " __fetchCodemods ");
       const codemods = await getCodemodList();
+      console.log("Sasha", " getCodemodList ", codemods);
+
       const codemodEntries = codemods.map(buildCodemodEntry);
+      console.log("Sasha", " codemodEntries ", codemodEntries);
 
       this.__store.dispatch(actions.setCodemods(codemodEntries));
     } catch (e) {
