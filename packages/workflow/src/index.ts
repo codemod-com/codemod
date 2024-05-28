@@ -8,8 +8,12 @@ import { astGrep } from "./astGrep/astGrep.js";
 
 import { jsFiles } from "./jsFiles.js";
 
+import { dirs } from "./fs/dirs.js";
+
+import { codemod } from "./codemod.js";
+
 export { git, astGrep, jsFiles };
 
-export const api = { git, astGrep, jsFiles, contexts };
+export const api = { git, astGrep, jsFiles, contexts, dirs, codemod };
 
 export type Api = typeof api;

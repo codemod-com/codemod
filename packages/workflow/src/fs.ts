@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
 import * as fg from "fast-glob";
-import { cwdContext, fileContext, getCwdContext } from "./contexts";
+import { fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
 
@@ -44,36 +44,6 @@ export const rm = async (dir: string) => {
     retryDelay: 1000,
     maxRetries: 5,
   });
-};
-
-/**
- * @description Run a callback for each directory matching the pattern
- * @param pattern Glob pattern or array of glob patterns
- * @param cb
- * @example directories`apps`
- *            .jsFiles`*.ts`
- *            .astGrep`import React from 'react'`
- *            .remove();
- * @example directories('apps/*', async ({ jsFiles }) => {
- *            await jsFiles`*.ts`
- *              .astGrep`import React from 'react'`
- *              .remove();
- *          });
- * @example directories(async ({ jsFiles }) => {
- *            await jsFiles`*.ts`
- *              .astGrep`import React from 'react'`
- *              .remove();
- *          });
- */
-export const directories = async (
-  pattern: string | string[],
-  cb: () => Promise<void>,
-) => {
-  const { cwd } = getCwdContext();
-  const dirs = await fg.glob(pattern, { cwd, onlyDirectories: true });
-  for (const dir of dirs) {
-    await cwdContext.run({ cwd: path.join(cwd, dir) }, cb);
-  }
 };
 
 export const files = async (
