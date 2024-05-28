@@ -1,6 +1,9 @@
-import { FunctionExecutor, fnWrapper } from "src/engineHelpers.js";
 import type { PLazy } from "../PLazy.js";
+import { codemod } from "../codemod.js";
 import { getRepositoryContext, repositoryContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { exec } from "../exec.js";
+import { dirs } from "../fs/dirs.js";
 import { switchBranch } from "../git.js";
 import { parseMultistring } from "../helpers.js";
 import { jsFiles } from "../jsFiles.js";
@@ -53,6 +56,6 @@ export function branchLogic(
 
 export const branch = fnWrapper("branch", branchLogic);
 
-const branchHelpers = { jsFiles, commit, push };
+const branchHelpers = { jsFiles, commit, push, dirs, codemod, exec };
 
 type BranchHelpers = typeof branchHelpers;

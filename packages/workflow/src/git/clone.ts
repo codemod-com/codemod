@@ -1,6 +1,9 @@
-import { FunctionExecutor, fnWrapper } from "src/engineHelpers.js";
 import type { PLazy } from "../PLazy.js";
+import { codemod } from "../codemod.js";
 import { cwdContext, repositoryContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { exec } from "../exec.js";
+import { dirs } from "../fs/dirs.js";
 import { cloneRepository } from "../git.js";
 import { parseMultistring } from "../helpers.js";
 import { jsFiles } from "../jsFiles.js";
@@ -61,6 +64,6 @@ export function cloneLogic(
 
 export const clone = fnWrapper("clone", cloneLogic);
 
-const cloneHelpers = { jsFiles, branch, commit, push };
+const cloneHelpers = { jsFiles, branch, commit, push, dirs, codemod, exec };
 
 type CloneHelpers = typeof cloneHelpers;
