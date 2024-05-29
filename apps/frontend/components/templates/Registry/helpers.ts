@@ -10,11 +10,25 @@ import type {
 } from "@/types/object.types";
 import { unslugify } from "@/utils/strings";
 
+const getDescriptionShortText = (description: string) => {
+  const descriptionWithoutHeadings = description
+    .split("\n")
+    .filter(
+      (line) => !line.startsWith("# ") && !line.startsWith("## Description"),
+    )
+    .join("\n");
+
+  const extractFirstParagraph = (text: string) => {
+    return text.match(/^\s*([\s\S]*?)(\n\s*\n|$)/s)?.[1]?.trim();
+  };
+
+  return extractFirstParagraph(descriptionWithoutHeadings);
+};
 export function getFormattedDescription(
   description: string,
   returnNonMatching = false,
 ) {
-  const _description = description.match(/^(.*?)(\n\s*\n|$)/s)?.[1]?.trim();
+  const _description = getDescriptionShortText(description);
 
   if (returnNonMatching) {
     const nonMatching = description
