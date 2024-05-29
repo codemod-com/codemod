@@ -1,6 +1,4 @@
-# Migration recipe
 
-## Description
 
 This recipe is a set of codemods that will fix some of React 19 breaking changes.  
 

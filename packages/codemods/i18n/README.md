@@ -1,6 +1,4 @@
-# Replace API Routes
 
-## Description
 
 This codemod removes unused i18n translations.
 

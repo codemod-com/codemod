@@ -1,6 +1,4 @@
-# Props Changed Migration
 
-## Description
 
 This codemod changes the way the component props are applied.
 

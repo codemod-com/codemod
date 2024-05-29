@@ -1,6 +1,4 @@
-# Replace string ref
 
-## Description
 
 This codemod migrates string refs (deprecated) to callback refs.
 

@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "name": "i18n/remove-unused-translations",
   "description": "This codemod removes unused translation phrases from i18n resources",

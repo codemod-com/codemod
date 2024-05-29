@@ -1,6 +1,4 @@
-# Replace reactDOM methods
 
-## Description
 
 - Replaces usages of `ReactDom.render()` with `createRoot(node).render()`.
 - Replaces usages of `ReactDom.hydrate()` with `hydrateRoot()`

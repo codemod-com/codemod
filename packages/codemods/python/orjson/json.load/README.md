@@ -1,6 +1,4 @@
-# Change json.load to orjson.loads
 
-## Description
 Converts json.load to orjson.loads. Adds `.read()` to the file object.
 
 ## Examples

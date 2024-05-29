@@ -1,5 +1,3 @@
-# Improvements recipe
-## Description
 This recipe is a set of codemods that will add improvements available in React 19 to your project.
 
 The recipe includes the following codemods:

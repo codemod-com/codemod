@@ -1,6 +1,4 @@
-# Remove unused feature flags 2
 
-## Description
 
 This experimental codemod replaces function calls in a form of `await functionName()`, based on the following arguments:
 

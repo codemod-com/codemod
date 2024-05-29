@@ -1,6 +1,4 @@
-# Removed Static Method Migration
 
-## Description
 
 Replace message.warn with message.warning.
 Replace notification.close with notification.destroy.

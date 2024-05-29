@@ -1,6 +1,4 @@
-# DevCycle/replace-feature-flag
 
-## Description
 
 This codemod replaces DevCycle feature flags with a static value provided by the user.
 It replaces following SDK method calls:  `variable`, `variableValue`, `useVariable`, `useDVCVariable`, `useVariableValue`.

@@ -1,6 +1,4 @@
-# Remove context provider
 
-## Description
 
 This codemod will remove the usage of `Provider` for contexts; e.g., Context.Provider to Context
 

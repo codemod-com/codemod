@@ -1,6 +1,4 @@
-# Converts Sentry json import to orjson
 
-## Description
 Replaces Sentry json import with orjson.
 
 ## Examples

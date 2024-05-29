@@ -1,6 +1,4 @@
-# Statsig / Replace gate
 
-## Description
 
 This codemod replaces Statsig gates with a static value provided by the user.
 Codemod replaces following SDK calls `checkGate`, `useGate`;
@@ -11,7 +9,6 @@ The codemod accepts the following arguments:
 - `value`: The value to replace the feature flag with.
 - `type`: The type to which the provided value should be cast.
 
-## Description
 
 ## Examples
 

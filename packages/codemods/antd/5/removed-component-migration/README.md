@@ -1,6 +1,4 @@
-# Removed Component Migration
 
-## Description
 
 Replace import for removed component in v5.
 
