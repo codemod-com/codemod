@@ -43,11 +43,6 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     handleProcessExit(0);
   });
 
-  fastify.addHook("onRequest", (request, reply, done) => {
-    reply.header("Access-Control-Allow-Origin", "false");
-    done();
-  });
-
   await fastify.register(cors, corsOptions);
 
   await fastify.register(fastifyRateLimit, {
