@@ -67,12 +67,11 @@ export const buildPatterns = async (
     return formattedPattern;
   };
 
-  const excludePatterns = flowSettings.exclude ?? [];
+  const excludePatterns = flowSettings.exclude;
   const userExcluded = excludePatterns.map(formatFunc);
   const defaultExcluded = DEFAULT_EXCLUDE_PATTERNS.concat(
     DEFAULT_VERSION_CONTROL_DIRECTORIES,
   ).map(formatFunc);
-
   const allExcluded = userExcluded.concat(defaultExcluded);
 
   // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
@@ -201,28 +200,25 @@ export const buildPatterns = async (
 
   const formattedInclude = patterns.map(formatFunc);
 
-  const exclude = allExcluded.filter((p) => {
+  const excludeFilterFunc = (p: string) => {
     // remove from excluded patterns if user is trying to override default exclude
-    if (
-      DEFAULT_EXCLUDE_PATTERNS.concat(
-        DEFAULT_VERSION_CONTROL_DIRECTORIES,
-      ).includes(p)
-    ) {
+    if (defaultExcluded.includes(p) || gitIgnored.includes(p)) {
       return !formattedInclude.includes(p);
     }
 
     return true;
-  });
+  };
 
+  const exclude = allExcluded.filter(excludeFilterFunc);
   // remove everything that was excluded from the included patterns
   const include = formattedInclude.filter((p) => !exclude.includes(p));
 
   return {
     include,
     exclude,
-    userExcluded,
-    defaultExcluded,
-    gitIgnoreExcluded: gitIgnored,
+    userExcluded: userExcluded.filter(excludeFilterFunc),
+    defaultExcluded: defaultExcluded.filter(excludeFilterFunc),
+    gitIgnoreExcluded: gitIgnored.filter(excludeFilterFunc),
     reason,
   };
 };
@@ -424,10 +420,8 @@ export const runCodemod = async (
                   subCodemod.bundleType === "package"
                     ? subCodemod.name
                     : undefined,
-                processedFileNumber:
-                  message.totalFileNumber * i + message.processedFileNumber,
-                totalFileNumber:
-                  message.totalFileNumber * codemod.codemods.length,
+                processedFileNumber: message.processedFileNumber,
+                totalFileNumber: message.totalFileNumber,
                 processedFileName: message.processedFileName,
               });
             }
@@ -492,10 +486,8 @@ export const runCodemod = async (
                 subCodemod.bundleType === "package"
                   ? subCodemod.name
                   : undefined,
-              processedFileNumber:
-                message.totalFileNumber * i + message.processedFileNumber,
-              totalFileNumber:
-                message.totalFileNumber * codemod.codemods.length,
+              processedFileNumber: message.processedFileNumber,
+              totalFileNumber: message.totalFileNumber,
               processedFileName: message.processedFileName,
             });
           }

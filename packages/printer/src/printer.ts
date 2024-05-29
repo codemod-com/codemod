@@ -86,7 +86,7 @@ export class Printer implements PrinterBlueprint {
       this.progressBar = new cliProgress.SingleBar({
         format: `Execution progress | ${chalk.cyan(
           "{bar}",
-        )} | {percentage}% || {value}/{total} files || Current: {file} || Codemod: {codemod}`,
+        )} | {percentage}% || {value}/{total} files || Current: {file}`,
         barCompleteChar: "\u2588",
         barIncompleteChar: "\u2591",
         hideCursor: true,
