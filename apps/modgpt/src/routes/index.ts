@@ -1,4 +1,6 @@
+import { clerkPlugin } from "@clerk/fastify";
 import type { FastifyPluginCallback } from "fastify";
+import { environment } from "../dev-utils/configs";
 import { corsDisableHeaders } from "../dev-utils/cors";
 import { getRootPath } from "./root";
 import { getSendChatPath } from "./sendChat";
@@ -18,6 +20,15 @@ export const protectedRoutes: FastifyPluginCallback = (
   _opts,
   done,
 ) => {
+  const clerkOptions = {
+    publishableKey: environment.CLERK_PUBLISH_KEY,
+    secretKey: environment.CLERK_SECRET_KEY,
+    jwtKey: environment.CLERK_JWT_KEY,
+  };
+
+  instance.register(clerkPlugin, clerkOptions);
+
   getSendChatPath(instance);
+
   done();
 };

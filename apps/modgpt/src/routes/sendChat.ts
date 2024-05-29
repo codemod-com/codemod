@@ -1,4 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { getAuth } from "@clerk/fastify";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import * as openAiEdge from "openai-edge";
@@ -32,6 +33,11 @@ const openAiEdgeApi = new openAiEdge.OpenAIApi(
 
 export const getSendChatPath = (instance: Instance) =>
   instance.post("/sendChat", async (request, reply) => {
+    const { userId } = getAuth(request);
+    if (!userId) {
+      return reply.code(401).send();
+    }
+
     const { messages, engine } = parseSendChatBody(request.body);
     if (!messages[0]) {
       return reply.code(400).send();
