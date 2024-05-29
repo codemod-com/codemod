@@ -9,6 +9,7 @@ export const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.options("/sendChat", (request, reply) => {
     reply.status(204).headers(corsDisableHeaders).send();
   });
+
   done();
 };
 

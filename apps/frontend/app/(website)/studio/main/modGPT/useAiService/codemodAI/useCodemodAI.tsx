@@ -9,7 +9,7 @@ import toast from "react-hot-toast";
 import { type Socket, io } from "socket.io-client";
 
 type MessageToSend = {
-  config: { llm_engine: "gpt-4-turbo" | "gpt-4" | "gpt-4o" };
+  config: { llm_engine: LLMEngine };
   previous_context: LLMMessage[];
   before: string;
   after: string;

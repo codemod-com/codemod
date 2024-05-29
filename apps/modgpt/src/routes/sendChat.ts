@@ -58,9 +58,7 @@ export const getSendChatPath = (instance: Instance) =>
           })),
           stream: true,
         });
-        const headers = isDevelopment
-          ? corsDisableHeaders
-          : { "Access-Control-Allow-Origin": "false" };
+        const headers = corsDisableHeaders;
 
         const stream = OpenAIStream(response);
         reply.raw.writeHead(200, headers);

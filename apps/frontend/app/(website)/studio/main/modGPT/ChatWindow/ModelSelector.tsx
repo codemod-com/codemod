@@ -1,4 +1,5 @@
 import { cn } from "@/utils";
+import { shouldUseCodemodAi } from "@chatbot/config";
 import { useTheme } from "@context/useTheme";
 import { type LLMEngine, llmEngines } from "@shared/consts";
 import {
@@ -10,6 +11,14 @@ import {
 } from "@studio/components/ui/select";
 import { useCFSStore } from "@studio/store/zustand/CFS";
 
+const legacyEngines = [
+  "gpt-4",
+  "claude-2.0",
+  "claude-instant-1.2",
+  "replit-code-v1-3b",
+  "gpt-4-with-chroma",
+];
+
 export const EngineSelector = () => {
   const {
     AIAssistant: { engine },
@@ -20,6 +29,7 @@ export const EngineSelector = () => {
     setEngine(e);
   };
 
+  const _llmEngines = shouldUseCodemodAi ? llmEngines : legacyEngines;
   const { isDark } = useTheme();
   return (
     <Select onValueChange={handleEngineChange} value={engine}>
@@ -34,7 +44,7 @@ export const EngineSelector = () => {
         <SelectValue placeholder={engine} />
       </SelectTrigger>
       <SelectContent>
-        {llmEngines.map((e) => (
+        {_llmEngines.map((e) => (
           <SelectItem
             key={e}
             value={e}
