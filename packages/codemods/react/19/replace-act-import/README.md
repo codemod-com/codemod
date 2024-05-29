@@ -1,6 +1,4 @@
-# Replace act import
 
-## Description
 
 This codemod will replace the usages of `TestUtils.act()` to use `React.act()`, introduced in React v19.
 

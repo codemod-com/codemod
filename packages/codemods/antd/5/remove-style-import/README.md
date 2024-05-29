@@ -1,6 +1,4 @@
-# Remove Style Import
 
-## Description
 
 Comment out the style file import from antd (in js file).
 

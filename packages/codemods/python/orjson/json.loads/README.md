@@ -1,6 +1,4 @@
-# Converts json.loads to orjson.loads
 
-## Description
 Converts json.loads to orjson.loads.
 
 ## Examples

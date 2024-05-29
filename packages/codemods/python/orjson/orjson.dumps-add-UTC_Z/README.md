@@ -1,6 +1,4 @@
-# Add OPT_UTC_Z to orjson.dumps
 
-## Description
 Add OPT_UTC_Z to orjson.dumps.
 
 ## Examples

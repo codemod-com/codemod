@@ -1,6 +1,4 @@
-# Netlify / replace feature flag
 
-## Description
 
 This codemod replaces feature flags with a static value provided by the user.
 Codemod replaces `useFlag` hook calls.

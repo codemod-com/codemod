@@ -1,5 +1,3 @@
-# Remove forward ref
-## Description
 
 React.forwardRef will be deprecated for Function Components in near future. This codemod removes forwardRef function.
 
