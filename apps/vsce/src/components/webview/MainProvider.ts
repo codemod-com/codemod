@@ -14,9 +14,13 @@ import {
 import type { Store } from "../../data";
 import { actions } from "../../data/slice";
 import { createIssueResponseCodec } from "../../github/types";
-import { relativeToAbsolutePath } from "../../selectors/selectCodemodTree";
+import {
+  type CodemodNodeHashDigest,
+  relativeToAbsolutePath,
+  selectCodemodArguments,
+} from "../../selectors/selectCodemodTree";
 import { selectMainWebviewViewProps } from "../../selectors/selectMainWebviewViewProps";
-import { buildGlobPattern } from "../../utilities";
+import { buildGlobPattern, isNeitherNullNorUndefined } from "../../utilities";
 import type { EngineService } from "../engineService";
 import { type MessageBus, MessageKind } from "../messageBus";
 import { WebviewResolver } from "./WebviewResolver";
@@ -376,23 +380,23 @@ export class MainViewProvider implements WebviewViewProvider {
       const uri = Uri.file(executionPath);
 
       // if missing some required arguments, open arguments popup
-      // TODO: support codemod arguments
-      // const argumentsSpecified = selectCodemodArguments(
-      // 	this.__store.getState(),
-      // 	hashDigest as unknown as CodemodNodeHashDigest,
-      // ).every(
-      // 	({ required, value }) =>
-      // 		!required || (isNeitherNullNorUndefined(value) && value !== ""),
-      // );
 
-      // if (!argumentsSpecified) {
-      // 	this.__store.dispatch(
-      // 		actions.setCodemodArgumentsPopupHashDigest(
-      // 			hashDigest as unknown as CodemodNodeHashDigest,
-      // 		),
-      // 	);
-      // 	return;
-      // }
+      const argumentsSpecified = selectCodemodArguments(
+        this.__store.getState(),
+        hashDigest as unknown as CodemodNodeHashDigest,
+      ).every(
+        ({ required, value }) =>
+          !required || (isNeitherNullNorUndefined(value) && value !== ""),
+      );
+
+      if (!argumentsSpecified) {
+        this.__store.dispatch(
+          actions.setCodemodArgumentsPopupHashDigest(
+            hashDigest as unknown as CodemodNodeHashDigest,
+          ),
+        );
+        return;
+      }
 
       commands.executeCommand("codemod.executeCodemod", uri, hashDigest);
     }

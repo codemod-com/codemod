@@ -1,6 +1,10 @@
 import type { Uri } from "vscode";
 import type { Configuration } from "../configuration";
-import { buildCrossplatformArg, buildGlobPattern } from "../utilities";
+import {
+  buildCrossplatformArg,
+  buildGlobPattern,
+  singleQuotify,
+} from "../utilities";
 import type { Message, MessageKind } from "./messageBus";
 
 export const buildArguments = (
@@ -18,7 +22,7 @@ export const buildArguments = (
     command.kind !== "executeLocalCodemod"
       ? (command.arguments ?? []).flatMap(({ name, value }) => [
           name,
-          String(value),
+          singleQuotify(String(value)),
         ])
       : [];
 
@@ -64,6 +68,7 @@ export const buildArguments = (
   args.push("--json");
 
   args.push("--output", buildCrossplatformArg(storageUri.fsPath));
+
   args.push(...codemodArguments);
   args.push("--clientIdentifier", buildCrossplatformArg("VSCE"));
   return args;

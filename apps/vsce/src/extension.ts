@@ -29,7 +29,10 @@ import { buildContainer } from "./container";
 import { buildStore } from "./data";
 import { actions } from "./data/slice";
 import type { CodemodHash } from "./packageJsonAnalyzer/types";
-import type { CodemodNodeHashDigest } from "./selectors/selectCodemodTree";
+import {
+  type CodemodNodeHashDigest,
+  selectCodemodArguments,
+} from "./selectors/selectCodemodTree";
 import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
@@ -429,11 +432,10 @@ export async function activate(context: vscode.ExtensionContext) {
             );
           }
 
-          // TODO: support codemod arguments
-          // const args = selectCodemodArguments(
-          // 	store.getState(),
-          // 	codemodHash as unknown as CodemodNodeHashDigest,
-          // );
+          const args = selectCodemodArguments(
+            store.getState(),
+            codemodHash as unknown as CodemodNodeHashDigest,
+          );
           const command: Command =
             // @ts-ignore TODO: Remove this logic in the next PR
             codemod.kind === "piranhaRule"
@@ -451,13 +453,13 @@ export async function activate(context: vscode.ExtensionContext) {
                   // @ts-ignore TODO: Remove this logic in the next PR
                   language: codemod.language,
                   name: codemod.name,
-                  arguments: [],
+                  arguments: args,
                 }
               : {
                   kind: "executeCodemod",
                   codemodHash,
                   name: codemod.name,
-                  arguments: [],
+                  arguments: args,
                 };
 
           store.dispatch(
@@ -589,11 +591,10 @@ export async function activate(context: vscode.ExtensionContext) {
             fileStat.type & vscode.FileType.Directory,
           );
 
-          // TODO: support codemod arguments
-          // const args = selectCodemodArguments(
-          // 	store.getState(),
-          // 	codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-          // );
+          const args = selectCodemodArguments(
+            store.getState(),
+            codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
+          );
 
           const command: Command =
             // @ts-ignore TODO: Remove this logic in the next PR
@@ -612,13 +613,13 @@ export async function activate(context: vscode.ExtensionContext) {
                   // @ts-ignore TODO: Remove this logic in the next PR
                   language: codemodEntry.language,
                   name: codemodEntry.name,
-                  arguments: [],
+                  arguments: args,
                 }
               : {
                   kind: "executeCodemod",
                   codemodHash: codemodEntry.hashDigest as CodemodHash,
                   name: codemodEntry.name,
-                  arguments: [],
+                  arguments: args,
                 };
 
           messageBus.publish({
