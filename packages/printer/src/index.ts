@@ -1,6 +1,7 @@
 export { default as chalk } from "chalk";
 export { default as boxen } from "boxen";
 export { Printer, type PrinterBlueprint } from "./printer.js";
+export { colorLongString } from "./utils.js";
 
 export * from "./schemata/consoleKindSchema.js";
 export * from "./schemata/mainThreadMessages.js";

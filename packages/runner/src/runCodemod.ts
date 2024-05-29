@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import { boxen, chalk } from "@codemod-com/printer";
+import { boxen, chalk, colorLongString } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type EngineOptions,
@@ -322,9 +322,9 @@ function printRunSummary(
         "\n",
         chalk.yellow(reason ? `\n${reason}` : ""),
         chalk.green("\nIncluded patterns:"),
-        chalk.green.bold(include.join(", ") ?? ""),
+        colorLongString(include.join(", ") ?? "", chalk.green.bold),
         chalk.red("\nExcluded patterns:"),
-        chalk.red.bold(exclude.join(", ") ?? ""),
+        colorLongString(exclude.join(", ") ?? "", chalk.red.bold),
         "\n",
         chalk.yellow(
           !flowSettings.install ? "\nDependency installation disabled" : "",

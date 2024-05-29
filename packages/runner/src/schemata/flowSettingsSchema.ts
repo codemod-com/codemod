@@ -13,11 +13,21 @@ import {
 } from "valibot";
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
-  "**/node_modules/**/*.*",
-  "**/*.d.ts",
-  "**/.next/**/*.*",
-  "**/dist/**/*.*",
-  "**/build/**/*.*",
+  "*.d.ts",
+  "node_modules/",
+  ".next/",
+  "dist/",
+  "build/",
+  // version control systems
+  ".git/",
+  ".svn/",
+  ".hg/",
+  ".bzr/",
+  "_darcs/",
+  "_MTN/",
+  "_FOSSIL_",
+  ".fslckout",
+  ".view/",
 ];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_ENABLE_PRETTIER = true;
