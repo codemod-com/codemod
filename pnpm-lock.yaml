@@ -4801,6 +4801,9 @@ importers:
       valibot:
         specifier: ^0.24.1
         version: 0.24.1
+      wrap-ansi:
+        specifier: ^9.0.0
+        version: 9.0.0
     devDependencies:
       '@codemod-com/filemod':
         specifier: workspace:*

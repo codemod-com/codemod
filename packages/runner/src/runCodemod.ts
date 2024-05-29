@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import { boxen, chalk } from "@codemod-com/printer";
+import { boxen, chalk, colorLongString } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type EngineOptions,
@@ -30,6 +30,7 @@ import type {
 } from "./schemata/callbacks.js";
 import {
   DEFAULT_EXCLUDE_PATTERNS,
+  DEFAULT_VERSION_CONTROL_DIRECTORIES,
   type FlowSettings,
 } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
@@ -45,6 +46,9 @@ export const buildPatterns = async (
 ): Promise<{
   include: string[];
   exclude: string[];
+  userExcluded: string[];
+  defaultExcluded: string[];
+  gitIgnoreExcluded: string[];
   reason?: string;
 }> => {
   const formatFunc = (pattern: string) => {
@@ -63,8 +67,12 @@ export const buildPatterns = async (
     return formattedPattern;
   };
 
-  const excludePatterns = flowSettings.exclude ?? [];
-  let formattedExclude = excludePatterns.map(formatFunc);
+  const excludePatterns = flowSettings.exclude;
+  const userExcluded = excludePatterns.map(formatFunc);
+  const defaultExcluded = DEFAULT_EXCLUDE_PATTERNS.concat(
+    DEFAULT_VERSION_CONTROL_DIRECTORIES,
+  ).map(formatFunc);
+  const allExcluded = userExcluded.concat(defaultExcluded);
 
   // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
   // Instead we just use the utils function to get the root gitignore if it exists. Otherwise, just ignore
@@ -110,6 +118,7 @@ export const buildPatterns = async (
     true,
   );
 
+  let gitIgnored: string[] = [];
   if (rootPath !== null) {
     try {
       const gitIgnoreContents = await readFile(
@@ -117,44 +126,36 @@ export const buildPatterns = async (
         "utf-8",
       );
 
-      const gitIgnored = gitIgnoreContents
+      gitIgnored = gitIgnoreContents
         .split("\n")
         .map((line) => line.trim())
         .filter((line) => line.length > 0 && !line.startsWith("#"))
         .map(formatFunc);
 
-      formattedExclude = formattedExclude.concat(gitIgnored);
+      allExcluded.push(...gitIgnored);
     } catch (err) {
       //
     }
   }
 
-  const { files } = flowSettings;
-
-  if (files) {
-    return {
-      include: files,
-      exclude: [...new Set(formattedExclude)],
-      reason: "Using files option from settings",
-    };
-  }
-
   let reason: string | undefined;
-  let patterns: string[] | undefined = undefined;
-  if (flowSettings.include) {
-    reason =
-      "Using paths provided by user via options (combined with engine defaults)";
-    patterns = flowSettings.include;
+  const patterns: string[] = [];
+
+  if (flowSettings.include || flowSettings.files) {
+    reason = "Using paths provided by user via options";
+    patterns.push(
+      ...(flowSettings.include ?? []),
+      ...(flowSettings.files ?? []),
+    );
   } else if (codemod.include) {
-    reason =
-      "Using paths provided by codemod settings (combined with engine defaults)";
-    patterns = codemod.include;
+    reason = "Using paths provided by codemod settings";
+    patterns.push(...codemod.include);
   }
 
-  // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
+  // ast-grep only runs on certain file and to override that behaviour we would have to create temporary sgconfig file
   if (codemod.engine === "ast-grep") {
     if (patterns) {
-      patterns = undefined;
+      patterns.splice(0, patterns.length);
       reason = "Ignoring include/exclude patterns for ast-grep codemod";
       onPrinterMessage?.({
         kind: "console",
@@ -163,55 +164,76 @@ export const buildPatterns = async (
       });
     }
 
+    let config: { language: string } | null = null;
     try {
-      const config = yaml.load(
+      config = yaml.load(
         await readFile(codemod.indexPath, { encoding: "utf8" }),
       ) as { language: string };
-      patterns = astGrepLanguageToPatterns[config.language];
+
+      const astGrepPatterns = astGrepLanguageToPatterns[config.language];
+      if (!astGrepPatterns) {
+        throw new Error("Invalid language in ast-grep config");
+      }
+
+      patterns.push(...astGrepPatterns);
     } catch (error) {
-      //
+      if (!config) {
+        throw new Error(
+          `Unable to load config file for ast-grep codemod at ${codemod.indexPath}`,
+        );
+      }
+
+      throw new Error(
+        `Unable to determine file patterns to run the ast-grep codemod on: ${config.language}`,
+      );
     }
   }
 
-  if (!patterns) {
+  if (patterns.length === 0) {
     reason = "Using default include patterns based on the engine";
-    patterns = [];
+
+    let engineDefaultPatterns = ["**/*.*"];
+
+    if (codemod.engine === "filemod" && filemod !== null) {
+      engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? [
+        "**/*",
+      ];
+    } else if (
+      codemod.engine === "jscodeshift" ||
+      codemod.engine === "ts-morph"
+    ) {
+      engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+    }
+
+    // remove from included if user is trying to override default include
+    engineDefaultPatterns = engineDefaultPatterns.filter(
+      (p) => !allExcluded.includes(p),
+    );
+
+    patterns.push(...engineDefaultPatterns);
   }
 
-  let engineDefaultPatterns = ["**/*.*"];
+  const formattedInclude = patterns.map(formatFunc);
 
-  if (codemod.engine === "filemod" && filemod !== null) {
-    engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
-  } else if (
-    codemod.engine === "jscodeshift" ||
-    codemod.engine === "ts-morph"
-  ) {
-    engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-  }
-
-  engineDefaultPatterns = engineDefaultPatterns.filter(
-    (p) => !formattedExclude.includes(p),
-  );
-
-  const formattedInclude = patterns
-    .map(formatFunc)
-    .concat(engineDefaultPatterns);
-
-  const exclude = formattedExclude.filter((p) => {
+  const excludeFilterFunc = (p: string) => {
     // remove from excluded patterns if user is trying to override default exclude
-    if (DEFAULT_EXCLUDE_PATTERNS.includes(p)) {
+    if (defaultExcluded.includes(p) || gitIgnored.includes(p)) {
       return !formattedInclude.includes(p);
     }
 
     return true;
-  });
+  };
 
+  const exclude = allExcluded.filter(excludeFilterFunc);
   // remove everything that was excluded from the included patterns
   const include = formattedInclude.filter((p) => !exclude.includes(p));
 
   return {
-    include: [...new Set(include)],
-    exclude: [...new Set(exclude)],
+    include,
+    exclude,
+    userExcluded: userExcluded.filter(excludeFilterFunc),
+    defaultExcluded: defaultExcluded.filter(excludeFilterFunc),
+    gitIgnoreExcluded: gitIgnored.filter(excludeFilterFunc),
     reason,
   };
 };
@@ -306,7 +328,9 @@ function printRunSummary(
     return;
   }
 
-  const { include, exclude, reason } = patterns;
+  const { include, defaultExcluded, gitIgnoreExcluded, userExcluded, reason } =
+    patterns;
+
   onPrinterMessage({
     kind: "console",
     consoleKind: "info",
@@ -321,10 +345,26 @@ function printRunSummary(
         chalk.bold(flowSettings.target),
         "\n",
         chalk.yellow(reason ? `\n${reason}` : ""),
-        chalk.green("\nIncluded patterns:"),
-        chalk.green.bold(include.join(", ") ?? ""),
-        chalk.red("\nExcluded patterns:"),
-        chalk.red.bold(exclude.join(", ") ?? ""),
+        chalk.yellow("\nIncluded patterns:"),
+        colorLongString(include.join(", "), chalk.green.bold),
+        ...(userExcluded.length > 0
+          ? [
+              chalk.yellow("\nPatterns excluded manually:"),
+              colorLongString(userExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
+        ...(defaultExcluded.length > 0
+          ? [
+              chalk.yellow("\nPatterns excluded by default:"),
+              colorLongString(defaultExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
+        ...(gitIgnoreExcluded.length > 0
+          ? [
+              chalk.yellow("\nPatterns excluded from gitignore:"),
+              colorLongString(gitIgnoreExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
         "\n",
         chalk.yellow(
           !flowSettings.install ? "\nDependency installation disabled" : "",
@@ -389,16 +429,14 @@ export const runCodemod = async (
           },
           (message) => {
             if (message.kind === "progress") {
-              onPrinterMessage({
+              return onPrinterMessage({
                 kind: "progress",
                 codemodName:
                   subCodemod.bundleType === "package"
                     ? subCodemod.name
                     : undefined,
-                processedFileNumber:
-                  message.totalFileNumber * i + message.processedFileNumber,
-                totalFileNumber:
-                  message.totalFileNumber * codemod.codemods.length,
+                processedFileNumber: message.processedFileNumber,
+                totalFileNumber: message.totalFileNumber,
                 processedFileName: message.processedFileName,
               });
             }
@@ -457,16 +495,14 @@ export const runCodemod = async (
         },
         (message) => {
           if (message.kind === "progress") {
-            onPrinterMessage({
+            return onPrinterMessage({
               kind: "progress",
               codemodName:
                 subCodemod.bundleType === "package"
                   ? subCodemod.name
                   : undefined,
-              processedFileNumber:
-                message.totalFileNumber * i + message.processedFileNumber,
-              totalFileNumber:
-                message.totalFileNumber * codemod.codemods.length,
+              processedFileNumber: message.processedFileNumber,
+              totalFileNumber: message.totalFileNumber,
               processedFileName: message.processedFileName,
             });
           }
@@ -514,6 +550,9 @@ export const runCodemod = async (
     printRunSummary(onPrinterMessage, codemod, flowSettings, {
       include: ["**/*.*"],
       exclude: [],
+      defaultExcluded: [],
+      gitIgnoreExcluded: [],
+      userExcluded: [],
     });
 
     const codemodSource = await readFile(codemod.indexPath, {

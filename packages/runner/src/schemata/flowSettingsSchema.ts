@@ -13,11 +13,22 @@ import {
 } from "valibot";
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
-  "**/node_modules/**/*.*",
-  "**/*.d.ts",
-  "**/.next/**/*.*",
-  "**/dist/**/*.*",
-  "**/build/**/*.*",
+  "*.d.ts",
+  "node_modules/",
+  ".next/",
+  "dist/",
+  "build/",
+];
+export const DEFAULT_VERSION_CONTROL_DIRECTORIES = [
+  ".git/",
+  ".svn/",
+  ".hg/",
+  ".bzr/",
+  "_darcs/",
+  "_MTN/",
+  "_FOSSIL_",
+  ".fslckout",
+  ".view/",
 ];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_ENABLE_PRETTIER = true;
@@ -31,7 +42,7 @@ export const DEFAULT_TELEMETRY = true;
 export const flowSettingsSchema = object({
   _: array(string()),
   include: optional(array(string())),
-  exclude: optional(array(string())),
+  exclude: optional(array(string()), []),
   target: optional(string()),
   files: optional(array(string())),
   format: optional(boolean(), DEFAULT_ENABLE_PRETTIER),
@@ -41,12 +52,8 @@ export const flowSettingsSchema = object({
   threads: optional(number([minValue(0)]), DEFAULT_THREAD_COUNT),
 });
 
-export type FlowSettings = Omit<
-  Output<typeof flowSettingsSchema>,
-  "exclude" | "target"
-> & {
+export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
   target: string;
-  exclude: string[];
 };
 
 export const parseFlowSettings = (
@@ -76,6 +83,5 @@ export const parseFlowSettings = (
   return {
     ...flowSettings,
     target: resolve(target),
-    exclude: (flowSettings.exclude ?? []).concat(DEFAULT_EXCLUDE_PATTERNS),
   };
 };
