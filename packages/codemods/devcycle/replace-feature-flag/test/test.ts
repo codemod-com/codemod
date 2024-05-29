@@ -57,4 +57,23 @@ describe("Replace feature flag", () => {
 
     assert.deepEqual(actual, expected);
   });
+
+  it("Should replace feature flag with object value", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/object.input.js"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/object.output.js"),
+      "utf-8",
+    );
+
+    const { actual, expected } = transform(INPUT, OUTPUT, "index.tsx", {
+      key: "simple-case",
+      type: "JSON",
+      value: `{ "foo": { "bar": null, "baz": "str", "faz": 12 } }`,
+    });
+
+    assert.deepEqual(actual, expected);
+  });
 });

@@ -44,14 +44,12 @@ export const buildLiteral = (type: VariableType, value: VariableValue) => {
       return value === "true" ? factory.createTrue() : factory.createFalse();
     }
     case "JSON": {
-      return factory.createCallExpression(
-        factory.createPropertyAccessExpression(
-          factory.createIdentifier("JSON"),
-          factory.createIdentifier("parse"),
-        ),
-        undefined,
-        [factory.createStringLiteral(value.toString())],
+      return buildJSON(
+        typeof value === "string" ? value : JSON.stringify(value),
       );
+    }
+    case "null": {
+      return factory.createNull();
     }
   }
 };
@@ -156,14 +154,38 @@ export const getPropertyValueAsText = (
 
   const propertyValue = property.getInitializer();
 
+  // @TODO
   if (
     !Node.isStringLiteral(propertyValue) &&
     !Node.isNumericLiteral(propertyValue) &&
     !Node.isTrueLiteral(propertyValue) &&
-    !Node.isFalseLiteral(propertyValue)
+    !Node.isFalseLiteral(propertyValue) &&
+    !Node.isObjectLiteralExpression(propertyValue)
   ) {
     return null;
   }
 
   return propertyValue.getFullText();
+};
+
+export const buildJSON = (json: string): ts.ObjectLiteralExpression => {
+  const object = JSON.parse(json);
+  const factory = ts.factory;
+
+  const properties = Object.entries(object).map(([key, value]) => {
+    const type =
+      typeof value === "object" && value !== null
+        ? "JSON"
+        : value === null
+          ? "null"
+          : typeof value;
+
+    return factory.createPropertyAssignment(
+      factory.createIdentifier(key),
+      // @ts-expect-error expecting only string number or boolean after parsing json
+      buildLiteral(type, value),
+    );
+  });
+
+  return factory.createObjectLiteralExpression(properties, true);
 };

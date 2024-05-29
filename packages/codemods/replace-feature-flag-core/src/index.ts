@@ -317,12 +317,12 @@ const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
 
     if (
       op.getKind() === SyntaxKind.EqualsEqualsEqualsToken &&
-      isPrimitiveLiteral(unwrappedLeft) &&
-      isPrimitiveLiteral(unwrappedRight)
+      isLiteral(unwrappedLeft) &&
+      isLiteral(unwrappedRight)
     ) {
       be.replaceWithText(
         String(
-          unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue(),
+          getLiteralText(unwrappedLeft) === getLiteralText(unwrappedRight),
         ),
       );
     }
@@ -365,9 +365,13 @@ const refactorIfStatements = (sourceFile: SourceFile) => {
       ? getCodemodLiteralValue(expression)
       : expression;
 
-    if (Node.isTrueLiteral(unwrapped)) {
+    if (!isLiteral(unwrapped)) {
+      return;
+    }
+
+    if (isTruthy(unwrapped)) {
       ifs.replaceWithText(getBlockText(ifs.getThenStatement()));
-    } else if (Node.isFalseLiteral(unwrapped)) {
+    } else {
       ifs.remove();
     }
   });
