@@ -1,19 +1,19 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path, { resolve } from "node:path";
+import path, { basename, dirname, extname, join, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
   type AllEngines,
   type CodemodConfig,
   type FileSystem,
+  type TarService,
   allEnginesSchema,
   doubleQuotify,
-  execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import { glob } from "fast-glob";
+import unzipper from "unzipper";
 import { object, parse } from "valibot";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import { rebuildCodemodFallback } from "./utils.js";
@@ -77,12 +77,49 @@ export const buildSourcedCodemodOptions = async (
   printer: PrinterBlueprint,
   codemodOptions: CodemodSettings & { kind: "runSourced" },
   codemodDownloader: CodemodDownloaderBlueprint,
+  tarService: TarService,
 ): Promise<Codemod> => {
-  const isDirectorySource = await fs.promises
-    .lstat(codemodOptions.source)
-    .then((pathStat) => pathStat.isDirectory());
+  const sourceStat = await fs.promises.lstat(codemodOptions.source);
+  const isDirectorySource = sourceStat.isDirectory();
 
   if (!isDirectorySource) {
+    let resultPath: string | null = null;
+
+    if (extname(codemodOptions.source) === ".zip") {
+      const unpackTarget = dirname(codemodOptions.source);
+
+      const zip = fs
+        .createReadStream(codemodOptions.source)
+        .pipe(unzipper.Parse({ forceStream: true }));
+
+      for await (const entry of zip) {
+        const writablePath = join(unpackTarget, entry.path);
+
+        if (entry.type === "Directory") {
+          await fs.promises.mkdir(writablePath, { recursive: true });
+          entry.autodrain(); // Skip processing the content of directory entries
+        } else {
+          if (basename(entry.path) === ".codemodrc.json") {
+            resultPath = dirname(writablePath);
+          }
+          await fs.promises.mkdir(dirname(writablePath), { recursive: true });
+          entry.pipe(fs.createWriteStream(writablePath));
+        }
+      }
+
+      if (resultPath === null) {
+        throw new Error(`Could not find .codemodrc.json in the zip file.`);
+      }
+
+      return buildSourcedCodemodOptions(
+        fs,
+        printer,
+        { ...codemodOptions, source: resultPath },
+        codemodDownloader,
+        tarService,
+      );
+    }
+
     if (codemodOptions.engine === null) {
       throw new Error("--engine has to be defined when running local codemod");
     }
@@ -139,6 +176,7 @@ export const buildSourcedCodemodOptions = async (
             printer,
             { ...codemodOptions, source: resolve(subCodemodName) },
             codemodDownloader,
+            tarService,
           );
         }
 
