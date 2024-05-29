@@ -334,23 +334,23 @@ function printRunSummary(
         chalk.bold(flowSettings.target),
         "\n",
         chalk.yellow(reason ? `\n${reason}` : ""),
-        chalk.green("\nIncluded patterns:"),
+        "\nIncluded patterns:",
         colorLongString(include.join(", "), chalk.green.bold),
         ...(userExcluded.length > 0
           ? [
-              chalk.red("\nPatterns excluded manually:"),
+              "\nPatterns excluded manually:",
               colorLongString(userExcluded.join(", "), chalk.red.bold),
             ]
           : []),
         ...(defaultExcluded.length > 0
           ? [
-              chalk.red("\nPatterns excluded by default:"),
+              "\nPatterns excluded by default:",
               colorLongString(defaultExcluded.join(", "), chalk.red.bold),
             ]
           : []),
         ...(gitIgnoreExcluded.length > 0
           ? [
-              chalk.red("\nPatterns excluded from gitignore:"),
+              "\nPatterns excluded from gitignore:",
               colorLongString(gitIgnoreExcluded.join(", "), chalk.red.bold),
             ]
           : []),
@@ -648,6 +648,7 @@ export const runCodemod = async (
       },
       (message) => {
         if (message.kind === "progress") {
+          console.log("msg processor:", message.processedFileNumber);
           onPrinterMessage({
             kind: "progress",
             codemodName:
