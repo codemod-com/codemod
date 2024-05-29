@@ -675,6 +675,7 @@ export class EngineService {
           jobs: this.#execution.jobs,
           case: this.#execution.case,
           executionErrors,
+          affectedAnyFile: this.#execution.affectedAnyFile,
         });
 
         this.__store.dispatch(
