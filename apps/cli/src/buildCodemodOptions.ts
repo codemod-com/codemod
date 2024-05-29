@@ -83,9 +83,9 @@ export const buildSourcedCodemodOptions = async (
   const isDirectorySource = sourceStat.isDirectory();
 
   if (!isDirectorySource) {
-    let resultPath: string | null = null;
-
     if (extname(codemodOptions.source) === ".zip") {
+      let resultPath: string | null = null;
+
       const unpackTarget = dirname(codemodOptions.source);
 
       const zip = fs
