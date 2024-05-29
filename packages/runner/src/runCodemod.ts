@@ -635,10 +635,6 @@ export const runCodemod = async (
         }
 
         if (message.kind === "finish") {
-          // onPrinterMessage({
-          //   kind: "finish",
-          // });
-
           resolve();
 
           return;
