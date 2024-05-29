@@ -21,7 +21,7 @@ export const buildArguments = (
   const codemodArguments =
     command.kind !== "executeLocalCodemod"
       ? (command.arguments ?? []).flatMap(({ name, value }) => [
-          name,
+          `--${name}`,
           singleQuotify(String(value)),
         ])
       : [];
