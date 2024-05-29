@@ -80,10 +80,11 @@ export function isAstGrepProjectFiles(
 const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
   js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
-const readme = ({ name, cases, vanillaJs }: ProjectDownloadInput) => {
-  return `# ${changeCase.sentenceCase(name)}
+const readme = ({ cases, vanillaJs }: ProjectDownloadInput) => {
+  return `
+Short description
 
-## Description
+Detailed description
 
 ## Examples
 ${cases?.map(({ before, after }) => {
