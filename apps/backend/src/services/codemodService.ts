@@ -1,10 +1,10 @@
+import type { Codemod, Prisma, PrismaClient, Tag } from "@codemod-com/database";
 import {
   type AllEngines,
   type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import Fuse from "fuse.js";
-import type { Codemod, Prisma, PrismaClient, Tag } from "../../prisma/client";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];

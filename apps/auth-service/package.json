@@ -1,0 +1,48 @@
+{
+  "name": "@codemod-com/registry-service",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "start": "nodemon --exec tsx src/app.ts",
+    "test": "vitest --run"
+  },
+  "author": "Codemod inc.",
+  "private": true,
+  "devDependencies": {
+    "@types/node": "20.12.12",
+    "@types/supertest": "^6.0.2",
+    "dotenv-cli": "^7.4.2",
+    "esbuild": "^0.21.3",
+    "nodemon": "^3.1.0",
+    "tsx": "^4.11.0",
+    "typescript": "5.4.5",
+    "vitest": "1.6.0"
+  },
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.583.0",
+    "@aws-sdk/s3-request-presigner": "^3.583.0",
+    "@clerk/backend": "1.2.1",
+    "@clerk/fastify": "1.0.11",
+    "@codemod-com/database": "workspace:*",
+    "@codemod-com/utilities": "workspace:*",
+    "@fastify/cors": "9.0.1",
+    "@fastify/env": "^4.3.0",
+    "@fastify/multipart": "^8.2.0",
+    "@fastify/rate-limit": "9.1.0",
+    "@types/tar": "^6.1.13",
+    "axios": "^1.7.2",
+    "cron": "^3.1.7",
+    "dotenv": "^16.4.5",
+    "esbuild-plugin-copy": "^2.1.1",
+    "fastify": "4.27.0",
+    "fastify-plugin": "4.5.1",
+    "fuse.js": "^7.0.0",
+    "tar": "^7.1.0",
+    "valibot": "0.31.0-rc.1"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@clerk/backend": "0.36.0",
+    "fastify-plugin": "4.5.1"
+  }
+}

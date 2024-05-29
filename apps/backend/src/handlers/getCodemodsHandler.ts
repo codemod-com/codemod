@@ -1,4 +1,4 @@
-import type { Codemod } from "@prisma/client";
+import type { Codemod } from "@codemod-com/database";
 import type { CustomHandler } from "../customHandler.js";
 import { parseGetCodemodsQuery } from "../schemata/schema.js";
 

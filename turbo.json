@@ -1,5 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDotEnv": [".env"],
   "pipeline": {
     "dev": {
       "cache": false,
@@ -18,6 +19,18 @@
     "create": {
       "dependsOn": ["^create"],
       "cache": false
+    },
+    "db:migrate:deploy": {
+      "outputs": []
+    },
+    "db:push": {
+      "outputs": []
+    },
+    "db:seed": {
+      "outputs": []
+    },
+    "db:generate": {
+      "dependsOn": ["^db:generate"]
     }
   }
 }

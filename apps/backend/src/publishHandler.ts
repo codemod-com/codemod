@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { prisma } from "@codemod-com/database";
 import {
   type CodemodConfig,
   TarService,
@@ -11,9 +12,7 @@ import {
 import axios from "axios";
 import * as semver from "semver";
 import type { z } from "zod";
-import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import type { CustomHandler } from "./customHandler";
-import { prisma } from "./db/prisma.js";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
 
@@ -229,10 +228,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
     uploadKeyParts.unshift("codemod-registry");
     const uploadKey = uploadKeyParts.join("/");
 
-    const codemodVersionEntry: Omit<
-      z.infer<typeof CodemodVersionCreateInputSchema>,
-      "codemod"
-    > = {
+    const codemodVersionEntry = {
       version,
       s3Bucket: bucket,
       s3UploadKey: uploadKey,

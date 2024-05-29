@@ -1,9 +1,8 @@
-import "dotenv/config";
-
 import { randomBytes } from "node:crypto";
 import type { OutgoingHttpHeaders } from "node:http";
 import type { OrganizationMembership, User } from "@clerk/backend";
 import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
+import { prisma } from "@codemod-com/database";
 import { PostHogSender } from "@codemod-com/telemetry";
 import {
   type CodemodRunResponse,
@@ -29,7 +28,6 @@ import {
   ForbiddenError,
   UnauthorizedError,
 } from "./customHandler.js";
-import { prisma } from "./db/prisma.js";
 import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
@@ -54,9 +52,9 @@ import {
   parseSendMessageBody,
   parseValidateIntentParams,
 } from "./schemata/schema.js";
-import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
 import { SourceControl } from "./services/SourceControl.js";
+import { Auth } from "./services/auth.js";
 import {
   CodemodNotFoundError,
   CodemodService,

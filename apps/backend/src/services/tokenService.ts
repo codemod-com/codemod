@@ -1,10 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
-import {
+import type {
   Prisma,
-  type PrismaClient,
-  type TokenMetadata,
-  type TokenRevocation,
-} from "../../prisma/client";
+  PrismaClient,
+  TokenMetadata,
+  TokenRevocation,
+} from "@codemod-com/database";
 import {
   type EncryptedTokenMetadata,
   type KeyIvPair,

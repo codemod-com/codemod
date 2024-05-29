@@ -1,7 +1,7 @@
+import { prisma } from "@codemod-com/database";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { decrypt, encrypt } from "../crypto/crypto.js";
 import type { CustomHandler } from "../customHandler.js";
-import { prisma } from "../db/prisma.js";
 import { parseBuildAccessTokenQuery } from "../schemata/schema.js";
 import { ALL_CLAIMS } from "../services/tokenService.js";
 

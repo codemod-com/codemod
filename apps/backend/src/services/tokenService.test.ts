@@ -1,5 +1,5 @@
+import { prisma } from "@codemod-com/database";
 import { describe, expect, test } from "vitest";
-import { prisma } from "../db/prisma.js";
 import {
   TokenNotFoundError,
   TokenRevokedError,
