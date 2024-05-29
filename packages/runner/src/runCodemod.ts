@@ -418,7 +418,7 @@ export const runCodemod = async (
           },
           (message) => {
             if (message.kind === "progress") {
-              onPrinterMessage({
+              return onPrinterMessage({
                 kind: "progress",
                 codemodName:
                   subCodemod.bundleType === "package"
@@ -486,7 +486,7 @@ export const runCodemod = async (
         },
         (message) => {
           if (message.kind === "progress") {
-            onPrinterMessage({
+            return onPrinterMessage({
               kind: "progress",
               codemodName:
                 subCodemod.bundleType === "package"
@@ -648,7 +648,6 @@ export const runCodemod = async (
       },
       (message) => {
         if (message.kind === "progress") {
-          console.log("msg processor:", message.processedFileNumber);
           onPrinterMessage({
             kind: "progress",
             codemodName:

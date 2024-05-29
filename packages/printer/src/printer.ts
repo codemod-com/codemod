@@ -95,8 +95,6 @@ export class Printer implements PrinterBlueprint {
       this.progressBar.start(message.totalFileNumber, 0);
     }
 
-    console.log("printer: ", message.processedFileNumber);
-
     this.progressBar.update(message.processedFileNumber, {
       file: message.processedFileName
         ? chalk.bold(message.processedFileName)

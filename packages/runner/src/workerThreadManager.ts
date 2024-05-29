@@ -180,8 +180,6 @@ export class WorkerThreadManager {
           : null,
       });
 
-      console.log("thread manager:", this.__processedFileNumber);
-
       if (this._getShouldFinish()) {
         await this.__finish();
       }
