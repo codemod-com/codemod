@@ -1,4 +1,4 @@
-import { modGptServer } from "@chatbot/config";
+import { modGptServer, shouldUseCodemodAi } from "@chatbot/config";
 import { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { onResponse } from "@chatbot/utils";
 import type { LLMEngine } from "@shared/consts";
@@ -23,7 +23,7 @@ export const useModGPT = ({
     onResponse,
     headers: getHeadersWithAuth(token),
     body: {
-      engine,
+      engine: shouldUseCodemodAi ? "gpt-4" : engine,
     },
   });
 
