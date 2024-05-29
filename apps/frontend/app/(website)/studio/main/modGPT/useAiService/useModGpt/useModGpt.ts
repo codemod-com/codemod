@@ -23,7 +23,7 @@ export const useModGPT = ({
     onResponse,
     headers: getHeadersWithAuth(token),
     body: {
-      engine: shouldUseCodemodAi ? "gpt-4" : engine,
+      engine,
     },
   });
 
