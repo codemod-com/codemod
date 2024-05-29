@@ -133,6 +133,7 @@ export const handleRunCliCommand = async (
       printer,
       codemodSettings,
       codemodDownloader,
+      tarService,
     );
 
     const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
