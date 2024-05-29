@@ -142,16 +142,13 @@ export const buildPatterns = async (
   let reason: string | undefined;
   let patterns: string[] | undefined = undefined;
   if (flowSettings.include) {
-    reason =
-      "Using paths provided by user via options (combined with engine defaults)";
+    reason = "Using paths provided by user via options";
     patterns = flowSettings.include;
   } else if (flowSettings.files) {
-    reason =
-      "Using paths provided by user via options (combined with engine defaults)";
+    reason = "Using paths provided by user via options";
     patterns = flowSettings.files;
   } else if (codemod.include) {
-    reason =
-      "Using paths provided by codemod settings (combined with engine defaults)";
+    reason = "Using paths provided by codemod settings";
     patterns = codemod.include;
   }
 
@@ -180,27 +177,29 @@ export const buildPatterns = async (
   if (!patterns) {
     reason = "Using default include patterns based on the engine";
     patterns = [];
+
+    let engineDefaultPatterns = ["**/*.*"];
+
+    if (codemod.engine === "filemod" && filemod !== null) {
+      engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? [
+        "**/*",
+      ];
+    } else if (
+      codemod.engine === "jscodeshift" ||
+      codemod.engine === "ts-morph"
+    ) {
+      engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
+    }
+
+    // remove from included if user is trying to override default include
+    engineDefaultPatterns = engineDefaultPatterns.filter(
+      (p) => !allExcluded.includes(p),
+    );
+
+    patterns.push(...engineDefaultPatterns);
   }
 
-  let engineDefaultPatterns = ["**/*.*"];
-
-  if (codemod.engine === "filemod" && filemod !== null) {
-    engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
-  } else if (
-    codemod.engine === "jscodeshift" ||
-    codemod.engine === "ts-morph"
-  ) {
-    engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-  }
-
-  engineDefaultPatterns = engineDefaultPatterns.filter(
-    (p) => !allExcluded.includes(p),
-  );
-
-  // remove from included if user is trying to override default include
-  const formattedInclude = patterns
-    .map(formatFunc)
-    .concat(engineDefaultPatterns);
+  const formattedInclude = patterns.map(formatFunc);
 
   const exclude = allExcluded.filter((p) => {
     // remove from excluded patterns if user is trying to override default exclude
