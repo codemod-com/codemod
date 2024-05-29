@@ -216,7 +216,7 @@ const buildCodemodEntry = (
     .digest("base64url");
 
   return {
-    ...codemod,
+    ...(codemod ?? {}),
     kind: "codemod" as const,
     hashDigest,
   };
