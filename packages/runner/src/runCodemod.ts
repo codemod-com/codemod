@@ -334,23 +334,23 @@ function printRunSummary(
         chalk.bold(flowSettings.target),
         "\n",
         chalk.yellow(reason ? `\n${reason}` : ""),
-        "\nIncluded patterns:",
+        chalk.yellow("\nIncluded patterns:"),
         colorLongString(include.join(", "), chalk.green.bold),
         ...(userExcluded.length > 0
           ? [
-              "\nPatterns excluded manually:",
+              chalk.yellow("\nPatterns excluded manually:"),
               colorLongString(userExcluded.join(", "), chalk.red.bold),
             ]
           : []),
         ...(defaultExcluded.length > 0
           ? [
-              "\nPatterns excluded by default:",
+              chalk.yellow("\nPatterns excluded by default:"),
               colorLongString(defaultExcluded.join(", "), chalk.red.bold),
             ]
           : []),
         ...(gitIgnoreExcluded.length > 0
           ? [
-              "\nPatterns excluded from gitignore:",
+              chalk.yellow("\nPatterns excluded from gitignore:"),
               colorLongString(gitIgnoreExcluded.join(", "), chalk.red.bold),
             ]
           : []),
