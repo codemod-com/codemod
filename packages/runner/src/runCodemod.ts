@@ -139,22 +139,23 @@ export const buildPatterns = async (
   }
 
   let reason: string | undefined;
-  let patterns: string[] | undefined = undefined;
-  if (flowSettings.include) {
+  const patterns: string[] = [];
+
+  if (flowSettings.include || flowSettings.files) {
     reason = "Using paths provided by user via options";
-    patterns = flowSettings.include;
-  } else if (flowSettings.files) {
-    reason = "Using paths provided by user via options";
-    patterns = flowSettings.files;
+    patterns.push(
+      ...(flowSettings.include ?? []),
+      ...(flowSettings.files ?? []),
+    );
   } else if (codemod.include) {
     reason = "Using paths provided by codemod settings";
-    patterns = codemod.include;
+    patterns.push(...codemod.include);
   }
 
-  // ast-grep only runs on certain file and to oevrride that behaviour we would have to create temporary sgconfig file
+  // ast-grep only runs on certain file and to override that behaviour we would have to create temporary sgconfig file
   if (codemod.engine === "ast-grep") {
     if (patterns) {
-      patterns = undefined;
+      patterns.splice(0, patterns.length);
       reason = "Ignoring include/exclude patterns for ast-grep codemod";
       onPrinterMessage?.({
         kind: "console",
@@ -163,19 +164,33 @@ export const buildPatterns = async (
       });
     }
 
+    let config: { language: string } | null = null;
     try {
-      const config = yaml.load(
+      config = yaml.load(
         await readFile(codemod.indexPath, { encoding: "utf8" }),
       ) as { language: string };
-      patterns = astGrepLanguageToPatterns[config.language];
+
+      const astGrepPatterns = astGrepLanguageToPatterns[config.language];
+      if (!astGrepPatterns) {
+        throw new Error("Invalid language in ast-grep config");
+      }
+
+      patterns.push(...astGrepPatterns);
     } catch (error) {
-      //
+      if (!config) {
+        throw new Error(
+          `Unable to load config file for ast-grep codemod at ${codemod.indexPath}`,
+        );
+      }
+
+      throw new Error(
+        `Unable to determine file patterns to run the ast-grep codemod on: ${config.language}`,
+      );
     }
   }
 
-  if (!patterns) {
+  if (patterns.length === 0) {
     reason = "Using default include patterns based on the engine";
-    patterns = [];
 
     let engineDefaultPatterns = ["**/*.*"];
 
