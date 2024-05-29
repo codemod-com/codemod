@@ -258,7 +258,8 @@ type Arguments = CodemodEntry["arguments"][number];
 export type CodemodArgumentWithValue =
   | (Extract<Arguments, { kind: "string" }> & { value: string })
   | (Extract<Arguments, { kind: "number" }> & { value: number })
-  | (Extract<Arguments, { kind: "boolean" }> & { value: boolean });
+  | (Extract<Arguments, { kind: "boolean" }> & { value: boolean })
+  | (Extract<Arguments, { kind: "enum" }> & { value: string });
 
 export const selectCodemodArguments = (
   state: RootState,
@@ -296,6 +297,12 @@ export const selectCodemodArguments = (
         return {
           ...arg,
           value: value === "true",
+        };
+      }
+      case "enum": {
+        return {
+          ...arg,
+          value: String(value),
         };
       }
     }

@@ -5,10 +5,10 @@ import { useKey } from "./jobDiffView/hooks/useKey";
 const getCodemodActionButtons = (
   hashDigest: CodemodNodeHashDigest,
 ): [HTMLElement | null, HTMLElement | null, HTMLElement | null] => {
-  const pathButton = document.getElementById(`${hashDigest}-pathButton`);
+  const configButton = document.getElementById(`${hashDigest}-configButton`);
   const dryRunButton = document.getElementById(`${hashDigest}-dryRunButton`);
   const shareButton = document.getElementById(`${hashDigest}-shareButton`);
-  return [pathButton, dryRunButton, shareButton];
+  return [configButton, dryRunButton, shareButton];
 };
 
 type TreeNode<HD extends string> = Readonly<{
@@ -117,12 +117,12 @@ export const CustomTreeView = <
       return;
     }
 
-    const [pathButton, dryRunButton, shareButton] = getCodemodActionButtons(
+    const [configButton, dryRunButton, shareButton] = getCodemodActionButtons(
       props.focusedNodeHashDigest as unknown as CodemodNodeHashDigest,
     );
 
     if (dryRunButton !== null && activeElement.id === dryRunButton.id) {
-      pathButton?.focus();
+      configButton?.focus();
     }
     if (shareButton !== null && activeElement.id === shareButton.id) {
       dryRunButton?.focus();
@@ -144,11 +144,11 @@ export const CustomTreeView = <
     if (activeElement === null) {
       return;
     }
-    const [pathButton, dryRunButton, shareButton] = getCodemodActionButtons(
+    const [configButton, dryRunButton, shareButton] = getCodemodActionButtons(
       props.focusedNodeHashDigest as unknown as CodemodNodeHashDigest,
     );
 
-    if (pathButton !== null && activeElement.id === pathButton.id) {
+    if (configButton !== null && activeElement.id === configButton.id) {
       dryRunButton?.focus();
     }
     if (dryRunButton !== null && activeElement.id === dryRunButton.id) {
@@ -161,12 +161,12 @@ export const CustomTreeView = <
       return;
     }
 
-    const [pathButton, dryRunButton, shareButton] = getCodemodActionButtons(
+    const [configButton, dryRunButton, shareButton] = getCodemodActionButtons(
       props.focusedNodeHashDigest as unknown as CodemodNodeHashDigest,
     );
 
     const focusedActionButtonNode =
-      [pathButton, dryRunButton, shareButton].find(
+      [configButton, dryRunButton, shareButton].find(
         (node) => node !== null && document.activeElement?.id === node.id,
       ) ?? null;
 

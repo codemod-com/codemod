@@ -30,18 +30,25 @@ const FormField = (props: Props) => {
     );
   }
 
-  if (kind === "options") {
+  if (kind === "enum") {
     return (
-      <VSCodeDropdown
-        onChange={(e) =>
-          onChange((e as React.ChangeEvent<HTMLInputElement>).target.value)
-        }
-        value={value}
-      >
-        {props.options.map((o) => (
-          <VSCodeOption value={o}>{o}</VSCodeOption>
-        ))}
-      </VSCodeDropdown>
+      <>
+        <label className={styles.label}>
+          {name} {required && "(required)"}
+        </label>
+        <VSCodeDropdown
+          onChange={(e) =>
+            onChange((e as React.ChangeEvent<HTMLInputElement>).target.value)
+          }
+          value={value}
+        >
+          {props.options.map((o) => (
+            <VSCodeOption key={o} value={o}>
+              {o}
+            </VSCodeOption>
+          ))}
+        </VSCodeDropdown>
+      </>
     );
   }
 

@@ -21,6 +21,18 @@ export const codemodArgumentsCodec = t.union([
     required: t.boolean,
     default: withFallback(t.boolean, false),
   }),
+  buildTypeCodec({
+    name: t.string,
+    kind: t.literal("enum"),
+    options: t.array(t.string),
+    required: t.boolean,
+    default: withFallback(t.array(t.string), [
+      "boolean",
+      "string",
+      "number",
+      "JSON",
+    ]),
+  }),
 ]);
 
 export const codemodEntryCodec = buildTypeCodec({
