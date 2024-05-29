@@ -67,7 +67,9 @@ export default async function CodemodRoute({ params }) {
             {children}
           </blockquote>
         ),
-        pre: CodeBlock,
+        pre: ({ children }) => (
+          <CodeBlock scrollable={false}>{children}</CodeBlock>
+        ),
         strong: ({ children }) => <span className="font-bold">{children}</span>,
         em: ({ children }) => <em>{children}</em>,
         underline: ({ children }) => <u>{children}</u>,
