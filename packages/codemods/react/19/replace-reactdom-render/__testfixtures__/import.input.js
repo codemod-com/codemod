@@ -1,7 +1,7 @@
-import ReactDom from "react-dom";
-import { createRoot } from "react-dom/client";
+import ReactDom from 'react-dom';
+import { createRoot, hydrateRoot } from 'react-dom/client';
 console.log(createRoot);
 
-import Component from "Component";
+import Component from 'Component';
 
-ReactDom.hydrate(<Component />, document.getElementById("app"));
+hydrateRoot(document.getElementById('app'), <Component />);

@@ -68,7 +68,12 @@ export const buildPatterns = async (
   };
 
   const excludePatterns = flowSettings.exclude ?? [];
-  let formattedExclude = excludePatterns.map(formatFunc);
+  const userExcluded = excludePatterns.map(formatFunc);
+  const defaultExcluded = DEFAULT_EXCLUDE_PATTERNS.concat(
+    DEFAULT_VERSION_CONTROL_DIRECTORIES,
+  ).map(formatFunc);
+
+  const allExcluded = userExcluded.concat(defaultExcluded);
 
   // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
   // Instead we just use the utils function to get the root gitignore if it exists. Otherwise, just ignore
@@ -128,37 +133,10 @@ export const buildPatterns = async (
         .filter((line) => line.length > 0 && !line.startsWith("#"))
         .map(formatFunc);
 
-      formattedExclude = formattedExclude.concat(gitIgnored);
+      allExcluded.push(...gitIgnored);
     } catch (err) {
       //
     }
-  }
-
-  const { files } = flowSettings;
-
-  if (files) {
-    const uniqueExclude = [...new Set(formattedExclude)];
-
-    const userExcluded = uniqueExclude.filter(
-      (e) =>
-        !DEFAULT_EXCLUDE_PATTERNS.concat(DEFAULT_VERSION_CONTROL_DIRECTORIES)
-          .concat(gitIgnored)
-          .includes(e),
-    );
-    const defaultExcluded = uniqueExclude.filter((e) =>
-      DEFAULT_EXCLUDE_PATTERNS.concat(
-        DEFAULT_VERSION_CONTROL_DIRECTORIES,
-      ).includes(e),
-    );
-
-    return {
-      include: files,
-      exclude: [...new Set(formattedExclude)],
-      userExcluded,
-      defaultExcluded,
-      gitIgnoreExcluded: gitIgnored,
-      reason: "Using files option from settings",
-    };
   }
 
   let reason: string | undefined;
@@ -167,6 +145,10 @@ export const buildPatterns = async (
     reason =
       "Using paths provided by user via options (combined with engine defaults)";
     patterns = flowSettings.include;
+  } else if (flowSettings.files) {
+    reason =
+      "Using paths provided by user via options (combined with engine defaults)";
+    patterns = flowSettings.files;
   } else if (codemod.include) {
     reason =
       "Using paths provided by codemod settings (combined with engine defaults)";
@@ -212,14 +194,15 @@ export const buildPatterns = async (
   }
 
   engineDefaultPatterns = engineDefaultPatterns.filter(
-    (p) => !formattedExclude.includes(p),
+    (p) => !allExcluded.includes(p),
   );
 
+  // remove from included if user is trying to override default include
   const formattedInclude = patterns
     .map(formatFunc)
     .concat(engineDefaultPatterns);
 
-  const exclude = formattedExclude.filter((p) => {
+  const exclude = allExcluded.filter((p) => {
     // remove from excluded patterns if user is trying to override default exclude
     if (
       DEFAULT_EXCLUDE_PATTERNS.concat(
@@ -234,23 +217,10 @@ export const buildPatterns = async (
 
   // remove everything that was excluded from the included patterns
   const include = formattedInclude.filter((p) => !exclude.includes(p));
-  const uniqueExclude = [...new Set(exclude)];
-
-  const userExcluded = uniqueExclude.filter(
-    (e) =>
-      !DEFAULT_EXCLUDE_PATTERNS.concat(DEFAULT_VERSION_CONTROL_DIRECTORIES)
-        .concat(gitIgnored)
-        .includes(e),
-  );
-  const defaultExcluded = uniqueExclude.filter((e) =>
-    DEFAULT_EXCLUDE_PATTERNS.concat(
-      DEFAULT_VERSION_CONTROL_DIRECTORIES,
-    ).includes(e),
-  );
 
   return {
-    include: [...new Set(include)],
-    exclude: uniqueExclude,
+    include,
+    exclude,
     userExcluded,
     defaultExcluded,
     gitIgnoreExcluded: gitIgnored,
