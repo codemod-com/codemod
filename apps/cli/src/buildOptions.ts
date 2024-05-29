@@ -67,8 +67,8 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "string",
       array: true,
       description: "Glob pattern(s) for files to exclude",
-      default: DEFAULT_EXCLUDE_PATTERNS,
-      defaultDescription: "node_modules, .next, dist, build",
+      defaultDescription:
+        "node_modules, .next, dist, build, *.d.ts, version control folders, gitignore entries",
     })
     .option("target", {
       alias: "t",

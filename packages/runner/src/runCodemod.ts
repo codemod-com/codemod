@@ -30,6 +30,7 @@ import type {
 } from "./schemata/callbacks.js";
 import {
   DEFAULT_EXCLUDE_PATTERNS,
+  DEFAULT_VERSION_CONTROL_DIRECTORIES,
   type FlowSettings,
 } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
@@ -45,6 +46,9 @@ export const buildPatterns = async (
 ): Promise<{
   include: string[];
   exclude: string[];
+  userExcluded: string[];
+  defaultExcluded: string[];
+  gitIgnoreExcluded: string[];
   reason?: string;
 }> => {
   const formatFunc = (pattern: string) => {
@@ -110,6 +114,7 @@ export const buildPatterns = async (
     true,
   );
 
+  let gitIgnored: string[] = [];
   if (rootPath !== null) {
     try {
       const gitIgnoreContents = await readFile(
@@ -117,7 +122,7 @@ export const buildPatterns = async (
         "utf-8",
       );
 
-      const gitIgnored = gitIgnoreContents
+      gitIgnored = gitIgnoreContents
         .split("\n")
         .map((line) => line.trim())
         .filter((line) => line.length > 0 && !line.startsWith("#"))
@@ -132,9 +137,26 @@ export const buildPatterns = async (
   const { files } = flowSettings;
 
   if (files) {
+    const uniqueExclude = [...new Set(formattedExclude)];
+
+    const userExcluded = uniqueExclude.filter(
+      (e) =>
+        !DEFAULT_EXCLUDE_PATTERNS.concat(DEFAULT_VERSION_CONTROL_DIRECTORIES)
+          .concat(gitIgnored)
+          .includes(e),
+    );
+    const defaultExcluded = uniqueExclude.filter((e) =>
+      DEFAULT_EXCLUDE_PATTERNS.concat(
+        DEFAULT_VERSION_CONTROL_DIRECTORIES,
+      ).includes(e),
+    );
+
     return {
       include: files,
       exclude: [...new Set(formattedExclude)],
+      userExcluded,
+      defaultExcluded,
+      gitIgnoreExcluded: gitIgnored,
       reason: "Using files option from settings",
     };
   }
@@ -199,7 +221,11 @@ export const buildPatterns = async (
 
   const exclude = formattedExclude.filter((p) => {
     // remove from excluded patterns if user is trying to override default exclude
-    if (DEFAULT_EXCLUDE_PATTERNS.includes(p)) {
+    if (
+      DEFAULT_EXCLUDE_PATTERNS.concat(
+        DEFAULT_VERSION_CONTROL_DIRECTORIES,
+      ).includes(p)
+    ) {
       return !formattedInclude.includes(p);
     }
 
@@ -208,10 +234,26 @@ export const buildPatterns = async (
 
   // remove everything that was excluded from the included patterns
   const include = formattedInclude.filter((p) => !exclude.includes(p));
+  const uniqueExclude = [...new Set(exclude)];
+
+  const userExcluded = uniqueExclude.filter(
+    (e) =>
+      !DEFAULT_EXCLUDE_PATTERNS.concat(DEFAULT_VERSION_CONTROL_DIRECTORIES)
+        .concat(gitIgnored)
+        .includes(e),
+  );
+  const defaultExcluded = uniqueExclude.filter((e) =>
+    DEFAULT_EXCLUDE_PATTERNS.concat(
+      DEFAULT_VERSION_CONTROL_DIRECTORIES,
+    ).includes(e),
+  );
 
   return {
     include: [...new Set(include)],
-    exclude: [...new Set(exclude)],
+    exclude: uniqueExclude,
+    userExcluded,
+    defaultExcluded,
+    gitIgnoreExcluded: gitIgnored,
     reason,
   };
 };
@@ -306,7 +348,9 @@ function printRunSummary(
     return;
   }
 
-  const { include, exclude, reason } = patterns;
+  const { include, defaultExcluded, gitIgnoreExcluded, userExcluded, reason } =
+    patterns;
+
   onPrinterMessage({
     kind: "console",
     consoleKind: "info",
@@ -322,9 +366,25 @@ function printRunSummary(
         "\n",
         chalk.yellow(reason ? `\n${reason}` : ""),
         chalk.green("\nIncluded patterns:"),
-        colorLongString(include.join(", ") ?? "", chalk.green.bold),
-        chalk.red("\nExcluded patterns:"),
-        colorLongString(exclude.join(", ") ?? "", chalk.red.bold),
+        colorLongString(include.join(", "), chalk.green.bold),
+        ...(userExcluded.length > 0
+          ? [
+              chalk.red("\nPatterns excluded manually:"),
+              colorLongString(userExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
+        ...(defaultExcluded.length > 0
+          ? [
+              chalk.red("\nPatterns excluded by default:"),
+              colorLongString(defaultExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
+        ...(gitIgnoreExcluded.length > 0
+          ? [
+              chalk.red("\nPatterns excluded from gitignore:"),
+              colorLongString(gitIgnoreExcluded.join(", "), chalk.red.bold),
+            ]
+          : []),
         "\n",
         chalk.yellow(
           !flowSettings.install ? "\nDependency installation disabled" : "",
@@ -514,6 +574,9 @@ export const runCodemod = async (
     printRunSummary(onPrinterMessage, codemod, flowSettings, {
       include: ["**/*.*"],
       exclude: [],
+      defaultExcluded: [],
+      gitIgnoreExcluded: [],
+      userExcluded: [],
     });
 
     const codemodSource = await readFile(codemod.indexPath, {

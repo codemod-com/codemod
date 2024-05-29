@@ -89,7 +89,7 @@ codemod [codemod name] -i "certain_file" -i "entire_folder/" -i "*.js"
 
 </ResponseField>
 
-<ResponseField name="--exclude (-e)" type="glob pattern" default="'node_modules/', 'dist/', 'build/', '.next/'">
+<ResponseField name="--exclude (-e)" type="glob pattern" default="node_modules/, dist/, build/, .next/, .git/">
   While running a codemod, you may want to prevent changes from occurring to specific parts of your project. The `--exclude` option can be used to specify a glob pattern of the files to be ignored by the codemod.
 
 ```bash

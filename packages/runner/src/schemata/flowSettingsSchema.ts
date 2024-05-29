@@ -18,7 +18,8 @@ export const DEFAULT_EXCLUDE_PATTERNS = [
   ".next/",
   "dist/",
   "build/",
-  // version control systems
+];
+export const DEFAULT_VERSION_CONTROL_DIRECTORIES = [
   ".git/",
   ".svn/",
   ".hg/",
@@ -86,6 +87,8 @@ export const parseFlowSettings = (
   return {
     ...flowSettings,
     target: resolve(target),
-    exclude: (flowSettings.exclude ?? []).concat(DEFAULT_EXCLUDE_PATTERNS),
+    exclude: (flowSettings.exclude ?? [])
+      .concat(DEFAULT_EXCLUDE_PATTERNS)
+      .concat(DEFAULT_VERSION_CONTROL_DIRECTORIES),
   };
 };
