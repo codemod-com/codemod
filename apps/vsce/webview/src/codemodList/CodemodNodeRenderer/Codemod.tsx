@@ -23,7 +23,6 @@ type Props = Omit<CodemodItemNode, "name" | "kind"> &
 
 const renderActionButtons = (
   hashDigest: CodemodItemNode["hashDigest"],
-  permalink: CodemodItemNode["permalink"],
   codemodInProgress: boolean,
   queued: boolean,
   deepLinkPrefix: typeof CURSOR_PREFIX | typeof VSCODE_PREFIX,
@@ -63,7 +62,7 @@ const renderActionButtons = (
     return (
       <>
         <ActionButton
-          id={`${hashDigest}-dryRunButton`}
+          id={`${hashDigest}-configButton`}
           content="Set codemod arguments"
           onClick={handleCodemodArgumentsClick}
           active={argumentsExpanded}
@@ -168,7 +167,6 @@ const Codemod = ({
   icon,
   screenWidth,
   focused,
-  permalink,
   argumentsExpanded,
 }: Props) => {
   const [hovering, setHovering] = useState(false);
@@ -218,7 +216,6 @@ const Codemod = ({
           >
             {renderActionButtons(
               hashDigest,
-              permalink,
               progress !== null,
               queued,
               deepLinkPrefix,
