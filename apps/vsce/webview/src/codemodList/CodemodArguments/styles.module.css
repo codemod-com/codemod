@@ -1,13 +1,20 @@
 .root {
-	z-index: 1;
-	width: 100%;
-	padding: 1em;
-	box-sizing: border-box;
+  z-index: 1;
+  width: 100%;
+  padding: 1em;
+  box-sizing: border-box;
 }
 
 .form {
-	display: flex;
-	flex-direction: column;
-	row-gap: 8px;
-	padding: 4px;
+  display: flex;
+  flex-direction: column;
+  row-gap: 8px;
+  padding: 4px;
+}
+
+.option {
+  min-height: 20px;
+  width: 100%;
+  display: inline-block;
+  line-height: 20px;
 }

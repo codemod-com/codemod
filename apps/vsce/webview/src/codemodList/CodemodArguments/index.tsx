@@ -68,8 +68,12 @@ const CodemodArguments = ({
           }
           autocompleteItems={autocompleteItems}
         />
-        {args.map((props) => (
-          <FormField {...props} onChange={onChangeFormField(props.name)} />
+        {args.map((arg, index) => (
+          <FormField
+            key={index}
+            {...arg}
+            onChange={onChangeFormField(arg.name)}
+          />
         ))}
       </form>
     </div>
