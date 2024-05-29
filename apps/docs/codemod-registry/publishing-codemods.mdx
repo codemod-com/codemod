@@ -68,7 +68,12 @@ To make your codemod package compatible with Codemod platform, it needs to have 
   <ResponseField name="applicability" type="object">
     The applicability field is an object with `from` and `to` keys that are both arrays of tuples.
     This field can be used to specify the dependencies and versions this codemod is made for.
-    This field is also used to check if the codemod is compatible with the project it will run over.
+    
+    Specifying the applicability criteria of your codemod helps:
+    1. Reduce false positives
+    2. Proactively recommend the codemod to users who might need it
+    3. Improve codemod performance, as it will only process projects that make sense
+    4. Allow daisy-chaining codemods
   
     Each tuple consists of three elements:
     1. a library name
