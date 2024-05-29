@@ -13,8 +13,9 @@ import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import { getCurrentUserData } from "../utils.js";
 
-const CODEMOD_ENGINE_CHOICES: KnownEngines[] = [
+const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",
+  "recipe",
   "ts-morph",
   "filemod",
   "ast-grep",
@@ -145,6 +146,8 @@ export const handleInitCliCommand = async (options: {
       // },
       {
         type: "confirm",
+        when: (answers) =>
+          answers.engine !== "ast-grep" && answers.engine !== "recipe",
         name: "typescript",
         message: "Do you want to use TypeScript?",
         default: true,
@@ -157,6 +160,8 @@ export const handleInitCliCommand = async (options: {
       },
       {
         type: "confirm",
+        when: (answers) =>
+          answers.engine !== "ast-grep" && answers.engine !== "recipe",
         name: "npm",
         message: "Do you want to install npm dependencies?",
         default: false,

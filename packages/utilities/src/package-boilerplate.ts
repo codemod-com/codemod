@@ -1,6 +1,7 @@
 import * as changeCase from "change-case";
 import jsBeautify from "js-beautify";
 import {
+  type CodemodConfig,
   type KnownEngines,
   parseCodemodConfig,
 } from "./schemata/codemodConfigSchema.js";
@@ -9,7 +10,7 @@ const { js } = jsBeautify;
 export interface ProjectDownloadInput {
   codemodBody?: string;
   name: string;
-  engine: KnownEngines | "tsmorph";
+  engine: KnownEngines | "tsmorph" | "recipe";
 
   license?: "MIT" | "Apache 2.0";
   vanillaJs?: boolean;
@@ -81,8 +82,7 @@ const beautify = (input: string, options?: Parameters<typeof js>[1]) =>
   js(input, { brace_style: "preserve-inline", indent_size: 2, ...options });
 
 const readme = ({ cases, vanillaJs }: ProjectDownloadInput) => {
-  return `
-Short description
+  return `Short description
 
 Detailed description
 
@@ -351,17 +351,21 @@ const codemodRc = ({
 }: ProjectDownloadInput) => {
   const finalName = changeCase.kebabCase(name);
 
-  const config = parseCodemodConfig({
-    $schema:
-      "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  const configContent = {
     version: version ?? "1.0.0",
     private: false,
     name: finalName,
-    engine: engine,
+    engine: engine === "tsmorph" ? "ts-morph" : engine,
     meta: {
-      tags: tags?.length ? JSON.stringify(tags) : [],
+      tags: tags?.length ? tags : [],
     },
-  });
+  } as CodemodConfig;
+
+  if (engine === "recipe") {
+    (configContent as CodemodConfig & { engine: "recipe" }).names = [];
+  }
+
+  const config = parseCodemodConfig(configContent);
 
   if (gitUrl) {
     // biome-ignore lint: config.meta is defined
@@ -403,53 +407,64 @@ const packageJson = ({
   name,
   engine,
   username,
-}: Pick<ProjectDownloadInput, "name" | "engine" | "username">) => {
+  license,
+}: ProjectDownloadInput) => {
   const finalName = changeCase.kebabCase(name);
 
-  let packages = "";
-  if (engine === "jscodeshift") {
-    packages = `
-	    "jscodeshift": "^0.15.1",
-      "@types/jscodeshift": "^0.11.10"
-    `;
-  } else if (engine === "ts-morph" || engine === "tsmorph") {
-    packages = `
-      "ts-morph": "^20.0.0"
-    `;
-  } else if (engine === "filemod") {
-    packages = `
-      "@codemod-com/filemod": "^2.0.0"
-    `;
-  } else if (engine === "workflow") {
-    packages = `
-      "@codemod.com/workflow": "^0.0.1"
-    `;
+  const content: {
+    name: string;
+    author?: string;
+    license: string;
+    files: string[];
+    type: "module";
+    dependencies?: Record<string, string>;
+    devDependencies?: Record<string, string>;
+    scripts?: Record<string, string>;
+  } = {
+    name: finalName,
+    license: license ?? "MIT",
+    devDependencies: {},
+    scripts: {},
+    files: ["README.md", ".codemodrc.json"],
+    type: "module",
+  };
+
+  const devDeps: Record<string, string> = {};
+  const scripts: Record<string, string> = {};
+
+  if (engine !== "recipe") {
+    devDeps["@types/node"] = "20.9.0";
+    devDeps.typescript = "^5.2.2";
+    devDeps.vitest = "^1.0.1";
+    scripts.test = "vitest run";
+    scripts["test:watch"] = "vitest watch";
+    content.files.push("/dist/index.cjs");
   }
 
-  return beautify(`
-      {
-        "name": "${finalName}",
-        "author": "${username ?? ""}",
-        "dependencies": {},
-        "devDependencies": {
-          "@types/node": "20.9.0",
-          "typescript": "5.2.2",
-          "vitest": "^1.0.1",
-          ${packages.trim()}
-        },
-        "scripts": {
-          "test": "vitest run",
-          "test:watch": "vitest watch"
-        },
-        "license": "MIT",
-        "files": [
-          "README.md",
-          ".codemodrc.json",
-          "./dist/index.cjs"
-        ],
-        "type": "module"
-      }
-  `);
+  if (username) {
+    content.author = username;
+  }
+
+  if (engine === "jscodeshift") {
+    devDeps.jscodeshift = "^0.15.1";
+    devDeps["@types/jscodeshift"] = "^0.11.10";
+  } else if (engine === "ts-morph" || engine === "tsmorph") {
+    devDeps["ts-morph"] = "^20.0.0";
+  } else if (engine === "filemod") {
+    devDeps["@codemod-com/filemod"] = "^2.0.0";
+  } else if (engine === "workflow") {
+    devDeps["@codemod.com/workflow"] = "^0.0.1";
+  }
+
+  if (Object.keys(devDeps).length) {
+    content.devDependencies = devDeps;
+  }
+
+  if (Object.keys(scripts).length) {
+    content.scripts = scripts;
+  }
+
+  return beautify(JSON.stringify(content, null, 2));
 };
 
 const testBody = ({
@@ -598,6 +613,15 @@ export function getCodemodProjectFiles(
 ): AstGrepProjectFiles;
 export function getCodemodProjectFiles(input: ProjectDownloadInput) {
   let mainFileBoilerplate: string;
+
+  if (input.engine === "recipe") {
+    return {
+      LICENSE: license(input),
+      "README.md": readme(input),
+      "package.json": packageJson(input),
+      ".codemodrc.json": codemodRc(input),
+    };
+  }
 
   switch (input.engine) {
     case "jscodeshift":

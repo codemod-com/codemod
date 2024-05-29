@@ -185,6 +185,7 @@ export const allEnginesSchema = union(
 export type AllEngines = Output<typeof allEnginesSchema>;
 
 const configJsonBaseSchema = object({
+  $schema: optional(string()),
   name: string(`"name" of the codemod has to be a string.`),
   description: optional(string(`"description" has to be a string.`)),
   version: string([
