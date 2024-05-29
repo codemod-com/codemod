@@ -124,6 +124,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ml"><img src="https://avatars.githubusercontent.com/u/1509?v=4?s=100" width="100px;" alt="Maciej Lotkowski"/><br /><sub><b>Maciej Lotkowski</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/issues?q=author%3Aml" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://jahred.me"><img src="https://avatars.githubusercontent.com/u/13903378?v=4?s=100" width="100px;" alt="Jahred Hope"/><br /><sub><b>Jahred Hope</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=jahredhope" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/arshcodemod"><img src="https://avatars.githubusercontent.com/u/167029627?v=4?s=100" width="100px;" alt="arshcodemod"/><br /><sub><b>arshcodemod</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=arshcodemod" title="Documentation">📖</a> <a href="#talk-arshcodemod" title="Talks">📢</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/35C4n0r"><img src="https://avatars.githubusercontent.com/u/70096901?v=4?s=100" width="100px;" alt="Jay Kumar"/><br /><sub><b>Jay Kumar</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=35C4n0r" title="Code">💻</a></td>
     </tr>
   </tbody>
 </table>
