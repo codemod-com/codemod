@@ -1,8 +1,14 @@
-import type { Arguments, KnownEngines } from "@codemod-com/utilities";
+import type {
+  ArgumentRecord,
+  Arguments,
+  EngineOptions,
+  KnownEngines,
+} from "@codemod-com/utilities";
 
 export type Codemod =
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
@@ -12,7 +18,8 @@ export type Codemod =
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
@@ -22,7 +29,8 @@ export type Codemod =
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "package";
+      bundleType: "package";
+      source: "local" | "registry";
       name: string;
       version: string;
       include?: string[];
@@ -31,8 +39,15 @@ export type Codemod =
       arguments: Arguments;
     }>
   | Readonly<{
-      source: "standalone";
+      bundleType: "standalone";
+      source: "local" | "registry";
       include?: string[];
       engine: KnownEngines;
       indexPath: string;
     }>;
+
+export type CodemodToRun = Codemod & {
+  safeArgumentRecord: ArgumentRecord;
+  hashDigest?: Buffer;
+  engineOptions: EngineOptions | null;
+};

@@ -13,7 +13,7 @@ export const buildSafeArgumentRecord = async (
   rawArgumentRecord: Record<string, unknown>,
   printer: PrinterBlueprint,
 ): Promise<ArgumentRecord> => {
-  if (codemod.source === "standalone") {
+  if (codemod.bundleType === "standalone") {
     // no checks performed for local codemods
     // b/c no source of truth for the arguments
     return Object.entries(rawArgumentRecord).reduce<ArgumentRecord>(

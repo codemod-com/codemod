@@ -4,9 +4,12 @@ import type {
   FormattedFileCommand,
   RunSettings,
 } from "@codemod-com/runner";
-import { CaseWritingService, type FileSystem } from "@codemod-com/utilities";
+import {
+  type ArgumentRecord,
+  CaseWritingService,
+  type FileSystem,
+} from "@codemod-com/utilities";
 import { buildSurfaceAgnosticJob } from "../buildSurfaceAgnosticJob.js";
-import type { SafeArgumentRecord } from "../safeArgumentRecord.js";
 
 export class SurfaceAgnosticCaseService {
   protected _caseWritingService: CaseWritingService | null = null;
@@ -15,7 +18,7 @@ export class SurfaceAgnosticCaseService {
     private readonly _fs: FileSystem,
     private readonly _runSettings: RunSettings,
     private readonly _flowSettings: FlowSettings,
-    private readonly _argumentRecord: SafeArgumentRecord,
+    private readonly _argumentRecord: ArgumentRecord,
     private readonly _codemodHashDigest: Buffer,
   ) {}
 

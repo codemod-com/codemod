@@ -5,14 +5,11 @@ import type { FileSystem } from "@codemod-com/utilities";
 export const buildFileMap = async (
   sourceFileSystem: FileSystem,
   targetFileSystem: FileSystem,
-  paths: {
-    include: string[];
-    exclude: string[];
-  },
+  paths: string[],
 ): Promise<Map<string, string>> => {
   const fileMap = new Map<string, string>();
 
-  for (const path of paths.include) {
+  for (const path of paths) {
     const data = await sourceFileSystem.promises.readFile(path, {
       encoding: "utf8",
     });

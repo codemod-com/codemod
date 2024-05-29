@@ -1,9 +1,5 @@
-import type {
-  ArgumentRecord,
-  EngineOptions,
-  FileSystem,
-} from "@codemod-com/utilities";
-import type { Codemod } from "./codemod.js";
+import type { FileSystem } from "@codemod-com/utilities";
+import type { CodemodToRun } from "./codemod.js";
 import {
   type FormattedFileCommand,
   modifyFileSystemUponCommand,
@@ -16,12 +12,6 @@ import type {
 import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 import { SurfaceAgnosticCaseService } from "./services/surfaceAgnosticCaseService.js";
-
-export type CodemodToRun = Codemod & {
-  safeArgumentRecord: ArgumentRecord;
-  hashDigest?: Buffer;
-  engineOptions: EngineOptions | null;
-};
 
 export class Runner {
   private __modifiedFilePaths: string[];

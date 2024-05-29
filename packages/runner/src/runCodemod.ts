@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
-import { chalk } from "@codemod-com/printer";
+import { boxen, chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type EngineOptions,
@@ -175,10 +175,10 @@ export const buildPatterns = async (
 
   if (!patterns) {
     reason = "Using default include patterns based on the engine";
-    patterns = ["**/*"];
+    patterns = [];
   }
 
-  let engineDefaultPatterns = ["**/*"];
+  let engineDefaultPatterns = ["**/*.*"];
 
   if (codemod.engine === "filemod" && filemod !== null) {
     engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? ["**/*"];
@@ -193,7 +193,6 @@ export const buildPatterns = async (
     (p) => !formattedExclude.includes(p),
   );
 
-  // Prepend the pattern with "**/" if user didn't specify it, so that we cover more files that user wants us to
   const formattedInclude = patterns
     .map(formatFunc)
     .concat(engineDefaultPatterns);
@@ -263,6 +262,87 @@ async function* buildPathGlobGenerator(
   stream.emit("close");
 }
 
+function printRunSummary(
+  onPrinterMessage: PrinterMessageCallback,
+  codemod: Codemod,
+  flowSettings: FlowSettings,
+  patterns: Awaited<ReturnType<typeof buildPatterns>>,
+) {
+  let runningCodemodVersion = "";
+  let runningCodemodName = "";
+
+  if (codemod.bundleType !== "standalone") {
+    runningCodemodVersion += `@${codemod.version}`;
+    runningCodemodName = codemod.name;
+  } else {
+    runningCodemodVersion += " (standalone)";
+    runningCodemodName = codemod.indexPath;
+  }
+
+  if (codemod.engine === "workflow") {
+    onPrinterMessage({
+      kind: "console",
+      consoleKind: "info",
+      message: boxen(
+        chalk.cyan(
+          `Codemod:`,
+          chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+          codemod.source === "local"
+            ? chalk.bold("\nRunning from local filesystem")
+            : "",
+          "\nTarget:",
+          chalk.bold(flowSettings.target),
+        ),
+        {
+          padding: 2,
+          dimBorder: true,
+          textAlignment: "left",
+          borderColor: "blue",
+          borderStyle: "round",
+        },
+      ),
+    });
+
+    return;
+  }
+
+  const { include, exclude, reason } = patterns;
+  onPrinterMessage({
+    kind: "console",
+    consoleKind: "info",
+    message: boxen(
+      chalk.cyan(
+        `Codemod:`,
+        chalk.bold(`${runningCodemodName}${runningCodemodVersion}`),
+        codemod.source === "local"
+          ? chalk.bold("\nRunning from local filesystem")
+          : "",
+        "\nTarget:",
+        chalk.bold(flowSettings.target),
+        "\n",
+        chalk.yellow(reason ? `\n${reason}` : ""),
+        chalk.green("\nIncluded patterns:"),
+        chalk.green.bold(include.join(", ") ?? ""),
+        chalk.red("\nExcluded patterns:"),
+        chalk.red.bold(exclude.join(", ") ?? ""),
+        "\n",
+        chalk.yellow(
+          !flowSettings.install ? "\nDependency installation disabled" : "",
+        ),
+        chalk.yellow(`\nRunning in ${flowSettings.threads} threads`),
+        chalk.yellow(!flowSettings.format ? "\nFile formatting disabled" : ""),
+      ),
+      {
+        padding: 2,
+        dimBorder: true,
+        textAlignment: "left",
+        borderColor: "blue",
+        borderStyle: "round",
+      },
+    ),
+  });
+}
+
 export const runCodemod = async (
   fileSystem: FileSystem,
   codemod: Codemod,
@@ -291,17 +371,6 @@ export const runCodemod = async (
       ),
     });
 
-  if (codemod.engine === "workflow") {
-    const codemodSource = await readFile(codemod.indexPath, {
-      encoding: "utf8",
-    });
-    const transpiledSource = codemod.indexPath.endsWith(".ts")
-      ? transpile(codemodSource.toString())
-      : codemodSource.toString();
-    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
-    return;
-  }
-
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {
@@ -319,15 +388,13 @@ export const runCodemod = async (
             commands.push(command);
           },
           (message) => {
-            if (message.kind === "error") {
-              onPrinterMessage(message);
-            }
-
             if (message.kind === "progress") {
               onPrinterMessage({
                 kind: "progress",
                 codemodName:
-                  subCodemod.source === "package" ? subCodemod.name : undefined,
+                  subCodemod.bundleType === "package"
+                    ? subCodemod.name
+                    : undefined,
                 processedFileNumber:
                   message.totalFileNumber * i + message.processedFileNumber,
                 totalFileNumber:
@@ -335,8 +402,8 @@ export const runCodemod = async (
                 processedFileName: message.processedFileName,
               });
             }
-            // we are discarding any printer messages from subcodemods
-            // if we are within a recipe
+
+            onPrinterMessage(message);
           },
           safeArgumentRecord,
           engineOptions,
@@ -354,12 +421,18 @@ export const runCodemod = async (
 
     const mfs = createFsFromVolume(Volume.fromJSON({}));
 
-    const paths = await buildPatterns(
+    const patterns = await buildPatterns(
       flowSettings,
       codemod,
       null,
       onPrinterMessage,
     );
+
+    const paths = await buildPathsGlob(fileSystem, flowSettings, patterns);
+
+    if (paths.length === 0) {
+      return pathsAreEmpty();
+    }
 
     const fileMap = await buildFileMap(fileSystem, mfs, paths);
 
@@ -383,15 +456,13 @@ export const runCodemod = async (
           commands.push(command);
         },
         (message) => {
-          if (message.kind === "error") {
-            onPrinterMessage(message);
-          }
-
           if (message.kind === "progress") {
             onPrinterMessage({
               kind: "progress",
               codemodName:
-                subCodemod.source === "package" ? subCodemod.name : undefined,
+                subCodemod.bundleType === "package"
+                  ? subCodemod.name
+                  : undefined,
               processedFileNumber:
                 message.totalFileNumber * i + message.processedFileNumber,
               totalFileNumber:
@@ -400,8 +471,7 @@ export const runCodemod = async (
             });
           }
 
-          // we are discarding any printer messages from subcodemods
-          // if we are within a recipe
+          onPrinterMessage(message);
         },
         safeArgumentRecord,
         engineOptions,
@@ -424,23 +494,9 @@ export const runCodemod = async (
       }
     }
 
-    const newPaths = await glob(paths.include, {
-      absolute: true,
-      cwd: flowSettings.target,
-      ignore: paths.exclude,
-      dot: true,
-      // @ts-expect-error type inconsistency
-      fs: mfs,
-      onlyFiles: true,
-    });
-
-    if (newPaths.length === 0) {
-      return pathsAreEmpty();
-    }
-
     const fileCommands = await buildFileCommands(
       fileMap,
-      newPaths,
+      paths,
       deletedPaths,
       mfs,
     );
@@ -450,6 +506,23 @@ export const runCodemod = async (
     for (const command of commands) {
       await onCommand(command);
     }
+
+    return;
+  }
+
+  if (codemod.engine === "workflow") {
+    printRunSummary(onPrinterMessage, codemod, flowSettings, {
+      include: ["**/*.*"],
+      exclude: [],
+    });
+
+    const codemodSource = await readFile(codemod.indexPath, {
+      encoding: "utf8",
+    });
+    const transpiledSource = codemod.indexPath.endsWith(".ts")
+      ? transpile(codemodSource.toString())
+      : codemodSource.toString();
+    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
 
     return;
   }
@@ -482,13 +555,15 @@ export const runCodemod = async (
       return pathsAreEmpty();
     }
 
+    printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
+
     const fileCommands = await runRepomod(
       fileSystem,
       {
         ...transformer,
         includePatterns: globPaths,
         excludePatterns: [],
-        name: codemod.source === "package" ? codemod.name : undefined,
+        name: codemod.bundleType === "package" ? codemod.name : undefined,
       },
       flowSettings.target,
       flowSettings.format,
@@ -525,6 +600,8 @@ export const runCodemod = async (
 
   const { engine } = codemod;
 
+  printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
+
   await new Promise<void>((resolve) => {
     let timeout: NodeJS.Timeout | null = null;
 
@@ -542,7 +619,7 @@ export const runCodemod = async (
           onPrinterMessage({
             kind: "progress",
             codemodName:
-              codemod.source === "package" ? codemod.name : undefined,
+              codemod.bundleType === "package" ? codemod.name : undefined,
             processedFileNumber: message.processedFileNumber,
             totalFileNumber: message.totalFileNumber,
             processedFileName: message.processedFileName
@@ -580,7 +657,7 @@ export const runCodemod = async (
       (error) => {
         onCodemodError({
           codemodName:
-            codemod.source === "package" ? codemod.name : "Local codemod",
+            codemod.bundleType === "package" ? codemod.name : "Local codemod",
           ...error,
         });
       },

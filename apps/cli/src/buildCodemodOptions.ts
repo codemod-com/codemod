@@ -88,7 +88,8 @@ export const buildSourcedCodemodOptions = async (
     }
 
     return {
-      source: "standalone",
+      bundleType: "standalone",
+      source: "local",
       engine: codemodOptions.engine,
       indexPath: codemodOptions.source,
     };
@@ -166,7 +167,8 @@ export const buildSourcedCodemodOptions = async (
     spinner.succeed();
 
     return {
-      source: "package",
+      bundleType: "package",
+      source: "local",
       name: codemodConfig.name,
       version: codemodConfig.version,
       engine: "recipe",
@@ -183,7 +185,8 @@ export const buildSourcedCodemodOptions = async (
   );
 
   return {
-    source: "package",
+    bundleType: "package",
+    source: "local",
     engine,
     name: codemodConfig.name,
     version: codemodConfig.version,

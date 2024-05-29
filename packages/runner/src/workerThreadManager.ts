@@ -6,11 +6,7 @@ import {
   type WorkerThreadMessage,
   decodeWorkerThreadMessage,
 } from "@codemod-com/printer";
-import {
-  type ArgumentRecord,
-  type EngineOptions,
-  sleep,
-} from "@codemod-com/utilities";
+import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
 import type { FormattedFileCommand } from "./fileCommands.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
@@ -22,6 +18,7 @@ export class WorkerThreadManager {
   private __filePaths: string[] = [];
   private __totalFileCount = 0;
   private __processedFileNumber = 0;
+  private __noMorePaths = false;
 
   public constructor(
     private readonly __workerCount: number,
@@ -83,6 +80,12 @@ export class WorkerThreadManager {
     const iteratorResult = await this.__pathGenerator.next();
 
     if (iteratorResult.done) {
+      this.__noMorePaths = true;
+
+      if (this._getShouldFinish()) {
+        await this.__finish();
+      }
+
       return;
     }
 
@@ -103,15 +106,6 @@ export class WorkerThreadManager {
     const filePath = this.__filePaths.shift();
 
     if (filePath === undefined) {
-      if (
-        this.__totalFileCount !== null &&
-        this.__idleWorkerIds.length === this.__workerCount
-      ) {
-        this.__finished = true;
-
-        this.__finish();
-      }
-
       return;
     }
 
@@ -141,11 +135,18 @@ export class WorkerThreadManager {
       worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
     }
 
-    // Let progress bar do its thing
-    await sleep(100);
     this.__onPrinterMessage({
       kind: "finish",
     });
+  }
+
+  private _getShouldFinish() {
+    return (
+      this.__noMorePaths &&
+      this.__totalFileCount !== null &&
+      this.__processedFileNumber === this.__totalFileCount &&
+      this.__idleWorkerIds.length === this.__workerCount
+    );
   }
 
   private __buildOnWorkerMessage(i: number) {
@@ -178,6 +179,10 @@ export class WorkerThreadManager {
           ? resolve(workerThreadMessage.path)
           : null,
       });
+
+      if (this._getShouldFinish()) {
+        await this.__finish();
+      }
 
       this.__idleWorkerIds.push(i);
       await this.__work();

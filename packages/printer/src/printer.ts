@@ -58,6 +58,10 @@ export class Printer implements PrinterBlueprint {
     if (message.kind === "progress") {
       this.updateExecutionProgress(message);
     }
+
+    if (message.kind === "finish") {
+      this.finishExecutionProgress();
+    }
   }
 
   public printConsoleMessage(kind: ConsoleKind, message: string) {
@@ -103,9 +107,12 @@ export class Printer implements PrinterBlueprint {
     if (this.progressBar.getTotal() !== message.totalFileNumber) {
       this.progressBar.setTotal(message.totalFileNumber);
     }
+  }
 
-    if (this.progressBar.getProgress() === 1) {
+  public finishExecutionProgress() {
+    if (this.progressBar) {
       this.progressBar.stop();
+      this.progressBar = null;
     }
   }
 
