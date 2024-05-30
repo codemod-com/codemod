@@ -215,3 +215,7 @@ h6[class*="heading"] a {
 .cl-userButtonPopoverActionButton, .cl-userButtonPopoverActionButton:hover {
   color: inherit;
 }
+
+.prose :where(code):not(:where([class~=not-prose],[class~=not-prose] *)):before,  .prose :where(code):not(:where([class~=not-prose],[class~=not-prose] *)):after{
+  content: normal
+}
