@@ -315,8 +315,12 @@ const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
 
     const op = be.getOperatorToken();
 
+    // @TODO handle ==
+
+    const isEqEqEq = op.getKind() === SyntaxKind.EqualsEqualsEqualsToken;
+
     if (
-      op.getKind() === SyntaxKind.EqualsEqualsEqualsToken &&
+      isEqEqEq &&
       isPrimitiveLiteral(unwrappedLeft) &&
       isPrimitiveLiteral(unwrappedRight)
     ) {
@@ -325,6 +329,15 @@ const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
           unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue(),
         ),
       );
+      return;
+    }
+
+    // if one of left or right is object literal, === will never return true
+    if (
+      (isEqEqEq && Node.isObjectLiteralExpression(unwrappedLeft)) ||
+      Node.isObjectLiteralExpression(unwrappedRight)
+    ) {
+      be.replaceWithText("false");
     }
   });
 };
@@ -365,9 +378,13 @@ const refactorIfStatements = (sourceFile: SourceFile) => {
       ? getCodemodLiteralValue(expression)
       : expression;
 
-    if (Node.isTrueLiteral(unwrapped)) {
+    if (!isLiteral(unwrapped)) {
+      return;
+    }
+
+    if (isTruthy(unwrapped)) {
       ifs.replaceWithText(getBlockText(ifs.getThenStatement()));
-    } else if (Node.isFalseLiteral(unwrapped)) {
+    } else {
       ifs.remove();
     }
   });
@@ -440,21 +457,12 @@ export function handleSourceFile(
   }
 
   repeatCallback(() => {
-    // console.log("replaceSDKMethodCalls", sourceFile.getFullText());
     refactorMemberExpressions(sourceFile);
-    // console.log("refactorMemberExpressions", sourceFile.getFullText());
     refactorReferences(sourceFile);
-    // console.log("refactorReferences", sourceFile.getFullText());
     simplifyUnaryExpressions(sourceFile);
-
-    // console.log("simplifyUnaryExpressions", sourceFile.getFullText());
     evaluateBinaryExpressions(sourceFile);
-
     evaluateLogicalExpressions(sourceFile);
-
     removeUselessParenthesis(sourceFile);
-    // console.log("evaluateLogicalExpressions", sourceFile.getFullText());
-
     refactorIfStatements(sourceFile);
     refactorConditionalExpressions(sourceFile);
   }, 5);

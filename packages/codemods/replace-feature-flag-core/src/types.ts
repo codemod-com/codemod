@@ -1,6 +1,6 @@
 import type { CallExpression, ts } from "ts-morph";
 
-export type VariableType = "string" | "boolean" | "number" | "JSON";
+export type VariableType = "string" | "boolean" | "number" | "null" | "JSON";
 export type VariableValue = string | boolean | number | Record<string, unknown>;
 
 export type ProviderKind = "DevCycle" | "Statsig" | "Netlify";

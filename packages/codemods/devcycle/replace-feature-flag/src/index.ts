@@ -10,6 +10,7 @@ import type {
 } from "../../../replace-feature-flag-core/src/types.js";
 
 import {
+  buildJSON,
   buildLiteral,
   getCEExpressionName,
 } from "../../../replace-feature-flag-core/src/utils.js";
@@ -56,9 +57,7 @@ const getVariableValueReplacerNode = (
   key: string,
   type: VariableType,
   value: VariableValue,
-) => {
-  return buildLiteral(type, value);
-};
+) => buildLiteral(type, value);
 
 type MatchedMethod = {
   name: string;
