@@ -8,13 +8,18 @@ import { Inconsolata } from "next/font/google";
 import { Highlight, Prism } from "prism-react-renderer";
 import { useEffect, useState } from "react";
 
+type Props = {
+  children?: React.ReactNode;
+  scrollable: boolean;
+};
+
 const inconsolata = Inconsolata({
   subsets: ["latin"],
   weight: "400",
   variable: "--inconsolata",
 });
 
-const CodeBlock = ({ children }) => {
+const CodeBlock = ({ children, scrollable = true }: Props) => {
   const [copied, setCopied] = useState(false);
 
   const {
@@ -59,8 +64,11 @@ const CodeBlock = ({ children }) => {
   return (
     <div
       className={clsx(
-        "codeblock relative mb-10 h-full overflow-hidden rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark/10",
+        "codeblock relative mb-10 h-full rounded-[8px] bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark/10",
         `${inconsolata.variable} font-mono text-lg`,
+        {
+          "overflow-hidden": scrollable,
+        },
       )}
     >
       <div className="absolute right-2 top-2">
@@ -78,7 +86,10 @@ const CodeBlock = ({ children }) => {
       <Highlight theme={theme} code={code.trim()} language={language}>
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={`no-scrollbar my-2 overflow-x-scroll rounded-lg p-[20px] ${className}`}
+            className={clsx(`my-2 rounded-lg p-[20px] ${className}`, {
+              // biome-ignore lint/complexity/useLiteralKeys:
+              ["no-scrollbar overflow-x-scroll"]: scrollable,
+            })}
             style={style}
           >
             {tokens.map((line, i) => (
