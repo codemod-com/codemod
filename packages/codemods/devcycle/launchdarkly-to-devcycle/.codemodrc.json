@@ -1,11 +1,12 @@
 {
   "name": "devcycle/launchdarkly-to-devcycle",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
   "meta": {
     "tags": ["devcycle", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/devcycle/launchdarkly-to-devcycle"
-  }
+  },
+  "deps": ["@devcycle/react-client-sdk"]
 }
