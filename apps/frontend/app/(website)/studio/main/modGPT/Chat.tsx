@@ -11,6 +11,7 @@ type Props = {
 
 const ChatBase = ({
   aiProps: {
+    resetInput,
     isLoading,
     handleStop,
     reload,
@@ -33,6 +34,7 @@ const ChatBase = ({
         className={className}
       />
       <PromptPanel
+        resetInput={resetInput}
         handleSubmit={modGptSubmit}
         resetMessages={resetMessages}
         isLoading={isLoading}

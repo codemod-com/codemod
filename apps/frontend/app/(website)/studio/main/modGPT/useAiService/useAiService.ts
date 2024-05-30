@@ -98,6 +98,7 @@ export const useAiService = ({
 
   return {
     ...restMod,
+    resetInput: () => restMod.setInput(""),
     handleStop: () => (serviceBusy ? stopCodemodAi() : restMod.handleStop()),
     resetMessages,
     isLoading,

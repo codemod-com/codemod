@@ -17,16 +17,17 @@ import { ScrollToBottomButton } from "./ScrollToBottomButton";
 export type PromptPanelProps = Pick<
   UseChatHelpers,
   "isLoading" | "reload" | "messages" | "stop" | "input" | "setInput"
-> & {
-  handleSubmit: ReturnType<typeof useModGptSubmit>;
-  startIterativeCodemodGeneration: ReturnType<
-    typeof useAiService
-  >["startIterativeCodemodGeneration"];
-  resetMessages: ReturnType<typeof useAiService>["resetMessages"];
-};
+> &
+  Pick<
+    ReturnType<typeof useAiService>,
+    "startIterativeCodemodGeneration" | "resetMessages" | "resetInput"
+  > & {
+    handleSubmit: ReturnType<typeof useModGptSubmit>;
+  };
 
 export function PromptPanel(props: PromptPanelProps) {
   const {
+    resetInput,
     handleSubmit,
     isLoading,
     stop,
@@ -66,7 +67,10 @@ export function PromptPanel(props: PromptPanelProps) {
           <PromptButtons promptsList={promptsList} handleSubmit={handleSubmit}>
             {shouldUseCodemodAi && (
               <WebSocketButton
-                handleButtonClick={startIterativeCodemodGeneration}
+                handleButtonClick={() => {
+                  resetInput();
+                  return startIterativeCodemodGeneration();
+                }}
                 isLoading={isLoading}
               />
             )}
