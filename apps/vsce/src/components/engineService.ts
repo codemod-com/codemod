@@ -6,14 +6,12 @@ import {
   spawn,
 } from "node:child_process";
 import { createHash } from "node:crypto";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { join } from "node:path";
 import * as readline from "node:readline";
 import axios from "axios";
 import * as E from "fp-ts/Either";
-import * as t from "io-ts";
-import prettyReporter from "io-ts-reporters";
-import { type FileSystem, Uri, commands, window, workspace } from "vscode";
+import { type FileSystem, Uri, commands, window } from "vscode";
 import type { Case } from "../cases/types";
 import type { CodemodEntry, CodemodListResponse } from "../codemods/types";
 import type { Configuration } from "../configuration";
@@ -21,12 +19,9 @@ import type { Container } from "../container";
 import type { Store } from "../data";
 import { actions } from "../data/slice";
 import { type ExecutionError, executionErrorCodec } from "../errors/types";
-import { buildJobHash } from "../jobs/buildJobHash";
-import { type Job, JobKind } from "../jobs/types";
 import type { CodemodHash } from "../packageJsonAnalyzer/types";
 import {
   buildCrossplatformArg,
-  buildTypeCodec,
   isNeitherNullNorUndefined,
   streamToString,
 } from "../utilities";
@@ -55,136 +50,19 @@ export enum EngineMessageKind {
   copy = 10,
 }
 
-export const messageCodec = t.union([
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.rewrite),
-    i: t.string,
-    o: t.string,
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.finish),
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.progress),
-    p: t.number,
-    t: t.number,
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.delete),
-    oldFilePath: t.string,
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.move),
-    oldFilePath: t.string,
-    newFilePath: t.string,
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.create),
-    newFilePath: t.string,
-    newContentPath: t.string,
-  }),
-  buildTypeCodec({
-    k: t.literal(EngineMessageKind.copy),
-    oldFilePath: t.string,
-    newFilePath: t.string,
-  }),
-  buildTypeCodec({
-    kind: t.literal("rewrite"),
-    oldPath: t.string,
-    newDataPath: t.string,
-  }),
-  buildTypeCodec({
-    kind: t.literal("finish"),
-  }),
-  buildTypeCodec({
-    kind: t.literal("progress"),
-    processedFileNumber: t.number,
-    totalFileNumber: t.number,
-  }),
-  buildTypeCodec({
-    kind: t.literal("delete"),
-    oldFilePath: t.string,
-  }),
-  buildTypeCodec({
-    kind: t.literal("move"),
-    oldFilePath: t.string,
-    newFilePath: t.string,
-  }),
-  buildTypeCodec({
-    kind: t.literal("create"),
-    newFilePath: t.string,
-    newContentPath: t.string,
-  }),
-  buildTypeCodec({
-    kind: t.literal("copy"),
-    oldFilePath: t.string,
-    newFilePath: t.string,
-  }),
-]);
-
-type EngineMessage = t.TypeOf<typeof messageCodec>;
-
-export const verboseEngineMessage = (message: EngineMessage): EngineMessage => {
-  if (!("k" in message)) {
-    return message;
-  }
-
-  if (message.k === EngineMessageKind.rewrite) {
-    return {
-      kind: "rewrite",
-      oldPath: message.i,
-      newDataPath: message.o,
-    };
-  }
-
-  if (message.k === EngineMessageKind.finish) {
-    return {
-      kind: "finish",
-    };
-  }
-
-  if (message.k === EngineMessageKind.progress) {
-    return {
-      kind: "progress",
-      processedFileNumber: message.p,
-      totalFileNumber: message.t,
-    };
-  }
-
-  if (message.k === EngineMessageKind.delete) {
-    return {
-      kind: "delete",
-      oldFilePath: message.oldFilePath,
-    };
-  }
-
-  if (message.k === EngineMessageKind.move) {
-    return {
-      kind: "move",
-      oldFilePath: message.oldFilePath,
-      newFilePath: message.newFilePath,
-    };
-  }
-
-  if (message.k === EngineMessageKind.create) {
-    return {
-      kind: "create",
-      newFilePath: message.newFilePath,
-      newContentPath: message.newContentPath,
-    };
-  }
-
-  return {
-    kind: "copy",
-    oldFilePath: message.oldFilePath,
-    newFilePath: message.newFilePath,
-  };
-};
+type EngineMessage =
+  | {
+      kind: "progress";
+      codemodName: string | undefined;
+      processedFileNumber: number;
+      totalFileNumber: number;
+      processedFileName: string | null;
+    }
+  | { kind: "finish" };
 
 type Execution = {
   readonly childProcess: ChildProcessWithoutNullStreams;
   readonly codemodHash: CodemodHash | null;
-  readonly jobs: Job[];
   readonly targetUri: Uri;
   readonly happenedAt: string;
   readonly case: Case;
@@ -241,6 +119,7 @@ export class EngineService {
     messageBus: MessageBus,
     fileSystem: FileSystem,
     private readonly __store: Store,
+    private readonly __rootPath: string | null,
   ) {
     this.#configurationContainer = configurationContainer;
     this.#messageBus = messageBus;
@@ -255,6 +134,25 @@ export class EngineService {
     });
 
     this.__pollCodemodEngineNode();
+  }
+
+  private async __getNumberOfAffectedFiles(): Promise<number> {
+    if (this.__rootPath === null) {
+      return 0;
+    }
+
+    const childProcess = exec("git diff --name-only", {
+      cwd: this.__rootPath,
+      timeout: 3000,
+    });
+
+    if (childProcess.stdout === null) {
+      return 0;
+    }
+
+    const output = await streamToString(childProcess.stdout);
+
+    return output.split("\n").length;
   }
 
   private async __pollCodemodEngineNode() {
@@ -474,14 +372,12 @@ export class EngineService {
     });
 
     const caseHashDigest = message.caseHashDigest;
-    const codemodName = message.command.name;
 
     this.#execution = {
       childProcess,
       halted: false,
       totalFileCount: 0, // that is the lower bound,
       affectedAnyFile: false,
-      jobs: [],
       targetUri: message.targetUri,
       happenedAt: message.happenedAt,
       case: {
@@ -502,6 +398,9 @@ export class EngineService {
 
     let timer: NodeJS.Timeout | null = null;
 
+    const initialNumberOfAffectedFiles =
+      await this.__getNumberOfAffectedFiles();
+
     interfase.on("line", async (line) => {
       if (timer !== null) {
         clearTimeout(timer);
@@ -515,20 +414,7 @@ export class EngineService {
         return;
       }
 
-      const either = messageCodec.decode(JSON.parse(line));
-
-      if (either._tag === "Left") {
-        const report = prettyReporter.report(either);
-
-        console.error(report);
-        return;
-      }
-
-      const message = verboseEngineMessage(either.right);
-
-      if ("k" in message) {
-        return;
-      }
+      const message = JSON.parse(line) as EngineMessage;
 
       if (message.kind === "progress") {
         this.#messageBus.publish({
@@ -546,124 +432,11 @@ export class EngineService {
       }
 
       if (message.kind === "finish") {
+        this.#execution.affectedAnyFile =
+          (await this.__getNumberOfAffectedFiles()) >
+          initialNumberOfAffectedFiles;
         return;
       }
-
-      let job: Job;
-
-      if (message.kind === "create") {
-        const newUri = Uri.file(message.newFilePath);
-        const newContentUri = Uri.file(message.newContentPath);
-
-        const hashlessJob: Omit<Job, "hash"> = {
-          kind: JobKind.createFile,
-          oldUri: null,
-          newUri,
-          newContentUri,
-          originalNewContent: readFileSync(newContentUri.fsPath).toString(
-            "utf8",
-          ),
-          codemodName,
-          createdAt: Date.now(),
-          caseHashDigest,
-        };
-
-        job = {
-          ...hashlessJob,
-          hash: buildJobHash(hashlessJob, caseHashDigest),
-        };
-      } else if (message.kind === "rewrite") {
-        const oldUri = Uri.file(message.oldPath);
-        const newContentUri = Uri.file(message.newDataPath);
-
-        const hashlessJob: Omit<Job, "hash"> = {
-          kind: JobKind.rewriteFile,
-          oldUri,
-          newUri: oldUri,
-          newContentUri,
-          originalNewContent: readFileSync(newContentUri.fsPath).toString(
-            "utf8",
-          ),
-          codemodName,
-          createdAt: Date.now(),
-          caseHashDigest,
-        };
-
-        job = {
-          ...hashlessJob,
-          hash: buildJobHash(hashlessJob, caseHashDigest),
-        };
-      } else if (message.kind === "delete") {
-        const oldUri = Uri.file(message.oldFilePath);
-
-        const hashlessJob: Omit<Job, "hash"> = {
-          kind: JobKind.deleteFile,
-          oldUri,
-          newUri: null,
-          newContentUri: null,
-          originalNewContent: null,
-          codemodName,
-          createdAt: Date.now(),
-          caseHashDigest,
-        };
-
-        job = {
-          ...hashlessJob,
-          hash: buildJobHash(hashlessJob, caseHashDigest),
-        };
-      } else if (message.kind === "move") {
-        const oldUri = Uri.file(message.oldFilePath);
-        const newUri = Uri.file(message.newFilePath);
-
-        const hashlessJob: Omit<Job, "hash"> = {
-          kind: JobKind.moveFile,
-          oldUri,
-          newUri,
-          newContentUri: oldUri,
-          originalNewContent: readFileSync(oldUri.fsPath).toString("utf8"),
-          codemodName,
-          createdAt: Date.now(),
-          caseHashDigest,
-        };
-
-        job = {
-          ...hashlessJob,
-          hash: buildJobHash(hashlessJob, caseHashDigest),
-        };
-      } else if (message.kind === "copy") {
-        const oldUri = Uri.file(message.oldFilePath);
-        const newUri = Uri.file(message.newFilePath);
-
-        const hashlessJob: Omit<Job, "hash"> = {
-          kind: JobKind.copyFile,
-          oldUri,
-          newUri,
-          newContentUri: oldUri,
-          originalNewContent: readFileSync(oldUri.fsPath).toString("utf8"),
-          codemodName,
-          createdAt: Date.now(),
-          caseHashDigest,
-        };
-
-        job = {
-          ...hashlessJob,
-          hash: buildJobHash(hashlessJob, caseHashDigest),
-        };
-      } else {
-        throw new Error("Unrecognized message");
-      }
-
-      if (job && !this.#execution.affectedAnyFile) {
-        this.#execution.affectedAnyFile = true;
-      }
-
-      this.#execution.jobs.push(job);
-
-      this.#messageBus.publish({
-        kind: MessageKind.upsertCase,
-        kase: this.#execution.case,
-        jobs: [job],
-      });
     });
 
     interfase.on("close", async () => {
@@ -672,26 +445,16 @@ export class EngineService {
           kind: MessageKind.codemodSetExecuted,
           halted: this.#execution.halted,
           fileCount: this.#execution.totalFileCount,
-          jobs: this.#execution.jobs,
           case: this.#execution.case,
           executionErrors,
-          affectedAnyFile: this.#execution.affectedAnyFile,
         });
 
-        this.__store.dispatch(
-          actions.setSelectedCaseHash(this.#execution.case.hash),
-        );
-
-        this.__store.dispatch(actions.setCaseHashInProgress(null));
-
-        this.__store.dispatch(
-          actions.setExplorerNodes([
-            this.#execution.case.hash,
-            workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
-          ]),
-        );
-
-        commands.executeCommand("codemodMainView.focus");
+        if (this.#execution.affectedAnyFile) {
+          setTimeout(() => {
+            commands.executeCommand("workbench.view.scm");
+          }, 500);
+          return;
+        }
 
         if (!this.#execution.halted && !this.#execution.affectedAnyFile) {
           window.showWarningMessage(Messages.noAffectedFiles);
