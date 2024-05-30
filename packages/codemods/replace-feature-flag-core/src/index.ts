@@ -315,16 +315,29 @@ const evaluateBinaryExpressions = (sourceFile: SourceFile) => {
 
     const op = be.getOperatorToken();
 
+    // @TODO handle ==
+
+    const isEqEqEq = op.getKind() === SyntaxKind.EqualsEqualsEqualsToken;
+
     if (
-      op.getKind() === SyntaxKind.EqualsEqualsEqualsToken &&
-      isLiteral(unwrappedLeft) &&
-      isLiteral(unwrappedRight)
+      isEqEqEq &&
+      isPrimitiveLiteral(unwrappedLeft) &&
+      isPrimitiveLiteral(unwrappedRight)
     ) {
       be.replaceWithText(
         String(
-          getLiteralText(unwrappedLeft) === getLiteralText(unwrappedRight),
+          unwrappedLeft.getLiteralValue() === unwrappedRight.getLiteralValue(),
         ),
       );
+      return;
+    }
+
+    // if one of left or right is object literal, === will never return true
+    if (
+      (isEqEqEq && Node.isObjectLiteralExpression(unwrappedLeft)) ||
+      Node.isObjectLiteralExpression(unwrappedRight)
+    ) {
+      be.replaceWithText("false");
     }
   });
 };
@@ -444,21 +457,12 @@ export function handleSourceFile(
   }
 
   repeatCallback(() => {
-    // console.log("replaceSDKMethodCalls", sourceFile.getFullText());
     refactorMemberExpressions(sourceFile);
-    // console.log("refactorMemberExpressions", sourceFile.getFullText());
     refactorReferences(sourceFile);
-    // console.log("refactorReferences", sourceFile.getFullText());
     simplifyUnaryExpressions(sourceFile);
-
-    // console.log("simplifyUnaryExpressions", sourceFile.getFullText());
     evaluateBinaryExpressions(sourceFile);
-
     evaluateLogicalExpressions(sourceFile);
-
     removeUselessParenthesis(sourceFile);
-    // console.log("evaluateLogicalExpressions", sourceFile.getFullText());
-
     refactorIfStatements(sourceFile);
     refactorConditionalExpressions(sourceFile);
   }, 5);
