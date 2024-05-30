@@ -128,10 +128,8 @@ export type Message =
       kind: MessageKind.codemodSetExecuted;
       halted: boolean;
       fileCount: number;
-      jobs: Job[];
       case: Case;
       executionErrors: ReadonlyArray<ExecutionError>;
-      affectedAnyFile: boolean;
     }>
   | Readonly<{
       kind: MessageKind.updateFile;

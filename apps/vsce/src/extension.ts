@@ -92,6 +92,7 @@ export async function activate(context: vscode.ExtensionContext) {
     messageBus,
     vscode.workspace.fs,
     store,
+    rootUri?.fsPath ?? null,
   );
 
   const vscodeTelemetry = new VscodeTelemetryReporter(
