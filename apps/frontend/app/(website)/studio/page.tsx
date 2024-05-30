@@ -1,10 +1,16 @@
 "use client";
 
 import { MainPage } from "@studio/main/index";
+import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
+  useEffect(() => {
+    document.documentElement.classList.remove("light", "dark");
+    document.body.classList.remove("bg-gray-darker", "bg-gray-bg-light");
+    document.documentElement.classList.add("light");
+  }, []);
   return (
     <>
       <div className="studio">
