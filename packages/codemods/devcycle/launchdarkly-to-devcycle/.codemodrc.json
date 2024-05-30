@@ -8,5 +8,8 @@
     "tags": ["devcycle", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/devcycle/launchdarkly-to-devcycle"
   },
-  "deps": ["@devcycle/react-client-sdk"]
+  "deps": [
+    "@devcycle/react-client-sdk@latest",
+    "-launchdarkly-react-client-sdk"
+  ]
 }
