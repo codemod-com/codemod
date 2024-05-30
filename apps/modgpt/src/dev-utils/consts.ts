@@ -1,4 +1,4 @@
-import { llmEngines } from "../../../shared";
+import { llmEngines } from "../../../apps/shared";
 
 export const port = process?.env?.PORT || "9999";
 export const engines = llmEngines;

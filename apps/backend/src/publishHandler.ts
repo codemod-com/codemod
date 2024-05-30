@@ -16,7 +16,6 @@ import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
-import { getCustomAccessToken } from "./util.js";
 
 export const publishHandler: CustomHandler<Record<string, never>> = async ({
   environment,

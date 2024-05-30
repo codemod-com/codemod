@@ -1,28 +1,15 @@
-import "dotenv/config";
-
 import { randomBytes } from "node:crypto";
-import type { OutgoingHttpHeaders } from "node:http";
-import type { OrganizationMembership, User } from "@clerk/backend";
-import { clerkPlugin, createClerkClient, getAuth } from "@clerk/fastify";
 import { PostHogSender } from "@codemod-com/telemetry";
-import {
-  type CodemodRunResponse,
-  isNeitherNullNorUndefined,
-} from "@codemod-com/utilities";
+import type { CodemodRunResponse } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { OpenAIStream } from "ai";
 import { Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
   type RouteHandlerMethod,
 } from "fastify";
 import Redis from "ioredis";
-import * as openAiEdge from "openai-edge";
-import { buildSafeChromaService } from "./chroma.js";
-import { ClaudeService } from "./claudeService.js";
-import { COMPLETION_PARAMS } from "./constants.js";
 import { decrypt, encrypt } from "./crypto/crypto.js";
 import {
   type CustomHandler,
@@ -30,15 +17,12 @@ import {
   UnauthorizedError,
 } from "./customHandler.js";
 import { prisma } from "./db/prisma.js";
-import { buildAccessTokenHandler } from "./handlers/buildAccessTokenHandler.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
-import { revokeTokenHandler } from "./handlers/revokeTokenHandler.js";
-import { validationHandler } from "./handlers/validationHandler.js";
+import authPlugin from "./plugins/authPlugin.js";
 import { publishHandler } from "./publishHandler.js";
-import { ReplicateService } from "./replicateService.js";
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,
@@ -50,29 +34,17 @@ import {
   parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
-  parseSendChatBody,
-  parseSendMessageBody,
   parseValidateIntentParams,
 } from "./schemata/schema.js";
-import { Auth } from "./services/Auth.js";
 import { GithubProvider } from "./services/GithubProvider.js";
 import { SourceControl } from "./services/SourceControl.js";
 import {
   CodemodNotFoundError,
   CodemodService,
 } from "./services/codemodService.js";
-import {
-  CLAIM_ISSUE_CREATION,
-  TokenExpiredError,
-  TokenInsufficientClaimsError,
-  TokenNotFoundError,
-  TokenNotVerifiedError,
-  TokenRevokedError,
-  TokenService,
-} from "./services/tokenService.js";
 import type { TelemetryEvents } from "./telemetry.js";
 import { unpublishHandler } from "./unpublishHandler.js";
-import { areClerkKeysSet, environment, getCustomAccessToken } from "./util.js";
+import { environment } from "./util.js";
 
 export enum TaskManagerJobs {
   CODEMOD_RUN = "CODEMOD_RUN",
@@ -89,10 +61,6 @@ const getSourceControlProvider = (
     }
   }
 };
-
-const X_CODEMOD_ACCESS_TOKEN = (
-  environment.X_CODEMOD_ACCESS_TOKEN ?? ""
-).toLocaleLowerCase();
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;
@@ -158,13 +126,8 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
       cb(new Error("Not allowed"), false);
     },
     methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
-    exposedHeaders: [
-      X_CODEMOD_ACCESS_TOKEN,
-      "x-clerk-auth-reason",
-      "x-clerk-auth-message",
-    ],
+    exposedHeaders: ["x-clerk-auth-reason", "x-clerk-auth-message"],
     allowedHeaders: [
-      X_CODEMOD_ACCESS_TOKEN,
       "Content-Type",
       "Authorization",
       "access-control-allow-origin",
@@ -177,6 +140,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   });
 
   await fastify.register(fastifyMultipart);
+  await fastify.register(authPlugin);
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);
@@ -187,40 +151,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   return fastify;
 };
 
-const { ChatGPTAPI } = await import("chatgpt");
-
-const chromaService = await buildSafeChromaService(environment);
-
 const sourceControl = new SourceControl();
-const auth = environment.CLERK_SECRET_KEY
-  ? new Auth(environment.CLERK_SECRET_KEY)
-  : null;
-
-const chatGptApi =
-  environment.OPEN_AI_API_KEY !== undefined
-    ? new ChatGPTAPI({
-        apiKey: environment.OPEN_AI_API_KEY,
-        completionParams: {
-          ...COMPLETION_PARAMS,
-        },
-      })
-    : null;
-
-const openAiEdgeApi =
-  environment.OPEN_AI_API_KEY !== undefined
-    ? new openAiEdge.OpenAIApi(
-        new openAiEdge.Configuration({
-          apiKey: environment.OPEN_AI_API_KEY,
-        }),
-      )
-    : null;
-
-const tokenService = new TokenService(
-  prisma,
-  environment.ENCRYPTION_KEY ?? "",
-  environment.SIGNATURE_PRIVATE_KEY ?? "",
-  environment.PEPPER ?? "",
-);
 
 const telemetryService = new PostHogSender<TelemetryEvents>({
   cloudRole: "",
@@ -228,14 +159,6 @@ const telemetryService = new PostHogSender<TelemetryEvents>({
 });
 
 const codemodService = new CodemodService(prisma);
-
-const clerkClient = areClerkKeysSet(environment)
-  ? createClerkClient({
-      publishableKey: environment.CLERK_PUBLISH_KEY,
-      secretKey: environment.CLERK_SECRET_KEY,
-      jwtKey: environment.CLERK_JWT_KEY,
-    })
-  : null;
 
 const redis = environment.REDIS_HOST
   ? new Redis({
@@ -254,68 +177,12 @@ const queue = redis
 const wrapRequestHandlerMethod =
   <T>(handler: CustomHandler<T>): RouteHandlerMethod =>
   async (request, reply) => {
-    const getAccessToken = () =>
-      getCustomAccessToken(environment, request.headers);
-
-    const setAccessToken = (accessToken: string) => {
-      reply.header(X_CODEMOD_ACCESS_TOKEN, accessToken);
-    };
-
-    const getClerkUserId = async (): Promise<string> => {
-      const { userId } = getAuth(request);
-
-      if (!userId) {
-        throw new UnauthorizedError();
-      }
-
-      return userId;
-    };
-
-    const getClerkUserData = async (
-      userId: string,
-    ): Promise<{
-      user: User;
-      organizations: OrganizationMembership[];
-      allowedNamespaces: string[];
-    } | null> => {
-      if (clerkClient === null) {
-        return null;
-      }
-
-      const user = await clerkClient.users.getUser(userId);
-      const userOrganizations =
-        await clerkClient.users.getOrganizationMembershipList({ userId });
-      const userAllowedNamespaces = [
-        ...userOrganizations.map((org) => org.organization.slug),
-      ].filter(isNeitherNullNorUndefined);
-
-      if (user.username) {
-        userAllowedNamespaces.push(user.username);
-
-        if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
-          userAllowedNamespaces.push("codemod-com", "codemod.com");
-        }
-      }
-
-      return {
-        user,
-        organizations: userOrganizations,
-        allowedNamespaces: userAllowedNamespaces,
-      };
-    };
-
     const now = () => Date.now();
 
     try {
       const data = await handler({
-        tokenService,
         codemodService,
         telemetryService,
-        getAccessToken,
-        setAccessToken,
-        clerkClient,
-        getClerkUserId,
-        getClerkUserData,
         now,
         request,
         reply,
@@ -326,42 +193,6 @@ const wrapRequestHandlerMethod =
 
       return data;
     } catch (error) {
-      if (error instanceof TokenExpiredError) {
-        reply.type("application/json").code(400);
-
-        return {
-          error: "Token expired",
-        };
-      }
-
-      if (error instanceof TokenRevokedError) {
-        reply.type("application/json").code(400);
-        return {
-          error: "Token revoked",
-        };
-      }
-
-      if (error instanceof TokenNotFoundError) {
-        reply.type("application/json").code(400);
-        return {
-          error: "Token not found",
-        };
-      }
-
-      if (error instanceof TokenInsufficientClaimsError) {
-        reply.type("application/json").code(400);
-        return {
-          error: "Token has insufficient claims",
-        };
-      }
-
-      if (error instanceof TokenNotVerifiedError) {
-        reply.type("application/json").code(400);
-        return {
-          error: "Token not verified",
-        };
-      }
-
       if (error instanceof CodemodNotFoundError) {
         reply.type("application/json").code(400);
         return {
@@ -385,20 +216,26 @@ const wrapRequestHandlerMethod =
     }
   };
 
-const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
+const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/", async (_, reply) => {
     reply.type("application/json").code(200);
     return { data: {} };
   });
 
-  instance.get("/version", async (_, reply) => {
-    const packageJson = await import(
-      new URL("../package.json", import.meta.url).href,
-      { assert: { type: "json" } }
-    );
-    reply.type("application/json").code(200);
-    return { version: packageJson.default.version };
-  });
+  instance.get(
+    "/version",
+    { preHandler: instance.getUserData },
+    async (request, reply) => {
+      const packageJson = await import(
+        new URL("../package.json", import.meta.url).href,
+        { assert: { type: "json" } }
+      );
+
+      console.log(request.user);
+      reply.type("application/json").code(200);
+      return { version: packageJson.default.version };
+    },
+  );
 
   instance.get(
     "/codemods/:slug",
@@ -415,11 +252,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get(
     "/codemods/list",
     wrapRequestHandlerMethod(getCodemodsListHandler),
-  );
-
-  instance.post(
-    "/validateAccessToken",
-    wrapRequestHandlerMethod(validationHandler),
   );
 
   instance.get("/diffs/:id", async (request, reply) => {
@@ -487,71 +319,69 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
     return { id: codeDiff.id, iv: iv.toString("base64url") };
   });
 
-  instance.delete("/revokeToken", wrapRequestHandlerMethod(revokeTokenHandler));
+  instance.get(
+    "/intents/:id",
+    { preHandler: instance.authenticateCLI },
+    async (request, reply) => {
+      const { id } = parseValidateIntentParams(request.params);
+      const { iv: ivStr } = parseIv(request.query);
 
-  instance.get("/intents/:id", async (request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
+      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+      const iv = Buffer.from(ivStr, "base64url");
 
-    const { id } = parseValidateIntentParams(request.params);
-    const { iv: ivStr } = parseIv(request.query);
+      const result = await prisma.userLoginIntent.findFirst({
+        where: {
+          id: decrypt(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(id, "base64url"),
+          ).toString(),
+        },
+      });
 
-    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-    const iv = Buffer.from(ivStr, "base64url");
+      if (result === null) {
+        reply.code(400).send();
+        return;
+      }
 
-    const result = await prisma.userLoginIntent.findFirst({
-      where: {
-        id: decrypt(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(id, "base64url"),
-        ).toString(),
-      },
-    });
+      if (result.token === null) {
+        reply.code(400).send();
+        return;
+      }
 
-    if (result === null) {
-      reply.code(400).send();
-      return;
-    }
+      const decryptedToken = decrypt(
+        "aes-256-cbc",
+        { key, iv },
+        Buffer.from(result.token, "base64url"),
+      ).toString();
 
-    if (result.token === null) {
-      reply.code(400).send();
-      return;
-    }
+      await prisma.userLoginIntent.delete({
+        where: { id: result.id },
+      });
 
-    const decryptedToken = decrypt(
-      "aes-256-cbc",
-      { key, iv },
-      Buffer.from(result.token, "base64url"),
-    ).toString();
+      reply.type("application/json").code(200);
+      return { token: decryptedToken };
+    },
+  );
 
-    await prisma.userLoginIntent.delete({
-      where: { id: result.id },
-    });
+  instance.post(
+    "/intents",
+    { preHandler: instance.authenticateCLI },
+    async (_request, reply) => {
+      const result = await prisma.userLoginIntent.create({});
 
-    reply.type("application/json").code(200);
-    return { token: decryptedToken };
-  });
+      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+      const iv = randomBytes(16);
+      const encryptedSessionId = encrypt(
+        "aes-256-cbc",
+        { key, iv },
+        Buffer.from(result.id),
+      ).toString("base64url");
 
-  instance.post("/intents", async (_request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
-
-    const result = await prisma.userLoginIntent.create({});
-
-    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-    const iv = randomBytes(16);
-    const encryptedSessionId = encrypt(
-      "aes-256-cbc",
-      { key, iv },
-      Buffer.from(result.id),
-    ).toString("base64url");
-
-    reply.type("application/json").code(200);
-    return { id: encryptedSessionId, iv: iv.toString("base64url") };
-  });
+      reply.type("application/json").code(200);
+      return { id: encryptedSessionId, iv: iv.toString("base64url") };
+    },
+  );
 
   instance.post("/sourceControl/:provider/issues", async (request, reply) => {
     if (!auth) {
@@ -589,171 +419,6 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
 
     reply.type("application/json").code(200);
     return result;
-  });
-
-  done();
-};
-
-const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
-  if (areClerkKeysSet(environment)) {
-    const clerkOptions = {
-      publishableKey: environment.CLERK_PUBLISH_KEY,
-      secretKey: environment.CLERK_SECRET_KEY,
-      jwtKey: environment.CLERK_JWT_KEY,
-    };
-
-    instance.register(clerkPlugin, clerkOptions);
-  } else {
-    console.warn("No Clerk keys set. Authentication is disabled.");
-  }
-
-  const claudeService = new ClaudeService(
-    environment.CLAUDE_API_KEY ?? null,
-    1024,
-  );
-
-  const replicateService = new ReplicateService(
-    environment.REPLICATE_API_KEY ?? null,
-  );
-
-  instance.post(
-    "/buildAccessToken",
-    wrapRequestHandlerMethod(buildAccessTokenHandler),
-  );
-
-  instance.post("/sendMessage", async (request, reply) => {
-    if (areClerkKeysSet(environment)) {
-      const { userId } = getAuth(request);
-      if (!userId) {
-        return reply.code(401).send();
-      }
-    } else {
-      console.warn("No Clerk keys set. Authentication is disabled.");
-    }
-
-    if (chatGptApi === null) {
-      throw new Error("The Chat GPT API requires the authentication key");
-    }
-
-    const { message, parentMessageId } = parseSendMessageBody(request.body);
-
-    const options: {
-      parentMessageId?: string;
-    } = {};
-
-    if (parentMessageId) {
-      options.parentMessageId = parentMessageId;
-    }
-
-    const result = await chatGptApi.sendMessage(message, options);
-
-    reply.type("application/json").code(200);
-    return result;
-  });
-
-  instance.post("/sendChat", async (request, reply) => {
-    if (areClerkKeysSet(environment)) {
-      const { userId } = getAuth(request);
-      if (!userId) {
-        return reply.code(401).send();
-      }
-    } else {
-      console.warn("No Clerk keys set. Authentication is disabled.");
-    }
-
-    const { messages, engine } = parseSendChatBody(request.body);
-
-    if (!messages[0]) {
-      return reply.code(400).send();
-    }
-
-    if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
-      const completion = await claudeService.complete(
-        engine,
-        messages[0].content,
-      );
-
-      reply.type("text/plain; charset=utf-8").code(200);
-
-      return completion ?? "";
-    }
-
-    if (engine === "replit-code-v1-3b") {
-      const completion = await replicateService.complete(messages[0].content);
-
-      reply.type("text/plain; charset=utf-8").code(200);
-
-      return completion ?? "";
-    }
-
-    if (engine === "gpt-4-with-chroma") {
-      // chat history is not supported. passing all messages as single prompt.
-      const prompt = messages
-        .map(({ content, role }) => `${role}: ${content}`)
-        .join("\n");
-
-      const completion = await chromaService.complete(prompt);
-
-      reply.type("text/plain; charset=utf-8").code(200);
-
-      return completion ?? "";
-    }
-
-    if (openAiEdgeApi === null) {
-      throw new Error(
-        "You need to provide the OPEN_AI_API_KEY to use this endpoint",
-      );
-    }
-
-    const response = await openAiEdgeApi.createChatCompletion({
-      ...COMPLETION_PARAMS,
-      messages: messages.slice(),
-      stream: true,
-    });
-
-    const stream = OpenAIStream(response);
-
-    // the following code is inspired by the implementation of the streamToResponse function
-    // available here: https://github.com/vercel-labs/ai/blob/164b33d963250a53bbaaabb7b68d143f81541a7a/packages/core/streams/streaming-text-response.ts#L22C17-L22C33
-
-    reply.hijack();
-
-    const replyHeaders = reply.getHeaders();
-
-    const headers: OutgoingHttpHeaders = {};
-
-    Object.keys(replyHeaders).forEach((key) => {
-      const value = replyHeaders[key];
-
-      if (value === undefined || typeof value === "number") {
-        return;
-      }
-
-      headers[key] = value;
-    });
-
-    headers["Content-Type"] = "text/plain; charset=utf-8";
-
-    reply.raw.writeHead(200, headers);
-
-    const reader = stream.getReader();
-
-    const writeToReplyRaw = async () => {
-      const { done, value } = await reader.read();
-
-      if (done) {
-        reply.raw.end();
-        return;
-      }
-
-      reply.raw.write(value);
-
-      await writeToReplyRaw();
-    };
-
-    await writeToReplyRaw();
-
-    return;
   });
 
   instance.post("/publish", wrapRequestHandlerMethod(publishHandler));
@@ -897,10 +562,4 @@ const protectedRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   done();
 };
 
-// @ts-expect-error setup a display name not to trigger require.cache down the line
-protectedRoutes[Symbol.for("fastify.display-name")] = "protectedRoutes";
-// @ts-expect-error setup a display name not to trigger require.cache down the line
-publicRoutes[Symbol.for("fastify.display-name")] = "publicRoutes";
-
-export const runServer = async () =>
-  await initApp([publicRoutes, protectedRoutes]);
+export const runServer = async () => await initApp([routes]);
