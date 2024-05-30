@@ -131,6 +131,7 @@ export type Message =
       jobs: Job[];
       case: Case;
       executionErrors: ReadonlyArray<ExecutionError>;
+      affectedAnyFile: boolean;
     }>
   | Readonly<{
       kind: MessageKind.updateFile;

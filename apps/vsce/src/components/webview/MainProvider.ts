@@ -141,11 +141,16 @@ export class MainViewProvider implements WebviewViewProvider {
       });
     });
 
-    this.__messageBus.subscribe(MessageKind.codemodSetExecuted, () => {
+    this.__messageBus.subscribe(MessageKind.codemodSetExecuted, (message) => {
       this.__postMessage({
         kind: "webview.global.codemodExecutionHalted",
       });
-      commands.executeCommand("workbench.view.scm");
+
+      if (message.affectedAnyFile) {
+        setTimeout(() => {
+          commands.executeCommand("workbench.view.scm");
+        }, 500);
+      }
     });
 
     this.__messageBus.subscribe(MessageKind.executeCodemodSet, () => {
