@@ -437,55 +437,53 @@ export class EngineService {
           processedFileNumber: message.processedFileNumber,
         });
         this.#execution.totalFileCount = message.totalFileNumber;
-        return;
-      }
 
-      if (message.kind === "finish") {
+        if (message.totalFileNumber !== message.processedFileNumber) {
+          return;
+        }
         this.#execution.affectedAnyFile =
           (await this.__getNumberOfAffectedFiles()) >
           initialNumberOfAffectedFiles;
-        return;
-      }
-    });
+        if (this.#execution) {
+          this.#messageBus.publish({
+            kind: MessageKind.codemodSetExecuted,
+            halted: this.#execution.halted,
+            fileCount: this.#execution.totalFileCount,
+            case: this.#execution.case,
+            executionErrors,
+          });
 
-    interfase.on("close", async () => {
-      if (this.#execution) {
+          if (
+            this.#execution.affectedAnyFile &&
+            this.__executionMessageQueue.length === 0
+          ) {
+            setTimeout(() => {
+              commands.executeCommand("workbench.view.scm");
+            }, 500);
+          }
+
+          if (!this.#execution.affectedAnyFile && !this.#execution.halted) {
+            window.showWarningMessage(Messages.noAffectedFiles);
+          }
+        }
+
+        this.#execution = null;
+
+        const nextMessage = this.__executionMessageQueue.shift() ?? null;
+
+        if (nextMessage === null) {
+          return;
+        }
+
+        this.#onExecuteCodemodSetMessage(nextMessage);
+
         this.#messageBus.publish({
-          kind: MessageKind.codemodSetExecuted,
-          halted: this.#execution.halted,
-          fileCount: this.#execution.totalFileCount,
-          case: this.#execution.case,
-          executionErrors,
+          kind: MessageKind.executionQueueChange,
+          queuedCodemodHashes: this.__getQueuedCodemodHashes(),
         });
 
-        if (
-          this.#execution.affectedAnyFile &&
-          this.__executionMessageQueue.length === 0
-        ) {
-          setTimeout(() => {
-            commands.executeCommand("workbench.view.scm");
-          }, 500);
-        }
-
-        if (!this.#execution.affectedAnyFile && !this.#execution.halted) {
-          window.showWarningMessage(Messages.noAffectedFiles);
-        }
-      }
-
-      this.#execution = null;
-
-      const nextMessage = this.__executionMessageQueue.shift() ?? null;
-
-      if (nextMessage === null) {
         return;
       }
-
-      this.#onExecuteCodemodSetMessage(nextMessage);
-
-      this.#messageBus.publish({
-        kind: MessageKind.executionQueueChange,
-        queuedCodemodHashes: this.__getQueuedCodemodHashes(),
-      });
     });
   }
 
