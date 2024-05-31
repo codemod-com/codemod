@@ -341,10 +341,6 @@ export class EngineService {
       shell: true,
     });
 
-    this.__store.dispatch(
-      actions.setCaseHashInProgress(message.caseHashDigest),
-    );
-
     const executionErrors: ExecutionError[] = [];
 
     childProcess.stderr.on("data", (chunk: unknown) => {
@@ -416,14 +412,18 @@ export class EngineService {
 
       const message = JSON.parse(line) as EngineMessage;
 
+      if (!message.kind) {
+        return;
+      }
+
       if (message.kind === "progress") {
         this.#messageBus.publish({
           kind: MessageKind.showProgress,
           codemodHash: this.#execution.codemodHash ?? null,
           progressKind:
-            this.#execution.codemodHash === "QKEdp-pofR9UnglrKAGDm1Oj6W0" // app router boilerplate
-              ? "infinite"
-              : "finite",
+            message.totalFileNumber && message.processedFileNumber
+              ? "finite"
+              : "infinite",
           totalFileNumber: message.totalFileNumber,
           processedFileNumber: message.processedFileNumber,
         });
@@ -449,14 +449,16 @@ export class EngineService {
           executionErrors,
         });
 
-        if (this.#execution.affectedAnyFile) {
+        if (
+          this.#execution.affectedAnyFile &&
+          this.__executionMessageQueue.length === 0
+        ) {
           setTimeout(() => {
             commands.executeCommand("workbench.view.scm");
           }, 500);
-          return;
         }
 
-        if (!this.#execution.halted && !this.#execution.affectedAnyFile) {
+        if (!this.#execution.affectedAnyFile && !this.#execution.halted) {
           window.showWarningMessage(Messages.noAffectedFiles);
         }
       }

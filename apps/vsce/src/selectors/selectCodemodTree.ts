@@ -80,7 +80,7 @@ export const buildCodemodNode = (
     hashDigest: codemod.hashDigest as CodemodNodeHashDigest,
     label: buildCodemodTitle(name),
     executionPath: T.right(executionPath),
-    queued: queued,
+    queued,
     icon: codemod.verified ? "certified" : "community",
     permalink: null,
     deepLinkPrefix: getDeepLinkPrefix(),
