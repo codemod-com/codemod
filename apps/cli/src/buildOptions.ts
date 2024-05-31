@@ -121,5 +121,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     .option("disable-tree-version-check", {
       type: "boolean",
       description: "Disable the tree version check",
+      hidden: true,
     });
 };
