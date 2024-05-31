@@ -140,11 +140,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     }
 
     const user = await clerkClient.users.getUser(userId);
-    const organizations = await clerkClient.users.getOrganizationMembershipList(
-      { userId },
-    );
+    const organizations = await (
+      await clerkClient.users.getOrganizationMembershipList({ userId })
+    ).data.map((organization) => organization);
     const allowedNamespaces = [
-      ...organizations.data.map(({ organization }) => organization.slug),
+      ...organizations.map(({ organization }) => organization.slug),
     ].filter(isNeitherNullNorUndefined);
 
     if (user.username) {
@@ -177,7 +177,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return reply.status(200).send({ token: jwt });
   });
 
-  instance.get("/oAuthAccessToken", async (request, reply) => {
+  instance.get("/oAuthToken", async (request, reply) => {
     const { userId } = getAuth(request);
 
     if (!userId) {

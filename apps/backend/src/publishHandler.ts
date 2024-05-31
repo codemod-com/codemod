@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { OrganizationMembership, User } from "@clerk/backend";
 import {
   type CodemodConfig,
   TarService,
@@ -10,55 +11,34 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import axios from "axios";
+import type { FastifyReply, FastifyRequest } from "fastify";
 import * as semver from "semver";
 import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
-import { CLAIM_PUBLISHING } from "./services/tokenService.js";
+import { environment } from "./util";
 
 export const publishHandler: CustomHandler<Record<string, never>> = async ({
-  environment,
-  tokenService,
-  clerkClient,
   request,
   reply,
+}: {
+  request: FastifyRequest & {
+    user?: User;
+    organizations?: OrganizationMembership[];
+  };
+  reply: FastifyReply;
 }) => {
   try {
-    if (clerkClient === null) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
-
-    const accessToken = getCustomAccessToken(environment, request.headers);
-
-    if (accessToken === null) {
-      return reply
-        .code(401)
-        .send({ error: "Access token is not present", success: false });
-    }
-
-    const userId = await tokenService.findUserIdMetadataFromToken(
-      accessToken,
-      BigInt(Date.now()),
-      CLAIM_PUBLISHING,
-    );
-
-    if (userId === null) {
-      return reply
-        .code(401)
-        .send({ error: "User id was not found", success: false });
-    }
-
     const {
       username,
       primaryEmailAddressId,
       emailAddresses,
       firstName,
       lastName,
-    } = await clerkClient.users.getUser(userId);
-    const orgs = await clerkClient.users.getOrganizationMembershipList({
-      userId,
-    });
+    } = request.user!;
+
+    const orgs = request.organizations!;
 
     if (username === null) {
       throw new Error("The username of the current user does not exist");

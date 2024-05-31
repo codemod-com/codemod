@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import type { User } from "@clerk/backend";
 import { PostHogSender } from "@codemod-com/telemetry";
 import type { CodemodRunResponse } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
@@ -7,6 +8,7 @@ import fastifyRateLimit from "@fastify/rate-limit";
 import { Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
+  type FastifyRequest,
   type RouteHandlerMethod,
 } from "fastify";
 import Redis from "ioredis";
@@ -222,20 +224,15 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     return { data: {} };
   });
 
-  instance.get(
-    "/version",
-    { preHandler: instance.getUserData },
-    async (request, reply) => {
-      const packageJson = await import(
-        new URL("../package.json", import.meta.url).href,
-        { assert: { type: "json" } }
-      );
+  instance.get("/version", async (request, reply) => {
+    const packageJson = await import(
+      new URL("../package.json", import.meta.url).href,
+      { assert: { type: "json" } }
+    );
 
-      console.log(request.user);
-      reply.type("application/json").code(200);
-      return { version: packageJson.default.version };
-    },
-  );
+    reply.type("application/json").code(200);
+    return { version: packageJson.default.version };
+  });
 
   instance.get(
     "/codemods/:slug",
@@ -246,11 +243,13 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get(
     "/codemods/downloadLink",
+    { preHandler: [instance.authenticateCLI, instance.getUserData] },
     wrapRequestHandlerMethod(getCodemodDownloadLink),
   );
 
   instance.get(
     "/codemods/list",
+    { preHandler: [instance.authenticateCLI, instance.getUserData] },
     wrapRequestHandlerMethod(getCodemodsListHandler),
   );
 
@@ -383,69 +382,61 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.post("/sourceControl/:provider/issues", async (request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
+  instance.post(
+    "/sourceControl/:provider/issues",
+    { preHandler: instance.getOAuthToken },
+    async (
+      request: FastifyRequest & {
+        token?: string;
+      },
+      reply,
+    ) => {
+      const { provider } = parseCreateIssueParams(request.params);
 
-    const { provider } = parseCreateIssueParams(request.params);
-
-    const { repoUrl, title, body } = parseCreateIssueBody(request.body);
-
-    const accessToken = getCustomAccessToken(environment, request.headers);
-
-    if (accessToken === null) {
-      return reply.code(401).send();
-    }
-
-    const userId = await tokenService.findUserIdMetadataFromToken(
-      accessToken,
-      BigInt(Date.now()),
-      CLAIM_ISSUE_CREATION,
-    );
-
-    const oAuthToken = await auth.getOAuthToken(userId, provider);
-
-    const sourceControlProvider = getSourceControlProvider(
-      provider,
-      oAuthToken,
-      repoUrl,
-    );
-
-    const result = await sourceControl.createIssue(sourceControlProvider, {
-      title,
-      body,
-    });
-
-    reply.type("application/json").code(200);
-    return result;
-  });
-
-  instance.post("/publish", wrapRequestHandlerMethod(publishHandler));
-
-  instance.post("/unpublish", wrapRequestHandlerMethod(unpublishHandler));
-
-  instance.get(
-    "/sourceControl/:provider/user/repos",
-    async (request, reply) => {
-      if (!auth) {
-        throw new Error("This endpoint requires auth configuration.");
-      }
-
-      // getting userId from clerk directly should be safe
-      const { userId } = getAuth(request);
-
-      if (!userId) {
-        return reply.code(401).send();
-      }
-
-      const { provider } = parseGetUserRepositoriesParams(request.params);
-
-      const oAuthToken = await auth.getOAuthToken(userId, provider);
+      const { repoUrl, title, body } = parseCreateIssueBody(request.body);
 
       const sourceControlProvider = getSourceControlProvider(
         provider,
-        oAuthToken,
+        request.token!,
+        repoUrl,
+      );
+
+      const result = await sourceControl.createIssue(sourceControlProvider, {
+        title,
+        body,
+      });
+
+      reply.type("application/json").code(200);
+      return result;
+    },
+  );
+
+  instance.post(
+    "/publish",
+    { preHandler: instance.getUserData },
+    wrapRequestHandlerMethod(publishHandler),
+  );
+
+  instance.post(
+    "/unpublish",
+    { preHandler: instance.getUserData },
+    wrapRequestHandlerMethod(unpublishHandler),
+  );
+
+  instance.get(
+    "/sourceControl/:provider/user/repos",
+    { preHandler: instance.getOAuthToken },
+    async (
+      request: FastifyRequest & {
+        token?: string;
+      },
+      reply,
+    ) => {
+      const { provider } = parseGetUserRepositoriesParams(request.params);
+
+      const sourceControlProvider = getSourceControlProvider(
+        provider,
+        request.token!,
         null,
       );
 
@@ -459,26 +450,19 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.post(
     "/sourceControl/:provider/repo/branches",
-    async (request, reply) => {
-      if (!auth) {
-        throw new Error("This endpoint requires auth configuration.");
-      }
-
-      // getting userId from clerk directly should be safe
-      const { userId } = getAuth(request);
-
-      if (!userId) {
-        return reply.code(401).send();
-      }
-
+    { preHandler: instance.getOAuthToken },
+    async (
+      request: FastifyRequest & {
+        token?: string;
+      },
+      reply,
+    ) => {
       const { provider } = parseGetRepoBranchesParams(request.params);
       const { repoUrl } = parseGetRepoBranchesBody(request.body);
 
-      const oAuthToken = await auth.getOAuthToken(userId, provider);
-
       const sourceControlProvider = getSourceControlProvider(
         provider,
-        oAuthToken,
+        request.token!,
         repoUrl,
       );
 
@@ -491,21 +475,16 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.post(
     "/codemodRun",
-    async (request, reply): Promise<CodemodRunResponse> => {
-      if (!auth) {
-        throw new Error("This endpoint requires auth configuration.");
-      }
-
+    { preHandler: instance.getUserData },
+    async (
+      request: FastifyRequest & {
+        user?: User;
+      },
+      reply,
+    ): Promise<CodemodRunResponse> => {
       if (!queue) {
         throw new Error("Queue service is not running.");
       }
-
-      const { userId } = getAuth(request);
-
-      if (!userId) {
-        return reply.code(401).send();
-      }
-
       const { codemodName, codemodSource, codemodEngine, repoUrl, branch } =
         parseCodemodRunBody(request.body);
 
@@ -513,7 +492,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         codemodName,
         codemodSource,
         codemodEngine,
-        userId,
+        userId: request.user?.id,
         repoUrl,
         branch,
       });
@@ -527,37 +506,31 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get("/codemodRun/status/:jobId", async (request, reply) => {
-    if (!auth) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
+  instance.get(
+    "/codemodRun/status/:jobId",
+    { preHandler: instance.getUserData },
+    async (request, reply) => {
+      if (!redis) {
+        throw new Error("Redis service is not running.");
+      }
 
-    if (!redis) {
-      throw new Error("Redis service is not running.");
-    }
+      const { jobId } = parseCodemodStatusParams(request.params);
 
-    const { userId } = getAuth(request);
-
-    if (!userId) {
-      return reply.code(401).send();
-    }
-
-    const { jobId } = parseCodemodStatusParams(request.params);
-
-    const data = await redis.get(`job-${jobId}::status`);
-    reply.type("application/json").code(200);
-    return {
-      success: true,
-      result: data
-        ? (JSON.parse(data) as {
-            status: string;
-            message?: string;
-            link?: string;
-            progress?: { processed: number; total: number };
-          })
-        : null,
-    };
-  });
+      const data = await redis.get(`job-${jobId}::status`);
+      reply.type("application/json").code(200);
+      return {
+        success: true,
+        result: data
+          ? (JSON.parse(data) as {
+              status: string;
+              message?: string;
+              link?: string;
+              progress?: { processed: number; total: number };
+            })
+          : null,
+      };
+    },
+  );
 
   done();
 };

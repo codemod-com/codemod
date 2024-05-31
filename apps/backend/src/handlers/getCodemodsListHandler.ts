@@ -1,41 +1,33 @@
 import { randomBytes } from "node:crypto";
+import type { OrganizationMembership, User } from "@clerk/backend";
+import type { TelemetrySender } from "@codemod-com/telemetry";
 import type { CodemodListResponse } from "@codemod-com/utilities";
+import type { FastifyRequest } from "fastify";
 import type { CustomHandler } from "../customHandler.js";
 import {
   parseClientIdentifierSchema,
   parseListCodemodsQuery,
 } from "../schemata/schema.js";
-import { ALL_CLAIMS } from "../services/tokenService.js";
+import type { CodemodService } from "../services/codemodService.js";
+import type { TelemetryEvents } from "../telemetry.js";
 
 export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
   async ({
-    getAccessToken,
-    tokenService,
+    request,
     codemodService,
     telemetryService,
-    getClerkUserData,
-    request,
+  }: {
+    request: FastifyRequest & {
+      user?: User;
+      organizations?: OrganizationMembership[];
+      allowedNamespaces?: string[];
+    };
+    codemodService: CodemodService;
+    telemetryService: TelemetrySender<TelemetryEvents>;
   }) => {
     const { search } = parseListCodemodsQuery(request.query);
-    const accessToken = getAccessToken();
 
-    const getUserId = async (): Promise<string | null> => {
-      if (accessToken === null) {
-        return null;
-      }
-
-      try {
-        return await tokenService.findUserIdMetadataFromToken(
-          accessToken,
-          BigInt(Date.now()),
-          ALL_CLAIMS,
-        );
-      } catch (err) {
-        return null;
-      }
-    };
-
-    const userId = await getUserId();
+    const userId = request.user?.id;
     const distinctId = userId ?? randomBytes(16).toString("hex");
 
     const clientIdentifier = request.headers["x-client-identifier"]
@@ -56,15 +48,13 @@ export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
       );
     }
 
-    if (userId === null) {
+    if (!userId) {
       return codemodService.getCodemodsList(null, search, []);
     }
-
-    const userData = await getClerkUserData(userId);
 
     return codemodService.getCodemodsList(
       userId,
       search,
-      userData?.allowedNamespaces,
+      request?.allowedNamespaces,
     );
   };

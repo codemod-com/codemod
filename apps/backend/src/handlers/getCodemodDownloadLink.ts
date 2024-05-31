@@ -1,38 +1,32 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import type { OrganizationMembership, User } from "@clerk/backend";
+import type { FastifyRequest } from "fastify";
 import type { CustomHandler } from "../customHandler.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
-import { ALL_CLAIMS } from "../services/tokenService.js";
+import type { CodemodService } from "../services/codemodService.js";
+import { environment } from "../util.js";
 
 export const getCodemodDownloadLink: CustomHandler<{
   link: string;
 }> = async ({
-  getAccessToken,
-  tokenService,
-  getClerkUserData,
   request,
-  environment,
   codemodService,
+}: {
+  request: FastifyRequest & {
+    user?: User;
+    organizations?: OrganizationMembership[];
+    allowedNamespaces?: string[];
+  };
+  codemodService: CodemodService;
 }) => {
   const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
-  const accessToken = getAccessToken();
-  if (accessToken === null) {
+  const userId = request.user?.id;
+
+  if (!userId) {
     return codemodService.getCodemodDownloadLink(name, null, []);
   }
-
-  let userId: string;
-  try {
-    userId = await tokenService.findUserIdMetadataFromToken(
-      accessToken,
-      BigInt(Date.now()),
-      ALL_CLAIMS,
-    );
-  } catch (err) {
-    return codemodService.getCodemodDownloadLink(name, null, []);
-  }
-
-  const userData = await getClerkUserData(userId);
 
   const s3Client = new S3Client({
     credentials: {
@@ -57,6 +51,6 @@ export const getCodemodDownloadLink: CustomHandler<{
   return codemodService.getCodemodDownloadLink(
     name,
     generateSignedUrl,
-    userData?.allowedNamespaces,
+    request?.allowedNamespaces,
   );
 };

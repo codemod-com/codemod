@@ -47,6 +47,7 @@ export const environmentSchema = object({
   TASK_MANAGER_QUEUE_NAME: optional(string()),
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
+  AUTH_SERVICE_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;
