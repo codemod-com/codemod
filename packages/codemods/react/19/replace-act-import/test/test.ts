@@ -102,10 +102,6 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         join(__dirname, "..", "__testfixtures__/fixture4.input.js"),
         "utf-8",
       );
-      const OUTPUT = await readFile(
-        join(__dirname, "..", "__testfixtures__/fixture4.output.js"),
-        "utf-8",
-      );
 
       const fileInfo: FileInfo = {
         path: "index.ts",
@@ -116,10 +112,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         quote: "single",
       });
 
-      assert.deepEqual(
-        actualOutput?.replace(/\W/gm, ""),
-        OUTPUT.replace(/\W/gm, ""),
-      );
+      assert.equal(actualOutput, undefined);
     });
 
     it("should not add react import if one is already present", async () => {
