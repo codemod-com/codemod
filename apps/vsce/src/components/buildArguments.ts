@@ -68,6 +68,7 @@ export const buildArguments = (
   args.push("--json");
 
   args.push("--output", buildCrossplatformArg(storageUri.fsPath));
+  args.push("--disable-tree-version-check");
 
   args.push(...codemodArguments);
   args.push("--clientIdentifier", buildCrossplatformArg("VSCE"));

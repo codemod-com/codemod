@@ -101,7 +101,7 @@ export const handleRunCliCommand = async (
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
 
-  if (!runSettings.dryRun) {
+  if (!runSettings.dryRun && !args["disable-tree-version-check"]) {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
