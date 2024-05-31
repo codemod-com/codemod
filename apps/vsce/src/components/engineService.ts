@@ -368,7 +368,6 @@ export class EngineService {
     });
 
     const caseHashDigest = message.caseHashDigest;
-
     this.#execution = {
       childProcess,
       halted: false,
@@ -408,6 +407,16 @@ export class EngineService {
 
       if (!this.#execution) {
         return;
+      }
+
+      if (line.toLowerCase().includes("update available")) {
+        // line will look like "│      Update available 0.11.2 > 0.11.5        │"
+        window.showWarningMessage(
+          `${line.replaceAll(
+            "│",
+            "",
+          )}. Run "npm i -g codemod@latest" to upgrade.`,
+        );
       }
 
       const message = JSON.parse(line) as EngineMessage;
