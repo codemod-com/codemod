@@ -147,7 +147,7 @@ const removeFeatureFlagKeyFromFlagsDict = (
     });
 };
 
-const removeMockFeatureFlagComponents = (
+const removeMockFlagsAttributes = (
   sourceFile: SourceFile,
   options: Options,
 ) => {
@@ -207,7 +207,7 @@ export function handleSourceFile(
    * removes feature flag from mockFlags
    */
   if (filePath.endsWith("spec.tsx")) {
-    removeMockFeatureFlagComponents(sourceFile, optionsWithProvider);
+    removeMockFlagsAttributes(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();
   }
 
