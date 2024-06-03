@@ -108,12 +108,18 @@ ${before.text}
   }
 
   async execute() {
-    const openai = new OpenAI({
-      // biome-ignore lint/complexity/useLiteralKeys: biome bug
-      apiKey: process.env["OPENAI_API_KEY"],
-    });
+    const apiKey = process.argv
+      .find((arg) => arg.startsWith("--OPENAI_API_KEY="))
+      ?.replace("--OPENAI_API_KEY=", "");
+    if (!apiKey) {
+      console.log(
+        `Please set OPENAI_API_KEY environment variable like "codemod ... --OPENAI_API_KEY=YOUR_API_KEY"`,
+      );
+      return;
+    }
+    const openai = new OpenAI({ apiKey });
     this.completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o",
       seed: 7,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
