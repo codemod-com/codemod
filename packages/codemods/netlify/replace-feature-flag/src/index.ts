@@ -140,6 +140,14 @@ const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
     });
 };
 
+const removeMockFlagsStories = (sourceFile: SourceFile, options: Options) => {
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
+    .forEach((ole) => {
+      ole.getProperty(options.key)?.remove();
+    });
+};
+
 export function handleSourceFile(
   sourceFile: SourceFile,
   options: Omit<Options, "provider">,
@@ -162,6 +170,11 @@ export function handleSourceFile(
    */
   if (filePath.endsWith("spec.tsx")) {
     removeMockedFlags(sourceFile, optionsWithProvider);
+    return sourceFile.getFullText();
+  }
+
+  if (filePath.endsWith("stories.tsx")) {
+    removeMockFlagsStories(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();
   }
 
