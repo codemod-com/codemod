@@ -1,6 +1,7 @@
 import { BracketsCurly } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { capitalizeWord } from "@studio/utils/string";
+import type * as React from "react";
 
 type AliasButtonsProps = {
   aliasList: string[][];
@@ -11,7 +12,7 @@ export const AliasButtons: React.FC<AliasButtonsProps> = ({
   aliasList,
   handleInsertValue,
 }) => (
-  <div className="flex w-full gap-1 overflow-x-auto px-1">
+  <div className="flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center prompt-builders">
     {aliasList.map(([label, value]) => (
       <Button
         variant="outline"

@@ -25,9 +25,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"],
+      "@features/*": ["./app/(website)/studio/features/*"],
       "@studio/main/*": ["./app/(website)/studio/main/*"],
       "@studio/*": ["./app/(website)/studio/src/*"],
-      "@chatbot/*": ["./app/(website)/studio/main/modGPT/*"],
+      "@chatbot/*": ["./app/(website)/studio/features/modGPT/*"],
       "tslib": ["node_modules/tslib"],
       "ts-morph": ["node_modules/ts-morph"],
       "@utils/*": ["./utils/*"],

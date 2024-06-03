@@ -2,6 +2,7 @@ import { LEARN_KEY } from "@/constants";
 import { cn } from "@/utils";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
+import "@features/Explain/firstLoginExperience";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
@@ -31,7 +32,6 @@ import {
   ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
-
 const Main = () => {
   const panelRefs: PanelsRefs = useRef({});
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
@@ -126,6 +126,7 @@ const Main = () => {
   const beforeAfterBottomPanels = (
     <>
       <CodeSnippets
+        className="before-and-after-panels"
         codeDiff={codeDiff}
         onlyAfterHidden={onlyAfterHidden}
         panelRefs={panelRefs}
@@ -149,6 +150,7 @@ const Main = () => {
 
   const outputBottomPanel = (
     <CodeSnippets
+      className="output-panel"
       codeDiff={codeDiff}
       onlyAfterHidden={onlyAfterHidden}
       panelRefs={panelRefs}
@@ -176,7 +178,7 @@ const Main = () => {
                   panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
                   boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
                   panelRefs={panelRefs}
-                  className="bg-gray-bg"
+                  className="bg-gray-bg assistant"
                 >
                   <AssistantTab
                     panelRefs={panelRefs}
@@ -205,7 +207,7 @@ const Main = () => {
                   panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
                   boundedIndex={ResizablePanelsIndices.TAB_SECTION}
                   panelRefs={panelRefs}
-                  className="bg-gray-bg"
+                  className="bg-gray-bg codemod"
                 >
                   {codemodHeader}
                   <Codemod />

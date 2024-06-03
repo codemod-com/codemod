@@ -5,7 +5,7 @@ import type { LLMEngine } from "@shared/consts";
 import { useModStore } from "@studio/store/zustand/mod";
 import type { Message } from "ai";
 import { useChat } from "ai/react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { getHeadersWithAuth, useHandlePrompt } from "./utils";
 
 export const useModGPT = ({

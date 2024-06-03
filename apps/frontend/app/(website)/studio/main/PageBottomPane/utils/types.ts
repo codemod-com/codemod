@@ -73,14 +73,14 @@ export type HeaderProps = {
   isCollapsed?: boolean;
   // @TODO
   ondblclick?: (typeof console)["log"];
-  title: string;
+  title: ReactNode;
   visibilityOptions?: VisibilityOptions;
 };
 
 export type SnippetType = "before" | "after" | "output";
 
 export type SnippetData = {
-  header: string;
+  header: ReactNode;
   diffEditorWrapper: {
     type: SnippetType;
     warnings?: ReactNode;

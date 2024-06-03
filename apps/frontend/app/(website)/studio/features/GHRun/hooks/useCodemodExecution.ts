@@ -1,7 +1,6 @@
 import { RUN_CODEMOD } from "@shared/endpoints";
 import type { CodemodRunRequest, CodemodRunStatus } from "@shared/types";
 import { useAPI } from "@studio/hooks/useAPI";
-import { useUserSession } from "@studio/store/zustand/userSession";
 import type { ToVoid } from "@studio/types/transformations";
 
 export const useCodemodExecution = ({

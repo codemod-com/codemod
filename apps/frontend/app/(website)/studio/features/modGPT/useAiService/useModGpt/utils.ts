@@ -1,19 +1,11 @@
 import { useAuth } from "@auth/useAuth";
 import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
 import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
-import { type ModState, useModStore } from "@studio/store/zustand/mod";
-import type { Message } from "ai";
+import { useModStore } from "@studio/store/zustand/mod";
 import type { useChat } from "ai/react/dist";
 import { identity } from "ramda";
-import {
-  type Dispatch,
-  type SetStateAction,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
-import toast from "react-hot-toast";
 
 export const useHandlePrompt = ({
   append,

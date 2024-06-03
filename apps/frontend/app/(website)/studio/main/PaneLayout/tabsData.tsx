@@ -1,3 +1,4 @@
+import { Chat } from "@chatbot/Chat";
 import { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import LiveIcon from "@studio/icons/LiveIcon";
@@ -11,9 +12,9 @@ import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
 import { useCFSStore } from "@studio/store/zustand/CFS";
 import { useModStore } from "@studio/store/zustand/mod";
 import { TabNames } from "@studio/store/zustand/view";
+import * as React from "react";
 import type { ReactNode } from "react";
 import { PanelGroup } from "react-resizable-panels";
-import { Chat } from "../modGPT";
 
 export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
 export type TabHeader = { value: string; name: ReactNode };
@@ -72,7 +73,10 @@ export const getTabsData = ({
       value: TabNames.DEBUG,
       name: (
         <>
-          <LiveIcon /> Debug
+          <LiveIcon />
+          <span className="flex items-center justify-center justify-content-center z-30">
+            Debug
+          </span>
         </>
       ),
       content: <Table />,
