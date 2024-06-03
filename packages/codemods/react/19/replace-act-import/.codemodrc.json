@@ -1,5 +1,5 @@
 {
-  "version": "1.0.6",
+  "version": "1.0.7",
   "name": "react/19/replace-act-import",
   "private": false,
   "engine": "jscodeshift",

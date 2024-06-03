@@ -117,5 +117,10 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description:
         "Disable packages installation for the codemod run if there is `deps` field declared in its configuration",
+    })
+    .option("disable-tree-version-check", {
+      type: "boolean",
+      description: "Disable the tree version check",
+      hidden: true,
     });
 };

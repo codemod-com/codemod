@@ -25,7 +25,7 @@ const selfContext = new AsyncLocalStorage<NodeContext>();
 
 const parentContext = new AsyncLocalStorage<NodeContext>();
 
-const wrapContext = new AsyncLocalStorage<(...args: any[]) => any>();
+export const wrapContext = new AsyncLocalStorage<(...args: any[]) => any>();
 
 const tree: { children: NodeContext[] } = {
   children: [],
@@ -51,7 +51,10 @@ export function fnWrapper<T extends (...args: any) => any>(
 
 export class FunctionExecutor<
   I extends (() => Promise<void> | void) | undefined = undefined, // init
-  H extends Record<string, any> | undefined = undefined, // helpers
+  H extends
+    | Record<string, any>
+    | ((self: FunctionExecutor<I, H, R, W, E, C, A>) => Record<string, any>)
+    | undefined = undefined, // helpers
   R extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // return
   W extends boolean = true, // return wrapped helpers like PLazy<H> & H or not
   E extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // executor
@@ -68,6 +71,7 @@ export class FunctionExecutor<
   private _parentWrapper: (...args: any[]) => any;
   private _callback?: C;
   private _arguments?: A;
+  private _done: any;
 
   constructor(public name: string) {
     this._context = selfContext.getStore() as NodeContext;
@@ -86,6 +90,11 @@ export class FunctionExecutor<
     return this as any;
   }
 
+  done(cb: any) {
+    this._done = cb;
+    return this;
+  }
+
   arguments<AE extends () => any | Promise<any>>(
     args: AE,
   ): FunctionExecutor<I, H, R, W, E, C, AE> {
@@ -100,7 +109,7 @@ export class FunctionExecutor<
   }
 
   helpers<HE extends Record<string, any>>(
-    helpers: HE,
+    helpers: HE | ((self: FunctionExecutor<I, H, R, W, E, C, A>) => HE),
   ): FunctionExecutor<I, HE, R, W, E, C, A> {
     this._helpers = helpers as any;
     return this as any;
@@ -115,10 +124,10 @@ export class FunctionExecutor<
     return this as any;
   }
 
-  wrappedHelpers(): H {
+  wrappedHelpers(): H extends (...args: any[]) => any ? ReturnType<H> : H {
     return mapValues(
       // @ts-ignore
-      this._helpers,
+      typeof this._helpers === "function" ? this._helpers(this) : this._helpers,
       (value: any) =>
         (...args: any[]) =>
           // @ts-ignore
@@ -178,7 +187,10 @@ export class FunctionExecutor<
     const promise = new PLazy((resolve, reject) => {
       (async () => {
         await this.context()();
-        return this._return?.(this);
+        const done = this._done?.();
+        const res = await this._return?.(this);
+        await done;
+        return res;
       })()
         .then(resolve)
         .catch(reject);

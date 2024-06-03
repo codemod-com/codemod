@@ -3,8 +3,34 @@ import { codemod } from "./codemod";
 import { getCwdContext } from "./contexts";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers";
 import { clc } from "./helpers";
+import { jsFiles } from "./jsFiles";
 import { spawn } from "./spawn";
 
+/**
+ * Run a command in current working directory
+ * @param command The command to run
+ * @param args Arguments to pass to the command
+ *
+ * @example
+ * Simple run
+ * ```ts
+ * await exec("ls");
+ * ```
+ *
+ * @example
+ * Run with arguments
+ * ```ts
+ * await exec("ls", ["-al"]);
+ * ```
+ *
+ * @example
+ * Chaining commands
+ * ```ts
+ * await exec("ls")
+ *   .exec("pwd")
+ *   .exec("ls", ["-al"]);
+ * ```
+ */
 export function execLogic(
   command: string,
   args?: string[],
@@ -34,6 +60,6 @@ export function execLogic(
 
 export const exec = fnWrapper("exec", execLogic);
 
-const execHelpers = { exec, codemod };
+const execHelpers = { exec, codemod, jsFiles };
 
 type ExecHelpers = typeof execHelpers;

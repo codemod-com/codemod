@@ -7,6 +7,7 @@ export default function transform(
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
+  let isDirty = false;
 
   // Get default import from test utils
   const defaultUtilsImportName = root
@@ -59,6 +60,7 @@ export default function transform(
       );
 
       root.get().node.program.body.unshift(reactImport);
+      isDirty = true;
     }
 
     actAccessExpressions.forEach((path) => {
@@ -72,6 +74,7 @@ export default function transform(
       });
 
       accessedPath?.replace(newIdentifier);
+      isDirty = true;
     });
 
     // Remove the old import
@@ -81,6 +84,8 @@ export default function transform(
         specifiers: [{ type: utilsCalleeType }],
       })
       .remove();
+
+    isDirty = true;
   }
 
   root
@@ -106,6 +111,7 @@ export default function transform(
           ?.node.specifiers?.push(newImportSpecifier);
 
         path.prune();
+        isDirty = true;
       } else {
         const newImportDeclaration = j.importDeclaration(
           [newImportSpecifier],
@@ -113,6 +119,7 @@ export default function transform(
         );
 
         path.replace(newImportDeclaration);
+        isDirty = true;
       }
     });
 
@@ -135,8 +142,9 @@ export default function transform(
 
       // add export { act } from "react";
       path.insertAfter(newExportDeclaration);
+      isDirty = true;
     }
   });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }
