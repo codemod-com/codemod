@@ -15,3 +15,5 @@ export type CodemodDownloadLinkResponse = {
   link: string;
   version: string;
 };
+
+export type GetScopedTokenResponse = { token: string };

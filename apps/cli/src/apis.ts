@@ -1,12 +1,26 @@
 import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
+  GetScopedTokenResponse,
   ValidateTokenResponse,
 } from "@codemod-com/utilities";
 import Axios from "axios";
 import type FormData from "form-data";
 
 const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
+
+export const getCLIAccessToken = async (
+  accessToken: string,
+): Promise<GetScopedTokenResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/clientToken`);
+
+  const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
+    headers: { [X_CODEMOD_ACCESS_TOKEN]: accessToken },
+    timeout: 10000,
+  });
+
+  return res.data;
+};
 
 export const validateAccessToken = async (
   accessToken: string,

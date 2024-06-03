@@ -8,7 +8,10 @@ import Fastify, { type FastifyPluginCallback } from "fastify";
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
 
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  type GetScopedTokenResponse,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import { environment } from "./util.js";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -162,20 +165,23 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     });
   });
 
-  instance.get("/clientToken", async (request, reply) => {
-    const { userId, sessionId } = getAuth(request);
+  instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
+    "/clientToken",
+    async (request, reply) => {
+      const { userId, sessionId } = getAuth(request);
 
-    if (!userId && !sessionId) {
-      return reply.status(401).send({ message: "Invalid token" });
-    }
+      if (!userId && !sessionId) {
+        return reply.status(401).send({ message: "Invalid token" });
+      }
 
-    const { jwt } = await clerkClient.sessions.getToken(
-      sessionId,
-      environment.CLI_TOKEN_TEMPLATE,
-    );
+      const { jwt } = await clerkClient.sessions.getToken(
+        sessionId,
+        environment.CLI_TOKEN_TEMPLATE,
+      );
 
-    return reply.status(200).send({ token: jwt });
-  });
+      return reply.status(200).send({ token: jwt });
+    },
+  );
 
   instance.get("/oAuthToken", async (request, reply) => {
     const { userId } = getAuth(request);
