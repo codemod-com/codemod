@@ -6,11 +6,6 @@ import { getAstGrepNodeContext, getFileContext } from "../contexts";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers";
 import { clc } from "../helpers";
 
-const openai = new OpenAI({
-  // biome-ignore lint/complexity/useLiteralKeys: biome bug
-  apiKey: process.env["OPENAI_API_KEY"],
-});
-
 const SYSTEM_PROMPT = `
 You are a meticulous engineer assigned to migrate a codebase by updating its code when necessary.
 
@@ -113,7 +108,10 @@ ${before.text}
   }
 
   async execute() {
-    console.log("Executing AI");
+    const openai = new OpenAI({
+      // biome-ignore lint/complexity/useLiteralKeys: biome bug
+      apiKey: process.env["OPENAI_API_KEY"],
+    });
     this.completion = await openai.chat.completions.create({
       model: "gpt-4",
       seed: 7,
@@ -124,7 +122,6 @@ ${before.text}
       temperature: 0.001,
       n: 1,
     });
-    console.log("done");
     const replacements = this.replacements;
     const files: Record<
       string,

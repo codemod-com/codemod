@@ -85,7 +85,6 @@ export const cloneRepository = async (
       remoteDefaultBranchHash,
       `No remote default branch hash found in remote ${repositoryUrl}`,
     );
-    console.log({ remoteDefaultBranchHash });
     return remoteDefaultBranch;
   }
 
