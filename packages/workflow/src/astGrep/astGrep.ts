@@ -4,25 +4,17 @@ import * as path from "node:path";
 import * as util from "node:util";
 import { type NapiConfig, tsx as astGrepTsx } from "@ast-grep/napi";
 import MagicString from "magic-string";
-import { PLazy } from "../PLazy.js";
+import type { PLazy } from "../PLazy.js";
+import { ai } from "../ai/ai.js";
 import {
   type AstGrepNodeContext,
   astGrepNodeContext,
   getFileContext,
-  getParentContext,
 } from "../contexts.js";
-import { clc, wrapHelpers } from "../helpers.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { clc } from "../helpers.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
-
-const astGrepHelpers = {
-  replace,
-  map,
-};
-
-const astGrepAPIHelpers = {
-  astGrep,
-};
 
 type AstGrepPattern = string | { selector: string; context: string };
 type AstGrepStopBy = "end" | "neighbour" | AstGrepInsideRule;
@@ -140,10 +132,10 @@ type AstGrepAPIHelpers = typeof astGrepAPIHelpers;
  *   await astGrep`import React from 'react'`;
  * ```
  */
-export function astGrep(
+export function astGrepLogic(
   query: string | readonly string[] | NapiConfig,
 ): PLazy<AstGrepHelpers> & AstGrepHelpers;
-export function astGrep(
+export function astGrepLogic(
   apiQuery: AstGrepAPI,
 ): PLazy<AstGrepAPIHelpers> & AstGrepAPIHelpers;
 /**
@@ -157,11 +149,11 @@ export function astGrep(
  *   });
  * ```
  */
-export function astGrep(
+export function astGrepLogic(
   query: string | readonly string[] | NapiConfig,
   callback: (helpers: AstGrepHelpers) => Promise<void> | void,
 ): PLazy<AstGrepHelpers> & AstGrepHelpers;
-export function astGrep<
+export function astGrepLogic<
   Q extends string | readonly string[] | NapiConfig | AstGrepAPI,
   H = Q extends AstGrepAPI ? AstGrepAPIHelpers : AstGrepHelpers,
 >(
@@ -169,24 +161,28 @@ export function astGrep<
   callback?: (helpers: AstGrepHelpers) => Promise<void> | void,
   // @ts-ignore
 ): Promise<H> & H {
-  const innerParentContext = getParentContext();
+  return new FunctionExecutor("astGrep")
+    .arguments(() => {
+      let grep: string | NapiConfig | AstGrepAPI = query as string;
+      if (typeof query === "object") {
+        grep = Array.isArray(query)
+          ? query.join("")
+          : (query as NapiConfig | AstGrepAPI);
+      }
+      return { grep, callback };
+    })
+    .helpers((self) => {
+      const { grep } = self.getArguments();
+      if (typeof grep === "object" && "id" in grep) {
+        return astGrepAPIHelpers;
+      }
 
-  let grep: string | NapiConfig | AstGrepAPI = query as string;
-  if (typeof query === "object") {
-    grep = Array.isArray(query)
-      ? query.join("")
-      : (query as NapiConfig | AstGrepAPI);
-  }
-
-  const returnHelpers =
-    typeof grep === "object" && "id" in grep
-      ? astGrepAPIHelpers
-      : astGrepHelpers;
-
-  const context = async (cb?: any) => {
-    await innerParentContext(async () => {
+      return astGrepHelpers;
+    })
+    .return((self) => self.wrappedHelpers())
+    .executor(async (next, self) => {
       const { file } = getFileContext();
-
+      const { grep, callback } = self.getArguments();
       if (typeof grep === "object" && "id" in grep) {
         await runExternalAstGrepRule(grep, file);
       } else {
@@ -195,15 +191,16 @@ export function astGrep<
         const nodes = astGrepTsx.parse(contents).root().findAll(grep).reverse();
         const astContext = {
           contents: new MagicString(contents),
+          query: grep,
         } as AstGrepNodeContext;
 
         for (const node of nodes) {
-          if (cb) {
+          if (next) {
             astContext.node = node;
             await astGrepNodeContext.run(
               astContext,
-              cb,
-              callback ? returnHelpers : wrapHelpers(returnHelpers, context),
+              next,
+              callback ? astGrepHelpers : self.wrapHelpers(astGrepHelpers),
             );
           }
         }
@@ -213,33 +210,18 @@ export function astGrep<
           console.log(`${clc.blueBright("FILE")} ${file}`);
         }
       }
-    });
-
-    return wrapHelpers(returnHelpers, context);
-  };
-
-  const helpers = wrapHelpers(returnHelpers, context);
-
-  const promise = new PLazy<AstGrepHelpers>((resolve, reject) => {
-    if (callback) {
-      const voidOrPromise = context(callback);
-      if (voidOrPromise instanceof Promise) {
-        voidOrPromise
-          // @ts-ignore
-          .then(() => resolve(wrapHelpers(returnHelpers, context)))
-          .catch(reject);
-      }
-    } else {
-      // @ts-ignore
-      context().then(resolve).catch(reject);
-    }
-  }) as PLazy<AstGrepHelpers> & AstGrepHelpers;
-
-  Object.keys(helpers).forEach((key) => {
-    // @ts-ignore
-    promise[key] = helpers[key];
-  });
-
-  // @ts-ignore
-  return promise;
+    })
+    .run() as any;
 }
+
+export const astGrep = fnWrapper("astGrep", astGrepLogic);
+
+const astGrepHelpers = {
+  replace,
+  map,
+  ai,
+};
+
+const astGrepAPIHelpers = {
+  astGrep,
+};
