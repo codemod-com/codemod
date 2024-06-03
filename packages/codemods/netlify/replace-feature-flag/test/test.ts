@@ -65,7 +65,7 @@ describe("Replace feature flag", () => {
     assert.deepEqual(actual, expected);
   });
 
-  it("Should remove type literal property in FlagDict type literal", async () => {
+  it("Should remove mockFlags from MockFeatureFlag", async () => {
     const INPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/mockFlags.input.tsx"),
       "utf-8",

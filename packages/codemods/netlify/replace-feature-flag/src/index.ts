@@ -1,4 +1,4 @@
-import type { SourceFile } from "ts-morph";
+import type { ImportDeclaration, JsxElement, SourceFile } from "ts-morph";
 import { type CallExpression, Node, SyntaxKind, ts } from "ts-morph";
 
 import { handleSourceFile as handleSourceFileCore } from "../../../replace-feature-flag-core/src/index.js";
@@ -78,6 +78,31 @@ const removeFeatureFlagProperty = (
     });
 };
 
+const replaceMockFeatureFlag = (mockFeatureFlag: JsxElement) => {
+  const children = mockFeatureFlag
+    .getJsxChildren()
+    .filter((c) => !(Node.isJsxText(c) && c.getFullText().trim() === ""));
+
+  const text = children.reduce<string>((acc, child) => {
+    // biome-ignore lint: args reassing
+    acc += `${child.getFullText()}`;
+    return acc;
+  }, "");
+
+  mockFeatureFlag.replaceWithText(
+    children.length === 1 ? text : `<>${text}</>`,
+  );
+};
+
+const removeImport = (mockFeatureFlagImport: ImportDeclaration) => {
+  const namedImports = mockFeatureFlagImport.getNamedImports();
+
+  if (namedImports.length !== 0) {
+    return;
+  }
+
+  mockFeatureFlagImport.remove();
+};
 const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
@@ -112,30 +137,19 @@ const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
           return;
         }
 
-        const def = tag.getDefinitions().at(0);
-
-        const maybeImportDeclaration = def
+        const maybeImportDeclaration = tag
+          .getDefinitions()
+          .at(0)
           ?.getNode()
           ?.getFirstAncestorByKind(SyntaxKind.ImportDeclaration);
+
+        replaceMockFeatureFlag(jsxElement);
 
         if (!Node.isImportDeclaration(maybeImportDeclaration)) {
           return;
         }
 
-        const namedImports = maybeImportDeclaration.getNamedImports();
-
-        if (namedImports.length === 0) {
-          maybeImportDeclaration.remove();
-        }
-
-        const text = jsxElement
-          .getJsxChildren()
-          .reduce<string>((acc, child) => {
-            acc += `${child.getFullText()}`;
-            return acc;
-          }, "");
-
-        jsxElement.replaceWithText(`<>${text}</>`);
+        removeImport(maybeImportDeclaration);
       }
     });
 };
