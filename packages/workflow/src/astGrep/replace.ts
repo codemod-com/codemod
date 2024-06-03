@@ -1,6 +1,6 @@
-import { PLazy } from "../PLazy.js";
-import { getAstGrepNodeContext, getParentContext } from "../contexts.js";
-import { wrapHelpers } from "../helpers.js";
+import type { PLazy } from "../PLazy.js";
+import { getAstGrepNodeContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { map } from "./map.js";
 
 const callbackHelpers = {
@@ -10,19 +10,15 @@ const callbackHelpers = {
     getAstGrepNodeContext().node.getMultipleMatches(m),
 };
 
-const helpers = { map };
-
-type Helpers = typeof helpers;
-
-export function replace(
+export function replaceLogic(
   callback: (
     helpers: typeof callbackHelpers,
   ) => Promise<string | undefined> | string | undefined,
 ): PLazy<Helpers> & Helpers;
-export function replace(
+export function replaceLogic(
   rawReplacement: string | Readonly<string[]>,
 ): PLazy<Helpers> & Helpers;
-export function replace(
+export function replaceLogic(
   replacementOrCallback:
     | string
     | Readonly<string[]>
@@ -30,26 +26,29 @@ export function replace(
         helpers: typeof callbackHelpers,
       ) => Promise<string | undefined> | string | undefined),
 ): PLazy<Helpers> & Helpers {
-  const innerParentContext = getParentContext();
+  return new FunctionExecutor("replace")
+    .arguments(() => {
+      let replacement: string | undefined;
+      if (typeof replacementOrCallback === "string") {
+        replacement = replacementOrCallback;
+      } else if (Array.isArray(replacementOrCallback)) {
+        replacement = replacementOrCallback.join("");
+      }
 
-  let replacement: string | undefined;
-  if (typeof replacementOrCallback === "string") {
-    replacement = replacementOrCallback;
-  } else if (Array.isArray(replacementOrCallback)) {
-    replacement = replacementOrCallback.join("");
-  }
+      const callback =
+        typeof replacementOrCallback === "function"
+          ? replacementOrCallback
+          : undefined;
 
-  const callback =
-    typeof replacementOrCallback === "function"
-      ? replacementOrCallback
-      : undefined;
-
-  const context = async (cb?: any) => {
-    await innerParentContext(async () => {
+      return { replacement, callback };
+    })
+    .helpers(() => helpers)
+    .return((self) => self.wrappedHelpers())
+    .executor(async (_next, self) => {
       const { node } = getAstGrepNodeContext();
-
+      let { callback, replacement } = self.getArguments();
       if (callback) {
-        replacement = await callback(wrapHelpers(callbackHelpers, context));
+        replacement = await callback(self.wrapHelpers(callbackHelpers));
       }
 
       if (replacement) {
@@ -76,25 +75,12 @@ export function replace(
           text,
         );
       }
-    });
-
-    if (cb) {
-      await innerParentContext(() => cb());
-    }
-
-    return helpersWithContext;
-  };
-
-  const helpersWithContext = wrapHelpers(helpers, context);
-
-  const promise = new PLazy<Helpers>((resolve, reject) => {
-    context().then(resolve).catch(reject);
-  }) as PLazy<Helpers> & Helpers;
-
-  Object.keys(helpersWithContext).forEach((key) => {
-    // @ts-ignore
-    promise[key] = helpersWithContext[key];
-  });
-
-  return promise;
+    })
+    .run();
 }
+
+export const replace = fnWrapper("replace", replaceLogic);
+
+const helpers = { map };
+
+type Helpers = typeof helpers;
