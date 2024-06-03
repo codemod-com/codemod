@@ -1,25 +1,21 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import type { OrganizationMembership, User } from "@clerk/backend";
 import {
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { FastifyReply, FastifyRequest } from "fastify";
-import type { CustomHandler } from "./customHandler";
+import type { RouteHandler } from "fastify";
 import { prisma } from "./db/prisma.js";
+import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { parseUnpublishBody } from "./schemata/schema";
 import { environment } from "./util";
 
-export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
-  request,
-  reply,
-}: {
-  request: FastifyRequest & {
-    user?: User;
-    organizations?: OrganizationMembership[];
-  };
-  reply: FastifyReply;
-}) => {
+export type UnPublishHandlerResponse =
+  | { success: true }
+  | { error: string; success: false };
+
+export const unpublishHandler: RouteHandler<{
+  Reply: UnPublishHandlerResponse;
+}> = async (request: UserDataPopulatedRequest, reply) => {
   try {
     const { username } = request.user!;
     const orgs = request.organizations!;

@@ -4,18 +4,16 @@ import type {
   GetScopedTokenResponse,
   ValidateTokenResponse,
 } from "@codemod-com/utilities";
-import Axios from "axios";
+import Axios, { type RawAxiosRequestHeaders } from "axios";
 import type FormData from "form-data";
-
-const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const getCLIAccessToken = async (
   accessToken: string,
 ): Promise<GetScopedTokenResponse> => {
-  const url = new URL(`${process.env.BACKEND_URL}/clientToken`);
+  const url = new URL(`${process.env.AUTH_BACKEND_URL}/clientToken`);
 
   const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
-    headers: { [X_CODEMOD_ACCESS_TOKEN]: accessToken },
+    headers: { Authorization: `Bearer ${accessToken}` },
     timeout: 10000,
   });
 
@@ -29,9 +27,7 @@ export const validateAccessToken = async (
     `${process.env.BACKEND_URL}/validateAccessToken`,
     {},
     {
-      headers: {
-        [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-      },
+      headers: { Authorization: `Bearer ${accessToken}` },
       timeout: 5000,
     },
   );
@@ -45,7 +41,7 @@ export const publish = async (
 ): Promise<void> => {
   await Axios.post(`${process.env.BACKEND_URL}/publish`, formData, {
     headers: {
-      [X_CODEMOD_ACCESS_TOKEN]: accessToken,
+      Authorization: `Bearer ${accessToken}`,
       "Content-Type": "multipart/form-data",
     },
     timeout: 10000,
@@ -60,9 +56,7 @@ export const unpublish = async (
     `${process.env.BACKEND_URL}/unpublish`,
     { name },
     {
-      headers: {
-        [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-      },
+      headers: { Authorization: `Bearer ${accessToken}` },
       timeout: 10000,
     },
   );
@@ -70,9 +64,7 @@ export const unpublish = async (
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
   await Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
-    headers: {
-      [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-    },
+    headers: { Authorization: `Bearer ${accessToken}` },
     timeout: 10000,
   });
 };
@@ -86,9 +78,9 @@ export const getCodemodDownloadURI = async (
     url.searchParams.set("name", name);
   }
 
-  const headers: { [key: string]: string } = {};
+  const headers: RawAxiosRequestHeaders = {};
   if (accessToken) {
-    headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   const res = await Axios.get<CodemodDownloadLinkResponse>(url.toString(), {
@@ -105,9 +97,9 @@ export const getCodemodList = async (options?: {
 }): Promise<CodemodListResponse> => {
   const { accessToken, search } = options ?? {};
 
-  const headers: { [key: string]: string } = {};
+  const headers: RawAxiosRequestHeaders = {};
   if (accessToken) {
-    headers[X_CODEMOD_ACCESS_TOKEN] = accessToken;
+    headers.Authorization = `Bearer ${accessToken}`;
   }
 
   const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);

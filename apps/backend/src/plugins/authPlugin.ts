@@ -4,6 +4,16 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import { environment } from "../util";
 
+export interface UserDataPopulatedRequest extends FastifyRequest {
+  user?: User;
+  organizations?: OrganizationMembership[];
+  allowedNamespaces?: string[];
+}
+
+export interface OAuthTokenPopulatedRequest extends FastifyRequest {
+  token?: string;
+}
+
 declare module "fastify" {
   interface FastifyInstance {
     authenticateCLI: (
@@ -11,17 +21,11 @@ declare module "fastify" {
       reply: FastifyReply,
     ) => Promise<void>;
     getUserData: (
-      request: FastifyRequest & {
-        user?: User;
-        organizations?: OrganizationMembership[];
-        allowedNamespaces?: string[];
-      },
+      request: FastifyRequest & UserDataPopulatedRequest,
       reply: FastifyReply,
     ) => Promise<void>;
     getOAuthToken: (
-      request: FastifyRequest & {
-        token?: string;
-      },
+      request: FastifyRequest & OAuthTokenPopulatedRequest,
       reply: FastifyReply,
     ) => Promise<void>;
   }

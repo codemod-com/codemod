@@ -8,7 +8,7 @@ import {
   parseClientIdentifierSchema,
   parseListCodemodsQuery,
 } from "../schemata/schema.js";
-import type { CodemodService } from "../services/codemodService.js";
+import type { CodemodService } from "../services/CodemodService.js";
 import type { TelemetryEvents } from "../telemetry.js";
 
 export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =

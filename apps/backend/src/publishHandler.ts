@@ -1,7 +1,6 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import type { OrganizationMembership, User } from "@clerk/backend";
 import {
   type CodemodConfig,
   TarService,
@@ -11,25 +10,24 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import axios from "axios";
-import type { FastifyReply, FastifyRequest } from "fastify";
+import type { RouteHandler } from "fastify";
 import * as semver from "semver";
 import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
-import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { environment } from "./util";
 
-export const publishHandler: CustomHandler<Record<string, never>> = async ({
-  request,
-  reply,
-}: {
-  request: FastifyRequest & {
-    user?: User;
-    organizations?: OrganizationMembership[];
-  };
-  reply: FastifyReply;
-}) => {
+export type PublishHandlerResponse =
+  | { success: true }
+  | { error: string; success: false };
+
+export const publishHandler: RouteHandler<{
+  Reply: PublishHandlerResponse;
+}> = async (request: UserDataPopulatedRequest, reply) => {
   try {
+    const organizations = request.organizations!;
+
     const {
       username,
       primaryEmailAddressId,
@@ -37,8 +35,6 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       firstName,
       lastName,
     } = request.user!;
-
-    const orgs = request.organizations!;
 
     if (username === null) {
       throw new Error("The username of the current user does not exist");
@@ -123,7 +119,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
 
       const allowedNamespaces = [
         username,
-        ...orgs.map((org) => org.organization.slug),
+        ...organizations.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
 
       if (!allowedNamespaces.includes(namespace)) {

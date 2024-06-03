@@ -1,11 +1,10 @@
 import apiClient from "@/utils/apis/client";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import type { AxiosError } from "axios";
-import { BUILD_ACCESS_TOKEN } from "../constants";
+import { POPULATE_LOGIN_INTENT } from "../constants";
 import { Either } from "../utils/Either";
 
-const X_CODEMODCOM_ACCESS_TOKEN = "x-codemod-access-token";
-const getAccessToken = async ({
+export const populateLoginIntent = async ({
   clerkToken,
   sessionId,
   iv,
@@ -24,18 +23,14 @@ const getAccessToken = async ({
 
   try {
     const res = await apiClient.post(
-      `${BUILD_ACCESS_TOKEN}${
+      `${POPULATE_LOGIN_INTENT}${
         searchParams.size > 0 ? `?${searchParams.toString()}` : ""
       }`,
       {},
-      {
-        headers: {
-          Authorization: `Bearer ${clerkToken}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${clerkToken}` } },
     );
-    // Axios automatically converts header names to lowercase in the `headers` object.
-    const accessToken = res.headers[X_CODEMODCOM_ACCESS_TOKEN.toLowerCase()];
+
+    const accessToken = res.data.accessToken;
 
     if (typeof accessToken !== "string") {
       throw new Error("`accessToken` is not a string.");
@@ -47,5 +42,3 @@ const getAccessToken = async ({
     return Either.left(new Error(err.response?.data.message ?? err.message));
   }
 };
-
-export default getAccessToken;

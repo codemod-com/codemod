@@ -3,7 +3,10 @@ import "dotenv/config";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, { type FastifyPluginCallback } from "fastify";
+import Fastify, {
+  type FastifyRequest,
+  type FastifyPluginCallback,
+} from "fastify";
 
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
@@ -143,7 +146,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     }
 
     const user = await clerkClient.users.getUser(userId);
-    const organizations = await (
+    const organizations = (
       await clerkClient.users.getOrganizationMembershipList({ userId })
     ).data.map((organization) => organization);
     const allowedNamespaces = [

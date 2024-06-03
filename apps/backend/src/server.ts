@@ -1,30 +1,31 @@
 import { randomBytes } from "node:crypto";
 import type { User } from "@clerk/backend";
-import { PostHogSender } from "@codemod-com/telemetry";
 import type { CodemodRunResponse } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import { Queue } from "bullmq";
 import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
-  type RouteHandlerMethod,
 } from "fastify";
-import Redis from "ioredis";
 import { decrypt, encrypt } from "./crypto/crypto.js";
-import {
-  type CustomHandler,
-  ForbiddenError,
-  UnauthorizedError,
-} from "./customHandler.js";
 import { prisma } from "./db/prisma.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
-import { getCodemodDownloadLink } from "./handlers/getCodemodDownloadLink.js";
+import {
+  type GetCodemodDownloadLinkResponse,
+  getCodemodDownloadLink,
+} from "./handlers/getCodemodDownloadLink.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
+import {
+  type PopulateLoginIntentResponse,
+  populateLoginIntent,
+} from "./handlers/populateLoginIntent.js";
 import authPlugin from "./plugins/authPlugin.js";
-import { publishHandler } from "./publishHandler.js";
+import {
+  type PublishHandlerResponse,
+  publishHandler,
+} from "./publishHandler.js";
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,
@@ -39,13 +40,12 @@ import {
   parseValidateIntentParams,
 } from "./schemata/schema.js";
 import { GithubProvider } from "./services/GithubProvider.js";
-import { SourceControl } from "./services/SourceControl.js";
+import { queue, redis } from "./services/Redis.js";
+import { sourceControl } from "./services/SourceControl.js";
 import {
-  CodemodNotFoundError,
-  CodemodService,
-} from "./services/codemodService.js";
-import type { TelemetryEvents } from "./telemetry.js";
-import { unpublishHandler } from "./unpublishHandler.js";
+  type UnPublishHandlerResponse,
+  unpublishHandler,
+} from "./unpublishHandler.js";
 import { environment } from "./util.js";
 
 export enum TaskManagerJobs {
@@ -153,172 +153,113 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   return fastify;
 };
 
-const sourceControl = new SourceControl();
-
-const telemetryService = new PostHogSender<TelemetryEvents>({
-  cloudRole: "",
-  distinctId: "",
-});
-
-const codemodService = new CodemodService(prisma);
-
-const redis = environment.REDIS_HOST
-  ? new Redis({
-      host: String(environment.REDIS_HOST),
-      port: Number(environment.REDIS_PORT),
-      maxRetriesPerRequest: null,
-    })
-  : null;
-
-const queue = redis
-  ? new Queue(environment.TASK_MANAGER_QUEUE_NAME ?? "", {
-      connection: redis,
-    })
-  : null;
-
-const wrapRequestHandlerMethod =
-  <T>(handler: CustomHandler<T>): RouteHandlerMethod =>
-  async (request, reply) => {
-    const now = () => Date.now();
-
-    try {
-      const data = await handler({
-        codemodService,
-        telemetryService,
-        now,
-        request,
-        reply,
-        environment,
-      });
-
-      reply.type("application/json").code(200);
-
-      return data;
-    } catch (error) {
-      if (error instanceof CodemodNotFoundError) {
-        reply.type("application/json").code(400);
-        return {
-          error: "Codemod not found",
-        };
-      }
-
-      if (error instanceof UnauthorizedError) {
-        reply.code(401).send();
-        return;
-      }
-
-      if (error instanceof ForbiddenError) {
-        reply.code(403).send();
-        return;
-      }
-
-      reply.code(500).send();
-      console.error(error);
-      return;
-    }
-  };
-
 const routes: FastifyPluginCallback = (instance, _opts, done) => {
   instance.get("/", async (_, reply) => {
     reply.type("application/json").code(200);
     return { data: {} };
   });
 
-  instance.get("/version", async (request, reply) => {
-    const packageJson = await import(
-      new URL("../package.json", import.meta.url).href,
-      { assert: { type: "json" } }
-    );
+  instance.get<{ Reply: { version: string } }>(
+    "/version",
+    async (request, reply) => {
+      const packageJson = await import(
+        new URL("../package.json", import.meta.url).href,
+        { assert: { type: "json" } }
+      );
 
-    reply.type("application/json").code(200);
-    return { version: packageJson.default.version };
-  });
-
-  instance.get(
-    "/codemods/:slug",
-    wrapRequestHandlerMethod(getCodemodBySlugHandler),
+      reply.type("application/json").code(200);
+      return { version: packageJson.default.version };
+    },
   );
 
-  instance.get("/codemods", wrapRequestHandlerMethod(getCodemodsHandler));
+  instance.get("/codemods/:slug", getCodemodBySlugHandler);
 
-  instance.get(
+  instance.get("/codemods", getCodemodsHandler);
+
+  instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
     "/codemods/downloadLink",
     { preHandler: [instance.authenticateCLI, instance.getUserData] },
-    wrapRequestHandlerMethod(getCodemodDownloadLink),
+    getCodemodDownloadLink,
   );
 
   instance.get(
     "/codemods/list",
     { preHandler: [instance.authenticateCLI, instance.getUserData] },
-    wrapRequestHandlerMethod(getCodemodsListHandler),
+    getCodemodsListHandler,
   );
 
-  instance.get("/diffs/:id", async (request, reply) => {
-    const { id } = parseGetCodeDiffParams(request.params);
-    const { iv: ivStr } = parseIv(request.query);
+  instance.get<{ Reply: { before: string; after: string } }>(
+    "/diffs/:id",
+    async (request, reply) => {
+      const { id } = parseGetCodeDiffParams(request.params);
+      const { iv: ivStr } = parseIv(request.query);
 
-    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-    const iv = Buffer.from(ivStr, "base64url");
+      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+      const iv = Buffer.from(ivStr, "base64url");
 
-    const codeDiff = await prisma.codeDiff.findUnique({
-      where: { id },
-    });
+      const codeDiff = await prisma.codeDiff.findUnique({
+        where: { id },
+      });
 
-    if (!codeDiff) {
-      reply.code(400).send();
-      return;
-    }
+      if (!codeDiff) {
+        reply.code(400).send();
+        return;
+      }
 
-    let before: string;
-    let after: string;
-    try {
-      before = decrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(codeDiff.before, "base64url"),
-      ).toString();
-      after = decrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(codeDiff.after, "base64url"),
-      ).toString();
-    } catch (err) {
-      reply.code(400).send();
-      return;
-    }
-
-    reply.type("application/json").code(200);
-    return { before, after };
-  });
-
-  instance.post("/diffs", async (request, reply) => {
-    const body = parseDiffCreationBody(request.body);
-
-    const iv = randomBytes(16);
-    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-
-    const codeDiff = await prisma.codeDiff.create({
-      data: {
-        name: body.name,
-        source: body.source,
-        before: encrypt(
+      let before: string;
+      let after: string;
+      try {
+        before = decrypt(
           "aes-256-cbc",
           { key, iv },
-          Buffer.from(body.before),
-        ).toString("base64url"),
-        after: encrypt(
+          Buffer.from(codeDiff.before, "base64url"),
+        ).toString();
+        after = decrypt(
           "aes-256-cbc",
           { key, iv },
-          Buffer.from(body.after),
-        ).toString("base64url"),
-      },
-    });
+          Buffer.from(codeDiff.after, "base64url"),
+        ).toString();
+      } catch (err) {
+        reply.code(400).send();
+        return;
+      }
 
-    reply.type("application/json").code(200);
-    return { id: codeDiff.id, iv: iv.toString("base64url") };
-  });
+      reply.type("application/json").code(200);
+      return { before, after };
+    },
+  );
 
-  instance.get(
+  instance.post<{ Reply: { id: string; iv: string } }>(
+    "/diffs",
+    async (request, reply) => {
+      const body = parseDiffCreationBody(request.body);
+
+      const iv = randomBytes(16);
+      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+
+      const codeDiff = await prisma.codeDiff.create({
+        data: {
+          name: body.name,
+          source: body.source,
+          before: encrypt(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(body.before),
+          ).toString("base64url"),
+          after: encrypt(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(body.after),
+          ).toString("base64url"),
+        },
+      });
+
+      reply.type("application/json").code(200);
+      return { id: codeDiff.id, iv: iv.toString("base64url") };
+    },
+  );
+
+  instance.get<{ Reply: { token: string } }>(
     "/intents/:id",
     { preHandler: instance.authenticateCLI },
     async (request, reply) => {
@@ -382,7 +323,9 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.post(
+  instance.post<{
+    Reply: { html_url: string };
+  }>(
     "/sourceControl/:provider/issues",
     { preHandler: instance.getOAuthToken },
     async (
@@ -411,16 +354,20 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.post(
-    "/publish",
+  instance.post<{ Reply: PopulateLoginIntentResponse }>(
+    "/populateLoginIntent",
     { preHandler: instance.getUserData },
-    wrapRequestHandlerMethod(publishHandler),
+    populateLoginIntent,
   );
 
-  instance.post(
+  instance.post<{
+    Reply: PublishHandlerResponse;
+  }>("/publish", { preHandler: instance.getUserData }, publishHandler);
+
+  instance.post<{ Reply: UnPublishHandlerResponse }>(
     "/unpublish",
     { preHandler: instance.getUserData },
-    wrapRequestHandlerMethod(unpublishHandler),
+    unpublishHandler,
   );
 
   instance.get(
