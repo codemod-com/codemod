@@ -73,7 +73,7 @@ const removeMockFeatureFlagComponent = (mockFeatureFlag: JsxElement) => {
   );
 };
 
-const removeImport = (mockFeatureFlagImport: ImportDeclaration) => {
+const removeImportIfUnused = (mockFeatureFlagImport: ImportDeclaration) => {
   const namedImports = mockFeatureFlagImport.getNamedImports();
 
   if (namedImports.length !== 0) {
@@ -169,7 +169,7 @@ const removeMockFlagsAttributes = (
         removeMockFeatureFlagComponent(parent);
 
         if (importDeclaration !== undefined) {
-          removeImport(importDeclaration);
+          removeImportIfUnused(importDeclaration);
         }
       }
     });
