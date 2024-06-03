@@ -195,7 +195,7 @@ export function handleSourceFile(
   const optionsWithProvider = { ...options, provider };
 
   /**
-   * Removes the `${key}` type property from FlagDict type literal
+   * Removes the feature flag key type property from FlagDict
    */
 
   if (filePath.endsWith("FeatureFlagProvider.tsx")) {
@@ -204,7 +204,7 @@ export function handleSourceFile(
   }
 
   /**
-   * removes feature flag from mockFlags
+   * removes feature flag key from mockFlags attribute in MockFeatureFlag component
    */
   if (filePath.endsWith("spec.tsx")) {
     removeMockFlagsAttributes(sourceFile, optionsWithProvider);
@@ -212,7 +212,7 @@ export function handleSourceFile(
   }
 
   /**
-   * removes feature flag params from stories
+   * removes feature flag from stories `args`
    */
   if (filePath.endsWith("stories.tsx")) {
     removeMockFeatureFlagArgs(sourceFile, optionsWithProvider);
