@@ -119,7 +119,7 @@ ${before.text}
     }
     const openai = new OpenAI({ apiKey });
     this.completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-4",
       seed: 7,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
