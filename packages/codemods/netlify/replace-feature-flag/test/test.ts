@@ -39,21 +39,49 @@ const transform = (
 };
 
 describe("Replace feature flag", () => {
-  it.todo("Should replace feature flag with boolean value", async () => {
+  it("Should remove type literal property in FlagDict type literal", async () => {
     const INPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/netlify.input.js"),
+      join(__dirname, "..", "__testfixtures__/typeLiteralProperty.input.ts"),
       "utf-8",
     );
     const OUTPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/netlify.output.js"),
+      join(__dirname, "..", "__testfixtures__/typeLiteralProperty.output.ts"),
       "utf-8",
     );
 
-    const { actual, expected } = transform(INPUT, OUTPUT, "index.tsx", {
-      key: "simple-case",
+    const { actual, expected } = transform(
+      INPUT,
+      OUTPUT,
+      "./FeatureFlagProvider.tsx",
+      {
+        key: "the_key",
+        type: "boolean",
+        value: "true",
+      },
+    );
+
+    console.log(actual, "???");
+
+    assert.deepEqual(actual, expected);
+  });
+
+  it("Should remove type literal property in FlagDict type literal", async () => {
+    const INPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/mockFlags.input.tsx"),
+      "utf-8",
+    );
+    const OUTPUT = await readFile(
+      join(__dirname, "..", "__testfixtures__/mockFlags.output.tsx"),
+      "utf-8",
+    );
+
+    const { actual, expected } = transform(INPUT, OUTPUT, "./test.spec.tsx", {
+      key: "the_key",
       type: "boolean",
       value: "true",
     });
+
+    console.log(actual, "???");
 
     assert.deepEqual(actual, expected);
   });
