@@ -22,7 +22,7 @@ import {
 const names = ["useFlag"];
 
 const getVariableValueReplacerNode = (
-  key: string,
+  _: string,
   type: VariableType,
   value: VariableValue,
 ) => {
@@ -52,38 +52,12 @@ export const provider: Provider = {
 
       return null;
     },
-  getReplacer: (
-    key: string,
-    type: VariableType,
-    value: VariableValue,
-    name: string,
-  ) => {
+  getReplacer: (key: string, type: VariableType, value: VariableValue) => {
     return getVariableValueReplacerNode(key, type, value);
   },
 };
 
-const removeFeatureFlagProperty = (
-  sourceFile: SourceFile,
-  options: Options,
-) => {
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration)
-    .forEach((tad) => {
-      if (tad.getName() !== "FlagDict") {
-        return;
-      }
-
-      const type = tad.getTypeNode();
-
-      if (!Node.isTypeLiteral(type)) {
-        return;
-      }
-
-      type.getProperty(options.key)?.remove();
-    });
-};
-
-const replaceMockFeatureFlag = (mockFeatureFlag: JsxElement) => {
+const removeMockFeatureFlagComponent = (mockFeatureFlag: JsxElement) => {
   const children = mockFeatureFlag
     .getJsxChildren()
     .filter((c) => !(Node.isJsxText(c) && c.getFullText().trim() === ""));
@@ -152,7 +126,31 @@ const matchMockFeatureFlag = (jsx: JsxOpeningElement) => {
   };
 };
 
-const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
+const removeFeatureFlagKeyFromFlagsDict = (
+  sourceFile: SourceFile,
+  options: Options,
+) => {
+  sourceFile
+    .getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration)
+    .forEach((tad) => {
+      if (tad.getName() !== "FlagDict") {
+        return;
+      }
+
+      const type = tad.getTypeNode();
+
+      if (!Node.isTypeLiteral(type)) {
+        return;
+      }
+
+      type.getProperty(options.key)?.remove();
+    });
+};
+
+const removeMockFeatureFlagComponents = (
+  sourceFile: SourceFile,
+  options: Options,
+) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
     .forEach((jsx) => {
@@ -168,7 +166,7 @@ const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
 
       // remove the whole Provider and its import if no properties left after key removal
       if (mockFlagsAttribute.getProperties().length === 0) {
-        replaceMockFeatureFlag(parent);
+        removeMockFeatureFlagComponent(parent);
 
         if (importDeclaration !== undefined) {
           removeImport(importDeclaration);
@@ -177,7 +175,10 @@ const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
     });
 };
 
-const removeMockFlagsStories = (sourceFile: SourceFile, options: Options) => {
+const removeMockFeatureFlagArgs = (
+  sourceFile: SourceFile,
+  options: Options,
+) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
     .forEach((ole) => {
@@ -198,7 +199,7 @@ export function handleSourceFile(
    */
 
   if (filePath.endsWith("FeatureFlagProvider.tsx")) {
-    removeFeatureFlagProperty(sourceFile, optionsWithProvider);
+    removeFeatureFlagKeyFromFlagsDict(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();
   }
 
@@ -206,7 +207,7 @@ export function handleSourceFile(
    * removes feature flag from mockFlags
    */
   if (filePath.endsWith("spec.tsx")) {
-    removeMockedFlags(sourceFile, optionsWithProvider);
+    removeMockFeatureFlagComponents(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();
   }
 
@@ -214,7 +215,7 @@ export function handleSourceFile(
    * removes feature flag params from stories
    */
   if (filePath.endsWith("stories.tsx")) {
-    removeMockFlagsStories(sourceFile, optionsWithProvider);
+    removeMockFeatureFlagArgs(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();
   }
 
