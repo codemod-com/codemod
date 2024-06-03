@@ -60,8 +60,6 @@ describe("Replace feature flag", () => {
       },
     );
 
-    console.log(actual, "???");
-
     assert.deepEqual(actual, expected);
   });
 
@@ -80,8 +78,6 @@ describe("Replace feature flag", () => {
       type: "boolean",
       value: "true",
     });
-
-    console.log(actual, "???");
 
     assert.deepEqual(actual, expected);
   });

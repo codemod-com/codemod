@@ -1,4 +1,9 @@
-import type { ImportDeclaration, JsxElement, SourceFile } from "ts-morph";
+import type {
+  ImportDeclaration,
+  JsxElement,
+  JsxOpeningElement,
+  SourceFile,
+} from "ts-morph";
 import { type CallExpression, Node, SyntaxKind, ts } from "ts-morph";
 
 import { handleSourceFile as handleSourceFileCore } from "../../../replace-feature-flag-core/src/index.js";
@@ -103,53 +108,71 @@ const removeImport = (mockFeatureFlagImport: ImportDeclaration) => {
 
   mockFeatureFlagImport.remove();
 };
+
+const matchMockFeatureFlag = (jsx: JsxOpeningElement) => {
+  if (
+    jsx.wasForgotten() ||
+    jsx.getTagNameNode()?.getFullText() !== "MockFeatureFlag"
+  ) {
+    return null;
+  }
+
+  const mockFlagsAttribute = jsx
+    .getAttribute("mockFlags")
+    ?.getFirstDescendantByKind(SyntaxKind.ObjectLiteralExpression);
+
+  if (mockFlagsAttribute === undefined) {
+    return null;
+  }
+
+  const tag = jsx.getTagNameNode();
+
+  if (!Node.isIdentifier(tag)) {
+    return null;
+  }
+
+  const parent = jsx.getParent();
+
+  if (!Node.isJsxElement(parent)) {
+    return null;
+  }
+
+  const importDeclaration = tag
+    ?.getDefinitions()
+    .at(0)
+    ?.getNode()
+    ?.getFirstAncestorByKind(SyntaxKind.ImportDeclaration);
+
+  return {
+    mockFlagsAttribute,
+    jsx,
+    tag,
+    parent,
+    importDeclaration,
+  };
+};
+
 const removeMockedFlags = (sourceFile: SourceFile, options: Options) => {
   sourceFile
     .getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
     .forEach((jsx) => {
-      if (jsx.wasForgotten()) {
+      const match = matchMockFeatureFlag(jsx);
+
+      if (match === null) {
         return;
       }
 
-      const tag = jsx.getTagNameNode();
+      const { mockFlagsAttribute, parent, importDeclaration } = match;
 
-      if (!Node.isIdentifier(tag) || tag.getFullText() !== "MockFeatureFlag") {
-        return;
-      }
-
-      const mockFlagsAttr = jsx.getAttribute("mockFlags");
-
-      const expression = mockFlagsAttr?.getFirstDescendantByKind(
-        SyntaxKind.ObjectLiteralExpression,
-      );
-
-      if (expression === undefined) {
-        return;
-      }
-
-      expression.getProperty(options.key)?.remove();
+      mockFlagsAttribute.getProperty(options.key)?.remove();
 
       // remove the whole Provider and its import if no properties left after key removal
-      if (expression.getProperties().length === 0) {
-        const jsxElement = jsx.getParent();
+      if (mockFlagsAttribute.getProperties().length === 0) {
+        replaceMockFeatureFlag(parent);
 
-        if (!Node.isJsxElement(jsxElement)) {
-          return;
+        if (importDeclaration !== undefined) {
+          removeImport(importDeclaration);
         }
-
-        const maybeImportDeclaration = tag
-          .getDefinitions()
-          .at(0)
-          ?.getNode()
-          ?.getFirstAncestorByKind(SyntaxKind.ImportDeclaration);
-
-        replaceMockFeatureFlag(jsxElement);
-
-        if (!Node.isImportDeclaration(maybeImportDeclaration)) {
-          return;
-        }
-
-        removeImport(maybeImportDeclaration);
       }
     });
 };
@@ -187,6 +210,9 @@ export function handleSourceFile(
     return sourceFile.getFullText();
   }
 
+  /**
+   * removes feature flag params from stories
+   */
   if (filePath.endsWith("stories.tsx")) {
     removeMockFlagsStories(sourceFile, optionsWithProvider);
     return sourceFile.getFullText();

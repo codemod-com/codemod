@@ -15,3 +15,7 @@ import MockFeatureFlag from '~stories/MockFeatureFlag';
         <C4 />
     </C3>
 </MockFeatureFlag>
+
+<MockFeatureFlag mockFlags={{ the_key: true, }}>
+    <C1 />
+</MockFeatureFlag>
