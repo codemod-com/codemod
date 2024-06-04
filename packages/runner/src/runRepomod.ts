@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type * as INodeFs from "node:fs";
 import { basename, dirname, join } from "node:path";
 import {
   type CallbackService,
@@ -13,7 +14,7 @@ import {
 } from "@codemod-com/filemod";
 import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
-import { type FileSystemAdapter, glob } from "fast-glob";
+import { glob } from "glob";
 import jscodeshift from "jscodeshift";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
@@ -90,7 +91,7 @@ export const runRepomod = async (
       absolute: true,
       cwd: globArguments.currentWorkingDirectory,
       ignore: globArguments.excludePatterns.slice(),
-      fs: fileSystem as Partial<FileSystemAdapter>,
+      fs: fileSystem as typeof INodeFs,
       dot: true,
     });
   };

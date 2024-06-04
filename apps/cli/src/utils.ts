@@ -6,7 +6,7 @@ import {
   execPromise,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 import keytar from "keytar";
 import { validateAccessToken } from "./apis";
 
@@ -118,7 +118,7 @@ export const rebuildCodemodFallback = async (options: {
       absolute: true,
       ignore: ["**/node_modules/**"],
       cwd: source,
-      onlyFiles: true,
+      nodir: true,
     });
 
     return mainFiles.at(0);

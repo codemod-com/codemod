@@ -6,7 +6,7 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import esbuild from "esbuild";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
@@ -31,20 +31,10 @@ export const handleBuildCliCommand = async (
 
   const codemodRc = parseCodemodConfig(JSON.parse(codemodRcContent));
 
-  let entryPointGlob: string[];
-  if (codemodRc.build?.input) {
-    entryPointGlob = await glob(codemodRc.build.input, {
-      absolute: true,
-      cwd: absoluteSource,
-      onlyFiles: true,
-    });
-  } else {
-    entryPointGlob = await glob("./src/index.{ts,js}", {
-      absolute: true,
-      cwd: absoluteSource,
-      onlyFiles: true,
-    });
-  }
+  const entryPointGlob = await glob(
+    codemodRc.build?.input ? codemodRc.build.input : "./src/index.{ts,js}",
+    { absolute: true, cwd: absoluteSource, nodir: true },
+  );
 
   const entryPoint = entryPointGlob.at(0);
   if (!isNeitherNullNorUndefined(entryPoint)) {

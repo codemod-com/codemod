@@ -1,3 +1,4 @@
+import type * as INodeFs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
@@ -9,7 +10,7 @@ import {
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
 } from "@codemod-com/utilities";
-import { type FileSystemAdapter, glob, globStream } from "fast-glob";
+import { glob, globStream } from "glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
@@ -246,14 +247,12 @@ export const buildPathsGlob = async (
     exclude: string[];
   },
 ) => {
-  const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
-
   return glob(patterns.include, {
     absolute: true,
     cwd: flowSettings.target,
-    fs: fileSystemAdapter,
+    fs: fileSystem as typeof INodeFs,
     ignore: patterns.exclude,
-    onlyFiles: true,
+    nodir: true,
     dot: true,
   });
 };
@@ -266,14 +265,12 @@ async function* buildPathGlobGenerator(
     exclude: string[];
   },
 ): AsyncGenerator<string, void, unknown> {
-  const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
-
   const stream = globStream(patterns.include, {
     absolute: true,
     cwd: flowSettings.target,
-    fs: fileSystemAdapter,
+    fs: fileSystem as typeof INodeFs,
     ignore: patterns.exclude,
-    onlyFiles: true,
+    nodir: true,
     dot: true,
   });
 

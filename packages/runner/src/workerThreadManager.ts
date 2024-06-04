@@ -11,7 +11,6 @@ import type { FormattedFileCommand } from "./fileCommands.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
 export class WorkerThreadManager {
-  private __finished = false;
   private __idleWorkerIds: number[] = [];
   private __workers: Worker[] = [];
   private __workerTimestamps: number[] = [];
@@ -67,10 +66,6 @@ export class WorkerThreadManager {
   }
 
   public async terminateWorkers() {
-    if (this.__finished) {
-      return;
-    }
-
     for (const worker of this.__workers) {
       await worker.terminate();
     }
@@ -80,6 +75,7 @@ export class WorkerThreadManager {
     const iteratorResult = await this.__pathGenerator.next();
 
     if (iteratorResult.done) {
+      console.log("No more paths");
       this.__noMorePaths = true;
 
       if (this._getShouldFinish()) {
@@ -99,10 +95,6 @@ export class WorkerThreadManager {
   }
 
   private async __work(): Promise<void> {
-    if (this.__finished) {
-      return;
-    }
-
     const filePath = this.__filePaths.shift();
 
     if (filePath === undefined) {
@@ -141,6 +133,10 @@ export class WorkerThreadManager {
   }
 
   private _getShouldFinish() {
+    console.log(this.__noMorePaths);
+    console.log(this.__totalFileCount !== null);
+    console.log(this.__processedFileNumber === this.__totalFileCount);
+    console.log(this.__idleWorkerIds.length === this.__workerCount);
     return (
       this.__noMorePaths &&
       this.__totalFileCount !== null &&
@@ -180,11 +176,13 @@ export class WorkerThreadManager {
           : null,
       });
 
+      this.__idleWorkerIds.push(i);
+
       if (this._getShouldFinish()) {
         await this.__finish();
+        return;
       }
 
-      this.__idleWorkerIds.push(i);
       await this.__work();
     };
   }
