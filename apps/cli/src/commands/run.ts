@@ -72,19 +72,17 @@ const checkFileTreeVersioning = async (target: string) => {
       });
 
       force = res.force;
+    } else {
+      const res = await inquirer.prompt<{ force: boolean }>({
+        type: "confirm",
+        name: "force",
+        message:
+          "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
+        default: false,
+      });
 
-      return;
+      force = res.force;
     }
-
-    const res = await inquirer.prompt<{ force: boolean }>({
-      type: "confirm",
-      name: "force",
-      message:
-        "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
-      default: false,
-    });
-
-    force = res.force;
   }
 
   if (!force) {
