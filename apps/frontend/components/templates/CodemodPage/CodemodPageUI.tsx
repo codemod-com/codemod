@@ -1,8 +1,5 @@
 import Button from "@/components/shared/Button";
 import Icon from "@/components/shared/Icon";
-import LinkButton from "@/components/shared/LinkButton";
-import RunCTAButton from "@/components/shared/RunCTAButton";
-import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
@@ -10,11 +7,7 @@ import { AuthorSection } from "@/components/templates/CodemodPage/AuthorSection"
 import { VCCodeShift } from "@/components/templates/CodemodPage/VCCodeShift";
 import { getCodemodCard } from "@/components/templates/CodemodPage/buildYourCodemodCard";
 import { getFrameworkCard } from "@/components/templates/CodemodPage/getFrameworkCard";
-import {
-  CURSOR_PREFIX,
-  REGISTRY_FILTER_TYPES,
-  VSCODE_PREFIX,
-} from "@/constants";
+import { REGISTRY_FILTER_TYPES } from "@/constants";
 import type { CodemodPagePayload } from "@/types";
 import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
@@ -157,7 +150,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
             )}
           </div>
           {description ? (
-            <div className=" [&_code]:inline-code mt-10 hidden flex-col gap-4 lg:flex [&_a]:underline">
+            <div className="mt-10 hidden flex-col gap-4 lg:flex">
               {description}
             </div>
           ) : null}

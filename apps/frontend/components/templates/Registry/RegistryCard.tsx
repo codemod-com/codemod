@@ -1,3 +1,4 @@
+import Markdown from "@/components/global/ReactMarkdown";
 import Icon from "@/components/shared/Icon";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { REGISTRY_FILTER_TYPES } from "@/constants";
@@ -11,9 +12,9 @@ import VerifiedBadge from "./VerifiedBadge";
 import {
   getAutomationFrameworkTitles,
   getAutomationPathname,
+  getDescriptionShortText,
   getFilterIcon,
   getFilterSection,
-  getFormattedDescription,
 } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
@@ -21,7 +22,7 @@ export default function RegistryCard(props: RegistryCardData) {
 
   const { cleaned: author } = vercelStegaSplit(`${props.author}`);
 
-  const formattedDescription = getFormattedDescription(
+  const formattedDescription = getDescriptionShortText(
     props.shortDescription || "",
   );
 
@@ -63,12 +64,11 @@ export default function RegistryCard(props: RegistryCardData) {
               {unslugify(props.name || "Untitled Automation")}
             </h3>
           </SanityLink>
-          {!!formattedDescription.length && (
-            <p
-              className="body-l mt-3 line-clamp-3"
-              dangerouslySetInnerHTML={{ __html: formattedDescription }}
-            />
-          )}
+          {formattedDescription ? (
+            <div className=" mt-10 flex-col gap-4">
+              <Markdown>{formattedDescription}</Markdown>
+            </div>
+          ) : null}
         </div>
       </div>
 
