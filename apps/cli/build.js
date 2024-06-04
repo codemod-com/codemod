@@ -36,6 +36,7 @@ build({
     "keytar",
     "prettier",
     // Workaround for @vue/compiler-sfc dynamic require
+    "react",
     "mustache",
     "templayed",
     "handlebars",

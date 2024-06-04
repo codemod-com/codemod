@@ -1,5 +1,5 @@
+import { prisma } from "@codemod-com/database";
 import { CronJob } from "cron";
-import { prisma } from "./db/prisma";
 import { PostHogService } from "./services/PostHogService";
 import { environment } from "./util";
 

@@ -1,4 +1,5 @@
 import { getAuth } from "@clerk/fastify";
+import { prisma } from "@codemod-com/database";
 import {
   decryptWithIv,
   encryptWithIv,

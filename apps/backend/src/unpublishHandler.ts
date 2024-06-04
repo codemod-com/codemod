@@ -1,10 +1,10 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { prisma } from "@codemod-com/database";
 import {
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
-import { prisma } from "./db/prisma.js";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { parseUnpublishBody } from "./schemata/schema";
 import { environment } from "./util";

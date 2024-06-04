@@ -4,15 +4,7 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "start": "node build/index.js",
-    "test": "vitest --run",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:push": "prisma db push",
-    "db:clear": "prisma migrate reset",
-    "db:generate": "prisma generate",
-    "db:migrate:apply": "prisma migrate deploy",
-    "db:migrate:generate": "prisma migrate dev --name",
-    "db:version": "prisma -v",
-    "db:studio": "prisma studio"
+    "test": "vitest --run"
   },
   "author": "Codemod inc.",
   "private": true,
@@ -28,6 +20,7 @@
     "@types/supertest": "^6.0.2",
     "dotenv-cli": "^7.4.1",
     "esbuild": "^0.19.12",
+    "esbuild-plugin-copy": "^2.1.1",
     "fastify-plugin": "4.5.1",
     "nodemon": "3.0.2",
     "supertest": "^6.3.4",
@@ -41,6 +34,7 @@
     "@aws-sdk/s3-request-presigner": "^3.549.0",
     "@clerk/backend": "0.36.0",
     "@clerk/fastify": "0.6.27",
+    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "^2.1.1",
     "@fastify/cors": "8.5.0",

@@ -2,7 +2,7 @@ import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetScopedTokenResponse,
-  ValidateTokenResponse,
+  VerifyCLITokenResponse,
 } from "@codemod-com/utilities";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 import type FormData from "form-data";
@@ -20,12 +20,11 @@ export const getCLIAccessToken = async (
   return res.data;
 };
 
-export const validateAccessToken = async (
+export const validateCLIToken = async (
   accessToken: string,
-): Promise<ValidateTokenResponse> => {
-  const res = await Axios.post<ValidateTokenResponse>(
-    `${process.env.BACKEND_URL}/validateAccessToken`,
-    {},
+): Promise<VerifyCLITokenResponse> => {
+  const res = await Axios.get<VerifyCLITokenResponse>(
+    `${process.env.AUTH_BACKEND_URL}/userData`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
       timeout: 5000,
@@ -62,11 +61,13 @@ export const unpublish = async (
   );
 };
 
+// @TODO
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-  await Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
-    headers: { Authorization: `Bearer ${accessToken}` },
-    timeout: 10000,
-  });
+  return void 0;
+  // await Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
+  //   headers: { Authorization: `Bearer ${accessToken}` },
+  //   timeout: 10000,
+  // });
 };
 
 export const getCodemodDownloadURI = async (
@@ -122,7 +123,7 @@ type UserLoginIntentResponse = {
 export const generateUserLoginIntent =
   async (): Promise<UserLoginIntentResponse> => {
     const res = await Axios.post<UserLoginIntentResponse>(
-      `${process.env.BACKEND_URL}/intents`,
+      `${process.env.AUTH_BACKEND_URL}/intents`,
       {},
     );
 
@@ -137,7 +138,7 @@ export const confirmUserLoggedIn = async (
   iv: string,
 ): Promise<string> => {
   const res = await Axios.get<ConfirmUserLoggedInResponse>(
-    `${process.env.BACKEND_URL}/intents/${sessionId}?iv=${iv}`,
+    `${process.env.AUTH_BACKEND_URL}/intents/${sessionId}?iv=${iv}`,
   );
 
   return res.data.token;

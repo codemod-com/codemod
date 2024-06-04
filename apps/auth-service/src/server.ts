@@ -1,22 +1,14 @@
 import "dotenv/config";
 
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
-import fastifyMultipart from "@fastify/multipart";
-import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, {
-  type FastifyRequest,
-  type FastifyPluginCallback,
-} from "fastify";
-
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
-
 import {
   type GetScopedTokenResponse,
-  decryptWithIv,
-  encryptWithIv,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import fastifyRateLimit from "@fastify/rate-limit";
+import Fastify, { type FastifyPluginCallback } from "fastify";
 import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";
@@ -98,8 +90,6 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     max: 1000,
     timeWindow: 60 * 1000,
   });
-
-  await fastify.register(fastifyMultipart);
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);

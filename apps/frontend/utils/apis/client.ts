@@ -10,7 +10,7 @@ const apiClient = axios.create({
 // mostly for local dev, in prod they should be on the same domain.
 // later we need to figure out how to do this in a better way
 const authApiClient = axios.create({
-  baseURL: env.NEXT_PUBLIC_API_URL,
+  baseURL: env.NEXT_PUBLIC_AUTH_API_URL,
   timeout: 60000,
 });
 

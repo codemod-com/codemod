@@ -2,13 +2,13 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-  type ValidateTokenResponse,
+  type VerifyCLITokenResponse,
   execPromise,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import keytar from "keytar";
-import { validateAccessToken } from "./apis";
+import { validateCLIToken } from "./apis";
 
 export const openURL = (url: string): boolean => {
   // `spawnSync` is used because `execSync` has an input length limit
@@ -28,8 +28,7 @@ export const openURL = (url: string): boolean => {
   }
 };
 
-type UserData = {
-  user: ValidateTokenResponse;
+type UserData = VerifyCLITokenResponse & {
   token: string;
 };
 
@@ -41,47 +40,43 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
   }
 
   const { account, password: token } = userCredentials;
-  let responseData: ValidateTokenResponse;
+  let responseData: VerifyCLITokenResponse;
   try {
-    responseData = await validateAccessToken(token);
+    responseData = await validateCLIToken(token);
   } catch (error) {
     await keytar.deletePassword("codemod.com", account);
     return null;
   }
 
-  return { user: responseData, token };
+  return { ...responseData, token };
 };
 
 export const getOrgsNames = (
   userData: UserData,
   type: "slug" | "name" | "slug-and-name" = "slug",
 ): string[] => {
-  let mapFunc: (
-    org: UserData["user"]["organizations"][number],
-  ) => string | null;
+  let mapFunc: (org: UserData["organizations"][number]) => string | null;
   switch (type) {
     case "slug":
-      mapFunc = (org) => org.slug;
+      mapFunc = (org) => org.organization.slug;
       break;
     case "name":
-      mapFunc = (org) => org.name;
+      mapFunc = (org) => org.organization.name;
       break;
     case "slug-and-name":
       mapFunc = (org) => {
-        if (org.name === org.slug) {
-          return org.name;
+        if (org.organization.name === org.organization.slug) {
+          return org.organization.name;
         }
 
-        return `${org.name} (${org.slug})`;
+        return `${org.organization.name} (${org.organization.slug})`;
       };
       break;
     default:
       throw new Error("Invalid type");
   }
 
-  return userData.user.organizations
-    .map(mapFunc)
-    .filter(isNeitherNullNorUndefined);
+  return userData.organizations.map(mapFunc).filter(isNeitherNullNorUndefined);
 };
 
 export const initGlobalNodeModules = async (): Promise<void> => {

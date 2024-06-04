@@ -41,7 +41,14 @@
     "test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
     "coverage": "pnpm test:unit --coverage",
     "prepare": "husky install",
-    "release:changelog": "node scripts/releaseChangelog.mjs"
+    "release:changelog": "node scripts/releaseChangelog.mjs",
+    "db:generate": "dotenv -- turbo run db:generate",
+    "db:migrate:create": "dotenv -- turbo run db:migrate:create",
+    "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
+    "db:push": "dotenv -- turbo run db:push",
+    "db:reset": "dotenv -- turbo run db:reset",
+    "db:seed": "dotenv -- turbo run db:seed",
+    "db:studio": "dotenv -- turbo run db:studio"
   },
   "devDependencies": {
     "@codemod-com/tsconfig": "workspace:*",

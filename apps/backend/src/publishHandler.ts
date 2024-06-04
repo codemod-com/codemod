@@ -1,6 +1,8 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { prisma } from "@codemod-com/database";
+import type { CodemodVersionCreateInputSchema } from "@codemod-com/database/prisma/generated/zod";
 import {
   type CodemodConfig,
   TarService,
@@ -13,8 +15,6 @@ import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
 import type { z } from "zod";
-import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
-import { prisma } from "./db/prisma.js";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { environment } from "./util";
 

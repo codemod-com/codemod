@@ -1,0 +1,34 @@
+{
+  "name": "@codemod-com/database",
+  "type": "module",
+  "version": "1.0.0",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": ["dist/**"],
+  "scripts": {
+    "build": "tsc && node ./build.js",
+    "db:migrate:create": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
+    "db:push": "prisma db push",
+    "db:seed": "tsx src/seed.ts",
+    "db:format": "prisma format",
+    "db:generate": "prisma generate",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset"
+  },
+  "dependencies": {
+    "prisma-json-types-generator": "^3.0.4",
+    "zod": "3.22.3",
+    "zod-prisma-types": "^3.1.6",
+    "@prisma/client": "^5.14.0"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "esbuild": "^0.17.14",
+    "prisma": "^5.14.0",
+    "tsx": "^4.11.0",
+    "typescript": "^5.4.5"
+  }
+}

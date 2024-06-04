@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { prisma } from "@codemod-com/database";
 import { encryptWithIv } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
 import { environment } from "../../util";

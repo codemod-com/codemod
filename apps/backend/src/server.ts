@@ -1,5 +1,6 @@
 import { randomBytes } from "node:crypto";
 import type { User } from "@clerk/backend";
+import { prisma } from "@codemod-com/database";
 import {
   type CodemodRunResponse,
   decryptWithIv,
@@ -12,7 +13,6 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
-import { prisma } from "./db/prisma.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import {
   type GetCodemodDownloadLinkResponse,
