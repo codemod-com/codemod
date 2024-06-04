@@ -22,7 +22,7 @@ export const transpile = (source: string): string => {
   return outputText;
 };
 
-export const getTransformer = (source: string) => {
+export const getTransformer: any = (source: string) => {
   type Exports =
     | {
         __esModule?: true;
