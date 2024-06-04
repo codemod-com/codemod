@@ -189,6 +189,7 @@ export class UnifiedFileSystem {
       })
     )
       // fast-glob has hardcoded separator pathSegmentSeparator: '/', so for windows platform we need to replace backslashes to forwardslashes
+      // side-note, we are not using fast-glob anymore, so maybe this is redundant?
       .map((path) =>
         process.platform === "win32" ? path.replace(/\//g, "\\") : path,
       );

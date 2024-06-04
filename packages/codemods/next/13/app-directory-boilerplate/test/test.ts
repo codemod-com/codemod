@@ -463,7 +463,7 @@ describe("next 13 app-directory-boilerplate", () => {
 			}
 		`;
 
-    const [, , upsertLayoutCommand, upsertLayoutClientComponentCommand] =
+    const [upsertLayoutCommand, upsertLayoutClientComponentCommand] =
       await transform({
         "/opt/project/pages/_app.tsx": _app,
         "/opt/project/pages/_document.tsx": _document,
@@ -553,7 +553,7 @@ describe("next 13 app-directory-boilerplate", () => {
 	}
 `;
 
-    const [, , upsertLayoutCommand, upsertLayoutClientComponentCommand] =
+    const [upsertLayoutCommand, upsertLayoutClientComponentCommand] =
       await transform({
         "/opt/project/pages/_app.tsx": _app,
         "/opt/project/pages/_document.tsx": _document,
@@ -623,7 +623,7 @@ describe("next 13 app-directory-boilerplate", () => {
 			}
 		`;
 
-    const [, , upsertLayoutCommand, , upsertPageCommand, , deleteFileCommand] =
+    const [upsertLayoutCommand, , upsertPageCommand, , deleteFileCommand] =
       await transform({
         "/opt/project/pages/index.tsx": index,
         "/opt/project/pages/_document.tsx": "",

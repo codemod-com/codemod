@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import { type NapiConfig, type SgNode, ts as astGrepTsx } from "@ast-grep/napi";
-import * as fg from "fast-glob";
+import * as glob from "glob";
 import type { PLazy } from "./PLazy.js";
 import { astGrep } from "./astGrep/astGrep.js";
 import { getImports } from "./astGrep/getImports.js";
@@ -54,9 +54,9 @@ export function jsFilesLogic(
     .executor(async (next, self) => {
       const { globs, callback } = self.getArguments();
       const { cwd } = getCwdContext();
-      const files = await fg.glob(globs, {
+      const files = await glob.glob(globs, {
         cwd,
-        onlyFiles: true,
+        nodir: true,
         ignore: [
           "**/node_modules/**",
           "**/.git/**",

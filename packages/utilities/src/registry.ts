@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import type * as INodeFs from "node:fs";
 import { basename, dirname, join } from "node:path";
 import type {
   GlobArguments,
@@ -7,7 +8,7 @@ import type {
   UnifiedEntry,
 } from "@codemod-com/filemod";
 import { UnifiedFileSystem } from "@codemod-com/filemod";
-import glob, { type FileSystemAdapter } from "fast-glob";
+import { glob } from "glob";
 import type { API } from "jscodeshift";
 import jscodeshift from "jscodeshift";
 import type { IFs } from "memfs";
@@ -58,8 +59,8 @@ export const buildGlobWrapper =
       absolute: true,
       cwd: globArguments.currentWorkingDirectory,
       ignore: globArguments.excludePatterns.slice(),
-      fs: fileSystem as Partial<FileSystemAdapter>,
-      onlyFiles: true,
+      fs: fileSystem as unknown as typeof INodeFs,
+      nodir: true,
     });
   };
 

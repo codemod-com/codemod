@@ -8,8 +8,8 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import { glob } from "fast-glob";
 import FormData from "form-data";
+import { glob } from "glob";
 import inquirer from "inquirer";
 import { publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
@@ -160,7 +160,7 @@ export const handlePublishCliCommand = async (
           const inputFiles = await glob(codemodRc.build.input, {
             absolute: true,
             cwd: source,
-            onlyFiles: true,
+            nodir: true,
           });
           const entryPoint = inputFiles.at(0);
           if (entryPoint === undefined) {

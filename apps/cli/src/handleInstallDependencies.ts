@@ -9,7 +9,7 @@ import {
   extractLibNameAndVersion,
   getProjectRootPathAndPackageManager,
 } from "@codemod-com/utilities";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 import inquirer from "inquirer";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
@@ -53,6 +53,7 @@ export const handleInstallDependencies = async (options: {
       cwd: rootPath,
       ignore: ["**/node_modules/**"],
       absolute: true,
+      nodir: true,
     });
 
     if (detectedPackageManager === null) {

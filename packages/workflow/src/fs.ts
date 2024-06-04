@@ -2,7 +2,7 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as fg from "fast-glob";
+import * as glob from "glob";
 import { fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
@@ -51,7 +51,7 @@ export const files = async (
   cb: () => Promise<void>,
 ) => {
   const { cwd } = getCwdContext();
-  const files = await fg.glob(pattern, { cwd, onlyFiles: true });
+  const files = await glob.glob(pattern, { cwd, nodir: true });
   for (const file of files) {
     await fileContext.run(
       { file: path.join(cwd, file), importsUpdates: [] },
@@ -67,7 +67,7 @@ export const jsonFiles = async <T>(
   }) => Promise<void>,
 ) => {
   const { cwd } = getCwdContext();
-  const files = await fg.glob(pattern, { cwd, onlyFiles: true });
+  const files = await glob.glob(pattern, { cwd, nodir: true });
   await cb({
     update: async (updater: T | ((input: T) => T | Promise<T>)) => {
       for (const file of files) {
