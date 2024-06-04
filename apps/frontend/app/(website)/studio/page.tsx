@@ -6,11 +6,12 @@ import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
+  const isDark = document.documentElement.classList.contains("dark");
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
     document.body.classList.remove("bg-gray-darker", "bg-gray-bg-light");
     document.documentElement.classList.add("light");
-  }, []);
+  }, [isDark]);
   return (
     <>
       <div className="studio">
