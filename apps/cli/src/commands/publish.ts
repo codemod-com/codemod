@@ -246,4 +246,6 @@ export const handlePublishCliCommand = async (
       `$ codemod ${codemodRc.name}`,
     )}`,
   );
+
+  return codemodRc.name;
 };
