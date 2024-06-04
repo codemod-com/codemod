@@ -12,4 +12,5 @@ export type TelemetryEvent =
   | Readonly<{
       kind: "codemodPublished";
       codemodName: string;
+      version: string;
     }>;

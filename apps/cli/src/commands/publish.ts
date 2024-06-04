@@ -247,5 +247,5 @@ export const handlePublishCliCommand = async (
     )}`,
   );
 
-  return codemodRc.name;
+  return codemodRc;
 };
