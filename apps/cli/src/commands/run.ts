@@ -255,7 +255,13 @@ export const handleRunCliCommand = async (
   > = {};
 
   const executionErrors = await runner.run(
-    async (codemod, filePaths) => {
+    async ({ codemod, commands, recipe }) => {
+      const modifiedFilePaths = [
+        ...new Set(
+          commands.map((c) => ("oldPath" in c ? c.oldPath : c.newPath)),
+        ),
+      ];
+
       let codemodName = "Standalone codemod (from user machine)";
 
       if (codemod.bundleType === "package") {
@@ -273,7 +279,7 @@ export const handleRunCliCommand = async (
 
         if (rcFile.deps) {
           depsToInstall[codemodName] = {
-            affectedFiles: filePaths,
+            affectedFiles: modifiedFilePaths,
             deps: rcFile.deps,
           };
         }
@@ -282,8 +288,10 @@ export const handleRunCliCommand = async (
       telemetry.sendDangerousEvent({
         kind: "codemodExecuted",
         codemodName,
+        // Codemod executed from the recipe will share the same  executionId
         executionId: runSettings.caseHashDigest.toString("base64url"),
-        fileCount: filePaths.length,
+        fileCount: modifiedFilePaths.length,
+        ...(recipe && { recipeName: recipe.name }),
       });
     },
     (error) => {
