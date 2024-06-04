@@ -7,7 +7,7 @@ import type { PanelData, PanelsRefs } from "../";
 import CodeSnippedPanel, {
   DiffEditorWrapper,
   type useCodeDiff,
-} from "../../JSCodeshiftRender";
+} from "../../../features/codemod-apply/JSCodeshiftRender";
 import SnippetUI from "../../SnippetUI";
 
 type CodeSnippetsProps = {

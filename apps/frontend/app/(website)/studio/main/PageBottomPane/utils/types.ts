@@ -1,5 +1,5 @@
+import type { useCodeDiff } from "@/app/(website)/studio/features/codemod-apply/JSCodeshiftRender";
 import type { KnownEngines } from "@codemod-com/utilities";
-import type { useCodeDiff } from "@studio/main/JSCodeshiftRender";
 import type { VisibilityOptions } from "@studio/types/options";
 import type { ValueOf } from "next/constants";
 import type { MutableRefObject, ReactNode } from "react";

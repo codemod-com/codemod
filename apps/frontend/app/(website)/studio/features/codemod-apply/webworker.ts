@@ -3,6 +3,17 @@ import {
   isIdentifier,
   isMemberExpression,
 } from "@babel/types";
+import {
+  type WebWorkerOutgoingMessage,
+  parseWebWorkerIncomingMessage,
+} from "@studio/schemata/webWorkersSchemata";
+import { EventManager } from "@studio/utils/eventManager";
+import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
+import {
+  type ProxifiedCollection,
+  type ProxifiedPath,
+  proxifyJSCodeshift,
+} from "@studio/utils/proxy";
 import jscodeshift, {
   type API,
   type ArrowFunctionExpression,
@@ -15,17 +26,6 @@ import jscodeshift, {
 } from "jscodeshift";
 import * as tsmorph from "ts-morph";
 import * as ts from "typescript";
-import {
-  type WebWorkerOutgoingMessage,
-  parseWebWorkerIncomingMessage,
-} from "../schemata/webWorkersSchemata";
-import { EventManager } from "./eventManager";
-import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
-import {
-  type ProxifiedCollection,
-  type ProxifiedPath,
-  proxifyJSCodeshift,
-} from "./proxy";
 
 type Exports =
   | {

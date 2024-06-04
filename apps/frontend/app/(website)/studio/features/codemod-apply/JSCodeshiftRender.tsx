@@ -1,5 +1,13 @@
+import { useWebWorker } from "@/app/(website)/studio/features/codemod-apply/useWebWorker";
 import { cn } from "@/utils";
-import { useWebWorker } from "@studio/hooks/useWebWorker";
+import {
+  BoundResizePanel,
+  type PanelData,
+  type PanelsRefs,
+  SnippetHeader,
+  type SnippetType,
+} from "@studio/main/PageBottomPane";
+import { useSnippet } from "@studio/main/SnippetUI";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
 import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
@@ -15,14 +23,6 @@ import {
   useCallback,
   useEffect,
 } from "react";
-import {
-  BoundResizePanel,
-  type PanelData,
-  type PanelsRefs,
-  SnippetHeader,
-  type SnippetType,
-} from "./PageBottomPane";
-import { useSnippet } from "./SnippetUI";
 
 const MonacoDiffEditor = dynamic(
   () => import("@studio/components/Snippet/MonacoDiffEditor"),
