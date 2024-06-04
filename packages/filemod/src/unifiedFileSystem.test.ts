@@ -115,9 +115,9 @@ describe("unifiedFileSystem", () => {
     );
 
     deepStrictEqual(filePaths, [
-      "/opt/project/README.md",
-      "/opt/project/package.json",
       "/opt/project/script_a.sh",
+      "/opt/project/package.json",
+      "/opt/project/README.md",
     ]);
   });
 
