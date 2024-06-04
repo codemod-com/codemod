@@ -1,25 +1,36 @@
 import { getAuth } from "@clerk/fastify";
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  decryptWithIv,
+  encryptWithIv,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
-import { decrypt, encrypt } from "~/crypto/crypto.js";
-import { prisma } from "~/db/prisma.js";
-import { environment } from "~/util.js";
-import { parseBuildAccessTokenQuery } from "../schemata/schema.js";
+import { object, optional, parse, string } from "valibot";
+import { environment } from "../../util";
 
-export type PopulateLoginIntentResponse =
-  | { message: string }
-  | { success: true };
+export type PopulateLoginIntentReply =
+  | { success: true }
+  | { message: string; success: false };
+
+export const populateAccessTokenQuerySchema = object({
+  sessionId: optional(string()),
+  iv: optional(string()),
+});
 
 export const populateLoginIntent: RouteHandler<{
-  Reply: PopulateLoginIntentResponse;
+  Reply: PopulateLoginIntentReply;
 }> = async (request, reply) => {
-  const { sessionId, iv: ivStr } = parseBuildAccessTokenQuery(request.query);
+  const { sessionId, iv: ivStr } = parse(
+    populateAccessTokenQuerySchema,
+    request.query,
+  );
 
   if (
     !isNeitherNullNorUndefined(sessionId) ||
     !isNeitherNullNorUndefined(ivStr)
   ) {
     return reply.status(400).send({
+      success: false,
       message: "Missing required parameters",
     });
   }
@@ -32,11 +43,12 @@ export const populateLoginIntent: RouteHandler<{
 
   if (token === null) {
     return reply.status(401).send({
+      success: false,
       message: "Unauthorized",
     });
   }
 
-  const decryptedSessionId = decrypt(
+  const decryptedSessionId = decryptWithIv(
     "aes-256-cbc",
     { key, iv },
     Buffer.from(sessionId, "base64url"),
@@ -45,9 +57,11 @@ export const populateLoginIntent: RouteHandler<{
   await prisma.userLoginIntent.update({
     where: { id: decryptedSessionId },
     data: {
-      token: encrypt("aes-256-cbc", { key, iv }, Buffer.from(token)).toString(
-        "base64url",
-      ),
+      token: encryptWithIv(
+        "aes-256-cbc",
+        { key, iv },
+        Buffer.from(token),
+      ).toString("base64url"),
     },
   });
 

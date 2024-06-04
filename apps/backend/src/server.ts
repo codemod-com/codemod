@@ -1,6 +1,10 @@
 import { randomBytes } from "node:crypto";
 import type { User } from "@clerk/backend";
-import type { CodemodRunResponse } from "@codemod-com/utilities";
+import {
+  type CodemodRunResponse,
+  decryptWithIv,
+  encryptWithIv,
+} from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -8,7 +12,6 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
-import { decrypt, encrypt } from "./crypto/crypto.js";
 import { prisma } from "./db/prisma.js";
 import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import {
@@ -17,10 +20,6 @@ import {
 } from "./handlers/getCodemodDownloadLink.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
-import {
-  type PopulateLoginIntentResponse,
-  populateLoginIntent,
-} from "./handlers/populateLoginIntent.js";
 import authPlugin from "./plugins/authPlugin.js";
 import {
   type PublishHandlerResponse,
@@ -37,7 +36,6 @@ import {
   parseGetRepoBranchesParams,
   parseGetUserRepositoriesParams,
   parseIv,
-  parseValidateIntentParams,
 } from "./schemata/schema.js";
 import { GithubProvider } from "./services/GithubProvider.js";
 import { queue, redis } from "./services/Redis.js";
@@ -209,12 +207,12 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       let before: string;
       let after: string;
       try {
-        before = decrypt(
+        before = decryptWithIv(
           "aes-256-cbc",
           { key, iv },
           Buffer.from(codeDiff.before, "base64url"),
         ).toString();
-        after = decrypt(
+        after = decryptWithIv(
           "aes-256-cbc",
           { key, iv },
           Buffer.from(codeDiff.after, "base64url"),
@@ -241,12 +239,12 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
         data: {
           name: body.name,
           source: body.source,
-          before: encrypt(
+          before: encryptWithIv(
             "aes-256-cbc",
             { key, iv },
             Buffer.from(body.before),
           ).toString("base64url"),
-          after: encrypt(
+          after: encryptWithIv(
             "aes-256-cbc",
             { key, iv },
             Buffer.from(body.after),
@@ -256,70 +254,6 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       reply.type("application/json").code(200);
       return { id: codeDiff.id, iv: iv.toString("base64url") };
-    },
-  );
-
-  instance.get<{ Reply: { token: string } }>(
-    "/intents/:id",
-    { preHandler: instance.authenticateCLI },
-    async (request, reply) => {
-      const { id } = parseValidateIntentParams(request.params);
-      const { iv: ivStr } = parseIv(request.query);
-
-      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-      const iv = Buffer.from(ivStr, "base64url");
-
-      const result = await prisma.userLoginIntent.findFirst({
-        where: {
-          id: decrypt(
-            "aes-256-cbc",
-            { key, iv },
-            Buffer.from(id, "base64url"),
-          ).toString(),
-        },
-      });
-
-      if (result === null) {
-        reply.code(400).send();
-        return;
-      }
-
-      if (result.token === null) {
-        reply.code(400).send();
-        return;
-      }
-
-      const decryptedToken = decrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(result.token, "base64url"),
-      ).toString();
-
-      await prisma.userLoginIntent.delete({
-        where: { id: result.id },
-      });
-
-      reply.type("application/json").code(200);
-      return { token: decryptedToken };
-    },
-  );
-
-  instance.post(
-    "/intents",
-    { preHandler: instance.authenticateCLI },
-    async (_request, reply) => {
-      const result = await prisma.userLoginIntent.create({});
-
-      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
-      const iv = randomBytes(16);
-      const encryptedSessionId = encrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(result.id),
-      ).toString("base64url");
-
-      reply.type("application/json").code(200);
-      return { id: encryptedSessionId, iv: iv.toString("base64url") };
     },
   );
 
@@ -352,12 +286,6 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       reply.type("application/json").code(200);
       return result;
     },
-  );
-
-  instance.post<{ Reply: PopulateLoginIntentResponse }>(
-    "/populateLoginIntent",
-    { preHandler: instance.getUserData },
-    populateLoginIntent,
   );
 
   instance.post<{

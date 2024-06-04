@@ -36,6 +36,11 @@ export {
   type TypeScriptProjectFiles,
 } from "./package-boilerplate.js";
 export {
+  type KeyIvPair,
+  decryptWithIv,
+  encryptWithIv,
+} from "./functions/crypto.js";
+export {
   buildApi,
   buildGlobWrapper,
   buildPathAPI,

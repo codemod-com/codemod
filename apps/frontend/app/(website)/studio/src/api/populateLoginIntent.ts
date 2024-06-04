@@ -1,4 +1,4 @@
-import apiClient from "@/utils/apis/client";
+import { authApiClient } from "@/utils/apis/client";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import type { AxiosError } from "axios";
 import { POPULATE_LOGIN_INTENT } from "../constants";
@@ -22,7 +22,7 @@ export const populateLoginIntent = async ({
   }
 
   try {
-    const res = await apiClient.post(
+    const res = await authApiClient.post(
       `${POPULATE_LOGIN_INTENT}${
         searchParams.size > 0 ? `?${searchParams.toString()}` : ""
       }`,

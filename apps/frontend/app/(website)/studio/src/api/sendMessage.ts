@@ -1,4 +1,4 @@
-import apiClient from "@/utils/apis/client";
+import { apiClient } from "@/utils/apis/client";
 import type { AxiosError } from "axios";
 import { SEND_MESSAGE } from "../constants";
 import { Either } from "../utils/Either";

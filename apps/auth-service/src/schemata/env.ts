@@ -12,6 +12,7 @@ import {
 
 export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),
+  ENCRYPTION_KEY: string(),
   CLERK_PUBLISH_KEY: string(),
   CLERK_SECRET_KEY: string(),
   CLERK_JWT_KEY: string(),

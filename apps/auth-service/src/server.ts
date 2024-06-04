@@ -13,8 +13,13 @@ import { clerkPlugin, getAuth } from "@clerk/fastify";
 
 import {
   type GetScopedTokenResponse,
+  decryptWithIv,
+  encryptWithIv,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
+import { createLoginIntent } from "./handlers/intents/create.js";
+import { getLoginIntent } from "./handlers/intents/get.js";
+import { populateLoginIntent } from "./handlers/intents/populate.js";
 import { environment } from "./util.js";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -117,6 +122,12 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     secretKey: environment.CLERK_SECRET_KEY,
     jwtKey: environment.CLERK_JWT_KEY,
   });
+
+  instance.get("/intents/:id", getLoginIntent);
+
+  instance.post("/intents", createLoginIntent);
+
+  instance.post("/populateLoginIntent", populateLoginIntent);
 
   instance.get("/verifyToken", async (request, reply) => {
     const { userId } = getAuth(request);
