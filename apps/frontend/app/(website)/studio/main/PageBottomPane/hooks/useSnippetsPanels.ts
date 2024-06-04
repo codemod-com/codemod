@@ -1,4 +1,4 @@
-import { useCodeDiff } from "@/app/(website)/studio/features/codemod-apply/JSCodeshiftRender";
+import { useCodeDiff } from "@studio/hooks/useCodeDiff";
 import { useToggleVisibility } from "@studio/hooks/useToggleVisibility";
 import { type PanelsRefs, panelsData } from "@studio/main/PageBottomPane";
 import { WarningTexts } from "@studio/main/PageBottomPane/Components/WarningTexts";
