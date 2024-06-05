@@ -282,7 +282,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/7889778?v=4",
       "profile": "https://fujino.dev",
       "contributions": [
-        "doc"
+        "doc",
+        "code",
+        "bug"
       ]
     }
   ],
