@@ -29,12 +29,12 @@
       "@studio/main/*": ["./app/(website)/studio/main/*"],
       "@studio/*": ["./app/(website)/studio/src/*"],
       "@chatbot/*": ["./app/(website)/studio/features/modGPT/*"],
+      "@gr-run/*": ["./app/(website)/studio/features/GHRun/*"],
       "tslib": ["node_modules/tslib"],
       "ts-morph": ["node_modules/ts-morph"],
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
-      "@gr-run/*": ["./app/(website)/studio/main/GHRun/*"],
       "be-types": ["../backend/types"],
       "@shared/*": ["../shared/*"]
     },
