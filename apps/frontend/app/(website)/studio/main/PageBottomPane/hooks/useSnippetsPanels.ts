@@ -1,5 +1,5 @@
+import { useCodeDiff } from "@studio/hooks/useCodeDiff";
 import { useToggleVisibility } from "@studio/hooks/useToggleVisibility";
-import { useCodeDiff } from "@studio/main/JSCodeshiftRender";
 import { type PanelsRefs, panelsData } from "@studio/main/PageBottomPane";
 import { WarningTexts } from "@studio/main/PageBottomPane/Components/WarningTexts";
 import { inferVisibilities } from "@studio/main/PageBottomPane/utils/inferVisibilites";
