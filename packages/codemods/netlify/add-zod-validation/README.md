@@ -6,7 +6,7 @@ Add zod validation to query parsing.
 
 ```ts
 const query = buildQuery(props.location?.search ?? '');
-const openCustomizeSiteName = query?.['customize-site-name'] === 'true';
+const someParam = query?.['some-param'] === 'true';
 ```
 
 ### After
@@ -14,11 +14,10 @@ const openCustomizeSiteName = query?.['customize-site-name'] === 'true';
 ```ts
 import { z } from 'zod';
 const querySchema = z.object({
-  'customize-site-name': z.string(),
+  'some-param': z.string(),
 });
 const query = buildQuery(props.location?.search ?? '');
 const parsedQuery = querySchema.parse(query);
-const openCustomizeSiteName = parsedQuery['customize-site-name'] === 'true';
-
+const someParam = parsedQuery['some-param'] === 'true';
 ```
 

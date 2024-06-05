@@ -1,2 +1,2 @@
 const query = buildQuery(props.location?.search ?? '');
-const openCustomizeSiteName = query?.['customize-site-name'] === 'true';
+const someParam = query?.['some-param'] === 'true';
