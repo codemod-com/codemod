@@ -127,7 +127,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/35C4n0r"><img src="https://avatars.githubusercontent.com/u/70096901?v=4?s=100" width="100px;" alt="Jay Kumar"/><br /><sub><b>Jay Kumar</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=35C4n0r" title="Code">💻</a></td>
     </tr>
     <tr>
-      <td align="center" valign="top" width="14.28%"><a href="https://fujino.dev"><img src="https://avatars.githubusercontent.com/u/7889778?v=4?s=100" width="100px;" alt="Shinya Fujino"/><br /><sub><b>Shinya Fujino</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=morinokami" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://fujino.dev"><img src="https://avatars.githubusercontent.com/u/7889778?v=4?s=100" width="100px;" alt="Shinya Fujino"/><br /><sub><b>Shinya Fujino</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=morinokami" title="Documentation">📖</a> <a href="https://github.com/codemod-com/codemod/commits?author=morinokami" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3Amorinokami" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
