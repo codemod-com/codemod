@@ -112,10 +112,13 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
       >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={clsx(`my-2 rounded-lg p-[20px] ${className}`, {
-              // biome-ignore lint/complexity/useLiteralKeys:
-              ["no-scrollbar overflow-x-scroll"]: scrollable,
-            })}
+            className={clsx(
+              `my-2 rounded-lg p-[20px] overflow-y-hidden ${className}`,
+              {
+                // biome-ignore lint/complexity/useLiteralKeys:
+                ["no-scrollbar overflow-x-scroll"]: scrollable,
+              },
+            )}
             style={style}
           >
             {tokens.map((line, i) => (

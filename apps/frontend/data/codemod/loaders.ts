@@ -6,17 +6,25 @@ import type {
 import { vercelStegaSplit } from "@vercel/stega";
 import { buildRegistryIndexDataQuery } from "./queries";
 
-export async function fetchWithTimeout(resource, options = {}) {
-  const { timeout = 8000 } = options as { timeout: number };
+const DEFAULT_FETCH_OPTIONS = {
+  next: {
+    revalidate: 120,
+  },
+  timeout: 8000,
+};
+
+export async function fetchWithTimeout(
+  resource: string,
+  options?: Partial<RequestInit>,
+) {
+  const mergedOptions = { ...DEFAULT_FETCH_OPTIONS, ...options };
+  const { timeout } = mergedOptions;
 
   const controller = new AbortController();
   const id = setTimeout(() => controller.abort(), timeout);
 
   const response = await fetch(resource, {
-    ...options,
-    next: {
-      revalidate: 0,
-    },
+    ...mergedOptions,
     signal: controller.signal,
   });
   clearTimeout(id);
@@ -29,11 +37,7 @@ export async function loadCodemod(pathname: string) {
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
   try {
     // API is regularly unstable, handle timeout errors
-    const response = await fetchWithTimeout(url, {
-      // @ts-ignore - only used in Next.js route context
-      next: { revalidate: 120 },
-      timout: 8000,
-    });
+    const response = await fetchWithTimeout(url);
 
     const data =
       // API is regularly unstable, handle bad gateway errors returning HTML instead of JSON
