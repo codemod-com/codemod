@@ -389,7 +389,8 @@ const tsconfigJson = () => {
         "skipLibCheck": true,
         "strict": true,
         "target": "ES6",
-        "allowJs": true
+        "allowJs": true, 
+        "noUncheckedIndexedAccess": true
       },
       "include": [
         "./src/**/*.ts",
