@@ -227,8 +227,10 @@ export default function transform(
 
     const replaceMethod = replacementFunctions[match];
 
-    replaceMethod(j, root, path);
-    isDirty = true;
+    if (replaceMethod) {
+      replaceMethod(j, root, path);
+      isDirty = true;
+    }
   });
 
   return isDirty ? root.toSource() : undefined;
