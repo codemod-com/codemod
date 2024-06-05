@@ -1,12 +1,15 @@
 "use client";
 
+import { FirstLoginExperience } from "@features/FirstLoginExperience";
+import { isServer } from "@studio/config";
 import { MainPage } from "@studio/main/index";
 import { useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
-  const isDark = document.documentElement.classList.contains("dark");
+  const isDark =
+    !isServer && document.documentElement.classList.contains("dark");
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
     document.body.classList.remove("bg-gray-darker", "bg-gray-bg-light");
@@ -14,6 +17,7 @@ export default function Page() {
   }, [isDark]);
   return (
     <>
+      <FirstLoginExperience />
       <div className="studio">
         <MainPage />
         <Tooltip

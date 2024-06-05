@@ -1,3 +1,3 @@
 export * from "./config";
 export * from "./BlinkingIcon";
-export * from "./firstLoginExperience";
+export * from "./FirstLoginExperience";

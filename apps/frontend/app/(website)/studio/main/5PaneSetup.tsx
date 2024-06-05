@@ -2,7 +2,6 @@ import { LEARN_KEY } from "@/constants";
 import { cn } from "@/utils";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
-import "@features/Explain/firstLoginExperience";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
