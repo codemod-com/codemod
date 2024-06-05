@@ -8,4 +8,9 @@ export type TelemetryEvent =
   | Readonly<{
       kind: "failedToExecuteCommand";
       commandName: string;
+    }>
+  | Readonly<{
+      kind: "codemodPublished";
+      codemodName: string;
+      version: string;
     }>;
