@@ -275,6 +275,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "morinokami",
+      "name": "Shinya Fujino",
+      "avatar_url": "https://avatars.githubusercontent.com/u/7889778?v=4",
+      "profile": "https://fujino.dev",
+      "contributions": [
+        "doc"
+      ]
     }
   ],
   "contributorsPerLine": 7,
