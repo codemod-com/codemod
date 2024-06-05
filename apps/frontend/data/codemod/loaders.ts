@@ -14,6 +14,9 @@ export async function fetchWithTimeout(resource, options = {}) {
 
   const response = await fetch(resource, {
     ...options,
+    next: {
+      revalidate: 0,
+    },
     signal: controller.signal,
   });
   clearTimeout(id);
@@ -34,9 +37,7 @@ export async function loadCodemod(pathname: string) {
 
     const data =
       // API is regularly unstable, handle bad gateway errors returning HTML instead of JSON
-      response.status === 200
-        ? await response.json()
-        : await new Promise((resolve) => resolve({ error: "Not found" }));
+      response.status === 200 ? await response.json() : { error: "Not found" };
     return data as Promise<AutomationResponse | { error: string }>;
   } catch (error) {
     return { error: "Not found" };
