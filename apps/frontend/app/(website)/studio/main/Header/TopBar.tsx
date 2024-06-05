@@ -1,4 +1,5 @@
 import AuthButtons from "@auth/AuthButtons";
+import { FirstLoginExperience } from "@features/FirstLoginExperience";
 import { Button } from "@studio/components/ui/button";
 import { CodemodLogo } from "@studio/icons/CodemodLogo";
 
@@ -13,7 +14,9 @@ export const TopBar = () => {
           <CodemodLogo />
         </a>
       </Button>
-      <AuthButtons variant="studio" />
+      <div className="flex">
+        <FirstLoginExperience /> <AuthButtons variant="studio" />
+      </div>
     </div>
   );
 };

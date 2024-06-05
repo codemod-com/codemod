@@ -1,6 +1,4 @@
 "use client";
-
-import { FirstLoginExperience } from "@features/FirstLoginExperience";
 import { isServer } from "@studio/config";
 import { MainPage } from "@studio/main/index";
 import { useEffect } from "react";
@@ -17,7 +15,6 @@ export default function Page() {
   }, [isDark]);
   return (
     <>
-      <FirstLoginExperience />
       <div className="studio">
         <MainPage />
         <Tooltip
