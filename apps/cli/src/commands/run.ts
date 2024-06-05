@@ -262,7 +262,6 @@ export const handleRunCliCommand = async (
         ),
       ];
 
-      // @TODO decide how to handle deps: should we respect deps of each codemod, or respect the deps of the recipe. or both?
       let codemodName = "Standalone codemod (from user machine)";
 
       if (codemod.bundleType === "package") {

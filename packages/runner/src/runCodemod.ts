@@ -412,6 +412,8 @@ export const runCodemod = async (
       ),
     });
 
+  const allRecipeCommands: FormattedFileCommand[] = [];
+
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
       for (let i = 0; i < codemod.codemods.length; ++i) {
@@ -455,7 +457,11 @@ export const runCodemod = async (
 
         // run onSuccess after each codemod
         onSuccess?.({ codemod: subCodemod, recipe: codemod, commands });
+        allRecipeCommands.push(...commands);
       }
+
+      // run onSuccess for recipe itself
+      onSuccess?.({ codemod, commands: allRecipeCommands, recipe: codemod });
 
       return;
     }
