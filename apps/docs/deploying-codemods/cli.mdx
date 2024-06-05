@@ -30,7 +30,7 @@ npm i -g codemod
 
 ## List available codemods
 
-The <Tooltip tip='Available aliases: `ls` and `search`'>`list`</Tooltip> command can be used to list the codemods available in the Codemod Registry and optionally search for a specific codemod using its name or tags.
+The <Tooltip tip='Available aliases: `ls` and `search`'>`list`</Tooltip> command can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
 
 ```bash
 codemod list [optional search query]
@@ -57,7 +57,7 @@ When using the `codemod` command, Codemod CLI will attempt to run a codemod as l
     Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
   </Step>
   <Step title="List available codemods">
-    Run `codemod list` to see all available codemods in the Codemod Registry.
+    Run `codemod list` to see all available codemods in Codemod Registry.
   </Step>
   <Step title="Run codemod">
     In this example, we will run the `next/13/app-router-recipe` codemod.
@@ -76,7 +76,7 @@ When using the `codemod` command, Codemod CLI will attempt to run a codemod as l
 
 ### Available options
 
-The following options can be used to change the default behavior of the Codemod CLI.
+The following options can be used to change the default behavior of Codemod CLI.
 
 <ResponseField name="--include (-i)" type="glob pattern" default="Defined by the codemod engine">
   Can be used to specify the files to be targeted by the codemod.
@@ -110,7 +110,7 @@ codemod [codemod name] -t [path]
 </ResponseField>
 
 <ResponseField name="--source (-s)" type="string">
-  Can be used to specify the path to the codemod package folder stored locally that you want to run using the Codemod CLI.
+  Can be used to specify the path to the codemod package folder stored locally that you want to run using Codemod CLI.
 
   If your local codemod follows the recommended [codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), it will include a `.codemodrc.json` file. By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. Otherwise, you will need to specify the codemod engine manually.
 
@@ -249,7 +249,7 @@ codemod build
 
 ## Publishing codemods
 
-The `publish` command can be used to [publish a codemod to the Codemod Registry](/codemod-registry/publishing-codemods). Publishing codemods requires [logging in](#login-to-codemod-platform) to Codemod platform.
+The `publish` command can be used to [publish a codemod to Codemod Registry](/codemod-registry/publishing-codemods). Publishing codemods requires [logging in](#login-to-codemod-platform) to Codemod platform.
 
 ```bash
 codemod publish
