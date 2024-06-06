@@ -9,9 +9,10 @@ export const FirstLoginExperience = () => {
   const [isEnabled, setIsEnabled] = useState(false);
   const onStart = () => {
     setIsEnabled(true);
-    (
-      document.getElementsByClassName("sign-in-required")[0] as HTMLElement
-    ).style.display = "none";
+    const signInRequired = document.getElementsByClassName(
+      "sign-in-required",
+    )[0] as HTMLElement;
+    if (signInRequired) signInRequired.style.display = "none";
   };
   useEffect(() => {
     const isFirstTimeUser = !localStorage.getItem("returningUser");
@@ -23,9 +24,10 @@ export const FirstLoginExperience = () => {
   }, []);
 
   const onEnd = () => {
-    (
-      document.getElementsByClassName("sign-in-required")[0] as HTMLElement
-    ).style.display = "grid";
+    const signInRequired = document.getElementsByClassName(
+      "sign-in-required",
+    )[0] as HTMLElement;
+    if (signInRequired) signInRequired.style.display = "grid";
     setIsEnabled(false);
   };
 
