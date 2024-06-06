@@ -1,3 +1,4 @@
+import type * as INodeFs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import type { Filemod } from "@codemod-com/filemod";
@@ -9,12 +10,12 @@ import {
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
 } from "@codemod-com/utilities";
-import { type FileSystemAdapter, glob, globStream } from "fast-glob";
+import { glob, globStream } from "glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
-import type { Codemod } from "./codemod.js";
+import type { Codemod, RunResult } from "./codemod.js";
 import {
   type FormattedFileCommand,
   buildFormattedFileCommands,
@@ -246,14 +247,12 @@ export const buildPathsGlob = async (
     exclude: string[];
   },
 ) => {
-  const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
-
   return glob(patterns.include, {
     absolute: true,
     cwd: flowSettings.target,
-    fs: fileSystemAdapter,
+    fs: fileSystem as typeof INodeFs,
     ignore: patterns.exclude,
-    onlyFiles: true,
+    nodir: true,
     dot: true,
   });
 };
@@ -266,14 +265,12 @@ async function* buildPathGlobGenerator(
     exclude: string[];
   },
 ): AsyncGenerator<string, void, unknown> {
-  const fileSystemAdapter = fileSystem as Partial<FileSystemAdapter>;
-
   const stream = globStream(patterns.include, {
     absolute: true,
     cwd: flowSettings.target,
-    fs: fileSystemAdapter,
+    fs: fileSystem as typeof INodeFs,
     ignore: patterns.exclude,
-    onlyFiles: true,
+    nodir: true,
     dot: true,
   });
 
@@ -393,6 +390,7 @@ export const runCodemod = async (
   safeArgumentRecord: ArgumentRecord,
   engineOptions: EngineOptions | null,
   onCodemodError: CodemodExecutionErrorCallback,
+  onSuccess?: (runResult: RunResult) => Promise<void> | void,
 ): Promise<void> => {
   if (codemod.engine === "piranha") {
     throw new Error("Piranha not supported");
@@ -410,6 +408,8 @@ export const runCodemod = async (
         }. Exiting...`,
       ),
     });
+
+  const allRecipeCommands: FormattedFileCommand[] = [];
 
   if (codemod.engine === "recipe") {
     if (!runSettings.dryRun) {
@@ -449,10 +449,16 @@ export const runCodemod = async (
         );
 
         for (const command of commands) {
-          await onCommand(command);
           await modifyFileSystemUponCommand(fileSystem, runSettings, command);
         }
+
+        // run onSuccess after each codemod
+        onSuccess?.({ codemod: subCodemod, recipe: codemod, commands });
+        allRecipeCommands.push(...commands);
       }
+
+      // run onSuccess for recipe itself
+      onSuccess?.({ codemod, commands: allRecipeCommands, recipe: codemod });
 
       return;
     }
@@ -563,6 +569,8 @@ export const runCodemod = async (
       : codemodSource.toString();
     await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
 
+    // @TODO pass modified paths?
+    onSuccess?.({ codemod, commands: [] });
     return;
   }
 
@@ -617,6 +625,7 @@ export const runCodemod = async (
       await onCommand(command);
     }
 
+    onSuccess?.({ codemod, commands: [...commands] });
     return;
   }
 
@@ -640,6 +649,8 @@ export const runCodemod = async (
   const { engine } = codemod;
 
   printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
+
+  const commands: FormattedFileCommand[] = [];
 
   await new Promise<void>((resolve) => {
     let timeout: NodeJS.Timeout | null = null;
@@ -685,7 +696,10 @@ export const runCodemod = async (
           resolve();
         }, TERMINATE_IDLE_THREADS_TIMEOUT);
       },
-      onCommand,
+      async (command) => {
+        commands.push(command);
+        await onCommand(command);
+      },
       pathGenerator,
       codemod.indexPath,
       engine,
@@ -702,4 +716,6 @@ export const runCodemod = async (
       },
     );
   });
+
+  onSuccess?.({ codemod, commands });
 };

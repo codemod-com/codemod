@@ -41,7 +41,7 @@
     "@codemod-com/filemod": "workspace:*",
     "bl": "^6.0.11",
     "change-case": "^5.2.0",
-    "fast-glob": "^3.3.2",
+    "glob": "^10.4.1",
     "js-beautify": "^1.14.11",
     "jscodeshift": "^0.15.1",
     "ms": "^2.1.3",

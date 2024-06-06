@@ -352,6 +352,8 @@ const codemodRc = ({
   const finalName = changeCase.kebabCase(name);
 
   const configContent = {
+    $schema:
+      "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
     version: version ?? "1.0.0",
     private: false,
     name: finalName,
@@ -387,7 +389,8 @@ const tsconfigJson = () => {
         "skipLibCheck": true,
         "strict": true,
         "target": "ES6",
-        "allowJs": true
+        "allowJs": true, 
+        "noUncheckedIndexedAccess": true
       },
       "include": [
         "./src/**/*.ts",

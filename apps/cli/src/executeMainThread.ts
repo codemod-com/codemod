@@ -262,12 +262,23 @@ export const executeMainThread = async () => {
           description: "path to the codemod to be published",
         }),
       async (args) => {
-        const { executeCliCommand, printer } =
+        const { executeCliCommand, printer, telemetryService } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() =>
-          handlePublishCliCommand(printer, args.source ?? process.cwd()),
-        );
+        return executeCliCommand(async () => {
+          const codemodConfig = await handlePublishCliCommand(
+            printer,
+            args.source ?? process.cwd(),
+          );
+
+          if (codemodConfig !== undefined) {
+            telemetryService.sendEvent({
+              kind: "codemodPublished",
+              codemodName: codemodConfig.name,
+              version: codemodConfig.version,
+            });
+          }
+        });
       },
     )
     .command(

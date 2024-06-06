@@ -1,5 +1,6 @@
 "use client";
 
+import Markdown from "@/components/global/ReactMarkdown";
 import Icon from "@/components/shared/Icon";
 import { SanityImage } from "@/components/shared/SanityImage";
 import { SanityLink } from "@/components/shared/SanityLink";
@@ -11,9 +12,9 @@ import VerifiedBadge from "./VerifiedBadge";
 import {
   getAutomationFrameworkTitles,
   getAutomationPathname,
+  getDescriptionShortText,
   getFilterIcon,
   getFilterSection,
-  getFormattedDescription,
 } from "./helpers";
 
 export default function RegistrySectionCard(
@@ -21,7 +22,7 @@ export default function RegistrySectionCard(
     onFilter: (key?: string | null, value?: string | null) => void;
   },
 ) {
-  const formattedDescription = getFormattedDescription(
+  const formattedDescription = getDescriptionShortText(
     props.shortDescription || "",
   );
 
@@ -63,10 +64,11 @@ export default function RegistrySectionCard(
               {unslugify(props.name || "Untitled Automation")}
             </h3>
           </SanityLink>
-          <p
-            className="body-l line-clamp-3"
-            dangerouslySetInnerHTML={{ __html: formattedDescription }}
-          />
+          {formattedDescription ? (
+            <div className=" mt-10 flex-col gap-4">
+              <Markdown>{formattedDescription}</Markdown>
+            </div>
+          ) : null}
         </div>
       </div>
 

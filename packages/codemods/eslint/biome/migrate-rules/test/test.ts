@@ -196,11 +196,11 @@ describe("eslint and prettier to biome migration", async () => {
               {
                 "linter": {
                   "ignore": [
-                    "ignore-key",
                     "dist",
                     "build",
                     "pnpm-lock.yaml",
                     "node_modules"
+                    "ignore-key",
                   ],
                   "rules": {
                     "suspicious": {
@@ -213,11 +213,11 @@ describe("eslint and prettier to biome migration", async () => {
                   }
                 },
                 "formatter": {
-                  "ignore": [],
                   "indentStyle": "tab"
+                  "ignore": [],
                 }
               }
-	          `.replace(/\W/gm, ""),
+            `.replace(/\W/gm, ""),
       ),
     );
   });

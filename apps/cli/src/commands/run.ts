@@ -72,19 +72,17 @@ const checkFileTreeVersioning = async (target: string) => {
       });
 
       force = res.force;
+    } else {
+      const res = await inquirer.prompt<{ force: boolean }>({
+        type: "confirm",
+        name: "force",
+        message:
+          "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
+        default: false,
+      });
 
-      return;
+      force = res.force;
     }
-
-    const res = await inquirer.prompt<{ force: boolean }>({
-      type: "confirm",
-      name: "force",
-      message:
-        "Could not run git working tree check. Codemod changes might be irreversible. Proceed anyway?",
-      default: false,
-    });
-
-    force = res.force;
   }
 
   if (!force) {
@@ -257,7 +255,13 @@ export const handleRunCliCommand = async (
   > = {};
 
   const executionErrors = await runner.run(
-    async (codemod, filePaths) => {
+    async ({ codemod, commands, recipe }) => {
+      const modifiedFilePaths = [
+        ...new Set(
+          commands.map((c) => ("oldPath" in c ? c.oldPath : c.newPath)),
+        ),
+      ];
+
       let codemodName = "Standalone codemod (from user machine)";
 
       if (codemod.bundleType === "package") {
@@ -275,7 +279,7 @@ export const handleRunCliCommand = async (
 
         if (rcFile.deps) {
           depsToInstall[codemodName] = {
-            affectedFiles: filePaths,
+            affectedFiles: modifiedFilePaths,
             deps: rcFile.deps,
           };
         }
@@ -284,8 +288,10 @@ export const handleRunCliCommand = async (
       telemetry.sendDangerousEvent({
         kind: "codemodExecuted",
         codemodName,
+        // Codemod executed from the recipe will share the same  executionId
         executionId: runSettings.caseHashDigest.toString("base64url"),
-        fileCount: filePaths.length,
+        fileCount: modifiedFilePaths.length,
+        ...(recipe && { recipeName: recipe.name }),
       });
     },
     (error) => {

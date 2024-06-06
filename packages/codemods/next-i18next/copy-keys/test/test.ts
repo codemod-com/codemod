@@ -41,7 +41,7 @@ describe("next-i18n copy keys", () => {
 			}
 		`;
 
-    const [upsertDeDataCommand, upsertEnDataCommand] = await transform(
+    const [upsertEnDataCommand, upsertDeDataCommand] = await transform(
       {
         "/opt/project/public/static/locales/en/common.json": EN_COMMON_JSON,
         "/opt/project/public/static/locales/de/common.json": DE_COMMON_JSON,
@@ -103,7 +103,7 @@ describe("next-i18n copy keys", () => {
 			}
 		`;
 
-    const [upsertDeDataCommand, upsertEnDataCommand] = await transform(
+    const [upsertEnDataCommand, upsertDeDataCommand] = await transform(
       {
         "/opt/project/public/static/locales/en/common.json": EN_COMMON_JSON,
         "/opt/project/public/static/locales/en/existing.json": EN_EXISTING_JSON,

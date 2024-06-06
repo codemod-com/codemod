@@ -1,25 +1,25 @@
+import { useCodeDiff } from "@studio/hooks/useCodeDiff";
 import { useToggleVisibility } from "@studio/hooks/useToggleVisibility";
-import { useCodeDiff } from "@studio/main/JSCodeshiftRender";
 import { type PanelsRefs, panelsData } from "@studio/main/PageBottomPane";
 import { WarningTexts } from "@studio/main/PageBottomPane/Components/WarningTexts";
 import { inferVisibilities } from "@studio/main/PageBottomPane/utils/inferVisibilites";
+import { mergeDeepRight } from "ramda";
 import { useEffect } from "react";
 
 export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
   const { beforePanel, afterPanel, outputPanel } = panelsData;
   const codeDiff = useCodeDiff();
   const warnings = WarningTexts(codeDiff);
-  const afterWithMessages = {
+  const afterWithVisibilityOptions = {
     ...afterPanel,
     visibilityOptions: useToggleVisibility(),
-    snippetData: {
-      ...afterPanel.snippetData,
-      warnings,
-    },
   };
+  const outputWithMessages = mergeDeepRight(outputPanel, {
+    snippetData: { warnings },
+  });
   const { onlyAfterHidden } = inferVisibilities({
     beforePanel,
-    afterPanel: afterWithMessages,
+    afterPanel: afterWithVisibilityOptions,
     outputPanel,
   });
 
@@ -35,8 +35,8 @@ export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
 
   return {
     beforePanel,
-    afterPanel: afterWithMessages,
-    outputPanel,
+    afterPanel: afterWithVisibilityOptions,
+    outputPanel: outputWithMessages,
     codeDiff,
     onlyAfterHidden,
   };

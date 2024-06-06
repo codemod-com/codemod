@@ -9,7 +9,7 @@ import {
   extractLibNameAndVersion,
   getProjectRootPathAndPackageManager,
 } from "@codemod-com/utilities";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 import inquirer from "inquirer";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
@@ -53,6 +53,7 @@ export const handleInstallDependencies = async (options: {
       cwd: rootPath,
       ignore: ["**/node_modules/**"],
       absolute: true,
+      nodir: true,
     });
 
     if (detectedPackageManager === null) {
@@ -129,7 +130,7 @@ export const handleInstallDependencies = async (options: {
       value: InstallationChoice;
     }[] = [
       {
-        name: "Modify dependencies in the affected package.jsons",
+        name: "Modify dependencies in ALL of the affected package.jsons",
         value: "affected",
       },
       {
@@ -145,7 +146,7 @@ export const handleInstallDependencies = async (options: {
       inquirerMessage =
         "A root package.json was detected in your project. Select how you want to proceed:";
       INSTALL_INQUIRER_CHOICES.splice(1, 0, {
-        name: "Modify dependencies in the root package.json",
+        name: "Modify dependencies ONLY in the root package.json",
         value: "root",
       });
     }

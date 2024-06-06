@@ -26,14 +26,26 @@ export const useWebWorker = () => {
 
   const ref = useRef<Worker | null>(null);
 
+  const postMessage = useCallback(
+    (engine: KnownEngines, content: string, input: string) => {
+      ref.current?.postMessage({
+        engine: String(engine),
+        content: String(content),
+        input: String(input),
+      } satisfies WebWorkerIncomingMessage);
+    },
+    [],
+  );
+
+  const [retry, setRetry] = useState<() => ReturnType<typeof postMessage>>();
+
+  const [count, setCount] = useState(3);
+
   useEffect(() => {
-    const worker = new Worker(
-      new URL("../utils/webworker.ts", import.meta.url),
-      {
-        type: "module",
-        credentials: "omit",
-      },
-    );
+    const worker = new Worker(new URL("./webworker.ts", import.meta.url), {
+      type: "module",
+      credentials: "omit",
+    });
 
     worker.onmessageerror = () => {
       setState({
@@ -44,7 +56,7 @@ export const useWebWorker = () => {
 
     worker.onmessage = (messageEvent) => {
       const data = parseWebWorkerOutgoingMessage(messageEvent.data);
-
+      setCount(3);
       setState({
         kind: "RIGHT",
         ...data,
@@ -57,6 +69,10 @@ export const useWebWorker = () => {
           ? ee.error
           : new Error("Unknown worker error");
 
+      if (count) {
+        retry?.();
+      }
+      setCount((c) => c - 1);
       setState({
         kind: "LEFT",
         error,
@@ -70,16 +86,5 @@ export const useWebWorker = () => {
     };
   }, []);
 
-  const postMessage = useCallback(
-    (engine: KnownEngines, content: string, input: string) => {
-      ref.current?.postMessage({
-        engine: String(engine),
-        content: String(content),
-        input: String(input),
-      } satisfies WebWorkerIncomingMessage);
-    },
-    [],
-  );
-
-  return [state, postMessage] as const;
+  return [state, postMessage, setRetry] as const;
 };

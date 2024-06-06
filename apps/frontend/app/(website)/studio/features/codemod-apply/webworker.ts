@@ -3,6 +3,17 @@ import {
   isIdentifier,
   isMemberExpression,
 } from "@babel/types";
+import {
+  type WebWorkerOutgoingMessage,
+  parseWebWorkerIncomingMessage,
+} from "@studio/schemata/webWorkersSchemata";
+import { EventManager } from "@studio/utils/eventManager";
+import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
+import {
+  type ProxifiedCollection,
+  type ProxifiedPath,
+  proxifyJSCodeshift,
+} from "@studio/utils/proxy";
 import jscodeshift, {
   type API,
   type ArrowFunctionExpression,
@@ -15,56 +26,15 @@ import jscodeshift, {
 } from "jscodeshift";
 import * as tsmorph from "ts-morph";
 import * as ts from "typescript";
-import {
-  type WebWorkerOutgoingMessage,
-  parseWebWorkerIncomingMessage,
-} from "../schemata/webWorkersSchemata";
-import { EventManager } from "./eventManager";
-import { isNeitherNullNorUndefined } from "./isNeitherNullNorUndefined";
-import {
-  type ProxifiedCollection,
-  type ProxifiedPath,
-  proxifyJSCodeshift,
-} from "./proxy";
 
+type F = (...args: any[]) => any;
 type Exports =
   | {
       __esModule?: true;
       default?: unknown;
       handleSourceFile?: unknown;
     }
-  // biome-ignore lint/complexity/noBannedTypes: Function
-  | Function;
-
-// disable access for particular objects exposed on the global this
-// the idea and the code inspired by the articles:
-// 1) https://www.meziantou.net/executing-untrusted-javascript-code-in-a-browser.htm
-// 2) https://github.com/zhennann/sandbox-webworker/blob/master/src/sandbox.spec.js
-
-/*
-@license
-MIT License
-
-Copyright (c) 2016-present zhennann
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-*/
+  | F;
 
 const keys = [
   "fetch",
@@ -177,8 +147,6 @@ keys.forEach((key) => {
 
   if (typeof self[key as keyof typeof self] === "function") {
     // defining property for e.g "fetch" disable it
-
-    // @ts-expect-error
     self[key as keyof typeof self] = () => {
       throw new Error(`Cannot access ${key} on the global this`);
     };
@@ -202,7 +170,7 @@ In case of a mismatch, the runner will simply return `$A` from the `__method` ca
 `$start` and `$end` indicate the `$B` node position in the original codemod.
 
 This function will work with other JSCodeshift collection functions.
-**/
+ **/
 const replaceCallExpression = (
   j: JSCodeshift,
   node: CallExpression,
@@ -430,8 +398,7 @@ function rewriteCodemod(input: string): string {
 export const getTransformFunction = async (
   eventManager: EventManager,
   input: string,
-  // biome-ignore lint/complexity/noBannedTypes: Function
-): Promise<Function> => {
+): Promise<F> => {
   const rewrittenInput = rewriteCodemod(input);
 
   const compiledCode = ts.transpileModule(rewrittenInput, {
@@ -513,8 +480,7 @@ interface ProxifiedAPI extends API {
 
 const executeTransformFunction = (
   eventManager: EventManager,
-  // biome-ignore lint/complexity/noBannedTypes: Function
-  transform: Function,
+  transform: F,
   input: string,
 ) => {
   const proxifiedCollections = new Set<ProxifiedCollection<any>>();
@@ -559,7 +525,7 @@ const executeTransformFunction = (
         ).bind(obj);
       }
 
-      return Reflect.get(obj as any, methodName).bind(obj);
+      return Reflect.get(obj as any, methodName)?.bind(obj);
     },
   });
 
