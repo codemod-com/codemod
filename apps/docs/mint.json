@@ -37,7 +37,12 @@
   "navigation": [
     {
       "group": "Introduction",
-      "pages": ["introduction"]
+      "pages": [
+        "introduction",
+        "platform/build",
+        "platform/share",
+        "platform/run"
+      ]
     },
     {
       "group": "Building Codemods",
