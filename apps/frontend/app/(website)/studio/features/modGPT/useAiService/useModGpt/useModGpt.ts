@@ -32,8 +32,8 @@ export const useModGPT = ({
 
   const handleStop = useCallback(() => {
     setCurrentCommand(null);
-    stop();
-  }, [setCurrentCommand, stop]);
+    global.stop();
+  }, [setCurrentCommand, global.stop]);
 
   return {
     id,

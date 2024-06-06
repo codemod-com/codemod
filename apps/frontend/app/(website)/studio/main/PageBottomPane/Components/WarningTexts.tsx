@@ -9,7 +9,7 @@ export const WarningTexts = ({
   codemodSourceHasOnlyWhitespaces,
 }: WarningTextsProps) => {
   return (
-    <div className="text-center">
+    <div className="text-center mr-3">
       {snippetBeforeHasOnlyWhitespaces && (
         <Text>
           Please provide the snippet before the transformation to execute the

@@ -58,9 +58,9 @@ const Text = ({
   }
 
   return (
-    <p {...rest} className={classes}>
+    <div {...rest} className={classes}>
       {children}
-    </p>
+    </div>
   );
 };
 
