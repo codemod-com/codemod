@@ -1,8 +1,3 @@
-import { useCodemodAI } from "@chatbot/useAiService/codemodAI/useCodemodAI";
-import { useModGPT } from "@chatbot/useAiService/useModGpt";
-import { useEffect, useState } from "react";
-import { create } from "zustand";
-
 type Message = {
   content: string;
   role: "function" | "assistant" | "data" | "system" | "user";

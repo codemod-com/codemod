@@ -14,8 +14,10 @@ type CodeSnippetsProps = {
   panelRefs: PanelsRefs;
   onlyAfterHidden: boolean;
   codeDiff: ReturnType<typeof useCodeDiff>;
+  className?: string;
 };
 export const CodeSnippets = ({
+  className,
   panels,
   children,
   codeDiff,
@@ -54,7 +56,7 @@ export const CodeSnippets = ({
     );
   });
   return (
-    <PanelGroup direction="horizontal">
+    <PanelGroup className={className} direction="horizontal">
       {snippetPanels}
       {children}
     </PanelGroup>

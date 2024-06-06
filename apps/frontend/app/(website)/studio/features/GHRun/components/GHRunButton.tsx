@@ -1,13 +1,16 @@
-import { useCodemodExecution } from "@gr-run/hooks/useCodemodExecution";
+import {
+  ProgressBar,
+  getButtonPropsByStatus,
+  useExecutionStatus,
+  useOpenRepoModalAfterSignIn,
+} from "@features/GHRun";
 import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { Button } from "@studio/components/ui/button";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import { useLocalStorage } from "@studio/hooks/useLocalStorage";
-import { getButtonPropsByStatus, useExecutionStatus } from "@studio/main/GHRun";
-import { ProgressBar } from "@studio/main/GHRun/components/ProgressBar";
-import { useOpenRepoModalAfterSignIn } from "@studio/main/GHRun/hooks/useOpenRepoModalAfterSignIn";
 import type { GHBranch, GithubRepository } from "be-types";
 import { memo, useState } from "react";
+import { useCodemodExecution } from "../hooks/useCodemodExecution";
 import { RepositoryModal } from "./RepositoryModal";
 
 export const GHRunButton = memo(() => {

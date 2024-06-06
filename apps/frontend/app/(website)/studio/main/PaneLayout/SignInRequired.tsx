@@ -15,7 +15,7 @@ export function SignInRequired() {
   };
 
   return (
-    <div className="grid h-full absolute top-0 bottom-0 w-full">
+    <div className="grid h-full absolute top-0 bottom-0 w-full sign-in-required">
       <div className="absolute top-0 left-0 right-0 bottom-0 w-full h-full blur-sm backdrop-blur-sm" />
       <section
         className={

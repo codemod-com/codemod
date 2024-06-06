@@ -6,6 +6,7 @@ import {
   ResizablePanelsIndices,
 } from "@studio/main/PageBottomPane/utils/types";
 import type { Repeat } from "@studio/types/transformations";
+import * as React from "react";
 
 export const getContent =
   (type: ContentViewerVariant) => (engine: KnownEngines) =>
@@ -23,7 +24,11 @@ const beforePanel: PanelData = {
   hasBoundResize: true,
   content: getContent("before"),
   snippetData: {
-    header: "Before",
+    header: (
+      <span className="flex items-center justify-center justify-content-center">
+        Before
+      </span>
+    ),
     diffEditorWrapper: {
       type: "before",
     },
@@ -52,7 +57,11 @@ const outputPanel: PanelData = {
   type: "output",
   content: getContent("output"),
   snippetData: {
-    header: "Output",
+    header: (
+      <span className="flex items-center justify-center justify-content-center">
+        Output
+      </span>
+    ),
     snippet: "diff",
     diffEditorWrapper: {
       type: "output",

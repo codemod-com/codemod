@@ -1,5 +1,4 @@
 import { cn } from "@/utils";
-import { useAiService } from "@chatbot/useAiService/useAiService";
 import { useAuth } from "@clerk/nextjs";
 import Text from "@studio/components/Text";
 import {
@@ -17,7 +16,7 @@ import {
 } from "@studio/main/PaneLayout/tabsData";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
   ...acc.tabs,
