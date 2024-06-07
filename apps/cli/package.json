@@ -1,7 +1,7 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.9",
+  "version": "0.11.11",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -35,7 +35,6 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod.com/workflow": "workspace:*",
     "@types/cli-progress": "^3.11.5",
     "@types/columnify": "^1.5.4",
     "@types/inquirer": "^9.0.7",
