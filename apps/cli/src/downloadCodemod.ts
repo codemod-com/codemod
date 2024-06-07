@@ -217,26 +217,16 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     if (config.engine === "recipe") {
       const codemods: Codemod[] = [];
 
-      const { runAll } = await inquirer.prompt<{ runAll: boolean }>({
-        name: "runAll",
-        type: "confirm",
+      const { names } = await inquirer.prompt<{ names: string[] }>({
+        name: "names",
+        type: "checkbox",
         message:
-          "The codemod you are trying to run is a recipe. Do you wish to run all of them?",
-        default: true,
+          "Select the codemods you want to run (use space and arrow keys to select, enter to confirm)",
+        choices: config.names,
+        default: config.names,
       });
 
-      if (!runAll) {
-        const { names } = await inquirer.prompt<{ names: string[] }>({
-          name: "names",
-          type: "checkbox",
-          message:
-            "Please select the codemods you want to run (use space and arrow keys to select)",
-          choices: config.names,
-          default: config.names,
-        });
-
-        config.names = names;
-      }
+      config.names = names;
 
       for (const name of config.names) {
         const codemod = await this.download(name);
