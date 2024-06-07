@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { chalk } from "@codemod-com/printer";
 import {
   type ValidateTokenResponse,
   execPromise,
@@ -145,5 +146,5 @@ export const rebuildCodemodFallback = async (options: {
   return mainFilePath;
 };
 
-export const oraCheckmark = "✔";
-export const oraCross = "✖";
+export const oraCheckmark = chalk.green("✔");
+export const oraCross = chalk.red("✖");

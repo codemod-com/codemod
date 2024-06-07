@@ -50,10 +50,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     await mkdir(directoryPath, { recursive: true });
 
+    const printableName = chalk.cyan.bold(doubleQuotify(name));
+
     let spinner: Ora | null = null;
     if (!disableSpinner) {
       spinner = this.__printer.withLoaderMessage(
-        chalk.cyan("Fetching", `${chalk.bold(doubleQuotify(name))}...`),
+        chalk.cyan("Fetching", `${printableName}...`),
       );
     }
 
@@ -98,13 +100,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       throw new Error((err as Error).message ?? "Error unpacking codemod");
     }
 
-    // spinner?.succeed();
     spinner?.stopAndPersist({
       symbol: oraCheckmark,
       text: chalk.cyan(
         cacheUsed
-          ? "Codemod successfully fetched from local cache."
-          : "Codemod successfully downloaded from the registry.",
+          ? `Successfully fetched ${printableName} from local cache.`
+          : `Successfully downloaded ${printableName} from the registry.`,
       ),
     });
 
