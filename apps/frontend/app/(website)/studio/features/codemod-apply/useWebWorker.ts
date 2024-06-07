@@ -55,29 +55,15 @@ export const useWebWorker = () => {
     };
 
     worker.onmessage = (messageEvent) => {
-      try {
-        const data = parseWebWorkerOutgoingMessage(messageEvent.data);
-        if (data.events[0]?.kind === "codemodExecutionError") {
-          setCount((c) => c - 1);
-          retry?.();
-        } else {
-          setCount(3);
-          setState({
-            kind: "RIGHT",
-            ...data,
-          });
-        }
-      } catch (e) {
-        console.error(e);
-      }
+      const data = parseWebWorkerOutgoingMessage(messageEvent.data);
+      setCount(3);
+      setState({
+        kind: "RIGHT",
+        ...data,
+      });
     };
 
     worker.onerror = (ee) => {
-      console.error(
-        "-------!!!-----\n\n\n WebSocket error emitted: ",
-        ee,
-        "\n\n-------!!!-----",
-      );
       const error =
         ee.error instanceof Error
           ? ee.error

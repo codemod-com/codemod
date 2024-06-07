@@ -157,6 +157,20 @@ keys.forEach((key) => {
   delete self[key as keyof typeof self];
 });
 
+/**
+Replaces: `$A.$B($C)`
+
+with: `api.__method($A, $start, $end)($C);`
+
+The idea is that `$A` is likely an expression that ends up with a JSCodeshift collection.
+
+The codemod runner tracks all the produced JSCodeshift collections.
+In case of a mismatch, the runner will simply return `$A` from the `__method` call.
+
+`$start` and `$end` indicate the `$B` node position in the original codemod.
+
+This function will work with other JSCodeshift collection functions.
+ **/
 const replaceCallExpression = (
   j: JSCodeshift,
   node: CallExpression,
@@ -205,6 +219,10 @@ const replaceCallExpression = (
     isNeitherNullNorUndefined(property.start) &&
     isNeitherNullNorUndefined(property.end)
   ) {
+    // the end of the selection is marked by the last meaningful's node's end
+    // since we can have chaining of nodes, like `root.find(...).remove()`
+    // it means that `node.end` can be before the `property.end`
+    // if property is e.g. `remove` like in the previous example
     const end = Math.max(
       property.end,
       callee.end ?? property.end,
@@ -229,14 +247,14 @@ export const findTransformFunction = (
 ): Collection<
   FunctionDeclaration | ArrowFunctionExpression | FunctionExpression
 > | null => {
-  const program = root.find(j.Program)?.paths()[0] ?? null;
+  const program = root.find(j.Program).paths()[0] ?? null;
 
   if (program === null) {
     return null;
   }
 
   const defaultExport =
-    root.find(j.ExportDefaultDeclaration)?.paths()[0] ?? null;
+    root.find(j.ExportDefaultDeclaration).paths()[0] ?? null;
 
   const defaultExportDeclaration = defaultExport?.value.declaration ?? null;
 
@@ -251,7 +269,7 @@ export const findTransformFunction = (
   }
 
   if (j.Identifier.check(defaultExportDeclaration)) {
-    program.value?.body?.forEach((node) => {
+    program.value.body.forEach((node) => {
       if (
         j.FunctionDeclaration.check(node) &&
         node.id?.name === defaultExportDeclaration.name
@@ -281,12 +299,16 @@ function rewriteCodemod(input: string): string {
 
   const transformFunction = findTransformFunction(j, root);
 
+  // replace expressions like `j(file.source)` with `j(file.source, undefined, start, end)`
+
   transformFunction
     ?.find(j.CallExpression, ({ callee }) => {
+      // e.g. `j(*)`
       if (callee.type === "Identifier") {
         return callee.name === "j" || callee.name === "jscodeshift";
       }
 
+      // e.g. `*.jscodeshift(*)`
       if (callee.type === "MemberExpression") {
         return (
           callee.property.type === "Identifier" &&
@@ -297,7 +319,7 @@ function rewriteCodemod(input: string): string {
 
       return false;
     })
-    ?.replaceWith(({ node }) => {
+    .replaceWith(({ node }) => {
       if (!isCallExpression(node)) {
         return node;
       }
@@ -329,7 +351,7 @@ function rewriteCodemod(input: string): string {
         },
       },
     })
-    ?.replaceWith(({ node }) => replaceCallExpression(j, node));
+    .replaceWith(({ node }) => replaceCallExpression(j, node));
 
   root
     .find(j.CallExpression, {
@@ -345,7 +367,7 @@ function rewriteCodemod(input: string): string {
         },
       },
     })
-    ?.replaceWith(({ node }) => {
+    .replaceWith(({ node }) => {
       if (!isCallExpression(node)) {
         return node;
       }
@@ -390,7 +412,6 @@ export const getTransformFunction = async (
     if (name === "ts-morph") {
       return tsmorph;
     }
-    throw new Error(`Module ${name} not found`);
   };
 
   const printMessage = (...args: any[]) => {
@@ -519,6 +540,7 @@ const executeTransformFunction = (
 
   if (typeof output === "string" || output === undefined || output === null) {
     const events = eventManager.getEvents();
+
     return { output: output as string | null | undefined, events };
   }
 
@@ -575,7 +597,7 @@ self.onmessage = async (messageEvent) => {
       return;
     }
 
-    const errorMessage = {
+    self.postMessage({
       output: "",
       events: [
         {
@@ -586,16 +608,10 @@ self.onmessage = async (messageEvent) => {
             end: 0,
           },
           message: error.message,
-          stack: error.stack,
           timestamp: Date.now(),
           mode: "control",
         },
       ],
-    };
-
-    console.error("Error caught in WebWorker:", error);
-    console.error("Error message:", errorMessage);
-
-    self.postMessage(errorMessage satisfies WebWorkerOutgoingMessage);
+    } satisfies WebWorkerOutgoingMessage);
   }
 };
