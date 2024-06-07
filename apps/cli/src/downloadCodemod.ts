@@ -19,7 +19,7 @@ import {
   FileDownloadService,
   type FileDownloadServiceBlueprint,
 } from "./fileDownloadService.js";
-import { getCurrentUserData } from "./utils.js";
+import { getCurrentUserData, oraCheckmark } from "./utils.js";
 
 export type CodemodDownloaderBlueprint = Readonly<{
   download(
@@ -50,14 +50,12 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     await mkdir(directoryPath, { recursive: true });
 
+    const printableName = chalk.cyan.bold(doubleQuotify(name));
+
     let spinner: Ora | null = null;
     if (!disableSpinner) {
       spinner = this.__printer.withLoaderMessage(
-        chalk.cyan(
-          "Downloading the",
-          chalk.bold(doubleQuotify(name)),
-          "codemod",
-        ),
+        chalk.cyan("Fetching", `${printableName}...`),
       );
     }
 
@@ -93,7 +91,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       );
     }
 
-    const { data, cacheUsed, cacheReason } = downloadResult;
+    const { data, cacheUsed } = downloadResult;
 
     try {
       await this._tarService.unpack(directoryPath, data);
@@ -102,19 +100,14 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       throw new Error((err as Error).message ?? "Error unpacking codemod");
     }
 
-    spinner?.succeed();
-
-    this.__printer.printConsoleMessage(
-      "info",
-      chalk.cyan(
+    spinner?.stopAndPersist({
+      symbol: oraCheckmark,
+      text: chalk.cyan(
         cacheUsed
-          ? "Successfully used cache to retrieve the codemod"
-          : chalk(
-              "Downloaded the codemod from the registry without using cache",
-              `(${chalk.yellow(cacheReason)})`,
-            ),
+          ? `Successfully fetched ${printableName} from local cache.`
+          : `Successfully downloaded ${printableName} from the registry.`,
       ),
-    );
+    });
 
     let config: CodemodConfig;
     try {
