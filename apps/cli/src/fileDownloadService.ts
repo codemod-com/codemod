@@ -10,7 +10,7 @@ export type FileDownloadServiceBlueprint = Readonly<{
   download(
     url: string,
     path: string,
-  ): Promise<{ data: Buffer; cacheUsed: boolean; cacheReason: string }>;
+  ): Promise<{ data: Buffer; cacheUsed: boolean }>;
 }>;
 
 export class FileDownloadService implements FileDownloadServiceBlueprint {
@@ -23,26 +23,22 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
   public async download(
     url: string,
     path: string,
-  ): Promise<{ data: Buffer; cacheUsed: boolean; cacheReason: string }> {
-    let cacheReason = "cache was disabled manually";
-
+  ): Promise<{ data: Buffer; cacheUsed: boolean }> {
     if (this.cacheEnabled) {
       const localCodemodLastModified =
         await this.__getLocalFileLastModified(path);
       const remoteCodemodLastModified =
         await this.__getRemoteFileLastModified(url);
 
-      if (localCodemodLastModified === null) {
-        cacheReason = "local codemod was not found";
-      } else if (remoteCodemodLastModified === null) {
-        cacheReason = "codemod required access permissions";
-      } else {
+      if (
+        localCodemodLastModified !== null &&
+        remoteCodemodLastModified !== null
+      ) {
         const tDataOut = await this._ifs.promises.readFile(path);
 
         return {
           data: Buffer.from(tDataOut),
           cacheUsed: true,
-          cacheReason: "cache was enabled",
         };
       }
     }
@@ -55,7 +51,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
 
     await this._ifs.promises.writeFile(path, buffer);
 
-    return { data: buffer, cacheUsed: false, cacheReason };
+    return { data: buffer, cacheUsed: false };
   }
 
   private async __getLocalFileLastModified(

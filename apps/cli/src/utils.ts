@@ -144,3 +144,6 @@ export const rebuildCodemodFallback = async (options: {
 
   return mainFilePath;
 };
+
+export const oraCheckmark = "✔";
+export const oraCross = "✖";
