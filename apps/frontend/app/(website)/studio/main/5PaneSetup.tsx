@@ -125,6 +125,7 @@ const Main = () => {
   const beforeAfterBottomPanels = (
     <>
       <CodeSnippets
+        key="before-and-after-panels"
         className="before-and-after-panels"
         codeDiff={codeDiff}
         onlyAfterHidden={onlyAfterHidden}

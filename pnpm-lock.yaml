@@ -751,6 +751,9 @@ importers:
       monaco-editor-webpack-plugin:
         specifier: ^7.0.1
         version: 7.1.0(monaco-editor@0.36.1)(webpack@5.91.0)
+      null-loader:
+        specifier: ^4.0.1
+        version: 4.0.1(webpack@5.91.0)
       postcss:
         specifier: 8.4.35
         version: 8.4.35
@@ -14679,7 +14682,7 @@ packages:
       std-env: 3.7.0
       strip-literal: 2.1.0
       test-exclude: 6.0.0
-      vitest: 1.5.1(@types/node@18.11.9)
+      vitest: 1.5.1(@types/node@20.12.7)
     transitivePeerDependencies:
       - supports-color
     dev: true
@@ -22903,6 +22906,17 @@ packages:
     resolution: {integrity: sha512-lqjrjmaOoAnWfMmBPL+XNnynZh2+swxiX3WUE0s4yEHI6m+AwrK2UZOimIRl3X/4QctVqS8AiZjFqyOGrMXb/w==}
     dependencies:
       boolbase: 1.0.0
+
+  /null-loader@4.0.1(webpack@5.91.0):
+    resolution: {integrity: sha512-pxqVbi4U6N26lq+LmgIbB5XATP0VdZKOG25DhHi8btMmJJefGArFyDg1yc4U3hWCJbMqSrw0qyrz1UQX+qYXqg==}
+    engines: {node: '>= 10.13.0'}
+    peerDependencies:
+      webpack: ^4.0.0 || ^5.0.0
+    dependencies:
+      loader-utils: 2.0.4
+      schema-utils: 3.3.0
+      webpack: 5.91.0(esbuild@0.20.2)
+    dev: true
 
   /num-sort@2.1.0:
     resolution: {integrity: sha512-1MQz1Ed8z2yckoBeSfkQHHO9K1yDRxxtotKSJ9yvcTUUxSvfvzEq5GwBrjjHEpMlq/k5gvXdmJ1SbYxWtpNoVg==}

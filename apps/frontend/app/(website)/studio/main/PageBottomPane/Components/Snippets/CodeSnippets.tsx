@@ -4,7 +4,7 @@ import { CodeSnippedPanel } from "@studio/components/Snippet/CodeSnippedPanel";
 import type { useCodeDiff } from "@studio/hooks/useCodeDiff";
 import { DiffEditorWrapper } from "@studio/main/PageBottomPane/Components/Snippets/DiffEditorWrapper";
 import { isVisible } from "@studio/utils/visibility";
-import type { PropsWithChildren } from "react";
+import React, { type PropsWithChildren } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import SnippetUI from "../../../SnippetUI";
 import type { PanelData, PanelsRefs } from "../../index";
@@ -34,7 +34,7 @@ export const CodeSnippets = ({
     } = panelData;
     const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
     return (
-      <>
+      <React.Fragment key={`fragment-${index}`}>
         <CodeSnippedPanel
           defaultSize={100 / arr.length}
           panelData={panelData}
@@ -52,7 +52,7 @@ export const CodeSnippets = ({
         {arr.length !== 1 &&
           index < arr.length - 1 &&
           isVisible(arr[index + 1]) && <ResizeHandle direction="horizontal" />}
-      </>
+      </React.Fragment>
     );
   });
   return (

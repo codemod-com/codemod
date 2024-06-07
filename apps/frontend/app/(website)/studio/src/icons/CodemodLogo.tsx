@@ -7,7 +7,7 @@ export const CodemodLogo = () => (
     xmlns="http://www.w3.org/2000/svg"
   >
     <title>Codemod Studio</title>
-    <g clip-path="url(#clip0_1128_14925)">
+    <g clipPath="url(#clip0_1128_14925)">
       <mask
         id="mask0_1128_14925"
         style={{ maskType: "alpha" }}

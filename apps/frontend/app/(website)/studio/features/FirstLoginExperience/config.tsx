@@ -1,3 +1,5 @@
+import { isServer } from "@studio/config";
+
 const steps = [
   {
     element: "codemod",
@@ -37,17 +39,19 @@ const steps = [
 ];
 
 export const getIntroJsOptions = () => ({
-  steps: steps.map(({ description: intro, element, name: title }) =>
-    title
-      ? {
-          title,
-          intro,
-        }
-      : element
-        ? {
-            intro,
-            element: document.getElementsByClassName(element)[0],
-          }
-        : {},
-  ),
+  steps: isServer
+    ? []
+    : steps.map(({ description: intro, element, name: title }) =>
+        title
+          ? {
+              title,
+              intro,
+            }
+          : element
+            ? {
+                intro,
+                element: document.getElementsByClassName(element)[0],
+              }
+            : {},
+      ),
 });
