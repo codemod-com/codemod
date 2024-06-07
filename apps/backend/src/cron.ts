@@ -35,11 +35,8 @@ const syncDatabaseWithPosthogDataCron = new CronJob(
     try {
       codemodTotalRuns = await posthogService.getCodemodTotalRuns();
     } catch (err) {
-      console.error(
-        `Failed getting total codemod runs from PostHog: ${
-          (err as Error).message
-        }`,
-      );
+      console.error("Failed getting total codemod runs from PostHog.");
+      console.error((err as Error).message);
       return;
     }
 
@@ -56,11 +53,8 @@ const syncDatabaseWithPosthogDataCron = new CronJob(
           });
         }
       } catch (err) {
-        console.error(
-          `Failed updating codemod runs in the database: ${
-            (err as Error).message
-          }`,
-        );
+        console.error("Failed updating codemod runs in the database.");
+        console.error((err as Error).message);
       }
     }
   }, // onTick
