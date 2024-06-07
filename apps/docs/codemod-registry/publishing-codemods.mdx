@@ -1,20 +1,7 @@
 ---
-title: 'Publishing Codemods'
-description: 'Learn how to publish your codemods to Codemod Registry and share them with the world.'
+title: 'Advanced features'
 icon: 'grid-round-2-plus'
 ---
-
-<img
-  className="block dark:hidden"
-  src="/images/codemod-registry/publishing-codemods-hero-light.svg"
-  alt="Codemod Registry hero banner"
-/>
-
-<img
-  className="hidden dark:block"
-  src="/images/codemod-registry/publishing-codemods-hero-dark.svg"
-  alt="Codemod Registry hero banner"
-/>
 
 You can easily share your codemods with thousands of people around the world by adding them to Codemod Registry. Once added, they will automatically integrate with Codemod platform. This simplifies codemod discovery and distribution, and offers a better running codemods experience.
 
@@ -28,7 +15,11 @@ Codemod platform currently supports the following codemod engines: [`ast-grep`](
 
 ## Required codemod package structure
 
-To make your codemod package compatible with Codemod platform, it needs to have a `.codemodrc.json` configuration file in the project root and conform to one of the structures, depending on the codemod engine used.
+To publish your codemod to Codemod Registry, it needs to have a `.codemodrc.json` configuration file in the project root and conform to one of the structures, depending on the codemod engine used.
+
+<Note>
+  If your codemod does not have a `.codemodrc.json` file, Codemod CLI will ask you a few questions about your codemod and generate the configuration file automatically for you.
+</Note>
 
 
 <Accordion title=".codemodrc.json reference">
@@ -355,7 +346,7 @@ To make your codemod package compatible with Codemod platform, it needs to have 
 
 ## Publish with Codemod CLI
 
-Once your codemod package is [compatible with Codemod platform](#required-codemod-package-structure), you can use Codemod CLI to publish a local codemod to the codemod registry.
+Once your codemod package has a [valid `.codemodrc.json` file](#required-codemod-package-structure), you can use Codemod CLI to publish a local codemod to the codemod registry.
 
 <Steps>
   <Step title="Login to Codemod platform">
