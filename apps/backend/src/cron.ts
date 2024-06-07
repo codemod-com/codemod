@@ -22,27 +22,45 @@ const cleanupLoginIntentsCron = new CronJob(
 );
 
 const syncDatabaseWithPosthogDataCron = new CronJob(
-  "0 0 * * *", // cronTime - every hour
+  "0 * * * *", // cronTime - every hour
   async () => {
     const posthogService = new PostHogService(
       environment.POSTHOG_API_KEY ?? "",
       environment.POSTHOG_PROJECT_ID ?? "",
     );
 
-    const codemodTotalRuns = await posthogService.getCodemodTotalRuns();
+    let codemodTotalRuns: Awaited<
+      ReturnType<typeof posthogService.getCodemodTotalRuns>
+    >;
+    try {
+      codemodTotalRuns = await posthogService.getCodemodTotalRuns();
+    } catch (err) {
+      console.error(
+        `Failed getting total codemod runs from PostHog: ${
+          (err as Error).message
+        }`,
+      );
+      return;
+    }
 
     for (const { slug, runs } of codemodTotalRuns) {
-      console.log({ slug, runs });
-
-      const codemod = await prisma.codemod.findFirst({
-        where: { slug },
-      });
-
-      if (codemod) {
-        await prisma.codemod.update({
-          where: { id: codemod.id },
-          data: { totalRuns: runs },
+      try {
+        const codemod = await prisma.codemod.findFirst({
+          where: { slug },
         });
+
+        if (codemod) {
+          await prisma.codemod.update({
+            where: { id: codemod.id },
+            data: { totalRuns: runs },
+          });
+        }
+      } catch (err) {
+        console.error(
+          `Failed updating codemod runs in the database: ${
+            (err as Error).message
+          }`,
+        );
       }
     }
   }, // onTick
