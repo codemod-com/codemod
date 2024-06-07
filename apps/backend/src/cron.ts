@@ -22,7 +22,7 @@ const cleanupLoginIntentsCron = new CronJob(
 );
 
 const syncDatabaseWithPosthogDataCron = new CronJob(
-  "0 * * * *", // cronTime - every hour
+  "0 0 * * *", // cronTime - every hour
   async () => {
     const posthogService = new PostHogService(
       environment.POSTHOG_API_KEY ?? "",
