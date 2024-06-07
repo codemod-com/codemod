@@ -6,7 +6,7 @@ settings:
 
 overrides:
   postcss: 8.4.35
-  node-fetch: ^3.3.2
+  whatwg-url: ^14.0.0
 
 importers:
 
@@ -245,9 +245,6 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
-      '@codemod.com/workflow':
-        specifier: workspace:*
-        version: link:../../packages/workflow
       '@types/cli-progress':
         specifier: ^3.11.5
         version: 3.11.5
@@ -14338,6 +14335,15 @@ packages:
   node-fetch-native@1.0.1:
     resolution: {integrity: sha512-VzW+TAk2wE4X9maiKMlT+GsPU4OMmR1U9CrHSmd3DFLn2IcZ9VJ6M6BBugGfYUnPCLSYxXdZy17M0BEJyhUTwg==}
 
+  node-fetch@2.7.0:
+    resolution: {integrity: sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==}
+    engines: {node: 4.x || >=6.0.0}
+    peerDependencies:
+      encoding: ^0.1.0
+    peerDependenciesMeta:
+      encoding:
+        optional: true
+
   node-fetch@3.3.2:
     resolution: {integrity: sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==}
     engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
@@ -17664,8 +17670,10 @@ snapshots:
       digest-fetch: 1.3.0
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
-      node-fetch: 3.3.2
+      node-fetch: 2.7.0
       web-streams-polyfill: 3.3.3
+    transitivePeerDependencies:
+      - encoding
 
   '@ariakit/core@0.4.6': {}
 
@@ -20467,6 +20475,8 @@ snapshots:
       pg: 8.11.5
       replicate: 0.25.2
       ws: 8.16.0
+    transitivePeerDependencies:
+      - encoding
 
   '@langchain/core@0.1.59':
     dependencies:
@@ -20490,6 +20500,8 @@ snapshots:
       openai: 4.38.3
       zod: 3.23.4
       zod-to-json-schema: 3.23.0(zod@3.23.4)
+    transitivePeerDependencies:
+      - encoding
 
   '@lezer/common@1.2.1': {}
 
@@ -24280,6 +24292,8 @@ snapshots:
       isomorphic-fetch: 3.0.0
     optionalDependencies:
       openai: 4.23.0
+    transitivePeerDependencies:
+      - encoding
 
   chrome-trace-event@1.0.3: {}
 
@@ -24617,6 +24631,8 @@ snapshots:
   cspell-cli@6.31.2:
     dependencies:
       cspell: 6.31.3
+    transitivePeerDependencies:
+      - encoding
 
   cspell-dictionary@6.31.3:
     dependencies:
@@ -24643,7 +24659,9 @@ snapshots:
   cspell-io@6.31.3:
     dependencies:
       '@cspell/cspell-service-bus': 6.31.3
-      node-fetch: 3.3.2
+      node-fetch: 2.7.0
+    transitivePeerDependencies:
+      - encoding
 
   cspell-lib@6.31.3:
     dependencies:
@@ -24668,6 +24686,8 @@ snapshots:
       resolve-global: 1.0.0
       vscode-languageserver-textdocument: 1.0.11
       vscode-uri: 3.0.8
+    transitivePeerDependencies:
+      - encoding
 
   cspell-trie-lib@6.31.3:
     dependencies:
@@ -24695,6 +24715,8 @@ snapshots:
       semver: 7.6.2
       strip-ansi: 6.0.1
       vscode-uri: 3.0.8
+    transitivePeerDependencies:
+      - encoding
 
   css-box-model@1.2.1:
     dependencies:
@@ -26808,8 +26830,10 @@ snapshots:
 
   isomorphic-fetch@3.0.0:
     dependencies:
-      node-fetch: 3.3.2
+      node-fetch: 2.7.0
       whatwg-fetch: 3.6.20
+    transitivePeerDependencies:
+      - encoding
 
   istanbul-lib-coverage@3.2.2: {}
 
@@ -27196,6 +27220,7 @@ snapshots:
       - discord.js
       - dria
       - duck-duck-scrape
+      - encoding
       - firebase-admin
       - hnswlib-node
       - interface-datastore
@@ -28503,6 +28528,10 @@ snapshots:
 
   node-fetch-native@1.0.1: {}
 
+  node-fetch@2.7.0:
+    dependencies:
+      whatwg-url: 14.0.0
+
   node-fetch@3.3.2:
     dependencies:
       data-uri-to-buffer: 4.0.1
@@ -28697,8 +28726,10 @@ snapshots:
       digest-fetch: 1.3.0
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
-      node-fetch: 3.3.2
+      node-fetch: 2.7.0
       web-streams-polyfill: 3.3.3
+    transitivePeerDependencies:
+      - encoding
 
   openai@4.38.3:
     dependencies:
@@ -28708,8 +28739,10 @@ snapshots:
       agentkeepalive: 4.5.0
       form-data-encoder: 1.7.2
       formdata-node: 4.4.1
-      node-fetch: 3.3.2
+      node-fetch: 2.7.0
       web-streams-polyfill: 3.3.3
+    transitivePeerDependencies:
+      - encoding
 
   openapi-types@12.1.3: {}
 

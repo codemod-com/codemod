@@ -66,7 +66,7 @@
   "pnpm": {
     "overrides": {
       "postcss": "8.4.35",
-      "node-fetch": "^3.3.2"
+      "whatwg-url": "^14.0.0"
     }
   }
 }

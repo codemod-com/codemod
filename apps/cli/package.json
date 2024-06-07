@@ -35,7 +35,6 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod.com/workflow": "workspace:*",
     "@types/cli-progress": "^3.11.5",
     "@types/columnify": "^1.5.4",
     "@types/inquirer": "^9.0.7",
