@@ -96,39 +96,58 @@ codemod unpublish [codemod-name] -f
 
 You can use the `codemod` command to run codemods.
 
-This command uses the following format:
+Codemod CLI allows you to run codemods:
+1. from [Codemod Registry](/codemod-registry)
+2. from source
+    - using a <Tooltip tip="A codemod package is a codemod with a valid `.codemodrc.json` configuration file.">codemod package</Tooltip>
+    - using a <Tooltip tip="This file can be a simple transfofrm file using any of the supported codemod engines.">transform file</Tooltip>
 
-```bash
-codemod [codemod-name]
-```
+<Tabs>
+  <Tab title="Run from Codemod Registry">
+    ```bash
+    codemod [codemod-name]
+    ```
+
+    <AccordionGroup>
+    <Accordion title="Example">
+      <Steps>
+      <Step title="Go to project directory">
+        Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
+      </Step>
+      <Step title="List available codemods">
+        Run `codemod list` to see all available codemods in Codemod Registry. Alternatively, you can search for codemods of a specific framework like `codemod search next.js`.
+      </Step>
+      <Step title="Run codemod">
+        In this example, we will run the `next/13/app-router-recipe` codemod.
+
+        To do so, we will run:
+
+        ```bash
+        codemod next/13/app-router-recipe
+        ```
+
+      </Step>
+    </Steps>
+    </Accordion>
+    </AccordionGroup>
+
+  </Tab>
+  <Tab title="Run from source">
+    To run a local codemod package, you can:
+    ```bash
+    codemod -s [path]
+    ```
+
+    or you can run a transform file ([using a supported codemod engine](/codemod-registry/publishing-codemods#supported-codemod-engines)) by using:
+    ```bash
+    codemod -s [path] --engine [codemod-engine]
+    ```
+  </Tab>
+</Tabs>
 
 <Note>
 When using the `codemod` command, Codemod CLI will attempt to run a codemod as long as it is not followed by a reserved command name.
 </Note>
-
-<AccordionGroup>
-<Accordion title="Example">
-  <Steps>
-  <Step title="Go to project directory">
-    Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
-  </Step>
-  <Step title="List available codemods">
-    Run `codemod list` to see all available codemods in Codemod Registry.
-  </Step>
-  <Step title="Run codemod">
-    In this example, we will run the `next/13/app-router-recipe` codemod.
-
-    To do so, we will run:
-
-    ```bash
-    codemod next/13/app-router-recipe
-    ```
-
-  </Step>
-</Steps>
-</Accordion>
-
-</AccordionGroup>
 
 ### Options
 
@@ -191,26 +210,6 @@ The following options can be used to change the default behavior of Codemod CLI.
 ```bash
 codemod [codemod-name] -t [path]
 ```
-
-</ResponseField>
-
-<ResponseField name="--source (-s)" type="string">
-  Can be used to specify the path to the codemod package folder stored locally that you want to run using Codemod CLI.
-
-  If your local codemod follows the recommended [codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), it will include a `.codemodrc.json` file. By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. Otherwise, you will need to specify the codemod engine manually.
-
-  <Tabs>
-    <Tab title="Codemods with `.codemodrc.json`">
-      ```bash
-      codemod -s [path]
-      ```
-    </Tab>
-    <Tab title="Codemods without `.codemodrc.json`">
-      ```bash
-      codemod -s [path] --engine jscodeshift
-      ```
-    </Tab>
-  </Tabs>
 
 </ResponseField>
 
@@ -321,7 +320,3 @@ codemod --version
 ```
 
 </ResponseField>
-
-
-
-----
