@@ -9,5 +9,17 @@
   },
   "applicability": {
     "from": [["react", "<=", "18"]]
-  }
+  },
+  "arguments": [
+    {
+      "name": "value",
+      "kind": ["string", "boolean"],
+      "required": true
+    },
+    {
+      "name": "key",
+      "kind": "string",
+      "required": true
+    }
+  ]
 }
