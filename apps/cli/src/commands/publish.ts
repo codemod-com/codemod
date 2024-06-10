@@ -15,10 +15,13 @@ import { publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
 
-export const handlePublishCliCommand = async (
-  printer: PrinterBlueprint,
-  source: string,
-) => {
+export const handlePublishCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  source: string;
+}) => {
+  const { printer } = options;
+  let { source } = options;
+
   const userData = await getCurrentUserData();
 
   if (userData === null) {
@@ -61,7 +64,6 @@ export const handlePublishCliCommand = async (
     if (isSourceAFile) {
       isSingleFile = true;
       mainFilePath = basename(source);
-      // biome-ignore lint: If source is a file, we define source as a directory that this file is in
       source = dirname(source);
     } else {
       const { mainPath } = await inquirer.prompt<{
@@ -126,7 +128,6 @@ export const handlePublishCliCommand = async (
       );
     }
 
-    // biome-ignore lint: If user changed the directory where he wants the `codemod init` to put its results, we continue execution as if this was a source
     source = resultPath;
 
     try {

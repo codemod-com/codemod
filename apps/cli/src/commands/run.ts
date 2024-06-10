@@ -90,11 +90,13 @@ const checkFileTreeVersioning = async (target: string) => {
   }
 };
 
-export const handleRunCliCommand = async (
-  printer: PrinterBlueprint,
-  args: GlobalArgvOptions & RunArgvOptions,
-  telemetry: TelemetrySender<TelemetryEvent>,
-) => {
+export const handleRunCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  args: GlobalArgvOptions & RunArgvOptions;
+  telemetry: TelemetrySender<TelemetryEvent>;
+}) => {
+  const { printer, args, telemetry } = options;
+
   const codemodSettings = parseCodemodSettings(args);
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
