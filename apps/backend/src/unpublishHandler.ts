@@ -1,5 +1,6 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
+  buildCodemodSlug,
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
@@ -169,6 +170,30 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
       await prisma.codemodVersion.delete({
         where: { id: versionToRemove.id },
       });
+    }
+
+    const revalidateURL = new URL(
+      `${environment.CODEMOD_COM_API_URL}/revalidate`,
+    );
+    const path = buildCodemodSlug(name);
+
+    revalidateURL.searchParams.set("path", path);
+
+    try {
+      const res = await fetch(revalidateURL.toString(), {
+        headers: { "Content-Type": "application/json" },
+      });
+
+      if (!res.ok) {
+        throw new Error(`Revalidation request failed`);
+      }
+
+      console.info(`Successfully revalidated ${path}`);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : String(e);
+      console.error(
+        `Failed to revalidate the page: ${path}. Reason: ${message}`,
+      );
     }
 
     return reply.code(200).send({ success: true });

@@ -26,10 +26,31 @@ export async function middleware(request: NextRequest) {
       status: redirect.permanent ? 301 : 302,
     });
   }
+
+  // only backend should be able to call this endpoint
+  if (request.nextUrl.pathname === "/api/revalidate") {
+    const res = NextResponse.next();
+
+    res.headers.append("Access-Control-Allow-Credentials", "true");
+    res.headers.append(
+      "Access-Control-Allow-Origin",
+      "https://backend.codemod.com",
+    );
+    res.headers.append(
+      "Access-Control-Allow-Methods",
+      "GET,DELETE,PATCH,POST,PUT",
+    );
+    res.headers.append(
+      "Access-Control-Allow-Headers",
+      "X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version",
+    );
+
+    return res;
+  }
 }
 
 export const config = {
   matcher: [
-    "/((?!api|_next/static|_next/image|favicon.ico|manage|blocks|favicons|fonts|images|studio-docs).*)",
+    "/((?!_next/static|_next/image|favicon.ico|manage|blocks|favicons|fonts|images|studio-docs).*)",
   ],
 };
