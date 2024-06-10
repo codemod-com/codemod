@@ -175,9 +175,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
     const revalidateURL = new URL(
       `${environment.CODEMOD_COM_API_URL}/revalidate`,
     );
-    const path = buildCodemodSlug(name);
+    const slug = buildCodemodSlug(name);
 
-    revalidateURL.searchParams.set("path", path);
+    revalidateURL.searchParams.set("path", `registry/${slug}`);
 
     try {
       const res = await fetch(revalidateURL.toString(), {
@@ -188,11 +188,11 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         throw new Error(`Revalidation request failed`);
       }
 
-      console.info(`Successfully revalidated ${path}`);
+      console.info(`Successfully revalidated ${slug}`);
     } catch (e) {
       const message = e instanceof Error ? e.message : String(e);
       console.error(
-        `Failed to revalidate the page: ${path}. Reason: ${message}`,
+        `Failed to revalidate the page: ${slug}. Reason: ${message}`,
       );
     }
 
