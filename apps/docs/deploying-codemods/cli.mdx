@@ -72,8 +72,16 @@ Can be used to publish a codemod to Codemod Registry.
 
 Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/codemod-registry/introduction#required-codemod-package-structure).
 
+To do so, use the `publish` command inside the codemod package directory:
+
 ```bash
 codemod publish
+```
+
+Alternatively, you can publish a codemod from <Tooltip tip="This path can point to a simple transform file or a Codemod-compatible package.">source path</Tooltip>:
+
+```bash
+codemod publish [path] --source
 ```
 
 ### `codemod unpublish`
