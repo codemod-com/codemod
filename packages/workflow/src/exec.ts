@@ -37,13 +37,13 @@ export function execLogic(
 ): PLazy<ExecHelpers> & ExecHelpers {
   return new FunctionExecutor("exec")
     .arguments(() => ({
-      name,
+      command,
       args,
     }))
     .helpers(execHelpers)
     .executor(async (next, self) => {
       const { cwd } = getCwdContext();
-      const { args } = self.getArguments();
+      const { command, args } = self.getArguments();
       console.log(
         `${clc.blueBright(`${command} ${args?.join(" ") ?? ""}`)} ${cwd}`,
       );
