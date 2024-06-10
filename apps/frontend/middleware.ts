@@ -13,6 +13,50 @@ import { type NextRequest, NextResponse } from "next/server";
 
 // @TODO: Handle redirects from Sanity
 export async function middleware(request: NextRequest) {
+  if (
+    !request.nextUrl.pathname.startsWith("/api") &&
+    process.env.NODE_ENV === "development"
+  ) {
+    // based off the examples presented on:
+    // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
+
+    const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+    const cspHeader = `
+        default-src 'self';
+        script-src 'self' 'nonce-${nonce}' 'sha256-XNTbKG77LyQDcAuZ0JrgVbMtQldHiDTAOjMbqn8+Ttg=' 'sha256-pr1pgXZvBhTRY7aqNJb3aBGcc1wCaDW0jSFfQHGkrrs=' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com;
+		frame-src https://challenges.cloudflare.com/;
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev;
+        style-src 'self' 'unsafe-inline';
+        img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com;
+        font-src 'self';
+        object-src 'none';
+        base-uri 'self';
+        form-action 'self';
+        frame-ancestors 'none';
+        block-all-mixed-content;
+        upgrade-insecure-requests;
+    `;
+
+    const contentSecurityPolicyHeaderValue = cspHeader
+      .replace(/\s{2,}/g, " ")
+      .trim();
+
+    const headers = new Headers(request.headers);
+    headers.set("x-nonce", nonce);
+    headers.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
+
+    const response = NextResponse.next({
+      request: {
+        headers,
+      },
+    });
+
+    response.headers.set(
+      "Content-Security-Policy",
+      contentSecurityPolicyHeaderValue,
+    );
+    return response;
+  }
   if (request.nextUrl.hostname === OLD_STUDIO_HOSTNAME) {
     return NextResponse.redirect(new URL(CODEMOD_STUDIO_URL));
   }
