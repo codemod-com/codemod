@@ -1,24 +1,22 @@
-import { PLazy } from "../PLazy.js";
-import {
-  getCwdContext,
-  getParentContext,
-  getRepositoryContext,
-} from "../contexts.js";
-import { logger, wrapHelpers } from "../helpers.js";
+import type { PLazy } from "../PLazy.js";
+import { getCwdContext, getRepositoryContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { logger } from "../helpers.js";
 import { spawn } from "../spawn.js";
 import { push } from "./push.js";
 
-const helpers = { push };
-
-type Helpers = typeof helpers;
-
-export function commit(commitName = "no commit message provided") {
-  const innerParentContext = getParentContext();
-
-  const context = async (cb?: any) => {
-    await innerParentContext(async () => {
-      const { repository, branch } = getRepositoryContext();
+export function commitLogic(
+  commitName = "no commit message provided",
+): PLazy<Helpers> & Helpers {
+  return new FunctionExecutor("commit")
+    .arguments(() => ({
+      commitName,
+    }))
+    .helpers(helpers)
+    .executor(async (next, self) => {
+      const { commitName } = self.getArguments();
       const { cwd } = getCwdContext();
+      const { repository, branch } = getRepositoryContext();
       const log = logger(
         `Committing to ${repository}/tree/${branch}${
           commitName ? ` with message: ${JSON.stringify(commitName)}` : ""
@@ -38,25 +36,14 @@ export function commit(commitName = "no commit message provided") {
       } catch (e: any) {
         log.fail(e.toString());
       }
-    });
-
-    if (cb) {
-      await innerParentContext(() => cb());
-    }
-
-    return wrapHelpers(helpers, context);
-  };
-
-  const helpersWithContext = wrapHelpers(helpers, context);
-
-  const promise = new PLazy<Helpers>((resolve, reject) => {
-    context().then(resolve).catch(reject);
-  }) as PLazy<Helpers> & Helpers;
-
-  Object.keys(helpersWithContext).forEach((key) => {
-    // @ts-ignore
-    promise[key] = helpersWithContext[key];
-  });
-
-  return promise;
+      await next();
+    })
+    .return((self) => self.wrappedHelpers())
+    .run();
 }
+
+export const commit = fnWrapper("commit", commitLogic);
+
+const helpers = { push };
+
+type Helpers = typeof helpers;

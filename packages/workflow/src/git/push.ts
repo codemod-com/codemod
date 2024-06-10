@@ -1,21 +1,16 @@
-import { PLazy } from "../PLazy.js";
-import {
-  getCwdContext,
-  getParentContext,
-  getRepositoryContext,
-} from "../contexts.js";
-import { logger, wrapHelpers } from "../helpers.js";
+import type { PLazy } from "../PLazy.js";
+import { getCwdContext, getRepositoryContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { logger } from "../helpers.js";
 import { spawn } from "../spawn.js";
 
-const helpers = {};
-
-type Helpers = typeof helpers;
-
-export function push({ force }: { force: boolean } = { force: false }) {
-  const innerParentContext = getParentContext();
-
-  const context = async (cb?: any) => {
-    await innerParentContext(async () => {
+export function pushLogic(
+  { force }: { force: boolean } = { force: false },
+): PLazy<Helpers> & Helpers {
+  return new FunctionExecutor("push")
+    .arguments(() => ({ force }))
+    .helpers(helpers)
+    .executor(async (next) => {
       const { repository, branch } = getRepositoryContext();
       const { cwd } = getCwdContext();
 
@@ -28,25 +23,14 @@ export function push({ force }: { force: boolean } = { force: false }) {
       } catch (e: any) {
         log.fail(e.toString());
       }
-    });
-
-    if (cb) {
-      await innerParentContext(() => cb());
-    }
-
-    return wrapHelpers(helpers, context);
-  };
-
-  const helpersWithContext = wrapHelpers(helpers, context);
-
-  const promise = new PLazy<Helpers>((resolve, reject) => {
-    context().then(resolve).catch(reject);
-  }) as PLazy<Helpers> & Helpers;
-
-  Object.keys(helpersWithContext).forEach((key) => {
-    // @ts-ignore
-    promise[key] = helpersWithContext[key];
-  });
-
-  return promise;
+      await next();
+    })
+    .return((self) => self.wrappedHelpers())
+    .run();
 }
+
+export const push = fnWrapper("push", pushLogic);
+
+const helpers = {};
+
+type Helpers = typeof helpers;
