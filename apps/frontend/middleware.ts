@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
         frame-ancestors 'none';
         block-all-mixed-content;
         upgrade-insecure-requests;
-        media-src 'self' https://cdn.sanity.io https://image.mux.com;
+        media-src 'self' https://cdn.sanity.io https://image.mux.com https://stream.mux.com;
         worker-src 'self' blob: https://*.vercel.app;
     `;
 
