@@ -43,8 +43,15 @@ export async function generateMetadata(
 }
 
 export default async function CodemodRoute({ params }) {
-  const initialAutomationData = await loadCodemod(params.codemod);
-
+  // Disabling cache for loadCodemod
+  // otherwise cache will not be revalidated properly when codemod is removed from the store
+  // because cache is updated only when original request returns status 200 https://github.com/vercel/next.js/blob/d7d5117777485fd3777f3429901369f4f244eb76/packages/next/src/server/lib/patch-fetch.ts#L584,
+  // but for removed codemod it will return 400 (cache will never be updated)
+  const initialAutomationData = await loadCodemod(params.codemod, {
+    next: {
+      revalidate: 0,
+    },
+  });
   if (!initialAutomationData || "error" in initialAutomationData) {
     notFound();
   }
@@ -63,5 +70,3 @@ export default async function CodemodRoute({ params }) {
 
   return <CodemodPage description={description} data={pageData} />;
 }
-
-export const revalidate = 3600;

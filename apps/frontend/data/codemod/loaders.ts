@@ -32,12 +32,15 @@ export async function fetchWithTimeout(
   return response;
 }
 
-export async function loadCodemod(pathname: string) {
+export async function loadCodemod(
+  pathname: string,
+  options?: Partial<RequestInit>,
+) {
   const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
   try {
     // API is regularly unstable, handle timeout errors
-    const response = await fetchWithTimeout(url);
+    const response = await fetchWithTimeout(url, options);
 
     const data =
       // API is regularly unstable, handle bad gateway errors returning HTML instead of JSON
