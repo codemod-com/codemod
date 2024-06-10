@@ -4,10 +4,12 @@ import columnify from "columnify";
 import terminalLink from "terminal-link";
 import { getCodemodList } from "../apis.js";
 
-export const handleListNamesCommand = async (
-  printer: PrinterBlueprint,
-  search: string | null,
-) => {
+export const handleListNamesCommand = async (options: {
+  printer: PrinterBlueprint;
+  search: string | null;
+}) => {
+  const { printer, search } = options;
+
   let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
   if (search && !printer.__jsonOutput) {
     spinner = printer.withLoaderMessage(

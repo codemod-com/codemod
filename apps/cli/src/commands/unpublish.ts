@@ -8,11 +8,13 @@ import { AxiosError } from "axios";
 import { unpublish } from "../apis.js";
 import { getCurrentUserData } from "../utils.js";
 
-export const handleUnpublishCliCommand = async (
-  printer: PrinterBlueprint,
-  name: string,
-  force?: boolean,
-) => {
+export const handleUnpublishCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  name: string;
+  force?: boolean;
+}) => {
+  const { printer, name, force } = options;
+
   const userData = await getCurrentUserData();
 
   if (userData === null) {

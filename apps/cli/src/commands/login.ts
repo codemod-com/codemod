@@ -22,7 +22,11 @@ const routeUserToStudioForLogin = (
     });
   }
 };
-export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
+export const handleLoginCliCommand = async (options: {
+  printer: PrinterBlueprint;
+}) => {
+  const { printer } = options;
+
   const userData = await getCurrentUserData();
   if (userData !== null) {
     printer.printConsoleMessage(
