@@ -1,6 +1,6 @@
-import { ChatWindow } from "@chatbot/ChatWindow";
 import type { useAiService } from "@chatbot/useAiService";
 import { memo } from "react";
+import { ChatWindow } from "./ChatWindow";
 import { PromptPanel } from "./PromptPanel";
 
 type Props = {

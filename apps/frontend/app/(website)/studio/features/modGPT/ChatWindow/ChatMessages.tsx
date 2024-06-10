@@ -1,8 +1,6 @@
 import { cn } from "@/utils";
 import type { LLMMessage } from "@chatbot/types";
-import Button from "@studio/components/button";
 import { Separator } from "@studio/components/ui/separator";
-import { useModStore } from "@studio/store/zustand/mod";
 import { ChatMessage } from "./ChatMessage";
 
 interface Props {

@@ -1,3 +1,4 @@
+import { cn } from "@/utils";
 import { useTheme } from "@context/useTheme";
 import Editor, { type EditorProps, type Monaco } from "@monaco-editor/react";
 import type { monaco } from "@studio/customMonaco";
@@ -13,6 +14,7 @@ type Link = {
 
 type CustomProps = {
   id?: string;
+  className?: string;
   highlights: ReadonlyArray<OffsetRange>;
   decorations?: monaco.editor.IModelDeltaDecoration[];
   links?: Link[];
@@ -45,6 +47,7 @@ const MonacoEditor = forwardRef<
 >(
   (
     {
+      className,
       highlights,
       decorations,
       links,
@@ -83,7 +86,7 @@ const MonacoEditor = forwardRef<
     );
 
     return (
-      <div className="relative h-full w-full">
+      <div className={cn(className, "relative h-full w-full")}>
         <Editor
           onMount={(editor, m) => {
             // @TODO move this to init

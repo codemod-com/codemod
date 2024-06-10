@@ -38,6 +38,7 @@ const mocks = vi.hoisted(() => {
       codemod: {
         upsert: vi.fn(),
         delete: vi.fn(),
+        findUnique: vi.fn(),
       },
     },
     clerkClient: {
@@ -175,6 +176,7 @@ describe("/publish route", async () => {
 
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+    mocks.prisma.codemod.findUnique.mockImplementation(() => null);
 
     mocks.prisma.codemod.upsert.mockImplementation(() => {
       return { createdAt: { getTime: () => MOCK_TIMESTAMP } };
@@ -446,6 +448,44 @@ describe("/publish route", async () => {
 
     expect(response.body).toEqual({
       error: `Codemod ${codemodRcContents.name} version ${codemodRcContents.version} is lower than the latest published or the same as the latest published version: 1.0.0`,
+      success: false,
+    });
+  });
+
+  it("should fail to publish a codemod from a certain author if another author already took the name", async () => {
+    mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
+    mocks.prisma.codemod.findUnique.mockImplementationOnce(() => ({
+      version: "1.0.0",
+    }));
+
+    const expectedCode = 400;
+
+    const response = await supertest(fastify.server)
+      .post("/publish")
+      .attach(".codemodrc.json", codemodRcBuf, {
+        contentType: "multipart/form-data",
+        filename: ".codemodrc.json",
+      })
+      .attach("index.cjs", indexCjsBuf, {
+        contentType: "multipart/form-data",
+        filename: "index.cjs",
+      })
+      .attach("description.md", readmeBuf, {
+        contentType: "multipart/form-data",
+        filename: "description.md",
+      })
+      .expect((res) => {
+        if (res.status !== expectedCode) {
+          console.log(JSON.stringify(res.body, null, 2));
+        }
+      })
+      .expect("Content-Type", "application/json; charset=utf-8")
+      .expect(expectedCode);
+
+    expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
+
+    expect(response.body).toEqual({
+      error: `Codemod name \`${codemodRcContents.name}\` is already taken.`,
       success: false,
     });
   });

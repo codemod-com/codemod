@@ -1,10 +1,12 @@
 import Input from "@/components/shared/Input";
+import {
+  DropdownSelector,
+  useBranchLogic,
+  useHandleCodemodRun,
+} from "@features/GHRun";
 import type { CodemodRunRequest } from "@shared/types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
-import { DropdownSelector } from "@studio/main/GHRun/components/Dropdown";
-import { useBranchLogic } from "@studio/main/GHRun/hooks/useBranchLogic";
-import { useHandleCodemodRun } from "@studio/main/GHRun/hooks/useHandleCodemodRun";
 import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { type SetStateAction, useState } from "react";

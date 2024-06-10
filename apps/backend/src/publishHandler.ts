@@ -144,6 +144,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
 
       const allowedNamespaces = [
         username,
+        environment.VERIFIED_PUBLISHERS.includes(username)
+          ? "codemod-com"
+          : null,
         ...orgs.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
 
@@ -246,15 +249,35 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       arguments: codemodRc.arguments,
     };
 
-    let isVerified = namespace === "Codemod" || namespace === "codemod-com";
+    let isVerified = false;
     let author = namespace;
-    if (!author) {
-      if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
+    if (author === null) {
+      if (
+        namespace === "codemod-com" ||
+        environment.VERIFIED_PUBLISHERS.includes(username)
+      ) {
         isVerified = true;
         author = "Codemod";
       } else {
         author = username;
       }
+    }
+
+    // Check if a codemod with the name already exists from other author
+    const existingCodemod = await prisma.codemod.findUnique({
+      where: {
+        name,
+        author: {
+          not: author,
+        },
+      },
+    });
+
+    if (existingCodemod !== null) {
+      return reply.code(400).send({
+        error: `Codemod name \`${name}\` is already taken.`,
+        success: false,
+      });
     }
 
     let createdAtTimestamp: number;

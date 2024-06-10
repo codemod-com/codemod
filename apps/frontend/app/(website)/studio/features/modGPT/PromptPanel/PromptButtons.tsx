@@ -1,5 +1,6 @@
 import { ArrowElbowDownLeft } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
+import * as React from "react";
 import type { PropsWithChildren } from "react";
 
 type PromptButtonsProps = {
@@ -12,7 +13,7 @@ export const PromptButtons = ({
   handleSubmit,
   children,
 }: PropsWithChildren<PromptButtonsProps>) => (
-  <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1">
+  <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center actions">
     {promptsList.map(([label, value]) => (
       <Button
         variant="outline"
