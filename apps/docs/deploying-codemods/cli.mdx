@@ -40,7 +40,7 @@ codemod learn
 
 ### `codemod build`
 
-Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/publishing-codemods#supported-codemod-engines), you can use the CLI to build the main executable file.
+Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/introduction#supported-codemod-engines), you can use the CLI to build the main executable file.
 
 ```bash
 codemod build
@@ -68,7 +68,9 @@ codemod init
 
 ### `codemod publish`
 
-Can be used to [publish a codemod to Codemod Registry](/codemod-registry/publishing-codemods). Publishing codemods requires [logging in](#login-to-codemod-platform) to Codemod platform.
+Can be used to publish a codemod to Codemod Registry.
+
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/codemod-registry/introduction#required-codemod-package-structure).
 
 ```bash
 codemod publish
@@ -138,7 +140,7 @@ Codemod CLI allows you to run codemods:
     codemod -s [path]
     ```
 
-    or you can run a transform file ([using a supported codemod engine](/codemod-registry/publishing-codemods#supported-codemod-engines)) by using:
+    or you can run a transform file ([using a supported codemod engine](/codemod-registry/introduction#supported-codemod-engines)) by using:
     ```bash
     codemod -s [path] --engine [codemod-engine]
     ```

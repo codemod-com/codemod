@@ -50,10 +50,7 @@
     },
     {
       "group": "Codemod Registry",
-      "pages": [
-        "codemod-registry/introduction",
-        "codemod-registry/publishing-codemods"
-      ]
+      "pages": ["codemod-registry/introduction"]
     },
     {
       "group": "CLI",
