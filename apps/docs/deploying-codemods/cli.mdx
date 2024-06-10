@@ -1,20 +1,8 @@
 ---
-title: 'CLI'
+title: 'All commands'
 description: 'Get started with using the Codemod command-line interface.'
 icon: 'terminal'
 ---
-
-<img
-	className="block dark:hidden"
-	src="/images/deploying-codemods/cli/hero-light.svg"
-	alt="Codemod CLI hero banner"
-/>
-
-<img
-	className="hidden dark:block"
-	src="/images/deploying-codemods/cli/hero-dark.svg"
-	alt="Codemod CLI hero banner"
-/>
 
 The Codemod command-line interface (CLI) allows you to interact with Codemod platform using a terminal or through an automated system.
 
@@ -28,53 +16,142 @@ The Codemod CLI accepts a variety of subcommands and options to explore, publish
 npm i -g codemod
 ```
 
-## List available codemods
+## Build
 
-The <Tooltip tip='Available aliases: `ls` and `search`'>`list`</Tooltip> command can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
+### `codemod learn`
+
+The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
+
+After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
 
 ```bash
-codemod list [optional-search-query]
+codemod learn
 ```
 
-## Running codemods
+<video
+	autoPlay
+	controls
+	muted
+	playsInline
+	loop
+	className="w-full aspect-video"
+	src="/images/deploying-codemods/cli/codemod-learn.mp4"
+></video>
+
+### `codemod build`
+
+Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/introduction#supported-codemod-engines), you can use the CLI to build the main executable file.
+
+```bash
+codemod build
+```
+
+## Share/discover
+
+### `codemod search`
+
+Can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
+
+Aliases: `list` and `ls`
+
+```bash
+codemod search [optional-search-query]
+```
+
+### `codemod init`
+
+Can be used to scaffold a new codemod package.
+
+```bash
+codemod init
+```
+
+### `codemod publish`
+
+Can be used to publish a codemod to Codemod Registry.
+
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/codemod-registry/introduction#required-codemod-package-structure).
+
+```bash
+codemod publish
+```
+
+### `codemod unpublish`
+
+Can be used to unpublish a codemod you own from Codemod Registry.
+
+You can publish a specific version of your codemods using:
+
+```bash
+codemod unpublish [codemod-name]@[version]
+```
+
+Or you can completely unpublish your codemod, including all versions, from the registry:
+
+```bash
+codemod unpublish [codemod-name] -f
+```
+
+## Run
+
+### `codemod run`
 
 You can use the `codemod` command to run codemods.
 
-This command uses the following format:
+Codemod CLI allows you to run codemods:
+1. from [Codemod Registry](/codemod-registry)
+2. from source
+    - using a <Tooltip tip="A codemod package is a codemod with a valid `.codemodrc.json` configuration file.">codemod package</Tooltip>
+    - using a <Tooltip tip="This file can be a simple transfofrm file using any of the supported codemod engines.">transform file</Tooltip>
 
-```bash
-codemod [codemod-name]
-```
+<Tabs>
+  <Tab title="Run from Codemod Registry">
+    ```bash
+    codemod [codemod-name]
+    ```
+
+    <AccordionGroup>
+    <Accordion title="Example">
+      <Steps>
+      <Step title="Go to project directory">
+        Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
+      </Step>
+      <Step title="List available codemods">
+        Run `codemod list` to see all available codemods in Codemod Registry. Alternatively, you can search for codemods of a specific framework like `codemod search next.js`.
+      </Step>
+      <Step title="Run codemod">
+        In this example, we will run the `next/13/app-router-recipe` codemod.
+
+        To do so, we will run:
+
+        ```bash
+        codemod next/13/app-router-recipe
+        ```
+
+      </Step>
+    </Steps>
+    </Accordion>
+    </AccordionGroup>
+
+  </Tab>
+  <Tab title="Run from source">
+    To run a local codemod package, you can:
+    ```bash
+    codemod -s [path]
+    ```
+
+    or you can run a transform file ([using a supported codemod engine](/codemod-registry/introduction#supported-codemod-engines)) by using:
+    ```bash
+    codemod -s [path] --engine [codemod-engine]
+    ```
+  </Tab>
+</Tabs>
 
 <Note>
 When using the `codemod` command, Codemod CLI will attempt to run a codemod as long as it is not followed by a reserved command name.
 </Note>
 
-<AccordionGroup>
-<Accordion title="Example">
-  <Steps>
-  <Step title="Go to project directory">
-    Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
-  </Step>
-  <Step title="List available codemods">
-    Run `codemod list` to see all available codemods in Codemod Registry.
-  </Step>
-  <Step title="Run codemod">
-    In this example, we will run the `next/13/app-router-recipe` codemod.
-
-    To do so, we will run:
-
-    ```bash
-    codemod next/13/app-router-recipe
-    ```
-
-  </Step>
-</Steps>
-</Accordion>
-
-</AccordionGroup>
-
-### Available options
+### Options
 
 The following options can be used to change the default behavior of Codemod CLI.
 
@@ -89,7 +166,7 @@ The following options can be used to change the default behavior of Codemod CLI.
   </Tab>
   <Tab title="Including folders">
     ```bash
-    codemod [codemod-name] -i "example_folder"
+    codemod [codemod-name] -i "example_folder/"
     ```
   </Tab>
   <Tab title="Including specific file extensions">
@@ -115,7 +192,7 @@ The following options can be used to change the default behavior of Codemod CLI.
   </Tab>
   <Tab title="Excluding folders">
     ```bash
-    codemod [codemod-name] -e "example_folder"
+    codemod [codemod-name] -e "example_folder/"
     ```
   </Tab>
   <Tab title="Excluding specific file extensions">
@@ -135,26 +212,6 @@ The following options can be used to change the default behavior of Codemod CLI.
 ```bash
 codemod [codemod-name] -t [path]
 ```
-
-</ResponseField>
-
-<ResponseField name="--source (-s)" type="string">
-  Can be used to specify the path to the codemod package folder stored locally that you want to run using Codemod CLI.
-
-  If your local codemod follows the recommended [codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), it will include a `.codemodrc.json` file. By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. Otherwise, you will need to specify the codemod engine manually.
-
-  <Tabs>
-    <Tab title="Codemods with `.codemodrc.json`">
-      ```bash
-      codemod -s [path]
-      ```
-    </Tab>
-    <Tab title="Codemods without `.codemodrc.json`">
-      ```bash
-      codemod -s [path] --engine jscodeshift
-      ```
-    </Tab>
-  </Tabs>
 
 </ResponseField>
 
@@ -221,92 +278,32 @@ codemod [codemod-name] --json
 ```bash
 codemod [codemod-name] -n [number-of-threads]
 ```
-
 </ResponseField>
 
-## Generate codemod from file diff
+## Other commands
 
-The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
-
-After running this command, if any git diff exists, the Codemod Engine will use the diff as before/after snippets in Codemod Studio.
-
-```bash
-codemod learn
-```
-
-<video
-	autoPlay
-	controls
-	muted
-	playsInline
-	loop
-	className="w-full aspect-video"
-	src="/images/deploying-codemods/cli/codemod-learn.mp4"
-></video>
-
-## Login to Codemod platform
-
-The `login` command can be used to login to Codemod platform.
+<ResponseField name="codemod login">
+Can be used to login to Codemod platform.
 
 ```bash
 codemod login
 ```
+</ResponseField>
 
-## Logout from Codemod platform
+<ResponseField name="codemod logout">
 
-The `logout` command can be used to logout from Codemod platform.
+Can be used to logout from Codemod platform.
 
 ```bash
 codemod logout
 ```
+</ResponseField>
 
-## Creating a codemod package
-
-The `init` command can be used to scaffold a new codemod package.
-
-```bash
-codemod init
-```
-
-## Building a codemod package
-
-The `build` command can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/publishing-codemods#supported-codemod-engines), you can use the CLI to build the main executable file.
+<ResponseField name="codemod help">
+Can be used to show a list of all available commands and options for Codemod CLI.
 
 ```bash
-codemod build
-```
-
-## Publishing codemods
-
-The `publish` command can be used to [publish a codemod to Codemod Registry](/codemod-registry/publishing-codemods). Publishing codemods requires [logging in](#login-to-codemod-platform) to Codemod platform.
-
-```bash
-codemod publish
-```
-
-### Unpublishing codemods
-
-The `unpublish` command can be used to unpublish a codemod you own from Codemod Registry.
-
-You can publish a specific version of your codemods using:
-
-```bash
-codemod unpublish [codemod-name]@[version]
-```
-
-Or you can completely unpublish your codemod, including all versions, from the registry:
-
-```bash
-codemod unpublish [codemod-name] -f
-```
-
-## Help commands
-
-<ResponseField name="--help">
-  Can be used to show a list of all available commands and options for Codemod CLI.
-
-```bash
-codemod --help
+codemod help
 ```
 
 You can also use this flag in combination with a particular CLI command to display usage information relevant to that command.
@@ -317,7 +314,7 @@ codemod login --help
 
 </ResponseField>
 
-<ResponseField name="--version (-v)">
+<ResponseField name="codemod --version (-v)">
   Can be used to show the currently active version of Codemod CLI.
 
 ```bash
