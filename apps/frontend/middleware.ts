@@ -15,7 +15,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   if (
     !request.nextUrl.pathname.startsWith("/api") &&
-    process.env.NODE_ENV === "development"
+    process.env.NODE_ENV !== "development"
   ) {
     // based off the examples presented on:
     // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
