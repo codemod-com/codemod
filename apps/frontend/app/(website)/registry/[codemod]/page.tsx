@@ -70,5 +70,3 @@ export default async function CodemodRoute({ params }) {
 
   return <CodemodPage description={description} data={pageData} />;
 }
-
-export const revalidate = 3600;
