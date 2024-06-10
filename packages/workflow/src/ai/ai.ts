@@ -1,4 +1,5 @@
 import * as fs from "node:fs/promises";
+import { formatText } from "@codemod-com/runner";
 import MagicString from "magic-string";
 import OpenAI from "openai";
 import type { PLazy } from "../PLazy";
@@ -160,7 +161,10 @@ ${before.text}
           );
         }
         if (contents.hasChanged()) {
-          await fs.writeFile(filename, contents.toString());
+          await fs.writeFile(
+            filename,
+            await formatText(filename, contents.toString(), true),
+          );
           console.log(`${clc.blueBright("FILE")} ${filename}`);
         }
       } catch (e) {
