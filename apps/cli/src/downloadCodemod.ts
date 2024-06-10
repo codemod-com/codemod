@@ -214,7 +214,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
         name: "names",
         type: "checkbox",
         message:
-          "Select the codemods you want to run (use space and arrow keys to select, enter to confirm)",
+          "Select the codemods you would like to run. Codemods will be executed in order.",
         choices: config.names,
         default: config.names,
       });
