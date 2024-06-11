@@ -37,7 +37,7 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
       </SignedOut>
       <SignedIn>
         <div className="flex items-center gap-2">
-          <UserButton afterSignOutUrl="/" />
+          <UserButton afterSignOutUrl={isStudio ? "/studio" : "/"} />
           {isStudio ? user?.firstName : ""}
           <SignOutButton>
             <Button
