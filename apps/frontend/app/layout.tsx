@@ -7,7 +7,6 @@ import dynamicFavicon from "@/headScripts/dynamic_favicon";
 import themeScript from "@/headScripts/theme";
 
 import "@/styles/globals.css";
-import AuthProvider from "@context/AuthProvider";
 import Script from "next/script";
 
 export default async function RootLayout({
@@ -35,10 +34,8 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        <AuthProvider>
-          {children}
-          <Analytics />
-        </AuthProvider>
+        {children}
+        <Analytics />
       </body>
     </html>
   );

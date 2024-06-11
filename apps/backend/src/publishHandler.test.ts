@@ -88,6 +88,7 @@ vi.mock("./schemata/env.js", async () => {
         CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
         CLERK_JWT_KEY: "CLERK_JWT_KEY",
         TASK_MANAGER_QUEUE_NAME: "TASK_MANAGER_QUEUE_NAME",
+        CODEMOD_COM_API_URL: "https://codemod.com/api",
       };
     }),
   };
@@ -141,6 +142,8 @@ vi.mock("@codemod-com/utilities", async () => {
     TarService: mocks.TarService,
   };
 });
+
+vi.stubGlobal("fetch", vi.fn());
 
 describe("/publish route", async () => {
   const fastify = await runServer();

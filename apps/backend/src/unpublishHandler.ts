@@ -172,21 +172,25 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
       });
     }
 
+    /**
+     * Revalidate codemod tag and page
+     */
+
+    const slug = buildCodemodSlug(name);
+
     const revalidateURL = new URL(
       `${environment.CODEMOD_COM_API_URL}/revalidate`,
     );
-    const slug = buildCodemodSlug(name);
-
     revalidateURL.searchParams.set("path", `registry/${slug}`);
 
-    try {
-      const res = await fetch(revalidateURL.toString(), {
-        headers: { "Content-Type": "application/json" },
-      });
+    const revalidateTagURL = new URL(
+      `${environment.CODEMOD_COM_API_URL}/revalidate-tag`,
+    );
+    revalidateTagURL.searchParams.set("tag", `codemod-${slug}`);
 
-      if (!res.ok) {
-        throw new Error(`Revalidation request failed`);
-      }
+    try {
+      await fetch(revalidateTagURL.toString());
+      await fetch(revalidateURL.toString());
 
       console.info(`Successfully revalidated ${slug}`);
     } catch (e) {
