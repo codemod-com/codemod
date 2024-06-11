@@ -2,9 +2,9 @@ import { createHash } from "node:crypto";
 import { dirname, extname, join } from "node:path";
 import {
   type FileSystem,
+  formatText,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { Options } from "prettier";
 import type { RunSettings } from "./schemata/runArgvSettingsSchema.js";
 
 export type CreateFileCommand = Readonly<{
@@ -47,78 +47,6 @@ export type FileCommand =
   | CopyFileCommand;
 
 export type FormattedFileCommand = FileCommand & { formatted: true };
-
-export const DEFAULT_PRETTIER_OPTIONS: Options = {
-  tabWidth: 4,
-  useTabs: true,
-  semi: true,
-  singleQuote: true,
-  quoteProps: "as-needed",
-  trailingComma: "all",
-  bracketSpacing: true,
-  arrowParens: "always",
-  endOfLine: "lf",
-  parser: "typescript",
-};
-
-const parserMappers = new Map<string, Options["parser"]>([
-  ["ts", "typescript"],
-  ["tsx", "typescript"],
-  ["js", "babel"],
-  ["jsx", "babel"],
-  ["json", "json"],
-  ["json5", "json5"],
-  ["jsonc", "json"],
-  ["css", "css"],
-  ["scss", "scss"],
-  ["less", "less"],
-  ["graphql", "graphql"],
-  ["md", "markdown"],
-  ["mdx", "mdx"],
-  ["html", "html"],
-  ["vue", "vue"],
-  ["yaml", "yaml"],
-  ["yml", "yaml"],
-]);
-
-export const getConfig = async (path: string): Promise<Options> => {
-  const { resolveConfig } = await import("prettier");
-  let config = await resolveConfig(path, {
-    editorconfig: false,
-  });
-
-  if (config === null || Object.keys(config).length === 0) {
-    config = DEFAULT_PRETTIER_OPTIONS;
-  }
-
-  const parser: Options["parser"] =
-    parserMappers.get(extname(path).slice(1)) ?? "typescript";
-
-  return {
-    ...config,
-    parser,
-  };
-};
-
-export const formatText = async (
-  path: string,
-  oldData: string,
-  formatWithPrettier: boolean,
-): Promise<string> => {
-  const newData = oldData.replace(/\/\*\* \*\*\//gm, "");
-
-  if (!formatWithPrettier) {
-    return newData;
-  }
-
-  try {
-    const { format } = await import("prettier");
-    const options = await getConfig(path);
-    return await format(newData, options);
-  } catch (err) {
-    return newData;
-  }
-};
 
 export const buildFormattedFileCommand = async (
   command: FileCommand,

@@ -3,7 +3,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as util from "node:util";
 import { type NapiConfig, tsx as astGrepTsx } from "@ast-grep/napi";
-import { formatText } from "@codemod-com/runner";
+import { formatText } from "@codemod-com/utilities";
 import MagicString from "magic-string";
 import type { PLazy } from "../PLazy.js";
 import { ai } from "../ai/ai.js";

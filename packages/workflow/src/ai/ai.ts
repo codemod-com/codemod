@@ -1,5 +1,5 @@
 import * as fs from "node:fs/promises";
-import { formatText } from "@codemod-com/runner";
+import { formatText } from "@codemod-com/utilities";
 import MagicString from "magic-string";
 import OpenAI from "openai";
 import type { PLazy } from "../PLazy";
