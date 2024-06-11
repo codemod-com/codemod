@@ -1,0 +1,99 @@
+---
+title: "React 18 -> 19 Migration"
+---
+
+React 19 introduces several new features and improvements, including:
+
+1. **Actions**: Automate handling of pending states, errors, forms, and optimistic updates using new hooks like `useTransition` and `useActionState`.
+2. **New API: `use`**: Read resources in render, supporting conditional calls and promises.
+3. **Server Components and Server Actions**: Enable async functions on the server, improving performance.
+4. **Improved Hydration**: Better error reporting and compatibility with third-party scripts.
+5. **Enhanced Ref Handling**: Simplified ref access and cleanup functions.
+
+For more details, check out [what's new in React 19](https://react.dev/blog/2024/04/25/react-19).
+
+Codemod supports a mostly automated React 19 upgrade experience. This page provides tips and resources you may need for a successfull migration.
+
+## Getting started
+
+<CardGroup cols={2}>
+<Card
+    title="React 19 Upgrade Guide"
+    icon={
+    <>
+      <svg xmlns="http://www.w3.org/2000/svg" width="32" height="28" viewBox="0 0 32 28" fill="none">
+      <g clipPath="url(#clip0_1_6)">
+      <path d="M15.7353 16.805C17.2845 16.805 18.5403 15.5492 18.5403 14C18.5403 12.4508 17.2845 11.195 15.7353 11.195C14.1861 11.195 12.9303 12.4508 12.9303 14C12.9303 15.5492 14.1861 16.805 15.7353 16.805Z" fill="#61DAFB"/>
+      <path d="M15.7354 19.7468C24.048 19.7468 30.7866 17.1739 30.7866 14C30.7866 10.8261 24.048 8.25317 15.7354 8.25317C7.42286 8.25317 0.684204 10.8261 0.684204 14C0.684204 17.1739 7.42286 19.7468 15.7354 19.7468Z" stroke="#61DAFB"/>
+      <path d="M10.7585 16.8734C14.9147 24.0723 20.5123 28.6217 23.261 27.0347C26.0096 25.4478 24.8685 18.3255 20.7122 11.1266C16.556 3.9277 10.9584 -0.621672 8.20975 0.965269C5.46109 2.55221 6.60218 9.67453 10.7585 16.8734Z" stroke="#61DAFB"/>
+      <path d="M10.7585 11.1266C6.60225 18.3255 5.46115 25.4478 8.20982 27.0347C10.9585 28.6217 16.556 24.0723 20.7123 16.8734C24.8686 9.67453 26.0097 2.55221 23.261 0.965273C20.5124 -0.621668 14.9148 3.92771 10.7585 11.1266Z" stroke="#61DAFB"/>
+      </g>
+      <defs>
+      <clipPath id="clip0_1_6">
+      <rect width="31.4707" height="28" fill="white"/>
+      </clipPath>
+      </defs>
+      </svg>
+    </>
+    }
+    href="https://react.dev/blog/2024/04/25/react-19-upgrade-guide"
+>
+</Card>
+<Card
+    title="React 19 Upgrade Recipe"
+    icon="cauldron"
+    href="https://codemod.com/registry/react-19-migration-recipe"
+>
+    
+</Card>
+</CardGroup>
+
+## Migration Steps
+<Steps>
+    <Step title="Installation">
+    Install the latest version of React and React DOM:
+    ```bash
+    npm install --save-exact react@rc react-dom@rc
+    ```
+
+    or, if you’re using Yarn:
+    ```bash
+    yarn add --exact react@rc react-dom@rc
+    ```
+    </Step>
+    <Step title="Update types (Optional - TypeScript only)">
+        If you're using TypeScript, you also need to update the types. Once React 19 is released as stable, you can install the types as usual from `@types/react` and `@types/react-dom`.  Until the stable release, the types are available in different packages which need to be enforced in your `package.json`:
+
+        ```json package.json
+        {
+        "dependencies": {
+            "@types/react": "npm:types-react@rc",
+            "@types/react-dom": "npm:types-react-dom@rc"
+        },
+        "overrides": {
+            "@types/react": "npm:types-react@rc",
+            "@types/react-dom": "npm:types-react-dom@rc"
+        }
+        }
+        ```
+    </Step>
+    <Step title="Run codemods">
+    Run the React 19 upgrade recipe:
+
+    ```bash
+    npx codemod@latest react/19/migration-recipe
+    ```
+
+    This recipe is a set of codemods that will fix some of React 19 breaking changes.  
+
+    The recipe includes the following codemods:
+
+    - [react/19/replace-reactdom-render](https://codemod.com/registry/react-19-replace-reactdom-render)
+    - [react/19/replace-string-ref](https://codemod.com/registry/react-19-replace-string-ref)
+    - [react/19/replace-act-import](https://codemod.com/registry/react-19-replace-act-import)
+    - [react/19/replace-use-form-state](https://codemod.com/registry/react-19-replace-use-form-state)
+    - [react/prop-types-typescript](https://codemod.com/registry/react-prop-types-typescript)
+
+    For a list of all available codemods, see the [`react-codemod` repo](https://github.com/reactjs/react-codemod).
+    </Step>
+</Steps>
