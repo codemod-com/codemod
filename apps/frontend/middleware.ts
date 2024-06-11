@@ -15,7 +15,7 @@ import { type NextRequest, NextResponse } from "next/server";
 export async function middleware(request: NextRequest) {
   if (
     !request.nextUrl.pathname.startsWith("/api") &&
-    process.env.NODE_ENV === "development"
+    process.env.NODE_ENV !== "development"
   ) {
     // based off the examples presented on:
     // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
@@ -23,11 +23,11 @@ export async function middleware(request: NextRequest) {
     const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
     const cspHeader = `
         default-src 'self';
-        script-src 'self' 'nonce-${nonce}' 'sha256-XNTbKG77LyQDcAuZ0JrgVbMtQldHiDTAOjMbqn8+Ttg=' 'sha256-pr1pgXZvBhTRY7aqNJb3aBGcc1wCaDW0jSFfQHGkrrs=' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com;
-		frame-src https://challenges.cloudflare.com/;
-        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev;
-        style-src 'self' 'unsafe-inline';
-        img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com;
+        script-src 'self' 'nonce-${nonce}' 'sha256-XNTbKG77LyQDcAuZ0JrgVbMtQldHiDTAOjMbqn8+Ttg=' 'sha256-pr1pgXZvBhTRY7aqNJb3aBGcc1wCaDW0jSFfQHGkrrs=' 'sha256-Jjt5yQN4lmRIL1Z0oPMIB0mTFQuul6+8PfUwDM1Lpv0=' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net;
+		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live;
+        style-src 'self' 'unsafe-inline' https://vercel.live;
+        img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com https://cdn.sanity.io https://image.mux.com https://vercel.com;
         font-src 'self';
         object-src 'none';
         base-uri 'self';
@@ -35,6 +35,8 @@ export async function middleware(request: NextRequest) {
         frame-ancestors 'none';
         block-all-mixed-content;
         upgrade-insecure-requests;
+        media-src 'self' https://cdn.sanity.io https://image.mux.com https://stream.mux.com;
+        worker-src 'self' blob: https://*.vercel.app;
     `;
 
     const contentSecurityPolicyHeaderValue = cspHeader
