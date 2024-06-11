@@ -12,8 +12,6 @@ const AuthProvider = ({ children }: { children: ReactNode }) => {
     throw new Error("Clerk Public Key not set");
   }
 
-  console.log(clerkPubKey, "clerkPubKey?");
-
   return (
     <ClerkProvider
       appearance={{
