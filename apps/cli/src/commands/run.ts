@@ -367,20 +367,9 @@ export const handleRunCliCommand = async (options: {
 
     printer.printConsoleMessage(
       "error",
-      chalk(
-        "Certain files failed to be correctly processed by the codemod execution:",
-        `\n${executionErrors
-          .slice(0, 5)
-          .map(
-            (e) => `${e.filePath} ${e.codemodName ? `(${e.codemodName})` : ""}`,
-          )
-          .join("\n")
-          .concat(
-            executionErrors.length > 5
-              ? `\n...and ${executionErrors.length - 5} more`
-              : "",
-          )}`,
-        "\nPlease check the logs for more information at",
+      chalk.red(
+        "\nCertain files failed to be correctly processed by the codemod execution.",
+        "Please check the logs for more information at",
         chalk.bold(logsPath),
       ),
     );

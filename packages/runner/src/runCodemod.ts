@@ -156,7 +156,7 @@ export const buildPatterns = async (
   if (codemod.engine === "ast-grep") {
     if (patterns) {
       patterns.splice(0, patterns.length);
-      reason = "Ignoring include/exclude patterns for ast-grep codemod";
+      reason = "Using patterns defined by selected ast-grep language";
     }
 
     let config: { language: string } | null = null;
