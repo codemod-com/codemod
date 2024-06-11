@@ -1,7 +1,7 @@
 {
   "name": "@codemod-com/runner",
   "author": "Codemod, Inc.",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "The codemod runner used in Codemod.com ecosystem",
   "type": "module",
   "main": "./dist/index.js",
@@ -32,6 +32,8 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
+    "@ast-grep/cli": "^0.22.3",
+    "@ast-grep/napi": "^0.22.3",
     "@babel/core": "^7.24.4",
     "@babel/parser": "^7.24.4",
     "@babel/preset-env": "^7.24.1",
