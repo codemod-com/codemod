@@ -70,3 +70,5 @@ export default async function CodemodRoute({ params }) {
 
   return <CodemodPage description={description} data={pageData} />;
 }
+
+export const dynamic = "force-static";
