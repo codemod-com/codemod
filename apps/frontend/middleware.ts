@@ -23,7 +23,7 @@ export async function middleware(request: NextRequest) {
     const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
     const cspHeader = `
         default-src 'self';
-        script-src 'self' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net;
 		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
         connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live;
         style-src 'self' 'unsafe-inline' https://vercel.live;
