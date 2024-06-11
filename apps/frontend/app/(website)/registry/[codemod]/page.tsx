@@ -49,7 +49,8 @@ export default async function CodemodRoute({ params }) {
   // but for removed codemod it will return 400 (cache will never be updated)
   const initialAutomationData = await loadCodemod(params.codemod, {
     next: {
-      revalidate: 0,
+      revalidate: 60 * 60 * 24 * 30,
+      tags: [`codemod-${params.codemod}`],
     },
   });
   if (!initialAutomationData || "error" in initialAutomationData) {
@@ -70,5 +71,3 @@ export default async function CodemodRoute({ params }) {
 
   return <CodemodPage description={description} data={pageData} />;
 }
-
-export const dynamic = "force-static";
