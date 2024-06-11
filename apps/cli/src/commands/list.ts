@@ -31,26 +31,40 @@ export const handleListNamesCommand = async (options: {
   const prettified = configObjects.map(
     ({ name, verified: _, tags: tagsArray, engine, author, slug }) => {
       const tags = tagsArray.join(", ");
-      const nameWithRegistryLink = terminalLink(
+
+      let resultRow: {
+        name: string;
+        tags: string;
+        engine: string;
+        author: string;
+        docs?: string;
+      } = {
         name,
-        `https://codemod.com/registry/${slug}`,
-      );
+        tags,
+        engine,
+        author,
+      };
 
       if (search && (name === search || tagsArray.includes(search))) {
-        return {
-          name: chalk.bold.cyan(nameWithRegistryLink),
+        resultRow = {
+          name: chalk.bold.cyan(name),
           tags: chalk.bold.cyan(tags),
           engine: chalk.bold.cyan(engine),
           author: chalk.bold.cyan(author),
         };
       }
 
-      return {
-        name: nameWithRegistryLink,
-        tags,
-        engine,
-        author,
-      };
+      const registryLink = `https://codemod.com/registry/${slug}`;
+
+      if (terminalLink.isSupported) {
+        resultRow.name = terminalLink(resultRow.name, registryLink);
+      } else {
+        resultRow.docs = terminalLink(registryLink, registryLink, {
+          fallback: false,
+        });
+      }
+
+      return resultRow;
     },
   );
 
