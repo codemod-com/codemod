@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as util from "node:util";
 import { type NapiConfig, tsx as astGrepTsx } from "@ast-grep/napi";
+import { formatText } from "@codemod-com/utilities";
 import MagicString from "magic-string";
 import type { PLazy } from "../PLazy.js";
 import { ai } from "../ai/ai.js";
@@ -206,7 +207,10 @@ export function astGrepLogic<
         }
 
         if (astContext.contents.hasChanged()) {
-          await fs.writeFile(file, astContext.contents.toString());
+          await fs.writeFile(
+            file,
+            await formatText(file, astContext.contents.toString(), true),
+          );
           console.log(`${clc.blueBright("FILE")} ${file}`);
         }
       }

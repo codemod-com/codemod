@@ -28,6 +28,9 @@
     "url": "https://github.com/codemod-com/codemod.git",
     "directory": "packages/workflow"
   },
+  "devDependencies": {
+    "@codemod-com/utilities": "workspace:*"
+  },
   "dependencies": {
     "@ast-grep/cli": "^0.22.3",
     "@ast-grep/napi": "^0.22.3",
@@ -38,6 +41,7 @@
     "openai": "4.23.0",
     "simple-git": "^3.24.0",
     "tree-kill": "^1.2.2",
-    "ts-invariant": "^0.10.3"
+    "ts-invariant": "^0.10.3",
+    "@codemod-com/utilities": "workspace:*"
   }
 }

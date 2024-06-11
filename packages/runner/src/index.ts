@@ -1,11 +1,8 @@
 export {
-  DEFAULT_PRETTIER_OPTIONS,
   buildFormattedFileCommand,
   buildFormattedFileCommands,
   buildNewDataPathForCreateFileCommand,
   buildNewDataPathForUpdateFileCommand,
-  formatText,
-  getConfig,
   modifyFileSystemUponCommand,
   modifyFileSystemUponDryRunCommand,
   modifyFileSystemUponWetRunCommand,
