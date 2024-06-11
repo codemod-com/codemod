@@ -5042,6 +5042,9 @@ importers:
         specifier: ^0.24.1
         version: 0.24.1
     devDependencies:
+      '@codemod-com/filemod':
+        specifier: workspace:*
+        version: link:../filemod
       '@types/js-beautify':
         specifier: ^1.14.3
         version: 1.14.3
