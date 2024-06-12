@@ -4,7 +4,6 @@ import Script from "next/script";
 
 import AuthProvider from "@/app/context/AuthProvider";
 import type { PropsWithChildren } from "react";
-import "../index.css";
 
 export const metadata = {
   title: "Codemod Studio",
