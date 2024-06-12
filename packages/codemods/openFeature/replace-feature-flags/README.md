@@ -1,7 +1,3 @@
-# openFeature / Replace feature flag
-
-## Description
-
 This codemod replaces openFeature compatible feature flags with a static value provided by the user.
 
 Codemod replaces following SDK calls: `getBooleanValue`, `getStringValue`, `getNumberValue`, `getObjectValue`.
@@ -11,9 +7,7 @@ The codemod accepts the following arguments:
 - `key`: The key of the feature flag to be replaced.
 - `value`: The value to replace the feature flag with.
 
-## Description
-
-## Examples
+## Example
 
 ### Before
 

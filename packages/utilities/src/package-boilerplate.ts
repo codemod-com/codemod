@@ -86,7 +86,7 @@ const readme = ({ cases, vanillaJs }: ProjectDownloadInput) => {
 
 Detailed description
 
-## Examples
+## Example
 ${cases?.map(({ before, after }) => {
   return `
 ### Before
