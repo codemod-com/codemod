@@ -34,7 +34,6 @@ export const metadata = {
 
 export default async function StudioLayout({ children }: PropsWithChildren) {
   const nonce = headers().get("x-nonce") ?? undefined;
-  console.log("entropia");
   return (
     <html lang="en" className="h-full">
       <head>
@@ -53,14 +52,12 @@ export default async function StudioLayout({ children }: PropsWithChildren) {
             })(window,document,'script','dataLayer','GTM-K32HQ25J');`}
         </Script>
       </head>
-      <AuthProvider>
-        <body className="h-full w-full">
-          <div id="root" className="h-full w-full">
-            {children}
-          </div>
-          <Analytics />
-        </body>
-      </AuthProvider>
+      <body className="h-full w-full">
+        <div id="root" className="h-full w-full">
+          {children}
+        </div>
+        <Analytics />
+      </body>
     </html>
   );
 }
