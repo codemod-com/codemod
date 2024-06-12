@@ -38,17 +38,6 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
       <SignedIn>
         <div className="flex items-center gap-2">
           <UserButton afterSignOutUrl={isStudio ? "/studio" : "/"} />
-          {isStudio ? user?.firstName : ""}
-          <SignOutButton redirectUrl={isStudio ? "/studio" : "/"}>
-            <Button
-              intent="inline"
-              variant="ghost"
-              className="pl-0 hover:bg-transparent"
-              hint={<p className="font-normal">Log out</p>}
-            >
-              {isStudio && <LogoutIcon />}
-            </Button>
-          </SignOutButton>
         </div>
       </SignedIn>
     </>
