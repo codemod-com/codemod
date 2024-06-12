@@ -1,4 +1,5 @@
 "use client";
+
 import AuthProvider from "@/app/context/AuthProvider";
 import { TokenBuilder } from "@/components/TokenBuilder";
 import Button from "@/components/shared/Button";
@@ -6,6 +7,7 @@ import { TechLogo } from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationLink from "./NavigationLink";
 import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
@@ -119,6 +121,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
 export function DesktopNavigationRight(props: {
   items: NavigationPayload["navigationCtas"];
 }) {
+  const pathname = usePathname();
   const [shouldRenderAuth, setShouldRenderAuth] = useState(false);
 
   useEffect(() => {
@@ -140,7 +143,7 @@ export function DesktopNavigationRight(props: {
 
       {shouldRenderAuth && (
         <AuthProvider>
-          <AuthButtons variant="www" />
+          <AuthButtons variant="www" redirectUrl={pathname} />
           <TokenBuilder />
         </AuthProvider>
       )}
