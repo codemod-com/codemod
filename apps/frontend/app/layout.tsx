@@ -8,6 +8,7 @@ import { cx } from "cva";
 import themeScript from "@/headScripts/theme";
 import "@/styles/globals.css";
 import AuthProvider from "@context/AuthProvider";
+import { isServer } from "@studio/config";
 import { headers } from "next/headers";
 import Script from "next/script";
 import StudioLayout from "./(website)/studio/StudioLayout";
@@ -17,11 +18,12 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const currentPath = headers().get("referer") || "";
-  const isStudioPage = currentPath.includes("/studio");
-  console.log({ isStudioPage });
-  // if (isStudioPage) {
-  //   return <StudioLayout>{children}</StudioLayout>;
-  // }
+  const isStudioPage =
+    (!isServer && window?.location.pathname.includes("/studio")) ||
+    currentPath.includes("/studio");
+  if (isStudioPage) {
+    return <StudioLayout>{children}</StudioLayout>;
+  }
   const nonce = headers().get("x-nonce") ?? undefined;
   // test
   return (

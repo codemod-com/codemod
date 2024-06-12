@@ -34,7 +34,7 @@ export const metadata = {
 
 export default async function StudioLayout({ children }: PropsWithChildren) {
   const nonce = headers().get("x-nonce") ?? undefined;
-
+  console.log("entropia");
   return (
     <html lang="en" className="h-full">
       <head>
