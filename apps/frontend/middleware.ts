@@ -25,14 +25,14 @@ export async function middleware(request: NextRequest) {
         default-src 'self';
         script-src 'self' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net https://www.googletagmanager.com;
 		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
-        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com;
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com wss://*.api.sanity.io;
         style-src 'self' 'unsafe-inline' https://vercel.live;
         img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com https://cdn.sanity.io https://image.mux.com https://vercel.com;
         font-src 'self';
         object-src 'none';
         base-uri 'self';
         form-action 'self';
-        frame-ancestors 'none';
+        frame-ancestors https://codemod.com;
         block-all-mixed-content;
         upgrade-insecure-requests;
         media-src 'self' https://cdn.sanity.io https://image.mux.com https://stream.mux.com;
