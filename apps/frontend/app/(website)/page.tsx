@@ -3,7 +3,6 @@ import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-import { TokenBuilder } from "@/components/TokenBuilder";
 import { Page } from "@/components/templates/ModularPage/Page";
 import { loadModularPage } from "@/data/sanity";
 import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMetadata";
@@ -35,7 +34,6 @@ export default async function IndexRoute() {
     <PagePreview initial={initial} />
   ) : (
     <>
-      <TokenBuilder />
       <Page data={initial.data!} />
     </>
   );

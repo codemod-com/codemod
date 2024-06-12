@@ -36,30 +36,29 @@
   ],
   "navigation": [
     {
-      "group": "Introduction",
-      "pages": ["introduction"]
+      "group": "Codemod Platform",
+      "pages": [
+        "introduction",
+        "platform/build",
+        "platform/share",
+        "platform/run"
+      ]
     },
     {
-      "group": "Building Codemods",
-      "pages": [
-        "building-codemods/getting-started",
-        "building-codemods/codemod-studio"
-      ]
+      "group": "Codemod Studio",
+      "pages": ["building-codemods/codemod-studio"]
     },
     {
       "group": "Codemod Registry",
-      "pages": [
-        "codemod-registry/introduction",
-        "codemod-registry/publishing-codemods"
-      ]
+      "pages": ["codemod-registry/introduction"]
     },
     {
-      "group": "Running codemods",
-      "pages": [
-        "deploying-codemods/introduction",
-        "deploying-codemods/cli",
-        "deploying-codemods/vsce"
-      ]
+      "group": "CLI",
+      "pages": ["deploying-codemods/cli-overview", "deploying-codemods/cli"]
+    },
+    {
+      "group": "VS Code Extension",
+      "pages": ["deploying-codemods/vsce"]
     },
     {
       "group": "Quick Links",

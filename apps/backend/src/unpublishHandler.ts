@@ -5,6 +5,7 @@ import {
 } from "@codemod-com/utilities";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import { buildRevalidateHelper } from "./revalidate";
 import { parseUnpublishBody } from "./schemata/schema";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
@@ -134,6 +135,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         where: { name: codemodName },
       });
 
+      const revalidate = buildRevalidateHelper(environment);
+      await revalidate(name);
+
       return reply.code(200).send({ success: true });
     }
 
@@ -170,6 +174,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         where: { id: versionToRemove.id },
       });
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

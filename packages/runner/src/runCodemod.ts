@@ -43,7 +43,6 @@ export const buildPatterns = async (
   flowSettings: FlowSettings,
   codemod: Codemod,
   filemod: Filemod<Dependencies, Record<string, unknown>> | null,
-  onPrinterMessage?: PrinterMessageCallback,
 ): Promise<{
   include: string[];
   exclude: string[];
@@ -157,12 +156,7 @@ export const buildPatterns = async (
   if (codemod.engine === "ast-grep") {
     if (patterns) {
       patterns.splice(0, patterns.length);
-      reason = "Ignoring include/exclude patterns for ast-grep codemod";
-      onPrinterMessage?.({
-        kind: "console",
-        consoleKind: "log",
-        message: reason,
-      });
+      reason = "Using patterns defined by selected ast-grep language";
     }
 
     let config: { language: string } | null = null;
@@ -465,12 +459,7 @@ export const runCodemod = async (
 
     const mfs = createFsFromVolume(Volume.fromJSON({}));
 
-    const patterns = await buildPatterns(
-      flowSettings,
-      codemod,
-      null,
-      onPrinterMessage,
-    );
+    const patterns = await buildPatterns(flowSettings, codemod, null);
 
     const paths = await buildPathsGlob(fileSystem, flowSettings, patterns);
 
@@ -593,7 +582,6 @@ export const runCodemod = async (
       flowSettings,
       codemod,
       transformer as Filemod<Dependencies, Record<string, unknown>>,
-      onPrinterMessage,
     );
 
     const globPaths = await buildPathsGlob(fileSystem, flowSettings, patterns);
@@ -630,12 +618,7 @@ export const runCodemod = async (
   }
 
   // jscodeshift or ts-morph or ast-grep
-  const patterns = await buildPatterns(
-    flowSettings,
-    codemod,
-    null,
-    onPrinterMessage,
-  );
+  const patterns = await buildPatterns(flowSettings, codemod, null);
 
   const pathGeneratorInitializer = () =>
     buildPathGlobGenerator(fileSystem, flowSettings, patterns);

@@ -12,7 +12,7 @@ Functionality:
 -   Removes `lazyRoot` prop
 -   Changes next.config.js `loader` to "custom", removes `path`, and sets `loaderFile` to a new file.
 
-## Examples
+## Example
 
 ### Before: intrinsic
 

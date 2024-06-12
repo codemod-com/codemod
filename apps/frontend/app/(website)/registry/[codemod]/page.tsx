@@ -12,6 +12,8 @@ import { notFound } from "next/navigation";
 
 export const dynamicParams = true;
 
+const ONE_DAY = 60 * 60 * 24;
+
 export async function generateStaticParams() {
   const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const res = await fetchWithTimeout(`${baseUrl}/list`);
@@ -43,7 +45,12 @@ export async function generateMetadata(
 }
 
 export default async function CodemodRoute({ params }) {
-  const initialAutomationData = await loadCodemod(params.codemod);
+  const initialAutomationData = await loadCodemod(params.codemod, {
+    next: {
+      tags: [`codemod-${params.codemod}`],
+      revalidate: ONE_DAY,
+    },
+  });
 
   if (!initialAutomationData || "error" in initialAutomationData) {
     notFound();
@@ -51,7 +58,9 @@ export default async function CodemodRoute({ params }) {
 
   const automationPageData = await loadAutomationPage(
     initialAutomationData.tags,
+    ONE_DAY,
   );
+
   const pageData = transformAutomation({
     ...initialAutomationData,
     ...automationPageData?.data,
@@ -63,5 +72,3 @@ export default async function CodemodRoute({ params }) {
 
   return <CodemodPage description={description} data={pageData} />;
 }
-
-export const revalidate = 3600;

@@ -4,10 +4,12 @@ import columnify from "columnify";
 import terminalLink from "terminal-link";
 import { getCodemodList } from "../apis.js";
 
-export const handleListNamesCommand = async (
-  printer: PrinterBlueprint,
-  search: string | null,
-) => {
+export const handleListNamesCommand = async (options: {
+  printer: PrinterBlueprint;
+  search: string | null;
+}) => {
+  const { printer, search } = options;
+
   let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
   if (search && !printer.__jsonOutput) {
     spinner = printer.withLoaderMessage(
@@ -29,26 +31,38 @@ export const handleListNamesCommand = async (
   const prettified = configObjects.map(
     ({ name, verified: _, tags: tagsArray, engine, author, slug }) => {
       const tags = tagsArray.join(", ");
-      const nameWithRegistryLink = terminalLink(
+
+      let resultRow: {
+        name: string;
+        tags: string;
+        engine: string;
+        author: string;
+      } = {
         name,
-        `https://codemod.com/registry/${slug}`,
-      );
+        tags,
+        engine,
+        author,
+      };
 
       if (search && (name === search || tagsArray.includes(search))) {
-        return {
-          name: chalk.bold.cyan(nameWithRegistryLink),
+        resultRow = {
+          name: chalk.bold.cyan(name),
           tags: chalk.bold.cyan(tags),
           engine: chalk.bold.cyan(engine),
           author: chalk.bold.cyan(author),
         };
       }
 
-      return {
-        name: nameWithRegistryLink,
-        tags,
-        engine,
-        author,
-      };
+      const registryLink = `https://codemod.com/registry/${slug}`;
+
+      if (terminalLink.isSupported) {
+        resultRow.name = terminalLink(
+          chalk.underline(resultRow.name),
+          registryLink,
+        );
+      }
+
+      return resultRow;
     },
   );
 
@@ -72,5 +86,18 @@ export const handleListNamesCommand = async (
     columnify(prettified, {
       headingTransform: (heading) => chalk.bold(heading.toLocaleUpperCase()),
     }),
+  );
+
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(
+      terminalLink.isSupported
+        ? "\nClick on the name of the codemod to visit its documentation page."
+        : chalk(
+            "\nVisit",
+            chalk.bold("https://codemod.com/registry"),
+            "to see the full list of codemods and their documentation.",
+          ),
+    ),
   );
 };

@@ -15,6 +15,7 @@ import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import { buildRevalidateHelper } from "./revalidate";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
 
@@ -404,6 +405,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
         console.error("Failed calling Zapier hook:", err);
       }
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

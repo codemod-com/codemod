@@ -92,7 +92,7 @@
     "lucide-react": "^0.265.0",
     "match-sorter": "^6.3.4",
     "monaco-editor": "^0.36.1",
-    "next": "^14.1.4",
+    "next": "^14.2.3",
     "next-sanity": "^8.5.0",
     "node-fetch": "^3.3.2",
     "os-browserify": "^0.3.0",

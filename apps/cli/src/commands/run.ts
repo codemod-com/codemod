@@ -90,11 +90,13 @@ const checkFileTreeVersioning = async (target: string) => {
   }
 };
 
-export const handleRunCliCommand = async (
-  printer: PrinterBlueprint,
-  args: GlobalArgvOptions & RunArgvOptions,
-  telemetry: TelemetrySender<TelemetryEvent>,
-) => {
+export const handleRunCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  args: GlobalArgvOptions & RunArgvOptions;
+  telemetry: TelemetrySender<TelemetryEvent>;
+}) => {
+  const { printer, args, telemetry } = options;
+
   const codemodSettings = parseCodemodSettings(args);
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
@@ -365,20 +367,9 @@ export const handleRunCliCommand = async (
 
     printer.printConsoleMessage(
       "error",
-      chalk(
-        "Certain files failed to be correctly processed by the codemod execution:",
-        `\n${executionErrors
-          .slice(0, 5)
-          .map(
-            (e) => `${e.filePath} ${e.codemodName ? `(${e.codemodName})` : ""}`,
-          )
-          .join("\n")
-          .concat(
-            executionErrors.length > 5
-              ? `\n...and ${executionErrors.length - 5} more`
-              : "",
-          )}`,
-        "\nPlease check the logs for more information at",
+      chalk.red(
+        "\nCertain files failed to be correctly processed by the codemod execution.",
+        "Please check the logs for more information at",
         chalk.bold(logsPath),
       ),
     );

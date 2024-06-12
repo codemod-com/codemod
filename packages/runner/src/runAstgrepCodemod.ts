@@ -1,3 +1,5 @@
+import { constants, access } from "node:fs/promises";
+import { join } from "node:path";
 import { execPromise } from "@codemod-com/utilities";
 import type { FileCommand } from "./fileCommands.js";
 
@@ -86,15 +88,49 @@ export const runAstGrepCodemod = async (
   oldData: string,
   formatWithPrettier: boolean,
 ): Promise<readonly FileCommand[]> => {
+  let astGrepExecutablePath: string;
+
   try {
-    // Use `which` command to check if the command is available
-    await execPromise("which sg");
-  } catch (error) {
-    const astInstallCommand = "npm install -g @ast-grep/cli";
-    if (process.platform === "win32") {
-      await execPromise(`powershell -Command ${astInstallCommand}`);
-    } else {
-      await execPromise(astInstallCommand);
+    // Try to look by the package.json of the CLI
+    astGrepExecutablePath = join(
+      require.resolve("@ast-grep/cli/package.json"),
+      "..",
+      "sg",
+    );
+    await access(astGrepExecutablePath, constants.X_OK);
+  } catch (err) {
+    try {
+      // If not, then try to get node_modules path and then look for .bin folder
+      astGrepExecutablePath = join(
+        __dirname,
+        "..",
+        "node_modules",
+        ".bin",
+        "sg",
+      );
+      await access(astGrepExecutablePath, constants.X_OK);
+    } catch (err) {
+      // Finally, try to install it globally
+      // First, use `which` command to check if the CLI is already installed
+      try {
+        await execPromise("which sg");
+        astGrepExecutablePath = "sg";
+      } catch (err) {
+        // If not installed, try to install using npm globally
+        try {
+          const astInstallCommand = "npm install -g @ast-grep/cli";
+          if (process.platform === "win32") {
+            await execPromise(`powershell -Command ${astInstallCommand}`);
+          } else {
+            await execPromise(astInstallCommand);
+          }
+          astGrepExecutablePath = "sg";
+        } catch (err) {
+          throw new Error(
+            `Could not locate the ast-grep CLI. Please install it with 'npm install -g @ast-grep/cli'.`,
+          );
+        }
+      }
     }
   }
 
@@ -103,7 +139,7 @@ export const runAstGrepCodemod = async (
   const rulesPathEscaped = rulesPath.replace(/(\s+)/g, "\\$1");
   const oldPathEscaped = oldPath.replace(/(\s+)/g, "\\$1");
 
-  const astCommandBase = `sg scan --rule ${rulesPathEscaped} ${oldPathEscaped} --json=compact`;
+  const astCommandBase = `${astGrepExecutablePath} scan --rule ${rulesPathEscaped} ${oldPathEscaped} --json=compact`;
 
   const astCommand =
     process.platform === "win32"

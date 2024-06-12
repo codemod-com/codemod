@@ -1,8 +1,13 @@
+"use client";
+
+import AuthProvider from "@/app/context/AuthProvider";
+import { TokenBuilder } from "@/components/TokenBuilder";
 import Button from "@/components/shared/Button";
 import { TechLogo } from "@/components/shared/Icon";
 import type { NavigationPayload, SanityLinkType } from "@/types";
 import AuthButtons from "@auth/AuthButtons";
 import { cx } from "cva";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import NavigationLink from "./NavigationLink";
 import PlatformButtonWithDropdown from "./PlatformButtonWithDropdown";
@@ -116,6 +121,13 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
 export function DesktopNavigationRight(props: {
   items: NavigationPayload["navigationCtas"];
 }) {
+  const pathname = usePathname();
+  const [shouldRenderAuth, setShouldRenderAuth] = useState(false);
+
+  useEffect(() => {
+    setShouldRenderAuth(true);
+  }, []);
+
   return (
     <div className="hidden gap-3 lg:flex lg:items-center lg:justify-center">
       {props.items?.map((item, index) => (
@@ -128,7 +140,13 @@ export function DesktopNavigationRight(props: {
           </Button>
         </NavigationLink>
       ))}
-      <AuthButtons variant="www" />
+
+      {shouldRenderAuth && (
+        <AuthProvider>
+          <AuthButtons variant="www" redirectUrl={pathname} />
+          <TokenBuilder />
+        </AuthProvider>
+      )}
     </div>
   );
 }

@@ -56,7 +56,7 @@ export function cloneLogic(
     })
     .callback(async (self) => {
       const { callback } = self.getArguments();
-      await callback?.(self.wrappedHelpers());
+      await callback?.(cloneHelpers);
     })
     .return((self) => self.wrappedHelpers())
     .run();

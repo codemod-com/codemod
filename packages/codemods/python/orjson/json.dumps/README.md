@@ -1,8 +1,7 @@
-
-Converts json.dumps to orjson.dumps().decode().
+This codemod converts json.dumps to orjson.dumps().decode().
 Should be run `before` the `orjson.dumps-add-UTC_Z` codemod.
 
-## Examples
+## Example
 
 ### Before
 
