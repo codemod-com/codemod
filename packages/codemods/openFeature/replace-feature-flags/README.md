@@ -7,7 +7,7 @@ The codemod accepts the following arguments:
 - `key`: The key of the feature flag to be replaced.
 - `value`: The value to replace the feature flag with.
 
-## Examples
+## Example
 
 ### Before
 

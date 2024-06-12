@@ -2,7 +2,7 @@
 
 This codemod migrates string refs (deprecated) to callback refs.
 
-## Examples
+## Example
 ### Before:
 
 ```ts

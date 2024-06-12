@@ -7,7 +7,7 @@ The codemod accepts the following arguments:
 - `value`: The value to replace the feature flag with.
 - `type`: The type to which the provided value should be cast.
 
-## Examples
+## Example
 
 ### Before
 
