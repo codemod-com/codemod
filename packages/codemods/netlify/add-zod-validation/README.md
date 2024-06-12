@@ -1,4 +1,4 @@
-Add zod validation to query parsing.
+This codemod adds zod validation to query parsing.
 
 ## Examples
 
