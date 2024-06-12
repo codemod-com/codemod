@@ -18,9 +18,10 @@ export default async function RootLayout({
 }) {
   const currentPath = headers().get("referer") || "";
   const isStudioPage = currentPath.includes("/studio");
-  if (isStudioPage) {
-    return <StudioLayout>{children}</StudioLayout>;
-  }
+  console.log({ isStudioPage });
+  // if (isStudioPage) {
+  //   return <StudioLayout>{children}</StudioLayout>;
+  // }
   const nonce = headers().get("x-nonce") ?? undefined;
   // test
   return (
