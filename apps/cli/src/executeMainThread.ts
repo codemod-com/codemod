@@ -128,6 +128,8 @@ export const executeMainThread = async () => {
     yargs(slicedArgv).help().version(false),
   );
 
+  argvObject.wrap(argvObject.terminalWidth());
+
   if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
     return console.log(version);
   }
