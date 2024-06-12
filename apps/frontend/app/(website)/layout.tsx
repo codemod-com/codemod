@@ -38,12 +38,9 @@ const getPathnameFromMetadataState = (state: any): string => {
 export async function generateMetadata(_: any, state: any): Promise<Metadata> {
   const pathname = getPathnameFromMetadataState(state);
 
-  if (pathname.includes("/studio")) {
-    return metadata;
-  }
   const { data } = await loadGlobalData(GLOBAL_QUERY);
 
-  return {
+  const globalOg = {
     title: publicConfig.siteName,
     openGraph: {
       title: publicConfig.siteName,
@@ -52,6 +49,13 @@ export async function generateMetadata(_: any, state: any): Promise<Metadata> {
         : getOgImages(data.fallbackOGImage),
     },
   };
+
+  return pathname.includes("/studio")
+    ? {
+        ...globalOg,
+        ...metadata,
+      }
+    : globalOg;
 }
 
 export default async function Layout({
