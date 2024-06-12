@@ -1,31 +1,19 @@
 import globalFontsVariables from "@/fonts";
 import { Analytics } from "@vercel/analytics/react";
+import { cx } from "cva";
 
 import { mediaStyles } from "@/components/global/Media";
 import dynamicFavicon from "@/headScripts/dynamic_favicon";
-import { cx } from "cva";
-
 import themeScript from "@/headScripts/theme";
+
 import "@/styles/globals.css";
-import AuthProvider from "@context/AuthProvider";
-import { isServer } from "@studio/config";
-import { headers } from "next/headers";
 import Script from "next/script";
-import StudioLayout from "./(website)/studio/StudioLayout";
+
 export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const currentPath = headers().get("referer") || "";
-  const isStudioPage =
-    (!isServer && window?.location.pathname.includes("/studio")) ||
-    currentPath.includes("/studio");
-  if (isStudioPage) {
-    return <StudioLayout>{children}</StudioLayout>;
-  }
-  const nonce = headers().get("x-nonce") ?? undefined;
-  // test
   return (
     <html lang="en" className={cx(globalFontsVariables, "scroll-smooth light")}>
       <head>

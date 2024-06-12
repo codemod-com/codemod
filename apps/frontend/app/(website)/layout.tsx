@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import dynamic from "next/dynamic";
-import { draftMode, headers } from "next/headers";
+import { draftMode } from "next/headers";
 
-import { metadata } from "@/app/(website)/studio/StudioLayout";
 import GlobalLayout from "@/components/global/GlobalLayout";
 import GlobalLayoutPreview from "@/components/global/GlobalLayoutPreview";
 import publicConfig from "@/config";
 import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
+import { mergeDeepRight } from "ramda";
+import { metadata } from "./studio/studioMetadata";
 
 const LiveVisualEditing = dynamic(
   () => import("@/components/LiveVisualEditing"),
@@ -51,10 +52,7 @@ export async function generateMetadata(_: any, state: any): Promise<Metadata> {
   };
 
   return pathname.includes("/studio")
-    ? {
-        ...globalOg,
-        ...metadata,
-      }
+    ? mergeDeepRight(globalOg, metadata)
     : globalOg;
 }
 
