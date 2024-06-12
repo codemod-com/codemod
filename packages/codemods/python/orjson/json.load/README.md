@@ -1,7 +1,6 @@
+This codemod converts json.load to orjson.loads. Adds `.read()` to the file object.
 
-Converts json.load to orjson.loads. Adds `.read()` to the file object.
-
-## Examples
+## Example
 
 ### Before
 

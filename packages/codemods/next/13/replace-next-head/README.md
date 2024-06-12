@@ -1,8 +1,8 @@
-Generates a static metadata object based on meta tags managed by `next/head`.
+This codemod generates a static metadata object based on meta tags managed by `next/head`.
 
 The codemod checks all the child components used in a page file and extracts all the meta tags defined within the `<Head>` component. Such tags are then moved to the very page file alongside the dependencies of the tags.
 
-## Example:
+## Example
 
 ### Before:
 

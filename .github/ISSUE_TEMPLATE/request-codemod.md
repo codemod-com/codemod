@@ -19,7 +19,7 @@ Give an understandable name for the codemod.
 
 Write a short description of the changes that should be made by this codemod.
 
-## Examples
+## Example
 
 > Note: The example section helps codemod champions identify all the transformation patterns that this codemod should handle. Repeat before/after snippets for every transformation example you can find.
 

@@ -1,7 +1,3 @@
-# Remove unused feature flags
-
-## Description
-
 This experimental codemod replaces function calls in a for of `await functionName(featureFlagName)`, where:
 
 -   `functionName` is the target function name (default: `isFlagEnabled`),
