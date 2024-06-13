@@ -9,6 +9,7 @@ import {
   type FileSystem,
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
+  isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { glob, globStream } from "glob";
 import * as yaml from "js-yaml";
@@ -184,28 +185,24 @@ export const buildPatterns = async (
     }
   }
 
+  if (
+    codemod.engine === "filemod" &&
+    isNeitherNullNorUndefined(filemod) &&
+    isNeitherNullNorUndefined(filemod.includePatterns) &&
+    filemod.includePatterns.length > 0
+  ) {
+    reason = "Using include patterns from filemod configuration";
+    patterns.push(...filemod.includePatterns);
+  }
+
   if (patterns.length === 0) {
     reason = "Using default include patterns based on the engine";
 
-    let engineDefaultPatterns = ["**/*.*"];
-
-    if (codemod.engine === "filemod" && filemod !== null) {
-      engineDefaultPatterns = (filemod?.includePatterns as string[]) ?? [
-        "**/*",
-      ];
-    } else if (
-      codemod.engine === "jscodeshift" ||
-      codemod.engine === "ts-morph"
-    ) {
-      engineDefaultPatterns = ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"];
-    }
-
-    // remove from included if user is trying to override default include
-    engineDefaultPatterns = engineDefaultPatterns.filter(
-      (p) => !allExcluded.includes(p),
+    patterns.push(
+      ...(codemod.engine === "jscodeshift" || codemod.engine === "ts-morph"
+        ? ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+        : ["**/*.*"]),
     );
-
-    patterns.push(...engineDefaultPatterns);
   }
 
   const formattedInclude = patterns.map(formatFunc);
@@ -341,19 +338,19 @@ function printRunSummary(
         ...(userExcluded.length > 0
           ? [
               chalk.yellow("\nPatterns excluded manually:"),
-              colorLongString(userExcluded.join(", "), chalk.red.bold),
+              colorLongString(userExcluded.join(", "), chalk.yellow.bold),
             ]
           : []),
         ...(defaultExcluded.length > 0
           ? [
               chalk.yellow("\nPatterns excluded by default:"),
-              colorLongString(defaultExcluded.join(", "), chalk.red.bold),
+              colorLongString(defaultExcluded.join(", "), chalk.yellow.bold),
             ]
           : []),
         ...(gitIgnoreExcluded.length > 0
           ? [
               chalk.yellow("\nPatterns excluded from gitignore:"),
-              colorLongString(gitIgnoreExcluded.join(", "), chalk.red.bold),
+              colorLongString(gitIgnoreExcluded.join(", "), chalk.yellow.bold),
             ]
           : []),
         "\n",
@@ -447,12 +444,16 @@ export const runCodemod = async (
         }
 
         // run onSuccess after each codemod
-        onSuccess?.({ codemod: subCodemod, recipe: codemod, commands });
+        await onSuccess?.({ codemod: subCodemod, recipe: codemod, commands });
         allRecipeCommands.push(...commands);
       }
 
       // run onSuccess for recipe itself
-      onSuccess?.({ codemod, commands: allRecipeCommands, recipe: codemod });
+      await onSuccess?.({
+        codemod,
+        commands: allRecipeCommands,
+        recipe: codemod,
+      });
 
       return;
     }
@@ -559,7 +560,7 @@ export const runCodemod = async (
     await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
 
     // @TODO pass modified paths?
-    onSuccess?.({ codemod, commands: [] });
+    await onSuccess?.({ codemod, commands: [] });
     return;
   }
 
@@ -603,7 +604,23 @@ export const runCodemod = async (
       flowSettings.target,
       flowSettings.format,
       safeArgumentRecord,
-      onPrinterMessage,
+      (message) => {
+        if (message.kind === "progress") {
+          onPrinterMessage({
+            kind: "progress",
+            codemodName:
+              codemod.bundleType === "package" ? codemod.name : undefined,
+            processedFileNumber: message.processedFileNumber,
+            totalFileNumber: message.totalFileNumber,
+            processedFileName: message.processedFileName
+              ? relative(flowSettings.target, message.processedFileName)
+              : null,
+          });
+          return;
+        }
+
+        onPrinterMessage(message);
+      },
       onCodemodError,
     );
 
@@ -613,7 +630,7 @@ export const runCodemod = async (
       await onCommand(command);
     }
 
-    onSuccess?.({ codemod, commands: [...commands] });
+    await onSuccess?.({ codemod, commands: [...commands] });
     return;
   }
 
@@ -700,5 +717,5 @@ export const runCodemod = async (
     );
   });
 
-  onSuccess?.({ codemod, commands });
+  await onSuccess?.({ codemod, commands });
 };
