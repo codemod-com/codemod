@@ -49,20 +49,28 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
 
   const nameOrPath = codemodSettings._.at(0);
 
-  if (!nameOrPath) {
-    throw new Error("Codemod to run was not specified!");
-  }
-
-  if (existsSync(nameOrPath) || codemodSettings.source) {
+  if (codemodSettings.source) {
     return {
       kind: "runSourced",
-      source: codemodSettings.source ?? nameOrPath,
+      source: codemodSettings.source,
       engine: codemodSettings.engine ?? null,
     };
   }
 
-  return {
-    kind: "runNamed",
-    name: nameOrPath,
-  };
+  if (nameOrPath && existsSync(nameOrPath)) {
+    return {
+      kind: "runSourced",
+      source: nameOrPath,
+      engine: codemodSettings.engine ?? null,
+    };
+  }
+
+  if (nameOrPath) {
+    return {
+      kind: "runNamed",
+      name: nameOrPath,
+    };
+  }
+
+  throw new Error("Codemod to run was not specified!");
 };
