@@ -69,10 +69,14 @@ export const buildPatterns = async (
   };
 
   const excludePatterns = flowSettings.exclude;
-  const userExcluded = excludePatterns.map(formatFunc);
-  const defaultExcluded = DEFAULT_EXCLUDE_PATTERNS.concat(
-    DEFAULT_VERSION_CONTROL_DIRECTORIES,
-  ).map(formatFunc);
+  const userExcluded = [...new Set(excludePatterns.map(formatFunc))];
+  const defaultExcluded = [
+    ...new Set(
+      DEFAULT_EXCLUDE_PATTERNS.concat(DEFAULT_VERSION_CONTROL_DIRECTORIES).map(
+        formatFunc,
+      ),
+    ),
+  ];
   const allExcluded = userExcluded.concat(defaultExcluded);
 
   // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
@@ -133,7 +137,7 @@ export const buildPatterns = async (
         .filter((line) => line.length > 0 && !line.startsWith("#"))
         .map(formatFunc);
 
-      allExcluded.push(...gitIgnored);
+      allExcluded.push(...new Set(gitIgnored));
     } catch (err) {
       //
     }
@@ -160,27 +164,32 @@ export const buildPatterns = async (
       reason = "Using patterns defined by selected ast-grep language";
     }
 
-    let config: { language: string } | null = null;
     try {
-      config = yaml.load(
+      const configs = yaml.loadAll(
         await readFile(codemod.indexPath, { encoding: "utf8" }),
-      ) as { language: string };
+      ) as { language?: string }[];
 
-      const astGrepPatterns = astGrepLanguageToPatterns[config.language];
-      if (!astGrepPatterns) {
-        throw new Error("Invalid language in ast-grep config");
-      }
+      configs.forEach((config, i) => {
+        if (!config.language) {
+          throw new Error(
+            `Rule${
+              configs.length > 1 ? ` at index ${i}` : ""
+            } does not have a language configured.`,
+          );
+        }
 
-      patterns.push(...astGrepPatterns);
+        const astGrepPatterns = astGrepLanguageToPatterns[config.language];
+        if (!astGrepPatterns) {
+          throw new Error(
+            "Unsupported ast-grep language specified in rule configuration file",
+          );
+        }
+
+        patterns.push(...astGrepPatterns);
+      });
     } catch (error) {
-      if (!config) {
-        throw new Error(
-          `Unable to load config file for ast-grep codemod at ${codemod.indexPath}`,
-        );
-      }
-
       throw new Error(
-        `Unable to determine file patterns to run the ast-grep codemod on: ${config.language}`,
+        `Unable to load config file for ast-grep codemod at ${codemod.indexPath}: ${error}`,
       );
     }
   }
@@ -221,8 +230,8 @@ export const buildPatterns = async (
   const include = formattedInclude.filter((p) => !exclude.includes(p));
 
   return {
-    include,
-    exclude,
+    include: [...new Set(include)],
+    exclude: [...new Set(exclude)],
     userExcluded: userExcluded.filter(excludeFilterFunc),
     defaultExcluded: defaultExcluded.filter(excludeFilterFunc),
     gitIgnoreExcluded: gitIgnored.filter(excludeFilterFunc),
