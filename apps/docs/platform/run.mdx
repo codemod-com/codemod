@@ -3,15 +3,21 @@ title: Running Codemods
 sidebarTitle: "Run"
 ---
 
-You can use Codemod [CLI](/deploying-codemods/cli) or [VS Code extension](/deploying-codemods/vsce) to effortlessly discover and run codemods, with a safe dry-run feature to preview changes before applying them. Easily customize or enhance existing codemods for yourself and the community with a quick feedback loop.
+## Benefits and features
+
+Running codemods with Codemod platform brings many benefits such as:
+- advanced codemod [configuration](/codemod-registry/introduction#required-codemod-package-structure:codemodrc-json-reference) (pre/post-run commands, arguments, formatting, daisy-chaining, multi-threading, dry-running, and more)
+- easily running codemods from different entry points, such as [CLI](/deploying-codemods/cli) and [IDE extension](/deploying-codemods/vsce), based on user preference.
 
 ## Getting started
 
-<CardGroup cols={2}>
-  <Card title="Running codemods with CLI" icon="terminal" href="/deploying-codemods/cli#running-codemods">
-    Learn how to run codemods with Codemod CLI.
-  </Card>
-  <Card title="Running codemods with VS Code extension" icon="code" href="/deploying-codemods/vsce#getting-started">
-    Learn how to run codemods with Codemod VS Code extension.
-  </Card>
-</CardGroup>
+Codemod platform allows you to run codemods using different ways:
+
+### Option 1: Running via codemod's source
+1. with [Codemod's opinionated scaffolding](/deploying-codemods/cli#codemod-init)
+2. via [raw transform file](/deploying-codemods/cli#run) 
+
+### Option 2: Running via codemods in Codemod Registry
+1. via [CLI](/deploying-codemods/cli#run)
+2. via [IDE extension](/deploying-codemods/vsce)
+3. via web app ([Codemod Studio](/codemod-studio) or [Codemod registry](/codemod-registry))
