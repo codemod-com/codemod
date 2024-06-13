@@ -13,9 +13,11 @@ function getHash(data: any) {
 class NodeContext {
   public name: string;
   public hash: string;
+  public arguments: any[];
   public children: NodeContext[];
-  constructor(name: string, fn: string, args: any) {
+  constructor(name: string, fn: string, args: any[]) {
     this.name = name;
+    this.arguments = args.map((arg) => String(arg));
     this.hash = getHash({ name, fn: fn.toString(), args });
     this.children = [];
   }
@@ -154,7 +156,9 @@ export class FunctionExecutor<
     return (cb?: any) =>
       this._parentWrapper(() =>
         (this._executor ?? noContextFn)(async () => {
-          await this._callback?.(this);
+          if (this._callback) {
+            await parentContext.run(this._context, this._callback, this);
+          }
           return cb?.();
         }, this),
       );

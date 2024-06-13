@@ -2,6 +2,7 @@ import type { PLazy } from "./PLazy";
 import { codemod } from "./codemod";
 import { getCwdContext } from "./contexts";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers";
+import { files } from "./files";
 import { clc } from "./helpers";
 import { jsFiles } from "./jsFiles";
 import { spawn } from "./spawn";
@@ -60,6 +61,6 @@ export function execLogic(
 
 export const exec = fnWrapper("exec", execLogic);
 
-const execHelpers = { exec, codemod, jsFiles };
+const execHelpers = { exec, codemod, jsFiles, files };
 
 type ExecHelpers = typeof execHelpers;

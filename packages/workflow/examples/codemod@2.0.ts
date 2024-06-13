@@ -15,7 +15,7 @@ export async function workflow({ jsFiles }: Api) {
     'length', 'mac', 'mac48', 'mac64', 'maxBytes', 'maxLength', 'maxSize', 'maxValue', 'mimeType', 'minBytes',
     'minLength', 'minSize', 'minValue', 'multipleOf', 'nonEmpty', 'notBytes', 'notLength', 'notSize', 'notValue', 'octal',
     'readonly', 'regex', 'safeInteger', 'size', 'some', 'startsWith', 'toLowerCase', 'toMaxValue', 'toMinValue', 'toUpperCase',
-    'transform', 'trim', 'trimEnd', 'trimStart', 'ulid', 'url', 'uuid', 'value','forward'
+    'transform', 'trim', 'trimEnd', 'trimStart', 'ulid', 'url', 'uuid', 'value', 'forward'
     
     If $SCHEMA is not one of SCHEMA, skip
     If $$$ACTIONS is not one of ACTIONS, skip

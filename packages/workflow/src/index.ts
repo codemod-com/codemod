@@ -12,8 +12,10 @@ import { dirs } from "./fs/dirs.js";
 
 import { codemod } from "./codemod.js";
 
+import { getTree } from "./engineHelpers.js";
+
 export { git, astGrep, jsFiles };
 
-export const api = { git, astGrep, jsFiles, contexts, dirs, codemod };
+export const api = { git, astGrep, jsFiles, contexts, dirs, codemod, getTree };
 
 export type Api = typeof api;
