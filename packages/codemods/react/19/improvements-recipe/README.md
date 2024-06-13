@@ -2,8 +2,8 @@ This recipe is a set of codemods that will add improvements available in React 1
 
 The recipe includes the following codemods:
 
--   [react/19/remove-context-provider](https://codemod.com/registry/react-19-remove-context-provider)
--   [react/19/remove-forward-ref](https://codemod.com/registry/react-19-remove-forward-ref)
--   [react/19/use-context-hook](https://codemod.com/registry/react-19-use-context-hook)
+-   react/19/remove-context-provider
+-   react/19/remove-forward-ref
+-   react/19/use-context-hook
 
 
