@@ -54,7 +54,7 @@
     },
     {
       "group": "CLI",
-      "pages": ["deploying-codemods/cli-overview", "deploying-codemods/cli"]
+      "pages": ["deploying-codemods/cli"]
     },
     {
       "group": "VS Code Extension",
