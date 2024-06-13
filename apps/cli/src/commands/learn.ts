@@ -1,8 +1,8 @@
 import { execSync } from "node:child_process";
-import { dirname, extname } from "node:path";
+import { basename, dirname, extname } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
-import open from "open";
+import inquirer from "inquirer";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
@@ -114,9 +114,9 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const dirtyPath = target ?? (await findLastlyModifiedFile());
+  const modifiedPaths = findModifiedFiles();
 
-  if (dirtyPath === null) {
+  if (modifiedPaths === null || modifiedPaths.length === 0) {
     printer.printOperationMessage({
       kind: "error",
       message: "We could not find any modified file to run the command on.",
@@ -124,167 +124,185 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
+  let paths = modifiedPaths.filter((path) => {
+    if (isJSorTS(getFileExtension(path))) {
+      return true;
+    }
 
-  const fileExtension = getFileExtension(path);
-
-  if (!isJSorTS(fileExtension)) {
     printer.printOperationMessage({
       kind: "error",
       message:
-        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n" +
+        "This feature currently only supports codemod generation using jscodeshift engine, so the files must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n" +
         "Soon, we will support other engines and hence other extensions including .md, .mdx and more!",
     });
-    return;
-  }
+    return false;
+  });
 
-  const latestCommitHash = getLatestCommitHash(dirname(path));
-  if (latestCommitHash === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "Unexpected error occurred while getting the latest commit hash.",
+  if (paths.length > 1) {
+    const { paths: userSelectedPaths } = await inquirer.prompt<{
+      paths: string[];
+    }>({
+      type: "checkbox",
+      name: "paths",
+      message: "Select the files you want to learn the diff from:",
+      choices: paths.map((path) => ({
+        name: basename(path),
+        value: path,
+        checked: true,
+      })),
     });
-    return;
+
+    paths = userSelectedPaths;
   }
 
-  const modifiedFiles = findModifiedFiles();
-  if (modifiedFiles !== null && modifiedFiles.length > 1) {
-    printer.printConsoleMessage(
-      "warn",
-      "Only the changes in the most recently edited file will be processed.",
+  for (const path of paths) {
+    const latestCommitHash = getLatestCommitHash(dirname(path));
+    if (latestCommitHash === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message:
+          "Unexpected error occurred while getting the latest commit hash.",
+      });
+      return;
+    }
+
+    // const path = dirtyPath.replace(/\$/g, "\\$").replace(/\^/g, "\\^");
+
+    // const fileExtension = getFileExtension(path);
+
+    // printer.printConsoleMessage(
+    //   "info",
+    //   chalk.cyan(
+    //     "Learning",
+    //     chalk.bold(doubleQuotify("git diff")),
+    //     "at",
+    //     chalk.bold(path),
+    //     "has begun...",
+    //     "\n",
+    //   ),
+    // );
+
+    const gitDiff = getGitDiffForFile(latestCommitHash, path);
+    if (gitDiff === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while running `git diff` command.",
+      });
+      return;
+    }
+
+    if (gitDiff.length === 0) {
+      printer.printOperationMessage({
+        kind: "error",
+        message:
+          "There is no difference between the status of the file and that at the previous commit.",
+      });
+      return;
+    }
+
+    const oldSourceFile = getOldSourceFile(
+      latestCommitHash,
+      path,
+      fileExtension,
     );
-  }
+    const sourceFile = getSourceFile(dirtyPath, fileExtension);
 
-  printer.printConsoleMessage(
-    "info",
-    chalk.cyan(
-      "Learning",
-      chalk.bold(doubleQuotify("git diff")),
-      "at",
-      chalk.bold(path),
-      "has begun...",
-      "\n",
-    ),
-  );
-
-  const gitDiff = getGitDiffForFile(latestCommitHash, path);
-  if (gitDiff === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while running `git diff` command.",
-    });
-    return;
-  }
-
-  if (gitDiff.length === 0) {
-    printer.printOperationMessage({
-      kind: "error",
-      message:
-        "There is no difference between the status of the file and that at the previous commit.",
-    });
-    return;
-  }
-
-  const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
-  const sourceFile = getSourceFile(dirtyPath, fileExtension);
-
-  if (oldSourceFile === null || sourceFile === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while getting AST of the file.",
-    });
-    return;
-  }
-
-  const beforeNodeTexts = new Set<string>();
-  const afterNodeTexts = new Set<string>();
-
-  const lines = gitDiff.split("\n");
-
-  for (const line of lines) {
-    if (!line.startsWith("-") && !line.startsWith("+")) {
-      continue;
-    }
-
-    const codeString = line.substring(1).trim();
-    if (removeSpecialCharacters(codeString).length === 0) {
-      continue;
-    }
-
-    if (line.startsWith("-")) {
-      oldSourceFile.forEachChild((node) => {
-        const content = node.getFullText();
-
-        if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
-          beforeNodeTexts.add(content);
-        }
+    if (oldSourceFile === null || sourceFile === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while getting AST of the file.",
       });
+      return;
     }
 
-    if (line.startsWith("+")) {
-      sourceFile.forEachChild((node) => {
-        const content = node.getFullText();
-        if (content.includes(codeString) && !afterNodeTexts.has(content)) {
-          afterNodeTexts.add(content);
-        }
+    const beforeNodeTexts = new Set<string>();
+    const afterNodeTexts = new Set<string>();
+
+    const lines = gitDiff.split("\n");
+
+    for (const line of lines) {
+      if (!line.startsWith("-") && !line.startsWith("+")) {
+        continue;
+      }
+
+      const codeString = line.substring(1).trim();
+      if (removeSpecialCharacters(codeString).length === 0) {
+        continue;
+      }
+
+      if (line.startsWith("-")) {
+        oldSourceFile.forEachChild((node) => {
+          const content = node.getFullText();
+
+          if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
+            beforeNodeTexts.add(content);
+          }
+        });
+      }
+
+      if (line.startsWith("+")) {
+        sourceFile.forEachChild((node) => {
+          const content = node.getFullText();
+          if (content.includes(codeString) && !afterNodeTexts.has(content)) {
+            afterNodeTexts.add(content);
+          }
+        });
+      }
+    }
+
+    const irrelevantNodeTexts = new Set<string>();
+
+    beforeNodeTexts.forEach((text) => {
+      if (afterNodeTexts.has(text)) {
+        irrelevantNodeTexts.add(text);
+      }
+    });
+
+    irrelevantNodeTexts.forEach((text) => {
+      beforeNodeTexts.delete(text);
+      afterNodeTexts.delete(text);
+    });
+
+    const beforeSnippet = Array.from(beforeNodeTexts)
+      .join("")
+      // remove all occurrences of `\n` at the beginning
+      .replace(/^\n+/, "");
+    const afterSnippet = Array.from(afterNodeTexts)
+      .join("")
+      // remove all occurrences of `\n` at the beginning
+      .replace(/^\n+/, "");
+
+    const { id: diffId, iv } = await createCodeDiff({
+      beforeSnippet,
+      afterSnippet,
+    });
+    const url = createCodemodStudioURL({
+      // TODO: Support other engines in the future
+      engine: "jscodeshift",
+      diffId,
+      iv,
+    });
+
+    if (url === null) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while creating a URL.",
       });
+      return;
     }
-  }
 
-  const irrelevantNodeTexts = new Set<string>();
+    printer.printConsoleMessage(
+      "info",
+      chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
+    );
 
-  beforeNodeTexts.forEach((text) => {
-    if (afterNodeTexts.has(text)) {
-      irrelevantNodeTexts.add(text);
+    const success = openURL(url);
+    if (!success) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while opening the Codemod Studio.",
+      });
+      return;
     }
-  });
-
-  irrelevantNodeTexts.forEach((text) => {
-    beforeNodeTexts.delete(text);
-    afterNodeTexts.delete(text);
-  });
-
-  const beforeSnippet = Array.from(beforeNodeTexts)
-    .join("")
-    // remove all occurrences of `\n` at the beginning
-    .replace(/^\n+/, "");
-  const afterSnippet = Array.from(afterNodeTexts)
-    .join("")
-    // remove all occurrences of `\n` at the beginning
-    .replace(/^\n+/, "");
-
-  const { id: diffId, iv } = await createCodeDiff({
-    beforeSnippet,
-    afterSnippet,
-  });
-  const url = createCodemodStudioURL({
-    // TODO: Support other engines in the future
-    engine: "jscodeshift",
-    diffId,
-    iv,
-  });
-
-  if (url === null) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while creating a URL.",
-    });
-    return;
-  }
-
-  printer.printConsoleMessage(
-    "info",
-    chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
-  );
-
-  const success = open(url);
-
-  if (!success) {
-    printer.printOperationMessage({
-      kind: "error",
-      message: "Unexpected error occurred while opening the Codemod Studio.",
-    });
-    return;
   }
 };
