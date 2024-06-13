@@ -7,3 +7,5 @@ By making a contribution to this project, you certify that:
 (c) The contribution was provided directly to me by some other person who certified (a), (b) or (c) and I have not modified it.
 
 (d) I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
+
+(e) I give Codemod Inc. permission to license my contributions on any terms they like. I am giving them this license in order to make it possible for them to accept my contributions into their project. As far as the law allows, my contributions come as is, without any warranty or condition, and I will not be liable to anyone for any damages related to this software or this license, under any kind of legal claim.
