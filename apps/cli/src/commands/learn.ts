@@ -1,13 +1,16 @@
 import { execSync } from "node:child_process";
+import { readFile } from "node:fs/promises";
 import { basename, dirname, extname, resolve, sep } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
   findLastlyModifiedFile,
   findModifiedFiles,
+  getFileFromCommit,
   getGitDiffForFile,
   getLatestCommitHash,
   isFileInGitDirectory,
@@ -22,35 +25,6 @@ const isJSorTS = (name: string) =>
 
 const getFileExtension = (filePath: string) => {
   return extname(filePath).toLowerCase();
-};
-
-const getOldSourceFile = (commitHash: string, filePath: string) => {
-  try {
-    const commitWithFileName = doubleQuotify(`${commitHash}:${filePath}`);
-    const output = execSync(`git show ${commitWithFileName}`).toString();
-
-    const project = new Project({
-      useInMemoryFileSystem: true,
-      compilerOptions: {
-        allowJs: true,
-      },
-    });
-
-    return project.createSourceFile(filePath, output);
-  } catch (error) {
-    console.error(error);
-    return null;
-  }
-};
-
-const getSourceFile = (filePath: string) => {
-  const project = new Project({
-    compilerOptions: {
-      allowJs: true,
-    },
-  });
-
-  return project.addSourceFileAtPathIfExists(filePath) ?? null;
 };
 
 const UrlParamKeys = {
@@ -92,7 +66,7 @@ export const handleLearnCliCommand = async (options: {
   target: string | null;
   source: string | null;
 }) => {
-  const { printer, target } = options;
+  const { printer, target, source } = options;
 
   if (target !== null && !isFileInGitDirectory(target)) {
     printer.printOperationMessage({
@@ -163,17 +137,15 @@ export const handleLearnCliCommand = async (options: {
     ),
   );
 
-  const changedFiles: string[] = [];
+  const diffs: Record<string, { before: string; after: string }[]> = {};
 
   for (const dirtyPath of paths) {
     const latestCommitHash = getLatestCommitHash(dirname(dirtyPath));
     if (latestCommitHash === null) {
       printer.printOperationMessage({
         kind: "error",
-        message:
-          "Unexpected error occurred while getting the latest commit hash.",
+        message: `Unexpected error occurred while getting the latest commit hash. - ${dirtyPath}`,
       });
-
       continue;
     }
 
@@ -183,165 +155,165 @@ export const handleLearnCliCommand = async (options: {
     if (gitDiff === null) {
       printer.printOperationMessage({
         kind: "error",
-        message: "Unexpected error occurred while running `git diff` command.",
+        message: `Unexpected error occurred while running ${chalk.bold(
+          "git diff",
+        )} command. - ${path}`,
       });
-      return;
-    }
-
-    if (gitDiff.length === 0) {
-      printer.printOperationMessage({
-        kind: "error",
-        message:
-          "There is no difference between the status of the file and that at the previous commit.",
-      });
-
       continue;
     }
 
-    const hunkPattern = /^@@ -\d+(,\d+)? \+\d+(,\d+)? @@/gm;
-    const hunks = [];
+    if (gitDiff.length === 0) {
+      continue;
+    }
 
+    const hunkPattern = /^@@ -(\d+)(?:,(\d+))? \+(\d+)(?:,(\d+))? @@/gm;
+    const hunks: {
+      header: string;
+      hunk: string;
+      details: {
+        removed: { at: number; count: number } | null;
+        added: { at: number; count: number } | null;
+      } | null;
+    }[] = [];
     let match = hunkPattern.exec(gitDiff);
 
-    // if (path.includes("list")) {
-    //   console.log(match);
-    // }
-
-    let lastIndex = 0;
     while (match !== null) {
-      if (match.index !== lastIndex) {
-        hunks.push(gitDiff.slice(lastIndex, match.index));
-      }
+      const hunkStart = match.index;
 
-      lastIndex = match.index;
+      // Find the next hunk or end of diff
+      const nextHunkIndex = gitDiff.indexOf("@@", hunkPattern.lastIndex);
+      const hunkEnd = nextHunkIndex !== -1 ? nextHunkIndex : gitDiff.length;
+      const hunkContent = gitDiff.substring(hunkStart, hunkEnd);
+
+      hunks.push({
+        header: match[0],
+        hunk: hunkContent,
+        details: {
+          removed: match[1]
+            ? {
+                at: Number.parseInt(match[1], 10),
+                count: match[2] ? Number.parseInt(match[2], 10) : 1,
+              }
+            : null,
+          added: match[3]
+            ? {
+                at: Number.parseInt(match[3], 10),
+                count: match[4] ? Number.parseInt(match[4], 10) : 1,
+              }
+            : null,
+        },
+      });
+
+      hunkPattern.lastIndex = hunkEnd;
       match = hunkPattern.exec(gitDiff);
-      // if (path.includes("list")) {
-      //   console.log(match);
-      // }
     }
 
-    if (lastIndex < gitDiff.length) {
-      hunks.push(gitDiff.substring(lastIndex));
+    const oldFile = await getFileFromCommit(latestCommitHash, path);
+    const newFile = await readFile(path, "utf-8");
+
+    if (!oldFile || !newFile) {
+      printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while reading the file.",
+      });
+
+      return;
     }
 
-    console.log(hunks);
-    // return hunks;
+    diffs[path] = hunks.map(({ header, hunk, details }) => {
+      const { removed, added } = details ?? { removed: null, added: null };
 
-    // function processHunk(hunk) {
-    //   // Implement your logic to handle each hunk
-    //   console.log("Processing hunk:\n", hunk);
-    // }
+      return {
+        before: removed
+          ? oldFile
+              .split("\n")
+              .slice(removed.at - 1, removed.at + removed.count)
+              .join("\n")
+          : "",
+        after: added
+          ? newFile
+              .split("\n")
+              .slice(added.at - 1, added.at + added.count)
+              .join("\n")
+          : "",
+      };
+    });
+  }
 
-    // const oldSourceFile = getOldSourceFile(latestCommitHash, path);
-    // const sourceFile = getSourceFile(dirtyPath);
+  if (Object.keys(diffs).length === 0) {
+    printer.printOperationMessage({
+      kind: "error",
+      message: chalk.yellow("No diffs found in selected files. Aborting..."),
+    });
+    return;
+  }
 
-    // if (oldSourceFile === null || sourceFile === null) {
-    //   printer.printOperationMessage({
-    //     kind: "error",
-    //     message: "Unexpected error occurred while getting AST of the file.",
-    //   });
-    //   return;
-    // }
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(`A total of ${diffs.length} diffs found in the files.`),
+  );
 
-    // const beforeNodeTexts = new Set<string>();
-    // const afterNodeTexts = new Set<string>();
+  if (source !== null) {
+    // Improve existing codemod
+    await Promise.all(
+      Object.entries(diffs).map(async ([path, fileDiffs]) =>
+        fileDiffs.map(({ before, after }, i) => {
+          const spinner = printer.withLoaderMessage(
+            `Processing diff #${i + 1}`,
+          );
 
-    // const lines = gitDiff.split("\n");
+          try {
+            // 1. send request to AI service
+            // 2. update the codemod in the source by adding the test fixture and updating the source code
+            spinner.succeed();
+          } catch (err) {
+            spinner.fail();
+            const error = err as AxiosError<{ message: string }> | Error;
+            printer.printConsoleMessage(
+              "error",
+              `Failed to process diff for file: ${path} - ${
+                error instanceof AxiosError
+                  ? error.response?.data.message
+                  : error.message
+              }`,
+            );
+            return;
+          }
+        }),
+      ),
+    );
+    return;
+  }
 
-    // if (path.includes("learn")) {
-    //   console.log(lines);
-    // }
+  // Regular studio flow as before (will require multiple diffs support implemented in studio)
+  const { id: diffId, iv } = await createCodeDiff(Object.values(diffs).flat());
 
-    // for (const line of lines) {
-    //   if (!line.startsWith("-") && !line.startsWith("+")) {
-    //     continue;
-    //   }
+  const url = createCodemodStudioURL({
+    // TODO: Support other engines in the future
+    engine: "jscodeshift",
+    diffId,
+    iv,
+  });
 
-    //   const codeString = line.substring(1).trim();
-    //   if (removeSpecialCharacters(codeString).length === 0) {
-    //     continue;
-    //   }
+  if (url === null) {
+    printer.printOperationMessage({
+      kind: "error",
+      message: "Unexpected error occurred while creating a URL.",
+    });
+    return;
+  }
 
-    //   if (line.startsWith("-")) {
-    //     oldSourceFile.forEachChild((node) => {
-    //       const content = node.getFullText();
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
+  );
 
-    //       if (content.includes(codeString) && !beforeNodeTexts.has(content)) {
-    //         beforeNodeTexts.add(content);
-    //       }
-    //     });
-    //   }
-
-    //   if (line.startsWith("+")) {
-    //     sourceFile.forEachChild((node) => {
-    //       const content = node.getFullText();
-    //       if (content.includes(codeString) && !afterNodeTexts.has(content)) {
-    //         afterNodeTexts.add(content);
-    //       }
-    //     });
-    //   }
-    // }
-
-    // if (path.includes("learn")) {
-    //   console.log(beforeNodeTexts);
-    //   console.log(afterNodeTexts);
-    // }
-
-    // const irrelevantNodeTexts = new Set<string>();
-
-    // beforeNodeTexts.forEach((text) => {
-    //   if (afterNodeTexts.has(text)) {
-    //     irrelevantNodeTexts.add(text);
-    //   }
-    // });
-
-    // irrelevantNodeTexts.forEach((text) => {
-    //   beforeNodeTexts.delete(text);
-    //   afterNodeTexts.delete(text);
-    // });
-
-    // const beforeSnippet = Array.from(beforeNodeTexts)
-    //   .join("")
-    //   // remove all occurrences of `\n` at the beginning
-    //   .replace(/^\n+/, "");
-    // const afterSnippet = Array.from(afterNodeTexts)
-    //   .join("")
-    //   // remove all occurrences of `\n` at the beginning
-    //   .replace(/^\n+/, "");
-
-    // console.log("BEFORE", beforeSnippet);
-    // console.log("AFTER", afterSnippet);
-    // const { id: diffId, iv } = await createCodeDiff({
-    //   beforeSnippet,
-    //   afterSnippet,
-    // });
-    // const url = createCodemodStudioURL({
-    //   // TODO: Support other engines in the future
-    //   engine: "jscodeshift",
-    //   diffId,
-    //   iv,
-    // });
-
-    // if (url === null) {
-    //   printer.printOperationMessage({
-    //     kind: "error",
-    //     message: "Unexpected error occurred while creating a URL.",
-    //   });
-    //   return;
-    // }
-
-    // printer.printConsoleMessage(
-    //   "info",
-    //   chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
-    // );
-
-    // const success = openURL(url);
-    // if (!success) {
-    //   printer.printOperationMessage({
-    //     kind: "error",
-    //     message: "Unexpected error occurred while opening the Codemod Studio.",
-    //   });
-    //   return;
-    // }
+  const success = openURL(url);
+  if (!success) {
+    printer.printOperationMessage({
+      kind: "error",
+      message: "Unexpected error occurred while opening the Codemod Studio.",
+    });
+    return;
   }
 };
