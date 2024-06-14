@@ -14,7 +14,7 @@ const steps = [
   {
     element: "assistant",
     description:
-      "<p>The AI assistant provides support and guidance throughout the codemod creation and execution process by generating codemod scripts, troubleshooting issues, and incrementally refining code transformations.</p><p>The 'Debug' tab lists the codemod workflow and potential errors.</p>",
+      '<p>Assistant section includes AI, and for advanced users: AST and debugger. AI requires login. Start by clicking the "Generate codemod with AI" button.</p>',
   },
   {
     element: "actions",
