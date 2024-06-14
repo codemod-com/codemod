@@ -1,18 +1,16 @@
-Short description
-
-Detailed description
+Replaces `react-test-renderer/shallow` import.
 
 ## Example
 
 ### Before
 
 ```ts
-const toReplace = "hello";
+import ShallowRenderer from 'react-test-renderer/shallow';
 ```
 
 ### After
 
 ```ts
-const replacement = "hello";
+import ShallowRenderer from "react-shallow-renderer";
 ```
 
