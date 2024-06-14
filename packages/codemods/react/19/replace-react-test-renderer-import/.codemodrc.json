@@ -1,7 +1,7 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "react/19/replace-react-test-renderer-import",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
