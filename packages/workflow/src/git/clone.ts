@@ -3,6 +3,7 @@ import { codemod } from "../codemod.js";
 import { cwdContext, repositoryContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
+import { files } from "../files.js";
 import { dirs } from "../fs/dirs.js";
 import { cloneRepository } from "../git.js";
 import { parseMultistring } from "../helpers.js";
@@ -64,6 +65,15 @@ export function cloneLogic(
 
 export const clone = fnWrapper("clone", cloneLogic);
 
-const cloneHelpers = { jsFiles, branch, commit, push, dirs, codemod, exec };
+const cloneHelpers = {
+  jsFiles,
+  branch,
+  commit,
+  push,
+  dirs,
+  codemod,
+  exec,
+  files,
+};
 
 type CloneHelpers = typeof cloneHelpers;

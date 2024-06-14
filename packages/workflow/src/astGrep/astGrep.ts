@@ -14,6 +14,7 @@ import {
 } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { clc } from "../helpers.js";
+import { filter } from "./filter.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
 
@@ -224,6 +225,7 @@ const astGrepHelpers = {
   replace,
   map,
   ai,
+  filter,
 };
 
 const astGrepAPIHelpers = {

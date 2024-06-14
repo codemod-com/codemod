@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import { formatText } from "@codemod-com/utilities";
+import { mapValues } from "lodash";
 import MagicString from "magic-string";
 import OpenAI from "openai";
 import type { PLazy } from "../PLazy";
@@ -12,7 +13,13 @@ You are a meticulous engineer assigned to migrate a codebase by updating its cod
 
 When you write code, the code works on the first try, and is complete. Take into account the current repository's language, code style, and dependencies.
 
-You will be given a Migration Description and a Source File. You will rewrite the Source File in order to apply the changes described in the Migration Description.
+You will be given a Context File, a Migration Description and a Source File. You will rewrite the Source File in order to apply the changes described in the Migration Description.
+
+You will use a Context File to understand the codebase and the Migration Description to apply the changes.
+Context file will be surrounded by triple single quotes like this:
+'''
+context file here
+'''
 
 If a line of code is not affected by the migration, you should keep it as it is.
 
@@ -33,30 +40,43 @@ You must preserve parts naming and order.
 
 type CodeSample = {
   filename: string;
+  contents: string;
   startPosition: number;
   endPosition: number;
   text: string;
 };
 
 class AiHandler {
-  private beforesSamples: CodeSample[] = [];
-  private completion: OpenAI.Chat.Completions.ChatCompletion | undefined;
+  private beforesSamples: Record<string, CodeSample[]> = {};
   public query: string | undefined;
+  private _usage: OpenAI.Completions.CompletionUsage = {
+    completion_tokens: 0,
+    prompt_tokens: 0,
+    total_tokens: 0,
+  };
 
   constructor(private userPrompt: string) {}
 
   addBefore(before: CodeSample) {
-    this.beforesSamples.push(before);
+    this.beforesSamples[before.filename] ??= [];
+    this.beforesSamples[before.filename]?.push(before);
   }
 
-  private get prompt() {
-    return `
+  private get prompts() {
+    return mapValues(
+      this.beforesSamples,
+      (samples) => `
 You are migrating a code, which matches ast-grep pattern:
 ${this.query ?? ""}
 
+Context file:
+'''
+${samples[0]?.contents}
+'''
+
 ${this.userPrompt}
 
-${this.beforesSamples
+${samples
   .map(
     (before, index) => `
 // codemod#ai#${index}
@@ -65,20 +85,17 @@ ${before.text}
 
 `,
   )
-  .join("")}`;
-  }
-
-  private get completionText() {
-    return this.completion?.choices[0]?.message.content;
+  .join("")}`,
+    );
   }
 
   public get usage() {
-    return this.completion?.usage;
+    return this._usage;
   }
 
-  public get replacements() {
+  public static getReplacements(completionText?: string | null) {
     // Match code block inside ``` and replace those quotes with empty string
-    const code = this.completionText
+    const code = completionText
       ?.match(/```([\s\S]*?)```/g)?.[0]
       ?.replace(/^```/g, "")
       ?.replace(/```$/g, "");
@@ -119,58 +136,75 @@ ${before.text}
       return;
     }
     const openai = new OpenAI({ apiKey });
-    this.completion = await openai.chat.completions.create({
-      model: "gpt-4-turbo",
-      seed: 7,
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: this.prompt },
-      ],
-      temperature: 0.001,
-      n: 1,
-    });
-    const replacements = this.replacements;
-    const files: Record<
-      string,
-      {
-        startPosition: number;
-        endPosition: number;
-        text: string;
-      }[]
-    > = {};
-    for (let i = 0; i < this.beforesSamples.length; i++) {
-      const before = this.beforesSamples[i] as CodeSample;
-      const after = replacements[i] as string;
-      if (!files[before.filename]) {
-        files[before.filename] = [];
-      }
-      files[before.filename]?.push({
-        startPosition: before.startPosition,
-        endPosition: before.endPosition,
-        text: after,
-      });
-    }
-    for (const [filename, replacements] of Object.entries(files)) {
-      try {
-        const contents = new MagicString(await fs.readFile(filename, "utf-8"));
-        for (const replacement of replacements) {
-          contents.update(
-            replacement.startPosition,
-            replacement.endPosition,
-            replacement.text,
-          );
+
+    await Promise.all(
+      Object.entries(this.prompts).map(async ([filename, prompt]) => {
+        const response = await openai.chat.completions.create({
+          model: "gpt-4-turbo",
+          seed: 7,
+          messages: [
+            { role: "system", content: SYSTEM_PROMPT },
+            { role: "user", content: prompt },
+          ],
+          temperature: 0.001,
+          n: 1,
+        });
+        const usage = response?.usage;
+        if (usage) {
+          this._usage.completion_tokens += usage.completion_tokens;
+          this._usage.prompt_tokens += usage.prompt_tokens;
+          this._usage.total_tokens += usage.total_tokens;
         }
-        if (contents.hasChanged()) {
-          await fs.writeFile(
-            filename,
-            await formatText(filename, contents.toString(), true),
-          );
-          console.log(`${clc.blueBright("FILE")} ${filename}`);
+        const completion = response?.choices[0]?.message.content;
+        const replacements = AiHandler.getReplacements(completion);
+        const foundReplacements: {
+          startPosition: number;
+          endPosition: number;
+          text: string;
+        }[] = [];
+        const beforeSamples = this.beforesSamples[filename] ?? [];
+        for (let i = 0; i < beforeSamples.length; i++) {
+          const before = beforeSamples[i] as CodeSample;
+          const after = replacements[i] as string;
+          foundReplacements.push({
+            startPosition: before.startPosition,
+            endPosition: before.endPosition,
+            text: after,
+          });
         }
-      } catch (e) {
-        //
-      }
-    }
+        if (foundReplacements.length) {
+          try {
+            const contents = new MagicString(
+              await fs.readFile(filename, "utf-8"),
+            );
+            for (const replacement of foundReplacements) {
+              contents.update(
+                replacement.startPosition,
+                replacement.endPosition,
+                replacement.text,
+              );
+            }
+            if (contents.hasChanged()) {
+              await fs.writeFile(
+                filename,
+                await formatText(filename, contents.toString(), true),
+              );
+              console.log(`${clc.blueBright("FILE")} ${filename}`);
+            }
+          } catch (e) {
+            //
+          }
+        }
+      }),
+    );
+
+    console.log(
+      `Codemod2.0 ${clc.blueBright("usage")}: ${clc.green("Prompt tokens")}(${
+        this._usage.prompt_tokens
+      }), ${clc.green("Completion tokens")}(${
+        this._usage.completion_tokens
+      }), ${clc.green("Total tokens")}(${this._usage.total_tokens})`,
+    );
   }
 }
 
@@ -184,14 +218,14 @@ export function aiLogic(
     .arguments(() => ({ prompt }))
     .helpers(aiHelpers)
     .executor(async () => {
-      const { node } = getAstGrepNodeContext();
+      const { node, query, contents } = getAstGrepNodeContext();
       const { file } = getFileContext();
       const range = node.range();
-      const { query } = getAstGrepNodeContext();
       aiHandler.query =
         typeof query === "string" ? query : JSON.stringify(query);
       aiHandler.addBefore({
         filename: file,
+        contents: contents.toString(),
         startPosition: range.start.index,
         endPosition: range.end.index,
         text: node.text(),

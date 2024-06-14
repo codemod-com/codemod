@@ -13,9 +13,11 @@ function getHash(data: any) {
 class NodeContext {
   public name: string;
   public hash: string;
+  public arguments: any[];
   public children: NodeContext[];
-  constructor(name: string, fn: string, args: any) {
+  constructor(name: string, fn: string, args: any[]) {
     this.name = name;
+    this.arguments = args.map((arg) => String(arg));
     this.hash = getHash({ name, fn: fn.toString(), args });
     this.children = [];
   }
@@ -59,7 +61,11 @@ export class FunctionExecutor<
   W extends boolean = true, // return wrapped helpers like PLazy<H> & H or not
   E extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // executor
   C extends ((...args: any[]) => Promise<any> | any) | undefined = undefined, // callback
-  A extends (() => any | Promise<any> | any) | undefined = undefined, // arguments parser
+  A extends
+    | ((self: { getChildArg: <T>(name: string) => T | undefined }) =>
+        | Promise<any>
+        | any)
+    | undefined = undefined, // arguments parser
 > {
   // @ts-ignore
   private _init?: I;
@@ -72,10 +78,27 @@ export class FunctionExecutor<
   private _callback?: C;
   private _arguments?: A;
   private _done: any;
+  private parentArgs: any[] = [];
+  private childArgs: any[] = [];
 
   constructor(public name: string) {
     this._context = selfContext.getStore() as NodeContext;
     this._parentWrapper = wrapContext.getStore() ?? noContextFn;
+  }
+
+  public setParentArgs(...args: any[]) {
+    this.parentArgs = args;
+    return this;
+  }
+
+  public getChildArgs() {
+    return this.childArgs;
+  }
+
+  public getChildArg(name: string) {
+    return this.childArgs.find((args) => typeof args[name] !== "undefined")?.[
+      name
+    ];
   }
 
   doNotCopyHelpersToPromise(): FunctionExecutor<I, H, R, false, E, C, A> {
@@ -95,17 +118,21 @@ export class FunctionExecutor<
     return this;
   }
 
-  arguments<AE extends () => any | Promise<any>>(
-    args: AE,
-  ): FunctionExecutor<I, H, R, W, E, C, AE> {
+  arguments<
+    AE extends (self: { getChildArg: <T>(name: string) => T | undefined }) =>
+      | Promise<any>
+      | any,
+  >(args: AE): FunctionExecutor<I, H, R, W, E, C, AE> {
     this._arguments = args as any;
     return this as any;
   }
 
-  getArguments(): A extends () => any | Promise<any>
+  getArguments(): A extends (self: {
+    getChildArg: <T>(name: string) => T | undefined;
+  }) => any | Promise<any>
     ? Awaited<ReturnType<A>>
     : undefined {
-    return this._arguments?.();
+    return this._arguments?.(this);
   }
 
   helpers<HE extends Record<string, any>>(
@@ -151,13 +178,20 @@ export class FunctionExecutor<
   }
 
   context() {
-    return (cb?: any) =>
-      this._parentWrapper(() =>
-        (this._executor ?? noContextFn)(async () => {
-          await this._callback?.(this);
-          return cb?.();
-        }, this),
+    return (cb?: any, ...childArgs: any[]) => {
+      this.childArgs = childArgs;
+      return this._parentWrapper(
+        () => {
+          return (this._executor ?? noContextFn)(async () => {
+            if (this._callback) {
+              await parentContext.run(this._context, this._callback, this);
+            }
+            return cb?.();
+          }, this);
+        },
+        ...this.parentArgs,
       );
+    };
   }
 
   return<
