@@ -12,8 +12,10 @@ import { useLocalStorage } from "@studio/hooks/useLocalStorage";
 import type { GHBranch, GithubRepository } from "be-types";
 import { useRouter } from "next/navigation";
 import { type MouseEvent, memo, useState } from "react";
+import { useModal } from "../../../src/hooks/useModal";
 import { useCodemodExecution } from "../hooks/useCodemodExecution";
 import { RepositoryModal } from "./RepositoryModal";
+import { UserPromptModal } from "./UserPromptModal";
 export const GHRunButton = memo(() => {
   const { user } = useUser();
   const router = useRouter();
@@ -38,6 +40,12 @@ export const GHRunButton = memo(() => {
     "openRepoModal",
   );
 
+  const {
+    showModal: showUserPromptModal,
+    hideModal: hideUserPromptModal,
+    isModalShown: isUserPromptModalShown,
+  } = useModal();
+
   const codemodRunStatus = useExecutionStatus({
     codemodExecutionId,
     clearExecutionId,
@@ -49,9 +57,7 @@ export const GHRunButton = memo(() => {
     setCodemodExecutionId,
   });
 
-  const redirectToRequestMoreScopes = async (
-    event: MouseEvent<HTMLButtonElement>,
-  ) => {
+  const handlePress = (event: MouseEvent<HTMLButtonElement>) => {
     const githubAccount = user?.externalAccounts.find(
       (account) => account.provider === "github",
     );
@@ -62,6 +68,17 @@ export const GHRunButton = memo(() => {
 
     if (githubAccount.approvedScopes.includes("repo")) {
       showRepoModalToSignedUser(event);
+      return;
+    }
+    showUserPromptModal();
+  };
+
+  const onApprove = async () => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
       return;
     }
 
@@ -92,9 +109,14 @@ export const GHRunButton = memo(() => {
         repositoriesToShow={repositoriesToShow}
         areReposLoading={areReposLoading}
       />
+      <UserPromptModal
+        isModalShown={isUserPromptModalShown}
+        onApprove={onApprove}
+        onReject={hideUserPromptModal}
+      />
       {codemodRunStatus && <ProgressBar codemodRunStatus={codemodRunStatus} />}
       <Button
-        onClick={redirectToRequestMoreScopes}
+        onClick={handlePress}
         size="xs"
         variant="outline"
         className="flex gap-1"
