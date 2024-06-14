@@ -171,7 +171,7 @@ export class FunctionExecutor<
 
   executor<
     EE extends (
-      next: any,
+      next: (...args: any[]) => Promise<void> | void,
       self: FunctionExecutor<I, H, R, W, E, C, A>,
     ) => Promise<any> | any,
   >(executor: EE): FunctionExecutor<I, H, R, W, EE, C, A> {

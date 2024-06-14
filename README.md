@@ -48,7 +48,7 @@ codemod learn
 
 ### 2. Publish codemods
 
-You can publish a [compatible](https://docs.codemod.com/codemod-registry/publishing-codemods#required-codemod-package-structure) local codemod package to [Codemod Registry](https://codemod.com/registry) with:
+You can publish a [compatible](https://go.codemod.com/package-structure) local codemod package to [Codemod Registry](https://codemod.com/registry) with:
 
 ```
 codemod publish
@@ -69,15 +69,6 @@ Our [Code of Conduct](/CODE_OF_CONDUCT.md) applies to all Codemod community chan
 ## Contributing
 
 To contribute to Codemod platform, please refer to the [contributing guide](/CONTRIBUTING.md).
-
-### Bounties
-
-<a href="https://console.algora.io/org/codemod-com/bounties?status=open">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://console.algora.io/api/og/codemod-com/bounties.png?p=0&status=open&theme=dark">
-    <img alt="Bounties of codemod-com" src="https://console.algora.io/api/og/codemod-com/bounties.png?p=0&status=open&theme=light">
-  </picture>
-</a>
 
 ### Contributors ✨
 

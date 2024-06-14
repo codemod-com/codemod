@@ -2,7 +2,11 @@ import type { PrinterBlueprint } from "@codemod-com/printer";
 import { revokeCLIToken } from "../apis.js";
 import { getCurrentUserData } from "../utils.js";
 
-export const handleLogoutCliCommand = async (printer: PrinterBlueprint) => {
+export const handleLogoutCliCommand = async (options: {
+  printer: PrinterBlueprint;
+}) => {
+  const { printer } = options;
+
   const userData = await getCurrentUserData();
 
   if (userData === null) {

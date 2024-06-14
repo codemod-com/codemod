@@ -5,6 +5,7 @@ import {
 } from "@codemod-com/utilities";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import { buildRevalidateHelper } from "./revalidate";
 import { parseUnpublishBody } from "./schemata/schema";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
@@ -74,16 +75,19 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
       });
     }
 
+    let skipCheck = false;
+
     const allowedNamespaces = [
       username,
       ...orgs.map((org) => org.organization.slug),
     ].filter(isNeitherNullNorUndefined);
 
+    // Allow Codemod engineers to unpublish anything if required
     if (environment.VERIFIED_PUBLISHERS.includes(username)) {
-      allowedNamespaces.push("codemod-com", "Codemod");
+      skipCheck = true;
     }
 
-    if (!allowedNamespaces.includes(codemod.author)) {
+    if (!skipCheck && !allowedNamespaces.includes(codemod.author)) {
       return reply.code(403).send({
         error: "You are not allowed to perform this operation",
         success: false,
@@ -131,6 +135,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         where: { name: codemodName },
       });
 
+      const revalidate = buildRevalidateHelper(environment);
+      await revalidate(name);
+
       return reply.code(200).send({ success: true });
     }
 
@@ -167,6 +174,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         where: { id: versionToRemove.id },
       });
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

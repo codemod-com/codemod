@@ -2,7 +2,7 @@
 
 This codemod will remove the usage of `Provider` for contexts; e.g., Context.Provider to Context
 
-## Examples
+## Example
 
 ### Before:
 

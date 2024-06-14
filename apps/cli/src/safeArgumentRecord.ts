@@ -190,7 +190,7 @@ export const buildSafeArgumentRecord = async (
             arg.name
           } argument (${kinds.join(", ")}`;
 
-          if ("options" in arg) {
+          if ("options" in arg && arg.options) {
             message += ` or one of the following: ${arg.options.join(", ")}`;
           }
           message += ")";

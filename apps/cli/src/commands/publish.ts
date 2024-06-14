@@ -15,10 +15,13 @@ import { publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
 
-export const handlePublishCliCommand = async (
-  printer: PrinterBlueprint,
-  source: string,
-) => {
+export const handlePublishCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  source: string;
+}) => {
+  const { printer } = options;
+  let { source } = options;
+
   const userData = await getCurrentUserData();
 
   if (userData === null) {
@@ -31,6 +34,7 @@ export const handlePublishCliCommand = async (
 
   const formData = new FormData();
 
+  let isSingleFile = false;
   let codemodRcBuf: Buffer;
   try {
     codemodRcBuf = await fs.promises.readFile(join(source, ".codemodrc.json"));
@@ -58,9 +62,9 @@ export const handlePublishCliCommand = async (
       .then((pathStat) => pathStat.isFile());
 
     if (isSourceAFile) {
-      // biome-ignore lint: If source is a file, we define source as a directory that this file is in
-      source = dirname(source);
+      isSingleFile = true;
       mainFilePath = basename(source);
+      source = dirname(source);
     } else {
       const { mainPath } = await inquirer.prompt<{
         mainPath: string;
@@ -83,6 +87,33 @@ export const handlePublishCliCommand = async (
       mainFilePath: mainFilePath ?? "index.ts",
     });
 
+    const { choice } = await inquirer.prompt<{ choice: string }>({
+      name: "choice",
+      type: "list",
+      message:
+        "Would you like to adjust the README description file before publishing?",
+      choices: [
+        "Yes, I want to refine the README.md file and configuration before publishing",
+        "No, I want to publish without a description and configuration adjustments",
+      ],
+      default: 0,
+    });
+
+    if (choice.startsWith("Yes")) {
+      // Good hint by Copilot, we can actually later open a buffer for user on the fly so that he does not leave the process if that's desired
+      // const editor = process.env.EDITOR ?? "vim";
+      // await execPromise(`${editor} ${join(resultPath, "README.md")}`);
+
+      // Currently though, we just abort
+      printer.printConsoleMessage(
+        "info",
+        chalk.cyan(
+          "\nSelected to adjust the README.md file and configuration before publishing. Aborting...",
+        ),
+      );
+      return;
+    }
+
     if (!mainFilePath) {
       printer.printConsoleMessage(
         "info",
@@ -97,7 +128,6 @@ export const handlePublishCliCommand = async (
       );
     }
 
-    // biome-ignore lint: If user changed the directory where he wants the `codemod init` to put its results, we continue execution as if this was a source
     source = resultPath;
 
     try {
@@ -107,6 +137,25 @@ export const handlePublishCliCommand = async (
     } catch (err) {
       throw new Error(
         "Unexpected error, codemodrc file could not be found after codemod package initialization has been completed.",
+      );
+    }
+  }
+
+  // for single file codemods we dont want to upload boilerplate README
+  if (!isSingleFile) {
+    try {
+      const descriptionMdBuf = await fs.promises.readFile(
+        join(source, "README.md"),
+      );
+      formData.append("README.md", descriptionMdBuf);
+    } catch {
+      printer.printConsoleMessage(
+        "info",
+        chalk.cyan(
+          "Could not locate README file at",
+          `${chalk.bold(join(source, "README.md"))}.`,
+          "Skipping README upload...",
+        ),
       );
     }
   }
@@ -197,15 +246,6 @@ export const handlePublishCliCommand = async (
     const mainFileBuf = await fs.promises.readFile(mainFilePath);
 
     formData.append(actualMainFileName, mainFileBuf);
-  }
-
-  try {
-    const descriptionMdBuf = await fs.promises.readFile(
-      join(source, "README.md"),
-    );
-    formData.append("description.md", descriptionMdBuf);
-  } catch {
-    //
   }
 
   const publishSpinner = printer.withLoaderMessage(

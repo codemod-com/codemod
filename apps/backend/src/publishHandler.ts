@@ -15,6 +15,7 @@ import type { z } from "zod";
 import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import { buildRevalidateHelper } from "./revalidate";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
 
@@ -144,6 +145,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
 
       const allowedNamespaces = [
         username,
+        environment.VERIFIED_PUBLISHERS.includes(username)
+          ? "codemod-com"
+          : null,
         ...orgs.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
 
@@ -246,15 +250,35 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       arguments: codemodRc.arguments,
     };
 
-    let isVerified = namespace === "Codemod" || namespace === "codemod-com";
+    let isVerified = false;
     let author = namespace;
-    if (!author) {
-      if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
+    if (author === null) {
+      if (
+        namespace === "codemod-com" ||
+        environment.VERIFIED_PUBLISHERS.includes(username)
+      ) {
         isVerified = true;
         author = "Codemod";
       } else {
         author = username;
       }
+    }
+
+    // Check if a codemod with the name already exists from other author
+    const existingCodemod = await prisma.codemod.findUnique({
+      where: {
+        name,
+        author: {
+          not: author,
+        },
+      },
+    });
+
+    if (existingCodemod !== null) {
+      return reply.code(400).send({
+        error: `Codemod name \`${name}\` is already taken.`,
+        success: false,
+      });
     }
 
     let createdAtTimestamp: number;
@@ -381,6 +405,9 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
         console.error("Failed calling Zapier hook:", err);
       }
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

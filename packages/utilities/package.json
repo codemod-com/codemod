@@ -35,10 +35,10 @@
     "memfs": "^4.8.2",
     "ts-node": "10.9.1",
     "typescript": "^5.3.2",
-    "vitest": "^1.0.1"
+    "vitest": "^1.0.1",
+    "@codemod-com/filemod": "workspace:*"
   },
   "dependencies": {
-    "@codemod-com/filemod": "workspace:*",
     "bl": "^6.0.11",
     "change-case": "^5.2.0",
     "glob": "^10.4.1",
@@ -48,6 +48,7 @@
     "semver": "^7.6.2",
     "tar": "^6.1.15",
     "tar-stream": "^3.1.7",
-    "valibot": "^0.24.1"
+    "valibot": "^0.24.1",
+    "prettier": "^3.2.5"
   }
 }

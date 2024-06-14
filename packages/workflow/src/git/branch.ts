@@ -48,7 +48,7 @@ export function branchLogic(
     })
     .callback(async (self) => {
       const { callback } = self.getArguments();
-      await callback?.(self.wrappedHelpers());
+      await callback?.(branchHelpers);
     })
     .return((self) => self.wrappedHelpers())
     .run();

@@ -22,8 +22,8 @@
   },
   "tabs": [
     {
-      "name": "Examples",
-      "url": "examples"
+      "name": "Guides",
+      "url": "guides"
     },
     {
       "name": "Blog",
@@ -36,30 +36,29 @@
   ],
   "navigation": [
     {
-      "group": "Introduction",
-      "pages": ["introduction"]
+      "group": "Codemod Platform",
+      "pages": [
+        "introduction",
+        "platform/build",
+        "platform/share",
+        "platform/run"
+      ]
     },
     {
-      "group": "Building Codemods",
-      "pages": [
-        "building-codemods/getting-started",
-        "building-codemods/codemod-studio"
-      ]
+      "group": "Codemod Studio",
+      "pages": ["building-codemods/codemod-studio"]
     },
     {
       "group": "Codemod Registry",
-      "pages": [
-        "codemod-registry/introduction",
-        "codemod-registry/publishing-codemods"
-      ]
+      "pages": ["codemod-registry/introduction"]
     },
     {
-      "group": "Running codemods",
-      "pages": [
-        "deploying-codemods/introduction",
-        "deploying-codemods/cli",
-        "deploying-codemods/vsce"
-      ]
+      "group": "CLI",
+      "pages": ["deploying-codemods/cli"]
+    },
+    {
+      "group": "VS Code Extension",
+      "pages": ["deploying-codemods/vsce"]
     },
     {
       "group": "Quick Links",
@@ -74,8 +73,8 @@
       "pages": ["more-resources/changelog"]
     },
     {
-      "group": "Explore examples",
-      "pages": ["examples/introduction"]
+      "group": "Guides & Examples",
+      "pages": ["guides/introduction"]
     }
   ],
   "feedback": {

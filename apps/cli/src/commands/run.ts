@@ -18,10 +18,10 @@ import {
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
+  sleep,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
-import terminalLink from "terminal-link";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
@@ -90,11 +90,13 @@ const checkFileTreeVersioning = async (target: string) => {
   }
 };
 
-export const handleRunCliCommand = async (
-  printer: PrinterBlueprint,
-  args: GlobalArgvOptions & RunArgvOptions,
-  telemetry: TelemetrySender<TelemetryEvent>,
-) => {
+export const handleRunCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  args: GlobalArgvOptions & RunArgvOptions;
+  telemetry: TelemetrySender<TelemetryEvent>;
+}) => {
+  const { printer, args, telemetry } = options;
+
   const codemodSettings = parseCodemodSettings(args);
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
@@ -237,17 +239,19 @@ export const handleRunCliCommand = async (
       : [codemodDefinition.codemod];
   const runner = new Runner(codemodsToRun, fs, runSettings, flowSettings);
 
-  if (runSettings.dryRun) {
-    printer.printConsoleMessage(
-      "log",
-      terminalLink(
-        "Click to view the live results of this run in the Codemod VSCode Extension!",
-        `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
-          "base64url",
-        )}`,
-      ),
-    );
-  }
+  // Currently unsupported
+
+  // if (runSettings.dryRun) {
+  //   printer.printConsoleMessage(
+  //     "log",
+  //     terminalLink(
+  //       "Click to view the live results of this run in the Codemod VSCode Extension!",
+  //       `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
+  //         "base64url",
+  //       )}`,
+  //     ),
+  //   );
+  // }
 
   const depsToInstall: Record<
     string,
@@ -322,17 +326,19 @@ export const handleRunCliCommand = async (
     (message) => printer.printMessage(message),
   );
 
-  if (runSettings.dryRun) {
-    printer.printConsoleMessage(
-      "log",
-      terminalLink(
-        "The run has finished! Click to open the Codemod VSCode Extension and view the results.",
-        `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
-          "base64url",
-        )}`,
-      ),
-    );
-  }
+  // Currently unsupported
+
+  // if (runSettings.dryRun) {
+  //   printer.printConsoleMessage(
+  //     "log",
+  //     terminalLink(
+  //       "The run has finished! Click to open the Codemod VSCode Extension and view the results.",
+  //       `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
+  //         "base64url",
+  //       )}`,
+  //     ),
+  //   );
+  // }
 
   if (executionErrors && executionErrors.length > 0) {
     const logsPath = join(
@@ -365,20 +371,9 @@ export const handleRunCliCommand = async (
 
     printer.printConsoleMessage(
       "error",
-      chalk(
-        "Certain files failed to be correctly processed by the codemod execution:",
-        `\n${executionErrors
-          .slice(0, 5)
-          .map(
-            (e) => `${e.filePath} ${e.codemodName ? `(${e.codemodName})` : ""}`,
-          )
-          .join("\n")
-          .concat(
-            executionErrors.length > 5
-              ? `\n...and ${executionErrors.length - 5} more`
-              : "",
-          )}`,
-        "\nPlease check the logs for more information at",
+      chalk.red(
+        "\nCertain files failed to be correctly processed by the codemod execution.",
+        "Please check the logs for more information at",
         chalk.bold(logsPath),
       ),
     );

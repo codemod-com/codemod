@@ -99,11 +99,13 @@ const createCodemodStudioURL = ({
   }
 };
 
-export const handleLearnCliCommand = async (
-  printer: PrinterBlueprint,
-  filePath: string | null,
-) => {
-  if (filePath !== null && !isFileInGitDirectory(filePath)) {
+export const handleLearnCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  target: string | null;
+}) => {
+  const { printer, target } = options;
+
+  if (target !== null && !isFileInGitDirectory(target)) {
     printer.printOperationMessage({
       kind: "error",
       message:
@@ -112,7 +114,7 @@ export const handleLearnCliCommand = async (
     return;
   }
 
-  const dirtyPath = filePath ?? (await findLastlyModifiedFile());
+  const dirtyPath = target ?? (await findLastlyModifiedFile());
 
   if (dirtyPath === null) {
     printer.printOperationMessage({

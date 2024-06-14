@@ -1,0 +1,75 @@
+---
+title: "MSW v1 -> v2 Migration"
+---
+
+MSW v2 brings the biggest API change to the library since its inception. Alongside the new API, it includes various features, such as `ReadableStream` support, ESM-compatibility, and countless bug fixes.
+
+Codemod supports a mostly automated MSW v2 upgrade experience. This page provides tips and resources you may need for a successful migration.
+
+## Getting started
+
+<CardGroup cols={2}>
+<Card
+    title="MSW v2 Upgrade Guide"
+    icon={
+    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 28 28" fill="none">
+    <g clipPath="url(#clip0_2_56)">
+    <path d="M22.75 0H5.25C2.35051 0 0 2.35051 0 5.25V22.75C0 25.6495 2.35051 28 5.25 28H22.75C25.6495 28 28 25.6495 28 22.75V5.25C28 2.35051 25.6495 0 22.75 0Z" fill="black"/>
+    <path opacity="0.48" fillRule="evenodd" clipRule="evenodd" d="M18.9679 16.9832C19.3987 17.4616 19.5948 18.0695 19.5636 18.6654C19.5324 19.2613 19.2738 19.8453 18.7953 20.2761C18.3665 20.6622 17.8097 20.8756 17.2327 20.875L7.18072 20.8646C6.98047 20.8644 6.79927 20.7831 6.66817 20.6517C6.53708 20.5203 6.4561 20.339 6.45631 20.1387L7.50061 10.0664C7.56726 9.42598 7.88717 8.87321 8.35052 8.4972C8.81387 8.12119 9.42067 7.92195 10.0611 7.98859C10.635 8.04832 11.1664 8.31873 11.5525 8.74754L18.9679 16.9832Z" stroke="#FF3333" strokeWidth="4"/>
+    <path fillRule="evenodd" clipRule="evenodd" d="M6.61448 8.33163C6.48049 8.18281 6.4195 7.99378 6.42922 7.80845C6.43893 7.62312 6.51934 7.4415 6.66815 7.30751C6.80152 7.18743 6.97467 7.12106 7.15413 7.12125L20.8194 7.13534C21.0196 7.13554 21.2008 7.2169 21.3319 7.34826C21.463 7.47962 21.544 7.661 21.5438 7.86124L20.1255 21.5274C20.1048 21.7266 20.0053 21.8985 19.8612 22.0155C19.7171 22.1324 19.5284 22.1944 19.3292 22.1736C19.1507 22.1551 18.9854 22.071 18.8654 21.9376L6.61448 8.33163Z" stroke="#FF6A33" strokeWidth="4"/>
+    </g>
+    <defs>
+    <clipPath id="clip0_2_56">
+    <rect width="28" height="28" fill="white"/>
+    </clipPath>
+    </defs>
+    </svg>
+    }
+    href="https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods"
+>
+</Card>
+<Card
+    title="MSW v2 Upgrade Recipe"
+    icon="cauldron"
+    href="https://codemod.com/registry/msw-2-upgrade-recipe"
+>
+    
+</Card>
+</CardGroup>
+
+## Migration Steps
+<Steps>
+    <Step title="Installation">
+    ```bash
+    npm install msw@latest
+    ```
+    </Step>
+    <Step title="Run codemods">
+        Inside your project's root directory, run the [MSW v2 upgrade recipe](https://codemod.com/registry/msw-2-upgrade-recipe):
+
+        ```bash
+        npx codemod@latest msw/2/upgrade-recipe
+        ```
+    </Step>
+    <Step title="Fix false negatives">
+        The upgrade recipe does not change the signatures of MSW handlers, if they were called using a custom factory function, for example to provide more type-safety or else. For example, the following code will only be partially updated:
+
+        ```Typescript
+        export function mockFactory<T extends MyComplexType>(
+        export function mockFactory<T extends MyComplexType>(
+            url: string,
+            resolver: MyResolverType,
+        ) {
+            return rest.get(url, resolver);
+        }
+
+        const handlers = [
+            mockFactory('/some/url', (req, res, ctx) => {
+                return res(ctx.status(200));
+            }),
+        ];
+        ```
+
+        Additionally, if you were using `req.body` in your interceptors, this codemod will blindly assume you want `await request.json()` instead of any other type. You will have to correct that manually.
+    </Step>
+</Steps>

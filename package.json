@@ -65,7 +65,8 @@
   },
   "pnpm": {
     "overrides": {
-      "postcss": "8.4.35"
+      "postcss": "8.4.35",
+      "whatwg-url": "^14.0.0"
     }
   }
 }

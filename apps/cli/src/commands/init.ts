@@ -91,6 +91,7 @@ export const handleInitCliCommand = async (options: {
       {
         type: "input",
         name: "gitUrl",
+        suffix: " (leave empty if none)",
         message:
           "Is there a git repository URL you want to associate with this codemod?",
       },
@@ -192,21 +193,20 @@ export const handleInitCliCommand = async (options: {
       };
 
   if (mainFilePath) {
+    const path = resolve(target, mainFilePath);
     try {
-      downloadInput.codemodBody = await readFile(
-        resolve(target, mainFilePath),
-        "utf-8",
-      );
+      downloadInput.codemodBody = await readFile(path, "utf-8");
     } catch (err) {
       printer.printConsoleMessage(
         "error",
         chalk(
           "Failed to read provided main file at",
-          `${chalk.bold(mainFilePath)}:`,
-          `${(err as Error).message}.`,
+          `${chalk.bold(path)}.`,
           "Aborting codemod creation...",
         ),
       );
+
+      return;
     }
   }
 
