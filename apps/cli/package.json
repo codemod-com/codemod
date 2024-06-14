@@ -36,11 +36,10 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@types/blessed": "catalog:",
-    "@types/cli-progress": "catalog:",
-    "@types/columnify": "catalog:",
-    "@types/diff": "catalog:",
-    "@types/inquirer": "catalog:",
+    "@types/cli-progress": "^3.11.5",
+    "@types/columnify": "^1.5.4",
+    "@types/diff": "^5.0.3",
+    "@types/inquirer": "^9.0.7",
     "@types/node": "18.11.9",
     "@types/prettyjson": "catalog:",
     "@types/semver": "^7.5.8",
@@ -82,17 +81,20 @@
     "outputPath": "./package/"
   },
   "license": "Apache License, Version 2.0",
-  "files": ["./dist/index.cjs", "LICENSE", "README.md"],
+  "files": [
+    "./dist/index.cjs",
+    "LICENSE",
+    "README.md"
+  ],
   "publishConfig": {
     "access": "public"
   },
   "dependencies": {
-    "@ast-grep/cli": "catalog:",
-    "@ast-grep/napi": "catalog:",
-    "esbuild": "^0.23.0",
-    "blessed": "catalog:",
-    "keytar": "catalog:",
-    "prettier": "^3.2.5",
-    "prettyjson": "catalog:"
+    "@ast-grep/cli": "^0.22.3",
+    "@ast-grep/napi": "^0.22.3",
+    "diff": "^5.1.0",
+    "esbuild": "^0.17.14",
+    "keytar": "^7.9.0",
+    "prettier": "^3.2.5"
   }
 }
