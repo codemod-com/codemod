@@ -34,7 +34,7 @@ const steps = [
   {
     name: "Feedback",
     description:
-      "Any feedback? <a style='color: blue' href='https://github.com/codemod-com/codemod/'>Create an issue in our GitHub repo</a>",
+      "Any feedback? <a style='color: blue' href='https://github.com/codemod-com/codemod/issues/new/choose'>Create an issue in our GitHub repo</a>",
   },
 ];
 
