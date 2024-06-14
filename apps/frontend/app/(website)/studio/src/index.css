@@ -345,16 +345,17 @@ html {
 	transition: background-color 0.2s linear;
 }
 
-.highlight {
-	background-color: rgb(150, 220, 255);
-}
 
 .dark .highlight {
 	background-color: rgba(96, 96, 192, 0.5);
 }
 
 .monaco-editor {
-	--vscode-editor-selectionBackground: rgba(96, 96, 192, 0.5) !important;
+	--vscode-editor-selectionBackground: hsla(99, 100%, 61%, 0.31) !important;
+}
+
+.monaco-editor::selection {
+	background: #3ac06b;
 }
 
 .popup-content {

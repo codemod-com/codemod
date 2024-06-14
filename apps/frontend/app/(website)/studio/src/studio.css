@@ -189,8 +189,11 @@
 	transition: background-color 0.2s linear;
 }
 
-.studio .highlight {
-	background-color: rgb(150, 220, 255);
+
+.highlight {
+	text-decoration-line: underline;
+	text-decoration-color: rgb(51 102 255);
+	text-underline-offset: 3px;
 }
 
 .studio .dark .highlight {
@@ -198,7 +201,17 @@
 }
 
 .studio .monaco-editor {
-	--vscode-editor-selectionBackground: rgba(96, 96, 192, 0.5) !important;
+	--vscode-editor-selectionHighlightBackground: rgba(109, 243, 80, 0.5) !important;
+	--vscode-editor-selectionBackground: rgba(109, 243, 80, 0.5) !important;
+	--vscode-editor-selectedBackground: rgba(109, 243, 80, 0.5) !important;
+	/* background for highlight of the same elements*/
+	--vscode-editor---wordHighlightStrongBackground: rgba(109, 243, 80, 0.8) !important;
+	--vscode-diffEditor-removedLineBackground: rgb(255 0 0 / 10%);
+	--vscode-diffEditor-removedTextBackground: rgb(255 0 0 / 10%);
+}
+
+.studio::selection {
+	background-color: rgba(109, 243, 80, 0.5);
 }
 
 .studio .popup-content {
