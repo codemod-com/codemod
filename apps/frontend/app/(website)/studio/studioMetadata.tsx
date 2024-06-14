@@ -1,5 +1,6 @@
 export const metadata = {
   title: "Codemod Studio",
+  image: "./ogimage.png",
   description:
     "Build codemods instantly with the help of AI, specialized helpers, debuggers, and a vibrant community of Codemod Champions.",
   keywords:
