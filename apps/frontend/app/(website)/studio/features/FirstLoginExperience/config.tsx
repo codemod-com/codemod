@@ -4,7 +4,7 @@ const steps = [
   {
     element: "codemod",
     description:
-      "<p>This section is dedicated to codemods.</p><p>Codemods are tools used to automate code modifications and refactorings. They allow developers to make large-scale changes across a codebase quickly and consistently.</p><p>The codemod editor allows you to see and modify the codemod you are building.</p>",
+      "<p>The codemod editor allows you to see and modify the codemod you are building.</p><p>Codemod Studio currently supports jscodeshift and ts-morph codemod engines, and more to come.</p>",
   },
   {
     element: "before-and-after-panels",
