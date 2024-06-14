@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/nextjs";
 import {
   ProgressBar,
   getButtonPropsByStatus,
@@ -9,11 +10,14 @@ import { Button } from "@studio/components/ui/button";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import { useLocalStorage } from "@studio/hooks/useLocalStorage";
 import type { GHBranch, GithubRepository } from "be-types";
-import { memo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type MouseEvent, memo, useState } from "react";
 import { useCodemodExecution } from "../hooks/useCodemodExecution";
 import { RepositoryModal } from "./RepositoryModal";
-
 export const GHRunButton = memo(() => {
+  const { user } = useUser();
+  const router = useRouter();
+
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
@@ -45,6 +49,38 @@ export const GHRunButton = memo(() => {
     setCodemodExecutionId,
   });
 
+  const redirectToRequestMoreScopes = async (
+    event: MouseEvent<HTMLButtonElement>,
+  ) => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
+      return;
+    }
+
+    if (githubAccount.approvedScopes.includes("repo")) {
+      showRepoModalToSignedUser(event);
+      return;
+    }
+
+    try {
+      const res = await githubAccount.reauthorize({
+        redirectUrl: window.location.href,
+        additionalScopes: ["repo"],
+      });
+      if (res.verification?.externalVerificationRedirectURL) {
+        router.push(res.verification.externalVerificationRedirectURL.href);
+        return;
+      }
+
+      throw new Error("externalVerificationRedirectURL not found");
+    } catch (err) {
+      console.log("ERROR:", err);
+    }
+  };
+
   return (
     <>
       <RepositoryModal
@@ -58,7 +94,7 @@ export const GHRunButton = memo(() => {
       />
       {codemodRunStatus && <ProgressBar codemodRunStatus={codemodRunStatus} />}
       <Button
-        onClick={showRepoModalToSignedUser}
+        onClick={redirectToRequestMoreScopes}
         size="xs"
         variant="outline"
         className="flex gap-1"
