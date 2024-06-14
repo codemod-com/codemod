@@ -1,7 +1,7 @@
 
 Add OPT_UTC_Z to orjson.dumps.
 
-## Examples
+## Example
 
 ### Before
 

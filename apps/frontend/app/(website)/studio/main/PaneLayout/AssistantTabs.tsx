@@ -113,6 +113,7 @@ export const AssistantTab = ({
       <TabsList
         className={cn("absolute h-[2.5rem] w-full rounded-none z-1", {
           "z-[100]": isSignedIn,
+          "z-[30]": !isSignedIn,
         })}
       >
         {...tabsData.tabs}

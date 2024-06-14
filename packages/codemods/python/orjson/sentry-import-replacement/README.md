@@ -1,7 +1,7 @@
 
 Replaces Sentry json import with orjson.
 
-## Examples
+## Example
 
 ### Before
 

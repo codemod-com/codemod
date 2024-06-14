@@ -1,11 +1,11 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import {
-  buildCodemodSlug,
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import type { CustomHandler } from "./customHandler";
 import { prisma } from "./db/prisma.js";
+import { buildRevalidateHelper } from "./revalidate";
 import { parseUnpublishBody } from "./schemata/schema";
 import { CLAIM_PUBLISHING } from "./services/tokenService.js";
 import { getCustomAccessToken } from "./util.js";
@@ -135,6 +135,9 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
         where: { name: codemodName },
       });
 
+      const revalidate = buildRevalidateHelper(environment);
+      await revalidate(name);
+
       return reply.code(200).send({ success: true });
     }
 
@@ -172,29 +175,8 @@ export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
       });
     }
 
-    const revalidateURL = new URL(
-      `${environment.CODEMOD_COM_API_URL}/revalidate`,
-    );
-    const slug = buildCodemodSlug(name);
-
-    revalidateURL.searchParams.set("path", `registry/${slug}`);
-
-    try {
-      const res = await fetch(revalidateURL.toString(), {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      if (!res.ok) {
-        throw new Error(`Revalidation request failed`);
-      }
-
-      console.info(`Successfully revalidated ${slug}`);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : String(e);
-      console.error(
-        `Failed to revalidate the page: ${slug}. Reason: ${message}`,
-      );
-    }
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

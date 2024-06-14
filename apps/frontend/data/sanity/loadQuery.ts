@@ -50,6 +50,7 @@ interface LoadQueryParams {
   query: string;
   params?: QueryParams;
   tags?: string[];
+  revalidate?: number;
 }
 
 // Automatically handle draft mode
@@ -57,6 +58,7 @@ export function loadQuery<T>({
   query,
   params = {},
   tags = [],
+  revalidate,
 }: LoadQueryParams) {
   const { queryStore } = initClient();
   const isDraftMode = draftMode().isEnabled;
@@ -64,7 +66,7 @@ export function loadQuery<T>({
   return queryStore.loadQuery<T>(query, params, {
     perspective: isDraftMode ? "previewDrafts" : "published",
     next: {
-      revalidate: isDraftMode ? 0 : 120,
+      revalidate: isDraftMode ? 0 : revalidate ?? 120,
       tags,
     },
   });
@@ -87,7 +89,7 @@ export function loadRoute(pathname: string) {
   });
 }
 
-export function loadAutomationPage(aTags: string[]) {
+export function loadAutomationPage(aTags: string[], revalidate?: number) {
   return loadQuery<{
     automationStories: AutomationStories;
     filterIconDictionary: AutomationFilterIconDictionary;
@@ -96,6 +98,7 @@ export function loadAutomationPage(aTags: string[]) {
     query: AUTOMATION_PAGE_QUERY,
     params: { aTags },
     tags: aTags.map((t) => `route:en${t}`),
+    revalidate,
   });
 }
 

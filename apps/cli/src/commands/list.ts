@@ -37,7 +37,6 @@ export const handleListNamesCommand = async (options: {
         tags: string;
         engine: string;
         author: string;
-        docs?: string;
       } = {
         name,
         tags,
@@ -57,11 +56,10 @@ export const handleListNamesCommand = async (options: {
       const registryLink = `https://codemod.com/registry/${slug}`;
 
       if (terminalLink.isSupported) {
-        resultRow.name = terminalLink(resultRow.name, registryLink);
-      } else {
-        resultRow.docs = terminalLink(registryLink, registryLink, {
-          fallback: false,
-        });
+        resultRow.name = terminalLink(
+          chalk.underline(resultRow.name),
+          registryLink,
+        );
       }
 
       return resultRow;
@@ -88,5 +86,18 @@ export const handleListNamesCommand = async (options: {
     columnify(prettified, {
       headingTransform: (heading) => chalk.bold(heading.toLocaleUpperCase()),
     }),
+  );
+
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(
+      terminalLink.isSupported
+        ? "\nClick on the name of the codemod to visit its documentation page."
+        : chalk(
+            "\nVisit",
+            chalk.bold("https://codemod.com/registry"),
+            "to see the full list of codemods and their documentation.",
+          ),
+    ),
   );
 };

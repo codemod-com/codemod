@@ -4,7 +4,7 @@
 - Replaces usages of `ReactDom.hydrate()` with `hydrateRoot()`
 - Replaces usages of `ReactDom.unmountComponentAtNode()` with `root.unmount()`
 
-## Examples
+## Example
 
 ### Before
 

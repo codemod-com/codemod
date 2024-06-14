@@ -147,7 +147,7 @@ export const handlePublishCliCommand = async (options: {
       const descriptionMdBuf = await fs.promises.readFile(
         join(source, "README.md"),
       );
-      formData.append("README.md", descriptionMdBuf);
+      formData.append("description.md", descriptionMdBuf);
     } catch {
       printer.printConsoleMessage(
         "info",

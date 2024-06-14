@@ -1,20 +1,16 @@
 import WButton from "@/components/shared/Button";
-import {
-  SignOutButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-  useUser,
-} from "@clerk/nextjs";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import { SignIn as SignInIcon } from "@phosphor-icons/react";
 import { Button as SButton } from "@studio/components/ui/button";
-import { LogoutIcon } from "@studio/icons/LogoutIcon";
+
 import { useRouter } from "next/navigation";
 
-const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
+const AuthButtons = ({
+  variant = "studio",
+  redirectUrl,
+}: { variant: "studio" | "www"; redirectUrl: string }) => {
   const isStudio = variant === "studio";
   const router = useRouter();
-  const { user } = useUser();
 
   const signUserIn = () => {
     const queryParams = new URLSearchParams({ variant }).toString();
@@ -37,18 +33,7 @@ const AuthButtons = ({ variant = "studio" }: { variant: "studio" | "www" }) => {
       </SignedOut>
       <SignedIn>
         <div className="flex items-center gap-2">
-          <UserButton afterSignOutUrl={isStudio ? "/studio" : "/"} />
-          {isStudio ? user?.firstName : ""}
-          <SignOutButton>
-            <Button
-              intent="inline"
-              variant="ghost"
-              className="pl-0 hover:bg-transparent"
-              hint={<p className="font-normal">Log out</p>}
-            >
-              {isStudio && <LogoutIcon />}
-            </Button>
-          </SignOutButton>
+          <UserButton afterSignOutUrl={redirectUrl} />
         </div>
       </SignedIn>
     </>

@@ -7,7 +7,7 @@ import type { AxiosResponse } from "axios";
 const shouldUseMocks =
   !isServer &&
   process.env.NODE_ENV === "development" &&
-  localStorage?.getItem("useMocks");
+  Boolean(localStorage?.getItem("useMocks"));
 const mockified = (
   verb: "put" | "get" | "post",
   endpoint: string | ((x: any) => string),

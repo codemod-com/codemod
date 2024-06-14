@@ -1,6 +1,6 @@
 This codemod migrates project from Launchdarkly React SDK to DevCycle React SDK
 
-## Examples
+## Example
 
 ### Before
 

@@ -23,16 +23,16 @@ export async function middleware(request: NextRequest) {
     const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
     const cspHeader = `
         default-src 'self';
-        script-src 'self' 'nonce-${nonce}' 'sha256-XNTbKG77LyQDcAuZ0JrgVbMtQldHiDTAOjMbqn8+Ttg=' 'sha256-pr1pgXZvBhTRY7aqNJb3aBGcc1wCaDW0jSFfQHGkrrs=' 'sha256-Jjt5yQN4lmRIL1Z0oPMIB0mTFQuul6+8PfUwDM1Lpv0=' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net;
+        script-src 'self' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net https://www.googletagmanager.com;
 		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
-        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live;
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com wss://*.api.sanity.io;
         style-src 'self' 'unsafe-inline' https://vercel.live;
         img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com https://cdn.sanity.io https://image.mux.com https://vercel.com;
         font-src 'self';
         object-src 'none';
         base-uri 'self';
         form-action 'self';
-        frame-ancestors 'none';
+        frame-ancestors https://codemod.com;
         block-all-mixed-content;
         upgrade-insecure-requests;
         media-src 'self' https://cdn.sanity.io https://image.mux.com https://stream.mux.com;

@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/nextjs";
 import {
   ProgressBar,
   getButtonPropsByStatus,
@@ -9,11 +10,16 @@ import { Button } from "@studio/components/ui/button";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import { useLocalStorage } from "@studio/hooks/useLocalStorage";
 import type { GHBranch, GithubRepository } from "be-types";
-import { memo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type MouseEvent, memo, useState } from "react";
+import { useModal } from "../../../src/hooks/useModal";
 import { useCodemodExecution } from "../hooks/useCodemodExecution";
 import { RepositoryModal } from "./RepositoryModal";
-
+import { UserPromptModal } from "./UserPromptModal";
 export const GHRunButton = memo(() => {
+  const { user } = useUser();
+  const router = useRouter();
+
   const [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
@@ -34,6 +40,12 @@ export const GHRunButton = memo(() => {
     "openRepoModal",
   );
 
+  const {
+    showModal: showUserPromptModal,
+    hideModal: hideUserPromptModal,
+    isModalShown: isUserPromptModalShown,
+  } = useModal();
+
   const codemodRunStatus = useExecutionStatus({
     codemodExecutionId,
     clearExecutionId,
@@ -44,6 +56,47 @@ export const GHRunButton = memo(() => {
     codemodExecutionId,
     setCodemodExecutionId,
   });
+
+  const handlePress = (event: MouseEvent<HTMLButtonElement>) => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
+      return;
+    }
+
+    if (githubAccount.approvedScopes.includes("repo")) {
+      showRepoModalToSignedUser(event);
+      return;
+    }
+    showUserPromptModal();
+  };
+
+  const onApprove = async () => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
+      return;
+    }
+
+    try {
+      const res = await githubAccount.reauthorize({
+        redirectUrl: window.location.href,
+        additionalScopes: ["repo"],
+      });
+      if (res.verification?.externalVerificationRedirectURL) {
+        router.push(res.verification.externalVerificationRedirectURL.href);
+        return;
+      }
+
+      throw new Error("externalVerificationRedirectURL not found");
+    } catch (err) {
+      console.log("ERROR:", err);
+    }
+  };
 
   return (
     <>
@@ -56,9 +109,14 @@ export const GHRunButton = memo(() => {
         repositoriesToShow={repositoriesToShow}
         areReposLoading={areReposLoading}
       />
+      <UserPromptModal
+        isModalShown={isUserPromptModalShown}
+        onApprove={onApprove}
+        onReject={hideUserPromptModal}
+      />
       {codemodRunStatus && <ProgressBar codemodRunStatus={codemodRunStatus} />}
       <Button
-        onClick={showRepoModalToSignedUser}
+        onClick={handlePress}
         size="xs"
         variant="outline"
         className="flex gap-1"
