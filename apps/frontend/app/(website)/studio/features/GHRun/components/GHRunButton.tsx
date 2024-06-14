@@ -49,7 +49,7 @@ export const GHRunButton = memo(() => {
     setCodemodExecutionId,
   });
 
-  const redirectToRequestMoreScoeps = async (
+  const redirectToRequestMoreScopes = async (
     event: MouseEvent<HTMLButtonElement>,
   ) => {
     const githubAccount = user?.externalAccounts.find(
@@ -94,7 +94,7 @@ export const GHRunButton = memo(() => {
       />
       {codemodRunStatus && <ProgressBar codemodRunStatus={codemodRunStatus} />}
       <Button
-        onClick={redirectToRequestMoreScoeps}
+        onClick={redirectToRequestMoreScopes}
         size="xs"
         variant="outline"
         className="flex gap-1"
