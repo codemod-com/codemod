@@ -4,6 +4,7 @@ import type { PLazy } from "./PLazy.js";
 import { fileContext, getCwdContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { parseMultistring } from "./helpers.js";
+import { js } from "./js.js";
 
 /**
  * @description Filter all js/ts files in current directory
@@ -35,9 +36,10 @@ export function filesLogic(
   maybeCallback?: (helpers: Helpers) => void | Promise<void>,
 ): PLazy<Helpers> & Helpers {
   return new FunctionExecutor("files")
-    .arguments(() => {
+    .arguments((self) => {
+      const defaultGlob = self.getChildArg<string>("defaultGlob") ?? "**/*.*";
       const globs = parseMultistring(
-        !rawGlobs || typeof rawGlobs === "function" ? "**/*.*" : rawGlobs,
+        !rawGlobs || typeof rawGlobs === "function" ? defaultGlob : rawGlobs,
         /[\n; ]/,
       );
 
@@ -78,6 +80,6 @@ export function filesLogic(
 
 export const files = fnWrapper("files", filesLogic);
 
-const helpers = {};
+const helpers = { js };
 
 type Helpers = typeof helpers;
