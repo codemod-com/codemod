@@ -1,7 +1,7 @@
+import type { Codemod } from "@codemod-com/database";
 import type { RouteHandler } from "fastify";
-import { codemodService } from "~/services/CodemodService";
-import type { Codemod } from "../../prisma/client";
 import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
+import { codemodService } from "../services/codemodService";
 
 export const getCodemodBySlugHandler: RouteHandler<{ Reply: Codemod }> = async (
   request,

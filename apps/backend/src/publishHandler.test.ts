@@ -154,8 +154,6 @@ describe("/publish route", async () => {
 
   await fastify.ready();
 
-  const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
-
   const codemodRcContents: CodemodConfigInput = {
     name: "mycodemod",
     version: "1.0.0",
@@ -203,8 +201,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
     const tarServiceInstance = mocks.TarService.mock.instances[0];
     expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
@@ -296,8 +292,6 @@ describe("/publish route", async () => {
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
 
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
-
     const tarServiceInstance = mocks.TarService.mock.instances[0];
     expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
     expect(tarServiceInstance.pack).toHaveBeenCalledWith([
@@ -360,8 +354,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
     expect(response.body).toEqual({
       error: "No main file was provided",

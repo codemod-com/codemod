@@ -2,7 +2,6 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "@codemod-com/database";
-import type { CodemodVersionCreateInputSchema } from "@codemod-com/database/prisma/generated/zod";
 import {
   type CodemodConfig,
   TarService,
@@ -205,10 +204,7 @@ export const publishHandler: RouteHandler<{
     uploadKeyParts.unshift("codemod-registry");
     const uploadKey = uploadKeyParts.join("/");
 
-    const codemodVersionEntry: Omit<
-      z.infer<typeof CodemodVersionCreateInputSchema>,
-      "codemod"
-    > = {
+    const codemodVersionEntry = {
       version,
       s3Bucket: bucket,
       s3UploadKey: uploadKey,

@@ -2,6 +2,7 @@ import { randomBytes } from "node:crypto";
 import type { User } from "@clerk/backend";
 import { prisma } from "@codemod-com/database";
 import {
+  type CodemodListResponse,
   type CodemodRunResponse,
   decryptWithIv,
   encryptWithIv,
@@ -176,11 +177,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
     "/codemods/downloadLink",
-    { preHandler: [instance.authenticateCLI, instance.getUserData] },
+    { preHandler: [instance.getOAuthToken, instance.getUserData] },
     getCodemodDownloadLink,
   );
 
-  instance.get(
+  instance.get<{ Reply: CodemodListResponse }>(
     "/codemods/list",
     { preHandler: [instance.authenticateCLI, instance.getUserData] },
     getCodemodsListHandler,

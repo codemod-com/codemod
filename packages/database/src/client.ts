@@ -1,11 +1,7 @@
-import { PrismaClient } from "../prisma/client";
+import { PrismaClient } from "../generated/prisma-client";
 
 declare global {
-  var prisma: PrismaClient<
-    import("../prisma/client").Prisma.PrismaClientOptions,
-    never,
-    import("../prisma/client/runtime/library").DefaultArgs
-  >;
+  var prisma: PrismaClient | undefined;
 }
 
 export const prisma = global.prisma || new PrismaClient();

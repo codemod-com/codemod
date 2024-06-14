@@ -6,6 +6,6 @@ export {
   type CodemodVersion,
   type Tag,
   type UserLoginIntent,
-} from "../prisma/client";
+} from "../generated/prisma-client";
 
 export { prisma } from "./client";

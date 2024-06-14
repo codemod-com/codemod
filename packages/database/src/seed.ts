@@ -1,11 +1,11 @@
 import "dotenv/config";
 
 import { faker } from "@faker-js/faker";
-import { PrismaClient } from "../prisma/client";
+import { PrismaClient } from "../generated/prisma-client";
 
 const prisma = new PrismaClient();
 
-const useCaseCategories = [
+const categories = [
   "Migration",
   "Best practices",
   "Refactoring",
@@ -36,7 +36,7 @@ const getRandomNumber = (min: number, max: number) =>
 const getRandomWord = () => faker.lorem.word();
 const getRandomWords = (min: number, max: number) =>
   faker.lorem.words({ min, max });
-const getRandomCategory = () => faker.helpers.arrayElement(useCaseCategories);
+const getRandomCategory = () => faker.helpers.arrayElement(categories);
 const getRandomFramework = () => faker.helpers.arrayElement(frameworks);
 const getRandomEngine = () => faker.helpers.arrayElement(engines);
 const getRandomUrl = () => faker.internet.url();
@@ -64,7 +64,7 @@ async function seedDatabaseWithCategories(): Promise<void> {
     data: Array.from({ length: getRandomNumber(3, 7) }, () => {
       const category = getRandomCategory();
       return {
-        classification: "useCaseCategory",
+        classification: "category",
         title: category.toLowerCase(),
         aliases: [category.toLowerCase()],
         displayName: category,
@@ -90,21 +90,11 @@ async function seedDatabaseWithCodemods(): Promise<void> {
           slug: [frameworkName, frameworkVersion, codemodName].join("-"),
           name: [frameworkName, frameworkVersion, codemodName].join("/"),
           tags: [frameworkName, useCaseCategory, getRandomWord()],
-          shortDescription: getRandomWords(10, 50),
-          applicability: [
-            [
-              frameworkName,
-              getRandomElementOfArray([">=", "<=", "<", ">"]),
-              frameworkVersion,
-            ],
-          ],
-          engine: getRandomEngine(),
-          arguments: [getRandomWord(), getRandomWord(), getRandomWord()],
+          category: useCaseCategory,
+          frameworks: [frameworkName],
+          description: getRandomWords(10, 50),
           labels: [getRandomWord(), getRandomWord(), getRandomWord()],
           author: getRandomName(),
-          amountOfUses: getRandomNumber(1, 5000),
-          totalTimeSaved: getRandomNumber(1, 100),
-          openedPrs: getRandomNumber(1, 20),
           featured: getRandomNumber(0, 1) === 1,
           verified: getRandomNumber(0, 1) === 1,
           private: getRandomNumber(0, 1) === 1,
@@ -117,8 +107,7 @@ async function seedDatabaseWithCodemods(): Promise<void> {
         data: Array.from({ length: getRandomNumber(1, 3) }, () => {
           return {
             codemodId: codemod.id,
-            tags: [frameworkName, useCaseCategory, getRandomWord()],
-            shortDescription: getRandomWords(10, 50),
+            description: getRandomWords(10, 50),
             applicability: [
               [
                 frameworkName,
@@ -133,9 +122,6 @@ async function seedDatabaseWithCodemods(): Promise<void> {
             codemodStudioExampleLink: getRandomUrl(),
             sourceRepo: getRandomUrl(),
             testProjectCommand: getRandomWords(1, 2),
-            amountOfUses: getRandomNumber(1, 500),
-            totalTimeSaved: getRandomNumber(1, 10),
-            openedPrs: getRandomNumber(1, 5),
             s3Bucket: getRandomWord(),
             s3UploadKey: getRandomWord(),
           };
