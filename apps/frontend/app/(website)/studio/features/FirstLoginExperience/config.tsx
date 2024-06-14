@@ -9,7 +9,7 @@ const steps = [
   {
     element: "before-and-after-panels",
     description:
-      "<p>The before/after panels allow you to specify how the code should look like before and after transformation.</p><p>To get started, insert your current code into the 'Before' panel, and how you want your code to look like after running the codemod into the 'After' panel.</p>",
+      "<p>This is your input, in the form of before/after test fixtures and comments describing the transformation logic.</p>",
   },
   {
     element: "assistant",
