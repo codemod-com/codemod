@@ -2,7 +2,7 @@ import { SanityImage } from "@/components/shared/SanityImage";
 import type { FilterIcon } from "@/components/templates/Registry/helpers";
 import Link from "next/link";
 
-export const AuthorSection = ({
+export let AuthorSection = ({
   author,
   authorImage,
   href,

@@ -5,26 +5,26 @@ import { useAPI } from "@studio/hooks/useAPI";
 import { useEffect, useState } from "react";
 import { showStatusToast } from "../utils";
 
-export const useExecutionStatus = ({
+export let useExecutionStatus = ({
   codemodExecutionId,
   clearExecutionId,
 }: {
   codemodExecutionId: string | null;
   clearExecutionId: VoidFunction;
 }): GetExecutionStatusResponse | null => {
-  const [executionStatus, setExecutionStatus] =
+  let [executionStatus, setExecutionStatus] =
     useState<GetExecutionStatusResponse | null>(null);
-  const { getToken } = useAuth();
-  const { get: getExecutionStatus } = useAPI<GetExecutionStatusResponse>(
+  let { getToken } = useAuth();
+  let { get: getExecutionStatus } = useAPI<GetExecutionStatusResponse>(
     GET_EXECUTION_STATUS(codemodExecutionId || ""),
   );
-  const [intervalId, setIntervalId] = useState(-1);
+  let [intervalId, setIntervalId] = useState(-1);
 
   useEffect(() => {
     let _intervalId: number;
-    const executeGhRun = async () => {
+    let executeGhRun = async () => {
       _intervalId = window.setInterval(async () => {
-        const token = await getToken();
+        let token = await getToken();
 
         if ([codemodExecutionId, token].includes(null)) {
           return clearInterval(_intervalId);
@@ -48,7 +48,7 @@ export const useExecutionStatus = ({
             success: false,
           };
         }
-        const isExecutionFinalized =
+        let isExecutionFinalized =
           !response?.success ||
           response?.result?.status === "done" ||
           response?.result?.status === "error";

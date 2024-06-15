@@ -1,7 +1,7 @@
 import { type File, type Node, isFile, isStatement } from "@babel/types";
 import { buildAST } from "ast-node-builder";
 
-const stringifyNode = (node: Node): string => {
+let stringifyNode = (node: Node): string => {
   return JSON.stringify(node, (key, value) => {
     if (["tokens", "loc", "start", "end", "extra"].includes(key)) {
       return undefined;
@@ -11,8 +11,8 @@ const stringifyNode = (node: Node): string => {
   });
 };
 
-export const buildFactoryCode = (node: Node): string => {
-  const astNode: File | null = isFile(node)
+export let buildFactoryCode = (node: Node): string => {
+  let astNode: File | null = isFile(node)
     ? node
     : isStatement(node)
       ? {
@@ -31,7 +31,7 @@ export const buildFactoryCode = (node: Node): string => {
     return stringifyNode(node);
   }
 
-  const factoryCode = buildAST(astNode).join("");
+  let factoryCode = buildAST(astNode).join("");
 
   if (factoryCode === "") {
     return stringifyNode(node);

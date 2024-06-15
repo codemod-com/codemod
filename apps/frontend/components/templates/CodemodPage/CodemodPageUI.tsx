@@ -28,23 +28,23 @@ export interface CodemodPageProps {
 }
 
 export default function CodemodPageUI({ data, description }: CodemodPageProps) {
-  const { cleaned: author } = vercelStegaSplit(`${data?.author}`);
+  let { cleaned: author } = vercelStegaSplit(`${data?.author}`);
 
-  const frameworkIcons = getFilterSection(
+  let frameworkIcons = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     data?.filterIconDictionary,
   );
 
-  const authorHref = `/registry?${
+  let authorHref = `/registry?${
     REGISTRY_FILTER_TYPES.owner
   }=${vercelStegaCleanAll(author)}`;
 
-  const frameworks = getAutomationFrameworkTitles(data).map((framework) => ({
+  let frameworks = getAutomationFrameworkTitles(data).map((framework) => ({
     name: framework,
     image: getFilterIcon(frameworkIcons, framework),
   }));
 
-  const frameworksDescription =
+  let frameworksDescription =
     !frameworks.length ? null : frameworks.length === 1 ? (
       capitalize(frameworks[0]?.name!)
     ) : (
@@ -56,21 +56,21 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
         ))}
       </ul>
     );
-  const authorIcons = getFilterSection("author", data?.filterIconDictionary);
-  const authorImage = getFilterIcon(authorIcons, author);
-  const buildYourCodemodCard = getCodemodCard(data);
-  const frameworkCards = frameworks.map(getFrameworkCard);
-  const categoryIcons = getFilterSection(
+  let authorIcons = getFilterSection("author", data?.filterIconDictionary);
+  let authorImage = getFilterIcon(authorIcons, author);
+  let buildYourCodemodCard = getCodemodCard(data);
+  let frameworkCards = frameworks.map(getFrameworkCard);
+  let categoryIcons = getFilterSection(
     "category",
     data?.filterIconDictionary,
   );
 
-  const categoryImage = getFilterIcon(
+  let categoryImage = getFilterIcon(
     categoryIcons,
     data?.useCaseCategory?.toLocaleLowerCase() || "",
   );
 
-  const currentVersion = data?.versions[0];
+  let currentVersion = data?.versions[0];
 
   return (
     <Section className="pt-[calc(var(--header-height)+24px)]">

@@ -8,12 +8,12 @@ import {
 } from "@studio/store/zustand/userSession";
 import { useRouter } from "next/navigation";
 
-export const useAuth = () => {
-  const router = useRouter();
-  const { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
-  const addRedirectAction = useRedirectWhenSigned();
-  const clerk = useClerk();
-  const getToken = isDevelopment ? () => devToken : clerk.getToken;
+export let useAuth = () => {
+  let router = useRouter();
+  let { resetPendingActions, addPendingActionsWhenSigned } = useUserSession();
+  let addRedirectAction = useRedirectWhenSigned();
+  let clerk = useClerk();
+  let getToken = isDevelopment ? () => devToken : clerk.getToken;
   return {
     ...clerk,
     getToken,

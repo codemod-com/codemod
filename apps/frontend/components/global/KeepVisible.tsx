@@ -13,15 +13,15 @@ export default function KeepVisible({
   bottom,
   children,
 }: KeepVisibleProps) {
-  const parentRef = createRef<HTMLDivElement>();
-  const childRef = createRef<HTMLDivElement>();
-  const childSticky = useRef<"top" | "bottom" | "none">("none");
-  const scrollY = useRef(0);
-  const y = useRef(0);
+  let parentRef = createRef<HTMLDivElement>();
+  let childRef = createRef<HTMLDivElement>();
+  let childSticky = useRef<"top" | "bottom" | "none">("none");
+  let scrollY = useRef(0);
+  let y = useRef(0);
 
-  const positionChild = useCallback(() => {
-    const child = childRef.current;
-    const parent = parentRef.current;
+  let positionChild = useCallback(() => {
+    let child = childRef.current;
+    let parent = parentRef.current;
 
     if (!child || !parent || Math.abs(y.current - window.scrollY) < 15) {
       y.current = window.scrollY;
@@ -30,27 +30,27 @@ export default function KeepVisible({
 
     y.current = window.scrollY;
 
-    const parentRect = parent.getBoundingClientRect();
-    const childRect = child.getBoundingClientRect();
+    let parentRect = parent.getBoundingClientRect();
+    let childRect = child.getBoundingClientRect();
 
-    const childTop = childRect.top;
-    const childHeight = childRect.height;
+    let childTop = childRect.top;
+    let childHeight = childRect.height;
 
-    const scrollingUp = scrollY.current > window.scrollY;
-    const scrollingDown = scrollY.current < window.scrollY;
-    const changeDown = scrollingDown && childSticky.current === "top";
-    const changeUp = scrollingUp && childSticky.current === "bottom";
-    const changeDirection = changeDown || changeUp;
+    let scrollingUp = scrollY.current > window.scrollY;
+    let scrollingDown = scrollY.current < window.scrollY;
+    let changeDown = scrollingDown && childSticky.current === "top";
+    let changeUp = scrollingUp && childSticky.current === "bottom";
+    let changeDirection = changeDown || changeUp;
 
-    const viewPortHeight =
+    let viewPortHeight =
       Math.max(document.documentElement.clientHeight, window.innerHeight || 0) -
       top;
-    const fitsInViewPort = childHeight < viewPortHeight;
+    let fitsInViewPort = childHeight < viewPortHeight;
 
-    const childAboveViewBottom = childTop < viewPortHeight - childHeight;
-    const childBelowViewTop = childTop > top;
-    const childInMiddle = !childBelowViewTop && !childAboveViewBottom;
-    const childEdgeInView = childBelowViewTop || childAboveViewBottom;
+    let childAboveViewBottom = childTop < viewPortHeight - childHeight;
+    let childBelowViewTop = childTop > top;
+    let childInMiddle = !childBelowViewTop && !childAboveViewBottom;
+    let childEdgeInView = childBelowViewTop || childAboveViewBottom;
 
     scrollY.current = window.scrollY;
 
@@ -64,8 +64,8 @@ export default function KeepVisible({
     }
     child.style.transition = "";
 
-    const childStyle: any = {};
-    const parentStyle: any = {
+    let childStyle: any = {};
+    let parentStyle: any = {
       height: "100%",
       display: "flex",
       flexDirection: "column",

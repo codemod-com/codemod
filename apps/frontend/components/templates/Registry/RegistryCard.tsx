@@ -18,33 +18,33 @@ import {
 } from "./helpers";
 
 export default function RegistryCard(props: RegistryCardData) {
-  const { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
+  let { handleFilterChange, prefetchFilterChange } = useRegistryFilters();
 
-  const { cleaned: author } = vercelStegaSplit(`${props.author}`);
+  let { cleaned: author } = vercelStegaSplit(`${props.author}`);
 
-  const formattedDescription = getDescriptionShortText(
+  let formattedDescription = getDescriptionShortText(
     props.shortDescription || "",
   );
 
-  const frameworkIcons = getFilterSection(
+  let frameworkIcons = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     props.filterIconDictionary,
   );
 
-  const frameworks = getAutomationFrameworkTitles(props).map((framework) => ({
+  let frameworks = getAutomationFrameworkTitles(props).map((framework) => ({
     name: framework,
     image: getFilterIcon(frameworkIcons, framework),
   }));
 
-  const authorIcons = getFilterSection("author", props.filterIconDictionary);
-  const authorImage = getFilterIcon(authorIcons, author);
+  let authorIcons = getFilterSection("author", props.filterIconDictionary);
+  let authorImage = getFilterIcon(authorIcons, author);
 
-  const categoryIcons = getFilterSection(
+  let categoryIcons = getFilterSection(
     "category",
     props.filterIconDictionary,
   );
 
-  const categoryImage = getFilterIcon(
+  let categoryImage = getFilterIcon(
     categoryIcons,
     props.useCaseCategory?.toLocaleLowerCase() || "",
   );

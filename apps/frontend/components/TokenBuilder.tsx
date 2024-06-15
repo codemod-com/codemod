@@ -12,21 +12,21 @@ import { useAuth, useUser } from "@clerk/nextjs";
 import getAccessToken from "@studio/api/getAccessToken";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 
-export const TokenBuilder = () => {
-  const { getToken } = useAuth();
-  const { isLoaded, isSignedIn } = useUser();
-  const router = useRouter();
+export let TokenBuilder = () => {
+  let { getToken } = useAuth();
+  let { isLoaded, isSignedIn } = useUser();
+  let router = useRouter();
 
   useEffect(() => {
     if (!isLoaded || !isSignedIn) {
       return;
     }
     (async () => {
-      const clerkToken = await getToken();
+      let clerkToken = await getToken();
       if (clerkToken === null) {
         return;
       }
-      const timestamp =
+      let timestamp =
         ACCESS_TOKEN_COMMANDS.find((x) => localStorage.getItem(x)) ?? null;
 
       if (
@@ -37,7 +37,7 @@ export const TokenBuilder = () => {
       }
 
       if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-        const [sessionId, iv] =
+        let [sessionId, iv] =
           localStorage
             .getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)
             ?.split(",") || [];
@@ -54,8 +54,8 @@ export const TokenBuilder = () => {
   }, [isSignedIn, isLoaded, getToken]);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+    let searchParams = new URLSearchParams(window.location.search);
+    let command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
     if (
       command === null ||
@@ -67,13 +67,13 @@ export const TokenBuilder = () => {
 
     if (isSignedIn) {
       (async () => {
-        const clerkToken = await getToken();
+        let clerkToken = await getToken();
         if (clerkToken === null) {
           return;
         }
         if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-          const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+          let sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+          let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           // Polling should pick it up
           await getAccessToken({
@@ -88,8 +88,8 @@ export const TokenBuilder = () => {
     }
 
     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-      const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-      const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+      let sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+      let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
       localStorage.setItem(command, [sessionId, iv].join(","));
     } else {

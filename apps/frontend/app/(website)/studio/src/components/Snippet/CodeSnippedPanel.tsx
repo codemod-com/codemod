@@ -7,7 +7,7 @@ import {
 } from "@studio/main/PageBottomPane";
 import type { PropsWithChildren, ReactNode } from "react";
 
-export const CodeSnippedPanel = ({
+export let CodeSnippedPanel = ({
   children,
   header,
   className,

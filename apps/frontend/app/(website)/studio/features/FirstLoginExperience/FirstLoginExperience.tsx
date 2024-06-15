@@ -5,17 +5,17 @@ import { Steps } from "intro.js-react";
 import "intro.js/introjs.css";
 import { useEffect, useState } from "react";
 
-export const FirstLoginExperience = () => {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const onStart = () => {
+export let FirstLoginExperience = () => {
+  let [isEnabled, setIsEnabled] = useState(false);
+  let onStart = () => {
     setIsEnabled(true);
-    const signInRequired = document.getElementsByClassName(
+    let signInRequired = document.getElementsByClassName(
       "sign-in-required",
     )[0] as HTMLElement;
     if (signInRequired) signInRequired.style.display = "none";
   };
   useEffect(() => {
-    const isFirstTimeUser = !localStorage.getItem("returningUser");
+    let isFirstTimeUser = !localStorage.getItem("returningUser");
     localStorage?.setItem("returningUser", "true");
     if (isFirstTimeUser) {
       sessionStorage.setItem("isFirstTime", "true");
@@ -23,8 +23,8 @@ export const FirstLoginExperience = () => {
     }
   }, []);
 
-  const onEnd = () => {
-    const signInRequired = document.getElementsByClassName(
+  let onEnd = () => {
+    let signInRequired = document.getElementsByClassName(
       "sign-in-required",
     )[0] as HTMLElement;
     if (signInRequired) signInRequired.style.display = "grid";

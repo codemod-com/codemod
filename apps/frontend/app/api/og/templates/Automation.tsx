@@ -7,7 +7,7 @@ type Props = {
   automationAuthor: { name: string; image: string };
 };
 
-const Automation = (props: Props) => {
+let Automation = (props: Props) => {
   return (
     <div
       style={{

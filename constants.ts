@@ -1,2 +1,2 @@
-export const VSCODE_PREFIX = "vscode://";
-export const CURSOR_PREFIX = "cursor://";
+export let VSCODE_PREFIX = 'vscode://';
+export let CURSOR_PREFIX = 'cursor://';

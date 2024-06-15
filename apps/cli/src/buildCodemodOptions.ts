@@ -1,235 +1,249 @@
-import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
-import path, { basename, dirname, extname, join, resolve } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import type { Codemod, CodemodSettings } from "@codemod-com/runner";
+import { existsSync } from 'node:fs';
+import { readFile } from 'node:fs/promises';
+import path, { basename, dirname, extname, join, resolve } from 'node:path';
+import { type PrinterBlueprint, chalk } from '@codemod-com/printer';
+import type { Codemod, CodemodSettings } from '@codemod-com/runner';
 import {
-  type AllEngines,
-  type CodemodConfig,
-  type FileSystem,
-  type TarService,
-  allEnginesSchema,
-  doubleQuotify,
-  parseCodemodConfig,
-} from "@codemod-com/utilities";
-import { AxiosError } from "axios";
-import unzipper from "unzipper";
-import { object, parse } from "valibot";
-import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
-import { rebuildCodemodFallback } from "./utils.js";
+	type AllEngines,
+	type CodemodConfig,
+	type FileSystem,
+	type TarService,
+	allEnginesSchema,
+	doubleQuotify,
+	parseCodemodConfig,
+} from '@codemod-com/utilities';
+import { AxiosError } from 'axios';
+import unzipper from 'unzipper';
+import { object, parse } from 'valibot';
+import type { CodemodDownloaderBlueprint } from './downloadCodemod.js';
+import { rebuildCodemodFallback } from './utils.js';
 
-const extractEngine = async (
-  fs: FileSystem,
-  filePath: string,
+let extractEngine = async (
+	fs: FileSystem,
+	filePath: string,
 ): Promise<AllEngines | null> => {
-  try {
-    const data = await fs.promises.readFile(filePath, {
-      encoding: "utf-8",
-    });
+	try {
+		let data = await fs.promises.readFile(filePath, {
+			encoding: 'utf-8',
+		});
 
-    const schema = object({
-      engine: allEnginesSchema,
-    });
+		let schema = object({
+			engine: allEnginesSchema,
+		});
 
-    const { engine } = parse(schema, JSON.parse(data.toString()));
+		let { engine } = parse(schema, JSON.parse(data.toString()));
 
-    return engine;
-  } catch {
-    return null;
-  }
+		return engine;
+	} catch {
+		return null;
+	}
 };
 
-const extractMainScriptPath = async (
-  printer: PrinterBlueprint,
-  codemodRc: CodemodConfig,
-  source: string,
+let extractMainScriptPath = async (
+	printer: PrinterBlueprint,
+	codemodRc: CodemodConfig,
+	source: string,
 ) => {
-  let globSearchPattern: string;
-  let actualMainFileName: string;
-  let errorOnMissing: string;
+	let globSearchPattern: string;
+	let actualMainFileName: string;
+	let errorOnMissing: string;
 
-  switch (codemodRc.engine) {
-    case "ast-grep":
-      globSearchPattern = "**/rule.yaml";
-      actualMainFileName = "rule.yaml";
-      errorOnMissing = `Please create the main "rule.yaml" file first.`;
-      break;
-    case "piranha":
-      globSearchPattern = "**/rules.toml";
-      actualMainFileName = "rules.toml";
-      errorOnMissing = `Please create the main "rules.toml" file first.`;
-      break;
-    default:
-      globSearchPattern = "dist/index.cjs";
-      actualMainFileName = "index.cjs";
-      errorOnMissing = `Did you forget to run "codemod build"?`;
-  }
+	switch (codemodRc.engine) {
+		case 'ast-grep':
+			globSearchPattern = '**/rule.yaml';
+			actualMainFileName = 'rule.yaml';
+			errorOnMissing = `Please create the main "rule.yaml" file first.`;
+			break;
+		case 'piranha':
+			globSearchPattern = '**/rules.toml';
+			actualMainFileName = 'rules.toml';
+			errorOnMissing = `Please create the main "rules.toml" file first.`;
+			break;
+		default:
+			globSearchPattern = 'dist/index.cjs';
+			actualMainFileName = 'index.cjs';
+			errorOnMissing = `Did you forget to run "codemod build"?`;
+	}
 
-  return rebuildCodemodFallback({
-    globPattern: codemodRc.build?.output ?? globSearchPattern,
-    source,
-    errorText: `Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
-  });
+	return rebuildCodemodFallback({
+		globPattern: codemodRc.build?.output ?? globSearchPattern,
+		source,
+		errorText: `Could not find the main file of the codemod with name ${actualMainFileName}. ${errorOnMissing}`,
+	});
 };
 
-export const buildSourcedCodemodOptions = async (
-  fs: FileSystem,
-  printer: PrinterBlueprint,
-  codemodOptions: CodemodSettings & { kind: "runSourced" },
-  codemodDownloader: CodemodDownloaderBlueprint,
-  tarService: TarService,
+export let buildSourcedCodemodOptions = async (
+	fs: FileSystem,
+	printer: PrinterBlueprint,
+	codemodOptions: CodemodSettings & { kind: 'runSourced' },
+	codemodDownloader: CodemodDownloaderBlueprint,
+	tarService: TarService,
 ): Promise<Codemod> => {
-  const sourceStat = await fs.promises.lstat(codemodOptions.source);
-  const isDirectorySource = sourceStat.isDirectory();
+	let sourceStat = await fs.promises.lstat(codemodOptions.source);
+	let isDirectorySource = sourceStat.isDirectory();
 
-  if (!isDirectorySource) {
-    if (extname(codemodOptions.source) === ".zip") {
-      let resultPath: string | null = null;
+	if (!isDirectorySource) {
+		if (extname(codemodOptions.source) === '.zip') {
+			let resultPath: string | null = null;
 
-      const unpackTarget = dirname(codemodOptions.source);
+			let unpackTarget = dirname(codemodOptions.source);
 
-      const zip = fs
-        .createReadStream(codemodOptions.source)
-        .pipe(unzipper.Parse({ forceStream: true }));
+			let zip = fs
+				.createReadStream(codemodOptions.source)
+				.pipe(unzipper.Parse({ forceStream: true }));
 
-      for await (const entry of zip) {
-        const writablePath = join(unpackTarget, entry.path);
+			for await (let entry of zip) {
+				let writablePath = join(unpackTarget, entry.path);
 
-        if (entry.type === "Directory") {
-          await fs.promises.mkdir(writablePath, { recursive: true });
-          entry.autodrain(); // Skip processing the content of directory entries
-        } else {
-          if (basename(entry.path) === ".codemodrc.json") {
-            resultPath = dirname(writablePath);
-          }
-          await fs.promises.mkdir(dirname(writablePath), { recursive: true });
-          entry.pipe(fs.createWriteStream(writablePath));
-        }
-      }
+				if (entry.type === 'Directory') {
+					await fs.promises.mkdir(writablePath, { recursive: true });
+					entry.autodrain(); // Skip processing the content of directory entries
+				} else {
+					if (basename(entry.path) === '.codemodrc.json') {
+						resultPath = dirname(writablePath);
+					}
+					await fs.promises.mkdir(dirname(writablePath), {
+						recursive: true,
+					});
+					entry.pipe(fs.createWriteStream(writablePath));
+				}
+			}
 
-      if (resultPath === null) {
-        throw new Error(`Could not find .codemodrc.json in the zip file.`);
-      }
+			if (resultPath === null) {
+				throw new Error(
+					`Could not find .codemodrc.json in the zip file.`,
+				);
+			}
 
-      return buildSourcedCodemodOptions(
-        fs,
-        printer,
-        { ...codemodOptions, source: resultPath },
-        codemodDownloader,
-        tarService,
-      );
-    }
+			return buildSourcedCodemodOptions(
+				fs,
+				printer,
+				{ ...codemodOptions, source: resultPath },
+				codemodDownloader,
+				tarService,
+			);
+		}
 
-    if (codemodOptions.engine === null) {
-      throw new Error("--engine has to be defined when running local codemod");
-    }
+		if (codemodOptions.engine === null) {
+			throw new Error(
+				'--engine has to be defined when running local codemod',
+			);
+		}
 
-    return {
-      bundleType: "standalone",
-      source: "local",
-      engine: codemodOptions.engine,
-      indexPath: codemodOptions.source,
-    };
-  }
+		return {
+			bundleType: 'standalone',
+			source: 'local',
+			engine: codemodOptions.engine,
+			indexPath: codemodOptions.source,
+		};
+	}
 
-  let codemodRcContent: string;
-  try {
-    codemodRcContent = await readFile(
-      path.join(codemodOptions.source, ".codemodrc.json"),
-      { encoding: "utf-8" },
-    );
-  } catch (err) {
-    throw new Error(
-      `Codemod directory is of incorrect structure at ${codemodOptions.source}`,
-    );
-  }
+	let codemodRcContent: string;
+	try {
+		codemodRcContent = await readFile(
+			path.join(codemodOptions.source, '.codemodrc.json'),
+			{ encoding: 'utf-8' },
+		);
+	} catch (err) {
+		throw new Error(
+			`Codemod directory is of incorrect structure at ${codemodOptions.source}`,
+		);
+	}
 
-  const codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
+	let codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
 
-  const engine = await extractEngine(
-    fs,
-    path.join(codemodOptions.source, ".codemodrc.json"),
-  );
+	let engine = await extractEngine(
+		fs,
+		path.join(codemodOptions.source, '.codemodrc.json'),
+	);
 
-  if (engine === "piranha" || engine === null) {
-    throw new Error(
-      `Engine specified in .codemodrc.json at ${codemodOptions.source} is not a valid codemod engine for local run.`,
-    );
-  }
+	if (engine === 'piranha' || engine === null) {
+		throw new Error(
+			`Engine specified in .codemodrc.json at ${codemodOptions.source} is not a valid codemod engine for local run.`,
+		);
+	}
 
-  if (engine === "recipe") {
-    const subCodemodsNames = (
-      codemodConfig as CodemodConfig & { engine: "recipe" }
-    ).names;
+	if (engine === 'recipe') {
+		let subCodemodsNames = (
+			codemodConfig as CodemodConfig & { engine: 'recipe' }
+		).names;
 
-    const spinner = printer.withLoaderMessage(
-      chalk.cyan(`Downloading recipe (${subCodemodsNames.length} codemods)`),
-    );
+		let spinner = printer.withLoaderMessage(
+			chalk.cyan(
+				`Downloading recipe (${subCodemodsNames.length} codemods)`,
+			),
+		);
 
-    const codemods = await Promise.all(
-      subCodemodsNames.map(async (subCodemodName) => {
-        const localMachinePath = resolve(codemodOptions.source, subCodemodName);
+		let codemods = await Promise.all(
+			subCodemodsNames.map(async (subCodemodName) => {
+				let localMachinePath = resolve(
+					codemodOptions.source,
+					subCodemodName,
+				);
 
-        if (existsSync(localMachinePath)) {
-          return buildSourcedCodemodOptions(
-            fs,
-            printer,
-            { ...codemodOptions, source: resolve(subCodemodName) },
-            codemodDownloader,
-            tarService,
-          );
-        }
+				if (existsSync(localMachinePath)) {
+					return buildSourcedCodemodOptions(
+						fs,
+						printer,
+						{ ...codemodOptions, source: resolve(subCodemodName) },
+						codemodDownloader,
+						tarService,
+					);
+				}
 
-        try {
-          return await codemodDownloader.download(subCodemodName, true);
-        } catch (error) {
-          spinner.fail();
-          if (error instanceof AxiosError) {
-            if (
-              error.response?.status === 400 &&
-              error.response.data.error === "Codemod not found"
-            ) {
-              throw new Error(
-                `Error locating one of the recipe codemods: ${chalk.bold(
-                  doubleQuotify(subCodemodName),
-                )}`,
-              );
-            }
-          }
+				try {
+					return await codemodDownloader.download(
+						subCodemodName,
+						true,
+					);
+				} catch (error) {
+					spinner.fail();
+					if (error instanceof AxiosError) {
+						if (
+							error.response?.status === 400 &&
+							error.response.data.error === 'Codemod not found'
+						) {
+							throw new Error(
+								`Error locating one of the recipe codemods: ${chalk.bold(
+									doubleQuotify(subCodemodName),
+								)}`,
+							);
+						}
+					}
 
-          throw error;
-        }
-      }),
-    );
+					throw error;
+				}
+			}),
+		);
 
-    spinner.succeed();
+		spinner.succeed();
 
-    return {
-      bundleType: "package",
-      source: "local",
-      name: codemodConfig.name,
-      version: codemodConfig.version,
-      engine: "recipe",
-      directoryPath: codemodOptions.source,
-      arguments: codemodConfig.arguments,
-      codemods,
-    };
-  }
+		return {
+			bundleType: 'package',
+			source: 'local',
+			name: codemodConfig.name,
+			version: codemodConfig.version,
+			engine: 'recipe',
+			directoryPath: codemodOptions.source,
+			arguments: codemodConfig.arguments,
+			codemods,
+		};
+	}
 
-  const mainScriptPath = await extractMainScriptPath(
-    printer,
-    codemodConfig,
-    codemodOptions.source,
-  );
+	let mainScriptPath = await extractMainScriptPath(
+		printer,
+		codemodConfig,
+		codemodOptions.source,
+	);
 
-  return {
-    bundleType: "package",
-    source: "local",
-    engine,
-    name: codemodConfig.name,
-    version: codemodConfig.version,
-    indexPath: mainScriptPath,
-    arguments: codemodConfig.arguments,
-    directoryPath: codemodOptions.source,
-  };
+	return {
+		bundleType: 'package',
+		source: 'local',
+		engine,
+		name: codemodConfig.name,
+		version: codemodConfig.version,
+		indexPath: mainScriptPath,
+		arguments: codemodConfig.arguments,
+		directoryPath: codemodOptions.source,
+	};
 };

@@ -16,10 +16,10 @@ export interface Props extends Pick<UseChatHelpers, "input" | "setInput"> {
   isLoading: boolean;
 }
 
-export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
+export let PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
   ({ onSubmit, onReset, input, setInput, isLoading }, ref) => {
-    const { formRef, onKeyDown } = useEnterSubmit();
-    const inputRef = React.useRef<HTMLTextAreaElement>(null);
+    let { formRef, onKeyDown } = useEnterSubmit();
+    let inputRef = React.useRef<HTMLTextAreaElement>(null);
 
     React.useEffect(() => {
       if (inputRef.current) {

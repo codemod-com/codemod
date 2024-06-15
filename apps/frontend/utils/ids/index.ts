@@ -14,7 +14,7 @@ export interface DeepLinkData {
   sectionKey?: string;
 }
 
-export const getPtComponentId = (blocks: PortableTextBlock) => {
+export let getPtComponentId = (blocks: PortableTextBlock) => {
   return truncate(slugify(toPlainText(blocks ?? [])), 200);
 };
 
@@ -24,10 +24,10 @@ export function getDeepLinkId(deepLink?: DeepLinkData) {
   return `${deepLink.fieldName}__${deepLink.sectionKey}`;
 }
 
-export const getParagraphId = (paragraph: string) => {
+export let getParagraphId = (paragraph: string) => {
   return truncate(slugify(paragraph), 200);
 };
 
-export const getTweetId = (url: string) => {
+export let getTweetId = (url: string) => {
   return url.match(/\/status\/(\d+)/)?.[1];
 };

@@ -1,10 +1,10 @@
-import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runTsMorphCodemod } from "../src/runTsMorphCodemod.js";
+import { deepStrictEqual } from 'node:assert';
+import type { ConsoleKind } from '@codemod-com/printer';
+import { describe, it } from 'vitest';
+import { transpile } from '../src/getTransformer.js';
+import { runTsMorphCodemod } from '../src/runTsMorphCodemod.js';
 
-const codemodSource = transpile(`
+let codemodSource = transpile(`
 import { SourceFile, EmitHint } from 'ts-morph';
 
 export const handleSourceFile = (
@@ -20,33 +20,33 @@ export const handleSourceFile = (
 };
 `);
 
-describe("runTsMorphCodemod", () => {
-  it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
+describe('runTsMorphCodemod', () => {
+	it('should return transformed output', () => {
+		let messages: [ConsoleKind, string][] = [];
 
-    const fileCommands = runTsMorphCodemod(
-      codemodSource,
-      "index.ts",
-      "",
-      true,
-      {},
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
-    );
+		let fileCommands = runTsMorphCodemod(
+			codemodSource,
+			'index.ts',
+			'',
+			true,
+			{},
+			(consoleKind, message) => {
+				messages.push([consoleKind, message]);
+			},
+		);
 
-    deepStrictEqual(fileCommands.length, 1);
+		deepStrictEqual(fileCommands.length, 1);
 
-    const [fileCommand] = fileCommands;
+		let [fileCommand] = fileCommands;
 
-    deepStrictEqual(fileCommand, {
-      kind: "updateFile",
-      oldPath: "index.ts",
-      oldData: "",
-      newData: "class Test {\n}\n",
-      formatWithPrettier: true,
-    });
+		deepStrictEqual(fileCommand, {
+			kind: 'updateFile',
+			oldPath: 'index.ts',
+			oldData: '',
+			newData: 'class Test {\n}\n',
+			formatWithPrettier: true,
+		});
 
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
-  });
+		deepStrictEqual(messages, [['log', '/index.ts']]);
+	});
 });

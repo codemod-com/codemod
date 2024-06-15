@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-const PricingPagePreview = dynamic(
+let PricingPagePreview = dynamic(
   () => import("@/components/templates/PricingPage/PagePreview"),
   { ssr: false },
 );
@@ -16,7 +16,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadPricingPage("/pricing");
+  let initialData = await loadPricingPage("/pricing");
 
   if (!initialData?.data) return notFound();
 
@@ -24,7 +24,7 @@ export async function generateMetadata(
 }
 
 export default async function Contact() {
-  const initial = await loadPricingPage("/pricing");
+  let initial = await loadPricingPage("/pricing");
 
   if (draftMode().isEnabled) {
     return (

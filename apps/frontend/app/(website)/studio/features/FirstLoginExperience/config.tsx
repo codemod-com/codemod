@@ -1,6 +1,6 @@
 import { isServer } from "@studio/config";
 
-const steps = [
+let steps = [
   {
     element: "codemod",
     description:
@@ -38,7 +38,7 @@ const steps = [
   },
 ];
 
-export const getIntroJsOptions = () => ({
+export let getIntroJsOptions = () => ({
   steps: isServer
     ? []
     : steps.map(({ description: intro, element, name: title }) =>

@@ -14,25 +14,25 @@ import {
 type Props = {
   type: "before" | "after" | "output";
 };
-const ASTViewer = ({ type }: Props) => {
-  const ASTTreeRef = useRef<HTMLDivElement>(null);
-  const executeRangeCommandOnBeforeInputThunk =
+let ASTViewer = ({ type }: Props) => {
+  let ASTTreeRef = useRef<HTMLDivElement>(null);
+  let executeRangeCommandOnBeforeInputThunk =
     useExecuteRangeCommandOnBeforeInput();
-  const { rootNode } = useSelectSnippetsFor(type);
-  const getFirstTreeNode = useSelectFirstTreeNode();
-  const { setSelections } = useCodemodOutputStore();
-  const { setOutputSelection } = useSnippetStore();
+  let { rootNode } = useSelectSnippetsFor(type);
+  let getFirstTreeNode = useSelectFirstTreeNode();
+  let { setSelections } = useCodemodOutputStore();
+  let { setOutputSelection } = useSnippetStore();
 
-  const setRange =
+  let setRange =
     type === "before"
       ? executeRangeCommandOnBeforeInputThunk
       : type === "after"
         ? setOutputSelection
         : setSelections;
 
-  const scrollNodeIntoView = useScrollNodeIntoView();
+  let scrollNodeIntoView = useScrollNodeIntoView();
 
-  const handleNodeClick = useCallback(
+  let handleNodeClick = useCallback(
     (node: TreeNode) => {
       setRange({
         kind: "FIND_CLOSEST_PARENT",

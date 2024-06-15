@@ -9,7 +9,7 @@ type Props = {
   isSignedIn: boolean;
 };
 
-const ChatBase = ({
+let ChatBase = ({
   aiProps: {
     isLoading,
     handleStop,
@@ -48,4 +48,4 @@ const ChatBase = ({
 };
 
 ChatBase.displayName = "Chat";
-export const Chat = memo(ChatBase);
+export let Chat = memo(ChatBase);

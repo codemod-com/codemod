@@ -9,27 +9,27 @@ import type { LLMEngine } from "@shared/consts";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const showCodemodCopiedToast = () =>
+let showCodemodCopiedToast = () =>
   toast.success("Codemod copied to the right pane", {
     position: "top-center",
     duration: 12000,
   });
-export const useAiService = ({
+export let useAiService = ({
   setCodemod,
   engine,
 }: {
   setCodemod: (content: string) => void;
   engine: LLMEngine;
 }) => {
-  const initialMessages = useInitialMss();
+  let initialMessages = useInitialMss();
 
-  const [messages, setMessages] = useState<LLMMessage[]>([]);
+  let [messages, setMessages] = useState<LLMMessage[]>([]);
 
   useEffect(() => {
     setMessages(initialMessages);
   }, [initialMessages]);
 
-  const {
+  let {
     isLoading: modGptLoading,
     modGptSubmit,
     messages: modGPTMessages,
@@ -39,7 +39,7 @@ export const useAiService = ({
     ...restMod
   } = useModGPT({ initialMessages: [], engine });
 
-  const {
+  let {
     wsMessage: codemodAIMessage,
     startIterativeCodemodGeneration,
     serviceBusy,
@@ -50,13 +50,13 @@ export const useAiService = ({
     setToken,
   });
 
-  const lastModGptMss = modGPTMessages?.at(-1);
-  const lastMss = messages?.at(-1);
+  let lastModGptMss = modGPTMessages?.at(-1);
+  let lastMss = messages?.at(-1);
 
   useEffect(() => {
     if (!codemodAIMessage) return;
 
-    const updateMessages =
+    let updateMessages =
       lastMss?.role === "assistant"
         ? () =>
             messages.with(-1, {
@@ -80,20 +80,20 @@ export const useAiService = ({
   useEffect(() => {
     if (!lastModGptMss?.content) return;
 
-    const index = messages.findIndex(({ id }) => id === lastModGptMss.id);
-    const updateMessages =
+    let index = messages.findIndex(({ id }) => id === lastModGptMss.id);
+    let updateMessages =
       index > -1
         ? () => messages.with(index, lastModGptMss)
         : (m: LLMMessage[]) => [...m, lastModGptMss];
     setMessages(updateMessages);
   }, [lastModGptMss?.content]);
 
-  const resetMessages = () => {
+  let resetMessages = () => {
     setMessages([]);
     localStorage.removeItem("frozenMessages");
   };
 
-  const isLoading = serviceBusy || modGptLoading;
+  let isLoading = serviceBusy || modGptLoading;
   useSaveMssgsToLocalStorage({ messages, isLoading });
 
   return {

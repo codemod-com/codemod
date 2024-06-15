@@ -1,4 +1,4 @@
-const LiveIcon = ({ color = "red-500" }: { color?: string }) => (
+let LiveIcon = ({ color = "red-500" }: { color?: string }) => (
   <div
     style={{ backgroundColor: color }}
     className={`mx-2 flex h-auto items-center bg-red-500 rounded px-2 py-0 text-sm text-gray-text-dark-title`}

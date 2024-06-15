@@ -1,223 +1,220 @@
 import type {
-  ImportDeclaration,
-  JsxElement,
-  JsxOpeningElement,
-  SourceFile,
-} from "ts-morph";
-import { type CallExpression, Node, SyntaxKind, ts } from "ts-morph";
+	ImportDeclaration,
+	JsxElement,
+	JsxOpeningElement,
+	SourceFile,
+} from 'ts-morph';
+import { type CallExpression, Node, SyntaxKind, ts } from 'ts-morph';
 
-import { handleSourceFile as handleSourceFileCore } from "../../../replace-feature-flag-core/src/index.js";
+import { handleSourceFile as handleSourceFileCore } from '../../../replace-feature-flag-core/src/index.js';
 import type {
-  Options,
-  Provider,
-  VariableType,
-  VariableValue,
-} from "../../../replace-feature-flag-core/src/types.js";
+	Options,
+	Provider,
+	VariableType,
+	VariableValue,
+} from '../../../replace-feature-flag-core/src/types.js';
 
 import {
-  buildLiteral,
-  getCEExpressionName,
-} from "../../../replace-feature-flag-core/src/utils.js";
+	buildLiteral,
+	getCEExpressionName,
+} from '../../../replace-feature-flag-core/src/utils.js';
 
-const names = ["useFlag"];
+let names = ['useFlag'];
 
-const getVariableValueReplacerNode = (
-  _: string,
-  type: VariableType,
-  value: VariableValue,
+let getVariableValueReplacerNode = (
+	_: string,
+	type: VariableType,
+	value: VariableValue,
 ) => {
-  return buildLiteral(type, value);
+	return buildLiteral(type, value);
 };
 
 type MatchedMethod = {
-  name: string;
+	name: string;
 };
 
-export const provider: Provider = {
-  getMatcher:
-    (keyName: string) =>
-    (ce: CallExpression): MatchedMethod | null => {
-      const name = getCEExpressionName(ce);
+export let provider: Provider = {
+	getMatcher:
+		(keyName: string) =>
+		(ce: CallExpression): MatchedMethod | null => {
+			let name = getCEExpressionName(ce);
 
-      if (name === null || !names.includes(name)) {
-        return null;
-      }
+			if (name === null || !names.includes(name)) {
+				return null;
+			}
 
-      const args = ce.getArguments();
-      const keyArg = args.at(0);
+			let args = ce.getArguments();
+			let keyArg = args.at(0);
 
-      if (Node.isStringLiteral(keyArg) && keyArg.getLiteralText() === keyName) {
-        return { name };
-      }
+			if (
+				Node.isStringLiteral(keyArg) &&
+				keyArg.getLiteralText() === keyName
+			) {
+				return { name };
+			}
 
-      return null;
-    },
-  getReplacer: (key: string, type: VariableType, value: VariableValue) => {
-    return getVariableValueReplacerNode(key, type, value);
-  },
+			return null;
+		},
+	getReplacer: (key: string, type: VariableType, value: VariableValue) => {
+		return getVariableValueReplacerNode(key, type, value);
+	},
 };
 
-const removeMockFeatureFlagComponent = (mockFeatureFlag: JsxElement) => {
-  const children = mockFeatureFlag
-    .getJsxChildren()
-    .filter((c) => !(Node.isJsxText(c) && c.getFullText().trim() === ""));
+let removeMockFeatureFlagComponent = (mockFeatureFlag: JsxElement) => {
+	let children = mockFeatureFlag
+		.getJsxChildren()
+		.filter((c) => !(Node.isJsxText(c) && c.getFullText().trim() === ''));
 
-  const text = children.reduce<string>((acc, child) => {
-    // biome-ignore lint: args reassing
-    acc += `${child.getFullText()}`;
-    return acc;
-  }, "");
+	let text = children.reduce<string>((acc, child) => {
+		// biome-ignore lint: args reassing
+		acc += `${child.getFullText()}`;
+		return acc;
+	}, '');
 
-  mockFeatureFlag.replaceWithText(
-    children.length === 1 ? text : `<>${text}</>`,
-  );
+	mockFeatureFlag.replaceWithText(
+		children.length === 1 ? text : `<>${text}</>`,
+	);
 };
 
-const removeImportIfUnused = (mockFeatureFlagImport: ImportDeclaration) => {
-  const namedImports = mockFeatureFlagImport.getNamedImports();
+let removeImportIfUnused = (mockFeatureFlagImport: ImportDeclaration) => {
+	let namedImports = mockFeatureFlagImport.getNamedImports();
 
-  if (namedImports.length !== 0) {
-    return;
-  }
+	if (namedImports.length !== 0) {
+		return;
+	}
 
-  mockFeatureFlagImport.remove();
+	mockFeatureFlagImport.remove();
 };
 
-const matchMockFeatureFlag = (jsx: JsxOpeningElement) => {
-  if (
-    jsx.wasForgotten() ||
-    jsx.getTagNameNode()?.getFullText() !== "MockFeatureFlag"
-  ) {
-    return null;
-  }
+let matchMockFeatureFlag = (jsx: JsxOpeningElement) => {
+	if (
+		jsx.wasForgotten() ||
+		jsx.getTagNameNode()?.getFullText() !== 'MockFeatureFlag'
+	) {
+		return null;
+	}
 
-  const mockFlagsAttribute = jsx
-    .getAttribute("mockFlags")
-    ?.getFirstDescendantByKind(SyntaxKind.ObjectLiteralExpression);
+	let mockFlagsAttribute = jsx
+		.getAttribute('mockFlags')
+		?.getFirstDescendantByKind(SyntaxKind.ObjectLiteralExpression);
 
-  if (mockFlagsAttribute === undefined) {
-    return null;
-  }
+	if (mockFlagsAttribute === undefined) {
+		return null;
+	}
 
-  const tag = jsx.getTagNameNode();
+	let tag = jsx.getTagNameNode();
 
-  if (!Node.isIdentifier(tag)) {
-    return null;
-  }
+	if (!Node.isIdentifier(tag)) {
+		return null;
+	}
 
-  const parent = jsx.getParent();
+	let parent = jsx.getParent();
 
-  if (!Node.isJsxElement(parent)) {
-    return null;
-  }
+	if (!Node.isJsxElement(parent)) {
+		return null;
+	}
 
-  const importDeclaration = tag
-    ?.getDefinitions()
-    .at(0)
-    ?.getNode()
-    ?.getFirstAncestorByKind(SyntaxKind.ImportDeclaration);
+	let importDeclaration = tag
+		?.getDefinitions()
+		.at(0)
+		?.getNode()
+		?.getFirstAncestorByKind(SyntaxKind.ImportDeclaration);
 
-  return {
-    mockFlagsAttribute,
-    jsx,
-    tag,
-    parent,
-    importDeclaration,
-  };
+	return {
+		mockFlagsAttribute,
+		jsx,
+		tag,
+		parent,
+		importDeclaration,
+	};
 };
 
-const removeFeatureFlagKeyFromFlagsDict = (
-  sourceFile: SourceFile,
-  options: Options,
+let removeFeatureFlagKeyFromFlagsDict = (
+	sourceFile: SourceFile,
+	options: Options,
 ) => {
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration)
-    .forEach((tad) => {
-      if (tad.getName() !== "FlagDict") {
-        return;
-      }
+	sourceFile
+		.getDescendantsOfKind(SyntaxKind.TypeAliasDeclaration)
+		.forEach((tad) => {
+			if (tad.getName() !== 'FlagDict') {
+				return;
+			}
 
-      const type = tad.getTypeNode();
+			let type = tad.getTypeNode();
 
-      if (!Node.isTypeLiteral(type)) {
-        return;
-      }
+			if (!Node.isTypeLiteral(type)) {
+				return;
+			}
 
-      type.getProperty(options.key)?.remove();
-    });
+			type.getProperty(options.key)?.remove();
+		});
 };
 
-const removeMockFlagsAttributes = (
-  sourceFile: SourceFile,
-  options: Options,
-) => {
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
-    .forEach((jsx) => {
-      const match = matchMockFeatureFlag(jsx);
+let removeMockFlagsAttributes = (sourceFile: SourceFile, options: Options) => {
+	sourceFile
+		.getDescendantsOfKind(SyntaxKind.JsxOpeningElement)
+		.forEach((jsx) => {
+			let match = matchMockFeatureFlag(jsx);
 
-      if (match === null) {
-        return;
-      }
+			if (match === null) {
+				return;
+			}
 
-      const { mockFlagsAttribute, parent, importDeclaration } = match;
+			let { mockFlagsAttribute, parent, importDeclaration } = match;
 
-      mockFlagsAttribute.getProperty(options.key)?.remove();
+			mockFlagsAttribute.getProperty(options.key)?.remove();
 
-      // remove the whole Provider and its import if no properties left after key removal
-      if (mockFlagsAttribute.getProperties().length === 0) {
-        removeMockFeatureFlagComponent(parent);
+			// remove the whole Provider and its import if no properties left after key removal
+			if (mockFlagsAttribute.getProperties().length === 0) {
+				removeMockFeatureFlagComponent(parent);
 
-        if (importDeclaration !== undefined) {
-          removeImportIfUnused(importDeclaration);
-        }
-      }
-    });
+				if (importDeclaration !== undefined) {
+					removeImportIfUnused(importDeclaration);
+				}
+			}
+		});
 };
 
-const removeMockFeatureFlagArgs = (
-  sourceFile: SourceFile,
-  options: Options,
-) => {
-  sourceFile
-    .getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
-    .forEach((ole) => {
-      ole.getProperty(options.key)?.remove();
-    });
+let removeMockFeatureFlagArgs = (sourceFile: SourceFile, options: Options) => {
+	sourceFile
+		.getDescendantsOfKind(SyntaxKind.ObjectLiteralExpression)
+		.forEach((ole) => {
+			ole.getProperty(options.key)?.remove();
+		});
 };
 
 export function handleSourceFile(
-  sourceFile: SourceFile,
-  options: Omit<Options, "provider">,
+	sourceFile: SourceFile,
+	options: Omit<Options, 'provider'>,
 ): string | undefined {
-  const filePath = sourceFile.getFilePath();
+	let filePath = sourceFile.getFilePath();
 
-  const optionsWithProvider = { ...options, provider };
+	let optionsWithProvider = { ...options, provider };
 
-  /**
-   * Removes the feature flag key type property from FlagDict
-   */
+	/**
+	 * Removes the feature flag key type property from FlagDict
+	 */
 
-  if (filePath.endsWith("FeatureFlagProvider.tsx")) {
-    removeFeatureFlagKeyFromFlagsDict(sourceFile, optionsWithProvider);
-    return sourceFile.getFullText();
-  }
+	if (filePath.endsWith('FeatureFlagProvider.tsx')) {
+		removeFeatureFlagKeyFromFlagsDict(sourceFile, optionsWithProvider);
+		return sourceFile.getFullText();
+	}
 
-  /**
-   * removes feature flag key from mockFlags attribute in MockFeatureFlag component
-   */
-  if (filePath.endsWith("spec.tsx")) {
-    removeMockFlagsAttributes(sourceFile, optionsWithProvider);
-    return sourceFile.getFullText();
-  }
+	/**
+	 * removes feature flag key from mockFlags attribute in MockFeatureFlag component
+	 */
+	if (filePath.endsWith('spec.tsx')) {
+		removeMockFlagsAttributes(sourceFile, optionsWithProvider);
+		return sourceFile.getFullText();
+	}
 
-  /**
-   * removes feature flag from stories `args`
-   */
-  if (filePath.endsWith("stories.tsx")) {
-    removeMockFeatureFlagArgs(sourceFile, optionsWithProvider);
-    return sourceFile.getFullText();
-  }
+	/**
+	 * removes feature flag from stories `args`
+	 */
+	if (filePath.endsWith('stories.tsx')) {
+		removeMockFeatureFlagArgs(sourceFile, optionsWithProvider);
+		return sourceFile.getFullText();
+	}
 
-  return handleSourceFileCore(sourceFile, optionsWithProvider);
+	return handleSourceFileCore(sourceFile, optionsWithProvider);
 }

@@ -2,10 +2,10 @@ import { loadRegistryAPIData } from "@/data/codemod/loaders";
 import { type NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
+  let body = await req.json();
 
   try {
-    const apiRes = await loadRegistryAPIData({
+    let apiRes = await loadRegistryAPIData({
       pageNumber: body.pageNumber,
       searchParams: body.searchParams,
       entriesPerPage: body.entriesPerPage,

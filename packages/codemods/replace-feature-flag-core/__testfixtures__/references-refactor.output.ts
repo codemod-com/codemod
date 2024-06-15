@@ -1,8 +1,7 @@
-const var3 = true + 'some value';
+let var3 = true + 'some value';
 
-const var4 = true;
-const var5 = var3;
+let var4 = true;
+let var5 = var3;
 
-const var6 =  var5 + 'somevalue';
+let var6 = var5 + 'somevalue';
 fn({ a, b, c, var2: true });
-

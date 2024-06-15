@@ -1,12 +1,12 @@
 import type { ToVoid } from "@studio/types/transformations";
 import { useState } from "react";
 
-export const useLocalStorage = <T = string | null>(
+export let useLocalStorage = <T = string | null>(
   key: string,
 ): [T | null, ToVoid<T | null>, VoidFunction] => {
-  const localStorageValue = localStorage.getItem(key) as T | null;
-  const [state, _setState] = useState<T | null>(localStorageValue);
-  const setState = (x: T | null) => {
+  let localStorageValue = localStorage.getItem(key) as T | null;
+  let [state, _setState] = useState<T | null>(localStorageValue);
+  let setState = (x: T | null) => {
     x !== null
       ? localStorage.setItem(
           key,
@@ -15,6 +15,6 @@ export const useLocalStorage = <T = string | null>(
       : localStorage.removeItem(key);
     _setState(x);
   };
-  const clear = () => setState(null);
+  let clear = () => setState(null);
   return [state, setState, clear];
 };

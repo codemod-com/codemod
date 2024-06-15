@@ -27,71 +27,72 @@ The source code has been taken from https://raw.githubusercontent.com/ant-design
 Changes: migrate imports from cjs to esm
 */
 
-import { parseStrToArray, printOptions } from "@codemod-com/antd5-utils";
+import { parseStrToArray, printOptions } from '@codemod-com/antd5-utils';
 
 // handle forked antd
-const commentOutStyleImport = [
-  // antd/es/auto-complete/style
-  /(es|lib)\/.+\/style.*/,
-  // antd/dist/antd.compact.min.css
-  /dist\/.+\.(less|css)/,
+let commentOutStyleImport = [
+	// antd/es/auto-complete/style
+	/(es|lib)\/.+\/style.*/,
+	// antd/dist/antd.compact.min.css
+	/dist\/.+\.(less|css)/,
 ];
 
-const transform = (file, api, options) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-  const antdPkgNames = parseStrToArray(options.antdPkgNames || "antd");
+let transform = (file, api, options) => {
+	let j = api.jscodeshift;
+	let root = j(file.source);
+	let antdPkgNames = parseStrToArray(options.antdPkgNames || 'antd');
 
-  // import 'antd/es/auto-complete/style';
-  // import 'antd/dist/antd.compact.min.css';
-  function removeStyleImport(j, root) {
-    let hasChanged = false;
+	// import 'antd/es/auto-complete/style';
+	// import 'antd/dist/antd.compact.min.css';
+	function removeStyleImport(j, root) {
+		let hasChanged = false;
 
-    const regexList = antdPkgNames
-      .map((antdPkg) => {
-        return new RegExp(
-          [
-            antdPkg,
-            `(${commentOutStyleImport.map((re) => re.source).join("|")})`,
-          ].join("/"),
-        );
-      })
-      .concat(
-        // import '@ant-design/compatible/assets/index.css';
-        new RegExp("@ant-design/compatible/assets/index\\.css"),
-      );
+		let regexList = antdPkgNames
+			.map((antdPkg) => {
+				return new RegExp(
+					[
+						antdPkg,
+						`(${commentOutStyleImport.map((re) => re.source).join('|')})`,
+					].join('/'),
+				);
+			})
+			.concat(
+				// import '@ant-design/compatible/assets/index.css';
+				new RegExp('@ant-design/compatible/assets/index\\.css'),
+			);
 
-    // import { Comment, PageHeader } from 'antd';
-    // import { Comment, PageHeader } from '@forked/antd';
-    root
-      .find(j.ImportDeclaration)
-      .filter(
-        (path) =>
-          path.node.source.type === "StringLiteral" &&
-          regexList.some((re) => re.test(path.node.source.value)),
-      )
-      .forEach((path) => {
-        hasChanged = true;
-        j(path).replaceWith((path) => {
-          // 不加空行会导致无法执行 root.toSource()
-          const empty = j.emptyStatement();
-          // add indent
-          empty.comments = [j.commentLine(` ${j(path.node).toSource()}`)];
-          return empty;
-        });
-      });
+		// import { Comment, PageHeader } from 'antd';
+		// import { Comment, PageHeader } from '@forked/antd';
+		root.find(j.ImportDeclaration)
+			.filter(
+				(path) =>
+					path.node.source.type === 'StringLiteral' &&
+					regexList.some((re) => re.test(path.node.source.value)),
+			)
+			.forEach((path) => {
+				hasChanged = true;
+				j(path).replaceWith((path) => {
+					// 不加空行会导致无法执行 root.toSource()
+					let empty = j.emptyStatement();
+					// add indent
+					empty.comments = [
+						j.commentLine(` ${j(path.node).toSource()}`),
+					];
+					return empty;
+				});
+			});
 
-    return hasChanged;
-  }
+		return hasChanged;
+	}
 
-  // step1. import deprecated components from '@ant-design/compatible'
-  // step2. cleanup antd import if empty
-  let hasChanged = false;
-  hasChanged = removeStyleImport(j, root) || hasChanged;
+	// step1. import deprecated components from '@ant-design/compatible'
+	// step2. cleanup antd import if empty
+	let hasChanged = false;
+	hasChanged = removeStyleImport(j, root) || hasChanged;
 
-  return hasChanged
-    ? root.toSource(options.printOptions || printOptions)
-    : null;
+	return hasChanged
+		? root.toSource(options.printOptions || printOptions)
+		: null;
 };
 
 export default transform;

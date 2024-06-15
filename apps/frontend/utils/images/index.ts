@@ -11,17 +11,17 @@ export function getImageDimensions(
   // example asset._ref:
   // image-7558c4a4d73dac0398c18b7fa2c69825882e6210-366x96-png
   // When splitting by '-' we can extract the dimensions, id and extension
-  const dimensions = image.asset._ref.split("-")[2];
-  const [width, height] = dimensions.split("x").map(Number);
+  let dimensions = image.asset._ref.split("-")[2];
+  let [width, height] = dimensions.split("x").map(Number);
 
   if (!width || !height || Number.isNaN(width) || Number.isNaN(height)) {
     return;
   }
 
   if (image.crop) {
-    const croppedWidth =
+    let croppedWidth =
       width * (1 - (image.crop?.right || 0) - image.crop?.left || 0);
-    const croppedHeight =
+    let croppedHeight =
       height * (1 - (image.crop?.top || 0) - image.crop?.bottom || 0);
     return {
       width: croppedWidth,
@@ -37,12 +37,12 @@ export function getImageDimensions(
   };
 }
 
-const LARGEST_VIEWPORT = 1920; // Retina sizes will take care of 4k (2560px) and other huge screens
+let LARGEST_VIEWPORT = 1920; // Retina sizes will take care of 4k (2560px) and other huge screens
 
-const DEFAULT_MIN_STEP = 0.1; // 10%
-const DEFAULT_WIDTH_STEPS = [400, 600, 850, 1000, 1150]; // arbitrary
+let DEFAULT_MIN_STEP = 0.1; // 10%
+let DEFAULT_WIDTH_STEPS = [400, 600, 850, 1000, 1150]; // arbitrary
 // Based on statcounter's most common screen sizes: https://gs.statcounter.com/screen-resolution-stats
-const DEFAULT_FULL_WIDTH_STEPS = [360, 414, 768, 1366, 1536, 1920];
+let DEFAULT_FULL_WIDTH_STEPS = [360, 414, 768, 1366, 1536, 1920];
 
 /**
  * Given an image reference and maxWidth, returns optimized srcSet and sizes properties for <img> elements
@@ -107,7 +107,7 @@ export function createGetImageProps(imageBuilder: ImageUrlBuilder) {
       return {};
     }
 
-    const {
+    let {
       image,
       customWidthSteps,
       customSizes,
@@ -122,32 +122,32 @@ export function createGetImageProps(imageBuilder: ImageUrlBuilder) {
       return {};
     }
 
-    const maxWidth =
+    let maxWidth =
       typeof props.maxWidth === "number"
         ? props.maxWidth
         : Math.round(
             LARGEST_VIEWPORT * (Number(props.maxWidth.match(/\d*/)?.[0]) / 100),
           );
 
-    const baseBuilder = imageBuilder.image(image).fit("max").auto("format");
-    const builder = props.imageTransformer
+    let baseBuilder = imageBuilder.image(image).fit("max").auto("format");
+    let builder = props.imageTransformer
       ? props.imageTransformer(baseBuilder)
       : baseBuilder;
 
-    const imageDimensions = getImageDimensions(image);
+    let imageDimensions = getImageDimensions(image);
 
     if (!imageDimensions) {
       return {};
     }
 
-    const baseSizes = [
+    let baseSizes = [
       maxWidth,
       ...(customWidthSteps ||
         (typeof props.maxWidth === "number"
           ? DEFAULT_WIDTH_STEPS
           : DEFAULT_FULL_WIDTH_STEPS)),
     ];
-    const retinaSizes = Array.from(
+    let retinaSizes = Array.from(
       // De-duplicate sizes with a Set
       new Set([
         ...baseSizes,
@@ -169,7 +169,7 @@ export function createGetImageProps(imageBuilder: ImageUrlBuilder) {
 
       // Exclude those with a value difference to their following size smaller than `minimumWidthStep`
       .filter((size, i, arr) => {
-        const nextSize = arr[i + 1];
+        let nextSize = arr[i + 1];
         if (nextSize) {
           return nextSize / size > minimumWidthStep + 1;
         }
@@ -177,12 +177,12 @@ export function createGetImageProps(imageBuilder: ImageUrlBuilder) {
         return true;
       });
 
-    const lastSize = retinaSizes.slice(-1)[0];
+    let lastSize = retinaSizes.slice(-1)[0];
     if (lastSize < maxWidth && lastSize < imageDimensions.width) {
       retinaSizes.push(imageDimensions.width);
     }
 
-    const aspectRatio =
+    let aspectRatio =
       props.forcedAspectRatio ||
       props.forceAspectRatio ||
       imageDimensions.aspectRatio;

@@ -1,1 +1,1 @@
-export const KEY_ALIAS = "simple-case";
+export let KEY_ALIAS = 'simple-case';

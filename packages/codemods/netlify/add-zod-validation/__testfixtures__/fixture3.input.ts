@@ -1,1 +1,1 @@
-const { search, page } = buildQuery(ownProps.location.search);
+let { search, page } = buildQuery(ownProps.location.search);

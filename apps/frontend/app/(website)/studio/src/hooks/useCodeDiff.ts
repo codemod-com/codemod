@@ -9,22 +9,22 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
 import { useCallback } from "react";
 
-export const useCodeDiff = () => {
-  const { inputSnippet, afterInputRanges } = useSnippetStore();
-  const setRangeThunk = useRangesOnTarget();
-  const { internalContent } = useModStore();
+export let useCodeDiff = () => {
+  let { inputSnippet, afterInputRanges } = useSnippetStore();
+  let setRangeThunk = useRangesOnTarget();
+  let { internalContent } = useModStore();
 
-  const { ranges, content } = useCodemodOutputStore();
-  const setActiveEventThunk = useSetActiveEventThunk();
+  let { ranges, content } = useCodemodOutputStore();
+  let setActiveEventThunk = useSetActiveEventThunk();
 
-  const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
+  let { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
-  const { setActiveTab } = useViewStore();
+  let { setActiveTab } = useViewStore();
 
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+  let snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  let codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
-  const onSelectionChange = useCallback(
+  let onSelectionChange = useCallback(
     (range: OffsetRange) => {
       setRangeThunk({
         target: "CODEMOD_OUTPUT",
@@ -34,22 +34,22 @@ export const useCodeDiff = () => {
     [setRangeThunk],
   );
 
-  const { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
+  let { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
 
-  const onDebug = () => {
+  let onDebug = () => {
     firstCodemodExecutionErrorEvent?.hashDigest &&
       setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest);
     setActiveTab(TabNames.DEBUG);
   };
 
-  const originalEditorProps = {
+  let originalEditorProps = {
     highlights: afterInputRanges,
     onSelectionChange: handleSelectionChange,
     onChange: onSnippetChange,
     value,
   };
 
-  const modifiedEditorProps = {
+  let modifiedEditorProps = {
     highlights: ranges,
     onSelectionChange,
     value: content ?? "",

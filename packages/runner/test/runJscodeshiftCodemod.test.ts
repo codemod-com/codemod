@@ -1,10 +1,10 @@
-import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runJscodeshiftCodemod } from "../src/runJscodeshiftCodemod.js";
+import { deepStrictEqual } from 'node:assert';
+import type { ConsoleKind } from '@codemod-com/printer';
+import { describe, it } from 'vitest';
+import { transpile } from '../src/getTransformer.js';
+import { runJscodeshiftCodemod } from '../src/runJscodeshiftCodemod.js';
 
-const codemodSource = transpile(`
+let codemodSource = transpile(`
 import type { FileInfo, API, Options } from 'jscodeshift';
 
 // this is the entry point for a JSCodeshift codemod
@@ -56,38 +56,38 @@ export default function transform(
 }
 `);
 
-describe("runJscodeshiftCodemod", () => {
-  it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
+describe('runJscodeshiftCodemod', () => {
+	it('should return transformed output', () => {
+		let messages: [ConsoleKind, string][] = [];
 
-    const oldData = "function mapStateToProps(state) {}";
+		let oldData = 'function mapStateToProps(state) {}';
 
-    const fileCommands = runJscodeshiftCodemod(
-      codemodSource,
-      "/index.ts",
-      oldData,
-      true,
-      {},
-      null,
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
-    );
+		let fileCommands = runJscodeshiftCodemod(
+			codemodSource,
+			'/index.ts',
+			oldData,
+			true,
+			{},
+			null,
+			(consoleKind, message) => {
+				messages.push([consoleKind, message]);
+			},
+		);
 
-    deepStrictEqual(fileCommands.length, 1);
+		deepStrictEqual(fileCommands.length, 1);
 
-    const [fileCommand] = fileCommands;
+		let [fileCommand] = fileCommands;
 
-    const newData = "function mapStateToProps(state: State) {}";
+		let newData = 'function mapStateToProps(state: State) {}';
 
-    deepStrictEqual(fileCommand, {
-      kind: "updateFile",
-      oldPath: "/index.ts",
-      oldData,
-      newData,
-      formatWithPrettier: true,
-    });
+		deepStrictEqual(fileCommand, {
+			kind: 'updateFile',
+			oldPath: '/index.ts',
+			oldData,
+			newData,
+			formatWithPrettier: true,
+		});
 
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
-  });
+		deepStrictEqual(messages, [['log', '/index.ts']]);
+	});
 });

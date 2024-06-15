@@ -1,7 +1,7 @@
 import { withLDProvider } from 'launchdarkly-react-client-sdk';
 
-const App = () => null;
+let App = () => null;
 
 export default withLDProvider({
-    clientSideID: '',
+	clientSideID: '',
 })(App);

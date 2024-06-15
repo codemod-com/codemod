@@ -1,5 +1,5 @@
-import { createRoot } from "react-dom/client";
-import { unmountComponentAtNode } from "react-dom";
+import { createRoot } from 'react-dom/client';
+import { unmountComponentAtNode } from 'react-dom';
 
-const root = createRoot(anything);
+let root = createRoot(anything);
 root.unmount();

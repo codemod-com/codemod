@@ -4,19 +4,19 @@ import { type StringInputProps, set, unset, useFormValue } from "sanity";
 import { useFetchAutomations } from "@/hooks/useFetchAutomations";
 import { Card, Select, Spinner, Text } from "@sanity/ui";
 
-const cardProps = { shadow: 1, padding: 3, radius: 2 };
+let cardProps = { shadow: 1, padding: 3, radius: 2 };
 
 export default function FilterValueIconPicker(props: StringInputProps) {
-  const document: any = useFormValue([]);
-  const { onChange, value } = props;
+  let document: any = useFormValue([]);
+  let { onChange, value } = props;
 
-  const { data, fetchAutomations, loaderState } = useFetchAutomations({
+  let { data, fetchAutomations, loaderState } = useFetchAutomations({
     limit: 1,
   });
 
-  const handleChange = React.useCallback(
+  let handleChange = React.useCallback(
     (event: React.FormEvent<HTMLSelectElement> | undefined) => {
-      const value = event?.currentTarget.value;
+      let value = event?.currentTarget.value;
 
       onChange(value ? set(value) : unset());
     },
@@ -26,15 +26,15 @@ export default function FilterValueIconPicker(props: StringInputProps) {
   useEffect(() => {
     (async () => {
       if (!data.filters.length) {
-        const initPars = new URLSearchParams();
+        let initPars = new URLSearchParams();
         initPars.append("verified", "true");
         await fetchAutomations(initPars);
       }
     })();
   }, [fetchAutomations, data.filters]);
 
-  const filterTypeKey = /"(\w+)/.exec(props.id)?.[1].replace(/"/g, "");
-  const filterType = document?.filters?.find(
+  let filterTypeKey = /"(\w+)/.exec(props.id)?.[1].replace(/"/g, "");
+  let filterType = document?.filters?.find(
     (item) => item?._key === filterTypeKey,
   );
 

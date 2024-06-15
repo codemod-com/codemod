@@ -1,19 +1,19 @@
 import type { GetExecutionStatusResponse } from "@shared/types";
 import toast from "react-hot-toast";
 
-const baseToastOptions: Parameters<typeof toast>[1] = {
+let baseToastOptions: Parameters<typeof toast>[1] = {
   position: "top-center",
   duration: 12000,
 };
 
-export const showStatusToast = (
+export let showStatusToast = (
   result: GetExecutionStatusResponse["result"],
 ) => {
   if (!result) return;
   if (result.status === "error") {
     toast(<span>{`❌ ${result.message}`}</span>, baseToastOptions);
   } else if (result.status === "done") {
-    const message = result.link ? (
+    let message = result.link ? (
       <span>
         Success! Check out the changes{" "}
         <a

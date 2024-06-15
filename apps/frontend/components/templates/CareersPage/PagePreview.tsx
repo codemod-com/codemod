@@ -15,8 +15,8 @@ type Props = {
 };
 
 export default function CareersPagePreview(props: Props) {
-  const { params, initial } = props;
-  const { data } = useQuery<CareersPagePayload | null>(
+  let { params, initial } = props;
+  let { data } = useQuery<CareersPagePayload | null>(
     CAREERS_PAGE_QUERY,
     params,
     {

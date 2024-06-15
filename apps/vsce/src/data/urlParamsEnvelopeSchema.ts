@@ -1,8 +1,8 @@
-import { object, parse, string } from "valibot";
+import { object, parse, string } from 'valibot';
 
-const urlParamsEnvelopeSchema = object({
-  urlParams: string(),
+let urlParamsEnvelopeSchema = object({
+	urlParams: string(),
 });
 
-export const parseUrlParamsEnvelope = (input: unknown) =>
-  parse(urlParamsEnvelopeSchema, input);
+export let parseUrlParamsEnvelope = (input: unknown) =>
+	parse(urlParamsEnvelopeSchema, input);

@@ -1,7 +1,7 @@
-import { useDevCycleClient } from "@devcycle/react-client-sdk";
+import { useDevCycleClient } from '@devcycle/react-client-sdk';
 
-const App = () => {
-    const { flag } = useDevCycleClient().allVariables();
+let App = () => {
+	let { flag } = useDevCycleClient().allVariables();
 
-    return <>{flag.value}</>;
+	return <>{flag.value}</>;
 };

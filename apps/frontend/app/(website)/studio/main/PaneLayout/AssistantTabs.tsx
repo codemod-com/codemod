@@ -18,14 +18,14 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
 import { useCallback, useEffect, useRef } from "react";
 
-const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
+let reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
   ...acc.tabs,
   <TabsTrigger key={value} className="flex-1" value={value}>
     {name}
   </TabsTrigger>,
 ];
 
-export const AssistantTab = ({
+export let AssistantTab = ({
   panelRefs,
   beforePanel,
   afterPanel,
@@ -34,16 +34,16 @@ export const AssistantTab = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
-  const { activeTab } = useViewStore();
-  const { engine } = useSnippetStore();
+  let { activeTab } = useViewStore();
+  let { engine } = useSnippetStore();
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const savedScrollPositionRef = useRef<number>(0);
-  const { isSignedIn } = useAuth();
+  let scrollContainerRef = useRef<HTMLDivElement>(null);
+  let savedScrollPositionRef = useRef<number>(0);
+  let { isSignedIn } = useAuth();
 
-  const { setActiveTab } = useViewStore();
+  let { setActiveTab } = useViewStore();
 
-  const handleOnClick = useCallback(
+  let handleOnClick = useCallback(
     (newActiveTab: TabNames) => {
       setActiveTab(newActiveTab);
     },
@@ -56,13 +56,13 @@ export const AssistantTab = ({
     }
   }, [activeTab]);
 
-  const handleScroll = () => {
+  let handleScroll = () => {
     if (activeTab === TabNames.MODGPT && scrollContainerRef.current !== null) {
       savedScrollPositionRef.current = scrollContainerRef.current.scrollTop;
     }
   };
 
-  const reduceContents = (
+  let reduceContents = (
     acc: TabsWithContents,
     { value, content }: TabContent,
   ) => [
@@ -78,7 +78,7 @@ export const AssistantTab = ({
     </TabsContent>,
   ];
 
-  const tabsData = getTabsData({
+  let tabsData = getTabsData({
     beforePanel,
     afterPanel,
     isSignedIn,

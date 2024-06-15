@@ -13,41 +13,41 @@ type Props = {
   scrollable: boolean;
 };
 
-const inconsolata = Inconsolata({
+let inconsolata = Inconsolata({
   subsets: ["latin"],
   weight: "400",
   variable: "--inconsolata",
 });
 
-const getCodeProps = (
+let getCodeProps = (
   children: React.ReactNode[],
 ): { language: string; code: string } | null => {
-  const firstChild = children.at(0);
+  let firstChild = children.at(0);
 
   if (!isValidElement(firstChild)) {
     return null;
   }
 
-  const { lang, children: _children } = firstChild.props;
+  let { lang, children: _children } = firstChild.props;
 
-  const language = lang
+  let language = lang
     ? lang
         .replace(/language-/, "")
         ?.trim()
         ?.toLowerCase()
     : "";
 
-  const code = _children.at(0);
+  let code = _children.at(0);
 
   return { language, code };
 };
 
-const CodeBlock = ({ children, scrollable = true }: Props) => {
-  const [copied, setCopied] = useState(false);
+let CodeBlock = ({ children, scrollable = true }: Props) => {
+  let [copied, setCopied] = useState(false);
 
-  const props = getCodeProps(children);
+  let props = getCodeProps(children);
 
-  const handleCopy = () => {
+  let handleCopy = () => {
     if (!props?.code) {
       return;
     }
@@ -62,7 +62,7 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
     }, 1200);
   };
 
-  const prismLanguageId = props?.language
+  let prismLanguageId = props?.language
     ? languageToPrismId(props.language)
     : null;
 

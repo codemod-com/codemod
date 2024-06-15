@@ -1,6 +1,6 @@
 import { defineField } from "sanity";
 
-export const imageWithAltField = defineField({
+export let imageWithAltField = defineField({
   type: "image",
   name: "imageWithAltField",
   title: "Image",

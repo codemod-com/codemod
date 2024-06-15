@@ -16,28 +16,28 @@ type DesktopNavigationProps = {
 
 // Desktop navigation items
 export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
-  const [tXAmount, setTXAmount] = useState({ solid: 0, shadow: 0 });
-  const outlineRefs = useRef<HTMLDivElement[]>([]);
-  const navRef = useRef<HTMLDivElement | null>(null);
-  const [activeHeadingIndex, setActiveHeadingIndex] = useState(0);
-  const [width, setWidth] = useState({ solid: 0, shadow: 0 });
-  const updateTXAmount = useCallback(
+  let [tXAmount, setTXAmount] = useState({ solid: 0, shadow: 0 });
+  let outlineRefs = useRef<HTMLDivElement[]>([]);
+  let navRef = useRef<HTMLDivElement | null>(null);
+  let [activeHeadingIndex, setActiveHeadingIndex] = useState(0);
+  let [width, setWidth] = useState({ solid: 0, shadow: 0 });
+  let updateTXAmount = useCallback(
     (index: number, type: "solid" | "shadow") => {
-      const tocRect = navRef.current?.getBoundingClientRect();
-      const selectedOutlineRect =
+      let tocRect = navRef.current?.getBoundingClientRect();
+      let selectedOutlineRect =
         outlineRefs.current[index]?.getBoundingClientRect();
       setWidth({
         ...width,
         [type]: Number(selectedOutlineRect?.width),
       });
-      const xDiff = Number(selectedOutlineRect?.left) - tocRect?.left!;
+      let xDiff = Number(selectedOutlineRect?.left) - tocRect?.left!;
       setTXAmount({ ...tXAmount, [type]: xDiff });
     },
     [tXAmount, width],
   );
 
   useEffect(() => {
-    const activeIndex = items?.findIndex((item) => item.isCurrent) ?? -1;
+    let activeIndex = items?.findIndex((item) => item.isCurrent) ?? -1;
     setActiveHeadingIndex(activeIndex);
 
     updateTXAmount(activeIndex, "solid");
@@ -45,7 +45,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [items]);
 
-  const handleClick = (
+  let handleClick = (
     item: SanityLinkType & { isCurrent?: boolean },
     index: number,
   ) => {
@@ -119,7 +119,7 @@ export function DesktopNavigationItems({ items }: DesktopNavigationProps) {
 export function DesktopNavigationRight(props: {
   items: NavigationPayload["navigationCtas"];
 }) {
-  const [shouldRenderAuth, setShouldRenderAuth] = useState(false);
+  let [shouldRenderAuth, setShouldRenderAuth] = useState(false);
 
   useEffect(() => {
     setShouldRenderAuth(true);

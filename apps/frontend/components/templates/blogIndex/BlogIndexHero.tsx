@@ -9,14 +9,14 @@ import type { BlogIndexProps } from "./BlogIndex";
 import TagsFilter from "./TagsFilter";
 
 export default function BlogIndexHero(props: BlogIndexProps) {
-  const activeTagSlug = props.pathParam;
-  const activeTag = props.data?.blogTags?.find(
+  let activeTagSlug = props.pathParam;
+  let activeTag = props.data?.blogTags?.find(
     (tag) => tag.slug.current === activeTagSlug,
   );
-  const activeTagTitle = activeTag?.title;
-  const isCustomerStory = activeTagSlug === CUSTOMER_STORY_TAG.value;
+  let activeTagTitle = activeTag?.title;
+  let isCustomerStory = activeTagSlug === CUSTOMER_STORY_TAG.value;
 
-  const featuredPosts = props.data?.featuredPosts?.filter(Boolean);
+  let featuredPosts = props.data?.featuredPosts?.filter(Boolean);
 
   return (
     <div

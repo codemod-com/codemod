@@ -4,7 +4,7 @@ import { commonSyntaxList } from "@/sanity/lib/components/codeLangs";
 import { capitalize } from "@/utils/strings";
 import { defineType } from "sanity";
 
-export const codeSnippet = defineType({
+export let codeSnippet = defineType({
   name: "codeSnippet",
   title: "Code Snippet",
   type: "object",

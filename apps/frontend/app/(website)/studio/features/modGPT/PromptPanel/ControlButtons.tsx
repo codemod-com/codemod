@@ -9,7 +9,7 @@ type ControlButtonsProps = {
   toggleHelper: () => void;
 };
 
-export const ControlButtons: React.FC<ControlButtonsProps> = ({
+export let ControlButtons: React.FC<ControlButtonsProps> = ({
   isLoading,
   stop,
   expandedHelper,

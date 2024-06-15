@@ -36,7 +36,7 @@ type Exports =
     }
   | F;
 
-const keys = [
+let keys = [
   "fetch",
   "importScripts",
   "addEventListener",
@@ -132,7 +132,7 @@ const keys = [
 ];
 
 keys.forEach((key) => {
-  const descriptor = Object.getOwnPropertyDescriptor(self, key);
+  let descriptor = Object.getOwnPropertyDescriptor(self, key);
 
   if (descriptor?.configurable) {
     Object.defineProperty(self, key, {
@@ -171,7 +171,7 @@ In case of a mismatch, the runner will simply return `$A` from the `__method` ca
 
 This function will work with other JSCodeshift collection functions.
  **/
-const replaceCallExpression = (
+let replaceCallExpression = (
   j: JSCodeshift,
   node: CallExpression,
 ): CallExpression => {
@@ -179,15 +179,15 @@ const replaceCallExpression = (
     return node;
   }
 
-  const { callee, arguments: args } = node;
+  let { callee, arguments: args } = node;
 
   if (!isMemberExpression(callee)) {
     return node;
   }
 
-  const { property, object: obj } = callee;
+  let { property, object: obj } = callee;
 
-  const ALLOWED_PROPERTY_NAMES = [
+  let ALLOWED_PROPERTY_NAMES = [
     "every",
     "find",
     "findVariableDeclarators",
@@ -210,7 +210,7 @@ const replaceCallExpression = (
     return node;
   }
 
-  const argumentsParam: CallExpression["arguments"] = [
+  let argumentsParam: CallExpression["arguments"] = [
     obj.type === "CallExpression" ? replaceCallExpression(j, obj) : obj,
     j.stringLiteral(property.name),
   ];
@@ -223,7 +223,7 @@ const replaceCallExpression = (
     // since we can have chaining of nodes, like `root.find(...).remove()`
     // it means that `node.end` can be before the `property.end`
     // if property is e.g. `remove` like in the previous example
-    const end = Math.max(
+    let end = Math.max(
       property.end,
       callee.end ?? property.end,
       node.end ?? property.end,
@@ -233,7 +233,7 @@ const replaceCallExpression = (
     argumentsParam.push(j.numericLiteral(end));
   }
 
-  const innerCE = j.callExpression(
+  let innerCE = j.callExpression(
     j.memberExpression(j.identifier("api"), j.identifier("__method")),
     argumentsParam,
   );
@@ -241,22 +241,22 @@ const replaceCallExpression = (
   return j.callExpression(innerCE, args);
 };
 
-export const findTransformFunction = (
+export let findTransformFunction = (
   j: JSCodeshift,
   root: Collection<File>,
 ): Collection<
   FunctionDeclaration | ArrowFunctionExpression | FunctionExpression
 > | null => {
-  const program = root.find(j.Program).paths()[0] ?? null;
+  let program = root.find(j.Program).paths()[0] ?? null;
 
   if (program === null) {
     return null;
   }
 
-  const defaultExport =
+  let defaultExport =
     root.find(j.ExportDefaultDeclaration).paths()[0] ?? null;
 
-  const defaultExportDeclaration = defaultExport?.value.declaration ?? null;
+  let defaultExportDeclaration = defaultExport?.value.declaration ?? null;
 
   let transformFunction:
     | FunctionDeclaration
@@ -294,10 +294,10 @@ export const findTransformFunction = (
 };
 
 function rewriteCodemod(input: string): string {
-  const j = jscodeshift.withParser("tsx");
-  const root = j(input);
+  let j = jscodeshift.withParser("tsx");
+  let root = j(input);
 
-  const transformFunction = findTransformFunction(j, root);
+  let transformFunction = findTransformFunction(j, root);
 
   // replace expressions like `j(file.source)` with `j(file.source, undefined, start, end)`
 
@@ -324,7 +324,7 @@ function rewriteCodemod(input: string): string {
         return node;
       }
 
-      const argumentsParam: CallExpression["arguments"] = [...node.arguments];
+      let argumentsParam: CallExpression["arguments"] = [...node.arguments];
 
       if (argumentsParam.length === 1) {
         argumentsParam.push(j.identifier("undefined"));
@@ -372,7 +372,7 @@ function rewriteCodemod(input: string): string {
         return node;
       }
 
-      const argumentsParam: CallExpression["arguments"] = [...node.arguments];
+      let argumentsParam: CallExpression["arguments"] = [...node.arguments];
 
       if (
         isNeitherNullNorUndefined(node.start) &&
@@ -395,27 +395,27 @@ function rewriteCodemod(input: string): string {
   return root.toSource();
 }
 
-export const getTransformFunction = async (
+export let getTransformFunction = async (
   eventManager: EventManager,
   input: string,
 ): Promise<F> => {
-  const rewrittenInput = rewriteCodemod(input);
+  let rewrittenInput = rewriteCodemod(input);
 
-  const compiledCode = ts.transpileModule(rewrittenInput, {
+  let compiledCode = ts.transpileModule(rewrittenInput, {
     compilerOptions: { module: ts.ModuleKind.CommonJS },
   });
 
-  const exports: Exports = {};
-  const module = { exports };
+  let exports: Exports = {};
+  let module = { exports };
 
-  const requireFunction = (name: string) => {
+  let requireFunction = (name: string) => {
     if (name === "ts-morph") {
       return tsmorph;
     }
   };
 
-  const printMessage = (...args: any[]) => {
-    const message = args
+  let printMessage = (...args: any[]) => {
+    let message = args
       .slice(0, -2)
       .map((a) => {
         try {
@@ -427,11 +427,11 @@ export const getTransformFunction = async (
       })
       .join(", ");
 
-    const start =
+    let start =
       typeof args[args.length - 2] === "number"
         ? args[args.length - 2]
         : Number.NaN;
-    const end =
+    let end =
       typeof args[args.length - 1] === "number"
         ? args[args.length - 1]
         : Number.NaN;
@@ -448,12 +448,12 @@ export const getTransformFunction = async (
     });
   };
 
-  const keys = ["module", "exports", "require", "printMessage"];
-  const values = [module, exports, requireFunction, printMessage];
+  let keys = ["module", "exports", "require", "printMessage"];
+  let values = [module, exports, requireFunction, printMessage];
 
   new Function(...keys, compiledCode.outputText).apply(null, values);
 
-  const transformer =
+  let transformer =
     typeof exports === "function"
       ? exports
       : exports.__esModule && typeof exports.default === "function"
@@ -478,15 +478,15 @@ interface ProxifiedAPI extends API {
   ) => unknown;
 }
 
-const executeTransformFunction = (
+let executeTransformFunction = (
   eventManager: EventManager,
   transform: F,
   input: string,
 ) => {
-  const proxifiedCollections = new Set<ProxifiedCollection<any>>();
-  const proxifiedPaths = new Set<ProxifiedPath<any>>();
+  let proxifiedCollections = new Set<ProxifiedCollection<any>>();
+  let proxifiedPaths = new Set<ProxifiedPath<any>>();
 
-  const j = proxifyJSCodeshift(
+  let j = proxifyJSCodeshift(
     jscodeshift.withParser("tsx"),
     eventManager,
     (proxifiedCollection) => {
@@ -497,7 +497,7 @@ const executeTransformFunction = (
     },
   );
 
-  const buildApi = (): ProxifiedAPI => ({
+  let buildApi = (): ProxifiedAPI => ({
     j,
     jscodeshift: j,
     stats: () => {
@@ -529,17 +529,17 @@ const executeTransformFunction = (
     },
   });
 
-  const api = buildApi();
+  let api = buildApi();
 
-  const fileInfo: FileInfo = {
+  let fileInfo: FileInfo = {
     path: "index.ts",
     source: input,
   };
 
-  const output = transform.apply(undefined, [fileInfo, api, {}]);
+  let output = transform.apply(undefined, [fileInfo, api, {}]);
 
   if (typeof output === "string" || output === undefined || output === null) {
-    const events = eventManager.getEvents();
+    let events = eventManager.getEvents();
 
     return { output: output as string | null | undefined, events };
   }
@@ -548,19 +548,19 @@ const executeTransformFunction = (
 };
 
 self.onmessage = async (messageEvent) => {
-  const { engine, content, input } = parseWebWorkerIncomingMessage(
+  let { engine, content, input } = parseWebWorkerIncomingMessage(
     messageEvent.data,
   );
 
-  const eventManager = new EventManager();
+  let eventManager = new EventManager();
 
   try {
     if (engine === "jscodeshift") {
-      const transformFunction = await getTransformFunction(
+      let transformFunction = await getTransformFunction(
         eventManager,
         content,
       );
-      const { output, events } = executeTransformFunction(
+      let { output, events } = executeTransformFunction(
         eventManager,
         transformFunction,
         input,
@@ -573,16 +573,16 @@ self.onmessage = async (messageEvent) => {
     }
 
     if (engine === "tsmorph") {
-      const transformFunction = await getTransformFunction(
+      let transformFunction = await getTransformFunction(
         eventManager,
         content,
       );
 
-      const project = new tsmorph.Project({
+      let project = new tsmorph.Project({
         useInMemoryFileSystem: true,
       });
-      const sourceFile = project.createSourceFile("page.tsx", input);
-      const output = transformFunction(sourceFile);
+      let sourceFile = project.createSourceFile("page.tsx", input);
+      let output = transformFunction(sourceFile);
 
       if (typeof output === "string") {
         self.postMessage({

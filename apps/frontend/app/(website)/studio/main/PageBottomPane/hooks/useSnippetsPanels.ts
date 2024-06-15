@@ -6,18 +6,18 @@ import { inferVisibilities } from "@studio/main/PageBottomPane/utils/inferVisibi
 import { mergeDeepRight } from "ramda";
 import { useEffect } from "react";
 
-export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
-  const { beforePanel, afterPanel, outputPanel } = panelsData;
-  const codeDiff = useCodeDiff();
-  const warnings = WarningTexts(codeDiff);
-  const afterWithVisibilityOptions = {
+export let useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
+  let { beforePanel, afterPanel, outputPanel } = panelsData;
+  let codeDiff = useCodeDiff();
+  let warnings = WarningTexts(codeDiff);
+  let afterWithVisibilityOptions = {
     ...afterPanel,
     visibilityOptions: useToggleVisibility(),
   };
-  const outputWithMessages = mergeDeepRight(outputPanel, {
+  let outputWithMessages = mergeDeepRight(outputPanel, {
     snippetData: { warnings },
   });
-  const { onlyAfterHidden } = inferVisibilities({
+  let { onlyAfterHidden } = inferVisibilities({
     beforePanel,
     afterPanel: afterWithVisibilityOptions,
     outputPanel,

@@ -10,7 +10,7 @@ import {
   union,
 } from "valibot";
 
-export const shareableCodemodSchemata = object({
+export let shareableCodemodSchemata = object({
   v: optional(number()), // version
   e: optional(knownEnginesSchema), // engine
   n: optional(string()), // codemod name
@@ -20,7 +20,7 @@ export const shareableCodemodSchemata = object({
   m: optional(union([literal("learn"), literal("accessTokenRequested")])), // command
 });
 
-export const parseShareableCodemod = (input: unknown) =>
+export let parseShareableCodemod = (input: unknown) =>
   parse(shareableCodemodSchemata, input);
 
 export type ShareableCodemod = Output<typeof shareableCodemodSchemata>;

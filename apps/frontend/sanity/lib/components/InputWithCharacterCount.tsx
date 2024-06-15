@@ -12,9 +12,9 @@ function CharacterCount(props: CountedTextOptions & { value?: string }) {
     return null;
   }
 
-  const { value = "" } = props;
+  let { value = "" } = props;
 
-  const maxPercentage =
+  let maxPercentage =
     props.maxLength && (value.length / props.maxLength) * 100;
   let tone: BadgeTone = "primary";
   if (maxPercentage && maxPercentage > 100) {
@@ -34,9 +34,9 @@ function CharacterCount(props: CountedTextOptions & { value?: string }) {
 }
 
 export function InputWithCharacterCount(props: TextInputProps) {
-  const document: any = useFormValue([]);
+  let document: any = useFormValue([]);
 
-  const defaultTitle =
+  let defaultTitle =
     props.id === "seo.title"
       ? ["organization", "person", "podcastShow"].includes(document?._type)
         ? document?.name

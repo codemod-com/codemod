@@ -61,16 +61,16 @@ type UseRange = Readonly<{
   target: "CODEMOD_INPUT" | "CODEMOD_OUTPUT" | "BEFORE_INPUT" | "AFTER_INPUT";
 }>;
 
-export const useRangesOnTarget = () => {
-  const { setActiveEventHashDigest } = useLogStore();
-  const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
-  const setRanges = useExecuteRangeCommandOnBeforeInput();
-  const { setOutputSelection } = useSnippetStore();
+export let useRangesOnTarget = () => {
+  let { setActiveEventHashDigest } = useLogStore();
+  let { setCodemodSelection } = useModStore();
+  let { setSelections } = useCodemodOutputStore();
+  let setRanges = useExecuteRangeCommandOnBeforeInput();
+  let { setOutputSelection } = useSnippetStore();
   return ({ ranges, target }: UseRange) => {
     setActiveEventHashDigest(null);
 
-    const rangeCommand: RangeCommand = {
+    let rangeCommand: RangeCommand = {
       kind: "FIND_CLOSEST_PARENT",
       ranges,
     };

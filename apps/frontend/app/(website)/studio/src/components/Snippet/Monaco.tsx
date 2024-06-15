@@ -32,7 +32,7 @@ type CustomProps = {
   onSelectionChange?(selection: OffsetRange): void;
 };
 
-const defaultOptions = {
+let defaultOptions = {
   wordWrap: "on",
   wrappingIndent: "indent",
   minimap: {
@@ -41,7 +41,7 @@ const defaultOptions = {
   scrollBeyondLastLine: false,
 } as const;
 
-const MonacoEditor = forwardRef<
+let MonacoEditor = forwardRef<
   monaco.editor.IStandaloneCodeEditor,
   EditorProps & CustomProps
 >(
@@ -62,11 +62,11 @@ const MonacoEditor = forwardRef<
     },
     ref,
   ) => {
-    const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
-    const monacoRef = useRef<Monaco>();
-    const { isDark } = useTheme();
+    let editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
+    let monacoRef = useRef<Monaco>();
+    let { isDark } = useTheme();
 
-    const [isMounted, setIsMounted] = useState(false);
+    let [isMounted, setIsMounted] = useState(false);
 
     useEditor(
       editorRef.current ?? null,

@@ -4,7 +4,7 @@ import { CURSOR_PREFIX, VSCODE_PREFIX } from "../../../../../constants";
 
 import type { CodemodPagePayload } from "@/types";
 import type { AutomationResponseVersion } from "@/types/object.types";
-export const VCCodeShift = (
+export let VCCodeShift = (
   data: CodemodPagePayload & { currentVersion: AutomationResponseVersion },
 ) => (
   <div className="flex flex-col gap-xs">

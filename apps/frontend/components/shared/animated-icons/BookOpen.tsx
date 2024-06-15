@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 
-const BookOpen = ({ className = "", play = false }) => {
+let BookOpen = ({ className = "", play = false }) => {
   useEffect(() => {
     if (play) {
       svgRefs.current.forEach((ref) => {
@@ -10,7 +10,7 @@ const BookOpen = ({ className = "", play = false }) => {
     }
   }, [play]);
 
-  const svgRefs = useRef<(SVGAnimationElement | null)[]>([
+  let svgRefs = useRef<(SVGAnimationElement | null)[]>([
     null,
     null,
     null,

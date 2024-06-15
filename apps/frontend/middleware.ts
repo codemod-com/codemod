@@ -6,8 +6,8 @@ import { getRedirect } from "@/data/sanity/redirects";
 //   OLD_STUDIO_HOSTNAME,
 // } from "@codemod-com/utilities";
 
-const CODEMOD_STUDIO_URL = "https://codemod.com/studio";
-const OLD_STUDIO_HOSTNAME = "codemod.studio";
+let CODEMOD_STUDIO_URL = "https://codemod.com/studio";
+let OLD_STUDIO_HOSTNAME = "codemod.studio";
 
 import { type NextRequest, NextResponse } from "next/server";
 
@@ -20,8 +20,8 @@ export async function middleware(request: NextRequest) {
     // based off the examples presented on:
     // https://nextjs.org/docs/app/building-your-application/configuring/content-security-policy
 
-    const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-    const cspHeader = `
+    let nonce = Buffer.from(crypto.randomUUID()).toString("base64");
+    let cspHeader = `
         default-src 'self';
         script-src 'self' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net https://www.googletagmanager.com;
 		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
@@ -39,15 +39,15 @@ export async function middleware(request: NextRequest) {
         worker-src 'self' blob: https://*.vercel.app;
     `;
 
-    const contentSecurityPolicyHeaderValue = cspHeader
+    let contentSecurityPolicyHeaderValue = cspHeader
       .replace(/\s{2,}/g, " ")
       .trim();
 
-    const headers = new Headers(request.headers);
+    let headers = new Headers(request.headers);
     headers.set("x-nonce", nonce);
     headers.set("Content-Security-Policy", contentSecurityPolicyHeaderValue);
 
-    const response = NextResponse.next({
+    let response = NextResponse.next({
       request: {
         headers,
       },
@@ -63,9 +63,9 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(CODEMOD_STUDIO_URL));
   }
 
-  const pathname = request.nextUrl.pathname;
+  let pathname = request.nextUrl.pathname;
   // @TODO fix sanity in middleware error
-  const redirect = await getRedirect(pathname);
+  let redirect = await getRedirect(pathname);
 
   if (redirect) {
     return NextResponse.redirect(new URL(redirect.destination, request.url), {
@@ -75,7 +75,7 @@ export async function middleware(request: NextRequest) {
 
   // only backend should be able to call this endpoint
   if (request.nextUrl.pathname === "/api/revalidate") {
-    const res = NextResponse.next();
+    let res = NextResponse.next();
 
     res.headers.append("Access-Control-Allow-Credentials", "true");
     res.headers.append(
@@ -95,7 +95,7 @@ export async function middleware(request: NextRequest) {
   }
 }
 
-export const config = {
+export let config = {
   matcher: [
     "/((?!_next/static|_next/image|favicon.ico|manage|blocks|favicons|fonts|images|studio-docs).*)",
   ],
