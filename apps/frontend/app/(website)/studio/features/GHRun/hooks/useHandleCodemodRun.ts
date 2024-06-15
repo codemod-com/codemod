@@ -6,13 +6,11 @@ import type { GHBranch, GithubRepository } from "be-types";
 
 type Props = {
   onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
-  codemodName?: string;
   selectedRepository: GithubRepository | undefined;
   selectedBranch: GHBranch | undefined;
 };
 export const useHandleCodemodRun = ({
   onCodemodRun,
-  codemodName,
   selectedRepository,
   selectedBranch,
 }: Props) => {
@@ -22,7 +20,6 @@ export const useHandleCodemodRun = ({
 
   return async () => {
     if (
-      !codemodName ||
       selectedRepository === undefined ||
       selectedBranch === undefined ||
       internalContent === null ||
@@ -36,7 +33,6 @@ export const useHandleCodemodRun = ({
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
       codemodSource: await transpileTs(internalContent),
-      codemodName,
       branch: selectedBranch.name,
     };
 
