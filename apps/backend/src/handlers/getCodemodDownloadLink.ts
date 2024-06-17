@@ -1,28 +1,24 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type { OrganizationMembership, User } from "@clerk/backend";
-import type { FastifyRequest } from "fastify";
-import type { CustomHandler } from "../customHandler.js";
+import type {
+  RawRequestDefaultExpression,
+  RawServerDefault,
+  RouteHandler,
+  RouteHandlerMethod,
+} from "fastify";
+import { codemodService } from "~/services/CodemodService.js";
+import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
-import type { CodemodService } from "../services/codemodService.js";
 import { environment } from "../util.js";
 
-export const getCodemodDownloadLink: CustomHandler<{
-  link: string;
-}> = async ({
-  request,
-  codemodService,
-}: {
-  request: FastifyRequest & {
-    user?: User;
-    organizations?: OrganizationMembership[];
-    allowedNamespaces?: string[];
-  };
-  codemodService: CodemodService;
-}) => {
+export type GetCodemodDownloadLinkResponse = { link: string };
+
+export const getCodemodDownloadLink: RouteHandler<{
+  Reply: GetCodemodDownloadLinkResponse;
+}> = async (request: UserDataPopulatedRequest) => {
   const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
-  const userId = request.user?.id;
+  const userId = request.user!.id;
 
   if (!userId) {
     return codemodService.getCodemodDownloadLink(name, null, []);

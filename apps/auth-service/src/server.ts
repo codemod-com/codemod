@@ -1,14 +1,17 @@
 import "dotenv/config";
 
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
-import fastifyMultipart from "@fastify/multipart";
-import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, { type FastifyPluginCallback } from "fastify";
-
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
-
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  type GetScopedTokenResponse,
+  isNeitherNullNorUndefined,
+} from "@codemod-com/utilities";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import fastifyRateLimit from "@fastify/rate-limit";
+import Fastify, { type FastifyPluginCallback } from "fastify";
+import { createLoginIntent } from "./handlers/intents/create.js";
+import { getLoginIntent } from "./handlers/intents/get.js";
+import { populateLoginIntent } from "./handlers/intents/populate.js";
 import { environment } from "./util.js";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
@@ -88,8 +91,6 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     timeWindow: 60 * 1000,
   });
 
-  await fastify.register(fastifyMultipart);
-
   for (const plugin of toRegister) {
     await fastify.register(plugin);
   }
@@ -111,6 +112,12 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     secretKey: environment.CLERK_SECRET_KEY,
     jwtKey: environment.CLERK_JWT_KEY,
   });
+
+  instance.get("/intents/:id", getLoginIntent);
+
+  instance.post("/intents", createLoginIntent);
+
+  instance.post("/populateLoginIntent", populateLoginIntent);
 
   instance.get("/verifyToken", async (request, reply) => {
     const { userId } = getAuth(request);
@@ -140,7 +147,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     }
 
     const user = await clerkClient.users.getUser(userId);
-    const organizations = await (
+    const organizations = (
       await clerkClient.users.getOrganizationMembershipList({ userId })
     ).data.map((organization) => organization);
     const allowedNamespaces = [
@@ -162,20 +169,23 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     });
   });
 
-  instance.get("/clientToken", async (request, reply) => {
-    const { userId, sessionId } = getAuth(request);
+  instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
+    "/clientToken",
+    async (request, reply) => {
+      const { userId, sessionId } = getAuth(request);
 
-    if (!userId && !sessionId) {
-      return reply.status(401).send({ message: "Invalid token" });
-    }
+      if (!userId && !sessionId) {
+        return reply.status(401).send({ message: "Invalid token" });
+      }
 
-    const { jwt } = await clerkClient.sessions.getToken(
-      sessionId,
-      environment.CLI_TOKEN_TEMPLATE,
-    );
+      const { jwt } = await clerkClient.sessions.getToken(
+        sessionId,
+        environment.CLI_TOKEN_TEMPLATE,
+      );
 
-    return reply.status(200).send({ token: jwt });
-  });
+      return reply.status(200).send({ token: jwt });
+    },
+  );
 
   instance.get("/oAuthToken", async (request, reply) => {
     const { userId } = getAuth(request);

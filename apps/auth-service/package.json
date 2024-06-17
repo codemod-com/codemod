@@ -12,6 +12,7 @@
     "@types/node": "20.10.5",
     "dotenv-cli": "^7.4.1",
     "esbuild": "^0.19.12",
+    "esbuild-plugin-copy": "^2.1.1",
     "ts-node": "10.9.2",
     "tsx": "^4.7.1",
     "typescript": "5.3.3"
@@ -19,6 +20,7 @@
   "dependencies": {
     "@clerk/backend": "^1.2.1",
     "@clerk/fastify": "^1.0.12",
+    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "^2.1.1",
     "@fastify/cors": "8.5.0",

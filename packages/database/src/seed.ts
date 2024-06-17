@@ -1,7 +1,7 @@
 import "dotenv/config";
 
 import { faker } from "@faker-js/faker";
-import { PrismaClient } from "./client";
+import { PrismaClient } from "../prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -28,11 +28,14 @@ const frameworks = [
 
 const engines = ["jscodeshift", "ts-morph", "ast-grep"];
 
-const getRandomElementOfArray = (array) => faker.helpers.arrayElement(array);
+const getRandomElementOfArray = (array: any[]) =>
+  faker.helpers.arrayElement(array);
 const getRandomName = () => faker.person.fullName();
-const getRandomNumber = (min, max) => faker.helpers.rangeToNumber({ min, max });
+const getRandomNumber = (min: number, max: number) =>
+  faker.helpers.rangeToNumber({ min, max });
 const getRandomWord = () => faker.lorem.word();
-const getRandomWords = (min, max) => faker.lorem.words({ min, max });
+const getRandomWords = (min: number, max: number) =>
+  faker.lorem.words({ min, max });
 const getRandomCategory = () => faker.helpers.arrayElement(useCaseCategories);
 const getRandomFramework = () => faker.helpers.arrayElement(frameworks);
 const getRandomEngine = () => faker.helpers.arrayElement(engines);

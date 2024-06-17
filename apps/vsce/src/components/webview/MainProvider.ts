@@ -29,7 +29,6 @@ import type {
   WebviewMessage,
   WebviewResponse,
 } from "./webviewEvents";
-const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const validateAccessToken = async (
   accessToken: string,
@@ -39,9 +38,7 @@ export const validateAccessToken = async (
       "https://backend.codemod.com/validateAccessToken",
       {},
       {
-        headers: {
-          [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
         timeout: 5000,
       },
     );
@@ -68,16 +65,8 @@ export const createIssue = async (
 
   const result = await axios.post(
     "https://backend.codemod.com/sourceControl/github/issues",
-    {
-      title,
-      body,
-      repoUrl: codemodRegistryRepoUrl,
-    },
-    {
-      headers: {
-        [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-      },
-    },
+    { title, body, repoUrl: codemodRegistryRepoUrl },
+    { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (result.status !== 200) {
     await onFail();

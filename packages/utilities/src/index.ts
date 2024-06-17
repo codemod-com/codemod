@@ -1,4 +1,10 @@
 export * from "./constants.js";
+export { buildCodemodSlug } from "./functions/buildCodemodSlug.js";
+export {
+  decryptWithIv,
+  encryptWithIv,
+  type KeyIvPair,
+} from "./functions/crypto.js";
 export { debounce } from "./functions/debounce.js";
 export {
   backtickify,
@@ -23,7 +29,6 @@ export {
   assertsNeitherNullOrUndefined,
   isNeitherNullNorUndefined,
 } from "./functions/validationMethods.js";
-export { buildCodemodSlug } from "./functions/buildCodemodSlug.js";
 export {
   getCodemodProjectFiles,
   isAstGrepProjectFiles,
@@ -49,6 +54,8 @@ export {
 export type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
+  GetScopedTokenResponse,
+  VerifyCLITokenResponse,
 } from "./schemata/apiResponses.js";
 export {
   argumentRecordSchema,
@@ -58,6 +65,7 @@ export {
   type Argument,
   type ArgumentRecord,
 } from "./schemata/argumentRecordSchema.js";
+export * from "./schemata/clerk.js";
 export {
   PIRANHA_LANGUAGES,
   allEnginesSchema,
@@ -93,7 +101,6 @@ export {
 } from "./schemata/surfaceAgnosticJobSchema.js";
 export * from "./schemata/types.js";
 export { type FileSystem } from "./schemata/types.js";
-export { type ValidateTokenResponse } from "./schemata/validateTokenResponse.js";
 export { CaseReadingService } from "./services/case/caseReadingService.js";
 export { CaseWritingService } from "./services/case/caseWritingService.js";
 export { FileWatcher } from "./services/case/fileWatcher.js";

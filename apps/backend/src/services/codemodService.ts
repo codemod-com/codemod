@@ -1,10 +1,16 @@
 import {
+  type Codemod,
+  type Prisma,
+  type PrismaClient,
+  type Tag,
+  prisma,
+} from "@codemod-com/database";
+import {
   type AllEngines,
   type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import Fuse from "fuse.js";
-import type { Codemod, Prisma, PrismaClient, Tag } from "../../prisma/client";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];
@@ -326,7 +332,7 @@ export class CodemodService {
       }
       downloadLink = await generateSignedUrl(
         latestVersion.s3Bucket,
-        latestVersion.s3UploadKey!,
+        latestVersion.s3UploadKey,
       );
     }
 
@@ -424,3 +430,5 @@ export class CodemodService {
     return codemodData;
   }
 }
+
+export const codemodService = new CodemodService(prisma);
