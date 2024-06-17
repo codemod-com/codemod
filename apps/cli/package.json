@@ -86,8 +86,6 @@
     "@ast-grep/napi": "^0.22.3",
     "esbuild": "^0.17.14",
     "keytar": "^7.9.0",
-    "@sindresorhus/slugify": "^2.2.1",
-    "filenamify": "^6.0.0",
     "prettier": "^3.2.5"
   }
 }
