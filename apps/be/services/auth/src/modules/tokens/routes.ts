@@ -5,9 +5,9 @@ import {
   getOAuthToken,
   revokeToken,
   validateToken,
-} from "./token.controllers";
+} from "./controllers";
 
-import { bearerTokenHeadersValidator } from "./token.validators";
+import { bearerTokenHeadersValidator } from "./validators";
 
 export async function tokenRoutes(server: FastifyInstance) {
   server.get(

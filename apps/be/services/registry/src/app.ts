@@ -15,12 +15,16 @@ import {
   serverOptions,
 } from "./config";
 
+import type { Prisma } from "@prisma/client";
 import { gracefulShutdown } from "./utils";
 
 declare module "fastify" {
   export interface FastifyInstance {
     name: string;
     run: () => Promise<void>;
+  }
+  export interface FastifyRequest {
+    prisma: Prisma;
   }
 }
 

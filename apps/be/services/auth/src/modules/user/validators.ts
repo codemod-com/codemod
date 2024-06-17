@@ -1,5 +1,5 @@
 import type { FastifyInstance, RouteShorthandOptions } from "fastify";
-import { BearerTokenHeaders } from "./user.schemas";
+import { BearerTokenHeaders } from "./schemas";
 
 export function bearerTokenHeadersValidator(
   server: FastifyInstance,

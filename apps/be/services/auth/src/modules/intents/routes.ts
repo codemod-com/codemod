@@ -7,10 +7,7 @@ import type {
   PopulateIntentQuery,
 } from "./schemas";
 
-import {
-  getIntentValidator,
-  populateIntentValidator,
-} from "./intents.validators";
+import { getIntentValidator, populateIntentValidator } from "./validators";
 
 export async function intentRoutes(server: FastifyInstance) {
   server.post("/intents", createIntent);

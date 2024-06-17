@@ -58,10 +58,8 @@ export const createService = async ({
     const { host, port } = serverOptions;
     try {
       gracefulShutdown(server);
-
       await this.ready();
       await this.listen({ host, port });
-
       this.log.info(`Server routes: \n${this.printRoutes()}`);
     } catch (error) {
       this.log.error(`Server start error: ${error}`);

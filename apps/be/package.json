@@ -4,9 +4,8 @@
   "scripts": {
     "start:auth": "tsx services/auth/src/run.ts",
     "start:registry": "tsx services/registry/src/run.ts",
-    "build:auth": "node ./services/auth/esbuild.config.js",
-    "start": "node build/index.js",
-    "test": "vitest --run"
+    "prisma:generate": "prisma generate",
+    "prisma:migrate:dev": "prisma migrate dev"
   },
   "author": "Codemod inc.",
   "private": true,
@@ -21,6 +20,7 @@
     "esbuild": "^0.19.12",
     "esbuild-plugin-copy": "^2.1.1",
     "nodemon": "3.0.2",
+    "prisma": "^5.10.2",
     "supertest": "^6.3.4",
     "ts-node": "10.9.2",
     "tsx": "^4.7.1",
@@ -30,11 +30,11 @@
   "dependencies": {
     "@clerk/backend": "1.2.3",
     "@clerk/fastify": "^1.0.14",
-    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.2.0",
     "@fastify/rate-limit": "9.0.1",
+    "@prisma/client": "^5.14.0",
     "cron": "^3.1.6",
     "dotenv": "^16.4.5",
     "fastify": "4.25.1",

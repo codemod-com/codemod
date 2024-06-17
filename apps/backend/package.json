@@ -34,7 +34,6 @@
     "@aws-sdk/s3-request-presigner": "^3.549.0",
     "@clerk/backend": "0.36.0",
     "@clerk/fastify": "0.6.27",
-    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "^2.1.1",
     "@fastify/cors": "8.5.0",

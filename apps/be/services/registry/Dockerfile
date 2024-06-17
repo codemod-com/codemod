@@ -23,16 +23,13 @@ RUN pnpm ---filter backend build:auth
 
 RUN pnpm build ---filter @codemod-com/utilities --filter @codemod-com/database
 
-
-
 FROM node:20-alpine3.16
 
 WORKDIR /app
 
 COPY --from=builder /app/apps/backend/package.json /app
-COPY --from=builder /app/apps/backend/build /app/build
-COPY --from=builder /app/apps/backend/prisma /app/prisma
+COPY --from=builder /app/apps/backend/services/auth/build /app/build
 
-EXPOSE 8081
+EXPOSE 8080
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node build/index.js"]

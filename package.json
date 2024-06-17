@@ -27,10 +27,10 @@
     "url": "https://github.com/codemod-com/codemod.git"
   },
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "clean": "turbo run clean",
-    "link": "turbo run link",
+    "dev": " run dev",
+    "build": " run build",
+    "clean": " run clean",
+    "link": " run link",
     "lint": "biome check .",
     "lint:apply": "biome check --apply .",
     "lint:linter": "biome lint --apply .",
@@ -42,13 +42,13 @@
     "coverage": "pnpm test:unit --coverage",
     "prepare": "husky install",
     "release:changelog": "node scripts/releaseChangelog.mjs",
-    "db:generate": "dotenv -- turbo run db:generate",
-    "db:migrate:create": "dotenv -- turbo run db:migrate:create",
-    "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
-    "db:push": "dotenv -- turbo run db:push",
-    "db:reset": "dotenv -- turbo run db:reset",
-    "db:seed": "dotenv -- turbo run db:seed",
-    "db:studio": "dotenv -- turbo run db:studio"
+    "db:generate": "turbo db:generate",
+    "db:migrate:create": "dotenv --  run db:migrate:create",
+    "db:migrate": "turbo db:push --skip-generate",
+    "db:push": "dotenv --  run db:push",
+    "db:reset": "dotenv --  run db:reset",
+    "db:seed": "dotenv --  run db:seed",
+    "db:studio": "dotenv --  run db:studio"
   },
   "devDependencies": {
     "@codemod-com/tsconfig": "workspace:*",

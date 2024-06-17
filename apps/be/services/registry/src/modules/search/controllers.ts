@@ -1,5 +1,3 @@
-import { type Prisma, type Tag, prisma } from "@codemod-com/database";
-
 import type { FastifyReply, FastifyRequest } from "fastify";
 import type { SearchQuery } from "./schemas";
 
