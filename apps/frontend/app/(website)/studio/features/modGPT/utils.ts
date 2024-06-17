@@ -45,9 +45,7 @@ export const getOrderedAliasList = (aliases: Aliases) =>
 
 export const usePrompts = (aliases: Aliases) => {
   const codemodExecutionError = useCodemodExecutionError();
-  const prompts = [
-    ["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
-  ];
+  const prompts = [["Autogenerate with AI", autoGenerateCodemodPrompt]];
 
   const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 
