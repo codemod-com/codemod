@@ -456,7 +456,7 @@ const packageJson = ({
   } else if (engine === "filemod") {
     devDeps["@codemod-com/filemod"] = "^2.0.0";
   } else if (engine === "workflow") {
-    devDeps["@codemod.com/workflow"] = "^0.0.1";
+    devDeps["@codemod.com/workflow"] = "*";
   }
 
   if (Object.keys(devDeps).length) {
@@ -819,8 +819,9 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 export const emptyWorkflowBoilerplate = beautify(`
 import type { Api } from "@codemod.com/workflow";
 
-export async function workflow({ jsFiles }: Api) {
-  await jsFiles("**/*.ts")
+export async function workflow({ files }: Api) {
+  await files("**/*.ts")
+    .js()
     .astGrep("console.log($A)")
     .replace("console.error($A)");
 }
