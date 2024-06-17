@@ -7,8 +7,8 @@ import { vercelStegaCleanAll } from "@sanity/client/stega";
 import useSWR from "swr";
 
 export default function SectionRegistry(props: SectionRegistryProps) {
-  const slugs = vercelStegaCleanAll(props.initialAutomationSlugs);
-  const { data: automations } = useSWR("RegistrySection", () =>
+  let slugs = vercelStegaCleanAll(props.initialAutomationSlugs);
+  let { data: automations } = useSWR("RegistrySection", () =>
     getInitialAutomations(slugs),
   );
 

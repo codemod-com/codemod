@@ -1,7 +1,7 @@
 import { z } from 'zod';
-const querySchema = z.object({
-  'some-param': z.string(),
+let querySchema = z.object({
+	'some-param': z.string(),
 });
-const query = buildQuery(props.location?.search ?? '');
-const parsedQuery = querySchema.parse(query);
-const someParam = parsedQuery['some-param'] === 'true';
+let query = buildQuery(props.location?.search ?? '');
+let parsedQuery = querySchema.parse(query);
+let someParam = parsedQuery['some-param'] === 'true';

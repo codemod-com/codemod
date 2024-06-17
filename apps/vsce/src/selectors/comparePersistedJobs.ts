@@ -1,34 +1,34 @@
-import { Uri } from "vscode";
-import { type Job, JobKind, type PersistedJob } from "../jobs/types";
+import { Uri } from 'vscode';
+import { type Job, JobKind, type PersistedJob } from '../jobs/types';
 
-export const doesJobAddNewFile = (kind: Job["kind"]): boolean => {
-  return [
-    JobKind.copyFile,
-    JobKind.createFile,
-    JobKind.moveAndRewriteFile,
-    JobKind.moveFile,
-  ].includes(kind);
+export let doesJobAddNewFile = (kind: Job['kind']): boolean => {
+	return [
+		JobKind.copyFile,
+		JobKind.createFile,
+		JobKind.moveAndRewriteFile,
+		JobKind.moveFile,
+	].includes(kind);
 };
 
-export const getPersistedJobUri = (job: PersistedJob): Uri | null => {
-  if (doesJobAddNewFile(job.kind) && job.newUri !== null) {
-    return Uri.parse(job.newUri);
-  }
+export let getPersistedJobUri = (job: PersistedJob): Uri | null => {
+	if (doesJobAddNewFile(job.kind) && job.newUri !== null) {
+		return Uri.parse(job.newUri);
+	}
 
-  if (!doesJobAddNewFile(job.kind) && job.oldUri !== null) {
-    return Uri.parse(job.oldUri);
-  }
+	if (!doesJobAddNewFile(job.kind) && job.oldUri !== null) {
+		return Uri.parse(job.oldUri);
+	}
 
-  return null;
+	return null;
 };
 
-export const comparePersistedJobs = (a: PersistedJob, b: PersistedJob) => {
-  const aUri = getPersistedJobUri(a);
-  const bUri = getPersistedJobUri(b);
+export let comparePersistedJobs = (a: PersistedJob, b: PersistedJob) => {
+	let aUri = getPersistedJobUri(a);
+	let bUri = getPersistedJobUri(b);
 
-  if (aUri === null || bUri === null) {
-    return 0;
-  }
+	if (aUri === null || bUri === null) {
+		return 0;
+	}
 
-  return aUri.fsPath.localeCompare(bUri.fsPath);
+	return aUri.fsPath.localeCompare(bUri.fsPath);
 };

@@ -1,17 +1,17 @@
-import vm from "node:vm";
-import astGrep from "@ast-grep/napi";
-import type { ConsoleKind } from "@codemod-com/printer";
-import type { ArgumentRecord } from "@codemod-com/utilities";
-import workflow from "@codemod.com/workflow";
-import { buildVmConsole } from "./buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
+import vm from 'node:vm';
+import astGrep from '@ast-grep/napi';
+import type { ConsoleKind } from '@codemod-com/printer';
+import type { ArgumentRecord } from '@codemod-com/utilities';
+import workflow from '@codemod.com/workflow';
+import { buildVmConsole } from './buildVmConsole.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
 
-const transform = async (
-  codemodSource: string,
-  safeArgumentRecord: ArgumentRecord,
-  consoleCallback: (kind: ConsoleKind, message: string) => void,
+let transform = async (
+	codemodSource: string,
+	safeArgumentRecord: ArgumentRecord,
+	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ) => {
-  const codeToExecute = `
+	let codeToExecute = `
 		${CONSOLE_OVERRIDE}
 
 		const __module__ = { exports: {} };
@@ -35,36 +35,36 @@ const transform = async (
 		promise = workflow(api);
 	`;
 
-  const exports = Object.freeze({});
+	let exports = Object.freeze({});
 
-  const context = vm.createContext({
-    module: Object.freeze({
-      exports,
-    }),
-    exports,
-    __CODEMODCOM__argumentRecord: safeArgumentRecord,
-    __CODEMODCOM__console__: buildVmConsole(consoleCallback),
-    __CODEMOD_SOURCE__: codemodSource,
-    require: (name: string) => {
-      if (name === "@ast-grep/napi") {
-        return astGrep;
-      }
-      if (name === "@codemod.com/workflow") {
-        return workflow;
-      }
-    },
-    promise: undefined,
-  });
-  vm.runInContext(codeToExecute, context, { timeout: 30000 });
-  if (context.promise) {
-    await context.promise;
-  }
+	let context = vm.createContext({
+		module: Object.freeze({
+			exports,
+		}),
+		exports,
+		__CODEMODCOM__argumentRecord: safeArgumentRecord,
+		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
+		__CODEMOD_SOURCE__: codemodSource,
+		require: (name: string) => {
+			if (name === '@ast-grep/napi') {
+				return astGrep;
+			}
+			if (name === '@codemod.com/workflow') {
+				return workflow;
+			}
+		},
+		promise: undefined,
+	});
+	vm.runInContext(codeToExecute, context, { timeout: 30000 });
+	if (context.promise) {
+		await context.promise;
+	}
 };
 
-export const runWorkflowCodemod = async (
-  codemodSource: string,
-  safeArgumentRecord: ArgumentRecord,
-  consoleCallback: (kind: ConsoleKind, message: string) => void,
+export let runWorkflowCodemod = async (
+	codemodSource: string,
+	safeArgumentRecord: ArgumentRecord,
+	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ) => {
-  await transform(codemodSource, safeArgumentRecord, consoleCallback);
+	await transform(codemodSource, safeArgumentRecord, consoleCallback);
 };

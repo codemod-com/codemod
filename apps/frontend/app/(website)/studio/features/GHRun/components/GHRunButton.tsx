@@ -13,34 +13,34 @@ import { memo, useState } from "react";
 import { useCodemodExecution } from "../hooks/useCodemodExecution";
 import { RepositoryModal } from "./RepositoryModal";
 
-export const GHRunButton = memo(() => {
-  const [repositoriesToShow, setRepositoriesToShow] = useState<
+export let GHRunButton = memo(() => {
+  let [repositoriesToShow, setRepositoriesToShow] = useState<
     GithubRepository[]
   >([]);
 
-  const [codemodExecutionId, setCodemodExecutionId, clearExecutionId] =
+  let [codemodExecutionId, setCodemodExecutionId, clearExecutionId] =
     useLocalStorage("codemodExecutionId");
-  const [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
+  let [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
 
-  const {
+  let {
     showModalWithRepositories,
     hideRepositoryModal,
     isRepositoryModalShown,
     areReposLoading,
   } = useOpenRepoModalAfterSignIn(setRepositoriesToShow);
 
-  const showRepoModalToSignedUser = useEnsureUserSigned(
+  let showRepoModalToSignedUser = useEnsureUserSigned(
     showModalWithRepositories,
     "openRepoModal",
   );
 
-  const codemodRunStatus = useExecutionStatus({
+  let codemodRunStatus = useExecutionStatus({
     codemodExecutionId,
     clearExecutionId,
   });
-  const status = codemodRunStatus?.result?.status ?? null;
-  const { text, hintText } = getButtonPropsByStatus(status);
-  const { onCodemodRun } = useCodemodExecution({
+  let status = codemodRunStatus?.result?.status ?? null;
+  let { text, hintText } = getButtonPropsByStatus(status);
+  let { onCodemodRun } = useCodemodExecution({
     codemodExecutionId,
     setCodemodExecutionId,
   });

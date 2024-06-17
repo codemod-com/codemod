@@ -6,7 +6,7 @@ type Props = {
   title: string;
 };
 
-const rootStyle = {
+let rootStyle = {
   display: "flex",
   height: "630px",
   width: "1200px",
@@ -16,7 +16,7 @@ const rootStyle = {
   flexDirection: "column",
 } as CSSProperties;
 
-const bgPatternDivStyle = {
+let bgPatternDivStyle = {
   display: "flex",
   position: "absolute",
   left: 0,
@@ -25,7 +25,7 @@ const bgPatternDivStyle = {
   height: "100%",
 } as CSSProperties;
 
-const containerStyle = {
+let containerStyle = {
   display: "flex",
   position: "relative",
   margin: "111px 131px",
@@ -36,7 +36,7 @@ const containerStyle = {
   widows: "938px",
 } as CSSProperties;
 
-const titleStyle = {
+let titleStyle = {
   display: "flex",
   flexDirection: "column",
   position: "relative",
@@ -52,7 +52,7 @@ const titleStyle = {
   height: "100%",
 } as CSSProperties;
 
-const titleSmallStyle = {
+let titleSmallStyle = {
   display: "flex",
   position: "relative",
   fontFamily: "Satoshi-Bold",
@@ -67,7 +67,7 @@ const titleSmallStyle = {
   height: "100%",
 } as CSSProperties;
 
-const Base = (props: Props) => {
+let Base = (props: Props) => {
   return (
     <div style={rootStyle}>
       <div style={bgPatternDivStyle}>

@@ -12,23 +12,23 @@ type ArticleSearchProps = {
   blogSearchPlaceholder?: string;
 };
 
-const ArticleSearch = ({
+let ArticleSearch = ({
   blogSearchNoResults,
   blogSearchPlaceholder,
 }: ArticleSearchProps) => {
-  const [searchInput, setSearchInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [articlesData, setArticlesData] = useState<
+  let [searchInput, setSearchInput] = useState("");
+  let [loading, setLoading] = useState(false);
+  let [articlesData, setArticlesData] = useState<
     BlogArticleCardData[] | null
   >(null);
-  const searchRef = useRef<HTMLDivElement>(null);
-  const [isSearchOpen, setSearchIsOpen] = useUniversalClosing([searchRef]);
+  let searchRef = useRef<HTMLDivElement>(null);
+  let [isSearchOpen, setSearchIsOpen] = useUniversalClosing([searchRef]);
 
-  const getAllBlogArticles = async (textSearch: string) => {
+  let getAllBlogArticles = async (textSearch: string) => {
     setLoading(true);
     try {
-      const searchText = removeSpecialChars(textSearch).trim();
-      const articles = searchText.length
+      let searchText = removeSpecialChars(textSearch).trim();
+      let articles = searchText.length
         ? await fetch("/api/search-articles", {
             method: "POST",
             body: JSON.stringify({ textSearch: searchText }),

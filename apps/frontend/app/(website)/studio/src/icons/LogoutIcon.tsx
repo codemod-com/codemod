@@ -1,4 +1,4 @@
-export const LogoutIcon = () => (
+export let LogoutIcon = () => (
   <svg
     width="16"
     height="16"

@@ -5,10 +5,10 @@ import { redirect } from "next/navigation";
 import { client } from "@/data/sanity/client";
 import { env } from "@/env";
 
-const clientWithToken = client.withConfig({ token: env.SANITY_API_TOKEN });
+let clientWithToken = client.withConfig({ token: env.SANITY_API_TOKEN });
 
 export async function GET(request: Request) {
-  const { isValid, redirectTo = "/" } = await validatePreviewUrl(
+  let { isValid, redirectTo = "/" } = await validatePreviewUrl(
     clientWithToken,
     request.url,
   );

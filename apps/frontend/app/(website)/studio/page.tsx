@@ -7,7 +7,7 @@ import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
-  const isDark =
+  let isDark =
     !isServer && document.documentElement.classList.contains("dark");
   useEffect(() => {
     document.documentElement.classList.remove("light", "dark");
@@ -32,4 +32,4 @@ export default function Page() {
   );
 }
 
-export const dynamic = "force-dynamic";
+export let dynamic = "force-dynamic";

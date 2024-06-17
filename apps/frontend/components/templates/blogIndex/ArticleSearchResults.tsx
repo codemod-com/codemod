@@ -7,7 +7,7 @@ import type { BlogArticleCardData } from "@/types/object.types";
 import { useCallback, useRef } from "react";
 import { TextHighlight } from "./TextHighlight";
 
-export const SearchResults = ({
+export let SearchResults = ({
   articlesData,
   query,
   noResultsText,
@@ -16,9 +16,9 @@ export const SearchResults = ({
   query: string;
   noResultsText: string;
 }) => {
-  const searchResultsRef = useRef<HTMLDivElement>(null);
+  let searchResultsRef = useRef<HTMLDivElement>(null);
 
-  const handleScroll = useCallback(() => {
+  let handleScroll = useCallback(() => {
     if (searchResultsRef.current) {
       searchResultsRef.current.scrollIntoView({
         behavior: "smooth",

@@ -11,7 +11,7 @@ import {
   union,
 } from "valibot";
 
-const frozenMessageSchema = object({
+let frozenMessageSchema = object({
   id: string(),
   createdAt: optional(number()),
   content: string(),
@@ -27,10 +27,10 @@ const frozenMessageSchema = object({
 
 type FrozenMessage = Output<typeof frozenMessageSchema>;
 
-export const parseFrozenMessages = (input: unknown) =>
+export let parseFrozenMessages = (input: unknown) =>
   parse(array(frozenMessageSchema), input);
 
-export const freezeMessage = (message: Message): FrozenMessage => ({
+export let freezeMessage = (message: Message): FrozenMessage => ({
   id: message.id,
   createdAt: message.createdAt?.getTime(),
   content: message.content,
@@ -45,7 +45,7 @@ export const freezeMessage = (message: Message): FrozenMessage => ({
       : undefined,
 });
 
-export const unfreezeMessage = (frozenMessage: FrozenMessage): Message => ({
+export let unfreezeMessage = (frozenMessage: FrozenMessage): Message => ({
   id: frozenMessage.id,
   createdAt:
     frozenMessage.createdAt !== undefined

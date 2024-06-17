@@ -7,7 +7,7 @@ interface Options {
   useClickOutside?: boolean;
 }
 
-const optionDefaults: Options = {
+let optionDefaults: Options = {
   useKeyDown: true,
   useClickOutside: true,
 };
@@ -16,22 +16,22 @@ function useUniversalClosing<T extends HTMLElement>(
   refs: RefType<T>[],
   options: Options = {},
 ): [boolean, React.Dispatch<React.SetStateAction<boolean>>] {
-  const currentOptions = { ...optionDefaults, ...options };
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const isOpen = useRef(false);
+  let currentOptions = { ...optionDefaults, ...options };
+  let [isMenuOpen, setIsMenuOpen] = useState(false);
+  let isOpen = useRef(false);
 
   useEffect(() => {
     isOpen.current = isMenuOpen;
   }, [isMenuOpen]);
 
-  const handleKeyDown = (ev: KeyboardEvent) => {
+  let handleKeyDown = (ev: KeyboardEvent) => {
     if (ev.code === "Escape") {
       setIsMenuOpen(false);
       isOpen.current = false;
     }
   };
 
-  const handleClick = (ev: MouseEvent) => {
+  let handleClick = (ev: MouseEvent) => {
     let isClickOutside = true;
 
     refs.forEach((ref) => {

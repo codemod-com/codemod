@@ -17,7 +17,7 @@ export type AIAssistantState = Readonly<{
   engine: LLMEngine;
 }>;
 
-const AIAssistantInitialState = {
+let AIAssistantInitialState = {
   loading: false,
   error: null,
   result: null,
@@ -39,11 +39,11 @@ export type CFSStateSetters = {
 
 export type CFSState = CFSStateValues & CFSStateSetters;
 
-export const defaultState: CFSStateValues = {
+export let defaultState: CFSStateValues = {
   AIAssistant: AIAssistantInitialState,
 };
 
-export const useCFSStore = create<CFSState>((set, get) => ({
+export let useCFSStore = create<CFSState>((set, get) => ({
   ...defaultState,
   setEngine: (engine: LLMEngine) =>
     set((state) => ({ AIAssistant: { ...state.AIAssistant, engine } })),

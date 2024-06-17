@@ -2,9 +2,9 @@ import publicConfig from "@/config";
 import type { Metadata } from "next";
 import Studio from "./Studio";
 
-export const dynamic = "force-static";
+export let dynamic = "force-static";
 
-export const metadata: Metadata = {
+export let metadata: Metadata = {
   title: `${publicConfig.siteName} - CMS`,
 };
 

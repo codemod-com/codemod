@@ -16,7 +16,7 @@ export default function Checkbox({
   checked,
   ...props
 }: CheckboxProps) {
-  const [_checked, setChecked] = useState(checked);
+  let [_checked, setChecked] = useState(checked);
 
   return (
     <label

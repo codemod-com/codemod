@@ -65,7 +65,7 @@ type PargraphProps = {
 };
 
 function ParagraphWithTitle(props: PargraphProps) {
-  const getSides = () => {
+  let getSides = () => {
     return {
       right: false,
       left: false,
@@ -127,7 +127,7 @@ type TeamMemberProps = {
 };
 
 function TeamMemberGridItem(props: TeamMemberProps) {
-  const getSides = () => {
+  let getSides = () => {
     return {
       right: false,
       left: false,
@@ -136,12 +136,12 @@ function TeamMemberGridItem(props: TeamMemberProps) {
     };
   };
 
-  const { cleaned: previousCompany } = vercelStegaSplit(
+  let { cleaned: previousCompany } = vercelStegaSplit(
     props.previousCompany || "",
   );
 
   return (
-    <div className="flex flex-col p-s lg:p-m ">
+    (<div className="flex flex-col p-s lg:p-m ">
       <div className="flex h-full flex-col">
         <div className="max-h-[212px] max-w-[212px] bg-emphasis-light lg:h-[212px] lg:w-[212px] dark:bg-emphasis-dark">
           {props.image ? (
@@ -155,11 +155,11 @@ function TeamMemberGridItem(props: TeamMemberProps) {
             />
           ) : (
             // eslint-disable-next-line @next/next/no-img-element
-            <img
+            (<img
               src="/static/img-placeholder.svg"
               className="h-full w-full rounded-s bg-secondary-light dark:bg-secondary-dark"
               alt="Placeholder"
-            />
+            />)
           )}
         </div>
         <GradientBorderBox
@@ -253,7 +253,7 @@ function TeamMemberGridItem(props: TeamMemberProps) {
           )}
         </div>
       </div>
-    </div>
+    </div>)
   );
 }
 
@@ -263,7 +263,7 @@ type CompaniesProps = {
 
 function Companies(props: CompaniesProps) {
   return (
-    <Section className="relative z-0 w-full max-w-full overflow-x-clip py-2xl lg:py-20">
+    (<Section className="relative z-0 w-full max-w-full overflow-x-clip py-2xl lg:py-20">
       <div className="relative z-20 flex flex-col items-center justify-center text-center">
         <div className="flex flex-col items-center justify-center gap-4">
           <h2 className="l-heading max-w-96 text-balance font-bold lg:max-w-[800px]">
@@ -300,7 +300,7 @@ function Companies(props: CompaniesProps) {
               >
                 {props.companies.logoCarousel.logos?.map(
                   (item, index, array) => {
-                    const isLastAndOdd =
+                    let isLastAndOdd =
                       index === array.length - 1 && (index + 1) % 2 !== 0;
 
                     return (
@@ -343,7 +343,7 @@ function Companies(props: CompaniesProps) {
           </GradientBorderBox>
         </div>
       )}
-    </Section>
+    </Section>)
   );
 }
 

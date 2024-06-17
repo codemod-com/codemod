@@ -1,4 +1,4 @@
-export const DownloadIcon = () => (
+export let DownloadIcon = () => (
   <svg
     width="16"
     height="16"

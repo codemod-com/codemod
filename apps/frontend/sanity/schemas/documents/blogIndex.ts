@@ -8,7 +8,7 @@ import page from "./page";
  *
  * For routing & querying information, refer to the coresponding singleton and the collection's document type schemas.
  */
-export const blogIndex = definePage({
+export let blogIndex = definePage({
   name: "blogIndex",
   title: "Blog Index",
   type: "document",

@@ -19,12 +19,12 @@ export default function InfiniteSlider({
   }[];
   direction?: "left" | "right";
 }) {
-  const isMobile = useMedia("(max-width: 768px)");
+  let isMobile = useMedia("(max-width: 768px)");
   if (!items?.length) {
     return null;
   }
 
-  const _items = items
+  let _items = items
     .concat(items)
     .concat(items)
     .concat(items)
@@ -83,7 +83,7 @@ export default function InfiniteSlider({
   );
 }
 
-const EdgeFadeWrapper = ({ children }) => {
+let EdgeFadeWrapper = ({ children }) => {
   return (
     <div className="relative">
       <div className="pointer-events-none absolute -left-px -top-6 z-10 h-24 w-4 bg-gradient-to-r from-white px-4 py-2 md:w-8 lg:w-24 dark:from-[#0b151e] dark:via-[#0b151e]" />

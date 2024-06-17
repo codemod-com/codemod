@@ -26,7 +26,7 @@ export type PromptPanelProps = Pick<
 };
 
 export function PromptPanel(props: PromptPanelProps) {
-  const {
+  let {
     handleSubmit,
     isLoading,
     stop,
@@ -36,17 +36,17 @@ export function PromptPanel(props: PromptPanelProps) {
     startIterativeCodemodGeneration,
     resetMessages,
   } = props;
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [expandedHelper, setExpandedHelper] = useState(true);
-  const { isSignedIn } = useAuth();
-  const aliases = useGetAliases();
-  const promptsList = usePrompts(aliases);
-  const aliasList = getOrderedAliasList(aliases);
+  let textAreaRef = useRef<HTMLTextAreaElement>(null);
+  let [expandedHelper, setExpandedHelper] = useState(true);
+  let { isSignedIn } = useAuth();
+  let aliases = useGetAliases();
+  let promptsList = usePrompts(aliases);
+  let aliasList = getOrderedAliasList(aliases);
 
-  const handleInsertValue = (value: string) => {
-    const textArea = textAreaRef.current;
+  let handleInsertValue = (value: string) => {
+    let textArea = textAreaRef.current;
     if (textArea) {
-      const updatedInput = insertValue(textArea, input, value);
+      let updatedInput = insertValue(textArea, input, value);
       setInput(updatedInput);
       textArea.focus();
     }

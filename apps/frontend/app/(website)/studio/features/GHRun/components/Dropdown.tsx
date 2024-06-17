@@ -23,7 +23,7 @@ type DropdownSelectorProps<T> = {
   loadingMessage?: string;
 };
 
-export const DropdownSelector = <T,>({
+export let DropdownSelector = <T,>({
   selectedValue,
   propName,
   onSelect,
@@ -33,10 +33,10 @@ export const DropdownSelector = <T,>({
   isLoading = false,
   loadingMessage = "Fetching",
 }: DropdownSelectorProps<T>) => {
-  const [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
-  const [valueToFilterBy, setValueToFilterBy] = useState<string>();
+  let [repoSelectorOpen, setRepoSelectorOpen] = useState(false);
+  let [valueToFilterBy, setValueToFilterBy] = useState<string>();
 
-  const filteredElements = useFilteredItems(
+  let filteredElements = useFilteredItems(
     items,
     valueToFilterBy,
     selectedValue,

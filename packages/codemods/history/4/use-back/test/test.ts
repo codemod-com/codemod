@@ -1,12 +1,12 @@
-import assert from "node:assert/strict";
-import { buildApi, trimLicense } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert/strict';
+import { buildApi, trimLicense } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("history v4 use-back", () => {
-  it("should replace history.goBack() with history.back()", async () => {
-    const input = `
+describe('history v4 use-back', () => {
+	it('should replace history.goBack() with history.back()', async () => {
+		let input = `
 		history.goBack();
 
 		const Component = () => {		  
@@ -28,7 +28,7 @@ describe("history v4 use-back", () => {
 		  };
 		`;
 
-    const output = `
+		let output = `
 		history.back();
 
 		const Component = () => {		  
@@ -50,16 +50,16 @@ describe("history v4 use-back", () => {
 		  };
 		`;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: trimLicense(input),
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: trimLicense(input),
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+		let actualOutput = transform(fileInfo, buildApi('js'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      trimLicense(output).replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			trimLicense(output).replace(/\W/gm, ''),
+		);
+	});
 });

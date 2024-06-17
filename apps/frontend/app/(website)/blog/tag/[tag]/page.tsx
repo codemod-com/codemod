@@ -6,9 +6,9 @@ export { generateMetadata };
 export default BlogRoute;
 
 export async function generateStaticParams() {
-  const tags = await client.fetch(groq`*[_type == "blog.tag"]`);
+  let tags = await client.fetch(groq`*[_type == "blog.tag"]`);
 
-  const paths = tags.map((tag: any) => ({
+  let paths = tags.map((tag: any) => ({
     tag: tag.slug?.current,
   }));
 

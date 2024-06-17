@@ -8,15 +8,15 @@ import { useChat } from "ai/react";
 import { useCallback, useState } from "react";
 import { getHeadersWithAuth, useHandlePrompt } from "./utils";
 
-export const useModGPT = ({
+export let useModGPT = ({
   initialMessages,
   id,
   engine,
 }: { initialMessages: Message[]; id?: string; engine: LLMEngine }) => {
-  const { setCurrentCommand } = useModStore();
+  let { setCurrentCommand } = useModStore();
 
-  const [token, setToken] = useState<string | null>(null);
-  const chat = useChat({
+  let [token, setToken] = useState<string | null>(null);
+  let chat = useChat({
     api: modGptServer,
     initialMessages,
     id,
@@ -28,9 +28,9 @@ export const useModGPT = ({
   });
 
   useHandlePrompt({ ...chat, id, setToken });
-  const modGptSubmit = useModGptSubmit({ id, setToken, ...chat });
+  let modGptSubmit = useModGptSubmit({ id, setToken, ...chat });
 
-  const handleStop = useCallback(() => {
+  let handleStop = useCallback(() => {
     setCurrentCommand(null);
     global.stop();
   }, [setCurrentCommand, global.stop]);

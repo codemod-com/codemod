@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import colors from "tailwindcss/colors";
 import defaultTheme from "tailwindcss/defaultTheme";
 
-const colorPalette = {
+let colorPalette = {
   // @TODO refine palette when design is finished
   "gray-bg": "#F0F0F0",
   "gray-bg-light": "#FFFFFF",
@@ -113,7 +113,7 @@ const colorPalette = {
   },
 };
 
-const colorsT = {
+let colorsT = {
   accent: "#D6FF62",
   background: {
     light: "#0B151E1A",

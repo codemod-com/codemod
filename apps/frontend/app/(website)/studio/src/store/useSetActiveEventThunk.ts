@@ -9,10 +9,10 @@ import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefin
 import type { RangeCommand } from "@studio/utils/tree";
 import jscodeshift from "jscodeshift";
 
-const alphanumerizeString = (input: string): string => {
+let alphanumerizeString = (input: string): string => {
   let output = "";
 
-  for (const character of input) {
+  for (let character of input) {
     if (!character.match(/[a-zA-Z0-9]/)) {
       continue;
     }
@@ -23,12 +23,12 @@ const alphanumerizeString = (input: string): string => {
   return output;
 };
 
-const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
-  const parseResult = parseSnippet(snippet);
-  const executeRangeCommandOnBeforeInputThunk =
+let buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
+  let parseResult = parseSnippet(snippet);
+  let executeRangeCommandOnBeforeInputThunk =
     useExecuteRangeCommandOnBeforeInput();
 
-  const tokens =
+  let tokens =
     parseResult !== null && "tokens" in parseResult
       ? parseResult.tokens ?? []
       : [];
@@ -40,7 +40,7 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
       }
 
       if ("value" in token) {
-        const { value } = token;
+        let { value } = token;
 
         if (typeof value === "string") {
           return value;
@@ -48,13 +48,13 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
       }
 
       if ("type" in token) {
-        const { type } = token;
+        let { type } = token;
 
         if (typeof type !== "object" || type === null) {
           return null;
         }
 
-        const { label } = type;
+        let { label } = type;
 
         return typeof label === "string" && label !== "eof" && label !== ";"
           ? label
@@ -66,11 +66,11 @@ const buildPhrasesUsingTokens = (snippet: string): ReadonlyArray<string> => {
     .filter(isNeitherNullNorUndefined);
 };
 
-const buildPhrasesUsingIdentifiers = (
+let buildPhrasesUsingIdentifiers = (
   snippet: string,
 ): ReadonlyArray<string> => {
-  const j = jscodeshift.withParser("tsx");
-  const root = j(snippet);
+  let j = jscodeshift.withParser("tsx");
+  let root = j(snippet);
 
   return root
     .find(j.Identifier)
@@ -80,14 +80,14 @@ const buildPhrasesUsingIdentifiers = (
         return true;
       }
 
-      const previousPath = array[i - 1];
+      let previousPath = array[i - 1];
 
       return previousPath?.value.name !== path.value.name;
     })
     .map((path) => alphanumerizeString(path.value.name));
 };
 
-const calculateReplacementRanges = (
+let calculateReplacementRanges = (
   output: string | null | undefined,
   replacedSnippets: ReadonlyArray<string>,
 ): ReadonlyArray<OffsetRange> => {
@@ -95,7 +95,7 @@ const calculateReplacementRanges = (
     return [];
   }
   try {
-    const replacementOffsetRanges: OffsetRange[] = [];
+    let replacementOffsetRanges: OffsetRange[] = [];
 
     replacedSnippets.forEach((snippet) => {
       let phrases = buildPhrasesUsingTokens(snippet);
@@ -107,11 +107,11 @@ const calculateReplacementRanges = (
         }
       }
 
-      const regex = new RegExp(phrases.join(".*?"), "gs");
+      let regex = new RegExp(phrases.join(".*?"), "gs");
 
-      for (const regExpMatchArray of output.matchAll(regex)) {
-        const start = regExpMatchArray.index ?? 0;
-        const end = start + regExpMatchArray[0].length;
+      for (let regExpMatchArray of output.matchAll(regex)) {
+        let start = regExpMatchArray.index ?? 0;
+        let end = start + regExpMatchArray[0].length;
 
         replacementOffsetRanges.push({
           start,
@@ -128,16 +128,16 @@ const calculateReplacementRanges = (
   }
 };
 
-export const useSetActiveEventThunk = () => {
-  const { setActiveEventHashDigest, events } = useLogStore();
-  const { setOutputSelection } = useSnippetStore();
-  const { setCodemodSelection } = useModStore();
-  const { content, setSelections } = useCodemodOutputStore();
-  const executeRangeCommandOnBeforeInputThunk =
+export let useSetActiveEventThunk = () => {
+  let { setActiveEventHashDigest, events } = useLogStore();
+  let { setOutputSelection } = useSnippetStore();
+  let { setCodemodSelection } = useModStore();
+  let { content, setSelections } = useCodemodOutputStore();
+  let executeRangeCommandOnBeforeInputThunk =
     useExecuteRangeCommandOnBeforeInput();
   return (eventHashDigest: string) => {
     if (eventHashDigest === null) {
-      const rangeCommand: RangeCommand = {
+      let rangeCommand: RangeCommand = {
         kind: "PASS_THROUGH",
         ranges: [],
       };
@@ -149,7 +149,7 @@ export const useSetActiveEventThunk = () => {
       return;
     }
 
-    const event =
+    let event =
       events.find(({ hashDigest }) => hashDigest === eventHashDigest) ?? null;
 
     if (event === null) {

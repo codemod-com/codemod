@@ -20,7 +20,7 @@ type TextProps = {
   isTitle?: boolean;
 } & JSX.IntrinsicElements["p"];
 
-const Text = ({
+let Text = ({
   children,
   className,
   size,
@@ -30,7 +30,7 @@ const Text = ({
   isTitle,
   ...rest
 }: TextProps) => {
-  const classes = cn(
+  let classes = cn(
     size === "xs" && "text-xs",
     size === "sm" && "text-sm",
     size === "base" || (!size && "text-base"),

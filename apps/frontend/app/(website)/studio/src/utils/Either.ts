@@ -49,7 +49,7 @@ export class Either<L, R> {
   }
 
   getOrThrow(errorMessage?: string): R {
-    const throwFn = () => {
+    let throwFn = () => {
       throw Error(
         errorMessage
           ? errorMessage
@@ -66,7 +66,7 @@ export class Either<L, R> {
   }
 
   getLeft(): L {
-    const throwFn = () => {
+    let throwFn = () => {
       throw Error(`The value is right: ${JSON.stringify(this.value)}`);
     };
 

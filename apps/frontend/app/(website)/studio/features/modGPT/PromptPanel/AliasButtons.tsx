@@ -8,7 +8,7 @@ type AliasButtonsProps = {
   handleInsertValue: (value: string) => void;
 };
 
-export const AliasButtons: React.FC<AliasButtonsProps> = ({
+export let AliasButtons: React.FC<AliasButtonsProps> = ({
   aliasList,
   handleInsertValue,
 }) => (

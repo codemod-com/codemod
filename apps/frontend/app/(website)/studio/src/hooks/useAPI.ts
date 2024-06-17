@@ -4,30 +4,30 @@ import { mockedEndpoints } from "@shared/mocks";
 import { isServer } from "@studio/config";
 import type { AxiosResponse } from "axios";
 
-const shouldUseMocks =
+let shouldUseMocks =
   !isServer &&
   process.env.NODE_ENV === "development" &&
   localStorage?.getItem("useMocks");
-const mockified = (
+let mockified = (
   verb: "put" | "get" | "post",
   endpoint: string | ((x: any) => string),
   ...rest: any[]
 ) => {
-  const path = typeof endpoint === "function" ? endpoint("") : endpoint;
+  let path = typeof endpoint === "function" ? endpoint("") : endpoint;
   // @ts-ignore
   if (mockedEndpoints[path]?.[verb]) {
     // @ts-ignore
-    const response = mockedEndpoints[path][verb](...rest);
+    let response = mockedEndpoints[path][verb](...rest);
     return new Promise((r) => setTimeout(() => r(response), 1000));
   }
   // @ts-ignore
   return apiClient[verb](...rest);
 };
 
-export const useAPI = <T>(endpoint: string) => {
-  const { getToken } = useAuth();
-  const getHeaders = async () => {
-    const token = await getToken();
+export let useAPI = <T>(endpoint: string) => {
+  let { getToken } = useAuth();
+  let getHeaders = async () => {
+    let token = await getToken();
     return {
       headers: {
         "Content-Type": "application/json",

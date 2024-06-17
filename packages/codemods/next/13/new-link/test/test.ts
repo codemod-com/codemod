@@ -22,17 +22,17 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-import assert from "node:assert";
-import { buildApi } from "@codemod-com/utilities";
-import type { FileInfo } from "jscodeshift";
-import { describe, it } from "vitest";
-import transform from "../src/index.js";
+import assert from 'node:assert';
+import { buildApi } from '@codemod-com/utilities';
+import type { FileInfo } from 'jscodeshift';
+import { describe, it } from 'vitest';
+import transform from '../src/index.js';
 
-describe("next 13 new-link", () => {
-  it("add legacy behavior", () => {
-    // adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
+describe('next 13 new-link', () => {
+	it('add legacy behavior', () => {
+		// adapted from https://github.com/vercel/next.js/blob/canary/packages/next-codemod/transforms/__testfixtures__/new-link/add-legacy-behavior.output.js
 
-    const INPUT = `
+		let INPUT = `
             import Link from 'next/link'
 
             function Comp({children}) {
@@ -48,7 +48,7 @@ describe("next 13 new-link", () => {
             }
         `;
 
-    const OUTPUT = `
+		let OUTPUT = `
             import Link from 'next/link'
 
             function Comp({children}) {
@@ -64,16 +64,16 @@ describe("next 13 new-link", () => {
             }
         `;
 
-    const fileInfo: FileInfo = {
-      path: "index.js",
-      source: INPUT,
-    };
+		let fileInfo: FileInfo = {
+			path: 'index.js',
+			source: INPUT,
+		};
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+		let actualOutput = transform(fileInfo, buildApi('tsx'));
 
-    assert.deepEqual(
-      actualOutput?.replace(/\W/gm, ""),
-      OUTPUT.replace(/\W/gm, ""),
-    );
-  });
+		assert.deepEqual(
+			actualOutput?.replace(/\W/gm, ''),
+			OUTPUT.replace(/\W/gm, ''),
+		);
+	});
 });

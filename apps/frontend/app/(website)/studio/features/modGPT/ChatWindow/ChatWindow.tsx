@@ -12,7 +12,7 @@ interface ChatWindowProps {
   className?: string;
 }
 
-export const ChatWindow: React.FC<ChatWindowProps> = ({
+export let ChatWindow: React.FC<ChatWindowProps> = ({
   messages,
   isSignedIn,
   isLoading,

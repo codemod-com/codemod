@@ -1,96 +1,110 @@
-import { type ReactNode, forwardRef, useEffect, useRef } from "react";
+import { type ReactNode, forwardRef, useEffect, useRef } from 'react';
 import {
-  type ImperativePanelHandle,
-  type PanelGroupProps,
-  type PanelProps,
-  Panel as RResizablePanel,
-  PanelGroup as RResizablePanelGroup,
-} from "react-resizable-panels";
+	type ImperativePanelHandle,
+	type PanelGroupProps,
+	type PanelProps,
+	Panel as RResizablePanel,
+	PanelGroup as RResizablePanelGroup,
+} from 'react-resizable-panels';
 
 type ResizablePanelProps = {
-  children?: ReactNode;
-  defaultSize: number;
-  minSize: number;
-  collapsible?: boolean;
-  className?: string;
+	children?: ReactNode;
+	defaultSize: number;
+	minSize: number;
+	collapsible?: boolean;
+	className?: string;
 } & PanelProps;
 
-const PanelGroup = (props: PanelGroupProps) => {
-  const isResizingRef = useRef(false);
-  const containerRef = useRef<HTMLDivElement>(null);
+let PanelGroup = (props: PanelGroupProps) => {
+	let isResizingRef = useRef(false);
+	let containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const onStartResizing = (e: MouseEvent) => {
-      if (
-        (e.target as HTMLDivElement | null)?.getAttribute(
-          "data-panel-resize-handle-id",
-        ) === undefined
-      ) {
-        return;
-      }
+	useEffect(() => {
+		let onStartResizing = (e: MouseEvent) => {
+			if (
+				(e.target as HTMLDivElement | null)?.getAttribute(
+					'data-panel-resize-handle-id',
+				) === undefined
+			) {
+				return;
+			}
 
-      isResizingRef.current = true;
-    };
+			isResizingRef.current = true;
+		};
 
-    const onEndResizing = () => {
-      isResizingRef.current = false;
-    };
+		let onEndResizing = () => {
+			isResizingRef.current = false;
+		};
 
-    const onResize = (e: MouseEvent) => {
-      if (isResizingRef.current === false) {
-        e.stopPropagation();
-      }
-    };
+		let onResize = (e: MouseEvent) => {
+			if (isResizingRef.current === false) {
+				e.stopPropagation();
+			}
+		};
 
-    if (containerRef.current === null) {
-      return;
-    }
+		if (containerRef.current === null) {
+			return;
+		}
 
-    containerRef.current.addEventListener("mousedown", onStartResizing);
+		containerRef.current.addEventListener('mousedown', onStartResizing);
 
-    containerRef.current.addEventListener("mouseup", onEndResizing);
-    containerRef.current.addEventListener("contextmenu", onEndResizing);
+		containerRef.current.addEventListener('mouseup', onEndResizing);
+		containerRef.current.addEventListener('contextmenu', onEndResizing);
 
-    containerRef.current.addEventListener("mousemove", onResize);
+		containerRef.current.addEventListener('mousemove', onResize);
 
-    return () => {
-      if (containerRef.current === null) {
-        return;
-      }
+		return () => {
+			if (containerRef.current === null) {
+				return;
+			}
 
-      containerRef.current.removeEventListener("mousedown", onStartResizing);
+			containerRef.current.removeEventListener(
+				'mousedown',
+				onStartResizing,
+			);
 
-      containerRef.current.removeEventListener("mouseup", onEndResizing);
-      containerRef.current.removeEventListener("contextmenu", onEndResizing);
+			containerRef.current.removeEventListener('mouseup', onEndResizing);
+			containerRef.current.removeEventListener(
+				'contextmenu',
+				onEndResizing,
+			);
 
-      containerRef.current.removeEventListener("mousemove", onResize);
-    };
-  }, []);
+			containerRef.current.removeEventListener('mousemove', onResize);
+		};
+	}, []);
 
-  return (
-    <div ref={containerRef} className="w-full h-full">
-      <RResizablePanelGroup {...props}>{props.children}</RResizablePanelGroup>
-    </div>
-  );
+	return (
+		<div ref={containerRef} className="w-full h-full">
+			<RResizablePanelGroup {...props}>
+				{props.children}
+			</RResizablePanelGroup>
+		</div>
+	);
 };
 
-const ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
-  (props, ref) => {
-    const { children, defaultSize, minSize, collapsible, className, ...rest } =
-      props;
-    return (
-      <RResizablePanel
-        {...rest}
-        className={className}
-        collapsible={collapsible}
-        defaultSize={defaultSize}
-        minSize={minSize}
-        ref={ref}
-      >
-        <div className="w-full h-full">{children}</div>
-      </RResizablePanel>
-    );
-  },
+let ResizablePanel = forwardRef<ImperativePanelHandle, ResizablePanelProps>(
+	(props, ref) => {
+		let {
+			children,
+			defaultSize,
+			minSize,
+			collapsible,
+			className,
+			...rest
+		} = props;
+		return (
+			<RResizablePanel
+				{...rest}
+				className={className}
+				collapsible={collapsible}
+				defaultSize={defaultSize}
+				minSize={minSize}
+				ref={ref}
+			>
+				<div className="w-full h-full">{children}</div>
+			</RResizablePanel>
+		);
+	},
 );
 
 export { ResizablePanel, PanelGroup };

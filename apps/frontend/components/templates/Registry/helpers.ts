@@ -10,13 +10,13 @@ import type {
 } from "@/types/object.types";
 import { unslugify } from "@/utils/strings";
 
-const extractFirstParagraph = (text: string) => {
+let extractFirstParagraph = (text: string) => {
   return text.match(/^\s*([\s\S]*?)(\n\s*\n|$)/s)?.[1]?.trim();
 };
 
-export const getDescriptionShortText = (description: string) => {
+export let getDescriptionShortText = (description: string) => {
   // replace header Codemod Name and ## Description Heading
-  const descriptionWithoutHeadings = description
+  let descriptionWithoutHeadings = description
     .split("\n")
     .filter(
       (line) => !line.startsWith("# ") && !line.startsWith("## Description"),
@@ -32,7 +32,7 @@ export function getAutomationFrameworkTitles(
     applicability?: AutomationResponse["applicability"];
   } | null,
 ): string[] {
-  const fw = automation?.frameworks?.length
+  let fw = automation?.frameworks?.length
     ? automation.frameworks
     : automation?.applicability?.from?.map(([framework]) => framework) ?? [];
   return fw.map((fw) => fw.replace(/@/g, ""));
@@ -56,7 +56,7 @@ export function getFilterIcon(
   filterValues?: AutomationFilterType["filterValues"],
   id?: string,
 ) {
-  const currentFilter = filterValues?.find(
+  let currentFilter = filterValues?.find(
     (filterValue) => filterValue.filterValue === id,
   );
 
@@ -70,18 +70,18 @@ export function getFilterIcon(
 }
 
 export async function getInitialAutomations(slugs?: string[]) {
-  const defaults = [
+  let defaults = [
     "next-13-remove-get-static-props",
     "react-replace-react-fc-typescript",
     "biome-migrate-rules",
     "ember-5-object-new-constructor",
   ];
-  const pathNames = slugs && slugs.length > 0 ? slugs : defaults;
+  let pathNames = slugs && slugs.length > 0 ? slugs : defaults;
 
-  const automations = (
+  let automations = (
     await Promise.all(
       pathNames.map(async (pathName) => {
-        const automation = await loadCodemod(pathName);
+        let automation = await loadCodemod(pathName);
         if ("error" in automation) return null;
         return automation;
       }),
@@ -115,13 +115,13 @@ export function transformAutomation(
     globalLabels?: GlobalLabels["codemodPage"];
   },
 ): CodemodPagePayload {
-  const _currentVersion = automation.versions[automation.versions.length - 1];
+  let _currentVersion = automation.versions[automation.versions.length - 1];
   if (_currentVersion) {
     _currentVersion.applicability = convertAutomationApplicability(
       _currentVersion?.applicability,
     );
   }
-  const currentVersion = _currentVersion;
+  let currentVersion = _currentVersion;
 
   return {
     ...automation,

@@ -27,6 +27,6 @@ The source code has been taken from https://github.com/ant-design/codemod-v5/blo
 */
 
 // https://github.com/benjamn/recast/blob/master/lib/options.ts
-export const printOptions = {
-  quote: "single",
+export let printOptions = {
+	quote: 'single',
 };

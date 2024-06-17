@@ -16,15 +16,15 @@ type CodeSnippetsProps = {
   codeDiff: ReturnType<typeof useCodeDiff>;
   className?: string;
 };
-export const CodeSnippets = ({
+export let CodeSnippets = ({
   className,
   panels,
   children,
   codeDiff,
   panelRefs,
 }: PropsWithChildren<CodeSnippetsProps>) => {
-  const snippetPanels = panels.map((panelData, index, arr) => {
-    const {
+  let snippetPanels = panels.map((panelData, index, arr) => {
+    let {
       snippetData: {
         snippet,
         getExtras,
@@ -32,7 +32,7 @@ export const CodeSnippets = ({
         ...codeSnippedPanel
       },
     } = panelData;
-    const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
+    let Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
     return (
       <React.Fragment key={`fragment-${index}`}>
         <CodeSnippedPanel

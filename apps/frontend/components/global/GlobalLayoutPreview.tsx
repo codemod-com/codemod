@@ -12,7 +12,7 @@ export default function GlobalLayoutPreview({
   data: GlobalPagePayload;
   children: any;
 }) {
-  const { data } = useQuery<GlobalPagePayload | null>(GLOBAL_QUERY, {
+  let { data } = useQuery<GlobalPagePayload | null>(GLOBAL_QUERY, {
     initial,
   });
 

@@ -9,14 +9,14 @@ export type LiveCodemodResultProps = Pick<
   "originalEditorProps" | "modifiedEditorProps"
 >;
 
-const MonacoDiffEditor = dynamic(
+let MonacoDiffEditor = dynamic(
   () => import("@studio/components/Snippet/MonacoDiffEditor"),
   {
     loading: () => <p>Loading...</p>,
     ssr: false,
   },
 );
-export const DiffEditorWrapper = ({
+export let DiffEditorWrapper = ({
   originalEditorProps,
   modifiedEditorProps,
   type,

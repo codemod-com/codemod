@@ -15,7 +15,7 @@ type TabsProps = {
 };
 
 export default function Tabs({ items, children, listClassName }: TabsProps) {
-  const [activeTab, setActiveTab] = useState(items[0].id);
+  let [activeTab, setActiveTab] = useState(items[0].id);
 
   return (
     <RadixTabs.Root

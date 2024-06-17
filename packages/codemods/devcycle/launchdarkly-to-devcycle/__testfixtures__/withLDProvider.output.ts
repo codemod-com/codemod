@@ -1,7 +1,7 @@
-import { withDevCycleProvider } from "@devcycle/react-client-sdk";
+import { withDevCycleProvider } from '@devcycle/react-client-sdk';
 
-const App = () => null;
+let App = () => null;
 
 export default withDevCycleProvider({
-    sdkKey: ''
+	sdkKey: '',
 })(App);

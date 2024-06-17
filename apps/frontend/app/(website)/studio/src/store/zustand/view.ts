@@ -15,7 +15,7 @@ type ViewState = {
   setASTViewCollapsed: (collapsed: boolean) => void;
 };
 
-export const useViewStore = create<ViewState>((set) => ({
+export let useViewStore = create<ViewState>((set) => ({
   activeTab: TabNames.MODGPT,
   astViewCollapsed: true,
   setActiveTab: (tab) => set(() => ({ activeTab: tab })),

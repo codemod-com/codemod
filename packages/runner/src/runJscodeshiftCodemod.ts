@@ -1,35 +1,35 @@
-import { extname } from "node:path";
-import vm from "node:vm";
-import type { ConsoleKind } from "@codemod-com/printer";
-import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
-import jscodeshift, { type API } from "jscodeshift";
-import { nullish, parse, string } from "valibot";
-import { getAdapterByExtname } from "./adapters/index.js";
-import { buildVmConsole } from "./buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
-import type { FileCommand } from "./fileCommands.js";
+import { extname } from 'node:path';
+import vm from 'node:vm';
+import type { ConsoleKind } from '@codemod-com/printer';
+import type { ArgumentRecord, EngineOptions } from '@codemod-com/utilities';
+import jscodeshift, { type API } from 'jscodeshift';
+import { nullish, parse, string } from 'valibot';
+import { getAdapterByExtname } from './adapters/index.js';
+import { buildVmConsole } from './buildVmConsole.js';
+import { CONSOLE_OVERRIDE } from './consoleOverride.js';
+import type { FileCommand } from './fileCommands.js';
 
-export const buildApi = (parser: string): API => ({
-  j: jscodeshift.withParser(parser),
-  jscodeshift: jscodeshift.withParser(parser),
-  stats: () => {},
-  report: () => {},
+export let buildApi = (parser: string): API => ({
+	j: jscodeshift.withParser(parser),
+	jscodeshift: jscodeshift.withParser(parser),
+	stats: () => {},
+	report: () => {},
 });
 
-const transform = (
-  codemodSource: string,
-  oldPath: string,
-  oldData: string,
-  api: API,
-  options: {
-    // the options will be of type ArgumentRecord
-    // after the removal of the createFile function
-    [x: string]: unknown;
-    createFile: (newPath: string, newData: string) => void;
-  },
-  consoleCallback: (kind: ConsoleKind, message: string) => void,
+let transform = (
+	codemodSource: string,
+	oldPath: string,
+	oldData: string,
+	api: API,
+	options: {
+		// the options will be of type ArgumentRecord
+		// after the removal of the createFile function
+		[x: string]: unknown;
+		createFile: (newPath: string, newData: string) => void;
+	},
+	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): string | undefined | null => {
-  const codeToExecute = `
+	let codeToExecute = `
 		${CONSOLE_OVERRIDE}
 
 		const __module__ = { exports: {} };
@@ -49,96 +49,96 @@ const transform = (
 		transform(__CODEMODCOM__file, __CODEMODCOM__api, __CODEMODCOM__options);
 	`;
 
-  // Create a new context for the code execution
-  const exports = Object.freeze({});
+	// Create a new context for the code execution
+	let exports = Object.freeze({});
 
-  const context = vm.createContext({
-    module: Object.freeze({
-      exports,
-    }),
-    exports,
-    __CODEMODCOM__file: { source: oldData, path: oldPath },
-    __CODEMODCOM__api: api,
-    __CODEMODCOM__options: options,
-    __CODEMODCOM__console__: buildVmConsole(consoleCallback),
-    __CODEMOD_SOURCE__: codemodSource,
-  });
+	let context = vm.createContext({
+		module: Object.freeze({
+			exports,
+		}),
+		exports,
+		__CODEMODCOM__file: { source: oldData, path: oldPath },
+		__CODEMODCOM__api: api,
+		__CODEMODCOM__options: options,
+		__CODEMODCOM__console__: buildVmConsole(consoleCallback),
+		__CODEMOD_SOURCE__: codemodSource,
+	});
 
-  const value = vm.runInContext(codeToExecute, context);
+	let value = vm.runInContext(codeToExecute, context);
 
-  return parse(nullish(string()), value);
+	return parse(nullish(string()), value);
 };
 
-export const runJscodeshiftCodemod = (
-  codemodSource: string,
-  oldPath: string,
-  oldData: string,
-  formatWithPrettier: boolean,
-  safeArgumentRecord: ArgumentRecord,
-  engineOptions: Extract<EngineOptions, { engine: "jscodeshift" }> | null,
-  consoleCallback: (kind: ConsoleKind, message: string) => void,
+export let runJscodeshiftCodemod = (
+	codemodSource: string,
+	oldPath: string,
+	oldData: string,
+	formatWithPrettier: boolean,
+	safeArgumentRecord: ArgumentRecord,
+	engineOptions: Extract<EngineOptions, { engine: 'jscodeshift' }> | null,
+	consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
-  const commands: FileCommand[] = [];
+	let commands: FileCommand[] = [];
 
-  const adapter = getAdapterByExtname(extname(oldPath));
+	let adapter = getAdapterByExtname(extname(oldPath));
 
-  const createFile = (newPath: string, newData: string): void => {
-    commands.push({
-      kind: "createFile",
-      newPath,
-      newData,
-      formatWithPrettier,
-    });
-  };
+	let createFile = (newPath: string, newData: string): void => {
+		commands.push({
+			kind: 'createFile',
+			newPath,
+			newData,
+			formatWithPrettier,
+		});
+	};
 
-  const api = buildApi(engineOptions?.parser ?? "tsx");
+	let api = buildApi(engineOptions?.parser ?? 'tsx');
 
-  const transformFn = adapter !== null ? adapter(transform) : transform;
+	let transformFn = adapter !== null ? adapter(transform) : transform;
 
-  const newData = transformFn(
-    codemodSource,
-    oldPath,
-    oldData,
-    api,
-    {
-      ...safeArgumentRecord,
-      createFile,
-    },
-    consoleCallback,
-  );
+	let newData = transformFn(
+		codemodSource,
+		oldPath,
+		oldData,
+		api,
+		{
+			...safeArgumentRecord,
+			createFile,
+		},
+		consoleCallback,
+	);
 
-  if (typeof newData !== "string" || oldData === newData) {
-    return commands;
-  }
+	if (typeof newData !== 'string' || oldData === newData) {
+		return commands;
+	}
 
-  // sometimes codemods produce newData even though they are literally no changes
-  // by removing parentheses around return statements, we will likely find the pointless results
-  try {
-    const oldRoot = api.jscodeshift(oldData);
-    const newRoot = api.jscodeshift(newData);
+	// sometimes codemods produce newData even though they are literally no changes
+	// by removing parentheses around return statements, we will likely find the pointless results
+	try {
+		let oldRoot = api.jscodeshift(oldData);
+		let newRoot = api.jscodeshift(newData);
 
-    oldRoot
-      .find(api.j.ParenthesizedExpression)
-      .replaceWith((path) => path.node.expression);
+		oldRoot
+			.find(api.j.ParenthesizedExpression)
+			.replaceWith((path) => path.node.expression);
 
-    newRoot
-      .find(api.j.ParenthesizedExpression)
-      .replaceWith((path) => path.node.expression);
+		newRoot
+			.find(api.j.ParenthesizedExpression)
+			.replaceWith((path) => path.node.expression);
 
-    if (oldRoot.toSource() === newRoot.toSource()) {
-      return commands;
-    }
-  } catch (error) {
-    console.error(error);
-  }
+		if (oldRoot.toSource() === newRoot.toSource()) {
+			return commands;
+		}
+	} catch (error) {
+		console.error(error);
+	}
 
-  commands.push({
-    kind: "updateFile",
-    oldPath,
-    oldData: oldData,
-    newData,
-    formatWithPrettier,
-  });
+	commands.push({
+		kind: 'updateFile',
+		oldPath,
+		oldData: oldData,
+		newData,
+		formatWithPrettier,
+	});
 
-  return commands;
+	return commands;
 };

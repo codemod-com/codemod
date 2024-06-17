@@ -2,7 +2,7 @@ import { BillIcon, TagIcon } from "@sanity/icons";
 import definePage from "../helpers/definePage";
 import { imageWithAltField } from "./../shared/imageWithAltField";
 
-export const blogArticle = definePage({
+export let blogArticle = definePage({
   name: "blog.article",
   title: "Article",
   type: "document",

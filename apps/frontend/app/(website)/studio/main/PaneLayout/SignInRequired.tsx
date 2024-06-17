@@ -7,10 +7,10 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 
 export function SignInRequired() {
-  const theme = useTheme();
-  const router = useRouter();
-  const signUserIn = () => {
-    const queryParams = new URLSearchParams({ variant: "studio" }).toString();
+  let theme = useTheme();
+  let router = useRouter();
+  let signUserIn = () => {
+    let queryParams = new URLSearchParams({ variant: "studio" }).toString();
     router.push(`/auth/sign-in?${queryParams}`);
   };
 

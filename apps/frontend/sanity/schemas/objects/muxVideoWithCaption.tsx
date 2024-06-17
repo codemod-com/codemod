@@ -1,7 +1,7 @@
 import Icon from "@/components/shared/Icon";
 import { muxVideo } from "./muxVideo";
 
-export const muxVideoWithCaption = {
+export let muxVideoWithCaption = {
   type: "object",
   name: "muxVideoWithCaption",
   title: "Video",
@@ -18,7 +18,7 @@ export const muxVideoWithCaption = {
       title: "caption",
     },
     prepare(selection) {
-      const { title } = selection;
+      let { title } = selection;
       return {
         title: title,
         media: <Icon name="play" />,

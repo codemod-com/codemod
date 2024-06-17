@@ -4,20 +4,20 @@ interface ChatScrollAnchorProps {
   trackVisibility?: boolean;
 }
 
-export const ChatScrollAnchor = ({
+export let ChatScrollAnchor = ({
   trackVisibility,
 }: ChatScrollAnchorProps) => {
-  const ref = useRef<HTMLDivElement>(null);
+  let ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const refNode = ref.current;
+    let refNode = ref.current;
     if (refNode === null) {
       return undefined;
     }
     if (!trackVisibility) {
       return undefined;
     }
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
+    let handleIntersection = (entries: IntersectionObserverEntry[]) => {
       entries.forEach((entry) => {
         if (entry.target === ref.current) {
           if (!entry.isIntersecting) {
@@ -27,7 +27,7 @@ export const ChatScrollAnchor = ({
       });
     };
 
-    const observer = new IntersectionObserver(handleIntersection);
+    let observer = new IntersectionObserver(handleIntersection);
     observer.observe(refNode);
 
     return () => {

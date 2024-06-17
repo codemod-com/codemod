@@ -6,7 +6,7 @@ import Table from "./Table";
 import TwitterEmbedBlock from "./TwitterEmbed";
 import VideoBlock from "./Video";
 
-export const ptBlockComponents: Record<string, React.ComponentType<any>> = {
+export let ptBlockComponents: Record<string, React.ComponentType<any>> = {
   muxVideoWithCaption: VideoBlock,
   youtubeVideo: VideoBlock,
   imageBlock: ImageBlock,

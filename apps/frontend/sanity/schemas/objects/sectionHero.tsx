@@ -2,7 +2,7 @@ import { InputWithCharacterCount } from "@/sanity/lib/components/InputWithCharac
 import { defineSection } from "@tinloof/sanity-studio";
 import { logoFields } from "../shared/logoFields";
 
-export const sectionHero = defineSection({
+export let sectionHero = defineSection({
   title: "Hero section",
   name: "section.hero",
   type: "object",
@@ -95,7 +95,7 @@ export const sectionHero = defineSection({
                   darkModeImage: "darkModeImage",
                 },
                 prepare(selection) {
-                  const { title, lightModeImage, darkModeImage } = selection;
+                  let { title, lightModeImage, darkModeImage } = selection;
                   return {
                     title: lightModeImage.alt || darkModeImage.alt || title,
                     media: lightModeImage || darkModeImage,

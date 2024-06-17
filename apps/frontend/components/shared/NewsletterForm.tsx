@@ -11,7 +11,7 @@ import Button from "./Button";
 import Input from "./Input";
 
 export default function NewsletterForm(props: PageCtaDouble) {
-  const { formState, handleSubmit, formRef } = useFormSubmission();
+  let { formState, handleSubmit, formRef } = useFormSubmission();
 
   return formState !== "success" ? (
     <div className="flex flex-col items-start py-[80px] lg:px-[52px] lg:pt-[140px]">
