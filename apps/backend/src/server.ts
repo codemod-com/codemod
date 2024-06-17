@@ -438,26 +438,27 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       return;
     }
 
-    let before: string;
-    let after: string;
+    type BeforeAfterDiff = {
+      before: string;
+      after: string;
+    };
+
+    let diffs: BeforeAfterDiff[];
     try {
-      before = decrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(codeDiff.before, "base64url"),
-      ).toString();
-      after = decrypt(
-        "aes-256-cbc",
-        { key, iv },
-        Buffer.from(codeDiff.after, "base64url"),
-      ).toString();
+      diffs = JSON.parse(
+        decrypt(
+          "aes-256-cbc",
+          { key, iv },
+          Buffer.from(codeDiff.diffs, "base64url"),
+        ).toString(),
+      ) as BeforeAfterDiff[];
     } catch (err) {
       reply.code(400).send();
       return;
     }
 
     reply.type("application/json").code(200);
-    return { before, after };
+    return { diffs };
   });
 
   instance.post("/diffs", async (request, reply) => {
@@ -470,15 +471,10 @@ const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
       data: {
         name: body.name,
         source: body.source,
-        before: encrypt(
+        diffs: encrypt(
           "aes-256-cbc",
           { key, iv },
-          Buffer.from(body.before),
-        ).toString("base64url"),
-        after: encrypt(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(body.after),
+          Buffer.from(JSON.stringify(body.diffs)),
         ).toString("base64url"),
       },
     });

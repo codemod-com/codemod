@@ -141,17 +141,12 @@ type CreateCodeDiffResponse = {
   id: string;
   iv: string;
 };
-export const createCodeDiff = async (body: {
-  beforeSnippet: string;
-  afterSnippet: string;
-}): Promise<CreateCodeDiffResponse> => {
+export const createCodeDiff = async (
+  diffs: { before: string; after: string }[],
+): Promise<CreateCodeDiffResponse> => {
   const res = await Axios.post<CreateCodeDiffResponse>(
     `${process.env.BACKEND_URL}/diffs`,
-    {
-      before: body.beforeSnippet,
-      after: body.afterSnippet,
-      source: "cli",
-    },
+    { diffs, source: "cli" },
   );
 
   return res.data;

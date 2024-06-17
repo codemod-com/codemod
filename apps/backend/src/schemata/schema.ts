@@ -140,8 +140,7 @@ export const ivObjectSchema = object({
 export const parseIv = (input: unknown) => parse(ivObjectSchema, input);
 
 export const diffCreationBodySchema = object({
-  before: string(),
-  after: string(),
+  diffs: array(object({ before: string(), after: string() })),
   source: union([literal("cli"), literal("studio")]),
   name: optional(string(), "untitled"),
 });

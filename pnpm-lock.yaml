@@ -222,6 +222,9 @@ importers:
       '@ast-grep/napi':
         specifier: ^0.22.3
         version: 0.22.4
+      diff:
+        specifier: ^5.1.0
+        version: 5.2.0
       esbuild:
         specifier: ^0.17.14
         version: 0.17.19
@@ -253,6 +256,9 @@ importers:
       '@types/columnify':
         specifier: ^1.5.4
         version: 1.5.4
+      '@types/diff':
+        specifier: ^5.0.3
+        version: 5.2.0
       '@types/inquirer':
         specifier: ^9.0.7
         version: 9.0.7

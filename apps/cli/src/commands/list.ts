@@ -87,6 +87,7 @@ export const handleListNamesCommand = async (options: {
       headingTransform: (heading) => chalk.bold(heading.toLocaleUpperCase()),
     }),
   );
+  console.log();
 
   printer.printConsoleMessage(
     "info",
