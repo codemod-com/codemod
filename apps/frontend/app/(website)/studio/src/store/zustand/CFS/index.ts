@@ -1,8 +1,8 @@
+import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
+import type { PromptPreset } from "@chatbot/prompts";
 import type { SendMessageResponse } from "@studio/api/sendMessage";
-import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
 import { create } from "zustand";
 import type { LLMEngine } from "../../../../../../../../shared/consts";
-import type { PromptPreset } from "./prompts";
 
 // @TODO move to separate slice after demo
 export type AIAssistantState = Readonly<{
