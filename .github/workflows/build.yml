@@ -23,10 +23,6 @@ jobs:
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
-      - name: Prisma generate
-        run: pnpm --filter @codemod-com/database db:generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Build projects
         run: pnpm build
         env:
