@@ -6,10 +6,10 @@ import clsx from "clsx";
 import { cx } from "cva";
 import { Inconsolata } from "next/font/google";
 import { Highlight, Prism } from "prism-react-renderer";
-import { useEffect, useState } from "react";
+import { isValidElement, useEffect, useState } from "react";
 
 type Props = {
-  children?: React.ReactNode;
+  children: React.ReactNode[];
   scrollable: boolean;
 };
 
@@ -19,23 +19,41 @@ const inconsolata = Inconsolata({
   variable: "--inconsolata",
 });
 
-const CodeBlock = ({ children, scrollable = true }: Props) => {
-  const [copied, setCopied] = useState(false);
+const getCodeProps = (
+  children: React.ReactNode[],
+): { language: string; code: string } | null => {
+  const firstChild = children.at(0);
 
-  const {
-    props: { className, children: code = "" },
-  } = children;
+  if (!isValidElement(firstChild)) {
+    return null;
+  }
 
-  const language = className
-    ? className
+  const { lang, children: _children } = firstChild.props;
+
+  const language = lang
+    ? lang
         .replace(/language-/, "")
         ?.trim()
         ?.toLowerCase()
     : "";
 
+  const code = _children.at(0);
+
+  return { language, code };
+};
+
+const CodeBlock = ({ children, scrollable = true }: Props) => {
+  const [copied, setCopied] = useState(false);
+
+  const props = getCodeProps(children);
+
   const handleCopy = () => {
+    if (!props?.code) {
+      return;
+    }
+
     if (navigator?.clipboard?.writeText) {
-      navigator.clipboard.writeText(code.trim());
+      navigator.clipboard.writeText(props.code.trim());
     }
 
     setCopied(true);
@@ -44,7 +62,9 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
     }, 1200);
   };
 
-  const prismLanguageId = languageToPrismId(language);
+  const prismLanguageId = props?.language
+    ? languageToPrismId(props.language)
+    : null;
 
   useEffect(() => {
     (async () => {
@@ -59,7 +79,9 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
     })();
   }, [prismLanguageId]);
 
-  if (!children || children.type !== "code") return null;
+  if (props === null) {
+    return null;
+  }
 
   return (
     <div
@@ -83,13 +105,20 @@ const CodeBlock = ({ children, scrollable = true }: Props) => {
           <Icon name={copied ? "check" : "copy"} className="h-4 w-4" />
         </button>
       </div>
-      <Highlight theme={theme} code={code.trim()} language={language}>
+      <Highlight
+        theme={theme}
+        code={props.code.trim()}
+        language={props.language}
+      >
         {({ className, style, tokens, getLineProps, getTokenProps }) => (
           <pre
-            className={clsx(`my-2 rounded-lg p-[20px] ${className}`, {
-              // biome-ignore lint/complexity/useLiteralKeys:
-              ["no-scrollbar overflow-x-scroll"]: scrollable,
-            })}
+            className={clsx(
+              `my-2 rounded-lg p-[20px] overflow-y-hidden ${className}`,
+              {
+                // biome-ignore lint/complexity/useLiteralKeys:
+                ["no-scrollbar overflow-x-scroll"]: scrollable,
+              },
+            )}
             style={style}
           >
             {tokens.map((line, i) => (

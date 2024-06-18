@@ -6,15 +6,16 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import esbuild from "esbuild";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
-export const handleBuildCliCommand = async (
-  _printer: PrinterBlueprint,
-  source: string,
-) => {
+export const handleBuildCliCommand = async (options: {
+  printer: PrinterBlueprint;
+  source: string;
+}) => {
+  const { printer, source } = options;
   const absoluteSource = resolve(source);
 
   let codemodRcContent: string;
@@ -31,20 +32,10 @@ export const handleBuildCliCommand = async (
 
   const codemodRc = parseCodemodConfig(JSON.parse(codemodRcContent));
 
-  let entryPointGlob: string[];
-  if (codemodRc.build?.input) {
-    entryPointGlob = await glob(codemodRc.build.input, {
-      absolute: true,
-      cwd: absoluteSource,
-      onlyFiles: true,
-    });
-  } else {
-    entryPointGlob = await glob("./src/index.{ts,js}", {
-      absolute: true,
-      cwd: absoluteSource,
-      onlyFiles: true,
-    });
-  }
+  const entryPointGlob = await glob(
+    codemodRc.build?.input ? codemodRc.build.input : "./src/index.{ts,js}",
+    { absolute: true, cwd: absoluteSource, nodir: true },
+  );
 
   const entryPoint = entryPointGlob.at(0);
   if (!isNeitherNullNorUndefined(entryPoint)) {
@@ -85,7 +76,7 @@ export const handleBuildCliCommand = async (
     licenseBuffer = "";
   }
 
-  const options: Parameters<typeof esbuild.build>[0] = {
+  const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entryPoint],
     bundle: true,
     external: EXTERNAL_DEPENDENCIES,
@@ -98,7 +89,7 @@ export const handleBuildCliCommand = async (
     write: false, // to the in-memory file system
   };
 
-  const { outputFiles } = await esbuild.build(options);
+  const { outputFiles } = await esbuild.build(buildOptions);
 
   const contents =
     outputFiles?.find((file) => file.path === outputFilePath)?.contents ?? null;

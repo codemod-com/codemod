@@ -2,6 +2,7 @@ import {
   type Output,
   array,
   literal,
+  nullish,
   number,
   object,
   string,
@@ -92,6 +93,7 @@ export const eventSchema = union([
   object({
     hashDigest: string(),
     kind: literal("codemodExecutionError"),
+    stack: nullish(string()),
     codemodSourceRange: offsetRangeSchema,
     message: string(),
     timestamp: number(),

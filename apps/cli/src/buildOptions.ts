@@ -8,6 +8,7 @@ import {
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
+import { knownEnginesSchema } from "@codemod-com/utilities";
 import type { Argv } from "yargs";
 
 export type GlobalArgvOptions = Awaited<
@@ -82,8 +83,7 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     })
     .option("engine", {
       type: "string",
-      description:
-        'The engine to use with the local codemod: "jscodeshift", "ts-morph", "filemod", "ast-grep"',
+      description: "The engine to use with the local codemod",
       hidden: true,
     })
     .option("format", {
@@ -94,7 +94,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     .option("no-format", {
       type: "boolean",
       description: "Disable formatting output with Prettier",
-      hidden: true,
     })
     .option("threads", {
       alias: "n",

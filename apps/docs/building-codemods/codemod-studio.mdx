@@ -1,7 +1,7 @@
 ---
-title: 'Codemod Studio'
-description: 'Get started with building codemods using the Codemod Studio.'
-icon: 'screwdriver-wrench'
+title: 'Getting started'
+description: 'Get started with building codemods using Codemod Studio.'
+icon: 'book-open-cover'
 ---
 
 <img
@@ -16,34 +16,91 @@ icon: 'screwdriver-wrench'
   alt="Codemod.com hero banner"
 />
 
-[Codemod Studio](https://codemod.com/studio/) is an AI workbench for creating codemods. Codemods are powerful code automation bots that can automate many crucial yet tedious coding tasks, such as migrations, upgrades, large-scale changes, enforcing best practices, and bringing conformity to a codebase. However, building them has been very hard and time-consuming. Until now.
 
 Codemod Studio allows you to "instantly" create code automation bots with the help of AI, specialized helpers, and debuggers, as well as a vibrant community of "codemod champions."
 
-<video
-  autoPlay
-  controls
-  muted
-  playsInline
-  loop
-  className="w-full aspect-video"
-  src="/images/codemod-studio/codemod-studio-quickstart.mp4"
-></video>
+## Building codemods with Codemod Studio
 
 <Steps>
-  <Step title="Build">
-    With the help of fine-tuned LLMs under-the-hood and codemod creation features such as expert-curated prompts, smart highlighting & GUI codemod builder, Codemod Studio can help you build codemods in a few minutes.
 
-    <Tip>
-    Your codemod creation journey can also start right from your IDE/CLI and with just one command: `codemod learn`
+<Step title="Add before/after snippets">
+  The user-defined code snippets in the before/after panels are used by the AI helper to generate a codemod based on the changes in code between both snippets.
 
-    [More info here ->](../deploying-codemods/cli#generate-codemod-from-file-diff)
-    </Tip>
+  To start building codemods, you can:
+  1. insert the original code into the 'Before' panel, then insert how the code should look like after transformation into the 'After' panel
+  2. or you can use the [`codemod learn`](/deploying-codemods/cli#codemod-learn) command straight from your IDE/CLI to automatically populate the before/after snippets.
   </Step>
-  <Step title="Test">
-    Codemod Studio allows you to iteratively test, debug, and improve your codemods’ as you build them.
+
+  <Step title="Use AI helper">
+  The assistant section provides support and guidance throughout the codemod creation and execution process. It leverages AI to help users generate codemod scripts, troubleshoot issues, and refine their code transformations.
+
+  To use the AI helper, make sure that the before/after panels are correctly populated, then use the available [actions](#actions) or [prompt builders](#prompt-builders) to iteratively build your codemod.
+
+  <AccordionGroup>
+    <Accordion
+      title="Actions"
+    >
+      The actions area includes tools and options to create and fix codemods. These actions operate independently from the prompt.
+
+      1. **Building a codemod:** you can use the `Build a codemod to transform before to after` action to automatically build a codemod using the default prompt.
+      2. **Fixing codemod errors:** if the generated codemod has an error, you can use the `Fix codemod error` action to automatically try fixing the caught error.
+    </Accordion>
+
+    <Accordion
+      title="Prompt builders"
+    >
+      The prompt builders assist users in crafting precise and effective prompts for generating codemods.
+      
+      These builders provide aliases and templates to streamline the prompt creation process, making it easier for users to specify their desired code transformations accurately.
+    </Accordion>
+  </AccordionGroup>
+</Step>
+
+<Step title="Codemod editor">
+  The codemod editor allows you to review and edit the generated codemod. This makes it easy to tweak your codemod without having to leave your studio environment.
+</Step>
+
+<Step title="Output panel">
+  The output panel dynamically reflects how the codemod affects the `Before` snippet in real-time.
+  
+  This immediate feedback loop helps you quickly identify and correct any issues in your codemod without having to export and run it over your local project.
+</Step>
+
+<Step title="AST viewer">
+  The AST viewer enables you to see a detailed view of the before and after snippets' Abstract Syntax Tree (AST).
+  
+  This feature is especially useful for experienced codemod builders who want to edit/build codemods manually.
+
+  <Note>
+    The AST viewer is made for more advanced codemod developers. If you intend to build codemods using the AI helper only, you can skip using this feature.
+  </Note>
+</Step>
+
+<Step title="Debugger">
+  The debugger displays the events that occur any caught errors when running the codemod. This allows you to easily trace and debug your codemod if it doesn't work as expected.
+
+  <Tip>
+    You can use `console.log` in the codemod editor to print out any output in the debugger.
+  </Tip>
+</Step>
+
+</Steps>
+
+## Sharing codemods
+
+After building a codemod, you can click `Share` to get a shareable public link to your codemod.
+
+This allows you to easily share and test your codemods with friends, team members, and the community.
+
+## Running codemods
+
+To run the codemod over your local project, you can:
+
+<Steps>
+  <Step title="Export codemod">
+    Click `Run locally via CLI` to export and download the [codemod package](/codemod-registry/introduction#required-codemod-package-structure).
   </Step>
-  <Step title="Run">
-    With close integration with Codemod platform, Codemod Studio allows you to easily run your codemods over your projects using the Codemod VS Code Extension.
+  <Step title="Run via Codemod CLI">
+    Run the codemod [using Codemod CLI](/deploying-codemods/cli#run).
   </Step>
 </Steps>

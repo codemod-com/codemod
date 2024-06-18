@@ -1,7 +1,7 @@
 import type { ValidateTokenResponse } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 import {
   type ExtensionContext,
   Uri,
@@ -223,12 +223,13 @@ export class MainViewProvider implements WebviewViewProvider {
 
     const globPattern = buildGlobPattern(this.__rootUri, "/**");
 
-    const directoryPaths = await glob(globPattern, {
+    // From `glob` documentation:
+    // (Note: to match only directories, put a / at the end of the pattern.)
+    const directoryPaths = await glob(`${globPattern}/`, {
       // ignore node_modules and files, match only directories
-      onlyDirectories: true,
       ignore: ["**/node_modules/**"],
-      followSymbolicLinks: false,
-      deep: 10,
+      follow: false,
+      maxDepth: 10,
     });
 
     const MAX_NUMBER_OF_DIRECTORIES = 10000;

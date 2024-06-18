@@ -1,7 +1,11 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { getCurrentUserData, getOrgsNames } from "../utils.js";
 
-export const handleWhoAmICommand = async (printer: PrinterBlueprint) => {
+export const handleWhoAmICommand = async (options: {
+  printer: PrinterBlueprint;
+}) => {
+  const { printer } = options;
+
   const userData = await getCurrentUserData();
 
   if (userData === null) {

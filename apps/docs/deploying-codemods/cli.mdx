@@ -1,20 +1,8 @@
 ---
-title: 'CLI'
+title: 'All commands'
 description: 'Get started with using the Codemod command-line interface.'
 icon: 'terminal'
 ---
-
-<img
-	className="block dark:hidden"
-	src="/images/deploying-codemods/cli/hero-light.svg"
-	alt="Codemod CLI hero banner"
-/>
-
-<img
-	className="hidden dark:block"
-	src="/images/deploying-codemods/cli/hero-dark.svg"
-	alt="Codemod CLI hero banner"
-/>
 
 The Codemod command-line interface (CLI) allows you to interact with Codemod platform using a terminal or through an automated system.
 
@@ -28,174 +16,9 @@ The Codemod CLI accepts a variety of subcommands and options to explore, publish
 npm i -g codemod
 ```
 
-## List available codemods
+## Build
 
-The <Tooltip tip='Available aliases: `ls` and `search`'>`list`</Tooltip> command can be used to list the codemods available in the Codemod Registry and optionally search for a specific codemod using its name or tags.
-
-```bash
-codemod list [optional search query]
-```
-
-## Running codemods
-
-You can use the `codemod` command to run codemods.
-
-This command uses the following format:
-
-```bash
-codemod [codemod name]
-```
-
-<Note>
-When using the `codemod` command, Codemod CLI will attempt to run a codemod as long as it is not followed by a reserved command name.
-</Note>
-
-<AccordionGroup>
-<Accordion title="Example">
-  <Steps>
-  <Step title="Go to project directory">
-    Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
-  </Step>
-  <Step title="List available codemods">
-    Run `codemod list` to see all available codemods in the Codemod Registry.
-  </Step>
-  <Step title="Run codemod">
-    In this example, we will run the `next/13/app-router-recipe` codemod.
-
-    To do so, we will run:
-
-    ```bash
-    codemod next/13/app-router-recipe
-    ```
-
-  </Step>
-</Steps>
-</Accordion>
-
-</AccordionGroup>
-
-### Available options
-
-The following options can be used to change the default behavior of the Codemod CLI.
-
-<ResponseField name="--include (-i)" type="glob pattern" default="Defined by the codemod engine">
-  Can be used to specify the files to be targeted by the codemod.
-
-```bash
-codemod [codemod name] -i "certain_file" -i "entire_folder/" -i "*.js"
-```
-
-<Warning>Folders should be defined with a trailing slash, for example `node_modules/`. Every other entry will be treated as a file. We don't check whether the paths under a certain glob pattern are directories or not for performance reasons.</Warning>
-
-</ResponseField>
-
-<ResponseField name="--exclude (-e)" type="glob pattern" default="node_modules/, dist/, build/, .next/, .git/">
-  While running a codemod, you may want to prevent changes from occurring to specific parts of your project. The `--exclude` option can be used to specify a glob pattern of the files to be ignored by the codemod.
-
-```bash
-codemod [codemod name] -e "certain_file" -e "entire_folder/" -e "*.py"
-```
-  
-<Note>By default, Codemod CLI would also look for your project's root `.gitignore` file and exclude the patterns defined in it. The trailing slash rule mentioned in `--include` command description also applies to the `--exclude` option.</Note>
-
-</ResponseField>
-
-<ResponseField name="--target (-t)" type="string">
-  Can be used to specify the directory of your project that the CLI should target while running codemods. This option is set as the current directory by default.
-
-```bash
-codemod [codemod name] -t [path]
-```
-
-</ResponseField>
-
-<ResponseField name="--source (-s)" type="string">
-  Can be used to specify the path to the codemod package folder stored locally that you want to run using the Codemod CLI.
-
-  If your local codemod follows the recommended [codemod package structure](/codemod-registry/publishing-codemods#required-codemod-package-structure), it will include a `.codemodrc.json` file. By default, Codemod CLI will attempt using the engine specified in `.codemodrc.json`. Otherwise, you will need to specify the codemod engine manually.
-
-  <Tabs>
-    <Tab title="Codemods with `.codemodrc.json`">
-      ```bash
-      codemod -s [path]
-      ```
-    </Tab>
-    <Tab title="Codemods without `.codemodrc.json`">
-      ```bash
-      codemod -s [path] --engine jscodeshift
-      ```
-    </Tab>
-  </Tabs>
-
-</ResponseField>
-
-<ResponseField name="--dry (-d)" type="boolean">
-  Can be used to switch to dry run mode. Dry running codemods helps you see the changes the codemod will make without affecting the project files.
-
-```bash
-codemod [codemod name] --dry
-```
-
-</ResponseField>
-
-<ResponseField name="--no-format" type="boolean">
-  Can be used to disable prettier formatting to the files affected by the codemod.
-
-```bash
-codemod [codemod name] --no-format
-```
-
-</ResponseField>
-
-<ResponseField name="--no-cache" type="boolean">
-  Can be used to disable caching downloaded codemod files.
-
-```bash
-codemod [codemod name] --no-cache
-```
-
-  <Tip>Disabling cache can ensure you are getting the freshest results. While keeping the cache enabled can help you save bandwidth and time for repetitive use of the same codemods.</Tip>
-</ResponseField>
-
-<ResponseField name="--no-install" type="boolean">
-  Can be used to disable dependencies installation after codemod run.
-
-```bash
-codemod [codemod name] --no-install
-```
-
-  <Warning>Some codemods may install or remove dependencies after running.
-  This option allows you to disable that behavior and handle dependency upgrades manually.</Warning>
-</ResponseField>
-
-<ResponseField name="--no-telemetry" type="boolean">
-  Can be used to disable CLI telemetry data collection.
-
-```bash
-codemod [codemod name] --no-telemetry
-```
-
-</ResponseField>
-
-<ResponseField name="--json (-j)" type="boolean">
-  Can be used to switch the CLI responses to JSON format.
-
-```bash
-codemod [codemod name] --json
-```
-
-</ResponseField>
-
-<ResponseField name="--threads (-n)" type="number" default="4">
-  Can be used to specify the number of worker threads the CLI uses while running codemods.
-
-```bash
-codemod [codemod name] -n [number of threads]
-```
-
-</ResponseField>
-
-## Generate codemod from file diff
+### `codemod learn`
 
 The `learn` command uses the diff of the latest edited file to automatically build a codemod using [Codemod Studio](/building-codemods/codemod-studio/).
 
@@ -215,53 +38,288 @@ codemod learn
 	src="/images/deploying-codemods/cli/codemod-learn.mp4"
 ></video>
 
-## Login to Codemod platform
+### `codemod build`
 
-The `login` command can be used to login to Codemod platform.
-
-```bash
-codemod login
-```
-
-## Logout from Codemod platform
-
-The `logout` command can be used to logout from Codemod platform.
-
-```bash
-codemod logout
-```
-
-## Creating a codemod package
-
-The `init` command can be used to scaffold a new codemod package.
-
-```bash
-codemod init
-```
-
-## Building a codemod package
-
-The `build` command can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/publishing-codemods#supported-codemod-engines), you can use the CLI to build the main executable file.
+Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/introduction#supported-codemod-engines), you can use the CLI to build the main executable file.
 
 ```bash
 codemod build
 ```
 
-## Publishing codemods
+## Share/discover
 
-The `publish` command can be used to [publish a codemod to the Codemod Registry](/codemod-registry/publishing-codemods). Publishing codemods requires [logging in](#login-to-codemod-platform) to Codemod platform.
+### `codemod search`
+
+Can be used to list the codemods available in Codemod Registry and optionally search for a specific codemod using its name or tags.
+
+Aliases: `list` and `ls`
+
+```bash
+codemod search [optional-search-query]
+```
+
+### `codemod init`
+
+Can be used to scaffold a new codemod package.
+
+```bash
+codemod init
+```
+
+### `codemod publish`
+
+Can be used to publish a codemod to Codemod Registry.
+
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/codemod-registry/introduction#required-codemod-package-structure).
+
+To do so, use the `publish` command inside the codemod package directory:
 
 ```bash
 codemod publish
 ```
 
-## Help commands
-
-<ResponseField name="--help">
-  Can be used to show a list of all available commands and options for Codemod CLI.
+Alternatively, you can publish a codemod from <Tooltip tip="This path can point to a simple transform file or a Codemod-compatible package.">source path</Tooltip>:
 
 ```bash
-codemod --help
+codemod publish [path] --source
+```
+
+### `codemod unpublish`
+
+Can be used to unpublish a codemod you own from Codemod Registry.
+
+You can publish a specific version of your codemods using:
+
+```bash
+codemod unpublish [codemod-name]@[version]
+```
+
+Or you can completely unpublish your codemod, including all versions, from the registry:
+
+```bash
+codemod unpublish [codemod-name] -f
+```
+
+## Run
+
+### `codemod run`
+
+You can use the `codemod` command to run codemods.
+
+Codemod CLI allows you to run codemods:
+1. from [Codemod Registry](/codemod-registry)
+2. from source
+    - using a <Tooltip tip="A codemod package is a codemod with a valid `.codemodrc.json` configuration file.">codemod package</Tooltip>
+    - using a <Tooltip tip="This file can be a simple transfofrm file using any of the supported codemod engines.">transform file</Tooltip>
+
+<Tabs>
+  <Tab title="Run from Codemod Registry">
+    ```bash
+    codemod [codemod-name]
+    ```
+
+    <AccordionGroup>
+    <Accordion title="Example">
+      <Steps>
+      <Step title="Go to project directory">
+        Make sure you are in the project directory to avoid running the codemod over the wrong directory on your machine.
+      </Step>
+      <Step title="List available codemods">
+        Run `codemod list` to see all available codemods in Codemod Registry. Alternatively, you can search for codemods of a specific framework like `codemod search next.js`.
+      </Step>
+      <Step title="Run codemod">
+        In this example, we will run the `next/13/app-router-recipe` codemod.
+
+        To do so, we will run:
+
+        ```bash
+        codemod next/13/app-router-recipe
+        ```
+
+      </Step>
+    </Steps>
+    </Accordion>
+    </AccordionGroup>
+
+  </Tab>
+  <Tab title="Run from source">
+    To run a local codemod package, you can:
+    ```bash
+    codemod -s [path]
+    ```
+
+    or you can run a transform file ([using a supported codemod engine](/codemod-registry/introduction#supported-codemod-engines)) by using:
+    ```bash
+    codemod -s [path] --engine [codemod-engine]
+    ```
+  </Tab>
+</Tabs>
+
+<Note>
+When using the `codemod` command, Codemod CLI will attempt to run a codemod as long as it is not followed by a reserved command name.
+</Note>
+
+### Options
+
+The following options can be used to change the default behavior of Codemod CLI.
+
+<ResponseField name="--include (-i)" type="glob pattern" default="Defined by the codemod engine">
+  Can be used to specify the files to be targeted by the codemod.
+
+<Tabs>
+  <Tab title="Including files">
+    ```bash
+    codemod [codemod-name] -i "example_file"
+    ```
+  </Tab>
+  <Tab title="Including folders">
+    ```bash
+    codemod [codemod-name] -i "example_folder/"
+    ```
+  </Tab>
+  <Tab title="Including specific file extensions">
+    ```bash
+    codemod [codemod-name] -i "*.js"
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>Due to performance reasons, Codemod CLI does not check if the path in the defined pattern is a file or directory. Folders should be defined with a trailing slash. Every other entry will be treated as a file.</Warning>
+
+</ResponseField>
+
+<ResponseField name="--exclude (-e)" type="glob pattern" default="node_modules/, dist/, build/, .next/, .git/">
+  While running a codemod, you may want to prevent changes from occurring to specific parts of your project. The `--exclude` option can be used to specify a glob pattern of the files to be ignored by the codemod.
+
+  By default, Codemod CLI excludes the patterns defined in the `.gitignore` found in the project's root directory.
+<Tabs>
+  <Tab title="Excluding files">
+    ```bash
+    codemod [codemod-name] -e "example_file"
+    ```
+  </Tab>
+  <Tab title="Excluding folders">
+    ```bash
+    codemod [codemod-name] -e "example_folder/"
+    ```
+  </Tab>
+  <Tab title="Excluding specific file extensions">
+    ```bash
+    codemod [codemod-name] -e "*.js"
+    ```
+  </Tab>
+</Tabs>
+
+<Warning>Due to performance reasons, Codemod CLI does not check if the path in the defined pattern is a file or directory. Folders should be defined with a trailing slash. Every other entry will be treated as a file.</Warning>
+
+</ResponseField>
+
+<ResponseField name="--target (-t)" type="string">
+  Can be used to specify the directory of your project that the CLI should target while running codemods. This option is set as the current directory by default.
+
+```bash
+codemod [codemod-name] -t [path]
+```
+
+</ResponseField>
+
+<ResponseField name="--dry (-d)" type="boolean">
+  Can be used to switch to dry run mode. Dry running codemods helps you see the changes the codemod will make without affecting the project files.
+
+```bash
+codemod [codemod-name] --dry
+```
+
+</ResponseField>
+
+<ResponseField name="--no-format" type="boolean">
+  Can be used to disable prettier formatting to the files affected by the codemod.
+
+```bash
+codemod [codemod-name] --no-format
+```
+
+</ResponseField>
+
+<ResponseField name="--no-cache" type="boolean">
+  Can be used to disable caching downloaded codemod files.
+
+```bash
+codemod [codemod-name] --no-cache
+```
+
+  <Tip>Disabling cache can ensure you are getting the freshest results. While keeping the cache enabled can help you save bandwidth and time for repetitive use of the same codemods.</Tip>
+</ResponseField>
+
+<ResponseField name="--no-install" type="boolean">
+  Can be used to disable dependencies installation after codemod run.
+
+```bash
+codemod [codemod-name] --no-install
+```
+
+  <Warning>Some codemods may install or remove dependencies after running.
+  This option allows you to disable that behavior and handle dependency upgrades manually.</Warning>
+</ResponseField>
+
+<ResponseField name="--no-telemetry" type="boolean">
+  Can be used to disable CLI telemetry data collection.
+
+```bash
+codemod [codemod-name] --no-telemetry
+```
+
+</ResponseField>
+
+<ResponseField name="--json (-j)" type="boolean">
+  Can be used to switch the CLI responses to JSON format.
+
+```bash
+codemod [codemod-name] --json
+```
+
+</ResponseField>
+
+<ResponseField name="--threads (-n)" type="number" default="4">
+  Can be used to specify the number of worker threads the CLI uses while running codemods.
+
+```bash
+codemod [codemod-name] -n [number-of-threads]
+```
+</ResponseField>
+
+## Other commands
+
+<ResponseField name="codemod login">
+Can be used to login to Codemod platform.
+
+```bash
+codemod login
+```
+</ResponseField>
+
+<ResponseField name="codemod logout">
+
+Can be used to logout from Codemod platform.
+
+```bash
+codemod logout
+```
+</ResponseField>
+
+<ResponseField name="codemod feedback">
+  Can be used to visit our feedback page and share your thoughts on Codemod Platform.
+
+  ```bash
+  codemod feedback
+  ```
+</ResponseField>
+
+<ResponseField name="codemod help">
+Can be used to show a list of all available commands and options for Codemod CLI.
+
+```bash
+codemod help
 ```
 
 You can also use this flag in combination with a particular CLI command to display usage information relevant to that command.
@@ -269,10 +327,9 @@ You can also use this flag in combination with a particular CLI command to displ
 ```bash
 codemod login --help
 ```
-
 </ResponseField>
 
-<ResponseField name="--version (-v)">
+<ResponseField name="codemod --version (-v)">
   Can be used to show the currently active version of Codemod CLI.
 
 ```bash

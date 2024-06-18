@@ -4,6 +4,7 @@ import type {
   EngineOptions,
   KnownEngines,
 } from "@codemod-com/utilities";
+import type { FormattedFileCommand } from "./fileCommands";
 
 export type Codemod =
   | Readonly<{
@@ -50,4 +51,10 @@ export type CodemodToRun = Codemod & {
   safeArgumentRecord: ArgumentRecord;
   hashDigest?: Buffer;
   engineOptions: EngineOptions | null;
+};
+
+export type RunResult = {
+  codemod: Codemod;
+  commands: FormattedFileCommand[];
+  recipe?: Codemod & { engine: "recipe" };
 };

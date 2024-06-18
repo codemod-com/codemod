@@ -6,6 +6,7 @@ import {
 } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
+import { buildRevalidateHelper } from "./revalidate";
 import { parseUnpublishBody } from "./schemata/schema";
 import { environment } from "./util";
 
@@ -48,16 +49,19 @@ export const unpublishHandler: RouteHandler<{
       });
     }
 
+    let skipCheck = false;
+
     const allowedNamespaces = [
       username,
       ...orgs.map((org) => org.organization.slug),
     ].filter(isNeitherNullNorUndefined);
 
+    // Allow Codemod engineers to unpublish anything if required
     if (environment.VERIFIED_PUBLISHERS.includes(username)) {
-      allowedNamespaces.push("codemod-com", "Codemod");
+      skipCheck = true;
     }
 
-    if (!allowedNamespaces.includes(codemod.author)) {
+    if (!skipCheck && !allowedNamespaces.includes(codemod.author)) {
       return reply.code(403).send({
         error: "You are not allowed to perform this operation",
         success: false,
@@ -105,6 +109,9 @@ export const unpublishHandler: RouteHandler<{
         where: { name: codemodName },
       });
 
+      const revalidate = buildRevalidateHelper(environment);
+      await revalidate(name);
+
       return reply.code(200).send({ success: true });
     }
 
@@ -141,6 +148,9 @@ export const unpublishHandler: RouteHandler<{
         where: { id: versionToRemove.id },
       });
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

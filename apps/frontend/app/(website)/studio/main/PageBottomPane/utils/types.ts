@@ -1,5 +1,5 @@
 import type { KnownEngines } from "@codemod-com/utilities";
-import type { useCodeDiff } from "@studio/main/JSCodeshiftRender";
+import type { useCodeDiff } from "@studio/hooks/useCodeDiff";
 import type { VisibilityOptions } from "@studio/types/options";
 import type { ValueOf } from "next/constants";
 import type { MutableRefObject, ReactNode } from "react";
@@ -73,14 +73,14 @@ export type HeaderProps = {
   isCollapsed?: boolean;
   // @TODO
   ondblclick?: (typeof console)["log"];
-  title: string;
+  title: ReactNode;
   visibilityOptions?: VisibilityOptions;
 };
 
 export type SnippetType = "before" | "after" | "output";
 
 export type SnippetData = {
-  header: string;
+  header: ReactNode;
   diffEditorWrapper: {
     type: SnippetType;
     warnings?: ReactNode;

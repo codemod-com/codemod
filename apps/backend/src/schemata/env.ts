@@ -46,6 +46,7 @@ export const environmentSchema = object({
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
   AUTH_SERVICE_URL: string(),
+  CODEMOD_COM_API_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;

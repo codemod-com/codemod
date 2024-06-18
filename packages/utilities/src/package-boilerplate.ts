@@ -86,7 +86,7 @@ const readme = ({ cases, vanillaJs }: ProjectDownloadInput) => {
 
 Detailed description
 
-## Examples
+## Example
 ${cases?.map(({ before, after }) => {
   return `
 ### Before
@@ -352,6 +352,8 @@ const codemodRc = ({
   const finalName = changeCase.kebabCase(name);
 
   const configContent = {
+    $schema:
+      "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
     version: version ?? "1.0.0",
     private: false,
     name: finalName,
@@ -387,7 +389,8 @@ const tsconfigJson = () => {
         "skipLibCheck": true,
         "strict": true,
         "target": "ES6",
-        "allowJs": true
+        "allowJs": true, 
+        "noUncheckedIndexedAccess": true
       },
       "include": [
         "./src/**/*.ts",
@@ -453,7 +456,7 @@ const packageJson = ({
   } else if (engine === "filemod") {
     devDeps["@codemod-com/filemod"] = "^2.0.0";
   } else if (engine === "workflow") {
-    devDeps["@codemod.com/workflow"] = "^0.0.1";
+    devDeps["@codemod.com/workflow"] = "*";
   }
 
   if (Object.keys(devDeps).length) {
@@ -816,8 +819,9 @@ export function handleSourceFile(sourceFile: SourceFile): string | undefined {
 export const emptyWorkflowBoilerplate = beautify(`
 import type { Api } from "@codemod.com/workflow";
 
-export async function workflow({ jsFiles }: Api) {
-  await jsFiles("**/*.ts")
+export async function workflow({ files }: Api) {
+  await files("**/*.ts")
+    .js()
     .astGrep("console.log($A)")
     .replace("console.error($A)");
 }

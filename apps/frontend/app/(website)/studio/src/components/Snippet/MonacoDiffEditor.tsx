@@ -49,6 +49,7 @@ const MonacoDiffEditor = ({
         editorRef.current = editor;
         setMounted(true);
       }}
+      language="typescript"
       theme={isDark ? "vs-dark" : "vs"}
       options={{
         ...(options ?? {}),

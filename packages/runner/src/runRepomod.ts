@@ -3,7 +3,6 @@ import { basename, dirname, join } from "node:path";
 import {
   type CallbackService,
   type Filemod,
-  type GlobArguments,
   type PathAPI,
   type PathHashDigest,
   type UnifiedEntry,
@@ -13,7 +12,6 @@ import {
 } from "@codemod-com/filemod";
 import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
-import { type FileSystemAdapter, glob } from "fast-glob";
 import jscodeshift from "jscodeshift";
 import { fromMarkdown } from "mdast-util-from-markdown";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
@@ -85,16 +83,6 @@ export const runRepomod = async (
     throw new Error(`The entry ${path} is neither a directory nor a file`);
   };
 
-  const globWrapper = (globArguments: GlobArguments) => {
-    return glob(globArguments.includePatterns.slice(), {
-      absolute: true,
-      cwd: globArguments.currentWorkingDirectory,
-      ignore: globArguments.excludePatterns.slice(),
-      fs: fileSystem as Partial<FileSystemAdapter>,
-      dot: true,
-    });
-  };
-
   const readDirectory = async (
     path: string,
   ): Promise<ReadonlyArray<UnifiedEntry>> => {
@@ -137,7 +125,7 @@ export const runRepomod = async (
   const unifiedFileSystem = new UnifiedFileSystem(
     buildPathHashDigest,
     getUnifiedEntry,
-    globWrapper,
+    async () => filemod.includePatterns as string[],
     readDirectory,
     readFile,
   );
@@ -178,7 +166,7 @@ export const runRepomod = async (
 
   const callbackService: CallbackService = {
     onCommandExecuted: (command) => {
-      if (command.kind !== "upsertData" && command.kind !== "deleteFile") {
+      if (command.kind !== "handleFile") {
         return;
       }
 

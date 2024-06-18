@@ -2,22 +2,49 @@ import type { PLazy } from "./PLazy";
 import { codemod } from "./codemod";
 import { getCwdContext } from "./contexts";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers";
+import { files } from "./files";
 import { clc } from "./helpers";
+import { jsFiles } from "./jsFiles";
 import { spawn } from "./spawn";
 
+/**
+ * Run a command in current working directory
+ * @param command The command to run
+ * @param args Arguments to pass to the command
+ *
+ * @example
+ * Simple run
+ * ```ts
+ * await exec("ls");
+ * ```
+ *
+ * @example
+ * Run with arguments
+ * ```ts
+ * await exec("ls", ["-al"]);
+ * ```
+ *
+ * @example
+ * Chaining commands
+ * ```ts
+ * await exec("ls")
+ *   .exec("pwd")
+ *   .exec("ls", ["-al"]);
+ * ```
+ */
 export function execLogic(
   command: string,
   args?: string[],
 ): PLazy<ExecHelpers> & ExecHelpers {
   return new FunctionExecutor("exec")
     .arguments(() => ({
-      name,
+      command,
       args,
     }))
     .helpers(execHelpers)
     .executor(async (next, self) => {
       const { cwd } = getCwdContext();
-      const { args } = self.getArguments();
+      const { command, args } = self.getArguments();
       console.log(
         `${clc.blueBright(`${command} ${args?.join(" ") ?? ""}`)} ${cwd}`,
       );
@@ -34,6 +61,6 @@ export function execLogic(
 
 export const exec = fnWrapper("exec", execLogic);
 
-const execHelpers = { exec, codemod };
+const execHelpers = { exec, codemod, jsFiles, files };
 
 type ExecHelpers = typeof execHelpers;

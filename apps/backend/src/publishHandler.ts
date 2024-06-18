@@ -13,8 +13,8 @@ import {
 import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
-import type { z } from "zod";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
+import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
 export type PublishHandlerResponse =
@@ -119,6 +119,9 @@ export const publishHandler: RouteHandler<{
       const allowedNamespaces = [
         username,
         ...organizations.map((org) => org.organization.slug),
+        environment.VERIFIED_PUBLISHERS.includes(username)
+          ? "codemod-com"
+          : null,
       ].filter(isNeitherNullNorUndefined);
 
       if (!allowedNamespaces.includes(namespace)) {
@@ -217,15 +220,35 @@ export const publishHandler: RouteHandler<{
       arguments: codemodRc.arguments,
     };
 
-    let isVerified = namespace === "Codemod" || namespace === "codemod-com";
+    let isVerified = false;
     let author = namespace;
-    if (!author) {
-      if (isVerified || environment.VERIFIED_PUBLISHERS.includes(username)) {
+    if (author === null) {
+      if (
+        namespace === "codemod-com" ||
+        environment.VERIFIED_PUBLISHERS.includes(username)
+      ) {
         isVerified = true;
         author = "Codemod";
       } else {
         author = username;
       }
+    }
+
+    // Check if a codemod with the name already exists from other author
+    const existingCodemod = await prisma.codemod.findUnique({
+      where: {
+        name,
+        author: {
+          not: author,
+        },
+      },
+    });
+
+    if (existingCodemod !== null) {
+      return reply.code(400).send({
+        error: `Codemod name \`${name}\` is already taken.`,
+        success: false,
+      });
     }
 
     let createdAtTimestamp: number;
@@ -352,6 +375,9 @@ export const publishHandler: RouteHandler<{
         console.error("Failed calling Zapier hook:", err);
       }
     }
+
+    const revalidate = buildRevalidateHelper(environment);
+    await revalidate(name);
 
     return reply.code(200).send({ success: true });
   } catch (err) {

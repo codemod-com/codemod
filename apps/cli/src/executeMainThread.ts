@@ -14,6 +14,7 @@ import { getUserDistinctId } from "./analytics/distinctId";
 import type { TelemetryEvent } from "./analytics/telemetry";
 import { buildGlobalOptions, buildRunOptions } from "./buildOptions.js";
 import { handleBuildCliCommand } from "./commands/build";
+import { handleFeedbackCommand } from "./commands/feedback";
 import { handleInitCliCommand } from "./commands/init";
 import { handleLearnCliCommand } from "./commands/learn";
 import { handleListNamesCommand } from "./commands/list";
@@ -127,6 +128,8 @@ export const executeMainThread = async () => {
     yargs(slicedArgv).help().version(false),
   );
 
+  argvObject.wrap(argvObject.terminalWidth());
+
   if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
     return console.log(version);
   }
@@ -143,7 +146,7 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleRunCliCommand(printer, args, telemetryService),
+          handleRunCliCommand({ printer, args, telemetry: telemetryService }),
         );
       },
     )
@@ -157,7 +160,7 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleRunCliCommand(printer, args, telemetryService),
+          handleRunCliCommand({ printer, args, telemetry: telemetryService }),
         );
       },
     )
@@ -180,7 +183,7 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleListNamesCommand(printer, searchTerm),
+          handleListNamesCommand({ printer, search: searchTerm }),
         );
       },
     )
@@ -198,7 +201,10 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleLearnCliCommand(printer, args.target ?? null),
+          handleLearnCliCommand({
+            printer,
+            target: args.target ?? null,
+          }),
         );
       },
     )
@@ -210,7 +216,7 @@ export const executeMainThread = async () => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() => handleLoginCliCommand(printer));
+        return executeCliCommand(() => handleLoginCliCommand({ printer }));
       },
     )
     .command(
@@ -221,7 +227,7 @@ export const executeMainThread = async () => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() => handleLogoutCliCommand(printer));
+        return executeCliCommand(() => handleLogoutCliCommand({ printer }));
       },
     )
     .command(
@@ -232,7 +238,7 @@ export const executeMainThread = async () => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() => handleWhoAmICommand(printer));
+        return executeCliCommand(() => handleWhoAmICommand({ printer }));
       },
     )
     .command(
@@ -249,7 +255,10 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleBuildCliCommand(printer, args.source ?? process.cwd()),
+          handleBuildCliCommand({
+            printer,
+            source: args.source ?? process.cwd(),
+          }),
         );
       },
     )
@@ -262,12 +271,23 @@ export const executeMainThread = async () => {
           description: "path to the codemod to be published",
         }),
       async (args) => {
-        const { executeCliCommand, printer } =
+        const { executeCliCommand, printer, telemetryService } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() =>
-          handlePublishCliCommand(printer, args.source ?? process.cwd()),
-        );
+        return executeCliCommand(async () => {
+          const codemodConfig = await handlePublishCliCommand({
+            printer,
+            source: args.source ?? process.cwd(),
+          });
+
+          if (codemodConfig !== undefined) {
+            telemetryService.sendEvent({
+              kind: "codemodPublished",
+              codemodName: codemodConfig.name,
+              version: codemodConfig.version,
+            });
+          }
+        });
       },
     )
     .command(
@@ -297,7 +317,11 @@ export const executeMainThread = async () => {
         }
 
         return executeCliCommand(() =>
-          handleUnpublishCliCommand(printer, lastArgument, args.force),
+          handleUnpublishCliCommand({
+            printer,
+            name: lastArgument,
+            force: args.force ?? false,
+          }),
         );
       },
     )
@@ -328,6 +352,17 @@ export const executeMainThread = async () => {
             target: args.target,
           }),
         );
+      },
+    )
+    .command(
+      "feedback",
+      "submit feedback to the Codemod team",
+      (y) => y,
+      async (args) => {
+        const { executeCliCommand, printer } =
+          await initializeDependencies(args);
+
+        return executeCliCommand(() => handleFeedbackCommand({ printer }));
       },
     );
 

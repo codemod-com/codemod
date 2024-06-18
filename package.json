@@ -37,9 +37,9 @@
     "clean": "turbo run clean",
     "link": "turbo run link",
     "lint": "biome check .",
-    "lint:apply": "biome check --apply .",
-    "lint:linter": "biome lint --apply .",
-    "lint:formatter": "biome format --write .",
+    "lint:apply": "biome check --apply --diagnostic-level=error .",
+    "lint:linter": "biome lint --apply --diagnostic-level=error .",
+    "lint:formatter": "biome format --write --diagnostic-level=error .",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
     "test:backend": "pnpm --filter @codemod-com/backend test",
@@ -73,12 +73,13 @@
   },
   "lint-staged": {
     "*": [
-      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true"
+      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
     ]
   },
   "pnpm": {
     "overrides": {
-      "postcss": "8.4.35"
+      "postcss": "8.4.35",
+      "whatwg-url": "^14.0.0"
     }
   }
 }

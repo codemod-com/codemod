@@ -102,12 +102,12 @@ export const argumentsSchema = array(
             literal("enum"),
           ]),
         ),
-        options: array(argumentSchema),
+        options: optional(array(argumentSchema)),
         required: optional(boolean(), false),
         default: optional(argumentSchema),
       }),
     ],
-    "Invalid arguments definition.",
+    "Invalid arguments definition",
   ),
 );
 

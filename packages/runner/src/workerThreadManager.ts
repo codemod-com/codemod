@@ -11,7 +11,6 @@ import type { FormattedFileCommand } from "./fileCommands.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 
 export class WorkerThreadManager {
-  private __finished = false;
   private __idleWorkerIds: number[] = [];
   private __workers: Worker[] = [];
   private __workerTimestamps: number[] = [];
@@ -67,10 +66,6 @@ export class WorkerThreadManager {
   }
 
   public async terminateWorkers() {
-    if (this.__finished) {
-      return;
-    }
-
     for (const worker of this.__workers) {
       await worker.terminate();
     }
@@ -99,10 +94,6 @@ export class WorkerThreadManager {
   }
 
   private async __work(): Promise<void> {
-    if (this.__finished) {
-      return;
-    }
-
     const filePath = this.__filePaths.shift();
 
     if (filePath === undefined) {
@@ -180,11 +171,13 @@ export class WorkerThreadManager {
           : null,
       });
 
+      this.__idleWorkerIds.push(i);
+
       if (this._getShouldFinish()) {
         await this.__finish();
+        return;
       }
 
-      this.__idleWorkerIds.push(i);
       await this.__work();
     };
   }

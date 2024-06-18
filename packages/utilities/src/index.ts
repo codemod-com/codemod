@@ -14,6 +14,7 @@ export {
   removeLineBreaksAtStartAndEnd,
   removeSpecialCharacters,
   singleQuotify,
+  formatText,
 } from "./functions/formatting.js";
 export {
   buildCodemodMetadataHash,

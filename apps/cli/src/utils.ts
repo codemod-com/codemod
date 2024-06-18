@@ -1,12 +1,13 @@
 import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import { chalk } from "@codemod-com/printer";
 import {
   type GetUserDataResponse,
   execPromise,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { glob } from "fast-glob";
+import { glob } from "glob";
 import keytar from "keytar";
 import { getUserData } from "./apis";
 
@@ -113,7 +114,7 @@ export const rebuildCodemodFallback = async (options: {
       absolute: true,
       ignore: ["**/node_modules/**"],
       cwd: source,
-      onlyFiles: true,
+      nodir: true,
     });
 
     return mainFiles.at(0);
@@ -139,3 +140,6 @@ export const rebuildCodemodFallback = async (options: {
 
   return mainFilePath;
 };
+
+export const oraCheckmark = chalk.green("✔");
+export const oraCross = chalk.red("✖");

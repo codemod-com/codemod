@@ -237,7 +237,7 @@ const Table = () => {
           </TableBody>
         </ShadCNTable>
       ) : (
-        <Label className="text-center text-lg font-light">
+        <Label className="text-center text-lg font-light mt-2">
           No results have been found
         </Label>
       )}

@@ -1,5 +1,5 @@
+import Markdown from "@/components/global/ReactMarkdown";
 import CodemodPage from "@/components/templates/CodemodPage/Page";
-import CodeBlock from "@/components/templates/CodemodPage/parts/Code";
 import { transformAutomation } from "@/components/templates/Registry/helpers";
 import { fetchWithTimeout, loadCodemod } from "@/data/codemod/loaders";
 import { loadAutomationPage } from "@/data/sanity/loadQuery";
@@ -7,12 +7,12 @@ import { resolveSanityRouteMetadata } from "@/data/sanity/resolveSanityRouteMeta
 import { env } from "@/env";
 import type { RouteProps } from "@/types";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
-import { cx } from "cva";
 import type { ResolvingMetadata } from "next";
-import { MDXRemote } from "next-mdx-remote/rsc";
 import { notFound } from "next/navigation";
 
 export const dynamicParams = true;
+
+const ONE_DAY = 60 * 60 * 24;
 
 export async function generateStaticParams() {
   const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
@@ -45,7 +45,12 @@ export async function generateMetadata(
 }
 
 export default async function CodemodRoute({ params }) {
-  const initialAutomationData = await loadCodemod(params.codemod);
+  const initialAutomationData = await loadCodemod(params.codemod, {
+    next: {
+      tags: [`codemod-${params.codemod}`],
+      revalidate: ONE_DAY,
+    },
+  });
 
   if (!initialAutomationData || "error" in initialAutomationData) {
     notFound();
@@ -53,43 +58,16 @@ export default async function CodemodRoute({ params }) {
 
   const automationPageData = await loadAutomationPage(
     initialAutomationData.tags,
+    ONE_DAY,
   );
+
   const pageData = transformAutomation({
     ...initialAutomationData,
     ...automationPageData?.data,
   });
 
   const description = pageData?.shortDescription ? (
-    <MDXRemote
-      components={{
-        blockquote: ({ children }) => (
-          <blockquote className={cx("mt-4 border-l-2 border-black pl-6")}>
-            {children}
-          </blockquote>
-        ),
-        pre: ({ children }) => (
-          <CodeBlock scrollable={false}>{children}</CodeBlock>
-        ),
-        strong: ({ children }) => <span className="font-bold">{children}</span>,
-        em: ({ children }) => <em>{children}</em>,
-        underline: ({ children }) => <u>{children}</u>,
-        ul: ({ children }) => <ul className="list-disc p-2">{children}</ul>,
-        ol: ({ children }) => <ol className="list-decimal p-2">{children}</ol>,
-        h1: ({ children }) => <h1 className={cx("m-heading")}>{children}</h1>,
-        h2: ({ children }) => <h2 className={cx("s-heading")}>{children}</h2>,
-        h3: ({ children }) => (
-          <h3 className={cx("xs-heading  py-4")}>{children}</h3>
-        ),
-        h4: ({ children }) => (
-          <h4 className={cx("body-l-medium py-4")}>{children}</h4>
-        ),
-        h5: ({ children }) => (
-          <h4 className={cx("body-m-medium py-2")}>{children}</h4>
-        ),
-        Route: () => null,
-      }}
-      source={vercelStegaCleanAll(pageData?.shortDescription || "")}
-    />
+    <Markdown>{vercelStegaCleanAll(pageData?.shortDescription || "")}</Markdown>
   ) : null;
 
   return <CodemodPage description={description} data={pageData} />;

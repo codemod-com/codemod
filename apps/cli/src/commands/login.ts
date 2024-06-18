@@ -26,7 +26,11 @@ const routeUserToStudioForLogin = (
     });
   }
 };
-export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
+export const handleLoginCliCommand = async (options: {
+  printer: PrinterBlueprint;
+}) => {
+  const { printer } = options;
+
   const userData = await getCurrentUserData();
   if (userData !== null) {
     printer.printConsoleMessage(
@@ -62,7 +66,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
       chalk.bold.cyan("You are successfully logged in."),
     );
   } catch (e) {
-    console.log(e)
+    console.log(e);
     spinner.fail();
     throw new Error("Could not validate access token. Please try again.");
   }

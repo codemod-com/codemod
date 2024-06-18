@@ -1,5 +1,5 @@
 import * as path from "node:path";
-import * as fg from "fast-glob";
+import * as glob from "glob";
 import type { PLazy } from "../PLazy";
 import { codemod } from "../codemod";
 import { cwdContext, getCwdContext } from "../contexts";
@@ -40,7 +40,10 @@ export function dirsLogic(
     .executor(async (next, self) => {
       const { directories } = self.getArguments();
       const { cwd } = getCwdContext();
-      const dirs = await fg.glob(directories, { cwd, onlyDirectories: true });
+      const dirs = await glob.glob(
+        directories.map((d) => (d.endsWith("/") ? d : `${d}/`)),
+        { cwd },
+      );
       for (const dir of dirs) {
         await cwdContext.run({ cwd: path.join(cwd, dir) }, next);
       }

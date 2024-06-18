@@ -2,28 +2,12 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
-import * as fg from "fast-glob";
+import slugify from "@sindresorhus/slugify";
+import filenamify from "filenamify";
+import * as glob from "glob";
 import { fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
-
-// A description why we are doing it this way would be nice to have.
-// Is this dependency injection? Why do we need it that way?
-const filenamify = async (a: string) => {
-  const module =
-    // biome-ignore lint/security/noGlobalEval: <explanation>
-    ((await eval('import("filenamify")')) as typeof import("filenamify"))
-      .default;
-  return module(a);
-};
-
-const slugify = async (a: string) => {
-  type Slugify = typeof import("@sindresorhus/slugify");
-  // biome-ignore lint/security/noGlobalEval: <explanation>
-  const module = ((await eval('import("@sindresorhus/slugify")')) as Slugify)
-    .default;
-  return module(a);
-};
 
 export const getTmpDir = async (...rawParts: string[]) => {
   const parts = await Promise.all(
@@ -51,7 +35,7 @@ export const files = async (
   cb: () => Promise<void>,
 ) => {
   const { cwd } = getCwdContext();
-  const files = await fg.glob(pattern, { cwd, onlyFiles: true });
+  const files = await glob.glob(pattern, { cwd, nodir: true });
   for (const file of files) {
     await fileContext.run(
       { file: path.join(cwd, file), importsUpdates: [] },
@@ -67,7 +51,7 @@ export const jsonFiles = async <T>(
   }) => Promise<void>,
 ) => {
   const { cwd } = getCwdContext();
-  const files = await fg.glob(pattern, { cwd, onlyFiles: true });
+  const files = await glob.glob(pattern, { cwd, nodir: true });
   await cb({
     update: async (updater: T | ((input: T) => T | Promise<T>)) => {
       for (const file of files) {

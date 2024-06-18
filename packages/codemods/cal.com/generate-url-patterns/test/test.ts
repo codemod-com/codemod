@@ -51,7 +51,7 @@ const removeWhitespaces = (
 
 describe("generate-url-patterns", () => {
   it("should build correct files", async () => {
-    const [abTestMiddlewareTsCommand, middlewareTsCommand, turboJsonCommand] =
+    const [turboJsonCommand, middlewareTsCommand, abTestMiddlewareTsCommand] =
       await transform(
         {
           "/opt/project/turbo.json": JSON.stringify({
@@ -144,11 +144,11 @@ describe("generate-url-patterns", () => {
 						"/noSegment",
 						"/future/noSegment/",
 
-						"/catchAllDynamicSegments/:d+",
-						"/future/catchAllDynamicSegments/:d+/",
-
             "/dynamicSegment/:a",
 						"/future/dynamicSegment/:a/",
+
+            "/catchAllDynamicSegments/:d+",
+						"/future/catchAllDynamicSegments/:d+/",
 
 						"/dynamicSegment/:b/:c",
 						"/future/dynamicSegment/:b/:c/",
@@ -163,7 +163,7 @@ describe("generate-url-patterns", () => {
   });
 
   it("should support generateAsPageGroup option", async () => {
-    const [abTestMiddlewareTsCommand, turboJsonCommand] = await transform(
+    const [turboJsonCommand, abTestMiddlewareTsCommand] = await transform(
       {
         "/opt/project/turbo.json": JSON.stringify({
           globalEnv: ["OTHER_ENVVAR"],

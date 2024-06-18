@@ -1,7 +1,6 @@
+This codemod converts json.loads to orjson.loads.
 
-Converts json.loads to orjson.loads.
-
-## Examples
+## Example
 
 ### Before
 
