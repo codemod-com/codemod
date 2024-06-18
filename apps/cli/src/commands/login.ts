@@ -5,7 +5,6 @@ import {
   confirmUserLoggedIn,
   generateUserLoginIntent,
   getCLIAccessToken,
-  getUserData,
 } from "../apis.js";
 import { getCurrentUserData, openURL } from "../utils.js";
 
@@ -28,7 +27,7 @@ const routeUserToStudioForLogin = (
   }
 };
 export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
-  const userData = await getUserData();
+  const userData = await getCurrentUserData();
   if (userData !== null) {
     printer.printConsoleMessage(
       "info",

@@ -23,8 +23,8 @@ export const getCLIAccessToken = async (
 
 export const validateCLIToken = async (
   accessToken: string,
-): Promise<VerifyCLITokenResponse> => {
-  const res = await Axios.get<VerifyCLITokenResponse>(
+): Promise<VerifyTokenResponse> => {
+  const res = await Axios.get<VerifyTokenResponse>(
     `${process.env.AUTH_BACKEND_URL}/verifyToken`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -37,8 +37,8 @@ export const validateCLIToken = async (
 
 export const getUserData = async (
   accessToken: string,
-): Promise<VerifyCLITokenResponse> => {
-  const res = await Axios.get<VerifyCLITokenResponse>(
+): Promise<GetUserDataResponse> => {
+  const res = await Axios.get<GetUserDataResponse>(
     `${process.env.AUTH_BACKEND_URL}/userData`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
