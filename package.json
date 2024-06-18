@@ -5,6 +5,10 @@
   "license": "Apache License, Version 2.0",
   "description": "A monorepo for all the interconnected tools of codemod.com",
   "private": true,
+  "prisma": {
+    "schema": "packages/database/prisma/schema.prisma",
+    "seed": "tsx packages/database/src/seed.ts"
+  },
   "engines": {
     "node": ">=20.x",
     "pnpm": ">=8.x"
@@ -42,7 +46,7 @@
     "coverage": "pnpm test:unit --coverage",
     "prepare": "husky install",
     "release:changelog": "node scripts/releaseChangelog.mjs",
-    "db:generate": "dotenv -- turbo run db:generate",
+    "db:generate": "turbo run db:generate",
     "db:migrate:create": "dotenv -- turbo run db:migrate:create",
     "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
     "db:push": "dotenv -- turbo run db:push",

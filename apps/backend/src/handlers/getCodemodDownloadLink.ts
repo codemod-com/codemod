@@ -1,14 +1,9 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type {
-  RawRequestDefaultExpression,
-  RawServerDefault,
-  RouteHandler,
-  RouteHandlerMethod,
-} from "fastify";
-import { codemodService } from "~/services/CodemodService.js";
+import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
+import { codemodService } from "../services/СodemodService.js";
 import { environment } from "../util.js";
 
 export type GetCodemodDownloadLinkResponse = { link: string };
@@ -18,11 +13,11 @@ export const getCodemodDownloadLink: RouteHandler<{
 }> = async (request: UserDataPopulatedRequest) => {
   const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
-  const userId = request.user!.id;
-
-  if (!userId) {
+  if (!request?.user?.id) {
     return codemodService.getCodemodDownloadLink(name, null, []);
   }
+
+  const allowedNamespaces = request?.allowedNamespaces;
 
   const s3Client = new S3Client({
     credentials: {
@@ -47,6 +42,6 @@ export const getCodemodDownloadLink: RouteHandler<{
   return codemodService.getCodemodDownloadLink(
     name,
     generateSignedUrl,
-    request?.allowedNamespaces,
+    allowedNamespaces,
   );
 };

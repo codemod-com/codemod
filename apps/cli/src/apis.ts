@@ -2,7 +2,8 @@ import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetScopedTokenResponse,
-  VerifyCLITokenResponse,
+  GetUserDataResponse,
+  VerifyTokenResponse,
 } from "@codemod-com/utilities";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 import type FormData from "form-data";
@@ -10,7 +11,7 @@ import type FormData from "form-data";
 export const getCLIAccessToken = async (
   accessToken: string,
 ): Promise<GetScopedTokenResponse> => {
-  const url = new URL(`${process.env.AUTH_BACKEND_URL}/clientToken`);
+  const url = new URL(`${process.env.AUTH_BACKEND_URL}/appToken`);
 
   const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
     headers: { Authorization: `Bearer ${accessToken}` },
@@ -21,6 +22,20 @@ export const getCLIAccessToken = async (
 };
 
 export const validateCLIToken = async (
+  accessToken: string,
+): Promise<VerifyCLITokenResponse> => {
+  const res = await Axios.get<VerifyCLITokenResponse>(
+    `${process.env.AUTH_BACKEND_URL}/verifyToken`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      timeout: 5000,
+    },
+  );
+
+  return res.data;
+};
+
+export const getUserData = async (
   accessToken: string,
 ): Promise<VerifyCLITokenResponse> => {
   const res = await Axios.get<VerifyCLITokenResponse>(

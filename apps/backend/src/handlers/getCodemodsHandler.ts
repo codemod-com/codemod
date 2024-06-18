@@ -1,7 +1,7 @@
+import type { Codemod } from "@codemod-com/database";
 import type { RouteHandler } from "fastify";
-import { codemodService } from "~/services/CodemodService";
-import type { Codemod } from "../../prisma/client";
 import { parseGetCodemodsQuery } from "../schemata/schema.js";
+import { codemodService } from "../services/СodemodService.js";
 
 export const getCodemodsHandler: RouteHandler<{
   Reply: {
@@ -10,7 +10,7 @@ export const getCodemodsHandler: RouteHandler<{
     page: number;
     size: number;
   };
-}> = async (request, reply) => {
+}> = async (request) => {
   const query = parseGetCodemodsQuery(request.query);
 
   const { search, verified, category, author, framework } = query;

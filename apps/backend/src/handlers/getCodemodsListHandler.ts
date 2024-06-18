@@ -1,60 +1,46 @@
 import { randomBytes } from "node:crypto";
-import type { OrganizationMembership, User } from "@clerk/backend";
-import type { TelemetrySender } from "@codemod-com/telemetry";
 import type { CodemodListResponse } from "@codemod-com/utilities";
-import type { FastifyRequest } from "fastify";
-import type { CustomHandler } from "../customHandler.js";
+import type { RouteHandler } from "fastify";
+import type { UserDataPopulatedRequest } from "~/plugins/authPlugin.js";
+import { telemetryService } from "~/services/TelemetryService.js";
+import { codemodService } from "~/services/СodemodService.js";
 import {
   parseClientIdentifierSchema,
   parseListCodemodsQuery,
 } from "../schemata/schema.js";
-import type { CodemodService } from "../services/CodemodService.js";
-import type { TelemetryEvents } from "../telemetry.js";
 
-export const getCodemodsListHandler: CustomHandler<CodemodListResponse> =
-  async ({
-    request,
-    codemodService,
-    telemetryService,
-  }: {
-    request: FastifyRequest & {
-      user?: User;
-      organizations?: OrganizationMembership[];
-      allowedNamespaces?: string[];
-    };
-    codemodService: CodemodService;
-    telemetryService: TelemetrySender<TelemetryEvents>;
-  }) => {
-    const { search } = parseListCodemodsQuery(request.query);
+export const getCodemodsListHandler: RouteHandler<{
+  Reply: CodemodListResponse;
+}> = async (request: UserDataPopulatedRequest) => {
+  const { search } = parseListCodemodsQuery(request.query);
 
-    const userId = request.user?.id;
-    const distinctId = userId ?? randomBytes(16).toString("hex");
+  if (!request.user?.id) {
+    return codemodService.getCodemodsList(null, search, []);
+  }
 
-    const clientIdentifier = request.headers["x-client-identifier"]
-      ? parseClientIdentifierSchema(request.headers["x-client-identifier"])
-      : "UNKNOWN";
+  const userId = request.user?.id;
+  const distinctId = userId ?? randomBytes(16).toString("hex");
 
-    // we are not interested in events without searchTerm
-    if (search !== undefined) {
-      telemetryService.sendEvent(
-        {
-          kind: "listNames",
-          searchTerm: search,
-        },
-        {
-          cloudRole: clientIdentifier,
-          distinctId,
-        },
-      );
-    }
+  const clientIdentifier = request.headers["x-client-identifier"]
+    ? parseClientIdentifierSchema(request.headers["x-client-identifier"])
+    : "UNKNOWN";
 
-    if (!userId) {
-      return codemodService.getCodemodsList(null, search, []);
-    }
-
-    return codemodService.getCodemodsList(
-      userId,
-      search,
-      request?.allowedNamespaces,
+  if (search !== undefined) {
+    telemetryService.sendEvent(
+      {
+        kind: "listNames",
+        searchTerm: search,
+      },
+      {
+        cloudRole: clientIdentifier,
+        distinctId,
+      },
     );
-  };
+  }
+
+  return codemodService.getCodemodsList(
+    userId,
+    search,
+    request?.allowedNamespaces,
+  );
+};

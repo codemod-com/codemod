@@ -1,7 +1,6 @@
 generator client {
   provider   = "prisma-client-js"
   engineType = "binary"
-  output     = "../generated/client"
 }
 
 datasource db {
@@ -27,6 +26,7 @@ model Codemod {
   amountOfUses     Int              @default(0)
   totalTimeSaved   Int              @default(0)
   openedPrs        Int              @default(0)
+  // Synced from Sanity
   labels           String[]         @default([])
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now()) @updatedAt
@@ -61,23 +61,27 @@ model Tag {
   aliases        String[]
   classification String   @db.VarChar(255)
   displayName    String   @db.VarChar(255)
+  // TODO: enterprise feature
+  // owners         User[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
 }
 
 model UserLoginIntent {
-  id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  token     String?
+  id    String  @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
 
 model CodeDiff {
-  id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name      String?  @db.VarChar(255)
-  source    String   @db.VarChar(255)
-  before    String   @db.Text
-  after     String   @db.Text
+  id     String  @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name   String? @db.VarChar(255)
+  source String  @db.VarChar(255)
+  before String  @db.Text
+  after  String  @db.Text
+
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

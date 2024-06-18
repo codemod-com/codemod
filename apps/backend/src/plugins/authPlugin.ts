@@ -1,4 +1,4 @@
-import type { OrganizationMembership, User } from "@clerk/backend";
+import type { OrganizationMembership, User } from "@codemod-com/utilities";
 import axios from "axios";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
@@ -16,7 +16,7 @@ export interface OAuthTokenPopulatedRequest extends FastifyRequest {
 
 declare module "fastify" {
   interface FastifyInstance {
-    authenticateCLI: (
+    authenticate: (
       request: FastifyRequest,
       reply: FastifyReply,
     ) => Promise<void>;
@@ -33,7 +33,7 @@ declare module "fastify" {
 
 async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
   fastify.decorate(
-    "authenticateCLI",
+    "authenticate",
     async (request: FastifyRequest, reply: FastifyReply) => {
       try {
         const authHeader = request.headers.authorization;
@@ -64,7 +64,13 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
       try {
         const authHeader = request.headers.authorization;
 
-        if (!authHeader) reply.code(401).send({ error: "Unauthorized" });
+        if (!authHeader) {
+          request.user = undefined;
+          request.organizations = undefined;
+          request.allowedNamespaces = undefined;
+
+          return;
+        }
 
         const { data } = await axios.get(
           `${environment.AUTH_SERVICE_URL}/userData`,

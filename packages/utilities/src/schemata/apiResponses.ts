@@ -19,7 +19,11 @@ export type CodemodDownloadLinkResponse = {
 
 export type GetScopedTokenResponse = { token: string };
 
-export type VerifyCLITokenResponse = {
+export type VerifyTokenResponse = {
+  userId: string;
+};
+
+export type GetUserDataResponse = {
   user: User;
   organizations: OrganizationMembership[];
   allowedNamespaces: string[];

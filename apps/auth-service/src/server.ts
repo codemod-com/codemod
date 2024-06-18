@@ -126,24 +126,14 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return reply.status(401).send({ message: "Invalid token" });
     }
 
-    return reply.status(200).send({ message: "User is authenticated" });
-  });
-
-  instance.get("/verifyClientToken", async (request, reply) => {
-    const { userId, sessionClaims } = getAuth(request);
-
-    if (!userId && sessionClaims?.client !== "CLI") {
-      return reply.status(401).send({ message: "Invalid token" });
-    }
-
-    return reply.status(200).send({ message: "User is authenticated" });
+    return reply.status(200).send({ userId });
   });
 
   instance.get("/userData", async (request, reply) => {
     const { userId } = getAuth(request);
 
     if (!userId) {
-      return reply.status(401).send({ message: "Invalid token" });
+      return reply.status(200).send({});
     }
 
     const user = await clerkClient.users.getUser(userId);
@@ -170,7 +160,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
   });
 
   instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
-    "/clientToken",
+    "/appToken",
     async (request, reply) => {
       const { userId, sessionId } = getAuth(request);
 
@@ -180,7 +170,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
       const { jwt } = await clerkClient.sessions.getToken(
         sessionId,
-        environment.CLI_TOKEN_TEMPLATE,
+        environment.APP_TOKEN_TEMPLATE,
       );
 
       return reply.status(200).send({ token: jwt });

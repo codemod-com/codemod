@@ -16,7 +16,7 @@ export const environmentSchema = object({
   CLERK_PUBLISH_KEY: string(),
   CLERK_SECRET_KEY: string(),
   CLERK_JWT_KEY: string(),
-  CLI_TOKEN_TEMPLATE: string(),
+  APP_TOKEN_TEMPLATE: string(),
   VERIFIED_PUBLISHERS: coerce(array(string()), (input) => {
     if (!isNeitherNullNorUndefined(input)) {
       return [];

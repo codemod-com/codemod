@@ -2,13 +2,13 @@ import { spawnSync } from "node:child_process";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import {
-  type VerifyCLITokenResponse,
+  type GetUserDataResponse,
   execPromise,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { glob } from "fast-glob";
 import keytar from "keytar";
-import { validateCLIToken } from "./apis";
+import { getUserData } from "./apis";
 
 export const openURL = (url: string): boolean => {
   // `spawnSync` is used because `execSync` has an input length limit
@@ -28,7 +28,7 @@ export const openURL = (url: string): boolean => {
   }
 };
 
-type UserData = VerifyCLITokenResponse & {
+type UserData = GetUserDataResponse & {
   token: string;
 };
 
@@ -40,9 +40,9 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
   }
 
   const { account, password: token } = userCredentials;
-  let responseData: VerifyCLITokenResponse;
+  let responseData: GetUserDataResponse;
   try {
-    responseData = await validateCLIToken(token);
+    responseData = await getUserData(token);
   } catch (error) {
     await keytar.deletePassword("codemod.com", account);
     return null;

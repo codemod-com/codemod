@@ -24,9 +24,9 @@ esbuild
         assets: [
           {
             from: [
-              "./node_modules/@codemod-com/database/prisma/client/schema.prisma",
+              "./node_modules/@codemod-com/database/generated/client/schema.prisma",
             ],
-            to: ["../prisma/client/schema.prisma"],
+            to: ["../generated/client/schema.prisma"],
           },
         ],
       }),

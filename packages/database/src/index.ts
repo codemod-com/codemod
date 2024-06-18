@@ -1,11 +1,14 @@
 export {
   Prisma,
   PrismaClient,
-  type CodeDiff,
-  type Codemod,
-  type CodemodVersion,
-  type Tag,
-  type UserLoginIntent,
-} from "../prisma/client";
+} from "../generated/client";
 
-export { prisma } from "./client";
+export type {
+  CodeDiff,
+  Codemod,
+  CodemodVersion,
+  Tag,
+  UserLoginIntent,
+} from "../generated/client";
+
+export * from "./client";

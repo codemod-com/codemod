@@ -5,11 +5,13 @@ import {
   type Tag,
   prisma,
 } from "@codemod-com/database";
+
 import {
   type AllEngines,
   type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
+
 import Fuse from "fuse.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
@@ -64,7 +66,7 @@ export type Filter = {
 
 export class CodemodNotFoundError extends Error {}
 
-export class CodemodService {
+class CodemodService {
   public constructor(protected prisma: PrismaClient) {}
 
   public async getCodemods(
