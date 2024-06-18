@@ -1,7 +1,7 @@
 {
   "include": ["./src/**/*"],
   "exclude": ["node_modules"],
-  "extends": "@codemod-com/tsconfig/lib.json",
+  "extends": "./node_modules/@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
     "baseUrl": ".",
     "outDir": "./dist"
