@@ -67,7 +67,7 @@ model Tag {
 
 model UserLoginIntent {
   id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  token     String?
+  token     String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }

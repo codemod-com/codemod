@@ -62,6 +62,7 @@ export const handleLoginCliCommand = async (printer: PrinterBlueprint) => {
       chalk.bold.cyan("You are successfully logged in."),
     );
   } catch (e) {
+    console.log(e)
     spinner.fail();
     throw new Error("Could not validate access token. Please try again.");
   }

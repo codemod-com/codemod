@@ -5,6 +5,7 @@
   "license": "Apache License, Version 2.0",
   "description": "A monorepo for all the interconnected tools of codemod.com",
   "private": true,
+  "packageManager": "pnpm@9.4.0",
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
     "seed": "tsx packages/database/src/seed.ts"
@@ -46,13 +47,14 @@
     "coverage": "pnpm test:unit --coverage",
     "prepare": "husky install",
     "release:changelog": "node scripts/releaseChangelog.mjs",
+    "db:up": "docker-compose up -d",
     "db:generate": "turbo run db:generate",
-    "db:migrate:create": "dotenv -- turbo run db:migrate:create",
-    "db:migrate:deploy": "dotenv -- turbo run db:migrate:deploy",
-    "db:push": "dotenv -- turbo run db:push",
-    "db:reset": "dotenv -- turbo run db:reset",
-    "db:seed": "dotenv -- turbo run db:seed",
-    "db:studio": "dotenv -- turbo run db:studio"
+    "db:migrate:create": "turbo run db:migrate:create -- --name ",
+    "db:migrate:deploy": "turbo run db:migrate:deploy",
+    "db:push": "turbo run db:push",
+    "db:reset": "turbo run db:reset",
+    "db:seed": "turbo run db:seed",
+    "db:studio": "turbo run db:studio"
   },
   "devDependencies": {
     "@codemod-com/tsconfig": "workspace:*",
@@ -64,7 +66,7 @@
     "husky": "^8.0.3",
     "lint-staged": "^15.1.0",
     "tsx": "^4.2.0",
-    "turbo": "^1.10.14",
+    "turbo": "^2.0.4",
     "typescript": "^5.2.0",
     "vitest": "^1.4.0",
     "@biomejs/biome": "^1.6.4"

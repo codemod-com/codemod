@@ -27,14 +27,8 @@ export const getCodemodsListHandler: RouteHandler<{
 
   if (search !== undefined) {
     telemetryService.sendEvent(
-      {
-        kind: "listNames",
-        searchTerm: search,
-      },
-      {
-        cloudRole: clientIdentifier,
-        distinctId,
-      },
+      { kind: "listNames", searchTerm: search },
+      { cloudRole: clientIdentifier, distinctId },
     );
   }
 

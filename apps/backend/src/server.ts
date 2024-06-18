@@ -3,6 +3,7 @@ import { prisma } from "@codemod-com/database";
 import {
   type CodemodListResponse,
   type CodemodRunResponse,
+  type User,
   decryptWithIv,
   encryptWithIv,
 } from "@codemod-com/utilities";
@@ -176,13 +177,13 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
     "/codemods/downloadLink",
-    { preHandler: [instance.authenticate, instance.getUserData] },
+    { preHandler: [instance.getUserData] },
     getCodemodDownloadLink,
   );
 
   instance.get<{ Reply: CodemodListResponse }>(
     "/codemods/list",
-    { preHandler: [instance.authenticate, instance.getUserData] },
+    { preHandler: [instance.getUserData] },
     getCodemodsListHandler,
   );
 

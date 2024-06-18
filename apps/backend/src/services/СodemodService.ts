@@ -381,6 +381,7 @@ class CodemodService {
         };
       });
 
+      // TODO: use prisma json type for arguments in prisma schema
       codemodData = codemods.filter(Boolean);
     } else {
       const dbCodemods = await this.prisma.codemod.findMany({
@@ -412,6 +413,7 @@ class CodemodService {
         };
       });
 
+      // TODO: use prisma json type for arguments in prisma schema
       codemodData = codemods.filter(Boolean);
     }
 

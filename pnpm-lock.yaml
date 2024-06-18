@@ -42,8 +42,8 @@ importers:
         specifier: ^4.2.0
         version: 4.11.0
       turbo:
-        specifier: ^1.10.14
-        version: 1.13.3
+        specifier: ^2.0.4
+        version: 2.0.4
       typescript:
         specifier: ^5.2.0
         version: 5.4.5
@@ -469,7 +469,7 @@ importers:
         version: 1.2.1(@sanity/ui@2.1.12(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(@types/react-dom@18.3.0)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react-fast-compare@3.2.2)(react@18.2.0)(rxjs@7.8.1)(sanity@3.43.0(@types/node@20.12.13)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.31.0))(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/preview-url-secret':
         specifier: ^1.6.3
-        version: 1.6.13(@sanity/client@6.18.2(debug@4.3.4))
+        version: 1.6.13(@sanity/client@6.18.2)
       '@sanity/react-loader':
         specifier: ^1.8.5
         version: 1.9.19(@sanity/client@6.18.2)(react@18.2.0)
@@ -1161,7 +1161,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1186,7 +1186,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1208,7 +1208,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1230,7 +1230,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
@@ -1249,7 +1249,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
@@ -1258,7 +1258,7 @@ importers:
     devDependencies:
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
 
   packages/codemods/bull/bullmq:
     devDependencies:
@@ -1273,7 +1273,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1316,7 +1316,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -1349,7 +1349,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -1382,7 +1382,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -1409,7 +1409,7 @@ importers:
         version: 20.9.0
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: 5.2.2
         version: 5.2.2
@@ -1445,7 +1445,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1469,7 +1469,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1493,7 +1493,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1517,7 +1517,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1541,7 +1541,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1565,7 +1565,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1589,7 +1589,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1613,7 +1613,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1637,7 +1637,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1661,7 +1661,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1685,7 +1685,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1709,7 +1709,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1733,7 +1733,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1757,7 +1757,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1781,7 +1781,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1805,7 +1805,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1829,7 +1829,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1886,7 +1886,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1910,7 +1910,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1934,7 +1934,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1958,7 +1958,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -1985,7 +1985,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -2015,7 +2015,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2039,7 +2039,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2063,7 +2063,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2087,7 +2087,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2111,7 +2111,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2135,7 +2135,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2159,7 +2159,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2183,7 +2183,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2207,7 +2207,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2231,7 +2231,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2255,7 +2255,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2279,7 +2279,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2303,7 +2303,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2330,7 +2330,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -2360,7 +2360,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2391,7 +2391,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -2418,7 +2418,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2635,7 +2635,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2659,7 +2659,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2683,7 +2683,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2707,7 +2707,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2731,7 +2731,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2755,7 +2755,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2779,7 +2779,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2803,7 +2803,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2827,7 +2827,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2851,7 +2851,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2875,7 +2875,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2899,7 +2899,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2923,7 +2923,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2949,7 +2949,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -2973,7 +2973,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3015,7 +3015,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3048,7 +3048,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3097,7 +3097,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3129,7 +3129,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3153,7 +3153,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3181,7 +3181,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3205,7 +3205,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3229,7 +3229,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3253,7 +3253,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3313,7 +3313,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3346,7 +3346,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3398,7 +3398,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3452,7 +3452,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -3503,7 +3503,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3527,7 +3527,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3551,7 +3551,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3592,7 +3592,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3616,7 +3616,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3640,7 +3640,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3664,7 +3664,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3688,7 +3688,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3712,7 +3712,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3736,7 +3736,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3760,7 +3760,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3784,7 +3784,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3808,7 +3808,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3832,7 +3832,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3856,7 +3856,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3880,7 +3880,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3904,7 +3904,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3931,7 +3931,7 @@ importers:
         version: 0.19.5
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3955,7 +3955,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -3979,7 +3979,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4003,7 +4003,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4027,7 +4027,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4051,7 +4051,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4075,7 +4075,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4099,7 +4099,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4123,7 +4123,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4147,7 +4147,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4171,7 +4171,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4195,7 +4195,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4219,7 +4219,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4243,7 +4243,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4267,7 +4267,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4291,7 +4291,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4315,7 +4315,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4339,7 +4339,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4363,7 +4363,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4391,7 +4391,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4415,7 +4415,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4439,7 +4439,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4460,7 +4460,7 @@ importers:
         version: 20.12.12
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
@@ -4478,7 +4478,7 @@ importers:
         version: 20.9.0
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: 5.2.2
         version: 5.2.2
@@ -4499,7 +4499,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4520,7 +4520,7 @@ importers:
         version: 20.12.12
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
@@ -4541,7 +4541,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4565,7 +4565,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4589,7 +4589,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4613,7 +4613,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4637,7 +4637,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4661,7 +4661,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4685,7 +4685,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4712,7 +4712,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       memfs:
         specifier: ^4.6.0
         version: 4.9.2
@@ -4775,7 +4775,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4802,7 +4802,7 @@ importers:
         version: 1.6.0(vitest@1.6.0(@types/node@20.12.13)(jsdom@23.2.0)(terser@5.31.0))
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.12.13)(typescript@5.4.5)
@@ -4823,7 +4823,7 @@ importers:
         version: 20.12.12
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       typescript:
         specifier: ^5.2.2
         version: 5.4.5
@@ -5086,7 +5086,7 @@ importers:
         version: 1.15.1
       jscodeshift:
         specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.6)
+        version: 0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5))
       ms:
         specifier: ^2.1.3
         version: 2.1.3
@@ -17681,38 +17681,38 @@ packages:
     resolution: {integrity: sha512-1h/Lnq9yajKY2PEbBadPXj3VxsDDu844OnaAo52UVmIzIvwwtBPIuNvkjuzBlTWpfJyUbG3ez0KSBibQkj4ojg==}
     engines: {node: '>=0.6.11 <=0.7.0 || >=0.7.3'}
 
-  turbo-darwin-64@1.13.3:
-    resolution: {integrity: sha512-glup8Qx1qEFB5jerAnXbS8WrL92OKyMmg5Hnd4PleLljAeYmx+cmmnsmLT7tpaVZIN58EAAwu8wHC6kIIqhbWA==}
+  turbo-darwin-64@2.0.4:
+    resolution: {integrity: sha512-x9mvmh4wudBstML8Z8IOmokLWglIhSfhQwnh2gBCSqabgVBKYvzl8Y+i+UCNPxheCGTgtsPepTcIaKBIyFIcvw==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@1.13.3:
-    resolution: {integrity: sha512-/np2xD+f/+9qY8BVtuOQXRq5f9LehCFxamiQnwdqWm5iZmdjygC5T3uVSYuagVFsZKMvX3ycySwh8dylGTl6lg==}
+  turbo-darwin-arm64@2.0.4:
+    resolution: {integrity: sha512-/B1Ih8zPRGVw5vw4SlclOf3C/woJ/2T6ieH6u54KT4wypoaVyaiyMqBcziIXycdObIYr7jQ+raHO7q3mhay9/A==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@1.13.3:
-    resolution: {integrity: sha512-G+HGrau54iAnbXLfl+N/PynqpDwi/uDzb6iM9hXEDG+yJnSJxaHMShhOkXYJPk9offm9prH33Khx2scXrYVW1g==}
+  turbo-linux-64@2.0.4:
+    resolution: {integrity: sha512-6aG670e5zOWu6RczEYcB81nEl8EhiGJEvWhUrnAfNEUIMBEH1pR5SsMmG2ol5/m3PgiRM12r13dSqTxCLcHrVg==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@1.13.3:
-    resolution: {integrity: sha512-qWwEl5VR02NqRyl68/3pwp3c/olZuSp+vwlwrunuoNTm6JXGLG5pTeme4zoHNnk0qn4cCX7DFrOboArlYxv0wQ==}
+  turbo-linux-arm64@2.0.4:
+    resolution: {integrity: sha512-AXfVOjst+mCtPDFT4tCu08Qrfv12Nj7NDd33AjGwV79NYN1Y1rcFY59UQ4nO3ij3rbcvV71Xc+TZJ4csEvRCSg==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@1.13.3:
-    resolution: {integrity: sha512-Nudr4bRChfJzBPzEmpVV85VwUYRCGKecwkBFpbp2a4NtrJ3+UP1VZES653ckqCu2FRyRuS0n03v9euMbAvzH+Q==}
+  turbo-windows-64@2.0.4:
+    resolution: {integrity: sha512-QOnUR9hKl0T5gq5h1fAhVEqBSjpcBi/BbaO71YGQNgsr6pAnCQdbG8/r3MYXet53efM0KTdOhieWeO3KLNKybA==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@1.13.3:
-    resolution: {integrity: sha512-ouJCgsVLd3icjRLmRvHQDDZnmGzT64GBupM1Y+TjtYn2LVaEBoV6hicFy8x5DUpnqdLy+YpCzRMkWlwhmkX7sQ==}
+  turbo-windows-arm64@2.0.4:
+    resolution: {integrity: sha512-3v8WpdZy1AxZw0gha0q3caZmm+0gveBQ40OspD6mxDBIS+oBtO5CkxhIXkFJJW+jDKmDlM7wXDIGfMEq+QyNCQ==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@1.13.3:
-    resolution: {integrity: sha512-n17HJv4F4CpsYTvKzUJhLbyewbXjq1oLCi90i5tW1TiWDz16ML1eDG7wi5dHaKxzh5efIM56SITnuVbMq5dk4g==}
+  turbo@2.0.4:
+    resolution: {integrity: sha512-Ilme/2Q5kYw0AeRr+aw3s02+WrEYaY7U8vPnqSZU/jaDG/qd6jHVN6nRWyd/9KXvJGYM69vE6JImoGoyNjLwaw==}
     hasBin: true
 
   type-check@0.4.0:
@@ -23093,6 +23093,14 @@ snapshots:
       - react
       - supports-color
 
+  '@sanity/client@6.18.2':
+    dependencies:
+      '@sanity/eventsource': 5.0.2
+      get-it: 8.5.0
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/client@6.18.2(debug@3.2.7)':
     dependencies:
       '@sanity/eventsource': 5.0.2
@@ -23112,7 +23120,7 @@ snapshots:
   '@sanity/client@6.19.1':
     dependencies:
       '@sanity/eventsource': 5.0.2
-      get-it: 8.5.0(debug@4.3.4)
+      get-it: 8.5.0
       rxjs: 7.8.1
     transitivePeerDependencies:
       - debug
@@ -23177,7 +23185,7 @@ snapshots:
 
   '@sanity/core-loader@1.6.14(@sanity/client@6.18.2)':
     dependencies:
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
 
   '@sanity/diff-match-patch@3.1.1': {}
 
@@ -23390,14 +23398,36 @@ snapshots:
       - react-is
       - styled-components
 
+  '@sanity/presentation@1.15.8(@sanity/client@6.18.2)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))':
+    dependencies:
+      '@sanity/client': 6.18.2
+      '@sanity/icons': 2.11.8(react@18.2.0)
+      '@sanity/preview-url-secret': 1.6.13(@sanity/client@6.18.2)
+      '@sanity/ui': 2.1.12(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      '@sanity/uuid': 3.0.2
+      '@types/lodash.isequal': 4.5.8
+      fast-deep-equal: 3.1.3
+      framer-motion: 11.0.8(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
+      lodash.isequal: 4.5.0
+      mendoza: 3.0.7
+      mnemonist: 0.39.8
+      path-to-regexp: 6.2.2
+      rxjs: 7.8.1
+      suspend-react: 0.1.3(react@18.2.0)
+    transitivePeerDependencies:
+      - react
+      - react-dom
+      - react-is
+      - styled-components
+
   '@sanity/preview-kit-compat@1.4.15(@sanity/client@6.18.2)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
       react: 18.2.0
 
   '@sanity/preview-kit@5.0.41(@sanity/client@6.18.2)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
       '@sanity/preview-kit-compat': 1.4.15(@sanity/client@6.18.2)(react@18.2.0)
       '@vercel/stega': 0.1.0
       lru-cache: 10.2.0
@@ -23412,9 +23442,14 @@ snapshots:
       '@sanity/client': 6.18.2(debug@4.3.4)
       '@sanity/uuid': 3.0.2
 
+  '@sanity/preview-url-secret@1.6.13(@sanity/client@6.18.2)':
+    dependencies:
+      '@sanity/client': 6.18.2
+      '@sanity/uuid': 3.0.2
+
   '@sanity/react-loader@1.9.19(@sanity/client@6.18.2)(react@18.2.0)':
     dependencies:
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
       '@sanity/core-loader': 1.6.14(@sanity/client@6.18.2)
       react: 18.2.0
 
@@ -23472,6 +23507,13 @@ snapshots:
     transitivePeerDependencies:
       - debug
 
+  '@sanity/types@3.43.0':
+    dependencies:
+      '@sanity/client': 6.18.2
+      '@types/react': 18.2.55
+    transitivePeerDependencies:
+      - debug
+
   '@sanity/types@3.43.0(debug@3.2.7)':
     dependencies:
       '@sanity/client': 6.18.2(debug@3.2.7)
@@ -23523,6 +23565,16 @@ snapshots:
     dependencies:
       '@sanity/client': 6.18.2(debug@4.3.4)
       '@sanity/types': 3.37.2(debug@4.3.4)
+      get-random-values-esm: 1.0.2
+      moment: 2.30.1
+      rxjs: 7.8.1
+    transitivePeerDependencies:
+      - debug
+
+  '@sanity/util@3.43.0':
+    dependencies:
+      '@sanity/client': 6.18.2
+      '@sanity/types': 3.43.0
       get-random-values-esm: 1.0.2
       moment: 2.30.1
       rxjs: 7.8.1
@@ -23599,7 +23651,7 @@ snapshots:
 
   '@sanity/visual-editing@1.8.7(@sanity/client@6.18.2)(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.17)':
     dependencies:
-      '@sanity/preview-url-secret': 1.6.13(@sanity/client@6.18.2(debug@4.3.4))
+      '@sanity/preview-url-secret': 1.6.13(@sanity/client@6.18.2)
       '@vercel/stega': 0.1.0
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
@@ -23607,7 +23659,7 @@ snapshots:
       scroll-into-view-if-needed: 3.1.0
       valibot: 0.30.0
     optionalDependencies:
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
       next: 14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       svelte: 4.2.17
 
@@ -24160,7 +24212,7 @@ snapshots:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/image-url': 1.0.2
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
-      '@sanity/presentation': 1.15.8(@sanity/client@6.18.2(debug@4.3.4))(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
+      '@sanity/presentation': 1.15.8(@sanity/client@6.18.2)(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@sanity/ui': 2.1.12(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
       '@tanstack/react-virtual': 3.5.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@tinloof/sanity-web': 0.3.1(@types/node@20.12.13)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.31.0)
@@ -27196,8 +27248,8 @@ snapshots:
       '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.3.3)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.8.0(eslint@8.56.0)
       eslint-plugin-react: 7.34.1(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.56.0)
@@ -27219,13 +27271,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0):
+  eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0):
     dependencies:
       debug: 4.3.4(supports-color@5.5.0)
       enhanced-resolve: 5.16.1
       eslint: 8.56.0
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.13.1
@@ -27236,18 +27288,18 @@ snapshots:
       - eslint-import-resolver-webpack
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       debug: 3.2.7(supports-color@5.5.0)
     optionalDependencies:
       '@typescript-eslint/parser': 6.21.0(eslint@8.56.0)(typescript@5.3.3)
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
+      eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0)
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -27257,7 +27309,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1)(eslint@8.56.0))(eslint@8.56.0)
       hasown: 2.0.2
       is-core-module: 2.13.1
       is-glob: 4.0.3
@@ -27717,6 +27769,10 @@ snapshots:
     optionalDependencies:
       debug: 3.2.7(supports-color@5.5.0)
 
+  follow-redirects@1.15.6(debug@4.3.4):
+    optionalDependencies:
+      debug: 4.3.4(supports-color@5.5.0)
+
   for-each@0.3.3:
     dependencies:
       is-callable: 1.2.7
@@ -27849,6 +27905,16 @@ snapshots:
       has-symbols: 1.0.3
       hasown: 2.0.2
 
+  get-it@8.5.0:
+    dependencies:
+      decompress-response: 7.0.0
+      follow-redirects: 1.15.6(debug@3.2.7)
+      is-retry-allowed: 2.2.0
+      progress-stream: 2.0.0
+      tunnel-agent: 0.6.0
+    transitivePeerDependencies:
+      - debug
+
   get-it@8.5.0(debug@3.2.7):
     dependencies:
       decompress-response: 7.0.0
@@ -27862,7 +27928,7 @@ snapshots:
   get-it@8.5.0(debug@4.3.4):
     dependencies:
       decompress-response: 7.0.0
-      follow-redirects: 1.15.6(debug@3.2.7)
+      follow-redirects: 1.15.6(debug@4.3.4)
       is-retry-allowed: 2.2.0
       progress-stream: 2.0.0
       tunnel-agent: 0.6.0
@@ -28708,7 +28774,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.15.2(@babel/preset-env@7.24.6):
+  jscodeshift@0.15.2(@babel/preset-env@7.24.6(@babel/core@7.24.5)):
     dependencies:
       '@babel/core': 7.24.5
       '@babel/parser': 7.24.5
@@ -30377,7 +30443,7 @@ snapshots:
   next-sanity@8.5.5(@sanity/client@6.18.2)(@sanity/icons@2.11.8(react@18.2.0))(@sanity/types@3.44.0)(@sanity/ui@2.1.12(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0)))(next@14.2.3(@babel/core@7.24.5)(@opentelemetry/api@1.8.0)(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(react@18.2.0)(sanity@3.43.0(@types/node@20.12.13)(@types/react@18.2.55)(react-dom@18.2.0(react@18.2.0))(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(terser@5.31.0))(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))(svelte@4.2.17):
     dependencies:
       '@portabletext/react': 3.0.18(react@18.2.0)
-      '@sanity/client': 6.18.2(debug@4.3.4)
+      '@sanity/client': 6.18.2
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/preview-kit': 5.0.41(@sanity/client@6.18.2)(react@18.2.0)
       '@sanity/types': 3.44.0
@@ -32161,7 +32227,7 @@ snapshots:
       '@sanity/icons': 2.11.8(react@18.2.0)
       '@sanity/incompatible-plugin': 1.0.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
       '@sanity/ui': 2.1.12(react-dom@18.2.0(react@18.2.0))(react-is@18.3.1)(react@18.2.0)(styled-components@6.1.11(react-dom@18.2.0(react@18.2.0))(react@18.2.0))
-      '@sanity/util': 3.43.0(debug@4.3.4)
+      '@sanity/util': 3.43.0
       '@sanity/uuid': 3.0.2
       dlv: 1.1.3
       react: 18.2.0
@@ -33547,32 +33613,32 @@ snapshots:
 
   tunnel@0.0.6: {}
 
-  turbo-darwin-64@1.13.3:
+  turbo-darwin-64@2.0.4:
     optional: true
 
-  turbo-darwin-arm64@1.13.3:
+  turbo-darwin-arm64@2.0.4:
     optional: true
 
-  turbo-linux-64@1.13.3:
+  turbo-linux-64@2.0.4:
     optional: true
 
-  turbo-linux-arm64@1.13.3:
+  turbo-linux-arm64@2.0.4:
     optional: true
 
-  turbo-windows-64@1.13.3:
+  turbo-windows-64@2.0.4:
     optional: true
 
-  turbo-windows-arm64@1.13.3:
+  turbo-windows-arm64@2.0.4:
     optional: true
 
-  turbo@1.13.3:
+  turbo@2.0.4:
     optionalDependencies:
-      turbo-darwin-64: 1.13.3
-      turbo-darwin-arm64: 1.13.3
-      turbo-linux-64: 1.13.3
-      turbo-linux-arm64: 1.13.3
-      turbo-windows-64: 1.13.3
-      turbo-windows-arm64: 1.13.3
+      turbo-darwin-64: 2.0.4
+      turbo-darwin-arm64: 2.0.4
+      turbo-linux-64: 2.0.4
+      turbo-linux-arm64: 2.0.4
+      turbo-windows-64: 2.0.4
+      turbo-windows-arm64: 2.0.4
 
   type-check@0.4.0:
     dependencies:
