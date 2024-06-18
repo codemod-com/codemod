@@ -1,4 +1,3 @@
-import type { ValidateTokenResponse } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "glob";
@@ -32,10 +31,10 @@ import type {
 
 export const validateAccessToken = async (
   accessToken: string,
-): Promise<ValidateTokenResponse | null> => {
+): Promise<void> => {
   try {
-    const response = await axios.post<ValidateTokenResponse>(
-      "https://backend.codemod.com/validateAccessToken",
+    const response = await axios.post(
+      "https://backend.codemod.com/verifyToken",
       {},
       {
         headers: { Authorization: `Bearer ${accessToken}` },
@@ -48,8 +47,6 @@ export const validateAccessToken = async (
     if (!axios.isAxiosError(error)) {
       console.error(error);
     }
-
-    return null;
   }
 };
 
