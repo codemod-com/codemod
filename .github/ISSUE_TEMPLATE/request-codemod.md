@@ -15,33 +15,20 @@ assignees: ''
 
 Give an understandable name for the codemod.
 
-## Codemod description
 
+### Codemod description
 Write a short description of the changes that should be made by this codemod.
 
-## Example
+e.g. 
+As described in the [upgrade guide](https://www.elastic.co/guide/en/elasticsearch/client/javascript-api/7.17/breaking-changes.html):
+"The returned value of an API call will no longer be the body, statusCode, and headers for callbacks, and only the body for promises. The new returned value will be a unique object containing the body, statusCode, headers, warnings, and meta, for both callback and promises."
 
-> Note: The example section helps codemod champions identify all the transformation patterns that this codemod should handle. Repeat before/after snippets for every transformation example you can find.
 
-### Code before transformation
+----
+To contributors working on this task:
+- [ ] **Framework/Subject Matter Expert**: [Build]Share the Codemod Studio link (example) with detailed specs from the framework expert, including before/after pairs and transformation logic, along with edge cases.
+- [ ] **Codemod Expert**: [Build](https://go.codemod.com/build-codemod-docs) and [publish](https://go.codemod.com/codemod-publish-doc) quality codemods that cover most edge cases (false negatives are acceptable) with no false positives.
+- Questions? -> [Community](https://go.codemod.com/community)
 
-```
-//insert your code before transformation here
-```
 
-### Code after transformation
 
-```
-//insert the expected **correct** output here
-```
-
-### Applicability Criteria
-
-Write the applicable framework/library for this codemod.
-A codemod can:
-- Migrate from one version to another [ex: React 18 -> React 19]
-- Migrate from one framework to another [ex: ESLint -> Biome]
-- Clean up or refactor code of the same framework/library version [ex: React 18 -> React 18]
-
-### Additional context or links
-Add any other context about the problem here. This might include extra considerations, edge cases, relevant business logic, existing migration guides, relevant links, etc.
