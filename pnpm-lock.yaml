@@ -5207,6 +5207,9 @@ importers:
         specifier: ^0.10.3
         version: 0.10.3
     devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../utilities
       '@types/lodash':
         specifier: ^4.17.4
         version: 4.17.5

@@ -29,9 +29,6 @@
     "url": "https://github.com/codemod-com/codemod.git",
     "directory": "packages/workflow"
   },
-  "devDependencies": {
-    "@codemod-com/utilities": "workspace:*"
-  },
   "dependencies": {
     "@ast-grep/cli": "^0.22.3",
     "@ast-grep/napi": "^0.22.3",
@@ -47,6 +44,7 @@
     "ts-invariant": "^0.10.3"
   },
   "devDependencies": {
+    "@codemod-com/utilities": "workspace:*",
     "@types/lodash": "^4.17.4"
   }
 }
