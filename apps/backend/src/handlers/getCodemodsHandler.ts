@@ -1,7 +1,7 @@
 import type { Codemod } from "@codemod-com/database";
 import type { RouteHandler } from "fastify";
 import { parseGetCodemodsQuery } from "../schemata/schema.js";
-import { codemodService } from "../services/СodemodService.js";
+import { codemodService } from "../services/CodemodService.js";
 
 export const getCodemodsHandler: RouteHandler<{
   Reply: {

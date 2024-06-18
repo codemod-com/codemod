@@ -3,7 +3,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
-import { codemodService } from "../services/СodemodService.js";
+import { codemodService } from "../services/CodemodService.js";
 import { environment } from "../util.js";
 
 export type GetCodemodDownloadLinkResponse = { link: string };
