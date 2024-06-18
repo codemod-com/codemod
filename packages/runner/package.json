@@ -42,7 +42,6 @@
     "@babel/types": "^7.24.0",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/printer": "workspace:*",
-    "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@codemod.com/workflow": "workspace:*",
     "@svgr/hast-util-to-babel-ast": "^7.0.0",
