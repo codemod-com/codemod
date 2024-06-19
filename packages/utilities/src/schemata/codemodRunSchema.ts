@@ -2,7 +2,6 @@ import { literal, object, optional, string, union } from "valibot";
 
 export const codemodRunBodySchema = object({
   codemodSource: string(),
-  codemodName: string(),
   codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
   repoUrl: string(),
   branch: optional(string()),
