@@ -1,4 +1,4 @@
-import apiClient from "@/utils/apis/client";
+import { apiClient } from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
 import { mockedEndpoints } from "@shared/mocks";
 import { isServer } from "@studio/config";

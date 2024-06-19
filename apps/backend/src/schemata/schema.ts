@@ -125,14 +125,6 @@ export const validateIntentParamsSchema = object({
 export const parseValidateIntentParams = (input: unknown) =>
   parse(validateIntentParamsSchema, input);
 
-export const buildAccessTokenQuerySchema = object({
-  sessionId: optional(string()),
-  iv: optional(string()),
-});
-
-export const parseBuildAccessTokenQuery = (input: unknown) =>
-  parse(buildAccessTokenQuerySchema, input);
-
 export const ivObjectSchema = object({
   iv: string(),
 });

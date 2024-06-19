@@ -18,6 +18,21 @@
     "create": {
       "dependsOn": ["^create"],
       "cache": false
+    },
+    "db:migrate:create": {
+      "outputs": []
+    },
+    "db:migrate:deploy": {
+      "outputs": []
+    },
+    "db:push": {
+      "outputs": []
+    },
+    "db:seed": {
+      "outputs": []
+    },
+    "db:generate": {
+      "dependsOn": ["^db:generate"]
     }
   }
 }

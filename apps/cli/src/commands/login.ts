@@ -1,7 +1,11 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
 import keytar from "keytar";
-import { confirmUserLoggedIn, generateUserLoginIntent } from "../apis.js";
+import {
+  confirmUserLoggedIn,
+  generateUserLoginIntent,
+  getCLIAccessToken,
+} from "../apis.js";
 import { getCurrentUserData, openURL } from "../utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
@@ -52,7 +56,9 @@ export const handleLoginCliCommand = async (options: {
       },
     );
 
-    await keytar.setPassword("codemod.com", "user-account", token);
+    const { token: cliToken } = await getCLIAccessToken(token);
+
+    await keytar.setPassword("codemod.com", "user-account", cliToken);
 
     spinner.succeed();
     printer.printConsoleMessage(
@@ -60,6 +66,7 @@ export const handleLoginCliCommand = async (options: {
       chalk.bold.cyan("You are successfully logged in."),
     );
   } catch (e) {
+    console.log(e);
     spinner.fail();
     throw new Error("Could not validate access token. Please try again.");
   }

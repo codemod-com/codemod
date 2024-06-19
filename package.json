@@ -5,6 +5,11 @@
   "license": "Apache License, Version 2.0",
   "description": "A monorepo for all the interconnected tools of codemod.com",
   "private": true,
+  "packageManager": "pnpm@9.4.0",
+  "prisma": {
+    "schema": "packages/database/prisma/schema.prisma",
+    "seed": "tsx packages/database/src/seed.ts"
+  },
   "engines": {
     "node": ">=20.x",
     "pnpm": ">=8.x"
@@ -32,16 +37,24 @@
     "clean": "turbo run clean",
     "link": "turbo run link",
     "lint": "biome check .",
-    "lint:apply": "biome check --apply .",
-    "lint:linter": "biome lint --apply .",
-    "lint:formatter": "biome format --write .",
+    "lint:apply": "biome check --apply --diagnostic-level=error .",
+    "lint:linter": "biome lint --apply --diagnostic-level=error .",
+    "lint:formatter": "biome format --write --diagnostic-level=error .",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
     "test:backend": "pnpm --filter @codemod-com/backend test",
     "test:win": "vitest run packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts",
     "coverage": "pnpm test:unit --coverage",
     "prepare": "husky install",
-    "release:changelog": "node scripts/releaseChangelog.mjs"
+    "release:changelog": "node scripts/releaseChangelog.mjs",
+    "db:up": "docker-compose up -d",
+    "db:generate": "turbo run db:generate",
+    "db:migrate:create": "turbo run db:migrate:create -- --name ",
+    "db:migrate:deploy": "turbo run db:migrate:deploy",
+    "db:push": "turbo run db:push",
+    "db:reset": "turbo run db:reset",
+    "db:seed": "turbo run db:seed",
+    "db:studio": "turbo run db:studio"
   },
   "devDependencies": {
     "@codemod-com/tsconfig": "workspace:*",
@@ -60,7 +73,7 @@
   },
   "lint-staged": {
     "*": [
-      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true"
+      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
     ]
   },
   "pnpm": {

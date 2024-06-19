@@ -29,19 +29,22 @@
     "url": "https://github.com/codemod-com/codemod.git",
     "directory": "packages/workflow"
   },
-  "devDependencies": {
-    "@codemod-com/utilities": "workspace:*"
-  },
   "dependencies": {
     "@ast-grep/cli": "^0.22.3",
     "@ast-grep/napi": "^0.22.3",
     "@sindresorhus/slugify": "^2.2.1",
     "colors-cli": "^1.0.33",
     "filenamify": "^6.0.0",
+    "glob": "^10.4.1",
+    "lodash": "^4.17.21",
     "magic-string": "^0.30.10",
     "openai": "4.23.0",
     "simple-git": "^3.24.0",
     "tree-kill": "^1.2.2",
     "ts-invariant": "^0.10.3"
+  },
+  "devDependencies": {
+    "@codemod-com/utilities": "workspace:*",
+    "@types/lodash": "^4.17.4"
   }
 }

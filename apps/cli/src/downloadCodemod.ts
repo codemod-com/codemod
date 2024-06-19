@@ -12,7 +12,6 @@ import {
 import type { TarService } from "@codemod-com/utilities";
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
-import type { Ora } from "ora";
 import semver from "semver";
 import { getCodemodDownloadURI } from "./apis.js";
 import {
@@ -50,9 +49,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     await mkdir(directoryPath, { recursive: true });
 
+    let spinner: ReturnType<typeof this.__printer.withLoaderMessage> | null =
+      null;
     const printableName = chalk.cyan.bold(doubleQuotify(name));
 
-    let spinner: Ora | null = null;
     if (!disableSpinner) {
       spinner = this.__printer.withLoaderMessage(
         chalk.cyan("Fetching", `${printableName}...`),

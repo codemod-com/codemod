@@ -4,15 +4,10 @@
   "scripts": {
     "build": "node esbuild.config.js",
     "start": "node build/index.js",
-    "test": "vitest --run",
-    "db:seed": "tsx prisma/seed.ts",
-    "db:push": "prisma db push",
-    "db:clear": "prisma migrate reset",
-    "db:generate": "prisma generate",
-    "db:migrate:apply": "prisma migrate deploy",
-    "db:migrate:generate": "prisma migrate dev --name",
-    "db:version": "prisma -v",
-    "db:studio": "prisma studio"
+    "test": "vitest --run"
+  },
+  "prisma": {
+    "schema": "packages/database/generated/client/schema.prisma"
   },
   "author": "Codemod inc.",
   "private": true,
@@ -28,6 +23,7 @@
     "@types/supertest": "^6.0.2",
     "dotenv-cli": "^7.4.1",
     "esbuild": "^0.19.12",
+    "esbuild-plugin-copy": "^2.1.1",
     "fastify-plugin": "4.5.1",
     "nodemon": "3.0.2",
     "supertest": "^6.3.4",
@@ -39,14 +35,12 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.549.0",
     "@aws-sdk/s3-request-presigner": "^3.549.0",
-    "@clerk/backend": "0.36.0",
-    "@clerk/fastify": "0.6.27",
+    "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "^2.1.1",
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.1.0",
     "@fastify/rate-limit": "9.0.1",
-    "@prisma/client": "5.10.2",
     "@types/tar": "^6.1.11",
     "ai": "2.2.29",
     "axios": "^1.6.8",
@@ -63,18 +57,14 @@
     "openai-edge": "1.2.2",
     "parse-github-url": "1.0.2",
     "pg": "^8.11.3",
-    "prisma": "^5.10.2",
-    "prisma-json-types-generator": "^3.0.4",
     "replicate": "0.25.2",
     "semver": "7.6.0",
     "tar": "^6.2.0",
     "valibot": "^0.24.1",
-    "zod": "3.22.3",
-    "zod-prisma-types": "^3.1.6"
+    "zod": "3.22.3"
   },
   "type": "module",
   "peerDependencies": {
-    "@clerk/backend": "0.36.0",
     "fastify-plugin": "4.5.1"
   }
 }

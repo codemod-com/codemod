@@ -1,16 +1,7 @@
 generator client {
   provider   = "prisma-client-js"
   engineType = "binary"
-  output     = "./client"
-}
-
-generator json {
-  provider = "prisma-json-types-generator"
-}
-
-generator zod {
-  provider                         = "zod-prisma-types"
-  createOptionalDefaultValuesTypes = true
+  output     = "../generated/client"
 }
 
 datasource db {
@@ -24,9 +15,7 @@ model Codemod {
   shortDescription String?          @db.Text
   tags             String[]         @default([])
   engine           String?          @db.VarChar(255)
-  /// [ApplicabilityCriteria]
   applicability    Json?
-  /// [Arguments]
   arguments        Json?
   name             String           @unique @db.VarChar(255)
   featured         Boolean          @default(false)
@@ -38,7 +27,6 @@ model Codemod {
   amountOfUses     Int              @default(0)
   totalTimeSaved   Int              @default(0)
   openedPrs        Int              @default(0)
-  // Synced from Sanity
   labels           String[]         @default([])
   createdAt        DateTime         @default(now())
   updatedAt        DateTime         @default(now()) @updatedAt
@@ -49,9 +37,7 @@ model CodemodVersion {
   version                  String   @db.VarChar(255)
   shortDescription         String?  @db.Text
   engine                   String   @db.VarChar(255)
-  /// [ApplicabilityCriteria]
   applicability            Json?
-  /// [Arguments]
   arguments                Json?
   vsCodeLink               String   @db.VarChar(255)
   codemodStudioExampleLink String?  @db.VarChar(255)
@@ -75,43 +61,23 @@ model Tag {
   aliases        String[]
   classification String   @db.VarChar(255)
   displayName    String   @db.VarChar(255)
-  // TODO: enterprise feature
-  // owners         User[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @default(now()) @updatedAt
 }
 
-model TokenMetadata {
-  pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
-  backendInitializationVector   String @map("biv") @db.VarChar(22)
-  encryptedUserId               String @map("euid") @db.VarChar(64)
-  createdAt                     BigInt @map("ca")
-  expiresAt                     BigInt @map("ea")
-  claims                        BigInt @map("c")
-  signature                     String @map("s") @db.VarChar(43)
-}
-
 model UserLoginIntent {
-  id    String  @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  token String? @db.VarChar(255)
-
+  id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  token     String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
 
-model TokenRevocation {
-  pepperedAccessTokenHashDigest String @id @map("pathd") @db.VarChar(27)
-  revokedAt                     BigInt @map("r")
-  signature                     String @map("s") @db.VarChar(43)
-}
-
 model CodeDiff {
-  id     String  @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  name   String? @db.VarChar(255)
-  source String  @db.VarChar(255)
-  before String  @db.Text
-  after  String  @db.Text
-
+  id        String   @id @unique @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String?  @db.VarChar(255)
+  source    String   @db.VarChar(255)
+  before    String   @db.Text
+  after     String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 }
