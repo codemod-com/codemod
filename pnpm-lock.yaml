@@ -1268,6 +1268,7 @@ importers:
     devDependencies:
       jscodeshift:
         specifier: ^0.15.1
+<<<<<<< HEAD
         version: 0.15.2(@babel/preset-env@7.24.4)
 
   packages/codemods/axios/fetch:
@@ -1284,6 +1285,11 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
+||||||| parent of b810034a (suffix)
+        version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
+=======
+        version: 0.15.2(@babel/preset-env@7.24.4)
+>>>>>>> b810034a (suffix)
 
   packages/codemods/bull/bullmq:
     devDependencies:
@@ -25909,7 +25915,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.3.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
