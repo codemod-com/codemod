@@ -95,7 +95,7 @@ export const DownloadZip = () => {
           id="download-zip-button"
         >
           <DownloadIcon />
-          Run locally via CLI
+          Download and Run Locally
         </Button>
       </DialogTrigger>
 
