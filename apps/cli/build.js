@@ -1,11 +1,17 @@
 import { build } from "esbuild";
 import { hideBin } from "yargs/helpers";
 
-const prodEnvs = {
+const localProdBuildEnvs = {
   "process.env.NODE_ENV": '"production"',
   "process.env.BACKEND_URL": '"https://backend.codemod.com"',
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
+  "process.env.IGNORE_TELEMETRY": "true",
+};
+
+const publishEnvs = {
+  ...localProdBuildEnvs,
+  "process.env.IGNORE_TELEMETRY": "false",
 };
 
 const localEnvs = {
@@ -13,6 +19,7 @@ const localEnvs = {
   "process.env.BACKEND_URL": '"http://localhost:8081"',
   "process.env.CODEMOD_HOME_PAGE_URL": '"http://localhost:3000"',
   "process.env.CODEMOD_STUDIO_URL": '"http://localhost:3000/studio"',
+  "process.env.IGNORE_TELEMETRY": "true",
 };
 
 const argv = hideBin(process.argv);
@@ -26,7 +33,11 @@ build({
   format: "cjs",
   legalComments: "inline",
   outfile: "./dist/index.cjs",
-  define: argv.includes("--local") ? localEnvs : prodEnvs,
+  define: argv.includes("--local")
+    ? localEnvs
+    : argv.includes("--publish")
+      ? publishEnvs
+      : localProdBuildEnvs,
   external: [
     "esbuild",
     "@ast-grep/napi",
