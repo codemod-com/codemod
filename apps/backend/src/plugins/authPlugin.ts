@@ -64,11 +64,12 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
       try {
         const authHeader = request.headers.authorization;
 
+        console.log({ authHeader });
+
         if (!authHeader) {
           request.user = undefined;
           request.organizations = undefined;
           request.allowedNamespaces = undefined;
-
           return;
         }
 
@@ -86,7 +87,7 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
         request.user = user;
         request.organizations = organizations;
         request.allowedNamespaces = allowedNamespaces;
-      } catch {
+      } catch (error) {
         reply.code(401).send({ error: "Unauthorized" });
       }
     },

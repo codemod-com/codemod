@@ -7,6 +7,9 @@
   },
   "author": "Codemod inc.",
   "private": true,
+  "prisma": {
+    "schema": "packages/database/generated/client/schema.prisma"
+  },
   "devDependencies": {
     "@codemod-com/tsconfig": "workspace:*",
     "@types/node": "20.10.5",

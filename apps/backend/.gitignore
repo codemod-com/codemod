@@ -1,4 +1,4 @@
 node_modules
-generated
+packages
 # Keep environment variables out of version control
 .env
