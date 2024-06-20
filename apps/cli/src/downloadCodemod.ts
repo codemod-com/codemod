@@ -49,10 +49,10 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     await mkdir(directoryPath, { recursive: true });
 
-    let spinner: ReturnType<typeof this.__printer.withLoaderMessage> | null =
-      null;
     const printableName = chalk.cyan.bold(doubleQuotify(name));
 
+    let spinner: ReturnType<typeof this.__printer.withLoaderMessage> | null =
+      null;
     if (!disableSpinner) {
       spinner = this.__printer.withLoaderMessage(
         chalk.cyan("Fetching", `${printableName}...`),

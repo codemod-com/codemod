@@ -4893,8 +4893,6 @@ importers:
         specifier: ^5.4.5
         version: 5.4.5
 
-  packages/database/generated/client: {}
-
   packages/filemod:
     devDependencies:
       '@types/node':
