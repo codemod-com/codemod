@@ -51,12 +51,12 @@ const CodeContent = ({ inline, className, children, message, ...others }) => {
   }
 
   return (
-    <CodeBlock
+    (<CodeBlock
       key={Math.random()}
       language="typescript" // TODO: support multiple languages in the future
       value={String(children).replace(/\n$/, "")}
       {...others}
-    />
+    />)
   );
 };
 
