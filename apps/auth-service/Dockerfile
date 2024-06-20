@@ -16,7 +16,6 @@ RUN pnpm install
 COPY ./apps/auth-service/tsconfig.json /app/apps/auth-service/
 COPY ./apps/auth-service/esbuild.config.js /app/apps/auth-service/
 COPY ./apps/auth-service/src /app/apps/auth-service/src/
-COPY ./apps/auth-service/node_modules/@codemod-com/database/generated/client/schema.prisma /app/apps/auth-service/packages/database/generated/client/schema.prisma
 
 RUN pnpm build --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/auth-service
 
@@ -26,8 +25,8 @@ WORKDIR /app
 
 COPY --from=builder /app/apps/auth-service/package.json /app
 COPY --from=builder /app/apps/auth-service/build /app/build
-COPY --from=builder /app/apps/auth-service/packages /app/packages
+COPY --from=builder /app/packages /app/packages
 
-EXPOSE 8080
+EXPOSE 8084
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node build/index.js"]
