@@ -12,11 +12,11 @@ import RegistrySectionSearch from "./RegistrySectionSearch";
 import { getFilterIcon, getFilterSection } from "./helpers";
 
 export default function RegistrySectionInner(props: SectionRegistryProps) {
-  const [searchParams, setSearchParams] = useState(new URLSearchParams());
-  const isMounted = useRef(false);
+  let [searchParams, setSearchParams] = useState(new URLSearchParams());
+  let isMounted = useRef(false);
   function handleFilterChange(key?: string, value?: string) {
     if (!key) return;
-    const newParams = new URLSearchParams(searchParams);
+    let newParams = new URLSearchParams(searchParams);
     if (!value || value === searchParams.get(key)) {
       newParams.delete(key);
     } else {
@@ -24,7 +24,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
     }
     setSearchParams(newParams);
   }
-  const { data, fetchAutomations } = useFetchAutomations({
+  let { data, fetchAutomations } = useFetchAutomations({
     initial: props.initialAutomations,
   });
   useDebounce(
@@ -43,7 +43,7 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
   );
 
   return (
-    <div className="scrollbar-color w-full">
+    (<div className="scrollbar-color w-full">
       <div className="mx-auto mt-8 max-w-[662px]">
         <RegistrySectionSearch
           onSearch={handleFilterChange}
@@ -52,11 +52,11 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
         <div className="mt-4 w-full overflow-scroll lg:overflow-clip">
           <ul className="m-0 flex justify-start gap-2 md:justify-center">
             {props.filter?.values?.slice(0, 5).map((filter) => {
-              const frameworkIcons = getFilterSection(
+              let frameworkIcons = getFilterSection(
                 "framework",
                 props.filterIconDictionary,
               );
-              const frameworkImage = getFilterIcon(frameworkIcons, filter.id);
+              let frameworkImage = getFilterIcon(frameworkIcons, filter.id);
 
               return (
                 <li key={filter.id} className="min-w-fit">
@@ -106,7 +106,6 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
           </ul>
         </div>
       </div>
-
       <div className="relative flex flex-col items-center">
         <ul className="m-0 mx-auto flex w-full max-w-[962px] animate-fade-in flex-col gap-3 divide-y-[1px] divide-border-light dark:divide-border-dark">
           {data?.data?.length ? (
@@ -130,6 +129,6 @@ export default function RegistrySectionInner(props: SectionRegistryProps) {
           {props.ctaLabel || "View all automations"}
         </LinkButton>
       </div>
-    </div>
+    </div>)
   );
 }

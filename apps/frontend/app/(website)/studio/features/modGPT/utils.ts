@@ -7,7 +7,7 @@ import { useCodemodExecutionError } from "@studio/store/zustand/log";
 import toast from "react-hot-toast";
 import { shouldUseCodemodAi } from "./config";
 
-const errorResponses = {
+let errorResponses = {
   400: "The request you made could not be completed.",
   401: "You are unauthorized to make this request.",
   403: "You are not allowed to make this request.",
@@ -18,17 +18,17 @@ const errorResponses = {
 type ErrorCodes = keyof typeof errorResponses;
 
 export function onResponse(response: Response) {
-  const errorMessage = errorResponses[response.status as ErrorCodes];
+  let errorMessage = errorResponses[response.status as ErrorCodes];
   if (errorMessage) {
     toast.error(errorMessage);
   }
 }
 
-export const buildCodemodFromLLMResponse = (
+export let buildCodemodFromLLMResponse = (
   LLMResponse: string,
 ): string | null => {
-  const CODE_BLOCK_REGEXP = /```typescript(.+?)```/gs;
-  const match = CODE_BLOCK_REGEXP.exec(LLMResponse);
+  let CODE_BLOCK_REGEXP = /```typescript(.+?)```/gs;
+  let match = CODE_BLOCK_REGEXP.exec(LLMResponse);
 
   if (match === null || match.length < 1) {
     return null;
@@ -37,15 +37,15 @@ export const buildCodemodFromLLMResponse = (
   return match.at(1)?.trim() ?? null;
 };
 
-export const getOrderedAliasList = (aliases: Aliases) =>
+export let getOrderedAliasList = (aliases: Aliases) =>
   Object.entries(aliases)
     .filter(([, alias]) => alias !== null)
     .sort(([, a], [, b]) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))
     .map(([key, value]) => [key, value?.value ?? ""]);
 
-export const usePrompts = (aliases: Aliases) => {
-  const codemodExecutionError = useCodemodExecutionError();
-  const prompts = [
+export let usePrompts = (aliases: Aliases) => {
+  let codemodExecutionError = useCodemodExecutionError();
+  let prompts = [
     shouldUseCodemodAi
       ? null
       : [
@@ -54,7 +54,7 @@ export const usePrompts = (aliases: Aliases) => {
         ],
   ].filter(Boolean);
 
-  const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
+  let codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 
   if (codemodHighlightedValue !== "") {
     prompts.unshift([

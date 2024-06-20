@@ -7,7 +7,7 @@ import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-const ContactPagePreview = dynamic(
+let ContactPagePreview = dynamic(
   () => import("@/components/templates/ContactPage/PagePreview"),
 );
 
@@ -15,7 +15,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadContactPage("/contact");
+  let initialData = await loadContactPage("/contact");
 
   if (!initialData?.data) return notFound();
 
@@ -23,7 +23,7 @@ export async function generateMetadata(
 }
 
 export default async function Contact() {
-  const initial = await loadContactPage("/contact");
+  let initial = await loadContactPage("/contact");
 
   if (draftMode().isEnabled) {
     return (

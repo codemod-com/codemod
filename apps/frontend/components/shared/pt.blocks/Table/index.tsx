@@ -10,7 +10,7 @@ export default function TableBlock(props: TableBlockType) {
 }
 
 function Table(props: TableBlockType) {
-  const { table } = props;
+  let { table } = props;
 
   return (
     <>

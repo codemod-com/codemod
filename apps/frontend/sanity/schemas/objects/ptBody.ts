@@ -9,7 +9,7 @@ import { ptTable } from "./table";
 import { twitterEmbed } from "./twitterEmbed";
 import { youtubeVideo } from "./youtubeVideo";
 
-const ptBlocks = [
+let ptBlocks = [
   muxVideoWithCaption,
   youtubeVideo,
   imageBlock,
@@ -19,7 +19,7 @@ const ptBlocks = [
   ptTable,
 ];
 
-export const ptBody = {
+export let ptBody = {
   name: "ptBody",
   title: "Rich Text with blocks",
   ...getCustomBody({
@@ -32,7 +32,7 @@ export const ptBody = {
   },
 };
 
-export const ptBodyCollapsible = {
+export let ptBodyCollapsible = {
   name: "ptBodyCollapsible",
   title: "Rich Text with blocks without collapsible",
   ...getCustomBody({

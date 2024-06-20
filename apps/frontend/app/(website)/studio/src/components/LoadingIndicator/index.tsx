@@ -1,4 +1,4 @@
-const LoadingIndicator = () => (
+let LoadingIndicator = () => (
   <div role="status">
     <svg
       aria-hidden="true"

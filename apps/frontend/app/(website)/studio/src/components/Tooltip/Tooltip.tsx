@@ -11,7 +11,7 @@ type Props = {
   content: string | ReactNode;
 };
 
-const Tooltip = ({ trigger, content }: Props) => (
+let Tooltip = ({ trigger, content }: Props) => (
   <TooltipProvider>
     <ShadcnTooltip>
       <TooltipTrigger asChild>{trigger}</TooltipTrigger>

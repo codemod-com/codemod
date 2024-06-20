@@ -7,12 +7,12 @@ interface Props {
   messages: LLMMessage[];
 }
 
-export const ChatMessages = ({ messages }: Props) => {
+export let ChatMessages = ({ messages }: Props) => {
   if (!messages.length) {
     return null;
   }
 
-  const chatPanel = document.getElementsByClassName("chatPanel")?.[0] ?? null;
+  let chatPanel = document.getElementsByClassName("chatPanel")?.[0] ?? null;
   return (
     <div
       className={cn("relative mx-auto px-4 pb-[12rem]", {

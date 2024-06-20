@@ -5,7 +5,7 @@ import { REGISTRY_FILTER_TYPES } from "@/constants";
 import { capitalize } from "@utils/strings";
 import Link from "next/link";
 
-export const getFrameworkCard = ({
+export let getFrameworkCard = ({
   name: framework,
   image: frameworkImage,
 }: { name: string; image: FilterIcon }) => (

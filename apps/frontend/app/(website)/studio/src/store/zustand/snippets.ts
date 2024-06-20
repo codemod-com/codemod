@@ -40,17 +40,17 @@ type SnippetStateSetters = {
 };
 
 export type SnippetState = SnippetStateValues & SnippetStateSetters;
-export const getInitialState = (): SnippetStateValues => {
-  const { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
+export let getInitialState = (): SnippetStateValues => {
+  let { engine, beforeSnippet, afterSnippet } = INITIAL_STATE;
 
   // before input
-  const beforeInputParsed = parseSnippet(beforeSnippet);
+  let beforeInputParsed = parseSnippet(beforeSnippet);
 
-  const beforeInputRootNode = isFile(beforeInputParsed)
+  let beforeInputRootNode = isFile(beforeInputParsed)
     ? mapBabelASTToRenderableTree(beforeInputParsed)
     : null;
 
-  const beforeInputTokens = isFile(beforeInputParsed)
+  let beforeInputTokens = isFile(beforeInputParsed)
     ? Array.isArray(beforeInputParsed.tokens)
       ? // @ts-ignore
         beforeInputParsed.tokens.map(({ start, end, value }) => ({
@@ -62,13 +62,13 @@ export const getInitialState = (): SnippetStateValues => {
     : [];
 
   // after input
-  const afterInputParsed = parseSnippet(afterSnippet);
+  let afterInputParsed = parseSnippet(afterSnippet);
 
-  const afterInputRootNode = isFile(afterInputParsed)
+  let afterInputRootNode = isFile(afterInputParsed)
     ? mapBabelASTToRenderableTree(afterInputParsed)
     : null;
 
-  const afterInputTokens = isFile(afterInputParsed)
+  let afterInputTokens = isFile(afterInputParsed)
     ? Array.isArray(afterInputParsed.tokens)
       ? // @ts-ignore
         afterInputParsed.tokens.map(({ start, end, value }) => ({
@@ -94,42 +94,42 @@ export const getInitialState = (): SnippetStateValues => {
   };
 };
 
-export const useSnippetStore = create<SnippetState>((set, get) => ({
+export let useSnippetStore = create<SnippetState>((set, get) => ({
   ...getInitialState(),
   setEngine: (engine) => set({ engine }),
   setInput: (input) => {
-    const parsed = parseSnippet(input);
-    const rootNode = isFile(parsed)
+    let parsed = parseSnippet(input);
+    let rootNode = isFile(parsed)
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ inputSnippet: input, beforeInputRootNode: rootNode });
   },
   setOutput: (output) => {
-    const parsed = parseSnippet(output);
-    const rootNode = isFile(parsed)
+    let parsed = parseSnippet(output);
+    let rootNode = isFile(parsed)
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ afterSnippet: output, afterInputRootNode: rootNode });
   },
   setInputSelection: (command) => {
-    const rootNode = get().beforeInputRootNode;
+    let rootNode = get().beforeInputRootNode;
     if (rootNode) {
-      const ranges = buildRanges(rootNode, command);
+      let ranges = buildRanges(rootNode, command);
       set({ beforeInputRanges: ranges, beforeRangeUpdatedAt: Date.now() });
     }
   },
   setOutputSelection: (command) => {
-    const rootNode = get().afterInputRootNode;
+    let rootNode = get().afterInputRootNode;
     if (rootNode) {
-      const ranges = buildRanges(rootNode, command);
+      let ranges = buildRanges(rootNode, command);
       set({ afterInputRanges: ranges, afterRangeUpdatedAt: Date.now() });
     }
   },
 }));
 
-export const useSelectFirstTreeNode = () => {
-  const state = useSnippetStore();
-  const { ranges } = useCodemodOutputStore();
+export let useSelectFirstTreeNode = () => {
+  let state = useSnippetStore();
+  let { ranges } = useCodemodOutputStore();
 
   return (type: SnippetType): TreeNode | null => {
     let firstRange: TreeNode | OffsetRange | undefined;
@@ -152,11 +152,11 @@ export const useSelectFirstTreeNode = () => {
   };
 };
 
-export const useSelectSnippetsFor = (type: SnippetType) => {
+export let useSelectSnippetsFor = (type: SnippetType) => {
   // @TODO make reusable reducer for the code snippet
   // that will include snippet, rootNode, ranges,
 
-  const {
+  let {
     inputSnippet,
     afterSnippet,
     beforeInputRootNode,
@@ -165,7 +165,7 @@ export const useSelectSnippetsFor = (type: SnippetType) => {
     afterInputRanges,
   } = useSnippetStore();
 
-  const { ranges, content, rootNode } = useCodemodOutputStore();
+  let { ranges, content, rootNode } = useCodemodOutputStore();
 
   switch (type) {
     case "before":

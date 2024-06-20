@@ -14,7 +14,7 @@ type CustomProps = {
   renderSideBySide: boolean;
 };
 
-const defaultOptions = {
+let defaultOptions = {
   wordWrap: "on",
   wrappingIndent: "indent",
   minimap: {
@@ -27,18 +27,18 @@ const defaultOptions = {
   scrollBeyondLastLine: false,
 } as const;
 
-const MonacoDiffEditor = ({
+let MonacoDiffEditor = ({
   originalEditorProps,
   modifiedEditorProps,
   options,
   ...restProps
 }: DiffEditorProps & CustomProps) => {
-  const [mounted, setMounted] = useState(false);
-  const editorRef = useRef<monaco.editor.IStandaloneDiffEditor>();
-  const originalEditor = editorRef.current?.getOriginalEditor() ?? null;
-  const modifiedEditor = editorRef.current?.getModifiedEditor() ?? null;
+  let [mounted, setMounted] = useState(false);
+  let editorRef = useRef<monaco.editor.IStandaloneDiffEditor>();
+  let originalEditor = editorRef.current?.getOriginalEditor() ?? null;
+  let modifiedEditor = editorRef.current?.getModifiedEditor() ?? null;
 
-  const { isDark } = useTheme();
+  let { isDark } = useTheme();
 
   useEditor(originalEditor, originalEditorProps, mounted);
   useEditor(modifiedEditor, modifiedEditorProps, mounted);

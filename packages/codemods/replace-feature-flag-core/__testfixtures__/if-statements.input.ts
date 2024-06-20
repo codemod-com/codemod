@@ -1,8 +1,8 @@
-const isDefaulted = useFlag(user, 'simple-case', true);
+let isDefaulted = useFlag(user, 'simple-case', true);
 
 if (isDefaulted) {
-  const a = b;
-  c?.forEach((d) => {
-    const f = e;
-  });
+	let a = b;
+	c?.forEach((d) => {
+		let f = e;
+	});
 }

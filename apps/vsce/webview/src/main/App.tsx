@@ -1,114 +1,117 @@
-import { useEffect, useRef, useState } from "react";
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import type { MainWebviewViewProps } from "../../../src/selectors/selectMainWebviewViewProps";
-import CodemodEngineNodeNotFound from "../CodemodEngineNodeNotFound";
-import { App as CodemodList } from "../codemodList/App";
-import { useTheme } from "../shared/Snippet/useTheme";
-import type { WebviewMessage } from "../shared/types";
+import { useEffect, useRef, useState } from 'react';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import type { MainWebviewViewProps } from '../../../src/selectors/selectMainWebviewViewProps';
+import CodemodEngineNodeNotFound from '../CodemodEngineNodeNotFound';
+import { App as CodemodList } from '../codemodList/App';
+import { useTheme } from '../shared/Snippet/useTheme';
+import type { WebviewMessage } from '../shared/types';
 
-const toastContainerProps = {
-  pauseOnHover: false,
-  pauseOnFocusLoss: false,
-  hideProgressBar: false,
-  closeOnClick: false,
-  closeButton: false,
-  draggable: false,
-  autoClose: false as const,
-  enableMultiContainer: true,
+let toastContainerProps = {
+	pauseOnHover: false,
+	pauseOnFocusLoss: false,
+	hideProgressBar: false,
+	closeOnClick: false,
+	closeButton: false,
+	draggable: false,
+	autoClose: false as const,
+	enableMultiContainer: true,
 };
 
 declare global {
-  interface Window {
-    mainWebviewViewProps: MainWebviewViewProps;
-  }
+	interface Window {
+		mainWebviewViewProps: MainWebviewViewProps;
+	}
 }
 
 function App() {
-  const ref = useRef(null);
-  const theme = useTheme();
-  const [screenWidth, setScreenWidth] = useState<number | null>(null);
-  const [mainWebviewViewProps, setMainWebviewViewProps] = useState(
-    window.mainWebviewViewProps,
-  );
+	let ref = useRef(null);
+	let theme = useTheme();
+	let [screenWidth, setScreenWidth] = useState<number | null>(null);
+	let [mainWebviewViewProps, setMainWebviewViewProps] = useState(
+		window.mainWebviewViewProps,
+	);
 
-  useEffect(() => {
-    const handler = (event: MessageEvent<WebviewMessage>) => {
-      if (event.data.kind !== "webview.main.setProps") {
-        return;
-      }
+	useEffect(() => {
+		let handler = (event: MessageEvent<WebviewMessage>) => {
+			if (event.data.kind !== 'webview.main.setProps') {
+				return;
+			}
 
-      setMainWebviewViewProps(event.data.props);
-    };
+			setMainWebviewViewProps(event.data.props);
+		};
 
-    window.addEventListener("message", handler);
+		window.addEventListener('message', handler);
 
-    return () => {
-      window.removeEventListener("message", handler);
-    };
-  }, []);
+		return () => {
+			window.removeEventListener('message', handler);
+		};
+	}, []);
 
-  useEffect(() => {
-    if (ResizeObserver === undefined) {
-      return undefined;
-    }
+	useEffect(() => {
+		if (ResizeObserver === undefined) {
+			return undefined;
+		}
 
-    if (ref.current === null) {
-      return;
-    }
+		if (ref.current === null) {
+			return;
+		}
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      const container = entries[0] ?? null;
-      if (container === null) {
-        return;
-      }
-      const {
-        contentRect: { width },
-      } = container;
+		let resizeObserver = new ResizeObserver((entries) => {
+			let container = entries[0] ?? null;
+			if (container === null) {
+				return;
+			}
+			let {
+				contentRect: { width },
+			} = container;
 
-      setScreenWidth(width);
-    });
+			setScreenWidth(width);
+		});
 
-    resizeObserver.observe(ref.current);
+		resizeObserver.observe(ref.current);
 
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
+		return () => {
+			resizeObserver.disconnect();
+		};
+	}, []);
 
-  if (mainWebviewViewProps === null) {
-    return (
-      <main className="App" ref={ref}>
-        <p className="warning">
-          Open a workspace folder to use the Codemod VSCode Extension.
-        </p>
-      </main>
-    );
-  }
+	if (mainWebviewViewProps === null) {
+		return (
+			<main className="App" ref={ref}>
+				<p className="warning">
+					Open a workspace folder to use the Codemod VSCode Extension.
+				</p>
+			</main>
+		);
+	}
 
-  if (!mainWebviewViewProps.codemodEngineNodeLocated) {
-    return <CodemodEngineNodeNotFound />;
-  }
+	if (!mainWebviewViewProps.codemodEngineNodeLocated) {
+		return <CodemodEngineNodeNotFound />;
+	}
 
-  return (
-    <main className="App" ref={ref}>
-      {mainWebviewViewProps.activeTabId === "codemods" ? (
-        <CodemodList screenWidth={screenWidth} {...mainWebviewViewProps} />
-      ) : null}
-      <ToastContainer
-        {...toastContainerProps}
-        containerId="codemodListToastContainer"
-        position="bottom-right"
-        theme={theme === "vs-light" ? "light" : "dark"}
-      />
-      <ToastContainer
-        {...toastContainerProps}
-        containerId="primarySidebarToastContainer"
-        theme={theme === "vs-light" ? "light" : "dark"}
-        position="top-right"
-      />
-    </main>
-  );
+	return (
+		<main className="App" ref={ref}>
+			{mainWebviewViewProps.activeTabId === 'codemods' ? (
+				<CodemodList
+					screenWidth={screenWidth}
+					{...mainWebviewViewProps}
+				/>
+			) : null}
+			<ToastContainer
+				{...toastContainerProps}
+				containerId="codemodListToastContainer"
+				position="bottom-right"
+				theme={theme === 'vs-light' ? 'light' : 'dark'}
+			/>
+			<ToastContainer
+				{...toastContainerProps}
+				containerId="primarySidebarToastContainer"
+				theme={theme === 'vs-light' ? 'light' : 'dark'}
+				position="top-right"
+			/>
+		</main>
+	);
 }
 
 export default App;

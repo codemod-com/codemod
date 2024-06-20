@@ -1,7 +1,7 @@
 import { PublishStatus, PublishStatusOptions } from "@/types";
 import { defineField } from "sanity";
 
-export const publishStatusField = defineField({
+export let publishStatusField = defineField({
   name: "publishStatus",
   title: "Search engine visibility",
   type: "string",

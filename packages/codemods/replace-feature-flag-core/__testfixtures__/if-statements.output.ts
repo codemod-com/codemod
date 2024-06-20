@@ -1,4 +1,4 @@
-  const a = b;
-  c?.forEach((d) => {
-    const f = e;
-  });
+let a = b;
+c?.forEach((d) => {
+	let f = e;
+});

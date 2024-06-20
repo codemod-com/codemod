@@ -1,5 +1,5 @@
 import type { PrismTheme } from "prism-react-renderer";
-const theme: PrismTheme = {
+let theme: PrismTheme = {
   plain: {
     color: "var(--text-color-code-plain)",
   },

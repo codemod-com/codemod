@@ -11,7 +11,7 @@ import {
 } from "@studio/components/ui/select";
 import { useCFSStore } from "@studio/store/zustand/CFS";
 
-const legacyEngines = [
+let legacyEngines = [
   "gpt-4",
   "claude-2.0",
   "claude-instant-1.2",
@@ -19,18 +19,18 @@ const legacyEngines = [
   "gpt-4-with-chroma",
 ];
 
-export const EngineSelector = () => {
-  const {
+export let EngineSelector = () => {
+  let {
     AIAssistant: { engine },
     setEngine,
   } = useCFSStore();
 
-  const handleEngineChange = (e: LLMEngine) => {
+  let handleEngineChange = (e: LLMEngine) => {
     setEngine(e);
   };
 
-  const _llmEngines = shouldUseCodemodAi ? llmEngines : legacyEngines;
-  const { isDark } = useTheme();
+  let _llmEngines = shouldUseCodemodAi ? llmEngines : legacyEngines;
+  let { isDark } = useTheme();
   return (
     <Select onValueChange={handleEngineChange} value={engine}>
       <SelectTrigger className="flex w-full select-none items-center font-semibold">

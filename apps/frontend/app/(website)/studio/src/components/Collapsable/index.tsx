@@ -10,7 +10,7 @@ type CollapsableProps = {
   contentWrapperClassName?: string;
 };
 
-const Collapsable = ({
+let Collapsable = ({
   title,
   rightContent,
   children,
@@ -18,7 +18,7 @@ const Collapsable = ({
   className,
   contentWrapperClassName,
 }: CollapsableProps) => {
-  const [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
+  let [collapsed, setCollapsed] = useState(defaultCollapsed ?? false);
 
   return (
     <div

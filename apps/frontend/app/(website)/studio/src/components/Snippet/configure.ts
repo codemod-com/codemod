@@ -5,21 +5,21 @@ import registerPromptLang, {
   LANG_ID as PROMPT_LANG_ID,
 } from "./lang/promptLang";
 
-const ignoreCodes = [
+let ignoreCodes = [
   2304, // unresolved vars
   2451, // redeclared block scope vars
   2552, // undef
 ];
 
-const configure = (m: Monaco, e: monaco.editor.IStandaloneCodeEditor) => {
+let configure = (m: Monaco, e: monaco.editor.IStandaloneCodeEditor) => {
   m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     diagnosticCodesToIgnore: ignoreCodes,
   });
 
-  const model = e.getModel();
+  let model = e.getModel();
 
-  const path = model?.uri.path;
-  const lang = model?.getLanguageId();
+  let path = model?.uri.path;
+  let lang = model?.getLanguageId();
 
   if (lang === "typescript") {
     m.languages.typescript.typescriptDefaults.setCompilerOptions({

@@ -27,35 +27,35 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  const dirtyFlag = false;
+	let dirtyFlag = false;
 
-  root.find(j.ImportDeclaration, {}).forEach((decl) => {
-    if (
-      decl.value.specifiers?.filter((s) =>
-        "imported" in s ? s.imported.name === "StaticRouter" : false,
-      ).length ??
-      0 > 0
-    ) {
-      decl.value.source.value = "react-router-dom/server";
-    }
-  });
+	root.find(j.ImportDeclaration, {}).forEach((decl) => {
+		if (
+			decl.value.specifiers?.filter((s) =>
+				'imported' in s ? s.imported.name === 'StaticRouter' : false,
+			).length ??
+			0 > 0
+		) {
+			decl.value.source.value = 'react-router-dom/server';
+		}
+	});
 
-  if (!dirtyFlag) {
-    return undefined;
-  }
+	if (!dirtyFlag) {
+		return undefined;
+	}
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

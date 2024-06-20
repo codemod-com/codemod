@@ -1,9 +1,9 @@
-import type { Api } from "@codemod.com/workflow";
+import type { Api } from '@codemod.com/workflow';
 
 export async function workflow({ jsFiles }: Api) {
-  const response = await jsFiles`**/*.input.ts`.astGrep(
-    "$SCHEMA($$$REST, [$$$ACTIONS])",
-  ).ai`
+	let response = await jsFiles`**/*.input.ts`.astGrep(
+		'$SCHEMA($$$REST, [$$$ACTIONS])',
+	).ai`
     SCHEMA could be one of 'any', 'array', 'bigint', 'blob', 'boolean', 'custom', 'date', 'enum_', 'instance', 'intersect',
     'lazy', 'literal', 'looseObject', 'looseTuple', 'map', 'nan', 'never', 'nonNullable', 'nonNullish', 'nonOptional',
     'null_', 'nullable', 'nullish', 'number', 'object', 'objectWithRest', 'optional', 'picklist', 'record', 'set',

@@ -28,38 +28,37 @@ License URL: https://github.com/ember-codemods/ember-no-implicit-this-codemod/bl
  */
 
 export default function transform(file, api) {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        type: "MemberExpression",
-        object: { callee: { name: "computed" } },
-        property: { name: "volatile" },
-      },
-    })
-    //.forEach(p => console.log(p.value.callee.object.arguments[0].body))
-    .map((p) => p.parentPath)
-    .replaceWith((path) => {
-      // Find the function expression in the arguments
-      const fnExp = path.value.value.callee.object.arguments.find(
-        (a) => a.type === "FunctionExpression",
-      );
-      const fnBody = fnExp.body;
-      return j.property(
-        "get",
-        j.identifier(path.value.key.name),
-        j.functionExpression(
-          j.identifier(path.value.key.name),
-          [],
-          fnBody,
-          false,
-          false,
-        ),
-      );
-    });
+	root.find(j.CallExpression, {
+		callee: {
+			type: 'MemberExpression',
+			object: { callee: { name: 'computed' } },
+			property: { name: 'volatile' },
+		},
+	})
+		//.forEach(p => console.log(p.value.callee.object.arguments[0].body))
+		.map((p) => p.parentPath)
+		.replaceWith((path) => {
+			// Find the function expression in the arguments
+			let fnExp = path.value.value.callee.object.arguments.find(
+				(a) => a.type === 'FunctionExpression',
+			);
+			let fnBody = fnExp.body;
+			return j.property(
+				'get',
+				j.identifier(path.value.key.name),
+				j.functionExpression(
+					j.identifier(path.value.key.name),
+					[],
+					fnBody,
+					false,
+					false,
+				),
+			);
+		});
 
-  return root.toSource();
+	return root.toSource();
 }

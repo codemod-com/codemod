@@ -1,6 +1,6 @@
 import { imageWithAltField } from "../shared/imageWithAltField";
 
-export const quoteBlock = {
+export let quoteBlock = {
   type: "object",
   name: "quoteBlock",
   title: "Quote Block",

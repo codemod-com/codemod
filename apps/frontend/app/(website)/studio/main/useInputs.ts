@@ -6,10 +6,10 @@ import { useEffect } from "react";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 
-export const useInputs = () => {
-  const { engine, setEngine, setInput, setOutput, inputSnippet, afterSnippet } =
+export let useInputs = () => {
+  let { engine, setEngine, setInput, setOutput, inputSnippet, afterSnippet } =
     useSnippetStore();
-  const { internalContent, setContent } = useModStore();
+  let { internalContent, setContent } = useModStore();
 
   useEffect(() => {
     localStorage.setItem(
@@ -24,7 +24,7 @@ export const useInputs = () => {
   }, [engine, inputSnippet, afterSnippet, internalContent]);
 
   useEffect(() => {
-    const storageEventListener = (storageEvent: StorageEvent) => {
+    let storageEventListener = (storageEvent: StorageEvent) => {
       if (storageEvent.key === SEARCH_PARAMS_KEYS.ENGINE) {
         setEngine(storageEvent.newValue as KnownEngines);
         return;

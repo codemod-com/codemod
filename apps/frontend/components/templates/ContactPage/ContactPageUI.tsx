@@ -15,8 +15,8 @@ export interface ContactPageProps {
 }
 
 export default function ContactPageUI({ data }: ContactPageProps) {
-  const { formState, handleSubmit, formRef } = useFormSubmission();
-  const getSides = () => {
+  let { formState, handleSubmit, formRef } = useFormSubmission();
+  let getSides = () => {
     return {
       right: false,
       left: true,
@@ -25,7 +25,7 @@ export default function ContactPageUI({ data }: ContactPageProps) {
     };
   };
 
-  const getMobileSides = () => {
+  let getMobileSides = () => {
     return {
       right: false,
       left: false,
@@ -34,7 +34,7 @@ export default function ContactPageUI({ data }: ContactPageProps) {
     };
   };
 
-  const dots = { tr: false, br: false, bl: false, tl: false };
+  let dots = { tr: false, br: false, bl: false, tl: false };
 
   return (
     <Section className="flex w-full flex-col pb-10 pt-[calc(var(--header-height)+5rem)] lg:flex-row lg:justify-center lg:pb-20">

@@ -1,28 +1,28 @@
-import type { Monaco } from "@monaco-editor/react";
-import type { editor } from "monaco-editor";
+import type { Monaco } from '@monaco-editor/react';
+import type { editor } from 'monaco-editor';
 
-const ignoreCodes = [
-  2304, // unresolved vars
-  2451, // redeclared block scope vars
-  2552, // undef
+let ignoreCodes = [
+	2304, // unresolved vars
+	2451, // redeclared block scope vars
+	2552, // undef
 ];
 
-const configure = (e: editor.IStandaloneDiffEditor, m: Monaco) => {
-  m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: ignoreCodes,
-  });
+let configure = (e: editor.IStandaloneDiffEditor, m: Monaco) => {
+	m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+		diagnosticCodesToIgnore: ignoreCodes,
+	});
 
-  const editor = e.getModifiedEditor();
-  const model = editor.getModel();
+	let editor = e.getModifiedEditor();
+	let model = editor.getModel();
 
-  const path = model?.uri.path;
-  const lang = model?.getLanguageId();
+	let path = model?.uri.path;
+	let lang = model?.getLanguageId();
 
-  if (lang === "typescript" && path?.endsWith(".tsx")) {
-    m.languages.typescript.typescriptDefaults.setCompilerOptions({
-      jsx: m.languages.typescript.JsxEmit.React,
-    });
-  }
+	if (lang === 'typescript' && path?.endsWith('.tsx')) {
+		m.languages.typescript.typescriptDefaults.setCompilerOptions({
+			jsx: m.languages.typescript.JsxEmit.React,
+		});
+	}
 };
 
 export default configure;

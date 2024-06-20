@@ -1,4 +1,4 @@
-export const commonSyntaxList = [
+export let commonSyntaxList = [
   { title: "Bash", value: "bash" },
   {
     title: "C#",

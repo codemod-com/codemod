@@ -1,8 +1,8 @@
-import axios from "axios";
-import axiosRetry from "axios-retry";
+import axios from 'axios';
+import axiosRetry from 'axios-retry';
 
-const retryingClient = axios.create();
+let retryingClient = axios.create();
 axiosRetry(retryingClient);
 
-export const DEFAULT_RETRY_COUNT = 3;
+export let DEFAULT_RETRY_COUNT = 3;
 export { retryingClient };

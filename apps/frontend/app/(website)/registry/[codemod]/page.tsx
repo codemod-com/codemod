@@ -10,12 +10,12 @@ import { vercelStegaCleanAll } from "@sanity/client/stega";
 import type { ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 
-export const dynamicParams = true;
+export let dynamicParams = true;
 
 export async function generateStaticParams() {
-  const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
-  const res = await fetchWithTimeout(`${baseUrl}/list`);
-  const allAutomations = res.status === 200 ? await res.json() : [];
+  let baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
+  let res = await fetchWithTimeout(`${baseUrl}/list`);
+  let allAutomations = res.status === 200 ? await res.json() : [];
   return allAutomations.map((automation) => ({ codemod: automation.slug }));
 }
 
@@ -23,7 +23,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialAutomationData = await loadCodemod(
+  let initialAutomationData = await loadCodemod(
     (props.params as unknown as { codemod: string })?.codemod,
   );
 
@@ -31,10 +31,10 @@ export async function generateMetadata(
     notFound();
   }
 
-  const automationPageData = await loadAutomationPage(
+  let automationPageData = await loadAutomationPage(
     initialAutomationData.tags,
   );
-  const pageData = transformAutomation({
+  let pageData = transformAutomation({
     ...initialAutomationData,
     ...automationPageData?.data,
   });
@@ -43,7 +43,7 @@ export async function generateMetadata(
 }
 
 export default async function CodemodRoute({ params }) {
-  const initialAutomationData = await loadCodemod(params.codemod, {
+  let initialAutomationData = await loadCodemod(params.codemod, {
     next: {
       revalidate: 60 * 60 * 24 * 30,
       tags: [`codemod-${params.codemod}`],
@@ -53,15 +53,15 @@ export default async function CodemodRoute({ params }) {
     notFound();
   }
 
-  const automationPageData = await loadAutomationPage(
+  let automationPageData = await loadAutomationPage(
     initialAutomationData.tags,
   );
-  const pageData = transformAutomation({
+  let pageData = transformAutomation({
     ...initialAutomationData,
     ...automationPageData?.data,
   });
 
-  const description = pageData?.shortDescription ? (
+  let description = pageData?.shortDescription ? (
     <Markdown>{vercelStegaCleanAll(pageData?.shortDescription || "")}</Markdown>
   ) : null;
 

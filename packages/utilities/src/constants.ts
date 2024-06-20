@@ -1,1 +1,1 @@
-export const CODEMOD_STUDIO_URL = "https://codemod.com/studio";
+export let CODEMOD_STUDIO_URL = 'https://codemod.com/studio';

@@ -1,9 +1,9 @@
-import { parse, sep } from "node:path";
-import type { Filemod, HandleData, HandleFile } from "@codemod-com/filemod";
-import type { JSCodeshift } from "jscodeshift";
+import { parse, sep } from 'node:path';
+import type { Filemod, HandleData, HandleFile } from '@codemod-com/filemod';
+import type { JSCodeshift } from 'jscodeshift';
 
 // zero dependency ab test middleware factory
-const MIDDLEWARE_FACTORY_CONTENT = `
+let MIDDLEWARE_FACTORY_CONTENT = `
 import type { NextMiddleware, NextRequest } from "next/server";
 import { NextResponse, URLPattern } from "next/server";
 
@@ -103,79 +103,80 @@ export const abTestMiddlewareFactory =
 type Dependencies = { jscodeshift: JSCodeshift };
 type State = Record<string, string>;
 
-const handleFile: HandleFile<Dependencies, State> = async (
-  _,
-  path,
-  options,
-) => {
-  const parsedPath = parse(path);
-  if (parsedPath.name === "middleware") {
-    return [
-      {
-        kind: "upsertFile",
-        path,
-        options,
-      },
-      {
-        kind: "upsertFile",
-        path: [parsedPath.dir, "abTestMiddlewareFactory.ts"].join(sep),
-        options,
-      },
-    ];
-  }
+let handleFile: HandleFile<Dependencies, State> = async (_, path, options) => {
+	let parsedPath = parse(path);
+	if (parsedPath.name === 'middleware') {
+		return [
+			{
+				kind: 'upsertFile',
+				path,
+				options,
+			},
+			{
+				kind: 'upsertFile',
+				path: [parsedPath.dir, 'abTestMiddlewareFactory.ts'].join(sep),
+				options,
+			},
+		];
+	}
 
-  return [];
+	return [];
 };
 
-const handleData: HandleData<Dependencies, State> = async (api, path, data) => {
-  const parsedPath = parse(path);
-  if (parsedPath.name === "middleware") {
-    const { jscodeshift } = api.getDependencies();
-    const j = jscodeshift.withParser("tsx");
-    const root = j(data);
+let handleData: HandleData<Dependencies, State> = async (api, path, data) => {
+	let parsedPath = parse(path);
+	if (parsedPath.name === 'middleware') {
+		let { jscodeshift } = api.getDependencies();
+		let j = jscodeshift.withParser('tsx');
+		let root = j(data);
 
-    root.find(j.ExportDefaultDeclaration).forEach((path) => {
-      if (path.node.declaration.type === "Identifier") {
-        const identifierName = path.node.declaration.name;
+		root.find(j.ExportDefaultDeclaration).forEach((path) => {
+			if (path.node.declaration.type === 'Identifier') {
+				let identifierName = path.node.declaration.name;
 
-        const importDeclaration = j.importDeclaration(
-          [j.importSpecifier(j.identifier("abTestMiddlewareFactory"))],
-          j.literal("abTestMiddlewareFactory"),
-        );
+				let importDeclaration = j.importDeclaration(
+					[
+						j.importSpecifier(
+							j.identifier('abTestMiddlewareFactory'),
+						),
+					],
+					j.literal('abTestMiddlewareFactory'),
+				);
 
-        root.get().node.program.body.unshift(importDeclaration);
+				root.get().node.program.body.unshift(importDeclaration);
 
-        path.replace(
-          j.exportDefaultDeclaration(
-            j.callExpression(j.identifier("abTestMiddlewareFactory"), [
-              j.identifier(identifierName),
-            ]),
-          ),
-        );
-      }
-    });
+				path.replace(
+					j.exportDefaultDeclaration(
+						j.callExpression(
+							j.identifier('abTestMiddlewareFactory'),
+							[j.identifier(identifierName)],
+						),
+					),
+				);
+			}
+		});
 
-    return {
-      kind: "upsertData",
-      path,
-      data: root.toSource(),
-    };
-  }
+		return {
+			kind: 'upsertData',
+			path,
+			data: root.toSource(),
+		};
+	}
 
-  if (parsedPath.name === "abTestMiddlewareFactory") {
-    return {
-      kind: "upsertData",
-      path,
-      data: MIDDLEWARE_FACTORY_CONTENT,
-    };
-  }
+	if (parsedPath.name === 'abTestMiddlewareFactory') {
+		return {
+			kind: 'upsertData',
+			path,
+			data: MIDDLEWARE_FACTORY_CONTENT,
+		};
+	}
 
-  return { kind: "noop" };
+	return { kind: 'noop' };
 };
 
-export const repomod: Filemod<Dependencies, State> = {
-  includePatterns: ["**/*.{js,jsx,ts,tsx}"],
-  excludePatterns: ["**/node_modules/**", "**/pages/api/**"],
-  handleFile,
-  handleData,
+export let repomod: Filemod<Dependencies, State> = {
+	includePatterns: ['**/*.{js,jsx,ts,tsx}'],
+	excludePatterns: ['**/node_modules/**', '**/pages/api/**'],
+	handleFile,
+	handleData,
 };

@@ -27,55 +27,54 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "Router" } },
-    })
-    .forEach((path) => {
-      const attrs = path.value.openingElement.attributes;
+	root.find(j.JSXElement, {
+		openingElement: { name: { name: 'Router' } },
+	}).forEach((path) => {
+		let attrs = path.value.openingElement.attributes;
 
-      const hasHistoryAttr =
-        attrs?.filter((a) => ("name" in a ? a.name.name === "history" : false))
-          .length ?? 0 > 0;
+		let hasHistoryAttr =
+			attrs?.filter((a) =>
+				'name' in a ? a.name.name === 'history' : false,
+			).length ?? 0 > 0;
 
-      if (attrs && hasHistoryAttr) {
-        if ("name" in path.value.openingElement.name) {
-          path.value.openingElement.name.name = "HashRouter";
-        }
+		if (attrs && hasHistoryAttr) {
+			if ('name' in path.value.openingElement.name) {
+				path.value.openingElement.name.name = 'HashRouter';
+			}
 
-        if (
-          path.value.closingElement &&
-          "name" in path.value.closingElement.name
-        ) {
-          path.value.closingElement.name.name = "HashRouter";
-        }
+			if (
+				path.value.closingElement &&
+				'name' in path.value.closingElement.name
+			) {
+				path.value.closingElement.name.name = 'HashRouter';
+			}
 
-        path.value.openingElement.attributes = attrs.filter((a) =>
-          "name" in a ? a.name.name !== "history" : false,
-        );
-      }
+			path.value.openingElement.attributes = attrs.filter((a) =>
+				'name' in a ? a.name.name !== 'history' : false,
+			);
+		}
 
-      const computedImport = j.importDeclaration(
-        [j.importSpecifier(j.identifier("HashRouter"))],
-        j.literal("react-router-dom"),
-      );
+		let computedImport = j.importDeclaration(
+			[j.importSpecifier(j.identifier('HashRouter'))],
+			j.literal('react-router-dom'),
+		);
 
-      const body = root.get().value.program.body;
-      body.unshift(computedImport);
-    });
+		let body = root.get().value.program.body;
+		body.unshift(computedImport);
+	});
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

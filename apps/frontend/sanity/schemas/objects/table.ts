@@ -4,7 +4,7 @@
 import { ThLargeIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const ptTable = defineType({
+export let ptTable = defineType({
   name: "ptTable",
   title: "Table",
   type: "object",

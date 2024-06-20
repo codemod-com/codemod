@@ -2,7 +2,7 @@ import { BlockContentIcon, DocumentTextIcon } from "@sanity/icons";
 import { defineSection } from "@tinloof/sanity-studio";
 import { richText } from "./../objects/richText";
 
-export const paragraph = defineSection({
+export let paragraph = defineSection({
   title: "Paragraph with Title",
   name: "section.paragraph",
   type: "object",

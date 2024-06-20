@@ -27,81 +27,83 @@ Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
 import type {
-  API,
-  ASTPath,
-  CallExpression,
-  FileInfo,
-  Options,
-} from "jscodeshift";
+	API,
+	ASTPath,
+	CallExpression,
+	FileInfo,
+	Options,
+} from 'jscodeshift';
 
 export default function transform(
-  file: FileInfo,
-  api: API,
-  options?: Options,
+	file: FileInfo,
+	api: API,
+	options?: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
-  const root = j(file.source);
+	let j = api.jscodeshift;
+	let root = j(file.source);
 
-  const variablesToRemove = [] as string[];
+	let variablesToRemove = [] as string[];
 
-  const removeAlertAction = (path: ASTPath<CallExpression>) => {
-    // Check if the argument is an object
-    if (j.ObjectExpression.check(path.node.arguments[0])) {
-      // Find the property 'alertAction' and remove it
-      path.node.arguments[0].properties =
-        path.node.arguments[0].properties.filter((property) => {
-          if (
-            j.Property.check(property) &&
-            j.Identifier.check(property.value)
-          ) {
-            variablesToRemove.push(property.value.name);
-          }
+	let removeAlertAction = (path: ASTPath<CallExpression>) => {
+		// Check if the argument is an object
+		if (j.ObjectExpression.check(path.node.arguments[0])) {
+			// Find the property 'alertAction' and remove it
+			path.node.arguments[0].properties =
+				path.node.arguments[0].properties.filter((property) => {
+					if (
+						j.Property.check(property) &&
+						j.Identifier.check(property.value)
+					) {
+						variablesToRemove.push(property.value.name);
+					}
 
-          if ("key" in property && property.key && "name" in property.key) {
-            return property.key.name !== "alertAction";
-          }
+					if (
+						'key' in property &&
+						property.key &&
+						'name' in property.key
+					) {
+						return property.key.name !== 'alertAction';
+					}
 
-          return true;
-        });
-    }
-  };
-  root
-    .find(j.CallExpression, {
-      callee: {
-        property: {
-          name: "presentLocalNotification",
-        },
-      },
-    })
-    .forEach(removeAlertAction);
+					return true;
+				});
+		}
+	};
+	root.find(j.CallExpression, {
+		callee: {
+			property: {
+				name: 'presentLocalNotification',
+			},
+		},
+	}).forEach(removeAlertAction);
 
-  root
-    .find(j.CallExpression, {
-      callee: {
-        property: {
-          name: "scheduleLocalNotification",
-        },
-      },
-    })
-    .forEach(removeAlertAction);
+	root.find(j.CallExpression, {
+		callee: {
+			property: {
+				name: 'scheduleLocalNotification',
+			},
+		},
+	}).forEach(removeAlertAction);
 
-  // Remove variables if they are not used anywhere else
-  variablesToRemove
-    .filter((variable) => {
-      const isUsed = !!root
-        .find(j.Identifier, { name: variable })
-        .filter((path) => {
-          return (
-            !j.VariableDeclarator.check(path.parent?.value) ||
-            path.parent?.value.id.name !== variable
-          );
-        }).length;
+	// Remove variables if they are not used anywhere else
+	variablesToRemove
+		.filter((variable) => {
+			let isUsed = !!root
+				.find(j.Identifier, { name: variable })
+				.filter((path) => {
+					return (
+						!j.VariableDeclarator.check(path.parent?.value) ||
+						path.parent?.value.id.name !== variable
+					);
+				}).length;
 
-      return !isUsed;
-    })
-    .forEach((variable) => {
-      root.find(j.VariableDeclarator, { id: { name: variable } }).remove();
-    });
+			return !isUsed;
+		})
+		.forEach((variable) => {
+			root.find(j.VariableDeclarator, {
+				id: { name: variable },
+			}).remove();
+		});
 
-  return root.toSource();
+	return root.toSource();
 }

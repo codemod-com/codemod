@@ -13,8 +13,8 @@ type Props = {
 };
 
 export default function BlogArticlePreview(props: Props) {
-  const { initial } = props;
-  const { data } = useQuery<BlogArticlePayload | null>(
+  let { initial } = props;
+  let { data } = useQuery<BlogArticlePayload | null>(
     BLOG_ARTICLE_QUERY,
     {
       pathname: initial.data?.pathname,

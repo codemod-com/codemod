@@ -1,20 +1,20 @@
-const a = {
-  key: "simple-case",
-  value: "string",
-  defaultValue: "string",
-  isDefaulted: true
+let a = {
+	key: 'simple-case',
+	value: 'string',
+	defaultValue: 'string',
+	isDefaulted: true,
 };
-const b = "string";
-const c = {
-  key: "simple-case",
-  value: "string",
-  defaultValue: "string",
-  isDefaulted: true
+let b = 'string';
+let c = {
+	key: 'simple-case',
+	value: 'string',
+	defaultValue: 'string',
+	isDefaulted: true,
 };
-const d = {
-  key: "simple-case",
-  value: "string",
-  defaultValue: "string",
-  isDefaulted: true
+let d = {
+	key: 'simple-case',
+	value: 'string',
+	defaultValue: 'string',
+	isDefaulted: true,
 };
-const e = "string";
+let e = 'string';

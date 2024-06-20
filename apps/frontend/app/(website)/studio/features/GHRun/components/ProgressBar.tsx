@@ -6,7 +6,7 @@ import { capitalize } from "@utils/strings";
 export type ProgressBarProps = {
   codemodRunStatus: GetExecutionStatusResponse;
 };
-export const ProgressBar = ({
+export let ProgressBar = ({
   codemodRunStatus: { result },
 }: ProgressBarProps) => {
   if (!result) return null;

@@ -1,6 +1,6 @@
 import type { ParserOptions } from "@babel/parser";
 
-const parserOptions = {
+let parserOptions = {
   sourceType: "module",
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,

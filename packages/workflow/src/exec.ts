@@ -1,10 +1,10 @@
-import type { PLazy } from "./PLazy";
-import { codemod } from "./codemod";
-import { getCwdContext } from "./contexts";
-import { FunctionExecutor, fnWrapper } from "./engineHelpers";
-import { clc } from "./helpers";
-import { jsFiles } from "./jsFiles";
-import { spawn } from "./spawn";
+import type { PLazy } from './PLazy';
+import { codemod } from './codemod';
+import { getCwdContext } from './contexts';
+import { FunctionExecutor, fnWrapper } from './engineHelpers';
+import { clc } from './helpers';
+import { jsFiles } from './jsFiles';
+import { spawn } from './spawn';
 
 /**
  * Run a command in current working directory
@@ -32,34 +32,34 @@ import { spawn } from "./spawn";
  * ```
  */
 export function execLogic(
-  command: string,
-  args?: string[],
+	command: string,
+	args?: string[],
 ): PLazy<ExecHelpers> & ExecHelpers {
-  return new FunctionExecutor("exec")
-    .arguments(() => ({
-      command,
-      args,
-    }))
-    .helpers(execHelpers)
-    .executor(async (next, self) => {
-      const { cwd } = getCwdContext();
-      const { command, args } = self.getArguments();
-      console.log(
-        `${clc.blueBright(`${command} ${args?.join(" ") ?? ""}`)} ${cwd}`,
-      );
-      await spawn(command, args ?? [], {
-        cwd,
-        doNotThrowError: true,
-        printOutput: true,
-      });
-      await next?.();
-    })
-    .return((self) => self.wrappedHelpers())
-    .run();
+	return new FunctionExecutor('exec')
+		.arguments(() => ({
+			command,
+			args,
+		}))
+		.helpers(execHelpers)
+		.executor(async (next, self) => {
+			let { cwd } = getCwdContext();
+			let { command, args } = self.getArguments();
+			console.log(
+				`${clc.blueBright(`${command} ${args?.join(' ') ?? ''}`)} ${cwd}`,
+			);
+			await spawn(command, args ?? [], {
+				cwd,
+				doNotThrowError: true,
+				printOutput: true,
+			});
+			await next?.();
+		})
+		.return((self) => self.wrappedHelpers())
+		.run();
 }
 
-export const exec = fnWrapper("exec", execLogic);
+export let exec = fnWrapper('exec', execLogic);
 
-const execHelpers = { exec, codemod, jsFiles };
+let execHelpers = { exec, codemod, jsFiles };
 
 type ExecHelpers = typeof execHelpers;

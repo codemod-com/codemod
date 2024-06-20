@@ -7,7 +7,7 @@ import { identity } from "ramda";
 import { type Dispatch, type SetStateAction, useEffect, useRef } from "react";
 import { flushSync } from "react-dom";
 
-export const useHandlePrompt = ({
+export let useHandlePrompt = ({
   append,
   id,
   isLoading,
@@ -20,17 +20,17 @@ export const useHandlePrompt = ({
   ReturnType<typeof useChat>,
   "append" | "isLoading" | "setMessages"
 >) => {
-  const { command } = useModStore();
-  const executedCommand = useRef(false);
-  const { getToken, isSignedIn } = useAuth();
-  const aliases = useGetAliases();
-  const handleSelectPrompt = async (value: string) => {
-    const t = await getToken();
+  let { command } = useModStore();
+  let executedCommand = useRef(false);
+  let { getToken, isSignedIn } = useAuth();
+  let aliases = useGetAliases();
+  let handleSelectPrompt = async (value: string) => {
+    let t = await getToken();
     flushSync(() => {
       setToken(t);
     });
 
-    const aliasesAppliedValue = applyAliases(value, aliases);
+    let aliasesAppliedValue = applyAliases(value, aliases);
     await append({
       id,
       content: aliasesAppliedValue,
@@ -39,7 +39,7 @@ export const useHandlePrompt = ({
     });
   };
 
-  const shouldApplyPrompt = [
+  let shouldApplyPrompt = [
     isSignedIn &&
       command === "learn" &&
       aliases.$BEFORE !== null &&
@@ -65,7 +65,7 @@ export const useHandlePrompt = ({
   ]);
 };
 
-export const getHeadersWithAuth = (token: string | null) => ({
+export let getHeadersWithAuth = (token: string | null) => ({
   "Content-Type": "application/json",
   Authorization: token ? `Bearer ${token}` : "",
 });

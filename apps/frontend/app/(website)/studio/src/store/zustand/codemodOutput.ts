@@ -15,20 +15,20 @@ type CodemodOutputState = {
   setSelections: (command: RangeCommand) => void;
 };
 
-export const useCodemodOutputStore = create<CodemodOutputState>((set) => ({
+export let useCodemodOutputStore = create<CodemodOutputState>((set) => ({
   content: null,
   rootNode: null,
   ranges: [],
   setContent: (content) => {
-    const parsed = parseSnippet(content);
-    const rootNode = isFile(parsed)
+    let parsed = parseSnippet(content);
+    let rootNode = isFile(parsed)
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ content, rootNode });
   },
   setSelections: (command) => {
     set((state) => {
-      const ranges = buildRanges(state.rootNode, command);
+      let ranges = buildRanges(state.rootNode, command);
       return { ranges };
     });
   },

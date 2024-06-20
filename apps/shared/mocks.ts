@@ -1,5 +1,5 @@
-import { mockedGhRunEndpoints } from "./mocks/gh-run";
+import { mockedGhRunEndpoints } from './mocks/gh-run';
 
-export const mockedEndpoints = {
-  ...mockedGhRunEndpoints,
+export let mockedEndpoints = {
+	...mockedGhRunEndpoints,
 };

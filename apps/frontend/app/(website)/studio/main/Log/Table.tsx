@@ -31,7 +31,7 @@ type TableRow = Readonly<{
   details: ReadonlyArray<string>;
 }>;
 
-const getTableRowName = (event: Event): string => {
+let getTableRowName = (event: Event): string => {
   switch (event.kind) {
     case "collectionFind":
       return "Found Collection";
@@ -62,8 +62,8 @@ const getTableRowName = (event: Event): string => {
   }
 };
 
-const getTableRowDetails = (event: Event) => {
-  const res: string[] = [];
+let getTableRowDetails = (event: Event) => {
+  let res: string[] = [];
 
   if ("nodeType" in event) {
     res.push(`Node Type: ${event.nodeType}`);
@@ -80,7 +80,7 @@ const getTableRowDetails = (event: Event) => {
   return res;
 };
 
-const buildTableRow = (
+let buildTableRow = (
   event: Event,
   eventHashDigest: string | null,
   index: number,
@@ -92,7 +92,7 @@ const buildTableRow = (
   details: getTableRowDetails(event),
 });
 
-const useRanges = () => ({
+let useRanges = () => ({
   codemodInputRanges: useModStore().ranges,
   codemodOutputRanges: useCodemodOutputStore().ranges,
   beforeInputRanges: useSnippetStore().beforeInputRanges,
@@ -101,23 +101,23 @@ const useRanges = () => ({
 
 type Ranges = ReturnType<typeof useRanges>;
 
-const Table = () => {
-  const executeRangeCommandOnBeforeInputThunk =
+let Table = () => {
+  let executeRangeCommandOnBeforeInputThunk =
     useExecuteRangeCommandOnBeforeInput();
-  const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
+  let [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
     null,
   );
-  const ranges = useRanges();
-  const [oldRanges, setOldRanges] = useState<Ranges | null>(null);
+  let ranges = useRanges();
+  let [oldRanges, setOldRanges] = useState<Ranges | null>(null);
 
-  const setActiveThunk = useSetActiveEventThunk();
-  const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
-  const { setOutputSelection } = useSnippetStore();
+  let setActiveThunk = useSetActiveEventThunk();
+  let { setCodemodSelection } = useModStore();
+  let { setSelections } = useCodemodOutputStore();
+  let { setOutputSelection } = useSnippetStore();
 
-  const { activeEventHashDigest, events } = useLogStore();
+  let { activeEventHashDigest, events } = useLogStore();
 
-  const buildOnMouseOver = useCallback(
+  let buildOnMouseOver = useCallback(
     (hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
       (event) => {
         event.preventDefault();
@@ -126,7 +126,7 @@ const Table = () => {
     [setActiveThunk],
   );
 
-  const buildOnClick = useCallback(
+  let buildOnClick = useCallback(
     (hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
       async (event) => {
         event.preventDefault();
@@ -139,7 +139,7 @@ const Table = () => {
     [setActiveThunk, ranges],
   );
 
-  const onMouseEnter: MouseEventHandler<HTMLTableElement> = useCallback(
+  let onMouseEnter: MouseEventHandler<HTMLTableElement> = useCallback(
     (event) => {
       event.preventDefault();
 
@@ -149,7 +149,7 @@ const Table = () => {
     [activeEventHashDigest, ranges],
   );
 
-  const onMouseLeave: MouseEventHandler<HTMLTableElement> = useCallback(
+  let onMouseLeave: MouseEventHandler<HTMLTableElement> = useCallback(
     (event) => {
       event.preventDefault();
 
@@ -192,7 +192,7 @@ const Table = () => {
     ],
   );
 
-  const tableRows = useMemo(
+  let tableRows = useMemo(
     () =>
       events.map((event, index) =>
         buildTableRow(event, activeEventHashDigest, index),

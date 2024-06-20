@@ -8,7 +8,7 @@ type Props = {
   children: string;
 };
 
-const Markdown = ({ children }: Props) => (
+let Markdown = ({ children }: Props) => (
   <ReactMarkdown
     remarkPlugins={[remarkGfm]}
     rehypePlugins={[rehypeSanitize]}

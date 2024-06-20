@@ -5,15 +5,15 @@ import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { useEffect } from "react";
 
-export const useCodemodOutputUpdate = () => {
-  const [webWorkerState, postMessage, setRetry] = useWebWorker();
-  const codemodOutput = useCodemodOutputStore();
-  const { setEvents, events } = useLogStore();
-  const { setHasRuntimeErrors } = useModStore();
-  const { engine, inputSnippet } = useSnippetStore();
-  const { internalContent } = useModStore();
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+export let useCodemodOutputUpdate = () => {
+  let [webWorkerState, postMessage, setRetry] = useWebWorker();
+  let codemodOutput = useCodemodOutputStore();
+  let { setEvents, events } = useLogStore();
+  let { setHasRuntimeErrors } = useModStore();
+  let { engine, inputSnippet } = useSnippetStore();
+  let { internalContent } = useModStore();
+  let snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  let codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
   useEffect(() => {
     postMessage(engine, internalContent ?? "", inputSnippet);
@@ -46,7 +46,7 @@ export const useCodemodOutputUpdate = () => {
     postMessage,
   ]);
 
-  const firstCodemodExecutionErrorEvent = events.find(
+  let firstCodemodExecutionErrorEvent = events.find(
     (e) => e.kind === "codemodExecutionError",
   );
 

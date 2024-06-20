@@ -1,4 +1,4 @@
-export const logoFields = [
+export let logoFields = [
   {
     name: "lightModeImage",
     title: "Light Mode Logo",

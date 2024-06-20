@@ -1,7 +1,7 @@
 import { useFlags } from 'launchdarkly-react-client-sdk';
 
-const App = () => {
-    const { flag } = useFlags();
+let App = () => {
+	let { flag } = useFlags();
 
-    return <>{flag}</>
+	return <>{flag}</>;
 };

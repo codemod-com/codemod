@@ -1,14 +1,14 @@
 import Arrows from "@/assets/icons/double-arrow.svg";
 import Image from "next/image";
 
-const degs = {
+let degs = {
   left: 90,
   right: -90,
   up: 180,
   down: 180,
 };
 
-export const Chevrons = ({
+export let Chevrons = ({
   className,
   direction = "left",
 }: {

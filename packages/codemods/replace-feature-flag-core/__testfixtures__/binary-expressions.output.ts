@@ -1,9 +1,9 @@
-const testCase1 = false;
-const testCase2 =  true;
-const testCase3 = true;
+let testCase1 = false;
+let testCase2 = true;
+let testCase3 = true;
 
-const x = true;
-const testCase4 = false;
-const testCase5 =  false;
-const testCase6 = true;
-const testCase7 = false;
+let x = true;
+let testCase4 = false;
+let testCase5 = false;
+let testCase6 = true;
+let testCase7 = false;

@@ -1,6 +1,6 @@
 import { env } from "./env";
 
-const publicConfig = {
+let publicConfig = {
   sanity: {
     projectId: env.NEXT_PUBLIC_SANITY_PROJECT_ID ?? "",
     dataset: env.NEXT_PUBLIC_SANITY_DATASET ?? "",

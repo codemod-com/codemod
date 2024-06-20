@@ -1,4 +1,3 @@
-
-const var1 = b;
-const var2 = b;
-const var3 = b;
+let var1 = b;
+let var2 = b;
+let var3 = b;

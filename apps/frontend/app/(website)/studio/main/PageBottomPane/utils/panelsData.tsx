@@ -8,7 +8,7 @@ import {
 import type { Repeat } from "@studio/types/transformations";
 import * as React from "react";
 
-export const getContent =
+export let getContent =
   (type: ContentViewerVariant) => (engine: KnownEngines) =>
     engine === "jscodeshift" ? (
       <ASTViewer type={type} />
@@ -16,7 +16,7 @@ export const getContent =
       "The AST View is not yet supported for tsmorph"
     );
 
-const beforePanel: PanelData = {
+let beforePanel: PanelData = {
   relatedAST: ResizablePanelsIndices.BEFORE_AST,
   boundIndex: ResizablePanelsIndices.BEFORE_AST,
   snippedIndex: ResizablePanelsIndices.BEFORE_SNIPPET,
@@ -36,7 +36,7 @@ const beforePanel: PanelData = {
   },
 };
 
-const afterPanel: PanelData = {
+let afterPanel: PanelData = {
   relatedAST: ResizablePanelsIndices.AFTER_AST,
   snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
   type: "after",
@@ -51,7 +51,7 @@ const afterPanel: PanelData = {
   },
 };
 
-const outputPanel: PanelData = {
+let outputPanel: PanelData = {
   relatedAST: ResizablePanelsIndices.OUTPUT_AST,
   snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
   type: "output",
@@ -69,9 +69,9 @@ const outputPanel: PanelData = {
   },
 };
 
-const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
+let panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
 
-export const panelsData = {
+export let panelsData = {
   panels,
   beforePanel,
   afterPanel,

@@ -1,6 +1,6 @@
 import { defineType } from "sanity";
 
-export const ogImage = defineType({
+export let ogImage = defineType({
   name: "ogImage",
   title: "Social sharing image",
   description:

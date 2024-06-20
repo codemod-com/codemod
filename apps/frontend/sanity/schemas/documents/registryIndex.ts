@@ -1,7 +1,7 @@
 import definePage from "../helpers/definePage";
 import page from "./page";
 
-export const registryIndex = definePage({
+export let registryIndex = definePage({
   name: "registryIndex",
   title: "Registry Index",
   type: "document",

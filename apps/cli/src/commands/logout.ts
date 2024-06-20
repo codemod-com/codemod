@@ -1,24 +1,27 @@
-import type { PrinterBlueprint } from "@codemod-com/printer";
-import { revokeCLIToken } from "../apis.js";
-import { getCurrentUserData } from "../utils.js";
+import type { PrinterBlueprint } from '@codemod-com/printer';
+import { revokeCLIToken } from '../apis.js';
+import { getCurrentUserData } from '../utils.js';
 
-export const handleLogoutCliCommand = async (options: {
-  printer: PrinterBlueprint;
+export let handleLogoutCliCommand = async (options: {
+	printer: PrinterBlueprint;
 }) => {
-  const { printer } = options;
+	let { printer } = options;
 
-  const userData = await getCurrentUserData();
+	let userData = await getCurrentUserData();
 
-  if (userData === null) {
-    printer.printConsoleMessage("info", "You are already logged out.");
-    return;
-  }
+	if (userData === null) {
+		printer.printConsoleMessage('info', 'You are already logged out.');
+		return;
+	}
 
-  try {
-    await revokeCLIToken(userData.token);
-  } catch (err) {
-    //
-  }
+	try {
+		await revokeCLIToken(userData.token);
+	} catch (err) {
+		//
+	}
 
-  printer.printConsoleMessage("info", "You have been successfully logged out.");
+	printer.printConsoleMessage(
+		'info',
+		'You have been successfully logged out.',
+	);
 };

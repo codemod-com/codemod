@@ -14,7 +14,7 @@ type MessageToSend = {
   before: string;
   after: string;
 };
-export const useCodemodAI = ({
+export let useCodemodAI = ({
   setToken,
   messages,
   engine,
@@ -23,18 +23,18 @@ export const useCodemodAI = ({
   messages: LLMMessage[];
   engine: LLMEngine;
 }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [ws, setWs] = useState<WebSocket | null>(null);
-  const [wsMessage, setWsMessage] = useState<MessageFromWs>();
-  const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
-  const [isWsConnected, setIsWsConnected] = useState(false);
-  const [serviceBusy, setServiceBusy] = useState(false);
-  const { getToken } = useAuth();
-  const emitMessage = (message: MessageToSend) => {
+  let [socket, setSocket] = useState<Socket | null>(null);
+  let [ws, setWs] = useState<WebSocket | null>(null);
+  let [wsMessage, setWsMessage] = useState<MessageFromWs>();
+  let { inputSnippet: before, afterSnippet: after } = useSnippetStore();
+  let [isWsConnected, setIsWsConnected] = useState(false);
+  let [serviceBusy, setServiceBusy] = useState(false);
+  let { getToken } = useAuth();
+  let emitMessage = (message: MessageToSend) => {
     ws?.send(JSON.stringify(message));
     // socket?.emit("message", message);
   };
-  const handleError = (error: string | Record<string, unknown> | Event) => {
+  let handleError = (error: string | Record<string, unknown> | Event) => {
     setServiceBusy(false);
     toast.error(
       `WebSocket Error ${
@@ -43,15 +43,15 @@ export const useCodemodAI = ({
     );
   };
 
-  const onConnect = () => {
+  let onConnect = () => {
     console.info("WebSocket connection established");
   };
-  const onDisconnect = () => {
+  let onDisconnect = () => {
     console.info("WebSocket connection ended");
     setIsWsConnected(false);
   };
 
-  const socketCleanup = () => {
+  let socketCleanup = () => {
     socket?.off("connect", onConnect);
     socket?.off("disconnect", onDisconnect);
     socket?.off("message", onMessage);
@@ -60,14 +60,14 @@ export const useCodemodAI = ({
     setServiceBusy(false);
   };
 
-  const wsCleanup = () => {
+  let wsCleanup = () => {
     ws?.close();
     setIsWsConnected(false);
     setServiceBusy(false);
   };
 
-  const onMessage = async (data: MessageToWs) => {
-    const _token = await getToken();
+  let onMessage = async (data: MessageToWs) => {
+    let _token = await getToken();
     setToken(_token);
     if (data.error || data.execution_status === "error") {
       handleError(data.error || "server crashed");
@@ -88,10 +88,10 @@ export const useCodemodAI = ({
     }
   };
 
-  const handleSocketConnection = async () => {
+  let handleSocketConnection = async () => {
     if (!shouldUseCodemodAi) return;
     setIsWsConnected(true);
-    const websocket = io(codemodAiWsServer, {
+    let websocket = io(codemodAiWsServer, {
       auth: { token: await getToken() },
     });
     websocket.on("connect", onConnect);
@@ -101,9 +101,9 @@ export const useCodemodAI = ({
     setSocket(websocket);
   };
 
-  const handleWebsocketConnection = async () => {
+  let handleWebsocketConnection = async () => {
     if (!shouldUseCodemodAi) return;
-    const websocket = new WebSocket(codemodAiWsServer);
+    let websocket = new WebSocket(codemodAiWsServer);
     setIsWsConnected(true);
     setWs(websocket);
     websocket.onopen = onConnect;
@@ -117,16 +117,16 @@ export const useCodemodAI = ({
     return wsCleanup;
   }, []);
 
-  const startIterativeCodemodGeneration = async () => {
+  let startIterativeCodemodGeneration = async () => {
     if (ws && before && after && isWsConnected && !serviceBusy) {
-      const _token = await getToken();
+      let _token = await getToken();
       setToken(_token);
       setWsMessage({
         content: `Generate codemod with AI`,
         role: "user",
         id: Date.now().toString(),
       });
-      const messageToSend: MessageToSend = {
+      let messageToSend: MessageToSend = {
         config: { llm_engine: engine },
         previous_context: messages,
         before,

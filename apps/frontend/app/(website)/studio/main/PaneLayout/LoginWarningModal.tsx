@@ -13,12 +13,12 @@ import { Button } from "@studio/components/ui/button";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-const LEARN_KEY = "learn";
+let LEARN_KEY = "learn";
 
-export const LoginWarningModal = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
-  const [isOpen, setIsOpen] = useState(false);
+export let LoginWarningModal = () => {
+  let { isSignedIn, isLoaded } = useAuth();
+  let isFromCLI = useSearchParams().get("command") === LEARN_KEY;
+  let [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     setIsOpen(isFromCLI && isLoaded && !isSignedIn);
   }, [isFromCLI, isSignedIn, isLoaded]);

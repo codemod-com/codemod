@@ -1,6 +1,6 @@
 import definePage from "../helpers/definePage";
 
-export const job = definePage({
+export let job = definePage({
   name: "job",
   title: "Job listing page",
   type: "document",

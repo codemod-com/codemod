@@ -31,12 +31,12 @@ export default function Input({
   onClear,
   ...props
 }: InputProps) {
-  const spreadProps = { ...props };
+  let spreadProps = { ...props };
   delete spreadProps.inputClassName;
   delete spreadProps.iconClassName;
 
-  const inputRef = React.useRef<HTMLInputElement>(null);
-  const textareaRef = React.useRef<HTMLTextAreaElement>(null);
+  let inputRef = React.useRef<HTMLInputElement>(null);
+  let textareaRef = React.useRef<HTMLTextAreaElement>(null);
 
   function focusInput() {
     if (inputRef.current) {

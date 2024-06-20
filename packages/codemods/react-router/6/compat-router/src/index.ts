@@ -27,48 +27,46 @@ THE SOFTWARE.
 Changes to the original file: added TypeScript, dirty flag, nullability checks
 */
 
-import type { API, FileInfo, Options, Transform } from "jscodeshift";
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
 
 function transform(
-  file: FileInfo,
-  api: API,
-  options: Options,
+	file: FileInfo,
+	api: API,
+	options: Options,
 ): string | undefined {
-  const j = api.jscodeshift;
+	let j = api.jscodeshift;
 
-  const root = j(file.source);
+	let root = j(file.source);
 
-  const isCompatRouteImportFound = root.find(j.ImportDeclaration, {
-    source: { value: "react-router-dom-v5-compat" },
-  }).length;
+	let isCompatRouteImportFound = root.find(j.ImportDeclaration, {
+		source: { value: 'react-router-dom-v5-compat' },
+	}).length;
 
-  if (isCompatRouteImportFound) {
-    return undefined;
-  }
+	if (isCompatRouteImportFound) {
+		return undefined;
+	}
 
-  const computedImport = j.importDeclaration(
-    [j.importSpecifier(j.identifier("CompatRouter"))],
-    j.literal("react-router-dom-v5-compat"),
-  );
+	let computedImport = j.importDeclaration(
+		[j.importSpecifier(j.identifier('CompatRouter'))],
+		j.literal('react-router-dom-v5-compat'),
+	);
 
-  const body = root.get().value.program.body;
-  body.unshift(computedImport);
+	let body = root.get().value.program.body;
+	body.unshift(computedImport);
 
-  root
-    .find(j.JSXElement, {
-      openingElement: { name: { name: "BrowserRouter" } },
-    })
-    .forEach((path) => {
-      const children = path.value.children;
-      const newEl = j.jsxElement(
-        j.jsxOpeningElement(j.jsxIdentifier("CompatRouter"), [], false),
-        j.jsxClosingElement(j.jsxIdentifier("CompatRouter")),
-        children,
-      );
-      path.value.children = [j.jsxText("\n  "), newEl, j.jsxText("\n")];
-    });
+	root.find(j.JSXElement, {
+		openingElement: { name: { name: 'BrowserRouter' } },
+	}).forEach((path) => {
+		let children = path.value.children;
+		let newEl = j.jsxElement(
+			j.jsxOpeningElement(j.jsxIdentifier('CompatRouter'), [], false),
+			j.jsxClosingElement(j.jsxIdentifier('CompatRouter')),
+			children,
+		);
+		path.value.children = [j.jsxText('\n  '), newEl, j.jsxText('\n')];
+	});
 
-  return root.toSource(options);
+	return root.toSource(options);
 }
 
 transform satisfies Transform;

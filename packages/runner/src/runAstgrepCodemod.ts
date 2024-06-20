@@ -1,180 +1,182 @@
-import { constants, access } from "node:fs/promises";
-import { join } from "node:path";
-import { execPromise } from "@codemod-com/utilities";
-import type { FileCommand } from "./fileCommands.js";
+import { constants, access } from 'node:fs/promises';
+import { join } from 'node:path';
+import { execPromise } from '@codemod-com/utilities';
+import type { FileCommand } from './fileCommands.js';
 
-const javaScriptPatterns = ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"];
-const typeScriptPatterns = ["**/*.ts", "**/*.cts", "**/*.mts"];
-const tsxPatterns = ["**/*.tsx"];
-const pythonPatterns = ["**/*.py", "**/*.py3", "**/*.pyi", "**/*.bzl"];
-const javaPatterns = ["**/*.java"];
-const bashPatterns = [
-  "**/*.bash",
-  "**/*.bats",
-  "**/*.cgi",
-  "**/*.command",
-  "**/*.env",
-  "**/*.fcgi",
-  "**/*.ksh",
-  "**/*.sh",
-  "**/*.sh.in",
-  "**/*.tmux",
-  "**/*.tool",
-  "**/*.zsh",
+let javaScriptPatterns = ['**/*.js', '**/*.jsx', '**/*.cjs', '**/*.mjs'];
+let typeScriptPatterns = ['**/*.ts', '**/*.cts', '**/*.mts'];
+let tsxPatterns = ['**/*.tsx'];
+let pythonPatterns = ['**/*.py', '**/*.py3', '**/*.pyi', '**/*.bzl'];
+let javaPatterns = ['**/*.java'];
+let bashPatterns = [
+	'**/*.bash',
+	'**/*.bats',
+	'**/*.cgi',
+	'**/*.command',
+	'**/*.env',
+	'**/*.fcgi',
+	'**/*.ksh',
+	'**/*.sh',
+	'**/*.sh.in',
+	'**/*.tmux',
+	'**/*.tool',
+	'**/*.zsh',
 ];
-const cPatterns = ["**/*.c", "**/*.h"];
-const cppPatterns = [
-  "**/*.cc",
-  "**/*.hpp",
-  "**/*.cpp",
-  "**/*.c++",
-  "**/*.hh",
-  "**/*.cxx",
-  "**/*.cu",
-  "**/*.ino",
+let cPatterns = ['**/*.c', '**/*.h'];
+let cppPatterns = [
+	'**/*.cc',
+	'**/*.hpp',
+	'**/*.cpp',
+	'**/*.c++',
+	'**/*.hh',
+	'**/*.cxx',
+	'**/*.cu',
+	'**/*.ino',
 ];
-const jsonPatterns = ["**/*.json"];
-const htmlPatterns = ["**/*.html", "**/*.htm", "**/*.xhtml"];
-export const astGrepLanguageToPatterns: Record<string, string[]> = {
-  js: javaScriptPatterns,
-  jsx: javaScriptPatterns,
-  javascript: javaScriptPatterns,
+let jsonPatterns = ['**/*.json'];
+let htmlPatterns = ['**/*.html', '**/*.htm', '**/*.xhtml'];
+export let astGrepLanguageToPatterns: Record<string, string[]> = {
+	js: javaScriptPatterns,
+	jsx: javaScriptPatterns,
+	javascript: javaScriptPatterns,
 
-  ts: typeScriptPatterns,
-  typescript: typeScriptPatterns,
+	ts: typeScriptPatterns,
+	typescript: typeScriptPatterns,
 
-  tsx: tsxPatterns,
+	tsx: tsxPatterns,
 
-  py: pythonPatterns,
-  python: pythonPatterns,
+	py: pythonPatterns,
+	python: pythonPatterns,
 
-  java: javaPatterns,
+	java: javaPatterns,
 
-  "bash-exp": bashPatterns,
+	'bash-exp': bashPatterns,
 
-  c: cPatterns,
+	c: cPatterns,
 
-  cc: cppPatterns,
-  "c++": cppPatterns,
-  cpp: cppPatterns,
-  cxx: cppPatterns,
+	cc: cppPatterns,
+	'c++': cppPatterns,
+	cpp: cppPatterns,
+	cxx: cppPatterns,
 
-  json: jsonPatterns,
+	json: jsonPatterns,
 
-  html: htmlPatterns,
+	html: htmlPatterns,
 };
 
 type AstGrepCompactOutput = {
-  text: string;
-  range: {
-    byteOffset: { start: number; end: number };
-    start: { line: number; column: number };
-    end: { line: number; column: number };
-  };
-  file: string;
-  lines: string;
-  replacement?: string;
-  replacementOffsets?: { start: number; end: number };
-  language: string;
-  ruleId: string;
-  severity: string;
-  note: string | null;
-  message: string;
+	text: string;
+	range: {
+		byteOffset: { start: number; end: number };
+		start: { line: number; column: number };
+		end: { line: number; column: number };
+	};
+	file: string;
+	lines: string;
+	replacement?: string;
+	replacementOffsets?: { start: number; end: number };
+	language: string;
+	ruleId: string;
+	severity: string;
+	note: string | null;
+	message: string;
 };
 
-export const runAstGrepCodemod = async (
-  rulesPath: string,
-  oldPath: string,
-  oldData: string,
-  formatWithPrettier: boolean,
+export let runAstGrepCodemod = async (
+	rulesPath: string,
+	oldPath: string,
+	oldData: string,
+	formatWithPrettier: boolean,
 ): Promise<readonly FileCommand[]> => {
-  let astGrepExecutablePath: string;
+	let astGrepExecutablePath: string;
 
-  try {
-    // Try to look by the package.json of the CLI
-    astGrepExecutablePath = join(
-      require.resolve("@ast-grep/cli/package.json"),
-      "..",
-      "sg",
-    );
-    await access(astGrepExecutablePath, constants.X_OK);
-  } catch (err) {
-    try {
-      // If not, then try to get node_modules path and then look for .bin folder
-      astGrepExecutablePath = join(
-        __dirname,
-        "..",
-        "node_modules",
-        ".bin",
-        "sg",
-      );
-      await access(astGrepExecutablePath, constants.X_OK);
-    } catch (err) {
-      // Finally, try to install it globally
-      // First, use `which` command to check if the CLI is already installed
-      try {
-        await execPromise("which sg");
-        astGrepExecutablePath = "sg";
-      } catch (err) {
-        // If not installed, try to install using npm globally
-        try {
-          const astInstallCommand = "npm install -g @ast-grep/cli";
-          if (process.platform === "win32") {
-            await execPromise(`powershell -Command ${astInstallCommand}`);
-          } else {
-            await execPromise(astInstallCommand);
-          }
-          astGrepExecutablePath = "sg";
-        } catch (err) {
-          throw new Error(
-            `Could not locate the ast-grep CLI. Please install it with 'npm install -g @ast-grep/cli'.`,
-          );
-        }
-      }
-    }
-  }
+	try {
+		// Try to look by the package.json of the CLI
+		astGrepExecutablePath = join(
+			require.resolve('@ast-grep/cli/package.json'),
+			'..',
+			'sg',
+		);
+		await access(astGrepExecutablePath, constants.X_OK);
+	} catch (err) {
+		try {
+			// If not, then try to get node_modules path and then look for .bin folder
+			astGrepExecutablePath = join(
+				__dirname,
+				'..',
+				'node_modules',
+				'.bin',
+				'sg',
+			);
+			await access(astGrepExecutablePath, constants.X_OK);
+		} catch (err) {
+			// Finally, try to install it globally
+			// First, use `which` command to check if the CLI is already installed
+			try {
+				await execPromise('which sg');
+				astGrepExecutablePath = 'sg';
+			} catch (err) {
+				// If not installed, try to install using npm globally
+				try {
+					let astInstallCommand = 'npm install -g @ast-grep/cli';
+					if (process.platform === 'win32') {
+						await execPromise(
+							`powershell -Command ${astInstallCommand}`,
+						);
+					} else {
+						await execPromise(astInstallCommand);
+					}
+					astGrepExecutablePath = 'sg';
+				} catch (err) {
+					throw new Error(
+						`Could not locate the ast-grep CLI. Please install it with 'npm install -g @ast-grep/cli'.`,
+					);
+				}
+			}
+		}
+	}
 
-  const commands: FileCommand[] = [];
+	let commands: FileCommand[] = [];
 
-  const rulesPathEscaped = rulesPath.replace(/(\s+)/g, "\\$1");
-  const oldPathEscaped = oldPath.replace(/(\s+)/g, "\\$1");
+	let rulesPathEscaped = rulesPath.replace(/(\s+)/g, '\\$1');
+	let oldPathEscaped = oldPath.replace(/(\s+)/g, '\\$1');
 
-  const astCommandBase = `${astGrepExecutablePath} scan --rule ${rulesPathEscaped} ${oldPathEscaped} --json=compact`;
+	let astCommandBase = `${astGrepExecutablePath} scan --rule ${rulesPathEscaped} ${oldPathEscaped} --json=compact`;
 
-  const astCommand =
-    process.platform === "win32"
-      ? `powershell -Command "${astCommandBase}"`
-      : astCommandBase;
+	let astCommand =
+		process.platform === 'win32'
+			? `powershell -Command "${astCommandBase}"`
+			: astCommandBase;
 
-  const { stdout } = await execPromise(astCommand);
-  const matches = JSON.parse(stdout.trim()) as AstGrepCompactOutput[];
-  // Sort in reverse order to not mess up replacement offsets
-  matches.sort((a, b) => b.range.byteOffset.start - a.range.byteOffset.start);
+	let { stdout } = await execPromise(astCommand);
+	let matches = JSON.parse(stdout.trim()) as AstGrepCompactOutput[];
+	// Sort in reverse order to not mess up replacement offsets
+	matches.sort((a, b) => b.range.byteOffset.start - a.range.byteOffset.start);
 
-  let newData = oldData;
-  for (const result of matches) {
-    const { replacementOffsets, replacement } = result;
-    if (!replacementOffsets) {
-      continue;
-    }
+	let newData = oldData;
+	for (let result of matches) {
+		let { replacementOffsets, replacement } = result;
+		if (!replacementOffsets) {
+			continue;
+		}
 
-    newData =
-      newData.slice(0, replacementOffsets.start) +
-      replacement +
-      newData.slice(replacementOffsets.end);
-  }
+		newData =
+			newData.slice(0, replacementOffsets.start) +
+			replacement +
+			newData.slice(replacementOffsets.end);
+	}
 
-  if (typeof newData !== "string" || oldData === newData) {
-    return commands;
-  }
+	if (typeof newData !== 'string' || oldData === newData) {
+		return commands;
+	}
 
-  commands.push({
-    kind: "updateFile",
-    oldPath,
-    oldData,
-    newData,
-    formatWithPrettier,
-  });
+	commands.push({
+		kind: 'updateFile',
+		oldPath,
+		oldData,
+		newData,
+		formatWithPrettier,
+	});
 
-  return commands;
+	return commands;
 };
