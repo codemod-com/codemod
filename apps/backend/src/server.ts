@@ -360,11 +360,10 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       if (!queue) {
         throw new Error("Queue service is not running.");
       }
-      const { codemodName, codemodSource, codemodEngine, repoUrl, branch } =
+      const { codemodSource, codemodEngine, repoUrl, branch } =
         parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemodName,
         codemodSource,
         codemodEngine,
         userId: request.user?.id,
