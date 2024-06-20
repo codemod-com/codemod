@@ -16,10 +16,9 @@ RUN pnpm install
 COPY ./apps/auth-service/tsconfig.json /app/apps/auth-service/
 COPY ./apps/auth-service/esbuild.config.js /app/apps/auth-service/
 COPY ./apps/auth-service/src /app/apps/auth-service/src/
+COPY ./apps/auth-service/node_modules/@codemod-com/database/generated/client/schema.prisma /app/apps/auth-service/packages/database/generated/client/schema.prisma
 
 RUN pnpm build --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/auth-service
-
-COPY ./apps/auth-service/packages /app/apps/auth-service/packages/
 
 FROM node:20-alpine3.16
 
