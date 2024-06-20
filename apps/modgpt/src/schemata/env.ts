@@ -21,7 +21,7 @@ export const environmentSchema = object({
   CLERK_PUBLISH_KEY: optional(string()),
   CLERK_SECRET_KEY: optional(string()),
   CLERK_JWT_KEY: optional(string()),
-  X_CODEMOD_ACCESS_TOKEN: optional(string()),
+  AUTH_SERVICE_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;
