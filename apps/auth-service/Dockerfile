@@ -27,6 +27,6 @@ COPY --from=builder /app/apps/auth-service/package.json /app
 COPY --from=builder /app/apps/auth-service/build /app/build
 COPY --from=builder /app/packages /app/packages
 
-EXPOSE 8084
+EXPOSE 8081
 
 CMD ["sh", "-c", "npx prisma migrate deploy && node build/index.js"]
