@@ -16,15 +16,15 @@ export type Aliases = Record<
   { value: string; updatedAt: number } | null
 >;
 
-export const useGetAliases = () => {
-  const codemodExecutionError = useCodemodExecutionError();
-  const {
+export let useGetAliases = () => {
+  let codemodExecutionError = useCodemodExecutionError();
+  let {
     internalContent,
     ranges: codemodInputRanges,
     rangesUpdatedAt,
   } = useModStore.getState();
 
-  const {
+  let {
     inputSnippet,
     outputSnippet,
     afterInputRanges,
@@ -76,14 +76,14 @@ export const useGetAliases = () => {
   };
 };
 
-export const applyAliases = (
+export let applyAliases = (
   message: string,
   variables: Record<string, { value: string } | null>,
 ): string => {
-  const METAVARIABLE_REGEX = /\$\w+/g;
+  let METAVARIABLE_REGEX = /\$\w+/g;
 
   return message.replace(METAVARIABLE_REGEX, (metavar) => {
-    const metavarValue = variables[metavar]?.value ?? "";
+    let metavarValue = variables[metavar]?.value ?? "";
 
     return `
 			\`\`\`

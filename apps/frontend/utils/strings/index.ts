@@ -14,7 +14,7 @@ export function truncate(str: string, maxLength: number) {
 
   // To prevent truncating in the middle of words, let's get
   // the position of the first whitespace after the truncation
-  const firstWhitespaceAfterTruncation =
+  let firstWhitespaceAfterTruncation =
     str.slice(maxLength).search(/\s/) + maxLength;
 
   return `${str.slice(0, firstWhitespaceAfterTruncation)}...`;
@@ -32,7 +32,7 @@ export function capitalize(str: string) {
  * Removes special characters, spaces, upper-cased letters.
  */
 export function slugify(str: string) {
-  const acceptedCharacters = [
+  let acceptedCharacters = [
     "a-z", // lower-case letters
     "0-9", // numbers
     " ", // spaces

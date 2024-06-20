@@ -30,9 +30,9 @@ export function SanityImage({
   loading = "lazy",
   ...props
 }: SanityImageBaseProps) {
-  const imageProps = getImageProps(props);
+  let imageProps = getImageProps(props);
 
-  const hotspotStyle: CSSProperties = props.applyHotspot
+  let hotspotStyle: CSSProperties = props.applyHotspot
     ? {
         objectFit: "cover",
         objectPosition: props.image?.hotspot
@@ -40,7 +40,7 @@ export function SanityImage({
           : undefined,
       }
     : {};
-  const style = { ...hotspotStyle, ...imageProps.style, ...elProps.style };
+  let style = { ...hotspotStyle, ...imageProps.style, ...elProps.style };
 
   if (!imageProps?.src) {
     return null;
@@ -58,13 +58,13 @@ export function SanityImage({
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
-    <img
+    (<img
       src={imageProps.src as string}
       alt={alt || props.image.alt || props.image.caption || ""}
       {...imageProps}
       {...elProps}
       style={style}
       loading={loading}
-    />
+    />)
   );
 }

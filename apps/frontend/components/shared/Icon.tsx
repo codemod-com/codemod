@@ -68,10 +68,10 @@ export enum TechLogoId {
   "Twitter / X" = "twitter/x",
 }
 
-const iconValues: string[] = Object.values(IconId);
+let iconValues: string[] = Object.values(IconId);
 export type IconName = (typeof iconValues)[number];
 
-const logoValues: string[] = Object.values(TechLogoId);
+let logoValues: string[] = Object.values(TechLogoId);
 export type LogoName = (typeof logoValues)[number];
 
 type IconProps = {
@@ -83,7 +83,7 @@ type LogoProps = {
   className?: string;
 };
 
-export const TechLogo = ({ name, className }: LogoProps) => {
+export let TechLogo = ({ name, className }: LogoProps) => {
   switch (name) {
     case "ant-design":
       return (
@@ -1671,7 +1671,7 @@ export default function Icon({ name, className }: IconProps) {
   }
 }
 
-export const codemodBrandString = `
+export let codemodBrandString = `
   <svg
     width="20"
     height="20"
@@ -1710,7 +1710,7 @@ export const codemodBrandString = `
   </svg>
   `;
 
-export const codemodLogoString = `
+export let codemodLogoString = `
   <svg
       width="133"
       height="22"

@@ -8,27 +8,27 @@ import { Inconsolata } from "next/font/google";
 import { Highlight, Prism } from "prism-react-renderer";
 import { useEffect, useState } from "react";
 
-const inconsolata = Inconsolata({
+let inconsolata = Inconsolata({
   subsets: ["latin"],
   weight: "400",
   variable: "--inconsolata",
 });
 
-const CodeBlock = ({ children }) => {
-  const [copied, setCopied] = useState(false);
+let CodeBlock = ({ children }) => {
+  let [copied, setCopied] = useState(false);
 
-  const {
+  let {
     props: { className, children: code = "" },
   } = children;
 
-  const language = className
+  let language = className
     ? className
         .replace(/language-/, "")
         ?.trim()
         ?.toLowerCase()
     : "";
 
-  const handleCopy = () => {
+  let handleCopy = () => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(code.trim());
     }
@@ -39,7 +39,7 @@ const CodeBlock = ({ children }) => {
     }, 1200);
   };
 
-  const prismLanguageId = languageToPrismId(language);
+  let prismLanguageId = languageToPrismId(language);
 
   useEffect(() => {
     (async () => {

@@ -14,11 +14,11 @@ type PreviewRouteProps = {
 };
 
 export default function RegistryIndexPreview(props: PreviewRouteProps) {
-  const { initial, searchParams } = props;
-  const registryEntries = initial?.data?.entries || [];
-  const registryIndexQuery = buildRegistryIndexQuery();
+  let { initial, searchParams } = props;
+  let registryEntries = initial?.data?.entries || [];
+  let registryIndexQuery = buildRegistryIndexQuery();
 
-  const { data } = useQuery<RegistryIndexPayload | null>(
+  let { data } = useQuery<RegistryIndexPayload | null>(
     registryIndexQuery,
     { pathname: "/registry" },
     { initial },

@@ -17,13 +17,13 @@ export function useLoadMoreAutomations({
   initial: RegistryIndexPayload["entries"];
   total: number;
 }) {
-  const [data, setData] = useState<AutomationAPISearchResponse>({
+  let [data, setData] = useState<AutomationAPISearchResponse>({
     data: initial,
     page: pageNumber,
     size: entriesPerPage,
     total,
   });
-  const [loaderState, setQueryState] = useState<
+  let [loaderState, setQueryState] = useState<
     "idle" | "loading" | "error" | "success"
   >("idle");
 
@@ -34,7 +34,7 @@ export function useLoadMoreAutomations({
   async function loadMore() {
     setQueryState("loading");
 
-    const res = await fetch(`/api/load-codemods`, {
+    let res = await fetch(`/api/load-codemods`, {
       method: "POST",
       body: JSON.stringify({
         pageNumber,
@@ -43,7 +43,7 @@ export function useLoadMoreAutomations({
       }),
     });
 
-    const moreAutomations: AutomationAPISearchResponse = await res.json();
+    let moreAutomations: AutomationAPISearchResponse = await res.json();
 
     if (res.status === 200 && data && moreAutomations.data) {
       setQueryState("success");

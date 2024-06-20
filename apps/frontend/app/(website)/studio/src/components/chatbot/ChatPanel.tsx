@@ -40,13 +40,13 @@ export interface ChatPanelProps
   setToken: Dispatch<SetStateAction<string | null>>;
 }
 
-const usePrompts = (aliases: Aliases) => {
-  const codemodExecutionError = useCodemodExecutionError();
-  const prompts = [
+let usePrompts = (aliases: Aliases) => {
+  let codemodExecutionError = useCodemodExecutionError();
+  let prompts = [
     ["Build a codemod to transform before to after", autoGenerateCodemodPrompt],
   ];
 
-  const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
+  let codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 
   if (codemodHighlightedValue !== "") {
     prompts.unshift([
@@ -63,7 +63,7 @@ const usePrompts = (aliases: Aliases) => {
 };
 
 // make sure the most recent highlighted alias goes to the left.
-const getOrderedAliasList = (aliases: Aliases) =>
+let getOrderedAliasList = (aliases: Aliases) =>
   Object.entries(aliases)
     .filter(([, v]) => v !== null)
     .sort(([, a], [, b]) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))
@@ -80,25 +80,25 @@ export function ChatPanel({
   messages,
   setToken,
 }: ChatPanelProps) {
-  const textAreaRef = useRef<HTMLTextAreaElement>(null);
-  const [expandedHelper, setExpandedHelper] = useState(true);
+  let textAreaRef = useRef<HTMLTextAreaElement>(null);
+  let [expandedHelper, setExpandedHelper] = useState(true);
 
-  const { getToken, isSignedIn } = useAuth();
+  let { getToken, isSignedIn } = useAuth();
 
-  const aliases = useGetAliases();
-  const promptsList = usePrompts(aliases);
-  const aliasList = getOrderedAliasList(aliases);
+  let aliases = useGetAliases();
+  let promptsList = usePrompts(aliases);
+  let aliasList = getOrderedAliasList(aliases);
 
-  const handleSubmit = async (value: string) => {
+  let handleSubmit = async (value: string) => {
     if (isLoading) {
       return;
     }
-    const token = await getToken();
+    let token = await getToken();
 
     flushSync(() => {
       setToken(token);
     });
-    const aliasesAppliedValue = applyAliases(value, aliases);
+    let aliasesAppliedValue = applyAliases(value, aliases);
     await append({
       id,
       content: aliasesAppliedValue,
@@ -106,32 +106,32 @@ export function ChatPanel({
     });
   };
 
-  const handleInsertValue = (value: string) => {
-    const textArea = textAreaRef.current;
+  let handleInsertValue = (value: string) => {
+    let textArea = textAreaRef.current;
 
     if (textArea === null) {
       return;
     }
 
-    const startPos = textArea.selectionStart;
+    let startPos = textArea.selectionStart;
 
-    const newValue = `${input.substring(
+    let newValue = `${input.substring(
       0,
       startPos,
     )} ${value} ${input.substring(startPos)}`;
 
     setInput(newValue);
-    const textareaNode =
+    let textareaNode =
       document.getElementsByClassName("promptTextarea")?.[0] ?? null;
     if (textareaNode !== null) {
       (textareaNode as HTMLTextAreaElement).focus();
     }
   };
 
-  const hasMessages = messages.length !== 0;
+  let hasMessages = messages.length !== 0;
 
   return (
-    <div className="chatPanel absolute bottom-0 mx-auto w-full sm:pl-8 sm:pr-16">
+    (<div className="chatPanel absolute bottom-0 mx-auto w-full sm:pl-8 sm:pr-16">
       {isSignedIn && messages.length > 0 && <ScrollToBottomButton />}
       <div className="flex h-10 items-center justify-center">
         {isLoading && (
@@ -217,6 +217,6 @@ export function ChatPanel({
           </div>
         </div>
       </div>
-    </div>
+    </div>)
   );
 }

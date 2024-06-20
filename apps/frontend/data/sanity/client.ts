@@ -2,7 +2,7 @@ import config from "@/config";
 import { type ClientPerspective, createClient } from "@sanity/client/stega";
 import createImageUrlBuilder from "@sanity/image-url";
 
-const clientConfig = {
+let clientConfig = {
   projectId: config.sanity.projectId,
   dataset: config.sanity.dataset,
   apiVersion: config.sanity.apiVersion,
@@ -10,7 +10,7 @@ const clientConfig = {
   perspective: "published" as ClientPerspective,
 };
 
-export const client = createClient({
+export let client = createClient({
   ...clientConfig,
   stega: {
     studioUrl: config.sanity.studioUrl,
@@ -18,7 +18,7 @@ export const client = createClient({
   },
 });
 
-export const imageBuilder = createImageUrlBuilder({
+export let imageBuilder = createImageUrlBuilder({
   projectId: clientConfig.projectId || "",
   dataset: clientConfig.dataset || "",
 });

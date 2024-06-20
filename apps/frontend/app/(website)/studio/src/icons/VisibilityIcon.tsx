@@ -2,7 +2,7 @@ import { Chevrons } from "@studio/icons/Chevrons";
 import type { VisibilityOptions } from "@studio/types/options";
 import { alwaysVisible } from "@studio/utils/visibility";
 
-export const VisibilityIcon = ({
+export let VisibilityIcon = ({
   visibilityOptions = alwaysVisible,
   className,
 }: { visibilityOptions?: VisibilityOptions; className?: string }) => (

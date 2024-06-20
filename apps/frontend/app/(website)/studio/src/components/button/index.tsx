@@ -17,7 +17,7 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   active?: boolean;
 }
 
-const Button = ({
+let Button = ({
   disabled,
   children,
   color,
@@ -30,7 +30,7 @@ const Button = ({
   active,
   ...restProps
 }: ButtonProps) => {
-  const buttonClasses = cn(
+  let buttonClasses = cn(
     "btn",
     color === "gray" && variant === "solid" && "btn-gray btn-gray-solid",
     color === "gray" && variant === "outline" && "btn-gray btn-gray-outline",
@@ -57,7 +57,7 @@ const Button = ({
     className,
   );
 
-  const iconClasses = cn(
+  let iconClasses = cn(
     "inline w-4 h-4 mr-2 animate-spin  fill-current",
     size === "sm" && "w-4 h-4",
     size === "xs" && "w-4 h-4",

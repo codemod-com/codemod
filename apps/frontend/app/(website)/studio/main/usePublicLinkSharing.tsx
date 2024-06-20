@@ -3,20 +3,20 @@ import { useShareLink } from "@studio/hooks/useShareLink";
 import { useCallback, useState } from "react";
 import { toast } from "react-hot-toast";
 
-export const usePublicLinkSharing = () => {
-  const { getURL } = useShareLink();
-  const [isCreating, setIsCreating] = useState(false);
+export let usePublicLinkSharing = () => {
+  let { getURL } = useShareLink();
+  let [isCreating, setIsCreating] = useState(false);
 
-  const getShareLink = useCallback(async () => {
+  let getShareLink = useCallback(async () => {
     setIsCreating(true);
 
-    const url = await getURL();
+    let url = await getURL();
 
     if (url === null) {
       return;
     }
 
-    const shortURL = await createSharedLink("studio", { url: url.toString() });
+    let shortURL = await createSharedLink("studio", { url: url.toString() });
 
     if (!shortURL) {
       toast.error(

@@ -5,8 +5,8 @@ import { Label } from "@studio/components/ui/label";
 import New5PaneSetup from "./5PaneSetup";
 import { useInputs } from "./useInputs";
 
-const MainPageContent = () => {
-  const isMobile =
+let MainPageContent = () => {
+  let isMobile =
     typeof window !== "undefined" &&
     /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone/i.test(
       navigator.userAgent,
@@ -46,7 +46,7 @@ const MainPageContent = () => {
   return <New5PaneSetup />;
 };
 
-export const MainPage = () => (
+export let MainPage = () => (
   <>
     <UserAuthStorage />
     <MainPageContent />

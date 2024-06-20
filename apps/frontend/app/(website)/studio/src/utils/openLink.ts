@@ -1,4 +1,4 @@
-export const openLink = (link: string): void => {
+export let openLink = (link: string): void => {
   try {
     window.open(link, "_blank");
   } catch (err) {

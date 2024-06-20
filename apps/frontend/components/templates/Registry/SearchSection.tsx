@@ -15,16 +15,16 @@ export default function SearchSection({
   placeholder?: string;
   path?: string;
 }) {
-  const router = useRouter();
-  const search = useSearchParams();
-  const pathname = usePathname();
-  const [searchInput, setSearchInput] = useState(search.get("q") || "");
+  let router = useRouter();
+  let search = useSearchParams();
+  let pathname = usePathname();
+  let [searchInput, setSearchInput] = useState(search.get("q") || "");
 
-  const [loading, setLoading] = useState(false);
-  const { toggleSidebar } = useSidebar();
-  const onSearch = async (query: string) => {
+  let [loading, setLoading] = useState(false);
+  let { toggleSidebar } = useSidebar();
+  let onSearch = async (query: string) => {
     try {
-      const newParams = new URLSearchParams(search.toString());
+      let newParams = new URLSearchParams(search.toString());
 
       if (query) {
         newParams.set("q", query);
@@ -39,7 +39,7 @@ export default function SearchSection({
       setLoading(false);
     }
   };
-  const inputWrapperRef = React.useRef<HTMLInputElement>(null);
+  let inputWrapperRef = React.useRef<HTMLInputElement>(null);
 
   useDebounce(
     () => {

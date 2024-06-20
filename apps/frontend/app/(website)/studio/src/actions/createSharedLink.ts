@@ -44,7 +44,7 @@ type CreateSharedLinkRequest = Readonly<{
   domain?: string;
 }>;
 
-export const createSharedLink = async (
+export let createSharedLink = async (
   destination: "studio" | "vsce",
   body: CreateSharedLinkRequest,
 ): Promise<string | null> => {
@@ -53,7 +53,7 @@ export const createSharedLink = async (
   }
 
   try {
-    const tagsResponse = await fetch(
+    let tagsResponse = await fetch(
       `https://api.dub.co/tags?workspaceId=${env.DUBCO_WORKSPACE_ID}`,
       {
         headers: {
@@ -63,15 +63,15 @@ export const createSharedLink = async (
       },
     );
 
-    const tags = (await tagsResponse.json()) as Array<{
+    let tags = (await tagsResponse.json()) as Array<{
       id: string;
       name: string;
       color: string;
     }>;
 
-    const studioTag = tags.find((tag) => tag.name === destination);
+    let studioTag = tags.find((tag) => tag.name === destination);
 
-    const response = await fetch(
+    let response = await fetch(
       `https://api.dub.co/links?workspaceId=${env.DUBCO_WORKSPACE_ID}`,
       {
         method: "post",
@@ -87,7 +87,7 @@ export const createSharedLink = async (
       },
     );
 
-    const json = (await response.json()) as CreateSharedLinkResponse;
+    let json = (await response.json()) as CreateSharedLinkResponse;
 
     return json.shortLink;
   } catch (e) {

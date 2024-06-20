@@ -47,7 +47,7 @@ export type ButtonWithIconOnly = {
 type ButtonProps = (Button | ButtonWithArrow | ButtonWithIconOnly) &
   React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-export const buttonVariant = cva(
+export let buttonVariant = cva(
   [
     "relative flex py-xs rounded-[8px] font-medium transition-colors group disabled:text-tertiary-light disabled:bg-emphasis-light dark:disabled:text-tertiary-dark dark:disabled:bg-emphasis-dark focus:outline-none focus-visible:ring-[4px] focus-visible:ring-border-light dark:focus-visible:ring-border-dark justify-center items-center",
   ],
@@ -97,7 +97,7 @@ export const buttonVariant = cva(
   },
 );
 
-const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+let Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
       intent = "primary",
@@ -111,11 +111,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     },
     ref,
   ) => {
-    const spreadableProps = { ...props };
+    let spreadableProps = { ...props };
     delete spreadableProps.glow;
     delete spreadableProps.flush;
 
-    const disabledIconState = cx(
+    let disabledIconState = cx(
       props.disabled && "pointer-events-none opacity-30",
       loading ? "invisible opacity-0 transition-opacity" : "transition-opacity",
     );

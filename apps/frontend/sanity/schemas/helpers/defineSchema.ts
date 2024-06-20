@@ -17,7 +17,7 @@ export type SchemaDefinition = Omit<DocumentDefinition, "options"> & {
 };
 
 export default function defineSchema(schema: SchemaDefinition) {
-  const groups = uniqBy(
+  let groups = uniqBy(
     [
       {
         name: "content",

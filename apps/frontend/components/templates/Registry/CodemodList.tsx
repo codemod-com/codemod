@@ -18,10 +18,10 @@ export default function CodemodList({
 }: {
   initial: (RegistryIndexPayload & { entriesPerPage?: number }) | null;
 }) {
-  const { toggleFilters } = useRegistryFilters();
-  const searchParams = useSearchParams();
-  const [nextPage, setPage] = useState(2);
-  const { data, loaderState, loadMore } = useLoadMoreAutomations({
+  let { toggleFilters } = useRegistryFilters();
+  let searchParams = useSearchParams();
+  let [nextPage, setPage] = useState(2);
+  let { data, loaderState, loadMore } = useLoadMoreAutomations({
     pageNumber: nextPage,
     searchParams,
     initial: initial?.entries || [],
@@ -29,7 +29,7 @@ export default function CodemodList({
     total: initial?.total || 0,
   });
 
-  const { ref, inView } = useInView({
+  let { ref, inView } = useInView({
     threshold: 1,
   });
 
@@ -38,9 +38,9 @@ export default function CodemodList({
     setPage(2);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  const registryCards = data.data;
+  let registryCards = data.data;
 
-  const totalPageCount =
+  let totalPageCount =
     initial?.total && initial?.entriesPerPage
       ? Math.ceil(initial?.total / initial?.entriesPerPage)
       : 1;

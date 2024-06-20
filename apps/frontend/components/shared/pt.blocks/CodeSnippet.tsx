@@ -8,21 +8,21 @@ import { Highlight, Prism } from "prism-react-renderer";
 import { useEffect, useState } from "react";
 import Icon from "../Icon";
 
-const inconsolata = Inconsolata({
+let inconsolata = Inconsolata({
   subsets: ["latin"],
   weight: "400",
   variable: "--inconsolata",
 });
 
 export function CodeSnippet(props: { code: CodeBlockProps }) {
-  const [copied, setCopied] = useState(false);
-  const [isHighlighted, setIsHighlighted] = useState(false);
+  let [copied, setCopied] = useState(false);
+  let [isHighlighted, setIsHighlighted] = useState(false);
 
-  const prismLanguageId = !props.code?.language
+  let prismLanguageId = !props.code?.language
     ? null
     : languageToPrismId(props.code.language);
 
-  const handleCopy = () => {
+  let handleCopy = () => {
     if (navigator?.clipboard?.writeText) {
       navigator.clipboard.writeText(props.code?.code);
     }
@@ -47,7 +47,7 @@ export function CodeSnippet(props: { code: CodeBlockProps }) {
   }, [prismLanguageId]);
 
   return (
-    <div
+    (<div
       className={clsx(
         "codeblock relative mb-10 h-full overflow-hidden rounded-md bg-emphasis-light/5 p-4 pr-12 dark:bg-emphasis-dark",
         `${inconsolata.variable} font-mono text-lg`,
@@ -75,7 +75,7 @@ export function CodeSnippet(props: { code: CodeBlockProps }) {
             style={style}
           >
             {tokens.map((line, index) => {
-              const lineProps = getLineProps({ line });
+              let lineProps = getLineProps({ line });
               if (props.code?.highlightedLines?.includes(index + 1)) {
                 lineProps.className = "highlighted";
               }
@@ -90,7 +90,7 @@ export function CodeSnippet(props: { code: CodeBlockProps }) {
           </pre>
         )}
       </Highlight>
-    </div>
+    </div>)
   );
 }
 

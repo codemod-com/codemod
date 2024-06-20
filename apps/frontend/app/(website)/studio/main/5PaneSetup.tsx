@@ -60,7 +60,7 @@ import {
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
-const enginesConfig: Array<{
+let enginesConfig: Array<{
   label: string;
   disabled: boolean;
   value: KnownEngines | "piranha";
@@ -82,20 +82,20 @@ const enginesConfig: Array<{
   },
 ];
 
-const LEARN_KEY = "learn";
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
-const ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2 =
+let LEARN_KEY = "learn";
+let ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1 = "accessTokenRequested"; // For backwards-compatibility
+let ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2 =
   "accessTokenRequestedByVSCE";
-const ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY = "accessTokenRequestedByCLI";
-const ACCESS_TOKEN_COMMANDS = [
+let ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY = "accessTokenRequestedByCLI";
+let ACCESS_TOKEN_COMMANDS = [
   ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1,
   ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2,
   ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY,
 ];
-const TWO_MINS_IN_MS = 2 * 60 * 1000;
+let TWO_MINS_IN_MS = 2 * 60 * 1000;
 
-const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
-  const accessTokenEither = await getAccessToken({
+let routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
+  let accessTokenEither = await getAccessToken({
     clerkToken,
   });
 
@@ -103,25 +103,25 @@ const routeUserToVSCodeWithAccessToken = async (clerkToken: string) => {
     console.error(accessTokenEither.getLeft());
     return;
   }
-  const accessToken = accessTokenEither.get();
+  let accessToken = accessTokenEither.get();
 
-  const vscodeUrl = new URL("vscode://codemod.codemod-vscode-extension/");
-  const searchParams = new URLSearchParams();
+  let vscodeUrl = new URL("vscode://codemod.codemod-vscode-extension/");
+  let searchParams = new URLSearchParams();
 
   searchParams.set(SEARCH_PARAMS_KEYS.ACCESS_TOKEN, accessToken);
   vscodeUrl.search = searchParams.toString();
   openLink(vscodeUrl.toString());
 };
 
-const Main = () => {
-  const { isSignedIn, getToken } = useAuth();
-  const router = useRouter();
-  const panelRefs: PanelsRefs = useRef({});
-  const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
+let Main = () => {
+  let { isSignedIn, getToken } = useAuth();
+  let router = useRouter();
+  let panelRefs: PanelsRefs = useRef({});
+  let { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  const { engine, setEngine } = useSnippetStore();
-  const { toggleTheme, isDark } = useTheme();
+  let { engine, setEngine } = useSnippetStore();
+  let { toggleTheme, isDark } = useTheme();
   // const executionId = "id"; // TODO: replace it with real id
   // const executionStatus = useExecutionStatus(executionId) ?? {
   // 	// TODO: Remove dummy data
@@ -131,7 +131,7 @@ const Main = () => {
   // 	progressInfo: { processed: 100, total: 300 },
   // };
 
-  const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
+  let onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
     setEngine(value as KnownEngines);
   };
 
@@ -155,18 +155,18 @@ const Main = () => {
   // 	}
   // }, [executionStatus]);
 
-  const snippetStore = useSnippetStore();
+  let snippetStore = useSnippetStore();
 
   useEffect(() => {
     if (!isSignedIn) {
       return;
     }
     (async () => {
-      const clerkToken = await getToken();
+      let clerkToken = await getToken();
       if (clerkToken === null) {
         return;
       }
-      const timestamp =
+      let timestamp =
         localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_1) ??
         localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_VSCE_STORAGE_KEY_2) ??
         localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY);
@@ -179,7 +179,7 @@ const Main = () => {
       }
 
       if (localStorage.getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)) {
-        const [sessionId, iv] =
+        let [sessionId, iv] =
           localStorage
             .getItem(ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY)
             ?.split(",") || [];
@@ -198,8 +198,8 @@ const Main = () => {
   }, [isSignedIn, getToken]);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+    let searchParams = new URLSearchParams(window.location.search);
+    let command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
     if (command === null || !ACCESS_TOKEN_COMMANDS.includes(command)) {
       return;
@@ -207,13 +207,13 @@ const Main = () => {
 
     if (isSignedIn) {
       (async () => {
-        const clerkToken = await getToken();
+        let clerkToken = await getToken();
         if (clerkToken === null) {
           return;
         }
         if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-          const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+          let sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+          let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           // Polling should pick it up
           await getAccessToken({
@@ -229,8 +229,8 @@ const Main = () => {
     }
 
     if (command === ACCESS_TOKEN_REQUESTED_BY_CLI_STORAGE_KEY) {
-      const sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
-      const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+      let sessionId = searchParams.get(SEARCH_PARAMS_KEYS.SESSION_ID);
+      let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
       localStorage.setItem(command, [sessionId, iv].join(","));
     } else {
@@ -241,22 +241,22 @@ const Main = () => {
   }, [getToken, isSignedIn, router]);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams(window.location.search);
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+    let searchParams = new URLSearchParams(window.location.search);
+    let command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
     if (command === LEARN_KEY) {
       (async () => {
         try {
-          const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
+          let engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
             "jscodeshift") as KnownEngines;
-          const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+          let diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+          let iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           if (!engine || !diffId || !iv) {
             return;
           }
 
-          const snippets = await getCodeDiff({ diffId, iv });
+          let snippets = await getCodeDiff({ diffId, iv });
 
           if (!snippets) {
             return;
@@ -273,7 +273,7 @@ const Main = () => {
     }
   }, [snippetStore]);
 
-  const codemodHeader = (
+  let codemodHeader = (
     <Panel.Header className="h-[30px]">
       <Panel.HeaderTab>
         <Panel.HeaderTitle className="h-full">
@@ -317,7 +317,7 @@ const Main = () => {
     </Panel.Header>
   );
 
-  const beforeAfterBottomPanels = (
+  let beforeAfterBottomPanels = (
     <>
       <CodeSnippets
         codeDiff={codeDiff}
@@ -341,7 +341,7 @@ const Main = () => {
     </>
   );
 
-  const outputBottomPanel = (
+  let outputBottomPanel = (
     <CodeSnippets
       codeDiff={codeDiff}
       onlyAfterHidden={onlyAfterHidden}
@@ -422,9 +422,9 @@ const Main = () => {
 };
 
 function SignInRequired() {
-  const theme = useTheme();
-  const router = useRouter();
-  const signUserIn = () => {
+  let theme = useTheme();
+  let router = useRouter();
+  let signUserIn = () => {
     router.push("/auth/sign-in");
   };
 
@@ -462,10 +462,10 @@ function SignInRequired() {
   );
 }
 
-const LoginWarningModal = () => {
-  const { isSignedIn, isLoaded } = useAuth();
-  const isFromCLI = useSearchParams().get("command") === LEARN_KEY;
-  const [isOpen, setIsOpen] = useState(false);
+let LoginWarningModal = () => {
+  let { isSignedIn, isLoaded } = useAuth();
+  let isFromCLI = useSearchParams().get("command") === LEARN_KEY;
+  let [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     setIsOpen(isFromCLI && isLoaded && !isSignedIn);
   }, [isFromCLI, isSignedIn, isLoaded]);
@@ -498,7 +498,7 @@ const LoginWarningModal = () => {
   );
 };
 
-const AssistantTab = ({
+let AssistantTab = ({
   panelRefs,
   beforePanel,
   afterPanel,
@@ -507,16 +507,16 @@ const AssistantTab = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
-  const { activeTab } = useViewStore();
-  const { engine } = useSnippetStore();
+  let { activeTab } = useViewStore();
+  let { engine } = useSnippetStore();
 
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const savedScrollPositionRef = useRef<number>(0);
-  const { isSignedIn } = useAuth();
+  let scrollContainerRef = useRef<HTMLDivElement>(null);
+  let savedScrollPositionRef = useRef<number>(0);
+  let { isSignedIn } = useAuth();
 
-  const { setActiveTab } = useViewStore();
+  let { setActiveTab } = useViewStore();
 
-  const handleOnClick = useCallback(
+  let handleOnClick = useCallback(
     (newActiveTab: TabNames) => {
       setActiveTab(newActiveTab);
     },
@@ -529,7 +529,7 @@ const AssistantTab = ({
     }
   }, [activeTab]);
 
-  const handleScroll = () => {
+  let handleScroll = () => {
     if (activeTab === TabNames.MODGPT && scrollContainerRef.current !== null) {
       savedScrollPositionRef.current = scrollContainerRef.current.scrollTop;
     }

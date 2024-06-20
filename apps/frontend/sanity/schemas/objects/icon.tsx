@@ -11,10 +11,10 @@ import { useCallback, useState } from "react";
 import { defineField, set, unset } from "sanity";
 import styled from "styled-components";
 
-const ids = Object.values(IconId);
-const logoIds = Object.values(TechLogoId);
+let ids = Object.values(IconId);
+let logoIds = Object.values(TechLogoId);
 
-export const icon = defineField({
+export let icon = defineField({
   name: "icon",
   title: "Icon",
   type: "string",
@@ -31,7 +31,7 @@ export const icon = defineField({
   },
 });
 
-export const logo = defineField({
+export let logo = defineField({
   name: "logo",
   title: "Logo",
   type: "string",
@@ -47,10 +47,10 @@ export const logo = defineField({
   },
 });
 
-export const addSpaceBeforeCapitalLetters = (inputString: string) =>
+export let addSpaceBeforeCapitalLetters = (inputString: string) =>
   inputString.replace(/([A-Z])/g, " $1").trim();
 
-const StyledFlex = styled(Flex)`
+let StyledFlex = styled(Flex)`
   &:hover {
     background: var(--card-bg-color);
     cursor: pointer;
@@ -58,22 +58,22 @@ const StyledFlex = styled(Flex)`
 `;
 
 function CustomSelect(props: any) {
-  const [open, setOpen] = useState(false);
-  const onClose = useCallback(() => setOpen(false), []);
-  const onOpen = useCallback(() => setOpen(true), []);
-  const [search, setSearch] = useState("");
-  const isTechLogo = /logo\b/.test(props.id);
+  let [open, setOpen] = useState(false);
+  let onClose = useCallback(() => setOpen(false), []);
+  let onOpen = useCallback(() => setOpen(true), []);
+  let [search, setSearch] = useState("");
+  let isTechLogo = /logo\b/.test(props.id);
 
-  const Icons = isTechLogo ? TechLogoId : IconId;
+  let Icons = isTechLogo ? TechLogoId : IconId;
 
-  const icons = search
+  let icons = search
     ? Object.values(Icons).map((icon) =>
         icon.toLowerCase().includes(search.toLowerCase()) ? icon : null,
       )
     : Object.values(Icons).map((icon) => icon);
-  const { elementProps, onChange, value = "" } = props;
+  let { elementProps, onChange, value = "" } = props;
 
-  const handleChange = (value: string) => {
+  let handleChange = (value: string) => {
     onChange(value ? set(value) : unset());
     setOpen(false);
   };
@@ -177,7 +177,7 @@ function CustomSelect(props: any) {
   );
 }
 
-const BlockVariantCardWrapper = styled(Card)`
+let BlockVariantCardWrapper = styled(Card)`
   all: initial;
   padding: 0.75em;
   border-radius: 0.1875rem;
@@ -205,7 +205,7 @@ function BlockVariantCard({
   type: "logo" | "icon";
 }) {
   return (
-    <BlockVariantCardWrapper
+    (<BlockVariantCardWrapper
       tone="transparent"
       data-has-asset={!!icon}
       padding={2}
@@ -238,6 +238,6 @@ function BlockVariantCard({
         )}
       </div>
       <Text size={0}>{addSpaceBeforeCapitalLetters(icon)}</Text>
-    </BlockVariantCardWrapper>
+    </BlockVariantCardWrapper>)
   );
 }

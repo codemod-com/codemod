@@ -1,4 +1,4 @@
-export const findPositionAfterImports = `
+export let findPositionAfterImports = `
 SNIPPET_DESCRIPTION:
 Finds first free position after imports; 
 Gets first position after import declarations;

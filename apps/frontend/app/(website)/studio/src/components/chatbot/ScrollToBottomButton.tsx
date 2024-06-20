@@ -3,10 +3,10 @@ import { ArrowDown as ArrowDownIcon } from "@phosphor-icons/react";
 import { Button, type ButtonProps } from "@studio/components/ui/button";
 import { useScrollToBottomDetector } from "@studio/hooks/useScrollToBottomDetector";
 
-const ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
-  const scrollWindow =
+let ScrollToBottomButton = ({ className, ...props }: ButtonProps) => {
+  let scrollWindow =
     document.getElementsByClassName("scrollWindow")?.[0] ?? null;
-  const isAtBottom = useScrollToBottomDetector(scrollWindow);
+  let isAtBottom = useScrollToBottomDetector(scrollWindow);
 
   return (
     <Button

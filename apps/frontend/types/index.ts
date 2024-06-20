@@ -267,7 +267,7 @@ export enum PublishStatus {
   public = "public",
 }
 
-export const PublishStatusOptions = [
+export let PublishStatusOptions = [
   {
     value: PublishStatus.hidden,
     title: "Hidden (won't show up in Google, but accessible through URL)",

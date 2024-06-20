@@ -10,18 +10,18 @@ import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { DownloadZip } from "./DownloadZip";
 import { usePublicLinkSharing } from "./usePublicLinkSharing";
 
-const Header = () => {
-  const { engine, setEngine, setInput, setOutput } = useSnippetStore();
-  const { setContent } = useModStore();
-  const { toggleTheme, isDark } = useTheme();
+let Header = () => {
+  let { engine, setEngine, setInput, setOutput } = useSnippetStore();
+  let { setContent } = useModStore();
+  let { toggleTheme, isDark } = useTheme();
 
-  const onEngineChange = (value: KnownEngines) => {
+  let onEngineChange = (value: KnownEngines) => {
     if (value === "jscodeshift" || value === "ts-morph") {
       setEngine(value);
     }
   };
 
-  const { getShareLink, isCreating: isShareURLBeingCreated } =
+  let { getShareLink, isCreating: isShareURLBeingCreated } =
     usePublicLinkSharing();
 
   return (

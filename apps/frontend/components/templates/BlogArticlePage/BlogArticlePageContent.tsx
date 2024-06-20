@@ -19,13 +19,13 @@ import getBlocksToc from "@/utils/getBlocksToc";
 import { cx } from "cva";
 
 export default function BlogArticlePageContent(props: BlogArticlePayload) {
-  const isCustomerStory = props._type === "blog.customerStory";
-  const toc = getBlocksToc(props.body);
+  let isCustomerStory = props._type === "blog.customerStory";
+  let toc = getBlocksToc(props.body);
 
-  const customerStorySidebar = props.sidebar as CustomerStorySidebar;
-  const articleSidebar = props.sidebar as BlogArticleSidebar;
+  let customerStorySidebar = props.sidebar as CustomerStorySidebar;
+  let articleSidebar = props.sidebar as BlogArticleSidebar;
 
-  const ctaCardProps = {
+  let ctaCardProps = {
     title: customerStorySidebar?.articleCta?.title || "",
     description: customerStorySidebar?.articleCta?.subtitle || "",
     ctaText: customerStorySidebar?.articleCta?.cta?.label || "",
@@ -235,7 +235,7 @@ export default function BlogArticlePageContent(props: BlogArticlePayload) {
   );
 }
 
-const Stats = (props: { stats: CustomerStorySidebar["stats"] }) => {
+let Stats = (props: { stats: CustomerStorySidebar["stats"] }) => {
   return (
     <div className="space-y-2">
       {props?.stats?.map((stat, index) => (
@@ -255,7 +255,7 @@ const Stats = (props: { stats: CustomerStorySidebar["stats"] }) => {
     </div>
   );
 };
-const Features = (props: { features: CustomerStorySidebar["features"] }) => {
+let Features = (props: { features: CustomerStorySidebar["features"] }) => {
   return (
     <div className="space-y-2">
       <h4 className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">
@@ -279,7 +279,7 @@ const Features = (props: { features: CustomerStorySidebar["features"] }) => {
     </div>
   );
 };
-const ArticleAuthors = (props: { authors: BlogArticlePayload["authors"] }) => {
+let ArticleAuthors = (props: { authors: BlogArticlePayload["authors"] }) => {
   return (
     <div className="relative">
       <span className="body-s-medium font-medium text-secondary-light dark:text-secondary-dark">

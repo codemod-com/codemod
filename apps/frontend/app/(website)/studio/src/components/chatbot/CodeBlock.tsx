@@ -15,11 +15,11 @@ interface Props {
   value: string;
 }
 
-const CodeBlock: FC<Props> = ({ language, value }) => {
-  const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
-  const { isDark } = useTheme();
+let CodeBlock: FC<Props> = ({ language, value }) => {
+  let { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
+  let { isDark } = useTheme();
 
-  const onCopy = () => {
+  let onCopy = () => {
     if (isCopied) {
       return;
     }

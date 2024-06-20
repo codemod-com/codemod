@@ -8,14 +8,14 @@ export type RedirectSetting = {
   permanent?: boolean;
 };
 
-const sanityClient = client.withConfig({
+let sanityClient = client.withConfig({
   token: config.sanity.token,
   perspective: "published",
   useCdn: true,
   stega: false,
 });
 
-const REDIRECT_QUERY = groq`
+let REDIRECT_QUERY = groq`
 *[_type == "settings"][0].redirects[@.source in $paths][0]
 `;
 

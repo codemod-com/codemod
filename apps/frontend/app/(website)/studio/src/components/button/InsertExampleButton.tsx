@@ -9,9 +9,9 @@ import {
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 
-const InsertExampleButton = () => {
-  const { engine, setInput, setOutput } = useSnippetStore();
-  const { setContent } = useModStore();
+let InsertExampleButton = () => {
+  let { engine, setInput, setOutput } = useSnippetStore();
+  let { setContent } = useModStore();
   return (
     <Tooltip
       trigger={

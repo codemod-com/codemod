@@ -27,9 +27,9 @@ interface Props extends React.ComponentProps<"div"> {
   id?: string;
 }
 
-const buildCodemodFromLLMResponse = (LLMResponse: string): string | null => {
-  const CODE_BLOCK_REGEXP = /```typescript(.+?)```/gs;
-  const match = CODE_BLOCK_REGEXP.exec(LLMResponse);
+let buildCodemodFromLLMResponse = (LLMResponse: string): string | null => {
+  let CODE_BLOCK_REGEXP = /```typescript(.+?)```/gs;
+  let match = CODE_BLOCK_REGEXP.exec(LLMResponse);
 
   if (match === null || match.length < 1) {
     return null;
@@ -38,23 +38,23 @@ const buildCodemodFromLLMResponse = (LLMResponse: string): string | null => {
   return match.at(1)?.trim() ?? null;
 };
 
-const Chat = ({ id, className }: Props) => {
-  const { command, setCurrentCommand, setContent } = useModStore();
-  const {
+let Chat = ({ id, className }: Props) => {
+  let { command, setCurrentCommand, setContent } = useModStore();
+  let {
     AIAssistant: { engine },
   } = useCFSStore();
 
-  const executedCommand = useRef(false);
+  let executedCommand = useRef(false);
 
-  const [token, setToken] = useState<string | null>(null);
+  let [token, setToken] = useState<string | null>(null);
 
-  const initialMessages = useMemo(() => {
+  let initialMessages = useMemo(() => {
     try {
       if (typeof localStorage === "undefined") {
         return [];
       }
 
-      const stringifiedFrozenMessages = localStorage.getItem("frozenMessages");
+      let stringifiedFrozenMessages = localStorage.getItem("frozenMessages");
 
       if (stringifiedFrozenMessages === null) {
         return [];
@@ -69,7 +69,7 @@ const Chat = ({ id, className }: Props) => {
     }
   }, []);
 
-  const {
+  let {
     messages,
     append,
     reload,
@@ -89,7 +89,7 @@ const Chat = ({ id, className }: Props) => {
 
       setCurrentCommand(null);
 
-      const codemodSourceCode = buildCodemodFromLLMResponse(content);
+      let codemodSourceCode = buildCodemodFromLLMResponse(content);
 
       if (codemodSourceCode !== null) {
         setContent(codemodSourceCode);
@@ -128,18 +128,18 @@ const Chat = ({ id, className }: Props) => {
       engine,
     },
   });
-  const { getToken, isSignedIn } = useAuth();
-  const codemodExecutionError = useCodemodExecutionError();
+  let { getToken, isSignedIn } = useAuth();
+  let codemodExecutionError = useCodemodExecutionError();
 
-  const aliases = useGetAliases();
+  let aliases = useGetAliases();
 
-  const handleSelectPrompt = async (value: string) => {
-    const t = await getToken();
+  let handleSelectPrompt = async (value: string) => {
+    let t = await getToken();
     flushSync(() => {
       setToken(t);
     });
 
-    const aliasesAppliedValue = applyAliases(value, aliases);
+    let aliasesAppliedValue = applyAliases(value, aliases);
     await append({
       id,
       content: aliasesAppliedValue,
@@ -177,7 +177,7 @@ const Chat = ({ id, className }: Props) => {
       return;
     }
 
-    const frozenMessages = messages.map((message) => freezeMessage(message));
+    let frozenMessages = messages.map((message) => freezeMessage(message));
 
     try {
       localStorage.setItem("frozenMessages", JSON.stringify(frozenMessages));
@@ -186,7 +186,7 @@ const Chat = ({ id, className }: Props) => {
     }
   }, [messages, isLoading]);
 
-  const handleStop = useCallback(() => {
+  let handleStop = useCallback(() => {
     setCurrentCommand(null);
 
     stop();

@@ -6,24 +6,24 @@ import { type NextRequest, NextResponse } from "next/server";
  * Refer to useFormSubmission.tsx for how this is called.
  */
 export async function POST(req: NextRequest) {
-  const _headers = headers();
+  let _headers = headers();
 
-  const formData = await req.formData();
-  const email = formData.get("email")?.toString() || "no email provided";
+  let formData = await req.formData();
+  let email = formData.get("email")?.toString() || "no email provided";
 
   try {
-    const endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${process.env.HUBSPOT_PORTAL_ID}`;
+    let endpoint = `https://api.hsforms.com/submissions/v3/integration/submit/${process.env.HUBSPOT_PORTAL_ID}`;
 
-    const fields = [
+    let fields = [
       {
         name: "email",
         value: email,
       },
     ].filter((field) => field.value !== undefined);
 
-    const submitedAt = Date.now();
+    let submitedAt = Date.now();
 
-    const submitForm = (id: string) => {
+    let submitForm = (id: string) => {
       return fetch(`${endpoint}/${id}`, {
         method: "POST",
         headers: {
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
       });
     };
 
-    const hubspotRes = await (
+    let hubspotRes = await (
       await submitForm(process.env.HUBSPOT_NEWSLETTER_FORM_ID!)
     ).json();
 

@@ -6,7 +6,7 @@ import {
 import { Label } from "@studio/components/ui/label";
 import EngineSelector from "./ModelSelector";
 
-const WELCOME_SCREEN_ITEMS = [
+let WELCOME_SCREEN_ITEMS = [
   {
     icon: <SunIcon className="mb-2" />,
     heading: "Examples",
@@ -31,7 +31,7 @@ const WELCOME_SCREEN_ITEMS = [
   },
 ];
 
-const WelcomeScreen = () => (
+let WelcomeScreen = () => (
   <div className="mx-auto flex h-full flex-col overflow-x-auto px-4 pb-[200px] pt-4">
     <div className="mb-10 ml-auto w-1/3">
       <EngineSelector />

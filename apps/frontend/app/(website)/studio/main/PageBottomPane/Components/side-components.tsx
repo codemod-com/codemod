@@ -19,7 +19,7 @@ import type {
   PanelsRefs,
 } from "../utils/types";
 
-export const BoundResizePanel = ({
+export let BoundResizePanel = ({
   defaultSize = 50,
   minSize = 0,
   panelRefs,
@@ -33,7 +33,7 @@ export const BoundResizePanel = ({
   },
 }: PanelComponentProps) => {
   return (
-    <Layout.ResizablePanel
+    (<Layout.ResizablePanel
       className={cn("relative dark:bg-gray-light", className)}
       collapsible
       defaultSize={defaultSize}
@@ -45,18 +45,18 @@ export const BoundResizePanel = ({
       onResize={
         !isNil(boundedIndex)
           ? debounce((size) => {
-              const panel = panelRefs.current[boundedIndex];
+              let panel = panelRefs.current[boundedIndex];
               if (!isNil(panel) && !isNil(size)) panel.resize(size);
             }, 5)
           : undefined
       }
     >
       {children}
-    </Layout.ResizablePanel>
+    </Layout.ResizablePanel>)
   );
 };
 
-export const ContentViewer: React.FC<ContentViewerProps> = ({
+export let ContentViewer: React.FC<ContentViewerProps> = ({
   type,
   engine,
 }) => (
@@ -69,7 +69,7 @@ export const ContentViewer: React.FC<ContentViewerProps> = ({
   </>
 );
 
-export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
+export let BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
   <Layout.ResizablePanel
     collapsible
     defaultSize={50}
@@ -82,7 +82,7 @@ export const BottomPanel: React.FC<PropsWithChildren> = ({ children }) => (
   </Layout.ResizablePanel>
 );
 
-export const AstSection = ({
+export let AstSection = ({
   panels,
   panelRefs,
   engine,
@@ -113,7 +113,7 @@ export const AstSection = ({
   ));
 };
 
-export const ShowPanelTile = ({
+export let ShowPanelTile = ({
   onClick,
   panel,
   header,

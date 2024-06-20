@@ -16,13 +16,13 @@ type SendMessageRequest = Readonly<{
   token: string;
 }>;
 
-const sendMessage = async ({
+let sendMessage = async ({
   message,
   parentMessageId,
   token,
 }: SendMessageRequest): Promise<Either<Error, SendMessageResponse>> => {
   try {
-    const res = await apiClient.post<SendMessageResponse>(
+    let res = await apiClient.post<SendMessageResponse>(
       SEND_MESSAGE,
       {
         message,
@@ -37,7 +37,7 @@ const sendMessage = async ({
 
     return Either.right(res.data);
   } catch (e) {
-    const err = e as AxiosError<{ message?: string }>;
+    let err = e as AxiosError<{ message?: string }>;
     return Either.left(new Error(err.response?.data.message ?? err.message));
   }
 };

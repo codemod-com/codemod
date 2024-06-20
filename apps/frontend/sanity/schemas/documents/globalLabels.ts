@@ -1,7 +1,7 @@
 import { TagIcon } from "@sanity/icons";
 import { defineType } from "sanity";
 
-export const globalLabels = defineType({
+export let globalLabels = defineType({
   type: "document",
   name: "globalLabels",
   title: "Global Labels",

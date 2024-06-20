@@ -25,26 +25,26 @@ export interface CodemodPageProps {
 }
 
 export default function CodemodPageUI({ data, description }: CodemodPageProps) {
-  const framework = getAutomationFramworkTitle(data);
+  let framework = getAutomationFramworkTitle(data);
 
-  const { cleaned: author } = vercelStegaSplit(`${data?.author}`);
+  let { cleaned: author } = vercelStegaSplit(`${data?.author}`);
 
-  const frameworkIcons = getFilterSection(
+  let frameworkIcons = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     data?.filterIconDictionary,
   );
 
-  const frameworkImage = getFilterIcon(frameworkIcons, framework);
-  const authorIcons = getFilterSection("author", data?.filterIconDictionary);
+  let frameworkImage = getFilterIcon(frameworkIcons, framework);
+  let authorIcons = getFilterSection("author", data?.filterIconDictionary);
 
-  const authorImage = getFilterIcon(authorIcons, author);
+  let authorImage = getFilterIcon(authorIcons, author);
 
-  const categoryIcons = getFilterSection(
+  let categoryIcons = getFilterSection(
     "category",
     data?.filterIconDictionary,
   );
 
-  const categoryImage = getFilterIcon(
+  let categoryImage = getFilterIcon(
     categoryIcons,
     data?.useCaseCategory?.toLocaleLowerCase() || "",
   );

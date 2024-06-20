@@ -8,10 +8,10 @@ import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { deflate } from "pako";
 
-export const useShareLink = () => {
-  const { engine, inputSnippet, outputSnippet } = useSnippetStore();
-  const { internalContent } = useModStore();
-  const { getToken } = useAuth();
+export let useShareLink = () => {
+  let { engine, inputSnippet, outputSnippet } = useSnippetStore();
+  let { internalContent } = useModStore();
+  let { getToken } = useAuth();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
   // 	try {
@@ -57,18 +57,18 @@ export const useShareLink = () => {
   // 	}
   // };
 
-  const getURL = async (): Promise<URL | null> => {
+  let getURL = async (): Promise<URL | null> => {
     try {
       if (internalContent === null) {
         throw new Error("codemod content not found");
       }
 
-      const token = await getToken();
+      let token = await getToken();
 
       let codemodName = "untitled";
       if (token !== null) {
         // Ask LLM to come up with a name for the given codemod
-        const codemodNameOrError = await sendMessage({
+        let codemodNameOrError = await sendMessage({
           message: generateCodemodNamePrompt(internalContent),
           token,
         });
@@ -80,7 +80,7 @@ export const useShareLink = () => {
         }
       }
 
-      const input = JSON.stringify({
+      let input = JSON.stringify({
         v: 1, // version
         e: engine,
         n: codemodName,
@@ -89,9 +89,9 @@ export const useShareLink = () => {
         c: internalContent ?? "",
       }); //satisfies ShareableCodemod);
 
-      const uint8array = deflate(input, { level: 9 });
+      let uint8array = deflate(input, { level: 9 });
 
-      const output = window
+      let output = window
         .btoa(
           Array.from(uint8array, (uint8) => String.fromCodePoint(uint8)).join(
             "",
@@ -101,11 +101,11 @@ export const useShareLink = () => {
         .replaceAll("/", "_")
         .replaceAll("+", "-");
 
-      const searchParams = new URLSearchParams({
+      let searchParams = new URLSearchParams({
         [SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD]: output,
       });
 
-      const url = new URL(window.location.href);
+      let url = new URL(window.location.href);
       url.search = searchParams.toString();
 
       return url;

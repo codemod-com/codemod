@@ -11,7 +11,7 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialData = await loadCareersPage("/careers");
+  let initialData = await loadCareersPage("/careers");
 
   if (!initialData?.data) return notFound();
 
@@ -19,7 +19,7 @@ export async function generateMetadata(
 }
 
 export default async function Careers() {
-  const initial = await loadCareersPage("/careers");
+  let initial = await loadCareersPage("/careers");
 
   if (!initial?.data) return notFound();
 

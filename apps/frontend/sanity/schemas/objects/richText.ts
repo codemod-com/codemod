@@ -1,6 +1,6 @@
 import { getCustomBody } from "../helpers/getCustomBody";
 
-export const richText = {
+export let richText = {
   name: "richtext",
   title: "Rich Text",
   ...getCustomBody({

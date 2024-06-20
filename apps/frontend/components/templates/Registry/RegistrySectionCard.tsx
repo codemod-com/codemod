@@ -21,30 +21,30 @@ export default function RegistrySectionCard(
     onFilter: (key?: string | null, value?: string | null) => void;
   },
 ) {
-  const framework = getAutomationFramworkTitle(props);
+  let framework = getAutomationFramworkTitle(props);
 
-  const formattedDescription = getFormattedDescription(
+  let formattedDescription = getFormattedDescription(
     props.shortDescription || "",
   );
 
-  const frameworkIcons = getFilterSection(
+  let frameworkIcons = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     props.filterIconDictionary,
   );
-  const frameworkImage = getFilterIcon(
+  let frameworkImage = getFilterIcon(
     frameworkIcons,
     getAutomationFramworkTitle(props),
   );
 
-  const authorIcons = getFilterSection("author", props.filterIconDictionary);
-  const authorImage = getFilterIcon(authorIcons, props.author);
+  let authorIcons = getFilterSection("author", props.filterIconDictionary);
+  let authorImage = getFilterIcon(authorIcons, props.author);
 
-  const categoryIcons = getFilterSection(
+  let categoryIcons = getFilterSection(
     "category",
     props.filterIconDictionary,
   );
 
-  const categoryImage = getFilterIcon(
+  let categoryImage = getFilterIcon(
     categoryIcons,
     props.useCaseCategory?.toLocaleLowerCase() || "",
   );

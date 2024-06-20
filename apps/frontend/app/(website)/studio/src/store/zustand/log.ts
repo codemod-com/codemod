@@ -10,12 +10,12 @@ type LogState = {
   setActiveEventHashDigest: (hashDigest: string | null) => void;
 };
 
-export const useLogStore = create<LogState>((set, get) => ({
+export let useLogStore = create<LogState>((set, get) => ({
   events: [],
   activeEventHashDigest: null,
   executionErrorUpdateAt: Date.now(),
   setEvents: (events) => {
-    const executionErrorExists =
+    let executionErrorExists =
       events.find((e) => e.kind === "codemodExecutionError") !== undefined;
     set((state) => ({
       events,
@@ -31,9 +31,9 @@ export const useLogStore = create<LogState>((set, get) => ({
   },
 }));
 
-export const useSelectActiveEvent = () => {
-  const { activeEventHashDigest, events } = useLogStore();
-  const { activeTab } = useViewStore();
+export let useSelectActiveEvent = () => {
+  let { activeEventHashDigest, events } = useLogStore();
+  let { activeTab } = useViewStore();
 
   if (activeTab !== TabNames.DEBUG || activeEventHashDigest === null) {
     return null;
@@ -45,8 +45,8 @@ export const useSelectActiveEvent = () => {
   );
 };
 
-export const useCodemodExecutionError = (): string | null => {
-  const { events } = useLogStore();
+export let useCodemodExecutionError = (): string | null => {
+  let { events } = useLogStore();
   return (
     events.find(
       (e): e is Event & { kind: "codemodExecutionError" } =>

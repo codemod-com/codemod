@@ -7,14 +7,14 @@ type IntersectionOptions = {
   threshold?: number;
 };
 
-const useInView = (
+let useInView = (
   options: IntersectionOptions = {},
 ): { inView: boolean; ref: RefObject<HTMLElement> } => {
-  const [inView, setInView] = useState(false);
-  const ref = useRef(null);
+  let [inView, setInView] = useState(false);
+  let ref = useRef(null);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(([entry]) => {
+    let observer = new IntersectionObserver(([entry]) => {
       // Update our state when observer callback fires
       setInView(entry.isIntersecting);
     }, options);

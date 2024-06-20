@@ -1,7 +1,7 @@
 import { withSession } from "@clerk/nextjs";
 import { useEffect } from "react";
 
-const TOKEN_STORAGE_KEY = "token";
+let TOKEN_STORAGE_KEY = "token";
 
 type AuthStoreProps = {
   session: {
@@ -9,14 +9,14 @@ type AuthStoreProps = {
   };
 };
 
-const AuthStore = ({ session }: AuthStoreProps) => {
+let AuthStore = ({ session }: AuthStoreProps) => {
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
 
-    const fn = async () => {
-      const token = await session.getToken();
+    let fn = async () => {
+      let token = await session.getToken();
       token && localStorage.setItem(TOKEN_STORAGE_KEY, token);
       !token && localStorage.removeItem(TOKEN_STORAGE_KEY);
     };

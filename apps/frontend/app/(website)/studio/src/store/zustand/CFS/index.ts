@@ -3,7 +3,7 @@ import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
 import create from "zustand";
 import type { PromptPreset } from "./prompts";
 
-export const LLM_ENGINES = [
+export let LLM_ENGINES = [
   "gpt-4",
   "claude-2.0",
   "claude-instant-1.2",
@@ -26,7 +26,7 @@ export type AIAssistantState = Readonly<{
   engine: Engine;
 }>;
 
-const AIAssistantInitialState = {
+let AIAssistantInitialState = {
   loading: false,
   error: null,
   result: null,
@@ -48,11 +48,11 @@ export type CFSStateSetters = {
 
 export type CFSState = CFSStateValues & CFSStateSetters;
 
-export const defaultState: CFSStateValues = {
+export let defaultState: CFSStateValues = {
   AIAssistant: AIAssistantInitialState,
 };
 
-export const useCFSStore = create<CFSState>((set, get) => ({
+export let useCFSStore = create<CFSState>((set, get) => ({
   ...defaultState,
   setEngine: (engine: Engine) =>
     set((state) => ({ AIAssistant: { ...state.AIAssistant, engine } })),

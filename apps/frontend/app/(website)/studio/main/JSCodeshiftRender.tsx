@@ -24,7 +24,7 @@ import {
 } from "./PageBottomPane";
 import { useSnippet } from "./SnippetUI";
 
-const MonacoDiffEditor = dynamic(
+let MonacoDiffEditor = dynamic(
   () => import("@studio/components/Snippet/MonacoDiffEditor"),
   {
     loading: () => <p>Loading...</p>,
@@ -32,29 +32,29 @@ const MonacoDiffEditor = dynamic(
   },
 );
 
-export const useCodeDiff = () => {
-  const { setEvents, events } = useLogStore();
-  const { engine, inputSnippet, afterInputRanges } = useSnippetStore();
+export let useCodeDiff = () => {
+  let { setEvents, events } = useLogStore();
+  let { engine, inputSnippet, afterInputRanges } = useSnippetStore();
 
-  const { setHasRuntimeErrors } = useModStore();
+  let { setHasRuntimeErrors } = useModStore();
 
-  const setRangeThunk = useRangesOnTarget();
-  const { internalContent } = useModStore();
-  const [webWorkerState, postMessage] = useWebWorker();
+  let setRangeThunk = useRangesOnTarget();
+  let { internalContent } = useModStore();
+  let [webWorkerState, postMessage] = useWebWorker();
 
-  const codemodOutput = useCodemodOutputStore();
-  const setActiveEventThunk = useSetActiveEventThunk();
+  let codemodOutput = useCodemodOutputStore();
+  let setActiveEventThunk = useSetActiveEventThunk();
 
-  const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
+  let { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
 
-  const content = internalContent ?? "";
+  let content = internalContent ?? "";
 
-  const { setActiveTab } = useViewStore();
+  let { setActiveTab } = useViewStore();
 
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
+  let snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  let codemodSourceHasOnlyWhitespaces = !/\S/.test(content);
 
-  const firstCodemodExecutionErrorEvent = events.find(
+  let firstCodemodExecutionErrorEvent = events.find(
     (e) => e.kind === "codemodExecutionError",
   );
 
@@ -97,7 +97,7 @@ export const useCodeDiff = () => {
     setHasRuntimeErrors,
   ]);
 
-  const onSelectionChange = useCallback(
+  let onSelectionChange = useCallback(
     (range: OffsetRange) => {
       setRangeThunk({
         target: "CODEMOD_OUTPUT",
@@ -107,20 +107,20 @@ export const useCodeDiff = () => {
     [setRangeThunk],
   );
 
-  const onDebug = () => {
+  let onDebug = () => {
     firstCodemodExecutionErrorEvent?.hashDigest &&
       setActiveEventThunk(firstCodemodExecutionErrorEvent.hashDigest);
     setActiveTab(TabNames.DEBUG);
   };
 
-  const originalEditorProps = {
+  let originalEditorProps = {
     highlights: afterInputRanges,
     onSelectionChange: handleSelectionChange,
     onChange: onSnippetChange,
     value,
   };
 
-  const modifiedEditorProps = {
+  let modifiedEditorProps = {
     highlights: codemodOutput.ranges,
     onSelectionChange,
     value: codemodOutput.content ?? "",
@@ -141,7 +141,7 @@ export type LiveCodemodResultProps = Pick<
   "originalEditorProps" | "modifiedEditorProps"
 >;
 
-export const DiffEditorWrapper = ({
+export let DiffEditorWrapper = ({
   originalEditorProps,
   modifiedEditorProps,
   type,
@@ -176,7 +176,7 @@ export const DiffEditorWrapper = ({
   );
 };
 
-const CodeSnippedPanel = ({
+let CodeSnippedPanel = ({
   children,
   header,
   className,

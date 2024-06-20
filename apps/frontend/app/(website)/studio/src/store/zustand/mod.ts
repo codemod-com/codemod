@@ -25,10 +25,10 @@ type ModStateSetters = {
 };
 
 export type ModState = ModStateSetters & ModStateValues;
-const getInitialState = (): ModStateValues => {
-  const parsed = parseSnippet(INITIAL_STATE.codemodSource);
+let getInitialState = (): ModStateValues => {
+  let parsed = parseSnippet(INITIAL_STATE.codemodSource);
 
-  const parsedContent = isFile(parsed)
+  let parsedContent = isFile(parsed)
     ? mapBabelASTToRenderableTree(parsed)
     : null;
 
@@ -42,20 +42,20 @@ const getInitialState = (): ModStateValues => {
   };
 };
 
-export const useModStore = create<ModState>((set, get) => ({
+export let useModStore = create<ModState>((set, get) => ({
   ...getInitialState(),
   setState: (newState) => set((state) => ({ ...state, ...newState })),
   setContent: (content) => {
-    const parsed = parseSnippet(content);
-    const parsedContent = isFile(parsed)
+    let parsed = parseSnippet(content);
+    let parsedContent = isFile(parsed)
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ internalContent: content, parsedContent });
   },
   setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
   setCodemodSelection: (command) => {
-    const { parsedContent } = get();
-    const ranges = buildRanges(parsedContent, command);
+    let { parsedContent } = get();
+    let ranges = buildRanges(parsedContent, command);
     set({ ranges, rangesUpdatedAt: Date.now() });
   },
   setCurrentCommand: (command) => set({ command }),

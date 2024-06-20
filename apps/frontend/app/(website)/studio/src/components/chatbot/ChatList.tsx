@@ -8,12 +8,12 @@ interface Props {
   messages: Message[];
 }
 
-const ChatList = ({ messages }: Props) => {
+let ChatList = ({ messages }: Props) => {
   if (!messages.length) {
     return null;
   }
 
-  const chatPanel = document.getElementsByClassName("chatPanel")?.[0] ?? null;
+  let chatPanel = document.getElementsByClassName("chatPanel")?.[0] ?? null;
 
   return (
     <div

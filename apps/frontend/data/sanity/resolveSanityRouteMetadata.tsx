@@ -23,7 +23,7 @@ export function getOgImages(
   image: SanityImageObject,
   options?: { width: number },
 ) {
-  const builder = imageBuilder.image(image).fit("max").auto("format");
+  let builder = imageBuilder.image(image).fit("max").auto("format");
 
   return [
     {
@@ -57,7 +57,7 @@ async function generateOGQueryString({
   automationFrom,
   automationTo,
 }: OGImageParams) {
-  const queryString = new URLSearchParams({
+  let queryString = new URLSearchParams({
     type,
     title,
     jobLocation: jobLocation || "",
@@ -86,68 +86,68 @@ export async function resolveSanityRouteMetadata(
 ): Promise<Metadata | null> {
   if (!data) return null;
 
-  const seo = data?.seo;
+  let seo = data?.seo;
 
   if (!seo) {
     return { title: config.siteName };
   }
 
-  const parent = await parentPromise;
+  let parent = await parentPromise;
 
-  const title =
+  let title =
     seo?.title ||
     capitalize((data as CodemodPagePayload)?.automationName) ||
     data.title ||
     config.siteName;
 
-  const canonicalUrl = seo?.canonicalUrl || pathToAbsUrl(data.pathname);
+  let canonicalUrl = seo?.canonicalUrl || pathToAbsUrl(data.pathname);
 
-  const { filterIconDictionary, applicability, author } =
+  let { filterIconDictionary, applicability, author } =
     data as CodemodPagePayload;
-  const { department, location } = data as Job;
+  let { department, location } = data as Job;
 
-  const automationFrom = getAutomationFramworkTitle(data as CodemodPagePayload);
-  const fSectionFrom = getFilterSection(
+  let automationFrom = getAutomationFramworkTitle(data as CodemodPagePayload);
+  let fSectionFrom = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     filterIconDictionary,
   );
-  const fIconFrom = getFilterIcon(
+  let fIconFrom = getFilterIcon(
     fSectionFrom,
     automationFrom.replace(/\/.+/g, ""),
   );
-  const fIconFromURl = fIconFrom?.image?.light
+  let fIconFromURl = fIconFrom?.image?.light
     ? getOgImages(fIconFrom.image.light, { width: 48 })?.[0]?.url
     : "";
 
-  const automationTo = applicability?.to?.[0]?.[0] || "";
-  const fSectionTo = getFilterSection(
+  let automationTo = applicability?.to?.[0]?.[0] || "";
+  let fSectionTo = getFilterSection(
     REGISTRY_FILTER_TYPES.framework,
     filterIconDictionary,
   );
-  const fIconTo = getFilterIcon(fSectionTo, automationTo);
-  const fIconToURl = fIconTo?.image?.light
+  let fIconTo = getFilterIcon(fSectionTo, automationTo);
+  let fIconToURl = fIconTo?.image?.light
     ? getOgImages(fIconTo.image.light, { width: 48 })?.[0]?.url
     : "";
 
-  const automationAuthor = author;
-  const automationAuthorValues = getFilterSection(
+  let automationAuthor = author;
+  let automationAuthorValues = getFilterSection(
     REGISTRY_FILTER_TYPES.owner,
     filterIconDictionary,
   );
-  const automationAuthorImg = getFilterIcon(
+  let automationAuthorImg = getFilterIcon(
     automationAuthorValues,
     automationAuthor,
   )?.image?.light;
-  const automationAuthorImgUrl = automationAuthorImg
+  let automationAuthorImgUrl = automationAuthorImg
     ? getOgImages(automationAuthorImg)[0].url
     : "";
-  const blogAuthors = (data as BlogArticlePayload)?.authors?.map((a) => ({
+  let blogAuthors = (data as BlogArticlePayload)?.authors?.map((a) => ({
     name: a.name,
     image: getOgImages(a.image)?.[0].url,
   }));
 
   // Skip generation if image if SEO image is present
-  const ogQueryString = seo?.image
+  let ogQueryString = seo?.image
     ? ""
     : await generateOGQueryString({
         type: data._type,
@@ -165,7 +165,7 @@ export async function resolveSanityRouteMetadata(
       });
 
   // Always use the image from the CMS if present
-  const ogImages = seo?.image
+  let ogImages = seo?.image
     ? getOgImages(seo.image)
     : // Then default to generated image
       ogQueryString

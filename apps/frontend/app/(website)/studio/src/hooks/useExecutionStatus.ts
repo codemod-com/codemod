@@ -4,26 +4,26 @@ import getExecutionStatus, {
 } from "@studio/api/getExecutionStatus";
 import { useEffect, useState } from "react";
 
-export const useExecutionStatus = (
+export let useExecutionStatus = (
   executionId: string,
 ): GetExecutionStatusResponse | null => {
-  const [executionStatus, setExecutionStatus] =
+  let [executionStatus, setExecutionStatus] =
     useState<GetExecutionStatusResponse | null>(null);
-  const { getToken } = useAuth();
+  let { getToken } = useAuth();
 
   useEffect(() => {
-    const handler = async () => {
+    let handler = async () => {
       if (!executionId) {
         return;
       }
 
-      const token = await getToken();
+      let token = await getToken();
 
       if (token === null) {
         return;
       }
 
-      const executionStatusOrError = await getExecutionStatus({
+      let executionStatusOrError = await getExecutionStatus({
         executionId,
         token,
       });

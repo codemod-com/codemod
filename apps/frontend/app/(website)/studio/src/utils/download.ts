@@ -6,18 +6,18 @@ import {
 import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
 
-export const downloadProject = async (input: ProjectDownloadInput) => {
-  const zip = new JSZip();
+export let downloadProject = async (input: ProjectDownloadInput) => {
+  let zip = new JSZip();
 
-  const files = getCodemodProjectFiles(input);
-  for (const [name, content] of Object.entries(files)) {
+  let files = getCodemodProjectFiles(input);
+  for (let [name, content] of Object.entries(files)) {
     zip.file(name, content);
   }
 
   // Pre-built file
   if ("src/index.ts" in files) {
     await initSwc();
-    const { code: compiled } = await transform(files["src/index.ts"], {
+    let { code: compiled } = await transform(files["src/index.ts"], {
       minify: true,
       module: { type: "commonjs" },
       jsc: {
@@ -31,10 +31,10 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
       `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
     );
   }
-  const blob = await zip.generateAsync({ type: "blob" });
+  let blob = await zip.generateAsync({ type: "blob" });
 
   // download hack
-  const link = document.createElement("a");
+  let link = document.createElement("a");
   link.href = window.URL.createObjectURL(blob);
   link.download = `${input.name}.zip`;
   link.click();

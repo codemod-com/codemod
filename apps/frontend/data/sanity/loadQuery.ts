@@ -27,7 +27,7 @@ import {
 let serverClientSet = false;
 
 function initClient() {
-  const serverClient = client.withConfig({
+  let serverClient = client.withConfig({
     token: config.sanity.token,
     stega: {
       enabled: draftMode().isEnabled,
@@ -39,7 +39,7 @@ function initClient() {
     serverClientSet = true;
   }
 
-  const usingCdn = serverClient.config().useCdn;
+  let usingCdn = serverClient.config().useCdn;
 
   return {
     queryStore,
@@ -59,8 +59,8 @@ export function loadQuery<T>({
   params = {},
   tags = [],
 }: LoadQueryParams) {
-  const { queryStore } = initClient();
-  const isDraftMode = draftMode().isEnabled;
+  let { queryStore } = initClient();
+  let isDraftMode = draftMode().isEnabled;
 
   return queryStore.loadQuery<T>(query, params, {
     perspective: isDraftMode ? "previewDrafts" : "published",
@@ -107,7 +107,7 @@ export function loadBlogIndex({
   pageNumber: number;
   pathParam?: string;
 }) {
-  const blogIndexDocQuery = buildBlogIndexQuery({
+  let blogIndexDocQuery = buildBlogIndexQuery({
     infiniteLoading: true,
     pathParam,
     sortBy: "publishDate",
@@ -123,7 +123,7 @@ export function loadBlogIndex({
   });
 }
 export function loadRegistryIndex() {
-  const registryIndexQuery = buildRegistryIndexQuery();
+  let registryIndexQuery = buildRegistryIndexQuery();
 
   return loadQuery<RegistryIndexPayload | null>({
     query: registryIndexQuery,

@@ -9,7 +9,7 @@ import dynamic from "next/dynamic";
 import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
-const PagePreview = dynamic(
+let PagePreview = dynamic(
   () => import("@/components/templates/ModularPage/PagePreview"),
 );
 
@@ -17,8 +17,8 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const pathname = `/`;
-  const initialData = await loadModularPage(pathname);
+  let pathname = `/`;
+  let initialData = await loadModularPage(pathname);
 
   if (!initialData?.data) {
     return notFound();
@@ -28,8 +28,8 @@ export async function generateMetadata(
 }
 
 export default async function IndexRoute() {
-  const pathname = `/`;
-  const initial = await loadModularPage(pathname);
+  let pathname = `/`;
+  let initial = await loadModularPage(pathname);
 
   return draftMode().isEnabled ? (
     <PagePreview initial={initial} />

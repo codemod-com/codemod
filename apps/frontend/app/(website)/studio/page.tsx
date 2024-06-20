@@ -22,4 +22,4 @@ export default function Page() {
   );
 }
 
-export const dynamic = "force-dynamic";
+export let dynamic = "force-dynamic";

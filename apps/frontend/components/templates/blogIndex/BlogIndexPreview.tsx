@@ -15,16 +15,16 @@ type PreviewRouteProps = {
 };
 
 export default function BlogIndexPreview(props: PreviewRouteProps) {
-  const { initial, locale, pathParam } = props;
+  let { initial, locale, pathParam } = props;
 
-  const blogIndexDocQuery = buildBlogIndexQuery({
+  let blogIndexDocQuery = buildBlogIndexQuery({
     infiniteLoading: true,
     pathParam,
     sortBy: "publishDate",
     sortOrder: "desc",
   });
 
-  const { data } = useQuery<BlogIndexPayload | null>(
+  let { data } = useQuery<BlogIndexPayload | null>(
     blogIndexDocQuery,
     { pathname: "/blog", locale },
     { initial },

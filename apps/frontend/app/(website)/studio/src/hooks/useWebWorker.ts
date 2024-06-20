@@ -17,17 +17,17 @@ type State =
       readonly output: string | null | undefined;
     };
 
-export const useWebWorker = () => {
-  const [state, setState] = useState<State>({
+export let useWebWorker = () => {
+  let [state, setState] = useState<State>({
     kind: "RIGHT",
     events: [],
     output: undefined,
   });
 
-  const ref = useRef<Worker | null>(null);
+  let ref = useRef<Worker | null>(null);
 
   useEffect(() => {
-    const worker = new Worker(
+    let worker = new Worker(
       new URL("../utils/webworker.ts", import.meta.url),
       {
         type: "module",
@@ -43,7 +43,7 @@ export const useWebWorker = () => {
     };
 
     worker.onmessage = (messageEvent) => {
-      const data = parseWebWorkerOutgoingMessage(messageEvent.data);
+      let data = parseWebWorkerOutgoingMessage(messageEvent.data);
 
       setState({
         kind: "RIGHT",
@@ -52,7 +52,7 @@ export const useWebWorker = () => {
     };
 
     worker.onerror = (ee) => {
-      const error =
+      let error =
         ee.error instanceof Error
           ? ee.error
           : new Error("Unknown worker error");
@@ -70,7 +70,7 @@ export const useWebWorker = () => {
     };
   }, []);
 
-  const postMessage = useCallback(
+  let postMessage = useCallback(
     (engine: KnownEngines, content: string, input: string) => {
       ref.current?.postMessage({
         engine: String(engine),

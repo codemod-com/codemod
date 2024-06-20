@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 
-export const useExitAnimation = (
+export let useExitAnimation = (
   trigger: any,
   callback: any = null,
   duration = 300,
 ) => {
-  const [shouldRender, setRender] = useState(trigger);
+  let [shouldRender, setRender] = useState(trigger);
 
   useEffect(() => {
     let timeout: string | number | NodeJS.Timeout | undefined;

@@ -1,4 +1,4 @@
-export const mock = {
+export let mock = {
   id: 546,
   slug: "ember-5-fpe-computed",
   shortDescription:
