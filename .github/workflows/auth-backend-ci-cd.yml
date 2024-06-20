@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/backend/**'
+      - 'apps/auth-service/**'
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -44,7 +44,7 @@ jobs:
       - name: Build Docker image
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
+          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
 
       - name: Push Docker image to Amazon ECR
         if: steps.check_version.outputs.should_deploy == 'true'
