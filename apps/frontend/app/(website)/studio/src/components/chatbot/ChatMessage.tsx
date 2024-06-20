@@ -28,7 +28,7 @@ const ChatMessage = ({ message }: Props) => {
   const [collapsed, setCollapsed] = useState(message.role === "user");
   const { isDark } = useTheme();
   return (
-    <div className={cn("group relative mb-4 flex")}>
+    (<div className={cn("group relative mb-4 flex")}>
       <div
         className={cn(
           "flex h-8 w-8 shrink-0 select-none items-center justify-center rounded-md border bg-background shadow",
@@ -102,12 +102,12 @@ const ChatMessage = ({ message }: Props) => {
                 }
 
                 return (
-                  <CodeBlock
+                  (<CodeBlock
                     key={Math.random()}
                     language={"typescript"} // TODO: support multiple languages in the future
                     value={String(children).replace(/\n$/, "")}
                     {...others}
-                  />
+                  />)
                 );
               },
             }}
@@ -116,7 +116,7 @@ const ChatMessage = ({ message }: Props) => {
           </MemoizedReactMarkdown>
         )}
       </div>
-    </div>
+    </div>)
   );
 };
 
