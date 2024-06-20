@@ -6,6 +6,7 @@ declare global {
       AUTH_BACKEND_URL: string;
       CODEMOD_HOME_PAGE_URL: string;
       CODEMOD_STUDIO_URL: string;
+      IGNORE_TELEMETRY: boolean;
     }
   }
 }

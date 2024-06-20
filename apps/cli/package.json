@@ -63,11 +63,12 @@
   },
   "scripts": {
     "build": "tsc && node ./build.js",
-    "build:local": "npm run build -- --local",
+    "build:publish": "pnpm build -- --publish",
+    "build:local": "pnpm build -- --local",
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
-    "prepublishOnly": "turbo run build --filter codemod"
+    "prepublishOnly": "turbo run build:publish --filter codemod"
   },
   "engines": {
     "node": ">=18.5.0"

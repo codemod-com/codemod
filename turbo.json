@@ -15,6 +15,14 @@
       "dependsOn": ["^build"],
       "outputs": ["build/**", "dist/**"]
     },
+    "build:local": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**"]
+    },
+    "build:publish": {
+      "dependsOn": ["^build"],
+      "outputs": ["build/**", "dist/**"]
+    },
     "create": {
       "dependsOn": ["^create"],
       "cache": false

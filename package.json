@@ -34,6 +34,8 @@
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
+    "build:local": "turbo run build:local",
+    "build:publish": "turbo run build:publish",
     "clean": "turbo run clean",
     "link": "turbo run link",
     "lint": "biome check .",
