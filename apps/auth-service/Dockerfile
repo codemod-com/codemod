@@ -9,6 +9,7 @@ COPY ./apps/auth-service/package.json /app/apps/auth-service/
 
 COPY ./packages/tsconfig /app/packages/tsconfig/
 COPY ./packages/utilities /app/packages/utilities/
+COPY ./packages/filemod /app/packages/filemod/
 COPY ./packages/database /app/packages/database/
 
 RUN pnpm install
