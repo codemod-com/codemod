@@ -4,90 +4,92 @@ export type Right<R> = { kind: "right"; rightValue: R };
 export type EitherValue<L, R> = Left<L> | Right<R>;
 
 export class Either<L, R> {
-  private constructor(private readonly value: EitherValue<L, R>) {}
+	private constructor(private readonly value: EitherValue<L, R>) {
+	}
 
-  isLeft(): boolean {
-    return this.value.kind === "left";
-  }
-  isRight(): boolean {
-    return this.value.kind === "right";
-  }
+	static left<L, R>(value: L) {
+		return new Either<L, R>({ kind: "left", leftValue: value });
+	}
 
-  fold<T>(leftFn: (left: L) => T, rightFn: (right: R) => T): T {
-    switch (this.value.kind) {
-      case "left":
-        return leftFn(this.value.leftValue);
-      case "right":
-        return rightFn(this.value.rightValue);
-    }
-  }
+	static right<L, R>(value: R) {
+		return new Either<L, R>({ kind: "right", rightValue: value });
+	}
 
-  map<T>(fn: (r: R) => T): Either<L, T> {
-    return this.flatMap((r) => Either.right(fn(r)));
-  }
+	isLeft(): boolean {
+		return this.value.kind === "left";
+	}
 
-  flatMap<T>(fn: (right: R) => Either<L, T>): Either<L, T> {
-    return this.fold(
-      (leftValue) => Either.left(leftValue),
-      (rightValue) => fn(rightValue),
-    );
-  }
+	isRight(): boolean {
+		return this.value.kind === "right";
+	}
 
-  mapLeft<T>(fn: (l: L) => T): Either<T, R> {
-    return this.flatMapLeft((l) => Either.left(fn(l)));
-  }
+	fold<T>(leftFn: (left: L) => T, rightFn: (right: R) => T): T {
+		switch (this.value.kind) {
+			case "left":
+				return leftFn(this.value.leftValue);
+			case "right":
+				return rightFn(this.value.rightValue);
+		}
+	}
 
-  flatMapLeft<T>(fn: (left: L) => Either<T, R>): Either<T, R> {
-    return this.fold(
-      (leftValue) => fn(leftValue),
-      (rightValue) => Either.right(rightValue),
-    );
-  }
+	map<T>(fn: (r: R) => T): Either<L, T> {
+		return this.flatMap((r) => Either.right(fn(r)));
+	}
 
-  get(errorMessage?: string): R {
-    return this.getOrThrow(errorMessage);
-  }
+	flatMap<T>(fn: (right: R) => Either<L, T>): Either<L, T> {
+		return this.fold(
+			(leftValue) => Either.left(leftValue),
+			(rightValue) => fn(rightValue),
+		);
+	}
 
-  getOrThrow(errorMessage?: string): R {
-    const throwFn = () => {
-      throw Error(
-        errorMessage
-          ? errorMessage
-          : `An error has ocurred retrieving value: ${JSON.stringify(
-              this.value,
-            )}`,
-      );
-    };
+	mapLeft<T>(fn: (l: L) => T): Either<T, R> {
+		return this.flatMapLeft((l) => Either.left(fn(l)));
+	}
 
-    return this.fold(
-      () => throwFn(),
-      (rightValue) => rightValue,
-    );
-  }
+	flatMapLeft<T>(fn: (left: L) => Either<T, R>): Either<T, R> {
+		return this.fold(
+			(leftValue) => fn(leftValue),
+			(rightValue) => Either.right(rightValue),
+		);
+	}
 
-  getLeft(): L {
-    const throwFn = () => {
-      throw Error(`The value is right: ${JSON.stringify(this.value)}`);
-    };
+	get(errorMessage?: string): R {
+		return this.getOrThrow(errorMessage);
+	}
 
-    return this.fold(
-      (leftValue) => leftValue,
-      () => throwFn(),
-    );
-  }
+	getOrThrow(errorMessage?: string): R {
+		const throwFn = () => {
+			throw Error(
+				errorMessage
+					? errorMessage
+					: `An error has ocurred retrieving value: ${ JSON.stringify(
+						this.value,
+					) }`,
+			);
+		};
 
-  getOrElse(defaultValue: R): R {
-    return this.fold(
-      () => defaultValue,
-      (someValue) => someValue,
-    );
-  }
+		return this.fold(
+			() => throwFn(),
+			(rightValue) => rightValue,
+		);
+	}
 
-  static left<L, R>(value: L) {
-    return new Either<L, R>({ kind: "left", leftValue: value });
-  }
+	getLeft(): L {
+		const throwFn = () => {
+			throw Error(`The value is right: ${ JSON.stringify(this.value) }`);
+		};
 
-  static right<L, R>(value: R) {
-    return new Either<L, R>({ kind: "right", rightValue: value });
-  }
+		return this.fold(
+			(leftValue) => leftValue,
+			() => throwFn(),
+		);
+	}
+
+	getOrElse(defaultValue: R): R {
+		return this.fold(
+			() => defaultValue,
+			(someValue) => someValue,
+		);
+	}
 }

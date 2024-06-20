@@ -10,55 +10,55 @@ import SnippetUI from "../../../SnippetUI";
 import type { PanelData, PanelsRefs } from "../../index";
 
 type CodeSnippetsProps = {
-  panels: PanelData[];
-  panelRefs: PanelsRefs;
-  onlyAfterHidden: boolean;
-  codeDiff: ReturnType<typeof useCodeDiff>;
-  className?: string;
+	panels: PanelData[];
+	panelRefs: PanelsRefs;
+	onlyAfterHidden: boolean;
+	codeDiff: ReturnType<typeof useCodeDiff>;
+	className?: string;
 };
 export const CodeSnippets = ({
-  className,
-  panels,
-  children,
-  codeDiff,
-  panelRefs,
-}: PropsWithChildren<CodeSnippetsProps>) => {
-  const snippetPanels = panels.map((panelData, index, arr) => {
-    const {
-      snippetData: {
-        snippet,
-        getExtras,
-        diffEditorWrapper,
-        ...codeSnippedPanel
-      },
-    } = panelData;
-    const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
-    return (
-      <React.Fragment key={`fragment-${index}`}>
-        <CodeSnippedPanel
-          defaultSize={100 / arr.length}
-          panelData={panelData}
-          className={cn(!isVisible(panelData) && "hidden")}
-          panelRefs={panelRefs}
-          {...codeSnippedPanel}
-        >
-          <Snippet
-            {...{
-              ...diffEditorWrapper,
-              ...codeDiff,
-            }}
-          />
-        </CodeSnippedPanel>
-        {arr.length !== 1 &&
-          index < arr.length - 1 &&
-          isVisible(arr[index + 1]) && <ResizeHandle direction="horizontal" />}
-      </React.Fragment>
-    );
-  });
-  return (
-    <PanelGroup className={className} direction="horizontal">
-      {snippetPanels}
-      {children}
-    </PanelGroup>
-  );
+	                             className,
+	                             panels,
+	                             children,
+	                             codeDiff,
+	                             panelRefs,
+                             }: PropsWithChildren<CodeSnippetsProps>) => {
+	const snippetPanels = panels.map((panelData, index, arr) => {
+		const {
+			snippetData: {
+				snippet,
+				getExtras,
+				diffEditorWrapper,
+				...codeSnippedPanel
+			},
+		} = panelData;
+		const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
+		return (
+			<React.Fragment key={ `fragment-${ index }` }>
+				<CodeSnippedPanel
+					defaultSize={ 100 / arr.length }
+					panelData={ panelData }
+					className={ cn(!isVisible(panelData) && "hidden") }
+					panelRefs={ panelRefs }
+					{ ...codeSnippedPanel }
+				>
+					<Snippet
+						{ ...{
+							...diffEditorWrapper,
+							...codeDiff,
+						} }
+					/>
+				</CodeSnippedPanel>
+				{ arr.length !== 1 &&
+					index < arr.length - 1 &&
+					isVisible(arr[index + 1]) && <ResizeHandle direction="horizontal"/> }
+			</React.Fragment>
+		);
+	});
+	return (
+		<PanelGroup className={ className } direction="horizontal">
+			{ snippetPanels }
+			{ children }
+		</PanelGroup>
+	);
 };

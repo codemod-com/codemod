@@ -1,41 +1,41 @@
-import { type File, type Node, isFile, isStatement } from "@babel/types";
+import { type File, isFile, isStatement, type Node } from "@babel/types";
 import { buildAST } from "ast-node-builder";
 
 const stringifyNode = (node: Node): string => {
-  return JSON.stringify(node, (key, value) => {
-    if (["tokens", "loc", "start", "end", "extra"].includes(key)) {
-      return undefined;
-    }
+	return JSON.stringify(node, (key, value) => {
+		if (["tokens", "loc", "start", "end", "extra"].includes(key)) {
+			return undefined;
+		}
 
-    return value;
-  });
+		return value;
+	});
 };
 
 export const buildFactoryCode = (node: Node): string => {
-  const astNode: File | null = isFile(node)
-    ? node
-    : isStatement(node)
-      ? {
-          type: "File" as const,
-          program: {
-            type: "Program" as const,
-            body: [node],
-            directives: [],
-            sourceType: "script",
-            sourceFile: "afterSnippet.tsx",
-          },
-        }
-      : null;
+	const astNode: File | null = isFile(node)
+		? node
+		: isStatement(node)
+			? {
+				type: "File" as const,
+				program: {
+					type: "Program" as const,
+					body: [node],
+					directives: [],
+					sourceType: "script",
+					sourceFile: "afterSnippet.tsx",
+				},
+			}
+			: null;
 
-  if (astNode === null) {
-    return stringifyNode(node);
-  }
+	if (astNode === null) {
+		return stringifyNode(node);
+	}
 
-  const factoryCode = buildAST(astNode).join("");
+	const factoryCode = buildAST(astNode).join("");
 
-  if (factoryCode === "") {
-    return stringifyNode(node);
-  }
+	if (factoryCode === "") {
+		return stringifyNode(node);
+	}
 
-  return factoryCode;
+	return factoryCode;
 };

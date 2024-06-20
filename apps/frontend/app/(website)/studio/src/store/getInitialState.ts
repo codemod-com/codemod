@@ -90,183 +90,178 @@ export const handleSourceFile = (
 `;
 
 export const buildDefaultCodemodSource = (engine: KnownEngines) => {
-  if (engine === "jscodeshift") {
-    return prettify(
-      STARTER_SNIPPET.replace(
-        "{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
-        DEFAULT_FIND_REPLACE_EXPRESSION,
-      ).replace("{%COMMENT%}", ""),
-    );
-  }
+	if (engine === "jscodeshift") {
+		return prettify(
+			STARTER_SNIPPET.replace(
+				"{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
+				DEFAULT_FIND_REPLACE_EXPRESSION,
+			).replace("{%COMMENT%}", ""),
+		);
+	}
 
-  return TSMORPH_STARTER_SNIPPET;
+	return TSMORPH_STARTER_SNIPPET;
 };
 
 export const SEARCH_PARAMS_KEYS = Object.freeze({
-  ENGINE: "engine" as const,
-  DIFF_ID: "diffId" as const,
-  CODEMOD_SOURCE: "codemodSource" as const,
-  CODEMOD_NAME: "codemodName" as const,
-  COMMAND: "command" as const,
-  COMPRESSED_SHAREABLE_CODEMOD: "c" as const,
-  ACCESS_TOKEN: "accessToken" as const,
-  SESSION_ID: "sessionId" as const,
-  IV: "iv" as const,
+	ENGINE: "engine" as const,
+	DIFF_ID: "diffId" as const,
+	CODEMOD_SOURCE: "codemodSource" as const,
+	CODEMOD_NAME: "codemodName" as const,
+	COMMAND: "command" as const,
+	COMPRESSED_SHAREABLE_CODEMOD: "c" as const,
+	ACCESS_TOKEN: "accessToken" as const,
+	SESSION_ID: "sessionId" as const,
+	IV: "iv" as const,
 });
 
 type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
 
 type InitialState = Readonly<{
-  engine: KnownEngines;
-  beforeSnippet: string;
-  afterSnippet: string;
-  codemodSource: string;
-  codemodName: string | null;
-  command: "learn" | AccessTokenCommands | null;
+	engine: KnownEngines;
+	beforeSnippet: string;
+	afterSnippet: string;
+	codemodSource: string;
+	codemodName: string | null;
+	command: "learn" | AccessTokenCommands | null;
 }>;
 
 const decodeNullable = (value: string | null): string | null => {
-  if (value === null) {
-    return value;
-  }
+	if (value === null) {
+		return value;
+	}
 
-  try {
-    return decode(value);
-  } catch (error) {
-    return value;
-  }
+	try {
+		return decode(value);
+	} catch (error) {
+		return value;
+	}
 };
 
 export const getInitialState = (): InitialState => {
-  {
-    if (typeof window === "undefined") {
-      return {
-        engine: "jscodeshift",
-        beforeSnippet: "",
-        afterSnippet: "",
-        codemodSource: "",
-        codemodName: "",
-        command: null,
-      };
-    }
+	{
+		if (typeof window === "undefined") {
+			return {
+				engine: "jscodeshift",
+				beforeSnippet: "",
+				afterSnippet: "",
+				codemodSource: "",
+				codemodName: "",
+				command: null,
+			};
+		}
 
-    const searchParams = new URLSearchParams(window.location.search);
+		const searchParams = new URLSearchParams(window.location.search);
 
-    const csc = searchParams.get(
-      SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD,
-    );
+		const csc = searchParams.get(
+			SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD,
+		);
 
-    if (csc !== null) {
-      try {
-        const encryptedString = window.atob(
-          csc.replaceAll("-", "+").replaceAll("_", "/"),
-        );
+		if (csc !== null) {
+			try {
+				const encryptedString = window.atob(
+					csc.replaceAll("-", "+").replaceAll("_", "/"),
+				);
 
-        const numberArray = Array.from(encryptedString)
-          .map((character) => character.codePointAt(0))
-          .filter(isNeitherNullNorUndefined);
+				const numberArray = Array.from(encryptedString)
+					.map((character) => character.codePointAt(0))
+					.filter(isNeitherNullNorUndefined);
 
-        const uint8Array = Uint8Array.from(numberArray);
+				const uint8Array = Uint8Array.from(numberArray);
 
-        const decryptedString = inflate(uint8Array, { to: "string" });
-        const shareableCodemod = parseShareableCodemod(
-          JSON.parse(decryptedString),
-        );
+				const decryptedString = inflate(uint8Array, { to: "string" });
+				const shareableCodemod = parseShareableCodemod(
+					JSON.parse(decryptedString),
+				);
 
-        return {
-          engine: shareableCodemod.e ?? "jscodeshift",
-          beforeSnippet: shareableCodemod.b ?? "",
-          afterSnippet: shareableCodemod.a ?? "",
-          codemodSource: shareableCodemod.c ?? "",
-          codemodName: shareableCodemod.n ?? null,
-          command: null,
-        };
-      } catch (error) {
-        console.error(error);
-      }
-    }
+				return {
+					engine: shareableCodemod.e ?? "jscodeshift",
+					beforeSnippet: shareableCodemod.b ?? "",
+					afterSnippet: shareableCodemod.a ?? "",
+					codemodSource: shareableCodemod.c ?? "",
+					codemodName: shareableCodemod.n ?? null,
+					command: null,
+				};
+			} catch (error) {
+				console.error(error);
+			}
+		}
 
-    const engine = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
-    ) as KnownEngines;
-    const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-    const codemodSource = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
-    );
-    const codemodName = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
-    );
+		const engine = decodeNullable(
+			searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
+		) as KnownEngines;
+		const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+		const codemodSource = decodeNullable(
+			searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
+		);
+		const codemodName = decodeNullable(
+			searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
+		);
 
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+		const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
-    const someSearchParamsSet = [
-      engine,
-      diffId,
-      codemodSource,
-      codemodName,
-      command,
-    ].some((s) => s !== null);
+		const someSearchParamsSet = [
+			engine,
+			diffId,
+			codemodSource,
+			codemodName,
+			command,
+		].some((s) => s !== null);
 
-    if (someSearchParamsSet) {
-      return {
-        engine: engine ?? "jscodeshift",
-        beforeSnippet: "",
-        afterSnippet: "",
-        codemodSource: codemodSource ?? "",
-        codemodName: codemodName ?? "",
-        command:
-          command === "learn" || command === "accessTokenRequested"
-            ? command
-            : null,
-      };
-    }
-  }
+		if (someSearchParamsSet) {
+			return {
+				engine: engine ?? "jscodeshift",
+				beforeSnippet: "",
+				afterSnippet: "",
+				codemodSource: codemodSource ?? "",
+				codemodName: codemodName ?? "",
+				command:
+					command === "learn" || command === "accessTokenRequested"
+						? command
+						: null,
+			};
+		}
+	}
 
-  const stringifiedState = localStorage.getItem("state");
+	const stringifiedState = localStorage.getItem("state");
 
-  if (stringifiedState !== null) {
-    try {
-      const state = parseState(JSON.parse(stringifiedState));
+	if (stringifiedState !== null) {
+		try {
+			console.log(9999, JSON.parse(stringifiedState))
+			const state = parseState(JSON.parse(stringifiedState));
 
-      const everyValueIsEmpty = [
-        state.afterSnippet,
-        state.beforeSnippet,
-        state.codemodSource,
-      ].every((s) => s === "");
+			const everyValueIsEmpty = [
+				state.afterSnippet,
+				state.beforeSnippet,
+				state.codemodSource,
+			].every((s) => s === "");
 
-      const beforeSnippet = everyValueIsEmpty
-        ? BEFORE_SNIPPET_DEFAULT_CODE
-        : state.beforeSnippet;
+			const beforeSnippet = everyValueIsEmpty
+				? BEFORE_SNIPPET_DEFAULT_CODE
+				: state.beforeSnippet;
 
-      const afterSnippet = everyValueIsEmpty
-        ? AFTER_SNIPPET_DEFAULT_CODE
-        : state.afterSnippet;
+			const afterSnippet = everyValueIsEmpty
+				? AFTER_SNIPPET_DEFAULT_CODE
+				: state.afterSnippet;
 
-      const codemodSource = everyValueIsEmpty
-        ? buildDefaultCodemodSource(state.engine)
-        : state.codemodSource;
+			const codemodSource = everyValueIsEmpty
+				? buildDefaultCodemodSource(state.engine)
+				: state.codemodSource;
 
-      return {
-        engine: state.engine,
-        beforeSnippet,
-        afterSnippet,
-        codemodSource,
-        codemodName: null,
-        command: null,
-      };
-    } catch (error) {
-      console.error(error);
-    }
-  }
+			return {
+				codemodSource,
+				codemodName: null,
+				command: null,
+			};
+		} catch (error) {
+			console.error(error);
+		}
+	}
 
-  return {
-    engine: "jscodeshift" as const,
-    beforeSnippet: BEFORE_SNIPPET_DEFAULT_CODE,
-    afterSnippet: AFTER_SNIPPET_DEFAULT_CODE,
-    codemodSource: buildDefaultCodemodSource("jscodeshift"),
-    codemodName: null,
-    command: null,
-  };
+	return {
+		codemodSource: buildDefaultCodemodSource("jscodeshift"),
+		codemodName: null,
+		command: null,
+	};
 };
 
 // I don't like this being a global variable

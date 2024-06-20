@@ -5,9 +5,9 @@ import Studio from "./Studio";
 export const dynamic = "force-static";
 
 export const metadata: Metadata = {
-  title: `${publicConfig.siteName} - CMS`,
+	title: `${ publicConfig.siteName } - CMS`,
 };
 
 export default function StudioPage() {
-  return <Studio />;
+	return <Studio/>;
 }

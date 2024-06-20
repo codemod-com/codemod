@@ -1,14 +1,14 @@
 import type { SnippetType } from "@studio/main/PageBottomPane";
 import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useSnippetsStore } from "./zustand/snippets2";
 
 export const useRanges = (type: SnippetType) => {
-  const { beforeInputRanges, afterInputRanges } = useSnippetStore();
-  const { ranges } = useCodemodOutputStore();
+	const { getSelectedEditors } = useSnippetsStore();
+	const { ranges } = useCodemodOutputStore();
 
-  return {
-    before: beforeInputRanges,
-    after: afterInputRanges,
-    output: ranges,
-  }[type];
+	return {
+		before: getSelectedEditors().before.ranges,
+		after: getSelectedEditors().after.ranges,
+		output: ranges,
+	}[type];
 };
