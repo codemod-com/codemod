@@ -18,10 +18,9 @@ RUN pnpm install
 COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
+COPY ./apps/backend/node_modules/@codemod-com/database/generated/client/schema.prisma /app/apps/backend/packages/database/generated/client/schema.prisma
 
 RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/backend
-
-COPY ./apps/backend/packages /app/apps/backend/packages/
 
 FROM node:20-alpine3.16
 
