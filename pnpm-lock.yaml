@@ -1220,6 +1220,21 @@ importers:
         specifier: ^0.15.1
         version: 0.15.2(@babel/preset-env@7.24.4(@babel/core@7.24.4))
 
+  packages/codemods/axios/fetch:
+    devDependencies:
+      '@codemod.com/workflow':
+        specifier: '*'
+        version: 0.0.9
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      typescript:
+        specifier: ^5.2.2
+        version: 5.4.5
+      vitest:
+        specifier: ^1.0.1
+        version: 1.5.1(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.30.4)
+
   packages/codemods/bull/bullmq:
     devDependencies:
       '@codemod-com/utilities':
@@ -6448,6 +6463,9 @@ packages:
 
   '@codemirror/view@6.26.3':
     resolution: {integrity: sha512-gmqxkPALZjkgSxIeeweY/wGQXBfwTUaLs8h7OKtSwfbj9Ct3L11lD+u1sS7XHppxFQoMDiMDp07P9f3I2jWOHw==}
+
+  '@codemod.com/workflow@0.0.9':
+    resolution: {integrity: sha512-dta3+dQv9iedn2Vwr+j+zwRAC59bVHIM1Jmr4CD2mo4wUERUVeWvIjxXEceFfJExS6HG7jLlujZh1Sqimsl3xg==}
 
   '@cspell/cspell-bundled-dicts@6.31.3':
     resolution: {integrity: sha512-KXy3qKWYzXOGYwqOGMCXHem3fV39iEmoKLiNhoWWry/SFdvAafmeY+LIDcQTXAcOQLkMDCwP2/rY/NadcWnrjg==}
@@ -19569,6 +19587,22 @@ snapshots:
       '@codemirror/state': 6.4.1
       style-mod: 4.1.2
       w3c-keyname: 2.2.8
+
+  '@codemod.com/workflow@0.0.9':
+    dependencies:
+      '@ast-grep/cli': 0.22.4
+      '@ast-grep/napi': 0.22.4
+      '@sindresorhus/slugify': 2.2.1
+      colors-cli: 1.0.33
+      filenamify: 6.0.0
+      magic-string: 0.30.10
+      openai: 4.23.0
+      simple-git: 3.24.0
+      tree-kill: 1.2.2
+      ts-invariant: 0.10.3
+    transitivePeerDependencies:
+      - encoding
+      - supports-color
 
   '@cspell/cspell-bundled-dicts@6.31.3':
     dependencies:
