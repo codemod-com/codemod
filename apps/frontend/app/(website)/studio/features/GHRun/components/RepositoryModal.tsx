@@ -1,4 +1,3 @@
-import Input from "@/components/shared/Input";
 import {
   DropdownSelector,
   useBranchLogic,
@@ -9,7 +8,7 @@ import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
 import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
-import { type SetStateAction, useState } from "react";
+import { useState } from "react";
 
 export type RepositoryModalProps = {
   onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
@@ -50,11 +49,8 @@ export const RepositoryModal = ({
     selectedRepository,
   });
 
-  const [codemodNameInput, setCodemodNameInput] = useState<string>();
-
   const handleCodemodRun = useHandleCodemodRun({
     onCodemodRun,
-    codemodName: codemodNameInput,
     selectedRepository,
     selectedBranch,
   });
@@ -63,7 +59,6 @@ export const RepositoryModal = ({
     await handleCodemodRun();
     setSelectedRepository(undefined);
     setSelectedBranch(undefined);
-    setCodemodNameInput("");
     hideRepositoryModal();
   };
 
@@ -74,32 +69,16 @@ export const RepositoryModal = ({
     if (!selectedBranch) {
       return "Select branch to run the codemod";
     }
-    if (!codemodNameInput) {
-      return "Enter a codemod name to run the codemod";
-    }
     return null;
   };
 
-  const isButtonDisabled = [
-    selectedRepository,
-    selectedBranch,
-    codemodNameInput,
-  ].some((item) => !item);
+  const isButtonDisabled = [selectedRepository, selectedBranch].some(
+    (item) => !item,
+  );
 
   return isRepositoryModalShown ? (
     <Modal onClose={hideRepositoryModal} centered transparent={false}>
       <h2 className="text-center p-2">Run Codemod on Github branch</h2>
-
-      <div className="flex justify-center items-center p-4 bg-white min-w-[400px] rounded-lg border-0">
-        <Input
-          type="text"
-          value={codemodNameInput}
-          placeholder="Codemod name (required)"
-          onChange={(event: {
-            target: { value: SetStateAction<string | undefined> };
-          }) => setCodemodNameInput(event.target.value)}
-        />
-      </div>
 
       <DropdownSelector
         isLoading={areReposLoading}
