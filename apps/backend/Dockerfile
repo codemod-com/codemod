@@ -30,7 +30,7 @@ WORKDIR /app
 COPY --from=builder /app/apps/backend/package.json /app
 COPY --from=builder /app/apps/backend/build /app/build
 COPY --from=builder /app/packages /app/packages
-COPY --from=builder ./pnpm-workspace.yaml /app/packages
+COPY --from=builder /app/pnpm-workspace.yaml /app/packages
 
 EXPOSE 8081
 
