@@ -38,19 +38,23 @@ export const validateCLIToken = async (
 export const getUserData = async (
   accessToken: string,
 ): Promise<GetUserDataResponse | null> => {
-  const { data } = await Axios.get<GetUserDataResponse | object>(
-    `${process.env.AUTH_BACKEND_URL}/userData`,
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      timeout: 5000,
-    },
-  );
+  try {
+    const { data } = await Axios.get<GetUserDataResponse | object>(
+      `${process.env.AUTH_BACKEND_URL}/userData`,
+      {
+        headers: { Authorization: `Bearer ${accessToken}` },
+        timeout: 5000,
+      },
+    );
 
-  if (!("user" in data)) {
+    if (!("user" in data)) {
+      return null;
+    }
+
+    return data;
+  } catch (err) {
     return null;
   }
-
-  return data;
 };
 
 export const publish = async (
