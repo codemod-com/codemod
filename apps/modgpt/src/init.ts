@@ -4,6 +4,7 @@ import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 import { environment } from "./dev-utils/configs";
 import { corsOptions } from "./dev-utils/cors";
+import authPlugin from "./plugins/authPlugin";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const { PORT: port } = environment;
@@ -42,6 +43,8 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     console.log(signal);
     handleProcessExit(0);
   });
+
+  await fastify.register(authPlugin);
 
   await fastify.register(cors, corsOptions);
 

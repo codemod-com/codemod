@@ -21,15 +21,13 @@ COPY ./apps/backend/src /app/apps/backend/src/
 
 RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/backend
 
-COPY ./apps/backend/packages /app/apps/backend/packages/
-
 FROM node:20-alpine3.16
 
 WORKDIR /app
 
 COPY --from=builder /app/apps/backend/package.json /app
 COPY --from=builder /app/apps/backend/build /app/build
-COPY --from=builder /app/apps/backend/packages /app/packages
+COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8081
 

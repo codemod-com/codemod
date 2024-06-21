@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/task-manager",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "scripts": {
     "build": "node esbuild.config.js",
     "start": "node build/worker.js"
@@ -14,6 +14,7 @@
     "ioredis": "^5.4.1",
     "parse-github-url": "1.0.2",
     "simple-git": "^3.24.0",
+    "uuid": "^10.0.0",
     "valibot": "^0.24.1"
   },
   "type": "module",

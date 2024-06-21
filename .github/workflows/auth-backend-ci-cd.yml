@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - 'apps/backend/**'
+      - 'apps/auth-service/**'
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
@@ -24,7 +24,7 @@ jobs:
       - name: Read version from package.json
         id: get_version
         run: |
-          VERSION=$(cat apps/backend/package.json | jq -r '.version')
+          VERSION=$(cat apps/auth-service/package.json | jq -r '.version')
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
 
       - name: Login to Amazon ECR
@@ -44,7 +44,7 @@ jobs:
       - name: Build Docker image
         if: steps.check_version.outputs.should_deploy == 'true'
         run: |
-          docker build -f apps/backend/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
+          docker build -f apps/auth-service/Dockerfile --no-cache --progress=plain -t ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY_AUTH_BACKEND_NAME }}:$VERSION .
 
       - name: Push Docker image to Amazon ECR
         if: steps.check_version.outputs.should_deploy == 'true'

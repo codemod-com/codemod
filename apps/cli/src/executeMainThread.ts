@@ -76,12 +76,13 @@ const initializeDependencies = async (argv: {
 
   const printer = new Printer(argv.json);
 
-  const telemetryService: TelemetrySender<TelemetryEvent> = argv.telemetry
-    ? new PostHogSender({
-        cloudRole: clientIdentifier,
-        distinctId: await getUserDistinctId(),
-      })
-    : new NullSender();
+  const telemetryService: TelemetrySender<TelemetryEvent> =
+    process.env.IGNORE_TELEMETRY === false && argv.telemetry
+      ? new PostHogSender({
+          cloudRole: clientIdentifier,
+          distinctId: await getUserDistinctId(),
+        })
+      : new NullSender();
 
   const exit = async () => {
     // appInsights telemetry client uses batches to send telemetry.
