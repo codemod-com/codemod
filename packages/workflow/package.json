@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
-    "@codemod.com/workflow": "workspace:*",
     "@types/lodash-es": "^4.17.4",
     "esbuild": "^0.17.14"
   }
