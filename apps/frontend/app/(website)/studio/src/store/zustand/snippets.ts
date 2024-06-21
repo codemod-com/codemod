@@ -10,7 +10,15 @@ import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
-import { path, assocPath, is, pathSatisfies } from "ramda";
+import {
+  path,
+  assocPath,
+  is,
+  map,
+  mapObjIndexed,
+  pathSatisfies,
+  reduce,
+} from "ramda";
 import { create } from "zustand";
 
 export type Token = Readonly<{
@@ -57,8 +65,16 @@ type Editors = {
   after: SnippetValues;
   output: SnippetValues;
 };
+type AllEditors = {
+  [x in keyof Editors]: SnippetValues[];
+};
 type EditorType = keyof Editors;
-type SnippetsValues = { editors: Editors[] };
+type AllSnippets = {
+  before: string[];
+  after: string[];
+  output: string[];
+};
+type SnippetsValues = { editors: Editors[]; getAllSnippets: () => AllSnippets };
 type SnippetsState = SnippetsValues & SnippetsSetters & SnippetsConfig;
 
 type SnippetsSetters = {
@@ -96,6 +112,13 @@ const getSnippetInitialState = (defaultContent = ""): SnippetValues => {
 };
 
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
+  editors: [
+    {
+      before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
+      after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
+      output: getSnippetInitialState(),
+    },
+  ],
   clearAll: () =>
     set({
       editors: [
@@ -108,6 +131,23 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     }),
   engine: "jscodeshift",
   selectedPairIndex: 0,
+  getAllSnippets: () =>
+    mapObjIndexed(
+      map(({ content }: SnippetValues) => content),
+      reduce(
+        (acc, { before, after, output }) => ({
+          before: [...acc.before, before],
+          after: [...acc.after, after],
+          output: [...acc.output, output],
+        }),
+        {
+          before: [],
+          after: [],
+          output: [],
+        } as AllEditors,
+        get().editors,
+      ),
+    ),
   setSelectedPairIndex: (i: number) => set({ selectedPairIndex: i }),
   getSelectedEditors: () => {
     const index = get().selectedPairIndex || 0;
@@ -124,13 +164,6 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         get().setSelection(index, editorType),
     };
   },
-  editors: [
-    {
-      before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
-      after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
-      output: getSnippetInitialState(),
-    },
-  ],
   setEngine: (engine) =>
     set({
       engine,

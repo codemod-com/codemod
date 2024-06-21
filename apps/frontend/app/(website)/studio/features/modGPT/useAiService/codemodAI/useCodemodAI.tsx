@@ -11,8 +11,8 @@ import { type Socket, io } from "socket.io-client";
 type MessageToSend = {
   config: { llm_engine: LLMEngine };
   previous_context: LLMMessage[];
-  before: string;
-  after: string;
+  before: string | string[];
+  after: string | string[];
 };
 export const useCodemodAI = ({
   setToken,
@@ -26,8 +26,7 @@ export const useCodemodAI = ({
   const [socket, setSocket] = useState<Socket | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
-  const { getSelectedEditors } = useSnippetsStore();
-  const { beforeSnippet, afterSnippet } = getSelectedEditors();
+  const { getAllSnippets } = useSnippetsStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
@@ -118,8 +117,16 @@ export const useCodemodAI = ({
     return wsCleanup;
   }, []);
 
+  const beforeSnippets = getAllSnippets().before;
+  const afterSnippets = getAllSnippets().after;
   const startIterativeCodemodGeneration = async () => {
-    if (ws && beforeSnippet && afterSnippet && isWsConnected && !serviceBusy) {
+    if (
+      ws &&
+      beforeSnippets.length &&
+      afterSnippets.length &&
+      isWsConnected &&
+      !serviceBusy
+    ) {
       const _token = await getToken();
       setToken(_token);
       setWsMessage({
@@ -130,8 +137,8 @@ export const useCodemodAI = ({
       const messageToSend: MessageToSend = {
         config: { llm_engine: engine },
         previous_context: messages,
-        before: beforeSnippet,
-        after: afterSnippet,
+        before: beforeSnippets,
+        after: afterSnippets,
       };
       emitMessage(messageToSend);
       setServiceBusy(true);
