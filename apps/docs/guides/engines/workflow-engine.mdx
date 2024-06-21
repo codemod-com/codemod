@@ -255,6 +255,13 @@ await git.clone('repo', async () => {
   #### Parameters:
   <ResponseField name="repository" type="repository or array of repositories" required>
   Can be a repository or array of repositories which you need to clone.
+  By shallow cloning is performed with `--depth 1 --single-branch`. You can specify `branch` to clone specific (not default branch).
+  If you want to disable shallow clone, you can provide it with extended configuration:
+  {
+    repository: string;
+    shallow?: boolean;
+    branch?: string;
+  }
   </ResponseField>
 
   <ResponseField name="callback" type="callback">
@@ -274,9 +281,20 @@ await git.clone('repo', async () => {
     ```tsx
     // clone one repository
     await git.clone('git@github.com:codemod-com/codemod.git')
+    await git.clone({
+      repository: 'git@github.com:codemod-com/codemod.git',
+      shallow: false,
+    })
     // clone multiple repositories
     await git.clone([
         'git@github.com:codemod-com/codemod.git',
+        'git@github.com:codemod-com/codemod2.git',
+    ])
+    await git.clone([
+        {
+          repository: 'git@github.com:codemod-com/codemod.git',
+          shallow: false,
+        },
         'git@github.com:codemod-com/codemod2.git',
     ])
     await git.clone`
@@ -295,6 +313,11 @@ await git.clone('repo', async () => {
 
 <ResponseField name="git.branch(branchName)">
   Tries to switch to provided branch, if branch doesn’t exist - creates new branch for cloned repository and check outs to it.
+  You can customize this behavior by providing extra config
+  {
+    branch: string;
+    force?: boolean; // by default true, whether to create a branch if it doesn't exist
+  }
 
   #### Parameters:
   <ResponseField name="branchName" type="string" required>
@@ -314,6 +337,11 @@ await git.clone('repo', async () => {
     // chain call
     await git.clone('git@github.com:codemod-com/codemod.git')
         .branch('new-branch')
+    await git.clone('git@github.com:codemod-com/codemod.git')
+        .branch({
+          branch: 'new-branch',
+          force: false,
+        })
         
     // inside callback
     await git.clone('git@github.com:codemod-com/codemod.git', async ({ branch }) => {

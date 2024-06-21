@@ -1,5 +1,5 @@
-import * as colors from "colors-cli";
-import { flattenDeep, identity, mapValues } from "lodash";
+import colors from "colors-cli";
+import { flattenDeep, identity, mapValues } from "lodash-es";
 import { getRepositoriesContext, parentContext } from "./contexts";
 
 export const clc = {
