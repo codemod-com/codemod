@@ -20,6 +20,8 @@ COPY ./apps/auth-service/src /app/apps/auth-service/src/
 
 RUN pnpm build --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/auth-service
 
+RUN pnpm db:migrate:deploy
+
 FROM node:20-alpine3.16
 
 WORKDIR /app
@@ -30,4 +32,4 @@ COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8084
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node build/index.js"]
+CMD ["node build/index.js"]
