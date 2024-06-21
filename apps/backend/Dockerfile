@@ -19,6 +19,8 @@ COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
+RUN pnpm db:migrate:deploy
+
 RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/backend
 
 FROM node:20-alpine3.16
@@ -31,4 +33,4 @@ COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8081
 
-CMD ["sh", "-c", "npx prisma migrate deploy && node build/index.js"]
+CMD ["node build/index.js"]
