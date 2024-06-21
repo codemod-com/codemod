@@ -4,7 +4,7 @@ import { hideBin } from "yargs/helpers";
 const localProdBuildEnvs = {
   "process.env.NODE_ENV": '"production"',
   "process.env.BACKEND_URL": '"https://backend.codemod.com"',
-  "process.env.AUTH_BACKEND_URL": '"https://backend.codemod.com"',
+  "process.env.AUTH_BACKEND_URL": '"https://backend.codemod.com/auth"',
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
