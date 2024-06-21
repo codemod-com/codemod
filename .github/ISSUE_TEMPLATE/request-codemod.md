@@ -1,47 +1,30 @@
 ---
 name: Request codemod
 about: Request a new codemod from the community
-title: "[codemod request] example codemod"
+title: "[codemod][new] <framework-name> - migration to <v.x>"
 labels: codemod-request
 assignees: ''
 
 ---
 
-:warning::warning: Please do not include any proprietary code in the issue. :warning::warning:
+### Migration details
+[Link to upgrade guide]
 
----
+- [ ] codemod-name1 - [[Codemod Studio Link](https://go.codemod.com/sme-input)]
+- [ ] codemod-name2 - [[Codemod Studio Link](https://go.codemod.com/sme-input)]
+- [ ] codemod-name3 - [[Codemod Studio Link](https://go.codemod.com/sme-input)]
 
-## Codemod name
 
-Give an understandable name for the codemod.
 
-## Codemod description
+----
+To contributors working on this task:
 
-Write a short description of the changes that should be made by this codemod.
+- [ ] **Framework Expert**:  For each codemod use case in this migration, provide the Codemod Studio link ([example](https://go.codemod.com/sme-input)) with detailed specifications. Include before/after pairs, transformation logic in comments, and edge cases. Even if the transformation is tricky, provide instructions on detecting the patterns. This helps estimate the effort needed and guides developers to the areas requiring manual changes.
 
-## Example
+- [ ] **Codemod Creator**: [Build](https://go.codemod.com/build-codemod-docs) and [publish](https://go.codemod.com/codemod-publish-doc) quality codemods that handle most edge cases. False negatives are acceptable, but there should be no false positives. Even if the transformation is tricky, build a codemod that can detect and add comments to guide developers to the areas needing manual changes.
 
-> Note: The example section helps codemod champions identify all the transformation patterns that this codemod should handle. Repeat before/after snippets for every transformation example you can find.
+- Questions? -> [Community](https://go.codemod.com/community)
 
-### Code before transformation
 
-```
-//insert your code before transformation here
-```
 
-### Code after transformation
 
-```
-//insert the expected **correct** output here
-```
-
-### Applicability Criteria
-
-Write the applicable framework/library for this codemod.
-A codemod can:
-- Migrate from one version to another [ex: React 18 -> React 19]
-- Migrate from one framework to another [ex: ESLint -> Biome]
-- Clean up or refactor code of the same framework/library version [ex: React 18 -> React 18]
-
-### Additional context or links
-Add any other context about the problem here. This might include extra considerations, edge cases, relevant business logic, existing migration guides, relevant links, etc.

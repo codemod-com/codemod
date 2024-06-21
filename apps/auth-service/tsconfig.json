@@ -1,0 +1,5 @@
+{
+  "include": ["./src"],
+  "exclude": ["./dist", "./node_modules"],
+  "extends": "@codemod-com/tsconfig/base.json"
+}

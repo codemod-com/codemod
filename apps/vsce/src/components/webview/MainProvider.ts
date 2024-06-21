@@ -1,4 +1,3 @@
-import type { ValidateTokenResponse } from "@codemod-com/utilities";
 import axios from "axios";
 import areEqual from "fast-deep-equal";
 import { glob } from "glob";
@@ -29,19 +28,16 @@ import type {
   WebviewMessage,
   WebviewResponse,
 } from "./webviewEvents";
-const X_CODEMOD_ACCESS_TOKEN = "X-Codemod-Access-Token".toLocaleLowerCase();
 
 export const validateAccessToken = async (
   accessToken: string,
-): Promise<ValidateTokenResponse | null> => {
+): Promise<void> => {
   try {
-    const response = await axios.post<ValidateTokenResponse>(
-      "https://backend.codemod.com/validateAccessToken",
+    const response = await axios.post(
+      "https://backend.codemod.com/verifyToken",
       {},
       {
-        headers: {
-          [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-        },
+        headers: { Authorization: `Bearer ${accessToken}` },
         timeout: 5000,
       },
     );
@@ -51,8 +47,6 @@ export const validateAccessToken = async (
     if (!axios.isAxiosError(error)) {
       console.error(error);
     }
-
-    return null;
   }
 };
 
@@ -68,16 +62,8 @@ export const createIssue = async (
 
   const result = await axios.post(
     "https://backend.codemod.com/sourceControl/github/issues",
-    {
-      title,
-      body,
-      repoUrl: codemodRegistryRepoUrl,
-    },
-    {
-      headers: {
-        [X_CODEMOD_ACCESS_TOKEN]: accessToken,
-      },
-    },
+    { title, body, repoUrl: codemodRegistryRepoUrl },
+    { headers: { Authorization: `Bearer ${accessToken}` } },
   );
   if (result.status !== 200) {
     await onFail();

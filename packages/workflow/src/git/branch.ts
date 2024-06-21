@@ -1,51 +1,68 @@
+import { memoize } from "lodash-es";
 import type { PLazy } from "../PLazy.js";
 import { codemod } from "../codemod.js";
-import { getRepositoryContext, repositoryContext } from "../contexts.js";
+import { getGitContext } from "../contexts.js";
+import type { GitContext } from "../contexts/GitContext.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
 import { files } from "../files.js";
 import { dirs } from "../fs/dirs.js";
-import { switchBranch } from "../git.js";
-import { parseMultistring } from "../helpers.js";
 import { jsFiles } from "../jsFiles.js";
 import { commit } from "./commit.js";
 import { push } from "./push.js";
+
+interface BranchOptions {
+  branch: string;
+  force?: boolean;
+}
 
 /**
  * Creates branch for current repository
  */
 export function branchLogic(
-  rawBranches: string | readonly string[],
+  rawBranches: string | BranchOptions,
 ): PLazy<BranchHelpers> & BranchHelpers;
 /**
  * Creates branch for current repository
  */
 export function branchLogic(
-  rawBranches: string | readonly string[],
+  rawBranches: string | BranchOptions,
   callback: (helpers: BranchHelpers) => void | Promise<void>,
 ): PLazy<BranchHelpers> & BranchHelpers;
 /**
  * Creates branch for current repository
  */
 export function branchLogic(
-  rawBranches: string | readonly string[],
+  rawBranches: string | BranchOptions,
   callback?: (helpers: BranchHelpers) => void | Promise<void>,
 ) {
+  const branchoutMemoized = memoize(
+    (key: string, gitContext: GitContext, branch: string, force?: boolean) =>
+      gitContext.checkout({ branch, force }),
+  );
   return new FunctionExecutor("branch")
-    .arguments(() => ({ branches: parseMultistring(rawBranches), callback }))
+    .arguments(() => {
+      return {
+        branchArg:
+          typeof rawBranches === "string"
+            ? ({ branch: rawBranches, force: true } as BranchOptions)
+            : rawBranches,
+        callback,
+      };
+    })
     .helpers(branchHelpers)
     .executor(async (next, self) => {
-      const { branches } = self.getArguments();
-      await Promise.all(
-        branches.map(async (branchName) => {
-          const repo = getRepositoryContext().repository;
-          await switchBranch(branchName);
-          await repositoryContext.run(
-            { repository: repo, branch: branchName },
-            next,
-          );
-        }),
+      const { branchArg } = self.getArguments();
+      const gitContext = getGitContext();
+      await branchoutMemoized(
+        `${gitContext.get("id")}-${branchArg.branch}-${String(
+          branchArg.force,
+        )}`,
+        gitContext,
+        branchArg.branch,
+        branchArg.force,
       );
+      await next();
     })
     .callback(async (self) => {
       const { callback } = self.getArguments();

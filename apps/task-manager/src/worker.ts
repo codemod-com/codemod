@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import { type Job, Worker } from "bullmq";
+import { v4 as uuidv4 } from "uuid";
 
 import { AuthService } from "./services/Auth";
 import { connection } from "./services/Redis";
@@ -19,6 +20,7 @@ const worker = new Worker(
   async (job: Job) => {
     const { id, name, data } = job;
 
+    const codemodName = uuidv4();
     const auth = new AuthService(CLERK_SECRET_KEY);
     const token = await auth.getAuthToken(job.data.userId);
 
@@ -30,6 +32,7 @@ const worker = new Worker(
           await runCodemodJob({
             jobId: id,
             token,
+            codemodName,
             ...data,
           });
         } catch (error) {

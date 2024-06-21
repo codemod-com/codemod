@@ -9,13 +9,11 @@ import { fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
 
-export const getTmpDir = async (...rawParts: string[]) => {
-  const parts = await Promise.all(
-    rawParts.map(async (part) => {
-      const slug = await slugify(part);
-      return await filenamify(slug);
-    }),
-  );
+export const getTmpDir = (...rawParts: string[]) => {
+  const parts = rawParts.map((part) => {
+    const slug = slugify(part);
+    return filenamify(slug);
+  });
   const dirpath = path.join(os.tmpdir(), DIRECTORY, ...parts);
 
   return dirpath;

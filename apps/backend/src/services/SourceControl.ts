@@ -175,3 +175,5 @@ export class SourceControl {
     }
   }
 }
+
+export const sourceControl = new SourceControl();

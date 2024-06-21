@@ -3,6 +3,7 @@
     "allowJs": true,
     "checkJs": false,
     "declaration": true,
+    "emitDeclarationOnly": true,
     "target": "ES2015",
     "outDir": "./dist"
   },

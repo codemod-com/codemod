@@ -1,51 +1,25 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { prisma } from "@codemod-com/database";
 import {
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { CustomHandler } from "./customHandler";
-import { prisma } from "./db/prisma.js";
+import type { RouteHandler } from "fastify";
+import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { parseUnpublishBody } from "./schemata/schema";
-import { CLAIM_PUBLISHING } from "./services/tokenService.js";
-import { getCustomAccessToken } from "./util.js";
+import { environment } from "./util";
 
-export const unpublishHandler: CustomHandler<Record<string, never>> = async ({
-  environment,
-  tokenService,
-  clerkClient,
-  request,
-  reply,
-}) => {
+export type UnPublishHandlerResponse =
+  | { success: true }
+  | { error: string; success: false };
+
+export const unpublishHandler: RouteHandler<{
+  Reply: UnPublishHandlerResponse;
+}> = async (request: UserDataPopulatedRequest, reply) => {
   try {
-    if (clerkClient === null) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
-
-    const accessToken = getCustomAccessToken(environment, request.headers);
-
-    if (accessToken === null) {
-      return reply
-        .code(401)
-        .send({ error: "Access token is not present", success: false });
-    }
-
-    const userId = await tokenService.findUserIdMetadataFromToken(
-      accessToken,
-      BigInt(Date.now()),
-      CLAIM_PUBLISHING,
-    );
-
-    if (userId === null) {
-      return reply
-        .code(401)
-        .send({ error: "User id was not found", success: false });
-    }
-
-    const { username } = await clerkClient.users.getUser(userId);
-    const orgs = await clerkClient.users.getOrganizationMembershipList({
-      userId,
-    });
+    const { username } = request.user!;
+    const orgs = request.organizations!;
 
     if (username === null) {
       throw new Error("The username of the current user does not exist");
