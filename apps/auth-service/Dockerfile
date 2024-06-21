@@ -29,8 +29,7 @@ WORKDIR /app
 COPY --from=builder /app/apps/auth-service/package.json /app
 COPY --from=builder /app/apps/auth-service/build /app/build
 COPY --from=builder /app/packages /app/packages
-COPY --from=builder /app/pnpm-workspace.yaml /app/packages
 
 EXPOSE 8084
 
-CMD ["pnpm --filter @codemod-com/database db:migrate:deploy && node build/index.js"]
+CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
