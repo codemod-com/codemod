@@ -8,14 +8,14 @@ import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 /**
  * @description Filter all js/ts files in current directory
  */
-export function jsLogic(): PLazy<Helpers> & Helpers;
-export function jsLogic(
+export function jsFamLogic(): PLazy<Helpers> & Helpers;
+export function jsFamLogic(
   callback: (helpers: Helpers) => void | Promise<void>,
 ): PLazy<Helpers> & Helpers;
-export function jsLogic(
+export function jsFamLogic(
   callback?: (helpers: Helpers) => void | Promise<void>,
 ): PLazy<Helpers> & Helpers {
-  return new FunctionExecutor("js")
+  return new FunctionExecutor("jsFam")
     .arguments(() => {
       return { callback };
     })
@@ -89,7 +89,7 @@ export function jsLogic(
     .run() as any;
 }
 
-export const js = fnWrapper("js", jsLogic);
+export const jsFam = fnWrapper("jsFam", jsFamLogic);
 
 const helpers = {
   astGrep,

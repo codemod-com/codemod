@@ -4,7 +4,7 @@ import type { PLazy } from "./PLazy.js";
 import { fileContext, getCwdContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { parseMultistring } from "./helpers.js";
-import { js } from "./js.js";
+import { jsFam } from "./jsFam.js";
 
 /**
  * @description Filter all js/ts files in current directory
@@ -80,6 +80,6 @@ export function filesLogic(
 
 export const files = fnWrapper("files", filesLogic);
 
-const helpers = { js };
+const helpers = { jsFam };
 
 type Helpers = typeof helpers;

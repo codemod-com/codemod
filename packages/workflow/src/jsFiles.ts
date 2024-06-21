@@ -10,12 +10,12 @@ import { parseMultistring } from "./helpers.js";
 
 /**
  * @description Filter all js/ts files in current directory
- * @deprecated Use `files().js()` instead
+ * @deprecated Use `files().jsFam()` instead
  */
 export function jsFilesLogic(): PLazy<Helpers> & Helpers;
 /**
  * @description Filter file by glob pattern
- * @deprecated Use `files(glob).js()` instead
+ * @deprecated Use `files(glob).jsFam()` instead
  * @param globs string or array of globs to search for a files, could be comma/space separated string
  * @example
  * ```ts
@@ -27,7 +27,7 @@ export function jsFilesLogic(
 ): PLazy<Helpers> & Helpers;
 /**
  * @description Filter file by glob pattern and apply callback
- * @deprecated Use `files(glob).js(callback)` instead
+ * @deprecated Use `files(glob).jsFam(callback)` instead
  */
 export function jsFilesLogic(
   globs: string | readonly string[],
@@ -35,7 +35,7 @@ export function jsFilesLogic(
 ): PLazy<Helpers> & Helpers;
 /**
  * @description Filter all js/ts files in current directory and apply callback
- * @deprecated Use `files().js(callback)` instead
+ * @deprecated Use `files().jsFam(callback)` instead
  */
 export function jsFilesLogic(
   callback: (helpers: Helpers) => void | Promise<void>,

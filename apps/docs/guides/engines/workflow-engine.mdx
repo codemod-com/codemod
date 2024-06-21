@@ -30,7 +30,7 @@ await git
 	.clone('git@github.com:codemod-com/codemod.git') // init repository context
 	.branch('new-branch') // inside repository context from previous call
   .files('**/*.ts') // find files using glob
-	.js() // create js context for every found file inside directory context
+	.jsFam() // create js context for every found file inside directory context
 	.astGrep('console.log($$$A)') // create context for each found console.log inside file context
 	.replace('console.error($$$A)') // replace inside ast-grep context from previous call
 ```
@@ -49,7 +49,7 @@ const repository = await git
 // Do something inside repository
 await repository
 	.files('**/*.ts')
-  .js()
+  .jsFam()
 	.astGrep('console.log($$$A)')
 	.replace('console.error($$$A)')
 	
@@ -73,7 +73,7 @@ await git
 		console.log(getRepositoryContext());
 		// { repository: "git@github.com:codemod-com/codemod.git", branch: "new-branch" }
 		await files('**/*.ts')
-      .js()
+      .jsFam()
 			.astGrep('console.log($$$A)')
 			.replace('console.error($$$A)')
 			
@@ -91,7 +91,7 @@ import * as fs from 'node:fs/promises'
 import { files } from '@codemod.com/workflow'
 
 await files()
-  .js(async () => {
+  .jsFam(async () => {
     // here we have file context
     const imports = await getImports() // which is passed to getImports function
   })
@@ -140,7 +140,7 @@ Another interesting feature is **ability to retrieve some data from chain calls 
 import { files, contexts } from '@codemod.com/workflow'
 
 const usages = await files()
-  .js()
+  .jsFam()
 	.astGrep('console.log($$$A)')
 	.map(() => {
 		const { file } = contexts.getFileContext()
@@ -222,7 +222,7 @@ import { git } from '@codemod.com/workflow'
 
 const repoLink = await git.clone('repo')
 await repoLink.dirs('packages/*') // get all the packages directories
-await repoLink.files().js() // get all the JavaScript files in repository
+await repoLink.files().jsFam() // get all the JavaScript files in repository
 await repoLink.branch('new-branch')  // create branch
 await repoLink.commit('message') // create commit
 await repoLink.push() // push
@@ -322,7 +322,7 @@ await git.clone('repo', async () => {
     await git.clone('git@github.com:codemod-com/codemod.git', async ({ files, commit, push }) => {
         // do something inside repository
         await files()
-            .js()
+            .jsFam()
             .astGrep('console.log($$$A)')
             .replace('console.error($$$A)')
     })
@@ -390,7 +390,7 @@ await git.clone('repo', async () => {
     // make changes
     await repository
         .files()
-        .js()
+        .jsFam()
         .astGrep('console.log($$$A)')
         .replace('console.error($$$A)')
     // commit
@@ -416,7 +416,7 @@ await git.clone('repo', async () => {
     // make changes
     await repository
         .files()
-        .js()
+        .jsFam()
         .astGrep('console.log($$$A)')
         .replace('console.error($$$A)')
     // commit and push
@@ -451,7 +451,7 @@ await git.clone('repo', async () => {
     await git.clone('git@github.com:codemod-com/codemod.git', async ({ files, branch, commit, push, exec }) => {
         await branch('remove-jquery-extend')
         await files()
-            .js()
+            .jsFam()
             .astGrep('$.extend({}, $A, $B)')
             .replace('{ ...$A, ...$B }')
         // verify change didn't break tests
@@ -503,7 +503,7 @@ await git.clone('repo', async () => {
 <ResponseField name="files(glob, callback)">
   Filters out files using glob.
   You can also combine this function and subcommand function:
-  Calling files().js() - will find files with js, jsx, ts, tsx, cjs, mjs extensions.
+  Calling files().jsFam() - will find files with js, jsx, ts, tsx, cjs, mjs extensions.
 
   #### Parameters:
   <ResponseField name="glob" type="glob">
@@ -521,14 +521,14 @@ await git.clone('repo', async () => {
     import { files } from '@codemod.com/workflow'
 
     // find all js files
-    await files().js()
+    await files().jsFam()
 
     // using glob
     await files('**/*.ts,src/**/app.tsx')
 
     // using callback - iterate for each file
     await files('**/*.ts', async ({ js }) => {
-        await js()
+        await jsFam()
             .astGrep('console.log($$$A)')
             .replace('console.error($$$A)')
     })
@@ -537,7 +537,7 @@ await git.clone('repo', async () => {
 
 ### Language Context
 
-<ResponseField name="js(callback)">
+<ResponseField name="jsFam(callback)">
   Adds context specific for file type.
   Currently only Javascript/Typescript is supported, later we will be adding more languages.
 
@@ -556,14 +556,14 @@ await git.clone('repo', async () => {
     import { files, js } from '@codemod.com/workflow'
 
     // find all js files
-    await files().js()
+    await files().jsFam()
 
     // using glob
     await files('**/*.ts,src/**/app.tsx')
 
     // using callback - iterate for each file
     await files('**/*.ts', async ({ js }) => {
-        await js()
+        await jsFam()
             .astGrep('console.log($$$A)')
             .replace('console.error($$$A)')
     })
@@ -728,7 +728,7 @@ await git.clone('repo', async () => {
     import { files } from '@codemod.com/workflow'
 
     await files()
-      .js()
+      .jsFam()
       .astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`
       .ai`
         SCHEMA could be one of 'any', 'array', 'bigint', 'blob', 'boolean', 'custom', 'date', 'enum_', 'instance', 'intersect',
