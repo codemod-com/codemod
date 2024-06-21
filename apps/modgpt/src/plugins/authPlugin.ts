@@ -32,7 +32,7 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
 
         if (!authHeader) reply.code(401).send({ error: "Unauthorized" });
 
-        await axios.get(`${environment.AUTH_SERVICE_URL}/verifyClientToken`, {
+        await axios.get(`${environment.AUTH_SERVICE_URL}/verifyToken`, {
           headers: {
             Authorization: authHeader,
           },
