@@ -29,6 +29,7 @@ WORKDIR /app
 COPY --from=builder /app/apps/auth-service/package.json /app
 COPY --from=builder /app/apps/auth-service/build /app/build
 COPY --from=builder /app/packages /app/packages
+COPY --from=builder ./pnpm-workspace.yaml /app/packages
 
 EXPOSE 8084
 
