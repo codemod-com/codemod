@@ -21,9 +21,9 @@ COPY ./apps/backend/src /app/apps/backend/src/
 
 RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/backend
 
-RUN pnpm db:migrate:deploy
-
 FROM node:20-alpine3.16
+
+RUN npm install -g pnpm
 
 WORKDIR /app
 
@@ -33,4 +33,4 @@ COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8081
 
-CMD ["node build/index.js"]
+CMD ["pnpm --filter @codemod-com/database db:migrate:deploy && node build/index.js"]
