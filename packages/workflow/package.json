@@ -2,7 +2,7 @@
   "name": "@codemod.com/workflow",
   "author": "Codemod, Inc.",
   "type": "module",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Workflow Engine for Codemod",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
+    "@codemod.com/workflow": "workspace:*",
     "@types/lodash-es": "^4.17.4",
     "esbuild": "^0.17.14"
   }

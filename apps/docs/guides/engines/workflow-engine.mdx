@@ -255,11 +255,12 @@ await git.clone('repo', async () => {
   #### Parameters:
   <ResponseField name="repository" type="repository or array of repositories" required>
   Can be a repository or array of repositories which you need to clone.
-  By shallow cloning is performed with `--depth 1 --single-branch`.
+  By shallow cloning is performed with `--depth 1 --single-branch`. You can specify `branch` to clone specific (not default branch).
   If you want to disable shallow clone, you can provide it with extended configuration:
   {
     repository: string;
     shallow?: boolean;
+    branch?: string;
   }
   </ResponseField>
 

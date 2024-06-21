@@ -52,7 +52,7 @@ export function fnWrapper<T extends (...args: any) => any>(
 }
 
 export class FunctionExecutor<
-  I extends (() => Promise<void> | void) | undefined = undefined, // init
+  I extends ((...args: any[]) => any) | undefined = undefined, // init
   H extends
     | Record<string, any>
     | ((self: FunctionExecutor<I, H, R, W, E, C, A>) => Record<string, any>)
@@ -80,6 +80,7 @@ export class FunctionExecutor<
   private _done: any;
   private parentArgs: any[] = [];
   private childArgs: any[] = [];
+  private initiated = false;
 
   constructor(public name: string) {
     this._context = selfContext.getStore() as NodeContext;
@@ -106,9 +107,11 @@ export class FunctionExecutor<
     return this as any;
   }
 
-  init<IE extends I>(init: IE): FunctionExecutor<IE, H, R, W, E, C, A> {
+  init<IE extends (...args: any[]) => any>(
+    init: (self: FunctionExecutor<I, H, R, W, E, C, A>) => Promise<void> | void,
+  ): FunctionExecutor<IE, H, R, W, E, C, A> {
     if (init) {
-      this._init = memoize(init);
+      this._init = memoize(init) as any;
     }
     return this as any;
   }
@@ -183,6 +186,10 @@ export class FunctionExecutor<
       return this._parentWrapper(
         () => {
           return (this._executor ?? noContextFn)(async () => {
+            if (this._init && !this.initiated) {
+              this.initiated = true;
+              await this._init(this);
+            }
             if (this._callback) {
               await parentContext.run(this._context, this._callback, this);
             }
@@ -221,9 +228,7 @@ export class FunctionExecutor<
     const promise = new PLazy((resolve, reject) => {
       (async () => {
         await this.context()();
-        const done = this._done?.();
         const res = await this._return?.(this);
-        await done;
         return res;
       })()
         .then(resolve)

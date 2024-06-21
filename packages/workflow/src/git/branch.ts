@@ -1,6 +1,8 @@
+import { memoize } from "lodash-es";
 import type { PLazy } from "../PLazy.js";
 import { codemod } from "../codemod.js";
 import { getGitContext } from "../contexts.js";
+import type { GitContext } from "../contexts/GitContext.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
 import { files } from "../files.js";
@@ -34,6 +36,10 @@ export function branchLogic(
   rawBranches: string | BranchOptions,
   callback?: (helpers: BranchHelpers) => void | Promise<void>,
 ) {
+  const branchoutMemoized = memoize(
+    (key: string, gitContext: GitContext, branch: string, force?: boolean) =>
+      gitContext.checkout({ branch, force }),
+  );
   return new FunctionExecutor("branch")
     .arguments(() => {
       return {
@@ -48,7 +54,14 @@ export function branchLogic(
     .executor(async (next, self) => {
       const { branchArg } = self.getArguments();
       const gitContext = getGitContext();
-      await gitContext.checkout(branchArg);
+      await branchoutMemoized(
+        `${gitContext.get("id")}-${branchArg.branch}-${String(
+          branchArg.force,
+        )}`,
+        gitContext,
+        branchArg.branch,
+        branchArg.force,
+      );
       await next();
     })
     .callback(async (self) => {

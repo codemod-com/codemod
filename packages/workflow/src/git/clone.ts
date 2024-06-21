@@ -1,3 +1,4 @@
+import { memoize } from "lodash-es";
 import type { PLazy } from "../PLazy.js";
 import { codemod } from "../codemod.js";
 import { cwdContext, gitContext } from "../contexts.js";
@@ -15,6 +16,7 @@ import { push } from "./push.js";
 
 interface CloneOptions {
   repository: string;
+  branch?: string;
   shallow?: boolean;
 }
 
@@ -30,7 +32,12 @@ const mapCloneOptions = (options: string | CloneOptions): CloneOptions => {
  * @param rawRepositories
  */
 export function cloneLogic(
-  rawRepositories: string | readonly string[] | CloneOptions | CloneOptions[],
+  rawRepositories:
+    | (string | CloneOptions)[]
+    | string
+    | readonly string[]
+    | CloneOptions
+    | CloneOptions[],
 ): PLazy<CloneHelpers> & CloneHelpers;
 /**
  *
@@ -38,7 +45,12 @@ export function cloneLogic(
  * @param callback
  */
 export function cloneLogic(
-  rawRepositories: string | readonly string[] | CloneOptions | CloneOptions[],
+  rawRepositories:
+    | (string | CloneOptions)[]
+    | string
+    | readonly string[]
+    | CloneOptions
+    | CloneOptions[],
   callback: (helpers: CloneHelpers) => void | Promise<void>,
 ): PLazy<CloneHelpers> & CloneHelpers;
 /**
@@ -48,9 +60,15 @@ export function cloneLogic(
  * @returns
  */
 export function cloneLogic(
-  rawRepositories: string | readonly string[] | CloneOptions | CloneOptions[],
+  rawRepositories:
+    | (string | CloneOptions)[]
+    | string
+    | readonly string[]
+    | CloneOptions
+    | CloneOptions[],
   callback?: (helpers: CloneHelpers) => void | Promise<void>,
 ) {
+  const memoizedCloneRepo = memoize(cloneRepository);
   return new FunctionExecutor("clone")
     .arguments(() => {
       let repositories: CloneOptions[];
@@ -80,14 +98,18 @@ export function cloneLogic(
     .executor(async (next, self) => {
       const { repositories } = self.getArguments();
       await Promise.all(
-        repositories.map(({ repository, shallow }, index) =>
+        repositories.map(({ repository, shallow, branch }, index) =>
           cwdContext.run({ cwd: process.cwd() }, async () => {
-            await cloneRepository({
-              repositoryUrl: repository,
-              extraName: String(index),
+            const id = `${repository}, ${String(index)}, ${String(
               shallow,
+            )}, ${String(branch)}`;
+            await memoizedCloneRepo(id, {
+              repositoryUrl: repository,
+              branch,
+              shallow,
+              extraName: String(index),
             });
-            await gitContext.run(new GitContext({ repository }), next);
+            await gitContext.run(new GitContext({ repository, id }), next);
           }),
         ),
       );

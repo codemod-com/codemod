@@ -2,7 +2,7 @@ import { simpleGit } from "simple-git";
 import { getCwdContext } from "../contexts";
 import { Context } from "./Context";
 
-export type GitContextData = { repository: string };
+export type GitContextData = { repository: string; id: string };
 
 export class GitContext extends Context<GitContextData> {
   get simpleGit() {
