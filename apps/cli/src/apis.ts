@@ -37,8 +37,8 @@ export const validateCLIToken = async (
 
 export const getUserData = async (
   accessToken: string,
-): Promise<GetUserDataResponse> => {
-  const res = await Axios.get<GetUserDataResponse>(
+): Promise<GetUserDataResponse | null> => {
+  const { data } = await Axios.get<GetUserDataResponse | object>(
     `${process.env.AUTH_BACKEND_URL}/userData`,
     {
       headers: { Authorization: `Bearer ${accessToken}` },
@@ -46,7 +46,11 @@ export const getUserData = async (
     },
   );
 
-  return res.data;
+  if (!("user" in data)) {
+    return null;
+  }
+
+  return data;
 };
 
 export const publish = async (

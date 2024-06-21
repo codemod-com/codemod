@@ -41,10 +41,9 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
   }
 
   const { account, password: token } = userCredentials;
-  let responseData: GetUserDataResponse;
-  try {
-    responseData = await getUserData(token);
-  } catch (error) {
+  const responseData = await getUserData(token);
+
+  if (responseData === null) {
     await keytar.deletePassword("codemod.com", account);
     return null;
   }
