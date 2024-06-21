@@ -5,6 +5,7 @@ import {
 } from "@codemod-com/utilities";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
+import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,18 +13,28 @@ import {
   DropdownMenuTrigger,
 } from "@studio/components/ui/dropdown-menu";
 import { Separator } from "@studio/components/ui/separator";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@studio/components/ui/tabs";
 import { ToastAction } from "@studio/components/ui/toast";
 import { useToast } from "@studio/components/ui/use-toast";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import { publishCodemod } from "../src/api/publishCodemod";
 import { DownloadZip } from "./DownloadZip";
+import { CopyTerminalCommands } from "./TerminalCommands";
 
 export const RunOptions = () => {
   const [open, setOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
+  const [publishedName, setPublishedName] = useState<string | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
 
   const modStore = useModStore();
   const { engine, inputSnippet, afterSnippet } = useSnippetStore();
@@ -36,18 +47,19 @@ export const RunOptions = () => {
   const handleClick = async () => {
     setIsPublishing(true);
 
-    if (!session) {
+    if (!modStore.internalContent) {
+      return;
+    }
+
+    const token = await getToken();
+
+    if (!session || !token) {
       return toast({
         variant: "destructive",
         title: "Please first log in to use this feature",
         action: <ToastAction altText="Goto login page">Log in</ToastAction>,
       });
     }
-    if (!modStore.internalContent) {
-      return;
-    }
-
-    const token = await getToken();
 
     const humanCodemodName = await getHumanCodemodName(
       modStore.internalContent,
@@ -62,7 +74,7 @@ export const RunOptions = () => {
       username: session.user.username ?? session.user.fullName,
     });
 
-    // Pre-built file
+    let publishResult: Awaited<ReturnType<typeof publishCodemod>> | null = null;
     if (isTypeScriptProjectFiles(files)) {
       await initSwc();
       const { code: compiled } = await transform(files["src/index.ts"], {
@@ -75,65 +87,128 @@ export const RunOptions = () => {
         },
       });
 
-      // zip.file(
-      //   "dist/index.cjs",
-      //   `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
-      // );
+      publishResult = await publishCodemod({
+        files: {
+          mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+          codemodRc: files[".codemodrc.json"],
+        },
+        mainFileName: "index.cjs",
+        token,
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Invalid codemod type",
+        description:
+          "It looks like you have tried to publish non-JS/TS codemod. Currently we don't support this.",
+      });
     }
 
     setIsPublishing(false);
-    setIsOpen(true);
+
+    if (publishResult?.success === true) {
+      setPublishedName(humanCodemodName);
+      setIsOpen(true);
+    }
   };
 
   return (
-    <div className="rounded-md bg-black flex gap-1 h-7 items-center relative overflow-hidden">
-      <Button
-        size="xs"
-        variant="outline"
-        className="text-white flex gap-1 bg-inherit border-none hover:bg-gray-700 pl-4 z-10 peer"
-        hint={
-          <p className="font-normal">
-            Will publish the codemod to the Codemod Registry
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogContent className="max-w-2xl bg-white">
+          <p>
+            We have published your codemod to the Codemod Registry. You can now
+            run it via CLI using the command below.
           </p>
-        }
-        isLoading={isPublishing}
-        disabled={!modStore.internalContent || isPublishing}
-        onClick={handleClick}
-        id="run-codemod-button"
-      >
-        <PlayIcon className="w-3" />
-        Run via CLI
-      </Button>
 
-      <Separator orientation="vertical" className="mx-2 h-2/3 z-10" />
+          <Tabs defaultValue="npm">
+            <TabsList>
+              <TabsTrigger value="npm">npm</TabsTrigger>
+              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+            </TabsList>
 
-      <DropdownMenu open={open} modal={false}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="unstyled"
-            size="xs"
-            role="list"
-            className="p-0 pr-4 z-10"
-            onClick={(e) => {
-              setOpen((prev) => !prev);
-            }}
-          >
-            {open ? (
-              <ChevronUpIcon className="text-white w-3" />
-            ) : (
-              <ChevronDownIcon className="text-white w-3" />
-            )}
-          </Button>
-        </DropdownMenuTrigger>
+            <TabsContent value="npm">
+              <InstructionsContent pm="npm" codemodName={publishedName} />
+            </TabsContent>
+            <TabsContent value="pnpm">
+              <InstructionsContent pm="pnpm" codemodName={publishedName} />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
 
-        <DropdownMenuContent>
-          <DropdownMenuItem className="h-7 bg-white">
-            <DownloadZip />
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <div className="rounded-md bg-black flex gap-1 h-7 items-center relative overflow-hidden">
+        <Button
+          size="xs"
+          variant="outline"
+          className="text-white flex gap-1 bg-inherit border-none hover:bg-gray-700 pl-4 z-10 peer"
+          hint={
+            <p className="font-normal">
+              Will publish the codemod to the Codemod Registry
+            </p>
+          }
+          isLoading={isPublishing}
+          disabled={!modStore.internalContent || isPublishing}
+          onClick={handleClick}
+          id="run-codemod-button"
+        >
+          <PlayIcon className="w-3" />
+          Run via CLI
+        </Button>
 
-      <div className="absolute inset-0 bg-transparent peer-hover:bg-gray-700 transition-colors" />
-    </div>
+        <Separator orientation="vertical" className="mx-2 h-2/3 z-10" />
+
+        <DropdownMenu open={open} modal={false}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="unstyled"
+              size="xs"
+              role="list"
+              className="p-0 pr-4 z-10"
+              onClick={(e) => {
+                setOpen((prev) => !prev);
+              }}
+            >
+              {open ? (
+                <ChevronUpIcon className="text-white w-3" />
+              ) : (
+                <ChevronDownIcon className="text-white w-3" />
+              )}
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className="bg-white" align="end">
+            <DropdownMenuItem asChild>
+              <DownloadZip />
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <div className="absolute inset-0 bg-transparent peer-hover:bg-gray-700 transition-colors" />
+      </div>
+    </>
   );
 };
+
+function InstructionsContent({
+  pm,
+  codemodName,
+}: { pm: "pnpm" | "npm"; codemodName: string | null }) {
+  const npxDialect = useMemo(() => {
+    if (pm === "pnpm") {
+      return "pnpm dlx";
+    }
+
+    return "npx";
+  }, [pm]);
+
+  if (!codemodName) {
+    return null;
+  }
+
+  return (
+    <div className="space-y-1">
+      <CopyTerminalCommands text={`${npxDialect} codemod ${codemodName}`} />
+    </div>
+  );
+}

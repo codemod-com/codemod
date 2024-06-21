@@ -1,4 +1,3 @@
-import { cn } from "@/utils";
 import { useAuth, useSession } from "@clerk/nextjs";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
@@ -18,8 +17,9 @@ import { DownloadIcon } from "@studio/icons/Download";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { downloadProject } from "@studio/utils/download";
-import { Check, Copy } from "lucide-react";
+import { DownloadIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import { CopyTerminalCommands } from "./TerminalCommands";
 
 export const DownloadZip = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -68,19 +68,14 @@ export const DownloadZip = () => {
       <DialogTrigger asChild>
         <Button
           size="xs"
-          variant="unstyled"
-          className="text-white flex gap-1"
-          hint={
-            <p className="font-normal">
-              Download a ZIP archive to use this codemod locally
-            </p>
-          }
+          variant="outline"
+          className="flex gap-1 border-none"
           isLoading={isDownloading}
           disabled={!modStore.content || isDownloading}
           onClick={handleClick}
           id="download-zip-button"
         >
-          <DownloadIcon />
+          <DownloadIcon className="h-4" />
           Download and Run Locally
         </Button>
       </DialogTrigger>
@@ -123,34 +118,6 @@ function InstructionsContent({ pm }: { pm: "pnpm" | "npm" }) {
       <CopyTerminalCommands
         text={`${npxDialect} codemod --source <codemod_path> --target <target_path>`}
       />
-    </div>
-  );
-}
-
-export function CopyTerminalCommands({ text }: { text: string }) {
-  const { isCopied, copy } = useCopyToClipboard({ timeout: 2000 });
-
-  return (
-    <div className="flex items-center justify-between rounded-md bg-secondary p-2 text-secondary-foreground">
-      <code>{text}</code>
-
-      <Button
-        size="unstyled"
-        variant="unstyled"
-        className="space-x-2"
-        onClick={() => copy(text)}
-      >
-        {isCopied ? (
-          <Check className="h-4 w-4 text-green-600" />
-        ) : (
-          <Copy
-            className={cn(
-              "h-4 w-4 cursor-pointer transition-colors hover:text-primary-light",
-              isCopied && "text-primary-light",
-            )}
-          />
-        )}
-      </Button>
     </div>
   );
 }

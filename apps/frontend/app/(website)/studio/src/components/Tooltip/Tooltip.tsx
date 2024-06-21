@@ -9,13 +9,14 @@ import type { ReactNode } from "react";
 type Props = {
   trigger: ReactNode;
   content: string | ReactNode;
+  className?: string
 };
 
-const Tooltip = ({ trigger, content }: Props) => (
+const Tooltip = ({ trigger, content, className }: Props) => (
   <TooltipProvider>
     <ShadcnTooltip>
       <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-      <TooltipContent>{content}</TooltipContent>
+      <TooltipContent className={className}>{content}</TooltipContent>
     </ShadcnTooltip>
   </TooltipProvider>
 );
