@@ -45,7 +45,8 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
             Authorization: authHeader,
           },
         });
-      } catch {
+      } catch (error) {
+        console.error(error);
         reply.code(401).send({ error: "Unauthorized" });
       }
     },
@@ -86,7 +87,7 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
         request.organizations = organizations;
         request.allowedNamespaces = allowedNamespaces;
       } catch (error) {
-        console.log(error);
+        console.error(error);
         reply.code(401).send({ error: "Unauthorized" });
       }
     },
