@@ -50,6 +50,7 @@ export default function transform(
             ),
         );
         if (srcPropertyIndex !== -1) {
+          // find the value of the .ejs template path in the src
           const pathLiteral = properties[srcPropertyIndex].value.arguments.find(
             (arg: any) =>
               j.StringLiteral.check(arg) &&
