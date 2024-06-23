@@ -8,7 +8,7 @@ addTemplate({
     },
 
     getContents({ options: options }) {
-        const contents = readFileSync(resolver.resolve('./runtime/plugin.ts'), 'utf-8');
+        const contents = readFileSync(resolver.resolve('./runtime/plugin.ejs'), 'utf-8');
 
         return template(contents)({
             options: options,
