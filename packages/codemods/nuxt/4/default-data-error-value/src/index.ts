@@ -86,7 +86,7 @@ export default function transform(
               },
             },
             right: {
-              type: "Literal",
+              type: "NullLiteral",
               value: null,
             },
             operator: "===",
@@ -116,7 +116,7 @@ export default function transform(
                 },
               },
               right: {
-                type: "Literal",
+                type: "StringLiteral",
                 value: null,
               },
               operator: "===",

@@ -1,5 +1,5 @@
 {
-  "name": "@codemod/nuxt-4-shallow-data-reactivity",
+  "name": "@codemod/nuxt-4-default-data-error-value",
   "dependencies": {},
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
