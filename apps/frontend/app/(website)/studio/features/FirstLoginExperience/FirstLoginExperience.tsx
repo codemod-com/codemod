@@ -3,6 +3,7 @@ import { getIntroJsOptions } from "@features/FirstLoginExperience/config";
 import { Lightbulb } from "@phosphor-icons/react";
 import { Steps } from "intro.js-react";
 import "intro.js/introjs.css";
+import { IconButton } from "@studio/components/button/IconButton";
 import { useEffect, useState } from "react";
 
 export const FirstLoginExperience = () => {
@@ -46,17 +47,12 @@ export const FirstLoginExperience = () => {
         }}
         steps={getIntroJsOptions().steps}
       />
-      <div
-        className="width-[50px]
-           hover:text-accent-foreground rounded-md hover:bg-accent
-           flex items-center justify-center cursor-pointer group mr-2 px-3"
+      <IconButton
+        Icon={Lightbulb}
+        text="Tour"
         onClick={onStart}
-      >
-        <div className="flex flex-col items-center">
-          <ExplainIcon text={"Explain the app"} Icon={Lightbulb} />
-          <strong className="text-[0.5rem]">Tour</strong>
-        </div>
-      </div>
+        hint="Explain the app"
+      />
     </>
   );
 };
