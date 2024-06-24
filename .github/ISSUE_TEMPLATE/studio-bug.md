@@ -3,7 +3,8 @@ name: Codemod Studio Issue
 about: Report any issues and bugs in Codemod Studio
 title: "studio: example-bug"
 labels: studio
-assignees: ""
+assignees: ''
+
 ---
 
 ### Issue Description
