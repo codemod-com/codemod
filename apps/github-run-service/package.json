@@ -1,0 +1,40 @@
+{
+  "name": "@codemod-com/github-run-service",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "node esbuild.config.js",
+    "start": "node build/index.js",
+    "test": "vitest --run"
+  },
+  "author": "Codemod inc.",
+  "private": true,
+  "devDependencies": {
+    "@codemod-com/tsconfig": "workspace:*",
+    "@types/node": "20.10.5",
+    "@types/parse-github-url": "1.0.3",
+    "dotenv-cli": "^7.4.1",
+    "esbuild": "^0.19.12",
+    "fastify-plugin": "4.5.1",
+    "nodemon": "3.0.2",
+    "ts-node": "10.9.2",
+    "tsx": "^4.7.1",
+    "typescript": "5.3.3"
+  },
+  "dependencies": {
+    "@codemod-com/utilities": "workspace:*",
+    "@fastify/busboy": "^2.1.1",
+    "@fastify/cors": "8.5.0",
+    "@fastify/multipart": "^8.1.0",
+    "@fastify/rate-limit": "9.0.1",
+    "bullmq": "^5.7.5",
+    "dotenv": "^16.4.5",
+    "fastify": "4.25.1",
+    "ioredis": "^5.4.1",
+    "parse-github-url": "1.0.2",
+    "valibot": "^0.24.1"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "fastify-plugin": "4.5.1"
+  }
+}

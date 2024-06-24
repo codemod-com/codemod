@@ -11,10 +11,10 @@ export {
   buildCrossplatformArg,
   capitalize,
   doubleQuotify,
+  formatText,
   removeLineBreaksAtStartAndEnd,
   removeSpecialCharacters,
   singleQuotify,
-  formatText,
 } from "./functions/formatting.js";
 export {
   buildCodemodMetadataHash,
