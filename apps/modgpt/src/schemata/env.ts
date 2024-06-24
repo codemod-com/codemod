@@ -5,7 +5,6 @@ import {
   coerce,
   number,
   object,
-  optional,
   parse,
   string,
 } from "valibot";

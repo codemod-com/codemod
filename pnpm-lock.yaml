@@ -600,6 +600,9 @@ importers:
       prism-react-renderer:
         specifier: ^2.3.1
         version: 2.3.1(react@18.2.0)
+      prop-types:
+        specifier: ^15.8.1
+        version: 15.8.1
       ramda:
         specifier: ^0.29.1
         version: 0.29.1
