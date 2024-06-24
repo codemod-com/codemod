@@ -1,35 +1,25 @@
 import Text from "@studio/components/Text";
 import Tree, { type TreeNode } from "@studio/components/Tree";
 import useScrollNodeIntoView from "@studio/hooks/useScrollNodeIntoView";
-import { useCallback, useEffect, useRef } from "react";
-
-import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import {
   useSelectFirstTreeNodeForSnippet,
-  useSelectSnippets,
   useSnippetsStore,
 } from "@studio/store/zustand/snippets";
+import { useCallback, useEffect, useRef } from "react";
 
 type Props = {
   type: "before" | "after" | "output";
 };
 const ASTViewer = ({ type }: Props) => {
   const ASTTreeRef = useRef<HTMLDivElement>(null);
-  const executeRangeCommandOnBeforeInputThunk =
-    useExecuteRangeCommandOnBeforeInput();
-  const { rootNode } = useSelectSnippets(type);
   const getFirstTreeNode = useSelectFirstTreeNodeForSnippet();
-  const { setSelections } = useCodemodOutputStore();
   const { getSelectedEditors } = useSnippetsStore();
-  const { setSelection } = getSelectedEditors();
+  const {
+    setSelection,
+    [type]: { rootNode },
+  } = getSelectedEditors();
 
-  const setRange =
-    type === "before"
-      ? executeRangeCommandOnBeforeInputThunk
-      : type === "after"
-        ? setSelection("after")
-        : setSelections;
+  const setRange = setSelection(type);
 
   const scrollNodeIntoView = useScrollNodeIntoView();
 

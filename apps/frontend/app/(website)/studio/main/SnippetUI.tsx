@@ -1,5 +1,4 @@
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useRanges } from "@studio/store/useRanges";
 import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
 import { prettify } from "@studio/utils/prettify";
 import dynamic from "next/dynamic";
@@ -17,8 +16,13 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
-  const { setBeforeSnippet, setAfterSnippet, beforeSnippet, afterSnippet } =
-    useSnippetsStore().getSelectedEditors();
+  const {
+    setBeforeSnippet,
+    setAfterSnippet,
+    beforeSnippet,
+    afterSnippet,
+    [type]: { ranges },
+  } = useSnippetsStore().getSelectedEditors();
 
   const snippetValue = type === "before" ? beforeSnippet : afterSnippet;
 
@@ -51,13 +55,17 @@ export const useSnippet = (type: SnippetType) => {
     onSnippetBlur,
     onSnippetChange,
     handleSelectionChange,
+    ranges,
   };
 };
 const SnippetUI = ({ type }: Props) => {
-  const { value, onSnippetBlur, onSnippetChange, handleSelectionChange } =
-    useSnippet(type);
-
-  const ranges = useRanges(type);
+  const {
+    value,
+    onSnippetBlur,
+    onSnippetChange,
+    handleSelectionChange,
+    ranges,
+  } = useSnippet(type);
 
   return (
     <div className="h-full overflow-hidden">

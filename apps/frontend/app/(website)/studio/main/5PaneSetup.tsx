@@ -37,7 +37,15 @@ const Main = () => {
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  const { engine, setEngine, getSelectedEditors } = useSnippetsStore();
+  const {
+    engine,
+    setEngine,
+    getSelectedEditors,
+    editors,
+    selectedPairIndex,
+    setSelectedPairIndex,
+    addPair,
+  } = useSnippetsStore();
   const { isDark } = useTheme();
 
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {
@@ -46,6 +54,20 @@ const Main = () => {
 
   const snippetStore = getSelectedEditors();
 
+  const TripletSelector = () => (
+    <ul style={{ display: "flex" }}>
+      {editors.map((_, i) => (
+        <li
+          className="cursor-pointer"
+          onClick={() => setSelectedPairIndex(i)}
+          key={i}
+        >
+          pair: {i}
+        </li>
+      ))}
+      <li onClick={addPair}>Add snippet</li>
+    </ul>
+  );
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
@@ -85,8 +107,6 @@ const Main = () => {
         <Panel.HeaderTitle className="h-full">
           Codemod
           <div className="flex items-center gap-1">
-            {/* <DownloadZip />
-						<ClearInputButton /> */}
             <Select onValueChange={onEngineChange} value={engine}>
               <SelectTrigger className="flex flex-1 h-full select-none items-center font-semibold">
                 <span
@@ -133,6 +153,7 @@ const Main = () => {
         panelRefs={panelRefs}
         panels={[beforePanel, afterPanel]}
       >
+        <TripletSelector />
         {onlyAfterHidden && (
           <ShowPanelTile
             header="After"

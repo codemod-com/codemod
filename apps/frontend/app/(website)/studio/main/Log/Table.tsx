@@ -9,9 +9,7 @@ import {
   TableHeader,
 } from "@studio/components/ui/table";
 import type { Event } from "@studio/schemata/eventSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
 import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import { useLogStore } from "@studio/store/zustand/log";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetsStore } from "@studio/store/zustand/snippets";
@@ -94,7 +92,7 @@ const buildTableRow = (
 
 const useRanges = () => ({
   codemodInputRanges: useModStore().ranges,
-  codemodOutputRanges: useCodemodOutputStore().ranges,
+  codemodOutputRanges: useSnippetsStore().getSelectedEditors().output.ranges,
   beforeInputRanges: useSnippetsStore().getSelectedEditors().before.ranges,
   afterInputRanges: useSnippetsStore().getSelectedEditors().after.ranges,
 });
@@ -102,8 +100,6 @@ const useRanges = () => ({
 type Ranges = ReturnType<typeof useRanges>;
 
 const Table = () => {
-  const executeRangeCommandOnBeforeInputThunk =
-    useExecuteRangeCommandOnBeforeInput();
   const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
     null,
   );
@@ -112,12 +108,11 @@ const Table = () => {
 
   const setActiveThunk = useSetActiveEventThunk();
   const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
   const { getSelectedEditors } = useSnippetsStore();
-  const { setSelection } = getSelectedEditors();
+  const { setAfterSelection, setOutputSelection, setBeforeSelection } =
+    getSelectedEditors();
   const { activeEventHashDigest, events } = useLogStore();
 
-  const setAfterSelection = setSelection("after");
   const buildOnMouseOver = useCallback(
     (hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
       (event) => {
@@ -167,12 +162,12 @@ const Table = () => {
         ranges: oldRanges.codemodInputRanges,
       });
 
-      setSelections({
+      setOutputSelection({
         kind: "PASS_THROUGH",
         ranges: oldRanges.codemodOutputRanges,
       });
 
-      executeRangeCommandOnBeforeInputThunk({
+      setBeforeSelection({
         kind: "PASS_THROUGH",
         ranges: oldRanges.beforeInputRanges,
       });
@@ -187,8 +182,8 @@ const Table = () => {
       oldRanges,
       setActiveThunk,
       setCodemodSelection,
-      setSelections,
-      executeRangeCommandOnBeforeInputThunk,
+      setOutputSelection,
+      setBeforeSelection,
       setAfterSelection,
     ],
   );

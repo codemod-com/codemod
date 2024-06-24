@@ -5,7 +5,6 @@ import {
   AFTER_SNIPPET_DEFAULT_CODE,
   BEFORE_SNIPPET_DEFAULT_CODE,
 } from "@studio/store/getInitialState";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
@@ -45,8 +44,11 @@ type SnippetValuesMap = {
 
 type SnippetSettersMap = {
   [K in EditorType as `set${Capitalize<K>}Snippet`]: SnippetSetters["setContent"];
+} & {
+  [K in EditorType as `set${Capitalize<K>}Selection`]: SnippetSetters["setSelection"];
 };
 type SnippetsConfig = {
+  addPair: () => void;
   clearAll: () => void;
   selectedPairIndex: number;
   engine: KnownEngines;
@@ -119,6 +121,17 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       output: getSnippetInitialState(),
     },
   ],
+  addPair: () =>
+    set({
+      editors: [
+        ...get().editors,
+        {
+          before: getSnippetInitialState(),
+          after: getSnippetInitialState(),
+          output: getSnippetInitialState(),
+        },
+      ],
+    }),
   clearAll: () =>
     set({
       editors: [
@@ -148,10 +161,14 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         get().editors,
       ),
     ),
-  setSelectedPairIndex: (i: number) => set({ selectedPairIndex: i }),
+  setSelectedPairIndex: (i: number) => {
+    console.log({ get: get() });
+    set({ selectedPairIndex: i });
+  },
   getSelectedEditors: () => {
     const index = get().selectedPairIndex || 0;
     const editors = get().editors?.[index] as Editors;
+    console.log({ editors: get().editors });
     return {
       ...editors,
       beforeSnippet: editors.before.content,
@@ -160,6 +177,9 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       setBeforeSnippet: get().setContent(index, "before"),
       setAfterSnippet: get().setContent(index, "after"),
       setOutputSnippet: get().setContent(index, "output"),
+      setBeforeSelection: get().setSelection(index, "before"),
+      setAfterSelection: get().setSelection(index, "after"),
+      setOutputSelection: get().setSelection(index, "output"),
       setSelection: (editorType: EditorType) =>
         get().setSelection(index, editorType),
     };
@@ -170,6 +190,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     }),
   setContent: (editorsPairIndex, type) => {
     return (content) => {
+      console.log({ editorsPairIndex, type, content });
       const parsed = parseSnippet(content);
       const rootNode = isFile(parsed)
         ? mapBabelASTToRenderableTree(parsed)
@@ -178,19 +199,8 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       const rpath = ["editors", editorsPairIndex, type];
 
       const obj = get();
-      if (pathSatisfies(is(Object), rpath, obj)) {
-        set(
-          assocPath(
-            rpath,
-            {
-              ...path(rpath, obj),
-              content,
-              rootNode,
-            },
-            obj,
-          ),
-        );
-      } else set(obj);
+      obj.editors[editorsPairIndex][type].content = content;
+      set(obj);
     };
   },
   setSelection: (editorsPairIndex, type) => (command) => {
@@ -200,87 +210,18 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       const rpath = ["editors", editorsPairIndex, type];
 
       const obj = get();
-      if (pathSatisfies(is(Object), rpath, obj)) {
-        set(
-          assocPath(
-            rpath,
-            {
-              ...path(rpath, obj),
-              ranges,
-              rangeUpdatedAt: Date.now(),
-            },
-            obj,
-          ),
-        );
-      } else set(obj);
+      obj.editors[editorsPairIndex][type].ranges = ranges;
+      obj.editors[editorsPairIndex][type].rangeUpdatedAt = Date.now();
+      set(obj);
     }
   },
 }));
 
 export const useSelectFirstTreeNodeForSnippet = () => {
-  const state = useSnippetsStore();
-  const { ranges } = useCodemodOutputStore();
-  let firstRange: TreeNode | OffsetRange | undefined;
+  const { getSelectedEditors } = useSnippetsStore();
 
   return (type: EditorType) => {
-    if (type === "output") firstRange = ranges[0];
-    else firstRange = state.editors[state.selectedPairIndex]?.[type].ranges[0];
-
+    const firstRange = getSelectedEditors()[type].ranges[0];
     return firstRange && "id" in firstRange ? firstRange : null;
   };
-};
-
-export const useSelectSnippets = (type: EditorType) => {
-  // @TODO make reusable reducer for the code snippet
-  // that will include snippet, rootNode, ranges,
-
-  const empty = {
-    snippet: "",
-    rootNode: null,
-    ranges: [],
-  };
-
-  const { editors, selectedPairIndex } = useSnippetsStore();
-
-  const { ranges, content: outputSnippet, rootNode } = useCodemodOutputStore();
-
-  if (!editors[selectedPairIndex]) return empty;
-  const {
-    before: {
-      content: beforeSnippet,
-      rootNode: beforeInputRootNode,
-      ranges: beforeInputRanges,
-    },
-
-    after: {
-      content: afterSnippet,
-      rootNode: afterInputRootNode,
-      ranges: afterInputRanges,
-    },
-  } = editors[selectedPairIndex] as Editors;
-
-  switch (type) {
-    case "before":
-      return {
-        snippet: beforeSnippet,
-        rootNode: beforeInputRootNode,
-        ranges: beforeInputRanges,
-      };
-    case "after":
-      return {
-        snippet: afterSnippet,
-        rootNode: afterInputRootNode,
-        ranges: afterInputRanges,
-      };
-
-    case "output":
-      return {
-        snippet: outputSnippet,
-        rootNode,
-        ranges,
-      };
-
-    default:
-      return empty;
-  }
 };

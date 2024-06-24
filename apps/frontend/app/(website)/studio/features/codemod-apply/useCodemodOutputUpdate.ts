@@ -1,5 +1,4 @@
 import { useWebWorker } from "@/app/(website)/studio/features/codemod-apply/useWebWorker";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import { useLogStore } from "@studio/store/zustand/log";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetsStore } from "@studio/store/zustand/snippets";
@@ -7,11 +6,10 @@ import { useEffect } from "react";
 
 export const useCodemodOutputUpdate = () => {
   const [webWorkerState, postMessage, setRetry] = useWebWorker();
-  const codemodOutput = useCodemodOutputStore();
   const { setEvents, events } = useLogStore();
   const { setHasRuntimeErrors } = useModStore();
   const { engine, getSelectedEditors } = useSnippetsStore();
-  const { beforeSnippet } = getSelectedEditors();
+  const { beforeSnippet, setOutputSnippet } = getSelectedEditors();
   const { internalContent } = useModStore();
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
@@ -20,16 +18,16 @@ export const useCodemodOutputUpdate = () => {
     postMessage(engine, internalContent ?? "", beforeSnippet);
     setRetry(() => postMessage(engine, internalContent ?? "", beforeSnippet));
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
-      codemodOutput.setContent("");
+      setOutputSnippet("");
       setHasRuntimeErrors(false);
       setEvents([]);
     }
     if (webWorkerState.kind === "LEFT") {
-      codemodOutput.setContent(webWorkerState.error.message);
+      setOutputSnippet(webWorkerState.error.message);
       setHasRuntimeErrors(true);
       setEvents([]);
     } else {
-      codemodOutput.setContent(webWorkerState.output ?? "");
+      setOutputSnippet(webWorkerState.output ?? "");
       setHasRuntimeErrors(true);
       setEvents(webWorkerState.events);
     }

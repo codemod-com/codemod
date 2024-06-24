@@ -1,6 +1,4 @@
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import { useLogStore } from "@studio/store/zustand/log";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetsStore } from "@studio/store/zustand/snippets";
@@ -129,12 +127,13 @@ const calculateReplacementRanges = (
 export const useSetActiveEventThunk = () => {
   const { setActiveEventHashDigest, events } = useLogStore();
   const { getSelectedEditors } = useSnippetsStore();
-  const { setSelection } = getSelectedEditors();
-  const setAfterSelection = setSelection("after");
+  const {
+    setAfterSelection,
+    setOutputSelection,
+    outputSnippet,
+    setBeforeSelection,
+  } = getSelectedEditors();
   const { setCodemodSelection } = useModStore();
-  const { content, setSelections } = useCodemodOutputStore();
-  const executeRangeCommandOnBeforeInputThunk =
-    useExecuteRangeCommandOnBeforeInput();
   return (eventHashDigest: string) => {
     if (eventHashDigest === null) {
       const rangeCommand: RangeCommand = {
@@ -142,9 +141,9 @@ export const useSetActiveEventThunk = () => {
         ranges: [],
       };
 
-      executeRangeCommandOnBeforeInputThunk(rangeCommand);
+      setBeforeSelection(rangeCommand);
       setAfterSelection(rangeCommand);
-      setSelections(rangeCommand);
+      setOutputSelection(rangeCommand);
 
       return;
     }
@@ -163,7 +162,7 @@ export const useSetActiveEventThunk = () => {
       ranges: [event.codemodSourceRange],
     });
 
-    executeRangeCommandOnBeforeInputThunk({
+    setBeforeSelection({
       // the selection from the evens will thus be reflected in the Find & Replace panel
       kind: "FIND_CLOSEST_PARENT",
       ranges: "snippetBeforeRanges" in event ? event.snippetBeforeRanges : [],
@@ -173,10 +172,10 @@ export const useSetActiveEventThunk = () => {
       ranges: [],
     });
 
-    setSelections({
+    setOutputSelection({
       kind: "PASS_THROUGH",
       ranges: calculateReplacementRanges(
-        content ?? "",
+        outputSnippet ?? "",
         "codes" in event ? event.codes : [],
       ),
     });

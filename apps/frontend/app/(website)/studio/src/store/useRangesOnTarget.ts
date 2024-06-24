@@ -49,8 +49,6 @@
 // });
 
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
 import { useLogStore } from "@studio/store/zustand/log";
 import { useModStore } from "@studio/store/zustand/mod";
 import type { RangeCommand } from "@studio/utils/tree";
@@ -64,11 +62,9 @@ type UseRange = Readonly<{
 export const useRangesOnTarget = () => {
   const { setActiveEventHashDigest } = useLogStore();
   const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
-  const setRanges = useExecuteRangeCommandOnBeforeInput();
   const { getSelectedEditors } = useSnippetsStore();
-  const { setSelection } = getSelectedEditors();
-  const setAfterSelection = setSelection("after");
+  const { setAfterSelection, setOutputSelection, setBeforeSelection } =
+    getSelectedEditors();
   return ({ ranges, target }: UseRange) => {
     setActiveEventHashDigest(null);
 
@@ -82,10 +78,10 @@ export const useRangesOnTarget = () => {
         setCodemodSelection(rangeCommand);
         break;
       case "CODEMOD_OUTPUT":
-        setSelections(rangeCommand);
+        setOutputSelection(rangeCommand);
         break;
       case "BEFORE_INPUT":
-        setRanges(rangeCommand);
+        setBeforeSelection(rangeCommand);
         break;
       case "AFTER_INPUT":
         setAfterSelection(rangeCommand);
