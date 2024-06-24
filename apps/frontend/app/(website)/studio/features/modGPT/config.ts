@@ -31,9 +31,7 @@ export const codemodAiWsServer = isDevelopment
   ? "ws://127.0.0.1:8000/ws"
   : "wss://backend.codemod.com/ws";
 
-const prodGptServer = shouldUseModService
-  ? "https://backend.codemod.com/modgpt"
-  : "https://backend.codemod.com";
+const prodGptServer = "https://backend.codemod.com/modgpt";
 
 export const modGptServer = `${
   isDevelopment ? "http://0.0.0.0:8082" : prodGptServer
