@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "react/19/replace-react-test-renderer-import",
+  "version": "1.0.3",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["react", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/replace-react-test-renderer-import"
+  },
+  "applicability": {
+    "from": [["react", "<=", "18"]]
+  }
+}
