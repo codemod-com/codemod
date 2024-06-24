@@ -55,7 +55,6 @@ export type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
   GetScopedTokenResponse,
-  VerifyCLITokenResponse,
 } from "./schemata/apiResponses.js";
 export {
   argumentRecordSchema,

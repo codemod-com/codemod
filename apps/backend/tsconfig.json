@@ -2,15 +2,10 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "~/*": ["src/*"]
+      "~/*": ["services/*"]
     }
   },
-  "include": [
-    "reset.d.ts",
-    "./src",
-    "./test",
-    "../../packages/utilities/src/functions/crypto"
-  ],
+  "include": ["./services/*/src"],
   "exclude": ["./dist", "./node_modules"],
   "extends": "@codemod-com/tsconfig/base.json"
 }
