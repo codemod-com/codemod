@@ -7,7 +7,7 @@ export type CodemodListResponse = {
   author: string;
   engine: AllEngines;
   tags: string[];
-  verified: boolean;
+  verified: any;
   arguments: Arguments;
   updatedAt: Date;
 }[];

@@ -7,7 +7,7 @@ export const codemodRunBodySchema = object({
   branch: optional(string()),
 });
 
-export type CodemodRunResponse = { success: boolean; codemodRunId: string };
+export type CodemodRunResponse = { success: any; codemodRunId: string };
 
 export const validateCodemodStatusParamsSchema = object({
   jobId: string(),

@@ -1,7 +1,7 @@
 import {
   type Output,
+  any,
   array,
-  boolean,
   number,
   parse,
   record,
@@ -13,7 +13,7 @@ import {
 export const argumentSchema = union([
   string(),
   number(),
-  boolean(),
+  any(),
   array(string()),
 ]);
 

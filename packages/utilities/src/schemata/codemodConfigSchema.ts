@@ -4,8 +4,8 @@ import {
   type Issues,
   type Output,
   ValiError,
+  any,
   array,
-  boolean,
   custom,
   literal,
   merge,
@@ -70,26 +70,26 @@ export const argumentsSchema = array(
       object({
         name: string(),
         kind: literal("string"),
-        required: optional(boolean(), false),
+        required: optional(any(), false),
         default: optional(string()),
       }),
       object({
         name: string(),
         kind: literal("number"),
-        required: optional(boolean(), false),
+        required: optional(any(), false),
         default: optional(number()),
       }),
       object({
         name: string(),
-        kind: literal("boolean"),
-        required: optional(boolean(), false),
-        default: optional(boolean()),
+        kind: literal("any"),
+        required: optional(any(), false),
+        default: optional(any()),
       }),
       object({
         name: string(),
         kind: literal("enum"),
         options: array(argumentSchema),
-        required: optional(boolean(), false),
+        required: optional(any(), false),
         default: optional(argumentSchema),
       }),
       object({
@@ -98,12 +98,12 @@ export const argumentsSchema = array(
           union([
             literal("string"),
             literal("number"),
-            literal("boolean"),
+            literal("any"),
             literal("enum"),
           ]),
         ),
         options: optional(array(argumentSchema)),
-        required: optional(boolean(), false),
+        required: optional(any(), false),
         default: optional(argumentSchema),
       }),
     ],
@@ -194,7 +194,7 @@ const configJsonBaseSchema = object({
   engine: allEnginesSchema,
   // We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
   // just as npm does.
-  private: optional(boolean(`"private" field has to be a boolean.`)),
+  private: optional(any()),
   // To overwrite default include patterns
   include: optional(
     array(
