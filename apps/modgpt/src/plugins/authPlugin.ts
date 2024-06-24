@@ -37,8 +37,8 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
             Authorization: authHeader,
           },
         });
-      } catch {
-        reply.code(401).send({ error: "Unauthorized" });
+      } catch (error) {
+        console.log(error);
       }
     },
   );
