@@ -2,8 +2,8 @@ import { getIntroJsOptions } from "@features/FirstLoginExperience/config";
 import { Lightbulb } from "@phosphor-icons/react";
 import { IconButton } from "@studio/components/button/IconButton";
 import { Steps } from "intro.js-react";
-import { useEffect, useState } from "react";
 import "intro.js/introjs.css";
+import { useEffect, useState } from "react";
 
 export const FirstLoginExperience = () => {
   const [isEnabled, setIsEnabled] = useState(false);
