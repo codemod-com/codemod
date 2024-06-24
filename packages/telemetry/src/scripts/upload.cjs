@@ -2,7 +2,7 @@ const { readFile } = require("node:fs/promises");
 const { PostHog } = require("posthog-node");
 
 const postHog = new PostHog("phc_nGWKWP3t1fcNFqGi6UdstXjMf0fxx7SBeohHPSS6d2Y", {
-  host: "https://app.posthog.com",
+  host: "https://us.i.posthog.com",
 });
 
 const wait = async (ms) => {
