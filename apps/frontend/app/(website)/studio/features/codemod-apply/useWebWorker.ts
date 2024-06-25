@@ -1,9 +1,6 @@
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { Event } from "@studio/schemata/eventSchemata";
-import {
-  type WebWorkerIncomingMessage,
-  parseWebWorkerOutgoingMessage,
-} from "@studio/schemata/webWorkersSchemata";
+import type { WebWorkerIncomingMessage } from "@studio/schemata/webWorkersSchemata";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 type State =
@@ -55,7 +52,7 @@ export const useWebWorker = () => {
     };
 
     worker.onmessage = (messageEvent) => {
-      const data = parseWebWorkerOutgoingMessage(messageEvent.data);
+      const data = messageEvent.data;
       setCount(3);
       setState({
         kind: "RIGHT",
