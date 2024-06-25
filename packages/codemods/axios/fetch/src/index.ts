@@ -33,7 +33,7 @@ export async function workflow({ files }: Api) {
     }));
 
   await files()
-    .js()
+    .jsFam()
     .astGrep({
       rule: {
         any: [
@@ -72,7 +72,7 @@ export async function workflow({ files }: Api) {
     .ai(prompt);
 
   await files()
-    .js()
+    .jsFam()
     .astGrep({ rule: { any: axiosPatterns } })
     .ai(prompt);
 }
