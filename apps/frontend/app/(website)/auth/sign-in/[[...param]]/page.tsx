@@ -12,7 +12,7 @@ function SignInPage() {
     <div className="flex h-screen w-screen items-center justify-center">
       <SignIn
         signUpUrl="/auth/sign-out"
-        afterSignInUrl={isStudio ? "/studio" : "/registry"}
+        forceRedirectUrl={isStudio ? "/studio" : "/registry"}
       />
     </div>
   );
