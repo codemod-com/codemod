@@ -13,6 +13,7 @@ function SignInPage() {
       <SignIn
         signUpUrl="/auth/sign-out"
         forceRedirectUrl={isStudio ? "/studio" : "/registry"}
+        appearance={{ elements: { signUpLink: { display: "none" } } }}
       />
     </div>
   );
