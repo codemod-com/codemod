@@ -1,5 +1,5 @@
 {
-  "name": "@codemod-com/github-run-service",
+  "name": "@codemod-com/run-service",
   "version": "0.0.1",
   "scripts": {
     "build": "node esbuild.config.js",

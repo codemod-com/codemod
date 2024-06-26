@@ -1,11 +1,10 @@
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, {
-  type FastifyPluginCallback,
-  type FastifyRequest,
-} from "fastify";
-import authPlugin from "./plugins/authPlugin.js";
+import Fastify, { type FastifyPluginCallback } from "fastify";
+import authPlugin, {
+  type UserDataPopulatedRequest,
+} from "./plugins/authPlugin.js";
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,
@@ -124,12 +123,18 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.post(
     "/codemodRun",
-    { preHandler: instance.authenticate },
-    async (request, reply) => {
+    { preHandler: [instance.authenticate, instance.getUserData] },
+    async (request: UserDataPopulatedRequest, reply) => {
       if (!queue) {
         throw new Error("Queue service is not running.");
       }
-      const { userId, codemodSource, codemodEngine, repoUrl, branch } =
+
+      const userId = request.user?.id;
+      if (!userId) {
+        return reply.code(401).send();
+      }
+
+      const { codemodSource, codemodEngine, repoUrl, branch } =
         parseCodemodRunBody(request.body);
 
       const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {

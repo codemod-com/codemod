@@ -5,12 +5,7 @@
       "~/*": ["src/*"]
     }
   },
-  "include": [
-    "reset.d.ts",
-    "./src",
-    "./test",
-    "../../packages/utilities/src/functions/crypto"
-  ],
+  "include": ["reset.d.ts", "./src", "./test"],
   "exclude": ["./dist", "./node_modules"],
   "extends": "@codemod-com/tsconfig/base.json"
 }
