@@ -3,8 +3,10 @@ import type { TelemetrySender } from "@codemod-com/telemetry";
 import { type fs, vol } from "memfs";
 import { describe, expect, it, vi } from "vitest";
 
+import { randomBytes } from "node:crypto";
 import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions";
 import { handleRunCliCommand } from "../commands/run";
+
 const mockedArgs = {
   _: ["recipe1"],
   target: "./target",
@@ -21,6 +23,7 @@ const mockedSendDangerousEvent = vi.fn();
 
 const mockedTelemetry = {
   sendDangerousEvent: mockedSendDangerousEvent,
+  sendEvent: () => {},
   sendError: () => {},
 } as unknown as TelemetrySender<any>;
 
@@ -82,6 +85,46 @@ vi.mock("node:fs/promises", async () => {
   return memfs.fs.promises;
 });
 
+vi.mock("../../../../packages/runner/dist/buildGlobGenerator.js", () => {
+  return {
+    buildPathGlobGenerator: async function* () {
+      console.log("buildPathGlobGenerator called");
+      yield "target/src/index.tsx";
+    },
+  };
+});
+
+vi.mock("../../../../packages/runner/dist/workerThreadManager.js", () => {
+  return {
+    WorkerThreadManager: function WorkerThreadManager(...args: any[]) {
+      const onMessage = args[2];
+      const onCommand = args[3];
+
+      onCommand({
+        kind: "updateFile",
+        oldPath: `./target/src/file_${randomBytes(8).toString("hex")}.tsx`,
+        oldData: "",
+        newData: "updated",
+        formatWithPrettier: false,
+      });
+
+      onMessage({
+        kind: "finish",
+      });
+    },
+  };
+});
+
+vi.mock(
+  "../../../../packages/runner/dist/fileCommands.js",
+  (requireOriginal) => {
+    return {
+      ...requireOriginal,
+      modifyFileSystemUponCommand: vi.fn(),
+    };
+  },
+);
+
 const memfsVolumeJSON = {
   "codemods/codemod1/dist/index.cjs": `module.exports = function transform(file, api, options) {
     return "transformed by codemod1"
@@ -108,10 +151,10 @@ const memfsVolumeJSON = {
     "engine": "recipe",
     "names": ["codemod1", "codemod2"]
 }`,
-  "target/src/index.tsx": "const a = 1;",
 };
 
 describe("Run command", () => {
+  // tracks both subcodemod runs and recipe run
   it("Should properly track children codemods of the recipe", async () => {
     vol.fromJSON(memfsVolumeJSON);
 
@@ -121,7 +164,6 @@ describe("Run command", () => {
       telemetry: mockedTelemetry,
     });
 
-    // dropping executionId because its random
     expect(
       mockedSendDangerousEvent.mock.calls.map(
         ([{ executionId, ...rest }]) => rest,
@@ -130,19 +172,19 @@ describe("Run command", () => {
       {
         kind: "codemodExecuted",
         codemodName: "codemod1",
-        fileCount: 0,
+        fileCount: 1,
         recipeName: "recipe1",
       },
       {
         kind: "codemodExecuted",
         codemodName: "codemod2",
-        fileCount: 0,
+        fileCount: 1,
         recipeName: "recipe1",
       },
       {
         kind: "codemodExecuted",
         codemodName: "recipe1",
-        fileCount: 0,
+        fileCount: 2,
         recipeName: "recipe1",
       },
     ]);
