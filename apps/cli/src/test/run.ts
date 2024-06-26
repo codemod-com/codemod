@@ -23,16 +23,16 @@ const mockedSendDangerousEvent = vi.fn();
 
 const mockedTelemetry = {
   sendDangerousEvent: mockedSendDangerousEvent,
-  sendEvent: () => {},
-  sendError: () => {},
+  sendEvent: vi.fn(),
+  sendError: vi.fn(),
 } as unknown as TelemetrySender<any>;
 
 const mockedPrinter = {
   __jsonOutput: true,
-  printMessage: () => {},
-  printOperationMessage: () => {},
-  printConsoleMessage: () => {},
-  withLoaderMessage: () => "",
+  printMessage: vi.fn(),
+  printOperationMessage: vi.fn(),
+  printConsoleMessage: vi.fn(),
+  withLoaderMessage: vi.fn(),
 } as unknown as PrinterBlueprint;
 
 const mocks = vi.hoisted(() => {
