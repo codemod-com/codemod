@@ -61,6 +61,11 @@ export const useWebWorker = () => {
     };
 
     worker.onerror = (ee) => {
+      console.error(
+        "-------!!!-----\n\n\n WebSocket error emitted: ",
+        ee,
+        "\n\n-------!!!-----",
+      );
       const error =
         ee.error instanceof Error
           ? ee.error
