@@ -11,9 +11,8 @@ function SignInPage() {
   return (
     <div className="flex h-screen w-screen items-center justify-center">
       <SignIn
-        signUpUrl="/auth/sign-out"
         forceRedirectUrl={isStudio ? "/studio" : "/registry"}
-        appearance={{ elements: { signUpLink: { display: "none" } } }}
+        appearance={{ elements: { footerAction__signUp: { display: "none" } } }}
       />
     </div>
   );
