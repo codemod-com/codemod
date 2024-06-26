@@ -8,15 +8,40 @@ import publicConfig from "@/config";
 import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
+import { mergeDeepRight } from "ramda";
+import { metadata } from "./studio/studioMetadata";
 
 const LiveVisualEditing = dynamic(
   () => import("@/components/LiveVisualEditing"),
 );
 
-export async function generateMetadata(): Promise<Metadata> {
+/**
+ * credits: https://github.com/vercel/next.js/discussions/50189#discussioncomment-9224262
+ *
+ * Get the pathname from the metadata state
+ * This dives into async storage of promise state to get the pathname
+ *
+ * This is much more performant that using headers() from next as this doesn't opt out from the cache
+ * @param state
+ */
+// @ts-ignore
+const getPathnameFromMetadataState = (state: any): string => {
+  const res = Object.getOwnPropertySymbols(state || {})
+    .map((p) => state[p])
+    .filter(Boolean)
+    .find((state) =>
+      Object.prototype.hasOwnProperty.call(state, "urlPathname"),
+    );
+
+  return res?.urlPathname.replace(/\?.+/, "") ?? "";
+};
+// @ts-ignore
+export async function generateMetadata(_: any, state: any): Promise<Metadata> {
+  const pathname = getPathnameFromMetadataState(state);
+
   const { data } = await loadGlobalData(GLOBAL_QUERY);
 
-  return {
+  const globalOg = {
     title: publicConfig.siteName,
     openGraph: {
       title: publicConfig.siteName,
@@ -25,6 +50,10 @@ export async function generateMetadata(): Promise<Metadata> {
         : getOgImages(data.fallbackOGImage),
     },
   };
+
+  return pathname.includes("/studio")
+    ? mergeDeepRight(globalOg, metadata)
+    : globalOg;
 }
 
 export default async function Layout({

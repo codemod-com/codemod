@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  type ReactNode,
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from "react";
+import { type ReactNode, createContext, useContext } from "react";
 
 const UseTheme = createContext<{
   isDark: boolean | null;
