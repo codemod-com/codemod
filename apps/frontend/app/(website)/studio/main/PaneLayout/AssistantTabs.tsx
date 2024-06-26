@@ -12,7 +12,7 @@ import {
   type TabContent,
   type TabHeader,
   type TabsWithContents,
-  getTabsData,
+  useTabsData,
 } from "@studio/main/PaneLayout/tabsData";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { TabNames, useViewStore } from "@studio/store/zustand/view";
@@ -78,7 +78,7 @@ export const AssistantTab = ({
     </TabsContent>,
   ];
 
-  const tabsData = getTabsData({
+  const tabsData = useTabsData({
     beforePanel,
     afterPanel,
     isSignedIn,
