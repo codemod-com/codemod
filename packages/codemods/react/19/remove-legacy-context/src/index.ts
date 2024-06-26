@@ -34,10 +34,14 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  let isDirty = false;
+
   findPatterns(j, root).forEach((pattern) => {
     if (!pattern) {
       return;
     }
+    isDirty = true;
+
     const { classComponent, getChildContext, childContextTypes } = pattern;
 
     const childContextValue =
@@ -70,5 +74,5 @@ export default function transform(
     );
   });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }
