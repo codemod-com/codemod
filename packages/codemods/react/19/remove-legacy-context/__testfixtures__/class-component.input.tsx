@@ -1,4 +1,5 @@
 import PropTypes from 'prop-types';
+import React from 'react';
 
 class Parent extends React.Component {
   static childContextTypes = {
@@ -11,15 +12,5 @@ class Parent extends React.Component {
 
   render() {
     return <Child />;
-  }
-}
-
-class Child extends React.Component {
-  static contextTypes = {
-    foo: PropTypes.string.isRequired,
-  };
-
-  render() {
-    return <div>{this.context.foo}</div>;
   }
 }

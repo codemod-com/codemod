@@ -21,13 +21,13 @@ const buildApi = (parser: string | undefined): API => ({
 });
 
 describe("remove-legacy-context", () => {
-  it("test #1", async () => {
+  it("should remove getChildContext and childContextTypes from parent component", async () => {
     const INPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/fixture1.input.ts"),
+      join(__dirname, "..", "__testfixtures__/class-component.input.tsx"),
       "utf-8",
     );
     const OUTPUT = await readFile(
-      join(__dirname, "..", "__testfixtures__/fixture1.output.ts"),
+      join(__dirname, "..", "__testfixtures__/class-component.output.tsx"),
       "utf-8",
     );
 
