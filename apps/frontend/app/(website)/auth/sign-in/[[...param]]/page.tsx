@@ -12,7 +12,7 @@ function SignInPage() {
     <div className="flex h-screen w-screen items-center justify-center">
       <SignIn
         forceRedirectUrl={isStudio ? "/studio" : "/registry"}
-        appearance={{ elements: { footerAction__signUp: { display: "none" } } }}
+        appearance={{ elements: { footer: { display: "none" } } }}
       />
     </div>
   );
