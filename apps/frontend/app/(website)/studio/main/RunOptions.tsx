@@ -48,16 +48,23 @@ export const RunOptions = () => {
     setIsPublishing(true);
 
     if (!modStore.internalContent) {
+      setIsPublishing(false);
       return;
     }
 
     const token = await getToken();
 
     if (!session || !token) {
+      setIsPublishing(false);
+      console.log("logged out");
       return toast({
         variant: "destructive",
         title: "Please first log in to use this feature",
-        action: <ToastAction altText="Goto login page">Log in</ToastAction>,
+        action: (
+          <ToastAction altText="Goto login page">
+            <a href="/auth/sign-in">Log in</a>
+          </ToastAction>
+        ),
       });
     }
 

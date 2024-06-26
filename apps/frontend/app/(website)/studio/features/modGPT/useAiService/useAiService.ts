@@ -6,14 +6,15 @@ import {
   useSaveMssgsToLocalStorage,
 } from "@chatbot/useAiService/utils";
 import type { LLMEngine } from "@shared/consts";
+import { toast } from "@studio/components/ui/use-toast";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 
 const showCodemodCopiedToast = () =>
   toast.success("Codemod copied to the right pane", {
     position: "top-center",
     duration: 12000,
   });
+
 export const useAiService = ({
   setCodemod,
   engine,

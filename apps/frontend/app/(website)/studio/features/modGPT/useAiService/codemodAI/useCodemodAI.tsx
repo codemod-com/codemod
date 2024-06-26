@@ -5,7 +5,6 @@ import type { LLMEngine } from "@shared/consts";
 import { useSnippetsStore } from "@studio/store/snippets";
 import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";
-import toast from "react-hot-toast";
 import { type Socket, io } from "socket.io-client";
 
 type MessageToSend = {
