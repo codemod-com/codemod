@@ -201,17 +201,17 @@
 }
 
 .studio .monaco-editor {
-	--vscode-editor-selectionHighlightBackground: rgba(109, 243, 80, 0.5) !important;
-	--vscode-editor-selectionBackground: rgba(109, 243, 80, 0.5) !important;
-	--vscode-editor-selectedBackground: rgba(109, 243, 80, 0.5) !important;
+	--vscode-editor-selectionHighlightBackground: rgba(62, 172, 236, 0.73) !important;
+	--vscode-editor-selectionBackground: rgba(62, 172, 236, 0.73) !important;
+	--vscode-editor-selectedBackground: rgba(62, 172, 236, 0.73) !important;
 	/* background for highlight of the same elements*/
-	--vscode-editor---wordHighlightStrongBackground: rgba(109, 243, 80, 0.8) !important;
+	--vscode-editor---wordHighlightStrongBackground: rgba(62, 172, 236, 0.73) !important;
 	--vscode-diffEditor-removedLineBackground: rgb(255 0 0 / 10%);
 	--vscode-diffEditor-removedTextBackground: rgb(255 0 0 / 10%);
 }
 
 .studio::selection {
-	background-color: rgba(109, 243, 80, 0.5);
+	background-color: rgba(62, 172, 236, 0.73) !important;
 }
 
 .studio .popup-content {
