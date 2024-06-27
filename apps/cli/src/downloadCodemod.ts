@@ -208,8 +208,6 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     }
 
     if (config.engine === "recipe") {
-      const codemods: Codemod[] = [];
-
       const { names } = await inquirer.prompt<{ names: string[] }>({
         name: "names",
         type: "checkbox",
@@ -221,10 +219,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
       config.names = names;
 
-      for (const name of config.names) {
-        const codemod = await this.download(name);
-        codemods.push(codemod);
-      }
+      const codemods = await Promise.all(
+        config.names.map(async (name) => this.download(name)),
+      );
 
       return {
         bundleType: "package",

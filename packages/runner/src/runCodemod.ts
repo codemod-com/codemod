@@ -17,7 +17,7 @@ import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
 import { buildPathGlobGenerator } from "./buildGlobGenerator.js";
-import type { Codemod, RunResult } from "./codemod.js";
+import type { Codemod, CodemodToRun, RunResult } from "./codemod.js";
 import {
   type FormattedFileCommand,
   buildFormattedFileCommands,
@@ -359,7 +359,7 @@ function printRunSummary(
 
 export const runCodemod = async (
   fileSystem: FileSystem,
-  codemod: Codemod,
+  codemod: CodemodToRun,
   flowSettings: FlowSettings,
   runSettings: RunSettings,
   onCommand: (command: FormattedFileCommand) => Promise<void>,
