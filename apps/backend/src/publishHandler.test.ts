@@ -44,12 +44,16 @@ const mocks = vi.hoisted(() => {
         findUnique: vi.fn(),
       },
     },
-    axios: {
-      get: vi.fn().mockImplementation((url: string, ...args: unknown[]) => ({
-        data: GET_USER_RETURN,
-      })),
-      post: vi.fn().mockImplementation(() => ({})),
-    },
+    fetch: vi.fn().mockImplementation((url, options) => {
+      if (options.method === "GET" || !options.method) {
+        return Promise.resolve({
+          json: () => Promise.resolve(GET_USER_RETURN),
+          ok: true,
+        });
+      }
+
+      return Promise.resolve({ json: () => GET_USER_RETURN, ok: true });
+    }),
     S3Client,
     TarService,
     PutObjectCommand,
@@ -60,10 +64,6 @@ vi.mock("@codemod-com/database", async () => {
   const actual = await vi.importActual("@codemod-com/database");
 
   return { ...actual, prisma: mocks.prisma };
-});
-
-vi.mock("axios", async () => {
-  return { default: mocks.axios };
 });
 
 vi.mock("@aws-sdk/client-s3", async () => {
@@ -116,7 +116,7 @@ vi.mock("@codemod-com/utilities", async () => {
   };
 });
 
-vi.stubGlobal("fetch", vi.fn());
+vi.stubGlobal("fetch", mocks.fetch);
 
 describe("/publish route", async () => {
   const fastify = await runServer();
@@ -218,26 +218,34 @@ describe("/publish route", async () => {
       requestTimeout: 5000,
     });
 
-    expect(mocks.axios.post).toHaveBeenCalledOnce();
-    expect(mocks.axios.post).toHaveBeenCalledWith(
+    expect(mocks.fetch).toHaveBeenCalledTimes(3);
+    expect(mocks.fetch).toHaveBeenNthCalledWith(
+      2,
       "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
       {
-        codemod: {
-          name: codemodRcContents.name,
-          from: codemodRcContents.applicability?.from?.map((tuple) =>
-            tuple.join(" "),
-          ),
-          to: codemodRcContents.applicability?.to?.map((tuple) =>
-            tuple.join(" "),
-          ),
-          engine: codemodRcContents.engine,
-          publishedAt: MOCK_TIMESTAMP,
+        body: JSON.stringify({
+          codemod: {
+            name: codemodRcContents.name,
+            from: codemodRcContents.applicability?.from?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            to: codemodRcContents.applicability?.to?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            engine: codemodRcContents.engine,
+            publishedAt: MOCK_TIMESTAMP,
+          },
+          author: {
+            username: GET_USER_RETURN.user.username,
+            name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
+            email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
+          },
+        }),
+        headers: {
+          "Content-Type": "application/json",
         },
-        author: {
-          username: GET_USER_RETURN.user.username,
-          name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
-          email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
-        },
+        method: "POST",
+        signal: expect.any(AbortSignal),
       },
     );
 
@@ -605,8 +613,9 @@ describe("/publish route", async () => {
   describe("when publishing via org", async () => {
     it("should go through happy path if user has access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.axios.get.mockImplementation(() => ({
-        data: { ...GET_USER_RETURN, allowedNamespaces: ["org"] },
+      mocks.fetch.mockImplementation(() => ({
+        json: () => ({ ...GET_USER_RETURN, allowedNamespaces: ["org"] }),
+        ok: true,
       }));
       mocks.prisma.codemod.upsert.mockImplementation(() => {
         return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
@@ -669,8 +678,13 @@ describe("/publish route", async () => {
 
     it("should fail if user has no access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.axios.get.mockImplementation(() => ({
-        data: { ...GET_USER_RETURN, organizations: [], allowedNamespaces: [] },
+      mocks.fetch.mockImplementation(() => ({
+        json: () => ({
+          ...GET_USER_RETURN,
+          organizations: [],
+          allowedNamespaces: [],
+        }),
+        ok: true,
       }));
 
       const codemodRcContents: CodemodConfigInput = {

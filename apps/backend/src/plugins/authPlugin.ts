@@ -1,5 +1,8 @@
-import type { OrganizationMembership, User } from "@codemod-com/utilities";
-import axios from "axios";
+import {
+  type OrganizationMembership,
+  type User,
+  extendedFetch,
+} from "@codemod-com/utilities";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";
 import { environment } from "../util";
@@ -38,12 +41,13 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
       try {
         const authHeader = request.headers.authorization;
 
-        if (!authHeader) reply.code(401).send({ error: "Unauthorized" });
+        if (!authHeader) {
+          reply.code(401).send({ error: "Unauthorized" });
+          return;
+        }
 
-        await axios.get(`${environment.AUTH_SERVICE_URL}/verifyToken`, {
-          headers: {
-            Authorization: authHeader,
-          },
+        await extendedFetch(`${environment.AUTH_SERVICE_URL}/verifyToken`, {
+          headers: { Authorization: authHeader },
         });
       } catch (error) {
         console.error(error);
@@ -72,16 +76,17 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
           return;
         }
 
-        const { data } = await axios.get(
+        const response = await extendedFetch(
           `${environment.AUTH_SERVICE_URL}/userData`,
-          {
-            headers: {
-              Authorization: authHeader,
-            },
-          },
+          { headers: { Authorization: authHeader } },
         );
 
-        const { user, organizations, allowedNamespaces } = data;
+        const { user, organizations, allowedNamespaces } =
+          (await response.json()) as {
+            user?: User;
+            organizations?: OrganizationMembership[];
+            allowedNamespaces?: string[];
+          };
 
         request.user = user;
         request.organizations = organizations;
@@ -104,18 +109,17 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
       try {
         const authHeader = request.headers.authorization;
 
-        if (!authHeader) reply.code(401).send({ error: "Unauthorized" });
+        if (!authHeader) {
+          reply.code(401).send({ error: "Unauthorized" });
+          return;
+        }
 
-        const { data } = await axios.get(
+        const response = await extendedFetch(
           `${environment.AUTH_SERVICE_URL}/oAuthToken`,
-          {
-            headers: {
-              Authorization: authHeader,
-            },
-          },
+          { headers: { Authorization: authHeader } },
         );
 
-        const { token } = data;
+        const { token } = (await response.json()) as { token?: string };
 
         request.token = token;
       } catch {

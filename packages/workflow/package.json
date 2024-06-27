@@ -30,8 +30,8 @@
     "directory": "packages/workflow"
   },
   "dependencies": {
-    "@ast-grep/cli": "^0.22.3",
-    "@ast-grep/napi": "^0.22.3",
+    "@ast-grep/cli": "^0.24.0",
+    "@ast-grep/napi": "^0.24.0",
     "@sindresorhus/slugify": "^2.2.1",
     "colors-cli": "^1.0.33",
     "filenamify": "^6.0.0",

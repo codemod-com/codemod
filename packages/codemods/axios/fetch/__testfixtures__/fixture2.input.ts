@@ -1,15 +1,20 @@
-const { data } = await axios.post(
-    `https://app.posthog.com/api/projects/${this.__projectId}/query/`,
-    {
-        query: {
-        kind: "HogQLQuery",
-        query:
-            "select properties.codemodName, count(*) from events where event in ('codemod.CLI.codemodExecuted', 'codemod.VSCE.codemodExecuted') group by properties.codemodName",
-        },
-    },
-    {
-        headers: {
-        Authorization: this.__authHeader,
-        },
-    },
+const response = await fetch(
+	`https://app.posthog.com/api/projects/${this.__projectId}/query/`,
+	{
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: this.__authHeader,
+		},
+		body: JSON.stringify({
+			query: {
+				kind: 'HogQLQuery',
+				query: "select properties.codemodName, count(*) from events where event in ('codemod.CLI.codemodExecuted', 'codemod.VSCE.codemodExecuted') group by properties.codemodName",
+			},
+		}),
+	},
 );
+if (!response.ok) {
+	throw new Error('Network response was not ok');
+}
+const { data } = await response.json();

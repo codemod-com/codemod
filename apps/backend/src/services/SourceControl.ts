@@ -1,4 +1,4 @@
-import { isAxiosError } from "axios";
+import { isFetchError } from "@codemod-com/utilities";
 
 export type NewIssueParams = Readonly<{
   body: string;
@@ -93,13 +93,17 @@ export interface SourceControlProvider {
 
 // biome-ignore lint/complexity/noStaticOnlyClass: reason?
 export class SourceControlError extends Error {
-  static parse(e: unknown) {
-    const message =
-      isAxiosError(e) && e.response?.data.message
-        ? e.response?.data.message
-        : e instanceof Error
-          ? e.message
-          : String(e);
+  static async parse(e: unknown) {
+    let message: any;
+    if (isFetchError(e)) {
+      const response = (await e.response?.json()) as { message?: string };
+      if (response.message) {
+        message = response.message;
+      }
+    }
+    if (!message) {
+      message = e instanceof Error ? e.message : String(e);
+    }
     return new SourceControlError(message);
   }
 }
@@ -112,7 +116,7 @@ export class SourceControl {
     try {
       return await provider.createIssue(params);
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -123,7 +127,7 @@ export class SourceControl {
     try {
       return await provider.createPullRequest(params);
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -134,7 +138,7 @@ export class SourceControl {
     try {
       return await provider.getPullRequests(params);
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -142,7 +146,7 @@ export class SourceControl {
     try {
       return await provider.getAssignees();
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -152,7 +156,7 @@ export class SourceControl {
     try {
       return await provider.getUserRepositories();
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -160,7 +164,7 @@ export class SourceControl {
     try {
       return await provider.getBranches();
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 
@@ -171,7 +175,7 @@ export class SourceControl {
     try {
       return await provider.getRepoContents(branchName);
     } catch (e) {
-      throw SourceControlError.parse(e);
+      throw await SourceControlError.parse(e);
     }
   }
 }

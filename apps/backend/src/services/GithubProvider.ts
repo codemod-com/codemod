@@ -1,9 +1,8 @@
-import axios, { type AxiosResponse } from "axios";
+import { extendedFetch } from "@codemod-com/utilities";
 import gh from "parse-github-url";
 import type {
   Assignee,
   CreatePRParams,
-  GHBranch,
   GithubContent,
   GithubRepository,
   Issue,
@@ -41,7 +40,7 @@ function parseGithubRepoUrl(url: string): Repository {
 }
 
 const withPagination = async (
-  paginatedRequest: (page: string) => Promise<AxiosResponse<any[]>>,
+  paginatedRequest: (page: string) => Promise<Response>,
 ) => {
   const nextPattern = /(?<=<)([\S]*)(?=>; rel="Next")/i;
   let nextPage: string | null = "1";
@@ -49,9 +48,9 @@ const withPagination = async (
 
   while (nextPage !== null) {
     const response = await paginatedRequest(nextPage);
-    data = [...data, ...(response.data ?? [])];
+    data = [...data, ...(((await response.json()) as any[]) ?? [])];
 
-    const linkHeader = response.headers.link;
+    const linkHeader = response.headers.get("link");
 
     if (typeof linkHeader === "string" && linkHeader.includes(`rel=\"next\"`)) {
       const nextUrl = linkHeader.match(nextPattern)?.[0];
@@ -83,27 +82,33 @@ export class GithubProvider implements SourceControlProvider {
     return `${this.__baseUrl}/repos/${owner}/${name}`;
   }
 
-  async createIssue(params: NewIssueParams): Promise<Issue> {
-    const res = await axios.post(`${this.__repoUrl}/issues`, params, {
+  async createIssue(params: NewIssueParams) {
+    const response = await extendedFetch(`${this.__repoUrl}/issues`, {
+      method: "POST",
       headers: {
         Authorization: this.__authHeader,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(params),
     });
 
-    return res.data;
+    return (await response.json()) as Issue;
   }
 
-  async createPullRequest(params: CreatePRParams): Promise<PullRequest> {
-    const res = await axios.post(`${this.__repoUrl}/pulls`, params, {
+  async createPullRequest(params: CreatePRParams) {
+    const response = await extendedFetch(`${this.__repoUrl}/pulls`, {
+      method: "POST",
       headers: {
         Authorization: this.__authHeader,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify(params),
     });
 
-    return res.data;
+    return (await response.json()) as PullRequest;
   }
 
-  async getPullRequests(params: ListPRParams): Promise<PullRequest[]> {
+  async getPullRequests(params: ListPRParams) {
     const queryParams = Object.entries(params).reduce<Record<string, string>>(
       (acc, [key, value]) => {
         if (value) {
@@ -117,69 +122,48 @@ export class GithubProvider implements SourceControlProvider {
 
     const query = new URLSearchParams(queryParams).toString();
 
-    const res = await axios.get(`${this.__repoUrl}/pulls?${query}`, {
-      headers: {
-        Authorization: this.__authHeader,
-      },
+    const response = await extendedFetch(`${this.__repoUrl}/pulls?${query}`, {
+      headers: { Authorization: this.__authHeader },
     });
 
-    return res.data;
+    return (await response.json()) as PullRequest[];
   }
 
-  async getAssignees(): Promise<Assignee[]> {
-    const res = await axios.get(`${this.__repoUrl}/assignees`, {
-      headers: {
-        Authorization: this.__authHeader,
-      },
+  async getAssignees() {
+    const response = await extendedFetch(`${this.__repoUrl}/assignees`, {
+      headers: { Authorization: this.__authHeader },
     });
 
-    return res.data;
+    return (await response.json()) as Assignee[];
   }
 
-  private __getUserRepositories = async (
-    page: string,
-  ): Promise<AxiosResponse<GithubRepository[]>> => {
-    return await axios.get<GithubRepository[]>(
+  private __getUserRepositories = (page: string) =>
+    extendedFetch(
       `https://api.github.com/user/repos?per_page=${PER_PAGE}&page=${page}`,
-      {
-        headers: {
-          Authorization: this.__authHeader,
-        },
-      },
+      { headers: { Authorization: this.__authHeader } },
     );
-  };
 
   async getUserRepositories(): Promise<GithubRepository[]> {
     return await withPagination(this.__getUserRepositories);
   }
 
-  private __getBranches = async (
-    page: string,
-  ): Promise<AxiosResponse<GHBranch[]>> => {
-    return await axios.get(
+  private __getBranches = (page: string) =>
+    extendedFetch(
       `${this.__repoUrl}/branches?per_page=${PER_PAGE}&page=${page}`,
       {
-        headers: {
-          Authorization: this.__authHeader,
-        },
+        headers: { Authorization: this.__authHeader },
       },
     );
-  };
 
   async getBranches(): Promise<string[]> {
     return await withPagination(this.__getBranches);
   }
 
-  async getRepoContents(branchName: string): Promise<GithubContent[]> {
-    const res = await axios.get(
+  async getRepoContents(branchName: string) {
+    const response = await extendedFetch(
       `${this.__repoUrl}/contents?ref=${branchName}`,
-      {
-        headers: {
-          Authorization: this.__authHeader,
-        },
-      },
+      { headers: { Authorization: this.__authHeader } },
     );
-
-    return res.data;
+    return (await response.json()) as GithubContent[];
   }
 }

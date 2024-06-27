@@ -71,7 +71,6 @@
     "ai": "^2.1.32",
     "ast-node-builder": "^4.2.1",
     "ast-types": "^0.14.2",
-    "axios": "^1.6.8",
     "change-case": "^5.2.0",
     "chart.js": "^4.4.2",
     "class-variance-authority": "^0.7.0",

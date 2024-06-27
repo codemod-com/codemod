@@ -105,33 +105,27 @@ export const mockGHBranches: GHBranch[] = [
 ];
 export const mockedGhRunEndpoints = {
   [GH_REPO_LIST]: {
-    get: (): { data: GithubRepository[] } => ({ data: mockGithubRepositories }),
+    GET: (): GithubRepository[] => mockGithubRepositories,
   },
   [GH_BRANCH_LIST]: {
-    post: ({ repoUrl }: { repoUrl: string }): { data: GHBranch[] } => {
+    POST: ({ repoUrl }: { repoUrl: string }): GHBranch[] => {
       isSuccess = repoUrl === "success";
-      return {
-        data: mockGHBranches,
-      };
+      return mockGHBranches;
     },
   },
   [RUN_CODEMOD]: {
-    post: (): { data: CodemodRunStatus } => ({
-      data: { codemodRunId: "1", success: true },
-    }),
+    POST: (): CodemodRunStatus => ({ codemodRunId: "1", success: true }),
   },
   [GET_EXECUTION_STATUS("1")]: {
-    get: (): { data: GetExecutionStatusResponse } => {
+    GET: (): GetExecutionStatusResponse => {
       const index = executionResultsIndex;
       executionResultsIndex =
         executionResultsIndex === getExecutionResults().length
           ? 0
           : executionResultsIndex + 1;
       return {
-        data: {
-          result: getExecutionResults()[index] || null,
-          success: true,
-        },
+        result: getExecutionResults()[index] || null,
+        success: true,
       };
     },
   },

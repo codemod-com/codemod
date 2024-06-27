@@ -2,12 +2,11 @@ import * as fs from "node:fs";
 import { basename, dirname, join, resolve } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+  FetchError,
   codemodNameRegex,
   doubleQuotify,
-  execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
 import FormData from "form-data";
 import { glob } from "glob";
 import inquirer from "inquirer";
@@ -263,7 +262,9 @@ export const handlePublishCliCommand = async (options: {
   } catch (error) {
     publishSpinner.fail();
     const message =
-      error instanceof AxiosError ? error.response?.data.error : String(error);
+      error instanceof FetchError
+        ? ((await error.response?.json()) as any).error
+        : String(error);
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;

@@ -7,10 +7,10 @@ import {
   TarService,
   buildCodemodSlug,
   codemodNameRegex,
+  extendedFetch,
   isNeitherNullNorUndefined,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
@@ -350,25 +350,32 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion === null) {
       try {
-        await axios.post(
+        await extendedFetch(
           "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
           {
-            codemod: {
-              name,
-              from: codemodRc.applicability?.from?.map((tuple) =>
-                tuple.join(" "),
-              ),
-              to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
-              engine: codemodRc.engine,
-              publishedAt: createdAtTimestamp,
-            },
-            author: {
-              username,
-              name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
-              email:
-                emailAddresses.find((e) => e.id === primaryEmailAddressId)
-                  ?.emailAddress ?? null,
-            },
+            method: "POST",
+            body: JSON.stringify({
+              codemod: {
+                name,
+                from: codemodRc.applicability?.from?.map((tuple) =>
+                  tuple.join(" "),
+                ),
+                to: codemodRc.applicability?.to?.map((tuple) =>
+                  tuple.join(" "),
+                ),
+                engine: codemodRc.engine,
+                publishedAt: createdAtTimestamp,
+              },
+              author: {
+                username,
+                name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
+                email:
+                  emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                    ?.emailAddress ?? null,
+              },
+            }),
+            headers: { "Content-Type": "application/json" },
+            signal: AbortSignal.timeout(5000),
           },
         );
       } catch (err) {

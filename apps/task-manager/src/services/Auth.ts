@@ -1,4 +1,4 @@
-import axios, { isAxiosError } from "axios";
+import { extendedFetch } from "@codemod-com/utilities";
 
 export class AuthError extends Error {}
 
@@ -20,14 +20,11 @@ export class AuthService {
         throw new AuthError("Invalid userId.");
       }
 
-      const result = await axios.get(
+      const response = await extendedFetch(
         `https://api.clerk.dev/v1/users/${userId}/oauth_access_tokens/github`,
-        {
-          headers: {
-            Authorization: this.__authHeader,
-          },
-        },
+        { headers: { Authorization: this.__authHeader } },
       );
+      const result = { data: (await response.json()) as { token: string }[] };
 
       const token = result.data[0]?.token;
 

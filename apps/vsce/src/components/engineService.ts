@@ -9,7 +9,7 @@ import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import * as readline from "node:readline";
-import axios from "axios";
+import { extendedFetch } from "@codemod-com/utilities";
 import * as E from "fp-ts/Either";
 import { type FileSystem, Uri, commands, window } from "vscode";
 import type { Case } from "../cases/types";
@@ -80,14 +80,17 @@ const CODEMOD_ENGINE_NODE_COMMAND = "codemod";
 const CODEMOD_ENGINE_NODE_POLLING_INTERVAL = 1250;
 const CODEMOD_ENGINE_NODE_POLLING_ITERATIONS_LIMIT = 200;
 
-export const getCodemodList = async (): Promise<CodemodListResponse> => {
+export const getCodemodList = async () => {
   const url = new URL("https://backend.codemod.com/codemods/list");
 
-  const res = await axios.get<CodemodListResponse>(url.toString(), {
-    timeout: 10000,
+  const response = await extendedFetch(url.toString(), {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    signal: AbortSignal.timeout(10000),
   });
 
-  return res.data;
+  return (await response.json()) as CodemodListResponse;
 };
 
 const buildCodemodEntry = (

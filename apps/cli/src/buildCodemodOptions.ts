@@ -6,13 +6,13 @@ import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
   type AllEngines,
   type CodemodConfig,
+  FetchError,
   type FileSystem,
   type TarService,
   allEnginesSchema,
   doubleQuotify,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
 import unzipper from "unzipper";
 import { object, parse } from "valibot";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
@@ -184,10 +184,10 @@ export const buildSourcedCodemodOptions = async (
           return await codemodDownloader.download(subCodemodName, true);
         } catch (error) {
           spinner.fail();
-          if (error instanceof AxiosError) {
+          if (error instanceof FetchError) {
             if (
               error.response?.status === 400 &&
-              error.response.data.error === "Codemod not found"
+              (await error.response.json()).error === "Codemod not found"
             ) {
               throw new Error(
                 `Error locating one of the recipe codemods: ${chalk.bold(

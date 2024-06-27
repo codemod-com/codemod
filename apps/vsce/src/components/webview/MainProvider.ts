@@ -1,4 +1,4 @@
-import axios from "axios";
+import { extendedFetch, isFetchError } from "@codemod-com/utilities";
 import areEqual from "fast-deep-equal";
 import { glob } from "glob";
 import {
@@ -33,18 +33,17 @@ export const validateAccessToken = async (
   accessToken: string,
 ): Promise<void> => {
   try {
-    const response = await axios.post(
+    const response = await extendedFetch(
       "https://backend.codemod.com/verifyToken",
-      {},
       {
+        method: "POST",
         headers: { Authorization: `Bearer ${accessToken}` },
-        timeout: 5000,
+        signal: AbortSignal.timeout(5000),
       },
     );
-
-    return response.data;
+    return await response.json();
   } catch (error) {
-    if (!axios.isAxiosError(error)) {
+    if (!isFetchError(error)) {
       console.error(error);
     }
   }
@@ -60,17 +59,24 @@ export const createIssue = async (
   // call API to create Github Issue
   const codemodRegistryRepoUrl = "https://github.com/codemod-com/codemod";
 
-  const result = await axios.post(
+  const response = await extendedFetch(
     "https://backend.codemod.com/sourceControl/github/issues",
-    { title, body, repoUrl: codemodRegistryRepoUrl },
-    { headers: { Authorization: `Bearer ${accessToken}` } },
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${accessToken}` },
+      body: JSON.stringify({
+        title,
+        body,
+        repoUrl: codemodRegistryRepoUrl,
+      }),
+    },
   );
-  if (result.status !== 200) {
+  if (response.status !== 200) {
     await onFail();
-    return { status: result.status, html_url: null };
+    return { status: response.status, html_url: null };
   }
 
-  const { data } = result;
+  const data = (await response.json()) as any;
 
   const validation = createIssueResponseCodec.decode(data);
 

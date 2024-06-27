@@ -1,5 +1,5 @@
 import { apiClient } from "@/utils/apis/client";
-import type { AxiosError } from "axios";
+import type { FetchError } from "@codemod-com/utilities";
 import { SEND_MESSAGE } from "../constants";
 import { Either } from "../utils/Either";
 
@@ -22,23 +22,26 @@ const sendMessage = async ({
   token,
 }: SendMessageRequest): Promise<Either<Error, SendMessageResponse>> => {
   try {
-    const res = await apiClient.post<SendMessageResponse>(
-      SEND_MESSAGE,
-      {
+    const response = await apiClient(SEND_MESSAGE, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
         message,
         parentMessageId,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+      }),
+    });
 
-    return Either.right(res.data);
+    return Either.right((await response.json()) as SendMessageResponse);
   } catch (e) {
-    const err = e as AxiosError<{ message?: string }>;
-    return Either.left(new Error(err.response?.data.message ?? err.message));
+    const err = e as FetchError;
+    return Either.left(
+      new Error(
+        ((await err.response?.json()) as { message?: string }).message ??
+          err.message,
+      ),
+    );
   }
 };
 

@@ -4,8 +4,11 @@ import {
   PostHogSender,
   type TelemetrySender,
 } from "@codemod-com/telemetry";
-import { doubleQuotify, execPromise } from "@codemod-com/utilities";
-import Axios from "axios";
+import {
+  addGlobalHook,
+  doubleQuotify,
+  execPromise,
+} from "@codemod-com/utilities";
 import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
@@ -68,10 +71,20 @@ const initializeDependencies = async (argv: {
   const clientIdentifier =
     typeof argv.clientIdentifier === "string" ? argv.clientIdentifier : "CLI";
 
-  Axios.interceptors.request.use((config) => {
-    config.headers["X-Client-Identifier"] = clientIdentifier;
+  addGlobalHook((options) => {
+    options.headers = options.headers ?? {};
 
-    return config;
+    if (options.headers) {
+      if (options.headers instanceof Headers) {
+        options.headers.set("X-Client-Identifier", clientIdentifier);
+      } else if (Array.isArray(options.headers)) {
+        options.headers.push(["X-Client-Identifier", clientIdentifier]);
+      } else {
+        options.headers["X-Client-Identśifier"] = clientIdentifier;
+      }
+    }
+
+    return options;
   });
 
   const printer = new Printer(argv.json);

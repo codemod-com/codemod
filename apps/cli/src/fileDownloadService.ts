@@ -1,6 +1,9 @@
 import type { PrinterBlueprint } from "@codemod-com/printer";
-import type { FileSystem } from "@codemod-com/utilities";
-import axios, { isAxiosError, type AxiosResponse } from "axios";
+import {
+  type FileSystem,
+  extendedFetch,
+  isFetchError,
+} from "@codemod-com/utilities";
 
 export type FileDownloadServiceBlueprint = Readonly<{
   cacheEnabled: boolean;
@@ -43,9 +46,8 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
       }
     }
 
-    const { data } = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
+    const response = await extendedFetch(url);
+    const data = await response.arrayBuffer();
 
     const buffer = Buffer.from(data);
 
@@ -67,14 +69,14 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
   private async __getRemoteFileLastModified(
     url: string,
   ): Promise<number | null> {
-    let response: AxiosResponse;
+    let response: Response;
 
     try {
-      response = await axios.head(url, {
-        timeout: 15000,
+      response = await extendedFetch(url, {
+        signal: AbortSignal.timeout(15000),
       });
     } catch (error) {
-      if (!isAxiosError(error)) {
+      if (!isFetchError(error)) {
         throw error;
       }
 
@@ -83,11 +85,10 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
       if (status === 403) {
         return null;
       }
-
       return null;
     }
 
-    const lastModified = response.headers["last-modified"];
+    const lastModified = response.headers.get("last-modified");
 
     return lastModified ? Date.parse(lastModified) : null;
   }

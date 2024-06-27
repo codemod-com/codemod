@@ -1,51 +1,49 @@
-import type {
-  CodemodDownloadLinkResponse,
-  CodemodListResponse,
-  GetScopedTokenResponse,
-  GetUserDataResponse,
-  VerifyTokenResponse,
+import {
+  type CodemodDownloadLinkResponse,
+  type CodemodListResponse,
+  type GetScopedTokenResponse,
+  type GetUserDataResponse,
+  type VerifyTokenResponse,
+  extendedFetch,
 } from "@codemod-com/utilities";
-import Axios, { type RawAxiosRequestHeaders } from "axios";
 import type FormData from "form-data";
 
-export const getCLIAccessToken = async (
-  accessToken: string,
-): Promise<GetScopedTokenResponse> => {
+export const getCLIAccessToken = async (accessToken: string) => {
   const url = new URL(`${process.env.AUTH_BACKEND_URL}/appToken`);
 
-  const res = await Axios.get<GetScopedTokenResponse>(url.toString(), {
+  const response = await extendedFetch(url.toString(), {
+    method: "GET",
     headers: { Authorization: `Bearer ${accessToken}` },
-    timeout: 10000,
+    signal: AbortSignal.timeout(10000),
   });
 
-  return res.data;
+  return (await response.json()) as GetScopedTokenResponse;
 };
 
-export const validateCLIToken = async (
-  accessToken: string,
-): Promise<VerifyTokenResponse> => {
-  const res = await Axios.get<VerifyTokenResponse>(
+export const validateCLIToken = async (accessToken: string) => {
+  const response = await extendedFetch(
     `${process.env.AUTH_BACKEND_URL}/verifyToken`,
     {
+      method: "GET",
       headers: { Authorization: `Bearer ${accessToken}` },
-      timeout: 5000,
+      signal: AbortSignal.timeout(10000),
     },
   );
 
-  return res.data;
+  return (await response.json()) as VerifyTokenResponse;
 };
 
-export const getUserData = async (
-  accessToken: string,
-): Promise<GetUserDataResponse | null> => {
+export const getUserData = async (accessToken: string) => {
   try {
-    const { data } = await Axios.get<GetUserDataResponse | object>(
+    const response = await extendedFetch(
       `${process.env.AUTH_BACKEND_URL}/userData`,
       {
         headers: { Authorization: `Bearer ${accessToken}` },
-        timeout: 5000,
+        signal: AbortSignal.timeout(5000),
       },
     );
+
+    const data = (await response.json()) as GetUserDataResponse;
 
     if (!("user" in data)) {
       return null;
@@ -57,31 +55,25 @@ export const getUserData = async (
   }
 };
 
-export const publish = async (
-  accessToken: string,
-  formData: FormData,
-): Promise<void> => {
-  await Axios.post(`${process.env.BACKEND_URL}/publish`, formData, {
+export const publish = async (accessToken: string, formData: FormData) => {
+  await extendedFetch(`${process.env.BACKEND_URL}/publish`, {
+    method: "POST",
+    body: formData as any,
     headers: {
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "multipart/form-data",
     },
-    timeout: 10000,
+    signal: AbortSignal.timeout(10000),
   });
 };
 
-export const unpublish = async (
-  accessToken: string,
-  name: string,
-): Promise<void> => {
-  await Axios.post(
-    `${process.env.BACKEND_URL}/unpublish`,
-    { name },
-    {
-      headers: { Authorization: `Bearer ${accessToken}` },
-      timeout: 10000,
-    },
-  );
+export const unpublish = async (accessToken: string, name: string) => {
+  await extendedFetch(`${process.env.BACKEND_URL}/unpublish`, {
+    method: "POST",
+    body: JSON.stringify({ name }),
+    headers: { Authorization: `Bearer ${accessToken}` },
+    signal: AbortSignal.timeout(10000),
+  });
 };
 
 // @TODO
@@ -96,34 +88,34 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
 export const getCodemodDownloadURI = async (
   name: string,
   accessToken?: string,
-): Promise<CodemodDownloadLinkResponse> => {
+) => {
   const url = new URL(`${process.env.BACKEND_URL}/codemods/downloadLink`);
   if (name) {
     url.searchParams.set("name", name);
   }
 
-  const headers: RawAxiosRequestHeaders = {};
+  const headers = new Headers();
   if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
+    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
-  const res = await Axios.get<CodemodDownloadLinkResponse>(url.toString(), {
+  const response = await extendedFetch(url.toString(), {
     headers,
-    timeout: 10000,
+    signal: AbortSignal.timeout(10000),
   });
 
-  return res.data;
+  return (await response.json()) as CodemodDownloadLinkResponse;
 };
 
 export const getCodemodList = async (options?: {
   accessToken?: string;
   search?: string | null;
-}): Promise<CodemodListResponse> => {
+}) => {
   const { accessToken, search } = options ?? {};
 
-  const headers: RawAxiosRequestHeaders = {};
+  const headers = new Headers();
   if (accessToken) {
-    headers.Authorization = `Bearer ${accessToken}`;
+    headers.set("Authorization", `Bearer ${accessToken}`);
   }
 
   const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);
@@ -131,40 +123,40 @@ export const getCodemodList = async (options?: {
     url.searchParams.set("search", search);
   }
 
-  const res = await Axios.get<CodemodListResponse>(url.toString(), {
+  const response = await extendedFetch(url.toString(), {
     headers,
-    timeout: 10000,
+    signal: AbortSignal.timeout(10000),
   });
 
-  return res.data;
+  return (await response.json()) as CodemodListResponse;
 };
 
 type UserLoginIntentResponse = {
   id: string;
   iv: string;
 };
-export const generateUserLoginIntent =
-  async (): Promise<UserLoginIntentResponse> => {
-    const res = await Axios.post<UserLoginIntentResponse>(
-      `${process.env.AUTH_BACKEND_URL}/intents`,
-      {},
-    );
+export const generateUserLoginIntent = async () => {
+  const response = await extendedFetch(
+    `${process.env.AUTH_BACKEND_URL}/intents`,
+    {
+      method: "POST",
+      body: JSON.stringify({}),
+    },
+  );
 
-    return res.data;
-  };
+  return (await response.json()) as UserLoginIntentResponse;
+};
 
 type ConfirmUserLoggedInResponse = {
   token: string;
 };
-export const confirmUserLoggedIn = async (
-  sessionId: string,
-  iv: string,
-): Promise<string> => {
-  const res = await Axios.get<ConfirmUserLoggedInResponse>(
+export const confirmUserLoggedIn = async (sessionId: string, iv: string) => {
+  const response = await extendedFetch(
     `${process.env.AUTH_BACKEND_URL}/intents/${sessionId}?iv=${iv}`,
   );
 
-  return res.data.token;
+  const data = (await response.json()) as ConfirmUserLoggedInResponse;
+  return data.token;
 };
 
 type CreateCodeDiffResponse = {
@@ -174,15 +166,14 @@ type CreateCodeDiffResponse = {
 export const createCodeDiff = async (body: {
   beforeSnippet: string;
   afterSnippet: string;
-}): Promise<CreateCodeDiffResponse> => {
-  const res = await Axios.post<CreateCodeDiffResponse>(
-    `${process.env.BACKEND_URL}/diffs`,
-    {
+}) => {
+  const response = await extendedFetch(`${process.env.BACKEND_URL}/diffs`, {
+    method: "POST",
+    body: JSON.stringify({
       before: body.beforeSnippet,
       after: body.afterSnippet,
       source: "cli",
-    },
-  );
-
-  return res.data;
+    }),
+  });
+  return (await response.json()) as CreateCodeDiffResponse;
 };
