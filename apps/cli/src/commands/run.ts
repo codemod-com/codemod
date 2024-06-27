@@ -23,6 +23,7 @@ import {
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
+import prettyjson from "prettyjson";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
@@ -278,6 +279,19 @@ export const handleRunCliCommand = async (options: {
 
   if (!codemodDefinition) {
     throw new Error("Codemod definition could not be resolved.");
+  }
+
+  if (codemodDefinition.kind !== "runOnPreCommit") {
+    if (args.man) {
+      return printer.printConsoleMessage(
+        "log",
+        prettyjson.render(JSON.stringify(codemodDefinition.codemod, null, 2)),
+      );
+    }
+
+    if (args.config) {
+      return;
+    }
   }
 
   const codemodsToRun =
