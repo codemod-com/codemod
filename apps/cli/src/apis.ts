@@ -85,7 +85,7 @@ export const unpublish = async (
 };
 
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-  return Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
+  return Axios.delete(`${process.env.AUTH_BACKEND_URL}/revokeToken`, {
     headers: { Authorization: `Bearer ${accessToken}` },
     timeout: 10000,
   });
