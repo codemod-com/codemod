@@ -26,6 +26,7 @@
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.1.0",
     "@fastify/rate-limit": "9.0.1",
+    "axios": "^1.6.8",
     "bullmq": "^5.7.5",
     "dotenv": "^16.4.5",
     "fastify": "4.25.1",
