@@ -210,7 +210,14 @@ export const buildPatterns = async (
 
     patterns.push(
       ...(codemod.engine === "jscodeshift" || codemod.engine === "ts-morph"
-        ? ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx"]
+        ? [
+            "**/*.js",
+            "**/*.jsx",
+            "**/*.ts",
+            "**/*.tsx",
+            "**/*.vue",
+            "**/*.svelte",
+          ]
         : ["**/*.*"]),
     );
   }
