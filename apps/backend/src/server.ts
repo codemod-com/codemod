@@ -347,65 +347,6 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       return result;
     },
   );
-
-  instance.post(
-    "/codemodRun",
-    { preHandler: instance.getUserData },
-    async (
-      request: FastifyRequest & {
-        user?: User;
-      },
-      reply,
-    ): Promise<CodemodRunResponse> => {
-      if (!queue) {
-        throw new Error("Queue service is not running.");
-      }
-      const { codemodSource, codemodEngine, repoUrl, branch } =
-        parseCodemodRunBody(request.body);
-
-      const job = await queue.add(TaskManagerJobs.CODEMOD_RUN, {
-        codemodSource,
-        codemodEngine,
-        userId: request.user?.id,
-        repoUrl,
-        branch,
-      });
-
-      if (!job.id) {
-        return reply.code(500).send();
-      }
-
-      reply.type("application/json").code(200);
-      return { success: true, codemodRunId: job.id };
-    },
-  );
-
-  instance.get(
-    "/codemodRun/status/:jobId",
-    { preHandler: instance.getUserData },
-    async (request, reply) => {
-      if (!redis) {
-        throw new Error("Redis service is not running.");
-      }
-
-      const { jobId } = parseCodemodStatusParams(request.params);
-
-      const data = await redis.get(`job-${jobId}::status`);
-      reply.type("application/json").code(200);
-      return {
-        success: true,
-        result: data
-          ? (JSON.parse(data) as {
-              status: string;
-              message?: string;
-              link?: string;
-              progress?: { processed: number; total: number };
-            })
-          : null,
-      };
-    },
-  );
-
   done();
 };
 

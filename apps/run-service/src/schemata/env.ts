@@ -1,13 +1,22 @@
-import { type Output, type ValiError, object, parse, string } from "valibot";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import {
+  type Output,
+  type ValiError,
+  array,
+  coerce,
+  number,
+  object,
+  optional,
+  parse,
+  string,
+} from "valibot";
 
 export const environmentSchema = object({
-  NODE_ENV: string(),
-  CLERK_PUBLISH_KEY: string(),
-  CLERK_SECRET_KEY: string(),
-  CLERK_JWT_KEY: string(),
-  REDIS_HOST: string(),
-  REDIS_PORT: string(),
-  TASK_MANAGER_QUEUE_NAME: string(),
+  PORT: coerce(number(), (input) => Number(input)),
+  REDIS_HOST: optional(string()),
+  REDIS_PORT: optional(string()),
+  TASK_MANAGER_QUEUE_NAME: optional(string()),
+  AUTH_SERVICE_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;
