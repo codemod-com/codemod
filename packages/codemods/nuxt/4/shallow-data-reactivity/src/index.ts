@@ -51,5 +51,40 @@ export default function transform(
       });
   });
 
+  root
+    .find(j.CallExpression, {
+      callee: {
+        type: "Identifier",
+        name: "useAsyncData",
+      },
+    })
+    .forEach((path) => {
+      const args = path.node.arguments;
+      if (args[0].type === "ArrowFunctionExpression") {
+        let slug = "";
+        root
+          .find(j.VariableDeclarator, {
+            init: {
+              type: "CallExpression",
+              callee: {
+                name: "useRoute",
+              },
+            },
+          })
+          .forEach((path) => {
+            slug = path.node.id.name;
+          });
+        slug += ".params.slug";
+
+        // Create the new arguments
+        const newArg = j.identifier(slug);
+
+        path.node.arguments.unshift(newArg);
+
+        // Replace the node with the new node, preserving comments
+        replaceWithComments(path, path.node);
+      }
+    });
+
   return root.toSource();
 }
