@@ -17,7 +17,7 @@ import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import Codemod from "./Codemod";
@@ -42,7 +42,7 @@ const Main = () => {
     setEngine,
     getSelectedEditors,
     editors,
-    selectedPairIndex,
+    removePair,
     setSelectedPairIndex,
     addPair,
   } = useSnippetsStore();
@@ -55,15 +55,18 @@ const Main = () => {
   const snippetStore = getSelectedEditors();
 
   const TripletSelector = () => (
-    <ul style={{ display: "flex" }}>
+    <ul>
       {editors.map((_, i) => (
-        <li
-          className="cursor-pointer"
-          onClick={() => setSelectedPairIndex(i)}
-          key={i}
-        >
-          pair: {i}
-        </li>
+        <>
+          <li
+            className="cursor-pointer"
+            onClick={() => setSelectedPairIndex(i)}
+            key={i}
+          >
+            pair: {i}
+          </li>
+          {/*<button onClick={ () => removePair(i) }>remove</button>*/}
+        </>
       ))}
       <li onClick={addPair}>Add snippet</li>
     </ul>

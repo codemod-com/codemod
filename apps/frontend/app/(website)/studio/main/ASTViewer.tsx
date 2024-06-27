@@ -4,7 +4,7 @@ import useScrollNodeIntoView from "@studio/hooks/useScrollNodeIntoView";
 import {
   useSelectFirstTreeNodeForSnippet,
   useSnippetsStore,
-} from "@studio/store/zustand/snippets";
+} from "@studio/store/snippets";
 import { useCallback, useEffect, useRef } from "react";
 
 type Props = {

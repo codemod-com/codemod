@@ -9,15 +9,7 @@ import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
-import {
-  path,
-  assocPath,
-  is,
-  map,
-  mapObjIndexed,
-  pathSatisfies,
-  reduce,
-} from "ramda";
+import { path, assocPath, is, map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
 
 export type Token = Readonly<{
@@ -50,6 +42,7 @@ type SnippetSettersMap = {
 type SnippetsConfig = {
   addPair: () => void;
   clearAll: () => void;
+  removePair: (index: number) => void;
   selectedPairIndex: number;
   engine: KnownEngines;
   getSelectedEditors: () => Editors &
@@ -99,7 +92,7 @@ const getSnippetInitialState = (defaultContent = ""): SnippetValues => {
         contentParsed.tokens.map(({ start, end, value }) => ({
           start,
           end,
-          value: value ?? "".slice(start, end),
+          value: (value ?? "").slice(start, end),
         }))
       : []
     : [];
@@ -132,6 +125,11 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         },
       ],
     }),
+
+  removePair: (index: number) =>
+    set({
+      editors: index ? remove(index, 1, get().editors) : get().editors,
+    }),
   clearAll: () =>
     set({
       editors: [
@@ -162,7 +160,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       ),
     ),
   setSelectedPairIndex: (i: number) => {
-    console.log({ get: get() });
+    console.log({ get: get(), getAllSnippets: get().getAllSnippets() });
     set({ selectedPairIndex: i });
   },
   getSelectedEditors: () => {
@@ -200,6 +198,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
 
       const obj = get();
       obj.editors[editorsPairIndex][type].content = content;
+      obj.editors[editorsPairIndex][type].rootNode = rootNode;
       set(obj);
     };
   },

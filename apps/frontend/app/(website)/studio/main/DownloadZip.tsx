@@ -15,8 +15,8 @@ import {
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { DownloadIcon } from "@studio/icons/Download";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { downloadProject } from "@studio/utils/download";
 import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";

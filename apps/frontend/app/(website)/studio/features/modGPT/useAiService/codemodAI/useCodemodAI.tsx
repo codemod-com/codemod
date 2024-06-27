@@ -2,7 +2,7 @@ import { useAuth } from "@/app/auth/useAuth";
 import { codemodAiWsServer, shouldUseCodemodAi } from "@chatbot/config";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@shared/consts";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
+import { useSnippetsStore } from "@studio/store/snippets";
 import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";

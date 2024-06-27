@@ -1,7 +1,7 @@
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useModStore } from "@studio/store/mod";
 import { deflate } from "pako";
-import { useSnippetsStore } from "../store/zustand/snippets";
+import { useSnippetsStore } from "../store/snippets";
 
 export const useShareLink = () => {
   const { engine, getSelectedEditors } = useSnippetsStore();

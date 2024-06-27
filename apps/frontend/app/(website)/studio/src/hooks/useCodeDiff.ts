@@ -1,11 +1,11 @@
 import { useCodemodOutputUpdate } from "@/app/(website)/studio/features/codemod-apply/useCodemodOutputUpdate";
 import { useSnippet } from "@studio/main/SnippetUI";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
-import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
-import { TabNames, useViewStore } from "@studio/store/zustand/view";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
+import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
+import { TabNames, useViewStore } from "@studio/store/view";
 import { useCallback } from "react";
 
 export const useCodeDiff = () => {

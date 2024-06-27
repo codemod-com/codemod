@@ -14,8 +14,8 @@ import {
   type TabsWithContents,
   getTabsData,
 } from "@studio/main/PaneLayout/tabsData";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
-import { TabNames, useViewStore } from "@studio/store/zustand/view";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { TabNames, useViewStore } from "@studio/store/view";
 import { useCallback, useEffect, useRef } from "react";
 
 const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [

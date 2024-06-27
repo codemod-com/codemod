@@ -1,7 +1,7 @@
 import { useWebWorker } from "@/app/(website)/studio/features/codemod-apply/useWebWorker";
-import { useLogStore } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
+import { useLogStore } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect } from "react";
 
 export const useCodemodOutputUpdate = () => {

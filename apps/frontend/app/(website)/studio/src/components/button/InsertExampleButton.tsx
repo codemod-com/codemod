@@ -6,8 +6,8 @@ import {
   BEFORE_SNIPPET_DEFAULT_CODE,
   buildDefaultCodemodSource,
 } from "@studio/store/getInitialState";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetsStore } from "../../store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "../../store/snippets";
 
 const InsertExampleButton = () => {
   const { engine, getSelectedEditors } = useSnippetsStore();

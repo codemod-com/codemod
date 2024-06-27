@@ -49,10 +49,10 @@
 // });
 
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useLogStore } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useLogStore } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
 import type { RangeCommand } from "@studio/utils/tree";
-import { useSnippetsStore } from "./zustand/snippets";
+import { useSnippetsStore } from "../snippets";
 
 type UseRange = Readonly<{
   ranges: ReadonlyArray<OffsetRange>;

@@ -9,10 +9,10 @@ import {
   TableHeader,
 } from "@studio/components/ui/table";
 import type { Event } from "@studio/schemata/eventSchemata";
-import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
-import { useLogStore } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetsStore } from "@studio/store/zustand/snippets";
+import { useLogStore } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
 import {
   type MouseEventHandler,
   memo,

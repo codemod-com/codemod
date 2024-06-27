@@ -1,5 +1,5 @@
-import { useCodemodExecutionError } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useCodemodExecutionError } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "../snippets";
 
 export type AliasName =
