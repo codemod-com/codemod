@@ -1,18 +1,18 @@
-Short description
-
-Detailed description
+Replaces deprecated `React.createFactory` method with JSX.
 
 ## Example
 
 ### Before
 
-```ts
-const toReplace = "hello";
+```tsx
+import { createFactory } from 'react';
+
+const route = createFactory(Route);
 ```
 
 ### After
 
-```ts
-const replacement = "hello";
+```tsx
+const route = <Route />;
 ```
 
