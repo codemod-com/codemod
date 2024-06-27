@@ -78,11 +78,7 @@
     "outputPath": "./package/"
   },
   "license": "Apache License, Version 2.0",
-  "files": [
-    "./dist/index.cjs",
-    "LICENSE",
-    "README.md"
-  ],
+  "files": ["./dist/index.cjs", "LICENSE", "README.md"],
   "publishConfig": {
     "access": "public"
   },
