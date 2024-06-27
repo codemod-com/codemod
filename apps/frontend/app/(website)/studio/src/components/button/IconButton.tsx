@@ -17,8 +17,8 @@ export const IconButton = ({
   const component = (
     <div
       className="w-[50px]
-	           hover:text-accent-foreground rounded-md hover:bg-accent
-	           flex items-center justify-center cursor-pointer group mr-2 px-3"
+           hover:text-accent-foreground rounded-md hover:bg-accent
+           flex items-center justify-center cursor-pointer group mr-2 px-3"
       onClick={onClick}
     >
       <div className="flex flex-col items-center">
