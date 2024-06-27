@@ -2,9 +2,10 @@ import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
-import { join } from "node:path";
+import { dirname, extname, join, parse } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+  type Codemod,
   type CodemodSettings,
   type CodemodToRun,
   Runner,
@@ -90,6 +91,58 @@ const checkFileTreeVersioning = async (target: string) => {
   }
 };
 
+export const transformCodemodToRunnable = async (options: {
+  codemod: Codemod;
+  codemodArguments: Record<string, unknown>;
+  printer: PrinterBlueprint;
+  argv: GlobalArgvOptions & RunArgvOptions;
+}): Promise<CodemodToRun> => {
+  const getCodemodName = (cdmd: Codemod) => {
+    if ("name" in cdmd) {
+      return cdmd.name;
+    }
+
+    return null;
+  };
+  const { codemod, codemodArguments, printer, argv } = options;
+
+  const safeArgumentRecord = await buildSafeArgumentRecord(
+    codemod,
+    codemodArguments,
+    printer,
+  );
+
+  const engineOptions = buildCodemodEngineOptions(codemod.engine, argv);
+
+  if (codemod.engine === "recipe") {
+    return {
+      ...codemod,
+      codemods: await Promise.all(
+        codemod.codemods.map(async (subCodemod) =>
+          transformCodemodToRunnable({ ...options, codemod: subCodemod }),
+        ),
+      ),
+      safeArgumentRecord,
+      engineOptions,
+    };
+  }
+
+  const codemodToRun: CodemodToRun = {
+    ...codemod,
+    safeArgumentRecord,
+    engineOptions,
+  };
+
+  const codemodName = getCodemodName(codemod);
+  if (codemodName) {
+    codemodToRun.hashDigest = createHash("ripemd160")
+      .update(codemodName)
+      .digest();
+  }
+
+  return codemodToRun;
+};
+
 export const handleRunCliCommand = async (options: {
   printer: PrinterBlueprint;
   args: GlobalArgvOptions & RunArgvOptions;
@@ -141,17 +194,14 @@ export const handleRunCliCommand = async (options: {
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
-        ...codemod,
-        source: "local",
-        hashDigest: createHash("ripemd160")
-          .update(codemodSettings.source)
-          .digest(),
-        safeArgumentRecord: await buildSafeArgumentRecord(
+        ...(await transformCodemodToRunnable({
           codemod,
-          args,
+          argv: args,
+          codemodArguments: args,
           printer,
-        ),
-        engineOptions,
+        })),
+        cleanup: extname(codemodSettings.source) === ".zip",
+        source: "local",
       },
     };
   } else if (codemodSettings.kind === "runNamed") {
@@ -192,14 +242,12 @@ export const handleRunCliCommand = async (options: {
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
-        ...codemod,
-        hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-        safeArgumentRecord: await buildSafeArgumentRecord(
+        ...(await transformCodemodToRunnable({
           codemod,
-          args,
+          argv: args,
+          codemodArguments: args,
           printer,
-        ),
-        engineOptions,
+        })),
       },
     };
   } else {
@@ -211,15 +259,14 @@ export const handleRunCliCommand = async (options: {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
         const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
 
-        codemods.push({
-          ...codemod,
-          safeArgumentRecord: await buildSafeArgumentRecord(
+        codemods.push(
+          await transformCodemodToRunnable({
             codemod,
-            preCommitCodemod.arguments,
+            argv: args,
+            codemodArguments: preCommitCodemod.arguments,
             printer,
-          ),
-          engineOptions,
-        });
+          }),
+        );
       }
 
       codemodDefinition = {
@@ -297,6 +344,10 @@ export const handleRunCliCommand = async (options: {
         fileCount: modifiedFilePaths.length,
         ...(recipe && { recipeName: recipe.name }),
       });
+
+      if (codemod.cleanup) {
+        await fs.promises.rm(dirname(codemod.source), { recursive: true });
+      }
     },
     (error) => {
       if (!(error instanceof Error)) {
