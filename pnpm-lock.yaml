@@ -814,6 +814,9 @@ importers:
 
   apps/modgpt:
     dependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       '@fastify/cors':
         specifier: 8.5.0
         version: 8.5.0
@@ -4937,6 +4940,8 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.4.5
+
+  packages/database/generated/client: {}
 
   packages/filemod:
     devDependencies:

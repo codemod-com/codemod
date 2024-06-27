@@ -21,7 +21,8 @@
     "replicate": "0.25.2",
     "ts-node": "^10.9.2",
     "ts-node-dev": "^2.0.0",
-    "valibot": "^0.24.1"
+    "valibot": "^0.24.1",
+    "@codemod-com/utilities": "workspace:*"
   },
   "devDependencies": {
     "@types/node": "20.10.5",
