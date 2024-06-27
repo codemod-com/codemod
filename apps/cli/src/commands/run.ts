@@ -3,7 +3,12 @@ import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { dirname, extname, join, parse } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import {
+  type PrinterBlueprint,
+  boxen,
+  chalk,
+  colorLongString,
+} from "@codemod-com/printer";
 import {
   type Codemod,
   type CodemodSettings,
@@ -155,7 +160,12 @@ export const handleRunCliCommand = async (options: {
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
 
-  if (!runSettings.dryRun && !args["disable-tree-version-check"]) {
+  if (
+    !runSettings.dryRun &&
+    !args["disable-tree-version-check"] &&
+    !args.man &&
+    !args.config
+  ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
@@ -190,8 +200,6 @@ export const handleRunCliCommand = async (options: {
       tarService,
     );
 
-    const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
-
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
@@ -208,7 +216,10 @@ export const handleRunCliCommand = async (options: {
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
-      codemod = await codemodDownloader.download(codemodSettings.name);
+      codemod = await codemodDownloader.download(
+        codemodSettings.name,
+        args.man || args.config,
+      );
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
@@ -238,8 +249,6 @@ export const handleRunCliCommand = async (options: {
       );
     }
 
-    const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
-
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
@@ -258,7 +267,6 @@ export const handleRunCliCommand = async (options: {
     for (const preCommitCodemod of preCommitCodemods) {
       if (preCommitCodemod.source === "package") {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
-        const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
 
         codemods.push(
           await transformCodemodToRunnable({
@@ -282,14 +290,59 @@ export const handleRunCliCommand = async (options: {
   }
 
   if (codemodDefinition.kind !== "runOnPreCommit") {
-    if (args.man) {
-      return printer.printConsoleMessage(
-        "log",
-        prettyjson.render(JSON.stringify(codemodDefinition.codemod, null, 2)),
-      );
-    }
+    if (args.man || args.config) {
+      if (codemodDefinition.codemod.bundleType === "standalone") {
+        printer.printConsoleMessage(
+          "error",
+          chalk.red("Standalone codemods do not support this feature."),
+        );
+        return;
+      }
 
-    if (args.config) {
+      if (args.man) {
+        let readmeContents: string;
+
+        try {
+          readmeContents = await readFile(
+            join(codemodDefinition.codemod.directoryPath, "description.md"),
+            { encoding: "utf8" },
+          );
+
+          printer.printConsoleMessage(
+            "log",
+            colorLongString(readmeContents, chalk.cyan, 80),
+          );
+        } catch (err) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red("Could not find the manual file for the codemod."),
+          );
+        }
+      }
+
+      if (args.config) {
+        let configContents: string;
+
+        try {
+          configContents = await readFile(
+            join(codemodDefinition.codemod.directoryPath, ".codemodrc.json"),
+            { encoding: "utf8" },
+          );
+
+          printer.printConsoleMessage(
+            "log",
+            prettyjson.render(JSON.parse(configContents), {
+              inlineArrays: true,
+            }),
+          );
+        } catch (err) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red("Could not find the configuration file for the codemod."),
+          );
+        }
+      }
+
       return;
     }
   }
