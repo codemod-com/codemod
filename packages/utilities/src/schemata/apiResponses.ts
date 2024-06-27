@@ -19,6 +19,10 @@ export type CodemodDownloadLinkResponse = {
 
 export type GetScopedTokenResponse = { token: string };
 
+export type RevokeScopedTokenResponse =
+  | { success: true }
+  | { success: false; error: string };
+
 export type VerifyTokenResponse = {
   userId: string;
 };

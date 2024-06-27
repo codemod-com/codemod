@@ -57,6 +57,7 @@ export type {
   CodemodListResponse,
   GetScopedTokenResponse,
   GetUserDataResponse,
+  RevokeScopedTokenResponse,
   VerifyTokenResponse,
 } from "./schemata/apiResponses.js";
 export {

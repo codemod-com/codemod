@@ -30,17 +30,26 @@ export const openURL = (url: string): boolean => {
 };
 
 type UserData = GetUserDataResponse & {
+  account: string;
   token: string;
 };
 
-export const getCurrentUserData = async (): Promise<UserData | null> => {
-  const [userCredentials] = await keytar.findCredentials("codemod.com");
+export const getUserCredentials = async (): Promise<{
+  account: string;
+  password: string;
+} | null> => {
+  return (await keytar.findCredentials("codemod.com"))[0] ?? null;
+};
 
-  if (!isNeitherNullNorUndefined(userCredentials)) {
+export const getCurrentUserData = async (): Promise<UserData | null> => {
+  const userCredentials = await getUserCredentials();
+
+  if (userCredentials === null) {
     return null;
   }
 
   const { account, password: token } = userCredentials;
+
   const responseData = await getUserData(token);
 
   if (responseData === null) {
@@ -48,7 +57,7 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
     return null;
   }
 
-  return { ...responseData, token };
+  return { ...responseData, token, account: userCredentials.account };
 };
 
 export const getOrgsNames = (
