@@ -1,3 +1,3 @@
-export const llmEngines = ["gpt-4-turbo", "gpt-4", "gpt-4o"] as const;
+export const llmEngines = ["gpt-4o", "gpt-4-turbo", "gpt-4"] as const;
 
 export type LLMEngine = (typeof llmEngines)[number];

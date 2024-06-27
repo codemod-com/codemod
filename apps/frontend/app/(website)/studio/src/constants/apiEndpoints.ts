@@ -1,5 +1,5 @@
 const SEND_MESSAGE = "sendMessage";
 const SEND_CHAT = "sendChat";
-const BUILD_ACCESS_TOKEN = "buildAccessToken";
+const POPULATE_LOGIN_INTENT = "populateLoginIntent";
 
-export { SEND_MESSAGE, SEND_CHAT, BUILD_ACCESS_TOKEN };
+export { SEND_MESSAGE, SEND_CHAT, POPULATE_LOGIN_INTENT };

@@ -1,48 +1,58 @@
 ---
 name: Report faulty codemod
 about: Report codemod incorrect output
-title: "[faulty output]"
-labels: invalid
+title: "[codemod][FP/FN] <codemod-name>"
+labels: codemod-issue
 assignees: ''
 
 ---
 
-:warning::warning: Please do not include any proprietary code in the issue. :warning::warning:
-
----
 
 ### Faulty codemod
 
-Mention the codemod you ran which resulted in incorrect output. [e.g. `next/13/app-router-recipe`]
+1. Mention the codemod name, e.g., `react/19/remove-forward-ref`
+2. If available, link to the codemod source, e.g., [source](https://github.com/reactjs/react-codemod/tree/master/transforms)
 
-### Code before transformation
+### Sample code snippets
 
-```jsx
-//insert your code before transformation here
+If the codemod source is available and supported in the studio, please share a link including the before/after code snippets. If not, provide them below, e.g.:
+
+See this [Codemod Studio link](https://go.codemod.com/faulty-codemod-demo) for sample code snippets and a description of the issue.
+
+#### Original
+
+```ts
+//insert your original code here
 ```
 
-### Expected code after transformation
+#### Expected
 
-```jsx
+```ts
 //insert the expected **correct** output here
 ```
 
-### Actual code after transformation
+#### Actual
 
-```jsx
+```ts
 //insert the actual **faulty** output here
 ```
 
-### Estimated severity
+### Estimated impact
+Numbers about your specific codemod run:
 
-A general estimation of the severity of this issue. This can be estimated based on the number of files affected and the difficulty of manually fixing the faulty output while reviewing Codemod.com's dry run results.
+- Total number of files/instances transformed: X
+- Number of files/instances missed by the codemod (FN): X
+- Number of files/instances mistakenly transformed (FP): X
+
+Anything else that helps the community prioritize, e.g.:
+- I still need this fix for my current or upcoming migration.
+OR
+- I manually fixed my issue, but I'm reporting this for other community members.
 
 ### Environment:
-
 -   Codemod CLI version: [e.g. v0.0.21]
 -   OS: [e.g. MacOS 13.0.1]
 -   Node.js version: [e.g. v16.16.0]
 
 ### Additional context
-
-Add any other context about the problem here. This might include the target project, explanation of faulty output related to business logic, relevant links, etc.
+Add any other context about the problem here. This might include the target project, an explanation of the faulty output related to business logic, relevant links, etc.

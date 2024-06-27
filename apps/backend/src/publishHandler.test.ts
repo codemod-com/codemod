@@ -3,16 +3,19 @@ import type { CodemodConfigInput } from "@codemod-com/utilities";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { runServer } from "./server.js";
-import * as utils from "./util.js";
 
 const TAR_SERVICE_PACK_RETURN = "archive";
 
-const CLERK_GET_USER_RETURN = {
-  username: "username",
-  primaryEmailAddressId: "123",
-  emailAddresses: [{ id: "123", emailAddress: "john.doe@gmail.com" }],
-  firstName: "John",
-  lastName: "Doe",
+const GET_USER_RETURN = {
+  user: {
+    username: "username",
+    primaryEmailAddressId: "123",
+    emailAddresses: [{ id: "123", emailAddress: "john.doe@gmail.com" }],
+    firstName: "John",
+    lastName: "Doe",
+  },
+  organizations: [{ organization: { slug: "org" } }],
+  allowedNamespaces: ["org"],
 };
 
 const MOCK_TIMESTAMP = "timestamp";
@@ -41,13 +44,10 @@ const mocks = vi.hoisted(() => {
         findUnique: vi.fn(),
       },
     },
-    clerkClient: {
-      users: {
-        getUser: vi.fn().mockImplementation(() => CLERK_GET_USER_RETURN),
-        getOrganizationMembershipList: vi.fn().mockImplementation(() => []),
-      },
-    },
     axios: {
+      get: vi.fn().mockImplementation((url: string, ...args: unknown[]) => ({
+        data: GET_USER_RETURN,
+      })),
       post: vi.fn().mockImplementation(() => ({})),
     },
     S3Client,
@@ -56,8 +56,10 @@ const mocks = vi.hoisted(() => {
   };
 });
 
-vi.mock("./db/prisma.js", async () => {
-  return { prisma: mocks.prisma };
+vi.mock("@codemod-com/database", async () => {
+  const actual = await vi.importActual("@codemod-com/database");
+
+  return { ...actual, prisma: mocks.prisma };
 });
 
 vi.mock("axios", async () => {
@@ -91,35 +93,6 @@ vi.mock("./schemata/env.js", async () => {
         CODEMOD_COM_API_URL: "https://codemod.com/api",
       };
     }),
-  };
-});
-
-vi.mock("./util.js", async () => {
-  const actual = await vi.importActual("./util.js");
-
-  return {
-    ...actual,
-    areClerkKeysSet: vi.fn().mockImplementation(() => true),
-    getCustomAccessToken: () => vi.fn().mockImplementation(() => "accessToken"),
-  };
-});
-
-vi.mock("./util.js", async () => {
-  const actual = await vi.importActual("./util.js");
-
-  return {
-    ...actual,
-    areClerkKeysSet: vi.fn().mockImplementation(() => true),
-    getCustomAccessToken: () => vi.fn().mockImplementation(() => "accessToken"),
-  };
-});
-
-vi.mock("@clerk/fastify", async () => {
-  const actual = await vi.importActual("@clerk/fastify");
-
-  return {
-    ...actual,
-    createClerkClient: vi.fn().mockImplementation(() => mocks.clerkClient),
   };
 });
 
@@ -158,8 +131,6 @@ describe("/publish route", async () => {
 
   await fastify.ready();
 
-  const getCustomAccessTokenSpy = vi.spyOn(utils, "getCustomAccessToken");
-
   const codemodRcContents: CodemodConfigInput = {
     name: "mycodemod",
     version: "1.0.0",
@@ -189,6 +160,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -208,8 +180,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
     const tarServiceInstance = mocks.TarService.mock.instances[0];
     expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
@@ -264,9 +234,9 @@ describe("/publish route", async () => {
           publishedAt: MOCK_TIMESTAMP,
         },
         author: {
-          username: CLERK_GET_USER_RETURN.username,
-          name: `${CLERK_GET_USER_RETURN.firstName} ${CLERK_GET_USER_RETURN.lastName}`,
-          email: CLERK_GET_USER_RETURN.emailAddresses[0]?.emailAddress,
+          username: GET_USER_RETURN.user.username,
+          name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
+          email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
         },
       },
     );
@@ -281,6 +251,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -300,8 +271,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
     const tarServiceInstance = mocks.TarService.mock.instances[0];
     expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
@@ -350,6 +319,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -365,8 +335,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    expect(getCustomAccessTokenSpy).toHaveBeenCalledOnce();
 
     expect(response.body).toEqual({
       error: "No main file was provided",
@@ -386,6 +354,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -427,6 +396,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -465,6 +435,7 @@ describe("/publish route", async () => {
 
     const response = await supertest(fastify.server)
       .post("/publish")
+      .set("Authorization", "auth-header")
       .attach(".codemodrc.json", codemodRcBuf, {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
@@ -517,6 +488,7 @@ describe("/publish route", async () => {
 
       const response = await supertest(fastify.server)
         .post("/publish")
+        .set("Authorization", "auth-header")
         .attach(".codemodrc.json", codemodRcBuf, {
           contentType: "multipart/form-data",
           filename: ".codemodrc.json",
@@ -580,6 +552,7 @@ describe("/publish route", async () => {
 
       const response = await supertest(fastify.server)
         .post("/publish")
+        .set("Authorization", "auth-header")
         .attach(".codemodrc.json", codemodRcBuf, {
           contentType: "multipart/form-data",
           filename: ".codemodrc.json",
@@ -632,9 +605,9 @@ describe("/publish route", async () => {
   describe("when publishing via org", async () => {
     it("should go through happy path if user has access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.clerkClient.users.getOrganizationMembershipList.mockImplementation(
-        () => [{ organization: { slug: "org" } }],
-      );
+      mocks.axios.get.mockImplementation(() => ({
+        data: { ...GET_USER_RETURN, allowedNamespaces: ["org"] },
+      }));
       mocks.prisma.codemod.upsert.mockImplementation(() => {
         return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
       });
@@ -665,6 +638,7 @@ describe("/publish route", async () => {
 
       const response = await supertest(fastify.server)
         .post("/publish")
+        .set("Authorization", "auth-header")
         .attach(".codemodrc.json", codemodRcBuf, {
           contentType: "multipart/form-data",
           filename: ".codemodrc.json",
@@ -695,9 +669,9 @@ describe("/publish route", async () => {
 
     it("should fail if user has no access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.clerkClient.users.getOrganizationMembershipList.mockImplementation(
-        () => [],
-      );
+      mocks.axios.get.mockImplementation(() => ({
+        data: { ...GET_USER_RETURN, organizations: [], allowedNamespaces: [] },
+      }));
 
       const codemodRcContents: CodemodConfigInput = {
         name: "@org/mycodemod",
@@ -720,6 +694,7 @@ describe("/publish route", async () => {
 
       const response = await supertest(fastify.server)
         .post("/publish")
+        .set("Authorization", "auth-header")
         .attach(".codemodrc.json", codemodRcBuf, {
           contentType: "multipart/form-data",
           filename: ".codemodrc.json",

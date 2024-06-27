@@ -1,8 +1,8 @@
-import type { Aliases } from "@studio/store/zustand/CFS/alias";
 import {
   autoGenerateCodemodPrompt,
   fixCodemodBlockNoDebugInfoPrompt,
-} from "@studio/store/zustand/CFS/prompts";
+} from "@chatbot/prompts";
+import type { Aliases } from "@studio/store/zustand/CFS/alias";
 import { useCodemodExecutionError } from "@studio/store/zustand/log";
 import toast from "react-hot-toast";
 import { shouldUseCodemodAi } from "./config";
@@ -45,14 +45,7 @@ export const getOrderedAliasList = (aliases: Aliases) =>
 
 export const usePrompts = (aliases: Aliases) => {
   const codemodExecutionError = useCodemodExecutionError();
-  const prompts = [
-    shouldUseCodemodAi
-      ? null
-      : [
-          "Build a codemod to transform before to after",
-          autoGenerateCodemodPrompt,
-        ],
-  ].filter(Boolean);
+  const prompts = [["Autogenerate with AI", autoGenerateCodemodPrompt]];
 
   const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
 

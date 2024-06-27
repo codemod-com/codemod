@@ -14,7 +14,7 @@ const MyInput = forwardRef(function MyInput(props, ref) {
 ### After:
 
 ```tsx
-const MyInput = function MyInput({ ref, ...otherProps }) {
+const MyInput = function MyInput({ ref, ...props }) {
 	// ...
 };
 ```

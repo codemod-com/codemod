@@ -31,7 +31,7 @@ export const useCodemodAI = ({
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
   const emitMessage = (message: MessageToSend) => {
-    ws?.send(JSON.stringify(message));
+    ws?.send(JSON.stringify({ ...message, token: getToken() }));
     // socket?.emit("message", message);
   };
   const handleError = (error: string | Record<string, unknown> | Event) => {

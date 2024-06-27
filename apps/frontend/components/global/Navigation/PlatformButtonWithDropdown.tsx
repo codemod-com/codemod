@@ -102,7 +102,7 @@ export default function PlatformButtonWithDropdown() {
             </DropdownMenu.Item>
             <DropdownMenu.Item asChild>
               <Link
-                href="/cli"
+                href="https://go.codemod.com/cli-docs"
                 prefetch
                 className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
               >

@@ -20,19 +20,7 @@ export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
 export type TabHeader = { value: string; name: ReactNode };
 export type TabContent = TabHeader & { content: ReactNode };
 
-const ChatTab = ({ isSignedIn }: { isSignedIn: boolean }) => {
-  const { setContent } = useModStore();
-  const {
-    AIAssistant: { engine: llmEngine },
-  } = useCFSStore();
-
-  const aiAssistantData = useAiService({
-    setCodemod: setContent,
-    engine: llmEngine,
-  });
-  return <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />;
-};
-export const getTabsData = ({
+export const useTabsData = ({
   beforePanel,
   afterPanel,
   isSignedIn = false,
@@ -45,13 +33,23 @@ export const getTabsData = ({
   beforePanel: PanelData;
   afterPanel: PanelData;
 }) => {
+  const { setContent } = useModStore();
+  const {
+    AIAssistant: { engine: llmEngine },
+  } = useCFSStore();
+
+  const aiAssistantData = useAiService({
+    setCodemod: setContent,
+    engine: llmEngine,
+  });
+
   const tabs = [
     {
       value: TabNames.MODGPT,
       name: "ModGPT",
       content: (
         <>
-          <ChatTab isSignedIn={isSignedIn} />
+          <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />
           {!isSignedIn && <SignInRequired />}
         </>
       ),

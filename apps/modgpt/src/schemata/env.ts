@@ -5,23 +5,18 @@ import {
   coerce,
   number,
   object,
-  optional,
   parse,
   string,
 } from "valibot";
 
 dotenv.config();
 export const environmentSchema = object({
+  NODE_ENV: string(),
   PORT: coerce(number(), (input) => Number(input)),
   OPEN_AI_API_KEY: string(),
   CLAUDE_API_KEY: string(),
-  NODE_ENV: string(),
   REPLICATE_API_KEY: string(),
-  CLERK_DISABLED: optional(string()),
-  CLERK_PUBLISH_KEY: optional(string()),
-  CLERK_SECRET_KEY: optional(string()),
-  CLERK_JWT_KEY: optional(string()),
-  X_CODEMOD_ACCESS_TOKEN: optional(string()),
+  AUTH_SERVICE_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;

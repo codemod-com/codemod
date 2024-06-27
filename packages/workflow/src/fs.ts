@@ -2,36 +2,18 @@
 import * as fs from "node:fs/promises";
 import * as os from "node:os";
 import * as path from "node:path";
+import slugify from "@sindresorhus/slugify";
+import filenamify from "filenamify";
 import * as glob from "glob";
 import { fileContext, getCwdContext } from "./contexts";
 
 const DIRECTORY = "cm";
 
-// A description why we are doing it this way would be nice to have.
-// Is this dependency injection? Why do we need it that way?
-const filenamify = async (a: string) => {
-  const module =
-    // biome-ignore lint/security/noGlobalEval: <explanation>
-    ((await eval('import("filenamify")')) as typeof import("filenamify"))
-      .default;
-  return module(a);
-};
-
-const slugify = async (a: string) => {
-  type Slugify = typeof import("@sindresorhus/slugify");
-  // biome-ignore lint/security/noGlobalEval: <explanation>
-  const module = ((await eval('import("@sindresorhus/slugify")')) as Slugify)
-    .default;
-  return module(a);
-};
-
-export const getTmpDir = async (...rawParts: string[]) => {
-  const parts = await Promise.all(
-    rawParts.map(async (part) => {
-      const slug = await slugify(part);
-      return await filenamify(slug);
-    }),
-  );
+export const getTmpDir = (...rawParts: string[]) => {
+  const parts = rawParts.map((part) => {
+    const slug = slugify(part);
+    return filenamify(slug);
+  });
   const dirpath = path.join(os.tmpdir(), DIRECTORY, ...parts);
 
   return dirpath;

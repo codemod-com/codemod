@@ -1,5 +1,7 @@
 import AuthButtons from "@auth/AuthButtons";
 import { FirstLoginExperience } from "@features/FirstLoginExperience";
+import { Chat, SlackLogo } from "@phosphor-icons/react";
+import { IconButton } from "@studio/components/button/IconButton";
 import { Button } from "@studio/components/ui/button";
 import { CodemodLogo } from "@studio/icons/CodemodLogo";
 
@@ -15,6 +17,18 @@ export const TopBar = () => {
         </a>
       </Button>
       <div className="flex">
+        <IconButton
+          Icon={Chat}
+          text="Feedback"
+          href="https://github.com/codemod-com/codemod/issues/new/choose"
+          hint="Share your feedback"
+        />
+        <IconButton
+          Icon={SlackLogo}
+          text="Slack"
+          href="https://codemod-community.slack.com/"
+          hint="Community Slack"
+        />
         <FirstLoginExperience /> <AuthButtons variant="studio" />
       </div>
     </div>
