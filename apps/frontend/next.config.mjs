@@ -33,6 +33,7 @@ const config = {
       },
       resolve: {
         ...config.resolve,
+        symlinks: true,
         fallback: {
           ...config.resolve.fallback,
           fs: false,
@@ -61,6 +62,7 @@ const config = {
     },
   },
   experimental: {
+    externalDir: true,
     taint: true,
   },
   async redirects() {

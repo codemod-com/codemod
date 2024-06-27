@@ -1,23 +1,6 @@
 import semver from "semver";
-import {
-  type Input,
-  type Issues,
-  type Output,
-  ValiError,
-  array,
-  boolean,
-  custom,
-  literal,
-  merge,
-  number,
-  object,
-  optional,
-  parse,
-  regex,
-  string,
-  tuple,
-  union,
-} from "valibot";
+import { type Input, type Issues, type Output, ValiError } from "valibot";
+import * as v from "valibot";
 import { isNeitherNullNorUndefined } from "../functions/validationMethods.js";
 import { argumentSchema } from "./argumentRecordSchema.js";
 
@@ -64,47 +47,47 @@ export const extractLibNameAndVersion = (val: string) => {
 
 export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
 
-export const argumentsSchema = array(
-  union(
+export const argumentsSchema = v.array(
+  v.union(
     [
-      object({
-        name: string(),
-        kind: literal("string"),
-        required: optional(boolean(), false),
-        default: optional(string()),
+      v.object({
+        name: v.string(),
+        kind: v.literal("string"),
+        required: v.optional(v.boolean(), false),
+        default: v.optional(v.string()),
       }),
-      object({
-        name: string(),
-        kind: literal("number"),
-        required: optional(boolean(), false),
-        default: optional(number()),
+      v.object({
+        name: v.string(),
+        kind: v.literal("number"),
+        required: v.optional(v.boolean(), false),
+        default: v.optional(v.number()),
       }),
-      object({
-        name: string(),
-        kind: literal("boolean"),
-        required: optional(boolean(), false),
-        default: optional(boolean()),
+      v.object({
+        name: v.string(),
+        kind: v.literal("boolean"),
+        required: v.optional(v.boolean(), false),
+        default: v.optional(v.boolean()),
       }),
-      object({
-        name: string(),
-        kind: literal("enum"),
-        options: array(argumentSchema),
-        required: optional(boolean(), false),
-        default: optional(argumentSchema),
+      v.object({
+        name: v.string(),
+        kind: v.literal("enum"),
+        options: v.array(argumentSchema),
+        required: v.optional(v.boolean(), false),
+        default: v.optional(argumentSchema),
       }),
-      object({
-        name: string(),
-        kind: array(
-          union([
-            literal("string"),
-            literal("number"),
-            literal("boolean"),
-            literal("enum"),
+      v.object({
+        name: v.string(),
+        kind: v.array(
+          v.union([
+            v.literal("string"),
+            v.literal("number"),
+            v.literal("boolean"),
+            v.literal("enum"),
           ]),
         ),
-        options: optional(array(argumentSchema)),
-        required: optional(boolean(), false),
-        default: optional(argumentSchema),
+        options: v.optional(v.array(argumentSchema)),
+        required: v.optional(v.boolean(), false),
+        default: v.optional(argumentSchema),
       }),
     ],
     "Invalid arguments definition",
@@ -125,16 +108,22 @@ export const PIRANHA_LANGUAGES = [
   "scala",
 ] as const;
 
-export const piranhaLanguageSchema = union(
-  PIRANHA_LANGUAGES.map((language) => literal(language)),
+export const piranhaLanguageSchema = v.union(
+  PIRANHA_LANGUAGES.map((language) => v.literal(language)),
 );
 
 export type PiranhaLanguage = Output<typeof piranhaLanguageSchema>;
 
 // Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 
-const versionUnion = union(
-  [literal("<"), literal(">"), literal("="), literal("<="), literal(">=")],
+const versionUnion = v.union(
+  [
+    v.literal("<"),
+    v.literal(">"),
+    v.literal("="),
+    v.literal("<="),
+    v.literal(">="),
+  ],
   "Invalid version range operator.",
 );
 
@@ -148,65 +137,65 @@ const semVerValidationFunc = (val: string) =>
   val === "alpha";
 
 const getLibraryVersionTupleValidator = (msg: string) =>
-  tuple(
+  v.tuple(
     [
-      string("Library name has to be a string."),
+      v.string("Library name has to be a string."),
       versionUnion,
-      union([
+      v.union([
         // react < 18.0.2 (preferred)
-        string([
-          custom(semVerValidationFunc, `"version" has to be a valid semver.`),
+        v.string([
+          v.custom(semVerValidationFunc, `"version" has to be a valid semver.`),
         ]),
         // react < 18 (for example, when no latest version of a given major is out yet)
-        string([regex(/^\d+$/)]),
+        v.string([v.regex(/^\d+$/)]),
       ]),
     ],
     msg,
   );
 
 const knownEngines = [
-  literal("jscodeshift"),
-  literal("filemod"),
-  literal("ts-morph"),
-  literal("ast-grep"),
-  literal("workflow"),
+  v.literal("jscodeshift"),
+  v.literal("filemod"),
+  v.literal("ts-morph"),
+  v.literal("ast-grep"),
+  v.literal("workflow"),
 ];
-export const knownEnginesSchema = union(
+export const knownEnginesSchema = v.union(
   knownEngines,
   "Specified engine is not supported.",
 );
 export type KnownEngines = Output<typeof knownEnginesSchema>;
 
-const allEngines = [...knownEngines, literal("recipe"), literal("piranha")];
-export const allEnginesSchema = union(
+const allEngines = [...knownEngines, v.literal("recipe"), v.literal("piranha")];
+export const allEnginesSchema = v.union(
   allEngines,
   "Specified engine is not supported.",
 );
 export type AllEngines = Output<typeof allEnginesSchema>;
 
-const configJsonBaseSchema = object({
-  $schema: optional(string()),
-  name: string(`"name" of the codemod has to be a string.`),
-  description: optional(string(`"description" has to be a string.`)),
-  version: string([
-    custom(semVerValidationFunc, `"version" has to be a valid semver.`),
+const configJsonBaseSchema = v.object({
+  $schema: v.optional(v.string()),
+  name: v.string(`"name" of the codemod has to be a string.`),
+  description: v.optional(v.string(`"description" has to be a string.`)),
+  version: v.string([
+    v.custom(semVerValidationFunc, `"version" has to be a valid semver.`),
   ]),
   engine: allEnginesSchema,
   // We should have custom logic for this in our code. For orgs, we default to private, for users, we default to public
   // just as npm does.
-  private: optional(boolean(`"private" field has to be a boolean.`)),
+  private: v.optional(v.boolean(`"private" field has to be a boolean.`)),
   // To overwrite default include patterns
-  include: optional(
-    array(
-      string("Include has to be an array of strings."),
+  include: v.optional(
+    v.array(
+      v.string("Include has to be an array of strings."),
       "Include has to be an array of strings.",
     ),
   ),
-  applicability: optional(
-    object({
+  applicability: v.optional(
+    v.object({
       // Array of tuples: [libName, versionOperator, version]
-      from: optional(
-        array(
+      from: v.optional(
+        v.array(
           getLibraryVersionTupleValidator(
             `Invalid library version specified in "from" field. It has to be of the following format: [["libname", ">=", "1.0.0"]].`,
           ),
@@ -214,8 +203,8 @@ const configJsonBaseSchema = object({
         ),
       ),
       // Array of tuples: [libName, versionOperator, version]
-      to: optional(
-        array(
+      to: v.optional(
+        v.array(
           getLibraryVersionTupleValidator(
             `Invalid library version specified in "to" field. It has to be of the following format: [["libname", ">=", "1.0.0"]].`,
           ),
@@ -224,10 +213,10 @@ const configJsonBaseSchema = object({
       ),
     }),
   ),
-  deps: optional(
-    array(
-      string([
-        custom((val) => {
+  deps: v.optional(
+    v.array(
+      v.string([
+        v.custom((val) => {
           const { libName, version } = extractLibNameAndVersion(val);
           // e.g. -jest
           if (libName?.startsWith("-")) {
@@ -245,48 +234,48 @@ const configJsonBaseSchema = object({
       `"deps" has to be an array of strings.`,
     ),
   ),
-  arguments: optional(argumentsSchema, []),
-  meta: optional(
-    object({
-      tags: optional(
-        array(
-          string("Tags has to be an array of strings."),
+  arguments: v.optional(argumentsSchema, []),
+  meta: v.optional(
+    v.object({
+      tags: v.optional(
+        v.array(
+          v.string("Tags has to be an array of strings."),
           `"tags" has to be an array of strings.`,
         ),
         [],
       ),
-      git: optional(string("Git link has to be a string.")),
+      git: v.optional(v.string("Git link has to be a string.")),
     }),
   ),
-  build: optional(
-    object(
+  build: v.optional(
+    v.object(
       {
-        input: optional(string("Build input path has to be a string.")),
-        output: optional(string("Build output path has to be a string.")),
+        input: v.optional(v.string("Build input path has to be a string.")),
+        output: v.optional(v.string("Build output path has to be a string.")),
       },
       `Invalid build definition. "build" has to be an object.`,
     ),
   ),
 });
 
-export const codemodConfigSchema = union([
-  merge([
+export const codemodConfigSchema = v.union([
+  v.merge([
     configJsonBaseSchema,
-    object({
+    v.object({
       engine: knownEnginesSchema,
     }),
   ]),
-  merge([
+  v.merge([
     configJsonBaseSchema,
-    object({
-      engine: literal("recipe"),
-      names: array(string()),
+    v.object({
+      engine: v.literal("recipe"),
+      names: v.array(v.string()),
     }),
   ]),
-  merge([
+  v.merge([
     configJsonBaseSchema,
-    object({
-      engine: literal("piranha"),
+    v.object({
+      engine: v.literal("piranha"),
       language: piranhaLanguageSchema,
     }),
   ]),
@@ -294,7 +283,7 @@ export const codemodConfigSchema = union([
 
 export const parseCodemodConfig = (config: unknown) => {
   try {
-    return parse(codemodConfigSchema, config, { abortEarly: true });
+    return v.parse(codemodConfigSchema, config, { abortEarly: true });
   } catch (err) {
     if (!(err instanceof ValiError)) {
       throw new Error("Error parsing config file");
