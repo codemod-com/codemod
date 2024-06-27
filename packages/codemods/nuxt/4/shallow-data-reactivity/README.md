@@ -1,4 +1,4 @@
-The `data` object returned from `useAsyncData`, `useFetch`, `useLazyAsyncData` and `useLazyFetch` is now a `shallowRef` rather than a `ref`.
+This codemod transforms the `data` object returned from `useAsyncData`, `useFetch`, `useLazyAsyncData` and `useLazyFetch` into a `shallowRef`
 
 When new data is fetched, anything depending on `data` will still be reactive because the entire object is replaced. But if your code changes a property within that data structure, this will not trigger any reactivity in your app.
 
