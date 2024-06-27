@@ -1,4 +1,4 @@
-## This codemod removes lodash/template and related template utilities from Nuxt in favor of a more flexible and secure getContents() function for code generation in v3.
+This codemod removes lodash/template and related template utilities from Nuxt in favor of a more flexible and secure getContents() function for code generation in v3.
 
 ### What Changed
 
