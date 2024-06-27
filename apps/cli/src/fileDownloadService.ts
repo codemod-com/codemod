@@ -43,9 +43,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
       }
     }
 
-    const { data } = await axios.get(url, {
-      responseType: "arraybuffer",
-    });
+    const response = await fetch(url);if (!response.ok) throw new Error('Network response was not ok.');const data = await response.arrayBuffer();
 
     const buffer = Buffer.from(data);
 
@@ -70,9 +68,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
     let response: AxiosResponse;
 
     try {
-      response = await axios.head(url, {
-        timeout: 15000,
-      });
+      response = await fetch(url, { signal: AbortSignal.timeout(15000) })if (!response.ok) throw new Error('Network response was not ok.');;
     } catch (error) {
       if (!isAxiosError(error)) {
         throw error;

@@ -32,11 +32,7 @@ async function authPlugin(fastify: FastifyInstance, _opts: unknown) {
 
         if (!authHeader) reply.code(401).send({ error: "Unauthorized" });
 
-        await axios.get(`${environment.AUTH_SERVICE_URL}/verifyToken`, {
-          headers: {
-            Authorization: authHeader,
-          },
-        });
+        await const controller = new AbortController();setTimeout(() => controller.abort(), 5000); // Assuming a default timeout of 5000ms as it was not specified in the original axios callconst response = await fetch(`${environment.AUTH_SERVICE_URL}/verifyToken`, {  headers: {    Authorization: authHeader,  },  signal: controller.signal});if (!response.ok) throw new Error('Failed to fetch');const result = { data: await response.json() };;
       } catch (error) {
         console.log(error);
       }
