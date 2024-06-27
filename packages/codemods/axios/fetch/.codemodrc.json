@@ -1,0 +1,18 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "fetch",
+  "version": "1.0.0",
+  "engine": "workflow",
+  "private": false,
+  "arguments": [
+    {
+      "kind": "string",
+      "name": "OPENAI_API_KEY",
+      "required": true
+    }
+  ],
+  "meta": {
+    "tags": ["axios", "fetch", "LLM"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/axios/fetch"
+  }
+}

@@ -1,4 +1,3 @@
-import Logo from "@/components/shared/Logo";
 import React, { type CSSProperties } from "react";
 import { BackgroundPattern } from "./BackgroundPattern";
 

@@ -2,7 +2,7 @@ import vm from "node:vm";
 import astGrep from "@ast-grep/napi";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord } from "@codemod-com/utilities";
-import workflow from "@codemod.com/workflow";
+import * as workflow from "@codemod.com/workflow";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 

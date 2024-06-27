@@ -3,6 +3,7 @@ import type { NapiConfig, SgNode } from "@ast-grep/napi";
 import type MagicString from "magic-string";
 
 import { invariant } from "ts-invariant";
+import type { GitContext } from "./contexts/GitContext";
 import { noContextFn } from "./helpers";
 
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
@@ -26,6 +27,10 @@ export const getParentContext = () => {
   return fn ?? noContextFn;
 };
 
+export const gitContext = registerContext(
+  "git",
+  new AsyncLocalStorage<GitContext>(),
+);
 export const astGrepNodeContext = registerContext(
   "astGrepNodeContext",
   new AsyncLocalStorage<AstGrepNodeContext>(),
@@ -87,6 +92,12 @@ export const getFileContext = () => {
   const file = fileContext.getStore();
   invariant(file, "No file context found");
   return file;
+};
+
+export const getGitContext = () => {
+  const git = gitContext.getStore();
+  invariant(git, "No git context found");
+  return git;
 };
 
 export const getRepositoryContext = () => {

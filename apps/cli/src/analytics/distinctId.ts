@@ -38,7 +38,7 @@ const getUserDistinctId = async (): Promise<string> => {
   const userData = await getCurrentUserData();
 
   if (userData !== null) {
-    return userData.user.userId;
+    return userData.user.id;
   }
 
   const distinctId = await getDistinctId(configurationDirectoryPath);

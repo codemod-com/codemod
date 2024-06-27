@@ -9,7 +9,7 @@ import {
   TWO_MINS_IN_MS,
 } from "@/constants";
 import { useAuth, useUser } from "@clerk/nextjs";
-import getAccessToken from "@studio/api/getAccessToken";
+import { populateLoginIntent } from "@studio/api/populateLoginIntent";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 
 export const TokenBuilder = () => {
@@ -43,7 +43,7 @@ export const TokenBuilder = () => {
             ?.split(",") || [];
 
         // Polling should pick it up
-        await getAccessToken({
+        await populateLoginIntent({
           clerkToken,
           sessionId,
           iv,
@@ -76,7 +76,7 @@ export const TokenBuilder = () => {
           const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           // Polling should pick it up
-          await getAccessToken({
+          await populateLoginIntent({
             clerkToken,
             sessionId,
             iv,

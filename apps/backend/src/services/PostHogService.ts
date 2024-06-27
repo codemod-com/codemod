@@ -20,7 +20,7 @@ export class PostHogService {
           query: {
             kind: "HogQLQuery",
             query:
-              "select properties.codemodName, count(*) from events where event in ('codemod.CLI.codemodExecuted', 'codemod.VSCE.codemodExecuted') group by properties.codemodName",
+              "select properties.codemodName, count(*) from events where event in ('codemod.CLI.codemodExecuted', 'codemod.VSCE.codemodExecuted') group by properties.codemodName limit 500",
           },
         },
         {

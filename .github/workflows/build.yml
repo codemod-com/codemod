@@ -23,15 +23,12 @@ jobs:
           run_install: |
             - recursive: true
               args: [--frozen-lockfile, --strict-peer-dependencies]
-      - name: Prisma generate
-        run: pnpm --filter backend db:generate
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL }}
       - name: Build projects
         run: pnpm build
         env:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_c3VtbWFyeS13YWxydXMtMjUuY2xlcmsuYWNjb3VudHMuZGV2JA'
-          NEXT_PUBLIC_API_URL: 'http://localhost:5173'
+          NEXT_PUBLIC_API_URL: 'http://localhost:8081'
+          NEXT_PUBLIC_AUTH_API_URL: 'http://localhost:8080'
           HUBSPOT_CONTACT_FORM_ID: ${{ secrets.HUBSPOT_CONTACT_FORM_ID }}
           HUBSPOT_JOB_FORM_ID: ${{ secrets.HUBSPOT_JOB_FORM_ID }}
           HUBSPOT_NEWSLETTER_FORM_ID: ${{ secrets.HUBSPOT_NEWSLETTER_FORM_ID }}

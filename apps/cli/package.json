@@ -1,7 +1,7 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.16",
+  "version": "0.11.21",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -44,7 +44,6 @@
     "@types/yargs": "^17.0.13",
     "@vitest/coverage-v8": "^1.0.1",
     "axios": "^1.6.8",
-    "cli-progress": "^3.12.0",
     "columnify": "^1.6.0",
     "cosmiconfig": "^8.3.6",
     "exponential-backoff": "^3.1.1",
@@ -64,11 +63,12 @@
   },
   "scripts": {
     "build": "tsc && node ./build.js",
-    "build:local": "npm run build -- --local",
+    "build:publish": "pnpm build -- --publish",
+    "build:local": "pnpm build -- --local",
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
-    "prepublishOnly": "turbo run build --filter codemod"
+    "prepublishOnly": "turbo run build:publish --filter codemod"
   },
   "engines": {
     "node": ">=18.5.0"

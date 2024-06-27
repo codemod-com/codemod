@@ -13,9 +13,10 @@ import { dirs } from "./fs/dirs.js";
 import { codemod } from "./codemod.js";
 
 import { getTree } from "./engineHelpers.js";
+
 import { files } from "./files.js";
 
-export { git, astGrep, jsFiles };
+export { git, astGrep, jsFiles, files, codemod, dirs };
 
 export const api = {
   git,

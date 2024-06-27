@@ -11,11 +11,12 @@ import {
   isGeneratorEmpty,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { glob, globStream } from "glob";
+import { glob } from "glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
 import { buildFileCommands } from "./buildFileCommands.js";
 import { buildFileMap } from "./buildFileMap.js";
+import { buildPathGlobGenerator } from "./buildGlobGenerator.js";
 import type { Codemod, RunResult } from "./codemod.js";
 import {
   type FormattedFileCommand,
@@ -256,30 +257,6 @@ export const buildPathsGlob = async (
     dot: true,
   });
 };
-
-async function* buildPathGlobGenerator(
-  fileSystem: FileSystem,
-  flowSettings: FlowSettings,
-  patterns: {
-    include: string[];
-    exclude: string[];
-  },
-): AsyncGenerator<string, void, unknown> {
-  const stream = globStream(patterns.include, {
-    absolute: true,
-    cwd: flowSettings.target,
-    fs: fileSystem as typeof INodeFs,
-    ignore: patterns.exclude,
-    nodir: true,
-    dot: true,
-  });
-
-  for await (const chunk of stream) {
-    yield chunk.toString();
-  }
-
-  stream.emit("close");
-}
 
 function printRunSummary(
   onPrinterMessage: PrinterMessageCallback,
@@ -660,7 +637,6 @@ export const runCodemod = async (
   printRunSummary(onPrinterMessage, codemod, flowSettings, patterns);
 
   const commands: FormattedFileCommand[] = [];
-
   await new Promise<void>((resolve) => {
     let timeout: NodeJS.Timeout | null = null;
 
