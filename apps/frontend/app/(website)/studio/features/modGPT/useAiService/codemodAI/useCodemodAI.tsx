@@ -1,12 +1,11 @@
 import { useAuth } from "@/app/auth/useAuth";
-import { codemodAiWsServer } from "@chatbot/config";
+import { env } from "@/env";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@shared/consts";
 import { useSnippetsStore } from "@studio/store/snippets";
 import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { type Socket, io } from "socket.io-client";
 
 type MessageToSend = {
   config: { llm_engine: LLMEngine };
@@ -85,7 +84,7 @@ export const useCodemodAI = ({
   };
 
   const handleWebsocketConnection = async () => {
-    const websocket = new WebSocket(codemodAiWsServer);
+    const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL);
     setIsWsConnected(true);
     setWs(websocket);
     websocket.onopen = onConnect;

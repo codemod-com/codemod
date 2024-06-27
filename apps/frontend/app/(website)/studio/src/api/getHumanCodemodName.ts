@@ -1,3 +1,5 @@
+import { useModGPT } from "@features/modGPT/useAiService/useModGpt";
+import { useEffect } from "react";
 import sendMessage from "./sendMessage";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `
@@ -14,10 +16,26 @@ ${codemod}
 \`\`\`
 `;
 
-export async function getHumanCodemodName(
+export async function useGetHumanCodemodName(
   codemod: string,
   token: string | null,
 ): Promise<string> {
+  const {
+    isLoading: modGptLoading,
+    modGptSubmit,
+    messages: modGPTMessages,
+    setMessages: setModGPTMessages,
+    append: appendModGPTMessages,
+    setToken,
+    ...restMod
+  } = useModGPT({ initialMessages: [], engine: "gpt-4-turbo" });
+
+  useEffect(() => {
+    if (!modGPTMessages) return;
+
+    console.log("modGPTMessages", modGPTMessages);
+  }, [modGPTMessages]);
+
   if (token === null) {
     return "codemod";
   }

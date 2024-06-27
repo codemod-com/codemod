@@ -1,4 +1,4 @@
-import { modGptServer } from "@chatbot/config";
+import { env } from "@/env";
 import { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { onResponse } from "@chatbot/utils";
 import type { LLMEngine } from "@shared/consts";
@@ -17,7 +17,7 @@ export const useModGPT = ({
 
   const [token, setToken] = useState<string | null>(null);
   const chat = useChat({
-    api: modGptServer,
+    api: `${env.NEXT_PUBLIC_AI_API_URL}/${SEND_CHAT}`,
     initialMessages,
     id,
     onResponse,

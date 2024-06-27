@@ -18,8 +18,12 @@ export const publishCodemod = async (options: {
   } = options;
 
   const formData = new FormData();
-  formData.append(mainFileName, mainFile);
-  formData.append(".codemodrc.json", codemodRc);
+
+  formData.append(mainFileName, new Blob([mainFile], { type: "text/plain" }));
+  formData.append(
+    ".codemodrc.json",
+    new Blob([codemodRc], { type: "text/plain" }),
+  );
 
   try {
     const res = await apiClient.post<PublishResponse>("publish", formData, {

@@ -116,6 +116,8 @@ importers:
         specifier: ^4.7.1
         version: 4.15.7
 
+  apps/auth-service/generated/client: {}
+
   apps/backend:
     dependencies:
       '@aws-sdk/client-s3':
@@ -263,6 +265,8 @@ importers:
       vitest:
         specifier: 1.1.0
         version: 1.1.0(@types/node@20.10.5)(jsdom@23.2.0)(terser@5.31.1)
+
+  apps/backend/generated/client: {}
 
   apps/cli:
     dependencies:
