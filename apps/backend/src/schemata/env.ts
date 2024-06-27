@@ -13,10 +13,8 @@ import {
 
 export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),
-  X_CODEMOD_ACCESS_TOKEN: optional(string()),
   ENCRYPTION_KEY: string(),
   SIGNATURE_PRIVATE_KEY: string(),
-  PEPPER: optional(string()),
   AWS_ACCESS_KEY_ID: optional(string()),
   AWS_SECRET_ACCESS_KEY: optional(string()),
   DATABASE_URI: string(),
@@ -47,6 +45,7 @@ export const environmentSchema = object({
   TASK_MANAGER_QUEUE_NAME: optional(string()),
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
+  AUTH_SERVICE_URL: string(),
   CODEMOD_COM_API_URL: string(),
 });
 

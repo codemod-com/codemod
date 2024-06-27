@@ -1,11 +1,12 @@
-import type { Codemod } from "@prisma/client";
-import type { CustomHandler } from "../customHandler.js";
+import type { Codemod } from "@codemod-com/database";
+import type { RouteHandler } from "fastify";
 import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
+import { codemodService } from "../services/CodemodService.js";
 
-export const getCodemodBySlugHandler: CustomHandler<Codemod> = async (
-  dependencies,
+export const getCodemodBySlugHandler: RouteHandler<{ Reply: Codemod }> = async (
+  request,
 ) => {
-  const { slug } = parseGetCodemodBySlugParams(dependencies.request.params);
+  const { slug } = parseGetCodemodBySlugParams(request.params);
 
-  return dependencies.codemodService.getCodemodBySlug(slug);
+  return codemodService.getCodemodBySlug(slug);
 };

@@ -1,13 +1,13 @@
 import type { CURSOR_PREFIX, VSCODE_PREFIX } from "@/constants";
 import { openLink } from "@/utils";
-import getAccessToken from "../api/getAccessToken";
+import { populateLoginIntent } from "../api/populateLoginIntent";
 import { SEARCH_PARAMS_KEYS } from "../store/getInitialState";
 
 export const openIDELink = async (
   clerkToken: string,
   deepLinkPrefix: typeof VSCODE_PREFIX | typeof CURSOR_PREFIX,
 ): Promise<void> => {
-  const accessTokenEither = await getAccessToken({
+  const accessTokenEither = await populateLoginIntent({
     clerkToken,
   });
   if (accessTokenEither.isLeft()) {

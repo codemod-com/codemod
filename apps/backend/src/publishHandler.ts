@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { prisma } from "@codemod-com/database";
 import {
   type CodemodConfig,
   TarService,
@@ -10,46 +11,21 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import axios from "axios";
+import type { RouteHandler } from "fastify";
 import * as semver from "semver";
-import type { z } from "zod";
-import type { CodemodVersionCreateInputSchema } from "../prisma/generated/zod";
-import type { CustomHandler } from "./customHandler";
-import { prisma } from "./db/prisma.js";
+import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
-import { CLAIM_PUBLISHING } from "./services/tokenService.js";
-import { getCustomAccessToken } from "./util.js";
+import { environment } from "./util";
 
-export const publishHandler: CustomHandler<Record<string, never>> = async ({
-  environment,
-  tokenService,
-  clerkClient,
-  request,
-  reply,
-}) => {
+export type PublishHandlerResponse =
+  | { success: true }
+  | { error: string; success: false };
+
+export const publishHandler: RouteHandler<{
+  Reply: PublishHandlerResponse;
+}> = async (request: UserDataPopulatedRequest, reply) => {
   try {
-    if (clerkClient === null) {
-      throw new Error("This endpoint requires auth configuration.");
-    }
-
-    const accessToken = getCustomAccessToken(environment, request.headers);
-
-    if (accessToken === null) {
-      return reply
-        .code(401)
-        .send({ error: "Access token is not present", success: false });
-    }
-
-    const userId = await tokenService.findUserIdMetadataFromToken(
-      accessToken,
-      BigInt(Date.now()),
-      CLAIM_PUBLISHING,
-    );
-
-    if (userId === null) {
-      return reply
-        .code(401)
-        .send({ error: "User id was not found", success: false });
-    }
+    const organizations = request.organizations!;
 
     const {
       username,
@@ -57,10 +33,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
       emailAddresses,
       firstName,
       lastName,
-    } = await clerkClient.users.getUser(userId);
-    const orgs = await clerkClient.users.getOrganizationMembershipList({
-      userId,
-    });
+    } = request.user!;
 
     if (username === null) {
       throw new Error("The username of the current user does not exist");
@@ -145,10 +118,10 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
 
       const allowedNamespaces = [
         username,
+        ...organizations.map((org) => org.organization.slug),
         environment.VERIFIED_PUBLISHERS.includes(username)
           ? "codemod-com"
           : null,
-        ...orgs.map((org) => org.organization.slug),
       ].filter(isNeitherNullNorUndefined);
 
       if (!allowedNamespaces.includes(namespace)) {
@@ -234,10 +207,7 @@ export const publishHandler: CustomHandler<Record<string, never>> = async ({
     uploadKeyParts.unshift("codemod-registry");
     const uploadKey = uploadKeyParts.join("/");
 
-    const codemodVersionEntry: Omit<
-      z.infer<typeof CodemodVersionCreateInputSchema>,
-      "codemod"
-    > = {
+    const codemodVersionEntry = {
       version,
       s3Bucket: bucket,
       s3UploadKey: uploadKey,

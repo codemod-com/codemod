@@ -247,14 +247,14 @@ export const findTransformFunction = (
 ): Collection<
   FunctionDeclaration | ArrowFunctionExpression | FunctionExpression
 > | null => {
-  const program = root.find(j.Program).paths()[0] ?? null;
+  const program = root.find(j.Program)?.paths()[0] ?? null;
 
   if (program === null) {
     return null;
   }
 
   const defaultExport =
-    root.find(j.ExportDefaultDeclaration).paths()[0] ?? null;
+    root.find(j.ExportDefaultDeclaration)?.paths()[0] ?? null;
 
   const defaultExportDeclaration = defaultExport?.value.declaration ?? null;
 
@@ -269,7 +269,7 @@ export const findTransformFunction = (
   }
 
   if (j.Identifier.check(defaultExportDeclaration)) {
-    program.value.body.forEach((node) => {
+    program.value?.body?.forEach((node) => {
       if (
         j.FunctionDeclaration.check(node) &&
         node.id?.name === defaultExportDeclaration.name
@@ -319,7 +319,7 @@ function rewriteCodemod(input: string): string {
 
       return false;
     })
-    .replaceWith(({ node }) => {
+    ?.replaceWith(({ node }) => {
       if (!isCallExpression(node)) {
         return node;
       }
@@ -351,7 +351,7 @@ function rewriteCodemod(input: string): string {
         },
       },
     })
-    .replaceWith(({ node }) => replaceCallExpression(j, node));
+    ?.replaceWith(({ node }) => replaceCallExpression(j, node));
 
   root
     .find(j.CallExpression, {
@@ -367,7 +367,7 @@ function rewriteCodemod(input: string): string {
         },
       },
     })
-    .replaceWith(({ node }) => {
+    ?.replaceWith(({ node }) => {
       if (!isCallExpression(node)) {
         return node;
       }
@@ -412,6 +412,7 @@ export const getTransformFunction = async (
     if (name === "ts-morph") {
       return tsmorph;
     }
+    throw new Error(`Module ${name} not found`);
   };
 
   const printMessage = (...args: any[]) => {
@@ -540,7 +541,6 @@ const executeTransformFunction = (
 
   if (typeof output === "string" || output === undefined || output === null) {
     const events = eventManager.getEvents();
-
     return { output: output as string | null | undefined, events };
   }
 
@@ -597,7 +597,7 @@ self.onmessage = async (messageEvent) => {
       return;
     }
 
-    self.postMessage({
+    const errorMessage = {
       output: "",
       events: [
         {
@@ -608,10 +608,16 @@ self.onmessage = async (messageEvent) => {
             end: 0,
           },
           message: error.message,
+          stack: error.stack,
           timestamp: Date.now(),
           mode: "control",
         },
       ],
-    } satisfies WebWorkerOutgoingMessage);
+    };
+
+    console.error("Error caught in WebWorker:", error);
+    console.error("Error message:", errorMessage);
+
+    self.postMessage(errorMessage satisfies WebWorkerOutgoingMessage);
   }
 };

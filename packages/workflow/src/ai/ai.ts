@@ -1,6 +1,6 @@
 import * as fs from "node:fs/promises";
 import { formatText } from "@codemod-com/utilities";
-import { mapValues } from "lodash";
+import { mapValues } from "lodash-es";
 import MagicString from "magic-string";
 import OpenAI from "openai";
 import type { PLazy } from "../PLazy";
@@ -130,10 +130,10 @@ ${before.text}
       .find((arg) => arg.startsWith("--OPENAI_API_KEY="))
       ?.replace("--OPENAI_API_KEY=", "");
     if (!apiKey) {
-      console.log(
+      console.error(
         `Please set OPENAI_API_KEY environment variable like "codemod ... --OPENAI_API_KEY=YOUR_API_KEY"`,
       );
-      return;
+      process.exit(1);
     }
     const openai = new OpenAI({ apiKey });
 

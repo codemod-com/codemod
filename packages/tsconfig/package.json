@@ -3,6 +3,6 @@
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
-  "files": ["base.json", "codemod.json"],
+  "files": ["base.json", "codemod.json", "lib.json", "extension.json"],
   "publishConfig": { "access": "public" }
 }

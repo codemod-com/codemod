@@ -16,7 +16,10 @@ export const handleWhoAmICommand = async (options: {
     return;
   }
 
-  const { username, organizations } = userData.user;
+  const {
+    user: { username },
+    organizations,
+  } = userData;
   printer.printConsoleMessage(
     "info",
     chalk.cyan("You are logged in as", `${chalk.bold(username)}.`),

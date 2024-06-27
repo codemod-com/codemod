@@ -1,6 +1,6 @@
 import { useAuth } from "@auth/useAuth";
+import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
 import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
-import { autoGenerateCodemodPrompt } from "@studio/store/zustand/CFS/prompts";
 import { useModStore } from "@studio/store/zustand/mod";
 import type { useChat } from "ai/react/dist";
 import { identity } from "ramda";

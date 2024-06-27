@@ -93,7 +93,7 @@ export const handleInitCliCommand = async (options: {
         name: "gitUrl",
         suffix: " (leave empty if none)",
         message:
-          "Is there a git repository URL you want to associate with this codemod?",
+          "Enter the URL of the git repository where this codemod is located.",
       },
       {
         type: "input",
@@ -156,8 +156,9 @@ export const handleInitCliCommand = async (options: {
       {
         type: "input",
         name: "gitUrl",
+        suffix: " (leave empty if none)",
         message:
-          "Is there a git repository URL you want to associate with this codemod?",
+          "Enter the URL of the git repository where this codemod is located.",
       },
       {
         type: "confirm",

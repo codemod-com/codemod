@@ -1,7 +1,7 @@
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs";
 
-import { noop, pickBy } from "lodash";
+import { noop, pickBy } from "lodash-es";
 import treeKill from "tree-kill";
 
 export const spawn = (
