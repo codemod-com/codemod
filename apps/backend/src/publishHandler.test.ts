@@ -20,8 +20,6 @@ const GET_USER_RETURN = {
 
 const MOCK_TIMESTAMP = "timestamp";
 
-const originalFetch = global.fetch;
-
 const mocks = vi.hoisted(() => {
   const S3Client = vi.fn();
   S3Client.prototype.send = vi.fn();
@@ -47,7 +45,7 @@ const mocks = vi.hoisted(() => {
       },
     },
     fetch: vi.fn().mockImplementation((url, options) => {
-      if (options.method === "GET") {
+      if (options.method === "GET" || !options.method) {
         return Promise.resolve({
           json: () => Promise.resolve(GET_USER_RETURN),
           ok: true,
@@ -220,26 +218,34 @@ describe("/publish route", async () => {
       requestTimeout: 5000,
     });
 
-    expect(mocks.fetch).toHaveBeenCalledOnce();
-    expect(mocks.fetch).toHaveBeenCalledWith(
+    expect(mocks.fetch).toHaveBeenCalledTimes(3);
+    expect(mocks.fetch).toHaveBeenNthCalledWith(
+      2,
       "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
       {
-        codemod: {
-          name: codemodRcContents.name,
-          from: codemodRcContents.applicability?.from?.map((tuple) =>
-            tuple.join(" "),
-          ),
-          to: codemodRcContents.applicability?.to?.map((tuple) =>
-            tuple.join(" "),
-          ),
-          engine: codemodRcContents.engine,
-          publishedAt: MOCK_TIMESTAMP,
+        body: JSON.stringify({
+          codemod: {
+            name: codemodRcContents.name,
+            from: codemodRcContents.applicability?.from?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            to: codemodRcContents.applicability?.to?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            engine: codemodRcContents.engine,
+            publishedAt: MOCK_TIMESTAMP,
+          },
+          author: {
+            username: GET_USER_RETURN.user.username,
+            name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
+            email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
+          },
+        }),
+        headers: {
+          "Content-Type": "application/json",
         },
-        author: {
-          username: GET_USER_RETURN.user.username,
-          name: `${GET_USER_RETURN.user.firstName} ${GET_USER_RETURN.user.lastName}`,
-          email: GET_USER_RETURN.user.emailAddresses[0]?.emailAddress,
-        },
+        method: "POST",
+        signal: expect.any(AbortSignal),
       },
     );
 
@@ -609,6 +615,7 @@ describe("/publish route", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
       mocks.fetch.mockImplementation(() => ({
         json: () => ({ ...GET_USER_RETURN, allowedNamespaces: ["org"] }),
+        ok: true,
       }));
       mocks.prisma.codemod.upsert.mockImplementation(() => {
         return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
@@ -677,6 +684,7 @@ describe("/publish route", async () => {
           organizations: [],
           allowedNamespaces: [],
         }),
+        ok: true,
       }));
 
       const codemodRcContents: CodemodConfigInput = {
