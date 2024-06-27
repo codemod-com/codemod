@@ -1,4 +1,4 @@
-# This codemod removes deprecated boolean values for the dedupe option in refresh calls, replacing them with string literals cancel and defer
+This codemod removes deprecated boolean values for the dedupe option in refresh calls, replacing them with string literals cancel and defer
 
 🚦 **Impact Level**: Minimal
 
