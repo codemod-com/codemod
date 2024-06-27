@@ -20,12 +20,12 @@ import {
   TabsTrigger,
 } from "@studio/components/ui/tabs";
 import { ToastAction } from "@studio/components/ui/toast";
-import { useToast } from "@studio/components/ui/use-toast";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
 import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
 import { publishCodemod } from "../src/api/publishCodemod";
 import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
@@ -42,8 +42,6 @@ export const RunOptions = () => {
   const { session } = useSession();
   const { getToken } = useAuth();
 
-  const { toast } = useToast();
-
   const handleClick = async () => {
     setIsPublishing(true);
 
@@ -57,14 +55,9 @@ export const RunOptions = () => {
     if (!session || !token) {
       setIsPublishing(false);
       console.log("logged out");
-      return toast({
-        variant: "destructive",
-        title: "Please first log in to use this feature",
-        action: (
-          <ToastAction altText="Goto login page">
-            <a href="/auth/sign-in">Log in</a>
-          </ToastAction>
-        ),
+      return toast.error("Please first log in to use this feature", {
+        position: "top-center",
+        duration: 12000,
       });
     }
 
@@ -103,11 +96,9 @@ export const RunOptions = () => {
         token,
       });
     } else {
-      toast({
-        variant: "destructive",
-        title: "Invalid codemod type",
-        description:
-          "It looks like you have tried to publish non-JS/TS codemod. Currently we don't support this.",
+      toast.error("Invalid codemod type", {
+        position: "top-center",
+        duration: 12000,
       });
     }
 

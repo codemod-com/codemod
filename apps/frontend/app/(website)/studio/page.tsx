@@ -1,9 +1,9 @@
 "use client";
 import AuthProvider from "@/app/context/AuthProvider";
-import { Toaster } from "@studio/components/ui/toaster";
 import { isServer } from "@studio/config";
 import { MainPage } from "@studio/main/index";
 import { Suspense, useEffect } from "react";
+import { Toaster } from "react-hot-toast";
 import { Tooltip } from "react-tooltip";
 
 export default function Page() {
