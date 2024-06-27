@@ -163,7 +163,7 @@ export const handleRunCliCommand = async (options: {
   if (
     !runSettings.dryRun &&
     !args["disable-tree-version-check"] &&
-    !args.man &&
+    !args.readme &&
     !args.config
   ) {
     await checkFileTreeVersioning(flowSettings.target);
@@ -218,7 +218,7 @@ export const handleRunCliCommand = async (options: {
     try {
       codemod = await codemodDownloader.download(
         codemodSettings.name,
-        args.man || args.config,
+        args.readme || args.config,
       );
     } catch (error) {
       if (error instanceof AxiosError) {
@@ -290,7 +290,7 @@ export const handleRunCliCommand = async (options: {
   }
 
   if (codemodDefinition.kind !== "runOnPreCommit") {
-    if (args.man || args.config) {
+    if (args.readme || args.config) {
       if (codemodDefinition.codemod.bundleType === "standalone") {
         printer.printConsoleMessage(
           "error",
@@ -299,7 +299,7 @@ export const handleRunCliCommand = async (options: {
         return;
       }
 
-      if (args.man) {
+      if (args.readme) {
         let readmeContents: string;
 
         try {
