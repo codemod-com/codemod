@@ -1,4 +1,4 @@
-# This codemod converts paths emitted by Nuxt's builder:watch hook from relative to absolute, enhancing support for external directories and complex patterns.
+This codemod converts paths emitted by Nuxt's builder:watch hook from relative to absolute, enhancing support for external directories and complex patterns.
 
 🚦 **Impact Level**: Minimal
 
