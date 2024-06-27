@@ -31,7 +31,6 @@ export const TokenBuilder = () => {
   const onLoginIntentPopulated = useCallback((result: "fail" | "success") => {
     setIsOpen(true);
     setResult(result);
-    window.history.pushState({}, document.title, "/");
 
     intervalRef.current = setInterval(() => {
       setTimeleft((prev) => prev - 1);
