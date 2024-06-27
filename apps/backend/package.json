@@ -43,7 +43,6 @@
     "@fastify/rate-limit": "9.0.1",
     "@types/tar": "^6.1.11",
     "ai": "2.2.29",
-    "axios": "^1.6.8",
     "bullmq": "^5.7.5",
     "chatgpt": "5.2.5",
     "chromadb": "1.7.2",

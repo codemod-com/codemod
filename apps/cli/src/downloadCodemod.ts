@@ -3,14 +3,16 @@ import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
-import type { CodemodDownloadLinkResponse } from "@codemod-com/utilities";
+import type {
+  CodemodDownloadLinkResponse,
+  FetchError,
+} from "@codemod-com/utilities";
 import {
   type CodemodConfig,
   doubleQuotify,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import type { TarService } from "@codemod-com/utilities";
-import type { AxiosError } from "axios";
 import inquirer from "inquirer";
 import semver from "semver";
 import { getCodemodDownloadURI } from "./apis.js";
@@ -68,7 +70,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     } catch (err) {
       spinner?.fail();
       throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data?.error ??
+        ((await (err as FetchError).response?.json()) as any).error ??
           "Error getting download link for codemod",
       );
     }
@@ -86,7 +88,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
     } catch (err) {
       spinner?.fail();
       throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data?.error ??
+        ((await (err as FetchError).response?.json()) as any).error ??
           "Error downloading codemod from the registry",
       );
     }

@@ -1,6 +1,6 @@
 import { authApiClient } from "@/utils/apis/client";
+import type { FetchError } from "@codemod-com/utilities";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
-import type { AxiosError } from "axios";
 import { POPULATE_LOGIN_INTENT } from "../constants";
 import { Either } from "../utils/Either";
 
@@ -38,7 +38,12 @@ export const populateLoginIntent = async ({
 
     return Either.right(accessToken);
   } catch (e) {
-    const err = e as AxiosError<{ message?: string }>;
-    return Either.left(new Error(err.response?.data.message ?? err.message));
+    const err = e as FetchError;
+    return Either.left(
+      new Error(
+        ((await err.response?.json()) as { message?: string }).message ??
+          err.message,
+      ),
+    );
   }
 };

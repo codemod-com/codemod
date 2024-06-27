@@ -75,9 +75,6 @@ importers:
       '@fastify/rate-limit':
         specifier: 9.0.1
         version: 9.0.1
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
@@ -148,9 +145,6 @@ importers:
       ai:
         specifier: 2.2.29
         version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.15)(vue@3.4.25(typescript@5.3.3))
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
       bullmq:
         specifier: ^5.7.5
         version: 5.7.5
@@ -267,11 +261,11 @@ importers:
   apps/cli:
     dependencies:
       '@ast-grep/cli':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       '@ast-grep/napi':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       esbuild:
         specifier: ^0.17.14
         version: 0.17.19
@@ -321,9 +315,6 @@ importers:
       '@vitest/coverage-v8':
         specifier: ^1.0.1
         version: 1.5.1(vitest@1.5.1(@types/node@18.11.9)(jsdom@23.2.0)(terser@5.30.4))
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
       columnify:
         specifier: ^1.6.0
         version: 1.6.0
@@ -513,9 +504,6 @@ importers:
       ast-types:
         specifier: ^0.14.2
         version: 0.14.2
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
       change-case:
         specifier: ^5.2.0
         version: 5.4.4
@@ -838,9 +826,6 @@ importers:
       ai:
         specifier: 2.2.29
         version: 2.2.29(react@18.2.0)(solid-js@1.8.17)(svelte@4.2.15)(vue@3.4.25(typescript@4.9.5))
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
       chatgpt:
         specifier: 5.2.5
         version: 5.2.5
@@ -884,9 +869,9 @@ importers:
 
   apps/task-manager:
     dependencies:
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../packages/utilities
       bullmq:
         specifier: ^5.7.2
         version: 5.7.5
@@ -942,12 +927,6 @@ importers:
       '@vscode/vsce':
         specifier: ^2.22.0
         version: 2.26.0
-      axios:
-        specifier: ^1.6.8
-        version: 1.6.8
-      axios-retry:
-        specifier: ^4.0.0
-        version: 4.1.0(axios@1.6.8)
       diff:
         specifier: ^5.1.0
         version: 5.2.0
@@ -979,8 +958,8 @@ importers:
         specifier: ^0.3.5
         version: 0.3.5(fp-ts@2.16.5)(monocle-ts@2.3.13(fp-ts@2.16.5))
       nock:
-        specifier: ^13.5.1
-        version: 13.5.4
+        specifier: beta
+        version: 14.0.0-beta.7
       redux-persist:
         specifier: ^6.0.0
         version: 6.0.0(react@18.2.0)(redux@4.2.1)
@@ -5032,11 +5011,11 @@ importers:
   packages/runner:
     dependencies:
       '@ast-grep/cli':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       '@ast-grep/napi':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       '@babel/core':
         specifier: ^7.24.4
         version: 7.24.4
@@ -5253,11 +5232,11 @@ importers:
   packages/workflow:
     dependencies:
       '@ast-grep/cli':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       '@ast-grep/napi':
-        specifier: ^0.22.3
-        version: 0.22.4
+        specifier: ^0.24.0
+        version: 0.24.0
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
@@ -5352,8 +5331,20 @@ packages:
     cpu: [arm64]
     os: [darwin]
 
+  '@ast-grep/cli-darwin-arm64@0.24.0':
+    resolution: {integrity: sha512-8YkcaYNzy970snexNS2+8O+Uk8wrmgUELFdoVcJMIdzeTppbzKbAypJkTrOxosCIOoO6Bq0vp8hvmZj04wXhlQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
   '@ast-grep/cli-darwin-x64@0.22.4':
     resolution: {integrity: sha512-gKUznVB4WgNrKCSco1J1cJ7g9eeMTktFGFDVynH9DUECB/ZFSyIJ82SIkvfMBYpO5ToR0tK2p9O8Ze4biWkI5Q==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@ast-grep/cli-darwin-x64@0.24.0':
+    resolution: {integrity: sha512-U7S2uZQmT4B79cVfvwd785yFj7ZF02hjhBhAuVQq81LPI8mE8NH/phmjoSoL1u1Olf3BxqUcBLFdM4zoLvryiw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -5364,8 +5355,20 @@ packages:
     cpu: [arm64]
     os: [linux]
 
+  '@ast-grep/cli-linux-arm64-gnu@0.24.0':
+    resolution: {integrity: sha512-NVn83DrcbBhrKwO3yNDdEPv05lr3TDq0pfDg8eEBfJQnZnvXliEYxJwyyzZ53867rLeqaPo4jvPHcIJKdKe0rw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
   '@ast-grep/cli-linux-x64-gnu@0.22.4':
     resolution: {integrity: sha512-ZcFvXr+yFHqXULdb9tNr8kjQwx+rA35UCq753sQxJ94VJ+jPvMLCzLOooFaEWOjZKiV3RNHjwQFIOd/O92yHcA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ast-grep/cli-linux-x64-gnu@0.24.0':
+    resolution: {integrity: sha512-OMVq58p2BsMVBoh/cdSDmmUiIA+78FAyZXYWZ8mS1BudU6Ba+15ZVqeId90Q4U9X+yEqIHyaz+X1CcLiygnQxg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -5376,8 +5379,20 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@ast-grep/cli-win32-arm64-msvc@0.24.0':
+    resolution: {integrity: sha512-02CE3PfvwEsKvTITBP+J3Dm87MCeZl+t0Q4vBhQhcMBQt7N7D9DPY5tm0mVcgioY0Fm1yGn2z7IG56Dd6Pmnmw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
   '@ast-grep/cli-win32-ia32-msvc@0.22.4':
     resolution: {integrity: sha512-0Ct+4iUf1yj2gtSC6dF0u4lszgak8mGs7aHpVhXGsygO3A29vJPX8P4zCP9AjKDJFUtxHb5sJG0HCoc/4XbUmA==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@ast-grep/cli-win32-ia32-msvc@0.24.0':
+    resolution: {integrity: sha512-JB0dFaPTf8JSuKsID4vV/FYGx9kDTxwvzSeNYXebmoEgiS7catiRWBmB4LSuJMvdd5RCSQskDRu733Qsyd4CoA==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -5388,13 +5403,30 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@ast-grep/cli-win32-x64-msvc@0.24.0':
+    resolution: {integrity: sha512-73LDMKe/O+wg1dAVww104UsAHo7u4GBcC+qzHODqGGP1j3QtESyDYRrZfiJAHhkTRSjitVZrxJ7SZzRmbaJn4g==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
   '@ast-grep/cli@0.22.4':
     resolution: {integrity: sha512-SsV8gP8gdPjsb2ov9T0uZ+pmBllLXpsSgBuQpO8MjYHNJBoCzpK/lmrjFj+Fs9NeJvvRuZJrhu1GfhpX+bumpw==}
     engines: {node: '>= 12.0.0'}
     hasBin: true
 
+  '@ast-grep/cli@0.24.0':
+    resolution: {integrity: sha512-sK1/Ozd2HWPOqft+nZGNamO6hCBpdHbmZtiatdsO1Yhz3VRt7m9LSiKNZ7dUfFw9PXn0LRqyZk9SoHq222KcHw==}
+    engines: {node: '>= 12.0.0'}
+    hasBin: true
+
   '@ast-grep/napi-darwin-arm64@0.22.4':
     resolution: {integrity: sha512-q0F3tIqQh+zxNUTFr56vkxwh+f88rlnWyJYA1EjrtkQ6j4Yw/KgdMW3WfIxVEdglAJ3dcRg2w4uOXHTwnmfQIg==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@ast-grep/napi-darwin-arm64@0.24.0':
+    resolution: {integrity: sha512-5cj+N60E9019uHsMTcN9vKA/fghNiqN77Sd0XKBg35hDJMc54R5n+kpZ8t3YvP5sN2Rhtf9UbIhznXhB8DPSug==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
@@ -5405,8 +5437,20 @@ packages:
     cpu: [x64]
     os: [darwin]
 
+  '@ast-grep/napi-darwin-x64@0.24.0':
+    resolution: {integrity: sha512-AaZAFkjnQAZ9LxK6uOXRlJVZAQriO37+wyjPjLC7KSuxzcSUBtrV2mGNkHRfNO6GcVCLbNZkk6qOhFNrRVOIxw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
   '@ast-grep/napi-linux-arm64-gnu@0.22.4':
     resolution: {integrity: sha512-5U6iOrbIOY/MpGcQBJSS418kLZtqkTMY51EH0H+aRh1MB5mKgcpyUuIJnFxI22uvjI/ZUkgp7Mh+S+Y+OgvD/g==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@ast-grep/napi-linux-arm64-gnu@0.24.0':
+    resolution: {integrity: sha512-/CEVtWpeHZrFeoc5GBVZ0E70FULls1EKHze8r7stVTSkOhIsrFVOImxKlt98tXTM/zfS9BijVz41bHnTif2GUw==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
@@ -5417,8 +5461,20 @@ packages:
     cpu: [x64]
     os: [linux]
 
+  '@ast-grep/napi-linux-x64-gnu@0.24.0':
+    resolution: {integrity: sha512-CyNMKz2yPb65uEIGwmBcBexweHdT7cyqYFVahTx4rZs+tHpnGVEKHwffQ1Kob+HCeeGZBUupDNXZqpWjp8q6Fw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
   '@ast-grep/napi-linux-x64-musl@0.22.4':
     resolution: {integrity: sha512-f+/cUaRjxpZdqefe91ud+YYOLeIl6MwISXh7ao1ywA+7/qtlm1ds/dMHZtNvcl3cw9ujmI+enp8wIOd4nUakhw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@ast-grep/napi-linux-x64-musl@0.24.0':
+    resolution: {integrity: sha512-H3F7QG45Y9uXb3Kebe7RHDvFvbArNcBNG4qEpxq9T5eAyBWzbunMGC1oAZo6BgBJtO0Yhl3QyC2OvnuAB+4GWw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -5429,8 +5485,20 @@ packages:
     cpu: [arm64]
     os: [win32]
 
+  '@ast-grep/napi-win32-arm64-msvc@0.24.0':
+    resolution: {integrity: sha512-ZX0JQk7uZV+yaXVhn/mFSSf55JglYq0uAiXB53aAQCOyiKyaewl+tK4sPlcF1BpSh7D+SpP9GNIU4MAE8zB1aA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
   '@ast-grep/napi-win32-ia32-msvc@0.22.4':
     resolution: {integrity: sha512-q1ElrjsPfrhItHnwolC16oTDjsh1tX2xirVVIAwmbK4+Wini3/6HDRpxOOIHr9QmkfGioabEJATZl7uQJiziUQ==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@ast-grep/napi-win32-ia32-msvc@0.24.0':
+    resolution: {integrity: sha512-rCOEY27Wu3K/lqHXy1Wg7HoScJuHvsRdmlmfSw19HSv4vR2MQVQx/wd0P3WKzqS8LeDr333kQKbJO57dgDYg5Q==}
     engines: {node: '>= 10'}
     cpu: [ia32]
     os: [win32]
@@ -5441,8 +5509,18 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@ast-grep/napi-win32-x64-msvc@0.24.0':
+    resolution: {integrity: sha512-049I7DvvC8IFpezOtda0Dj7C5V+Erl1Jhcsq14mUnUEe++nMldicss7D0CXZHVQ9UjPJ5zpxnqYxx05caMMDzA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
   '@ast-grep/napi@0.22.4':
     resolution: {integrity: sha512-2kBrpVLGivW316WDb25ulau2nWYlyp+N+jLsVdoO3F2Ik80y6uilAbV80gw9SZwlnqRJjzADAYqkXs/lVsc+AA==}
+    engines: {node: '>= 10'}
+
+  '@ast-grep/napi@0.24.0':
+    resolution: {integrity: sha512-pldAub9mf12u/xJRNMj0x88y9uH2DpVHWqXfp+MoY1NT1j9jdA/QrXHHwddyeerfCoHZK1j5RDA23LaJAZloGQ==}
     engines: {node: '>= 10'}
 
   '@aws-crypto/crc32@3.0.0':
@@ -10912,11 +10990,6 @@ packages:
     resolution: {integrity: sha512-M0JtH+hlOL5pLQwHOLNYZaXuhqmvS8oExsqB1SBYgA4Dk7u/xx+YdGHXaK5pyUfed5mYXdlYiphWq3G8cRi5JQ==}
     engines: {node: '>=4'}
 
-  axios-retry@4.1.0:
-    resolution: {integrity: sha512-svdth4H00yhlsjBbjfLQ/sMLkXqeLxhiFC1nE1JtkN/CIssGxqk0UwTEdrVjwA2gr3yJkAulwvDSIm4z4HyPvg==}
-    peerDependencies:
-      axios: 0.x || 1.x
-
   axios@1.6.8:
     resolution: {integrity: sha512-v/ZHtJDU39mDpyBoFVkETcd/uNdxrWRrg3bKpOKzXFA6Bvqopts6ALSMU3y6ijYxbw2B+wPrIv46egTzJXCLGQ==}
 
@@ -14667,9 +14740,9 @@ packages:
   no-case@3.0.4:
     resolution: {integrity: sha512-fgAN3jGAh+RoxUGZHTSOLJIqUc2wmoBwGR4tbpNAKmmovFoWq0OdRkb0VkldReO2a2iBT/OEulG9XSUc10r3zg==}
 
-  nock@13.5.4:
-    resolution: {integrity: sha512-yAyTfdeNJGGBFxWdzSKCBYxs5FxLbCg5X5Q4ets974hcQzG1+qCxvIyOo4j2Ry6MUlhWVMX4OoYDefAIIwupjw==}
-    engines: {node: '>= 10.13'}
+  nock@14.0.0-beta.7:
+    resolution: {integrity: sha512-+EQMm5W9K8YnBE2Ceg4hnJynaCZmvK8ZlFXQ2fxGwtkOkBUq8GpQLTks2m1jpvse9XDxMDDOHgOWpiznFuh0bA==}
+    engines: {node: '>= 18'}
 
   node-abi@3.62.0:
     resolution: {integrity: sha512-CPMcGa+y33xuL1E0TcNIu4YyaZCxnnvkVaEXrsosR3FxN+fV8xvb7Mzpb7IgKler10qeMkE6+Dp8qJhpzdq35g==}
@@ -18070,22 +18143,43 @@ snapshots:
   '@ast-grep/cli-darwin-arm64@0.22.4':
     optional: true
 
+  '@ast-grep/cli-darwin-arm64@0.24.0':
+    optional: true
+
   '@ast-grep/cli-darwin-x64@0.22.4':
+    optional: true
+
+  '@ast-grep/cli-darwin-x64@0.24.0':
     optional: true
 
   '@ast-grep/cli-linux-arm64-gnu@0.22.4':
     optional: true
 
+  '@ast-grep/cli-linux-arm64-gnu@0.24.0':
+    optional: true
+
   '@ast-grep/cli-linux-x64-gnu@0.22.4':
+    optional: true
+
+  '@ast-grep/cli-linux-x64-gnu@0.24.0':
     optional: true
 
   '@ast-grep/cli-win32-arm64-msvc@0.22.4':
     optional: true
 
+  '@ast-grep/cli-win32-arm64-msvc@0.24.0':
+    optional: true
+
   '@ast-grep/cli-win32-ia32-msvc@0.22.4':
     optional: true
 
+  '@ast-grep/cli-win32-ia32-msvc@0.24.0':
+    optional: true
+
   '@ast-grep/cli-win32-x64-msvc@0.22.4':
+    optional: true
+
+  '@ast-grep/cli-win32-x64-msvc@0.24.0':
     optional: true
 
   '@ast-grep/cli@0.22.4':
@@ -18100,28 +18194,64 @@ snapshots:
       '@ast-grep/cli-win32-ia32-msvc': 0.22.4
       '@ast-grep/cli-win32-x64-msvc': 0.22.4
 
+  '@ast-grep/cli@0.24.0':
+    dependencies:
+      detect-libc: 2.0.3
+    optionalDependencies:
+      '@ast-grep/cli-darwin-arm64': 0.24.0
+      '@ast-grep/cli-darwin-x64': 0.24.0
+      '@ast-grep/cli-linux-arm64-gnu': 0.24.0
+      '@ast-grep/cli-linux-x64-gnu': 0.24.0
+      '@ast-grep/cli-win32-arm64-msvc': 0.24.0
+      '@ast-grep/cli-win32-ia32-msvc': 0.24.0
+      '@ast-grep/cli-win32-x64-msvc': 0.24.0
+
   '@ast-grep/napi-darwin-arm64@0.22.4':
+    optional: true
+
+  '@ast-grep/napi-darwin-arm64@0.24.0':
     optional: true
 
   '@ast-grep/napi-darwin-x64@0.22.4':
     optional: true
 
+  '@ast-grep/napi-darwin-x64@0.24.0':
+    optional: true
+
   '@ast-grep/napi-linux-arm64-gnu@0.22.4':
+    optional: true
+
+  '@ast-grep/napi-linux-arm64-gnu@0.24.0':
     optional: true
 
   '@ast-grep/napi-linux-x64-gnu@0.22.4':
     optional: true
 
+  '@ast-grep/napi-linux-x64-gnu@0.24.0':
+    optional: true
+
   '@ast-grep/napi-linux-x64-musl@0.22.4':
+    optional: true
+
+  '@ast-grep/napi-linux-x64-musl@0.24.0':
     optional: true
 
   '@ast-grep/napi-win32-arm64-msvc@0.22.4':
     optional: true
 
+  '@ast-grep/napi-win32-arm64-msvc@0.24.0':
+    optional: true
+
   '@ast-grep/napi-win32-ia32-msvc@0.22.4':
     optional: true
 
+  '@ast-grep/napi-win32-ia32-msvc@0.24.0':
+    optional: true
+
   '@ast-grep/napi-win32-x64-msvc@0.22.4':
+    optional: true
+
+  '@ast-grep/napi-win32-x64-msvc@0.24.0':
     optional: true
 
   '@ast-grep/napi@0.22.4':
@@ -18134,6 +18264,17 @@ snapshots:
       '@ast-grep/napi-win32-arm64-msvc': 0.22.4
       '@ast-grep/napi-win32-ia32-msvc': 0.22.4
       '@ast-grep/napi-win32-x64-msvc': 0.22.4
+
+  '@ast-grep/napi@0.24.0':
+    optionalDependencies:
+      '@ast-grep/napi-darwin-arm64': 0.24.0
+      '@ast-grep/napi-darwin-x64': 0.24.0
+      '@ast-grep/napi-linux-arm64-gnu': 0.24.0
+      '@ast-grep/napi-linux-x64-gnu': 0.24.0
+      '@ast-grep/napi-linux-x64-musl': 0.24.0
+      '@ast-grep/napi-win32-arm64-msvc': 0.24.0
+      '@ast-grep/napi-win32-ia32-msvc': 0.24.0
+      '@ast-grep/napi-win32-x64-msvc': 0.24.0
 
   '@aws-crypto/crc32@3.0.0':
     dependencies:
@@ -24354,11 +24495,6 @@ snapshots:
 
   axe-core@4.7.0: {}
 
-  axios-retry@4.1.0(axios@1.6.8):
-    dependencies:
-      axios: 1.6.8
-      is-retry-allowed: 2.2.0
-
   axios@1.6.8:
     dependencies:
       follow-redirects: 1.15.6(debug@3.2.7)
@@ -28965,13 +29101,10 @@ snapshots:
       lower-case: 2.0.2
       tslib: 2.4.1
 
-  nock@13.5.4:
+  nock@14.0.0-beta.7:
     dependencies:
-      debug: 4.3.4(supports-color@5.5.0)
       json-stringify-safe: 5.0.1
       propagate: 2.0.1
-    transitivePeerDependencies:
-      - supports-color
 
   node-abi@3.62.0:
     dependencies:

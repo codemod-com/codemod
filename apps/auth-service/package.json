@@ -28,7 +28,6 @@
     "@fastify/busboy": "^2.1.1",
     "@fastify/cors": "8.5.0",
     "@fastify/rate-limit": "9.0.1",
-    "axios": "^1.6.8",
     "dotenv": "^16.4.5",
     "fastify": "4.25.1",
     "valibot": "^0.24.1"

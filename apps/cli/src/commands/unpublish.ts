@@ -1,10 +1,10 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+  FetchError,
   doubleQuotify,
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
 import { unpublish } from "../apis.js";
 import { getCurrentUserData } from "../utils.js";
 
@@ -49,7 +49,9 @@ export const handleUnpublishCliCommand = async (options: {
   } catch (error) {
     spinner.fail();
     const message =
-      error instanceof AxiosError ? error.response?.data.error : String(error);
+      error instanceof FetchError
+        ? ((await error.response?.json()) as any).error
+        : String(error);
     const errorMessage = `${chalk.bold(
       `Could not unpublish the "${name}" codemod`,
     )}:\n${message}`;

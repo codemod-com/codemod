@@ -25,6 +25,10 @@ export async function workflow({ files }: Api) {
     { pattern: "axios.$_($$$).$_($$$)" }, // axios.get(...).then(...)
     { pattern: "axios.$_($$$).$_($$$).$_($$$)" }, // axios.get(...).then(...).catch(...)
     { pattern: "axios.$_($$$).$_($$$).$_($$$).$_($$$)" }, // axios.get(...).then(...).catch(...).finally(...)
+    { pattern: "axios.$_<$_>($$$)" }, // axios.get(...)
+    { pattern: "axios.$_<$_>($$$).$_($$$)" }, // axios.get(...).then(...)
+    { pattern: "axios.$_<$_>($$$).$_($$$).$_($$$)" }, // axios.get(...).then(...).catch(...)
+    { pattern: "axios.$_<$_>($$$).$_($$$).$_($$$).$_($$$)" }, // axios.get(...).then(...).catch(...).finally(...)
   ];
 
   const extendAxiosPatterns = (extend: (pattern: string) => string) =>

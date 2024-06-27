@@ -12,11 +12,13 @@ export const getCodeDiff = async (body: {
   const { diffId, iv } = body;
 
   try {
-    const res = await apiClient.get<GetCodeDiffResponse>(
-      `diffs/${diffId}?iv=${iv}`,
-    );
+    const response = await apiClient(`diffs/${diffId}?iv=${iv}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
 
-    return res.data;
+    return (await response.json()) as GetCodeDiffResponse;
   } catch (e) {
     console.error(e);
     return null;

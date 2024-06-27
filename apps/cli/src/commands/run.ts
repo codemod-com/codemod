@@ -14,13 +14,13 @@ import {
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
+  FetchError,
   TarService,
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
   sleep,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
@@ -159,10 +159,10 @@ export const handleRunCliCommand = async (options: {
     try {
       codemod = await codemodDownloader.download(codemodSettings.name);
     } catch (error) {
-      if (error instanceof AxiosError) {
+      if (error instanceof FetchError) {
         if (
           error.response?.status === 400 &&
-          error.response.data.error === "Codemod not found"
+          (await error.response.json()).error === "Codemod not found"
         ) {
           printer.printConsoleMessage(
             "error",

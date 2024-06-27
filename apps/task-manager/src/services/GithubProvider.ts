@@ -1,6 +1,7 @@
+import { extendedFetch } from "@codemod-com/utilities";
 import { type SimpleGit, simpleGit } from "simple-git";
 import type { CodemodMetadata } from "../jobs/runCodemod";
-import { axiosRequest, parseGithubRepoUrl } from "../util";
+import { parseGithubRepoUrl } from "../util";
 
 const BASE_URL = "https://api.github.com";
 
@@ -116,20 +117,22 @@ export class GithubProviderService {
       const title = `[${codemodName}]: Codemod changes for ${authorName}/${repoName}.`;
       const body = `Changes applied with ${codemodName} codemod.`;
 
-      const pullRequestResponse = await axiosRequest<PullRequestResponse>(
-        url,
-        "post",
-        {
+      const response = await extendedFetch(url, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.__codemodMetadata.token}`,
+          Accept: "application/vnd.github+json",
+        },
+        body: JSON.stringify({
           head: this.__currentBranch,
           base: branch ?? this.__base,
           title,
           body,
-        },
-        {
-          Authorization: `Bearer ${this.__codemodMetadata.token}`,
-          Accept: "application/vnd.github+json",
-        },
-      );
+        }),
+      });
+
+      const pullRequestResponse =
+        (await response.json()) as PullRequestResponse;
 
       return pullRequestResponse.html_url;
     } catch (error) {

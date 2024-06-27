@@ -20,6 +20,8 @@ const GET_USER_RETURN = {
 
 const MOCK_TIMESTAMP = "timestamp";
 
+const originalFetch = global.fetch;
+
 const mocks = vi.hoisted(() => {
   const S3Client = vi.fn();
   S3Client.prototype.send = vi.fn();
@@ -44,12 +46,16 @@ const mocks = vi.hoisted(() => {
         findUnique: vi.fn(),
       },
     },
-    axios: {
-      get: vi.fn().mockImplementation((url: string, ...args: unknown[]) => ({
-        data: GET_USER_RETURN,
-      })),
-      post: vi.fn().mockImplementation(() => ({})),
-    },
+    fetch: vi.fn().mockImplementation((url, options) => {
+      if (options.method === "GET") {
+        return Promise.resolve({
+          json: () => Promise.resolve(GET_USER_RETURN),
+          ok: true,
+        });
+      }
+
+      return Promise.resolve({ json: () => GET_USER_RETURN, ok: true });
+    }),
     S3Client,
     TarService,
     PutObjectCommand,
@@ -60,10 +66,6 @@ vi.mock("@codemod-com/database", async () => {
   const actual = await vi.importActual("@codemod-com/database");
 
   return { ...actual, prisma: mocks.prisma };
-});
-
-vi.mock("axios", async () => {
-  return { default: mocks.axios };
 });
 
 vi.mock("@aws-sdk/client-s3", async () => {
@@ -116,7 +118,7 @@ vi.mock("@codemod-com/utilities", async () => {
   };
 });
 
-vi.stubGlobal("fetch", vi.fn());
+vi.stubGlobal("fetch", mocks.fetch);
 
 describe("/publish route", async () => {
   const fastify = await runServer();
@@ -218,8 +220,8 @@ describe("/publish route", async () => {
       requestTimeout: 5000,
     });
 
-    expect(mocks.axios.post).toHaveBeenCalledOnce();
-    expect(mocks.axios.post).toHaveBeenCalledWith(
+    expect(mocks.fetch).toHaveBeenCalledOnce();
+    expect(mocks.fetch).toHaveBeenCalledWith(
       "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
       {
         codemod: {
@@ -605,8 +607,8 @@ describe("/publish route", async () => {
   describe("when publishing via org", async () => {
     it("should go through happy path if user has access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.axios.get.mockImplementation(() => ({
-        data: { ...GET_USER_RETURN, allowedNamespaces: ["org"] },
+      mocks.fetch.mockImplementation(() => ({
+        json: () => ({ ...GET_USER_RETURN, allowedNamespaces: ["org"] }),
       }));
       mocks.prisma.codemod.upsert.mockImplementation(() => {
         return { createdAt: { getTime: () => MOCK_TIMESTAMP }, id: "id" };
@@ -669,8 +671,12 @@ describe("/publish route", async () => {
 
     it("should fail if user has no access to the org", async () => {
       mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-      mocks.axios.get.mockImplementation(() => ({
-        data: { ...GET_USER_RETURN, organizations: [], allowedNamespaces: [] },
+      mocks.fetch.mockImplementation(() => ({
+        json: () => ({
+          ...GET_USER_RETURN,
+          organizations: [],
+          allowedNamespaces: [],
+        }),
       }));
 
       const codemodRcContents: CodemodConfigInput = {

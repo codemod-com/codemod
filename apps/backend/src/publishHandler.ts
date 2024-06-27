@@ -7,10 +7,10 @@ import {
   TarService,
   buildCodemodSlug,
   codemodNameRegex,
+  extendedFetch,
   isNeitherNullNorUndefined,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
 import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
@@ -350,7 +350,34 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion === null) {
       try {
-        await const controller = new AbortController();const signal = controller.signal;setTimeout(() => controller.abort(), 5000);try {  const response = await fetch(    "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",    {      method: 'POST',      body: JSON.stringify({        codemod: {          name,          from: codemodRc.applicability?.from?.map((tuple) => tuple.join(" ")),          to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),          engine: codemodRc.engine,          publishedAt: createdAtTimestamp,        },        author: {          username,          name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,          email: emailAddresses.find((e) => e.id === primaryEmailAddressId)?.emailAddress ?? null,        },      }),      headers: {        'Content-Type': 'application/json'      },      signal: signal    }  );  if (!response.ok) {    throw new Error('Network response was not ok');  }  const result = { data: await response.json() };} catch (err) {  console.error("Failed calling Zapier hook:", err);};
+        await extendedFetch(
+          "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
+          {
+            method: "POST",
+            body: JSON.stringify({
+              codemod: {
+                name,
+                from: codemodRc.applicability?.from?.map((tuple) =>
+                  tuple.join(" "),
+                ),
+                to: codemodRc.applicability?.to?.map((tuple) =>
+                  tuple.join(" "),
+                ),
+                engine: codemodRc.engine,
+                publishedAt: createdAtTimestamp,
+              },
+              author: {
+                username,
+                name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
+                email:
+                  emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                    ?.emailAddress ?? null,
+              },
+            }),
+            headers: { "Content-Type": "application/json" },
+            signal: AbortSignal.timeout(5000),
+          },
+        );
       } catch (err) {
         console.error("Failed calling Zapier hook:", err);
       }

@@ -1,7 +1,7 @@
 import type { Mode } from "node:fs";
-import { type AxiosResponse, isAxiosError } from "axios";
+import { isFetchError } from "@codemod-com/utilities";
 import type { FileSystem, Uri } from "vscode";
-import { DEFAULT_RETRY_COUNT, retryingClient } from "../axios";
+import { DEFAULT_RETRY_COUNT, retryingClient } from "../fetch";
 import type { FileSystemUtilities } from "./fileSystemUtilities";
 
 export class RequestError extends Error {}
@@ -27,21 +27,20 @@ export class DownloadService {
     const localModificationTime =
       await this.#fileSystemUtilities.getModificationTime(uri);
 
-    let response: AxiosResponse | undefined;
+    let response: Response | undefined;
 
     try {
-      response = await retryingClient.head(url, {
-        timeout: 15000,
-        "axios-retry": {
-          retries: DEFAULT_RETRY_COUNT,
-        },
+      response = await retryingClient(url, {
+        method: "HEAD",
+        retries: DEFAULT_RETRY_COUNT,
+        signal: AbortSignal.timeout(15000),
       });
     } catch (error) {
       if (localModificationTime > 0) {
         return false;
       }
 
-      if (!isAxiosError(error)) {
+      if (!isFetchError(error)) {
         throw error;
       }
 
@@ -56,7 +55,7 @@ export class DownloadService {
       throw new RequestError(`Could not make a request to ${url}`);
     }
 
-    const lastModified = response?.headers["last-modified"] ?? null;
+    const lastModified = response?.headers.get("last-modified") ?? null;
     const remoteModificationTime = lastModified
       ? Date.parse(lastModified)
       : localModificationTime;
@@ -75,13 +74,11 @@ export class DownloadService {
     uri: Uri,
     chmod: Mode | null,
   ): Promise<void> {
-    const response = await retryingClient.get(url, {
-      responseType: "arraybuffer",
-      "axios-retry": {
-        retries: DEFAULT_RETRY_COUNT,
-      },
+    const response = await retryingClient(url, {
+      retries: DEFAULT_RETRY_COUNT,
+      signal: AbortSignal.timeout(15000),
     });
-    const content = new Uint8Array(response.data);
+    const content = new Uint8Array(await response.arrayBuffer());
 
     await this.#fileSystem.writeFile(uri, content);
 
