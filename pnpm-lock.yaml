@@ -116,6 +116,8 @@ importers:
         specifier: 5.3.3
         version: 5.3.3
 
+  apps/auth-service/generated/client: {}
+
   apps/backend:
     dependencies:
       '@aws-sdk/client-s3':
@@ -264,6 +266,8 @@ importers:
         specifier: 1.1.0
         version: 1.1.0(@types/node@20.10.5)(jsdom@23.2.0)(terser@5.31.1)
 
+  apps/backend/generated/client: {}
+
   apps/cli:
     dependencies:
       '@ast-grep/cli':
@@ -281,6 +285,9 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.3.2
+      prettyjson:
+        specifier: ^1.2.5
+        version: 1.2.5
     devDependencies:
       '@codemod-com/filemod':
         specifier: workspace:*
@@ -309,6 +316,9 @@ importers:
       '@types/node':
         specifier: 18.11.9
         version: 18.11.9
+      '@types/prettyjson':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -10394,6 +10404,9 @@ packages:
   '@types/prettier@2.7.3':
     resolution: {integrity: sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==}
 
+  '@types/prettyjson@0.0.33':
+    resolution: {integrity: sha512-hHZMkavT9OXFq8p6pTCiaREtPxMRfy9NMp+Qa4PWH0RINQjyh0crOhoqUFA/cvIZncpjBpdvxkoe7nmVbyBJXw==}
+
   '@types/prismjs@1.26.4':
     resolution: {integrity: sha512-rlAnzkW2sZOjbqZ743IHUhFcvzaGbqijwOu8QZnZCjfQzBqFE3s4lOTJEsxikImav9uzz/42I+O7YUs1mWgMlg==}
 
@@ -15657,6 +15670,10 @@ packages:
   pretty-ms@7.0.1:
     resolution: {integrity: sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==}
     engines: {node: '>=10'}
+
+  prettyjson@1.2.5:
+    resolution: {integrity: sha512-rksPWtoZb2ZpT5OVgtmy0KHVM+Dca3iVwWY9ifwhcexfjebtgjg3wmrUt9PvJ59XIYBcknQeYHD8IAnVlh9lAw==}
+    hasBin: true
 
   prism-react-renderer@2.3.1:
     resolution: {integrity: sha512-Rdf+HzBLR7KYjzpJ1rSoxT9ioO85nZngQEoFIhL07XhtJHlCU3SOz0GJ6+qvMyQe0Se+BV3qpe6Yd/NmQF5Juw==}
@@ -23911,6 +23928,8 @@ snapshots:
 
   '@types/prettier@2.7.3': {}
 
+  '@types/prettyjson@0.0.33': {}
+
   '@types/prismjs@1.26.4': {}
 
   '@types/prop-types@15.7.12': {}
@@ -30266,6 +30285,11 @@ snapshots:
   pretty-ms@7.0.1:
     dependencies:
       parse-ms: 2.1.0
+
+  prettyjson@1.2.5:
+    dependencies:
+      colors: 1.4.0
+      minimist: 1.2.8
 
   prism-react-renderer@2.3.1(react@18.2.0):
     dependencies:
