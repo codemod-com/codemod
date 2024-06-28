@@ -1,0 +1,12 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "react/19/remove-legacy-context",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["react", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/19/remove-legacy-context"
+  }
+}
