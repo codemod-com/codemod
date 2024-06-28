@@ -4592,6 +4592,24 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/react/19/remove-legacy-context:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/react/19/remove-memoization:
     devDependencies:
       '@codemod-com/utilities':
