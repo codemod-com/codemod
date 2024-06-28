@@ -5,7 +5,7 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect } from "react";
 
 export const useCodemodOutputUpdate = () => {
-  const [webWorkerState, postMessage, setRetry] = useWebWorker();
+  const [webWorkerState, postMessage] = useWebWorker();
   const { setEvents, events } = useLogStore();
   const { setHasRuntimeErrors } = useModStore();
   const { engine, getSelectedEditors } = useSnippetsStore();
@@ -14,9 +14,10 @@ export const useCodemodOutputUpdate = () => {
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
+  console.log("useCodemodOutputUpdate");
   useEffect(() => {
+    console.log("useCodemodOutputUpdate, useEffect");
     postMessage(engine, internalContent ?? "", beforeSnippet);
-    setRetry(() => postMessage(engine, internalContent ?? "", beforeSnippet));
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
       setOutputSnippet("");
       setHasRuntimeErrors(false);
@@ -31,6 +32,17 @@ export const useCodemodOutputUpdate = () => {
       setHasRuntimeErrors(true);
       setEvents(webWorkerState.events);
     }
+
+    console.log({
+      "webWorkerState.error?.message": webWorkerState.error?.message,
+      "webWorkerState.kind": webWorkerState.kind,
+      // @ts-ignore
+      "webWorkerState.output": webWorkerState.output,
+      engine,
+      beforeSnippet,
+      internalContent,
+      postMessage,
+    });
   }, [
     // @ts-ignore
     webWorkerState.error?.message,
@@ -40,8 +52,6 @@ export const useCodemodOutputUpdate = () => {
     engine,
     beforeSnippet,
     internalContent,
-    snippetBeforeHasOnlyWhitespaces,
-    codemodSourceHasOnlyWhitespaces,
     postMessage,
   ]);
 

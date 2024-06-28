@@ -9,6 +9,7 @@ import { useSnippetsStore } from "@studio/store/snippets";
 export const useInputs = () => {
   const { engine, setEngine, getSelectedEditors } = useSnippetsStore();
   const { internalContent, setContent } = useModStore();
+  console.log("useInputs");
 
   const { beforeSnippet, afterSnippet } = getSelectedEditors();
 

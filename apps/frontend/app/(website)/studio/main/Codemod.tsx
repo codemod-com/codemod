@@ -75,7 +75,10 @@ const Codemod = () => {
       highlights={ranges}
       language="typescript"
       onBlur={onBlur}
-      onChange={(value) => setContent(value ?? "")}
+      onChange={(value) => {
+        console.log("codemod onchane");
+        setContent(value ?? "");
+      }}
       onKeyUp={({ event }) => onKeyUp(event)}
       path="codemod.ts"
       value={content}

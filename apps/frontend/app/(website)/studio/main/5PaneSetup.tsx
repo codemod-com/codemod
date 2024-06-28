@@ -37,6 +37,7 @@ const Main = () => {
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
+  console.log("Main 5PaneSetup");
   const {
     engine,
     setEngine,

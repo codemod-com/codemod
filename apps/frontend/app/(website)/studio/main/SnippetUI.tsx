@@ -16,28 +16,24 @@ type Props = {
 };
 
 export const useSnippet = (type: SnippetType) => {
+  const { getSelectedEditors } = useSnippetsStore();
   const {
-    setBeforeSnippet,
-    setAfterSnippet,
-    beforeSnippet,
-    afterSnippet,
-    [type]: { ranges },
-  } = useSnippetsStore().getSelectedEditors();
-
-  const snippetValue = type === "before" ? beforeSnippet : afterSnippet;
+    [type]: { ranges, content: snippetValue },
+  } = getSelectedEditors();
+  console.log("useSnippet");
 
   const setRangesOnTarget = useRangesOnTarget();
 
-  const onSnippetChange = useCallback(
-    (text?: string) => {
-      const val = text ?? "";
-      type === "before" ? setBeforeSnippet(val) : setAfterSnippet(val);
-    },
-
-    [setBeforeSnippet, setAfterSnippet, type],
-  );
+  const onSnippetChange = (text?: string) => {
+    console.log("onSnippetChange");
+    const val = text ?? "";
+    const { setContent } = getSelectedEditors();
+    setContent(type)(val);
+  };
 
   const onSnippetBlur = () => {
+    console.clear();
+    console.log(type, "onSnippetBlur");
     onSnippetChange(prettify(snippetValue));
   };
 
@@ -66,7 +62,7 @@ const SnippetUI = ({ type }: Props) => {
     handleSelectionChange,
     ranges,
   } = useSnippet(type);
-
+  console.log("SnippetUI");
   return (
     <div className="h-full overflow-hidden">
       <div className="h-full grow">

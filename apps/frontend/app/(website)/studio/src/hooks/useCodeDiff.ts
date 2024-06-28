@@ -18,10 +18,11 @@ export const useCodeDiff = () => {
   } = getSelectedEditors();
   const setRangeThunk = useRangesOnTarget();
   const { internalContent } = useModStore();
-
+  console.log("useCodeDiff");
   const setActiveEventThunk = useSetActiveEventThunk();
 
-  const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
+  const { value, handleSelectionChange, onSnippetChange, onSnippetBlur } =
+    useSnippet("after");
 
   const { setActiveTab } = useViewStore();
 
@@ -54,6 +55,7 @@ export const useCodeDiff = () => {
   };
 
   const modifiedEditorProps = {
+    onBlur: onSnippetBlur,
     highlights: outputRanges,
     onSelectionChange,
     value: outputSnippet ?? "",

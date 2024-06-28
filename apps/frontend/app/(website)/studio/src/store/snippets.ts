@@ -50,6 +50,7 @@ type SnippetsConfig = {
     SnippetSettersMap & {
       setSelection: (x: EditorType) => (command: RangeCommand) => void;
       setRanges: (x: EditorType) => (command: RangeCommand) => void;
+      setContent: (x: EditorType) => (command: RangeCommand) => void;
     };
   setEngine: (engine: KnownEngines) => void;
   setSelectedPairIndex: (index: number) => void;
@@ -81,7 +82,7 @@ type SnippetsSetters = {
 const getSnippetInitialState = (defaultContent = ""): SnippetValues => {
   const content = defaultContent;
   const contentParsed = parseSnippet(content);
-
+  console.log("getSnippetInitialState");
   const rootNode = isFile(contentParsed)
     ? mapBabelASTToRenderableTree(contentParsed)
     : null;
@@ -142,8 +143,9 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     }),
   engine: "jscodeshift",
   selectedPairIndex: 0,
-  getAllSnippets: () =>
-    mapObjIndexed(
+  getAllSnippets: () => {
+    console.log("getAllSnippets");
+    return mapObjIndexed(
       map(({ content }: SnippetValues) => content),
       reduce(
         (acc, { before, after, output }) => ({
@@ -158,7 +160,8 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         } as AllEditors,
         get().editors,
       ),
-    ),
+    );
+  },
   setSelectedPairIndex: (i: number) => {
     console.log({ get: get(), getAllSnippets: get().getAllSnippets() });
     set({ selectedPairIndex: i });
@@ -166,9 +169,10 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   getSelectedEditors: () => {
     const index = get().selectedPairIndex || 0;
     const editors = get().editors?.[index] as Editors;
-    console.log({ editors: get().editors });
+    console.log({ snippets: get().getAllSnippets() });
     return {
       ...editors,
+      setContent: (type) => get().setContent(index, type),
       beforeSnippet: editors.before.content,
       afterSnippet: editors.after.content,
       outputSnippet: editors.output.content,
@@ -187,7 +191,9 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       engine,
     }),
   setContent: (editorsPairIndex, type) => {
+    console.log("setContent", { editorsPairIndex, type });
     return (content) => {
+      console.log("setContent closure");
       console.log({ editorsPairIndex, type, content });
       const parsed = parseSnippet(content);
       const rootNode = isFile(parsed)
