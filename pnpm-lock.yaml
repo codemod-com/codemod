@@ -5076,6 +5076,8 @@ importers:
         specifier: ^5.4.5
         version: 5.5.2
 
+  packages/database/generated/client: {}
+
   packages/filemod:
     devDependencies:
       '@types/node':
