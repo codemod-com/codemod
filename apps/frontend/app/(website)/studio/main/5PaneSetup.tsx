@@ -65,7 +65,12 @@ const Main = () => {
           >
             pair: {i}
           </li>
-          {/*<button onClick={ () => removePair(i) }>remove</button>*/}
+          <button
+            className="cursor-pointer text-sm"
+            onClick={() => removePair(i)}
+          >
+            remove
+          </button>
         </>
       ))}
       <li onClick={addPair} className="cursor-pointer mx-2 hover:text-red-600">
