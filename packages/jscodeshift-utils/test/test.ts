@@ -28,7 +28,7 @@ const buildRootCollection = (file: FileInfo, api: API) => {
 };
 
 describe("import utils", async () => {
-  it("add named import", async () => {
+  it("add named import 1", async () => {
     const INPUT = await readFile(
       join(__dirname, "..", "__testfixtures__/import-add-1.input.ts"),
       "utf-8",
@@ -48,6 +48,7 @@ describe("import utils", async () => {
     addNamedImport(j, root, "a", "import-name");
     addNamedImport(j, root, "a", "import-name");
     addNamedImport(j, root, "b", "import-name1");
+    addNamedImport(j, root, "c", "import-name2");
 
     const actualOutput = root.toSource();
 
