@@ -1,11 +1,11 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
+import * as os from "node:os";
 import { homedir } from "node:os";
-import { dirname, extname, join, parse } from "node:path";
+import { dirname, extname, join } from "node:path";
 import {
   type PrinterBlueprint,
-  boxen,
   chalk,
   colorLongString,
 } from "@codemod-com/printer";
@@ -24,11 +24,11 @@ import {
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
-  sleep,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import prettyjson from "prettyjson";
+import { version } from "../../package.json";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
@@ -458,44 +458,51 @@ export const handleRunCliCommand = async (options: {
   //   );
   // }
 
+  const logsPath = join(
+    configurationDirectoryPath,
+    "logs",
+    `${new Date().toISOString()}-error.log`,
+  );
+
+  let logsContent = `- CLI version: ${version}
+- Node version: ${process.versions.node}
+- OS: ${os.type()} ${os.release()} ${os.arch()}
+
+`;
+
   if (executionErrors && executionErrors.length > 0) {
-    const logsPath = join(
-      configurationDirectoryPath,
-      "logs",
-      `${new Date().toISOString()}-error.log`,
-    );
+    logsContent += executionErrors
+      .map(
+        (e) =>
+          `Error at ${e.filePath}${
+            e.codemodName ? ` (${e.codemodName})` : ""
+          }:\n${e.message}`,
+      )
+      .join("\n\n");
+  }
 
-    try {
-      await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
-        recursive: true,
-      });
-      await fs.promises.writeFile(
-        logsPath,
-        executionErrors
-          .map(
-            (e) =>
-              `Error at ${e.filePath}${
-                e.codemodName ? ` (${e.codemodName})` : ""
-              }:\n${e.message}`,
-          )
-          .join("\n\n"),
-      );
-    } catch (err) {
-      printer.printConsoleMessage(
-        "error",
-        `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
-      );
-    }
-
+  try {
+    await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
+      recursive: true,
+    });
+    await fs.promises.writeFile(logsPath, logsContent);
+  } catch (err) {
     printer.printConsoleMessage(
       "error",
-      chalk.red(
-        "\nCertain files failed to be correctly processed by the codemod execution.",
-        "Please check the logs for more information at",
-        chalk.bold(logsPath),
-      ),
+      `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
     );
   }
+
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(
+      "\nFind the logs of the run at",
+      chalk.bold(logsPath),
+      "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+      chalk.bold(doubleQuotify("codemod feedback")),
+      "and include the logs in the issue body.",
+    ),
+  );
 
   if (!runSettings.dryRun && flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
