@@ -16,7 +16,6 @@ import {
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { useLocalStorage } from "@studio/hooks/useLocalStorage";
-import { DownloadIcon } from "@studio/icons/Download";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { downloadProject } from "@studio/utils/download";
@@ -57,6 +56,7 @@ function DropdownButton({
   onPressGHRun: (event: MouseEvent<HTMLButtonElement>) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const [runPlatform, setRunPlatform] = useState<"cli" | "github">("cli");
   const ffs = useFeatureFlags();
   const isGHRunEnabled = ffs.includes(CODEMOD_RUN_FEATURE_FLAG);
 
@@ -66,24 +66,50 @@ function DropdownButton({
         className="select-none py-px"
         name="Navigation Button"
         aria-label="Hover for context menu"
-        onClick={() => setOpen(!open)}
       >
         <Button
           size="xs"
           variant="default"
-          className="text-white flex gap-1"
-          hint={
-            <p className="font-normal">
-              Choose how you want to run your codemod
-            </p>
-          }
+          className="text-white flex gap-1 bg-[#0B151E] hover:bg-[#0B151E] hover:bg-opacity-90"
+          onClick={(e) => {
+            if (runPlatform === "cli") {
+              onPressCLIRun(e);
+            } else if (runPlatform === "github") {
+              onPressGHRun(e);
+            }
+          }}
         >
-          Run
-          {open ? (
-            <Icon name="chevron-up" className="w-3" />
+          {runPlatform === "cli" ? (
+            <Icon name="terminal" className="h-5 w-5" />
           ) : (
-            <Icon name="chevron-down" className="w-3" />
+            <TechLogo
+              className="text-black h-5 w-5"
+              name="github"
+              pathClassName="fill-white"
+            />
           )}
+          Run in {runPlatform === "cli" ? "CLI" : "Github"}
+          <Button
+            size="xs"
+            variant="default"
+            className="text-white flex bg-transparent hover:bg-transparent"
+            hint={
+              <p className="font-normal">
+                Choose how you want to run your codemod
+              </p>
+            }
+            onClick={(e) => {
+              e.stopPropagation();
+              setOpen(!open);
+            }}
+          >
+            <span className="mr-2">|</span>
+            {open ? (
+              <Icon name="chevron-up" className="w-3" />
+            ) : (
+              <Icon name="chevron-down" className="w-3" />
+            )}
+          </Button>
         </Button>
       </DropdownMenu.Trigger>
 
@@ -95,30 +121,38 @@ function DropdownButton({
           onCloseAutoFocus={(event) => event.preventDefault()}
           onEscapeKeyDown={() => setOpen(false)}
           onPointerDownOutside={() => setOpen(false)}
-          className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark p-s shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
+          className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
         >
-          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
+          <DropdownMenu.Group className="flex">
             <DropdownMenu.Item asChild>
               <Button
                 size="lg"
                 variant="outline"
-                className="body-s-large flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
-                onClick={onPressCLIRun}
+                className="py-m w-full body-s-large flex flex-row items-center gap-xs p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark border-none"
+                style={{ justifyContent: "flex-start" }}
+                onClick={(e) => {
+                  setRunPlatform("cli");
+                  onPressCLIRun(e);
+                }}
               >
-                <DownloadIcon />
-                <span>locally via CLI</span>
+                <Icon name="terminal" className="h-5 w-5" />
+                <span>Run in CLI</span>
               </Button>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
 
-          <DropdownMenu.Group className="flex flex-col border-b-border-light py-s dark:border-b-border-dark">
+          <DropdownMenu.Group className="flex">
             <DropdownMenu.Item asChild>
               <Button
                 size="lg"
                 variant="outline"
-                className="body-s-large flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+                className="py-m w-full body-s-large flex flex-row items-center gap-xs p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark border-none"
+                style={{ justifyContent: "flex-start" }}
                 disabled={!isGHRunEnabled}
-                onClick={onPressGHRun}
+                onClick={(e) => {
+                  setRunPlatform("github");
+                  onPressGHRun(e);
+                }}
                 hint={
                   isGHRunEnabled ? null : (
                     <p className="font-normal">
@@ -131,7 +165,7 @@ function DropdownButton({
                   className="text-black h-[16px] w-[16px]"
                   name="github"
                 />
-                <span>remotely on Github</span>
+                <span>Run in Github</span>
               </Button>
             </DropdownMenu.Item>
           </DropdownMenu.Group>
