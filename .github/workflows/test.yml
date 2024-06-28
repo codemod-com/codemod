@@ -55,7 +55,7 @@ jobs:
           DATABASE_URI: ${{ secrets.DATABASE_URI }}
 
       - name: Build necessary packages
-        run: pnpm build --filter @codemod-com/jscodeshift-utils --filter codemod
+        run: pnpm build --filter @codemod-com/jscodeshift-utils
 
       - name: Run unit tests
         run: |
