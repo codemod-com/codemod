@@ -66,7 +66,6 @@ export const useRangesOnTarget = () => {
   return ({ ranges, target }: UseRange) => {
     const { setAfterSelection, setOutputSelection, setBeforeSelection } =
       getSelectedEditors();
-    console.log("useRangesOnTarget");
     setActiveEventHashDigest(null);
 
     const rangeCommand: RangeCommand = {

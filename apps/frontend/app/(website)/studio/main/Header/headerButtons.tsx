@@ -22,7 +22,6 @@ export const HeaderButtons = () => {
       hintText: "Clear all inputs",
       onClick: () => {
         clearAll();
-        console.log("lear all");
         setContent("");
       },
       Icon: BackspaceIcon,

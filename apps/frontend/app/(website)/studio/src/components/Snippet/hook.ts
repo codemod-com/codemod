@@ -105,7 +105,6 @@ export const useEditor = (
   const mouseDownRef = useRef<monaco.IDisposable>();
   const keyUpRef = useRef<monaco.IDisposable>();
   const preventTriggerChangeEvent = useRef<boolean | null>(null);
-  console.log("useEditor");
   /**
    * Selection change handler
    */
@@ -131,7 +130,6 @@ export const useEditor = (
           return;
         }
 
-        console.log("useEditor: on selection chane");
         onSelectionChange({ start: startOffset, end: endOffset });
       },
     );
@@ -148,7 +146,6 @@ export const useEditor = (
     didChangeModelContentRef.current?.dispose();
 
     didChangeModelContentRef.current = editor.onDidChangeModelContent((e) => {
-      console.log("didChangeModelContentRef.current");
       onChange(editor.getValue() ?? "", e);
     });
   }, [onChange, editor, editor?.onDidChangeModelContent, editor?.getValue]);
@@ -164,7 +161,6 @@ export const useEditor = (
     didBlurEditorWidgetRef.current?.dispose();
 
     didBlurEditorWidgetRef.current = editor.onDidBlurEditorWidget(() => {
-      console.log("didBlurEditorWidgetRef.current");
       onBlur(editor.getValue());
     });
   }, [onBlur, editor, editor?.onDidBlurEditorWidget, editor?.getValue]);
@@ -186,7 +182,6 @@ export const useEditor = (
         return;
       }
 
-      console.log("onMouseDownHandler");
       const offset = editor.getModel()?.getOffsetAt(position);
 
       if (offset) {

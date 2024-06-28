@@ -14,7 +14,6 @@ export const useSnippetsPanels = ({ panelRefs }: { panelRefs: PanelsRefs }) => {
     ...afterPanel,
     visibilityOptions: useToggleVisibility(),
   };
-  console.log("useSnippetsPanels");
   const outputWithMessages = mergeDeepRight(outputPanel, {
     snippetData: { warnings },
   });

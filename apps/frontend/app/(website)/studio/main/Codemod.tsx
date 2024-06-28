@@ -76,7 +76,6 @@ const Codemod = () => {
       language="typescript"
       onBlur={onBlur}
       onChange={(value) => {
-        console.log("codemod onchane");
         setContent(value ?? "");
       }}
       onKeyUp={({ event }) => onKeyUp(event)}

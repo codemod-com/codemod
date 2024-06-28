@@ -25,7 +25,6 @@ export const DiffEditorWrapper = ({
     warnings?: ReactNode;
     type: SnippetType;
   }>) => {
-  console.log("DiffEditorWrapper");
   return (
     <div
       className={cn(

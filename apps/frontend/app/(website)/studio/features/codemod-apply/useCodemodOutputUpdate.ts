@@ -14,9 +14,7 @@ export const useCodemodOutputUpdate = () => {
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
-  console.log("useCodemodOutputUpdate");
   useEffect(() => {
-    console.log("useCodemodOutputUpdate, useEffect");
     postMessage(engine, internalContent ?? "", beforeSnippet);
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
       setOutputSnippet("");
@@ -32,17 +30,6 @@ export const useCodemodOutputUpdate = () => {
       setHasRuntimeErrors(true);
       setEvents(webWorkerState.events);
     }
-
-    console.log({
-      "webWorkerState.error?.message": webWorkerState.error?.message,
-      "webWorkerState.kind": webWorkerState.kind,
-      // @ts-ignore
-      "webWorkerState.output": webWorkerState.output,
-      engine,
-      beforeSnippet,
-      internalContent,
-      postMessage,
-    });
   }, [
     // @ts-ignore
     webWorkerState.error?.message,

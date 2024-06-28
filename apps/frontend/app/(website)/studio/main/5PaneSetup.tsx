@@ -37,7 +37,6 @@ const Main = () => {
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  console.log("Main 5PaneSetup");
   const {
     engine,
     setEngine,
@@ -56,11 +55,11 @@ const Main = () => {
   const snippetStore = getSelectedEditors();
 
   const TripletSelector = () => (
-    <ul>
+    <ul className="flex">
       {editors.map((_, i) => (
         <>
           <li
-            className="cursor-pointer"
+            className="cursor-pointer mx-2 hover:text-red-600"
             onClick={() => setSelectedPairIndex(i)}
             key={i}
           >
@@ -69,7 +68,9 @@ const Main = () => {
           {/*<button onClick={ () => removePair(i) }>remove</button>*/}
         </>
       ))}
-      <li onClick={addPair}>Add snippet</li>
+      <li onClick={addPair} className="cursor-pointer mx-2 hover:text-red-600">
+        Add snippet
+      </li>
     </ul>
   );
   useEffect(() => {

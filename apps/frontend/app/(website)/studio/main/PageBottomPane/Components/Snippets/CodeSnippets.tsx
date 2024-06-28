@@ -33,7 +33,6 @@ export const CodeSnippets = ({
       },
     } = panelData;
     const Snippet = snippet === "regular" ? SnippetUI : DiffEditorWrapper;
-    console.log("CodeSnippets");
     return (
       <React.Fragment key={`fragment-${index}`}>
         <CodeSnippedPanel

@@ -18,7 +18,6 @@ export const useCodeDiff = () => {
   } = getSelectedEditors();
   const setRangeThunk = useRangesOnTarget();
   const { internalContent } = useModStore();
-  console.log("useCodeDiff");
   const setActiveEventThunk = useSetActiveEventThunk();
 
   const { value, handleSelectionChange, onSnippetChange, onSnippetBlur } =

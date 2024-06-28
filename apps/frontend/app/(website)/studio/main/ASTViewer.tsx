@@ -24,7 +24,6 @@ const ASTViewer = ({ type }: Props) => {
   const setRangesOnTarget = useRangesOnTarget();
   const scrollNodeIntoView = useScrollNodeIntoView();
   const handleNodeClick = (node: TreeNode = rootNode) => {
-    console.log("handleNodeClick");
     scrollNodeIntoView(node, ASTTreeRef);
 
     flushSync(() => {

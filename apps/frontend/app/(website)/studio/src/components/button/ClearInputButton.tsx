@@ -17,7 +17,6 @@ const ClearInputButton = ({ className }: Props) => {
           className={cn("flex items-center justify-center", className)}
           onClick={() => {
             clearAll();
-            console.log("clear all");
             setContent("");
           }}
           size="sm"

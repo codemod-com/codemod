@@ -65,7 +65,6 @@ const MonacoEditor = forwardRef<
     const editorRef = useRef<monaco.editor.IStandaloneCodeEditor>();
     const monacoRef = useRef<Monaco>();
     const { isDark } = useTheme();
-    console.log("MonacoEditor");
     const [isMounted, setIsMounted] = useState(false);
 
     useEditor(

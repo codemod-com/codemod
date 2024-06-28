@@ -20,12 +20,10 @@ export const useSnippet = (type: SnippetType) => {
   const {
     [type]: { ranges, content: snippetValue },
   } = getSelectedEditors();
-  console.log("useSnippet");
 
   const setRangesOnTarget = useRangesOnTarget();
 
   const onSnippetChange = (text?: string) => {
-    console.log("onSnippetChange", { text });
     const val = text ?? "";
     const { setContent } = getSelectedEditors();
     setContent(type)(val);
@@ -58,7 +56,6 @@ const SnippetUI = ({ type }: Props) => {
     handleSelectionChange,
     ranges,
   } = useSnippet(type);
-  console.log("SnippetUI");
   return (
     <div className="h-full overflow-hidden">
       <div className="h-full grow">
