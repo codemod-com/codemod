@@ -25,9 +25,14 @@ export async function generateMetadata(
   props: RouteProps,
   parent: ResolvingMetadata,
 ) {
-  const initialAutomationData = await loadCodemod(
-    (props.params as unknown as { codemod: string })?.codemod,
-  );
+  const codemod = (props.params as unknown as { codemod: string })?.codemod;
+
+  const initialAutomationData = await loadCodemod(codemod, {
+    next: {
+      tags: [`codemod-${codemod}`],
+      revalidate: ONE_DAY,
+    },
+  });
 
   if (!initialAutomationData || "error" in initialAutomationData) {
     notFound();
