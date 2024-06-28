@@ -3,7 +3,6 @@ import { ControlButtons } from "@chatbot/PromptPanel/ControlButtons";
 import { PromptButtons } from "@chatbot/PromptPanel/PromptButtons";
 import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
 import { insertValue } from "@chatbot/PromptPanel/utils";
-import { shouldUseCodemodAi } from "@chatbot/config";
 import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList, usePrompts } from "@chatbot/utils";
@@ -64,12 +63,10 @@ export function PromptPanel(props: PromptPanelProps) {
       {expandedHelper && (
         <>
           <PromptButtons promptsList={promptsList} handleSubmit={handleSubmit}>
-            {shouldUseCodemodAi && (
-              <WebSocketButton
-                handleButtonClick={startIterativeCodemodGeneration}
-                isLoading={isLoading}
-              />
-            )}
+            <WebSocketButton
+              handleButtonClick={startIterativeCodemodGeneration}
+              isLoading={isLoading}
+            />
           </PromptButtons>
           <AliasButtons
             aliasList={aliasList}

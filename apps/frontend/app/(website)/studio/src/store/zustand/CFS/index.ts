@@ -1,4 +1,3 @@
-import { shouldUseCodemodAi } from "@chatbot/config";
 import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
 import type { PromptPreset } from "@chatbot/prompts";
 import type { SendMessageResponse } from "@studio/api/sendMessage";
@@ -27,7 +26,7 @@ const AIAssistantInitialState = {
   codemodHasRuntimeErrors: false,
   selectedPreset: null,
   open: false,
-  engine: shouldUseCodemodAi ? "gpt-4o" : ("gpt-4" as const),
+  engine: "gpt-4o",
 };
 
 export type CFSStateValues = {

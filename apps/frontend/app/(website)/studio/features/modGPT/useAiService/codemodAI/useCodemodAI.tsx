@@ -1,5 +1,5 @@
 import { useAuth } from "@/app/auth/useAuth";
-import { codemodAiWsServer, shouldUseCodemodAi } from "@chatbot/config";
+import { codemodAiWsServer } from "@chatbot/config";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@shared/consts";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
@@ -89,7 +89,6 @@ export const useCodemodAI = ({
   };
 
   const handleSocketConnection = async () => {
-    if (!shouldUseCodemodAi) return;
     setIsWsConnected(true);
     const websocket = io(codemodAiWsServer, {
       auth: { token: await getToken() },
@@ -102,7 +101,6 @@ export const useCodemodAI = ({
   };
 
   const handleWebsocketConnection = async () => {
-    if (!shouldUseCodemodAi) return;
     const websocket = new WebSocket(codemodAiWsServer);
     setIsWsConnected(true);
     setWs(websocket);
