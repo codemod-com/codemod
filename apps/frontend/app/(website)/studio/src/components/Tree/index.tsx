@@ -72,10 +72,7 @@ const Tree = ({
               key={index}
               node={child}
               onClick={onClick}
-              selectedNode={() => {
-                selectedNode();
-                console.log("selectedNode");
-              }}
+              selectedNode={selectedNode}
               selectionEnd={selectionEnd}
               selectionStart={selectionStart}
             />

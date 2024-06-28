@@ -63,9 +63,9 @@ export const useRangesOnTarget = () => {
   const { setActiveEventHashDigest } = useLogStore();
   const { setCodemodSelection } = useModStore();
   const { getSelectedEditors } = useSnippetsStore();
-  const { setAfterSelection, setOutputSelection, setBeforeSelection } =
-    getSelectedEditors();
   return ({ ranges, target }: UseRange) => {
+    const { setAfterSelection, setOutputSelection, setBeforeSelection } =
+      getSelectedEditors();
     console.log("useRangesOnTarget");
     setActiveEventHashDigest(null);
 

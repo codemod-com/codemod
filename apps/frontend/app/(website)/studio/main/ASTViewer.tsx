@@ -5,7 +5,9 @@ import {
   useSelectFirstTreeNodeForSnippet,
   useSnippetsStore,
 } from "@studio/store/snippets";
-import { useEffect, useRef } from "react";
+import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
+import { useEffect, useRef, useState } from "react";
+import { flushSync } from "react-dom";
 
 type Props = {
   type: "before" | "after" | "output";
@@ -13,26 +15,36 @@ type Props = {
 const ASTViewer = ({ type }: Props) => {
   const ASTTreeRef = useRef<HTMLDivElement>(null);
   const getFirstTreeNode = useSelectFirstTreeNodeForSnippet();
+  const [firstNode, setFirstNode] = useState<TreeNode | null>(null);
   const { getSelectedEditors } = useSnippetsStore();
   const {
     [type]: { rootNode },
   } = getSelectedEditors();
 
+  const setRangesOnTarget = useRangesOnTarget();
   const scrollNodeIntoView = useScrollNodeIntoView();
-
-  const handleNodeClick = (node: TreeNode) => {
-    const setRange = getSelectedEditors().setSelection(type);
+  const handleNodeClick = (node: TreeNode = rootNode) => {
     console.log("handleNodeClick");
-    setRange({
-      kind: "FIND_CLOSEST_PARENT",
-      ranges: [node],
-    });
     scrollNodeIntoView(node, ASTTreeRef);
+
+    flushSync(() => {
+      setFirstNode(node);
+      setRangesOnTarget({
+        target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
+        ranges: [node],
+      });
+      const setRange = getSelectedEditors().setSelection(type);
+      return setRange({
+        kind: "FIND_CLOSEST_PARENT",
+        ranges: [node],
+      });
+    });
   };
 
   useEffect(() => {
     if (getFirstTreeNode(type) !== null) {
       scrollNodeIntoView(getFirstTreeNode(type), ASTTreeRef);
+      setFirstNode(getFirstTreeNode(type));
     }
   }, [scrollNodeIntoView, getFirstTreeNode, type]);
 
@@ -47,7 +59,7 @@ const ASTViewer = ({ type }: Props) => {
             initialCollapseState="open"
             node={rootNode}
             onClick={handleNodeClick}
-            selectedNode={getFirstTreeNode(type) ?? undefined}
+            selectedNode={firstNode}
           />
         ) : (
           <Text>

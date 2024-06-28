@@ -35,15 +35,13 @@ export const useSnippet = (type: SnippetType) => {
     onSnippetChange(prettify(val));
   };
 
-  const handleSelectionChange = useCallback(
-    (range: OffsetRange) => {
-      setRangesOnTarget({
-        target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
-        ranges: [range],
-      });
-    },
-    [type, setRangesOnTarget],
-  );
+  const handleSelectionChange = (range: OffsetRange) => {
+    setRangesOnTarget({
+      target: type === "before" ? "BEFORE_INPUT" : "AFTER_INPUT",
+      ranges: [range],
+    });
+  };
+
   return {
     value: snippetValue,
     onSnippetBlur,

@@ -29,15 +29,12 @@ export const useCodeDiff = () => {
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(afterSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
-  const onSelectionChange = useCallback(
-    (range: OffsetRange) => {
-      setRangeThunk({
-        target: "CODEMOD_OUTPUT",
-        ranges: [range],
-      });
-    },
-    [setRangeThunk],
-  );
+  const onSelectionChange = (range: OffsetRange) => {
+    setRangeThunk({
+      target: "CODEMOD_OUTPUT",
+      ranges: [range],
+    });
+  };
 
   const { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
 
