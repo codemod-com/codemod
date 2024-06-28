@@ -25,16 +25,14 @@ export const useSnippet = (type: SnippetType) => {
   const setRangesOnTarget = useRangesOnTarget();
 
   const onSnippetChange = (text?: string) => {
-    console.log("onSnippetChange");
+    console.log("onSnippetChange", { text });
     const val = text ?? "";
     const { setContent } = getSelectedEditors();
     setContent(type)(val);
   };
 
-  const onSnippetBlur = () => {
-    console.clear();
-    console.log(type, "onSnippetBlur");
-    onSnippetChange(prettify(snippetValue));
+  const onSnippetBlur = (val) => {
+    onSnippetChange(prettify(val));
   };
 
   const handleSelectionChange = useCallback(

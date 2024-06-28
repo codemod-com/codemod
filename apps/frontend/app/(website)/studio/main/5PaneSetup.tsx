@@ -157,7 +157,6 @@ const Main = () => {
         panelRefs={panelRefs}
         panels={[beforePanel, afterPanel]}
       >
-        <TripletSelector />
         {onlyAfterHidden && (
           <ShowPanelTile
             header="After"
@@ -213,6 +212,7 @@ const Main = () => {
                   />
                 </BoundResizePanel>
                 <ResizeHandle direction="vertical" />
+                <TripletSelector />
                 <BoundResizePanel
                   panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
                   panelRefs={panelRefs}
