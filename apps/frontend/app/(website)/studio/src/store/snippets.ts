@@ -51,12 +51,14 @@ type SnippetsConfig = {
       setSelection: (x: EditorType) => (command: RangeCommand) => void;
       setRanges: (x: EditorType) => (command: RangeCommand) => void;
       setContent: (x: EditorType) => (command: RangeCommand) => void;
+      renameEditor: (index: number) => (name: string) => void;
     };
   setEngine: (engine: KnownEngines) => void;
   setSelectedPairIndex: (index: number) => void;
 };
 
 type Editors = {
+  name: string;
   before: SnippetValues;
   after: SnippetValues;
   output: SnippetValues;
@@ -109,6 +111,7 @@ const getSnippetInitialState = (defaultContent = ""): SnippetValues => {
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   editors: [
     {
+      name: '1',
       before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
       after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
       output: getSnippetInitialState(),
@@ -119,13 +122,18 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       editors: [
         ...get().editors,
         {
+          name: (get().editors.map(e => Number(e.name)).filter(Boolean).length).toString(),
           before: getSnippetInitialState(),
           after: getSnippetInitialState(),
           output: getSnippetInitialState(),
         },
       ],
     }),
-
+  renameEditor: (index) => (name) => {
+    const obj = get();
+    obj.editors[index].name = name;
+    set(obj)
+  },
   removePair: (index: number) =>
     set({
       editors: index ? remove(index, 1, get().editors) : get().editors,
@@ -134,6 +142,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     set({
       editors: [
         {
+          name: '1',
           before: getSnippetInitialState(),
           after: getSnippetInitialState(),
           output: getSnippetInitialState(),

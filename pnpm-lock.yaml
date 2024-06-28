@@ -453,7 +453,7 @@ importers:
         specifier: ^1.0.3
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-tabs':
-        specifier: ^1.0.4
+        specifier: ^1.1.0
         version: 1.1.0(@types/react-dom@18.3.0)(@types/react@18.2.55)(react-dom@18.2.0)(react@18.2.0)
       '@radix-ui/react-toast':
         specifier: ^1.1.5
@@ -4897,6 +4897,8 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.5.2
+
+  packages/database/generated/client: {}
 
   packages/filemod:
     devDependencies:
@@ -15321,7 +15323,7 @@ packages:
       std-env: 3.7.0
       strip-literal: 2.1.0
       test-exclude: 6.0.0
-      vitest: 1.6.0(@types/node@18.11.9)
+      vitest: 1.6.0(@types/node@20.14.7)
     transitivePeerDependencies:
       - supports-color
     dev: true

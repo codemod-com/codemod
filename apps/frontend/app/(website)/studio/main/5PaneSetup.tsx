@@ -31,6 +31,7 @@ import {
   ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
+import { TabComponent } from "@studio/main/PageBottomPane/TabComponent";
 
 const Main = () => {
   const panelRefs: PanelsRefs = useRef({});
@@ -218,7 +219,7 @@ const Main = () => {
                   />
                 </BoundResizePanel>
                 <ResizeHandle direction="vertical" />
-                <TripletSelector />
+                {/*<TripletSelector />*/}<TabComponent/>
                 <BoundResizePanel
                   panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
                   panelRefs={panelRefs}
