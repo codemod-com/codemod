@@ -4,8 +4,11 @@ import { Chat, SlackLogo } from "@phosphor-icons/react";
 import { IconButton } from "@studio/components/button/IconButton";
 import { Button } from "@studio/components/ui/button";
 import { CodemodLogo } from "@studio/icons/CodemodLogo";
+import { usePathname } from "next/navigation";
 
 export const TopBar = () => {
+  const pathname = usePathname();
+
   return (
     <div className="flex justify-between h-[50px] w-full flex-1 bg-white p-1">
       <Button
@@ -29,7 +32,8 @@ export const TopBar = () => {
           href="https://codemod-community.slack.com/"
           hint="Community Slack"
         />
-        <FirstLoginExperience /> <AuthButtons variant="studio" />
+        <FirstLoginExperience />
+        <AuthButtons variant="studio" redirectUrl={pathname} />
       </div>
     </div>
   );
