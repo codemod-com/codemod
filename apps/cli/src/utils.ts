@@ -1,4 +1,5 @@
 import { spawnSync } from "node:child_process";
+import * as os from "node:os";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import { chalk } from "@codemod-com/printer";
@@ -38,13 +39,34 @@ export const getUserCredentials = async (): Promise<{
   account: string;
   password: string;
 } | null> => {
-  return (await keytar.findCredentials("codemod.com"))[0] ?? null;
+  try {
+    return (await keytar.findCredentials("codemod.com"))[0] ?? null;
+  } catch (err) {
+    if (os.platform() === "linux") {
+      throw new Error(
+        chalk(
+          `Codemod CLI uses "keytar" to store your credentials securely.`,
+          `\nPlease make sure you have "libsecret" installed on your system.`,
+          "\nDepending on your distribution, you will need to run the following command",
+          "\nDebian/Ubuntu:",
+          chalk.bold("sudo apt-get install libsecret-1-dev"),
+          "\nFedora:",
+          chalk.bold("sudo dnf install libsecret"),
+          "\nArch Linux:",
+          chalk.bold("sudo pacman -S libsecret"),
+          `\n\n${String(err)}`,
+        ),
+      );
+    }
+
+    throw err;
+  }
 };
 
 export const getCurrentUserData = async (): Promise<UserData | null> => {
   const userCredentials = await getUserCredentials();
 
-  if (userCredentials === null) {
+  if (!isNeitherNullNorUndefined(userCredentials)) {
     return null;
   }
 
