@@ -288,6 +288,7 @@ export default function transform(file: FileInfo, api: API) {
 
         if (specifiersWithoutForwardRef.length === 0) {
           j(importDeclarationPath).remove();
+          return;
         }
 
         importDeclarationPath.node.specifiers = specifiersWithoutForwardRef;
