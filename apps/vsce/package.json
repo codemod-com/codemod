@@ -65,10 +65,6 @@
       {
         "command": "codemod.executeCodemod",
         "title": "Codemod: Execute Codemod"
-      },
-      {
-        "command": "codemod.executeCodemodWithinPath",
-        "title": "Codemod: Execute Codemod On Path"
       }
     ],
     "configuration": {
@@ -161,10 +157,6 @@
         {
           "command": "codemod.executeCodemod",
           "when": "false"
-        },
-        {
-          "command": "codemod.executeCodemodWithinPath",
-          "when": "editorIsOpen"
         }
       ],
       "editor/context": [],
@@ -178,11 +170,6 @@
           "command": "codemod.executeAsPiranhaRule",
           "group": "2_workspace",
           "when": "explorerResourceIsFolder"
-        },
-        {
-          "command": "codemod.executeCodemodWithinPath",
-          "group": "2_workspace",
-          "when": "true"
         }
       ]
     }

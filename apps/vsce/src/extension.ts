@@ -6,22 +6,16 @@ import {
   piranhaLanguageSchema,
 } from "@codemod-com/utilities";
 
-import { isLeft } from "fp-ts/lib/Either";
-import prettyReporter from "io-ts-reporters";
 import { parse } from "valibot";
 import * as vscode from "vscode";
-import { CaseManager } from "./cases/caseManager";
-import { type CaseHash, caseHashCodec } from "./cases/types";
+
 import { createClearStateCommand } from "./commands/clearStateCommand";
 import { BootstrapExecutablesService } from "./components/bootstrapExecutablesService";
 import { DownloadService } from "./components/downloadService";
 import { EngineService } from "./components/engineService";
 import { FileService } from "./components/fileService";
 import { FileSystemUtilities } from "./components/fileSystemUtilities";
-import { JobManager } from "./components/jobManager";
 import { type Command, MessageBus, MessageKind } from "./components/messageBus";
-import { CustomTextDocumentContentProvider } from "./components/textDocumentContentProvider";
-import { CustomPanelProvider } from "./components/webview/CustomPanelProvider";
 import { ErrorWebviewProvider } from "./components/webview/ErrorWebviewProvider";
 import { MainViewProvider } from "./components/webview/MainProvider";
 import { getConfiguration } from "./configuration";
@@ -33,12 +27,11 @@ import {
   type CodemodNodeHashDigest,
   selectCodemodArguments,
 } from "./selectors/selectCodemodTree";
-import { selectExplorerTree } from "./selectors/selectExplorerTree";
 import { generateDistinctId, getDistinctId } from "./telemetry/distinctId";
 import { buildCaseHash } from "./telemetry/hashes";
 import { buildTelemetryLogger } from "./telemetry/logger";
 import { VscodeTelemetryReporter } from "./telemetry/reporter";
-import { buildHash, isNeitherNullNorUndefined } from "./utilities";
+import { buildHash } from "./utilities";
 
 export enum SEARCH_PARAMS_KEYS {
   ENGINE = "engine",
@@ -76,10 +69,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const fileService = new FileService(messageBus);
 
-  const jobManager = new JobManager(fileService, messageBus, store);
-
-  new CaseManager(messageBus, store);
-
   const fileSystemUtilities = new FileSystemUtilities(vscode.workspace.fs);
 
   const downloadService = new DownloadService(
@@ -108,9 +97,6 @@ export async function activate(context: vscode.ExtensionContext) {
     vscodeTelemetry,
   );
 
-  const customTextDocumentContentProvider =
-    new CustomTextDocumentContentProvider();
-
   const mainViewProvider = new MainViewProvider(
     context,
     engineService,
@@ -122,15 +108,6 @@ export async function activate(context: vscode.ExtensionContext) {
   const mainView = vscode.window.registerWebviewViewProvider(
     "codemodMainView",
     mainViewProvider,
-  );
-
-  new CustomPanelProvider(
-    context.extensionUri,
-    store,
-    mainViewProvider,
-    messageBus,
-    rootUri?.fsPath ?? null,
-    jobManager,
   );
 
   context.subscriptions.push(mainView);
@@ -172,130 +149,6 @@ export async function activate(context: vscode.ExtensionContext) {
       }
 
       await engineService.clearOutputFiles(storageUri);
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
-      "codemod.sourceControl.saveStagedJobsToTheFileSystem",
-      async (arg0: unknown) => {
-        try {
-          store.dispatch(actions.setApplySelectedInProgress(true));
-
-          const validation = caseHashCodec.decode(arg0);
-
-          if (validation._tag === "Left") {
-            throw new Error(prettyReporter.report(validation).join("\n"));
-          }
-
-          const caseHashDigest = validation.right;
-
-          const state = store.getState();
-
-          if (caseHashDigest !== state.codemodRunsTab.selectedCaseHash) {
-            return;
-          }
-
-          const tree = selectExplorerTree(
-            state,
-            vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
-          );
-
-          if (tree === null) {
-            store.dispatch(actions.setApplySelectedInProgress(false));
-            return;
-          }
-
-          const { selectedJobHashes } = tree;
-
-          await jobManager.acceptJobs(new Set(selectedJobHashes));
-
-          store.dispatch(actions.clearSelectedExplorerNodes(caseHashDigest));
-          store.dispatch(
-            actions.clearIndeterminateExplorerNodes(caseHashDigest),
-          );
-
-          vscode.commands.executeCommand("workbench.view.scm");
-        } catch (e) {
-          const message = e instanceof Error ? e.message : String(e);
-          vscodeTelemetry.sendError({
-            kind: "failedToExecuteCommand",
-            commandName: "codemod.sourceControl.saveStagedJobsToTheFileSystem",
-          });
-          vscode.window.showErrorMessage(message);
-        } finally {
-          store.dispatch(actions.setApplySelectedInProgress(false));
-        }
-      },
-    ),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.discardJobs", async (arg0) => {
-      try {
-        const validation = caseHashCodec.decode(arg0);
-
-        if (validation._tag === "Left") {
-          throw new Error(prettyReporter.report(validation).join("\n"));
-        }
-
-        const caseHashDigest = validation.right;
-
-        const state = store.getState();
-
-        if (caseHashDigest !== state.codemodRunsTab.selectedCaseHash) {
-          return;
-        }
-
-        const tree = selectExplorerTree(
-          state,
-          vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? "",
-        );
-
-        if (tree === null) {
-          return;
-        }
-
-        const { selectedJobHashes } = tree;
-
-        jobManager.deleteJobs(selectedJobHashes);
-
-        store.dispatch(actions.clearSelectedExplorerNodes(caseHashDigest));
-        store.dispatch(actions.clearIndeterminateExplorerNodes(caseHashDigest));
-      } catch (e) {
-        const message = e instanceof Error ? e.message : String(e);
-        vscode.window.showErrorMessage(message);
-
-        vscodeTelemetry.sendError({
-          kind: "failedToExecuteCommand",
-          commandName: "codemod.discardJobs",
-        });
-      }
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.rejectCase", async (arg0) => {
-      try {
-        const caseHash: string | null = typeof arg0 === "string" ? arg0 : null;
-
-        if (caseHash === null) {
-          throw new Error("Did not pass the caseHash into the command.");
-        }
-
-        messageBus.publish({
-          kind: MessageKind.rejectCase,
-          caseHash: caseHash as CaseHash,
-        });
-      } catch (e) {
-        const message = e instanceof Error ? e.message : String(e);
-        vscode.window.showErrorMessage(message);
-
-        vscodeTelemetry.sendError({
-          kind: "failedToExecuteCommand",
-          commandName: "codemod.rejectCase",
-        });
-      }
     }),
   );
 
@@ -497,171 +350,8 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "codemod.executeCodemodWithinPath",
-      async (uriArg: vscode.Uri | null | undefined) => {
-        try {
-          const { storageUri } = context;
-
-          if (!storageUri) {
-            throw new Error("No storage URI, aborting the command.");
-          }
-
-          const targetUri =
-            uriArg ?? vscode.window.activeTextEditor?.document.uri ?? null;
-
-          if (targetUri === null) {
-            return;
-          }
-
-          const codemodList = Object.values(
-            store.getState().codemod.entities,
-          ).filter(isNeitherNullNorUndefined);
-
-          // order: least recent to most recent
-          const top5RecentCodemodHashes =
-            store.getState().lastCodemodHashDigests;
-
-          const top5RecentCodemods = codemodList.filter((codemod) =>
-            top5RecentCodemodHashes.includes(codemod.hashDigest as CodemodHash),
-          );
-
-          // order: least recent to most recent
-          top5RecentCodemods.sort((a, b) => {
-            return (
-              top5RecentCodemodHashes.indexOf(a.hashDigest as CodemodHash) -
-              top5RecentCodemodHashes.indexOf(b.hashDigest as CodemodHash)
-            );
-          });
-          const sortedCodemodList = [
-            ...top5RecentCodemods.reverse(),
-            ...codemodList.filter(
-              (codemod) =>
-                !top5RecentCodemodHashes.includes(
-                  codemod.hashDigest as CodemodHash,
-                ),
-            ),
-          ];
-
-          const quickPickItem =
-            (await vscode.window.showQuickPick(
-              sortedCodemodList.map(({ name, hashDigest }) => ({
-                label: name,
-                ...(top5RecentCodemodHashes.includes(
-                  hashDigest as CodemodHash,
-                ) && { description: "(recent)" }),
-              })),
-              {
-                placeHolder: "Pick a codemod to execute over the selected path",
-              },
-            )) ?? null;
-
-          if (quickPickItem === null) {
-            return;
-          }
-
-          const codemodEntry =
-            sortedCodemodList.find(
-              ({ name }) => name === quickPickItem.label,
-            ) ?? null;
-
-          if (codemodEntry === null) {
-            throw new Error("Codemod is not selected");
-          }
-
-          await mainViewProvider.updateExecutionPath({
-            newPath: targetUri.path,
-            codemodHash: codemodEntry.hashDigest as CodemodHash,
-            fromVSCodeCommand: true,
-            errorMessage: null,
-            warningMessage: null,
-            revertToPrevExecutionIfInvalid: false,
-          });
-
-          vscode.commands.executeCommand(
-            "workbench.view.extension.codemodViewId",
-          );
-
-          store.dispatch(
-            actions.setFocusedCodemodHashDigest(
-              codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-            ),
-          );
-
-          const fileStat = await vscode.workspace.fs.stat(targetUri);
-          const targetUriIsDirectory = Boolean(
-            fileStat.type & vscode.FileType.Directory,
-          );
-
-          const args = selectCodemodArguments(
-            store.getState(),
-            codemodEntry.hashDigest as unknown as CodemodNodeHashDigest,
-          );
-
-          const command: Command =
-            // @ts-ignore TODO: Remove this logic in the next PR
-            codemodEntry.kind === "piranhaRule"
-              ? {
-                  kind: "executePiranhaRule",
-                  configurationUri: vscode.Uri.file(
-                    join(
-                      homedir(),
-                      ".codemod",
-                      createHash("ripemd160")
-                        .update(codemodEntry.name)
-                        .digest("base64url"),
-                    ),
-                  ),
-                  // @ts-ignore TODO: Remove this logic in the next PR
-                  language: codemodEntry.language,
-                  name: codemodEntry.name,
-                  arguments: args,
-                }
-              : {
-                  kind: "executeCodemod",
-                  codemodHash: codemodEntry.hashDigest as CodemodHash,
-                  name: codemodEntry.name,
-                  arguments: args,
-                };
-
-          messageBus.publish({
-            kind: MessageKind.executeCodemodSet,
-            command,
-            caseHashDigest: buildCaseHash(),
-            happenedAt: String(Date.now()),
-            storageUri,
-            targetUri,
-            targetUriIsDirectory,
-          });
-        } catch (e) {
-          const message = e instanceof Error ? e.message : String(e);
-          vscode.window.showErrorMessage(message);
-
-          vscodeTelemetry.sendError({
-            kind: "failedToExecuteCommand",
-            commandName: "codemod.executeCodemodWithinPath",
-          });
-        }
-      },
-    ),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
       "codemod.clearState",
       createClearStateCommand({ fileService, store }),
-    ),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand("codemod.stopStateClearing", () => {
-      store.dispatch(actions.onStateCleared());
-    }),
-  );
-
-  context.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider(
-      "codemod",
-      customTextDocumentContentProvider,
     ),
   );
 
@@ -674,82 +364,62 @@ export async function activate(context: vscode.ExtensionContext) {
           SEARCH_PARAMS_KEYS.CODEMOD_HASH_DIGEST,
         );
         const state = store.getState();
-
-        const [hash, casesString] = uri.toString().split("/").reverse();
-        const codemodRunCaseHash =
-          casesString === "cases" && hash ? hash : null;
-
-        // user is routed to a specific dry run case
-        if (codemodRunCaseHash !== null) {
-          vscode.commands.executeCommand(
-            "workbench.view.extension.codemodViewId",
-          );
-
-          const validation = caseHashCodec.decode(codemodRunCaseHash);
-          if (isLeft(validation)) {
-            throw new Error(prettyReporter.report(validation).join("\n"));
-          }
-
-          messageBus.publish({
-            kind: MessageKind.loadHomeDirectoryCase,
-            caseHashDigest: validation.right,
-          });
+        if (!codemodHashDigest) {
+          return;
         }
+
+        vscode.commands.executeCommand(
+          "workbench.view.extension.codemodViewId",
+        );
 
         // user is opening a deep link to a specific codemod
-        else if (codemodHashDigest !== null) {
-          vscode.commands.executeCommand(
-            "workbench.view.extension.codemodViewId",
-          );
 
-          // Expand collapsed parent directories of the relevant codemod
-          if (codemodHashDigest !== null) {
-            const codemod = state.codemod.entities[codemodHashDigest] ?? null;
-            if (codemod === null) {
-              return;
-            }
-            const { name } = codemod;
-            const sep = name.indexOf("/") !== -1 ? "/" : ":";
+        // Expand collapsed parent directories of the relevant codemod
 
-            const pathParts = name.split(sep).filter((part) => part !== "");
-
-            if (pathParts.length === 0) {
-              return;
-            }
-
-            pathParts.forEach((name, idx) => {
-              const path = pathParts.slice(0, idx + 1).join(sep);
-
-              if (idx === pathParts.length - 1) {
-                return;
-              }
-
-              const parentHashDigest = buildHash(
-                [path, name].join("_"),
-              ) as CodemodNodeHashDigest;
-
-              if (
-                state.codemodDiscoveryView.expandedNodeHashDigests.includes(
-                  parentHashDigest,
-                )
-              ) {
-                return;
-              }
-
-              store.dispatch(actions.flipCodemodHashDigest(parentHashDigest));
-            });
-          }
-
-          if (state.codemodDiscoveryView.searchPhrase.length > 0) {
-            store.dispatch(actions.setCodemodSearchPhrase(""));
-          }
-
-          store.dispatch(
-            actions.setFocusedCodemodHashDigest(
-              codemodHashDigest as unknown as CodemodNodeHashDigest,
-            ),
-          );
+        const codemod = state.codemod.entities[codemodHashDigest] ?? null;
+        if (codemod === null) {
+          return;
         }
+        const { name } = codemod;
+        const sep = name.indexOf("/") !== -1 ? "/" : ":";
+
+        const pathParts = name.split(sep).filter((part) => part !== "");
+
+        if (pathParts.length === 0) {
+          return;
+        }
+
+        pathParts.forEach((name, idx) => {
+          const path = pathParts.slice(0, idx + 1).join(sep);
+
+          if (idx === pathParts.length - 1) {
+            return;
+          }
+
+          const parentHashDigest = buildHash(
+            [path, name].join("_"),
+          ) as CodemodNodeHashDigest;
+
+          if (
+            state.codemodDiscoveryView.expandedNodeHashDigests.includes(
+              parentHashDigest,
+            )
+          ) {
+            return;
+          }
+
+          store.dispatch(actions.flipCodemodHashDigest(parentHashDigest));
+        });
+
+        if (state.codemodDiscoveryView.searchPhrase.length > 0) {
+          store.dispatch(actions.setCodemodSearchPhrase(""));
+        }
+
+        store.dispatch(
+          actions.setFocusedCodemodHashDigest(
+            codemodHashDigest as unknown as CodemodNodeHashDigest,
+          ),
+        );
       },
     }),
   );
@@ -763,9 +433,5 @@ export async function activate(context: vscode.ExtensionContext) {
 
   messageBus.publish({
     kind: MessageKind.bootstrapEngine,
-  });
-
-  messageBus.publish({
-    kind: MessageKind.loadHomeDirectoryData,
   });
 }

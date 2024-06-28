@@ -265,23 +265,8 @@ export class MainViewProvider implements WebviewViewProvider {
       );
     }
 
-    if (message.kind === "webview.campaignManager.setSelectedCaseHash") {
-      this.__store.dispatch(actions.setSelectedCaseHash(message.caseHash));
-    }
-
-    if (message.kind === "webview.global.discardSelected") {
-      commands.executeCommand("codemod.discardJobs", message.caseHashDigest);
-    }
-
     if (message.kind === "webview.global.showInformationMessage") {
       window.showInformationMessage(message.value);
-    }
-
-    if (message.kind === "webview.global.applySelected") {
-      commands.executeCommand(
-        "codemod.sourceControl.saveStagedJobsToTheFileSystem",
-        message.caseHashDigest,
-      );
     }
 
     if (message.kind === "webview.main.setActiveTabId") {
@@ -304,42 +289,6 @@ export class MainViewProvider implements WebviewViewProvider {
 
     if (message.kind === "webview.main.setToaster") {
       this.__store.dispatch(actions.setToaster(message.value));
-    }
-
-    if (message.kind === "webview.global.flipSelectedExplorerNode") {
-      this.__store.dispatch(
-        actions.flipSelectedExplorerNode([
-          message.caseHashDigest,
-          message.explorerNodeHashDigest,
-        ]),
-      );
-    }
-
-    if (message.kind === "webview.global.flipCollapsibleExplorerNode") {
-      this.__store.dispatch(
-        actions.flipCollapsibleExplorerNode([
-          message.caseHashDigest,
-          message.explorerNodeHashDigest,
-        ]),
-      );
-    }
-
-    if (message.kind === "webview.global.focusExplorerNode") {
-      this.__store.dispatch(
-        actions.focusExplorerNode([
-          message.caseHashDigest,
-          message.explorerNodeHashDigest,
-        ]),
-      );
-    }
-
-    if (message.kind === "webview.global.setChangeExplorerSearchPhrase") {
-      this.__store.dispatch(
-        actions.setChangeExplorerSearchPhrase([
-          message.caseHashDigest,
-          message.searchPhrase,
-        ]),
-      );
     }
 
     if (message.kind === "webview.codemodList.haltCodemodExecution") {
@@ -417,16 +366,6 @@ export class MainViewProvider implements WebviewViewProvider {
     if (message.kind === "webview.global.setCodemodSearchPhrase") {
       this.__store.dispatch(
         actions.setCodemodSearchPhrase(message.searchPhrase),
-      );
-    }
-
-    if (message.kind === "webview.global.collapseResultsPanel") {
-      this.__store.dispatch(actions.collapseResultsPanel(message.collapsed));
-    }
-
-    if (message.kind === "webview.global.collapseChangeExplorerPanel") {
-      this.__store.dispatch(
-        actions.collapseChangeExplorerPanel(message.collapsed),
       );
     }
 
