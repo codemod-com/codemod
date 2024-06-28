@@ -154,12 +154,20 @@ export const TokenBuilder = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogContent className="max-w-2xl bg-white text-gray-dark m-auto flex-col flex items-center gap-2">
-        <span>Login successful.</span>
-        <span>You can return to the CLI now.</span>
-        <span>
-          This tab will close in{" "}
-          <span className="text-red-500">{timeleft} seconds</span>...
-        </span>
+        {result === "success" ? (
+          <>
+            <span>Login successful.</span>
+            <span>You can return to the CLI now.</span>
+            <span>
+              This tab will close in{" "}
+              <span className="text-red-500">{timeleft} seconds</span>...
+            </span>
+          </>
+        ) : (
+          <span className="text-red-500">
+            Login failed. Please contact Codemod team.
+          </span>
+        )}
       </DialogContent>
     </Dialog>
   );
