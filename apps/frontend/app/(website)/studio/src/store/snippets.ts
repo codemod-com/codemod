@@ -210,6 +210,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   },
   setSelection: (editorsPairIndex, type) => (command) => {
     const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
+    console.log("setSelection", { rootNode });
     if (rootNode) {
       const ranges = buildRanges(rootNode, command);
       const rpath = ["editors", editorsPairIndex, type];
@@ -226,6 +227,7 @@ export const useSelectFirstTreeNodeForSnippet = () => {
   const { getSelectedEditors } = useSnippetsStore();
 
   return (type: EditorType) => {
+    console.log("useSelectFirstTreeNodeForSnippet");
     const firstRange = getSelectedEditors()[type].ranges[0];
     return firstRange && "id" in firstRange ? firstRange : null;
   };

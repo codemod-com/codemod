@@ -5,7 +5,7 @@ import {
   useSelectFirstTreeNodeForSnippet,
   useSnippetsStore,
 } from "@studio/store/snippets";
-import { useCallback, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 type Props = {
   type: "before" | "after" | "output";
@@ -15,24 +15,20 @@ const ASTViewer = ({ type }: Props) => {
   const getFirstTreeNode = useSelectFirstTreeNodeForSnippet();
   const { getSelectedEditors } = useSnippetsStore();
   const {
-    setSelection,
     [type]: { rootNode },
   } = getSelectedEditors();
 
-  const setRange = setSelection(type);
-
   const scrollNodeIntoView = useScrollNodeIntoView();
 
-  const handleNodeClick = useCallback(
-    (node: TreeNode) => {
-      setRange({
-        kind: "FIND_CLOSEST_PARENT",
-        ranges: [node],
-      });
-      scrollNodeIntoView(node, ASTTreeRef);
-    },
-    [scrollNodeIntoView, setRange],
-  );
+  const handleNodeClick = (node: TreeNode) => {
+    const setRange = getSelectedEditors().setSelection(type);
+    console.log("handleNodeClick");
+    setRange({
+      kind: "FIND_CLOSEST_PARENT",
+      ranges: [node],
+    });
+    scrollNodeIntoView(node, ASTTreeRef);
+  };
 
   useEffect(() => {
     if (getFirstTreeNode(type) !== null) {
