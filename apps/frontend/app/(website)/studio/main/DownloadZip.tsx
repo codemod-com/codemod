@@ -1,12 +1,10 @@
+import Icon, { TechLogo } from "@/components/shared/Icon";
 import { cn } from "@/utils";
 import { useAuth, useSession } from "@clerk/nextjs";
+import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import sendMessage from "@studio/api/sendMessage";
 import { Button } from "@studio/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@studio/components/ui/dialog";
+import { Dialog, DialogContent } from "@studio/components/ui/dialog";
 import {
   Tabs,
   TabsContent,
@@ -34,6 +32,82 @@ Do not return any text other than the codemod name.
 ${codemod}
 \`\`\`
 `;
+
+function DropdownButton({ onPressCLIRun }: { onPressCLIRun: () => void }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <DropdownMenu.Root open={open}>
+      <DropdownMenu.Trigger
+        className="select-none py-px"
+        name="Navigation Button"
+        aria-label="Hover for context menu"
+        onClick={() => setOpen(!open)}
+      >
+        <Button
+          size="xs"
+          variant="default"
+          className="text-white flex gap-1"
+          hint={
+            <p className="font-normal">
+              Choose how you want to run your codemod
+            </p>
+          }
+        >
+          Run
+          {open ? (
+            <Icon name="chevron-up" className="w-3" />
+          ) : (
+            <Icon name="chevron-down" className="w-3" />
+          )}
+        </Button>
+      </DropdownMenu.Trigger>
+
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content
+          align="start"
+          side="bottom"
+          sideOffset={16}
+          onCloseAutoFocus={(event) => event.preventDefault()}
+          onEscapeKeyDown={() => setOpen(false)}
+          onPointerDownOutside={() => setOpen(false)}
+          className="z-[99] min-w-[250px] animate-slideDownAndFade select-none rounded-[8px] border-[1px] border-border-light bg-primary-dark p-s shadow-sm dark:border-border-dark dark:bg-primary-light dark:shadow-none"
+        >
+          <DropdownMenu.Group className="flex flex-col border-b-[1px] border-b-border-light py-s dark:border-b-border-dark">
+            <DropdownMenu.Item asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+                onClick={onPressCLIRun}
+              >
+                <DownloadIcon />
+                <span>locally via CLI</span>
+              </Button>
+            </DropdownMenu.Item>
+          </DropdownMenu.Group>
+
+          <DropdownMenu.Group className="flex flex-col border-b-border-light py-s dark:border-b-border-dark">
+            <DropdownMenu.Item asChild>
+              <Button
+                size="lg"
+                variant="outline"
+                className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+              >
+                <TechLogo
+                  className="text-black h-[16px] w-[16px]"
+                  name="github"
+                />
+
+                <span>remotely on Github</span>
+              </Button>
+            </DropdownMenu.Item>
+          </DropdownMenu.Group>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
+  );
+}
 
 export const DownloadZip = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -82,25 +156,7 @@ export const DownloadZip = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button
-          size="xs"
-          variant="default"
-          className="text-white flex gap-1"
-          hint={
-            <p className="font-normal">
-              Download a ZIP archive to use this codemod locally
-            </p>
-          }
-          isLoading={isDownloading}
-          disabled={!modStore.internalContent || isDownloading}
-          onClick={handleClick}
-          id="download-zip-button"
-        >
-          <DownloadIcon />
-          Run locally via CLI
-        </Button>
-      </DialogTrigger>
+      <DropdownButton onPressCLIRun={handleClick} />
 
       <DialogContent className="max-w-2xl bg-white">
         <p>

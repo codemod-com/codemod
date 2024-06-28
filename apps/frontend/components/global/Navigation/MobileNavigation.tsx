@@ -85,7 +85,7 @@ export function MobileDropdown({
                 <TechLogo
                   className="text-black dark:text-white"
                   pathClassName="dark:fill-white"
-                  name={"github"}
+                  name="github"
                 />
                 <span className="">{"Star us"}</span>
               </span>
