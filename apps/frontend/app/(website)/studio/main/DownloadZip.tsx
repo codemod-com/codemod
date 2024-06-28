@@ -1,5 +1,8 @@
 import Icon, { TechLogo } from "@/components/shared/Icon";
+import useFeatureFlags from "@/hooks/useFeatureFlags";
 import { cn } from "@/utils";
+import { CODEMOD_RUN_FEATURE_FLAG } from "@/utils/strings";
+import { useUser } from "@clerk/nextjs";
 import { useAuth, useSession } from "@clerk/nextjs";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import sendMessage from "@studio/api/sendMessage";
@@ -12,12 +15,25 @@ import {
   TabsTrigger,
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
+import { useLocalStorage } from "@studio/hooks/useLocalStorage";
 import { DownloadIcon } from "@studio/icons/Download";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import { downloadProject } from "@studio/utils/download";
+import type { GHBranch, GithubRepository } from "be-types";
 import { Check, Copy } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type MouseEvent, useMemo, useState } from "react";
+import {
+  RepositoryModal,
+  getButtonPropsByStatus,
+  useExecutionStatus,
+  useOpenRepoModalAfterSignIn,
+} from "../features/GHRun";
+import { UserPromptModal } from "../features/GHRun/components/UserPromptModal";
+import { useCodemodExecution } from "../features/GHRun/hooks/useCodemodExecution";
+import { useEnsureUserSigned } from "../src/hooks/useEnsureUserSigned";
+import { useModal } from "../src/hooks/useModal";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
@@ -33,8 +49,16 @@ ${codemod}
 \`\`\`
 `;
 
-function DropdownButton({ onPressCLIRun }: { onPressCLIRun: () => void }) {
+function DropdownButton({
+  onPressCLIRun,
+  onPressGHRun,
+}: {
+  onPressCLIRun: (event: MouseEvent<HTMLButtonElement>) => void;
+  onPressGHRun: (event: MouseEvent<HTMLButtonElement>) => void;
+}) {
   const [open, setOpen] = useState(false);
+  const ffs = useFeatureFlags();
+  const isGHRunEnabled = ffs.includes(CODEMOD_RUN_FEATURE_FLAG);
 
   return (
     <DropdownMenu.Root open={open}>
@@ -78,7 +102,7 @@ function DropdownButton({ onPressCLIRun }: { onPressCLIRun: () => void }) {
               <Button
                 size="lg"
                 variant="outline"
-                className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+                className="body-s-large flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
                 onClick={onPressCLIRun}
               >
                 <DownloadIcon />
@@ -92,13 +116,21 @@ function DropdownButton({ onPressCLIRun }: { onPressCLIRun: () => void }) {
               <Button
                 size="lg"
                 variant="outline"
-                className="body-s-medium flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+                className="body-s-large flex items-center gap-xs rounded-[8px] p-xs font-medium text-primary-light focus:outline-none data-[highlighted]:bg-emphasis-light dark:text-primary-dark dark:data-[highlighted]:bg-emphasis-dark"
+                disabled={!isGHRunEnabled}
+                onClick={onPressGHRun}
+                hint={
+                  isGHRunEnabled ? null : (
+                    <p className="font-normal">
+                      This feature is not available yet. Stay tuned for updates.
+                    </p>
+                  )
+                }
               >
                 <TechLogo
                   className="text-black h-[16px] w-[16px]"
                   name="github"
                 />
-
                 <span>remotely on Github</span>
               </Button>
             </DropdownMenu.Item>
@@ -110,8 +142,86 @@ function DropdownButton({ onPressCLIRun }: { onPressCLIRun: () => void }) {
 }
 
 export const DownloadZip = () => {
+  const { user } = useUser();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
-  const [isDownloading, setIsDownloading] = useState(false);
+  const [repositoriesToShow, setRepositoriesToShow] = useState<
+    GithubRepository[]
+  >([]);
+
+  const [codemodExecutionId, setCodemodExecutionId, clearExecutionId] =
+    useLocalStorage("codemodExecutionId");
+  const [branchesToShow, setBranchesToShow] = useState<GHBranch[]>([]);
+
+  const {
+    showModalWithRepositories,
+    hideRepositoryModal,
+    isRepositoryModalShown,
+    areReposLoading,
+  } = useOpenRepoModalAfterSignIn(setRepositoriesToShow);
+
+  const showRepoModalToSignedUser = useEnsureUserSigned(
+    showModalWithRepositories,
+    "openRepoModal",
+  );
+
+  const {
+    showModal: showUserPromptModal,
+    hideModal: hideUserPromptModal,
+    isModalShown: isUserPromptModalShown,
+  } = useModal();
+
+  const codemodRunStatus = useExecutionStatus({
+    codemodExecutionId,
+    clearExecutionId,
+  });
+  const status = codemodRunStatus?.result?.status ?? null;
+  const { text, hintText } = getButtonPropsByStatus(status);
+  const { onCodemodRun } = useCodemodExecution({
+    codemodExecutionId,
+    setCodemodExecutionId,
+  });
+
+  const handlePressGHRun = (event: MouseEvent<HTMLButtonElement>) => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
+      return;
+    }
+
+    if (githubAccount.approvedScopes.includes("repo")) {
+      showRepoModalToSignedUser(event);
+      return;
+    }
+    showUserPromptModal();
+  };
+
+  const onApprove = async () => {
+    const githubAccount = user?.externalAccounts.find(
+      (account) => account.provider === "github",
+    );
+
+    if (!githubAccount) {
+      return;
+    }
+
+    try {
+      const res = await githubAccount.reauthorize({
+        redirectUrl: window.location.href,
+        additionalScopes: ["repo"],
+      });
+      if (res.verification?.externalVerificationRedirectURL) {
+        router.push(res.verification.externalVerificationRedirectURL.href);
+        return;
+      }
+
+      throw new Error("externalVerificationRedirectURL not found");
+    } catch (err) {
+      console.log("ERROR:", err);
+    }
+  };
 
   const modStore = useModStore();
   const snippetStore = useSnippetStore();
@@ -120,8 +230,7 @@ export const DownloadZip = () => {
   const { session } = useSession();
   const { getToken } = useAuth();
 
-  const handleClick = async () => {
-    setIsDownloading(true);
+  const handlePressCLIRun = async () => {
     if (!modStore.internalContent) {
       return;
     }
@@ -146,7 +255,6 @@ export const DownloadZip = () => {
       username: session?.user.username ?? null,
     });
 
-    setIsDownloading(false);
     setIsOpen(true);
   };
 
@@ -155,30 +263,49 @@ export const DownloadZip = () => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DropdownButton onPressCLIRun={handleClick} />
+    <>
+      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownButton
+          onPressCLIRun={handlePressCLIRun}
+          onPressGHRun={handlePressGHRun}
+        />
 
-      <DialogContent className="max-w-2xl bg-white">
-        <p>
-          Unzip the codemod package into your preferred folder, copy its path,
-          update the command below with the copied path, and run it.
-        </p>
+        <DialogContent className="max-w-2xl bg-white">
+          <p>
+            Unzip the codemod package into your preferred folder, copy its path,
+            update the command below with the copied path, and run it.
+          </p>
 
-        <Tabs defaultValue="npm">
-          <TabsList>
-            <TabsTrigger value="npm">npm</TabsTrigger>
-            <TabsTrigger value="pnpm">pnpm</TabsTrigger>
-          </TabsList>
+          <Tabs defaultValue="npm">
+            <TabsList>
+              <TabsTrigger value="npm">npm</TabsTrigger>
+              <TabsTrigger value="pnpm">pnpm</TabsTrigger>
+            </TabsList>
 
-          <TabsContent value="npm">
-            <InstructionsContent pm="npm" />
-          </TabsContent>
-          <TabsContent value="pnpm">
-            <InstructionsContent pm="pnpm" />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+            <TabsContent value="npm">
+              <InstructionsContent pm="npm" />
+            </TabsContent>
+            <TabsContent value="pnpm">
+              <InstructionsContent pm="pnpm" />
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+      <RepositoryModal
+        onCodemodRun={onCodemodRun}
+        branchesToShow={branchesToShow}
+        setBranchesToShow={setBranchesToShow}
+        hideRepositoryModal={hideRepositoryModal}
+        isRepositoryModalShown={isRepositoryModalShown}
+        repositoriesToShow={repositoriesToShow}
+        areReposLoading={areReposLoading}
+      />
+      <UserPromptModal
+        isModalShown={isUserPromptModalShown}
+        onApprove={onApprove}
+        onReject={hideUserPromptModal}
+      />
+    </>
   );
 };
 
