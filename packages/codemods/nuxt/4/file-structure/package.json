@@ -1,5 +1,5 @@
 {
-  "name": "fetch",
+  "name": "@codemod/nuxt-4-file-structure",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.9.0",

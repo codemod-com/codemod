@@ -1,7 +1,7 @@
 import { memoize } from "lodash-es";
 import type { PLazy } from "../PLazy.js";
 import { codemod } from "../codemod.js";
-import { cwdContext, gitContext } from "../contexts.js";
+import { cwdContext, gitContext, parentCwdContext } from "../contexts.js";
 import { GitContext } from "../contexts/GitContext.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
@@ -99,18 +99,20 @@ export function cloneLogic(
       const { repositories } = self.getArguments();
       await Promise.all(
         repositories.map(({ repository, shallow, branch }, index) =>
-          cwdContext.run({ cwd: process.cwd() }, async () => {
-            const id = `${repository}, ${String(index)}, ${String(
-              shallow,
-            )}, ${String(branch)}`;
-            await memoizedCloneRepo(id, {
-              repositoryUrl: repository,
-              branch,
-              shallow,
-              extraName: String(index),
-            });
-            await gitContext.run(new GitContext({ repository, id }), next);
-          }),
+          parentCwdContext.run({ cwd: process.cwd() }, () =>
+            cwdContext.run({ cwd: process.cwd() }, async () => {
+              const id = `${repository}, ${String(index)}, ${String(
+                shallow,
+              )}, ${String(branch)}`;
+              await memoizedCloneRepo(id, {
+                repositoryUrl: repository,
+                branch,
+                shallow,
+                extraName: String(index),
+              });
+              await gitContext.run(new GitContext({ repository, id }), next);
+            }),
+          ),
         ),
       );
     })

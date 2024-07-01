@@ -1,6 +1,6 @@
 import colors from "colors-cli";
 import { flattenDeep, identity, mapValues } from "lodash-es";
-import { getRepositoriesContext, parentContext } from "./contexts";
+import { getRepositoriesContext, parentContextLegacy } from "./contexts.js";
 
 export const clc = {
   blueBright: (text: string) => colors.blue_bt(text),
@@ -88,5 +88,5 @@ export const wrapHelpers = <C, H>(helpers: H, context: C): H =>
     (value: any) =>
       (...args: any[]) =>
         // @ts-ignore
-        parentContext.run(context, () => value(...args)),
+        parentContextLegacy.run(context, () => value(...args)),
   ) as any;

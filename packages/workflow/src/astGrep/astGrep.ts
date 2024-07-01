@@ -190,7 +190,22 @@ export function astGrepLogic<
       } else {
         const contents = await fs.readFile(file, { encoding: "utf-8" });
 
-        const nodes = astGrepTsx.parse(contents).root().findAll(grep).reverse();
+        const nodes = astGrepTsx
+          .parse(contents)
+          .root()
+          .findAll(
+            typeof grep === "string"
+              ? ({
+                  rule: {
+                    pattern: {
+                      context: grep,
+                      strictness: "relaxed",
+                    },
+                  },
+                } as NapiConfig)
+              : grep,
+          )
+          .reverse();
         const astContext = {
           contents: new MagicString(contents),
           query: grep,

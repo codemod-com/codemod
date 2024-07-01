@@ -3,10 +3,10 @@ import { formatText } from "@codemod-com/utilities";
 import { mapValues } from "lodash-es";
 import MagicString from "magic-string";
 import OpenAI from "openai";
-import type { PLazy } from "../PLazy";
-import { getAstGrepNodeContext, getFileContext } from "../contexts";
-import { FunctionExecutor, fnWrapper } from "../engineHelpers";
-import { clc } from "../helpers";
+import type { PLazy } from "../PLazy.js";
+import { getAstGrepNodeContext, getFileContext } from "../contexts.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { clc } from "../helpers.js";
 
 const SYSTEM_PROMPT = `
 You are a meticulous engineer assigned to migrate a codebase by updating its code when necessary.

@@ -1,6 +1,6 @@
 import { simpleGit } from "simple-git";
-import { getCwdContext } from "../contexts";
-import { Context } from "./Context";
+import { getCwdContext } from "../contexts.js";
+import { Context } from "./Context.js";
 
 export type GitContextData = { repository: string; id: string };
 

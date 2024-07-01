@@ -1,6 +1,6 @@
 import { CleanOptions, simpleGit } from "simple-git";
 import { invariant } from "ts-invariant";
-import { cwdContext } from "../contexts.js";
+import { cwdContext, parentCwdContext } from "../contexts.js";
 import { getTmpDir, isDirectory } from "../fs.js";
 import { logger } from "../helpers.js";
 
@@ -52,14 +52,18 @@ export const cloneRepository = async (
     `${repositoryUrl}${extraName ? `-${extraName}` : ""}`,
   );
   const cwd = cwdContext.getStore();
+  const parentCwd = parentCwdContext.getStore();
   if (cwd) {
     cwd.cwd = tmpDir;
+  }
+  if (parentCwd) {
+    parentCwd.cwd = tmpDir;
   }
 
   if (await isDirectory(tmpDir)) {
     const git = simpleGit(tmpDir);
     console.log(`Directory ${tmpDir} already exists, skipping clone`);
-    await git.clean(CleanOptions.FORCE);
+    await git.clean(CleanOptions.FORCE + CleanOptions.RECURSIVE);
     await git.reset(["--hard"]);
     const remoteDefaultBranch = await getDefaultBranchFromRemote(repositoryUrl);
     invariant(

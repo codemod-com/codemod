@@ -16,7 +16,9 @@ import { getTree } from "./engineHelpers.js";
 
 import { files } from "./files.js";
 
-export { git, astGrep, jsFiles, files, codemod, dirs };
+import { exec } from "./exec.js";
+
+export { git, astGrep, jsFiles, files, codemod, dirs, exec };
 
 export const api = {
   git,
@@ -27,6 +29,7 @@ export const api = {
   codemod,
   getTree,
   files,
+  exec,
 };
 
 export type Api = typeof api;

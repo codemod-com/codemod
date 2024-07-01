@@ -3,6 +3,7 @@ import * as glob from "glob";
 import type { PLazy } from "./PLazy.js";
 import { fileContext, getCwdContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
+import { move } from "./fs/move.js";
 import { parseMultistring } from "./helpers.js";
 import { jsFam } from "./jsFam.js";
 
@@ -80,6 +81,6 @@ export function filesLogic(
 
 export const files = fnWrapper("files", filesLogic);
 
-const helpers = { jsFam };
+const helpers = { jsFam, move };
 
 type Helpers = typeof helpers;

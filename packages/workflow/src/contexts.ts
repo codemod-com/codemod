@@ -3,8 +3,8 @@ import type { NapiConfig, SgNode } from "@ast-grep/napi";
 import type MagicString from "magic-string";
 
 import { invariant } from "ts-invariant";
-import type { GitContext } from "./contexts/GitContext";
-import { noContextFn } from "./helpers";
+import type { GitContext } from "./contexts/GitContext.js";
+import { noContextFn } from "./helpers.js";
 
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
 
@@ -19,10 +19,12 @@ export type AstGrepNodeContext = {
   contents: MagicString;
 };
 
-export const parentContext = new AsyncLocalStorage<(...args: any[]) => any>();
+export const parentContextLegacy = new AsyncLocalStorage<
+  (...args: any[]) => any
+>();
 
 export const getParentContext = () => {
-  const fn = parentContext.getStore();
+  const fn = parentContextLegacy.getStore();
 
   return fn ?? noContextFn;
 };
@@ -45,6 +47,12 @@ export const migrateContext = registerContext(
 );
 export const cwdContext = registerContext(
   "cwdContext",
+  new AsyncLocalStorage<{
+    cwd: string;
+  }>(),
+);
+export const parentCwdContext = registerContext(
+  "parentCwdContext",
   new AsyncLocalStorage<{
     cwd: string;
   }>(),
@@ -84,6 +92,12 @@ export const getAstGrepNodeContext = () => {
 
 export const getCwdContext = () => {
   const cwd = cwdContext.getStore();
+
+  return cwd ?? { cwd: process.cwd() };
+};
+
+export const getParentCwdContext = () => {
+  const cwd = parentCwdContext.getStore();
 
   return cwd ?? { cwd: process.cwd() };
 };

@@ -1,4 +1,4 @@
-import { astGrep } from "./astGrep";
+import { astGrep } from "./astGrep.js";
 
 /**
  * Same as astGrep, but searches with single and double quotes
