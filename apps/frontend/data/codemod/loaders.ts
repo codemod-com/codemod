@@ -36,6 +36,7 @@ export async function loadCodemod(
   pathname: string,
   options?: Partial<RequestInit>,
 ) {
+  console.log("test");
   const baseUrl = env.NEXT_PUBLIC_CODEMOD_AUTOMATIONS_LIST_ENDPOINT;
   const { cleaned: url } = vercelStegaSplit(`${baseUrl}/${pathname}`);
   try {
