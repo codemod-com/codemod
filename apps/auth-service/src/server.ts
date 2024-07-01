@@ -4,6 +4,7 @@ import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
 import {
   type GetScopedTokenResponse,
+  type RevokeScopedTokenResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
@@ -158,6 +159,30 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
       allowedNamespaces,
     });
   });
+
+  instance.delete<{ Reply: RevokeScopedTokenResponse }>(
+    "/revokeToken",
+    async (request, reply) => {
+      const { userId, sessionId } = getAuth(request);
+
+      if (!userId && !sessionId) {
+        return reply
+          .status(401)
+          .send({ success: false, error: "Invalid token" });
+      }
+
+      try {
+        await clerkClient.sessions.revokeSession(sessionId);
+      } catch (err) {
+        console.error("Failed to revoke session:\n", err);
+        return reply
+          .status(500)
+          .send({ success: false, error: "Failed to revoke session" });
+      }
+
+      return reply.status(200).send({ success: true });
+    },
+  );
 
   instance.get<{ Reply: GetScopedTokenResponse | { message: string } }>(
     "/appToken",

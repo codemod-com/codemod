@@ -112,7 +112,7 @@ export function loadBlogIndex({
   const blogIndexDocQuery = buildBlogIndexQuery({
     infiniteLoading: true,
     pathParam,
-    sortBy: "publishDate",
+    sortBy: "publishedAt",
     sortOrder: "desc",
     pageNumber,
     entriesPerPage: 10,
@@ -124,6 +124,7 @@ export function loadBlogIndex({
     tags: [`blogIndex:en`],
   });
 }
+
 export function loadRegistryIndex() {
   const registryIndexQuery = buildRegistryIndexQuery();
 

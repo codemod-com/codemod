@@ -1,10 +1,16 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
+import * as os from "node:os";
 import { homedir } from "node:os";
-import { join } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { dirname, extname, join } from "node:path";
 import {
+  type PrinterBlueprint,
+  chalk,
+  colorLongString,
+} from "@codemod-com/printer";
+import {
+  type Codemod,
   type CodemodSettings,
   type CodemodToRun,
   Runner,
@@ -18,10 +24,11 @@ import {
   doubleQuotify,
   execPromise,
   parseCodemodConfig,
-  sleep,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
+import prettyjson from "prettyjson";
+import { version } from "../../package.json";
 import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
@@ -90,6 +97,58 @@ const checkFileTreeVersioning = async (target: string) => {
   }
 };
 
+export const transformCodemodToRunnable = async (options: {
+  codemod: Codemod;
+  codemodArguments: Record<string, unknown>;
+  printer: PrinterBlueprint;
+  argv: GlobalArgvOptions & RunArgvOptions;
+}): Promise<CodemodToRun> => {
+  const getCodemodName = (cdmd: Codemod) => {
+    if ("name" in cdmd) {
+      return cdmd.name;
+    }
+
+    return null;
+  };
+  const { codemod, codemodArguments, printer, argv } = options;
+
+  const safeArgumentRecord = await buildSafeArgumentRecord(
+    codemod,
+    codemodArguments,
+    printer,
+  );
+
+  const engineOptions = buildCodemodEngineOptions(codemod.engine, argv);
+
+  if (codemod.engine === "recipe") {
+    return {
+      ...codemod,
+      codemods: await Promise.all(
+        codemod.codemods.map(async (subCodemod) =>
+          transformCodemodToRunnable({ ...options, codemod: subCodemod }),
+        ),
+      ),
+      safeArgumentRecord,
+      engineOptions,
+    };
+  }
+
+  const codemodToRun: CodemodToRun = {
+    ...codemod,
+    safeArgumentRecord,
+    engineOptions,
+  };
+
+  const codemodName = getCodemodName(codemod);
+  if (codemodName) {
+    codemodToRun.hashDigest = createHash("ripemd160")
+      .update(codemodName)
+      .digest();
+  }
+
+  return codemodToRun;
+};
+
 export const handleRunCliCommand = async (options: {
   printer: PrinterBlueprint;
   args: GlobalArgvOptions & RunArgvOptions;
@@ -101,7 +160,12 @@ export const handleRunCliCommand = async (options: {
   const flowSettings = parseFlowSettings(args, printer);
   const runSettings = parseRunSettings(homedir(), args);
 
-  if (!runSettings.dryRun && !args["disable-tree-version-check"]) {
+  if (
+    !runSettings.dryRun &&
+    !args["disable-tree-version-check"] &&
+    !args.readme &&
+    !args.config
+  ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
@@ -136,28 +200,26 @@ export const handleRunCliCommand = async (options: {
       tarService,
     );
 
-    const engineOptions = await buildCodemodEngineOptions(codemod.engine, args);
-
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
-        ...codemod,
-        source: "local",
-        hashDigest: createHash("ripemd160")
-          .update(codemodSettings.source)
-          .digest(),
-        safeArgumentRecord: await buildSafeArgumentRecord(
+        ...(await transformCodemodToRunnable({
           codemod,
-          args,
+          argv: args,
+          codemodArguments: args,
           printer,
-        ),
-        engineOptions,
+        })),
+        cleanup: extname(codemodSettings.source) === ".zip",
+        source: "local",
       },
     };
   } else if (codemodSettings.kind === "runNamed") {
     let codemod: Awaited<ReturnType<typeof codemodDownloader.download>>;
     try {
-      codemod = await codemodDownloader.download(codemodSettings.name);
+      codemod = await codemodDownloader.download(
+        codemodSettings.name,
+        args.readme || args.config,
+      );
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
@@ -187,19 +249,15 @@ export const handleRunCliCommand = async (options: {
       );
     }
 
-    const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
-
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
-        ...codemod,
-        hashDigest: createHash("ripemd160").update(codemod.name).digest(),
-        safeArgumentRecord: await buildSafeArgumentRecord(
+        ...(await transformCodemodToRunnable({
           codemod,
-          args,
+          argv: args,
+          codemodArguments: args,
           printer,
-        ),
-        engineOptions,
+        })),
       },
     };
   } else {
@@ -209,17 +267,15 @@ export const handleRunCliCommand = async (options: {
     for (const preCommitCodemod of preCommitCodemods) {
       if (preCommitCodemod.source === "package") {
         const codemod = await codemodDownloader.download(preCommitCodemod.name);
-        const engineOptions = buildCodemodEngineOptions(codemod.engine, args);
 
-        codemods.push({
-          ...codemod,
-          safeArgumentRecord: await buildSafeArgumentRecord(
+        codemods.push(
+          await transformCodemodToRunnable({
             codemod,
-            preCommitCodemod.arguments,
+            argv: args,
+            codemodArguments: preCommitCodemod.arguments,
             printer,
-          ),
-          engineOptions,
-        });
+          }),
+        );
       }
 
       codemodDefinition = {
@@ -231,6 +287,64 @@ export const handleRunCliCommand = async (options: {
 
   if (!codemodDefinition) {
     throw new Error("Codemod definition could not be resolved.");
+  }
+
+  if (codemodDefinition.kind !== "runOnPreCommit") {
+    if (args.readme || args.config) {
+      if (codemodDefinition.codemod.bundleType === "standalone") {
+        printer.printConsoleMessage(
+          "error",
+          chalk.red("Standalone codemods do not support this feature."),
+        );
+        return;
+      }
+
+      if (args.readme) {
+        let readmeContents: string;
+
+        try {
+          readmeContents = await readFile(
+            join(codemodDefinition.codemod.directoryPath, "description.md"),
+            { encoding: "utf8" },
+          );
+
+          printer.printConsoleMessage(
+            "log",
+            colorLongString(readmeContents, chalk.cyan, 80),
+          );
+        } catch (err) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red("Could not find the manual file for the codemod."),
+          );
+        }
+      }
+
+      if (args.config) {
+        let configContents: string;
+
+        try {
+          configContents = await readFile(
+            join(codemodDefinition.codemod.directoryPath, ".codemodrc.json"),
+            { encoding: "utf8" },
+          );
+
+          printer.printConsoleMessage(
+            "log",
+            prettyjson.render(JSON.parse(configContents), {
+              inlineArrays: true,
+            }),
+          );
+        } catch (err) {
+          printer.printConsoleMessage(
+            "error",
+            chalk.red("Could not find the configuration file for the codemod."),
+          );
+        }
+      }
+
+      return;
+    }
   }
 
   const codemodsToRun =
@@ -297,6 +411,10 @@ export const handleRunCliCommand = async (options: {
         fileCount: modifiedFilePaths.length,
         ...(recipe && { recipeName: recipe.name }),
       });
+
+      if (codemod.cleanup) {
+        await fs.promises.rm(dirname(codemod.source), { recursive: true });
+      }
     },
     (error) => {
       if (!(error instanceof Error)) {
@@ -340,44 +458,51 @@ export const handleRunCliCommand = async (options: {
   //   );
   // }
 
+  const logsPath = join(
+    configurationDirectoryPath,
+    "logs",
+    `${new Date().toISOString()}-error.log`,
+  );
+
+  let logsContent = `- CLI version: ${version}
+- Node version: ${process.versions.node}
+- OS: ${os.type()} ${os.release()} ${os.arch()}
+
+`;
+
   if (executionErrors && executionErrors.length > 0) {
-    const logsPath = join(
-      configurationDirectoryPath,
-      "logs",
-      `${new Date().toISOString()}-error.log`,
-    );
+    logsContent += executionErrors
+      .map(
+        (e) =>
+          `Error at ${e.filePath}${
+            e.codemodName ? ` (${e.codemodName})` : ""
+          }:\n${e.message}`,
+      )
+      .join("\n\n");
+  }
 
-    try {
-      await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
-        recursive: true,
-      });
-      await fs.promises.writeFile(
-        logsPath,
-        executionErrors
-          .map(
-            (e) =>
-              `Error at ${e.filePath}${
-                e.codemodName ? ` (${e.codemodName})` : ""
-              }:\n${e.message}`,
-          )
-          .join("\n\n"),
-      );
-    } catch (err) {
-      printer.printConsoleMessage(
-        "error",
-        `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
-      );
-    }
-
+  try {
+    await fs.promises.mkdir(join(configurationDirectoryPath, "logs"), {
+      recursive: true,
+    });
+    await fs.promises.writeFile(logsPath, logsContent);
+  } catch (err) {
     printer.printConsoleMessage(
       "error",
-      chalk.red(
-        "\nCertain files failed to be correctly processed by the codemod execution.",
-        "Please check the logs for more information at",
-        chalk.bold(logsPath),
-      ),
+      `Failed to write error log file at ${logsPath}. Please verify that codemod CLI has the necessary permissions to write to this location.`,
     );
   }
+
+  printer.printConsoleMessage(
+    "info",
+    chalk.cyan(
+      "\nFind the logs of the run at",
+      chalk.bold(logsPath),
+      "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+      chalk.bold(doubleQuotify("codemod feedback")),
+      "and include the logs in the issue body.",
+    ),
+  );
 
   if (!runSettings.dryRun && flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(

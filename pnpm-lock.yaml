@@ -281,6 +281,9 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.3.2
+      prettyjson:
+        specifier: ^1.2.5
+        version: 1.2.5
     devDependencies:
       '@codemod-com/filemod':
         specifier: workspace:*
@@ -309,6 +312,9 @@ importers:
       '@types/node':
         specifier: 18.11.9
         version: 18.11.9
+      '@types/prettyjson':
+        specifier: ^0.0.33
+        version: 0.0.33
       '@types/semver':
         specifier: ^7.5.8
         version: 7.5.8
@@ -3608,7 +3614,55 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/nuxt/4/absolute-watch-paths:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/nuxt/4/default-data-error-value:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/nuxt/4/deprecated-dedupe-value:
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*
@@ -3648,6 +3702,30 @@ importers:
         version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
   packages/codemods/nuxt/4/shallow-data-reactivity:
+    devDependencies:
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/nuxt/4/template-compilation-changes:
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*
@@ -4535,6 +4613,24 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/react/19/remove-legacy-context:
+    devDependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/react/19/remove-memoization:
     devDependencies:
       '@codemod-com/utilities':
@@ -4576,6 +4672,27 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/react/19/replace-create-factory:
+    devDependencies:
+      '@codemod-com/jscodeshift-utils':
+        specifier: workspace:*
+        version: link:../../../../jscodeshift-utils
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@types/node':
+        specifier: 20.9.0
+        version: 20.9.0
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
   packages/codemods/react/19/replace-default-props:
     devDependencies:
@@ -5023,6 +5140,31 @@ importers:
       vitest:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.8.5)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/jscodeshift-utils:
+    dependencies:
+      '@types/jscodeshift':
+        specifier: ^0.11.11
+        version: 0.11.11
+      jscodeshift:
+        specifier: ^0.16.1
+        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+    devDependencies:
+      '@types/node':
+        specifier: 20.10.3
+        version: 20.10.3
+      '@vitest/coverage-v8':
+        specifier: ^1.0.1
+        version: 1.6.0(vitest@1.6.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1))
+      ts-node:
+        specifier: 10.9.1
+        version: 10.9.1(@types/node@20.10.3)(typescript@5.5.2)
+      typescript:
+        specifier: ^5.3.2
+        version: 5.5.2
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.10.3)(jsdom@23.2.0)(terser@5.31.1)
 
   packages/printer:
     dependencies:
@@ -10273,6 +10415,9 @@ packages:
   '@types/prettier@2.7.3':
     resolution: {integrity: sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==}
 
+  '@types/prettyjson@0.0.33':
+    resolution: {integrity: sha512-hHZMkavT9OXFq8p6pTCiaREtPxMRfy9NMp+Qa4PWH0RINQjyh0crOhoqUFA/cvIZncpjBpdvxkoe7nmVbyBJXw==}
+
   '@types/prismjs@1.26.4':
     resolution: {integrity: sha512-rlAnzkW2sZOjbqZ743IHUhFcvzaGbqijwOu8QZnZCjfQzBqFE3s4lOTJEsxikImav9uzz/42I+O7YUs1mWgMlg==}
 
@@ -13576,6 +13721,15 @@ packages:
       '@babel/preset-env':
         optional: true
 
+  jscodeshift@0.16.1:
+    resolution: {integrity: sha512-oMQXySazy63awNBzMpXbbVv73u3irdxTeX2L5ueRyFRxi32qb9uzdZdOY5fTBYADBG19l5M/wnGknZSV1dzCdA==}
+    hasBin: true
+    peerDependencies:
+      '@babel/preset-env': ^7.1.6
+    peerDependenciesMeta:
+      '@babel/preset-env':
+        optional: true
+
   jsdom-global@3.0.2:
     resolution: {integrity: sha512-t1KMcBkz/pT5JrvcJbpUR2u/w1kO9jXctaaGJ0vZDzwFnIvGWw9IDSRciT83kIs8Bnw4qpOl8bQK08V01YgMPg==}
     peerDependencies:
@@ -15528,6 +15682,10 @@ packages:
     resolution: {integrity: sha512-973driJZvxiGOQ5ONsFhOF/DtzPMOMtgC11kCpUrPGMTgqp2q/1gwzCquocrN33is0VZ5GFHXZYMM9l6h67v2Q==}
     engines: {node: '>=10'}
 
+  prettyjson@1.2.5:
+    resolution: {integrity: sha512-rksPWtoZb2ZpT5OVgtmy0KHVM+Dca3iVwWY9ifwhcexfjebtgjg3wmrUt9PvJ59XIYBcknQeYHD8IAnVlh9lAw==}
+    hasBin: true
+
   prism-react-renderer@2.3.1:
     resolution: {integrity: sha512-Rdf+HzBLR7KYjzpJ1rSoxT9ioO85nZngQEoFIhL07XhtJHlCU3SOz0GJ6+qvMyQe0Se+BV3qpe6Yd/NmQF5Juw==}
     peerDependencies:
@@ -17029,6 +17187,10 @@ packages:
     resolution: {integrity: sha512-s0ZZzd0BzYv5tLSptZooSjK8oj6C+c19p7Vqta9+6NPOf7r+fxq0cJe6/oN4LTC79sy5NY8ucOJNgwsKCSbfqg==}
     engines: {node: '>=6.0.0'}
 
+  temp@0.9.4:
+    resolution: {integrity: sha512-yYrrsWnrXMcdsnu/7YMYAofM1ktpL5By7vZhf15CrXijWWrEYZks5AXBudalfSWJLlnen/QUJUB5aoB0kqZUGA==}
+    engines: {node: '>=6.0.0'}
+
   terminal-link@3.0.0:
     resolution: {integrity: sha512-flFL3m4wuixmf6IfhFJd1YPiLiMuxEc8uHRM1buzIeZPm22Au2pDqBJQgdo7n1WfPU1ONFGv7YDwpFBmHGF6lg==}
     engines: {node: '>=12'}
@@ -18036,6 +18198,10 @@ packages:
 
   write-file-atomic@3.0.3:
     resolution: {integrity: sha512-AvHcyZ5JnSfq3ioSyjrBkH9yW4m7Ayk8/9My/DD9onKeu/94fwrMocemO2QAJFAlnnDN+ZDS+ZjAR5ua1/PV/Q==}
+
+  write-file-atomic@5.0.1:
+    resolution: {integrity: sha512-+QU2zd6OTD8XWIJCbffaiQeH9U73qIqafo1x6V1snCWYGJf6cVE0cDR4D8xRzcEnfI21IFrUPzPGtcPf8AC+Rw==}
+    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
 
   ws@8.17.1:
     resolution: {integrity: sha512-6XQFvXTkbfUOZOKKILFG1PDK2NDQs4azKQl26T0YS5CxqWLgXajbPZ+h4gZekJyRqFU8pvnbAbbs/3TgRPy+GQ==}
@@ -23754,6 +23920,8 @@ snapshots:
 
   '@types/prettier@2.7.3': {}
 
+  '@types/prettyjson@0.0.33': {}
+
   '@types/prismjs@1.26.4': {}
 
   '@types/prop-types@15.7.12': {}
@@ -27753,6 +27921,32 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+    dependencies:
+      '@babel/core': 7.24.7
+      '@babel/parser': 7.24.7
+      '@babel/plugin-transform-class-properties': 7.24.7(@babel/core@7.24.7)
+      '@babel/plugin-transform-modules-commonjs': 7.24.7(@babel/core@7.24.7)
+      '@babel/plugin-transform-nullish-coalescing-operator': 7.24.7(@babel/core@7.24.7)
+      '@babel/plugin-transform-optional-chaining': 7.24.7(@babel/core@7.24.7)
+      '@babel/plugin-transform-private-methods': 7.24.7(@babel/core@7.24.7)
+      '@babel/preset-flow': 7.24.7(@babel/core@7.24.7)
+      '@babel/preset-typescript': 7.24.7(@babel/core@7.24.7)
+      '@babel/register': 7.24.6(@babel/core@7.24.7)
+      chalk: 4.1.2
+      flow-parser: 0.238.0
+      graceful-fs: 4.2.11
+      micromatch: 4.0.7
+      neo-async: 2.6.2
+      node-dir: 0.1.17
+      recast: 0.23.9
+      temp: 0.9.4
+      write-file-atomic: 5.0.1
+    optionalDependencies:
+      '@babel/preset-env': 7.24.7(@babel/core@7.24.7)
+    transitivePeerDependencies:
+      - supports-color
+
   jsdom-global@3.0.2(jsdom@23.2.0):
     dependencies:
       jsdom: 23.2.0
@@ -30084,6 +30278,11 @@ snapshots:
     dependencies:
       parse-ms: 2.1.0
 
+  prettyjson@1.2.5:
+    dependencies:
+      colors: 1.4.0
+      minimist: 1.2.8
+
   prism-react-renderer@2.3.1(react@18.2.0):
     dependencies:
       '@types/prismjs': 1.26.4
@@ -32031,6 +32230,11 @@ snapshots:
     dependencies:
       rimraf: 2.6.3
 
+  temp@0.9.4:
+    dependencies:
+      mkdirp: 0.5.6
+      rimraf: 2.6.3
+
   terminal-link@3.0.0:
     dependencies:
       ansi-escapes: 5.0.0
@@ -33501,6 +33705,11 @@ snapshots:
       is-typedarray: 1.0.0
       signal-exit: 3.0.7
       typedarray-to-buffer: 3.1.5
+
+  write-file-atomic@5.0.1:
+    dependencies:
+      imurmurhash: 0.1.4
+      signal-exit: 4.1.0
 
   ws@8.17.1: {}
 

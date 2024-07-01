@@ -1,5 +1,4 @@
 import { cn } from "@/utils";
-import { shouldUseCodemodAi } from "@chatbot/config";
 import { useTheme } from "@context/useTheme";
 import { type LLMEngine, llmEngines } from "@shared/consts";
 import {
@@ -29,7 +28,6 @@ export const EngineSelector = () => {
     setEngine(e);
   };
 
-  const _llmEngines = shouldUseCodemodAi ? llmEngines : legacyEngines;
   const { isDark } = useTheme();
   return (
     <Select onValueChange={handleEngineChange} value={engine}>
@@ -44,7 +42,7 @@ export const EngineSelector = () => {
         <SelectValue placeholder={engine} />
       </SelectTrigger>
       <SelectContent>
-        {_llmEngines.map((e) => (
+        {llmEngines.map((e) => (
           <SelectItem
             key={e}
             value={e}

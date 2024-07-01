@@ -121,5 +121,14 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "boolean",
       description: "Disable the tree version check",
       hidden: true,
+    })
+    .option("readme", {
+      type: "boolean",
+      description:
+        "Prints description/readme of the codemod if available in the configuration",
+    })
+    .option("config", {
+      type: "boolean",
+      description: "Prints configuration file of the codemod",
     });
 };

@@ -5,11 +5,11 @@
   "name": "nuxt/4/shallow-function-reactivity",
   "engine": "jscodeshift",
   "applicability": {
-    "from": [["nuxt", ">", "3.0.0"]],
-    "to": [["vue", ">=", "4.0.0"]]
+    "from": [["nuxt", ">=", "3.0.0"], ["nuxt", "<", "4.0.0"]],
+    "to": [["nuxt", ">=", "4.0.0"]]
   },
   "meta": {
-    "tags": ["nuxt", "4"],
+    "tags": ["nuxt", "4", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/shallow-data-reactivity"
   },
   "include": ["**/*.js", "**/*.ts"]

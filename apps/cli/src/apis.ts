@@ -84,13 +84,11 @@ export const unpublish = async (
   );
 };
 
-// @TODO
 export const revokeCLIToken = async (accessToken: string): Promise<void> => {
-  return void 0;
-  // await Axios.delete(`${process.env.BACKEND_URL}/revokeToken`, {
-  //   headers: { Authorization: `Bearer ${accessToken}` },
-  //   timeout: 10000,
-  // });
+  return Axios.delete(`${process.env.AUTH_BACKEND_URL}/revokeToken`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    timeout: 10000,
+  });
 };
 
 export const getCodemodDownloadURI = async (

@@ -39,6 +39,7 @@
     "@types/columnify": "^1.5.4",
     "@types/inquirer": "^9.0.7",
     "@types/node": "18.11.9",
+    "@types/prettyjson": "^0.0.33",
     "@types/semver": "^7.5.8",
     "@types/unzipper": "^0.10.9",
     "@types/yargs": "^17.0.13",
@@ -86,6 +87,7 @@
     "@ast-grep/napi": "^0.24.0",
     "esbuild": "^0.17.14",
     "keytar": "^7.9.0",
-    "prettier": "^3.2.5"
+    "prettier": "^3.2.5",
+    "prettyjson": "^1.2.5"
   }
 }

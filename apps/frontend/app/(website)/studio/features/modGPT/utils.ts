@@ -5,7 +5,6 @@ import {
 import type { Aliases } from "@studio/store/zustand/CFS/alias";
 import { useCodemodExecutionError } from "@studio/store/zustand/log";
 import toast from "react-hot-toast";
-import { shouldUseCodemodAi } from "./config";
 
 const errorResponses = {
   400: "The request you made could not be completed.",

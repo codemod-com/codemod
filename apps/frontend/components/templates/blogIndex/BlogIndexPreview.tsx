@@ -20,7 +20,7 @@ export default function BlogIndexPreview(props: PreviewRouteProps) {
   const blogIndexDocQuery = buildBlogIndexQuery({
     infiniteLoading: true,
     pathParam,
-    sortBy: "publishDate",
+    sortBy: "publishedAt",
     sortOrder: "desc",
   });
 

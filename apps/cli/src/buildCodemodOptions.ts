@@ -1,6 +1,14 @@
+import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
-import path, { basename, dirname, extname, join, resolve } from "node:path";
+import { homedir } from "node:os";
+import {
+  basename,
+  dirname,
+  join,
+  parse as pathParse,
+  resolve,
+} from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
@@ -83,10 +91,17 @@ export const buildSourcedCodemodOptions = async (
   const isDirectorySource = sourceStat.isDirectory();
 
   if (!isDirectorySource) {
-    if (extname(codemodOptions.source) === ".zip") {
+    const { name, ext } = pathParse(codemodOptions.source);
+
+    if (ext === ".zip") {
       let resultPath: string | null = null;
 
-      const unpackTarget = dirname(codemodOptions.source);
+      const unpackTarget = join(
+        homedir(),
+        ".codemod",
+        "temp",
+        createHash("ripemd160").update(name).digest("base64url"),
+      );
 
       const zip = fs
         .createReadStream(codemodOptions.source)
@@ -135,7 +150,7 @@ export const buildSourcedCodemodOptions = async (
   let codemodRcContent: string;
   try {
     codemodRcContent = await readFile(
-      path.join(codemodOptions.source, ".codemodrc.json"),
+      join(codemodOptions.source, ".codemodrc.json"),
       { encoding: "utf-8" },
     );
   } catch (err) {
@@ -148,7 +163,7 @@ export const buildSourcedCodemodOptions = async (
 
   const engine = await extractEngine(
     fs,
-    path.join(codemodOptions.source, ".codemodrc.json"),
+    join(codemodOptions.source, ".codemodrc.json"),
   );
 
   if (engine === "piranha" || engine === null) {
