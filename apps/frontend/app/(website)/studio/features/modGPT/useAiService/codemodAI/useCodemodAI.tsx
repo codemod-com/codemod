@@ -88,18 +88,6 @@ export const useCodemodAI = ({
     }
   };
 
-  const handleSocketConnection = async () => {
-    setIsWsConnected(true);
-    const websocket = io(codemodAiWsServer, {
-      auth: { token: await getToken() },
-    });
-    websocket.on("connect", onConnect);
-    websocket.on("disconnect", onDisconnect);
-    websocket.on("message", onMessage);
-    websocket.on("error", handleError);
-    setSocket(websocket);
-  };
-
   const handleWebsocketConnection = async () => {
     const websocket = new WebSocket(codemodAiWsServer);
     setIsWsConnected(true);
@@ -111,8 +99,16 @@ export const useCodemodAI = ({
   };
 
   useEffect(() => {
-    handleWebsocketConnection();
-    return wsCleanup;
+    let cleanup = () => {};
+    const wsConnect = async () => {
+      const _token = await getToken();
+      if (_token) {
+        handleWebsocketConnection();
+        cleanup = wsCleanup;
+      }
+    };
+    wsConnect();
+    return () => cleanup();
   }, []);
 
   const startIterativeCodemodGeneration = async () => {
