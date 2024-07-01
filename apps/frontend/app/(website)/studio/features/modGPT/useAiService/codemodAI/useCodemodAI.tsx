@@ -30,8 +30,10 @@ export const useCodemodAI = ({
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
-  const emitMessage = (message: MessageToSend) => {
-    ws?.send(JSON.stringify({ ...message, token: getToken() }));
+  const emitMessage = async (message: MessageToSend) => {
+    const _token = await getToken();
+    setToken(_token);
+    ws?.send(JSON.stringify({ ...message, token: _token }));
     // socket?.emit("message", message);
   };
   const handleError = (error: string | Record<string, unknown> | Event) => {
@@ -67,8 +69,6 @@ export const useCodemodAI = ({
   };
 
   const onMessage = async (data: MessageToWs) => {
-    const _token = await getToken();
-    setToken(_token);
     if (data.error || data.execution_status === "error") {
       handleError(data.error || "server crashed");
     } else if (data.codemod) {
