@@ -1,12 +1,12 @@
 {
-  "include": ["./src", "test"],
+  "include": ["./src", "test", "./global.d.ts"],
   "exclude": ["./dist", "./build", "./node_modules"],
   "compilerOptions": {
     "module": "NodeNext",
     "moduleResolution": "nodenext",
     "types": ["node"],
     "baseUrl": ".",
-    "target": "es2015",
+    "target": "ES2022",
     "declaration": true,
     "outDir": "./dist",
     "esModuleInterop": true,

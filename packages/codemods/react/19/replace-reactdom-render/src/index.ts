@@ -7,6 +7,8 @@ import type {
   JSCodeshift,
 } from "jscodeshift";
 
+import { addNamedImport, analyzeImport } from "@codemod-com/jscodeshift-utils";
+
 const getMatcher =
   (
     j: JSCodeshift,
@@ -34,90 +36,6 @@ const getMatcher =
 
     return null;
   };
-
-const getImportDeclaration = (
-  j: JSCodeshift,
-  root: Collection<any>,
-  importName: string,
-) =>
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: importName },
-    })
-    .paths()
-    .at(0)?.node;
-
-const buildImportDeclaration = (j: JSCodeshift, sourceName: string) => {
-  return j.importDeclaration([], j.literal(sourceName));
-};
-
-const addNamedImport = (
-  j: JSCodeshift,
-  root: Collection<any>,
-  importName: string,
-  sourceName: string,
-) => {
-  const existingImportDeclaration = getImportDeclaration(j, root, sourceName);
-  const importDeclaration =
-    existingImportDeclaration ?? buildImportDeclaration(j, sourceName);
-
-  const importSpecifier = j.importSpecifier(j.identifier(importName));
-
-  if (
-    importDeclaration.specifiers?.findIndex(
-      (s) =>
-        importSpecifier.imported &&
-        s.local?.name === importSpecifier.imported.name,
-    ) === -1
-  ) {
-    importDeclaration.specifiers?.push(importSpecifier);
-  }
-
-  if (!existingImportDeclaration) {
-    const body = root.get().node.program.body;
-    body.unshift(importDeclaration);
-  }
-};
-
-const collectImportNames = (
-  j: JSCodeshift,
-  root: Collection,
-  source: string,
-) => {
-  const importSpecifierLocalNames = new Map<string, string>();
-
-  let importDefaultSpecifierName: string | null = null;
-  let importNamespaceSpecifierName: string | null = null;
-
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: source },
-    })
-    .forEach((path) => {
-      path.value.specifiers?.forEach((specifier) => {
-        if (j.ImportSpecifier.check(specifier)) {
-          importSpecifierLocalNames.set(
-            specifier.imported.name,
-            specifier.local?.name ?? "",
-          );
-        }
-
-        if (j.ImportDefaultSpecifier.check(specifier) && specifier.local) {
-          importDefaultSpecifierName = specifier.local.name;
-        }
-
-        if (j.ImportNamespaceSpecifier.check(specifier) && specifier.local) {
-          importNamespaceSpecifierName = specifier.local.name;
-        }
-      });
-    });
-
-  return {
-    importSpecifierLocalNames,
-    importDefaultSpecifierName,
-    importNamespaceSpecifierName,
-  };
-};
 
 const replaceHydrate = (
   j: JSCodeshift,
@@ -207,7 +125,7 @@ export default function transform(
     importNamespaceSpecifierName,
     importDefaultSpecifierName,
     importSpecifierLocalNames,
-  } = collectImportNames(j, root, "react-dom");
+  } = analyzeImport(j, root, "react-dom");
 
   const importedModuleName =
     importDefaultSpecifierName ?? importNamespaceSpecifierName ?? "";

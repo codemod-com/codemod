@@ -5,6 +5,7 @@ export const getCallExpressionsByImport = (
   j: JSCodeshift,
   root: Collection<any>,
   source: string,
+  names: string[],
 ): Collection<CallExpression> => {
   const {
     importNamespaceSpecifierName,
@@ -18,10 +19,9 @@ export const getCallExpressionsByImport = (
   return root.find(j.CallExpression).filter((path) => {
     const { callee } = path.value;
 
-    if (
-      j.Identifier.check(callee) &&
-      importSpecifierLocalNames.has(callee.name)
-    ) {
+    const localNames = names.map((name) => importSpecifierLocalNames.get(name));
+
+    if (j.Identifier.check(callee) && localNames.includes(callee.name)) {
       return true;
     }
 
@@ -29,7 +29,8 @@ export const getCallExpressionsByImport = (
       j.MemberExpression.check(callee) &&
       j.Identifier.check(callee.object) &&
       callee.object.name === importedModuleName &&
-      j.Identifier.check(callee.property)
+      j.Identifier.check(callee.property) &&
+      names.includes(callee.property.name)
     ) {
       return true;
     }
