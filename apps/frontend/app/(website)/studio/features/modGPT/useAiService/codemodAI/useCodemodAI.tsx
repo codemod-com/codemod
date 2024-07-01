@@ -23,7 +23,6 @@ export const useCodemodAI = ({
   messages: LLMMessage[];
   engine: LLMEngine;
 }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
   const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
@@ -57,15 +56,6 @@ export const useCodemodAI = ({
   const onDisconnect = () => {
     console.info("WebSocket connection ended");
     setIsWsConnected(false);
-  };
-
-  const socketCleanup = () => {
-    socket?.off("connect", onConnect);
-    socket?.off("disconnect", onDisconnect);
-    socket?.off("message", onMessage);
-    socket?.off("error", handleError);
-    setIsWsConnected(false);
-    setServiceBusy(false);
   };
 
   const wsCleanup = () => {
