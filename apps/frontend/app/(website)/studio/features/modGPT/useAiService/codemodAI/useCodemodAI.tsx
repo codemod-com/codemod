@@ -23,24 +23,31 @@ export const useCodemodAI = ({
   messages: LLMMessage[];
   engine: LLMEngine;
 }) => {
-  const [socket, setSocket] = useState<Socket | null>(null);
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
   const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
-  const emitMessage = (message: MessageToSend) => {
-    ws?.send(JSON.stringify({ ...message, token: getToken() }));
+  const emitMessage = async (message: MessageToSend) => {
+    const _token = await getToken();
+    setToken(_token);
+    ws?.send(JSON.stringify({ ...message, token: _token }));
     // socket?.emit("message", message);
   };
-  const handleError = (error: string | Record<string, unknown> | Event) => {
+  const handleError = (error: Record<string, unknown> | Event) => {
     setServiceBusy(false);
-    toast.error(
-      `WebSocket Error ${
-        error instanceof Object ? JSON.stringify(error) : error
-      }`,
-    );
+    if (error.severity === "user")
+      toast.error(
+        `WebSocket Error ${
+          error instanceof Object
+            ? JSON.stringify(error.message) || "websocket crashed"
+            : error
+        }`,
+      );
+    else {
+      console.error(error);
+    }
   };
 
   const onConnect = () => {
@@ -51,15 +58,6 @@ export const useCodemodAI = ({
     setIsWsConnected(false);
   };
 
-  const socketCleanup = () => {
-    socket?.off("connect", onConnect);
-    socket?.off("disconnect", onDisconnect);
-    socket?.off("message", onMessage);
-    socket?.off("error", handleError);
-    setIsWsConnected(false);
-    setServiceBusy(false);
-  };
-
   const wsCleanup = () => {
     ws?.close();
     setIsWsConnected(false);
@@ -67,10 +65,8 @@ export const useCodemodAI = ({
   };
 
   const onMessage = async (data: MessageToWs) => {
-    const _token = await getToken();
-    setToken(_token);
     if (data.error || data.execution_status === "error") {
-      handleError(data.error || "server crashed");
+      handleError(data);
     } else if (data.codemod) {
       setWsMessage({
         codemod: data.codemod,
@@ -88,18 +84,6 @@ export const useCodemodAI = ({
     }
   };
 
-  const handleSocketConnection = async () => {
-    setIsWsConnected(true);
-    const websocket = io(codemodAiWsServer, {
-      auth: { token: await getToken() },
-    });
-    websocket.on("connect", onConnect);
-    websocket.on("disconnect", onDisconnect);
-    websocket.on("message", onMessage);
-    websocket.on("error", handleError);
-    setSocket(websocket);
-  };
-
   const handleWebsocketConnection = async () => {
     const websocket = new WebSocket(codemodAiWsServer);
     setIsWsConnected(true);
@@ -111,8 +95,16 @@ export const useCodemodAI = ({
   };
 
   useEffect(() => {
-    handleWebsocketConnection();
-    return wsCleanup;
+    let cleanup = () => {};
+    const wsConnect = async () => {
+      const _token = await getToken();
+      if (_token) {
+        handleWebsocketConnection();
+        cleanup = wsCleanup;
+      }
+    };
+    wsConnect();
+    return () => cleanup();
   }, []);
 
   const startIterativeCodemodGeneration = async () => {
