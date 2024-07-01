@@ -38,11 +38,15 @@ export const useCodemodAI = ({
   };
   const handleError = (error: string | Record<string, unknown> | Event) => {
     setServiceBusy(false);
-    toast.error(
-      `WebSocket Error ${
-        error instanceof Object ? JSON.stringify(error) : error
-      }`,
-    );
+    if (error.severity === "user")
+      toast.error(
+        `WebSocket Error ${
+          error instanceof Object ? JSON.stringify(error) : error
+        }`,
+      );
+    else {
+      console.error(error);
+    }
   };
 
   const onConnect = () => {
