@@ -36,12 +36,14 @@ export const useCodemodAI = ({
     ws?.send(JSON.stringify({ ...message, token: _token }));
     // socket?.emit("message", message);
   };
-  const handleError = (error: string | Record<string, unknown> | Event) => {
+  const handleError = (error: Record<string, unknown> | Event) => {
     setServiceBusy(false);
     if (error.severity === "user")
       toast.error(
         `WebSocket Error ${
-          error instanceof Object ? JSON.stringify(error) : error
+          error instanceof Object
+            ? JSON.stringify(error.message) || "websocket crashed"
+            : error
         }`,
       );
     else {
@@ -74,7 +76,7 @@ export const useCodemodAI = ({
 
   const onMessage = async (data: MessageToWs) => {
     if (data.error || data.execution_status === "error") {
-      handleError(data.error || "server crashed");
+      handleError(data);
     } else if (data.codemod) {
       setWsMessage({
         codemod: data.codemod,
