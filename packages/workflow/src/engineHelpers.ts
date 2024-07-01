@@ -1,8 +1,8 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createHash } from "node:crypto";
 import { mapValues, memoize } from "lodash-es";
-import { PLazy } from "./PLazy";
-import { noContextFn } from "./helpers";
+import { PLazy } from "./PLazy.js";
+import { noContextFn } from "./helpers.js";
 
 function getHash(data: any) {
   const h = createHash("sha1");

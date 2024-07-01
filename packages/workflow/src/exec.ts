@@ -1,11 +1,11 @@
-import type { PLazy } from "./PLazy";
-import { codemod } from "./codemod";
-import { getCwdContext } from "./contexts";
-import { FunctionExecutor, fnWrapper } from "./engineHelpers";
-import { files } from "./files";
-import { clc } from "./helpers";
-import { jsFiles } from "./jsFiles";
-import { spawn } from "./spawn";
+import type { PLazy } from "./PLazy.js";
+import { codemod } from "./codemod.js";
+import { getCwdContext } from "./contexts.js";
+import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
+import { files } from "./files.js";
+import { clc } from "./helpers.js";
+import { jsFiles } from "./jsFiles.js";
+import { spawn } from "./spawn.js";
 
 /**
  * Run a command in current working directory

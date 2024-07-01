@@ -5,7 +5,7 @@ import * as path from "node:path";
 import slugify from "@sindresorhus/slugify";
 import filenamify from "filenamify";
 import * as glob from "glob";
-import { fileContext, getCwdContext } from "./contexts";
+import { fileContext, getCwdContext } from "./contexts.js";
 
 const DIRECTORY = "cm";
 

@@ -1,6 +1,7 @@
 import type { Api } from "@codemod.com/workflow";
 
-export async function workflow({ files }: Api) {
+export async function workflow({ files, exec }: Api) {
+  await exec("asd");
   const prompt = `
     You are migrating from axios to fetch.
     Ignore axios.create() and axios.all().

@@ -82,8 +82,8 @@
     "access": "public"
   },
   "dependencies": {
-    "@ast-grep/cli": "^0.22.3",
-    "@ast-grep/napi": "^0.22.3",
+    "@ast-grep/cli": "^0.24.0",
+    "@ast-grep/napi": "^0.24.0",
     "esbuild": "^0.17.14",
     "keytar": "^7.9.0",
     "prettier": "^3.2.5"
