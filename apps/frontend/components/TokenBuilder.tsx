@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import {
   ACCESS_TOKEN_COMMANDS,
@@ -10,6 +10,11 @@ import {
 } from "@/constants";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { populateLoginIntent } from "@studio/api/populateLoginIntent";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@studio/components/ui/dialog";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 
 export const TokenBuilder = () => {
@@ -17,10 +22,36 @@ export const TokenBuilder = () => {
   const { isLoaded, isSignedIn } = useUser();
   const router = useRouter();
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [timeleft, setTimeleft] = useState(5);
+  const [result, setResult] = useState<"fail" | "success" | null>(null);
+
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const onLoginIntentPopulated = useCallback((result: "fail" | "success") => {
+    setIsOpen(true);
+    setResult(result);
+
+    intervalRef.current = setInterval(() => {
+      setTimeleft((prev) => prev - 1);
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    if (timeleft === 0) {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+      setIsOpen(false);
+      window.close();
+    }
+  }, [timeleft]);
+
   useEffect(() => {
     if (!isLoaded || !isSignedIn) {
       return;
     }
+
     (async () => {
       const clerkToken = await getToken();
       if (clerkToken === null) {
@@ -43,15 +74,26 @@ export const TokenBuilder = () => {
             ?.split(",") || [];
 
         // Polling should pick it up
-        await populateLoginIntent({
-          clerkToken,
-          sessionId,
-          iv,
-        });
+        try {
+          await populateLoginIntent({
+            clerkToken,
+            sessionId,
+            iv,
+          });
+          onLoginIntentPopulated("success");
+        } catch (err) {
+          onLoginIntentPopulated("fail");
+        }
       }
       ACCESS_TOKEN_COMMANDS.forEach((key) => localStorage.removeItem(key));
     })();
-  }, [isSignedIn, isLoaded, getToken]);
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [isSignedIn, isLoaded, getToken, onLoginIntentPopulated]);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
@@ -76,12 +118,16 @@ export const TokenBuilder = () => {
           const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
 
           // Polling should pick it up
-          await populateLoginIntent({
-            clerkToken,
-            sessionId,
-            iv,
-          });
-          return;
+          try {
+            await populateLoginIntent({
+              clerkToken,
+              sessionId,
+              iv,
+            });
+            onLoginIntentPopulated("success");
+          } catch (err) {
+            onLoginIntentPopulated("fail");
+          }
         }
       })();
       return;
@@ -97,7 +143,32 @@ export const TokenBuilder = () => {
     }
 
     router.push("/auth/sign-in");
-  }, [getToken, isSignedIn, isLoaded, router]);
 
-  return null;
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [getToken, isSignedIn, isLoaded, router, onLoginIntentPopulated]);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogContent className="max-w-2xl bg-white text-gray-dark m-auto flex-col flex items-center gap-2">
+        {result === "success" ? (
+          <>
+            <span>Login successful.</span>
+            <span>You can return to the CLI now.</span>
+            <span>
+              This tab will close in{" "}
+              <span className="text-red-500">{timeleft} seconds</span>...
+            </span>
+          </>
+        ) : (
+          <span className="text-red-500">
+            Login failed. Please contact Codemod team.
+          </span>
+        )}
+      </DialogContent>
+    </Dialog>
+  );
 };
