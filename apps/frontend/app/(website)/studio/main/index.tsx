@@ -11,8 +11,6 @@ export const MainPage = () => {
 			navigator.userAgent,
 		);
 
-	useInputs();
-
 	if (isMobile) {
 		return (
 			<div className="flex h-[100vh] w-full flex-col items-center justify-center p-7">

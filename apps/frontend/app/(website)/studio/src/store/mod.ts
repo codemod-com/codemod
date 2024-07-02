@@ -6,6 +6,7 @@ import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
 import { INITIAL_STATE } from "./getInitialState";
+import { isServer } from "@studio/config";
 
 type ModStateValues = {
   internalContent: string | null;
@@ -26,7 +27,8 @@ type ModStateSetters = {
 
 export type ModState = ModStateSetters & ModStateValues;
 const getInitialState = (): ModStateValues => {
-  const parsed = parseSnippet(INITIAL_STATE.codemodSource);
+  const savedState = isServer ? null : localStorage.getItem('mod')
+  const parsed = parseSnippet(savedState ?? INITIAL_STATE.codemodSource);
 
   const parsedContent = isFile(parsed)
     ? mapBabelASTToRenderableTree(parsed)
@@ -51,6 +53,7 @@ export const useModStore = create<ModState>((set, get) => ({
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ internalContent: content, parsedContent });
+    localStorage.setItem('mod', content)
   },
   setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
   setCodemodSelection: (command) => {

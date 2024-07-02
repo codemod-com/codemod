@@ -231,29 +231,45 @@ h6[class*="heading"] a {
 
 .tabs {
   z-index: 9999;
+  background: rgba(206, 208, 210, 0.12);
+  font-size: 14px;
+  height: 33px
+}
+
+.tabs input {
+  width: 80px;
 }
 
 .tabs-list {
   display: flex;
   align-items: center;
+  height: 33px
 }
 
 .tab-item {
   display: flex;
   align-items: center;
+  height: 30px;
+  padding-bottom: 3px;
 }
 
-.tab-trigger {
+.tab-item > * {
   padding: 10px 20px;
+}
+
+.tab-trigger{
   cursor: pointer;
-  border: none;
   background: none;
-  font-size: 16px;
+  min-width: 100px
+}
+
+.tab-trigger:hover {
   font-weight: bold;
 }
 
-.tab-trigger[data-state="active"] {
+.tab-item.active {
   border-bottom: 2px solid black;
+  font-weight: bold;
 }
 
 .dots-button {
@@ -264,6 +280,7 @@ h6[class*="heading"] a {
   font-size: 24px;
   font-weight: bold;
   margin-left: 5px;
+  width: 30px;
 }
 
 .add-tab-button {
@@ -272,8 +289,12 @@ h6[class*="heading"] a {
   background: none;
   border: none;
   font-size: 24px;
-  font-weight: bold;
+  font-weight: lighter;
   margin-left: 10px;
+}
+
+.add-tab-button:hover {
+  font-weight: bold;
 }
 
 .dropdown-menu-content {

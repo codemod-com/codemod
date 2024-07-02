@@ -1,10 +1,10 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
-import { object, type Output, parse, string } from "valibot";
+import { array, object, type Output, parse, string } from "valibot";
 
 const stateSchema = object({
 	engine: knownEnginesSchema,
-	beforeSnippet: string(),
-	afterSnippet: string(),
+	beforeSnippets: array(string()),
+	afterSnippets: array(string()),
 	codemodSource: string(),
 });
 

@@ -51,6 +51,8 @@ export enum ResizablePanelsIndices {
 	LEFT = 12,
 	RIGHT = 13,
 	AST_TAB = 14,
+	TOP ,
+	BOTTOM
 }
 
 export type PanelContentRenderer = (engine: KnownEngines) => React.ReactNode;

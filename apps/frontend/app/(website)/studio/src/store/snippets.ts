@@ -1,16 +1,15 @@
 import { isFile } from "@babel/types";
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import {
-  AFTER_SNIPPET_DEFAULT_CODE,
-  BEFORE_SNIPPET_DEFAULT_CODE,
-} from "@studio/store/getInitialState";
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 import { path, assocPath, is, map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
+import { getSingleTestCase, getSnippetInitialState } from "@studio/store/utils/getSnippetInitialState";
+import { INITIAL_STATE } from "@studio/store/getInitialState";
+import { isServer } from "@studio/config";
 
 export type Token = Readonly<{
   start: number;
@@ -18,7 +17,7 @@ export type Token = Readonly<{
   value?: string;
 }>;
 
-type SnippetValues = {
+export type SnippetValues = {
   content: string;
   rootNode: TreeNode | null;
   ranges: ReadonlyArray<TreeNode | OffsetRange>;
@@ -57,12 +56,17 @@ type SnippetsConfig = {
   setSelectedPairIndex: (index: number) => void;
 };
 
-type Editors = {
+export type Editors = {
   name: string;
   before: SnippetValues;
   after: SnippetValues;
   output: SnippetValues;
 };
+
+export type EditorsSnippets = {
+  [x in Omit<keyof Editors, 'output'>]: string
+}
+
 type AllEditors = {
   [x in keyof Editors]: SnippetValues[];
 };
@@ -81,48 +85,22 @@ type SnippetsSetters = {
     type: EditorType,
   ) => SnippetSetters[x];
 };
-const getSnippetInitialState = (defaultContent = ""): SnippetValues => {
-  const content = defaultContent;
-  const contentParsed = parseSnippet(content);
-  const rootNode = isFile(contentParsed)
-    ? mapBabelASTToRenderableTree(contentParsed)
-    : null;
 
-  const tokens: SnippetValues["tokens"] = isFile(contentParsed)
-    ? Array.isArray(contentParsed.tokens)
-      ? // @ts-ignore
-        contentParsed.tokens.map(({ start, end, value }) => ({
-          start,
-          end,
-          value: (value ?? "").slice(start, end),
-        }))
-      : []
-    : [];
 
-  return {
-    rootNode,
-    ranges: [],
-    content,
-    tokens,
-    rangeUpdatedAt: Date.now(),
-  };
-};
-
+const getEditorsFromLS = () => {
+  if(isServer) return;
+  const editors = localStorage.getItem('editors') ;
+  if(!editors) return;
+  return
+}
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
-  editors: [
-    {
-      name: '1',
-      before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
-      after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
-      output: getSnippetInitialState(),
-    },
-  ],
+  editors: getEditorsFromLS() || INITIAL_STATE.editors,
   addPair: () =>
     set({
       editors: [
         ...get().editors,
         {
-          name: (get().editors.map(e => Number(e.name)).filter(Boolean).length).toString(),
+          name: `Test ${(get().editors.length + 1).toString()}`,
           before: getSnippetInitialState(),
           after: getSnippetInitialState(),
           output: getSnippetInitialState(),
@@ -134,10 +112,17 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     obj.editors[index].name = name;
     set(obj)
   },
-  removePair: (index: number) =>
-    set({
+  removePair: (index: number) => {
+    if(index === get().selectedPairIndex) {
+      set({
+        selectedPairIndex: 0,
+        editors: index ? remove(index, 1, get().editors) : get().editors,
+      })
+    }
+    else set({
       editors: index ? remove(index, 1, get().editors) : get().editors,
-    }),
+    })
+  },
   clearAll: () =>
     set({
       editors: [
@@ -208,13 +193,18 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       obj.editors[editorsPairIndex][type].content = content;
       obj.editors[editorsPairIndex][type].rootNode = rootNode;
       set(obj);
+      try {
+        localStorage.setItem('editors', JSON.stringify(obj.editors))
+      }
+      catch (error) {
+        console.error('error on JSON.stringify(obj.editors) ', {error})
+      }
     };
   },
   setSelection: (editorsPairIndex, type) => (command) => {
     const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
     if (rootNode) {
       const ranges = buildRanges(rootNode, command);
-      const rpath = ["editors", editorsPairIndex, type];
 
       const obj = get();
       obj.editors[editorsPairIndex][type].ranges = ranges;

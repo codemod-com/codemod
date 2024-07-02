@@ -2,12 +2,11 @@ import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button } from "@studio/components/ui/button";
 import { ExampleIcon } from "@studio/icons/Example";
 import {
-  AFTER_SNIPPET_DEFAULT_CODE,
-  BEFORE_SNIPPET_DEFAULT_CODE,
   buildDefaultCodemodSource,
 } from "@studio/store/getInitialState";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "../../store/snippets";
+import { AFTER_SNIPPET_DEFAULT_CODE, BEFORE_SNIPPET_DEFAULT_CODE } from "@studio/store/utils/getSnippetInitialState";
 
 const InsertExampleButton = () => {
   const { engine, getSelectedEditors } = useSnippetsStore();

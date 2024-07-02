@@ -4,7 +4,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useSnippetsStore } from "@studio/store/snippets";
 import { cn } from "@/utils";
 
-export const TabComponent = () => {
+export const TestTabsComponent = () => {
 	const {
 		getSelectedEditors,
 		addPair,
@@ -17,11 +17,12 @@ export const TabComponent = () => {
 
 	const [editingIndex, setEditingIndex] = useState(null);
 	const [newName, setNewName] = useState('');
+	const tabsRef = useRef(null);
 	const inputRef = useRef(null);
 
 	useEffect(() => {
 		if (inputRef.current) {
-			inputRef.current.focus();
+			setTimeout(() => inputRef.current.focus(), 0)
 		}
 	}, [editingIndex]);
 
@@ -47,21 +48,22 @@ export const TabComponent = () => {
 
 	return (
 		<Tabs.Root defaultValue="0" className="tabs">
-			<Tabs.List className="tabs-list">
+			<Tabs.List className="tabs-list"
+			           ref={tabsRef}>
 				{editors.map((editor, i) => (
-					<div key={editor.name} className="tab-item">
+					<div key={editor.name} className={cn("tab-item", selectedPairIndex === i && 'active')}>
 						<Tabs.Trigger
-							className={cn(selectedPairIndex === i && "tab-trigger")}
+							className={cn( "tab-trigger")}
 							onClick={() => setSelectedPairIndex(i)}
 							onDoubleClick={() => handleRename(i)}
 							value={String(i)}
-							style={{ minWidth: '100px' }}
 						>
 							{editingIndex === i ? (
 								<input
 									ref={inputRef}
 									type="text"
 									value={newName}
+									style={{ padding: '0', margin: 0 }}
 									onChange={(e) => setNewName(e.target.value)}
 									onBlur={() => handleBlur(i)}
 									onKeyPress={(e) => handleKeyPress(e, i)}
@@ -76,8 +78,7 @@ export const TabComponent = () => {
 								<button className="dots-button">⋮</button>
 							</DropdownMenu.Trigger>
 							<DropdownMenu.Content className="dropdown-menu-content">
-								<DropdownMenu.Item className="dropdown-menu-item" onClick={() => handleRename(i)}>Rename</DropdownMenu.Item>
-								<DropdownMenu.Item className="dropdown-menu-item" onClick={() => removePair(i)}>Remove Snippets</DropdownMenu.Item>
+								<DropdownMenu.Item className="dropdown-menu-item" onClick={() => removePair(i)}>Remove Snippet</DropdownMenu.Item>
 							</DropdownMenu.Content>
 						</DropdownMenu.Root>
 					</div>
