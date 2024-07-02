@@ -43,7 +43,12 @@ const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // }, [setDarkTheme, isDark]);
 
   return (
-    <UseTheme.Provider value={{ isDark: false, toggleTheme: () => {} }}>
+    <UseTheme.Provider
+      value={{
+        isDark: false,
+        toggleTheme: () => {},
+      }}
+    >
       {children}
     </UseTheme.Provider>
   );

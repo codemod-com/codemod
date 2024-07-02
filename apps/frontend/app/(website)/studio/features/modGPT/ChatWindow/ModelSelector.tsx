@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
-import { useCFSStore } from "@studio/store/zustand/CFS";
+import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 
 const legacyEngines = [
   "gpt-4",

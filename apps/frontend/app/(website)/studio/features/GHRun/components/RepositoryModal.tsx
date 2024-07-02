@@ -79,7 +79,6 @@ export const RepositoryModal = ({
   return isRepositoryModalShown ? (
     <Modal onClose={hideRepositoryModal} centered transparent={false}>
       <h2 className="text-center p-2">Run Codemod on Github branch</h2>
-
       <DropdownSelector
         isLoading={areReposLoading}
         loadingMessage="Fetching repos"

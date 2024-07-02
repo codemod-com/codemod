@@ -2,7 +2,7 @@ import { useAuth } from "@/app/auth/useAuth";
 import { codemodAiWsServer } from "@chatbot/config";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
 import type { LLMEngine } from "@shared/consts";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useSnippetsStore } from "@studio/store/snippets";
 import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
@@ -11,8 +11,8 @@ import { type Socket, io } from "socket.io-client";
 type MessageToSend = {
   config: { llm_engine: LLMEngine };
   previous_context: LLMMessage[];
-  before: string;
-  after: string;
+  before: string | string[];
+  after: string | string[];
 };
 export const useCodemodAI = ({
   setToken,
@@ -25,7 +25,7 @@ export const useCodemodAI = ({
 }) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
-  const { inputSnippet: before, afterSnippet: after } = useSnippetStore();
+  const { getAllSnippets } = useSnippetsStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
@@ -107,8 +107,16 @@ export const useCodemodAI = ({
     return () => cleanup();
   }, []);
 
+  const beforeSnippets = getAllSnippets().before;
+  const afterSnippets = getAllSnippets().after;
   const startIterativeCodemodGeneration = async () => {
-    if (ws && before && after && isWsConnected && !serviceBusy) {
+    if (
+      ws &&
+      beforeSnippets.length &&
+      afterSnippets.length &&
+      isWsConnected &&
+      !serviceBusy
+    ) {
       const _token = await getToken();
       setToken(_token);
       setWsMessage({
@@ -119,8 +127,8 @@ export const useCodemodAI = ({
       const messageToSend: MessageToSend = {
         config: { llm_engine: engine },
         previous_context: messages,
-        before,
-        after,
+        before: beforeSnippets,
+        after: afterSnippets,
       };
       emitMessage(messageToSend);
       setServiceBusy(true);
