@@ -2,7 +2,7 @@ import { modGptServer } from "@chatbot/config";
 import { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { onResponse } from "@chatbot/utils";
 import type { LLMEngine } from "@shared/consts";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useModStore } from "@studio/store/mod";
 import type { Message } from "ai";
 import { useChat } from "ai/react";
 import { useCallback, useState } from "react";

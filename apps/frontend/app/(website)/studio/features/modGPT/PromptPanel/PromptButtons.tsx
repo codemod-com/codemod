@@ -1,7 +1,7 @@
 import { ArrowElbowDownLeft } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
-import * as React from "react";
 import type { PropsWithChildren } from "react";
+import * as React from "react";
 
 type PromptButtonsProps = {
   promptsList: string[][];

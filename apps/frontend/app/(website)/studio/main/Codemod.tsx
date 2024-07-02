@@ -1,7 +1,7 @@
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
-import { useSelectActiveEvent } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useSelectActiveEvent } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
 import type * as monaco from "monaco-editor/esm/vs/editor/editor.api.d.ts";
 import dynamic from "next/dynamic";
 import { useCallback, useEffect, useRef } from "react";
@@ -75,7 +75,9 @@ const Codemod = () => {
       highlights={ranges}
       language="typescript"
       onBlur={onBlur}
-      onChange={(value) => setContent(value ?? "")}
+      onChange={(value) => {
+        setContent(value ?? "");
+      }}
       onKeyUp={({ event }) => onKeyUp(event)}
       path="codemod.ts"
       value={content}

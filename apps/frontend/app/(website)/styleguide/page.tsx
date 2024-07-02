@@ -11,7 +11,6 @@ import Input from "@/components/shared/Input";
 import Snippet from "@/components/shared/Snippet";
 import Tabs, { TabContent } from "@/components/shared/Tabs";
 import Tag from "@/components/shared/Tag";
-import RegistryCard from "@/components/templates/Registry/RegistryCard";
 import React from "react";
 
 export default function Styleguide() {

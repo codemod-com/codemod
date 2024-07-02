@@ -1,4 +1,3 @@
-
 @import '../app/(website)/studio/src/index.css';
 
 @tailwind base;
@@ -227,6 +226,96 @@ h6[class*="heading"] a {
 .introjs-tooltiptext p {
   padding: 8px 0;
   text-align: justify;
+}
+
+.tabs {
+  z-index: 9999;
+  background: rgba(206, 208, 210, 0.12);
+  font-size: 14px;
+  height: 33px
+}
+
+.tabs input {
+  width: 80px;
+}
+
+.tabs-list {
+  display: flex;
+  align-items: center;
+  height: 33px
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  height: 30px;
+  padding-bottom: 3px;
+}
+
+.tab-item > * {
+  padding: 10px 20px;
+}
+
+.tab-trigger{
+  cursor: pointer;
+  background: none;
+  min-width: 100px
+}
+
+.tab-trigger:hover {
+  font-weight: bold;
+}
+
+.tab-item.active {
+  border-bottom: 2px solid black;
+  font-weight: bold;
+}
+
+.dots-button {
+  padding: 0 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: bold;
+  margin-left: 5px;
+  width: 30px;
+}
+
+.add-tab-button {
+  padding: 0 10px;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-size: 24px;
+  font-weight: lighter;
+  margin-left: 10px;
+}
+
+.add-tab-button:hover {
+  font-weight: bold;
+}
+
+.dropdown-menu-content {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-menu-item {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.dropdown-menu-item:hover {
+  background-color: #eee;
+}
+
+.tab-content {
+  padding: 20px;
 }
 
 .og-title {

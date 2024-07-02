@@ -1,38 +1,38 @@
 import { useCodemodOutputUpdate } from "@/app/(website)/studio/features/codemod-apply/useCodemodOutputUpdate";
 import { useSnippet } from "@studio/main/SnippetUI";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { useRangesOnTarget } from "@studio/store/useRangesOnTarget";
-import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
-import { TabNames, useViewStore } from "@studio/store/zustand/view";
-import { useCallback } from "react";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
+import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
+import { TabNames, useViewStore } from "@studio/store/view";
 
 export const useCodeDiff = () => {
-  const { inputSnippet, afterInputRanges } = useSnippetStore();
+  const { getSelectedEditors } = useSnippetsStore();
+  const {
+    outputSnippet,
+    afterSnippet,
+    after: { ranges: afterInputRanges },
+    output: { ranges: outputRanges },
+  } = getSelectedEditors();
   const setRangeThunk = useRangesOnTarget();
   const { internalContent } = useModStore();
-
-  const { ranges, content } = useCodemodOutputStore();
   const setActiveEventThunk = useSetActiveEventThunk();
 
-  const { value, handleSelectionChange, onSnippetChange } = useSnippet("after");
+  const { value, handleSelectionChange, onSnippetChange, onSnippetBlur } =
+    useSnippet("after");
 
   const { setActiveTab } = useViewStore();
 
-  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(inputSnippet);
+  const snippetBeforeHasOnlyWhitespaces = !/\S/.test(afterSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
 
-  const onSelectionChange = useCallback(
-    (range: OffsetRange) => {
-      setRangeThunk({
-        target: "CODEMOD_OUTPUT",
-        ranges: [range],
-      });
-    },
-    [setRangeThunk],
-  );
+  const onSelectionChange = (range: OffsetRange) => {
+    setRangeThunk({
+      target: "CODEMOD_OUTPUT",
+      ranges: [range],
+    });
+  };
 
   const { firstCodemodExecutionErrorEvent } = useCodemodOutputUpdate();
 
@@ -50,9 +50,10 @@ export const useCodeDiff = () => {
   };
 
   const modifiedEditorProps = {
-    highlights: ranges,
+    onBlur: onSnippetBlur,
+    highlights: outputRanges,
     onSelectionChange,
-    value: content ?? "",
+    value: outputSnippet ?? "",
   };
 
   return {

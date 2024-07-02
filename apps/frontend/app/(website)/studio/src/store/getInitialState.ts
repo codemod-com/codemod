@@ -1,27 +1,13 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
+import type { EditorsSnippets } from "@studio/store/snippets";
+import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 import { parseState } from "../schemata/stateSchemata";
-
-export const BEFORE_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state) {
-    const { data } = state;
-    return {
-        data,
-    };
-}
- `;
-
-export const AFTER_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state: State) {
-    const { data } = state;
-    return {
-        data,
-    };
-}
-`;
 
 export const DEFAULT_FIND_REPLACE_EXPRESSION = `
 root.find(j.FunctionDeclaration, {
@@ -118,11 +104,10 @@ type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
 
 type InitialState = Readonly<{
   engine: KnownEngines;
-  beforeSnippet: string;
-  afterSnippet: string;
   codemodSource: string;
   codemodName: string | null;
   command: "learn" | AccessTokenCommands | null;
+  editors: EditorsSnippets[];
 }>;
 
 const decodeNullable = (value: string | null): string | null => {
@@ -142,8 +127,7 @@ export const getInitialState = (): InitialState => {
     if (typeof window === "undefined") {
       return {
         engine: "jscodeshift",
-        beforeSnippet: "",
-        afterSnippet: "",
+        editors: [],
         codemodSource: "",
         codemodName: "",
         command: null,
@@ -175,8 +159,13 @@ export const getInitialState = (): InitialState => {
 
         return {
           engine: shareableCodemod.e ?? "jscodeshift",
-          beforeSnippet: shareableCodemod.b ?? "",
-          afterSnippet: shareableCodemod.a ?? "",
+          editors: [
+            {
+              name: "test 1",
+              before: shareableCodemod.b ?? "",
+              after: shareableCodemod.a ?? "",
+            },
+          ],
           codemodSource: shareableCodemod.c ?? "",
           codemodName: shareableCodemod.n ?? null,
           command: null,
@@ -210,8 +199,7 @@ export const getInitialState = (): InitialState => {
     if (someSearchParamsSet) {
       return {
         engine: engine ?? "jscodeshift",
-        beforeSnippet: "",
-        afterSnippet: "",
+        editors: [],
         codemodSource: codemodSource ?? "",
         codemodName: codemodName ?? "",
         command:
@@ -222,47 +210,35 @@ export const getInitialState = (): InitialState => {
     }
   }
 
-  const stringifiedState = localStorage.getItem("state");
+  const stringifiedState = localStorage.getItem("editors");
 
-  if (stringifiedState !== null) {
-    try {
-      const state = parseState(JSON.parse(stringifiedState));
+  try {
+    const state = parseState(JSON.parse(stringifiedState));
 
-      const everyValueIsEmpty = [
-        state.afterSnippet,
-        state.beforeSnippet,
-        state.codemodSource,
-      ].every((s) => s === "");
+    const everyValueIsEmpty = [
+      state[0].afterSnippet,
+      state[0].beforeSnippet,
+      state.codemodSource,
+    ].every((s) => s === "");
 
-      const beforeSnippet = everyValueIsEmpty
-        ? BEFORE_SNIPPET_DEFAULT_CODE
-        : state.beforeSnippet;
+    const codemodSource = everyValueIsEmpty
+      ? buildDefaultCodemodSource(state.engine)
+      : state.codemodSource;
 
-      const afterSnippet = everyValueIsEmpty
-        ? AFTER_SNIPPET_DEFAULT_CODE
-        : state.afterSnippet;
-
-      const codemodSource = everyValueIsEmpty
-        ? buildDefaultCodemodSource(state.engine)
-        : state.codemodSource;
-
-      return {
-        engine: state.engine,
-        beforeSnippet,
-        afterSnippet,
-        codemodSource,
-        codemodName: null,
-        command: null,
-      };
-    } catch (error) {
-      console.error(error);
-    }
+    return {
+      engine: "jscodeshift",
+      editors: [getSingleTestCase()],
+      codemodSource,
+      codemodName: null,
+      command: null,
+    };
+  } catch (error) {
+    console.error(error);
   }
 
   return {
-    engine: "jscodeshift" as const,
-    beforeSnippet: BEFORE_SNIPPET_DEFAULT_CODE,
-    afterSnippet: AFTER_SNIPPET_DEFAULT_CODE,
+    engine: "jscodeshift",
+    editors: [getSingleTestCase()],
     codemodSource: buildDefaultCodemodSource("jscodeshift"),
     codemodName: null,
     command: null,
