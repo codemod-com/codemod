@@ -21,7 +21,7 @@ Every migration requires ability to work on different levels simultaneously:
 
 You need ability to jump between those levels quickly. Child level should be able to access data from parent level. Core principle in workflow engine is passing context. We are using [Asyncronous Context Tracking](https://nodejs.org/api/async_context.html#class-asynclocalstorage) to able to pass context between function calls. When you run a function within context, it will be propagated down to all other function calls. Similar how React context is getting passed down to all the children components.
 
-Context is getting passed inside function’s chain calls and also inside callback. Let’s look at simple example:
+Context is getting passed inside function's chain calls and also inside callback. Let's look at simple example:
 
 ```tsx
 import { git } from '@codemod.com/workflow'
@@ -272,11 +272,14 @@ await git.clone('repo', async () => {
   Can be a repository or array of repositories which you need to clone.
   By shallow cloning is performed with `--depth 1 --single-branch`. You can specify `branch` to clone specific (not default branch).
   If you want to disable shallow clone, you can provide it with extended configuration:
+  
+  ```json
   {
     repository: string;
     shallow?: boolean;
     branch?: string;
   }
+  ```
   </ResponseField>
 
   <ResponseField name="callback" type="callback">
@@ -330,12 +333,14 @@ await git.clone('repo', async () => {
 </ResponseField>
 
 <ResponseField name="git.branch(branchName)">
-  Tries to switch to provided branch, if branch doesn’t exist - creates new branch for cloned repository and check outs to it.
+  Tries to switch to provided branch, if branch doesn't exist - creates new branch for cloned repository and check outs to it.
   You can customize this behavior by providing extra config
+  ```json
   {
     branch: string;
     force?: boolean; // by default true, whether to create a branch if it doesn't exist
   }
+  ```
 
   #### Parameters:
   <ResponseField name="branchName" type="string" required>
