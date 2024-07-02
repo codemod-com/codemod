@@ -1,13 +1,13 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
+import { Editors, type EditorsSnippets } from "@studio/store/snippets";
+import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 import { parseState } from "../schemata/stateSchemata";
-import { Editors, EditorsSnippets } from "@studio/store/snippets";
-import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
 
 export const DEFAULT_FIND_REPLACE_EXPRESSION = `
 root.find(j.FunctionDeclaration, {
@@ -159,11 +159,13 @@ export const getInitialState = (): InitialState => {
 
         return {
           engine: shareableCodemod.e ?? "jscodeshift",
-          editors: [{
-            name: 'test 1',
-            before: shareableCodemod.b ?? "",
-            after: shareableCodemod.a ?? "",
-          }],
+          editors: [
+            {
+              name: "test 1",
+              before: shareableCodemod.b ?? "",
+              after: shareableCodemod.a ?? "",
+            },
+          ],
           codemodSource: shareableCodemod.c ?? "",
           codemodName: shareableCodemod.n ?? null,
           command: null,
@@ -210,7 +212,6 @@ export const getInitialState = (): InitialState => {
 
   const stringifiedState = localStorage.getItem("editors");
 
-
   try {
     const state = parseState(JSON.parse(stringifiedState));
 
@@ -234,7 +235,6 @@ export const getInitialState = (): InitialState => {
   } catch (error) {
     console.error(error);
   }
-
 
   return {
     engine: "jscodeshift",

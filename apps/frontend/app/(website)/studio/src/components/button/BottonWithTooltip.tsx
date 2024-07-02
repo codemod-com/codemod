@@ -1,24 +1,24 @@
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button } from "@studio/components/ui/button";
-import type React, { PropsWithChildren } from "react";
+import type { ComponentProps, FC, PropsWithChildren, ReactNode } from "react";
 
 type ButtonWithTooltipProps = PropsWithChildren<
-	{
-		tooltipContent: React.ReactNode;
-	} & React.ComponentProps<typeof Button>
+  {
+    tooltipContent: ReactNode;
+  } & ComponentProps<typeof Button>
 >;
 
-const ButtonWithTooltip: React.FC<ButtonWithTooltipProps> = ({
-	                                                             children,
-	                                                             tooltipContent,
-	                                                             ...buttonProps
-                                                             }) => {
-	return (
-		<Tooltip
-			trigger={ <Button { ...buttonProps }>{ children }</Button> }
-			content={ tooltipContent }
-		/>
-	);
+const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
+  children,
+  tooltipContent,
+  ...buttonProps
+}) => {
+  return (
+    <Tooltip
+      trigger={<Button {...buttonProps}>{children}</Button>}
+      content={tooltipContent}
+    />
+  );
 };
 
 export default ButtonWithTooltip;
