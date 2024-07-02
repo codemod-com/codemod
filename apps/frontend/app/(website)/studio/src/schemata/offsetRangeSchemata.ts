@@ -1,8 +1,8 @@
-import { number, object, type Output } from "valibot";
+import { type Output, number, object } from "valibot";
 
 export const offsetRangeSchema = object({
-	start: number(),
-	end: number(),
+  start: number(),
+  end: number(),
 });
 
 export type OffsetRange = Output<typeof offsetRangeSchema>;

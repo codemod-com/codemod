@@ -8,26 +8,26 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(
-	props: RouteProps,
-	parent: ResolvingMetadata,
+  props: RouteProps,
+  parent: ResolvingMetadata,
 ) {
-	const initialData = await loadAboutPage("/about");
+  const initialData = await loadAboutPage("/about");
 
-	if (!initialData?.data) return notFound();
+  if (!initialData?.data) return notFound();
 
-	return resolveSanityRouteMetadata(initialData.data, parent);
+  return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function About() {
-	const initial = await loadAboutPage("/about");
+  const initial = await loadAboutPage("/about");
 
-	if (!initial?.data) return notFound();
+  if (!initial?.data) return notFound();
 
-	if (draftMode().isEnabled) {
-		return (
-			<AboutPagePreview initial={ initial } params={ { pathname: "/contact" } }/>
-		);
-	}
+  if (draftMode().isEnabled) {
+    return (
+      <AboutPagePreview initial={initial} params={{ pathname: "/contact" }} />
+    );
+  }
 
-	return <AboutPage data={ initial.data }/>;
+  return <AboutPage data={initial.data} />;
 }

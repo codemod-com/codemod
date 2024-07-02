@@ -1,15 +1,15 @@
 import { isFile } from "@babel/types";
 import type { KnownEngines } from "@codemod-com/utilities";
+import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
+import { INITIAL_STATE } from "@studio/store/getInitialState";
+import { getSnippetInitialState } from "@studio/store/utils/getSnippetInitialState";
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
-import { path, assocPath, is, map, mapObjIndexed, reduce, remove } from "ramda";
+import { map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
-import { getSingleTestCase, getSnippetInitialState } from "@studio/store/utils/getSnippetInitialState";
-import { INITIAL_STATE } from "@studio/store/getInitialState";
-import { isServer } from "@studio/config";
 
 export type Token = Readonly<{
   start: number;
@@ -64,8 +64,8 @@ export type Editors = {
 };
 
 export type EditorsSnippets = {
-  [x in Omit<keyof Editors, 'output'>]: string
-}
+  [x in Omit<keyof Editors, "output">]: string;
+};
 
 type AllEditors = {
   [x in keyof Editors]: SnippetValues[];
@@ -86,13 +86,12 @@ type SnippetsSetters = {
   ) => SnippetSetters[x];
 };
 
-
 const getEditorsFromLS = () => {
-  if(isServer) return;
-  const editors = localStorage.getItem('editors') ;
-  if(!editors) return;
-  return
-}
+  if (isServer) return;
+  const editors = localStorage.getItem("editors");
+  if (!editors) return;
+  return;
+};
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   editors: getEditorsFromLS() || INITIAL_STATE.editors,
   addPair: () =>
@@ -110,24 +109,24 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   renameEditor: (index) => (name) => {
     const obj = get();
     obj.editors[index].name = name;
-    set(obj)
+    set(obj);
   },
   removePair: (index: number) => {
-    if(index === get().selectedPairIndex) {
+    if (index === get().selectedPairIndex) {
       set({
         selectedPairIndex: 0,
         editors: index ? remove(index, 1, get().editors) : get().editors,
-      })
-    }
-    else set({
-      editors: index ? remove(index, 1, get().editors) : get().editors,
-    })
+      });
+    } else
+      set({
+        editors: index ? remove(index, 1, get().editors) : get().editors,
+      });
   },
   clearAll: () =>
     set({
       editors: [
         {
-          name: '1',
+          name: "1",
           before: getSnippetInitialState(),
           after: getSnippetInitialState(),
           output: getSnippetInitialState(),
@@ -194,10 +193,9 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
       obj.editors[editorsPairIndex][type].rootNode = rootNode;
       set(obj);
       try {
-        localStorage.setItem('editors', JSON.stringify(obj.editors))
-      }
-      catch (error) {
-        console.error('error on JSON.stringify(obj.editors) ', {error})
+        localStorage.setItem("editors", JSON.stringify(obj.editors));
+      } catch (error) {
+        console.error("error on JSON.stringify(obj.editors) ", { error });
       }
     };
   },

@@ -7,7 +7,7 @@ Come up with a precise, detailed variable name to be used for the following jsco
 Variable name should start with "handle". 
 Do not return any text other than the variable name.
 \`\`\`
-${ codemod }
+${codemod}
 \`\`\`
 `;
 
@@ -22,7 +22,7 @@ written in kebab-case. If you can't determine which framework this is for, you c
 written in kebab-case.
 Do not return any text other than the codemod name.
 \`\`\`
-${ codemod }
+${codemod}
 \`\`\`
 `;
 
@@ -128,48 +128,48 @@ const fixCodemodBlockNoDebugInfoPrompt = `
 
 type PromptPresetKind = "fixCodemod" | "autoGenerateCodemod" | "customPrompt";
 type PromptPreset = {
-	kind: PromptPresetKind;
-	prompt: string;
-	name: string;
-	description: string;
+  kind: PromptPresetKind;
+  prompt: string;
+  name: string;
+  description: string;
 };
 
 interface ProcessPromptResponseStrategy {
-	getCodemodFromLLMResponse(prevCodemod: string, responseText: string): string;
+  getCodemodFromLLMResponse(prevCodemod: string, responseText: string): string;
 }
 
 const overwriteAll = {
-	getCodemodFromLLMResponse: (
-		prevCodemod: string,
-		responseText: string,
-	): string =>
-		STARTER_SNIPPET.replace(
-			"{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
-			responseText,
-		).replace("{%COMMENT%}", ""),
+  getCodemodFromLLMResponse: (
+    prevCodemod: string,
+    responseText: string,
+  ): string =>
+    STARTER_SNIPPET.replace(
+      "{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
+      responseText,
+    ).replace("{%COMMENT%}", ""),
 };
 
 const insertAtTheTop = {
-	getCodemodFromLLMResponse: (
-		prevCodemod: string,
-		responseText: string,
-		// @TODO rename
-	): string => injectCFSOutputToCodemod(prevCodemod, responseText) ?? "",
+  getCodemodFromLLMResponse: (
+    prevCodemod: string,
+    responseText: string,
+    // @TODO rename
+  ): string => injectCFSOutputToCodemod(prevCodemod, responseText) ?? "",
 };
 
 const promptStrategies: Readonly<
-	Record<PromptPresetKind, ProcessPromptResponseStrategy>
+  Record<PromptPresetKind, ProcessPromptResponseStrategy>
 > = {
-	autoGenerateCodemod: overwriteAll,
-	fixCodemod: overwriteAll,
-	customPrompt: insertAtTheTop,
+  autoGenerateCodemod: overwriteAll,
+  fixCodemod: overwriteAll,
+  customPrompt: insertAtTheTop,
 };
 
 export type { PromptPreset };
 export {
-	promptStrategies,
-	generateCodemodNamePrompt,
-	generateCodemodHumanNamePrompt,
-	autoGenerateCodemodPrompt,
-	fixCodemodBlockNoDebugInfoPrompt,
+  promptStrategies,
+  generateCodemodNamePrompt,
+  generateCodemodHumanNamePrompt,
+  autoGenerateCodemodPrompt,
+  fixCodemodBlockNoDebugInfoPrompt,
 };

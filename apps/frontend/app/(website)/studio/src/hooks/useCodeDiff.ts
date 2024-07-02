@@ -6,7 +6,6 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
 import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
 import { TabNames, useViewStore } from "@studio/store/view";
-import { useCallback } from "react";
 
 export const useCodeDiff = () => {
   const { getSelectedEditors } = useSnippetsStore();

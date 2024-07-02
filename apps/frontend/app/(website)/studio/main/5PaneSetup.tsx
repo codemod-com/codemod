@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
+import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent";
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
@@ -31,7 +32,6 @@ import {
   ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
-import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent";
 
 const Main = () => {
   const panelRefs: PanelsRefs = useRef({});
@@ -166,44 +166,52 @@ const Main = () => {
     />
   );
 
-  const tabsPanel = <BoundResizePanel
-    panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
-    boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
-    panelRefs={panelRefs}
-    className="bg-gray-bg assistant"
-  >
-    <AssistantTab
+  const tabsPanel = (
+    <BoundResizePanel
+      panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
+      boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
       panelRefs={panelRefs}
-      beforePanel={beforePanel}
-      afterPanel={afterPanel}
-    />
-  </BoundResizePanel>
+      className="bg-gray-bg assistant"
+    >
+      <AssistantTab
+        panelRefs={panelRefs}
+        beforePanel={beforePanel}
+        afterPanel={afterPanel}
+      />
+    </BoundResizePanel>
+  );
 
-  const beforeAndAfterPanel = <BoundResizePanel
-    panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
-    panelRefs={panelRefs}
-    className="bg-gray-bg"
-  >
-    {beforeAfterBottomPanels}
-  </BoundResizePanel>
+  const beforeAndAfterPanel = (
+    <BoundResizePanel
+      panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
+      panelRefs={panelRefs}
+      className="bg-gray-bg"
+    >
+      {beforeAfterBottomPanels}
+    </BoundResizePanel>
+  );
 
-  const codemodPanel = <BoundResizePanel
-    panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
-    boundedIndex={ResizablePanelsIndices.TAB_SECTION}
-    panelRefs={panelRefs}
-    className="bg-gray-bg codemod"
-  >
-    {codemodHeader}
-    <Codemod />
-  </BoundResizePanel>
+  const codemodPanel = (
+    <BoundResizePanel
+      panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+      boundedIndex={ResizablePanelsIndices.TAB_SECTION}
+      panelRefs={panelRefs}
+      className="bg-gray-bg codemod"
+    >
+      {codemodHeader}
+      <Codemod />
+    </BoundResizePanel>
+  );
 
-  const outputPanelD = <BoundResizePanel
-    panelRefIndex={ResizablePanelsIndices.OUTPUT_AST}
-    panelRefs={panelRefs}
-    className="bg-gray-bg"
-  >
-    {outputBottomPanel}
-  </BoundResizePanel>
+  const outputPanelD = (
+    <BoundResizePanel
+      panelRefIndex={ResizablePanelsIndices.OUTPUT_AST}
+      panelRefs={panelRefs}
+      className="bg-gray-bg"
+    >
+      {outputBottomPanel}
+    </BoundResizePanel>
+  );
 
   return (
     <>
@@ -231,7 +239,7 @@ const Main = () => {
               panelRefs={panelRefs}
               className="bg-gray-bg"
             >
-              <TestTabsComponent/>
+              <TestTabsComponent />
               <PanelGroup direction="horizontal">
                 {beforeAndAfterPanel}
                 <ResizeHandle direction="horizontal" />

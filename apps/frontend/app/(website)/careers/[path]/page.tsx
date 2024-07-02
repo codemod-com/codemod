@@ -10,38 +10,38 @@ import { draftMode } from "next/headers";
 import { notFound } from "next/navigation";
 
 export async function generateMetadata(
-	props: RouteProps,
-	parent: ResolvingMetadata,
+  props: RouteProps,
+  parent: ResolvingMetadata,
 ) {
-	const initialData = await loadJobListingPage(`/careers/${ props.params.path }`);
+  const initialData = await loadJobListingPage(`/careers/${props.params.path}`);
 
-	if (!initialData?.data) return notFound();
+  if (!initialData?.data) return notFound();
 
-	return resolveSanityRouteMetadata(initialData.data, parent);
+  return resolveSanityRouteMetadata(initialData.data, parent);
 }
 
 export default async function Job(props: RouteProps) {
-	const initial = await loadJobListingPage(`/careers/${ props.params.path }`);
+  const initial = await loadJobListingPage(`/careers/${props.params.path}`);
 
-	if (!initial?.data) return notFound();
+  if (!initial?.data) return notFound();
 
-	if (draftMode().isEnabled) {
-		return (
-			<JobListingPagePreview
-				initial={ initial }
-				params={ { pathname: `/careers/${ props.params.path }` } }
-			/>
-		);
-	}
+  if (draftMode().isEnabled) {
+    return (
+      <JobListingPagePreview
+        initial={initial}
+        params={{ pathname: `/careers/${props.params.path}` }}
+      />
+    );
+  }
 
-	return <JobListingPage data={ initial.data }/>;
+  return <JobListingPage data={initial.data} />;
 }
 
 export async function generateStaticParams() {
-	const jobs = await client.fetch(groq`*[_type == 'job']`);
-	const paths = jobs.map((job: any) => ({
-		path: job.pathname.current.replace("/careers/", ""),
-	}));
+  const jobs = await client.fetch(groq`*[_type == 'job']`);
+  const paths = jobs.map((job: any) => ({
+    path: job.pathname.current.replace("/careers/", ""),
+  }));
 
-	return paths;
+  return paths;
 }

@@ -9,72 +9,72 @@ import type { Repeat } from "@studio/types/transformations";
 import * as React from "react";
 
 export const getContent =
-	(type: ContentViewerVariant) => (engine: KnownEngines) =>
-		engine === "jscodeshift" ? (
-			<ASTViewer type={ type }/>
-		) : (
-			"The AST View is not yet supported for tsmorph"
-		);
+  (type: ContentViewerVariant) => (engine: KnownEngines) =>
+    engine === "jscodeshift" ? (
+      <ASTViewer type={type} />
+    ) : (
+      "The AST View is not yet supported for tsmorph"
+    );
 
 const beforePanel: PanelData = {
-	relatedAST: ResizablePanelsIndices.BEFORE_AST,
-	boundIndex: ResizablePanelsIndices.BEFORE_AST,
-	snippedIndex: ResizablePanelsIndices.BEFORE_SNIPPET,
-	type: "before",
-	hasBoundResize: true,
-	content: getContent("before"),
-	snippetData: {
-		header: (
-			<span className="flex items-center justify-center justify-content-center">
+  relatedAST: ResizablePanelsIndices.BEFORE_AST,
+  boundIndex: ResizablePanelsIndices.BEFORE_AST,
+  snippedIndex: ResizablePanelsIndices.BEFORE_SNIPPET,
+  type: "before",
+  hasBoundResize: true,
+  content: getContent("before"),
+  snippetData: {
+    header: (
+      <span className="flex items-center justify-center justify-content-center">
         Before
       </span>
-		),
-		diffEditorWrapper: {
-			type: "before",
-		},
-		snippet: "regular",
-	},
+    ),
+    diffEditorWrapper: {
+      type: "before",
+    },
+    snippet: "regular",
+  },
 };
 
 const afterPanel: PanelData = {
-	relatedAST: ResizablePanelsIndices.AFTER_AST,
-	snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
-	boundIndex: ResizablePanelsIndices.TOP,
-	type: "after",
-	hasBoundResize: false,
-	content: getContent("after"),
-	snippetData: {
-		header: "After (Expected)",
-		diffEditorWrapper: {
-			type: "after",
-		},
-		snippet: "diff",
-	},
+  relatedAST: ResizablePanelsIndices.AFTER_AST,
+  snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
+  boundIndex: ResizablePanelsIndices.TOP,
+  type: "after",
+  hasBoundResize: false,
+  content: getContent("after"),
+  snippetData: {
+    header: "After (Expected)",
+    diffEditorWrapper: {
+      type: "after",
+    },
+    snippet: "diff",
+  },
 };
 
 const outputPanel: PanelData = {
-	relatedAST: ResizablePanelsIndices.OUTPUT_AST,
-	snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
-	type: "output",
-	content: getContent("output"),
-	snippetData: {
-		header: (
-			<span className="flex items-center justify-center justify-content-center">
+  relatedAST: ResizablePanelsIndices.OUTPUT_AST,
+  snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
+  type: "output",
+  content: getContent("output"),
+  snippetData: {
+    header: (
+      <span className="flex items-center justify-center justify-content-center">
         Output
       </span>
-		),
-		snippet: "diff",
-		diffEditorWrapper: {
-			type: "output",
-		},
-	},
+    ),
+    snippet: "diff",
+    diffEditorWrapper: {
+      type: "output",
+    },
+  },
 };
 
 const panels: Repeat<PanelData, 3> = [beforePanel, afterPanel, outputPanel];
 
 export const panelsData = {
-	panels,
-	beforePanel,
-	afterPanel,
-	outputPanel,
+  panels,
+  beforePanel,
+  afterPanel,
+  outputPanel,
 };

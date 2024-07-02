@@ -1,4 +1,5 @@
 import { isFile } from "@babel/types";
+import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
 import { create } from "zustand";
@@ -6,7 +7,6 @@ import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
 import { INITIAL_STATE } from "./getInitialState";
-import { isServer } from "@studio/config";
 
 type ModStateValues = {
   internalContent: string | null;
@@ -27,7 +27,7 @@ type ModStateSetters = {
 
 export type ModState = ModStateSetters & ModStateValues;
 const getInitialState = (): ModStateValues => {
-  const savedState = isServer ? null : localStorage.getItem('mod')
+  const savedState = isServer ? null : localStorage.getItem("mod");
   const parsed = parseSnippet(savedState ?? INITIAL_STATE.codemodSource);
 
   const parsedContent = isFile(parsed)
@@ -53,7 +53,7 @@ export const useModStore = create<ModState>((set, get) => ({
       ? mapBabelASTToRenderableTree(parsed)
       : null;
     set({ internalContent: content, parsedContent });
-    localStorage.setItem('mod', content)
+    localStorage.setItem("mod", content);
   },
   setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
   setCodemodSelection: (command) => {

@@ -1,6 +1,6 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
-import { Editors, type EditorsSnippets } from "@studio/store/snippets";
+import type { EditorsSnippets } from "@studio/store/snippets";
 import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
