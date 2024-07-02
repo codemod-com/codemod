@@ -14,8 +14,8 @@ type ButtonProps = {
 export const HeaderButtons = () => {
   const { setInput, setOutput } = useSnippetStore();
   const { setContent } = useModStore();
-  const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
-  const { getShareLink } = usePublicLinkSharing();
+  const { isCreating: isShareURLBeingCreated, getShareLink } =
+    usePublicLinkSharing();
 
   const buttonsData = [
     {
