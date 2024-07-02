@@ -158,18 +158,18 @@ keys.forEach((key) => {
 });
 
 /**
-Replaces: `$A.$B($C)`
+ Replaces: `$A.$B($C)`
 
-with: `api.__method($A, $start, $end)($C);`
+ with: `api.__method($A, $start, $end)($C);`
 
-The idea is that `$A` is likely an expression that ends up with a JSCodeshift collection.
+ The idea is that `$A` is likely an expression that ends up with a JSCodeshift collection.
 
-The codemod runner tracks all the produced JSCodeshift collections.
-In case of a mismatch, the runner will simply return `$A` from the `__method` call.
+ The codemod runner tracks all the produced JSCodeshift collections.
+ In case of a mismatch, the runner will simply return `$A` from the `__method` call.
 
-`$start` and `$end` indicate the `$B` node position in the original codemod.
+ `$start` and `$end` indicate the `$B` node position in the original codemod.
 
-This function will work with other JSCodeshift collection functions.
+ This function will work with other JSCodeshift collection functions.
  **/
 const replaceCallExpression = (
   j: JSCodeshift,

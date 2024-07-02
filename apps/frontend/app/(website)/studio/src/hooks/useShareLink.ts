@@ -1,10 +1,10 @@
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
 import { deflate } from "pako";
+import { useSnippetsStore } from "../store/snippets";
 
 export const useShareLink = () => {
-  const { engine, inputSnippet, afterSnippet } = useSnippetStore();
+  const { engine, getSelectedEditors } = useSnippetsStore();
   const { internalContent } = useModStore();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
@@ -63,8 +63,8 @@ export const useShareLink = () => {
         v: 1, // version
         e: engine,
         n: codemodName,
-        b: inputSnippet,
-        a: afterSnippet,
+        b: getSelectedEditors().beforeSnippet,
+        a: getSelectedEditors().afterSnippet,
         c: internalContent ?? "",
       }); //satisfies ShareableCodemod);
 

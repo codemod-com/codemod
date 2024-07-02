@@ -1,6 +1,6 @@
 import { useAuth } from "@auth/useAuth";
 import { getHeadersWithAuth } from "@chatbot/useAiService/useModGpt/utils";
-import { applyAliases, useGetAliases } from "@studio/store/zustand/CFS/alias";
+import { applyAliases, useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react/dist";
 import type { Dispatch, SetStateAction } from "react";
 

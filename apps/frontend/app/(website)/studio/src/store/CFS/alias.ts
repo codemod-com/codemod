@@ -1,6 +1,6 @@
-import { useCodemodExecutionError } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useCodemodExecutionError } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "../snippets";
 
 export type AliasName =
   | "$CODEMOD"
@@ -24,15 +24,14 @@ export const useGetAliases = (): Aliases => {
     rangesUpdatedAt,
   } = useModStore.getState();
 
-  const {
-    inputSnippet,
-    afterSnippet,
-    afterInputRanges,
-    afterRangeUpdatedAt,
-    beforeInputRanges,
-    beforeRangeUpdatedAt,
-  } = useSnippetStore.getState();
+  const { getSelectedEditors } = useSnippetsStore();
 
+  const {
+    beforeSnippet: inputSnippet,
+    afterSnippet,
+    after: { ranges: afterInputRanges, rangeUpdatedAt: afterRangeUpdatedAt },
+    before: { ranges: beforeInputRanges, rangeUpdatedAt: beforeRangeUpdatedAt },
+  } = getSelectedEditors();
   return {
     $CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
     $HIGHLIGHTED_IN_CODEMOD:

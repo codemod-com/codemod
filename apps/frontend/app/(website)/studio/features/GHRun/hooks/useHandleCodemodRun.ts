@@ -1,6 +1,6 @@
 import type { CodemodRunRequest } from "@shared/types";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { transpileTs } from "@studio/utils/transpileTs";
 import type { GHBranch, GithubRepository } from "be-types";
 
@@ -14,7 +14,7 @@ export const useHandleCodemodRun = ({
   selectedRepository,
   selectedBranch,
 }: Props) => {
-  const { engine } = useSnippetStore();
+  const { engine } = useSnippetsStore();
   const { internalContent } = useModStore();
   const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
 
