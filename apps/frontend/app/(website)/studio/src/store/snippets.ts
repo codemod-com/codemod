@@ -158,7 +158,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   },
   getSelectedEditors: () => {
     const index = get().selectedPairIndex || 0;
-    const editors = get().editors?.[index] as Editors;
+    const editors = (get().editors?.[index] as Editors) || [];
     return {
       ...editors,
       setContent: (type) => get().setContent(index, type),
