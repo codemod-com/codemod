@@ -45,8 +45,14 @@ export const environmentSchema = object({
   TASK_MANAGER_QUEUE_NAME: optional(string()),
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
-  AUTH_SERVICE_URL: string(),
   CODEMOD_COM_API_URL: string(),
+  SLACK_TOKEN: string(),
+  SLACK_CHANNEL: string(),
+  BACKEND_API_URL: optional(string()),
+  AUTH_SERVICE_URL: optional(string()),
+  MODGPT_SERVICE_URL: optional(string()),
+  CODEMOD_AI_SERVICE_URL: optional(string()),
+  RUN_SERVICE_URL: optional(string()),
 });
 
 export type Environment = Output<typeof environmentSchema>;
