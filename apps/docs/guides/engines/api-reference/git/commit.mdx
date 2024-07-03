@@ -1,0 +1,33 @@
+---
+title: "commit"
+---
+
+<ResponseField name="git.commit(message)" />
+
+Creates commit for cloned repository.
+
+### Parameters
+<ParamField path="message" type="string" required>
+  Add a git commit message.
+</ParamField>
+
+### Returns
+- [push](./push)
+
+<RequestExample>
+    ```tsx single commit
+    import { git } from '@codemod.com/workflow'
+
+    // clone
+    const repository = await git.clone('git@github.com:codemod-com/codemod.git')
+    // make changes
+    await repository
+        .files()
+        .jsFam()
+        .astGrep('console.log($$$A)')
+        .replace('console.error($$$A)')
+    // commit
+    await repository
+        .commit('Changed console.log to console.error')
+    ```
+</RequestExample>

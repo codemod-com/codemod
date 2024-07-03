@@ -75,6 +75,58 @@
     {
       "group": "Guides & Examples",
       "pages": ["guides/introduction"]
+    },
+    {
+      "group": "Workflow Engine",
+      "pages": ["guides/engines/workflow-engine"]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "guides/engines/api-reference/codemod",
+        "guides/engines/api-reference/ast-grep/ai",
+        {
+          "group": "pattern matching",
+          "icon": "code",
+          "pages": [
+            "guides/engines/api-reference/ast-grep/ast-grep",
+            "guides/engines/api-reference/ast-grep/replace",
+            "guides/engines/api-reference/ast-grep/map",
+            "guides/engines/api-reference/ast-grep/ai"
+          ]
+        },
+        {
+          "group": "JavaScript/TypeScript",
+          "icon": "js",
+          "pages": [
+            "guides/engines/api-reference/jsFam/jsFam",
+            "guides/engines/api-reference/jsFam/jscodeshift",
+            "guides/engines/api-reference/ast-grep/ast-grep",
+            "guides/engines/api-reference/jsFam/addImport",
+            "guides/engines/api-reference/jsFam/removeImport"
+          ]
+        },
+        {
+          "group": "git",
+          "icon": "git-alt",
+          "pages": [
+            "guides/engines/api-reference/git/clone",
+            "guides/engines/api-reference/git/branch",
+            "guides/engines/api-reference/git/commit",
+            "guides/engines/api-reference/git/push"
+          ]
+        },
+        {
+          "group": "file system",
+          "icon": "folder-tree",
+          "pages": [
+            "guides/engines/api-reference/fs/files",
+            "guides/engines/api-reference/fs/dirs",
+            "guides/engines/api-reference/fs/move"
+          ]
+        },
+        "guides/engines/api-reference/exec"
+      ]
     }
   ],
   "feedback": {

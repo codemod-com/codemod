@@ -1,5 +1,6 @@
 ---
-title: "Codemod Workflow Engine"
+title: "Getting Started"
+icon: 'book-open-cover'
 ---
 
 The Workflow Engine is a TypeScript library designed to manage migration tasks at various levels, from code changes to handling repositories and pull requests (PRs). 
@@ -14,31 +15,55 @@ Below, we discuss core concepts and features, as well as API references.
 
 Every migration requires ability to work on different levels simultaneously:
 
-- repository - clone, branch, commit, push
-- directories - iterate, copy, move, remove
-- files - iterate, copy, move, remove
-- code blocks - iterate, change, remove
+- repository - [clone](#clone), [branch](#branch), [commit](#commit), [push](#push)
+- directories - [iterate](#dirs), copy, move, remove
+- files - [iterate](#files), copy, move, remove
+- code blocks - [iterate](#astgrep), [change](#replace), [remove](#replace)
 
 You need ability to jump between those levels quickly. Child level should be able to access data from parent level. Core principle in workflow engine is passing context. We are using [Asyncronous Context Tracking](https://nodejs.org/api/async_context.html#class-asynclocalstorage) to able to pass context between function calls. When you run a function within context, it will be propagated down to all other function calls. Similar how React context is getting passed down to all the children components.
 
 Context is getting passed inside function’s chain calls and also inside callback. Let’s look at simple example:
 
+<Tabs>
+  <Tab title="Workflow Code">
 ```tsx
 import { git } from '@codemod.com/workflow'
 
 await git
 	.clone('git@github.com:codemod-com/codemod.git') // init repository context
 	.branch('new-branch') // inside repository context from previous call
-  .files('**/*.ts') // find files using glob
+    .files('**/*.ts') // find files using glob
 	.jsFam() // create js context for every found file inside directory context
 	.astGrep('console.log($$$A)') // create context for each found console.log inside file context
 	.replace('console.error($$$A)') // replace inside ast-grep context from previous call
 ```
+  </Tab>
+  <Tab title="Context Diagram">
+```mermaid
+  %%{ init: { 'flowchart': { 'curve': 'basis' } } }%%
+  flowchart TB
+    subgraph clone["clone('git@github.com:codemod-com/codemod.git')"]
+      subgraph branch["branch('new-branch')"]
+        subgraph files["files('**/*.ts')"]
+          subgraph jsFam["jsFam()"]
+            subgraph astGrep["astGrep('console.log($$$A)')"]
+              replace["replace('console.error($$$A)')"]
+            end
+          end
+        end
+      end
+    end
+    classDef default fill:#e6ffa0,stroke:#000,color:#000,stroke-width:1px
+```
+  </Tab>
+</Tabs>
 
 ### Saving and Reusing Context
 
 Function calls with context can be saved and reused:
 
+<Tabs>
+  <Tab title="Workflow Code">
 ```tsx
 import { git } from '@codemod.com/workflow'
 
@@ -49,7 +74,7 @@ const repository = await git
 // Do something inside repository
 await repository
 	.files('**/*.ts')
-  .jsFam()
+    .jsFam()
 	.astGrep('console.log($$$A)')
 	.replace('console.error($$$A)')
 	
@@ -58,6 +83,30 @@ await repository
 	.commit('Replaced console.log with console.error')
 	.push()
 ```
+  </Tab>
+  <Tab title="Context Diagram">
+```mermaid
+  %%{ init: { 'flowchart': { 'curve': 'basis' } } }%%
+  flowchart TB
+    subgraph clone["clone('git@github.com:codemod-com/codemod.git')"]
+      subgraph branch["branch('new-branch')"]
+        subgraph files["files('**/*.ts')"]
+          subgraph jsFam["jsFam()"]
+            subgraph astGrep["astGrep('console.log($$$A)')"]
+              replace["replace('console.error($$$A)')"]
+            end
+          end
+        end
+        subgraph commit["commit('Replaced console.log with console.error')"]
+          push["push()"]
+        end
+        files --> commit
+      end
+    end
+    classDef default fill:#e6ffa0,stroke:#000,color:#000,stroke-width:1px
+```
+  </Tab>
+</Tabs>
 
 ### Callback Context Retrieval
 
@@ -259,506 +308,3 @@ await git.clone('repo', async () => {
   })
 });
 ```
-
-## API Reference
-
-### Git
-
-<ResponseField name="git.clone(repository, callback)">
-  Clones repository to temporary directory.
-
-  #### Parameters:
-  <ResponseField name="repository" type="repository or array of repositories" required>
-  Can be a repository or array of repositories which you need to clone.
-  By shallow cloning is performed with `--depth 1 --single-branch`. You can specify `branch` to clone specific (not default branch).
-  If you want to disable shallow clone, you can provide it with extended configuration:
-  {
-    repository: string;
-    shallow?: boolean;
-    branch?: string;
-  }
-  </ResponseField>
-
-  <ResponseField name="callback" type="callback">
-  A callback which will be executed for each repository.
-  </ResponseField>
-
-  #### Subcommands:
-  - files
-  - branch
-  - commit
-  - push
-  - dirs
-  - codemod
-  - exec
-
-  #### Example:
-    ```tsx
-    import { git } from '@codemod.com/workflow'
-
-    // clone one repository
-    await git.clone('git@github.com:codemod-com/codemod.git')
-    await git.clone({
-      repository: 'git@github.com:codemod-com/codemod.git',
-      shallow: false,
-    })
-    // clone multiple repositories
-    await git.clone([
-        'git@github.com:codemod-com/codemod.git',
-        'git@github.com:codemod-com/codemod2.git',
-    ])
-    await git.clone([
-        {
-          repository: 'git@github.com:codemod-com/codemod.git',
-          shallow: false,
-        },
-        'git@github.com:codemod-com/codemod2.git',
-    ])
-    await git.clone`
-        git@github.com:codemod-com/codemod.git
-        git@github.com:codemod-com/codemod2.git
-    `
-    // using callback
-    await git.clone('git@github.com:codemod-com/codemod.git', async ({ files, commit, push }) => {
-        // do something inside repository
-        await files()
-            .jsFam()
-            .astGrep('console.log($$$A)')
-            .replace('console.error($$$A)')
-    })
-    ```
-</ResponseField>
-
-<ResponseField name="git.branch(branchName)">
-  Tries to switch to provided branch, if branch doesn’t exist - creates new branch for cloned repository and check outs to it.
-  You can customize this behavior by providing extra config
-  {
-    branch: string;
-    force?: boolean; // by default true, whether to create a branch if it doesn't exist
-  }
-
-  #### Parameters:
-  <ResponseField name="branchName" type="string" required>
-  For every repository switch to provided branch.
-  </ResponseField>
-
-  #### Subcommands:
-  - files
-  - commit
-  - push
-  - dirs
-  - codemod
-  - exec
-
-  #### Example:
-    ```tsx
-    import { git } from '@codemod.com/workflow'
-
-    // chain call
-    await git.clone('git@github.com:codemod-com/codemod.git')
-        .branch('new-branch')
-    await git.clone('git@github.com:codemod-com/codemod.git')
-        .branch({
-          branch: 'new-branch',
-          force: false,
-        })
-        
-    // inside callback
-    await git.clone('git@github.com:codemod-com/codemod.git', async ({ branch }) => {
-        await branch('new-branch')
-    })
-    ```
-</ResponseField>
-
-<ResponseField name="git.commit(commitMessage)">
-  Creates commit for cloned repository.
-
-  #### Parameters:
-  <ResponseField name="commitMessage" type="string">
-  Adds a git commit message.
-  </ResponseField>
-
-  #### Subcommands:
-  - push
-
-  #### Example:
-    ```tsx
-    import { git } from '@codemod.com/workflow'
-
-    // clone
-    const repository = await git.clone('git@github.com:codemod-com/codemod.git')
-    // make changes
-    await repository
-        .files()
-        .jsFam()
-        .astGrep('console.log($$$A)')
-        .replace('console.error($$$A)')
-    // commit
-    await repository
-        .commit('Changed console.log to console.error')
-    ```
-</ResponseField>
-
-<ResponseField name="git.push()">
-  Pushes commits to remote.
-
-  #### Parameters:
-  <ResponseField name="{ force: true }">
-  Enables force push.
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { git } from '@codemod.com/workflow'
-
-    // clone
-    const repository = await git.clone('git@github.com:codemod-com/codemod.git')
-    // make changes
-    await repository
-        .files()
-        .jsFam()
-        .astGrep('console.log($$$A)')
-        .replace('console.error($$$A)')
-    // commit and push
-    await repository
-        .commit('Changed console.log to console.error')
-        .push({ force: true })
-    ```
-</ResponseField>
-
-### Commands
-
-<ResponseField name="exec(command, [arguments])">
-  Executes CLI command with arguments (uses child_processes.spawn underneath).
-
-  #### Parameters:
-  <ResponseField name="command" type="string" required>
-  Specifies a command name.
-  </ResponseField>
-
-  <ResponseField name="[arguments]" type="array">
-  Specifies arguments to be passed.
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { exec, git } from '@codemod.com/workflow'
-
-    // single call
-    await exec('pnpm', ['install'])
-
-    // chain call of multiple commands
-    await git.clone('git@github.com:codemod-com/codemod.git', async ({ files, branch, commit, push, exec }) => {
-        await branch('remove-jquery-extend')
-        await files()
-            .jsFam()
-            .astGrep('$.extend({}, $A, $B)')
-            .replace('{ ...$A, ...$B }')
-        // verify change didn't break tests
-        await exec('pnpm', ['install'])
-            .exec('pnpm', ['lint'])
-            .exec('pnpm', ['test'])
-            .exec('pnpm', ['e2e'])
-        await commit('replaced jquery.extend with object spread')
-        await push()
-    })
-    ```
-</ResponseField>
-
-<ResponseField name="codemod(name, { [argumentName]: [argumentValue] })">
-  Executes codemod in current working directory.
-
-  #### Parameters:
-  <ResponseField name="name" type="string" required>
-  Specifies the codemod name as published in [Codemod Registry](https://codemod.com/registry).
-  </ResponseField>
-
-  <ResponseField name="{ [argumentName]: [argumentValue] }" type="string | number | boolean | array of valid types">
-  Specified codemod arguments. Arguments are passed as key-value pair objects.
-  </ResponseField>
-
-  #### Subcommands:
-  -  codemod
-  - exec
-  - files
-
-  #### Example:
-    ```tsx
-    import { codemod } from '@codemod.com/workflow'
-
-    // single call
-    await codemod('openFeature-replace-feature-flag', {
-        key: 'someFeatureFlag',
-        value: 'replacement',
-    })
-
-    // chain call
-    await codemod('openFeature-replace-feature-flag', {
-        key: 'someFeatureFlag',
-        value: 'replacement',
-    }).codemod('valibot/migrate-to-v0.31.0')
-    ```
-</ResponseField>
-
-<ResponseField name="files(glob, callback)">
-  Filters out files using glob.
-  You can also combine this function and subcommand function:
-  Calling files().jsFam() - will find files with js, jsx, ts, tsx, cjs, mjs extensions.
-
-  #### Parameters:
-  <ResponseField name="glob" type="glob">
-   Specifies the js files to be if omitted - all js files will be found.
-  </ResponseField>
-
-  <ResponseField name="callback" type="callback">
-  </ResponseField>
-
-  #### Subcommands:
-  - js
-
-  #### Example:
-    ```tsx
-    import { files } from '@codemod.com/workflow'
-
-    // find all js files
-    await files().jsFam()
-
-    // using glob
-    await files('**/*.ts,src/**/app.tsx')
-
-    // using callback - iterate for each file
-    await files('**/*.ts', async ({ js }) => {
-        await jsFam()
-            .astGrep('console.log($$$A)')
-            .replace('console.error($$$A)')
-    })
-    ```
-</ResponseField>
-
-### Language Context
-
-<ResponseField name="jsFam(callback)">
-  Adds context specific for file type.
-  Currently only Javascript/Typescript is supported, later we will be adding more languages.
-
-  #### Parameters:
-  <ResponseField name="callback" type="callback">
-  </ResponseField>
-
-  #### Subcommands:
-  - astGrep
-  - addImport
-  - removeImport
-  - getImports
-
-  #### Example:
-    ```tsx
-    import { files, js } from '@codemod.com/workflow'
-
-    // find all js files
-    await files().jsFam()
-
-    // using glob
-    await files('**/*.ts,src/**/app.tsx')
-
-    // using callback - iterate for each file
-    await files('**/*.ts', async ({ js }) => {
-        await jsFam()
-            .astGrep('console.log($$$A)')
-            .replace('console.error($$$A)')
-    })
-    ```
-</ResponseField>
-
-### Transformer
-
-<ResponseField name="addImport(importString)">
-  Adds import to js file, it will add import specifier to existing import clause.
-
-  #### Parameters:
-  <ResponseField name="importString" type="string">
-   Full import line.
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { files } from '@codemod.com/workflow'
-
-    await files(({ addImport }) => {
-      addImport('import { useEffect } from "react"')
-    })
-
-    // before
-    import { useMemo } from "react"
-
-    // after
-    import { useMemo, useEffect } from "react"
-    ```
-</ResponseField>
-
-<ResponseField name="removeImport(importString)">
-  Removes import from js file, will remove import specifier from existing import clause.
-
-  #### Parameters:
-  <ResponseField name="importString" type="string">
-   Full import line.
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { files } from '@codemod.com/workflow'
-
-    await files(({ removeImport }) => {
-      removeImport('import { useEffect } from "react"')
-    })
-
-    // before
-    import { useMemo, useEffect } from "react"
-
-    // after
-    import { useMemo } from "react"
-    ```
-</ResponseField>
-
-<ResponseField name="astGrep(query, callback)">
-  Search part of the code using `ast-grep`.
-
-  #### Parameters:
-  <ResponseField name="query" type="string | ast-grep object (YAML)">
-   Check [`ast-grep` rule essentials](https://ast-grep.github.io/guide/rule-config.html).
-  </ResponseField>
-
-  <ResponseField name="callback" type="callback">
-  </ResponseField>
-
-  #### Subcommands:
-  - map
-  - replace
-  - ai
-
-  #### Example:
-    ```tsx
-    import { astGrep } from '@codemod.com/workflow'
-
-    // string pattern search
-    await astGrep('console.log($$$A)')
-
-    // object pattern search
-    await astGrep({
-      rule: {
-        any: [
-          { pattern: 'console.log($$$A)' },
-          { pattern: 'console.warn($$$A)' },
-        ],
-      },
-    })
-    ```
-</ResponseField>
-
-<ResponseField name="map(callback)">
-  Works similar to `array.map` - maps found code with `ast-grep` to return and return result.
-
-  #### Parameters:
-
-  <ResponseField name="callback" type="callback">
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { astGrep } from '@codemod.com/workflow'
-
-    const allUsagesOfConsoleLog = await astGrep('console.log($$$A)')
-      .map(({ getNode }) => getNode().text())
-      
-    console.log(allUsagesOfConsoleLog)
-    // [
-    //   "console.log('sample console.log'),
-    //   "console.log('debugging flow')
-    // ]
-    ```
-</ResponseField>
-
-<ResponseField name="replace(replacement)">
-  Replaces code found with `ast-grep`.
-
-  #### Parameters:
-
-  <ResponseField name="replacement" type="string | callback">
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { astGrep } from '@codemod.com/workflow'
-
-    // string replacement
-    await astGrep('console.log($$$A)')
-      .replace('console.error($$$A)')
-    // before
-    console.log('debugging flow')
-    // after
-    console.error('debugging flow')
-
-    // callback replacement
-    await astGrep('console.log($$$A)')
-      .replace(async ({ getMultipleMatches }) => {
-        const args = getMultipleMatches('A')
-          .filter(node => node.kind !== 'arrow_function' && node.kind !== ',')
-          
-        return `console.error(${args.join(', '))})`
-      })
-    //before
-    console.log('debug', () => {})
-    // after
-    console.log('debug')
-    ```
-</ResponseField>
-
-<ResponseField name="ai(instructions)">
-  Replaces code found with `ast-grep` pattern using instructions provided to LLM.
-
-  <Note>`ai(instructions)` requires `--OPENAI_API_KEY=somekey` to be passed to workflow.</Note>
-
-  #### Parameters:
-
-  <ResponseField name="instructions" type="string (in natural language)">
-  </ResponseField>
-
-  #### Example:
-    ```tsx
-    import { files } from '@codemod.com/workflow'
-
-    await files()
-      .jsFam()
-      .astGrep`$SCHEMA($$$REST, [$$$ACTIONS])`
-      .ai`
-        SCHEMA could be one of 'any', 'array', 'bigint', 'blob', 'boolean', 'custom', 'date', 'enum_', 'instance', 'intersect',
-        'lazy', 'literal', 'looseObject', 'looseTuple', 'map', 'nan', 'never', 'nonNullable', 'nonNullish', 'nonOptional',
-        'null_', 'nullable', 'nullish', 'number', 'object', 'objectWithRest', 'optional', 'picklist', 'record', 'set',
-        'strictObject', 'strictTuple', 'string', 'symbol', 'tuple', 'tupleWithRest', 'undefined_', 'union', 'unknown', 'variant',
-        'void_'
-        ACTIONS is array of calls to one of 'bic', 'brand', 'bytes', 'check', 'creditCard', 'cuid2', 'decimal', 'email',
-        'emoji', 'empty', 'endsWith', 'every', 'excludes', 'finite', 'hash', 'hexadecimal', 'hexColor', 'imei', 'includes',
-        'integer', 'ip', 'ipv4', 'ipv6', 'isoDate', 'isoDateTime', 'isoTime', 'isoTimeSecond', 'isoTimestamp', 'isoWeek',
-        'length', 'mac', 'mac48', 'mac64', 'maxBytes', 'maxLength', 'maxSize', 'maxValue', 'mimeType', 'minBytes',
-        'minLength', 'minSize', 'minValue', 'multipleOf', 'nonEmpty', 'notBytes', 'notLength', 'notSize', 'notValue', 'octal',
-        'readonly', 'regex', 'safeInteger', 'size', 'some', 'startsWith', 'toLowerCase', 'toMaxValue', 'toMinValue', 'toUpperCase',
-        'transform', 'trim', 'trimEnd', 'trimStart', 'ulid', 'url', 'uuid', 'value','forward'
-        
-        If $SCHEMA is not one of SCHEMA, skip
-        If $$$ACTIONS is not one of ACTIONS, skip
-
-        If skipping - return same string
-
-        Take into account recursive replacements
-        
-        Example
-        Before: v.string('some string', [v.email()])
-        After: v.pipe(v.string('some string'), v.email())
-        `
-    // before
-    v.string([v.email(), v.endsWith('@gmail.com')])
-
-    // after
-    v.pipe(v.string(), v.email(), v.endsWith('@gmail.com'))
-    ```
-</ResponseField>

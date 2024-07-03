@@ -1,0 +1,34 @@
+---
+title: "move"
+---
+
+<ResponseField name="move(target)" />
+Moves files or directories to the target directory.
+
+### Parameters
+
+<ParamField path="target" type="string">
+Absolute path to the target directory.
+</ParamField>
+
+<RequestExample>
+```ts move files
+import { files, dirs } from '@codemod.com/workflow'
+
+const appDir = (await dirs`app`.map(({ cwd }) => cwd()))
+    .pop()
+
+await files('app.vue')
+  .move(appDir)
+```
+
+```ts move directories
+import { files, dirs } from '@codemod.com/workflow'
+
+const appDir = (await dirs`app`.map(({ cwd }) => cwd()))
+    .pop()
+
+await dirs('utils/*')
+  .move(appDir)
+```
+</RequestExample>

@@ -1,0 +1,42 @@
+---
+title: "codemod"
+icon: "slash-forward"
+---
+
+<ResponseField name="codemod(name, arguments)" />
+
+Executes [codemod from registry](https://codemod.com/registry) in current working directory.
+
+### Parameters
+<ParamField path="name" type="string" required>
+  Codemod name as published in [Codemod Registry](https://codemod.com/registry).
+</ParamField>
+
+<ParamField path="arguments" type="string | number | boolean | (string | number | boolean)[]">
+  Codemod arguments. Arguments are passed as key-value pair objects.
+</ParamField>
+
+### Returns
+- [codemod](./codemod)
+- [exec](./exec)
+
+<RequestExample>
+    ```tsx single call
+    import { codemod } from '@codemod.com/workflow'
+
+    await codemod('openFeature-replace-feature-flag', {
+        key: 'someFeatureFlag',
+        value: 'replacement',
+    })
+    ```
+
+    ```tsx chain call
+    import { codemod } from '@codemod.com/workflow'
+
+    await codemod('openFeature-replace-feature-flag', {
+        key: 'someFeatureFlag',
+        value: 'replacement',
+    })
+        .codemod('valibot/migrate-to-v0.31.0')
+    ```
+</RequestExample>

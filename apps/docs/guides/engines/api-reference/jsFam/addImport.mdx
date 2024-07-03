@@ -1,0 +1,31 @@
+---
+title: "addImport"
+---
+
+<ResponseField name="addImport(importString)" />
+Adds import to js file.
+Accepts code with imports and automatically merges file imports with provided imports.
+
+### Parameters:
+<ResponseField name="importString" type="string" required>
+    Full import line, e.g. `import { useEffect } from "react"`.
+</ResponseField>
+
+<RequestExample>
+```ts sample
+import { files } from '@codemod.com/workflow'
+
+await files
+    .jsFam(({ addImport }) => {
+        addImport('import { useEffect } from "react"')
+    })
+```
+
+```ts before
+import { useMemo } from "react"
+```
+
+```ts after
+import { useMemo, useEffect } from "react"
+```
+</RequestExample>

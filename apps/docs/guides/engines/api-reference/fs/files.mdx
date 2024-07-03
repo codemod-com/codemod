@@ -1,0 +1,46 @@
+---
+title: "files"
+---
+
+<ResponseField name="files(glob, callback)" />
+Filters out files using glob.
+By default all the files will be found.
+
+### Parameters
+
+<ParamField path="glob" type="string | readonly string[]">
+Accepts string and template literals. You can space or comma-separate multiple globs.
+</ParamField>
+
+<ResponseField name="callback" type="(subcommands: Subcommands) => Promise<void> | void">
+A callback which will be executed for each file. First argument is an object with [subcommands](#returns). It can be destructured to get access to subcommands.
+</ResponseField>
+
+### Returns
+- [jsFam](../jsFam/jsFam)
+- [astGrep](../ast-grep/ast-grep)
+- [move](./move)
+
+<RequestExample>
+```ts all js files
+import { files } from '@codemod.com/workflow'
+
+await files()
+  .jsFam()
+```
+
+```ts using glob
+import { files } from '@codemod.com/workflow'
+
+await files('**/*.ts,src/**/app.tsx')
+  .jsFam()
+```
+
+```ts callback
+await files('**/*.ts', async ({ jsFam }) => {
+    await jsFam()
+        .astGrep('console.log($$$A)')
+        .replace('console.error($$$A)')
+})
+```
+</RequestExample>
