@@ -13,11 +13,11 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 19
+          node-version: 20
       - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Install modules
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v4
         with:
           version: 9
           run_install: |
