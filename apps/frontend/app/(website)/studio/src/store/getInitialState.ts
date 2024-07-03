@@ -186,9 +186,9 @@ export const getInitialState = (): InitialState => {
 
       const editors = shareableCodemod.bm
         ? getMultipleEditors({
-            before: shareableCodemod.bm,
-            after: shareableCodemod.am,
-            names: shareableCodemod.nm,
+            before: shareableCodemod.bm.split("__codemod_splitter__"),
+            after: shareableCodemod.am.split("__codemod_splitter__"),
+            names: shareableCodemod.nm.split("__codemod_splitter__"),
           })
         : [
             {

@@ -67,9 +67,9 @@ export const useShareLink = () => {
         n: codemodName,
         b: getSelectedEditors().beforeSnippet,
         a: getSelectedEditors().afterSnippet,
-        bm: getAllSnippets().before,
-        am: getAllSnippets().after,
-        name: getAllNames(),
+        bm: getAllSnippets().before.join("__codemod_splitter__"),
+        am: getAllSnippets().after.join("__codemod_splitter__"),
+        nm: getAllNames().join("__codemod_splitter__"),
         c: content ?? "",
       });
 

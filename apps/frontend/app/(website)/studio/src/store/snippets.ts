@@ -109,10 +109,19 @@ export const useSnippetsStore = create<SnippetsState>(
       editors: INITIAL_STATE.editors,
       addPair: () =>
         set({
+          selectedPairIndex: get().editors.length,
           editors: [
             ...get().editors,
             {
-              name: `Test ${(get().editors.length + 1).toString()}`,
+              name: `Test ${
+                get()
+                  .getAllNames()
+                  .filter((name) => name.startsWith("Test "))
+                  .map((name) => name.split(" ")[1])
+                  .map(Number)
+                  .filter(Boolean)
+                  .at(-1) + 1
+              }`,
               before: getSnippetInitialState(),
               after: getSnippetInitialState(),
               output: getSnippetInitialState(),
@@ -132,6 +141,7 @@ export const useSnippetsStore = create<SnippetsState>(
           });
         } else
           set({
+            selectedPairIndex: Math.max(get().selectedPairIndex - 1, 0),
             editors: index ? remove(index, 1, get().editors) : get().editors,
           });
       },
