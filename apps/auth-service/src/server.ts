@@ -108,6 +108,11 @@ const clerkClient = createClerkClient({
 });
 
 const routes: FastifyPluginCallback = (instance, _opts, done) => {
+  instance.get("/", async (_, reply) => {
+    reply.type("application/json").code(200);
+    return { data: {} };
+  });
+
   instance.register(clerkPlugin, {
     publishableKey: environment.CLERK_PUBLISH_KEY,
     secretKey: environment.CLERK_SECRET_KEY,
