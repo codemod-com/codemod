@@ -1,14 +1,25 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { EditorsSnippets } from "@studio/store/snippets";
-import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
+import {
+  getEmptyTestCase,
+  getSingleTestCase,
+  getSnippetInitialState,
+  toInitialStates,
+} from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
 import { map, pipe, zip, zipWith } from "ramda";
 import { decode } from "universal-base64url";
+import { parse } from "valibot";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
-import { parseState } from "../schemata/stateSchemata";
+import {
+  editorsArraySchemata,
+  editorsSchemata,
+  editorsSnippetsSchema,
+  parseState,
+} from "../schemata/stateSchemata";
 
 export const DEFAULT_FIND_REPLACE_EXPRESSION = `
 root.find(j.FunctionDeclaration, {
@@ -124,143 +135,113 @@ const decodeNullable = (value: string | null): string | null => {
 };
 
 export const getInitialState = (): InitialState => {
-  {
-    if (typeof window === "undefined") {
+  if (typeof window === "undefined") {
+    return {
+      engine: "jscodeshift",
+      editors: [getEmptyTestCase()],
+      codemodSource: "",
+      codemodName: "",
+      command: null,
+    };
+  }
+
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const csc = searchParams.get(SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD);
+
+  if (csc !== null) {
+    try {
+      const encryptedString = window.atob(
+        csc.replaceAll("-", "+").replaceAll("_", "/"),
+      );
+
+      const numberArray = Array.from(encryptedString)
+        .map((character) => character.codePointAt(0))
+        .filter(isNeitherNullNorUndefined);
+
+      const uint8Array = Uint8Array.from(numberArray);
+
+      const decryptedString = inflate(uint8Array, { to: "string" });
+      const shareableCodemod = parseShareableCodemod(
+        JSON.parse(decryptedString),
+      );
+
+      const getMultipleEditors = ({
+        before,
+        after,
+        names,
+      }: {
+        before: string[];
+        after: string[];
+        names: string[];
+      }) => {
+        const zipit = zipWith((before, after) => ({ before, after }));
+        const zipitMore = zipWith(({ before, after }, name) => ({
+          before,
+          after,
+          name: name ?? "test",
+        }));
+        return zipitMore(zipit(before, after), names);
+      };
+
+      const editors = shareableCodemod.bm
+        ? getMultipleEditors({
+            before: shareableCodemod.bm,
+            after: shareableCodemod.am,
+            names: shareableCodemod.nm,
+          })
+        : [
+            {
+              name: "test 1",
+              before: shareableCodemod.b ?? "",
+              after: shareableCodemod.a ?? "",
+            },
+          ];
+
       return {
-        engine: "jscodeshift",
-        editors: [],
-        codemodSource: "",
-        codemodName: "",
+        engine: shareableCodemod.e ?? "jscodeshift",
+        editors: editors.map(toInitialStates),
+        codemodSource: shareableCodemod.c ?? "",
+        codemodName: shareableCodemod.n ?? null,
         command: null,
       };
-    }
-
-    const searchParams = new URLSearchParams(window.location.search);
-
-    const csc = searchParams.get(
-      SEARCH_PARAMS_KEYS.COMPRESSED_SHAREABLE_CODEMOD,
-    );
-
-    if (csc !== null) {
-      try {
-        const encryptedString = window.atob(
-          csc.replaceAll("-", "+").replaceAll("_", "/"),
-        );
-
-        const numberArray = Array.from(encryptedString)
-          .map((character) => character.codePointAt(0))
-          .filter(isNeitherNullNorUndefined);
-
-        const uint8Array = Uint8Array.from(numberArray);
-
-        const decryptedString = inflate(uint8Array, { to: "string" });
-        const shareableCodemod = parseShareableCodemod(
-          JSON.parse(decryptedString),
-        );
-
-        const getMultipleEditors = ({
-          beforeSnippets,
-          afterSnippets,
-          names,
-        }: {
-          beforeSnippets: string[];
-          afterSnippets: string[];
-          names: string[];
-        }) => {
-          const zipit = zipWith((before, after) => ({ before, after }));
-          const zipitMore = zipWith(({ before, after }, name) => ({
-            before,
-            after,
-            name,
-          }));
-          return zipitMore(zipit(beforeSnippets, afterSnippets), names);
-        };
-
-        const editors = shareableCodemod.bm
-          ? getMultipleEditors({
-              beforeSnippets: shareableCodemod.bm,
-              afterSnippets: shareableCodemod.am,
-              names: shareableCodemod.nm,
-            })
-          : [
-              {
-                name: "test 1",
-                before: shareableCodemod.b ?? "",
-                after: shareableCodemod.a ?? "",
-              },
-            ];
-
-        return {
-          engine: shareableCodemod.e ?? "jscodeshift",
-          editors,
-          codemodSource: shareableCodemod.c ?? "",
-          codemodName: shareableCodemod.n ?? null,
-          command: null,
-        };
-      } catch (error) {
-        console.error(error);
-      }
-    }
-
-    const engine = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
-    ) as KnownEngines;
-    const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
-    const codemodSource = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
-    );
-    const codemodName = decodeNullable(
-      searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
-    );
-
-    const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
-
-    const someSearchParamsSet = [
-      engine,
-      diffId,
-      codemodSource,
-      codemodName,
-      command,
-    ].some((s) => s !== null);
-
-    if (someSearchParamsSet) {
-      return {
-        engine: engine ?? "jscodeshift",
-        editors: [],
-        codemodSource: codemodSource ?? "",
-        codemodName: codemodName ?? "",
-        command:
-          command === "learn" || command === "accessTokenRequested"
-            ? command
-            : null,
-      };
+    } catch (error) {
+      console.error(error);
     }
   }
 
-  const stringifiedState = localStorage.getItem("editors");
+  const engine = decodeNullable(
+    searchParams.get(SEARCH_PARAMS_KEYS.ENGINE),
+  ) as KnownEngines;
+  const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+  const codemodSource = decodeNullable(
+    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_SOURCE),
+  );
+  const codemodName = decodeNullable(
+    searchParams.get(SEARCH_PARAMS_KEYS.CODEMOD_NAME),
+  );
 
-  try {
-    const state = parseState(JSON.parse(stringifiedState));
+  const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
 
-    const everyValueIsEmpty = [
-      state[0].afterSnippet,
-      state[0].beforeSnippet,
-      state.codemodSource,
-    ].every((s) => s === "");
+  const someSearchParamsSet = [
+    engine,
+    diffId,
+    codemodSource,
+    codemodName,
+    command,
+  ].some((s) => s !== null);
 
-    const codemodSource = everyValueIsEmpty
-      ? buildDefaultCodemodSource(state.engine)
-      : state.codemodSource;
-
+  if (someSearchParamsSet) {
     return {
-      engine: "jscodeshift",
-      editors: [getSingleTestCase()],
-      codemodSource,
-      codemodName: null,
-      command: null,
+      engine: engine ?? "jscodeshift",
+      editors: [getEmptyTestCase()],
+      codemodSource: codemodSource ?? "",
+      codemodName: codemodName ?? "",
+      command:
+        command === "learn" || command === "accessTokenRequested"
+          ? command
+          : null,
     };
-  } catch (error) {
-    console.error(error);
   }
 
   return {

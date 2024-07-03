@@ -19,7 +19,7 @@ export type Aliases = Record<
 export const useGetAliases = (): Aliases => {
   const codemodExecutionError = useCodemodExecutionError();
   const {
-    internalContent,
+    content,
     ranges: codemodInputRanges,
     rangesUpdatedAt,
   } = useModStore();
@@ -33,11 +33,11 @@ export const useGetAliases = (): Aliases => {
     before: { ranges: beforeInputRanges, rangeUpdatedAt: beforeRangeUpdatedAt },
   } = getSelectedEditors();
   return {
-    $CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
+    $CODEMOD: { value: content ?? "", updatedAt: -1 },
     $HIGHLIGHTED_IN_CODEMOD:
-      codemodInputRanges[0] && internalContent !== null
+      codemodInputRanges[0] && content !== null
         ? {
-            value: internalContent.slice(
+            value: content.slice(
               codemodInputRanges[0].start,
               codemodInputRanges[0].end,
             ),

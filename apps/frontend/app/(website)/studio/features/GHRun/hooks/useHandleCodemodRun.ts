@@ -15,14 +15,14 @@ export const useHandleCodemodRun = ({
   selectedBranch,
 }: Props) => {
   const { engine } = useSnippetsStore();
-  const { internalContent } = useModStore();
-  const isCodemodSourceNotEmpty = internalContent?.trim() !== "";
+  const { content } = useModStore();
+  const isCodemodSourceNotEmpty = content?.trim() !== "";
 
   return async () => {
     if (
       selectedRepository === undefined ||
       selectedBranch === undefined ||
-      internalContent === null ||
+      content === null ||
       !isCodemodSourceNotEmpty ||
       !(engine === "jscodeshift" || engine === "ts-morph") // other engines are not supported by backend API
     ) {
@@ -32,7 +32,7 @@ export const useHandleCodemodRun = ({
     const request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
-      codemodSource: await transpileTs(internalContent),
+      codemodSource: await transpileTs(content),
       branch: selectedBranch.name,
     };
 

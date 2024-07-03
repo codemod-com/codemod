@@ -8,15 +8,9 @@ import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThu
 import { TabNames, useViewStore } from "@studio/store/view";
 
 export const useCodeDiff = () => {
-  const { getSelectedEditors } = useSnippetsStore();
-  const {
-    outputSnippet,
-    afterSnippet,
-    after: { ranges: afterInputRanges },
-    output: { ranges: outputRanges },
-  } = getSelectedEditors();
+  const { getSelectedEditors, selectedPairIndex } = useSnippetsStore();
   const setRangeThunk = useRangesOnTarget();
-  const { internalContent } = useModStore();
+  const { content } = useModStore();
   const setActiveEventThunk = useSetActiveEventThunk();
 
   const { value, handleSelectionChange, onSnippetChange, onSnippetBlur } =
@@ -24,8 +18,15 @@ export const useCodeDiff = () => {
 
   const { setActiveTab } = useViewStore();
 
+  const {
+    outputSnippet,
+    afterSnippet,
+    after: { ranges: afterInputRanges },
+    output: { ranges: outputRanges },
+  } = getSelectedEditors();
+
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(afterSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+  const codemodSourceHasOnlyWhitespaces = !/\S/.test(content ?? "");
 
   const onSelectionChange = (range: OffsetRange) => {
     setRangeThunk({

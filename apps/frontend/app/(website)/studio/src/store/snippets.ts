@@ -10,6 +10,7 @@ import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 import { map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type Token = Readonly<{
   start: number;
@@ -67,6 +68,12 @@ export type EditorsSnippets = {
   [x in Omit<keyof Editors, "output">]: string;
 };
 
+const toEditorSnippets = (editors: Editors): EditorsSnippets => ({
+  name: editors.name,
+  before: editors.before.content,
+  after: editors.after.content,
+});
+
 type AllEditors = {
   [x in keyof Editors]: SnippetValues[];
 };
@@ -76,7 +83,11 @@ type AllSnippets = {
   after: string[];
   output: string[];
 };
-type SnippetsValues = { editors: Editors[]; getAllSnippets: () => AllSnippets };
+type SnippetsValues = {
+  editors: Editors[];
+  getAllSnippets: () => AllSnippets;
+  getAllNames: () => string[];
+};
 type SnippetsState = SnippetsValues & SnippetsSetters & SnippetsConfig;
 
 type SnippetsSetters = {
@@ -92,125 +103,142 @@ const getEditorsFromLS = () => {
   if (!editors) return;
   return;
 };
-export const useSnippetsStore = create<SnippetsState>((set, get) => ({
-  editors: getEditorsFromLS() || INITIAL_STATE.editors,
-  addPair: () =>
-    set({
-      editors: [
-        ...get().editors,
-        {
-          name: `Test ${(get().editors.length + 1).toString()}`,
-          before: getSnippetInitialState(),
-          after: getSnippetInitialState(),
-          output: getSnippetInitialState(),
-        },
-      ],
-    }),
-  renameEditor: (index) => (name) => {
-    const obj = get();
-    obj.editors[index].name = name;
-    set(obj);
-  },
-  removePair: (index: number) => {
-    if (index === get().selectedPairIndex) {
-      set({
-        selectedPairIndex: 0,
-        editors: index ? remove(index, 1, get().editors) : get().editors,
-      });
-    } else
-      set({
-        editors: index ? remove(index, 1, get().editors) : get().editors,
-      });
-  },
-  clearAll: () =>
-    set({
-      editors: [
-        {
-          name: "1",
-          before: getSnippetInitialState(),
-          after: getSnippetInitialState(),
-          output: getSnippetInitialState(),
-        },
-      ],
-    }),
-  engine: "jscodeshift",
-  selectedPairIndex: 0,
-  getAllSnippets: () => {
-    return mapObjIndexed(
-      map(({ content }: SnippetValues) => content),
-      reduce(
-        (acc, { before, after, output }) => ({
-          before: [...acc.before, before],
-          after: [...acc.after, after],
-          output: [...acc.output, output],
+export const useSnippetsStore = create<SnippetsState>(
+  persist(
+    (set, get) => ({
+      editors: INITIAL_STATE.editors,
+      addPair: () =>
+        set({
+          editors: [
+            ...get().editors,
+            {
+              name: `Test ${(get().editors.length + 1).toString()}`,
+              before: getSnippetInitialState(),
+              after: getSnippetInitialState(),
+              output: getSnippetInitialState(),
+            },
+          ],
         }),
-        {
-          before: [],
-          after: [],
-          output: [],
-        } as AllEditors,
-        get().editors,
-      ),
-    );
-  },
-  setSelectedPairIndex: (i: number) => {
-    set({ selectedPairIndex: i });
-  },
-  getSelectedEditors: () => {
-    const index = get().selectedPairIndex || 0;
-    const editors = (get().editors?.[index] as Editors) || [];
-    return {
-      ...editors,
-      setContent: (type) => get().setContent(index, type),
-      beforeSnippet: editors[0]?.before?.content || "",
-      afterSnippet: editors[0]?.after?.content || "",
-      outputSnippet: editors[0]?.output?.content || "",
-      setBeforeSnippet: get().setContent(index, "before"),
-      setAfterSnippet: get().setContent(index, "after"),
-      setOutputSnippet: get().setContent(index, "output"),
-      setBeforeSelection: get().setSelection(index, "before"),
-      setAfterSelection: get().setSelection(index, "after"),
-      setOutputSelection: get().setSelection(index, "output"),
-      setSelection: (editorType: EditorType) =>
-        get().setSelection(index, editorType),
-    };
-  },
-  setEngine: (engine) =>
-    set({
-      engine,
+      renameEditor: (index) => (name) => {
+        const obj = get();
+        obj.editors[index].name = name;
+        set(obj);
+      },
+      removePair: (index: number) => {
+        if (index === get().selectedPairIndex) {
+          set({
+            selectedPairIndex: 0,
+            editors: index ? remove(index, 1, get().editors) : get().editors,
+          });
+        } else
+          set({
+            editors: index ? remove(index, 1, get().editors) : get().editors,
+          });
+      },
+      clearAll: () =>
+        set({
+          editors: [
+            {
+              name: "1",
+              before: getSnippetInitialState(),
+              after: getSnippetInitialState(),
+              output: getSnippetInitialState(),
+            },
+          ],
+        }),
+      engine: INITIAL_STATE.engine,
+      selectedPairIndex: 0,
+      getAllNames: () => get().editors.map(({ name }) => name),
+      getAllSnippets: () => {
+        return mapObjIndexed(
+          map(({ content }: SnippetValues) => content),
+          reduce(
+            (acc, { before, after, output }) => ({
+              before: [...acc.before, before],
+              after: [...acc.after, after],
+              output: [...acc.output, output],
+            }),
+            {
+              before: [],
+              after: [],
+              output: [],
+            } as AllEditors,
+            get().editors,
+          ),
+        );
+      },
+      setSelectedPairIndex: (i: number) => {
+        set({ selectedPairIndex: i });
+      },
+      getSelectedEditors: () => {
+        const index = get().selectedPairIndex || 0;
+        const editors = get().editors?.[index] as Editors;
+        return {
+          ...editors,
+          setContent: (type) => get().setContent(index, type),
+          beforeSnippet: editors?.before?.content || "",
+          afterSnippet: editors?.after?.content || "",
+          outputSnippet: editors?.output?.content || "",
+          setBeforeSnippet: get().setContent(index, "before"),
+          setAfterSnippet: get().setContent(index, "after"),
+          setOutputSnippet: get().setContent(index, "output"),
+          setBeforeSelection: get().setSelection(index, "before"),
+          setAfterSelection: get().setSelection(index, "after"),
+          setOutputSelection: get().setSelection(index, "output"),
+          setSelection: (editorType: EditorType) =>
+            get().setSelection(index, editorType),
+        };
+      },
+      setEngine: (engine) =>
+        set({
+          engine,
+        }),
+      setContent: (editorsPairIndex, type) => {
+        return (content) => {
+          const parsed = parseSnippet(content);
+          const rootNode = isFile(parsed)
+            ? mapBabelASTToRenderableTree(parsed)
+            : null;
+
+          const rpath = ["editors", editorsPairIndex, type];
+
+          const obj = get();
+          obj.editors[editorsPairIndex][type].content = content;
+          obj.editors[editorsPairIndex][type].rootNode = rootNode;
+          set(obj);
+          try {
+            localStorage.setItem(
+              "editors",
+              JSON.stringify(obj.editors.map(toEditorSnippets)),
+            );
+          } catch (error) {
+            console.error("error on JSON.stringify(obj.editors) ", { error });
+          }
+        };
+      },
+      setSelection: (editorsPairIndex, type) => (command) => {
+        const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
+        if (rootNode) {
+          const ranges = buildRanges(rootNode, command);
+
+          const obj = get();
+          obj.editors[editorsPairIndex][type].ranges = ranges;
+          obj.editors[editorsPairIndex][type].rangeUpdatedAt = Date.now();
+          set(obj);
+        }
+      },
     }),
-  setContent: (editorsPairIndex, type) => {
-    return (content) => {
-      const parsed = parseSnippet(content);
-      const rootNode = isFile(parsed)
-        ? mapBabelASTToRenderableTree(parsed)
-        : null;
-
-      const rpath = ["editors", editorsPairIndex, type];
-
-      const obj = get();
-      obj.editors[editorsPairIndex][type].content = content;
-      obj.editors[editorsPairIndex][type].rootNode = rootNode;
-      set(obj);
-      try {
-        localStorage.setItem("editors", JSON.stringify(obj.editors));
-      } catch (error) {
-        console.error("error on JSON.stringify(obj.editors) ", { error });
-      }
-    };
-  },
-  setSelection: (editorsPairIndex, type) => (command) => {
-    const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
-    if (rootNode) {
-      const ranges = buildRanges(rootNode, command);
-
-      const obj = get();
-      obj.editors[editorsPairIndex][type].ranges = ranges;
-      obj.editors[editorsPairIndex][type].rangeUpdatedAt = Date.now();
-      set(obj);
-    }
-  },
-}));
+    {
+      name: "snippets-storage",
+      merge: (persistedState, currentState) => ({
+        ...currentState,
+        ...persistedState,
+        engine: persistedState.engine || INITIAL_STATE.engine,
+        editors: persistedState.editors || INITIAL_STATE.editors,
+      }),
+    },
+  ),
+);
 
 export const useSelectFirstTreeNodeForSnippet = () => {
   const { getSelectedEditors } = useSnippetsStore();

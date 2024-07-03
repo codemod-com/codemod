@@ -19,6 +19,13 @@ export const AFTER_SNIPPET_DEFAULT_CODE = `function mapStateToProps(state: State
 }
 `;
 
+export const toInitialStates = ({ before, after, name }) => ({
+  name,
+  before: getSnippetInitialState(before),
+  after: getSnippetInitialState(after),
+  output: getSnippetInitialState(),
+});
+
 export const getSnippetInitialState = (
   defaultContent: string | null = "",
 ): SnippetValues => {
@@ -52,5 +59,12 @@ export const getSingleTestCase = () => ({
   name: "Test 1",
   before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
   after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
+  output: getSnippetInitialState(),
+});
+
+export const getEmptyTestCase = () => ({
+  name: "Test 1",
+  before: getSnippetInitialState(),
+  after: getSnippetInitialState(),
   output: getSnippetInitialState(),
 });

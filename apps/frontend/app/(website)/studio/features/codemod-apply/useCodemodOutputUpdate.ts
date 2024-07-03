@@ -10,12 +10,12 @@ export const useCodemodOutputUpdate = () => {
   const { setHasRuntimeErrors } = useModStore();
   const { engine, getSelectedEditors } = useSnippetsStore();
   const { beforeSnippet, setOutputSnippet } = getSelectedEditors();
-  const { internalContent } = useModStore();
+  const { content } = useModStore();
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
-  const codemodSourceHasOnlyWhitespaces = !/\S/.test(internalContent ?? "");
+  const codemodSourceHasOnlyWhitespaces = !/\S/.test(content ?? "");
 
   useEffect(() => {
-    postMessage(engine, internalContent ?? "", beforeSnippet);
+    postMessage(engine, content ?? "", beforeSnippet);
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
       setOutputSnippet("");
       setHasRuntimeErrors(false);
@@ -38,7 +38,7 @@ export const useCodemodOutputUpdate = () => {
     webWorkerState.output,
     engine,
     beforeSnippet,
-    internalContent,
+    content,
     postMessage,
   ]);
 

@@ -1,11 +1,13 @@
+import { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useModStore } from "@studio/store/mod";
 import { deflate } from "pako";
 import { useSnippetsStore } from "../store/snippets";
 
 export const useShareLink = () => {
-  const { engine, getSelectedEditors } = useSnippetsStore();
-  const { internalContent } = useModStore();
+  const { engine, getSelectedEditors, getAllSnippets, getAllNames } =
+    useSnippetsStore();
+  const { content } = useModStore();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
   // 	try {
@@ -53,7 +55,7 @@ export const useShareLink = () => {
 
   const getURL = (): URL | null => {
     try {
-      if (internalContent === null) {
+      if (content === null) {
         throw new Error("codemod content not found");
       }
 
@@ -65,8 +67,11 @@ export const useShareLink = () => {
         n: codemodName,
         b: getSelectedEditors().beforeSnippet,
         a: getSelectedEditors().afterSnippet,
-        c: internalContent ?? "",
-      }); //satisfies ShareableCodemod);
+        bm: getAllSnippets().before,
+        am: getAllSnippets().after,
+        name: getAllNames(),
+        c: content ?? "",
+      });
 
       const uint8array = deflate(input, { level: 9 });
 

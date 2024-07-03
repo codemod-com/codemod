@@ -48,20 +48,17 @@ export const DownloadZip = () => {
 
   const handleClick = async () => {
     setIsDownloading(true);
-    if (!modStore.internalContent) {
+    if (!modStore.content) {
       return;
     }
 
     const token = await getToken();
 
-    const humanCodemodName = await getHumanCodemodName(
-      modStore.internalContent,
-      token,
-    );
+    const humanCodemodName = await getHumanCodemodName(modStore.content, token);
 
     await downloadProject({
       name: humanCodemodName,
-      codemodBody: modStore.internalContent,
+      codemodBody: modStore.content,
       cases: [
         {
           before: snippetStore.getSelectedEditors().beforeSnippet,
@@ -93,7 +90,7 @@ export const DownloadZip = () => {
             </p>
           }
           isLoading={isDownloading}
-          disabled={!modStore.internalContent || isDownloading}
+          disabled={!modStore.content || isDownloading}
           onClick={handleClick}
           id="download-zip-button"
         >
