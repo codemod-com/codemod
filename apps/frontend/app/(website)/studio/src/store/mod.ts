@@ -70,8 +70,7 @@ export const useModStore = create<ModState>(
       merge: (persistedState, currentState) => ({
         ...currentState,
         ...persistedState,
-        ...(console.log({ persistedState }) ||
-          (!persistedState && getInitialState())),
+        ...(!persistedState && getInitialState()),
       }),
     },
   ),
