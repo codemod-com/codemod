@@ -1,8 +1,8 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import type { NapiConfig, SgNode } from "@ast-grep/napi";
-import type MagicString from "magic-string";
 
 import { invariant } from "ts-invariant";
+import type { FileContext } from "./contexts/FileContext.js";
 import type { GitContext } from "./contexts/GitContext.js";
 import { noContextFn } from "./helpers.js";
 
@@ -16,7 +16,6 @@ export const registerContext = <T>(name: string, ctx: AsyncLocalStorage<T>) => {
 export type AstGrepNodeContext = {
   query: string | NapiConfig;
   node: SgNode;
-  contents: MagicString;
 };
 
 export const parentContextLegacy = new AsyncLocalStorage<
@@ -59,10 +58,7 @@ export const parentCwdContext = registerContext(
 );
 export const fileContext = registerContext(
   "fileContext",
-  new AsyncLocalStorage<{
-    file: string;
-    importsUpdates: { type: "add" | "remove"; import: string }[];
-  }>(),
+  new AsyncLocalStorage<FileContext>(),
 );
 export const repositoryContext = registerContext(
   "repositoryContext",

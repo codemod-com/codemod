@@ -61,6 +61,6 @@ export function execLogic(
 
 export const exec = fnWrapper("exec", execLogic);
 
-const execHelpers = { exec, codemod, jsFiles, files };
+const execHelpers = { exec, codemod };
 
 type ExecHelpers = typeof execHelpers;
