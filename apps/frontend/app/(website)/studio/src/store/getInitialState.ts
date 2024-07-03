@@ -5,6 +5,7 @@ import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
+import { map, pipe, zip, zipWith } from "ramda";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 import { parseState } from "../schemata/stateSchemata";
@@ -157,15 +158,41 @@ export const getInitialState = (): InitialState => {
           JSON.parse(decryptedString),
         );
 
+        const getMultipleEditors = ({
+          beforeSnippets,
+          afterSnippets,
+          names,
+        }: {
+          beforeSnippets: string[];
+          afterSnippets: string[];
+          names: string[];
+        }) => {
+          const zipit = zipWith((before, after) => ({ before, after }));
+          const zipitMore = zipWith(({ before, after }, name) => ({
+            before,
+            after,
+            name,
+          }));
+          return zipitMore(zipit(beforeSnippets, afterSnippets), names);
+        };
+
+        const editors = shareableCodemod.bm
+          ? getMultipleEditors({
+              beforeSnippets: shareableCodemod.bm,
+              afterSnippets: shareableCodemod.am,
+              names: shareableCodemod.nm,
+            })
+          : [
+              {
+                name: "test 1",
+                before: shareableCodemod.b ?? "",
+                after: shareableCodemod.a ?? "",
+              },
+            ];
+
         return {
           engine: shareableCodemod.e ?? "jscodeshift",
-          editors: [
-            {
-              name: "test 1",
-              before: shareableCodemod.b ?? "",
-              after: shareableCodemod.a ?? "",
-            },
-          ],
+          editors,
           codemodSource: shareableCodemod.c ?? "",
           codemodName: shareableCodemod.n ?? null,
           command: null,

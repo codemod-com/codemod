@@ -22,7 +22,7 @@ export const useGetAliases = (): Aliases => {
     internalContent,
     ranges: codemodInputRanges,
     rangesUpdatedAt,
-  } = useModStore.getState();
+  } = useModStore();
 
   const { getSelectedEditors } = useSnippetsStore();
 
