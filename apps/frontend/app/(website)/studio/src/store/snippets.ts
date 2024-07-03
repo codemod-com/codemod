@@ -162,9 +162,9 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     return {
       ...editors,
       setContent: (type) => get().setContent(index, type),
-      beforeSnippet: editors[0].before?.content || "",
-      afterSnippet: editors[0].after?.content || "",
-      outputSnippet: editors[0].output?.content || "",
+      beforeSnippet: editors[0]?.before?.content || "",
+      afterSnippet: editors[0]?.after?.content || "",
+      outputSnippet: editors[0]?.output?.content || "",
       setBeforeSnippet: get().setContent(index, "before"),
       setAfterSnippet: get().setContent(index, "after"),
       setOutputSnippet: get().setContent(index, "output"),
