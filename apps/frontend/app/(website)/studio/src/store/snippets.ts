@@ -147,9 +147,10 @@ export const useSnippetsStore = create<SnippetsState>(
       },
       clearAll: () =>
         set({
+          selectedPairIndex: 0,
           editors: [
             {
-              name: "1",
+              name: "Test 1",
               before: getSnippetInitialState(),
               after: getSnippetInitialState(),
               output: getSnippetInitialState(),

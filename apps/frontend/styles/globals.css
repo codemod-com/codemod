@@ -321,3 +321,7 @@ h6[class*="heading"] a {
 .og-title {
   text-align: left;
 }
+
+.tab-item.input-error {
+  border-color: red;
+}

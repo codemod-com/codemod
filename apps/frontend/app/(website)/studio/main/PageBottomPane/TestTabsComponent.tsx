@@ -19,7 +19,8 @@ export const TestTabsComponent = () => {
   const [newName, setNewName] = useState("");
   const tabsRef = useRef(null);
   const inputRef = useRef(null);
-
+  const [isEditedNameAlreadyInUse, setIsEditedNameAlreadyInUse] =
+    useState(false);
   useEffect(() => {
     if (inputRef.current) {
       setTimeout(() => inputRef.current.focus(), 0);
@@ -36,11 +37,20 @@ export const TestTabsComponent = () => {
       newName.trim() === "" ||
       editors.some((editor, i) => editor.name === newName && i !== index)
     ) {
-      setNewName(editors[index].name);
+      handleRename(index);
     } else {
       renameEditor(index)(newName);
     }
     setEditingIndex(null);
+    setIsEditedNameAlreadyInUse(false);
+  };
+
+  const onChange = (e) => {
+    const value = e.target.value;
+    setIsEditedNameAlreadyInUse(
+      editors.some((editor) => editor.name === value),
+    );
+    setNewName(value);
   };
 
   const handleKeyPress = (e, index) => {
@@ -55,7 +65,11 @@ export const TestTabsComponent = () => {
         {editors.map((editor, i) => (
           <div
             key={editor.name}
-            className={cn("tab-item", selectedPairIndex === i && "active")}
+            className={cn(
+              isEditedNameAlreadyInUse && "input-error",
+              "tab-item",
+              selectedPairIndex === i && "active",
+            )}
           >
             <Tabs.Trigger
               className={cn("tab-trigger")}
@@ -69,7 +83,7 @@ export const TestTabsComponent = () => {
                   type="text"
                   value={newName}
                   style={{ padding: "0", margin: 0 }}
-                  onChange={(e) => setNewName(e.target.value)}
+                  onChange={onChange}
                   onBlur={() => handleBlur(i)}
                   onKeyPress={(e) => handleKeyPress(e, i)}
                 />
