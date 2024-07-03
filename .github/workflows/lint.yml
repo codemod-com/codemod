@@ -22,7 +22,7 @@ jobs:
                   node-version: 20
 
             - name: Install modules
-              uses: pnpm/action-setup@v4
+              uses: pnpm/action-setup@v2
 
             - name: Install dependencies
               run: pnpm install
