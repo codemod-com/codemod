@@ -13,6 +13,7 @@ import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaCleanAll } from "@sanity/client/stega";
 import { vercelStegaSplit } from "@vercel/stega";
 import Link from "next/link";
+import { prop, uniqBy } from "ramda";
 import type { ReactNode } from "react";
 import VerifiedBadge from "../Registry/VerifiedBadge";
 import {
@@ -59,7 +60,7 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
   const authorIcons = getFilterSection("author", data?.filterIconDictionary);
   const authorImage = getFilterIcon(authorIcons, author);
   const buildYourCodemodCard = getCodemodCard(data);
-  const frameworkCards = frameworks.map(getFrameworkCard);
+  const frameworkCards = uniqBy(prop("name"), frameworks).map(getFrameworkCard);
   const categoryIcons = getFilterSection(
     "category",
     data?.filterIconDictionary,
@@ -124,16 +125,16 @@ export default function CodemodPageUI({ data, description }: CodemodPageProps) {
           </div>
 
           <div className="mt-6 flex items-center gap-s rounded-[8px] border border-border-light p-s dark:border-border-dark">
-            {frameworks.length ? (
-              <>
-                <InfoCard
-                  value={frameworksDescription}
-                  label="Made for"
-                  icon="/icons/badge-info.svg"
-                />
-                <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />
-              </>
-            ) : null}
+            {/*{frameworks.length ? (*/}
+            {/*  <>*/}
+            {/*    <InfoCard*/}
+            {/*      value={frameworksDescription}*/}
+            {/*      label="Made for"*/}
+            {/*      icon="/icons/badge-info.svg"*/}
+            {/*    />*/}
+            {/*    <span className="h-full w-[2px] bg-border-light dark:bg-border-dark" />*/}
+            {/*  </>*/}
+            {/*) : null}*/}
             {currentVersion?.updatedAt && (
               <InfoCard
                 value={new Date(currentVersion?.updatedAt).toLocaleString(
