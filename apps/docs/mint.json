@@ -77,60 +77,24 @@
       "pages": ["guides/introduction"]
     },
     {
-      "group": "Workflow Engine",
-      "pages": ["guides/engines/workflow-engine"]
+      "group": "Engines",
+      "pages": [
+        {
+          "group": "Codemod Workflow Engine",
+          "pages": [
+            "guides/engines/workflow-engine",
+            "guides/engines/workflow-engine/core-concepts",
+            "guides/engines/workflow-engine/api-reference"
+          ]
+        }
+      ]
     },
     {
-      "group": "API Reference",
+      "group": "Migrations",
       "pages": [
-        "guides/engines/workflow-engine/api-reference/codemod",
-        "guides/engines/workflow-engine/api-reference/ast-grep/ai",
-        {
-          "group": "pattern matching",
-          "icon": "code",
-          "pages": [
-            {
-              "group": "ast-grep",
-              "icon": "code",
-              "pages": ["guides/engines/workflow-engine/api-reference/ast-grep"]
-            },
-            "guides/engines/workflow-engine/api-reference/ast-grep",
-            "guides/engines/workflow-engine/api-reference/ast-grep/replace",
-            "guides/engines/workflow-engine/api-reference/ast-grep/map",
-            "guides/engines/workflow-engine/api-reference/ast-grep/ai"
-          ]
-        },
-        {
-          "group": "JavaScript/TypeScript",
-          "icon": "js",
-          "pages": [
-            "guides/engines/workflow-engine/api-reference/jsFam/jsFam",
-            "guides/engines/workflow-engine/api-reference/jsFam/jscodeshift",
-            "guides/engines/workflow-engine/api-reference/ast-grep",
-            "guides/engines/workflow-engine/api-reference/jsFam/addImport",
-            "guides/engines/workflow-engine/api-reference/jsFam/removeImport"
-          ]
-        },
-        {
-          "group": "git",
-          "icon": "git-alt",
-          "pages": [
-            "guides/engines/workflow-engine/api-reference/git/clone",
-            "guides/engines/workflow-engine/api-reference/git/branch",
-            "guides/engines/workflow-engine/api-reference/git/commit",
-            "guides/engines/workflow-engine/api-reference/git/push"
-          ]
-        },
-        {
-          "group": "file system",
-          "icon": "folder-tree",
-          "pages": [
-            "guides/engines/workflow-engine/api-reference/fs/files",
-            "guides/engines/workflow-engine/api-reference/fs/dirs",
-            "guides/engines/workflow-engine/api-reference/fs/move"
-          ]
-        },
-        "guides/engines/workflow-engine/api-reference/exec"
+        "guides/migrations/react-18-19",
+        "guides/migrations/msw-v1-v2",
+        "guides/external-links/valibot"
       ]
     }
   ],
