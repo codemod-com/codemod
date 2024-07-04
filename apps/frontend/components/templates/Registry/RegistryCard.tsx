@@ -6,6 +6,7 @@ import { useRegistryFilters } from "@/hooks/useRegistryFilters";
 import type { RegistryCardData } from "@/types/object.types";
 import { capitalize, unslugify } from "@/utils/strings";
 import { vercelStegaSplit } from "@vercel/stega";
+import { prop, uniqBy } from "ramda";
 import { SanityLink } from "../../shared/SanityLink";
 import Tag from "../../shared/Tag";
 import VerifiedBadge from "./VerifiedBadge";
@@ -76,50 +77,55 @@ export default function RegistryCard(props: RegistryCardData) {
         {/* tags */}
         <div className="flex items-center gap-xs">
           {props.verified && <VerifiedBadge content={props.verifiedTooltip} />}
-          {frameworks.map(({ name: framework, image: frameworkImage }) => (
-            <button
-              key={framework}
-              onLoad={() =>
-                prefetchFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
-              }
-              onClick={() =>
-                handleFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
-              }
-              type="button"
-            >
-              <Tag intent="default">
-                <>
-                  {frameworkImage?.image.light && (
-                    <SanityImage
-                      maxWidth={20}
-                      image={frameworkImage.image.light}
-                      alt={frameworkImage.image.light.alt}
-                      elProps={{
-                        width: 20,
-                        height: 20,
-                        className: "h-5 w-5 dark:hidden",
-                      }}
-                    />
-                  )}
+          {uniqBy(prop("name"), frameworks).map(
+            ({ name: framework, image: frameworkImage }) => (
+              <button
+                key={framework}
+                onLoad={() =>
+                  prefetchFilterChange(
+                    REGISTRY_FILTER_TYPES.framework,
+                    framework,
+                  )
+                }
+                onClick={() =>
+                  handleFilterChange(REGISTRY_FILTER_TYPES.framework, framework)
+                }
+                type="button"
+              >
+                <Tag intent="default">
+                  <>
+                    {frameworkImage?.image.light && (
+                      <SanityImage
+                        maxWidth={20}
+                        image={frameworkImage.image.light}
+                        alt={frameworkImage.image.light.alt}
+                        elProps={{
+                          width: 20,
+                          height: 20,
+                          className: "h-5 w-5 dark:hidden",
+                        }}
+                      />
+                    )}
 
-                  {frameworkImage?.image.dark && (
-                    <SanityImage
-                      maxWidth={20}
-                      image={frameworkImage.image.dark}
-                      alt={frameworkImage.image.dark.alt}
-                      elProps={{
-                        width: 20,
-                        height: 20,
-                        className: "hidden h-5 w-5 dark:inline",
-                      }}
-                    />
-                  )}
-                </>
+                    {frameworkImage?.image.dark && (
+                      <SanityImage
+                        maxWidth={20}
+                        image={frameworkImage.image.dark}
+                        alt={frameworkImage.image.dark.alt}
+                        elProps={{
+                          width: 20,
+                          height: 20,
+                          className: "hidden h-5 w-5 dark:inline",
+                        }}
+                      />
+                    )}
+                  </>
 
-                <span>{capitalize(framework)}</span>
-              </Tag>
-            </button>
-          ))}
+                  <span>{capitalize(framework)}</span>
+                </Tag>
+              </button>
+            ),
+          )}
           {props.useCaseCategory && (
             <button
               onClick={() =>
