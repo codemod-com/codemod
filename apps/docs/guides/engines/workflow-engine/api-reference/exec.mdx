@@ -7,20 +7,7 @@ icon: "terminal"
 
 Executes cli command in current working directory.
 
-### Parameters
-<ParamField path="name" type="string" required>
-  Command name.
-</ParamField>
-
-<ParamField path="arguments" type="string[]">
-  Arguments passed to command.
-</ParamField>
-
-### Returns
-- [codemod](./codemod)
-- [exec](./exec)
-
-<RequestExample>
+<CodeGroup>
 ```ts chain call
 import { exec, git } from '@codemod.com/workflow'
 await git.clone('git@github.com:codemod-com/codemod.git', async ({ files, branch, commit, push, exec }) => {
@@ -44,4 +31,17 @@ import { exec } from '@codemod.com/workflow'
 
 await exec('pnpm', ['install'])
 ```
-</RequestExample>
+</CodeGroup>
+
+**Parameters:**
+<ParamField path="name" type="string" required>
+  Command name.
+</ParamField>
+
+<ParamField path="arguments" type="string[]">
+  Arguments passed to command.
+</ParamField>
+
+**Returns:**
+- [codemod](./codemod)
+- [exec](./exec)

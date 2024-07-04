@@ -8,8 +8,8 @@
   },
   "favicon": "/favicon.svg",
   "colors": {
-    "primary": "#0B151E",
-    "light": "#D6FF62",
+    "primary": "#005a06",
+    "light": "#91c500",
     "dark": "#0B151E",
     "anchors": {
       "from": "#91c500",
@@ -83,49 +83,54 @@
     {
       "group": "API Reference",
       "pages": [
-        "guides/engines/api-reference/codemod",
-        "guides/engines/api-reference/ast-grep/ai",
+        "guides/engines/workflow-engine/api-reference/codemod",
+        "guides/engines/workflow-engine/api-reference/ast-grep/ai",
         {
           "group": "pattern matching",
           "icon": "code",
           "pages": [
-            "guides/engines/api-reference/ast-grep/ast-grep",
-            "guides/engines/api-reference/ast-grep/replace",
-            "guides/engines/api-reference/ast-grep/map",
-            "guides/engines/api-reference/ast-grep/ai"
+            {
+              "group": "ast-grep",
+              "icon": "code",
+              "pages": ["guides/engines/workflow-engine/api-reference/ast-grep"]
+            },
+            "guides/engines/workflow-engine/api-reference/ast-grep",
+            "guides/engines/workflow-engine/api-reference/ast-grep/replace",
+            "guides/engines/workflow-engine/api-reference/ast-grep/map",
+            "guides/engines/workflow-engine/api-reference/ast-grep/ai"
           ]
         },
         {
           "group": "JavaScript/TypeScript",
           "icon": "js",
           "pages": [
-            "guides/engines/api-reference/jsFam/jsFam",
-            "guides/engines/api-reference/jsFam/jscodeshift",
-            "guides/engines/api-reference/ast-grep/ast-grep",
-            "guides/engines/api-reference/jsFam/addImport",
-            "guides/engines/api-reference/jsFam/removeImport"
+            "guides/engines/workflow-engine/api-reference/jsFam/jsFam",
+            "guides/engines/workflow-engine/api-reference/jsFam/jscodeshift",
+            "guides/engines/workflow-engine/api-reference/ast-grep",
+            "guides/engines/workflow-engine/api-reference/jsFam/addImport",
+            "guides/engines/workflow-engine/api-reference/jsFam/removeImport"
           ]
         },
         {
           "group": "git",
           "icon": "git-alt",
           "pages": [
-            "guides/engines/api-reference/git/clone",
-            "guides/engines/api-reference/git/branch",
-            "guides/engines/api-reference/git/commit",
-            "guides/engines/api-reference/git/push"
+            "guides/engines/workflow-engine/api-reference/git/clone",
+            "guides/engines/workflow-engine/api-reference/git/branch",
+            "guides/engines/workflow-engine/api-reference/git/commit",
+            "guides/engines/workflow-engine/api-reference/git/push"
           ]
         },
         {
           "group": "file system",
           "icon": "folder-tree",
           "pages": [
-            "guides/engines/api-reference/fs/files",
-            "guides/engines/api-reference/fs/dirs",
-            "guides/engines/api-reference/fs/move"
+            "guides/engines/workflow-engine/api-reference/fs/files",
+            "guides/engines/workflow-engine/api-reference/fs/dirs",
+            "guides/engines/workflow-engine/api-reference/fs/move"
           ]
         },
-        "guides/engines/api-reference/exec"
+        "guides/engines/workflow-engine/api-reference/exec"
       ]
     }
   ],
