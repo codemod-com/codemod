@@ -107,9 +107,8 @@ export const useSnippetsStore = create<SnippetsState>(
   persist(
     (set, get) => ({
       editors: INITIAL_STATE.editors,
-      addPair: () =>
+      addPair: () => {
         set({
-          selectedPairIndex: get().editors.length,
           editors: [
             ...get().editors,
             {
@@ -127,36 +126,55 @@ export const useSnippetsStore = create<SnippetsState>(
               output: getSnippetInitialState(),
             },
           ],
-        }),
+        });
+        setTimeout(
+          () =>
+            set({
+              selectedPairIndex: get().editors.length - 1,
+            }),
+          100,
+        );
+      },
       renameEditor: (index) => (name) => {
         const obj = get();
         obj.editors[index].name = name;
         set(obj);
       },
       removePair: (index: number) => {
+        const editors =
+          get().editors.length > 1
+            ? remove(index, 1, get().editors)
+            : get().editors;
         if (index === get().selectedPairIndex) {
           set({
             selectedPairIndex: 0,
-            editors: index ? remove(index, 1, get().editors) : get().editors,
+            editors,
           });
         } else
           set({
             selectedPairIndex: Math.max(get().selectedPairIndex - 1, 0),
-            editors: index ? remove(index, 1, get().editors) : get().editors,
+            editors,
           });
       },
-      clearAll: () =>
+      clearAll: () => {
         set({
           selectedPairIndex: 0,
-          editors: [
-            {
-              name: "Test 1",
-              before: getSnippetInitialState(),
-              after: getSnippetInitialState(),
-              output: getSnippetInitialState(),
-            },
-          ],
-        }),
+        });
+        setTimeout(
+          () =>
+            set({
+              editors: [
+                {
+                  name: "Test 1",
+                  before: getSnippetInitialState(),
+                  after: getSnippetInitialState(),
+                  output: getSnippetInitialState(),
+                },
+              ],
+            }),
+          100,
+        );
+      },
       engine: INITIAL_STATE.engine,
       selectedPairIndex: 0,
       getAllNames: () => get().editors.map(({ name }) => name),
