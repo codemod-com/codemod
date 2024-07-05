@@ -44,6 +44,7 @@ export const useCodeDiff = () => {
   };
 
   const originalEditorProps = {
+    onBlur: onSnippetBlur,
     highlights: afterInputRanges,
     onSelectionChange: handleSelectionChange,
     onChange: onSnippetChange,
@@ -51,7 +52,7 @@ export const useCodeDiff = () => {
   };
 
   const modifiedEditorProps = {
-    onBlur: onSnippetBlur,
+    // onBlur: onSnippetBlur,
     highlights: outputRanges,
     onSelectionChange,
     value: outputSnippet ?? "",
