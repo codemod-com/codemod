@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/backend",
-  "version": "0.0.129",
+  "version": "0.0.130",
   "scripts": {
     "build": "node esbuild.config.js",
     "start": "node build/index.js",
@@ -41,6 +41,7 @@
     "@fastify/cors": "8.5.0",
     "@fastify/multipart": "^8.1.0",
     "@fastify/rate-limit": "9.0.1",
+    "@slack/web-api": "^7.2.0",
     "@types/tar": "^6.1.11",
     "ai": "2.2.29",
     "axios": "^1.6.8",
