@@ -5447,6 +5447,9 @@ importers:
       '@sindresorhus/slugify':
         specifier: ^2.2.1
         version: 2.2.1
+      '@types/jscodeshift':
+        specifier: ^0.11.6
+        version: 0.11.11
       colors-cli:
         specifier: ^1.0.33
         version: 1.0.33
@@ -5456,6 +5459,9 @@ importers:
       glob:
         specifier: ^10.4.1
         version: 10.4.2
+      jscodeshift:
+        specifier: ^0.15.0
+        version: 0.15.2(@babel/preset-env@7.24.7)
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
@@ -5477,6 +5483,9 @@ importers:
       ts-invariant:
         specifier: ^0.10.3
         version: 0.10.3
+      yaml:
+        specifier: ^2.4.5
+        version: 2.4.5
     devDependencies:
       '@codemod-com/utilities':
         specifier: workspace:*

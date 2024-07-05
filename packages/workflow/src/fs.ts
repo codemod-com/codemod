@@ -6,6 +6,7 @@ import slugify from "@sindresorhus/slugify";
 import filenamify from "filenamify";
 import * as glob from "glob";
 import { fileContext, getCwdContext } from "./contexts.js";
+import { FileContext } from "./contexts/FileContext.js";
 
 const DIRECTORY = "cm";
 
@@ -35,10 +36,7 @@ export const files = async (
   const { cwd } = getCwdContext();
   const files = await glob.glob(pattern, { cwd, nodir: true });
   for (const file of files) {
-    await fileContext.run(
-      { file: path.join(cwd, file), importsUpdates: [] },
-      cb,
-    );
+    await fileContext.run(new FileContext({ file: path.join(cwd, file) }), cb);
   }
 };
 

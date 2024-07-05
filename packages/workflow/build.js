@@ -23,5 +23,7 @@ build({
     "tree-kill",
     "ts-invariant",
     "prettier",
+    "jscodeshift",
+    "yaml",
   ],
 });

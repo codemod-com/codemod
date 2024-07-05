@@ -5,26 +5,24 @@ import { logger } from "../helpers.js";
 import { spawn } from "../spawn.js";
 import { push } from "./push.js";
 
-export function commitLogic(
-  commitName = "no commit message provided",
-): PLazy<Helpers> & Helpers {
+export function commitLogic(message: string): PLazy<Helpers> & Helpers {
   return new FunctionExecutor("commit")
     .arguments(() => ({
-      commitName,
+      message,
     }))
     .helpers(helpers)
     .executor(async (next, self) => {
-      const { commitName } = self.getArguments();
+      const { message } = self.getArguments();
       const { cwd } = getCwdContext();
       const { repository, branch } = getRepositoryContext();
       const log = logger(
         `Committing to ${repository}/tree/${branch}${
-          commitName ? ` with message: ${JSON.stringify(commitName)}` : ""
+          message ? ` with message: ${JSON.stringify(message)}` : ""
         }`,
       );
       try {
         await spawn("git", ["add", "."], { cwd });
-        const { stdout } = await spawn("git", ["commit", "-m", commitName], {
+        const { stdout } = await spawn("git", ["commit", "-m", message], {
           cwd: cwd,
           doNotThrowError: true,
         });

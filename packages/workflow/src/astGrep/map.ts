@@ -1,31 +1,22 @@
-import { PLazy } from "../PLazy.js";
 import { getAstGrepNodeContext } from "../contexts.js";
-import { fnWrapper, wrapContext } from "../engineHelpers.js";
-import { wrapHelpers } from "../helpers.js";
+import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 
 export function mapLogic<
   CALLBACK extends (helpers: Helpers) => ReturnType<CALLBACK>,
   RETURN extends ReturnType<CALLBACK>,
 >(callback: CALLBACK): Promise<RETURN[]> {
-  const innerParentContext = wrapContext.getStore();
-
-  const context = async (cb: any) => {
-    const response = [] as RETURN[];
-
-    await innerParentContext?.(async () => {
-      const result = await cb(wrapHelpers(helpers, context));
-      response.push(result);
-      return result;
-    });
-
-    return response;
-  };
-
-  const promise = new PLazy<RETURN[]>((resolve, reject) => {
-    context(callback).then(resolve).catch(reject);
-  }) as PLazy<RETURN[]>;
-
-  return promise;
+  const response = [] as RETURN[];
+  return new FunctionExecutor("map")
+    .helpers(helpers)
+    .arguments(() => ({ callback }))
+    .executor(async (next, self) => {
+      const { callback } = self.getArguments();
+      const result = await callback(helpers);
+      response.push(result as RETURN);
+      await next?.();
+    })
+    .return(() => response)
+    .run();
 }
 
 export const map = fnWrapper("map", mapLogic);

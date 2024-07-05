@@ -1,7 +1,9 @@
 import * as path from "node:path";
 import * as glob from "glob";
 import type { PLazy } from "./PLazy.js";
+import { astGrep } from "./astGrep/astGrep.js";
 import { fileContext, getCwdContext } from "./contexts.js";
+import { FileContext } from "./contexts/FileContext.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { move } from "./fs/move.js";
 import { parseMultistring } from "./helpers.js";
@@ -65,7 +67,7 @@ export function filesLogic(
 
       for (const file of files) {
         await fileContext.run(
-          { file: path.join(cwd, file), importsUpdates: [] },
+          new FileContext({ file: path.join(cwd, file) }),
           async () => {
             if (callback) {
               await callback(helpers);
@@ -81,6 +83,6 @@ export function filesLogic(
 
 export const files = fnWrapper("files", filesLogic);
 
-const helpers = { jsFam, move };
+const helpers = { jsFam, move, astGrep };
 
 type Helpers = typeof helpers;

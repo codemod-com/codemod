@@ -4,6 +4,7 @@
     "checkJs": false,
     "declaration": true,
     "emitDeclarationOnly": true,
+    "isolatedModules": false,
     "target": "ES2015",
     "outDir": "./dist"
   },

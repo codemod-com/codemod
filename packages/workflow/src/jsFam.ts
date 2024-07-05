@@ -4,6 +4,7 @@ import { astGrep } from "./astGrep/astGrep.js";
 import { getImports } from "./astGrep/getImports.js";
 import { getFileContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
+import { jscodeshift } from "./jsFam/jscodeshift.js";
 
 /**
  * @description Filter all js/ts files in current directory
@@ -100,6 +101,7 @@ const helpers = {
   removeImport: (line: string) => {
     getFileContext().importsUpdates.push({ type: "remove", import: line });
   },
+  jscodeshift,
 };
 
 export type Helpers = typeof helpers;
