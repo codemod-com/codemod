@@ -269,6 +269,12 @@ importers:
       '@ast-grep/napi':
         specifier: ^0.24.0
         version: 0.24.1
+      blessed:
+        specifier: ^0.1.81
+        version: 0.1.81
+      diff:
+        specifier: ^5.1.0
+        version: 5.2.0
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
@@ -297,12 +303,18 @@ importers:
       '@codemod-com/utilities':
         specifier: workspace:*
         version: link:../../packages/utilities
+      '@types/blessed':
+        specifier: ^0.1.25
+        version: 0.1.25
       '@types/cli-progress':
         specifier: ^3.11.5
         version: 3.11.5
       '@types/columnify':
         specifier: ^1.5.4
         version: 1.5.4
+      '@types/diff':
+        specifier: ^5.0.3
+        version: 5.2.1
       '@types/inquirer':
         specifier: ^9.0.7
         version: 9.0.7
@@ -10376,6 +10388,9 @@ packages:
   '@types/babel__traverse@7.20.6':
     resolution: {integrity: sha512-r1bzfrm0tomOI8g1SzvCaQHo6Lcv6zu0EA+W2kHrt8dyrHQxGzBBL4kdkzIS+jBMV+EYcMAEAqXqYaLJq5rOZg==}
 
+  '@types/blessed@0.1.25':
+    resolution: {integrity: sha512-kQsjBgtsbJLmG6CJA+Z6Nujj+tq1fcSE3UIowbDvzQI4wWmoTV7djUDhSo5lDjgwpIN0oRvks0SA5mMdKE5eFg==}
+
   '@types/chai@4.3.16':
     resolution: {integrity: sha512-PatH4iOdyh3MyWtmHVFXLWCCIhUbopaltqddG9BzB+gMIzee2MJrvd+jouii9Z3wzQJruGWAm7WOMjgfG8hQlQ==}
 
@@ -11362,6 +11377,11 @@ packages:
 
   bl@6.0.13:
     resolution: {integrity: sha512-tMncAcpsyjZgAVbVFupVIaB2xud13xxT59fdHkuszY2jdZkqIWfpQdmII1fOe3kOGAz0mNLTIHEm+KxpYsQKKg==}
+
+  blessed@0.1.81:
+    resolution: {integrity: sha512-LoF5gae+hlmfORcG1M5+5XZi4LBmvlXTzwJWzUlPryN/SJdSflZvROM2TwkT0GMpq7oqT48NRd4GS7BiVBc5OQ==}
+    engines: {node: '>= 0.8.0'}
+    hasBin: true
 
   bluebird@3.4.7:
     resolution: {integrity: sha512-iD3898SR7sWVRHbiQv+sHUtHnMvC1o3nW5rAcqnq3uOn07DSAppZYUkIGslDz6gXC7HfunPe7YVBgoEJASPcHA==}
@@ -23971,6 +23991,10 @@ snapshots:
     dependencies:
       '@babel/types': 7.24.7
 
+  '@types/blessed@0.1.25':
+    dependencies:
+      '@types/node': 20.14.8
+
   '@types/chai@4.3.16': {}
 
   '@types/cli-progress@3.11.5':
@@ -25222,6 +25246,8 @@ snapshots:
       buffer: 6.0.3
       inherits: 2.0.4
       readable-stream: 4.5.2
+
+  blessed@0.1.81: {}
 
   bluebird@3.4.7: {}
 

@@ -95,11 +95,13 @@ const initializeDependencies = async (argv: {
 
   const executeCliCommand = async (
     executableCallback: () => Promise<unknown> | unknown,
+    omitExit?: boolean,
   ) => {
     try {
       await executableCallback();
     } catch (error) {
       if (!(error instanceof Error)) {
+        exit();
         return;
       }
 
@@ -107,9 +109,13 @@ const initializeDependencies = async (argv: {
         kind: "error",
         message: error.message,
       });
+
+      exit();
     }
 
-    exit();
+    if (!omitExit) {
+      exit();
+    }
   };
 
   return {
@@ -143,11 +149,18 @@ export const executeMainThread = async () => {
       "runs a codemod or recipe",
       (y) => buildRunOptions(y),
       async (args) => {
-        const { printer, telemetryService, executeCliCommand } =
+        const { printer, telemetryService, executeCliCommand, exit } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() =>
-          handleRunCliCommand({ printer, args, telemetry: telemetryService }),
+        return executeCliCommand(
+          () =>
+            handleRunCliCommand({
+              printer,
+              args,
+              telemetry: telemetryService,
+              onExit: exit,
+            }),
+          true,
         );
       },
     )
@@ -157,11 +170,18 @@ export const executeMainThread = async () => {
       "run pre-commit codemods against staged files passed positionally",
       (y) => buildRunOptions(y),
       async (args) => {
-        const { executeCliCommand, printer, telemetryService } =
+        const { executeCliCommand, printer, telemetryService, exit } =
           await initializeDependencies(args);
 
-        return executeCliCommand(() =>
-          handleRunCliCommand({ printer, args, telemetry: telemetryService }),
+        return executeCliCommand(
+          () =>
+            handleRunCliCommand({
+              printer,
+              args,
+              telemetry: telemetryService,
+              onExit: exit,
+            }),
+          true,
         );
       },
     )

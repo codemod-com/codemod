@@ -3,9 +3,10 @@ import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import { homedir } from "node:os";
-import { dirname, extname, join } from "node:path";
+import { basename, dirname, extname, join } from "node:path";
 import {
   type PrinterBlueprint,
+  boxen,
   chalk,
   colorLongString,
 } from "@codemod-com/printer";
@@ -13,6 +14,7 @@ import {
   type Codemod,
   type CodemodSettings,
   type CodemodToRun,
+  type FormattedFileCommand,
   Runner,
   parseCodemodSettings,
   parseFlowSettings,
@@ -26,6 +28,8 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
+import blessed from "blessed";
+import * as diff from "diff";
 import inquirer from "inquirer";
 import prettyjson from "prettyjson";
 import { version } from "../../package.json";
@@ -153,8 +157,9 @@ export const handleRunCliCommand = async (options: {
   printer: PrinterBlueprint;
   args: GlobalArgvOptions & RunArgvOptions;
   telemetry: TelemetrySender<TelemetryEvent>;
+  onExit: () => void;
 }) => {
-  const { printer, args, telemetry } = options;
+  const { printer, args, telemetry, onExit } = options;
 
   const codemodSettings = parseCodemodSettings(args);
   const flowSettings = parseFlowSettings(args, printer);
@@ -353,24 +358,13 @@ export const handleRunCliCommand = async (options: {
       : [codemodDefinition.codemod];
   const runner = new Runner(codemodsToRun, fs, runSettings, flowSettings);
 
-  // Currently unsupported
-
-  // if (runSettings.dryRun) {
-  //   printer.printConsoleMessage(
-  //     "log",
-  //     terminalLink(
-  //       "Click to view the live results of this run in the Codemod VSCode Extension!",
-  //       `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
-  //         "base64url",
-  //       )}`,
-  //     ),
-  //   );
-  // }
-
   const depsToInstall: Record<
     string,
     { deps: string[]; affectedFiles: string[] }
   > = {};
+
+  type CommandWithCodemodName = FormattedFileCommand & { codemodName: string };
+  const allExecutedCommands: CommandWithCodemodName[] = [];
 
   const executionErrors = await runner.run(
     async ({ codemod, commands, recipe }) => {
@@ -402,6 +396,8 @@ export const handleRunCliCommand = async (options: {
           };
         }
       }
+
+      allExecutedCommands.push(...commands.map((c) => ({ ...c, codemodName })));
 
       telemetry.sendDangerousEvent({
         kind: "codemodExecuted",
@@ -444,19 +440,109 @@ export const handleRunCliCommand = async (options: {
     (message) => printer.printMessage(message),
   );
 
-  // Currently unsupported
+  let screen: blessed.Widgets.Screen | null = null;
+  if (runSettings.dryRun && allExecutedCommands.length > 0) {
+    interface DiffResult {
+      filename: string;
+      codemodName: string;
+      diff: string;
+    }
 
-  // if (runSettings.dryRun) {
-  //   printer.printConsoleMessage(
-  //     "log",
-  //     terminalLink(
-  //       "The run has finished! Click to open the Codemod VSCode Extension and view the results.",
-  //       `vscode://codemod.codemod-vscode-extension/cases/${runSettings.caseHashDigest.toString(
-  //         "base64url",
-  //       )}`,
-  //     ),
-  //   );
-  // }
+    function getDiff(command: CommandWithCodemodName): DiffResult {
+      if (command.kind === "createFile") {
+        return {
+          filename: command.newPath,
+          codemodName: command.codemodName,
+          diff: command.newData
+            .split("\n")
+            .map((line) => chalk.bgGreen(line))
+            .join("\n"),
+        };
+      }
+
+      if (command.kind === "deleteFile") {
+        return {
+          filename: command.oldPath,
+          codemodName: command.codemodName,
+          diff: "",
+        };
+      }
+
+      if (command.kind === "moveFile") {
+        return {
+          filename: `${command.oldPath} -> ${command.newPath}`,
+          codemodName: command.codemodName,
+          diff: "",
+        };
+      }
+
+      if (command.kind === "copyFile") {
+        return {
+          filename: `COPIED: ${command.oldPath} -> ${command.newPath}`,
+          codemodName: command.codemodName,
+          diff: "",
+        };
+      }
+
+      const diffResult = diff.diffLines(command.oldData, command.newData);
+
+      const formattedDiff = diffResult
+        .map((part) => {
+          const color = part.added ? "green" : part.removed ? "red" : "grey";
+          return part.value
+            .split("\n")
+            .map((line) => chalk[color](line))
+            .join("\n");
+        })
+        .join("\n");
+
+      return {
+        filename: `${command.oldPath}`,
+        codemodName: command.codemodName,
+        diff: formattedDiff,
+      };
+    }
+
+    const diffs = allExecutedCommands.map(getDiff);
+
+    screen = blessed.screen({
+      smartCSR: true,
+      title: "Diff Viewer",
+    });
+
+    const diffContent = diffs
+      .map(
+        (diff) =>
+          `${boxen(`@@ ${basename(diff.filename)} (${diff.codemodName})`, { padding: 0.5 })}\n${diff.diff}`,
+      )
+      .join("\n\n");
+
+    const diffBox = blessed.box({
+      top: 0,
+      left: 0,
+      width: "100%",
+      height: "100%",
+      content: diffContent,
+      tags: true,
+      scrollable: true,
+      alwaysScroll: true,
+      keys: true,
+      vi: true,
+      mouse: true,
+      border: {
+        type: "line",
+      },
+      style: {
+        border: {
+          fg: "#f0f0f0",
+        },
+      },
+    });
+
+    screen.append(diffBox);
+
+    diffBox.focus();
+  }
 
   const logsPath = join(
     configurationDirectoryPath,
@@ -465,10 +551,10 @@ export const handleRunCliCommand = async (options: {
   );
 
   let logsContent = `- CLI version: ${version}
-- Node version: ${process.versions.node}
-- OS: ${os.type()} ${os.release()} ${os.arch()}
+  - Node version: ${process.versions.node}
+  - OS: ${os.type()} ${os.release()} ${os.arch()}
 
-`;
+  `;
 
   if (executionErrors && executionErrors.length > 0) {
     logsContent += executionErrors
@@ -493,28 +579,41 @@ export const handleRunCliCommand = async (options: {
     );
   }
 
-  printer.printConsoleMessage(
-    "info",
-    chalk.cyan(
-      "\nFind the logs of the run at",
-      chalk.bold(logsPath),
-      "\nIn case you want to leave any feedback or report a faulty codemod, please run",
-      chalk.bold(doubleQuotify("codemod feedback")),
-      "and include the logs in the issue body.",
-    ),
-  );
+  const printLogsNotice = () =>
+    printer.printConsoleMessage(
+      "info",
+      chalk.cyan(
+        "\nFind the logs of the run at",
+        chalk.bold(logsPath),
+        "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+        chalk.bold(doubleQuotify("codemod feedback")),
+        "and include the logs in the issue body.",
+      ),
+    );
 
-  if (!runSettings.dryRun && flowSettings.install) {
-    for (const [codemodName, { deps, affectedFiles }] of Object.entries(
-      depsToInstall,
-    )) {
-      await handleInstallDependencies({
-        codemodName,
-        printer,
-        affectedFiles,
-        target: flowSettings.target,
-        deps,
-      });
+  if (runSettings.dryRun && screen) {
+    screen.key(["escape", "q", "C-c"], () => {
+      screen?.destroy();
+      printLogsNotice();
+      return onExit();
+    });
+
+    screen.render();
+  } else {
+    printLogsNotice();
+
+    if (flowSettings.install) {
+      for (const [codemodName, { deps, affectedFiles }] of Object.entries(
+        depsToInstall,
+      )) {
+        await handleInstallDependencies({
+          codemodName,
+          printer,
+          affectedFiles,
+          target: flowSettings.target,
+          deps,
+        });
+      }
     }
   }
 };
