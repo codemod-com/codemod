@@ -14,6 +14,7 @@ import inquirer from "inquirer";
 import { publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
+import { handleLoginCliCommand } from "./login.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: PrinterBlueprint;
@@ -22,12 +23,25 @@ export const handlePublishCliCommand = async (options: {
   const { printer } = options;
   let { source } = options;
 
-  const userData = await getCurrentUserData();
+  let userData = await getCurrentUserData();
 
   if (userData === null) {
-    throw new Error(
-      "To be able to publish to Codemod Registry, please log in first.",
-    );
+    const { login } = await inquirer.prompt<{ login: boolean }>({
+      type: "confirm",
+      name: "login",
+      message: "Authentication is required to publish codemods. Proceed?",
+    });
+
+    if (!login) {
+      return;
+    }
+
+    await handleLoginCliCommand({ printer });
+    userData = await getCurrentUserData();
+
+    if (userData === null) {
+      throw new Error("Unexpected authentication error occurred.");
+    }
   }
 
   const { token } = userData;
