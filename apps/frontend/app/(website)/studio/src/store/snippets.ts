@@ -7,6 +7,7 @@ import { getSnippetInitialState } from "@studio/store/utils/getSnippetInitialSta
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+import { prettify } from "@studio/utils/prettify";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 import { map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
@@ -229,10 +230,8 @@ export const useSnippetsStore = create<SnippetsState>(
             ? mapBabelASTToRenderableTree(parsed)
             : null;
 
-          const rpath = ["editors", editorsPairIndex, type];
-
           const obj = get();
-          obj.editors[editorsPairIndex][type].content = content;
+          obj.editors[editorsPairIndex][type].content = prettify(content);
           obj.editors[editorsPairIndex][type].rootNode = rootNode;
           set(obj);
           try {

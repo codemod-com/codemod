@@ -169,7 +169,7 @@ const Main = () => {
   const tabsPanel = (
     <BoundResizePanel
       panelRefIndex={ResizablePanelsIndices.TAB_SECTION}
-      boundedIndex={ResizablePanelsIndices.CODEMOD_SECTION}
+      boundedIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
       panelRefs={panelRefs}
       className="bg-gray-bg assistant"
     >
@@ -184,6 +184,7 @@ const Main = () => {
   const beforeAndAfterPanel = (
     <BoundResizePanel
       panelRefIndex={ResizablePanelsIndices.BEFORE_AFTER_COMBINED}
+      boundedIndex={ResizablePanelsIndices.TAB_SECTION}
       panelRefs={panelRefs}
       className="bg-gray-bg"
     >
@@ -194,7 +195,6 @@ const Main = () => {
   const codemodPanel = (
     <BoundResizePanel
       panelRefIndex={ResizablePanelsIndices.CODEMOD_SECTION}
-      boundedIndex={ResizablePanelsIndices.TAB_SECTION}
       panelRefs={panelRefs}
       className="bg-gray-bg codemod"
     >

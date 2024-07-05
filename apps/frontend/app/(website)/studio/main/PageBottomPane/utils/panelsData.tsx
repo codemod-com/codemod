@@ -39,7 +39,6 @@ const beforePanel: PanelData = {
 const afterPanel: PanelData = {
   relatedAST: ResizablePanelsIndices.AFTER_AST,
   snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
-  boundIndex: ResizablePanelsIndices.TOP,
   type: "after",
   hasBoundResize: false,
   content: getContent("after"),

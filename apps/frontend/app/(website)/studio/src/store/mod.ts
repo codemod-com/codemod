@@ -55,7 +55,7 @@ export const useModStore = create<ModState>(
         const parsedContent = isFile(parsed)
           ? mapBabelASTToRenderableTree(parsed)
           : null;
-        set({ internalContent: content, parsedContent });
+        set({ content, parsedContent });
       },
       setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
       setCodemodSelection: (command) => {

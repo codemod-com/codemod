@@ -7,14 +7,14 @@ import { useEffect } from "react";
 export const useCodemodOutputUpdate = () => {
   const [webWorkerState, postMessage] = useWebWorker();
   const { setEvents, events } = useLogStore();
-  const { setHasRuntimeErrors } = useModStore();
+  const { setHasRuntimeErrors, content } = useModStore();
   const { engine, getSelectedEditors } = useSnippetsStore();
   const { beforeSnippet, setOutputSnippet } = getSelectedEditors();
-  const { content } = useModStore();
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(beforeSnippet);
   const codemodSourceHasOnlyWhitespaces = !/\S/.test(content ?? "");
 
   useEffect(() => {
+    console.log("update");
     postMessage(engine, content ?? "", beforeSnippet);
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
       setOutputSnippet("");
