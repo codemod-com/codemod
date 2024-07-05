@@ -21,8 +21,7 @@
     "react-dom": "^18.2.0",
     "react-resizable-panels": "^0.0.51",
     "react-toastify": "^9.1.3",
-    "tippy.js": "^6.3.7",
-    "typescript": "^4.9.5"
+    "tippy.js": "^6.3.7"
   },
   "scripts": {
     "start": "NODE_ENV='development' vite -c 'vite.config.dev.ts'",
