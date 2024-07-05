@@ -77,6 +77,10 @@
       "pages": ["guides/introduction"]
     },
     {
+      "group": "Building codemods",
+      "pages": ["guides/building-codemods/codemod2"]
+    },
+    {
       "group": "Engines",
       "pages": [
         {
