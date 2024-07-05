@@ -453,10 +453,7 @@ export const handleRunCliCommand = async (options: {
         return {
           filename: command.newPath,
           codemodName: command.codemodName,
-          diff: command.newData
-            .split("\n")
-            .map((line) => chalk.bgGreen(line))
-            .join("\n"),
+          diff: chalk.bgGreen(command.newData),
         };
       }
 
@@ -484,17 +481,19 @@ export const handleRunCliCommand = async (options: {
         };
       }
 
-      const diffResult = diff.diffLines(command.oldData, command.newData);
+      const diffResult = diff.diffWords(command.oldData, command.newData);
 
       const formattedDiff = diffResult
         .map((part) => {
           const color = part.added ? "green" : part.removed ? "red" : "grey";
-          return part.value
-            .split("\n")
-            .map((line) => chalk[color](line))
-            .join("\n");
+
+          return chalk[color](part.value);
+          // return part.value
+          //   .split("\n")
+          //   .map((line) => chalk[color](line))
+          //   .join("\n");
         })
-        .join("\n");
+        .join("");
 
       return {
         filename: `${command.oldPath}`,
