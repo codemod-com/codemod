@@ -1,7 +1,12 @@
 import { prisma } from "@codemod-com/database";
+import { WebClient } from "@slack/web-api";
 import { CronJob } from "cron";
 import { PostHogService } from "./services/PostHogService";
 import { environment } from "./util";
+
+import axios from "axios";
+
+// TODO: Move crons into independent CronService
 
 const cleanupLoginIntentsCron = new CronJob(
   "* * * * *", // cronTime
@@ -62,7 +67,59 @@ const syncDatabaseWithPosthogDataCron = new CronJob(
   false, // start
 );
 
+const systemHealthCheckCron = new CronJob(
+  "*/10 * * * *",
+  async () => {
+    const token = environment.SLACK_TOKEN;
+    const channel = environment.SLACK_CHANNEL;
+
+    const web = new WebClient(token);
+
+    const services: Array<{ name: string; url: string }> = [
+      {
+        name: "Backend API",
+        url: environment.BACKEND_API_URL ?? "",
+      },
+      {
+        name: "Auth Service",
+        url: environment.AUTH_SERVICE_URL ?? "",
+      },
+      {
+        name: "ModGPT Service",
+        url: environment.MODGPT_SERVICE_URL ?? "",
+      },
+      {
+        name: "Codemod AI Service",
+        url: environment.CODEMOD_AI_SERVICE_URL ?? "",
+      },
+      {
+        name: "Run Service",
+        url: environment.RUN_SERVICE_URL ?? "",
+      },
+    ];
+
+    for (const service of services) {
+      try {
+        const { status } = await axios.get(service.url);
+        if (status !== 200) {
+          throw new Error("Service did not respond with OK");
+        }
+      } catch (error) {
+        console.error(`${service.name} is down`, error);
+
+        await web.chat.postMessage({
+          channel: channel,
+          text: `${service.name} is down. Error: ${error}`,
+        });
+      }
+    }
+  }, // onTick
+  null, // onComplete
+  false, // start
+);
+
 export const startCronJobs = () => {
   cleanupLoginIntentsCron.start();
   syncDatabaseWithPosthogDataCron.start();
+  systemHealthCheckCron.start();
 };
