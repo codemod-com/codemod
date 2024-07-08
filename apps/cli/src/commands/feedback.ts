@@ -13,6 +13,7 @@ export const handleFeedbackCommand = async (options: {
   );
 
   const success = await open(feedbackUrl);
+
   if (!success) {
     printer.printOperationMessage({
       kind: "error",
