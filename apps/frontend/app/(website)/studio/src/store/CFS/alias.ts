@@ -24,14 +24,18 @@ export const useGetAliases = (): Aliases => {
     rangesUpdatedAt,
   } = useModStore();
 
-  const { getSelectedEditors } = useSnippetsStore();
+  const { getSelectedEditors, getAllSnippets } = useSnippetsStore();
 
   const {
-    beforeSnippet: inputSnippet,
-    afterSnippet,
     after: { ranges: afterInputRanges, rangeUpdatedAt: afterRangeUpdatedAt },
     before: { ranges: beforeInputRanges, rangeUpdatedAt: beforeRangeUpdatedAt },
   } = getSelectedEditors();
+
+  const { before, after } = getAllSnippets();
+
+  const inputSnippet = before.join(" ");
+  const afterSnippet = after.join(" ");
+
   return {
     $CODEMOD: { value: content ?? "", updatedAt: -1 },
     $HIGHLIGHTED_IN_CODEMOD:

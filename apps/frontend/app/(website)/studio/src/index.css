@@ -344,9 +344,6 @@ html {
     transition: background-color 0.2s linear;
 }
 
-.highlight {
-    background-color: rgb(150, 220, 255);
-}
 
 .dark .highlight {
     background-color: rgba(96, 96, 192, 0.5);

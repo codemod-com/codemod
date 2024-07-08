@@ -192,7 +192,7 @@
 
 .highlight {
     text-decoration-line: underline;
-    text-decoration-color: rgb(51 102 255);
+    text-decoration-color: rgba(51, 102, 255, 0.71);
     text-underline-offset: 3px;
 }
 

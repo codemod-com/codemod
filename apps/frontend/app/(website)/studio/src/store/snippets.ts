@@ -231,7 +231,7 @@ export const useSnippetsStore = create<SnippetsState>(
             : null;
 
           const obj = get();
-          obj.editors[editorsPairIndex][type].content = prettify(content);
+          obj.editors[editorsPairIndex][type].content = content;
           obj.editors[editorsPairIndex][type].rootNode = rootNode;
           set(obj);
           try {
