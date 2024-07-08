@@ -1,0 +1,12 @@
+{
+  "name": "test",
+  "description": "test",
+  "version": "1.0.0",
+  "author": "Test",
+  "private": true,
+  "dependencies": {
+    "@testing-library/react-hooks": "8.0.1",
+    "react-router": "3.2.6",
+    "@testing-library/react": "12.1.5"
+  }
+}
