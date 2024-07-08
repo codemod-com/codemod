@@ -183,6 +183,7 @@ describe("Run command", () => {
       printer: mockedPrinter,
       args: mockedArgs,
       telemetry: mockedTelemetry,
+      onExit: vi.fn(),
     });
 
     expect(
@@ -227,6 +228,7 @@ describe("Run command", () => {
         _: ["codemod1"],
       },
       telemetry: mockedTelemetry,
+      onExit: vi.fn(),
     });
 
     const { executionId, ...event } = mockedSendDangerousEvent.mock.calls[0][0];
