@@ -1,10 +1,10 @@
 import { prisma } from "@codemod-com/database";
 import { WebClient } from "@slack/web-api";
+import axios from "axios";
 import { CronJob } from "cron";
+import WebSocket from "ws";
 import { PostHogService } from "./services/PostHogService";
 import { environment } from "./util";
-
-import axios from "axios";
 
 // TODO: Move crons into independent CronService
 
@@ -75,34 +75,64 @@ const systemHealthCheckCron = new CronJob(
 
     const web = new WebClient(token);
 
-    const services: Array<{ name: string; url: string }> = [
+    const services: Array<{
+      name: string;
+      url: string;
+      type: "http" | "websocket";
+    }> = [
       {
         name: "Backend API",
         url: environment.BACKEND_API_URL ?? "",
+        type: "http",
       },
       {
         name: "Auth Service",
         url: environment.AUTH_SERVICE_URL ?? "",
+        type: "http",
       },
       {
         name: "ModGPT Service",
         url: environment.MODGPT_SERVICE_URL ?? "",
+        type: "http",
       },
       {
         name: "Codemod AI Service",
         url: environment.CODEMOD_AI_SERVICE_URL ?? "",
+        type: "websocket",
       },
       {
         name: "Run Service",
         url: environment.RUN_SERVICE_URL ?? "",
+        type: "http",
       },
     ];
 
     for (const service of services) {
       try {
-        const { status } = await axios.get(service.url);
-        if (status !== 200) {
-          throw new Error("Service did not respond with OK");
+        if (service.type === "http") {
+          const { status } = await axios.get(service.url);
+          if (status !== 200) {
+            throw new Error("Service did not respond with OK");
+          }
+        } else if (service.type === "websocket") {
+          await new Promise((resolve, reject) => {
+            const ws = new WebSocket(service.url);
+
+            ws.on("open", () => {
+              ws.close();
+              resolve(true);
+            });
+
+            ws.on("error", (error) => {
+              reject(new Error(`WebSocket connection error: ${error.message}`));
+            });
+
+            ws.on("close", (code) => {
+              if (code !== 1000) {
+                reject(new Error(`WebSocket closed with code: ${code}`));
+              }
+            });
+          });
         }
       } catch (error) {
         console.error(`${service.name} is down`, error);
