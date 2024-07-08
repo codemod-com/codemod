@@ -2,10 +2,13 @@
   "name": "netlify/replace-feature-flag",
   "author": "dmytrohryshyn",
   "dependencies": {
+    "@ast-grep/napi": "^0.24.0",
+    "@codemod.com/workflow": "workspace:*",
     "@types/npm-registry-fetch": "^8.0.7",
     "@types/semver": "^7.5.8",
     "npm-registry-fetch": "^17.1.0",
-    "semver": "^7.6.2"
+    "semver": "^7.6.2",
+    "ts-node": "^10.9.2"
   },
   "devDependencies": {
     "@types/node": "20.9.0",
@@ -18,5 +21,6 @@
     "test:watch": "vitest watch"
   },
   "license": "MIT",
-  "files": ["README.md", ".codemodrc.json", "./dist/index.cjs"]
+  "files": ["README.md", ".codemodrc.json", "./dist/index.cjs"],
+  "type": "module"
 }

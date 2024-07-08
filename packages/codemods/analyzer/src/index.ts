@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { type Api, api } from "@codemod.com/workflow";
 import fetch from "npm-registry-fetch";
 import semver from "semver";
 
@@ -50,9 +51,7 @@ const getPackageData = async (packageKey: string) => {
     : null;
 };
 
-function isStableVersion(version: string) {
-  return !semver.prerelease(version);
-}
+const isStableVersion = (version: string) => !semver.prerelease(version);
 
 // function checkCompatibility(packageData, packageVersion, pckVersion) {
 //   const versions = Object.keys(packageData.versions);
@@ -284,4 +283,14 @@ const getDependentPackages = async (packageName: string) => {
   return dependents;
 };
 
-getDependentPackages("react");
+// getDependentPackages("react");
+
+export async function workflow({ git }: Api) {
+  const repo = await git.clone(
+    "git@github.com:DmytroHryshyn/feature-flag-example",
+  );
+
+  console.log(repo, "???");
+}
+
+workflow(api);
