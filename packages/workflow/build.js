@@ -25,5 +25,6 @@ build({
     "prettier",
     "jscodeshift",
     "yaml",
+    "inquirer",
   ],
 });

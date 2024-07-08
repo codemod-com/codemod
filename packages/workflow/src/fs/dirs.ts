@@ -6,14 +6,16 @@ import { codemod } from "../codemod.js";
 import { cwdContext, getCwdContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { exec } from "../exec.js";
+import { files } from "../files.js";
 import { parseMultistring } from "../helpers.js";
 import { jsFiles } from "../jsFiles.js";
 import { map } from "./map.js";
 import { move } from "./move.js";
 
 type DirsParams = {
-  create?: boolean;
   dirs: string | readonly string[];
+  create?: boolean;
+  ignore?: string | string[] | glob.IgnoreLike;
 };
 
 /**
@@ -36,10 +38,7 @@ type DirsParams = {
  *          });
  */
 export function dirsLogic(
-  pattern:
-    | string
-    | readonly string[]
-    | { create?: boolean; dirs: string | readonly string[] },
+  pattern: string | readonly string[] | DirsParams,
   callback?: (helpers: DirsHelpers) => Promise<void> | void,
 ): PLazy<DirsHelpers> & DirsHelpers {
   return new FunctionExecutor("dirs")
@@ -71,13 +70,10 @@ export function dirsLogic(
     .helpers(dirsHelpers)
     .executor(async (next, self) => {
       const {
-        params: { dirs: directories, create },
+        params: { dirs: directories, create, ignore },
       } = self.getArguments();
       const { cwd } = getCwdContext();
-      const dirs = await glob.glob(
-        directories.map((d) => (d.endsWith("/") ? d : `${d}/`)),
-        { cwd },
-      );
+      const dirs = await glob.glob(directories, { cwd, ignore });
       const directoriesWalked = new Set<string>();
       for (const dir of dirs) {
         if (directoriesWalked.has(dir)) {
@@ -117,6 +113,6 @@ export function dirsLogic(
 
 export const dirs = fnWrapper("dirs", dirsLogic);
 
-const dirsHelpers = { dirs, jsFiles, codemod, exec, move, map };
+const dirsHelpers = { dirs, jsFiles, codemod, exec, move, map, files };
 
 type DirsHelpers = typeof dirsHelpers;

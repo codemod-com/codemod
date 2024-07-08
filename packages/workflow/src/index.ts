@@ -18,7 +18,20 @@ import { files } from "./files.js";
 
 import { exec } from "./exec.js";
 
-export { git, astGrep, jsFiles, files, codemod, dirs, exec };
+import { question } from "./question.js";
+
+export {
+  git,
+  astGrep,
+  jsFiles,
+  contexts,
+  dirs,
+  codemod,
+  getTree,
+  files,
+  exec,
+  question,
+};
 
 export const api = {
   git,
@@ -30,6 +43,7 @@ export const api = {
   getTree,
   files,
   exec,
+  question,
 };
 
 export type Api = typeof api;
