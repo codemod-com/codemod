@@ -1,6 +1,6 @@
 ---
-name: Request codemod
-about: Request a new codemod from the community
+name: New codemod
+about: Request a new codemod from the community.
 title: "[codemod][new] <framework-name> - migration to <v.x>"
 labels: codemod-request
 assignees: ''
