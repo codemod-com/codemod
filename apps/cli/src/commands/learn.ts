@@ -279,6 +279,7 @@ export const handleLearnCliCommand = async (options: {
   );
 
   const success = open(url);
+
   if (!success) {
     printer.printOperationMessage({
       kind: "error",
