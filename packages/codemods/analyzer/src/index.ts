@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { type Api, api } from "@codemod.com/workflow";
 import fetch from "npm-registry-fetch";
 import semver from "semver";
 
@@ -77,24 +76,27 @@ const isStableVersion = (version: string) => !semver.prerelease(version);
 
 // const arb = new Arborist();
 
-const getDependenciesFromPackageJson = (filePath: string) => {
-  try {
-    const packageJsonPath = path.resolve(filePath);
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
-    if (!packageJson.dependencies) {
-      throw new Error("No dependencies found in package.json");
-    }
+const buildPackageKey = (name: string, version: string) => `${name}@${version}`;
 
-    const dependencies = packageJson.dependencies;
-    const dependenciesList = Object.keys(dependencies).map(
-      (dependency) => `${dependency}@${dependencies[dependency]}`,
+const getDependenciesFromPackageJson = (filePath: string) => {
+  const packageJsonPath = path.resolve(filePath);
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, "utf8"));
+  if (!packageJson.dependencies) {
+    throw new Error("No dependencies found in package.json");
+  }
+
+  const { dependencies, peerDependencies, devDependencies } = packageJson;
+
+  const depsRecordToArr = (deps: Record<string, string>) =>
+    Object.entries(deps).map(([name, version]) =>
+      buildPackageKey(name, version),
     );
 
-    return dependenciesList;
-  } catch (error) {
-    console.error(`Error reading or parsing package.json: ${error.message}`);
-    return [];
-  }
+  return {
+    dependencies: depsRecordToArr(dependencies),
+    peerDependencies: depsRecordToArr(peerDependencies),
+    devDependencies: depsRecordToArr(devDependencies),
+  };
 };
 
 const analyzePackageJson = async (pathToPackage = "./package.json") => {
@@ -166,21 +168,18 @@ const buildNode = (node: Package): Node => {
 const buildNodesTree = async (
   rawPackage: RawPackage,
   depth = 0,
-  maxDepth = 2,
+  maxDepth = DEFAULT_MAX_DEPTH,
 ) => {
   const parentNode = buildNode(rawPackage);
 
   parentNode.parent = new Set();
   parentNode.children = new Set();
 
-  const dependencies = {
-    // ...parentNode.package.dependencies,
-    // ...parentNode.package.devDependencies,
-    ...parentNode.package.peerDependencies,
-  };
+  // @TODO do we need to check other kinds of dependencies?
+  const dependencies = parentNode.package.peerDependencies ?? {};
 
-  const dependenciesList = Object.keys(dependencies).map(
-    (dependency) => `${dependency}@${dependencies[dependency]}`,
+  const dependenciesList = Object.keys(dependencies).map((dependency) =>
+    buildPackageKey(dependency, dependencies[dependency] ?? ""),
   );
 
   const dependencyData = (
@@ -245,23 +244,28 @@ const buildNodesTree = async (
 
 // main();
 
-// getTopLevelPackages();
+const DEFAULT_MAX_DEPTH = 2;
 
-const analyze = async () => {
+const getDependencyTree = async (
+  ignorePackages: string[] = [],
+  maxDepths = DEFAULT_MAX_DEPTH,
+) => {
   const nodes = new Map();
 
-  const packages = await analyzePackageJson("./test.json");
-  const promises = packages.map((pkg) => buildNodesTree(pkg, 0, 2));
+  // @TODO remove test data
+  const { dependencies } = getDependenciesFromPackageJson("./test.json");
 
-  (await Promise.all(promises)).forEach((node) =>
-    nodes.set(node?.package.name, node),
-  );
+  for (const packageKey of dependencies) {
+    const packageData = await getPackageData(packageKey);
+    const treeNode = await buildNodesTree(packageData, 0, maxDepths);
+    nodes.set(treeNode?.package.name, treeNode);
+  }
 
   return nodes;
 };
 
 const getDependentPackages = async (packageName: string) => {
-  const dependencyTree = await analyze();
+  const dependencyTree = await getDependencyTree();
 
   const dependents = new Set<Node>();
 
@@ -283,14 +287,17 @@ const getDependentPackages = async (packageName: string) => {
   return dependents;
 };
 
-// getDependentPackages("react");
+const res = getDependentPackages("react");
+// export async function workflow({ git }: Api) {
+//   const repo = await git.clone(
+//     "git@github.com:DmytroHryshyn/feature-flag-example",
+//   );
 
-export async function workflow({ git }: Api) {
-  const repo = await git.clone(
-    "git@github.com:DmytroHryshyn/feature-flag-example",
-  );
+//   // @TODO switch the context to
 
-  console.log(repo, "???");
-}
+//   const dependentPackages = await getDependentPackages("react");
 
-workflow(api);
+//   console.log(dependentPackages, "???");
+// }
+
+// workflow(api);

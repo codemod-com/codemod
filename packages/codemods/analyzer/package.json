@@ -21,6 +21,5 @@
     "test:watch": "vitest watch"
   },
   "license": "MIT",
-  "files": ["README.md", ".codemodrc.json", "./dist/index.cjs"],
-  "type": "module"
+  "files": ["README.md", ".codemodrc.json", "./dist/index.cjs"]
 }
