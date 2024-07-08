@@ -1,12 +1,13 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
 import keytar from "keytar";
+import open from "open";
 import {
   confirmUserLoggedIn,
   generateUserLoginIntent,
   getCLIAccessToken,
 } from "../apis.js";
-import { getCurrentUserData, openURL } from "../utils.js";
+import { getCurrentUserData } from "../utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
@@ -15,9 +16,10 @@ const routeUserToStudioForLogin = (
   sessionId: string,
   iv: string,
 ) => {
-  const success = openURL(
+  const success = open(
     `${process.env.CODEMOD_HOME_PAGE_URL}?command=${ACCESS_TOKEN_REQUESTED_BY_CLI_KEY}&sessionId=${sessionId}&iv=${iv}`,
   );
+
   if (!success) {
     printer.printOperationMessage({
       kind: "error",
@@ -42,10 +44,10 @@ export const handleLoginCliCommand = async (options: {
 
   const { id: sessionId, iv: initVector } = await generateUserLoginIntent();
 
-  routeUserToStudioForLogin(printer, sessionId, initVector);
   const spinner = printer.withLoaderMessage(
     chalk.cyan("Redirecting to Codemod sign-in page"),
   );
+  routeUserToStudioForLogin(printer, sessionId, initVector);
   try {
     const token = await backOff(
       () => confirmUserLoggedIn(sessionId, initVector),
