@@ -5502,6 +5502,9 @@ importers:
       esbuild:
         specifier: ^0.17.14
         version: 0.17.19
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
 
 packages:
 
