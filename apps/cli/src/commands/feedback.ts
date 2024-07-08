@@ -1,5 +1,5 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { openURL } from "../utils.js";
+import open from "open";
 
 export const handleFeedbackCommand = async (options: {
   printer: PrinterBlueprint;
@@ -12,7 +12,7 @@ export const handleFeedbackCommand = async (options: {
     chalk.cyan("Redirecting to the feedback page..."),
   );
 
-  const success = openURL(feedbackUrl);
+  const success = await open(feedbackUrl);
   if (!success) {
     printer.printOperationMessage({
       kind: "error",

@@ -111,21 +111,23 @@ export const runJscodeshiftCodemod = (
     return commands;
   }
 
-  // sometimes codemods produce newData even though they are literally no changes
-  // by removing parentheses around return statements, we will likely find the pointless results
-  const oldRoot = api.jscodeshift(oldData);
-  const newRoot = api.jscodeshift(newData);
+  if (adapter === null) {
+    // sometimes codemods produce newData even though they are literally no changes
+    // by removing parentheses around return statements, we will likely find the pointless results
+    const oldRoot = api.jscodeshift(oldData);
+    const newRoot = api.jscodeshift(newData);
 
-  oldRoot
-    .find(api.j.ParenthesizedExpression)
-    .replaceWith((path) => path.node.expression);
+    oldRoot
+      .find(api.j.ParenthesizedExpression)
+      .replaceWith((path) => path.node.expression);
 
-  newRoot
-    .find(api.j.ParenthesizedExpression)
-    .replaceWith((path) => path.node.expression);
+    newRoot
+      .find(api.j.ParenthesizedExpression)
+      .replaceWith((path) => path.node.expression);
 
-  if (oldRoot.toSource() === newRoot.toSource()) {
-    return commands;
+    if (oldRoot.toSource() === newRoot.toSource()) {
+      return commands;
+    }
   }
 
   commands.push({

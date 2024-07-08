@@ -17,8 +17,7 @@
     "fastify-plugin": "4.5.1",
     "nodemon": "3.0.2",
     "ts-node": "10.9.2",
-    "tsx": "^4.7.1",
-    "typescript": "5.3.3"
+    "tsx": "^4.7.1"
   },
   "dependencies": {
     "@codemod-com/utilities": "workspace:*",

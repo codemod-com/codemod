@@ -46,6 +46,7 @@ build({
     "@ast-grep/cli",
     "keytar",
     "prettier",
+    "blessed",
     // Workaround for @vue/compiler-sfc dynamic require
     "react",
     "mustache",
