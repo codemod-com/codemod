@@ -8,7 +8,7 @@
 @tailwind utilities;
 
 
-.studio {
+.studio  {
     scroll-behavior: smooth;
 }
 
@@ -63,8 +63,7 @@
     color: blue;
     cursor: pointer;
 }
-
-.studio .after-hidden .editor.original, .studio .after-hidden .original-in-monaco-diff-editor {
+.studio .after-hidden .editor.original , .studio .after-hidden .original-in-monaco-diff-editor {
     display: none;
 }
 
@@ -72,7 +71,7 @@
     left: 0 !important;
 }
 
-.studio .output-shown .editor.original, .studio .output-shown .original-in-monaco-diff-editor {
+.studio .output-shown .editor.original , .studio .output-shown .original-in-monaco-diff-editor {
     display: none;
 }
 
@@ -197,10 +196,6 @@
     text-underline-offset: 3px;
 }
 
-.studio .highlight {
-    background-color: rgb(150, 220, 255);
-}
-
 .studio .dark .highlight {
     background-color: rgba(96, 96, 192, 0.5);
 }
@@ -217,7 +212,6 @@
 
 .studio::selection {
     background-color: rgba(62, 172, 236, 0.73) !important;
-    --vscode-editor-selectionBackground: rgba(96, 96, 192, 0.5) !important;
 }
 
 .studio .popup-content {
@@ -268,7 +262,7 @@
     --radius: 0.5rem;
 }
 
-.dark .studio {
+.dark .studio  {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
 
@@ -300,11 +294,12 @@
 }
 
 
+
 .studio * {
     @apply border-border;
 }
 
-.studio {
+.studio  {
     @apply bg-background text-foreground;
 }
 
