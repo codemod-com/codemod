@@ -8,6 +8,8 @@ import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { move } from "./fs/move.js";
 import { parseMultistring } from "./helpers.js";
 import { jsFam } from "./jsFam.js";
+import { json } from "./json/json.js";
+import { yaml } from "./yaml/yaml.js";
 
 /**
  * @description Filter all js/ts files in current directory
@@ -83,6 +85,6 @@ export function filesLogic(
 
 export const files = fnWrapper("files", filesLogic);
 
-const helpers = { jsFam, move, astGrep };
+const helpers = { jsFam, move, astGrep, yaml, json };
 
 type Helpers = typeof helpers;
