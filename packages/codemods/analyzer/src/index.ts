@@ -1,5 +1,6 @@
 import fs from "node:fs";
-import path from "node:path";
+import path, { join } from "node:path";
+import { type Api, api } from "@codemod.com/workflow";
 import fetch from "npm-registry-fetch";
 import semver from "semver";
 
@@ -29,13 +30,18 @@ const getPackageVersions = async (packageName: string) => {
   }
 };
 
-// const getMaxSatisfyingVersion = (versions: string[], versionRange: string) =>
-//   semver.maxSatisfying(versions, versionRange);
+const packageVersionsCache = new Map();
 
 const getPackageData = async (packageKey: string) => {
   const { version, name } = parsePackageKey(packageKey);
 
-  const packageVersions = await getPackageVersions(name);
+  let packageVersions = packageVersionsCache.get(packageKey);
+
+  if (packageVersions === undefined) {
+    packageVersions = await getPackageVersions(name);
+
+    packageVersionsCache.set(packageKey, packageVersions);
+  }
 
   if (!packageVersions) {
     return null;
@@ -52,29 +58,30 @@ const getPackageData = async (packageKey: string) => {
 
 const isStableVersion = (version: string) => !semver.prerelease(version);
 
-// function checkCompatibility(packageData, packageVersion, pckVersion) {
-//   const versions = Object.keys(packageData.versions);
-//   const stableVersions = versions.filter(isStableVersion);
-//   const compatibleVersions = stableVersions.filter((version) => {
-//     const dependencies = packageData.versions[version].peerDependencies || {};
-//     if (
-//       dependencies.react &&
-//       semver.gt(version, pckVersion) &&
-//       semver.satisfies(packageVersion, dependencies.react)
-//     ) {
-//       // console.log(`isCompat ${packageData.name}@${version}:`, dependencies.react, packageVersion);
+const checkCompatibility = (
+  packageVersions: any,
+  packageVersion: string,
+  currentVersion: string,
+) => {
+  const versions = Object.keys(packageVersions.versions);
+  const stableVersions = versions.filter(isStableVersion);
+  const compatibleVersions = stableVersions.filter((version) => {
+    const dependencies =
+      packageVersions.versions[version].peerDependencies || {};
+    if (
+      dependencies.react &&
+      semver.gt(version, currentVersion) &&
+      semver.satisfies(packageVersion, dependencies.react)
+    ) {
+      return true;
+    }
 
-//       return true;
-//     }
-
-//     return false;
-//   });
-//   return compatibleVersions.length
-//     ? semver.minSatisfying(compatibleVersions, "*")
-//     : null;
-// }
-
-// const arb = new Arborist();
+    return false;
+  });
+  return compatibleVersions.length
+    ? semver.minSatisfying(compatibleVersions, "*")
+    : null;
+};
 
 const buildPackageKey = (name: string, version: string) => `${name}@${version}`;
 
@@ -88,7 +95,7 @@ const getDependenciesFromPackageJson = (filePath: string) => {
   const { dependencies, peerDependencies, devDependencies } = packageJson;
 
   const depsRecordToArr = (deps: Record<string, string>) =>
-    Object.entries(deps).map(([name, version]) =>
+    Object.entries(deps ?? {}).map(([name, version]) =>
       buildPackageKey(name, version),
     );
 
@@ -98,31 +105,6 @@ const getDependenciesFromPackageJson = (filePath: string) => {
     devDependencies: depsRecordToArr(devDependencies),
   };
 };
-
-const analyzePackageJson = async (pathToPackage = "./package.json") => {
-  const deps = getDependenciesFromPackageJson(pathToPackage);
-
-  const data = await Promise.allSettled(deps.slice(0, 5).map(getPackageData));
-
-  return data.map(({ value }) => value);
-};
-
-// const getPackagesData = async (entry) => {
-//   const dependencies = entry.package.dependencies ?? {};
-
-//   const dependenciesList = Object.keys(dependencies).map(
-//     (dependency) => `${dependency}@${dependencies[dependency]}`,
-//   );
-
-//   return await Promise.allSettled(
-//     dependenciesList.slice(0, 5).map(getPackageData),
-//   );
-// };
-
-// const entries = await analyzePackageJson();
-// const nodes = new Map();
-// const parentNodesMap = new Map();
-// const rootNodes = new Map();
 
 type Package = {
   name: string;
@@ -208,52 +190,16 @@ const buildNodesTree = async (
   return parentNode;
 };
 
-// await Promise.allSettled(entries.map(buildNodesTree));
-
-// console.log([...nodes.values()], "???");
-
-// const packageVersion = "18.3.1";
-
-// const main = async () => {
-//     const tree = await arb.loadActual();
-
-//     const reactNode = [...tree.children.values()].find(({ name }) => name === 'react');
-//     const edgesIn = [...reactNode.edgesIn.values()];
-
-//     const incompatiblePackages = edgesIn.filter(edge => !semver.satisfies(packageVersion, edge.spec));
-
-//     const pkgs = incompatiblePackages.map(({ from }) => ([from.name, from.version]))
-
-//     for (const [packageName, version] of pkgs) {
-//         if(['react-dom', 'react', 'netlify-react-ui'].includes(packageName)) {
-//             continue;
-//         }
-//         const packageData = await getPackageData(packageName);
-//         if (packageData) {
-//           const minVersion = checkCompatibility(packageData, packageVersion, version);
-//           if (minVersion) {
-//             console.log(`Package ${packageName}@${version} supports React ${packageVersion} starting from version ${minVersion}`);
-//           } else {
-//             console.log(`Package ${packageName}@${version} does not support React ${packageVersion}`);
-//           }
-//         } else {
-//           console.log(`Could not retrieve data for package ${packageName}`);
-//         }
-//       }
-// }
-
-// main();
-
 const DEFAULT_MAX_DEPTH = 2;
 
 const getDependencyTree = async (
-  ignorePackages: string[] = [],
+  path: string,
   maxDepths = DEFAULT_MAX_DEPTH,
 ) => {
   const nodes = new Map();
 
   // @TODO remove test data
-  const { dependencies } = getDependenciesFromPackageJson("./test.json");
+  const { dependencies } = getDependenciesFromPackageJson(path);
 
   for (const packageKey of dependencies) {
     const packageData = await getPackageData(packageKey);
@@ -264,8 +210,8 @@ const getDependencyTree = async (
   return nodes;
 };
 
-const getDependentPackages = async (packageName: string) => {
-  const dependencyTree = await getDependencyTree();
+const getDependentPackages = async (packageName: string, path: string) => {
+  const dependencyTree = await getDependencyTree(path);
 
   const dependents = new Set<Node>();
 
@@ -287,17 +233,59 @@ const getDependentPackages = async (packageName: string) => {
   return dependents;
 };
 
-const res = getDependentPackages("react");
-// export async function workflow({ git }: Api) {
-//   const repo = await git.clone(
-//     "git@github.com:DmytroHryshyn/feature-flag-example",
-//   );
+type Options = {
+  name: string;
+  version: string;
+};
 
-//   // @TODO switch the context to
+export async function workflow({ git }: Api, options: Options) {
+  await git.clone("git@github.com:DmytroHryshyn/feature-flag-example");
 
-//   const dependentPackages = await getDependentPackages("react");
+  // @TODO hardcoded
+  const path = `/var/folders/lb/jyy18cts4zb3xnwqs876921w0000gn/T/cm/git-github-com-dmytro-hryshyn-feature-flag-example-0`;
+  const packageJsonPath = join(path, "package.json");
 
-//   console.log(dependentPackages, "???");
-// }
+  const dependentPackages = await getDependentPackages(
+    options.name,
+    packageJsonPath,
+  );
 
-// workflow(api);
+  const incompatiblePackages = [...dependentPackages.values()]
+    .filter((pkg) => !semver.satisfies(options.version, pkg.package.name))
+    .map((pkg) => [pkg.package.name, pkg.package.version]);
+
+  for (const [packageName, version] of incompatiblePackages) {
+    // @TODO hardcoded
+    if (
+      ["react-dom", "react", "netlify-react-ui"].includes(packageName ?? "")
+    ) {
+      continue;
+    }
+
+    const packageKey = buildPackageKey(packageName ?? "", version ?? "");
+    console.log("analyzing...", packageKey);
+    const packageVersions = packageVersionsCache.get(packageKey);
+
+    if (!packageVersions) {
+      continue;
+    }
+
+    const minVersion = checkCompatibility(
+      packageVersions,
+      options.version,
+      version ?? "",
+    );
+
+    if (minVersion) {
+      console.log(
+        `Package ${packageName}@${version} supports ${options.name} ${options.version} starting from version ${minVersion}`,
+      );
+    } else {
+      console.log(
+        `Package ${packageName}@${version} does not support ${options.name} ${options.version}`,
+      );
+    }
+  }
+}
+
+workflow(api, { name: "react", version: "18.0.0" });
