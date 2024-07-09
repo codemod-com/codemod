@@ -6,7 +6,6 @@ import type {
   VerifyTokenResponse,
 } from "@codemod-com/utilities";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
-import type FormData from "form-data";
 
 export const getCLIAccessToken = async (
   accessToken: string,

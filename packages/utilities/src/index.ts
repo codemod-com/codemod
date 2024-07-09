@@ -1,4 +1,7 @@
 export * from "./constants.js";
+export * from "./schemata/api/errors.js";
+export * from "./schemata/api/responses.js";
+
 export { buildCodemodSlug } from "./functions/buildCodemodSlug.js";
 export {
   decryptWithIv,
@@ -52,14 +55,6 @@ export {
   getUnifiedEntry,
   trimLicense,
 } from "./registry.js";
-export type {
-  CodemodDownloadLinkResponse,
-  CodemodListResponse,
-  GetScopedTokenResponse,
-  GetUserDataResponse,
-  RevokeScopedTokenResponse,
-  VerifyTokenResponse,
-} from "./schemata/apiResponses.js";
 export {
   argumentRecordSchema,
   argumentSchema,

@@ -1,20 +1,46 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type { RouteHandler } from "fastify";
+import {
+  type ApiResponse,
+  CODEMOD_NOT_FOUND,
+  type CodemodDownloadLinkResponse,
+  INTERNAL_SERVER_ERROR,
+} from "@codemod-com/utilities";
+import type { FastifyReply, RouteHandler } from "fastify";
+import { CodemodNotFoundError } from "~/types/errors.js";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
 import { environment } from "../util.js";
 
-export type GetCodemodDownloadLinkResponse = { link: string };
+const retrieveCodemodDownloadLink = async (
+  reply: FastifyReply,
+  ...opts: Parameters<typeof codemodService.getCodemodDownloadLink>
+) => {
+  try {
+    return await codemodService.getCodemodDownloadLink(...opts);
+  } catch (err) {
+    if (err instanceof CodemodNotFoundError) {
+      return reply.status(400).send({
+        error: CODEMOD_NOT_FOUND,
+        errorText: "Codemod not found",
+      });
+    }
+
+    return reply.status(500).send({
+      error: INTERNAL_SERVER_ERROR,
+      errorText: "Failed to retrieve codemod download link",
+    });
+  }
+};
 
 export const getCodemodDownloadLink: RouteHandler<{
-  Reply: GetCodemodDownloadLinkResponse;
-}> = async (request: UserDataPopulatedRequest) => {
+  Reply: ApiResponse<CodemodDownloadLinkResponse>;
+}> = async (request: UserDataPopulatedRequest, reply: FastifyReply) => {
   const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
   if (!request?.user?.id) {
-    return codemodService.getCodemodDownloadLink(name, null, []);
+    return retrieveCodemodDownloadLink(reply, name, null, []);
   }
 
   const allowedNamespaces = request?.allowedNamespaces;
@@ -39,7 +65,8 @@ export const getCodemodDownloadLink: RouteHandler<{
     );
   };
 
-  return codemodService.getCodemodDownloadLink(
+  return retrieveCodemodDownloadLink(
+    reply,
     name,
     generateSignedUrl,
     allowedNamespaces,

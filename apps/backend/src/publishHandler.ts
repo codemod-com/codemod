@@ -3,8 +3,16 @@ import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "@codemod-com/database";
 import {
+  type ApiResponse,
+  CODEMOD_CONFIG_INVALID,
+  CODEMOD_NAME_TAKEN,
+  CODEMOD_VERSION_EXISTS,
   type CodemodConfig,
+  INTERNAL_SERVER_ERROR,
+  NO_CONFIG_FILE_FOUND,
+  NO_MAIN_FILE_FOUND,
   TarService,
+  UNAUTHORIZED,
   buildCodemodSlug,
   codemodNameRegex,
   isNeitherNullNorUndefined,
@@ -17,9 +25,7 @@ import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
-export type PublishHandlerResponse =
-  | { success: true }
-  | { error: string; success: false };
+export type PublishHandlerResponse = ApiResponse<void>;
 
 export const publishHandler: RouteHandler<{
   Reply: PublishHandlerResponse;
@@ -94,8 +100,8 @@ export const publishHandler: RouteHandler<{
 
     if (!isNeitherNullNorUndefined(codemodRcBuffer) || !codemodRc) {
       return reply.code(400).send({
-        error: "No .codemodrc.json file was provided",
-        success: false,
+        error: NO_CONFIG_FILE_FOUND,
+        errorText: "No .codemodrc.json file was provided",
       });
     }
 
@@ -105,8 +111,8 @@ export const publishHandler: RouteHandler<{
         !isNeitherNullNorUndefined(mainFileName))
     ) {
       return reply.code(400).send({
-        error: "No main file was provided",
-        success: false,
+        error: NO_MAIN_FILE_FOUND,
+        errorText: "No main file was provided",
       });
     }
 
@@ -126,8 +132,8 @@ export const publishHandler: RouteHandler<{
 
       if (!allowedNamespaces.includes(namespace)) {
         return reply.code(403).send({
-          error: `You are not allowed to publish under namespace "${namespace}"`,
-          success: false,
+          error: UNAUTHORIZED,
+          errorText: `You are not allowed to publish under namespace "${namespace}"`,
         });
       }
     }
@@ -138,15 +144,15 @@ export const publishHandler: RouteHandler<{
 
     if (!isNeitherNullNorUndefined(name)) {
       return reply.code(400).send({
-        error: "Codemod name was not provided in codemodrc",
-        success: false,
+        error: CODEMOD_CONFIG_INVALID,
+        errorText: "Codemod name was not provided in codemodrc",
       });
     }
 
     if (!isNeitherNullNorUndefined(version)) {
       return reply.code(400).send({
-        error: "Codemod version was not provided in codemodrc",
-        success: false,
+        error: CODEMOD_CONFIG_INVALID,
+        errorText: "Codemod version was not provided in codemodrc",
       });
     }
 
@@ -185,8 +191,8 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion !== null && !semver.gt(version, latestVersion.version)) {
       return reply.code(400).send({
-        error: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,
-        success: false,
+        error: CODEMOD_VERSION_EXISTS,
+        errorText: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,
       });
     }
 
@@ -246,8 +252,8 @@ export const publishHandler: RouteHandler<{
 
     if (existingCodemod !== null) {
       return reply.code(400).send({
-        error: `Codemod name \`${name}\` is already taken.`,
-        success: false,
+        error: CODEMOD_NAME_TAKEN,
+        errorText: `Codemod name \`${name}\` is already taken.`,
       });
     }
 
@@ -289,10 +295,10 @@ export const publishHandler: RouteHandler<{
     } catch (err) {
       console.error("Failed writing codemod to the database:", err);
       return reply.code(500).send({
-        error: `Failed writing codemod to the database: ${
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed writing codemod to the database: ${
           (err as Error).message
         }`,
-        success: false,
       });
     }
 
@@ -343,8 +349,8 @@ export const publishHandler: RouteHandler<{
       }
 
       return reply.code(500).send({
-        error: `Failed publishing to S3: ${(err as Error).message}`,
-        success: false,
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed publishing to S3: ${(err as Error).message}`,
       });
     }
 
@@ -379,12 +385,12 @@ export const publishHandler: RouteHandler<{
     const revalidate = buildRevalidateHelper(environment);
     await revalidate(name);
 
-    return reply.code(200).send({ success: true });
+    return reply.code(200).send();
   } catch (err) {
     console.error(err);
     return reply.code(500).send({
-      error: `Failed calling publish endpoint: ${(err as Error).message}`,
-      success: false,
+      error: INTERNAL_SERVER_ERROR,
+      errorText: `Failed calling publish endpoint: ${(err as Error).message}`,
     });
   }
 };

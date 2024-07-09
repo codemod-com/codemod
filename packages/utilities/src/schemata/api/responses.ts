@@ -1,5 +1,21 @@
-import type { OrganizationMembership, User } from "./clerk.js";
-import type { AllEngines, Arguments } from "./codemodConfigSchema.js";
+import type { OrganizationMembership, User } from "../clerk.js";
+import type { AllEngines, Arguments } from "../codemodConfigSchema.js";
+
+export type ApiError = {
+  error: string;
+  errorText: string;
+};
+
+export function isApiError(value: unknown): value is ApiError {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "error" in value &&
+    "errorText" in value
+  );
+}
+
+export type ApiResponse<T> = T | ApiError;
 
 export type CodemodListResponse = {
   name: string;
