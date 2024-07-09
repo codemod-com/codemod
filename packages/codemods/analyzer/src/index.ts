@@ -193,15 +193,18 @@ const buildNodesTree = async (
 const DEFAULT_MAX_DEPTH = 2;
 
 const getDependencyTree = async (
-  path: string,
+  packageJSON: any,
   maxDepths = DEFAULT_MAX_DEPTH,
 ) => {
   const nodes = new Map();
 
-  // @TODO remove test data
-  const { dependencies } = getDependenciesFromPackageJson(path);
+  const { dependencies } = packageJSON;
 
-  for (const packageKey of dependencies) {
+  const packageKeys = Object.entries(dependencies ?? {}).map(
+    ([name, version]) => buildPackageKey(name, version),
+  );
+
+  for (const packageKey of packageKeys) {
     const packageData = await getPackageData(packageKey);
     const treeNode = await buildNodesTree(packageData, 0, maxDepths);
     nodes.set(treeNode?.package.name, treeNode);
@@ -210,8 +213,8 @@ const getDependencyTree = async (
   return nodes;
 };
 
-const getDependentPackages = async (packageName: string, path: string) => {
-  const dependencyTree = await getDependencyTree(path);
+const getDependentPackages = async (packageName: string, packageJSON: any) => {
+  const dependencyTree = await getDependencyTree(packageJSON);
 
   const dependents = new Set<Node>();
 
@@ -261,59 +264,65 @@ const consoleReporter = (report: Report) => {
 };
 
 export async function workflow({ git }: Api, options: Options) {
-  await git.clone(options.repo);
+  await git.clone(options.repo, async ({ files }) => {
+    const deps = await files("package.json")
+      .json()
+      .map<any, any>(async ({ getContents }) => {
+        const content = await getContents();
 
-  // @TODO hardcoded
-  const path = `/var/folders/lb/jyy18cts4zb3xnwqs876921w0000gn/T/cm/git-github-com-dmytro-hryshyn-feature-flag-example-0`;
-  const packageJsonPath = join(path, "package.json");
+        const dependentPackages = await getDependentPackages(
+          options.name,
+          content,
+        );
 
-  const dependentPackages = await getDependentPackages(
-    options.name,
-    packageJsonPath,
-  );
+        const incompatiblePackages = [...dependentPackages.values()]
+          .filter((pkg) => !semver.satisfies(options.version, pkg.package.name))
+          .map((pkg) => [pkg.package.name, pkg.package.version]);
 
-  const incompatiblePackages = [...dependentPackages.values()]
-    .filter((pkg) => !semver.satisfies(options.version, pkg.package.name))
-    .map((pkg) => [pkg.package.name, pkg.package.version]);
+        const report: Report = {
+          target: {
+            name: options.name,
+            version: options.version,
+          },
+          packages: {},
+        };
 
-  const report: Report = {
-    target: {
-      name: options.name,
-      version: options.version,
-    },
-    packages: {},
-  };
+        for (const [packageName, version] of incompatiblePackages) {
+          // @TODO hardcoded
+          if (
+            ["react-dom", "react", "netlify-react-ui"].includes(
+              packageName ?? "",
+            )
+          ) {
+            continue;
+          }
 
-  for (const [packageName, version] of incompatiblePackages) {
-    // @TODO hardcoded
-    if (
-      ["react-dom", "react", "netlify-react-ui"].includes(packageName ?? "")
-    ) {
-      continue;
-    }
+          const packageKey = buildPackageKey(packageName ?? "", version ?? "");
+          console.log(`Analyzing... ${packageKey}`);
 
-    const packageKey = buildPackageKey(packageName ?? "", version ?? "");
-    console.log(`Analyzing... ${packageKey}`);
+          const packageVersions = packageVersionsCache.get(packageKey);
 
-    const packageVersions = packageVersionsCache.get(packageKey);
+          if (!packageVersions) {
+            continue;
+          }
 
-    if (!packageVersions) {
-      continue;
-    }
+          const minVersion = checkCompatibility(
+            packageVersions,
+            options.version,
+            version ?? "",
+          );
 
-    const minVersion = checkCompatibility(
-      packageVersions,
-      options.version,
-      version ?? "",
-    );
+          report.packages[packageKey] = {
+            isCompatible: false,
+            minVersion,
+          };
+        }
 
-    report.packages[packageKey] = {
-      isCompatible: false,
-      minVersion,
-    };
-  }
+        consoleReporter(report);
+      });
+  });
 
-  consoleReporter(report);
+  // // @TODO hardcoded
 }
 
 workflow(api, {
