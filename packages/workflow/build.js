@@ -26,5 +26,7 @@ build({
     "jscodeshift",
     "yaml",
     "inquirer",
+    "detect-indent",
+    "detect-newline",
   ],
 });

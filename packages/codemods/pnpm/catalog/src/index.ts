@@ -1,6 +1,5 @@
 import type { Api } from "@codemod.com/workflow";
 import * as semver from "semver";
-import { invariant } from "ts-invariant";
 
 type PackagesVersions = Record<
   string,
@@ -16,12 +15,23 @@ type PackageJson = {
   devDependencies?: Record<string, string>;
 };
 
+const isAlias = (version: string) => {
+  return version.match(/^p?npm:/)?.length === 1;
+};
+
+const validRange = (version: string) => {
+  return semver.validRange(version) !== null;
+};
+
 const readDependencies = (
   packagesVersions: PackagesVersions,
   dependencies: Record<string, string> = {},
 ) => {
   for (const [name, version] of Object.entries(dependencies)) {
-    if (version === "workspace:*" || !semver.validRange(version)) {
+    if (
+      version === "workspace:*" ||
+      (!isAlias(version) && !validRange(version))
+    ) {
       continue;
     }
 
@@ -47,7 +57,10 @@ export async function workflow({ files, dirs, question, exec }: Api) {
     )
   ).pop();
 
-  invariant(workspaceConfig, "pnpm-workspace.yaml not found");
+  if (!workspaceConfig) {
+    console.log("pnpm-workspace.yaml not found");
+    return;
+  }
 
   const packagesVersions: PackagesVersions = {};
 
@@ -69,10 +82,23 @@ export async function workflow({ files, dirs, question, exec }: Api) {
     readDependencies(packagesVersions, packageJson.devDependencies);
   });
 
-  invariant(
-    Object.entries(packagesVersions).some(([_, { usages }]) => usages > 1),
-    "No duplicated dependencies found",
-  );
+  if (!Object.entries(packagesVersions).some(([_, { usages }]) => usages > 1)) {
+    console.log("No duplicated dependencies found");
+    return;
+  }
+
+  const packagesWithSameVersions = Object.entries(packagesVersions)
+    .filter(([_, { usages, versions }]) => usages > 1 && versions.length === 1)
+    .map(([name, { versions }]) => ({
+      name: `${name} (${versions.join(", ")})`,
+      value: name,
+    }));
+
+  if (packagesWithSameVersions.length) {
+    console.info(
+      `The following packages are safe to use in catalog: ${packagesWithSameVersions.map(({ name }) => name).join(", ")}`,
+    );
+  }
 
   const packagesWithDifferentVersions = Object.entries(packagesVersions)
     .filter(([_, { usages, versions }]) => usages > 1 && versions.length > 1)
@@ -89,10 +115,10 @@ export async function workflow({ files, dirs, question, exec }: Api) {
     message: `The following packages have 2 or more different versions in workspace.
 Catalog supports only one version at a time for default configuration.
 Latest version will be picked for each package and used in catalog.
-By default all the packages are selected.
+By default all the packages are deselected.
 Select packages to merge versions:`,
     choices: packagesWithDifferentVersions,
-    default: packagesWithDifferentVersions.map(({ value }) => value),
+    default: [],
   });
 
   const updateCatalog = Object.fromEntries(
@@ -106,7 +132,9 @@ Select packages to merge versions:`,
         name,
         versions
           .map((version) => ({
-            version: version.replace(/[~\^]/g, ""),
+            version: isAlias(version)
+              ? version.replace(/^p?npm:(.+@)?/, "").replace(/[~\^]/g, "")
+              : version.replace(/[~\^]/g, ""),
             original: version,
           }))
           .sort((a, b) => semver.compare(a.version, b.version))
@@ -115,23 +143,32 @@ Select packages to merge versions:`,
       ]),
   );
 
-  invariant(
-    Object.keys(updateCatalog).length > 0,
-    "No packages selected for catalog",
-  );
+  if (Object.keys(updateCatalog).length === 0) {
+    console.log("No packages selected for catalog");
+    return;
+  }
 
-  console.log(
-    `The following packages will be used in catalog: ${JSON.stringify(updateCatalog, null, 2)}`,
+  console.info(
+    `The following packages will be used in catalog: ${Object.entries(
+      updateCatalog,
+    )
+      .map(([name, version]) => `${name} (${version})`)
+      .join(", ")}`,
   );
 
   await workspaceFile.update<{ catalog: Record<string, string> }>(
-    ({ catalog, ...rest }) => ({
-      ...rest,
-      catalog: {
-        ...catalog,
-        ...updateCatalog,
-      },
-    }),
+    ({ catalog, ...rest }) => {
+      const sortedCatalog = Object.fromEntries(
+        Object.entries({
+          ...catalog,
+          ...updateCatalog,
+        }).sort(([a], [b]) => a.localeCompare(b)),
+      );
+      return {
+        ...rest,
+        catalog: sortedCatalog,
+      };
+    },
   );
 
   await packageJsonFiles.json().update<PackageJson>((packageJson) => {
@@ -149,7 +186,7 @@ Select packages to merge versions:`,
 
   await files("package.json")
     .json()
-    .update<PackageJson>(async (packageJson) => {
+    .update<PackageJson>((packageJson) => {
       if (packageJson.packageManager) {
         const version = packageJson.packageManager.match(/pnpm@(.*)/)?.[1];
         if (version && semver.lt(version, "9.5.0")) {

@@ -55,9 +55,17 @@ const transform = async (
     },
     promise: undefined,
   });
-  vm.runInContext(codeToExecute, context, { timeout: 30000 });
+
+  vm.runInContext(codeToExecute, context, {
+    timeout: 30000,
+  });
+
   if (context.promise) {
-    await context.promise;
+    try {
+      await context.promise;
+    } catch (e) {
+      console.error(e);
+    }
   }
 };
 

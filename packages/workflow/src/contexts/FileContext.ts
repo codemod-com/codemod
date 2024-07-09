@@ -48,7 +48,7 @@ export class FileContext extends Context<FileContextData> {
     magicString.update(start, end, replacement);
   }
 
-  async save() {
+  async save({ skipFormat }: { skipFormat?: boolean } = {}) {
     let contents: string | undefined;
     if (this._magicString?.hasChanged()) {
       contents = this._magicString.toString();
@@ -58,7 +58,7 @@ export class FileContext extends Context<FileContextData> {
     if (typeof contents === "string") {
       await fs.writeFile(
         this.file,
-        await formatText(this.file, contents, true),
+        skipFormat ? contents : await formatText(this.file, contents, true),
       );
       console.log(`${clc.blueBright("FILE")} ${this.file}`);
     }

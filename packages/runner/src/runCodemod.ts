@@ -554,7 +554,13 @@ export const runCodemod = async (
     const transpiledSource = codemod.indexPath.endsWith(".ts")
       ? transpile(codemodSource.toString())
       : codemodSource.toString();
-    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+    await runWorkflowCodemod(
+      transpiledSource,
+      safeArgumentRecord,
+      (kind, message) => {
+        onPrinterMessage({ kind: "console", message, consoleKind: kind });
+      },
+    );
 
     // @TODO pass modified paths?
     await onSuccess?.({ codemod, commands: [] });
