@@ -78,7 +78,14 @@
     },
     {
       "group": "Building codemods",
-      "pages": ["guides/building-codemods/codemod2"]
+      "pages": [
+        "guides/building-codemods/build-package",
+        "guides/building-codemods/codemod2"
+      ]
+    },
+    {
+      "group": "Sharing codemods",
+      "pages": ["guides/sharing/publishing-codemods"]
     },
     {
       "group": "Engines",

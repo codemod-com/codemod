@@ -1,0 +1,52 @@
+---
+title: Publishing to Codemod Registry
+sidebarTitle: Publishing Codemods
+---
+
+This guide will walk you through the steps needed to publish codemods to [Codemod Registry](/codemod-registry). 
+
+There are three ways to publish codemods to Codemod Registry:
+1. [publishing a Codemod-compatible package](#option-1-publishing-a-codemod-compatible-package-recommended)
+2. [publishing from source](#option-2-publishing-a-codemod-from-source-file)
+3. publishing with Codemod Studio (Coming soon!)
+
+## Publishing codemods
+
+### Option 1: Publishing a Codemod-compatible package (recommended)
+
+Creating and publishing a Codemod-compatible package brings an [enhanced codemod running experience](/platform/run#benefits-and-features).
+
+<Steps>
+    <Step title="Prepare a codemod package">
+        To publish a codemod to Codemod Registry, the codemod package needs to be compatible with Codemod platform. To learn how to build Codemod-compatible codemods, please refer to the [building codemods guide](/guides/building-codemods/build-package).
+    </Step>
+    <Step title="Login to Codemod platform">
+        If you are not already logged in, login to Codemod platform using:
+        ```bash
+        codemod login
+        ```
+    </Step>
+    <Step title="Publish codemod">
+        Move to your codemod package directory and run:
+        ```bash
+        codemod publish
+        ```
+    </Step>
+</Steps>
+
+### Option 2: Publishing a codemod from source file
+
+<Steps>
+    <Step title="Login to Codemod platform">
+        If you are not already logged in, login to Codemod platform using:
+        ```bash
+        codemod login
+        ```
+    </Step>
+    <Step title="Publish codemod">
+        Publish the codemod from <Tooltip tip="This path can point to a simple transform file or a Codemod-compatible package.">source path</Tooltip>:
+        ```bash
+        codemod publish [path] --source
+        ```
+    </Step>
+</Steps>
