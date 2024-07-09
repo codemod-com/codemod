@@ -2,7 +2,7 @@
   "name": "@codemod.com/workflow",
   "author": "Codemod, Inc.",
   "type": "module",
-  "version": "0.0.18",
+  "version": "0.0.19",
   "description": "Workflow Engine for Codemod",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -46,7 +46,9 @@
     "tree-kill": "^1.2.2",
     "ts-invariant": "^0.10.3",
     "yaml": "^2.4.5",
-    "inquirer": "^9.2.16"
+    "inquirer": "^9.2.16",
+    "detect-indent": "^7.0.1",
+    "detect-newline": "^4.0.1"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
