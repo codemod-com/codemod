@@ -13,6 +13,7 @@ import {
 } from "@codemod-com/utilities";
 
 import Fuse from "fuse.js";
+import { CodemodNotFoundError } from "~/types/errors";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];
@@ -63,8 +64,6 @@ export type Filter = {
     count: number;
   }>;
 };
-
-export class CodemodNotFoundError extends Error {}
 
 class CodemodService {
   public constructor(protected prisma: PrismaClient) {}
