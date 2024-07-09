@@ -41,6 +41,8 @@ type SnippetSettersMap = {
   [K in EditorType as `set${Capitalize<K>}Selection`]: SnippetSetters["setSelection"];
 };
 type SnippetsConfig = {
+  currentContent: string;
+  currentType: EditorType;
   addPair: () => void;
   clearAll: () => void;
   removePair: (index: number) => void;
@@ -233,7 +235,7 @@ export const useSnippetsStore = create<SnippetsState>(
           const obj = get();
           obj.editors[editorsPairIndex][type].content = content;
           obj.editors[editorsPairIndex][type].rootNode = rootNode;
-          set(obj);
+          set({ currentContent: content, currentType: type, ...obj });
           try {
             localStorage.setItem(
               "editors",

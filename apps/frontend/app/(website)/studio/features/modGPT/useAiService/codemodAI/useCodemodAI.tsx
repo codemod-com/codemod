@@ -33,7 +33,6 @@ export const useCodemodAI = ({
     const _token = await getToken();
     setToken(_token);
     ws?.send(JSON.stringify({ ...message, token: _token }));
-    // socket?.emit("message", message);
   };
   const handleError = (error: Record<string, unknown> | Event) => {
     setServiceBusy(false);
