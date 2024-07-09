@@ -236,10 +236,32 @@ const getDependentPackages = async (packageName: string, path: string) => {
 type Options = {
   name: string;
   version: string;
+  repo: string;
+  depth: number;
+};
+
+type Report = { packages: Record<string, any>; target: any };
+
+const consoleReporter = (report: Report) => {
+  const { target, packages } = report;
+
+  for (const [packageKey, packageReport] of Object.entries(packages)) {
+    const { minVersion, isCompatible } = packageReport;
+
+    if (minVersion) {
+      console.log(
+        `Package ${packageKey} supports ${target.name} ${target.version} starting from version ${minVersion}`,
+      );
+    } else {
+      console.log(
+        `Package ${packageKey} does not support ${target.name} ${target.version}`,
+      );
+    }
+  }
 };
 
 export async function workflow({ git }: Api, options: Options) {
-  await git.clone("git@github.com:DmytroHryshyn/feature-flag-example");
+  await git.clone(options.repo);
 
   // @TODO hardcoded
   const path = `/var/folders/lb/jyy18cts4zb3xnwqs876921w0000gn/T/cm/git-github-com-dmytro-hryshyn-feature-flag-example-0`;
@@ -254,6 +276,14 @@ export async function workflow({ git }: Api, options: Options) {
     .filter((pkg) => !semver.satisfies(options.version, pkg.package.name))
     .map((pkg) => [pkg.package.name, pkg.package.version]);
 
+  const report: Report = {
+    target: {
+      name: options.name,
+      version: options.version,
+    },
+    packages: {},
+  };
+
   for (const [packageName, version] of incompatiblePackages) {
     // @TODO hardcoded
     if (
@@ -263,7 +293,8 @@ export async function workflow({ git }: Api, options: Options) {
     }
 
     const packageKey = buildPackageKey(packageName ?? "", version ?? "");
-    console.log("analyzing...", packageKey);
+    console.log(`Analyzing... ${packageKey}`);
+
     const packageVersions = packageVersionsCache.get(packageKey);
 
     if (!packageVersions) {
@@ -276,16 +307,18 @@ export async function workflow({ git }: Api, options: Options) {
       version ?? "",
     );
 
-    if (minVersion) {
-      console.log(
-        `Package ${packageName}@${version} supports ${options.name} ${options.version} starting from version ${minVersion}`,
-      );
-    } else {
-      console.log(
-        `Package ${packageName}@${version} does not support ${options.name} ${options.version}`,
-      );
-    }
+    report.packages[packageKey] = {
+      isCompatible: false,
+      minVersion,
+    };
   }
+
+  consoleReporter(report);
 }
 
-workflow(api, { name: "react", version: "18.0.0" });
+workflow(api, {
+  name: "react",
+  version: "18.0.0",
+  repo: "git@github.com:DmytroHryshyn/feature-flag-example",
+  depth: 2,
+});
