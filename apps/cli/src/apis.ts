@@ -1,6 +1,7 @@
 import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
+  GetCodemodResponse,
   GetScopedTokenResponse,
   GetUserDataResponse,
   VerifyTokenResponse,
@@ -88,6 +89,25 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
     headers: { Authorization: `Bearer ${accessToken}` },
     timeout: 10000,
   });
+};
+
+export const getCodemod = async (
+  name: string,
+  accessToken?: string,
+): Promise<GetCodemodResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/codemods/${name}`);
+
+  const headers: RawAxiosRequestHeaders = {};
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const res = await Axios.get<GetCodemodResponse>(url.toString(), {
+    headers,
+    timeout: 10000,
+  });
+
+  return res.data;
 };
 
 export const getCodemodDownloadURI = async (

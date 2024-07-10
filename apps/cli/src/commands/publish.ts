@@ -1,19 +1,19 @@
 import * as fs from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   CODEMOD_VERSION_EXISTS,
+  buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
   isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-// import FormData from "form-data";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
-import { publish } from "../apis.js";
+import { getCodemod, publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
 import { handleLoginCliCommand } from "./login.js";
@@ -46,7 +46,7 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
-  const { token } = userData;
+  const { token, allowedNamespaces, organizations } = userData;
 
   const formData = new FormData();
 
@@ -204,6 +204,33 @@ export const handlePublishCliCommand = async (options: {
     );
   }
 
+  let codemodIsPublished = false;
+  try {
+    await getCodemod(buildCodemodSlug(codemodRc.name), token);
+    codemodIsPublished = true;
+  } catch (err) {
+    //
+  }
+
+  if (
+    !codemodIsPublished &&
+    allowedNamespaces.length > 1 &&
+    !codemodRc.name.startsWith("@")
+  ) {
+    const { namespace } = await inquirer.prompt<{ namespace: string }>({
+      type: "list",
+      name: "namespace",
+      choices: allowedNamespaces,
+      default: allowedNamespaces.find(
+        (ns) => !organizations.map((org) => org.organization.slug).includes(ns),
+      ),
+      message:
+        "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
+    });
+
+    formData.append("namespace", namespace);
+  }
+
   if (codemodRc.engine !== "recipe") {
     let globSearchPattern: string;
     let actualMainFileName: string;
@@ -307,6 +334,15 @@ export const handlePublishCliCommand = async (options: {
       }
 
       codemodRc.version = semver.inc(existingVersion, "patch") ?? "0.0.1";
+      try {
+        await fs.promises.writeFile(
+          codemodRcPath,
+          JSON.stringify(codemodRc, null, 2),
+        );
+      } catch (err) {
+        //
+      }
+
       formData.append(
         ".codemodrc.json",
         new Blob([Buffer.from(JSON.stringify(codemodRc))]),

@@ -151,7 +151,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     ].filter(isNeitherNullNorUndefined);
 
     if (user.username) {
-      allowedNamespaces.push(user.username);
+      allowedNamespaces.unshift(user.username);
 
       if (environment.VERIFIED_PUBLISHERS.includes(user.username)) {
         allowedNamespaces.push("codemod-com", "codemod.com");

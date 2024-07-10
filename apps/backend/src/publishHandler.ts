@@ -119,28 +119,48 @@ export const publishHandler: RouteHandler<{
     const { name, version } = codemodRc;
 
     let namespace: string | null = null;
-    if (name.startsWith("@") && name.includes("/")) {
-      namespace = name.split("/").at(0)?.slice(1)!;
-
-      const allowedNamespaces = [
-        username,
-        ...organizations.map((org) => org.organization.slug),
-        environment.VERIFIED_PUBLISHERS.includes(username)
-          ? "codemod-com"
-          : null,
-      ].filter(isNeitherNullNorUndefined);
-
-      if (!allowedNamespaces.includes(namespace)) {
-        return reply.code(403).send({
-          error: UNAUTHORIZED,
-          errorText: `You are not allowed to publish under namespace "${namespace}"`,
-        });
-      }
+    try {
+      const formData = await request.formData();
+      namespace = formData.get("namespace")?.toString() ?? null;
+    } catch (err) {
+      //
     }
+
+    let isPrivate = false;
+
+    if (!namespace) {
+      if (name.startsWith("@") && name.includes("/")) {
+        namespace = name.split("/").at(0)?.slice(1)!;
+
+        const allowedNamespaces = [
+          username,
+          ...organizations.map((org) => org.organization.slug),
+          environment.VERIFIED_PUBLISHERS.includes(username)
+            ? "codemod-com"
+            : null,
+        ].filter(isNeitherNullNorUndefined);
+
+        if (!allowedNamespaces.includes(namespace)) {
+          return reply.code(403).send({
+            error: UNAUTHORIZED,
+            errorText: `You are not allowed to publish under namespace "${namespace}"`,
+          });
+        }
+
+        isPrivate = true;
+      }
+
+      namespace = username;
+    }
+
+    isPrivate = codemodRc.private ?? isPrivate;
+    const isVerified =
+      namespace === "codemod-com" ||
+      environment.VERIFIED_PUBLISHERS.includes(username);
+    const author = isVerified ? "Codemod" : namespace;
 
     // private flag in codemodrc as primary source of truth,
     // fallback is to check if publishing under a namespace. if yes - set to private by default
-    const isPrivate = codemodRc.private ?? !!namespace;
 
     if (!isNeitherNullNorUndefined(name)) {
       return reply.code(400).send({
@@ -225,20 +245,6 @@ export const publishHandler: RouteHandler<{
       tags: codemodRc.meta?.tags,
       arguments: codemodRc.arguments,
     };
-
-    let isVerified = false;
-    let author = namespace;
-    if (author === null) {
-      if (
-        namespace === "codemod-com" ||
-        environment.VERIFIED_PUBLISHERS.includes(username)
-      ) {
-        isVerified = true;
-        author = "Codemod";
-      } else {
-        author = username;
-      }
-    }
 
     // Check if a codemod with the name already exists from other author
     const existingCodemod = await prisma.codemod.findUnique({

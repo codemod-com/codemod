@@ -1,3 +1,4 @@
+import type { Codemod } from "@codemod-com/database";
 import type { OrganizationMembership, User } from "../clerk.js";
 import type { AllEngines, Arguments } from "../codemodConfigSchema.js";
 
@@ -48,3 +49,5 @@ export type GetUserDataResponse = {
   organizations: OrganizationMembership[];
   allowedNamespaces: string[];
 };
+
+export type GetCodemodResponse = Codemod;
