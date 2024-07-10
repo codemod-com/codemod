@@ -2,346 +2,67 @@
 title: Building a codemod package
 ---
 
-## Supported codemod engines
-
-Codemod platform currently supports the following codemod engines: [`ast-grep`](https://github.com/ast-grep/ast-grep), [`filemod`](https://github.com/codemod-com/codemod/tree/main/packages/filemod), [`jscodeshift`](https://github.com/facebook/jscodeshift), [`ts-morph`](https://github.com/dsherret/ts-morph), and [`piranha`](https://github.com/uber/piranha)
-
-## Codemod package structure
-
-// TODO: should this be made into a separate `.codemodrc.json` reference page/group?
-
-A Codemod-compatible package should have a `.codemodrc.json` configuration file in the project root and conform to one of the supported engines' structures.
-
-<Note>
-  If your codemod does not have a `.codemodrc.json` file, Codemod CLI will ask you a few questions about your codemod and generate the configuration file automatically for you.
-</Note>
-
-
-<Accordion title=".codemodrc.json reference">
-  
-  <ResponseField name="name" type="string" required>
-    Specifies the slugified name of the codemod published to the codemod registry.
-  </ResponseField>
-  
-  <ResponseField name="version" type="string" required>
-    Specifies the current codemod version. Should follow the [SemVer scheme](https://semver.org/).
-    <Warning>The version field must be bumped every time the codemod is published.</Warning>
-  </ResponseField>
-  
-  <ResponseField name="private" type="boolean" default="false">
-    Can be used to set the codemod visibility to `private`.
-
-    By default, when a codemod is published without a namespace, visibility will be set as `public`.
-    If a codemod is published under a namespace, such as `@codemod/my-codemod`, visibility will be set as `private`.
-  </ResponseField>
-  
-  <ResponseField name="engine" type="string" required>
-    Specifies the engine used to run the codemod.
-    Can be any of:
-    - `filemod`
-    - `jscodeshift`
-    - `ts-morph`
-    - `ast-grep`
-    - `piranha` (requires additional `language` field that specifies one of the supported piranha languages:
-    `java`, `kt`, `go`, `py`, `swift`, `ts`, `tsx`, or `scala`)
-    - `recipe` (requires additional `names` field, which is an ordered array of codemod names that will be executed)
-  </ResponseField>
-  
-  <ResponseField name="include" type="glob pattern array">
-    Can be used to override the default glob pattern for files that will be processed by the codemod.
-  </ResponseField>
-  
-  <ResponseField name="applicability" type="object">
-    The applicability field is an object with `from` and `to` keys that are both arrays of tuples.
-    This field can be used to specify the dependencies and versions this codemod is made for.
-    
-    Specifying the applicability criteria of your codemod helps:
-    1. Reduce false positives
-    2. Proactively recommend the codemod to users who might need it
-    3. Improve codemod performance, as it will only process projects that make sense
-    4. Allow daisy-chaining codemods (e.g., migrating from v1 to v3 by combining v1-to-v2 and v2-to-v3 codemods)
-  
-    Each tuple consists of three elements:
-    1. a library name
-    2. a comparison operator (`<`, `>`, `<=`, `>=`, `=`)
-    3. a version number ([SemVer](https://semver.org/) compatible)
-  </ResponseField>
-  
-  <ResponseField name="deps" type="array of strings">
-    Can be used to specify dependencies to be installed after successful a codemod run.
-    You can also specify a package to be removed by prepending it with a `-` sign.
-    Each dependency should be a string in one of the following formats:
-    - `package-name@version`
-    - `-package-name`
-    - `package-name`
-  </ResponseField>
-  
-  <ResponseField name="arguments" type="array of objects">
-    If your codemod requires arguments, you can specify them in this field.
-
-    <Expandable title="Argument fields">
-      <ResponseField name="name" type="string">
-        Specifies the argument name.
-      </ResponseField>
-
-      <ResponseField name="description" type="string">
-        Specifies the argument description.
-      </ResponseField>
-
-      <ResponseField name="kind" type="string">
-        Specifies the argument argument type. Can be any of: `string`, `number`, or `boolean`.
-      </ResponseField>
-
-      <ResponseField name="required" type="boolean">
-        Specifies if the argument is required.
-      </ResponseField>
-    </Expandable>
-
-  </ResponseField>
-  
-  <ResponseField name="meta" type="object">
-    Specifies additional information about your codemod for discoverability purposes.
-
-    <Expandable title="Meta child fields">
-      <ResponseField name="tags" type="array of strings">
-        Specifies tags for your codemods (ex: next.js, react).
-      </ResponseField>
-
-      <ResponseField name="git" type="string">
-        Specifies the url to the codemod's repository.
-      </ResponseField>
-    </Expandable>
-  </ResponseField>
-  
-  <ResponseField name="build" type="object">
-    Specifies custom paths for the build input and output files.
-
-    <Expandable title="Build child fields">
-      <ResponseField name="input" type="string">
-        Specifies the path to the input file.
-      </ResponseField>
-
-      <ResponseField name="output" type="string">
-        Specifies the path to the output file.
-      </ResponseField>
-    </Expandable>
-  </ResponseField>
-
-  ### Example of a valid configuration file:
-
-```json .codemodrc.json
-  {
-    "name": "my-unique-codemod-name",
-    "version": "1.0.0",
-    "private": false,
-    "engine": "filemod",
-    "include": ["**/*.js"],
-    "applicability": {
-      "from": [["react", ">", "17.0.0"], ["react", "<", "17.1.9"]],
-      "to": [["react", "=", "18.0.0"]]
-    },
-    "deps": ["-jest", "vitest@2.0.0"],
-    "arguments": [
-      {
-        "name": "arg1",
-        "description": "Arg number one",
-        "kind": "string",
-        "required": false
-      },
-      {
-        "name": "arg2",
-        "description": "Some other arg",
-        "kind": "number",
-        "required": true
-      }
-    ],
-    "meta": {
-      "tags": ["react", "migration"],
-      "git": "https://github.com/codemod-com/codemod"
-    },
-    "build": {
-      "input": "src/index.ts",
-      "output": "dist/index.cjs"
-    }
-  }
-  ```
-  
-</Accordion>
-
-<Tabs>
-  <Tab title="jscodeshift, ts-morph, and filemod">
-    ```bash
-    ├── dist
-    │   ├── index.cjs # built codemod file. when someone runs your codemod, this file will be executed.
-    ├── src
-    │   ├── index.ts # the default path for the codemod's entry point file.
-    │   ├── ...
-    ├── .codemodrc.json # contains the codemod configuration
-    └── README.md # contains a short description and examples, such as in the example at the bottom of this page
-    ```
-
-    <CodeGroup>
-
-    ```json .codemodrc.json
-    {
-    "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-    "version": "1.0.0",
-    "private": false,
-    "name": "framework/version/codemod-name",
-    "description": "example codemod description",
-    "engine": "jscodeshift/ts-morph/filemod",
-    "meta": {
-      "tags": ["framework", "migration", "etc"],
-        "git": "https://github.com/user/repo"
-    },
-    "applicability": {
-      "from": [["framework", "<=", "version"]],
-      "to": [["framework", "=", "version"]]
-      }
-    }
-    ```
-
-    ```markdown README.md
-
-    This codemod does X, Y, and Z. // example codemod description
-
-    ## Example
-
-    ### Before
-
-    // code before transformation
-
-    ### After
-
-    // code after transformation
-
-    ## Other links
-
-    - [Link to migration guide reference]()
-    ```
-
-    </CodeGroup>
-
-    </Tab>
-    <Tab title="ast-grep">
-
-      ```bash
-      ├── src
-      │   ├── rule.yaml # ast-grep rule file.
-      ├── .codemodrc.json # should contain "engine" field set to "ast-grep"
-      └── README.md
-      ```
-
-      To learn how to build your first rule, check out [ast-grep's documentation](https://ast-grep.github.io/guide/rule-config.html).
-
-      <CodeGroup>
-
-      ```json .codemodrc.json
-      {
-      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "version": "1.0.0",
-      "private": false,
-      "name": "framework/version/codemod-name",
-      "description": "example codemod description",
-      "engine": "ast-grep",
-      "meta": {
-        "tags": ["framework", "migration", "etc"],
-        "git": "https://github.com/user/repo"
-      },
-      "applicability": {
-        "from": [["framework", "<=", "version"]],
-        "to": [["framework", "=", "version"]]
-        }
-      }
-      ```
-
-      ```yaml rule.yaml
-      id: rule-id
-      language: TypeScript
-      rule:
-        pattern: Promise.all($A)
-        has:
-          pattern: await $_
-          stopBy: end
-      ```
-
-      ```markdown README.md
-
-      This codemod does X, Y, and Z. // example codemod description
-
-      ## Example
-
-      ### Before
-
-      // code before transformation
-
-      ### After
-
-      // code after transformation
-
-      ## Other links
-
-      - [Link to migration guide reference]()
-      ```
-
-      </CodeGroup>
-  </Tab>
-  <Tab title="Recipes">
-
-    ```bash
-    ├── .codemodrc.json # should contain "engine" field set to "recipe" and "names" field with an ordered array of codemod names that will be executed.
-    └── README.md
-    ```
-
-    Unlike JavaScript and ast-grep codemods, recipes do not inlcude input files in `.codemodrc.json`. To specify codemods that should be run by the recipe, simply add the codemod names under the `names` field.
-
-    <CodeGroup>
-
-    ```json .codemodrc.json
-    {
-      "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-      "name": "framework/version/recipe-name",
-      "version": "1.0.0",
-      "private": false,
-      "engine": "recipe",
-      "names": [
-        "framework/version/codemod-1",
-        "framework/version/codemod-2",
-        "framework/version/codemod-3"
-      ],
-      "meta": {
-        "tags": ["framework", "migration"],
-        "git": "https://github.com/user/repo"
-      },
-      "applicability": {
-        "from": [["framework", "<=", "version"]],
-        "to": [["framework", "=", "version"]]
-      }
-    }
-    ```
-
-    ```markdown README.md
-    This recipe runs a set of codemods that assist you with some migration process.
-
-    The recipe includes the following codemods:
-
-    - codemod 1
-    - codemod 2
-    - ..
-
-    ## Other links
-
-    - [Link to migration guide reference]()
-    ```
-
-    </CodeGroup>
-
-  </Tab>
-</Tabs>
-
-## Building a codemod package
-
-// TODO
-1. Build from Codemod Studio
-2. Build from `codemod learn`
+You can build a codemod package using three different ways:
+1. Build with Codemod Studio
+2. Build with `codemod learn`
 3. Build from existing codemod
+
+By building a codemod with Codemod Studio or with `codemod learn`, your codemod package will automatically have the recommended [package structure](/guides/building-codemods/package-requirements).
+
+If you build a codemod from scratch or a previously built codemod, you will have to scaffold a valid codemod package using Codemod CLI.
+
+## Building with Codemod Studio
+
+To learn how to build codemods with Codemod Studio, please refer to the [detailed Codemod Studio usage guide](/building-codemods/codemod-studio#building-codemods-with-codemod-studio).
+
+## Building with `codemod learn`
+
+You can use `codemod learn` to build a codemod from the latest diff made in your current project. This allows you to seamlessly build codemods right from your IDE.
+
+<Steps>
+    <Step title="Make a change">
+        Start by manually making change in a file that you would like to see repeated over many files in your project.
+    </Step>
+    <Step title="Run `codemod learn`">
+        Open a terminal in your current project and run `codemod learn`. Codemod AI will use the diff of the latest edited file to automatically generate a codemod.
+    </Step>
+    <Step title="Building the codemod">
+        Codemod Studio will automatically open, with pre-populated data, and begin building your codemod. Allow Codemod Studio to finish generating your codemod.
+    </Step>
+    <Step title="Export/publish the generated codemod">
+        After Codemod Studio builds your codemod, you can easily [export and run your codemod](/building-codemods/codemod-studio#running-codemods) over your local project.
+    </Step>
+</Steps>
+
+## Building from an existing codemod
+
+To build a codemod package from an existing codemod, you should:
+
+<Steps>
+    <Step title="Verify codemod engine compatibility">
+        Verify that the existing codemod is built by one of the [supported codemod engines](/guides/building-codemods/package-requirements#supported-codemod-engines).
+    </Step>
+    <Step title="Initialize codemod package">
+        Initialize a Codemod-compatible package by running:
+        ```bash
+        codemod init
+        ```
+    </Step>
+    <Step title="Update transform file content">
+        <Card title="For jscodeshift/ts-morph/filemod codemods:">
+        Update the content inside the `src/index.ts` file with the content of your codemod's transform file.
+        </Card>
+        <Card title="For ast-grep codemods:">
+        Update the content inside the `src/rule.yaml` file with the content of your ast-grep rule.
+        </Card>
+    </Step>
+    <Step title="Update package configuration file">
+        Add information about your codemod to the `.codemodrc.json` configuration file. Refer to [`.codemodrc.json` reference here](/guides/building-codemods/package-requirements#codemodrc-json-reference).
+    </Step>
+</Steps>
+
+## Next steps
+
+<Card title="Publishing your codemod ->" icon="share-nodes" href="/guides/sharing/publishing-codemods">
+Get started with publishing your codemod to Codemod Registry.
+</Card>

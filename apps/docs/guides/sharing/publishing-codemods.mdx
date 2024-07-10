@@ -8,7 +8,11 @@ This guide will walk you through the steps needed to publish codemods to [Codemo
 There are three ways to publish codemods to Codemod Registry:
 1. [publishing a Codemod-compatible package](#option-1-publishing-a-codemod-compatible-package-recommended)
 2. [publishing from source](#option-2-publishing-a-codemod-from-source-file)
-3. publishing with Codemod Studio (Coming soon!)
+3. publishing with Codemod Studio (Coming soon)
+
+<Tip>
+Publishing codemods to the registry is especially useful for framework/library builders. With features like shareable codemod deep links and Codemod CLI & IDE extenion, your users can adopt your latest releases with one click, straight from your migration doc. <Tooltip tip="MSW V2 migration">[See example ->](https://mswjs.io/docs/migrations/1.x-to-2.x/#codemods)</Tooltip>
+</Tip>
 
 ## Publishing codemods
 
@@ -17,7 +21,7 @@ There are three ways to publish codemods to Codemod Registry:
 Creating and publishing a Codemod-compatible package brings an [enhanced codemod running experience](/platform/run#benefits-and-features).
 
 <Steps>
-    <Step title="Prepare a codemod package">
+    <Step title="Build a codemod package">
         To publish a codemod to Codemod Registry, the codemod package needs to be compatible with Codemod platform. To learn how to build Codemod-compatible codemods, please refer to the [building codemods guide](/guides/building-codemods/build-package).
     </Step>
     <Step title="Login to Codemod platform">
@@ -44,9 +48,18 @@ Creating and publishing a Codemod-compatible package brings an [enhanced codemod
         ```
     </Step>
     <Step title="Publish codemod">
-        Publish the codemod from <Tooltip tip="This path can point to a simple transform file or a Codemod-compatible package.">source path</Tooltip>:
+        Publish the codemod from source path:
+
+        <Note>
+        To generate a [Codemod-compatible package](/guides/building-codemods/package-requirements), Codemod CLI will ask you a few questions about your codemod to generate the [`codemodrc.json` configuration file](/guides/building-codemods/package-requirements#codemodrc-json-reference) automatically for you.
+        </Note>
+
         ```bash
         codemod publish [path] --source
         ```
     </Step>
 </Steps>
+
+## Unpublishing codemods
+
+To unpublish a codemod from Codemod Registry, you can use the [`codemod unpublish` command](/deploying-codemods/cli#codemod-unpublish).

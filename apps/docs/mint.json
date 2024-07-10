@@ -79,7 +79,13 @@
     {
       "group": "Building codemods",
       "pages": [
-        "guides/building-codemods/build-package",
+        {
+          "group": "Codemod packages",
+          "pages": [
+            "guides/building-codemods/package-requirements",
+            "guides/building-codemods/build-package"
+          ]
+        },
         "guides/building-codemods/codemod2"
       ]
     },
