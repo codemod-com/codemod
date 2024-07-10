@@ -2,9 +2,7 @@ import type { PLazy } from "./PLazy.js";
 import { getCwdContext } from "./contexts.js";
 import { FunctionExecutor, fnWrapper } from "./engineHelpers.js";
 import { exec } from "./exec.js";
-import { files } from "./files.js";
 import { clc } from "./helpers.js";
-import { jsFiles } from "./jsFiles.js";
 import { spawn } from "./spawn.js";
 
 /**
@@ -73,6 +71,6 @@ export function codemodLogic(
 
 export const codemod = fnWrapper("codemod", codemodLogic);
 
-const codemodHelpers = { codemod, exec, jsFiles, files };
+const codemodHelpers = { codemod, exec };
 
 type CodemodHelpers = typeof codemodHelpers;

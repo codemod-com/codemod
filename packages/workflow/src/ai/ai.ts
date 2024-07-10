@@ -1,10 +1,8 @@
-import * as fs from "node:fs/promises";
-import { formatText } from "@codemod-com/utilities";
 import { mapValues } from "lodash-es";
-import MagicString from "magic-string";
 import OpenAI from "openai";
 import type { PLazy } from "../PLazy.js";
 import { getAstGrepNodeContext, getFileContext } from "../contexts.js";
+import { FileContext } from "../contexts/FileContext.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { clc } from "../helpers.js";
 
@@ -174,23 +172,15 @@ ${before.text}
         }
         if (foundReplacements.length) {
           try {
-            const contents = new MagicString(
-              await fs.readFile(filename, "utf-8"),
-            );
+            const fileContext = new FileContext({ file: filename });
             for (const replacement of foundReplacements) {
-              contents.update(
-                replacement.startPosition,
-                replacement.endPosition,
-                replacement.text,
-              );
+              await fileContext.update({
+                start: replacement.startPosition,
+                end: replacement.endPosition,
+                replacement: replacement.text,
+              });
             }
-            if (contents.hasChanged()) {
-              await fs.writeFile(
-                filename,
-                await formatText(filename, contents.toString(), true),
-              );
-              console.log(`${clc.blueBright("FILE")} ${filename}`);
-            }
+            await fileContext.save();
           } catch (e) {
             //
           }
@@ -218,14 +208,14 @@ export function aiLogic(
     .arguments(() => ({ prompt }))
     .helpers(aiHelpers)
     .executor(async () => {
-      const { node, query, contents } = getAstGrepNodeContext();
-      const { file } = getFileContext();
+      const { node, query } = getAstGrepNodeContext();
+      const fileContext = getFileContext();
       const range = node.range();
       aiHandler.query =
         typeof query === "string" ? query : JSON.stringify(query);
       aiHandler.addBefore({
-        filename: file,
-        contents: contents.toString(),
+        filename: fileContext.file,
+        contents: await fileContext.contents(),
         startPosition: range.start.index,
         endPosition: range.end.index,
         text: node.text(),

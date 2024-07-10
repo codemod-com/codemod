@@ -1,0 +1,14 @@
+{
+  "name": "@codemod.com/pnpm-catalog",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "20.9.0",
+    "typescript": "^5.2.2",
+    "vitest": "^1.0.1",
+    "@codemod.com/workflow": "workspace:*",
+    "semver": "^7.6.2",
+    "@types/semver": "^7.5.8"
+  },
+  "files": ["README.md", ".codemodrc.json", "/dist/index.cjs"],
+  "type": "module"
+}

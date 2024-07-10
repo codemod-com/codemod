@@ -5,11 +5,11 @@ export class Context<T extends Record<string, any>> {
     this._context = data;
   }
 
-  set(key: string, value: T[keyof T]) {
-    (this._context as Record<string, any>)[key] = value;
+  set(key: keyof T, value: T[keyof T]) {
+    (this._context as Record<keyof T, any>)[key] = value;
   }
 
-  get(key: string) {
+  get(key: keyof T) {
     return this._context[key];
   }
 }

@@ -136,7 +136,6 @@ export const useCodemodAI = ({
 
   return {
     stopCodemodAi: () => {
-      socket?.disconnect();
       wsCleanup();
       handleWebsocketConnection();
     },

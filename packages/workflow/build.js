@@ -23,5 +23,10 @@ build({
     "tree-kill",
     "ts-invariant",
     "prettier",
+    "jscodeshift",
+    "yaml",
+    "inquirer",
+    "detect-indent",
+    "detect-newline",
   ],
 });

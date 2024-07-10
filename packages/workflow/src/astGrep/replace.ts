@@ -1,5 +1,5 @@
 import type { PLazy } from "../PLazy.js";
-import { getAstGrepNodeContext } from "../contexts.js";
+import { getAstGrepNodeContext, getFileContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
 import { map } from "./map.js";
 
@@ -45,6 +45,7 @@ export function replaceLogic(
     .helpers(() => helpers)
     .return((self) => self.wrappedHelpers())
     .executor(async (_next, self) => {
+      const fileContext = getFileContext();
       const { node } = getAstGrepNodeContext();
       let { callback, replacement } = self.getArguments();
       if (callback) {
@@ -69,11 +70,11 @@ export function replaceLogic(
 
         const range = node.range();
 
-        getAstGrepNodeContext().contents.update(
-          range.start.index,
-          range.end.index,
-          text,
-        );
+        await fileContext.update({
+          start: range.start.index,
+          end: range.end.index,
+          replacement: text,
+        });
       }
     })
     .run();

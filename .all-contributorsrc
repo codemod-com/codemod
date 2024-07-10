@@ -286,6 +286,15 @@
         "code",
         "bug"
       ]
+    },
+    {
+      "login": "coderaiser",
+      "name": "coderaiser",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1573141?v=4",
+      "profile": "http://coderaiser.github.io",
+      "contributions": [
+        "code"
+      ]
     }
   ],
   "contributorsPerLine": 7,
