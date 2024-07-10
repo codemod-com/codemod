@@ -97,12 +97,12 @@ export const getCodemodsQuerySchema = object({
 export const parseGetCodemodsQuery = (input: unknown) =>
   parse(getCodemodsQuerySchema, input);
 
-export const getCodemodBySlugParamsSchema = object({
-  slug: string(),
+export const getCodemodParamsSchema = object({
+  criteria: string(),
 });
 
 export const parseGetCodemodBySlugParams = (input: unknown) =>
-  parse(getCodemodBySlugParamsSchema, input);
+  parse(getCodemodParamsSchema, input);
 
 export const getCodemodLatestVersionQuerySchema = object({
   name: string(),
