@@ -264,7 +264,7 @@ export const useSnippetsStore = create<SnippetsState>(
         ...currentState,
         ...persistedState,
         engine: persistedState.engine || INITIAL_STATE.engine,
-        editors: persistedState.editors | INITIAL_STATE.editors,
+        editors: persistedState.editors || INITIAL_STATE.editors,
       }),
     },
   ),

@@ -1,6 +1,7 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { EditorsSnippets } from "@studio/store/snippets";
+import { useSnippetsStore } from "@studio/store/snippets";
 import {
   getEmptyTestCase,
   getSingleTestCase,
@@ -315,6 +316,7 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
 type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
 
 type InitialState = Readonly<{
+  legacyLS?: boolean;
   engine: KnownEngines;
   codemodSource: string;
   codemodName: string | null;

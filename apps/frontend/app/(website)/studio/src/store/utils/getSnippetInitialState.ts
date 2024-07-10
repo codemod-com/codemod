@@ -55,10 +55,13 @@ export const getSnippetInitialState = (
   };
 };
 
-export const getSingleTestCase = () => ({
+export const getSingleTestCase = (
+  before = BEFORE_SNIPPET_DEFAULT_CODE,
+  after = AFTER_SNIPPET_DEFAULT_CODE,
+) => ({
   name: "Test 1",
-  before: getSnippetInitialState(BEFORE_SNIPPET_DEFAULT_CODE),
-  after: getSnippetInitialState(AFTER_SNIPPET_DEFAULT_CODE),
+  before: getSnippetInitialState(before),
+  after: getSnippetInitialState(after),
   output: getSnippetInitialState(),
 });
 
