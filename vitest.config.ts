@@ -4,7 +4,10 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
-    setupFiles: ["dotenv/config"],
+    setupFiles: [
+      `${__dirname}/apps/auth-service/node_modules/dotenv/config`,
+      `${__dirname}/apps/backend/node_modules/dotenv/config`,
+    ],
     env: {
       NODE_ENV: "test",
       PORT: "8081",
