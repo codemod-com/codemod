@@ -5,6 +5,7 @@ import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type KnownEngines,
   type ProjectDownloadInput,
+  backtickify,
   doubleQuotify,
   execPromise,
   getCodemodProjectFiles,
@@ -13,6 +14,7 @@ import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import { url, safeParse, string } from "valibot";
 import { getCurrentUserData } from "../utils.js";
+import { handleBuildCliCommand } from "./build.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",
@@ -34,13 +36,6 @@ export const handleInitCliCommand = async (options: {
   mainFilePath?: string;
 }) => {
   const { printer, noPrompt = false, target, mainFilePath } = options;
-
-  // TODO: turn tags into list
-  // const tags = await getTagsList();
-  // const TAGS_CHOICES = tags.map((tag) => ({
-  // 	name: tag.name,
-  // 	value: tag.aliases.at(0),
-  // }));
 
   let answers: {
     name: string;
@@ -68,7 +63,6 @@ export const handleInitCliCommand = async (options: {
       license: License;
       gitUrl: string;
       path: string;
-      tags: string;
     }>([
       {
         type: "input",
@@ -90,35 +84,6 @@ export const handleInitCliCommand = async (options: {
           "What kind of license do you want to include with your codemod?",
         pageSize: LICENSE_CHOICES.length,
         choices: LICENSE_CHOICES,
-      },
-      {
-        type: "input",
-        name: "gitUrl",
-        suffix: " (leave empty if none)",
-        message:
-          "Enter the URL of the git repository where this codemod is located.",
-        validate: (input) =>
-          safeParse(string([url()]), input).success ||
-          "Please provide a valid URL.",
-      },
-      // TODO: replace with list
-      // {
-      // 	type: "list",
-      // 	name: "tags",
-      // 	message: "Optionally select tags for your codemod:",
-      // 	pageSize: TAGS_CHOICES.length,
-      // 	choices: TAGS_CHOICES,
-      // },
-      {
-        type: "input",
-        name: "tags",
-        suffix:
-          "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
-        message:
-          "Provide a list of tags for this codemod as a comma-separated string",
-        validate: (input) =>
-          safeParse(string([url()]), input).success ||
-          "Please provide a valid URL.",
       },
       {
         type: "input",
@@ -163,40 +128,11 @@ export const handleInitCliCommand = async (options: {
         default: true,
       },
       {
-        type: "input",
-        name: "gitUrl",
-        suffix: " (leave empty if none)",
-        message:
-          "Enter the URL of the git repository where this codemod is located.",
-        validate: (input) =>
-          safeParse(string([url()]), input).success ||
-          "Please provide a valid URL.",
-      },
-      // TODO: replace with list
-      // {
-      // 	type: "list",
-      // 	name: "tags",
-      // 	message: "Optionally select tags for your codemod:",
-      // 	pageSize: TAGS_CHOICES.length,
-      // 	choices: TAGS_CHOICES,
-      // },
-      {
-        type: "input",
-        name: "tags",
-        suffix:
-          "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
-        message:
-          "Provide a list of tags for this codemod as a comma-separated string",
-        validate: (input) =>
-          safeParse(string([url()]), input).success ||
-          "Please provide a valid URL.",
-      },
-      {
         type: "confirm",
         when: (answers) =>
           answers.engine !== "ast-grep" && answers.engine !== "recipe",
         name: "npm",
-        message: "Do you want to install npm dependencies?",
+        message: "Do you want to install the default npm dependencies?",
         default: false,
       },
     ]);
@@ -212,7 +148,6 @@ export const handleInitCliCommand = async (options: {
         username: userData?.user.username ?? null,
         vanillaJs: !answers.typescript,
         gitUrl: answers.gitUrl,
-        tags: answers.tags?.split(",").map((tag) => tag.trim()) ?? [],
       }
     : {
         engine: "jscodeshift",
@@ -307,38 +242,29 @@ export const handleInitCliCommand = async (options: {
     answers?.engine === "filemod" ||
     answers === null;
   if (isJsCodemod) {
-    printer.printConsoleMessage(
-      "info",
-      chalk.cyan(
-        "\nRun",
-        chalk.bold(doubleQuotify("codemod build")),
-        "to build the codemod.",
-      ),
-    );
+    await handleBuildCliCommand({
+      printer,
+      source: codemodBaseDir,
+      silent: true,
+    });
   }
 
-  const howToRunText = `Run ${chalk.bold(
-    doubleQuotify(`codemod --source ${codemodBaseDir}`),
-  )} to run the codemod on current working directory (or specify a target using ${chalk.yellow(
-    "--target",
-  )} option).`;
+  const howToRunText = chalk(
+    `Run ${chalk.bold(doubleQuotify(`codemod --source ${codemodBaseDir}`))}`,
+    "to run the codemod on current working directory",
+    `\nYou can specify a different target directory using ${chalk.yellow("--target")} option.`,
+    `\nType ${chalk.bold(doubleQuotify("codemod --help"))} for a full list of run options.`,
+  );
   printer.printConsoleMessage("info", chalk.cyan(howToRunText));
 
-  let publishText = `Run ${chalk.bold(
-    doubleQuotify("codemod publish"),
-  )} to publish the codemod to the Codemod registry.`;
-  if (isJsCodemod) {
-    publishText += chalk.yellow(
-      " NOTE: Your codemod has to be built using the build command",
-    );
-  }
+  const publishText = chalk(
+    "\nTo publish the codemod to the Codemod Registry, follow the steps below:",
+    "\n- Update the codemod source",
+    `\n- Adjust the configuration in ${chalk.bold(backtickify(".codemodrc.json"))}`,
+    `by referring to ${terminalLink("our documentation", "https://docs.codemod.com")}`,
+    `\n- Run ${chalk.bold(doubleQuotify(`codemod publish --source ${codemodBaseDir}`))}`,
+  );
   printer.printConsoleMessage("info", chalk.cyan(publishText));
-
-  const otherGuidelinesText = `For other guidelines, please visit our documentation at ${terminalLink(
-    chalk.bold("https://docs.codemod.com"),
-    "https://docs.codemod.com",
-  )} or type ${chalk.bold(doubleQuotify("codemod --help"))}.`;
-  printer.printConsoleMessage("info", chalk.cyan(otherGuidelinesText));
 
   return codemodBaseDir;
 };

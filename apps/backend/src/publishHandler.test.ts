@@ -83,26 +83,6 @@ vi.mock("@aws-sdk/client-s3", async () => {
   };
 });
 
-vi.mock("./schemata/env.js", async () => {
-  const actual = await vi.importActual("./schemata/env.js");
-
-  return {
-    ...actual,
-    parseEnvironment: vi.fn().mockImplementation(() => {
-      return {
-        PORT: "8081",
-        DATABASE_URI: "sqlite://:memory:",
-        VERIFIED_PUBLISHERS: [],
-        CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
-        CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
-        CLERK_JWT_KEY: "CLERK_JWT_KEY",
-        TASK_MANAGER_QUEUE_NAME: "TASK_MANAGER_QUEUE_NAME",
-        CODEMOD_COM_API_URL: "https://codemod.com/api",
-      };
-    }),
-  };
-});
-
 vi.mock("./services/tokenService.js", async () => {
   const actual = await vi.importActual("./services/tokenService.js");
 

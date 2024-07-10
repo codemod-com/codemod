@@ -359,7 +359,7 @@ const codemodRc = ({
     name: finalName,
     engine: engine === "tsmorph" ? "ts-morph" : engine,
     meta: {
-      tags: tags?.length ? tags : [],
+      ...(tags && tags.length > 0 && { tags }),
     },
   } as CodemodConfig;
 

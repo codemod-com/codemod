@@ -4,6 +4,18 @@ import { configDefaults, defineConfig } from "vitest/config";
 export default defineConfig({
   plugins: [tsconfigPaths()],
   test: {
+    setupFiles: ["dotenv/config"],
+    env: {
+      NODE_ENV: "test",
+      PORT: "8081",
+      DATABASE_URI: "sqlite://:memory:",
+      VERIFIED_PUBLISHERS: "",
+      CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
+      CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
+      CLERK_JWT_KEY: "CLERK_JWT_KEY",
+      TASK_MANAGER_QUEUE_NAME: "TASK_MANAGER_QUEUE_NAME",
+      CODEMOD_COM_API_URL: "https://codemod.com/api",
+    },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
     testTimeout: 15_000,

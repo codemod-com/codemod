@@ -308,6 +308,10 @@ export const publishHandler: RouteHandler<{
       });
     }
 
+    if (environment.NODE_ENV === "development") {
+      return reply.code(200).send({});
+    }
+
     try {
       const client = new S3Client({
         credentials: {
