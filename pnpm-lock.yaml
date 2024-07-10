@@ -882,6 +882,9 @@ importers:
       typescript:
         specifier: ^5.4.5
         version: 5.5.2
+      vite-tsconfig-paths:
+        specifier: ^4.2.0
+        version: 4.3.2(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.8)(terser@5.31.1))
       vitest:
         specifier: ^1.4.0
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
@@ -33645,6 +33648,10 @@ snapshots:
     optionalDependencies:
       typescript: 4.9.5
 
+  tsconfck@3.1.0(typescript@5.5.2):
+    optionalDependencies:
+      typescript: 5.5.2
+
   tsconfig-paths@3.15.0:
     dependencies:
       '@types/json5': 0.0.29
@@ -34240,6 +34247,17 @@ snapshots:
       tsconfck: 3.1.0(typescript@4.9.5)
     optionalDependencies:
       vite: 4.5.3(@types/node@16.18.101)(terser@5.31.1)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  vite-tsconfig-paths@4.3.2(typescript@5.5.2)(vite@5.3.1(@types/node@20.14.8)(terser@5.31.1)):
+    dependencies:
+      debug: 4.3.5(supports-color@5.5.0)
+      globrex: 0.1.2
+      tsconfck: 3.1.0(typescript@5.5.2)
+    optionalDependencies:
+      vite: 5.3.1(@types/node@20.14.8)(terser@5.31.1)
     transitivePeerDependencies:
       - supports-color
       - typescript
