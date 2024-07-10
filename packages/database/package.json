@@ -19,12 +19,12 @@
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "^5.14.0",
-    "tsup": "^8.1.0"
+    "@prisma/client": "catalog:",
+    "tsup": "catalog:"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "prisma": "^5.14.0",
+    "@faker-js/faker": "catalog:",
+    "prisma": "catalog:",
     "tsx": "^4.11.0"
   }
 }
