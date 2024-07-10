@@ -1,11 +1,11 @@
 {
   "name": "@codemod-com/codemod-next-13-app-directory-boilerplate",
   "dependencies": {
-    "mdast-util-from-markdown": "^2.0.0",
-    "mdast-util-to-markdown": "^2.1.0",
-    "micromark-extension-mdxjs": "^2.0.0",
-    "mdast-util-mdx": "^3.0.0",
-    "unist-util-visit": "^5.0.0"
+    "mdast-util-from-markdown": "catalog:",
+    "mdast-util-to-markdown": "catalog:",
+    "micromark-extension-mdxjs": "catalog:",
+    "mdast-util-mdx": "catalog:",
+    "unist-util-visit": "catalog:"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
@@ -17,7 +17,7 @@
     "jscodeshift": "^0.15.1",
     "@types/jscodeshift": "^0.11.10",
     "vitest": "^1.0.1",
-    "@vitest/coverage-v8": "^1.0.1"
+    "@vitest/coverage-v8": "catalog:"
   },
   "main": "./dist/index.cjs",
   "scripts": {
