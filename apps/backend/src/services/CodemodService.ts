@@ -13,7 +13,8 @@ import {
 } from "@codemod-com/utilities";
 
 import Fuse from "fuse.js";
-import { CodemodNotFoundError } from "~/types/errors";
+
+import { CodemodNotFoundError } from "~/types/errors.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];
