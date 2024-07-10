@@ -3,9 +3,11 @@ import { basename, dirname, join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   CODEMOD_VERSION_EXISTS,
+  type CodemodConfig,
   buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
+  execPromise,
   isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
@@ -13,6 +15,7 @@ import { AxiosError } from "axios";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
+import { url, custom, safeParse, string } from "valibot";
 import { getCodemod, publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
@@ -47,8 +50,6 @@ export const handlePublishCliCommand = async (options: {
   }
 
   const { token, allowedNamespaces, organizations } = userData;
-
-  const formData = new FormData();
 
   let isSingleFile = false;
   let codemodRcBuf: Buffer;
@@ -158,6 +159,26 @@ export const handlePublishCliCommand = async (options: {
       );
     }
   }
+
+  const formData = new FormData();
+
+  const updateCodemodRC = async (newRc: CodemodConfig) => {
+    try {
+      await fs.promises.writeFile(
+        codemodRcPath,
+        JSON.stringify(newRc, null, 2),
+      );
+    } catch (err) {
+      //
+    }
+
+    formData.delete(".codemodrc.json");
+
+    formData.append(
+      ".codemodrc.json",
+      new Blob([Buffer.from(JSON.stringify(newRc))]),
+    );
+  };
 
   // for single file codemods we dont want to upload boilerplate README
   if (!isSingleFile) {
@@ -293,6 +314,82 @@ export const handlePublishCliCommand = async (options: {
     formData.append(actualMainFileName, new Blob([mainFileBuf]));
   }
 
+  if (!codemodRc.meta?.git) {
+    const { gitUrl } = await inquirer.prompt<{
+      gitUrl: string;
+    }>({
+      type: "input",
+      name: "gitUrl",
+      suffix: " (leave empty if none)",
+      message:
+        "Enter the URL of the git repository where this codemod is located.",
+      validate: (input) => {
+        const stringParsingResult = safeParse(string(), input);
+        if (stringParsingResult.success === false) {
+          return stringParsingResult.issues[0].message;
+        }
+
+        const stringInput = stringParsingResult.output;
+        if (stringInput.length === 0) {
+          return true;
+        }
+
+        const urlParsingResult = safeParse(string([url()]), stringInput);
+        if (urlParsingResult.success === false) {
+          return urlParsingResult.issues[0].message;
+        }
+
+        return true;
+      },
+    });
+
+    if (gitUrl) {
+      try {
+        await execPromise("git init", { cwd: source });
+
+        await execPromise(`git remote add origin ${gitUrl}`, {
+          cwd: source,
+        });
+
+        codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
+
+        await updateCodemodRC(codemodRc);
+      } catch (err) {
+        printer.printConsoleMessage(
+          "error",
+          `Failed to initialize a git package with provided repository link:\n${
+            (err as Error).message
+          }. Setting it to null...`,
+        );
+      }
+    }
+  }
+
+  if (!codemodRc.meta?.tags || codemodRc.meta.tags.length === 0) {
+    const { tags } = await inquirer.prompt<{
+      tags: string;
+    }>({
+      type: "input",
+      name: "tags",
+      suffix:
+        "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
+      message:
+        "Provide a list of tags for this codemod as a comma-separated string",
+    });
+
+    const tagsList =
+      tags
+        ?.split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean) ?? [];
+
+    if (tagsList.length > 0) {
+      codemodRc.meta = { ...codemodRc.meta, tags: tagsList };
+
+      await updateCodemodRC(codemodRc);
+    }
+  }
+
   const publishSpinner = printer.withLoaderMessage(
     chalk.cyan(
       "Publishing the codemod using name from",
@@ -310,7 +407,6 @@ export const handlePublishCliCommand = async (options: {
       publishSpinner.succeed();
     } catch (firstError) {
       // Rethrow if no further logic
-
       if (
         !(firstError instanceof AxiosError) ||
         !firstError.response?.data ||
@@ -322,7 +418,6 @@ export const handlePublishCliCommand = async (options: {
 
       // If error is of specific type (determined above), we first try to upgrade the version
       // and resubmit the request again
-      formData.delete(".codemodrc.json");
 
       // Kinda hacky, but works for now. Didn't want to change the error format too much.
       const existingVersion = /latest published version: (\d+\.\d+\.\d+)/.exec(
@@ -334,19 +429,8 @@ export const handlePublishCliCommand = async (options: {
       }
 
       codemodRc.version = semver.inc(existingVersion, "patch") ?? "0.0.1";
-      try {
-        await fs.promises.writeFile(
-          codemodRcPath,
-          JSON.stringify(codemodRc, null, 2),
-        );
-      } catch (err) {
-        //
-      }
 
-      formData.append(
-        ".codemodrc.json",
-        new Blob([Buffer.from(JSON.stringify(codemodRc))]),
-      );
+      await updateCodemodRC(codemodRc);
 
       // In case if this fails, outer catch will be triggered
       await publish(token, formData);
@@ -369,11 +453,12 @@ export const handlePublishCliCommand = async (options: {
     "info",
     chalk.bold.cyan(
       `Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
-      bumpedVersion &&
-        chalk.yellow(
-          `\nVersion was automatically bumped to ${chalk.green(codemodRc.version)}.`,
-          "Please resort to bumping it manually during your next publish to ensure correct versioning.",
-        ),
+      bumpedVersion
+        ? chalk.yellow(
+            `\nVersion was automatically bumped to ${chalk.green(codemodRc.version)}.`,
+            "Please resort to bumping it manually during your next publish to ensure correct versioning.",
+          )
+        : "",
     ),
   );
 
