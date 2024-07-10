@@ -10,7 +10,10 @@
     "@vitest/coverage-v8": "catalog:"
   },
   "main": "./dist/index.cjs",
-  "scripts": {},
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest watch"
+  },
   "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
   "type": "module"
 }
