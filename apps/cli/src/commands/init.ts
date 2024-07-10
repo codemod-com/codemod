@@ -11,6 +11,7 @@ import {
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
+import { url, safeParse, string } from "valibot";
 import { getCurrentUserData } from "../utils.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
@@ -34,7 +35,7 @@ export const handleInitCliCommand = async (options: {
 }) => {
   const { printer, noPrompt = false, target, mainFilePath } = options;
 
-  // TODO:
+  // TODO: turn tags into list
   // const tags = await getTagsList();
   // const TAGS_CHOICES = tags.map((tag) => ({
   // 	name: tag.name,
@@ -49,6 +50,7 @@ export const handleInitCliCommand = async (options: {
     gitUrl: string;
     npm: boolean;
     path?: string;
+    tags?: string;
   } | null = null;
 
   // We provide main file path when user attempts to publish a non-compatible codemod package.
@@ -66,6 +68,7 @@ export const handleInitCliCommand = async (options: {
       license: License;
       gitUrl: string;
       path: string;
+      tags: string;
     }>([
       {
         type: "input",
@@ -94,14 +97,11 @@ export const handleInitCliCommand = async (options: {
         suffix: " (leave empty if none)",
         message:
           "Enter the URL of the git repository where this codemod is located.",
+        validate: (input) =>
+          safeParse(string([url()]), input).success ||
+          "Please provide a valid URL.",
       },
-      {
-        type: "input",
-        name: "path",
-        message: "Confirm path where you want to initiate a package",
-        default: target,
-      },
-      // TODO:
+      // TODO: replace with list
       // {
       // 	type: "list",
       // 	name: "tags",
@@ -109,6 +109,23 @@ export const handleInitCliCommand = async (options: {
       // 	pageSize: TAGS_CHOICES.length,
       // 	choices: TAGS_CHOICES,
       // },
+      {
+        type: "input",
+        name: "tags",
+        suffix:
+          "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
+        message:
+          "Provide a list of tags for this codemod as a comma-separated string",
+        validate: (input) =>
+          safeParse(string([url()]), input).success ||
+          "Please provide a valid URL.",
+      },
+      {
+        type: "input",
+        name: "path",
+        message: "Confirm path where you want to initiate a package",
+        default: target,
+      },
     ]);
 
     answers = {
@@ -137,14 +154,6 @@ export const handleInitCliCommand = async (options: {
         pageSize: LICENSE_CHOICES.length,
         choices: LICENSE_CHOICES,
       },
-      // TODO:
-      // {
-      // 	type: "list",
-      // 	name: "tags",
-      // 	message: "Optionally select tags for your codemod:",
-      // 	pageSize: TAGS_CHOICES.length,
-      // 	choices: TAGS_CHOICES,
-      // },
       {
         type: "confirm",
         when: (answers) =>
@@ -159,6 +168,28 @@ export const handleInitCliCommand = async (options: {
         suffix: " (leave empty if none)",
         message:
           "Enter the URL of the git repository where this codemod is located.",
+        validate: (input) =>
+          safeParse(string([url()]), input).success ||
+          "Please provide a valid URL.",
+      },
+      // TODO: replace with list
+      // {
+      // 	type: "list",
+      // 	name: "tags",
+      // 	message: "Optionally select tags for your codemod:",
+      // 	pageSize: TAGS_CHOICES.length,
+      // 	choices: TAGS_CHOICES,
+      // },
+      {
+        type: "input",
+        name: "tags",
+        suffix:
+          "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
+        message:
+          "Provide a list of tags for this codemod as a comma-separated string",
+        validate: (input) =>
+          safeParse(string([url()]), input).success ||
+          "Please provide a valid URL.",
       },
       {
         type: "confirm",
@@ -181,16 +212,13 @@ export const handleInitCliCommand = async (options: {
         username: userData?.user.username ?? null,
         vanillaJs: !answers.typescript,
         gitUrl: answers.gitUrl,
-        // TODO:
-        // tags
+        tags: answers.tags?.split(",").map((tag) => tag.trim()) ?? [],
       }
     : {
         engine: "jscodeshift",
         name: "my-awesome-codemod",
         license: "MIT",
         username: userData?.user.username ?? null,
-        // TODO:
-        // tags
       };
 
   if (mainFilePath) {
