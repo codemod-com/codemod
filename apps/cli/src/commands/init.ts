@@ -282,27 +282,6 @@ export const handleInitCliCommand = async (options: {
     chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
   );
 
-  if (answers?.gitUrl) {
-    try {
-      await execPromise("git init", { cwd: codemodBaseDir });
-    } catch (err) {
-      //
-    }
-
-    try {
-      await execPromise(`git remote add origin ${answers.gitUrl}`, {
-        cwd: codemodBaseDir,
-      });
-    } catch (err) {
-      printer.printConsoleMessage(
-        "error",
-        `Failed to initialize a git package with provided repository link:\n${
-          (err as Error).message
-        }.`,
-      );
-    }
-  }
-
   if (answers?.npm) {
     try {
       await execPromise("pnpm i", { cwd: codemodBaseDir });

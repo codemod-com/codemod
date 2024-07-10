@@ -6,6 +6,7 @@ import {
   buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
+  execPromise,
   isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
@@ -13,6 +14,7 @@ import { AxiosError } from "axios";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
+import { url, safeParse, string } from "valibot";
 import { getCodemod, publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
@@ -291,6 +293,42 @@ export const handlePublishCliCommand = async (options: {
     const mainFileBuf = await fs.promises.readFile(mainFilePath);
 
     formData.append(actualMainFileName, new Blob([mainFileBuf]));
+  }
+
+  if (!codemodRc.meta?.git) {
+    const { gitUrl } = await inquirer.prompt<{
+      gitUrl: string;
+    }>({
+      type: "input",
+      name: "gitUrl",
+      suffix: " (leave empty if none)",
+      message:
+        "Enter the URL of the git repository where this codemod is located.",
+      validate: (input) =>
+        safeParse(string([url()]), input).success ||
+        "Please provide a valid URL.",
+    });
+
+    if (gitUrl) {
+      try {
+        await execPromise("git init", { cwd: source });
+      } catch (err) {
+        //
+      }
+
+      try {
+        await execPromise(`git remote add origin ${gitUrl}`, {
+          cwd: source,
+        });
+      } catch (err) {
+        return printer.printConsoleMessage(
+          "error",
+          `Failed to initialize a git package with provided repository link:\n${
+            (err as Error).message
+          }.`,
+        );
+      }
+    }
   }
 
   const publishSpinner = printer.withLoaderMessage(
