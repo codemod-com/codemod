@@ -9,7 +9,7 @@ import {
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
 import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
-import { map, pipe, zip, zipWith } from "ramda";
+import { zipWith } from "ramda";
 import { decode } from "universal-base64url";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
 
