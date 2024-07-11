@@ -13,6 +13,7 @@ import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
   type AllEngines,
+  CODEMOD_NOT_FOUND,
   type CodemodConfig,
   type FileSystem,
   type TarService,
@@ -202,7 +203,7 @@ export const buildSourcedCodemodOptions = async (
           if (error instanceof AxiosError) {
             if (
               error.response?.status === 400 &&
-              error.response.data.error === "Codemod not found"
+              error.response.data.error === CODEMOD_NOT_FOUND
             ) {
               throw new Error(
                 `Error locating one of the recipe codemods: ${chalk.bold(

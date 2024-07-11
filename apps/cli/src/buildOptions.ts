@@ -130,5 +130,10 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     .option("config", {
       type: "boolean",
       description: "Prints configuration file of the codemod",
+    })
+    .option("version", {
+      alias: "v",
+      type: "boolean",
+      description: "Prints the latest version of the codemod",
     });
 };
