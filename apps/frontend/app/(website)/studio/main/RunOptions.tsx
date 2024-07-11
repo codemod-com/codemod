@@ -66,6 +66,8 @@ export const RunOptions = () => {
       token,
     );
 
+    setPublishedName(humanCodemodName);
+
     const files = getCodemodProjectFiles({
       name: humanCodemodName,
       codemodBody: modStore.internalContent,
@@ -104,10 +106,19 @@ export const RunOptions = () => {
 
     setIsPublishing(false);
 
-    if (publishResult?.success === true) {
-      setPublishedName(humanCodemodName);
-      setIsOpen(true);
+    if (!publishResult) {
+      return;
     }
+
+    if (publishResult.isLeft()) {
+      console.error(publishResult.getLeft());
+      return toast.error("Failed to publish your codemod", {
+        position: "top-center",
+        duration: 12000,
+      });
+    }
+
+    setOpen(true);
   };
 
   return (

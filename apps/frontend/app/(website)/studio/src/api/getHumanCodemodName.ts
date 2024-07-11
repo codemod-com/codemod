@@ -1,6 +1,6 @@
 import { useModGPT } from "@features/modGPT/useAiService/useModGpt";
 import { useEffect } from "react";
-import sendMessage from "./sendMessage";
+import sendChat from "./sendMessage";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `
 You are a jscodeshift codemod and javascript expert. 
@@ -16,26 +16,10 @@ ${codemod}
 \`\`\`
 `;
 
-export async function useGetHumanCodemodName(
+export async function getHumanCodemodName(
   codemod: string,
   token: string | null,
 ): Promise<string> {
-  const {
-    isLoading: modGptLoading,
-    modGptSubmit,
-    messages: modGPTMessages,
-    setMessages: setModGPTMessages,
-    append: appendModGPTMessages,
-    setToken,
-    ...restMod
-  } = useModGPT({ initialMessages: [], engine: "gpt-4-turbo" });
-
-  useEffect(() => {
-    if (!modGPTMessages) return;
-
-    console.log("modGPTMessages", modGPTMessages);
-  }, [modGPTMessages]);
-
   if (token === null) {
     return "codemod";
   }
@@ -48,7 +32,7 @@ export async function useGetHumanCodemodName(
     let codemodName = "";
     if (token !== null) {
       // Ask LLM to come up with a name for the given codemod
-      const codemodNameOrError = await sendMessage({
+      const codemodNameOrError = await sendChat({
         message: generateCodemodHumanNamePrompt(codemod),
         token,
       });
@@ -56,7 +40,8 @@ export async function useGetHumanCodemodName(
       if (codemodNameOrError.isLeft()) {
         console.error(codemodNameOrError.getLeft());
       } else {
-        codemodName = codemodNameOrError.get().text;
+        codemodName = codemodNameOrError.get();
+        console.log("Codemod name: ", codemodName);
       }
     }
 

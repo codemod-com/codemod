@@ -25,7 +25,7 @@ import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
-export type PublishHandlerResponse = ApiResponse<Record<string, unknown>>;
+export type PublishHandlerResponse = ApiResponse<{ name: string }>;
 
 export const publishHandler: RouteHandler<{
   Reply: PublishHandlerResponse;
@@ -309,7 +309,7 @@ export const publishHandler: RouteHandler<{
     }
 
     if (environment.NODE_ENV === "development") {
-      return reply.code(200).send({});
+      return reply.code(200).send({ name });
     }
 
     try {
@@ -395,7 +395,7 @@ export const publishHandler: RouteHandler<{
     const revalidate = buildRevalidateHelper(environment);
     await revalidate(name);
 
-    return reply.code(200).send({});
+    return reply.code(200).send({ name });
   } catch (err) {
     console.error(err);
     return reply.code(500).send({

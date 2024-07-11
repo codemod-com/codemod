@@ -7,10 +7,13 @@ const apiClient = axios.create({
   timeout: 60000,
 });
 
-// mostly for local dev, in prod they should be on the same domain.
-// later we need to figure out how to do this in a better way
 const authApiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_AUTH_API_URL,
+  timeout: 60000,
+});
+
+const aiApiClient = axios.create({
+  baseURL: env.NEXT_PUBLIC_AI_API_URL,
   timeout: 60000,
 });
 
@@ -34,4 +37,9 @@ authApiClient.interceptors.response.use(
   (error) => errorHandler(error),
 );
 
-export { apiClient, authApiClient };
+aiApiClient.interceptors.response.use(
+  (response) => response,
+  (error) => errorHandler(error),
+);
+
+export { apiClient, authApiClient, aiApiClient };
