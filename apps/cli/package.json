@@ -1,7 +1,7 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.27",
+  "version": "0.11.28",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
