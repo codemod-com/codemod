@@ -51,3 +51,8 @@ export type GetUserDataResponse = {
 };
 
 export type GetCodemodResponse = Codemod;
+
+export type PublishResponse = {
+  name: string;
+  version: string;
+};

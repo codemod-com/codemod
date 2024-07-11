@@ -1,7 +1,10 @@
 import { useAuth, useSession } from "@clerk/nextjs";
 import {
+  CODEMOD_VERSION_EXISTS,
   getCodemodProjectFiles,
+  isApiError,
   isTypeScriptProjectFiles,
+  parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
@@ -19,22 +22,22 @@ import {
   TabsList,
   TabsTrigger,
 } from "@studio/components/ui/tabs";
-import { ToastAction } from "@studio/components/ui/toast";
 import { useModStore } from "@studio/store/zustand/mod";
 import { useSnippetStore } from "@studio/store/zustand/snippets";
 import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
+import * as semver from "semver";
 import { publishCodemod } from "../src/api/publishCodemod";
 import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
 export const RunOptions = () => {
-  const [open, setOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isPublishing, setIsPublishing] = useState(false);
   const [publishedName, setPublishedName] = useState<string | null>(null);
-  const [isOpen, setIsOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
 
   const modStore = useModStore();
   const { engine, inputSnippet, afterSnippet } = useSnippetStore();
@@ -76,54 +79,90 @@ export const RunOptions = () => {
       username: session.user.username ?? session.user.fullName,
     });
 
-    let publishResult: Awaited<ReturnType<typeof publishCodemod>> | null = null;
-    if (isTypeScriptProjectFiles(files)) {
-      await initSwc();
-      const { code: compiled } = await transform(files["src/index.ts"], {
-        minify: true,
-        module: { type: "commonjs" },
-        jsc: {
-          target: "es5",
-          loose: false,
-          parser: { syntax: "typescript", tsx: true },
-        },
-      });
-
-      publishResult = await publishCodemod({
-        files: {
-          mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
-          codemodRc: files[".codemodrc.json"],
-        },
-        mainFileName: "index.cjs",
-        token,
-      });
-    } else {
-      toast.error("Invalid codemod type", {
+    if (!isTypeScriptProjectFiles(files)) {
+      setIsPublishing(false);
+      return toast.error("Invalid codemod type", {
         position: "top-center",
         duration: 12000,
       });
     }
+
+    await initSwc();
+    const { code: compiled } = await transform(files["src/index.ts"], {
+      minify: true,
+      module: { type: "commonjs" },
+      jsc: {
+        target: "es5",
+        loose: false,
+        parser: { syntax: "typescript", tsx: true },
+      },
+    });
+
+    const publishResult = await publishCodemod({
+      files: {
+        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+        codemodRc: files[".codemodrc.json"],
+      },
+      mainFileName: "index.cjs",
+      token,
+    });
 
     setIsPublishing(false);
 
-    if (!publishResult) {
-      return;
+    if (!publishResult || publishResult.isLeft()) {
+      const error = publishResult?.getLeft();
+
+      if (!isApiError(error)) {
+        setIsPublishing(false);
+        return toast.error(
+          "Failed to publish your codemod with an unexpected error.",
+          { position: "top-center", duration: 12000 },
+        );
+      }
+
+      if (error.error === CODEMOD_VERSION_EXISTS) {
+        const codemodRc = parseCodemodConfig(
+          JSON.parse(files[".codemodrc.json"]),
+        );
+
+        const retryResult = await publishCodemod({
+          files: {
+            mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+            codemodRc: JSON.stringify({
+              ...codemodRc,
+              version: semver.inc(codemodRc.version, "patch"),
+            }),
+          },
+          mainFileName: "index.cjs",
+          token,
+        });
+
+        if (!retryResult || retryResult.isLeft()) {
+          const retryError = retryResult?.getLeft();
+
+          setIsPublishing(false);
+
+          console.error(
+            isApiError(retryError)
+              ? retryError.errorText
+              : "Unknown error. Contact Codemod team.",
+          );
+
+          return toast.error(
+            "Failed to publish your codemod. Open console for more information.",
+            { position: "top-center", duration: 12000 },
+          );
+        }
+      }
     }
 
-    if (publishResult.isLeft()) {
-      console.error(publishResult.getLeft());
-      return toast.error("Failed to publish your codemod", {
-        position: "top-center",
-        duration: 12000,
-      });
-    }
-
-    setOpen(true);
+    setIsPublishing(false);
+    setDialogOpen(true);
   };
 
   return (
     <>
-      <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl bg-white">
           <p>
             We have published your codemod to the Codemod Registry. You can now
@@ -167,7 +206,7 @@ export const RunOptions = () => {
 
         <Separator orientation="vertical" className="mx-2 h-2/3 z-10" />
 
-        <DropdownMenu open={open} modal={false}>
+        <DropdownMenu open={dropdownOpen} modal={false}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="unstyled"
@@ -175,10 +214,10 @@ export const RunOptions = () => {
               role="list"
               className="p-0 pr-4 z-10"
               onClick={(e) => {
-                setOpen((prev) => !prev);
+                setDropdownOpen((prev) => !prev);
               }}
             >
-              {open ? (
+              {dropdownOpen ? (
                 <ChevronUpIcon className="text-white w-3" />
               ) : (
                 <ChevronDownIcon className="text-white w-3" />

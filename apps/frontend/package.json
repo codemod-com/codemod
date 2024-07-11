@@ -16,7 +16,11 @@
     "prepare": "husky"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -125,6 +129,7 @@
     "sanity-plugin-documents-pane": "catalog:",
     "sanity-plugin-media": "catalog:",
     "sanity-plugin-mux-input": "catalog:",
+    "semver": "^7.6.2",
     "server-only": "catalog:",
     "socket.io": "catalog:",
     "socket.io-client": "catalog:",
@@ -159,6 +164,7 @@
     "@types/react-syntax-highlighter": "catalog:",
     "@types/react-treeview": "catalog:",
     "@types/react-virtualized-auto-sizer": "catalog:",
+    "@types/semver": "^7.5.8",
     "@types/testing-library__jest-dom": "catalog:",
     "assert": "catalog:",
     "autoprefixer": "catalog:",

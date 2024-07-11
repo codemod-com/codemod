@@ -11,6 +11,7 @@ import {
   INTERNAL_SERVER_ERROR,
   NO_CONFIG_FILE_FOUND,
   NO_MAIN_FILE_FOUND,
+  type PublishResponse,
   TarService,
   UNAUTHORIZED,
   buildCodemodSlug,
@@ -25,7 +26,7 @@ import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
-export type PublishHandlerResponse = ApiResponse<{ name: string }>;
+export type PublishHandlerResponse = ApiResponse<PublishResponse>;
 
 export const publishHandler: RouteHandler<{
   Reply: PublishHandlerResponse;
@@ -309,7 +310,7 @@ export const publishHandler: RouteHandler<{
     }
 
     if (environment.NODE_ENV === "development") {
-      return reply.code(200).send({ name });
+      return reply.code(200).send({ name, version: codemodRc.version });
     }
 
     try {
@@ -395,7 +396,7 @@ export const publishHandler: RouteHandler<{
     const revalidate = buildRevalidateHelper(environment);
     await revalidate(name);
 
-    return reply.code(200).send({ name });
+    return reply.code(200).send({ name, version });
   } catch (err) {
     console.error(err);
     return reply.code(500).send({

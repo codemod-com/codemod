@@ -1,8 +1,7 @@
 import { apiClient } from "@/utils/apis/client";
+import type { ApiError, PublishResponse } from "@codemod-com/utilities";
 import type { AxiosError } from "axios";
 import { Either } from "../utils/Either";
-
-type PublishResponse = Record<string, unknown>;
 
 export const publishCodemod = async (options: {
   token: string;
@@ -11,7 +10,7 @@ export const publishCodemod = async (options: {
     mainFile: string;
     codemodRc: string;
   };
-}): Promise<Either<Error, PublishResponse>> => {
+}): Promise<Either<ApiError | string, PublishResponse>> => {
   const {
     token,
     mainFileName,
@@ -36,7 +35,7 @@ export const publishCodemod = async (options: {
 
     return Either.right(res.data);
   } catch (e) {
-    const err = e as AxiosError<{ message?: string }>;
-    return Either.left(new Error(err.response?.data.message ?? err.message));
+    const err = e as AxiosError<ApiError>;
+    return Either.left(err.response?.data ?? err.message);
   }
 };
