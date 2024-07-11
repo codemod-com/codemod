@@ -111,6 +111,7 @@
       "pages": [
         "guides/migrations/react-18-19",
         "guides/migrations/msw-v1-v2",
+        "guides/migrations/pnpm-catalog",
         "guides/external-links/valibot"
       ]
     }
