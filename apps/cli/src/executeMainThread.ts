@@ -137,7 +137,10 @@ export const executeMainThread = async () => {
 
   argvObject.wrap(argvObject.terminalWidth());
 
-  if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
+  if (
+    (slicedArgv.includes("--version") || slicedArgv.includes("-v")) &&
+    slicedArgv.length === 1
+  ) {
     return console.log(version);
   }
 

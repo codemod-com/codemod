@@ -1,17 +1,22 @@
 import * as fs from "node:fs";
-import { basename, dirname, join, resolve } from "node:path";
+import { basename, dirname, join } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
+  CODEMOD_VERSION_EXISTS,
+  type CodemodConfig,
+  buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
   execPromise,
+  isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import FormData from "form-data";
 import { glob } from "glob";
 import inquirer from "inquirer";
-import { publish } from "../apis.js";
+import * as semver from "semver";
+import { url, custom, safeParse, string } from "valibot";
+import { getCodemod, publish } from "../apis.js";
 import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
 import { handleLoginCliCommand } from "./login.js";
@@ -44,14 +49,14 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
-  const { token } = userData;
-
-  const formData = new FormData();
+  const { token, allowedNamespaces, organizations } = userData;
 
   let isSingleFile = false;
   let codemodRcBuf: Buffer;
+
+  const codemodRcPath = join(source, ".codemodrc.json");
   try {
-    codemodRcBuf = await fs.promises.readFile(join(source, ".codemodrc.json"));
+    codemodRcBuf = await fs.promises.readFile(codemodRcPath);
   } catch (err) {
     const { init } = await inquirer.prompt<{
       init: boolean;
@@ -155,13 +160,33 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
+  const formData = new FormData();
+
+  const updateCodemodRC = async (newRc: CodemodConfig) => {
+    try {
+      await fs.promises.writeFile(
+        codemodRcPath,
+        JSON.stringify(newRc, null, 2),
+      );
+    } catch (err) {
+      //
+    }
+
+    formData.delete(".codemodrc.json");
+
+    formData.append(
+      ".codemodrc.json",
+      new Blob([Buffer.from(JSON.stringify(newRc))]),
+    );
+  };
+
   // for single file codemods we dont want to upload boilerplate README
   if (!isSingleFile) {
     try {
       const descriptionMdBuf = await fs.promises.readFile(
         join(source, "README.md"),
       );
-      formData.append("description.md", descriptionMdBuf);
+      formData.append("description.md", new Blob([descriptionMdBuf]));
     } catch {
       printer.printConsoleMessage(
         "info",
@@ -174,7 +199,7 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
-  formData.append(".codemodrc.json", codemodRcBuf);
+  formData.append(".codemodrc.json", new Blob([codemodRcBuf]));
   const codemodRcData = codemodRcBuf.toString("utf-8");
   const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
 
@@ -198,6 +223,33 @@ export const handlePublishCliCommand = async (options: {
     throw new Error(
       `The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
     );
+  }
+
+  let codemodIsPublished = false;
+  try {
+    await getCodemod(buildCodemodSlug(codemodRc.name), token);
+    codemodIsPublished = true;
+  } catch (err) {
+    //
+  }
+
+  if (
+    !codemodIsPublished &&
+    allowedNamespaces.length > 1 &&
+    !codemodRc.name.startsWith("@")
+  ) {
+    const { namespace } = await inquirer.prompt<{ namespace: string }>({
+      type: "list",
+      name: "namespace",
+      choices: allowedNamespaces,
+      default: allowedNamespaces.find(
+        (ns) => !organizations.map((org) => org.organization.slug).includes(ns),
+      ),
+      message:
+        "You have access to multiple namespaces. Please choose which one you would like to publish the codemod under.",
+    });
+
+    formData.append("namespace", namespace);
   }
 
   if (codemodRc.engine !== "recipe") {
@@ -259,7 +311,83 @@ export const handlePublishCliCommand = async (options: {
 
     const mainFileBuf = await fs.promises.readFile(mainFilePath);
 
-    formData.append(actualMainFileName, mainFileBuf);
+    formData.append(actualMainFileName, new Blob([mainFileBuf]));
+  }
+
+  if (!codemodRc.meta?.git) {
+    const { gitUrl } = await inquirer.prompt<{
+      gitUrl: string;
+    }>({
+      type: "input",
+      name: "gitUrl",
+      suffix: " (leave empty if none)",
+      message:
+        "Enter the URL of the git repository where this codemod is located.",
+      validate: (input) => {
+        const stringParsingResult = safeParse(string(), input);
+        if (stringParsingResult.success === false) {
+          return stringParsingResult.issues[0].message;
+        }
+
+        const stringInput = stringParsingResult.output;
+        if (stringInput.length === 0) {
+          return true;
+        }
+
+        const urlParsingResult = safeParse(string([url()]), stringInput);
+        if (urlParsingResult.success === false) {
+          return urlParsingResult.issues[0].message;
+        }
+
+        return true;
+      },
+    });
+
+    if (gitUrl) {
+      try {
+        await execPromise("git init", { cwd: source });
+
+        await execPromise(`git remote add origin ${gitUrl}`, {
+          cwd: source,
+        });
+
+        codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
+
+        await updateCodemodRC(codemodRc);
+      } catch (err) {
+        printer.printConsoleMessage(
+          "error",
+          `Failed to initialize a git package with provided repository link:\n${
+            (err as Error).message
+          }. Setting it to null...`,
+        );
+      }
+    }
+  }
+
+  if (!codemodRc.meta?.tags || codemodRc.meta.tags.length === 0) {
+    const { tags } = await inquirer.prompt<{
+      tags: string;
+    }>({
+      type: "input",
+      name: "tags",
+      suffix:
+        "\nExample: react, javascript, tailwind\nNote: tags help with codemod discoverability and allow us to recommend them where appropriate.\nYou can leave this empty if you don't want to add any tags.\nTags:",
+      message:
+        "Provide a list of tags for this codemod as a comma-separated string",
+    });
+
+    const tagsList =
+      tags
+        ?.split(",")
+        .map((tag) => tag.trim())
+        .filter(Boolean) ?? [];
+
+    if (tagsList.length > 0) {
+      codemodRc.meta = { ...codemodRc.meta, tags: tagsList };
+
+      await updateCodemodRC(codemodRc);
+    }
   }
 
   const publishSpinner = printer.withLoaderMessage(
@@ -271,13 +399,49 @@ export const handlePublishCliCommand = async (options: {
     ),
   );
 
+  let bumpedVersion = false;
+  // Using outer trycatch to catch error from inner catch block too.
   try {
-    await publish(token, formData);
-    publishSpinner.succeed();
+    try {
+      await publish(token, formData);
+      publishSpinner.succeed();
+    } catch (firstError) {
+      // Rethrow if no further logic
+      if (
+        !(firstError instanceof AxiosError) ||
+        !firstError.response?.data ||
+        !isApiError(firstError.response.data) ||
+        firstError.response.data.error !== CODEMOD_VERSION_EXISTS
+      ) {
+        throw firstError;
+      }
+
+      // If error is of specific type (determined above), we first try to upgrade the version
+      // and resubmit the request again
+
+      // Kinda hacky, but works for now. Didn't want to change the error format too much.
+      const existingVersion = /latest published version: (\d+\.\d+\.\d+)/.exec(
+        firstError.response.data.errorText,
+      )?.[1];
+
+      if (!existingVersion) {
+        throw firstError;
+      }
+
+      codemodRc.version = semver.inc(existingVersion, "patch") ?? "0.0.1";
+
+      await updateCodemodRC(codemodRc);
+
+      // In case if this fails, outer catch will be triggered
+      await publish(token, formData);
+      bumpedVersion = true;
+    }
   } catch (error) {
     publishSpinner.fail();
     const message =
-      error instanceof AxiosError ? error.response?.data.error : String(error);
+      error instanceof AxiosError
+        ? error.response?.data.errorText
+        : String(error);
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;
@@ -287,10 +451,14 @@ export const handlePublishCliCommand = async (options: {
 
   printer.printConsoleMessage(
     "info",
-    chalk.bold(
-      chalk.cyan(
-        `Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
-      ),
+    chalk.bold.cyan(
+      `Codemod was successfully published to the registry under the name "${codemodRc.name}".`,
+      bumpedVersion
+        ? chalk.yellow(
+            `\nVersion was automatically bumped to ${chalk.green(codemodRc.version)}.`,
+            "Please resort to bumping it manually during your next publish to ensure correct versioning.",
+          )
+        : "",
     ),
   );
 
