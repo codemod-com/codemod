@@ -14,6 +14,7 @@ export const PromptButtons = ({
   children,
 }: PropsWithChildren<PromptButtonsProps>) => (
   <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center actions">
+    {children}
     {promptsList.map(([label, value]) => (
       <Button
         variant="outline"
@@ -30,6 +31,5 @@ export const PromptButtons = ({
         </span>
       </Button>
     ))}
-    {children}
   </div>
 );

@@ -1,4 +1,5 @@
 import { AliasButtons } from "@chatbot/PromptPanel/AliasButtons";
+import { ClearHistoryButton } from "@chatbot/PromptPanel/ClearHistoryButton";
 import { ControlButtons } from "@chatbot/PromptPanel/ControlButtons";
 import { PromptButtons } from "@chatbot/PromptPanel/PromptButtons";
 import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
@@ -7,8 +8,10 @@ import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList, usePrompts } from "@chatbot/utils";
 import { useAuth } from "@clerk/nextjs";
+import ButtonWithTooltip from "@studio/components/button/BottonWithTooltip";
 import { useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react";
+import Link from "next/link";
 import { useRef, useState } from "react";
 import { PromptForm } from "./PromptForm";
 import { ScrollToBottomButton } from "./ScrollToBottomButton";
@@ -63,6 +66,7 @@ export function PromptPanel(props: PromptPanelProps) {
       {expandedHelper && (
         <>
           <PromptButtons promptsList={promptsList} handleSubmit={handleSubmit}>
+            <ClearHistoryButton onClick={resetMessages} />
             <WebSocketButton
               handleButtonClick={startIterativeCodemodGeneration}
               isLoading={isLoading}
