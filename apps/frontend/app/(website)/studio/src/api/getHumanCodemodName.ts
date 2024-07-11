@@ -41,7 +41,6 @@ export async function getHumanCodemodName(
         console.error(codemodNameOrError.getLeft());
       } else {
         codemodName = codemodNameOrError.get();
-        console.log("Codemod name: ", codemodName);
       }
     }
 

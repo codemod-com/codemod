@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import type { ApiError } from "@codemod-com/utilities";
 import axios, { type AxiosError } from "axios";
 import toast from "react-hot-toast";
 
@@ -17,11 +18,16 @@ const aiApiClient = axios.create({
   timeout: 60000,
 });
 
-const errorHandler = (error: AxiosError<{ message?: string }>) => {
+const errorHandler = (error: AxiosError<ApiError>) => {
   if (error.response?.status) {
-    toast.error(error.response?.data.message ?? "Network Error", {
-      position: "top-center",
-    });
+    toast.error(
+      error.response?.data.errorText ??
+        (error.response?.data as any).message ??
+        "Network Error",
+      {
+        position: "top-center",
+      },
+    );
   }
 
   return Promise.reject({ ...error });

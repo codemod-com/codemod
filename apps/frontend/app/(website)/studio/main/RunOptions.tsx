@@ -107,57 +107,40 @@ export const RunOptions = () => {
       token,
     });
 
-    setIsPublishing(false);
-
-    if (!publishResult || publishResult.isLeft()) {
-      const error = publishResult?.getLeft();
-
-      if (!isApiError(error)) {
-        setIsPublishing(false);
-        return toast.error(
-          "Failed to publish your codemod with an unexpected error.",
-          { position: "top-center", duration: 12000 },
-        );
-      }
-
-      if (error.error === CODEMOD_VERSION_EXISTS) {
-        const codemodRc = parseCodemodConfig(
-          JSON.parse(files[".codemodrc.json"]),
-        );
-
-        const retryResult = await publishCodemod({
-          files: {
-            mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
-            codemodRc: JSON.stringify({
-              ...codemodRc,
-              version: semver.inc(codemodRc.version, "patch"),
-            }),
-          },
-          mainFileName: "index.cjs",
-          token,
-        });
-
-        if (!retryResult || retryResult.isLeft()) {
-          const retryError = retryResult?.getLeft();
-
-          setIsPublishing(false);
-
-          console.error(
-            isApiError(retryError)
-              ? retryError.errorText
-              : "Unknown error. Contact Codemod team.",
-          );
-
-          return toast.error(
-            "Failed to publish your codemod. Open console for more information.",
-            { position: "top-center", duration: 12000 },
-          );
-        }
-      }
+    if (publishResult.isRight()) {
+      setPublishedName(publishResult.get().name);
+      setIsPublishing(false);
+      setDialogOpen(true);
+      return;
     }
 
-    setIsPublishing(false);
-    setDialogOpen(true);
+    const error = publishResult?.getLeft();
+
+    if (!isApiError(error) || error.error !== CODEMOD_VERSION_EXISTS) {
+      setIsPublishing(false);
+      return;
+    }
+
+    const codemodRc = parseCodemodConfig(JSON.parse(files[".codemodrc.json"]));
+
+    const retryResult = await publishCodemod({
+      files: {
+        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+        codemodRc: JSON.stringify({
+          ...codemodRc,
+          version: semver.inc(codemodRc.version, "patch"),
+        }),
+      },
+      mainFileName: "index.cjs",
+      token,
+    });
+
+    if (!retryResult || retryResult.isLeft()) {
+      setIsPublishing(false);
+      return;
+    }
+
+    setPublishedName(retryResult.get().name);
   };
 
   return (
