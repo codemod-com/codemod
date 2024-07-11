@@ -12,8 +12,6 @@ import {
   TabsList,
   TabsTrigger,
 } from "@studio/components/ui/tabs";
-import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
-import { DownloadIcon } from "@studio/icons/Download";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { downloadProject } from "@studio/utils/download";
