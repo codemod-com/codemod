@@ -2,5 +2,7 @@
   "name": "@codemod-com/antd5-utils",
   "type": "module",
   "exports": "./index.js",
-  "devDependencies": { "jscodeshift": "^0.15.1" }
+  "devDependencies": {
+    "jscodeshift": "^0.15.1"
+  }
 }

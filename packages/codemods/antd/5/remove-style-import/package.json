@@ -1,6 +1,8 @@
 {
   "name": "@codemod-com/codemod-antd-5-v5-remove-style-import",
-  "dependencies": { "@codemod-com/antd5-utils": "workspace:*" },
+  "dependencies": {
+    "@codemod-com/antd5-utils": "workspace:*"
+  },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
     "typescript": "^5.2.2",

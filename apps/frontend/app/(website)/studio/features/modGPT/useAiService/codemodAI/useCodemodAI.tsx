@@ -64,6 +64,7 @@ export const useCodemodAI = ({
   };
 
   const onMessage = async (data: MessageToWs) => {
+    if (data.execution_status === "heartbeat") return;
     if (data.error || data.execution_status === "error") {
       handleError(data);
     } else if (data.codemod) {
