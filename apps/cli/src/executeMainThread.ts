@@ -85,11 +85,6 @@ const initializeDependencies = async (argv: {
       : new NullSender();
 
   const exit = async () => {
-    // appInsights telemetry client uses batches to send telemetry.
-    // this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-    // see Channel2.prototype.send
-    // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-    await telemetryService.dispose();
     process.exit(0);
   };
 
@@ -116,6 +111,10 @@ const initializeDependencies = async (argv: {
     if (!omitExit) {
       exit();
     }
+
+    // telemetry client uses batches to send telemetry.
+    // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+    await telemetryService.dispose();
   };
 
   return {
