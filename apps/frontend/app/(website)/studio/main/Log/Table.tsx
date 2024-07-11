@@ -9,12 +9,10 @@ import {
   TableHeader,
 } from "@studio/components/ui/table";
 import type { Event } from "@studio/schemata/eventSchemata";
-import { useExecuteRangeCommandOnBeforeInput } from "@studio/store/useExecuteRangeCommandOnBeforeInput";
-import { useSetActiveEventThunk } from "@studio/store/useSetActiveEventThunk";
-import { useCodemodOutputStore } from "@studio/store/zustand/codemodOutput";
-import { useLogStore } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useLogStore } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
 import {
   type MouseEventHandler,
   memo,
@@ -94,16 +92,14 @@ const buildTableRow = (
 
 const useRanges = () => ({
   codemodInputRanges: useModStore().ranges,
-  codemodOutputRanges: useCodemodOutputStore().ranges,
-  beforeInputRanges: useSnippetStore().beforeInputRanges,
-  afterInputRanges: useSnippetStore().afterInputRanges,
+  codemodOutputRanges: useSnippetsStore().getSelectedEditors().output.ranges,
+  beforeInputRanges: useSnippetsStore().getSelectedEditors().before.ranges,
+  afterInputRanges: useSnippetsStore().getSelectedEditors().after.ranges,
 });
 
 type Ranges = ReturnType<typeof useRanges>;
 
 const Table = () => {
-  const executeRangeCommandOnBeforeInputThunk =
-    useExecuteRangeCommandOnBeforeInput();
   const [oldEventHashDigest, setOldEventHashDigest] = useState<string | null>(
     null,
   );
@@ -112,9 +108,9 @@ const Table = () => {
 
   const setActiveThunk = useSetActiveEventThunk();
   const { setCodemodSelection } = useModStore();
-  const { setSelections } = useCodemodOutputStore();
-  const { setOutputSelection } = useSnippetStore();
-
+  const { getSelectedEditors } = useSnippetsStore();
+  const { setAfterSelection, setOutputSelection, setBeforeSelection } =
+    getSelectedEditors();
   const { activeEventHashDigest, events } = useLogStore();
 
   const buildOnMouseOver = useCallback(
@@ -166,17 +162,17 @@ const Table = () => {
         ranges: oldRanges.codemodInputRanges,
       });
 
-      setSelections({
+      setOutputSelection({
         kind: "PASS_THROUGH",
         ranges: oldRanges.codemodOutputRanges,
       });
 
-      executeRangeCommandOnBeforeInputThunk({
+      setBeforeSelection({
         kind: "PASS_THROUGH",
         ranges: oldRanges.beforeInputRanges,
       });
 
-      setOutputSelection({
+      setAfterSelection({
         kind: "PASS_THROUGH",
         ranges: oldRanges.afterInputRanges,
       });
@@ -186,9 +182,9 @@ const Table = () => {
       oldRanges,
       setActiveThunk,
       setCodemodSelection,
-      setSelections,
-      executeRangeCommandOnBeforeInputThunk,
       setOutputSelection,
+      setBeforeSelection,
+      setAfterSelection,
     ],
   );
 

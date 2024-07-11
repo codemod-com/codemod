@@ -1,6 +1,6 @@
-import { useCodemodExecutionError } from "@studio/store/zustand/log";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useCodemodExecutionError } from "@studio/store/log";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "../snippets";
 
 export type AliasName =
   | "$CODEMOD"
@@ -19,26 +19,29 @@ export type Aliases = Record<
 export const useGetAliases = (): Aliases => {
   const codemodExecutionError = useCodemodExecutionError();
   const {
-    internalContent,
+    content,
     ranges: codemodInputRanges,
     rangesUpdatedAt,
-  } = useModStore.getState();
+  } = useModStore();
+
+  const { getSelectedEditors, getAllSnippets } = useSnippetsStore();
 
   const {
-    inputSnippet,
-    afterSnippet,
-    afterInputRanges,
-    afterRangeUpdatedAt,
-    beforeInputRanges,
-    beforeRangeUpdatedAt,
-  } = useSnippetStore.getState();
+    after: { ranges: afterInputRanges, rangeUpdatedAt: afterRangeUpdatedAt },
+    before: { ranges: beforeInputRanges, rangeUpdatedAt: beforeRangeUpdatedAt },
+  } = getSelectedEditors();
+
+  const { before, after } = getAllSnippets();
+
+  const inputSnippet = before.join(" ");
+  const afterSnippet = after.join(" ");
 
   return {
-    $CODEMOD: { value: internalContent ?? "", updatedAt: -1 },
+    $CODEMOD: { value: content ?? "", updatedAt: -1 },
     $HIGHLIGHTED_IN_CODEMOD:
-      codemodInputRanges[0] && internalContent !== null
+      codemodInputRanges[0] && content !== null
         ? {
-            value: internalContent.slice(
+            value: content.slice(
               codemodInputRanges[0].start,
               codemodInputRanges[0].end,
             ),

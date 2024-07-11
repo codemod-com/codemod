@@ -15,8 +15,8 @@ import {
 } from "@studio/components/ui/tabs";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
 import { DownloadIcon } from "@studio/icons/Download";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { downloadProject } from "@studio/utils/download";
 import { Check, Copy } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -40,7 +40,7 @@ export const DownloadZip = () => {
   const [isDownloading, setIsDownloading] = useState(false);
 
   const modStore = useModStore();
-  const snippetStore = useSnippetStore();
+  const snippetStore = useSnippetsStore();
   const engine = snippetStore.engine;
 
   const { session } = useSession();
@@ -48,24 +48,21 @@ export const DownloadZip = () => {
 
   const handleClick = async () => {
     setIsDownloading(true);
-    if (!modStore.internalContent) {
+    if (!modStore.content) {
       return;
     }
 
     const token = await getToken();
 
-    const humanCodemodName = await getHumanCodemodName(
-      modStore.internalContent,
-      token,
-    );
+    const humanCodemodName = await getHumanCodemodName(modStore.content, token);
 
     await downloadProject({
       name: humanCodemodName,
-      codemodBody: modStore.internalContent,
+      codemodBody: modStore.content,
       cases: [
         {
-          before: snippetStore.inputSnippet,
-          after: snippetStore.afterSnippet,
+          before: snippetStore.getSelectedEditors().beforeSnippet,
+          after: snippetStore.getSelectedEditors().afterSnippet,
         },
       ],
       engine,
@@ -93,7 +90,7 @@ export const DownloadZip = () => {
             </p>
           }
           isLoading={isDownloading}
-          disabled={!modStore.internalContent || isDownloading}
+          disabled={!modStore.content || isDownloading}
           onClick={handleClick}
           id="download-zip-button"
         >

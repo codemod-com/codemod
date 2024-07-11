@@ -1,17 +1,14 @@
 import Tooltip from "@studio/components/Tooltip/Tooltip";
 import { Button } from "@studio/components/ui/button";
-import type React from "react";
-import type { PropsWithChildren } from "react";
-import ReactMarkdown from "react-markdown";
-import children = ReactMarkdown.propTypes.children;
+import type { ComponentProps, FC, PropsWithChildren, ReactNode } from "react";
 
 type ButtonWithTooltipProps = PropsWithChildren<
   {
-    tooltipContent: React.ReactNode;
-  } & React.ComponentProps<typeof Button>
+    tooltipContent: ReactNode;
+  } & ComponentProps<typeof Button>
 >;
 
-const ButtonWithTooltip: React.FC<ButtonWithTooltipProps> = ({
+const ButtonWithTooltip: FC<ButtonWithTooltipProps> = ({
   children,
   tooltipContent,
   ...buttonProps
