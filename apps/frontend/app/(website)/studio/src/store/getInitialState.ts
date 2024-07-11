@@ -1,11 +1,9 @@
 import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
 import type { EditorsSnippets } from "@studio/store/snippets";
-import { useSnippetsStore } from "@studio/store/snippets";
 import {
   getEmptyTestCase,
   getSingleTestCase,
-  getSnippetInitialState,
   toInitialStates,
 } from "@studio/store/utils/getSnippetInitialState";
 import { isNeitherNullNorUndefined } from "@studio/utils/isNeitherNullNorUndefined";
@@ -13,14 +11,7 @@ import { prettify } from "@studio/utils/prettify";
 import { inflate } from "pako";
 import { map, pipe, zip, zipWith } from "ramda";
 import { decode } from "universal-base64url";
-import { parse } from "valibot";
 import { parseShareableCodemod } from "../schemata/shareableCodemodSchemata";
-import {
-  editorsArraySchemata,
-  editorsSchemata,
-  editorsSnippetsSchema,
-  parseState,
-} from "../schemata/stateSchemata";
 
 export const BEFORE_SNIPPET_DEFAULT_CODE = `const [a, b] = await Promise.all([
     Promise.resolve('a'),
