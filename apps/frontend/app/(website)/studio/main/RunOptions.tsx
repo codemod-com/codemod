@@ -1,11 +1,13 @@
 import { useAuth, useSession } from "@clerk/nextjs";
 import {
   CODEMOD_VERSION_EXISTS,
+  buildCodemodSlug,
   getCodemodProjectFiles,
   isApiError,
   isTypeScriptProjectFiles,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
+import { getCodemod } from "@studio/api/getCodemod";
 import { getHumanCodemodName } from "@studio/api/getHumanCodemodName";
 import { Button } from "@studio/components/ui/button";
 import { Dialog, DialogContent } from "@studio/components/ui/dialog";
@@ -22,8 +24,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@studio/components/ui/tabs";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -40,7 +42,7 @@ export const RunOptions = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const modStore = useModStore();
-  const { engine, inputSnippet, afterSnippet } = useSnippetStore();
+  const { engine, getAllSnippets } = useSnippetsStore();
 
   const { session } = useSession();
   const { getToken } = useAuth();
@@ -48,7 +50,7 @@ export const RunOptions = () => {
   const handleClick = async () => {
     setIsPublishing(true);
 
-    if (!modStore.internalContent) {
+    if (!modStore.content) {
       setIsPublishing(false);
       return;
     }
@@ -57,24 +59,40 @@ export const RunOptions = () => {
 
     if (!session || !token) {
       setIsPublishing(false);
-      console.log("logged out");
       return toast.error("Please first log in to use this feature", {
         position: "top-center",
         duration: 12000,
       });
     }
 
-    const humanCodemodName = await getHumanCodemodName(
-      modStore.internalContent,
-      token,
-    );
+    const humanCodemodName = await getHumanCodemodName(modStore.content, token);
 
-    setPublishedName(humanCodemodName);
+    const codemodResponse = await getCodemod({
+      name: buildCodemodSlug(humanCodemodName),
+      token,
+    });
+
+    if (codemodResponse.isLeft()) {
+      setIsPublishing(false);
+      return;
+    }
+
+    const allSnippets = getAllSnippets();
 
     const files = getCodemodProjectFiles({
       name: humanCodemodName,
-      codemodBody: modStore.internalContent,
-      cases: [{ before: inputSnippet, after: afterSnippet }],
+      codemodBody: modStore.content,
+      cases: allSnippets.before.reduce(
+        (acc, before, i) => {
+          const after = allSnippets.after[i];
+          if (!after) {
+            return acc;
+          }
+
+          return acc.concat({ before, after });
+        },
+        [] as { before: string; after: string }[],
+      ),
       engine,
       username: session.user.username ?? session.user.fullName,
     });
@@ -85,6 +103,22 @@ export const RunOptions = () => {
         position: "top-center",
         duration: 12000,
       });
+    }
+
+    const codemodRc = parseCodemodConfig(JSON.parse(files[".codemodrc.json"]));
+
+    const latestVersion = codemodResponse.get().versions.at(-1)?.version;
+    if (!latestVersion) {
+      setIsPublishing(false);
+      return toast.error("Unexpected error occurred", {
+        position: "top-center",
+        duration: 12000,
+      });
+    }
+    if (semver.lte(codemodRc.version, latestVersion)) {
+      codemodRc.version =
+        semver.inc(latestVersion, "patch") ?? codemodRc.version;
+      files[".codemodrc.json"] = JSON.stringify(codemodRc, null, 2);
     }
 
     await initSwc();
@@ -107,40 +141,14 @@ export const RunOptions = () => {
       token,
     });
 
-    if (publishResult.isRight()) {
-      setPublishedName(publishResult.get().name);
-      setIsPublishing(false);
-      setDialogOpen(true);
+    setIsPublishing(false);
+
+    if (publishResult.isLeft()) {
       return;
     }
 
-    const error = publishResult?.getLeft();
-
-    if (!isApiError(error) || error.error !== CODEMOD_VERSION_EXISTS) {
-      setIsPublishing(false);
-      return;
-    }
-
-    const codemodRc = parseCodemodConfig(JSON.parse(files[".codemodrc.json"]));
-
-    const retryResult = await publishCodemod({
-      files: {
-        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
-        codemodRc: JSON.stringify({
-          ...codemodRc,
-          version: semver.inc(codemodRc.version, "patch"),
-        }),
-      },
-      mainFileName: "index.cjs",
-      token,
-    });
-
-    if (!retryResult || retryResult.isLeft()) {
-      setIsPublishing(false);
-      return;
-    }
-
-    setPublishedName(retryResult.get().name);
+    setPublishedName(publishResult.get().name);
+    setDialogOpen(true);
   };
 
   return (
@@ -178,8 +186,8 @@ export const RunOptions = () => {
               Will publish the codemod to the Codemod Registry
             </p>
           }
-          isLoading={isPublishing}
-          disabled={!modStore.internalContent || isPublishing}
+          isLoading={true}
+          disabled={!modStore.content || isPublishing}
           onClick={handleClick}
           id="run-codemod-button"
         >

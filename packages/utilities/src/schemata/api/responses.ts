@@ -1,4 +1,4 @@
-import type { Codemod } from "@codemod-com/database";
+import type { Codemod, CodemodVersion } from "@codemod-com/database";
 import type { OrganizationMembership, User } from "../clerk.js";
 import type { AllEngines, Arguments } from "../codemodConfigSchema.js";
 
@@ -50,7 +50,11 @@ export type GetUserDataResponse = {
   allowedNamespaces: string[];
 };
 
-export type GetCodemodResponse = Codemod;
+export type GetCodemodResponse = Codemod & { versions: CodemodVersion[] } & {
+  frameworks: string[];
+  frameworkVersion: string | null | undefined;
+  useCaseCategory: string | null | undefined;
+};
 
 export type PublishResponse = {
   name: string;
