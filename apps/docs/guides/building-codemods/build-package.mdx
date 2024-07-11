@@ -5,7 +5,7 @@ title: Building a codemod package
 You can build a codemod package using three different ways:
 1. Build with Codemod Studio
 2. Build with `codemod learn`
-3. Build from existing codemod
+3. Scaffold a codemod package
 
 By building a codemod with Codemod Studio or with `codemod learn`, your codemod package will automatically have the recommended [package structure](/guides/building-codemods/package-requirements).
 
@@ -18,16 +18,6 @@ To learn how to build codemods with Codemod Studio, please refer to the [detaile
 ## Building with `codemod learn`
 
 You can use `codemod learn` to build a codemod from the latest diff made in your current project. This allows you to seamlessly build codemods right from your IDE.
-
-<video
-	autoPlay
-	controls
-	muted
-	playsInline
-	loop
-	className="w-full aspect-video"
-	src="/images/deploying-codemods/cli/codemod-learn.mp4"
-></video>
 
 <Steps>
     <Step title="Make a change">
@@ -44,9 +34,13 @@ You can use `codemod learn` to build a codemod from the latest diff made in your
     </Step>
 </Steps>
 
-## Building from an existing codemod
+## Scaffolding a codemod package
 
-To build a codemod package from an existing codemod, you should:
+Scaffolding a codemod package allows you to either:
+1. manually write your own codemod
+2. turn an existing codemod into a Codemod-compatible package.
+
+To scaffold a new codemod package, you should:
 
 <Steps>
     <Step title="Verify codemod engine compatibility">
