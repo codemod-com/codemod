@@ -46,7 +46,7 @@ export const useTabsData = ({
   const tabs = [
     {
       value: TabNames.MODGPT,
-      name: "ModGPT",
+      name: "Assistant",
       content: (
         <>
           <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />
