@@ -1,13 +1,14 @@
 import { apiClient } from "@/utils/apis/client";
 import type { ApiError, GetCodemodResponse } from "@codemod-com/utilities";
-import type { AxiosError } from "axios";
+import type { AxiosError, AxiosRequestConfig } from "axios";
 import { Either } from "../utils/Either";
 
 export const getCodemod = async (options: {
   name: string;
   token: string;
+  options?: AxiosRequestConfig;
 }): Promise<Either<ApiError | string, GetCodemodResponse>> => {
-  const { name, token } = options;
+  const { name, token, options: requestOptions } = options;
 
   try {
     const res = await apiClient.get<GetCodemodResponse>(`codemods/${name}`, {
@@ -15,6 +16,7 @@ export const getCodemod = async (options: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "multipart/form-data",
       },
+      ...requestOptions,
     });
 
     return Either.right(res.data);
