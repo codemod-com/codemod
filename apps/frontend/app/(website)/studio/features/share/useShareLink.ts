@@ -1,8 +1,8 @@
 import { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
 import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { deflate } from "pako";
-import { useSnippetsStore } from "../store/snippets";
 
 export const useShareLink = () => {
   const { engine, getSelectedEditors, getAllSnippets, getAllNames } =
@@ -100,6 +100,5 @@ export const useShareLink = () => {
     }
   };
 
-  // return { getURL, getExtensionUrl };
   return { getURL };
 };

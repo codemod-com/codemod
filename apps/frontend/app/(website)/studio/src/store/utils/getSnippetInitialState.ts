@@ -29,7 +29,7 @@ export const getSnippetInitialState = (
         contentParsed.tokens.map(({ start, end, value }) => ({
           start,
           end,
-          value: (value ?? "").slice(start, end),
+          value: (value ?? "").toString().slice(start, end),
         }))
       : []
     : [];
