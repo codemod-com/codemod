@@ -3,6 +3,12 @@ import type { ApiError } from "@codemod-com/utilities";
 import axios, { type AxiosError } from "axios";
 import toast from "react-hot-toast";
 
+declare module "axios" {
+  export interface AxiosRequestConfig {
+    ignoreIntercept?: boolean;
+  }
+}
+
 const apiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_API_URL,
   timeout: 60000,
@@ -19,14 +25,16 @@ const aiApiClient = axios.create({
 });
 
 const errorHandler = (error: AxiosError<ApiError>) => {
+  if (error.config?.ignoreIntercept) {
+    return Promise.reject({ ...error });
+  }
+
   if (error.response?.status) {
     toast.error(
       error.response?.data.errorText ??
         (error.response?.data as any).message ??
         "Network Error",
-      {
-        position: "top-center",
-      },
+      { position: "top-center" },
     );
   }
 

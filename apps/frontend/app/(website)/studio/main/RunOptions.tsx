@@ -68,12 +68,8 @@ export const RunOptions = () => {
     const codemodResponse = await getCodemod({
       name: buildCodemodSlug(humanCodemodName),
       token,
+      options: { ignoreIntercept: true },
     });
-
-    if (codemodResponse.isLeft()) {
-      setIsPublishing(false);
-      return;
-    }
 
     const allSnippets = getAllSnippets();
 
@@ -107,18 +103,21 @@ export const RunOptions = () => {
     // Make it private by default
     codemodRc.private = true;
 
-    const latestVersion = codemodResponse.get().versions.at(-1)?.version;
-    if (!latestVersion) {
-      setIsPublishing(false);
-      return toast.error("Unexpected error occurred", {
-        position: "top-center",
-        duration: 12000,
-      });
-    }
-    if (semver.lte(codemodRc.version, latestVersion)) {
-      codemodRc.version =
-        semver.inc(latestVersion, "patch") ?? codemodRc.version;
-      files[".codemodrc.json"] = JSON.stringify(codemodRc, null, 2);
+    if (!codemodResponse.isLeft()) {
+      const latestVersion = codemodResponse.get().versions.at(-1)?.version;
+      if (!latestVersion) {
+        setIsPublishing(false);
+        return toast.error("Unexpected error occurred", {
+          position: "top-center",
+          duration: 12000,
+        });
+      }
+
+      if (semver.lte(codemodRc.version, latestVersion)) {
+        codemodRc.version =
+          semver.inc(latestVersion, "patch") ?? codemodRc.version;
+        files[".codemodrc.json"] = JSON.stringify(codemodRc, null, 2);
+      }
     }
 
     await initSwc();
