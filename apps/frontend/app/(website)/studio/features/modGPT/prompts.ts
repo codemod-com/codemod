@@ -1,4 +1,4 @@
-import { STARTER_SNIPPET } from "@studio/store/getInitialState";
+import { STARTER_SNIPPET } from "@studio/store/initialState";
 import { injectCFSOutputToCodemod } from "@studio/utils/injectCFSOutputToCodemod";
 
 const generateCodemodNamePrompt = (codemod: string) => `

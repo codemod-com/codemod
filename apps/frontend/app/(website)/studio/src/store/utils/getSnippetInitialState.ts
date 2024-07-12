@@ -2,7 +2,7 @@ import { isFile } from "@babel/types";
 import {
   AFTER_SNIPPET_DEFAULT_CODE,
   BEFORE_SNIPPET_DEFAULT_CODE,
-} from "@studio/store/getInitialState";
+} from "@studio/store/initialState";
 import type { SnippetValues } from "@studio/store/snippets";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";

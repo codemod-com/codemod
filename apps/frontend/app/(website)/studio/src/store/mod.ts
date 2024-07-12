@@ -7,7 +7,7 @@ import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
-import { INITIAL_STATE } from "./getInitialState";
+import { INITIAL_STATE } from "./initialState";
 
 type ModStateValues = {
   name: string;

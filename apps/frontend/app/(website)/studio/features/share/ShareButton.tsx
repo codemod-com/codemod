@@ -9,12 +9,11 @@ export const ShareButton = () => {
   const { getShareLink } = usePublicLinkSharing();
 
   const Icon = isShareURLBeingCreated ? LinkIcon : null;
+  const hintText = "Share the codemod";
 
   const buttonProps = {
-    hintText: "Share the codemod",
     onClick: getShareLink,
     text: "Share",
-    /* FIXME: refactor button component to replace loading icon with the button's icon */
     props: { isLoading: isShareURLBeingCreated },
   };
 
@@ -23,7 +22,7 @@ export const ShareButton = () => {
       size="xs"
       variant="outline"
       className="flex gap-1"
-      hint={<p className="font-normal">{buttonProps.hintText}</p>}
+      hint={<p className="font-normal">{hintText}</p>}
       {...buttonProps}
     >
       {Icon && <Icon className="h-4 w-4" />}

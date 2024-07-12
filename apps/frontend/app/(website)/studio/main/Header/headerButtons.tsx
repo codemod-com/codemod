@@ -15,9 +15,8 @@ type ButtonProps = {
 const ClearAllButton = () => {
   const { clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
-
+  const hintText = "Clear all inputs";
   const buttonData = {
-    hintText: "Clear all inputs",
     onClick: () => {
       clearAll();
       setContent("");
@@ -31,7 +30,7 @@ const ClearAllButton = () => {
       size="xs"
       variant="outline"
       className="flex gap-1"
-      hint={<p className="font-normal">{buttonData.hintText}</p>}
+      hint={<p className="font-normal">{hintText}</p>}
       {...buttonData}
     >
       <BackspaceIcon className="h-4 w-4" />

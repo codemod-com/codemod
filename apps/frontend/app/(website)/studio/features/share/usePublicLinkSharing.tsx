@@ -1,5 +1,5 @@
+import { createSharedLink } from "@features/share/createSharedLink";
 import { useShareLink } from "@features/share/useShareLink";
-import { createSharedLink } from "@studio/actions/createSharedLink";
 import { useCallback, useState } from "react";
 import toast from "react-hot-toast";
 
