@@ -73,45 +73,50 @@ const systemHealthCheckCron = new CronJob(
     const token = environment.SLACK_TOKEN;
     const channel = environment.SLACK_CHANNEL;
 
-    const web = new WebClient(token);
+    try {
+      const web = new WebClient(token);
 
-    const services: Array<{ name: string; url: string }> = [
-      {
-        name: "Backend API",
-        url: environment.BACKEND_API_URL ?? "",
-      },
-      {
-        name: "Auth Service",
-        url: environment.AUTH_SERVICE_URL ?? "",
-      },
-      {
-        name: "ModGPT Service",
-        url: environment.MODGPT_SERVICE_URL ?? "",
-      },
-      {
-        name: "Codemod AI Service",
-        url: environment.CODEMOD_AI_SERVICE_URL ?? "",
-      },
-      {
-        name: "Run Service",
-        url: environment.RUN_SERVICE_URL ?? "",
-      },
-    ];
+      const services: Array<{ name: string; url: string }> = [
+        {
+          name: "Backend API",
+          url: environment.BACKEND_API_URL ?? "",
+        },
+        {
+          name: "Auth Service",
+          url: environment.AUTH_SERVICE_URL ?? "",
+        },
+        {
+          name: "ModGPT Service",
+          url: environment.MODGPT_SERVICE_URL ?? "",
+        },
+        {
+          name: "Codemod AI Service",
+          url: environment.CODEMOD_AI_SERVICE_URL ?? "",
+        },
+        {
+          name: "Run Service",
+          url: environment.RUN_SERVICE_URL ?? "",
+        },
+      ];
 
-    for (const service of services) {
-      try {
-        const { status } = await axios.get(service.url);
-        if (status !== 200) {
-          throw new Error("Service did not respond with OK");
+      for (const service of services) {
+        try {
+          const { status } = await axios.get(service.url);
+          if (status !== 200) {
+            throw new Error("Service did not respond with OK");
+          }
+        } catch (error) {
+          console.error(`${service.name} is down`, error);
+
+          await web.chat.postMessage({
+            channel: channel,
+            text: `${service.name} is down. Error: ${error}`,
+          });
         }
-      } catch (error) {
-        console.error(`${service.name} is down`, error);
-
-        await web.chat.postMessage({
-          channel: channel,
-          text: `${service.name} is down. Error: ${error}`,
-        });
       }
+    } catch (err) {
+      console.error("Failed to check system health.");
+      console.error((err as Error).message);
     }
   }, // onTick
   null, // onComplete

@@ -228,7 +228,10 @@ describe("/publish route", async () => {
       },
     );
 
-    expect(response.body).toEqual({});
+    expect(response.body).toEqual({
+      name: codemodRcContents.name,
+      version: codemodRcContents.version,
+    });
   });
 
   it("should publish piranha codemods", async () => {
@@ -296,7 +299,10 @@ describe("/publish route", async () => {
       requestTimeout: 5000,
     });
 
-    expect(response.body).toEqual({});
+    expect(response.body).toEqual({
+      name: codemodRcContents.name,
+      version: codemodRcContents.version,
+    });
   });
 
   it("should not allow further execution if required files were not provided", async () => {
@@ -649,7 +655,10 @@ describe("/publish route", async () => {
       const clientInstance = mocks.S3Client.mock.instances[0];
       expect(clientInstance.send).toHaveBeenCalledOnce();
 
-      expect(response.body).toEqual({});
+      expect(response.body).toEqual({
+        name: codemodRcContents.name,
+        version: codemodRcContents.version,
+      });
     });
 
     it("should fail if user has no access to the org", async () => {

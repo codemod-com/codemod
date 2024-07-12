@@ -1,4 +1,5 @@
 import { env } from "@/env";
+import type { ApiError } from "@codemod-com/utilities";
 import axios, { type AxiosError } from "axios";
 import toast from "react-hot-toast";
 
@@ -7,18 +8,26 @@ const apiClient = axios.create({
   timeout: 60000,
 });
 
-// mostly for local dev, in prod they should be on the same domain.
-// later we need to figure out how to do this in a better way
 const authApiClient = axios.create({
   baseURL: env.NEXT_PUBLIC_AUTH_API_URL,
   timeout: 60000,
 });
 
-const errorHandler = (error: AxiosError<{ message?: string }>) => {
+const aiApiClient = axios.create({
+  baseURL: env.NEXT_PUBLIC_AI_API_URL,
+  timeout: 60000,
+});
+
+const errorHandler = (error: AxiosError<ApiError>) => {
   if (error.response?.status) {
-    toast.error(error.response?.data.message ?? "Network Error", {
-      position: "top-center",
-    });
+    toast.error(
+      error.response?.data.errorText ??
+        (error.response?.data as any).message ??
+        "Network Error",
+      {
+        position: "top-center",
+      },
+    );
   }
 
   return Promise.reject({ ...error });
@@ -34,4 +43,9 @@ authApiClient.interceptors.response.use(
   (error) => errorHandler(error),
 );
 
-export { apiClient, authApiClient };
+aiApiClient.interceptors.response.use(
+  (response) => response,
+  (error) => errorHandler(error),
+);
+
+export { apiClient, authApiClient, aiApiClient };

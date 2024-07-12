@@ -1,11 +1,6 @@
-import {
-  type ApiResponse,
-  CODEMOD_NOT_FOUND,
-  type GetCodemodResponse,
-  INTERNAL_SERVER_ERROR,
-} from "@codemod-com/utilities";
+import type { ApiResponse, GetCodemodResponse } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
-import { CodemodNotFoundError, processHandlerError } from "~/types/errors.js";
+import { processHandlerError } from "~/types/errors.js";
 import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
 

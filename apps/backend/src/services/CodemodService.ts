@@ -1,5 +1,6 @@
 import {
   type Codemod,
+  type CodemodVersion,
   type Prisma,
   type PrismaClient,
   type Tag,
@@ -250,7 +251,9 @@ class CodemodService {
     return { total, data, filters, page, size };
   }
 
-  public async getCodemod(criteria: string): Promise<FullCodemodInfo> {
+  public async getCodemod(
+    criteria: string,
+  ): Promise<FullCodemodInfo & { versions: CodemodVersion[] }> {
     const codemod = await this.prisma.codemod.findFirst({
       where: {
         OR: [{ slug: criteria }, { name: criteria }],
