@@ -1,9 +1,7 @@
 import { useAuth, useSession } from "@clerk/nextjs";
 import {
-  CODEMOD_VERSION_EXISTS,
   buildCodemodSlug,
   getCodemodProjectFiles,
-  isApiError,
   isTypeScriptProjectFiles,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
@@ -188,7 +186,7 @@ export const RunOptions = () => {
               Will publish the codemod to the Codemod Registry
             </p>
           }
-          isLoading={true}
+          isLoading={isPublishing}
           disabled={!modStore.content || isPublishing}
           onClick={handleClick}
           id="run-codemod-button"
