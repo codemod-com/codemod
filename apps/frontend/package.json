@@ -7,7 +7,7 @@
     "dev": "next",
     "format": "npx @biomejs/biome --write . --ignore-path .gitignore",
     "biome": "npx @biomejs/biome lint --error-on-warnings ./",
-    "biome:fix": "npx @biomejs/biome lint --apply ./",
+    "biome:fix": "npx @biomejs/biome lint --write ./",
     "biome:errors": "npx @biomejs/biome lint - -diagnostic-level=error ./",
     "lint": "next lint -- --ignore-path .gitignore",
     "lint:fix": "npm run format && npm run lint -- --fix",
@@ -16,11 +16,7 @@
     "prepare": "husky"
   },
   "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
+    "production": [">0.2%", "not dead", "not op_mini all"],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
