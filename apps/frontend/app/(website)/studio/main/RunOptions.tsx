@@ -106,6 +106,8 @@ export const RunOptions = () => {
     }
 
     const codemodRc = parseCodemodConfig(JSON.parse(files[".codemodrc.json"]));
+    // Make it private by default
+    codemodRc.private = true;
 
     const latestVersion = codemodResponse.get().versions.at(-1)?.version;
     if (!latestVersion) {
