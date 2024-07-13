@@ -1,11 +1,13 @@
+import { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
 import { deflate } from "pako";
+import { useSnippetsStore } from "../store/snippets";
 
 export const useShareLink = () => {
-  const { engine, inputSnippet, afterSnippet } = useSnippetStore();
-  const { internalContent } = useModStore();
+  const { engine, getSelectedEditors, getAllSnippets, getAllNames } =
+    useSnippetsStore();
+  const { content } = useModStore();
 
   // const getExtensionUrl = async (): Promise<URL | null> => {
   // 	try {
@@ -53,7 +55,7 @@ export const useShareLink = () => {
 
   const getURL = (): URL | null => {
     try {
-      if (internalContent === null) {
+      if (content === null) {
         throw new Error("codemod content not found");
       }
 
@@ -63,10 +65,13 @@ export const useShareLink = () => {
         v: 1, // version
         e: engine,
         n: codemodName,
-        b: inputSnippet,
-        a: afterSnippet,
-        c: internalContent ?? "",
-      }); //satisfies ShareableCodemod);
+        b: getSelectedEditors().beforeSnippet,
+        a: getSelectedEditors().afterSnippet,
+        bm: getAllSnippets().before.join("__codemod_splitter__"),
+        am: getAllSnippets().after.join("__codemod_splitter__"),
+        nm: getAllNames().join("__codemod_splitter__"),
+        c: content ?? "",
+      });
 
       const uint8array = deflate(input, { level: 9 });
 

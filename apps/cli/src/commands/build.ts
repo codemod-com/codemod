@@ -14,8 +14,9 @@ const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 export const handleBuildCliCommand = async (options: {
   printer: PrinterBlueprint;
   source: string;
+  silent?: boolean;
 }) => {
-  const { printer, source } = options;
+  const { printer, source, silent } = options;
   const absoluteSource = resolve(source);
 
   let codemodRcContent: string;
@@ -109,10 +110,12 @@ export const handleBuildCliCommand = async (options: {
 
   await writeFile(outputFilePath, buffer);
 
-  console.log(
-    "The bundled CommonJS contents have been written into %s",
-    outputFilePath,
-  );
+  if (!silent) {
+    printer.printConsoleMessage(
+      "info",
+      `The bundled CommonJS contents have been written into ${outputFilePath}`,
+    );
+  }
 
   return {
     outputFilePath,

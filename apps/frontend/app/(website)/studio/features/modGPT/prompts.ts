@@ -26,91 +26,193 @@ ${codemod}
 \`\`\`
 `;
 
-const autoGenerateCodemodPrompt = `
-Below, you are provided with "Before" and "After" code snippets.
-The code snippets are written in JavaScript or TypeScript language.
+const autoGenerateCodemodPrompt = `### Context
+- You will be provided with BEFORE and AFTER code snippets.
+- Write a single jscodeshift codemod that transforms each BEFORE snippet into the AFTER snippet.
+- Identify common patterns and create a generic codemod to handle all cases.
+- Use only jscodeshift and TypeScript.
+- If comments in AFTER snippets describe the transformation, do not preserve them.
+- Only include a code block in your response, no extra explanations.
+- Comment your code following best practices.
+- Do not import 'namedTypes' or 'builders' from jscodeshift.
+- Always narrow node types using typeguards before accessing their properties.
 
-Before:
-$BEFORE
+Here are two examples of using typeguards to check whether the import source is a string literal:
+\`\`\`typescript
+if (j.Literal.check(node.source)) { // CORRECT
+  // rest of the code
+}
 
-After:
-$AFTER
-
-Consider the following jscodeshift codemod Template:
-	
+if (j.Literal.check(node.source) && typeof node.source.value === 'string') { // CORRECT
+  // rest of the code
+}
 \`\`\`
-import type { FileInfo, API, Options } from 'jscodeshift';
-export default function transform(
-	file: FileInfo,
-	api: API,
-	options?: Options,
-): string | undefined {
+
+
+- Never check the node type without using typeguards. The following example is INCORRECT:
+\`\`\`typescript
+if (node.source.type === 'Literal') { // INCORRECT
+  // rest of the code
+}
+\`\`\`
+
+
+### Input Snippets
+
+
+**BEFORE**:
+\`\`\`typescript
+$BEFORE
+\`\`\`
+**AFTER**:
+\`\`\`typescript
+$AFTER
+\`\`\`
+
+
+### Examples
+#### Example 1
+**BEFORE**:
+\`\`\`typescript
+import { A } from '@ember/array';
+let arr = new A();
+\`\`\`
+**AFTER**:
+\`\`\`typescript
+import { A as emberA } from '@ember/array';
+let arr = A();
+\`\`\`
+**CODEMOD**:
+\`\`\`typescript
+export default function transform(file, api) {
+    const j = api.jscodeshift;
+    const root = j(file.source);
+    root.find(j.NewExpression, { callee: { name: "A" } }).replaceWith(() => {
+        root.find(j.ImportSpecifier, {
+            imported: { name: "A" },
+            local: { name: "A" }
+        }).replaceWith(() => {
+            return j.importSpecifier(j.identifier("A"), j.identifier("emberA"));
+        });
+        return j.callExpression(j.identifier("A"), []);
+    });
+    return root.toSource();
+}
+\`\`\`
+
+#### Example 2
+**BEFORE**:
+\`\`\`typescript
+import { Route, Router } from 'react-router-dom';
+const MyApp = () => (
+    <Router history={history}>
+        <Route path='/posts' component={PostList} />
+        <Route path='/posts/:id' component={PostEdit} />
+        <Route path='/posts/:id/show' component={PostShow} />
+        <Route path='/posts/:id/delete' component={PostDelete} />
+    </Router>
+);
+\`\`\`
+**AFTER**:
+\`\`\`typescript
+import { Route, Router } from 'react-router-dom';
+const MyApp = () => (
+    <Router history={history}>
+        <Switch>
+            <Route path='/posts' component={PostList} />
+            <Route path='/posts/:id' component={PostEdit} />
+            <Route path='/posts/:id/show' component={PostShow} />
+            <Route path='/posts/:id/delete' component={PostDelete} />
+        </Switch>
+    </Router>
+);
+\`\`\`
+**CODEMOD**:
+\`\`\`typescript
+import type { API, FileInfo, Options, Transform } from "jscodeshift";
+function transform(file: FileInfo, api: API, options: Options): string | undefined {
 	const j = api.jscodeshift;
 	const root = j(file.source);
-	
-	//jscodeshift codemod implementation
-	
-	return root.toSource();
+	root.find(j.JSXElement, {
+		openingElement: { name: { name: "Router" } }
+	}).forEach((path) => {
+		const hasSwitch = root.findJSXElements("Switch").length > 0;
+		if (hasSwitch) {
+			return;
+		}
+		const children = path.value.children;
+		const newEl = j.jsxElement(
+			j.jsxOpeningElement(j.jsxIdentifier("Switch"), [], false),
+			j.jsxClosingElement(j.jsxIdentifier("Switch")),
+			children
+		);
+		path.value.children = [j.jsxText("\\n  "), newEl, j.jsxText("\\n")];
+	});
+	return root.toSource(options);
 }
+export default transform;
 \`\`\`
-	
-Write a jscodeshift codemod that transforms the "Before" code snippet into the "After" while adhering to the Template above and replace the "//jscodeshift codemod implementation" comment with actual codemod implementation.
 
-Preserve the leading comments by using a helper function like this:
-
+#### Example 3
+**BEFORE**:
+\`\`\`typescript
+import { Redirect, Route } from 'react-router';
 \`\`\`
-function replaceWithComments(path, newNode) {
-	// If the original node had comments, add them to the new node
-	if (path.node.comments) {
-		newNode.comments = path.node.comments;
-	}
-
-	// Replace the node
-	j(path).replaceWith(newNode);
+**AFTER**:
+\`\`\`typescript
+import { Redirect, Route } from 'react-router-dom';
+\`\`\`
+**CODEMOD**:
+\`\`\`typescript
+import type { API, FileInfo, Options, Transform } from 'jscodeshift';
+function transform(file: FileInfo, api: API, options: Options): string | undefined {
+	const j = api.jscodeshift;
+	const root = j(file.source);
+	root.find(j.ImportDeclaration, {
+		source: { value: 'react-router' }
+	}).forEach((path) => {
+		path.value.source.value = 'react-router-dom';
+	});
+	return root.toSource(options);
 }
-\`\`\`
- 
- 
-You are only allowed to use jscodeshift library and TypeScript language.
-
-Do not use any other libraries other than jscodeshift.
-
-Your codemod should not contain any typescript errors and bugs.
-
-Only provide the code. Do not share extra explanations.
-
-Before accessing jscodeshift node properties, try to narrow node's type.
-
-You can narrow node type by checking "type" property. Example:
-	
-\`\`\`
-// ensures that node is Identifier
-if(node.type === "Identifier") {
-	// safely access properties of Identifier
-}
+export default transform;
 \`\`\`
 
-Try making your codemod modular.
+## Additional API about jscodeshift
+### closestScope: Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
+\`\`\`typescript
+const closestScopes = j.find(j.Identifier).closestScope();
+\`\`\`
 
-Write comments with best practices in mind.
+### some: checks if at least one element in the collection passes the test implemented by the provided function.
+\`\`\`typescript
+const hasVariableA = root.find(j.VariableDeclarator).some(path => path.node.id.name === 'a');
+\`\`\`
 
-Never import namedTypes or builders from jscodeshift.
-Only import jscodeshift in the codemod.
+### map: Maps each node in the collection to a new value.
+\`\`\`typescript
+const variableNames = j.find(j.VariableDeclaration).map(path => path.node.declarations.map(decl => decl.id.name));
+\`\`\`
 
-"VariableDeclarator" does not have a property "id".
-"VariableDeclarator" does not have a property "init".
-"Identifier" does not have a property "init".
-"ExpressionKind" does not have a property "params".
-"Identifier" does not have a property "params".
-"PatternKind" does not have a property "name".
-"RestElement" does not have a property "name".
-"PatternKind" does not have a property "typeAnnotation".
-"SpreadElementPattern" does not have a property "typeAnnotation".
+### paths: Returns the paths of the found nodes.
+\`\`\`typescript
+const paths = j.find(j.VariableDeclaration).paths();
+\`\`\`
 
-Make sure the codemod you generate, FULLY and EXACTLY transforms the "Before" code snippet to the "After" code snippet.
-- If the "After" code has additional import statements, make sure the codemod adds them.
-- If the "After" code has fewer import statements, make sure the codemod removes them.
-- If the "After" code has type annotations, make sure the codemod adds them.
+### get: Gets the first node in the collection.
+\`\`\`typescript
+const firstVariableDeclaration = j.find(j.VariableDeclaration).get();
+\`\`\`
+
+### at: Navigates to a specific path in the AST.
+\`\`\`typescript
+const secondVariableDeclaration = j.find(j.VariableDeclaration).at(1);
+\`\`\`
+
+### isOfType: checks if the node in the collection is of a specific type.
+\`\`\`typescript
+const isVariableDeclarator = root.find(j.VariableDeclarator).at(0).isOfType('VariableDeclarator');
+\`\`\`
 `;
 
 // fixBlock V1

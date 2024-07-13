@@ -1,7 +1,6 @@
 import type { useAiService } from "@chatbot/useAiService";
 import type { useCodemodAI } from "@chatbot/useAiService/codemodAI/useCodemodAI";
 import ButtonWithTooltip from "@studio/components/button/BottonWithTooltip";
-import { Button } from "@studio/components/ui/button";
 import Link from "next/link";
 
 export const WebSocketButton = ({

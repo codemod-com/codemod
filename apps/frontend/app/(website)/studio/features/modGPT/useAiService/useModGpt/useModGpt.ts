@@ -1,8 +1,9 @@
-import { modGptServer } from "@chatbot/config";
+import { SEND_CHAT } from "@/app/(website)/studio/src/constants";
+import { env } from "@/env";
 import { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { onResponse } from "@chatbot/utils";
 import type { LLMEngine } from "@shared/consts";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useModStore } from "@studio/store/mod";
 import type { Message } from "ai";
 import { useChat } from "ai/react";
 import { useCallback, useState } from "react";
@@ -17,7 +18,7 @@ export const useModGPT = ({
 
   const [token, setToken] = useState<string | null>(null);
   const chat = useChat({
-    api: modGptServer,
+    api: `${env.NEXT_PUBLIC_AI_API_URL}/${SEND_CHAT}`,
     initialMessages,
     id,
     onResponse,

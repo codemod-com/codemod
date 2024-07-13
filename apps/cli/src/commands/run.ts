@@ -22,6 +22,7 @@ import {
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
+  CODEMOD_NOT_FOUND,
   TarService,
   doubleQuotify,
   execPromise,
@@ -153,6 +154,17 @@ export const transformCodemodToRunnable = async (options: {
   return codemodToRun;
 };
 
+const printCodemodVersion = (codemod: Codemod, printer: PrinterBlueprint) => {
+  if (codemod.bundleType === "standalone") {
+    return printer.printConsoleMessage(
+      "log",
+      chalk.cyan("Standalone codemods do not support versioning."),
+    );
+  }
+
+  return printer.printConsoleMessage("log", chalk.cyan(`v${codemod.version}`));
+};
+
 export const handleRunCliCommand = async (options: {
   printer: PrinterBlueprint;
   args: GlobalArgvOptions & RunArgvOptions;
@@ -169,7 +181,8 @@ export const handleRunCliCommand = async (options: {
     !runSettings.dryRun &&
     !args["disable-tree-version-check"] &&
     !args.readme &&
-    !args.config
+    !args.config &&
+    !args.version
   ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
@@ -205,6 +218,10 @@ export const handleRunCliCommand = async (options: {
       tarService,
     );
 
+    if (args.version) {
+      return printCodemodVersion(codemod, printer);
+    }
+
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
@@ -223,13 +240,17 @@ export const handleRunCliCommand = async (options: {
     try {
       codemod = await codemodDownloader.download(
         codemodSettings.name,
-        args.readme || args.config,
+        args.readme || args.config || args.version,
       );
+
+      if (args.version) {
+        return printCodemodVersion(codemod, printer);
+      }
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
           error.response?.status === 400 &&
-          error.response.data.error === "Codemod not found"
+          error.response.data.error === CODEMOD_NOT_FOUND
         ) {
           printer.printConsoleMessage(
             "error",

@@ -1,4 +1,4 @@
-import { useUserSession } from "@studio/store/zustand/userSession";
+import { useUserSession } from "@studio/store/utils/userSession";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useLocation } from "react-use";

@@ -39,8 +39,8 @@
     "clean": "turbo run clean",
     "link": "turbo run link",
     "lint": "biome check .",
-    "lint:apply": "biome check --apply --diagnostic-level=error .",
-    "lint:linter": "biome lint --apply --diagnostic-level=error .",
+    "lint:write": "biome check --write --diagnostic-level=error .",
+    "lint:linter": "biome lint --write --diagnostic-level=error .",
     "lint:formatter": "biome format --write --diagnostic-level=error .",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
@@ -59,6 +59,7 @@
     "db:studio": "turbo run db:studio"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.4",
     "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@total-typescript/ts-reset": "^0.4.2",
@@ -70,15 +71,18 @@
     "tsx": "^4.2.0",
     "turbo": "^1.10.14",
     "typescript": "^5.4.5",
-    "vitest": "^1.4.0",
-    "@biomejs/biome": "^1.6.4"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^1.4.0"
   },
   "lint-staged": {
     "*": [
-      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
+      "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
     ]
   },
   "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": ["@babel/core"]
+    },
     "overrides": {
       "postcss": "8.4.35",
       "whatwg-url": "^14.0.0"

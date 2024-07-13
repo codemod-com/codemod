@@ -2,8 +2,8 @@ import {
   autoGenerateCodemodPrompt,
   fixCodemodBlockNoDebugInfoPrompt,
 } from "@chatbot/prompts";
-import type { Aliases } from "@studio/store/zustand/CFS/alias";
-import { useCodemodExecutionError } from "@studio/store/zustand/log";
+import type { Aliases } from "@studio/store/CFS/alias";
+import { useCodemodExecutionError } from "@studio/store/log";
 import toast from "react-hot-toast";
 
 const errorResponses = {

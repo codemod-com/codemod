@@ -1,5 +1,6 @@
 import {
   type Codemod,
+  type CodemodVersion,
   type Prisma,
   type PrismaClient,
   type Tag,
@@ -13,6 +14,8 @@ import {
 } from "@codemod-com/utilities";
 
 import Fuse from "fuse.js";
+
+import { CodemodNotFoundError } from "~/types/errors.js";
 
 const parseAndFilterQueryParams = (query: string | string[] | undefined) => {
   const result = [];
@@ -63,8 +66,6 @@ export type Filter = {
     count: number;
   }>;
 };
-
-export class CodemodNotFoundError extends Error {}
 
 class CodemodService {
   public constructor(protected prisma: PrismaClient) {}
@@ -250,10 +251,12 @@ class CodemodService {
     return { total, data, filters, page, size };
   }
 
-  public async getCodemodBySlug(slug: string): Promise<FullCodemodInfo> {
+  public async getCodemod(
+    criteria: string,
+  ): Promise<FullCodemodInfo & { versions: CodemodVersion[] }> {
     const codemod = await this.prisma.codemod.findFirst({
       where: {
-        slug,
+        OR: [{ slug: criteria }, { name: criteria }],
       },
       include: {
         versions: {

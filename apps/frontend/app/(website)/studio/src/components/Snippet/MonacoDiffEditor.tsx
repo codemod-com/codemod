@@ -37,7 +37,6 @@ const MonacoDiffEditor = ({
   const editorRef = useRef<monaco.editor.IStandaloneDiffEditor>();
   const originalEditor = editorRef.current?.getOriginalEditor() ?? null;
   const modifiedEditor = editorRef.current?.getModifiedEditor() ?? null;
-
   const { isDark } = useTheme();
 
   useEditor(originalEditor, originalEditorProps, mounted);

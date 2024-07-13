@@ -14,11 +14,11 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
-import { getCodemodBySlugHandler } from "./handlers/getCodemodBySlugHandler.js";
 import {
   type GetCodemodDownloadLinkResponse,
   getCodemodDownloadLink,
 } from "./handlers/getCodemodDownloadLink.js";
+import { getCodemodHandler } from "./handlers/getCodemodHandler.js";
 import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
 import authPlugin from "./plugins/authPlugin.js";
@@ -171,7 +171,7 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     },
   );
 
-  instance.get("/codemods/:slug", getCodemodBySlugHandler);
+  instance.get("/codemods/:criteria", getCodemodHandler);
 
   instance.get("/codemods", getCodemodsHandler);
 

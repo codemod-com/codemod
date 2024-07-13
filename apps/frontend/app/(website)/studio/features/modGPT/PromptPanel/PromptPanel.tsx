@@ -7,7 +7,7 @@ import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { getOrderedAliasList, usePrompts } from "@chatbot/utils";
 import { useAuth } from "@clerk/nextjs";
-import { useGetAliases } from "@studio/store/zustand/CFS/alias";
+import { useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react";
 import { useRef, useState } from "react";
 import { PromptForm } from "./PromptForm";

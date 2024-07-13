@@ -78,7 +78,20 @@
     },
     {
       "group": "Building codemods",
-      "pages": ["guides/building-codemods/codemod2"]
+      "pages": [
+        {
+          "group": "Codemod packages",
+          "pages": [
+            "guides/building-codemods/package-requirements",
+            "guides/building-codemods/build-package"
+          ]
+        },
+        "guides/building-codemods/codemod2"
+      ]
+    },
+    {
+      "group": "Sharing codemods",
+      "pages": ["guides/sharing/publishing-codemods"]
     },
     {
       "group": "Engines",
@@ -98,6 +111,7 @@
       "pages": [
         "guides/migrations/react-18-19",
         "guides/migrations/msw-v1-v2",
+        "guides/migrations/pnpm-catalog",
         "guides/external-links/valibot"
       ]
     }
