@@ -9,11 +9,11 @@ import {
   type PanelsRefs,
 } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
-import { useCFSStore } from "@studio/store/zustand/CFS";
-import { useModStore } from "@studio/store/zustand/mod";
-import { TabNames } from "@studio/store/zustand/view";
-import * as React from "react";
+import { useModStore } from "@studio/store/mod";
+import { TabNames } from "@studio/store/view";
+import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 import type { ReactNode } from "react";
+import * as React from "react";
 import { PanelGroup } from "react-resizable-panels";
 
 export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
@@ -46,7 +46,7 @@ export const useTabsData = ({
   const tabs = [
     {
       value: TabNames.MODGPT,
-      name: "ModGPT",
+      name: "Assistant",
       content: (
         <>
           <Chat aiProps={aiAssistantData} isSignedIn={isSignedIn} />

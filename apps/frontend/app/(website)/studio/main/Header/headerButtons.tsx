@@ -1,8 +1,8 @@
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
 import { Link as LinkIcon } from "@phosphor-icons/react/dist/csr/Link";
 import { Button } from "@studio/components/ui/button";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "@studio/store/snippets";
 import { usePublicLinkSharing } from "../usePublicLinkSharing";
 
 type ButtonProps = {
@@ -12,17 +12,16 @@ type ButtonProps = {
 };
 
 export const HeaderButtons = () => {
-  const { setInput, setOutput } = useSnippetStore();
+  const { clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
-  const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
-  const { getShareLink } = usePublicLinkSharing();
+  const { isCreating: isShareURLBeingCreated, getShareLink } =
+    usePublicLinkSharing();
 
   const buttonsData = [
     {
       hintText: "Clear all inputs",
       onClick: () => {
-        setInput("");
-        setOutput("");
+        clearAll();
         setContent("");
       },
       Icon: BackspaceIcon,

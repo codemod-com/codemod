@@ -10,7 +10,7 @@ import {
 } from "@phosphor-icons/react";
 import { Button } from "@studio/components/ui/button";
 import { useCopyToClipboard } from "@studio/hooks/useCopyToClipboard";
-import { useModStore } from "@studio/store/zustand/mod";
+import { useModStore } from "@studio/store/mod";
 import { prettify } from "@studio/utils/prettify";
 import { type FC, memo } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";

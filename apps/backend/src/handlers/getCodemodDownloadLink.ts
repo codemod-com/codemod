@@ -1,20 +1,36 @@
 import { GetObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import type { RouteHandler } from "fastify";
+import {
+  type ApiResponse,
+  CODEMOD_NOT_FOUND,
+  type CodemodDownloadLinkResponse,
+  INTERNAL_SERVER_ERROR,
+} from "@codemod-com/utilities";
+import type { FastifyReply, RouteHandler } from "fastify";
+import { CodemodNotFoundError, processHandlerError } from "~/types/errors.js";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
 import { environment } from "../util.js";
 
-export type GetCodemodDownloadLinkResponse = { link: string };
+export type GetCodemodDownloadLinkResponse =
+  ApiResponse<CodemodDownloadLinkResponse>;
 
 export const getCodemodDownloadLink: RouteHandler<{
   Reply: GetCodemodDownloadLinkResponse;
-}> = async (request: UserDataPopulatedRequest) => {
+}> = async (request: UserDataPopulatedRequest, reply: FastifyReply) => {
   const { name } = parseGetCodemodLatestVersionQuery(request.query);
 
   if (!request?.user?.id) {
-    return codemodService.getCodemodDownloadLink(name, null, []);
+    try {
+      return await codemodService.getCodemodDownloadLink(name, null, []);
+    } catch (err) {
+      return processHandlerError(
+        err,
+        reply,
+        "Failed to retrieve codemod download link",
+      );
+    }
   }
 
   const allowedNamespaces = request?.allowedNamespaces;
@@ -39,9 +55,17 @@ export const getCodemodDownloadLink: RouteHandler<{
     );
   };
 
-  return codemodService.getCodemodDownloadLink(
-    name,
-    generateSignedUrl,
-    allowedNamespaces,
-  );
+  try {
+    return await codemodService.getCodemodDownloadLink(
+      name,
+      generateSignedUrl,
+      allowedNamespaces,
+    );
+  } catch (err) {
+    return processHandlerError(
+      err,
+      reply,
+      "Failed to retrieve codemod download link",
+    );
+  }
 };

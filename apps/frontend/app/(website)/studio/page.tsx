@@ -14,6 +14,7 @@ export default function Page() {
     document.body.classList.remove("bg-gray-darker", "bg-gray-bg-light");
     document.documentElement.classList.add("light");
   }, [isDark]);
+
   return (
     <Suspense>
       <AuthProvider>

@@ -34,11 +34,11 @@
     "@vitest/coverage-v8": "catalog:",
     "memfs": "^4.8.2",
     "ts-node": "10.9.1",
-    "vitest": "^1.0.1",
-    "@codemod-com/filemod": "workspace:*"
+    "vitest": "^1.0.1"
   },
   "dependencies": {
     "@clerk/backend": "catalog:",
+    "@codemod-com/database": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "bl": "catalog:",
     "change-case": "catalog:",

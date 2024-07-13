@@ -28,6 +28,9 @@ jobs:
           NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: 'pk_test_c3VtbWFyeS13YWxydXMtMjUuY2xlcmsuYWNjb3VudHMuZGV2JA'
           NEXT_PUBLIC_API_URL: 'http://localhost:8081'
           NEXT_PUBLIC_AUTH_API_URL: 'http://localhost:8080'
+          NEXT_PUBLIC_AI_API_URL: 'http://localhost:8081'
+          NEXT_PUBLIC_AUTH_API_URL: 'http://localhost:8080'
+          NEXT_PUBLIC_WS_URL: 'ws://localhost:8000'
           HUBSPOT_CONTACT_FORM_ID: ${{ secrets.HUBSPOT_CONTACT_FORM_ID }}
           HUBSPOT_JOB_FORM_ID: ${{ secrets.HUBSPOT_JOB_FORM_ID }}
           HUBSPOT_NEWSLETTER_FORM_ID: ${{ secrets.HUBSPOT_NEWSLETTER_FORM_ID }}
