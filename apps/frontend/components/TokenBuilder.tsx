@@ -15,7 +15,7 @@ import {
   DialogContent,
   DialogTrigger,
 } from "@studio/components/ui/dialog";
-import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 
 export const TokenBuilder = () => {
   const { getToken } = useAuth();

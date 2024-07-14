@@ -1,7 +1,6 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
 import {
   type Output,
-  array,
   literal,
   number,
   object,

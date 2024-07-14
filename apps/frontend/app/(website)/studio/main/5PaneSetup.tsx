@@ -17,7 +17,7 @@ import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
-import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";

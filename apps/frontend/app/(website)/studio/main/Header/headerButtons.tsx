@@ -1,9 +1,10 @@
+import { ShareButton } from "@features/share/ShareButton";
+import { usePublicLinkSharing } from "@features/share/usePublicLinkSharing";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
 import { Link as LinkIcon } from "@phosphor-icons/react/dist/csr/Link";
 import { Button } from "@studio/components/ui/button";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
-import { usePublicLinkSharing } from "../usePublicLinkSharing";
 
 type ButtonProps = {
   text: string;
@@ -11,47 +12,33 @@ type ButtonProps = {
   disabled: boolean;
 };
 
-export const HeaderButtons = () => {
+const ClearAllButton = () => {
   const { clearAll } = useSnippetsStore();
   const { setContent } = useModStore();
-  const { isCreating: isShareURLBeingCreated, getShareLink } =
-    usePublicLinkSharing();
-
-  const buttonsData = [
-    {
-      hintText: "Clear all inputs",
-      onClick: () => {
-        clearAll();
-        setContent("");
-      },
-      Icon: BackspaceIcon,
-      text: "Clear all inputs",
-    },
-    {
-      hintText: "Share the codemod",
-      onClick: getShareLink,
-      Icon: isShareURLBeingCreated ? LinkIcon : null,
-      text: "Share",
-      /* FIXME: refactor button component to replace loading icon with the button's icon */
-      props: { isLoading: isShareURLBeingCreated },
-    },
-  ];
+  const hintText = "Clear all inputs";
+  const onClick = () => {
+    clearAll();
+    setContent("");
+  };
 
   return (
+    <Button
+      onClick={onClick}
+      size="xs"
+      variant="outline"
+      className="flex gap-1"
+      hint={<p className="font-normal">{hintText}</p>}
+    >
+      <BackspaceIcon className="h-4 w-4" />
+      Clear all inputs
+    </Button>
+  );
+};
+export const HeaderButtons = () => {
+  return (
     <>
-      {buttonsData.map(({ Icon, hintText, ...button }, index) => (
-        <Button
-          key={index}
-          size="xs"
-          variant="outline"
-          className="flex gap-1"
-          hint={<p className="font-normal">{hintText}</p>}
-          {...button}
-        >
-          {Icon && <Icon className="h-4 w-4" />}
-          {button.text}
-        </Button>
-      ))}
+      <ClearAllButton />
+      <ShareButton />
     </>
   );
 };
