@@ -63,7 +63,6 @@ export function PromptPanel(props: PromptPanelProps) {
       {expandedHelper && (
         <>
           <PromptButtons promptsList={promptsList} handleSubmit={handleSubmit}>
-            <ClearHistoryButton onClick={resetMessages} />
             <WebSocketButton
               handleButtonClick={startIterativeCodemodGeneration}
               isLoading={isLoading}
