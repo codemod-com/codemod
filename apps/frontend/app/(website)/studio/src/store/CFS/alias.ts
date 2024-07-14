@@ -20,15 +20,21 @@ export const useGetAliases = (): Aliases => {
   const codemodExecutionError = useCodemodExecutionError();
   const {
     content,
-    ranges: codemodInputRanges,
+    ranges: codemodInputRanges = [],
     rangesUpdatedAt,
   } = useModStore();
 
   const { getSelectedEditors, getAllSnippets } = useSnippetsStore();
 
   const {
-    after: { ranges: afterInputRanges, rangeUpdatedAt: afterRangeUpdatedAt },
-    before: { ranges: beforeInputRanges, rangeUpdatedAt: beforeRangeUpdatedAt },
+    after: {
+      ranges: afterInputRanges = [],
+      rangeUpdatedAt: afterRangeUpdatedAt,
+    },
+    before: {
+      ranges: beforeInputRanges = [],
+      rangeUpdatedAt: beforeRangeUpdatedAt,
+    },
   } = getSelectedEditors();
 
   const { before, after } = getAllSnippets();

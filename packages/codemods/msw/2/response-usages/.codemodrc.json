@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "name": "msw/2/response-usages",
   "engine": "ts-morph",

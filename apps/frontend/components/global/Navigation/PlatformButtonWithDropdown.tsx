@@ -25,7 +25,7 @@ export default function PlatformButtonWithDropdown() {
   }, [pathname]);
 
   return (
-    <DropdownMenu.Root open={open}>
+    <DropdownMenu.Root open={open} modal={false}>
       <DropdownMenu.Trigger
         className="select-none py-px"
         name="Navigation Button"
