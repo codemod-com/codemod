@@ -7,26 +7,19 @@ export const ShareButton = () => {
   useSharedState();
   const { isCreating: isShareURLBeingCreated } = usePublicLinkSharing();
   const { getShareLink } = usePublicLinkSharing();
-
-  const Icon = isShareURLBeingCreated ? LinkIcon : null;
   const hintText = "Share the codemod";
-
-  const buttonProps = {
-    onClick: getShareLink,
-    text: "Share",
-    props: { isLoading: isShareURLBeingCreated },
-  };
 
   return (
     <Button
+      onClick={getShareLink}
       size="xs"
+      isLoading={isShareURLBeingCreated}
       variant="outline"
       className="flex gap-1"
       hint={<p className="font-normal">{hintText}</p>}
-      {...buttonProps}
     >
-      {Icon && <Icon className="h-4 w-4" />}
-      {buttonProps.text}
+      {isShareURLBeingCreated && <LinkIcon className="h-4 w-4" />}
+      Share
     </Button>
   );
 };

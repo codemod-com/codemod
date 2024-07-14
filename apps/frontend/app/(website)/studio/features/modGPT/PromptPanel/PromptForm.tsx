@@ -40,7 +40,30 @@ export const PromptForm = React.forwardRef<HTMLTextAreaElement, Props>(
         }}
         ref={formRef}
       >
-        <div className="max-h-60 relative flex w-full grow items-center overflow-hidden bg-background sm:rounded-md sm:border">
+        <div className="max-h-60 relative flex w-full grow items-center overflow-hidden bg-background pl-8 sm:rounded-md sm:border sm:pl-12">
+          <Tooltip
+            trigger={
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onReset();
+                }}
+                className={cn(
+                  buttonVariants({
+                    size: "sm",
+                    variant: "outline",
+                  }),
+                  "absolute left-0 top-4 h-8 w-8 rounded-full bg-background p-0 sm:left-4",
+                )}
+              >
+                <TrashIcon />
+                <span className="sr-only">Clear History</span>
+              </button>
+            }
+            content="Clear History"
+          />
+
           <Textarea
             maxRows={5}
             ref={ref ?? inputRef}

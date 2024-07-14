@@ -9,50 +9,6 @@ export const useShareLink = () => {
     useSnippetsStore();
   const { content } = useModStore();
 
-  // const getExtensionUrl = async (): Promise<URL | null> => {
-  // 	try {
-  // 		if (internalContent === null) {
-  // 			throw new Error("codemod content not found");
-  // 		}
-
-  // 		const token = await getToken();
-
-  // 		let codemodName = "untitled";
-  // 		if (token !== null) {
-  // 			// Ask LLM to come up with a name for the given codemod
-  // 			const codemodNameOrError = await sendMessage({
-  // 				message: generateCodemodNamePrompt(internalContent),
-  // 				token,
-  // 			});
-
-  // 			if (codemodNameOrError.isLeft()) {
-  // 				console.error(codemodNameOrError.getLeft());
-  // 			} else {
-  // 				codemodName = codemodNameOrError.get().text;
-  // 			}
-  // 		}
-
-  // 		const searchParams = new URLSearchParams();
-  // 		searchParams.set(SEARCH_PARAMS_KEYS.ENGINE, encode(engine));
-  // 		searchParams.set(SEARCH_PARAMS_KEYS.BEFORE_SNIPPET, encode(inputSnippet));
-  // 		searchParams.set(SEARCH_PARAMS_KEYS.AFTER_SNIPPET, encode(outputSnippet));
-  // 		searchParams.set(
-  // 			SEARCH_PARAMS_KEYS.CODEMOD_SOURCE,
-  // 			encode(internalContent ?? ""),
-  // 		);
-  // 		searchParams.set(SEARCH_PARAMS_KEYS.CODEMOD_NAME, encode(codemodName));
-
-  // 		const url = new URL(window.location.href);
-  // 		url.search = searchParams.toString();
-
-  // 		return url;
-  // 	} catch (error) {
-  // 		console.error(error);
-
-  // 		return null;
-  // 	}
-  // };
-
   const getURL = (): URL | null => {
     try {
       if (content === null) {
