@@ -83,7 +83,7 @@ export const handleListNamesCommand = async (options: {
   if (prettified.length === 0) {
     printer.printConsoleMessage(
       "info",
-      chalk.bold.red("No results matched your search."),
+      chalk.bold.red("No results matched your query."),
     );
     return;
   }

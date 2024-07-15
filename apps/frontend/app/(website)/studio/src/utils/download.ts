@@ -12,16 +12,19 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 
   const files = getCodemodProjectFiles(input);
   for (const [name, content] of Object.entries(files)) {
-    zip.file(name, content);
+    if (name !== "src/index.ts") {
+      zip.file(name, content);
+    }
   }
 
   // Pre-built file
   if (isTypeScriptProjectFiles(files)) {
-    const compiled = await transpileTs(files["src/index.ts"]);
+    const { transpiled, source } = await transpileTs(files["src/index.ts"]);
     zip.file(
       "dist/index.cjs",
-      `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+      `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
     );
+    zip.file("src/index.ts", source);
   }
   const blob = await zip.generateAsync({ type: "blob" });
 

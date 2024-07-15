@@ -30,6 +30,23 @@ export const DownloadZip = () => {
   const { session } = useSession();
   const { getToken } = useAuth();
 
+  const allSnippets = snippetStore.getAllSnippets();
+  const cases = useMemo(
+    () =>
+      allSnippets.before.reduce(
+        (acc, before, i) => {
+          const after = allSnippets.after[i];
+          if (!after) {
+            return acc;
+          }
+
+          return acc.concat({ before, after });
+        },
+        [] as { before: string; after: string }[],
+      ),
+    [allSnippets],
+  );
+
   const handleClick = async () => {
     setIsDownloading(true);
     if (!modStore.content) {
@@ -43,12 +60,7 @@ export const DownloadZip = () => {
     await downloadProject({
       name: humanCodemodName,
       codemodBody: modStore.content,
-      cases: [
-        {
-          before: snippetStore.getSelectedEditors().beforeSnippet,
-          after: snippetStore.getSelectedEditors().afterSnippet,
-        },
-      ],
+      cases,
       engine,
       username: session?.user.username ?? null,
     });

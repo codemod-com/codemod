@@ -503,9 +503,10 @@ const testBody = ({
         });
 
         describe('${name}', () => {
-          ${cases?.map((_, i) => {
-            return beautify(
-              `it('test #${i + 1}', async () => {
+          ${cases
+            ?.map((_, i) => {
+              return beautify(
+                `it('test #${i + 1}', async () => {
                 const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
                   i + 1
                 }.input.${vanillaJs ? "js" : "ts"}'), 'utf-8');
@@ -519,6 +520,7 @@ const testBody = ({
                     source: INPUT,
                   },
                   buildApi('tsx'),
+                  {}
                 );
 
                 assert.deepEqual(
@@ -527,9 +529,10 @@ const testBody = ({
                 );
               });
             `,
-              { indent_level: 4 },
-            );
-          })}
+                { indent_level: 4 },
+              );
+            })
+            .join("\n\n")}
         });
     `);
   }

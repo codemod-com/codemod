@@ -16,7 +16,11 @@
     "prepare": "husky"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -56,6 +60,7 @@
     "@radix-ui/react-tabs": "catalog:",
     "@radix-ui/react-toast": "catalog:",
     "@radix-ui/react-tooltip": "catalog:",
+    "@sanity/client": "^6.21.0",
     "@sanity/code-input": "catalog:",
     "@sanity/orderable-document-list": "catalog:",
     "@sanity/preview-url-secret": "catalog:",

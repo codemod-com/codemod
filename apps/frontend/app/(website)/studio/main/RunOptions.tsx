@@ -76,7 +76,9 @@ export const RunOptions = () => {
 
     const files = getCodemodProjectFiles({
       name: humanCodemodName,
-      codemodBody: modStore.content,
+      // TODO: temporary fix, most likely we need to upgrade monaco editor or babel or whatever is responsible
+      // for taking the code from the web-editor and converting it to string
+      codemodBody: modStore.content.replace(/\n *as\n *const/g, " as const"),
       cases: allSnippets.before.reduce(
         (acc, before, i) => {
           const after = allSnippets.after[i];
@@ -121,11 +123,11 @@ export const RunOptions = () => {
       }
     }
 
-    const compiled = await transpileTs(files["src/index.ts"]);
+    const { transpiled, source } = await transpileTs(files["src/index.ts"]);
 
     const publishResult = await publishCodemod({
       files: {
-        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
         codemodRc: files[".codemodrc.json"],
       },
       mainFileName: "index.cjs",
