@@ -12,6 +12,7 @@ export const getCodemodHandler: RouteHandler<{
   try {
     return await codemodService.getCodemod(criteria);
   } catch (err) {
+    console.log(err);
     processHandlerError(err, reply, "Failed to retrieve codemod");
   }
 };

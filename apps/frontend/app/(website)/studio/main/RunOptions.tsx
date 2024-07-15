@@ -30,6 +30,7 @@ import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import * as semver from "semver";
 import { publishCodemod } from "../src/api/publishCodemod";
+import { transpileTs } from "../src/utils/transpileTs";
 import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
@@ -120,16 +121,7 @@ export const RunOptions = () => {
       }
     }
 
-    await initSwc();
-    const { code: compiled } = await transform(files["src/index.ts"], {
-      minify: true,
-      module: { type: "commonjs" },
-      jsc: {
-        target: "es5",
-        loose: false,
-        parser: { syntax: "typescript", tsx: true },
-      },
-    });
+    const compiled = await transpileTs(files["src/index.ts"]);
 
     const publishResult = await publishCodemod({
       files: {
@@ -155,8 +147,8 @@ export const RunOptions = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl bg-white">
           <p>
-            We have published your codemod to the Codemod Registry. You can now
-            run it via CLI using the command below.
+            Your codemod is now available to be run via Codemod CLI. To do so
+            use the command below.
           </p>
 
           <Tabs defaultValue="npm">
@@ -234,11 +226,16 @@ function InstructionsContent({
 }: { pm: "pnpm" | "npm"; codemodName: string | null }) {
   const npxDialect = useMemo(() => {
     if (pm === "pnpm") {
-      return "pnpm dlx";
+      return "pnpx" as const;
     }
 
-    return "npx";
+    return "npx" as const;
   }, [pm]);
+
+  const cliCommand = useMemo(
+    () => (npxDialect === "pnpx" ? "codemod" : "codemod@latest"),
+    [npxDialect],
+  );
 
   if (!codemodName) {
     return null;
@@ -246,7 +243,9 @@ function InstructionsContent({
 
   return (
     <div className="space-y-1">
-      <CopyTerminalCommands text={`${npxDialect} codemod ${codemodName}`} />
+      <CopyTerminalCommands
+        text={`${npxDialect} ${cliCommand} login && ${npxDialect} ${cliCommand} ${codemodName}`}
+      />
     </div>
   );
 }

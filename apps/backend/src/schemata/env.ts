@@ -60,6 +60,7 @@ export const environmentSchema = object({
     literal("production"),
     literal("test"),
   ]),
+  FRONTEND_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;

@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "@codemod-com/database";
@@ -117,7 +117,13 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    const { name, version } = codemodRc;
+    let { name, version } = codemodRc;
+
+    const isHidden =
+      request.headers.origin?.startsWith(environment.FRONTEND_URL) ?? false;
+    name = isHidden
+      ? `${name}-${randomBytes(16).toString("hex").substring(0, 8)}`
+      : name;
 
     let namespace: string | null = null;
     try {
@@ -278,6 +284,7 @@ export const publishHandler: RouteHandler<{
           engine: codemodRc.engine,
           applicability: codemodRc.applicability,
           verified: isVerified,
+          hidden: isHidden,
           private: isPrivate,
           author,
           arguments: codemodRc.arguments,

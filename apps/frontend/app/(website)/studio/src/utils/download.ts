@@ -5,6 +5,7 @@ import {
 } from "@codemod-com/utilities";
 import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
+import { transpileTs } from "./transpileTs";
 
 export const downloadProject = async (input: ProjectDownloadInput) => {
   const zip = new JSZip();
@@ -16,16 +17,7 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
 
   // Pre-built file
   if (isTypeScriptProjectFiles(files)) {
-    await initSwc();
-    const { code: compiled } = await transform(files["src/index.ts"], {
-      minify: true,
-      module: { type: "commonjs" },
-      jsc: {
-        target: "es5",
-        loose: false,
-        parser: { syntax: "typescript", tsx: true },
-      },
-    });
+    const compiled = await transpileTs(files["src/index.ts"]);
     zip.file(
       "dist/index.cjs",
       `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
