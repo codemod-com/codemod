@@ -5,10 +5,8 @@ import {
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
-import inquirer from "inquirer";
 import { unpublish } from "../apis.js";
-import { getCurrentUserData } from "../utils.js";
-import { handleLoginCliCommand } from "./login.js";
+import { getCurrentUserOrLogin } from "../utils.js";
 
 export const handleUnpublishCliCommand = async (options: {
   printer: PrinterBlueprint;
@@ -17,26 +15,10 @@ export const handleUnpublishCliCommand = async (options: {
 }) => {
   const { printer, name, force } = options;
 
-  let userData = await getCurrentUserData();
-
-  if (userData === null) {
-    const { login } = await inquirer.prompt<{ login: boolean }>({
-      type: "confirm",
-      name: "login",
-      message: "Authentication is required to unpublish codemods. Proceed?",
-    });
-
-    if (!login) {
-      return;
-    }
-
-    await handleLoginCliCommand({ printer });
-    userData = await getCurrentUserData();
-
-    if (userData === null) {
-      throw new Error("Unexpected authentication error occurred.");
-    }
-  }
+  const { token } = await getCurrentUserOrLogin({
+    message: "Authentication is required to unpublish codemods. Proceed?",
+    printer,
+  });
 
   const { libName: codemodName, version } = extractLibNameAndVersion(name);
 
@@ -51,8 +33,6 @@ export const handleUnpublishCliCommand = async (options: {
       )}" flag.`,
     );
   }
-
-  const { token } = userData;
 
   const spinner = printer.withLoaderMessage(
     chalk.cyan("Unpublishing ", chalk.bold(doubleQuotify(name))),

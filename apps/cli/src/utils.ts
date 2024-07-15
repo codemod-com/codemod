@@ -1,15 +1,17 @@
 import * as os from "node:os";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { chalk } from "@codemod-com/printer";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
   type GetUserDataResponse,
   execPromise,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 import { glob } from "glob";
+import inquirer from "inquirer";
 import keytar from "keytar";
 import { getUserData } from "./apis";
+import { handleLoginCliCommand } from "./commands/login";
 
 type UserData = GetUserDataResponse & {
   account: string;
@@ -61,6 +63,44 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
   }
 
   return { ...responseData, token, account: userCredentials.account };
+};
+
+export const getCurrentUserOrLogin = async (options: {
+  message: string;
+  printer: PrinterBlueprint;
+  onEmptyAfterLoginText?: string;
+}) => {
+  const { message, printer } = options;
+
+  let userData = await getCurrentUserData();
+
+  if (userData !== null) {
+    return userData;
+  }
+
+  const { login } = await inquirer.prompt<{ login: boolean }>({
+    type: "confirm",
+    name: "login",
+    message,
+  });
+
+  if (!login) {
+    throw new Error(
+      "Refused to login for a command that requires authentication. Aborting...",
+    );
+  }
+
+  await handleLoginCliCommand({ printer });
+  userData = await getCurrentUserData();
+
+  if (userData === null) {
+    throw new Error(
+      options.onEmptyAfterLoginText ??
+        "Unexpected empty user data after authentication. Aborting...",
+    );
+  }
+
+  return userData;
 };
 
 export const getOrgsNames = (

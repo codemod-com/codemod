@@ -70,21 +70,33 @@ export type Filter = {
 class CodemodService {
   public constructor(protected prisma: PrismaClient) {}
 
-  public async getCodemods(
-    search: string | undefined,
-    category: string | string[] | undefined,
-    author: string | string[] | undefined,
-    framework: string | string[] | undefined,
-    verified: boolean | undefined,
-    page: number,
-    size: number,
-  ): Promise<{
+  public async getCodemods(options: {
+    search: string | undefined;
+    category: string | string[] | undefined;
+    author: string | string[] | undefined;
+    framework: string | string[] | undefined;
+    verified: boolean | undefined;
+    page: number;
+    size: number;
+    whitelisted: string[];
+  }): Promise<{
     total: number;
     data: FullCodemodInfo[];
     filters: Filter[];
     page: number;
     size: number;
   }> {
+    const {
+      search,
+      category,
+      author,
+      framework,
+      verified,
+      page,
+      size,
+      whitelisted,
+    } = options;
+
     const categories = parseAndFilterQueryParams(category);
     const authors = parseAndFilterQueryParams(author);
     const frameworks = parseAndFilterQueryParams(framework);
@@ -92,6 +104,8 @@ class CodemodService {
     const searchAndFilterClauses: Prisma.CodemodWhereInput["AND"] = [];
     const whereClause: Prisma.CodemodWhereInput = {
       AND: searchAndFilterClauses,
+      OR: [{ private: false }, { author: { in: whitelisted } }],
+      hidden: false,
     };
 
     if (search) {
@@ -253,10 +267,15 @@ class CodemodService {
 
   public async getCodemod(
     criteria: string,
+    whitelisted: string[],
   ): Promise<FullCodemodInfo & { versions: CodemodVersion[] }> {
     const codemod = await this.prisma.codemod.findFirst({
       where: {
-        OR: [{ slug: criteria }, { name: criteria }],
+        AND: [
+          { OR: [{ slug: criteria }, { name: criteria }] },
+          { OR: [{ private: false }, { author: { in: whitelisted } }] },
+        ],
+        hidden: false,
       },
       include: {
         versions: {
@@ -308,6 +327,7 @@ class CodemodService {
       where: {
         name,
         OR: [{ private: false }, { author: { in: allowedNamespaces } }],
+        hidden: false,
       },
       include: {
         versions: {
@@ -344,97 +364,80 @@ class CodemodService {
     return { link: downloadLink, version: latestVersion.version };
   }
 
-  public async getCodemodsList(
-    userId: string | null,
-    search: string | undefined,
-    allowedNamespaces?: string[],
-  ): Promise<CodemodListResponse> {
-    let codemodData: CodemodListResponse;
+  public async getCodemodsList(options: {
+    userId: string | null;
+    whitelisted?: string[];
+    search?: string;
+    mine?: boolean;
+    all?: boolean;
+  }): Promise<CodemodListResponse> {
+    const { userId, search, whitelisted, mine, all } = options;
 
-    if (isNeitherNullNorUndefined(userId)) {
-      const dbCodemods = await this.prisma.codemod.findMany({
-        where: {
-          OR: [{ private: false }, { author: { in: allowedNamespaces } }],
-        },
-        include: {
-          versions: {
-            orderBy: {
-              createdAt: "desc",
-            },
-            take: 1,
-          },
-        },
-      });
+    const whereClause: Prisma.CodemodWhereInput = {
+      OR: [{ private: false }, { author: { in: whitelisted } }],
+    };
 
-      const codemods = dbCodemods.map((codemod) => {
-        const latestVersion = codemod.versions?.[0];
-        if (!latestVersion) {
-          return null;
-        }
-
-        return {
-          name: codemod.name,
-          slug: codemod.slug,
-          engine: latestVersion?.engine as AllEngines,
-          author: codemod.author,
-          tags: latestVersion.tags,
-          verified: codemod.verified,
-          arguments: codemod.arguments ?? [],
-          updatedAt: codemod.updatedAt,
-        };
-      });
-
-      // TODO: use prisma json type for arguments in prisma schema
-      codemodData = codemods.filter(Boolean);
-    } else {
-      const dbCodemods = await this.prisma.codemod.findMany({
-        include: {
-          versions: {
-            orderBy: {
-              createdAt: "desc",
-            },
-            take: 1,
-          },
-        },
-      });
-
-      const codemods = dbCodemods.map((codemod) => {
-        const latestVersion = codemod.versions?.[0];
-        if (!latestVersion) {
-          return null;
-        }
-
-        return {
-          name: codemod.name,
-          slug: codemod.slug,
-          engine: latestVersion?.engine as AllEngines,
-          author: codemod.author,
-          tags: latestVersion.tags,
-          verified: codemod.verified,
-          arguments: codemod.arguments ?? [],
-          updatedAt: codemod.updatedAt,
-        };
-      });
-
-      // TODO: use prisma json type for arguments in prisma schema
-      codemodData = codemods.filter(Boolean);
+    if (!all) {
+      whereClause.hidden = false;
     }
 
+    if (mine) {
+      if (!userId) {
+        throw new Error("User ID is required to filter user's codemods");
+      }
+      whereClause.author = userId;
+    }
+
+    const dbCodemods = await this.prisma.codemod.findMany({
+      where: {
+        OR: [{ private: false }, { author: { in: whitelisted } }],
+        hidden: false,
+      },
+      include: {
+        versions: {
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 1,
+        },
+      },
+    });
+
+    let codemods = dbCodemods
+      .map((codemod) => {
+        const latestVersion = codemod.versions?.[0];
+        if (!latestVersion) {
+          return null;
+        }
+
+        return {
+          name: codemod.name,
+          slug: codemod.slug,
+          engine: latestVersion?.engine as AllEngines,
+          author: codemod.author,
+          tags: latestVersion.tags,
+          verified: codemod.verified,
+          arguments: codemod.arguments ?? [],
+          updatedAt: codemod.updatedAt,
+        };
+      })
+      .filter(Boolean);
+
     if (search) {
-      const fuse = new Fuse(codemodData, {
+      const fuse = new Fuse(codemods, {
         keys: ["name", "tags"],
         isCaseSensitive: false,
         threshold: 0.35,
       });
 
-      codemodData = fuse.search(search).map((res) => res.item);
+      codemods = fuse.search(search).map((res) => res.item);
     } else {
-      codemodData = codemodData.sort((a, b) =>
+      codemods = codemods.sort((a, b) =>
         a.name.toLowerCase().localeCompare(b.name.toLowerCase()),
       );
     }
 
-    return codemodData;
+    return codemods;
   }
 }
 

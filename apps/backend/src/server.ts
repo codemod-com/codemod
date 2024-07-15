@@ -19,7 +19,10 @@ import {
   getCodemodDownloadLink,
 } from "./handlers/getCodemodDownloadLink.js";
 import { getCodemodHandler } from "./handlers/getCodemodHandler.js";
-import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
+import {
+  type GetCodemodsResponse,
+  getCodemodsHandler,
+} from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
 import authPlugin from "./plugins/authPlugin.js";
 import {
@@ -173,7 +176,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get("/codemods/:criteria", getCodemodHandler);
 
-  instance.get("/codemods", getCodemodsHandler);
+  instance.get<{ Reply: GetCodemodsResponse }>(
+    "/codemods",
+    { preHandler: [instance.getUserData] },
+    getCodemodsHandler,
+  );
 
   instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
     "/codemods/downloadLink",
