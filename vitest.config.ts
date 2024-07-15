@@ -22,6 +22,7 @@ export default defineConfig({
       SIGNATURE_PRIVATE_KEY: "topsecret",
       SLACK_TOKEN: "xoxb-123123123",
       SLACK_CHANNEL: "my-channel",
+      FRONTEND_URL: "http://localhost:3000",
     },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
