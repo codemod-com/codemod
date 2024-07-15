@@ -275,7 +275,6 @@ class CodemodService {
           { OR: [{ slug: criteria }, { name: criteria }] },
           { OR: [{ private: false }, { author: { in: whitelisted } }] },
         ],
-        hidden: false,
       },
       include: {
         versions: {
@@ -327,7 +326,6 @@ class CodemodService {
       where: {
         name,
         OR: [{ private: false }, { author: { in: allowedNamespaces } }],
-        hidden: false,
       },
       include: {
         versions: {
@@ -389,10 +387,7 @@ class CodemodService {
     }
 
     const dbCodemods = await this.prisma.codemod.findMany({
-      where: {
-        OR: [{ private: false }, { author: { in: whitelisted } }],
-        hidden: false,
-      },
+      where: whereClause,
       include: {
         versions: {
           orderBy: {

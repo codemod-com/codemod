@@ -213,7 +213,8 @@ export const executeMainThread = async () => {
           handleListNamesCommand({
             printer,
             search: searchTerm,
-            ...args,
+            all: args.all,
+            mine: args.mine,
           }),
         );
       },

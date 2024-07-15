@@ -122,7 +122,7 @@ export const publishHandler: RouteHandler<{
     const isPublishedFromStudio =
       request.headers.origin?.startsWith(environment.FRONTEND_URL) ?? false;
     name = isPublishedFromStudio
-      ? `${name}-${randomBytes(16).toString("hex").substring(0, 8)}`
+      ? `${name}-${randomBytes(4).toString("hex")}`
       : name;
 
     let namespace: string | null = null;

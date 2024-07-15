@@ -6,7 +6,6 @@ import {
   INTERNAL_SERVER_ERROR,
   NO_MAIN_FILE_FOUND,
   UNAUTHORIZED,
-  buildCodemodSlug,
 } from "@codemod-com/utilities";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";

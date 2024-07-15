@@ -8,8 +8,8 @@ import { getCurrentUserOrLogin } from "../utils.js";
 export const handleListNamesCommand = async (options: {
   printer: PrinterBlueprint;
   search: string | null;
-  mine?: boolean;
-  all?: boolean;
+  mine: boolean;
+  all: boolean;
 }) => {
   const { printer, search, mine, all } = options;
 

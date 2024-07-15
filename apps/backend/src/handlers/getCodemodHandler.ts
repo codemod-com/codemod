@@ -16,7 +16,6 @@ export const getCodemodHandler: RouteHandler<{
       request.allowedNamespaces ?? [],
     );
   } catch (err) {
-    console.log(err);
     processHandlerError(err, reply, "Failed to retrieve codemod");
   }
 };

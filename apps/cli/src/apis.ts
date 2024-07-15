@@ -134,9 +134,9 @@ export const getCodemodDownloadURI = async (
 
 export const getCodemodList = async (options?: {
   accessToken?: string;
-  search?: string | null;
-  mine?: boolean;
-  all?: boolean;
+  search: string | null;
+  mine: boolean;
+  all: boolean;
 }): Promise<CodemodListResponse> => {
   const { accessToken, search, mine, all } = options ?? {};
 
@@ -155,7 +155,7 @@ export const getCodemodList = async (options?: {
   }
 
   if (all) {
-    url.searchParams.set("hidden", "true");
+    url.searchParams.set("all", "true");
   }
 
   const res = await Axios.get<CodemodListResponse>(url.toString(), {
