@@ -40,6 +40,8 @@ type SnippetSettersMap = {
   [K in EditorType as `set${Capitalize<K>}Selection`]: SnippetSetters["setSelection"];
 };
 type SnippetsConfig = {
+  getHasReachedTabsLimit: () => boolean;
+  tabsLimit: number;
   currentContent: string;
   currentType: EditorType;
   addPair: () => void;
@@ -109,6 +111,8 @@ const getEditorsFromLS = () => {
 export const useSnippetsStore = create<SnippetsState>(
   persist(
     (set, get) => ({
+      tabsLimit: 12,
+      getHasReachedTabsLimit: () => get().editors.length >= get().tabsLimit,
       editors: INITIAL_STATE.editors,
       addPair: () => {
         set({
