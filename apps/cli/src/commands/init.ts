@@ -12,7 +12,6 @@ import {
 } from "@codemod-com/utilities";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
-import { url, safeParse, string } from "valibot";
 import { getCurrentUserData } from "../utils.js";
 import { handleBuildCliCommand } from "./build.js";
 

@@ -1,5 +1,4 @@
 import { cx } from "cva";
-import React from "react";
 import BookOpen from "./animated-icons/BookOpen";
 
 export enum IconId {

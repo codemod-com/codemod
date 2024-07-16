@@ -4,7 +4,6 @@ import Icon from "@/components/shared/Icon";
 import RelatedLinks from "@/components/shared/RelatedLinks";
 import { RichText } from "@/components/shared/RichText";
 import type { Job } from "@/types";
-import React from "react";
 import ApplyToJobForm from "./ApplyToJobForm";
 
 export default function JobListingPageContent(props: Job) {

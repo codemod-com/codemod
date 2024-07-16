@@ -2,13 +2,11 @@ import {
   DEFAULT_CACHE,
   DEFAULT_DRY_RUN,
   DEFAULT_ENABLE_PRETTIER,
-  DEFAULT_EXCLUDE_PATTERNS,
   DEFAULT_INSTALL,
   DEFAULT_TELEMETRY,
   DEFAULT_THREAD_COUNT,
   DEFAULT_USE_JSON,
 } from "@codemod-com/runner";
-import { knownEnginesSchema } from "@codemod-com/utilities";
 import type { Argv } from "yargs";
 
 export type GlobalArgvOptions = Awaited<

@@ -1,7 +1,5 @@
 import { ShareButton } from "@features/share/ShareButton";
-import { usePublicLinkSharing } from "@features/share/usePublicLinkSharing";
 import { Backspace as BackspaceIcon } from "@phosphor-icons/react/dist/csr/Backspace";
-import { Link as LinkIcon } from "@phosphor-icons/react/dist/csr/Link";
 import { Button } from "@studio/components/ui/button";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";

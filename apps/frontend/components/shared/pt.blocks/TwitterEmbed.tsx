@@ -1,6 +1,5 @@
 import type { TwitterEmbedBlock } from "@/types/object.types";
 import { getTweetId } from "@/utils/ids";
-import React from "react";
 import { Tweet } from "react-tweet";
 
 export const TwitterEmbed = (props: TwitterEmbedBlock) => {

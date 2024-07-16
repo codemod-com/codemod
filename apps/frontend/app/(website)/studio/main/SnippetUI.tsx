@@ -3,7 +3,6 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
 import { prettify } from "@studio/utils/prettify";
 import dynamic from "next/dynamic";
-import { useCallback } from "react";
 import type { SnippetType } from "./PageBottomPane";
 
 const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {

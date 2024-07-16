@@ -24,7 +24,6 @@ import {
 } from "@studio/components/ui/tabs";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
-import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";

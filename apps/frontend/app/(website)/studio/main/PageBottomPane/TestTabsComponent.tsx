@@ -2,7 +2,7 @@ import { cn } from "@/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useSnippetsStore } from "@studio/store/snippets";
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const TestTabsComponent = () => {
   const {

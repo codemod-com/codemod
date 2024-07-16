@@ -15,15 +15,10 @@ import { AxiosError } from "axios";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
-import { url, custom, safeParse, string } from "valibot";
+import { url, safeParse, string } from "valibot";
 import { getCodemod, publish } from "../apis.js";
-import {
-  getCurrentUserData,
-  getCurrentUserOrLogin,
-  rebuildCodemodFallback,
-} from "../utils.js";
+import { getCurrentUserOrLogin, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
-import { handleLoginCliCommand } from "./login.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: PrinterBlueprint;

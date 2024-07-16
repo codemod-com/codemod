@@ -1,4 +1,4 @@
-import type { ApiResponse, GetCodemodResponse } from "@codemod-com/utilities";
+import type { GetCodemodResponse } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "~/plugins/authPlugin.js";
 import { processHandlerError } from "~/types/errors.js";

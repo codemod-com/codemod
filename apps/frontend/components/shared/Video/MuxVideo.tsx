@@ -2,7 +2,6 @@
 
 import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
-import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 import useInView from "../../../hooks/useInView";
 import Icon from "../Icon";

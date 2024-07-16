@@ -13,7 +13,6 @@ import { useModStore } from "@studio/store/mod";
 import { TabNames } from "@studio/store/view";
 import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 import type { ReactNode } from "react";
-import * as React from "react";
 import { PanelGroup } from "react-resizable-panels";
 
 export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };

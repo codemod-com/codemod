@@ -1,7 +1,6 @@
 import useFeatureFlags from "@/hooks/useFeatureFlags";
 import { CODEMOD_RUN_FEATURE_FLAG } from "@/utils/strings";
 import { GHRunButton } from "@features/GHRun";
-import { DownloadZip } from "../DownloadZip";
 import { RunOptions } from "../RunOptions";
 import { TopBar } from "./TopBar";
 import { HeaderButtons } from "./headerButtons";

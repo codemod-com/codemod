@@ -1,4 +1,4 @@
-import { CUSTOMER_STORY_TAG, REGISTRY_FILTER_TYPES } from "@/constants";
+import { CUSTOMER_STORY_TAG } from "@/constants";
 import { groq } from "next-sanity";
 
 export const REGISTRY_CARD_FRAGMENT = groq`
