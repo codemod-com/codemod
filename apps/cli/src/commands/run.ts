@@ -603,11 +603,11 @@ export const handleRunCliCommand = async (options: {
     printer.printConsoleMessage(
       "info",
       chalk.cyan(
-        "\nFind the logs of the run at",
+        "\nLogs can be found at:",
         chalk.bold(logsPath),
-        "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+        "\nFor feedback or reporting issues, run",
         chalk.bold(doubleQuotify("codemod feedback")),
-        "and include the logs in the issue body.",
+        "and include the logs.",
       ),
     );
 
