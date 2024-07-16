@@ -161,3 +161,14 @@ export const parseCodemodRunBody = (input: unknown) =>
 
 export const parseCodemodStatusParams = (input: unknown) =>
   parse(validateCodemodStatusParamsSchema, input);
+
+export const beforeAfterDiffSchema = object({
+  before: string(),
+  after: string(),
+});
+
+export const parseBeforeAfterDiff = (input: unknown) =>
+  parse(beforeAfterDiffSchema, input);
+
+export const parseBeforeAfterDiffArray = (input: unknown) =>
+  parse(array(beforeAfterDiffSchema), input);

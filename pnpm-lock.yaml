@@ -1122,11 +1122,11 @@ importers:
         specifier: 'catalog:'
         version: 0.24.1
       '@ast-grep/napi':
-        specifier: ^0.22.3
-        version: 0.22.4
-      diff:
-        specifier: ^5.1.0
-        version: 5.2.0
+        specifier: 'catalog:'
+        version: 0.24.1
+      blessed:
+        specifier: 'catalog:'
+        version: 0.1.81
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
@@ -1136,9 +1136,6 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.3.2
-      prettyjson:
-        specifier: 'catalog:'
-        version: 1.2.5
     devDependencies:
       '@codemod-com/api-types':
         specifier: workspace:*
@@ -1168,8 +1165,8 @@ importers:
         specifier: 'catalog:'
         version: 1.5.4
       '@types/diff':
-        specifier: ^5.0.3
-        version: 5.2.0
+        specifier: 'catalog:'
+        version: 5.2.1
       '@types/inquirer':
         specifier: 'catalog:'
         version: 9.0.7
@@ -1221,6 +1218,9 @@ importers:
       open:
         specifier: 'catalog:'
         version: 8.4.2
+      prettyjson:
+        specifier: 'catalog:'
+        version: 1.2.5
       semver:
         specifier: ^7.6.2
         version: 7.6.2

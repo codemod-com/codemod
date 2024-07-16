@@ -2,7 +2,13 @@ import { randomBytes } from "node:crypto";
 import type { CodemodListResponse } from "@codemod-com/api-types";
 import { getAuthPlugin } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
-import { decryptWithIv, encryptWithIv } from "@codemod-com/utilities";
+import {
+  type ApiResponse,
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+  decryptWithIv,
+  encryptWithIv,
+} from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -10,6 +16,7 @@ import Fastify, {
   type FastifyPluginCallback,
   type FastifyRequest,
 } from "fastify";
+import type { Output } from "valibot";
 import {
   type GetCodemodDownloadLinkResponse,
   getCodemodDownloadLink,
@@ -25,6 +32,8 @@ import {
   publishHandler,
 } from "./publishHandler.js";
 import {
+  type beforeAfterDiffSchema,
+  parseBeforeAfterDiffArray,
   parseCreateIssueBody,
   parseCreateIssueParams,
   parseDiffCreationBody,
@@ -188,7 +197,9 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     getCodemodsListHandler,
   );
 
-  instance.get("/diffs/:id", async (request, reply) => {
+  instance.get<{
+    Reply: ApiResponse<{ diffs: Output<typeof beforeAfterDiffSchema>[] }>;
+  }>("/diffs/:id", async (request, reply) => {
     const { id } = parseGetCodeDiffParams(request.params);
     const { iv: ivStr } = parseIv(request.query);
 
@@ -200,31 +211,30 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     });
 
     if (!codeDiff) {
-      reply.code(400).send();
-      return;
+      return reply
+        .code(400)
+        .send({ errorText: "Code diff not found", error: BAD_REQUEST });
     }
 
-    type BeforeAfterDiff = {
-      before: string;
-      after: string;
-    };
-
-    let diffs: BeforeAfterDiff[];
     try {
-      diffs = JSON.parse(
-        decryptWithIv(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(codeDiff.diffs, "base64url"),
-        ).toString(),
-      ) as BeforeAfterDiff[];
-    } catch (err) {
-      reply.code(400).send();
-      return;
-    }
+      const diffs = parseBeforeAfterDiffArray(
+        JSON.parse(
+          decryptWithIv(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(codeDiff.diffs, "base64url"),
+          ).toString(),
+        ),
+      );
 
-    reply.type("application/json").code(200);
-    return { diffs };
+      reply.type("application/json").code(200);
+      return { diffs };
+    } catch (err) {
+      return reply.code(400).send({
+        errorText: `Failed to decrypt the diffs array: ${(err as Error).message}`,
+        error: INTERNAL_SERVER_ERROR,
+      });
+    }
   });
 
   instance.post("/diffs", async (request, reply) => {
