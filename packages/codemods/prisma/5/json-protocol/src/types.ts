@@ -1,11 +1,9 @@
-import type { Schema } from "@mrleebo/prisma-ast";
-
-export type RuleValue = "error" | "warn" | "off";
+import type { JSCodeshift } from "jscodeshift";
 
 export type Dependencies = Readonly<{
-  fetch: typeof fetch;
+  jscodeshift: JSCodeshift;
 }>;
 
 export type Options = Readonly<{
-  schema: Schema | null;
+  pairs: Record<string, { type: string; name: string }[]>;
 }>;

@@ -283,7 +283,7 @@ export const executeFilemod = async <D extends RSU, S extends State>(
         filemod,
         { kind: "handleFile", path, options },
         callbackService,
-        state,
+        nextState,
       );
     }
   } else {
