@@ -1,4 +1,3 @@
-import React from "react";
 import { PortableTextInput, type PortableTextInputProps } from "sanity";
 
 const onPaste: PortableTextInputProps["onPaste"] = (data) => {

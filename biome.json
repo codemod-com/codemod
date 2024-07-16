@@ -50,6 +50,7 @@
       "correctness": {
         "noUndeclaredVariables": "off",
         "noUnusedVariables": "off",
+        "noUnusedImports": "error",
         "noConstAssign": "warn",
         "noEmptyCharacterClassInRegex": "warn",
         "noEmptyPattern": "warn",

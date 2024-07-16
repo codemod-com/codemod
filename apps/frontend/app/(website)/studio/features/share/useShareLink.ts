@@ -1,4 +1,3 @@
-import { ShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";

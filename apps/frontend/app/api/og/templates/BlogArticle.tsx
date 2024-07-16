@@ -1,5 +1,3 @@
-import React from "react";
-
 type Props = {
   title: string;
   authors: { name: string; image: string }[];

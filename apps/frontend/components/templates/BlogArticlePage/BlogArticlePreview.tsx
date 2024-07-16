@@ -4,8 +4,8 @@ import type { QueryResponseInitial } from "@sanity/react-loader";
 
 import { useQuery } from "@/data/sanity/useQuery";
 
-import { BLOG_ARTICLE_QUERY, JOB_QUERY } from "@/data/sanity/queries";
-import { type BlogArticlePayload, Job } from "@/types";
+import { BLOG_ARTICLE_QUERY } from "@/data/sanity/queries";
+import type { BlogArticlePayload } from "@/types";
 import BlogArticle from "./BlogArticle";
 
 type Props = {

@@ -1,7 +1,6 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
 import {
-  type Argument,
   type ArgumentRecord,
   doubleQuotify,
   safeParseArgument,

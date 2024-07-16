@@ -3,7 +3,6 @@ import {
   getCodemodProjectFiles,
   isTypeScriptProjectFiles,
 } from "@codemod-com/utilities";
-import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
 import { transpileTs } from "./transpileTs";
 

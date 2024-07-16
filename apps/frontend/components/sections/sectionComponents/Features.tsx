@@ -6,7 +6,6 @@ import Snippet from "@/components/shared/Snippet";
 import Tag from "@/components/shared/Tag";
 import MuxVideo from "@/components/shared/Video/MuxVideo";
 import type { FeaturesProps } from "@/types/section.types";
-import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
 import { useState } from "react";
 

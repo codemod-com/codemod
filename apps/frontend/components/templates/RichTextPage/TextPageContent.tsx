@@ -2,7 +2,6 @@ import { RichText } from "@/components/shared/RichText";
 import TableOfContents from "@/components/shared/TableOfContents";
 import type { TextPagePayload } from "@/types";
 import getBlocksToc from "@/utils/getBlocksToc";
-import { getParagraphId } from "@/utils/ids";
 import type { PortableTextReactComponents } from "@portabletext/react";
 
 const textPagePtComponents: Partial<PortableTextReactComponents> = {};

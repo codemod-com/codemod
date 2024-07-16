@@ -6,7 +6,6 @@ import {
   ResizablePanelsIndices,
 } from "@studio/main/PageBottomPane/utils/types";
 import type { Repeat } from "@studio/types/transformations";
-import * as React from "react";
 
 export const getContent =
   (type: ContentViewerVariant) => (engine: KnownEngines) =>

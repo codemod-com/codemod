@@ -1,4 +1,3 @@
-import React from "react";
 import LinkButton from "./LinkButton";
 
 type CtaCardProps = {

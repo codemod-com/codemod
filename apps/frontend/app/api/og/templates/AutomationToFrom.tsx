@@ -1,5 +1,4 @@
 import Icon from "@/components/shared/Icon";
-import React from "react";
 
 type Props = {
   title: string;

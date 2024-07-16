@@ -13,7 +13,6 @@ import {
   useRef,
   useState,
 } from "react";
-import KeepVisible from "../global/KeepVisible";
 
 function throttle(func, delay) {
   let inProgress = false;
