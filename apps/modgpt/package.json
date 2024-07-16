@@ -3,7 +3,7 @@
   "version": "0.0.21",
   "type": "module",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js"
   },
   "keywords": [],

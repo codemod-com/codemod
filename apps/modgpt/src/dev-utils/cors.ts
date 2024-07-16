@@ -20,10 +20,6 @@ export const getCorsDisabledHeaders = (fastify: FastifyInstance) => {
   });
 };
 
-const X_CODEMOD_ACCESS_TOKEN = (
-  environment.X_CODEMOD_ACCESS_TOKEN ?? ""
-).toLocaleLowerCase();
-
 export const corsOptions: FastifyCorsOptions = isDevelopment
   ? { origin: false }
   : {
@@ -41,13 +37,8 @@ export const corsOptions: FastifyCorsOptions = isDevelopment
         cb(new Error("Not allowed"), false);
       },
       methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
-      exposedHeaders: [
-        X_CODEMOD_ACCESS_TOKEN,
-        "x-clerk-auth-reason",
-        "x-clerk-auth-message",
-      ],
+      exposedHeaders: ["x-clerk-auth-reason", "x-clerk-auth-message"],
       allowedHeaders: [
-        X_CODEMOD_ACCESS_TOKEN,
         "Content-Type",
         "Authorization",
         "access-control-allow-origin",

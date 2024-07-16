@@ -24,6 +24,7 @@
     "tsup": "catalog:"
   },
   "devDependencies": {
+    "@codemod-com/utilities": "workspace:*",
     "@faker-js/faker": "catalog:",
     "prisma": "catalog:",
     "tsx": "^4.11.0"

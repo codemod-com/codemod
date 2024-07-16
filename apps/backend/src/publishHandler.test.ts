@@ -2,11 +2,11 @@ import { createHash } from "node:crypto";
 import {
   CODEMOD_NAME_TAKEN,
   CODEMOD_VERSION_EXISTS,
-  type CodemodConfigInput,
   INTERNAL_SERVER_ERROR,
   NO_MAIN_FILE_FOUND,
   UNAUTHORIZED,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
+import type { CodemodConfigInput } from "@codemod-com/utilities";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import { runServer } from "./server.js";

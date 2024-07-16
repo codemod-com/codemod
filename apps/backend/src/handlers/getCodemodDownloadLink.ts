@@ -3,7 +3,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import type {
   ApiResponse,
   CodemodDownloadLinkResponse,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 import type { FastifyReply, RouteHandler } from "fastify";
 import { processHandlerError } from "~/types/errors.js";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";

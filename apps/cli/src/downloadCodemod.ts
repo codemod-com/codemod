@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
-import type { CodemodDownloadLinkResponse } from "@codemod-com/utilities";
 import {
   type CodemodConfig,
   doubleQuotify,

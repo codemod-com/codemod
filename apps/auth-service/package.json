@@ -2,7 +2,7 @@
   "name": "@codemod-com/auth-service",
   "version": "0.0.9",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js"
   },
   "author": "Codemod inc.",
@@ -11,6 +11,7 @@
     "schema": "packages/database/generated/client/schema.prisma"
   },
   "devDependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/tsconfig": "workspace:*",
     "@types/node": "20.10.5",
     "dotenv-cli": "catalog:",

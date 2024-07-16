@@ -1,7 +1,7 @@
 import {
   CODEMOD_NOT_FOUND,
   INTERNAL_SERVER_ERROR,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 import type { FastifyReply } from "fastify";
 
 export const processHandlerError = (

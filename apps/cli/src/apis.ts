@@ -5,7 +5,7 @@ import type {
   GetScopedTokenResponse,
   GetUserDataResponse,
   VerifyTokenResponse,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 
 export const getCLIAccessToken = async (

@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import type { CodemodListResponse } from "@codemod-com/utilities";
+import type { CodemodListResponse } from "@codemod-com/api-types";
 import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "../plugins/authPlugin.js";
 import {

@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
     "paths": {
       "~/*": ["src/*"]
     }

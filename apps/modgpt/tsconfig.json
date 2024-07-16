@@ -8,6 +8,10 @@
     "forceConsistentCasingInFileNames": true,
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "allowJs": true,
+    "checkJs": false,
+    "noEmit": true,
     "outDir": "./dist"
   },
   "include": ["src/**/*"],

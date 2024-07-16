@@ -2,7 +2,7 @@
   "name": "@codemod-com/run-service",
   "version": "0.0.2",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",
     "test": "vitest --run"
   },

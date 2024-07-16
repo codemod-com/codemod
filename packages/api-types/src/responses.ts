@@ -1,6 +1,10 @@
 import type { Codemod, CodemodVersion } from "@codemod-com/database";
-import type { OrganizationMembership, User } from "../clerk.js";
-import type { AllEngines, Arguments } from "../codemodConfigSchema.js";
+import type {
+  AllEngines,
+  Arguments,
+  OrganizationMembership,
+  User,
+} from "@codemod-com/utilities";
 
 export type ApiError = {
   error: string;
