@@ -4,6 +4,837 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@ariakit/react':
+      specifier: ^0.4.6
+      version: 0.4.7
+    '@artsy/fresnel':
+      specifier: ^7.1.4
+      version: 7.1.4
+    '@ast-grep/cli':
+      specifier: ^0.24.0
+      version: 0.24.1
+    '@ast-grep/napi':
+      specifier: ^0.24.0
+      version: 0.24.1
+    '@aws-sdk/client-s3':
+      specifier: ^3.549.0
+      version: 3.600.0
+    '@aws-sdk/s3-request-presigner':
+      specifier: ^3.549.0
+      version: 3.600.0
+    '@babel/plugin-syntax-flow':
+      specifier: ^7.14.5
+      version: 7.24.7
+    '@babel/plugin-transform-react-jsx':
+      specifier: ^7.14.9
+      version: 7.24.7
+    '@babel/preset-typescript':
+      specifier: ^7.24.1
+      version: 7.24.7
+    '@babel/traverse':
+      specifier: 7.24.1
+      version: 7.24.1
+    '@biomejs/biome':
+      specifier: 1.5.3
+      version: 1.5.3
+    '@clerk/backend':
+      specifier: ^1.2.1
+      version: 1.2.4
+    '@clerk/clerk-react':
+      specifier: 4.30.3
+      version: 4.30.3
+    '@clerk/fastify':
+      specifier: ^1.0.12
+      version: 1.0.15
+    '@clerk/nextjs':
+      specifier: 5.0.9
+      version: 5.0.9
+    '@clerk/themes':
+      specifier: 1.7.10
+      version: 1.7.10
+    '@faker-js/faker':
+      specifier: ^8.4.1
+      version: 8.4.1
+    '@fastify/busboy':
+      specifier: ^2.1.1
+      version: 2.1.1
+    '@fastify/cors':
+      specifier: 8.5.0
+      version: 8.5.0
+    '@fastify/multipart':
+      specifier: ^8.1.0
+      version: 8.3.0
+    '@fastify/rate-limit':
+      specifier: 9.0.1
+      version: 9.0.1
+    '@hookform/resolvers':
+      specifier: ^3.3.2
+      version: 3.6.0
+    '@phosphor-icons/react':
+      specifier: ^2.0.10
+      version: 2.1.6
+    '@portabletext/react':
+      specifier: ^3.0.11
+      version: 3.1.0
+    '@portabletext/types':
+      specifier: ^2.0.8
+      version: 2.0.13
+    '@preact/preset-vite':
+      specifier: ^2.5.0
+      version: 2.8.3
+    '@prisma/client':
+      specifier: ^5.14.0
+      version: 5.15.1
+    '@radix-ui/react-alert-dialog':
+      specifier: ^1.0.4
+      version: 1.1.1
+    '@radix-ui/react-avatar':
+      specifier: ^1.0.4
+      version: 1.1.0
+    '@radix-ui/react-dialog':
+      specifier: ^1.0.4
+      version: 1.1.1
+    '@radix-ui/react-dropdown-menu':
+      specifier: ^2.0.5
+      version: 2.1.1
+    '@radix-ui/react-label':
+      specifier: ^2.0.2
+      version: 2.1.0
+    '@radix-ui/react-progress':
+      specifier: ^1.0.3
+      version: 1.1.0
+    '@radix-ui/react-select':
+      specifier: ^1.2.2
+      version: 1.2.2
+    '@radix-ui/react-separator':
+      specifier: ^1.0.3
+      version: 1.1.0
+    '@radix-ui/react-slot':
+      specifier: ^1.0.2
+      version: 1.1.0
+    '@radix-ui/react-switch':
+      specifier: ^1.0.3
+      version: 1.1.0
+    '@radix-ui/react-tabs':
+      specifier: ^1.0.4
+      version: 1.1.0
+    '@radix-ui/react-toast':
+      specifier: ^1.1.5
+      version: 1.2.1
+    '@radix-ui/react-tooltip':
+      specifier: ^1.0.6
+      version: 1.1.1
+    '@reduxjs/toolkit':
+      specifier: ^1.9.5
+      version: 1.9.7
+    '@sanity/code-input':
+      specifier: ^4.1.3
+      version: 4.1.4
+    '@sanity/orderable-document-list':
+      specifier: ^1.2.1
+      version: 1.2.1
+    '@sanity/preview-url-secret':
+      specifier: ^1.6.3
+      version: 1.6.17
+    '@sanity/react-loader':
+      specifier: ^1.8.5
+      version: 1.10.3
+    '@sanity/table':
+      specifier: ^1.1.2
+      version: 1.1.2
+    '@sanity/vision':
+      specifier: ^3.29.1
+      version: 3.47.1
+    '@sindresorhus/slugify':
+      specifier: ^2.2.1
+      version: 2.2.1
+    '@slack/web-api':
+      specifier: ^7.2.0
+      version: 7.2.0
+    '@svgr/hast-util-to-babel-ast':
+      specifier: ^7.0.0
+      version: 7.0.0
+    '@t3-oss/env-nextjs':
+      specifier: ^0.7.1
+      version: 0.7.3
+    '@tailwindcss/typography':
+      specifier: 0.5.10
+      version: 0.5.10
+    '@testing-library/dom':
+      specifier: ^9.0.0
+      version: 9.3.4
+    '@testing-library/jest-dom':
+      specifier: ^5.16.5
+      version: 5.17.0
+    '@testing-library/react':
+      specifier: ^13.4.0
+      version: 13.4.0
+    '@testing-library/user-event':
+      specifier: ^13.5.0
+      version: 13.5.0
+    '@tinloof/sanity-studio':
+      specifier: ^1.0.0
+      version: 1.3.1
+    '@tinloof/sanity-web':
+      specifier: ^0.1.0
+      version: 0.1.1
+    '@tippyjs/react':
+      specifier: ^4.2.6
+      version: 4.2.6
+    '@tiptap/extension-code-block-lowlight':
+      specifier: ^2.1.8
+      version: 2.4.0
+    '@tiptap/pm':
+      specifier: ^2.1.8
+      version: 2.4.0
+    '@tiptap/react':
+      specifier: ^2.1.8
+      version: 2.4.0
+    '@tiptap/starter-kit':
+      specifier: ^2.1.8
+      version: 2.4.0
+    '@total-typescript/ts-reset':
+      specifier: ^0.5.1
+      version: 0.5.1
+    '@types/babel__traverse':
+      specifier: ^7.20.1
+      version: 7.20.6
+    '@types/blessed':
+      specifier: ^0.1.25
+      version: 0.1.25
+    '@types/chai':
+      specifier: ^4.3.4
+      version: 4.3.16
+    '@types/cli-progress':
+      specifier: ^3.11.5
+      version: 3.11.5
+    '@types/columnify':
+      specifier: ^1.5.4
+      version: 1.5.4
+    '@types/diff':
+      specifier: ^5.0.3
+      version: 5.2.1
+    '@types/glob':
+      specifier: ^8.0.0
+      version: 8.1.0
+    '@types/inquirer':
+      specifier: ^9.0.7
+      version: 9.0.7
+    '@types/jest':
+      specifier: ^27.5.2
+      version: 27.5.2
+    '@types/js-beautify':
+      specifier: ^1.14.3
+      version: 1.14.3
+    '@types/js-yaml':
+      specifier: 4.0.9
+      version: 4.0.9
+    '@types/lodash-es':
+      specifier: ^4.17.4
+      version: 4.17.12
+    '@types/mocha':
+      specifier: ^10.0.1
+      version: 10.0.7
+    '@types/ms':
+      specifier: ^0.7.34
+      version: 0.7.34
+    '@types/pako':
+      specifier: ^2.0.0
+      version: 2.0.3
+    '@types/parse-github-url':
+      specifier: 1.0.3
+      version: 1.0.3
+    '@types/pg':
+      specifier: ^8.11.2
+      version: 8.11.6
+    '@types/prettier':
+      specifier: ^2.7.3
+      version: 2.7.3
+    '@types/prettyjson':
+      specifier: ^0.0.33
+      version: 0.0.33
+    '@types/ramda':
+      specifier: ^0.29.12
+      version: 0.29.12
+    '@types/react-dom':
+      specifier: ^18.0.11
+      version: 18.3.0
+    '@types/react-syntax-highlighter':
+      specifier: ^15.5.6
+      version: 15.5.13
+    '@types/react-treeview':
+      specifier: ^0.4.3
+      version: 0.4.6
+    '@types/react-virtualized':
+      specifier: ^9.21.21
+      version: 9.21.30
+    '@types/react-virtualized-auto-sizer':
+      specifier: ^1.0.1
+      version: 1.0.4
+    '@types/supertest':
+      specifier: ^6.0.2
+      version: 6.0.2
+    '@types/tar':
+      specifier: ^6.1.11
+      version: 6.1.13
+    '@types/tar-stream':
+      specifier: ^3.1.3
+      version: 3.1.3
+    '@types/testing-library__jest-dom':
+      specifier: ^5.14.5
+      version: 5.14.9
+    '@types/unzipper':
+      specifier: ^0.10.9
+      version: 0.10.9
+    '@types/vscode':
+      specifier: ^1.74.0
+      version: 1.90.0
+    '@types/vscode-webview':
+      specifier: ^1.57.1
+      version: 1.57.5
+    '@types/yargs':
+      specifier: ^17.0.13
+      version: 17.0.32
+    '@vercel/analytics':
+      specifier: ^1.2.2
+      version: 1.3.1
+    '@vercel/stega':
+      specifier: ^0.1.0
+      version: 0.1.2
+    '@vitejs/plugin-react':
+      specifier: ^4.0.0
+      version: 4.3.1
+    '@vitest/coverage-v8':
+      specifier: ^1.0.1
+      version: 1.6.0
+    '@vscode/test-electron':
+      specifier: ^2.2.2
+      version: 2.4.0
+    '@vscode/vsce':
+      specifier: ^2.22.0
+      version: 2.29.0
+    '@vscode/webview-ui-toolkit':
+      specifier: ^1.2.2
+      version: 1.4.0
+    '@vue/compiler-sfc':
+      specifier: ^3.4.21
+      version: 3.4.30
+    applicationinsights:
+      specifier: ^2.9.1
+      version: 2.9.5
+    assert:
+      specifier: ^2.0.0
+      version: 2.1.0
+    ast-node-builder:
+      specifier: ^4.2.1
+      version: 4.2.1
+    ast-types:
+      specifier: ^0.14.2
+      version: 0.14.2
+    autoprefixer:
+      specifier: 10.4.17
+      version: 10.4.17
+    axios:
+      specifier: ^1.6.8
+      version: 1.7.2
+    axios-retry:
+      specifier: ^4.0.0
+      version: 4.4.1
+    bl:
+      specifier: ^6.0.11
+      version: 6.0.13
+    blessed:
+      specifier: ^0.1.81
+      version: 0.1.81
+    boxen:
+      specifier: ^7.1.1
+      version: 7.1.1
+    bullmq:
+      specifier: ^5.7.5
+      version: 5.8.2
+    chai:
+      specifier: ^4.3.7
+      version: 4.4.1
+    chalk:
+      specifier: ^5.3.0
+      version: 5.3.0
+    change-case:
+      specifier: ^5.2.0
+      version: 5.4.4
+    chart.js:
+      specifier: ^4.4.2
+      version: 4.4.3
+    chatgpt:
+      specifier: 5.2.5
+      version: 5.2.5
+    chromadb:
+      specifier: 1.7.2
+      version: 1.7.2
+    class-variance-authority:
+      specifier: ^0.7.0
+      version: 0.7.0
+    cli-progress:
+      specifier: ^3.12.0
+      version: 3.12.0
+    clsx:
+      specifier: ^2.0.0
+      version: 2.1.1
+    colors-cli:
+      specifier: ^1.0.33
+      version: 1.0.33
+    columnify:
+      specifier: ^1.6.0
+      version: 1.6.0
+    constants-browserify:
+      specifier: ^1.0.0
+      version: 1.0.0
+    cosmiconfig:
+      specifier: ^8.3.6
+      version: 8.3.6
+    cron:
+      specifier: ^3.1.6
+      version: 3.1.7
+    cspell-cli:
+      specifier: ^6.17.1
+      version: 6.31.2
+    csstype:
+      specifier: ^3.1.1
+      version: 3.1.3
+    csv-parser:
+      specifier: ^3.0.0
+      version: 3.0.0
+    cva:
+      specifier: npm:class-variance-authority@^0.7.0
+      version: 0.7.0
+    detect-indent:
+      specifier: ^7.0.1
+      version: 7.0.1
+    detect-newline:
+      specifier: ^4.0.1
+      version: 4.0.1
+    diff:
+      specifier: ^5.1.0
+      version: 5.2.0
+    dotenv:
+      specifier: ^16.4.5
+      version: 16.4.5
+    dotenv-cli:
+      specifier: ^7.4.1
+      version: 7.4.2
+    esbuild-plugin-copy:
+      specifier: ^2.1.1
+      version: 2.1.1
+    eslint:
+      specifier: 8.56.0
+      version: 8.56.0
+    eslint-config-next:
+      specifier: 14.1.0
+      version: 14.1.0
+    eslint-config-prettier:
+      specifier: ^9.1.0
+      version: 9.1.0
+    eslint-plugin-prettier:
+      specifier: ^5.1.3
+      version: 5.1.3
+    eslint-plugin-simple-import-sort:
+      specifier: 12.0.0
+      version: 12.0.0
+    exponential-backoff:
+      specifier: ^3.1.1
+      version: 3.1.1
+    fast-deep-equal:
+      specifier: ^3.1.3
+      version: 3.1.3
+    fastify:
+      specifier: 4.25.1
+      version: 4.25.1
+    fastify-plugin:
+      specifier: 4.5.1
+      version: 4.5.1
+    filenamify:
+      specifier: ^6.0.0
+      version: 6.0.0
+    form-data:
+      specifier: ^4.0.0
+      version: 4.0.0
+    framer-motion:
+      specifier: ^11.0.6
+      version: 11.2.11
+    fuse.js:
+      specifier: ^7.0.0
+      version: 7.0.0
+    fuzzysort:
+      specifier: ^2.0.4
+      version: 2.0.4
+    get-youtube-id:
+      specifier: ^1.0.1
+      version: 1.0.1
+    glob:
+      specifier: ^10.4.1
+      version: 10.4.2
+    husky:
+      specifier: ^9.0.11
+      version: 9.0.11
+    inquirer:
+      specifier: ^9.2.16
+      version: 9.2.23
+    intro.js:
+      specifier: ^7.2.0
+      version: 7.2.0
+    intro.js-react:
+      specifier: ^1.0.0
+      version: 1.0.0
+    io-ts:
+      specifier: ^2.2.20
+      version: 2.2.21
+    io-ts-reporters:
+      specifier: ^2.0.1
+      version: 2.0.1
+    io-ts-types:
+      specifier: ^0.5.19
+      version: 0.5.19
+    ioredis:
+      specifier: ^5.4.1
+      version: 5.4.1
+    js-beautify:
+      specifier: ^1.14.11
+      version: 1.15.1
+    js-yaml:
+      specifier: 4.1.0
+      version: 4.1.0
+    json-schema-to-typescript:
+      specifier: ^13.1.2
+      version: 13.1.2
+    jszip:
+      specifier: ^3.10.1
+      version: 3.10.1
+    katex:
+      specifier: ^0.16.10
+      version: 0.16.10
+    keytar:
+      specifier: ^7.9.0
+      version: 7.9.0
+    langchain:
+      specifier: 0.0.209
+      version: 0.0.209
+    lodash-es:
+      specifier: ^4.17.21
+      version: 4.17.21
+    lottie-react:
+      specifier: ^2.4.0
+      version: 2.4.0
+    lowlight:
+      specifier: ^3.0.0
+      version: 3.1.0
+    lucide-react:
+      specifier: ^0.265.0
+      version: 0.265.0
+    magic-string:
+      specifier: ^0.30.10
+      version: 0.30.10
+    match-sorter:
+      specifier: ^6.3.4
+      version: 6.3.4
+    mdast-util-from-markdown:
+      specifier: ^2.0.0
+      version: 2.0.1
+    mdast-util-mdx:
+      specifier: ^3.0.0
+      version: 3.0.0
+    mdast-util-to-markdown:
+      specifier: ^2.1.0
+      version: 2.1.0
+    micromark-extension-mdxjs:
+      specifier: ^2.0.0
+      version: 2.0.0
+    monaco-editor-webpack-plugin:
+      specifier: ^7.0.1
+      version: 7.1.0
+    monocle-ts:
+      specifier: ^2.3.13
+      version: 2.3.13
+    ms:
+      specifier: ^2.1.3
+      version: 2.1.3
+    newtype-ts:
+      specifier: ^0.3.5
+      version: 0.3.5
+    next:
+      specifier: ^14.2.3
+      version: 14.2.4
+    next-sanity:
+      specifier: ^8.5.0
+      version: 8.5.5
+    nock:
+      specifier: ^13.5.1
+      version: 13.5.4
+    node-fetch:
+      specifier: ^3.3.2
+      version: 3.3.2
+    null-loader:
+      specifier: ^4.0.1
+      version: 4.0.1
+    open:
+      specifier: ^8.4.2
+      version: 8.4.2
+    openai:
+      specifier: 4.23.0
+      version: 4.23.0
+    openai-edge:
+      specifier: 1.2.2
+      version: 1.2.2
+    ora:
+      specifier: ^8.0.1
+      version: 8.0.1
+    os-browserify:
+      specifier: ^0.3.0
+      version: 0.3.0
+    pako:
+      specifier: ^2.1.0
+      version: 2.1.0
+    parse-github-url:
+      specifier: 1.0.2
+      version: 1.0.2
+    pg:
+      specifier: ^8.11.3
+      version: 8.12.0
+    postcss-multiple-tailwind:
+      specifier: ^1.0.1
+      version: 1.0.1
+    posthog-node:
+      specifier: ^4.0.0
+      version: 4.0.1
+    preact:
+      specifier: ^10.13.2
+      version: 10.22.0
+    preact-compat:
+      specifier: ^3.19.0
+      version: 3.19.0
+    prettier-plugin-packagejson:
+      specifier: 2.4.10
+      version: 2.4.10
+    prettier-plugin-tailwindcss:
+      specifier: 0.5.11
+      version: 0.5.11
+    prettyjson:
+      specifier: ^1.2.5
+      version: 1.2.5
+    prism-react-renderer:
+      specifier: ^2.3.1
+      version: 2.3.1
+    prisma:
+      specifier: ^5.14.0
+      version: 5.15.1
+    prop-types:
+      specifier: ^15.8.1
+      version: 15.8.1
+    ramda:
+      specifier: ^0.29.1
+      version: 0.29.1
+    raw-loader:
+      specifier: ^4.0.2
+      version: 4.0.2
+    rc-progress:
+      specifier: ^3.4.1
+      version: 3.5.1
+    react-chartjs-2:
+      specifier: ^5.2.0
+      version: 5.2.0
+    react-hook-form:
+      specifier: ^7.48.2
+      version: 7.52.0
+    react-hot-toast:
+      specifier: ^2.4.0
+      version: 2.4.1
+    react-markdown:
+      specifier: ^8.0.7
+      version: 8.0.7
+    react-syntax-highlighter:
+      specifier: ^15.5.0
+      version: 15.5.0
+    react-textarea-autosize:
+      specifier: ^8.5.2
+      version: 8.5.3
+    react-toastify:
+      specifier: ^9.1.3
+      version: 9.1.3
+    react-tooltip:
+      specifier: ^5.9.0
+      version: 5.27.0
+    react-treeview:
+      specifier: ^0.4.7
+      version: 0.4.7
+    react-tweet:
+      specifier: ^3.2.0
+      version: 3.2.1
+    react-use:
+      specifier: ^17.5.0
+      version: 17.5.0
+    reactjs-popup:
+      specifier: ^2.0.5
+      version: 2.0.6
+    recast:
+      specifier: ^0.22.0
+      version: 0.22.0
+    redux-persist:
+      specifier: ^6.0.0
+      version: 6.0.0
+    rehype-sanitize:
+      specifier: ^6.0.0
+      version: 6.0.0
+    remark-gfm:
+      specifier: ^3.0.1
+      version: 3.0.1
+    remark-math:
+      specifier: ^5.1.1
+      version: 5.1.1
+    replicate:
+      specifier: 0.25.2
+      version: 0.25.2
+    sanity:
+      specifier: ^3.36.4
+      version: 3.47.1
+    sanity-plugin-asset-source-ogimage:
+      specifier: ^2.0.0-2
+      version: 2.0.0-2
+    sanity-plugin-documents-pane:
+      specifier: ^2.2.1
+      version: 2.3.0
+    sanity-plugin-media:
+      specifier: ^2.2.5
+      version: 2.2.5
+    sanity-plugin-mux-input:
+      specifier: ^2.2.4
+      version: 2.3.6
+    server-only:
+      specifier: 0.0.1
+      version: 0.0.1
+    simple-git:
+      specifier: ^3.24.0
+      version: 3.25.0
+    sinon:
+      specifier: ^15.0.1
+      version: 15.2.0
+    socket.io:
+      specifier: ^4.7.5
+      version: 4.7.5
+    socket.io-client:
+      specifier: ^4.7.5
+      version: 4.7.5
+    sonner:
+      specifier: ^1.4.2
+      version: 1.5.0
+    styled-components:
+      specifier: ^6.1.8
+      version: 6.1.11
+    supertest:
+      specifier: ^6.3.4
+      version: 6.3.4
+    swr:
+      specifier: ^2.2.5
+      version: 2.2.5
+    tailwind-merge:
+      specifier: ^1.10.0
+      version: 1.14.0
+    tailwindcss:
+      specifier: 3.4.1
+      version: 3.4.1
+    tailwindcss-animate:
+      specifier: ^1.0.7
+      version: 1.0.7
+    tar-stream:
+      specifier: ^3.1.7
+      version: 3.1.7
+    terminal-link:
+      specifier: ^3.0.0
+      version: 3.0.0
+    tippy.js:
+      specifier: ^6.3.7
+      version: 6.3.7
+    tree-kill:
+      specifier: ^1.2.2
+      version: 1.2.2
+    ts-invariant:
+      specifier: ^0.10.3
+      version: 0.10.3
+    ts-loader:
+      specifier: ^9.4.2
+      version: 9.5.1
+    ts-node-dev:
+      specifier: ^2.0.0
+      version: 2.0.0
+    tslib:
+      specifier: 2.4.1
+      version: 2.4.1
+    tsup:
+      specifier: ^8.1.0
+      version: 8.1.0
+    umd-compat-loader:
+      specifier: ^2.1.2
+      version: 2.1.2
+    unified:
+      specifier: ^10.1.2
+      version: 10.1.2
+    unist-util-filter:
+      specifier: ^5.0.1
+      version: 5.0.1
+    unist-util-visit:
+      specifier: ^5.0.0
+      version: 5.0.0
+    universal-base64url:
+      specifier: ^1.1.0
+      version: 1.1.0
+    unzipper:
+      specifier: ^0.11.6
+      version: 0.11.6
+    valibot:
+      specifier: ^0.24.1
+      version: 0.24.1
+    vaul:
+      specifier: ^0.9.0
+      version: 0.9.1
+    vite:
+      specifier: ^4.5.3
+      version: 4.5.3
+    vite-plugin-monaco-editor:
+      specifier: ^1.1.0
+      version: 1.1.0
+    vite-plugin-svgr:
+      specifier: ^2.4.0
+      version: 2.4.0
+    vite-tsconfig-paths:
+      specifier: ^4.2.0
+      version: 4.3.2
+    vue-sfc-descriptor-to-string:
+      specifier: ^2.0.0
+      version: 2.0.0
+    web-vitals:
+      specifier: ^2.1.4
+      version: 2.1.4
+    webpack:
+      specifier: 5.91.0
+      version: 5.91.0
+    webpack-cli:
+      specifier: 5.1.4
+      version: 5.1.4
+    wrap-ansi:
+      specifier: ^9.0.0
+      version: 9.0.0
+    yaml:
+      specifier: ^2.4.5
+      version: 2.4.5
+    yargs:
+      specifier: ^17.6.2
+      version: 17.7.2
+    zod:
+      specifier: 3.22.3
+      version: 3.22.3
+    zustand:
+      specifier: ^4.5.2
+      version: 4.5.2
+
 overrides:
   postcss: 8.4.35
   whatwg-url: ^14.0.0
@@ -116,8 +947,6 @@ importers:
         specifier: ^4.7.1
         version: 4.15.7
 
-  apps/auth-service/generated/client: {}
-
   apps/backend:
     dependencies:
       '@aws-sdk/client-s3':
@@ -182,7 +1011,7 @@ importers:
         version: 5.4.1
       langchain:
         specifier: 'catalog:'
-        version: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
+        version: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
       openai:
         specifier: 'catalog:'
         version: 4.23.0
@@ -265,8 +1094,6 @@ importers:
       vitest:
         specifier: 1.1.0
         version: 1.1.0(@types/node@20.10.5)(jsdom@23.2.0)(terser@5.31.1)
-
-  apps/backend/generated/client: {}
 
   apps/cli:
     dependencies:
@@ -3816,6 +4643,37 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.9.0)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/prisma/5/json-protocol:
+    dependencies:
+      '@mrleebo/prisma-ast':
+        specifier: ^0.12.0
+        version: 0.12.0
+    devDependencies:
+      '@codemod-com/filemod':
+        specifier: workspace:*
+        version: link:../../../../filemod
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../../utilities
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      memfs:
+        specifier: ^4.6.0
+        version: 4.9.3
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.2
+      valibot:
+        specifier: 'catalog:'
+        version: 0.24.1
+      vitest:
+        specifier: ^1.0.1
+        version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/python/orjson/recipe: {}
 
   packages/codemods/react-native/74/migrate-to-fire-interval-seconds:
@@ -6734,6 +7592,18 @@ packages:
     resolution: {integrity: sha512-QBEeUmc5K6kzut0uurwBtJhJW2fc/KEdKhST2/71Ln6V3j4b4qzK1/OeDsUHAt/RM2Dxe5TjWNn82r6WzmrAIQ==}
     engines: {node: '>=18'}
 
+  '@chevrotain/cst-dts-gen@10.5.0':
+    resolution: {integrity: sha512-lhmC/FyqQ2o7pGK4Om+hzuDrm9rhFYIJ/AXoQBeongmn870Xeb0L6oGEiuR8nohFNL5sMaQEJWCxr1oIVIVXrw==}
+
+  '@chevrotain/gast@10.5.0':
+    resolution: {integrity: sha512-pXdMJ9XeDAbgOWKuD1Fldz4ieCs6+nLNmyVhe2gZVqoO7v8HXuHYs5OV2EzUtbuai37TlOAQHrTDvxMnvMJz3A==}
+
+  '@chevrotain/types@10.5.0':
+    resolution: {integrity: sha512-f1MAia0x/pAVPWH/T73BJVyO2XU5tI4/iE7cnxb7tqdNTNhQI3Uq3XkqcoteTmD4t1aM0LbHCJOhgIDn07kl2A==}
+
+  '@chevrotain/utils@10.5.0':
+    resolution: {integrity: sha512-hBzuU5+JjB2cqNZyszkDHZgOSrUUT8V3dhgRl8Q9Gp6dAj/H5+KILGjbhDpc3Iy9qmqlm/akuOI2ut9VUtzJxQ==}
+
   '@clerk/backend@1.1.4':
     resolution: {integrity: sha512-3Tgsh5JIuEX8UePlxf5ULl4DqSr5MKastuyMZ+HjytD4hqG7GALQILUNFCLIJGhvwpnaYnK5ZfQ/T2CH/G445A==}
     engines: {node: '>=18.17.0'}
@@ -8512,6 +9382,10 @@ packages:
       monaco-editor: '>= 0.25.0 < 1'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
+
+  '@mrleebo/prisma-ast@0.12.0':
+    resolution: {integrity: sha512-qQsScED+KOMbnKP946Tiyi0Jzxq3YjvxkjD7MsR+SI815JLyoc2Ca6pi3t7ub8DJzO6kv3PC9Ly4ru7JufFnyQ==}
+    engines: {node: '>=16'}
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     resolution: {integrity: sha512-QZHtlVgbAdy2zAqNA9Gu1UpIuI8Xvsd1v8ic6B2pZmeFnFcMWiPLfWXh7TVw4eGEZ/C9TH281KwhVoeQUKbyjw==}
@@ -11670,6 +12544,9 @@ packages:
   cheerio@1.0.0-rc.12:
     resolution: {integrity: sha512-VqR8m68vM46BNnuZ5NtnGBKIE/DfN0cRIzg9n40EIq9NOv90ayxLBXA8fXC5gquFRGJSTRqBq25Jt2ECLR431Q==}
     engines: {node: '>= 6'}
+
+  chevrotain@10.5.0:
+    resolution: {integrity: sha512-Pkv5rBY3+CsHOYfV5g/Vs5JY9WTHHDEKOlohI2XeygaZhUeqhAlldZ8Hz9cRmxu709bvS08YzxHdTPHhffc13A==}
 
   chokidar@3.6.0:
     resolution: {integrity: sha512-7VT13fmjotKpGipCW9JEQAusEPE+Ei8nl6/g4FBAmIm0GOOLMua9NDDo/DWp0ZAxCr3cPq5ZpBqmPAQgDda2Pw==}
@@ -16562,6 +17439,9 @@ packages:
   regenerator-transform@0.15.2:
     resolution: {integrity: sha512-hfMp2BoF0qOk3uc5V20ALGDS2ddjQaLrdl7xrGXvAIow7qeWRM2VA2HuCHkUKk9slq3VwEwLNK3DFBqDfPGYtg==}
 
+  regexp-to-ast@0.5.0:
+    resolution: {integrity: sha512-tlbJqcMHnPKI9zSrystikWKwHkBqu2a/Sgw01h3zFjvYrMxEDYHzzoMZnUrbIfpTFEsoRnnviOXNCzFiSc54Qw==}
+
   regexp.prototype.flags@1.5.2:
     resolution: {integrity: sha512-NcDiDkTLuPR+++OCKB0nWafEmhg/Da8aUPLPMQbK+bxKKCm1/S5he+AqYa4PlMCVBalb4/yxIRub6qkEx5yJbw==}
     engines: {node: '>= 0.4'}
@@ -18602,837 +19482,6 @@ packages:
   zwitch@2.0.4:
     resolution: {integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==}
 
-catalogs:
-  default:
-    '@ariakit/react':
-      specifier: ^0.4.6
-      version: 0.4.7
-    '@artsy/fresnel':
-      specifier: ^7.1.4
-      version: 7.1.4
-    '@ast-grep/cli':
-      specifier: ^0.24.0
-      version: 0.24.1
-    '@ast-grep/napi':
-      specifier: ^0.24.0
-      version: 0.24.1
-    '@aws-sdk/client-s3':
-      specifier: ^3.549.0
-      version: 3.600.0
-    '@aws-sdk/s3-request-presigner':
-      specifier: ^3.549.0
-      version: 3.600.0
-    '@babel/plugin-syntax-flow':
-      specifier: ^7.14.5
-      version: 7.24.7
-    '@babel/plugin-transform-react-jsx':
-      specifier: ^7.14.9
-      version: 7.24.7
-    '@babel/preset-typescript':
-      specifier: ^7.24.1
-      version: 7.24.7
-    '@babel/traverse':
-      specifier: 7.24.1
-      version: 7.24.1
-    '@biomejs/biome':
-      specifier: 1.5.3
-      version: 1.5.3
-    '@clerk/backend':
-      specifier: ^1.2.1
-      version: 1.2.4
-    '@clerk/clerk-react':
-      specifier: 4.30.3
-      version: 4.30.3
-    '@clerk/fastify':
-      specifier: ^1.0.12
-      version: 1.0.15
-    '@clerk/nextjs':
-      specifier: 5.0.9
-      version: 5.0.9
-    '@clerk/themes':
-      specifier: 1.7.10
-      version: 1.7.10
-    '@faker-js/faker':
-      specifier: ^8.4.1
-      version: 8.4.1
-    '@fastify/busboy':
-      specifier: ^2.1.1
-      version: 2.1.1
-    '@fastify/cors':
-      specifier: 8.5.0
-      version: 8.5.0
-    '@fastify/multipart':
-      specifier: ^8.1.0
-      version: 8.3.0
-    '@fastify/rate-limit':
-      specifier: 9.0.1
-      version: 9.0.1
-    '@hookform/resolvers':
-      specifier: ^3.3.2
-      version: 3.6.0
-    '@phosphor-icons/react':
-      specifier: ^2.0.10
-      version: 2.1.6
-    '@portabletext/react':
-      specifier: ^3.0.11
-      version: 3.1.0
-    '@portabletext/types':
-      specifier: ^2.0.8
-      version: 2.0.13
-    '@preact/preset-vite':
-      specifier: ^2.5.0
-      version: 2.8.3
-    '@prisma/client':
-      specifier: ^5.14.0
-      version: 5.15.1
-    '@radix-ui/react-alert-dialog':
-      specifier: ^1.0.4
-      version: 1.1.1
-    '@radix-ui/react-avatar':
-      specifier: ^1.0.4
-      version: 1.1.0
-    '@radix-ui/react-dialog':
-      specifier: ^1.0.4
-      version: 1.1.1
-    '@radix-ui/react-dropdown-menu':
-      specifier: ^2.0.5
-      version: 2.1.1
-    '@radix-ui/react-label':
-      specifier: ^2.0.2
-      version: 2.1.0
-    '@radix-ui/react-progress':
-      specifier: ^1.0.3
-      version: 1.1.0
-    '@radix-ui/react-select':
-      specifier: ^1.2.2
-      version: 1.2.2
-    '@radix-ui/react-separator':
-      specifier: ^1.0.3
-      version: 1.1.0
-    '@radix-ui/react-slot':
-      specifier: ^1.0.2
-      version: 1.1.0
-    '@radix-ui/react-switch':
-      specifier: ^1.0.3
-      version: 1.1.0
-    '@radix-ui/react-tabs':
-      specifier: ^1.0.4
-      version: 1.1.0
-    '@radix-ui/react-toast':
-      specifier: ^1.1.5
-      version: 1.2.1
-    '@radix-ui/react-tooltip':
-      specifier: ^1.0.6
-      version: 1.1.1
-    '@reduxjs/toolkit':
-      specifier: ^1.9.5
-      version: 1.9.7
-    '@sanity/code-input':
-      specifier: ^4.1.3
-      version: 4.1.4
-    '@sanity/orderable-document-list':
-      specifier: ^1.2.1
-      version: 1.2.1
-    '@sanity/preview-url-secret':
-      specifier: ^1.6.3
-      version: 1.6.17
-    '@sanity/react-loader':
-      specifier: ^1.8.5
-      version: 1.10.3
-    '@sanity/table':
-      specifier: ^1.1.2
-      version: 1.1.2
-    '@sanity/vision':
-      specifier: ^3.29.1
-      version: 3.47.1
-    '@sindresorhus/slugify':
-      specifier: ^2.2.1
-      version: 2.2.1
-    '@slack/web-api':
-      specifier: ^7.2.0
-      version: 7.2.0
-    '@svgr/hast-util-to-babel-ast':
-      specifier: ^7.0.0
-      version: 7.0.0
-    '@t3-oss/env-nextjs':
-      specifier: ^0.7.1
-      version: 0.7.3
-    '@tailwindcss/typography':
-      specifier: 0.5.10
-      version: 0.5.10
-    '@testing-library/dom':
-      specifier: ^9.0.0
-      version: 9.3.4
-    '@testing-library/jest-dom':
-      specifier: ^5.16.5
-      version: 5.17.0
-    '@testing-library/react':
-      specifier: ^13.4.0
-      version: 13.4.0
-    '@testing-library/user-event':
-      specifier: ^13.5.0
-      version: 13.5.0
-    '@tinloof/sanity-studio':
-      specifier: ^1.0.0
-      version: 1.3.1
-    '@tinloof/sanity-web':
-      specifier: ^0.1.0
-      version: 0.1.1
-    '@tippyjs/react':
-      specifier: ^4.2.6
-      version: 4.2.6
-    '@tiptap/extension-code-block-lowlight':
-      specifier: ^2.1.8
-      version: 2.4.0
-    '@tiptap/pm':
-      specifier: ^2.1.8
-      version: 2.4.0
-    '@tiptap/react':
-      specifier: ^2.1.8
-      version: 2.4.0
-    '@tiptap/starter-kit':
-      specifier: ^2.1.8
-      version: 2.4.0
-    '@total-typescript/ts-reset':
-      specifier: ^0.5.1
-      version: 0.5.1
-    '@types/babel__traverse':
-      specifier: ^7.20.1
-      version: 7.20.6
-    '@types/blessed':
-      specifier: ^0.1.25
-      version: 0.1.25
-    '@types/chai':
-      specifier: ^4.3.4
-      version: 4.3.16
-    '@types/cli-progress':
-      specifier: ^3.11.5
-      version: 3.11.5
-    '@types/columnify':
-      specifier: ^1.5.4
-      version: 1.5.4
-    '@types/diff':
-      specifier: ^5.0.3
-      version: 5.2.1
-    '@types/glob':
-      specifier: ^8.0.0
-      version: 8.1.0
-    '@types/inquirer':
-      specifier: ^9.0.7
-      version: 9.0.7
-    '@types/jest':
-      specifier: ^27.5.2
-      version: 27.5.2
-    '@types/js-beautify':
-      specifier: ^1.14.3
-      version: 1.14.3
-    '@types/js-yaml':
-      specifier: 4.0.9
-      version: 4.0.9
-    '@types/lodash-es':
-      specifier: ^4.17.4
-      version: 4.17.12
-    '@types/mocha':
-      specifier: ^10.0.1
-      version: 10.0.7
-    '@types/ms':
-      specifier: ^0.7.34
-      version: 0.7.34
-    '@types/pako':
-      specifier: ^2.0.0
-      version: 2.0.3
-    '@types/parse-github-url':
-      specifier: 1.0.3
-      version: 1.0.3
-    '@types/pg':
-      specifier: ^8.11.2
-      version: 8.11.6
-    '@types/prettier':
-      specifier: ^2.7.3
-      version: 2.7.3
-    '@types/prettyjson':
-      specifier: ^0.0.33
-      version: 0.0.33
-    '@types/ramda':
-      specifier: ^0.29.12
-      version: 0.29.12
-    '@types/react-dom':
-      specifier: ^18.0.11
-      version: 18.3.0
-    '@types/react-syntax-highlighter':
-      specifier: ^15.5.6
-      version: 15.5.13
-    '@types/react-treeview':
-      specifier: ^0.4.3
-      version: 0.4.6
-    '@types/react-virtualized':
-      specifier: ^9.21.21
-      version: 9.21.30
-    '@types/react-virtualized-auto-sizer':
-      specifier: ^1.0.1
-      version: 1.0.4
-    '@types/supertest':
-      specifier: ^6.0.2
-      version: 6.0.2
-    '@types/tar':
-      specifier: ^6.1.11
-      version: 6.1.13
-    '@types/tar-stream':
-      specifier: ^3.1.3
-      version: 3.1.3
-    '@types/testing-library__jest-dom':
-      specifier: ^5.14.5
-      version: 5.14.9
-    '@types/unzipper':
-      specifier: ^0.10.9
-      version: 0.10.9
-    '@types/vscode':
-      specifier: ^1.74.0
-      version: 1.90.0
-    '@types/vscode-webview':
-      specifier: ^1.57.1
-      version: 1.57.5
-    '@types/yargs':
-      specifier: ^17.0.13
-      version: 17.0.32
-    '@vercel/analytics':
-      specifier: ^1.2.2
-      version: 1.3.1
-    '@vercel/stega':
-      specifier: ^0.1.0
-      version: 0.1.2
-    '@vitejs/plugin-react':
-      specifier: ^4.0.0
-      version: 4.3.1
-    '@vitest/coverage-v8':
-      specifier: ^1.0.1
-      version: 1.6.0
-    '@vscode/test-electron':
-      specifier: ^2.2.2
-      version: 2.4.0
-    '@vscode/vsce':
-      specifier: ^2.22.0
-      version: 2.29.0
-    '@vscode/webview-ui-toolkit':
-      specifier: ^1.2.2
-      version: 1.4.0
-    '@vue/compiler-sfc':
-      specifier: ^3.4.21
-      version: 3.4.30
-    applicationinsights:
-      specifier: ^2.9.1
-      version: 2.9.5
-    assert:
-      specifier: ^2.0.0
-      version: 2.1.0
-    ast-node-builder:
-      specifier: ^4.2.1
-      version: 4.2.1
-    ast-types:
-      specifier: ^0.14.2
-      version: 0.14.2
-    autoprefixer:
-      specifier: 10.4.17
-      version: 10.4.17
-    axios:
-      specifier: ^1.6.8
-      version: 1.7.2
-    axios-retry:
-      specifier: ^4.0.0
-      version: 4.4.1
-    bl:
-      specifier: ^6.0.11
-      version: 6.0.13
-    blessed:
-      specifier: ^0.1.81
-      version: 0.1.81
-    boxen:
-      specifier: ^7.1.1
-      version: 7.1.1
-    bullmq:
-      specifier: ^5.7.5
-      version: 5.8.2
-    chai:
-      specifier: ^4.3.7
-      version: 4.4.1
-    chalk:
-      specifier: ^5.3.0
-      version: 5.3.0
-    change-case:
-      specifier: ^5.2.0
-      version: 5.4.4
-    chart.js:
-      specifier: ^4.4.2
-      version: 4.4.3
-    chatgpt:
-      specifier: 5.2.5
-      version: 5.2.5
-    chromadb:
-      specifier: 1.7.2
-      version: 1.7.2
-    class-variance-authority:
-      specifier: ^0.7.0
-      version: 0.7.0
-    cli-progress:
-      specifier: ^3.12.0
-      version: 3.12.0
-    clsx:
-      specifier: ^2.0.0
-      version: 2.1.1
-    colors-cli:
-      specifier: ^1.0.33
-      version: 1.0.33
-    columnify:
-      specifier: ^1.6.0
-      version: 1.6.0
-    constants-browserify:
-      specifier: ^1.0.0
-      version: 1.0.0
-    cosmiconfig:
-      specifier: ^8.3.6
-      version: 8.3.6
-    cron:
-      specifier: ^3.1.6
-      version: 3.1.7
-    cspell-cli:
-      specifier: ^6.17.1
-      version: 6.31.2
-    csstype:
-      specifier: ^3.1.1
-      version: 3.1.3
-    csv-parser:
-      specifier: ^3.0.0
-      version: 3.0.0
-    cva:
-      specifier: npm:class-variance-authority@^0.7.0
-      version: 0.7.0
-    detect-indent:
-      specifier: ^7.0.1
-      version: 7.0.1
-    detect-newline:
-      specifier: ^4.0.1
-      version: 4.0.1
-    diff:
-      specifier: ^5.1.0
-      version: 5.2.0
-    dotenv:
-      specifier: ^16.4.5
-      version: 16.4.5
-    dotenv-cli:
-      specifier: ^7.4.1
-      version: 7.4.2
-    esbuild-plugin-copy:
-      specifier: ^2.1.1
-      version: 2.1.1
-    eslint:
-      specifier: 8.56.0
-      version: 8.56.0
-    eslint-config-next:
-      specifier: 14.1.0
-      version: 14.1.0
-    eslint-config-prettier:
-      specifier: ^9.1.0
-      version: 9.1.0
-    eslint-plugin-prettier:
-      specifier: ^5.1.3
-      version: 5.1.3
-    eslint-plugin-simple-import-sort:
-      specifier: 12.0.0
-      version: 12.0.0
-    exponential-backoff:
-      specifier: ^3.1.1
-      version: 3.1.1
-    fast-deep-equal:
-      specifier: ^3.1.3
-      version: 3.1.3
-    fastify:
-      specifier: 4.25.1
-      version: 4.25.1
-    fastify-plugin:
-      specifier: 4.5.1
-      version: 4.5.1
-    filenamify:
-      specifier: ^6.0.0
-      version: 6.0.0
-    form-data:
-      specifier: ^4.0.0
-      version: 4.0.0
-    framer-motion:
-      specifier: ^11.0.6
-      version: 11.2.11
-    fuse.js:
-      specifier: ^7.0.0
-      version: 7.0.0
-    fuzzysort:
-      specifier: ^2.0.4
-      version: 2.0.4
-    get-youtube-id:
-      specifier: ^1.0.1
-      version: 1.0.1
-    glob:
-      specifier: ^10.4.1
-      version: 10.4.2
-    husky:
-      specifier: ^9.0.11
-      version: 9.0.11
-    inquirer:
-      specifier: ^9.2.16
-      version: 9.2.23
-    intro.js:
-      specifier: ^7.2.0
-      version: 7.2.0
-    intro.js-react:
-      specifier: ^1.0.0
-      version: 1.0.0
-    io-ts:
-      specifier: ^2.2.20
-      version: 2.2.21
-    io-ts-reporters:
-      specifier: ^2.0.1
-      version: 2.0.1
-    io-ts-types:
-      specifier: ^0.5.19
-      version: 0.5.19
-    ioredis:
-      specifier: ^5.4.1
-      version: 5.4.1
-    js-beautify:
-      specifier: ^1.14.11
-      version: 1.15.1
-    js-yaml:
-      specifier: 4.1.0
-      version: 4.1.0
-    json-schema-to-typescript:
-      specifier: ^13.1.2
-      version: 13.1.2
-    jszip:
-      specifier: ^3.10.1
-      version: 3.10.1
-    katex:
-      specifier: ^0.16.10
-      version: 0.16.10
-    keytar:
-      specifier: ^7.9.0
-      version: 7.9.0
-    langchain:
-      specifier: 0.0.209
-      version: 0.0.209
-    lodash-es:
-      specifier: ^4.17.21
-      version: 4.17.21
-    lottie-react:
-      specifier: ^2.4.0
-      version: 2.4.0
-    lowlight:
-      specifier: ^3.0.0
-      version: 3.1.0
-    lucide-react:
-      specifier: ^0.265.0
-      version: 0.265.0
-    magic-string:
-      specifier: ^0.30.10
-      version: 0.30.10
-    match-sorter:
-      specifier: ^6.3.4
-      version: 6.3.4
-    mdast-util-from-markdown:
-      specifier: ^2.0.0
-      version: 2.0.1
-    mdast-util-mdx:
-      specifier: ^3.0.0
-      version: 3.0.0
-    mdast-util-to-markdown:
-      specifier: ^2.1.0
-      version: 2.1.0
-    micromark-extension-mdxjs:
-      specifier: ^2.0.0
-      version: 2.0.0
-    monaco-editor-webpack-plugin:
-      specifier: ^7.0.1
-      version: 7.1.0
-    monocle-ts:
-      specifier: ^2.3.13
-      version: 2.3.13
-    ms:
-      specifier: ^2.1.3
-      version: 2.1.3
-    newtype-ts:
-      specifier: ^0.3.5
-      version: 0.3.5
-    next:
-      specifier: ^14.2.3
-      version: 14.2.4
-    next-sanity:
-      specifier: ^8.5.0
-      version: 8.5.5
-    nock:
-      specifier: ^13.5.1
-      version: 13.5.4
-    node-fetch:
-      specifier: ^3.3.2
-      version: 3.3.2
-    null-loader:
-      specifier: ^4.0.1
-      version: 4.0.1
-    open:
-      specifier: ^8.4.2
-      version: 8.4.2
-    openai:
-      specifier: 4.23.0
-      version: 4.23.0
-    openai-edge:
-      specifier: 1.2.2
-      version: 1.2.2
-    ora:
-      specifier: ^8.0.1
-      version: 8.0.1
-    os-browserify:
-      specifier: ^0.3.0
-      version: 0.3.0
-    pako:
-      specifier: ^2.1.0
-      version: 2.1.0
-    parse-github-url:
-      specifier: 1.0.2
-      version: 1.0.2
-    pg:
-      specifier: ^8.11.3
-      version: 8.12.0
-    postcss-multiple-tailwind:
-      specifier: ^1.0.1
-      version: 1.0.1
-    posthog-node:
-      specifier: ^4.0.0
-      version: 4.0.1
-    preact:
-      specifier: ^10.13.2
-      version: 10.22.0
-    preact-compat:
-      specifier: ^3.19.0
-      version: 3.19.0
-    prettier-plugin-packagejson:
-      specifier: 2.4.10
-      version: 2.4.10
-    prettier-plugin-tailwindcss:
-      specifier: 0.5.11
-      version: 0.5.11
-    prettyjson:
-      specifier: ^1.2.5
-      version: 1.2.5
-    prism-react-renderer:
-      specifier: ^2.3.1
-      version: 2.3.1
-    prisma:
-      specifier: ^5.14.0
-      version: 5.15.1
-    prop-types:
-      specifier: ^15.8.1
-      version: 15.8.1
-    ramda:
-      specifier: ^0.29.1
-      version: 0.29.1
-    raw-loader:
-      specifier: ^4.0.2
-      version: 4.0.2
-    rc-progress:
-      specifier: ^3.4.1
-      version: 3.5.1
-    react-chartjs-2:
-      specifier: ^5.2.0
-      version: 5.2.0
-    react-hook-form:
-      specifier: ^7.48.2
-      version: 7.52.0
-    react-hot-toast:
-      specifier: ^2.4.0
-      version: 2.4.1
-    react-markdown:
-      specifier: ^8.0.7
-      version: 8.0.7
-    react-syntax-highlighter:
-      specifier: ^15.5.0
-      version: 15.5.0
-    react-textarea-autosize:
-      specifier: ^8.5.2
-      version: 8.5.3
-    react-toastify:
-      specifier: ^9.1.3
-      version: 9.1.3
-    react-tooltip:
-      specifier: ^5.9.0
-      version: 5.27.0
-    react-treeview:
-      specifier: ^0.4.7
-      version: 0.4.7
-    react-tweet:
-      specifier: ^3.2.0
-      version: 3.2.1
-    react-use:
-      specifier: ^17.5.0
-      version: 17.5.0
-    reactjs-popup:
-      specifier: ^2.0.5
-      version: 2.0.6
-    recast:
-      specifier: ^0.22.0
-      version: 0.22.0
-    redux-persist:
-      specifier: ^6.0.0
-      version: 6.0.0
-    rehype-sanitize:
-      specifier: ^6.0.0
-      version: 6.0.0
-    remark-gfm:
-      specifier: ^3.0.1
-      version: 3.0.1
-    remark-math:
-      specifier: ^5.1.1
-      version: 5.1.1
-    replicate:
-      specifier: 0.25.2
-      version: 0.25.2
-    sanity:
-      specifier: ^3.36.4
-      version: 3.47.1
-    sanity-plugin-asset-source-ogimage:
-      specifier: ^2.0.0-2
-      version: 2.0.0-2
-    sanity-plugin-documents-pane:
-      specifier: ^2.2.1
-      version: 2.3.0
-    sanity-plugin-media:
-      specifier: ^2.2.5
-      version: 2.2.5
-    sanity-plugin-mux-input:
-      specifier: ^2.2.4
-      version: 2.3.6
-    server-only:
-      specifier: 0.0.1
-      version: 0.0.1
-    simple-git:
-      specifier: ^3.24.0
-      version: 3.25.0
-    sinon:
-      specifier: ^15.0.1
-      version: 15.2.0
-    socket.io:
-      specifier: ^4.7.5
-      version: 4.7.5
-    socket.io-client:
-      specifier: ^4.7.5
-      version: 4.7.5
-    sonner:
-      specifier: ^1.4.2
-      version: 1.5.0
-    styled-components:
-      specifier: ^6.1.8
-      version: 6.1.11
-    supertest:
-      specifier: ^6.3.4
-      version: 6.3.4
-    swr:
-      specifier: ^2.2.5
-      version: 2.2.5
-    tailwind-merge:
-      specifier: ^1.10.0
-      version: 1.14.0
-    tailwindcss:
-      specifier: 3.4.1
-      version: 3.4.1
-    tailwindcss-animate:
-      specifier: ^1.0.7
-      version: 1.0.7
-    tar-stream:
-      specifier: ^3.1.7
-      version: 3.1.7
-    terminal-link:
-      specifier: ^3.0.0
-      version: 3.0.0
-    tippy.js:
-      specifier: ^6.3.7
-      version: 6.3.7
-    tree-kill:
-      specifier: ^1.2.2
-      version: 1.2.2
-    ts-invariant:
-      specifier: ^0.10.3
-      version: 0.10.3
-    ts-loader:
-      specifier: ^9.4.2
-      version: 9.5.1
-    ts-node-dev:
-      specifier: ^2.0.0
-      version: 2.0.0
-    tslib:
-      specifier: 2.4.1
-      version: 2.4.1
-    tsup:
-      specifier: ^8.1.0
-      version: 8.1.0
-    umd-compat-loader:
-      specifier: ^2.1.2
-      version: 2.1.2
-    unified:
-      specifier: ^10.1.2
-      version: 10.1.2
-    unist-util-filter:
-      specifier: ^5.0.1
-      version: 5.0.1
-    unist-util-visit:
-      specifier: ^5.0.0
-      version: 5.0.0
-    universal-base64url:
-      specifier: ^1.1.0
-      version: 1.1.0
-    unzipper:
-      specifier: ^0.11.6
-      version: 0.11.6
-    valibot:
-      specifier: ^0.24.1
-      version: 0.24.1
-    vaul:
-      specifier: ^0.9.0
-      version: 0.9.1
-    vite:
-      specifier: ^4.5.3
-      version: 4.5.3
-    vite-plugin-monaco-editor:
-      specifier: ^1.1.0
-      version: 1.1.0
-    vite-plugin-svgr:
-      specifier: ^2.4.0
-      version: 2.4.0
-    vite-tsconfig-paths:
-      specifier: ^4.2.0
-      version: 4.3.2
-    vue-sfc-descriptor-to-string:
-      specifier: ^2.0.0
-      version: 2.0.0
-    web-vitals:
-      specifier: ^2.1.4
-      version: 2.1.4
-    webpack:
-      specifier: 5.91.0
-      version: 5.91.0
-    webpack-cli:
-      specifier: 5.1.4
-      version: 5.1.4
-    wrap-ansi:
-      specifier: ^9.0.0
-      version: 9.0.0
-    yaml:
-      specifier: ^2.4.5
-      version: 2.4.5
-    yargs:
-      specifier: ^17.6.2
-      version: 17.7.2
-    zod:
-      specifier: 3.22.3
-      version: 3.22.3
-    zustand:
-      specifier: ^4.5.2
-      version: 4.5.2
-
 snapshots:
 
   '@adobe/css-tools@4.4.0': {}
@@ -21187,6 +21236,21 @@ snapshots:
       hotscript: 1.0.13
       nanoid: 5.0.7
 
+  '@chevrotain/cst-dts-gen@10.5.0':
+    dependencies:
+      '@chevrotain/gast': 10.5.0
+      '@chevrotain/types': 10.5.0
+      lodash: 4.17.21
+
+  '@chevrotain/gast@10.5.0':
+    dependencies:
+      '@chevrotain/types': 10.5.0
+      lodash: 4.17.21
+
+  '@chevrotain/types@10.5.0': {}
+
+  '@chevrotain/utils@10.5.0': {}
+
   '@clerk/backend@1.1.4(react-dom@18.2.0(react@18.2.0))(react@18.2.0)':
     dependencies:
       '@clerk/shared': 2.1.0(react-dom@18.2.0(react@18.2.0))(react@18.2.0)
@@ -22346,13 +22410,13 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@langchain/community@0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)':
+  '@langchain/community@0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)':
     dependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
-      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
+      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))
       expr-eval: 2.0.2
       flat: 5.0.2
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
       uuid: 9.0.1
       zod: 3.23.8
       zod-to-json-schema: 3.23.1(zod@3.23.8)
@@ -22373,13 +22437,13 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)':
+  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.12
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
       ml-distance: 4.0.1
       mustache: 4.2.0
       p-queue: 6.6.2
@@ -22391,13 +22455,13 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)':
+  '@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)':
     dependencies:
       ansi-styles: 5.2.0
       camelcase: 6.3.0
       decamelize: 1.2.0
       js-tiktoken: 1.0.12
-      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
+      langsmith: 0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
       ml-distance: 4.0.1
       mustache: 4.2.0
       p-queue: 6.6.2
@@ -22409,9 +22473,9 @@ snapshots:
       - langchain
       - openai
 
-  '@langchain/openai@0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))':
+  '@langchain/openai@0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))':
     dependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
       js-tiktoken: 1.0.12
       openai: 4.52.0
       zod: 3.23.8
@@ -22521,6 +22585,11 @@ snapshots:
       monaco-editor: 0.37.1
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
+
+  '@mrleebo/prisma-ast@0.12.0':
+    dependencies:
+      chevrotain: 10.5.0
+      lilconfig: 2.1.0
 
   '@msgpackr-extract/msgpackr-extract-darwin-arm64@3.0.3':
     optional: true
@@ -26454,6 +26523,15 @@ snapshots:
       parse5: 7.1.2
       parse5-htmlparser2-tree-adapter: 7.0.0
 
+  chevrotain@10.5.0:
+    dependencies:
+      '@chevrotain/cst-dts-gen': 10.5.0
+      '@chevrotain/gast': 10.5.0
+      '@chevrotain/types': 10.5.0
+      '@chevrotain/utils': 10.5.0
+      lodash: 4.17.21
+      regexp-to-ast: 0.5.0
+
   chokidar@3.6.0:
     dependencies:
       anymatch: 3.1.3
@@ -29380,12 +29458,12 @@ snapshots:
 
   kolorist@1.8.0: {}
 
-  langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1):
+  langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1):
     dependencies:
       '@anthropic-ai/sdk': 0.9.1
-      '@langchain/community': 0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
-      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))
+      '@langchain/community': 0.0.57(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(chromadb@1.7.2(openai@4.23.0))(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
+      '@langchain/openai': 0.0.34(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))
       binary-extensions: 2.3.0
       expr-eval: 2.0.2
       js-tiktoken: 1.0.12
@@ -29491,7 +29569,7 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
 
-  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0):
+  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0):
     dependencies:
       '@types/uuid': 9.0.8
       commander: 10.0.1
@@ -29499,11 +29577,11 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
     optionalDependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
-      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.23.0)
+      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
       openai: 4.23.0
 
-  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0):
+  langsmith@0.1.32(@langchain/core@0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0))(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0):
     dependencies:
       '@types/uuid': 9.0.8
       commander: 10.0.1
@@ -29511,8 +29589,8 @@ snapshots:
       p-retry: 4.6.2
       uuid: 9.0.1
     optionalDependencies:
-      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
-      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0)(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
+      '@langchain/core': 0.1.63(langchain@0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1))(openai@4.52.0)
+      langchain: 0.0.209(@aws-crypto/sha256-js@5.2.0)(@aws-sdk/client-s3@3.600.0)(@aws-sdk/credential-provider-node@3.600.0(@aws-sdk/client-sso-oidc@3.600.0(@aws-sdk/client-sts@3.600.0))(@aws-sdk/client-sts@3.600.0))(@smithy/util-utf8@2.3.0)(axios@1.7.2)(cheerio@1.0.0-rc.12)(chromadb@1.7.2(openai@4.23.0))(ignore@5.3.1)(ioredis@5.4.1)(jsdom@23.2.0)(jsonwebtoken@9.0.2)(lodash@4.17.21)(openai@4.23.0)(pg@8.12.0)(replicate@0.25.2)(ws@8.17.1)
       openai: 4.52.0
 
   language-subtag-registry@0.3.23: {}
@@ -32268,6 +32346,8 @@ snapshots:
   regenerator-transform@0.15.2:
     dependencies:
       '@babel/runtime': 7.24.7
+
+  regexp-to-ast@0.5.0: {}
 
   regexp.prototype.flags@1.5.2:
     dependencies:
