@@ -1,15 +1,12 @@
-import { execSync } from "node:child_process";
 import { readFile } from "node:fs/promises";
-import { basename, dirname, extname, resolve, sep } from "node:path";
+import { dirname, extname, resolve, sep } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import open from "open";
-import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
-  findLastlyModifiedFile,
   findModifiedFiles,
   getFileFromCommit,
   getGitDiffForFile,
@@ -283,6 +280,7 @@ export const handleLearnCliCommand = async (options: {
         }),
       ),
     );
+
     return;
   }
 
