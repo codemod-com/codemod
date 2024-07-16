@@ -388,6 +388,7 @@ export default {
         check: 'url("/icons/check.svg")',
       },
       animation: {
+        spin: "spin 1s linear infinite",
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "flip-x": "flip-x .6s cubic-bezier(0, 0, 0.58, 1)",
@@ -405,6 +406,10 @@ export default {
         sm: "calc(var(--radius) - 4px)",
       },
       keyframes: {
+        spin: {
+          from: { transform: "rotate(0deg)" },
+          to: { transform: "rotate(360deg)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },

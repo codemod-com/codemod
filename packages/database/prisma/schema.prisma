@@ -21,6 +21,7 @@ model Codemod {
   featured         Boolean          @default(false)
   verified         Boolean          @default(false)
   private          Boolean
+  hidden           Boolean          @default(false)
   author           String           @db.VarChar(255)
   totalRuns        Int              @default(0)
   versions         CodemodVersion[]

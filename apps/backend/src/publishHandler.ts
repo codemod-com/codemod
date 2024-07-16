@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { prisma } from "@codemod-com/database";
@@ -117,7 +117,13 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    const { name, version } = codemodRc;
+    let { name, version } = codemodRc;
+
+    const isPublishedFromStudio =
+      request.headers.origin?.startsWith(environment.FRONTEND_URL) ?? false;
+    name = isPublishedFromStudio
+      ? `${name}-${randomBytes(4).toString("hex")}`
+      : name;
 
     let namespace: string | null = null;
     try {
@@ -278,6 +284,7 @@ export const publishHandler: RouteHandler<{
           engine: codemodRc.engine,
           applicability: codemodRc.applicability,
           verified: isVerified,
+          hidden: isPublishedFromStudio,
           private: isPrivate,
           author,
           arguments: codemodRc.arguments,
@@ -371,7 +378,7 @@ export const publishHandler: RouteHandler<{
           "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
           {
             codemod: {
-              name,
+              name: isPublishedFromStudio ? `${name} (studio publish)` : name,
               from: codemodRc.applicability?.from?.map((tuple) =>
                 tuple.join(" "),
               ),

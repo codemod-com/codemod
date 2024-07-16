@@ -113,6 +113,8 @@ export const parseGetCodemodLatestVersionQuery = (input: unknown) =>
 
 export const listCodemodsQuerySchema = object({
   search: optional(string()),
+  mine: optional(coerce(boolean(), (input) => input === "true")),
+  all: optional(coerce(boolean(), (input) => input === "true")),
 });
 
 export const parseListCodemodsQuery = (input: unknown) =>

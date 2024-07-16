@@ -32,7 +32,7 @@ export const useHandleCodemodRun = ({
     const request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
-      codemodSource: await transpileTs(content),
+      codemodSource: (await transpileTs(content)).transpiled,
       branch: selectedBranch.name,
     };
 

@@ -48,6 +48,26 @@ Aliases: `list` and `ls`
 codemod search [optional-search-query]
 ```
 
+This command has special flags available to it that can be combined together to perform more advanced searches.
+
+<Tabs>
+  <Tab title="Your codemods">
+    ```bash
+    codemod search [optional-search-query] --mine
+    ```
+  </Tab>
+  <Tab title="All the codemods (including hidden)">
+    ```bash
+    codemod search [optional-search-query] --all
+    ```
+  </Tab>
+  <Tab title="Your codemods (including hidden)">
+    ```bash
+    codemod search [optional-search-query] --mine --all
+    ```
+  </Tab>
+</Tabs>
+
 ### `codemod init`
 
 Can be used to scaffold a new codemod package.

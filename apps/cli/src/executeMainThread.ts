@@ -190,23 +190,32 @@ export const executeMainThread = async () => {
     .command(
       ["list", "ls", "search"],
       "lists all the codemods & recipes in the public registry. can be used to search by name and tags",
-      (y) => y,
+      (y) =>
+        y
+          .option("mine", {
+            type: "boolean",
+            default: false,
+            description: "list only the codemods created by the logged in user",
+          })
+          .option("all", {
+            type: "boolean",
+            default: false,
+            description:
+              "include all of the codemods in the list (including hidden)",
+          }),
       async (args) => {
         const searchTerm = args._.length > 1 ? String(args._.at(-1)) : null;
-
-        if (searchTerm) {
-          if (searchTerm.length < 2) {
-            throw new Error(
-              "Search term must be at least 2 characters long. Aborting...",
-            );
-          }
-        }
 
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleListNamesCommand({ printer, search: searchTerm }),
+          handleListNamesCommand({
+            printer,
+            search: searchTerm,
+            all: args.all,
+            mine: args.mine,
+          }),
         );
       },
     )

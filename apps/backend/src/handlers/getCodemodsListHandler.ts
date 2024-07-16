@@ -12,10 +12,14 @@ import { telemetryService } from "../services/TelemetryService.js";
 export const getCodemodsListHandler: RouteHandler<{
   Reply: CodemodListResponse;
 }> = async (request: UserDataPopulatedRequest) => {
-  const { search } = parseListCodemodsQuery(request.query);
+  const query = parseListCodemodsQuery(request.query);
 
   if (!request.user?.id) {
-    return codemodService.getCodemodsList(null, search, []);
+    return codemodService.getCodemodsList({
+      userId: null,
+      whitelisted: [],
+      ...query,
+    });
   }
 
   const userId = request.user?.id;
@@ -25,16 +29,16 @@ export const getCodemodsListHandler: RouteHandler<{
     ? parseClientIdentifierSchema(request.headers["x-client-identifier"])
     : "UNKNOWN";
 
-  if (search !== undefined) {
+  if (query.search !== undefined) {
     telemetryService.sendEvent(
-      { kind: "listNames", searchTerm: search },
+      { kind: "listNames", searchTerm: query.search },
       { cloudRole: clientIdentifier, distinctId },
     );
   }
 
-  return codemodService.getCodemodsList(
+  return codemodService.getCodemodsList({
     userId,
-    search,
-    request?.allowedNamespaces,
-  );
+    whitelisted: request.allowedNamespaces ?? [],
+    ...query,
+  });
 };
