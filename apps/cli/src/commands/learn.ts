@@ -5,6 +5,7 @@ import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
+import open from "open";
 import { Project } from "ts-morph";
 import { createCodeDiff } from "../apis.js";
 import {
@@ -308,7 +309,7 @@ export const handleLearnCliCommand = async (options: {
     chalk.cyan("Learning went successful! Opening the Codemod Studio...\n"),
   );
 
-  const success = openURL(url);
+  const success = open(url);
   if (!success) {
     printer.printOperationMessage({
       kind: "error",
