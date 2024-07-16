@@ -237,27 +237,32 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
     }
   });
 
-  instance.post("/diffs", async (request, reply) => {
-    const body = parseDiffCreationBody(request.body);
+  instance.post<{ Reply: ApiResponse<{ id: string; iv: string }> }>(
+    "/diffs",
+    async (request, reply) => {
+      const body = parseDiffCreationBody(request.body);
 
-    const iv = randomBytes(16);
-    const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
+      const iv = randomBytes(16);
+      const key = Buffer.from(environment.ENCRYPTION_KEY, "base64url");
 
-    const codeDiff = await prisma.codeDiff.create({
-      data: {
-        name: body.name,
-        source: body.source,
-        diffs: encryptWithIv(
-          "aes-256-cbc",
-          { key, iv },
-          Buffer.from(JSON.stringify(body.diffs)),
-        ).toString("base64url"),
-      },
-    });
+      const codeDiff = await prisma.codeDiff.create({
+        data: {
+          name: body.name,
+          source: body.source,
+          diffs: encryptWithIv(
+            "aes-256-cbc",
+            { key, iv },
+            Buffer.from(JSON.stringify(body.diffs)),
+          ).toString("base64url"),
+        },
+      });
 
-    reply.type("application/json").code(200);
-    return { id: codeDiff.id, iv: iv.toString("base64url") };
-  });
+      return reply
+        .type("application/json")
+        .code(200)
+        .send({ id: codeDiff.id, iv: iv.toString("base64url") });
+    },
+  );
 
   instance.post<{
     Reply: { html_url: string };
