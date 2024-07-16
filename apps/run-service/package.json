@@ -20,6 +20,7 @@
     "tsx": "^4.7.1"
   },
   "dependencies": {
+    "@codemod-com/auth": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",

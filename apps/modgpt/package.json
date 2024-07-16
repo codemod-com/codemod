@@ -10,6 +10,7 @@
   "author": "Codemod inc.",
   "license": "ISC",
   "dependencies": {
+    "@codemod-com/auth": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/multipart": "catalog:",
     "@fastify/rate-limit": "catalog:",

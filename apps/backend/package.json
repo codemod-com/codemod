@@ -35,6 +35,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
+    "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",

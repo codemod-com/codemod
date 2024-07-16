@@ -12,6 +12,7 @@ import {
   type PublishResponse,
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
+import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import {
   type CodemodConfig,
@@ -24,7 +25,6 @@ import {
 import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
-import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 

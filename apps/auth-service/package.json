@@ -23,6 +23,7 @@
   "dependencies": {
     "@clerk/backend": "catalog:",
     "@clerk/fastify": "catalog:",
+    "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",
