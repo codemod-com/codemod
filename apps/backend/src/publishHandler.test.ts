@@ -63,6 +63,8 @@ const mocks = vi.hoisted(() => {
   };
 });
 
+vi.mock("@codemod-com/auth", async () => vi.importActual("@codemod-com/auth"));
+
 vi.mock("@codemod-com/database", async () => {
   const actual = await vi.importActual("@codemod-com/database");
 
