@@ -605,7 +605,7 @@ export const handleRunCliCommand = async (options: {
       chalk.cyan(
         "\nLogs can be found at:",
         chalk.bold(logsPath),
-        "\nFor feedback or reporting issues, run ",
+        "\nFor feedback or reporting issues, run",
         chalk.bold(doubleQuotify("codemod feedback")),
         "and include the logs.",
       ),
