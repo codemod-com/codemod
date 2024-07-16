@@ -1,18 +1,16 @@
 import type {
+  CodemodRunStatus,
   GHBranch,
+  GetExecutionStatusResponse,
   GithubRepository,
-} from "../../backend/src/services/SourceControl";
+  Result,
+} from "@codemod-com/api-types";
 import {
   GET_EXECUTION_STATUS,
   GH_BRANCH_LIST,
   GH_REPO_LIST,
   RUN_CODEMOD,
-} from "../endpoints";
-import type {
-  CodemodRunStatus,
-  GetExecutionStatusResponse,
-  Result,
-} from "../types";
+} from "../endpoints/gh-run";
 
 let isSuccess = true;
 const errorExecutionResult: Result = {
@@ -103,7 +101,8 @@ export const mockGHBranches: GHBranch[] = [
     },
   },
 ];
-export const mockedGhRunEndpoints = {
+
+export const endpoints = {
   [GH_REPO_LIST]: {
     get: (): { data: GithubRepository[] } => ({ data: mockGithubRepositories }),
   },

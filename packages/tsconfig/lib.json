@@ -1,11 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
     "module": "esnext",
     "moduleResolution": "node",
     "types": ["node"],
     "target": "es2022",
-    "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -26,6 +24,8 @@
     "skipLibCheck": true,
     "isolatedModules": true,
     "sourceMap": true,
-    "declarationMap": true
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true
   }
 }

@@ -1,6 +1,6 @@
 import { useAuth } from "@/app/auth/useAuth";
-import { GET_EXECUTION_STATUS } from "@shared/endpoints";
-import type { GetExecutionStatusResponse } from "@shared/types";
+import type { GetExecutionStatusResponse } from "@codemod-com/api-types";
+import { GET_EXECUTION_STATUS } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useEffect, useState } from "react";
 import { showStatusToast } from "../utils";

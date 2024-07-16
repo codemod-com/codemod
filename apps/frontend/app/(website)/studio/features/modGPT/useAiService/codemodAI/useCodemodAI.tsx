@@ -1,7 +1,7 @@
 import { useAuth } from "@/app/auth/useAuth";
 import { env } from "@/env";
 import type { LLMMessage, MessageFromWs, MessageToWs } from "@chatbot/types";
-import type { LLMEngine } from "@shared/consts";
+import type { LLMEngine } from "@codemod-com/utilities";
 import { useSnippetsStore } from "@studio/store/snippets";
 import type { ToVoid } from "@studio/types/transformations";
 import { useEffect, useState } from "react";

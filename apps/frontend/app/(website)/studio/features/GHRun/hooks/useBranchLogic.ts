@@ -1,6 +1,6 @@
-import { GH_BRANCH_LIST } from "@shared/endpoints";
+import type { GHBranch, GithubRepository } from "@codemod-com/api-types";
+import { GH_BRANCH_LIST } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
-import type { GHBranch, GithubRepository } from "be-types";
 import { useEffect, useState } from "react";
 
 type UseBranchLogicProps = {

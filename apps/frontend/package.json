@@ -37,6 +37,7 @@
     "@clerk/clerk-react": "catalog:",
     "@clerk/nextjs": "catalog:",
     "@clerk/themes": "catalog:",
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@hookform/resolvers": "catalog:",
     "@monaco-editor/react": "^4.4.6",
