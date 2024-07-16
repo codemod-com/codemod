@@ -7,7 +7,8 @@ import {
   string,
   union,
 } from "valibot";
-import { roles } from "../dev-utils/consts";
+
+export const roles = ["system", "user", "assistant", "function"] as const;
 
 export const sendChatBodySchema = object({
   messages: array(
