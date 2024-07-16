@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
+    "outDir": "dist",
     "module": "esnext",
     "moduleResolution": "node",
     "types": ["node"],
-    "target": "es2015",
+    "target": "es2022",
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -24,6 +25,7 @@
     "noPropertyAccessFromIndexSignature": false,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declarationMap": true
   }
 }

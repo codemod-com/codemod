@@ -1,34 +1,8 @@
 {
   "include": ["./src"],
   "exclude": ["./dist", "./build", "./node_modules"],
+  "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
-    "types": ["node"],
-    "baseUrl": ".",
-    "target": "es2021",
-    "declaration": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "noPropertyAccessFromIndexSignature": false,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "sourceMap": true
+    "baseUrl": "."
   }
 }

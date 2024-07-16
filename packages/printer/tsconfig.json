@@ -3,7 +3,6 @@
   "exclude": ["node_modules"],
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./dist"
+    "baseUrl": "."
   }
 }
