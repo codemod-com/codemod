@@ -1,20 +1,11 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "ESNext",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "moduleResolution": "node",
-    "allowSyntheticDefaultImports": true,
     "baseUrl": ".",
-    "allowJs": true,
-    "checkJs": false,
-    "noEmit": true,
-    "outDir": "./dist"
+    "paths": {
+      "~/*": ["src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "**/*.spec.ts"],
-  "extends": "@codemod-com/tsconfig/base.json"
+  "extends": "@codemod-com/tsconfig/backend.json"
 }

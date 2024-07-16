@@ -1,19 +1,11 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "allowJs": true,
-    "checkJs": false,
-    "noEmit": true,
     "paths": {
       "~/*": ["src/*"]
     }
   },
-  "include": [
-    "reset.d.ts",
-    "./src",
-    "./test",
-    "../../packages/utilities/src/functions/crypto"
-  ],
+  "include": ["reset.d.ts", "./src", "./test"],
   "exclude": ["./dist", "./node_modules"],
-  "extends": "@codemod-com/tsconfig/base.json"
+  "extends": "@codemod-com/tsconfig/backend.json"
 }

@@ -1,10 +1,11 @@
 {
   "compilerOptions": {
-    "allowJs": true,
-    "checkJs": false,
-    "noEmit": true
+    "baseUrl": ".",
+    "paths": {
+      "~/*": ["src/*"]
+    }
   },
   "include": ["./src"],
   "exclude": ["./dist", "./node_modules"],
-  "extends": "@codemod-com/tsconfig/base.json"
+  "extends": "@codemod-com/tsconfig/backend.json"
 }
