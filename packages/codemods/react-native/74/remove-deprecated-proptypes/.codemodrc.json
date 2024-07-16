@@ -1,14 +1,16 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "name": "remove-deprecated-proptypes",
+  "name": "react-native/74/remove-deprecated-proptypes",
   "version": "1.0.1",
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": [
-      "react-native"
-    ],
-    "git": "https://github.com/manishjha-04/codemod"
+    "tags": ["react-native"],
+    "git": "https://github.com/codemod-com/codemod"
+  },
+
+  "applicability": {
+    "from": [["react-native", "<", "0.74.0"]]
   }
 }
