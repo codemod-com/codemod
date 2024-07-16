@@ -11,6 +11,7 @@ export default defineConfig({
     env: {
       NODE_ENV: "test",
       PORT: "8081",
+      AUTH_SERVICE_URL: "http://localhost:8081",
       DATABASE_URI: "sqlite://:memory:",
       VERIFIED_PUBLISHERS: "",
       CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
