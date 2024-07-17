@@ -7,7 +7,7 @@ import {
   useSnippetsStore,
 } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
-import React, { useEffect, useRef, useState, useCallback } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { type NodeRendererProps, Tree } from "react-arborist";
 import { flushSync } from "react-dom";
 import useResizeObserver from "use-resize-observer";

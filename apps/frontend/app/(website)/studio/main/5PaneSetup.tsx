@@ -21,7 +21,7 @@ import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useSnippetsStore } from "@studio/store/snippets";
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
 import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
