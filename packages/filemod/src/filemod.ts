@@ -42,9 +42,11 @@ export type HandleData<D extends RSU, S extends State> = (
   state: S | null,
 ) => Promise<DataCommand>;
 
-export type InitializeState<S extends State> = (
+export type InitializeState<D extends RSU, S extends State> = (
   options: Options,
   previousState: S | null,
+  api: API<D>,
+  paths: readonly string[] | null,
 ) => Promise<S>;
 
 export type HandleFinish<S extends State> = (
@@ -58,7 +60,7 @@ export interface Filemod<D extends RSU, S extends State> {
   readonly handleDirectory?: HandleDirectory<D, S>;
   readonly handleFile?: HandleFile<D, S>;
   readonly handleData?: HandleData<D, S>;
-  readonly initializeState?: InitializeState<S>;
+  readonly initializeState?: InitializeState<D, S>;
   readonly handleFinish?: HandleFinish<S>;
 }
 
@@ -118,33 +120,6 @@ const handleCommand = async <D extends RSU, S extends State>(
   state: S | null,
 ): Promise<void> => {
   if (command.kind === "handleDirectory") {
-    if (filemod.includePatterns && filemod.includePatterns.length > 0) {
-      const paths = await api.unifiedFileSystem.getFilePaths(
-        command.path,
-        filemod.includePatterns,
-        filemod.excludePatterns ?? [],
-      );
-
-      for (const path of paths) {
-        await handleCommand(
-          api,
-          filemod,
-          {
-            kind: "handleFile",
-            path,
-            options: command.options,
-          },
-          callbackService,
-          state,
-        );
-      }
-
-      callbackService.onCommandExecuted?.({
-        kind: command.kind,
-        path: command.path,
-      });
-    }
-
     const unifiedEntry = await api.unifiedFileSystem.upsertUnifiedDirectory(
       command.path,
     );
@@ -278,7 +253,7 @@ export const executeFilemod = async <D extends RSU, S extends State>(
   path: string,
   options: Options,
   callbackService: CallbackService,
-  state?: S | null,
+  state: S | null = null,
 ): Promise<readonly ExternalFileCommand[]> => {
   const unifiedEntry = await api.unifiedFileSystem.upsertUnifiedEntry(path);
 
@@ -286,18 +261,45 @@ export const executeFilemod = async <D extends RSU, S extends State>(
     return [];
   }
 
-  const command: DirectoryCommand = {
-    kind: unifiedEntry.kind === "directory" ? "handleDirectory" : "handleFile",
-    path,
-    options,
-  };
+  const paths =
+    filemod.includePatterns && filemod.includePatterns.length > 0
+      ? await api.unifiedFileSystem.getFilePaths(
+          path,
+          filemod.includePatterns,
+          filemod.excludePatterns ?? [],
+        )
+      : null;
 
   const previousState = state ?? null;
 
   const nextState =
-    (await filemod.initializeState?.(options, previousState)) ?? null;
+    (await filemod.initializeState?.(options, previousState, api, paths)) ??
+    null;
 
-  await handleCommand<D, S>(api, filemod, command, callbackService, nextState);
+  if (paths !== null) {
+    for (const path of paths) {
+      await handleCommand<D, S>(
+        api,
+        filemod,
+        { kind: "handleFile", path, options },
+        callbackService,
+        nextState,
+      );
+    }
+  } else {
+    await handleCommand<D, S>(
+      api,
+      filemod,
+      {
+        kind:
+          unifiedEntry.kind === "directory" ? "handleDirectory" : "handleFile",
+        path,
+        options,
+      },
+      callbackService,
+      nextState,
+    );
+  }
 
   const finishCommand = (await filemod.handleFinish?.(options, nextState)) ?? {
     kind: "noop",
