@@ -1,6 +1,6 @@
-import { ASTViewer } from "@features/ASTViewer/AboristViewer";
 import { BoundResizePanel } from "@studio/components/ResizePanel/BoundResizePanel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
+import { ASTViewer } from "@studio/main/ASTViewer/AboristViewer";
 import type {
   PanelData,
   PanelsRefs,

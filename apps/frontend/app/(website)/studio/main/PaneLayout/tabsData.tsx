@@ -1,8 +1,8 @@
 import { Chat } from "@chatbot/Chat";
 import { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
-import { AstSection } from "@features/ASTViewer/AstSectionBase";
 import LiveIcon from "@studio/icons/LiveIcon";
+import { AstSection } from "@studio/main/ASTViewer/AstSectionBase";
 import Table from "@studio/main/Log/Table";
 import type { PanelData, PanelsRefs } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
