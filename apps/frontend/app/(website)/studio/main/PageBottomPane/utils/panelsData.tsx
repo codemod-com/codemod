@@ -1,19 +1,8 @@
-import type { KnownEngines } from "@codemod-com/utilities";
-import ASTViewer from "@studio/main/ASTViewer";
 import {
-  type ContentViewerVariant,
   type PanelData,
   ResizablePanelsIndices,
 } from "@studio/main/PageBottomPane/utils/types";
 import type { Repeat } from "@studio/types/transformations";
-
-export const getContent =
-  (type: ContentViewerVariant) => (engine: KnownEngines) =>
-    engine === "jscodeshift" ? (
-      <ASTViewer type={type} />
-    ) : (
-      "The AST View is not yet supported for tsmorph"
-    );
 
 const beforePanel: PanelData = {
   relatedAST: ResizablePanelsIndices.BEFORE_AST,
@@ -21,7 +10,6 @@ const beforePanel: PanelData = {
   snippedIndex: ResizablePanelsIndices.BEFORE_SNIPPET,
   type: "before",
   hasBoundResize: true,
-  content: getContent("before"),
   snippetData: {
     header: (
       <span className="flex items-center justify-center justify-content-center">
@@ -40,7 +28,6 @@ const afterPanel: PanelData = {
   snippedIndex: ResizablePanelsIndices.AFTER_SNIPPET,
   type: "after",
   hasBoundResize: false,
-  content: getContent("after"),
   snippetData: {
     header: "After (Expected)",
     diffEditorWrapper: {
@@ -54,7 +41,6 @@ const outputPanel: PanelData = {
   relatedAST: ResizablePanelsIndices.OUTPUT_AST,
   snippedIndex: ResizablePanelsIndices.OUTPUT_SNIPPET,
   type: "output",
-  content: getContent("output"),
   snippetData: {
     header: (
       <span className="flex items-center justify-center justify-content-center">
