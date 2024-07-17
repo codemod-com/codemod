@@ -1,6 +1,4 @@
 export * from "./constants.js";
-export * from "./schemata/api/errors.js";
-export * from "./schemata/api/responses.js";
 
 export { buildCodemodSlug } from "./functions/buildCodemodSlug.js";
 export {

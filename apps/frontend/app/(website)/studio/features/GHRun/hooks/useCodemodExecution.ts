@@ -1,5 +1,8 @@
-import { RUN_CODEMOD as RUN_CODEMOD_URL } from "@shared/endpoints";
-import type { CodemodRunRequest, CodemodRunStatus } from "@shared/types";
+import type {
+  CodemodRunRequest,
+  CodemodRunStatus,
+} from "@codemod-com/api-types";
+import { RUN_CODEMOD as RUN_CODEMOD_URL } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import type { ToVoid } from "@studio/types/transformations";
 

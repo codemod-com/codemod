@@ -2,7 +2,7 @@ import { SEND_CHAT } from "@/app/(website)/studio/src/constants";
 import { env } from "@/env";
 import { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
 import { onResponse } from "@chatbot/utils";
-import type { LLMEngine } from "@shared/consts";
+import type { LLMEngine } from "@codemod-com/utilities";
 import { useModStore } from "@studio/store/mod";
 import type { Message } from "ai";
 import { useChat } from "ai/react";

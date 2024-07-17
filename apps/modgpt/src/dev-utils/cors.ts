@@ -1,6 +1,6 @@
 import type { FastifyCorsOptions } from "@fastify/cors";
 import type { FastifyInstance } from "fastify";
-import { environment, isDevelopment } from "./configs";
+import { isDevelopment } from "./configs";
 
 const ALLOWED_ORIGINS = [
   /^https?:\/\/.*-codemod\.vercel\.app$/,
@@ -15,14 +15,10 @@ export const corsDisableHeaders = {
 };
 
 export const getCorsDisabledHeaders = (fastify: FastifyInstance) => {
-  fastify.options("/sendChat", (request, reply) => {
+  fastify.options("/sendChat", (_request, reply) => {
     reply.status(204).headers(corsDisableHeaders).send();
   });
 };
-
-const X_CODEMOD_ACCESS_TOKEN = (
-  environment.X_CODEMOD_ACCESS_TOKEN ?? ""
-).toLocaleLowerCase();
 
 export const corsOptions: FastifyCorsOptions = isDevelopment
   ? { origin: false }
@@ -41,13 +37,8 @@ export const corsOptions: FastifyCorsOptions = isDevelopment
         cb(new Error("Not allowed"), false);
       },
       methods: ["POST", "PUT", "PATCH", "GET", "DELETE", "OPTIONS"],
-      exposedHeaders: [
-        X_CODEMOD_ACCESS_TOKEN,
-        "x-clerk-auth-reason",
-        "x-clerk-auth-message",
-      ],
+      exposedHeaders: ["x-clerk-auth-reason", "x-clerk-auth-message"],
       allowedHeaders: [
-        X_CODEMOD_ACCESS_TOKEN,
         "Content-Type",
         "Authorization",
         "access-control-allow-origin",

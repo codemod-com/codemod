@@ -62,7 +62,7 @@ jobs:
           elif [[ ${{ matrix.os }} == "macos-latest" ]]; then
             pnpm test --filter=!@codemod-com/backend
           else
-            pnpm --filter @codemod-com/database build && pnpm test
+            pnpm build --filter @codemod-com/auth && pnpm build --filter @codemod-com/database && pnpm test
           fi
         shell: bash
         env:

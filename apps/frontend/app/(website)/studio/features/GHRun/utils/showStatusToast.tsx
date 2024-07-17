@@ -1,4 +1,4 @@
-import type { GetExecutionStatusResponse } from "@shared/types";
+import type { GetExecutionStatusResponse } from "@codemod-com/api-types";
 import toast from "react-hot-toast";
 
 const baseToastOptions: Parameters<typeof toast>[1] = {

@@ -1,12 +1,9 @@
 import * as os from "node:os";
 import { homedir } from "node:os";
 import { join } from "node:path";
+import type { GetUserDataResponse } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import {
-  type GetUserDataResponse,
-  execPromise,
-  isNeitherNullNorUndefined,
-} from "@codemod-com/utilities";
+import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import keytar from "keytar";

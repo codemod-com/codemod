@@ -2,7 +2,7 @@
   "name": "@codemod-com/backend",
   "version": "0.0.133",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",
     "test": "vitest --run"
   },
@@ -12,6 +12,7 @@
   "author": "Codemod inc.",
   "private": true,
   "devDependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/tsconfig": "workspace:*",
     "@faker-js/faker": "catalog:",
@@ -34,6 +35,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
+    "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",

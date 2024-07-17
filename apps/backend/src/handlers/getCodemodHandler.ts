@@ -1,12 +1,12 @@
-import type { GetCodemodResponse } from "@codemod-com/utilities";
+import type { ApiResponse, GetCodemodResponse } from "@codemod-com/api-types";
+import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import type { RouteHandler } from "fastify";
-import type { UserDataPopulatedRequest } from "~/plugins/authPlugin.js";
 import { processHandlerError } from "~/types/errors.js";
 import { parseGetCodemodBySlugParams } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
 
 export const getCodemodHandler: RouteHandler<{
-  Reply: GetCodemodResponse;
+  Reply: ApiResponse<GetCodemodResponse>;
 }> = async (request: UserDataPopulatedRequest, reply) => {
   const { criteria } = parseGetCodemodBySlugParams(request.params);
 

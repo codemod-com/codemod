@@ -1,12 +1,15 @@
+import type {
+  CodemodRunRequest,
+  GHBranch,
+  GithubRepository,
+} from "@codemod-com/api-types";
 import {
   DropdownSelector,
   useBranchLogic,
   useHandleCodemodRun,
 } from "@features/GHRun";
-import type { CodemodRunRequest } from "@shared/types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
-import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { useState } from "react";
 

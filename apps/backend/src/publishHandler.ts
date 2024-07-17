@@ -1,19 +1,22 @@
 import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { prisma } from "@codemod-com/database";
 import {
   type ApiResponse,
   CODEMOD_CONFIG_INVALID,
   CODEMOD_NAME_TAKEN,
   CODEMOD_VERSION_EXISTS,
-  type CodemodConfig,
   INTERNAL_SERVER_ERROR,
   NO_CONFIG_FILE_FOUND,
   NO_MAIN_FILE_FOUND,
   type PublishResponse,
-  TarService,
   UNAUTHORIZED,
+} from "@codemod-com/api-types";
+import type { UserDataPopulatedRequest } from "@codemod-com/auth";
+import { prisma } from "@codemod-com/database";
+import {
+  type CodemodConfig,
+  TarService,
   buildCodemodSlug,
   codemodNameRegex,
   isNeitherNullNorUndefined,
@@ -22,7 +25,6 @@ import {
 import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
-import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
