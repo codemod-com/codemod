@@ -1,10 +1,10 @@
 import { prisma } from "@codemod-com/database";
 import { WebClient } from "@slack/web-api";
+import axios from "axios";
 import { CronJob } from "cron";
+import WebSocket from "ws";
 import { PostHogService } from "./services/PostHogService";
 import { environment } from "./util";
-
-import axios from "axios";
 
 // TODO: Move crons into independent CronService
 
@@ -67,57 +67,100 @@ const syncDatabaseWithPosthogDataCron = new CronJob(
   false, // start
 );
 
+const services: Array<{
+  name: string;
+  url: string;
+  type: "http" | "websocket";
+  available: boolean;
+}> = [
+  {
+    name: "Backend API",
+    url: process.env.BACKEND_API_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "Auth Service",
+    url: process.env.AUTH_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "ModGPT Service",
+    url: process.env.MODGPT_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "Codemod AI Service",
+    url: process.env.CODEMOD_AI_SERVICE_URL ?? "",
+    type: "websocket",
+    available: true,
+  },
+  {
+    name: "Run Service",
+    url: process.env.RUN_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+];
+
 const systemHealthCheckCron = new CronJob(
-  "*/10 * * * *",
+  "*/10 * * * * *",
   async () => {
-    const token = environment.SLACK_TOKEN;
-    const channel = environment.SLACK_CHANNEL;
+    const token = process.env.SLACK_TOKEN ?? "";
+    const channel = process.env.SLACK_CHANNEL ?? "";
+    const web = new WebClient(token);
 
-    try {
-      const web = new WebClient(token);
-
-      const services: Array<{ name: string; url: string }> = [
-        {
-          name: "Backend API",
-          url: environment.BACKEND_API_URL ?? "",
-        },
-        {
-          name: "Auth Service",
-          url: environment.AUTH_SERVICE_URL ?? "",
-        },
-        {
-          name: "ModGPT Service",
-          url: environment.MODGPT_SERVICE_URL ?? "",
-        },
-        {
-          name: "Codemod AI Service",
-          url: environment.CODEMOD_AI_SERVICE_URL ?? "",
-        },
-        {
-          name: "Run Service",
-          url: environment.RUN_SERVICE_URL ?? "",
-        },
-      ];
-
-      for (const service of services) {
+    await Promise.all(
+      services.map(async (service) => {
         try {
-          const { status } = await axios.get(service.url);
-          if (status !== 200) {
-            throw new Error("Service did not respond with OK");
+          if (service.type === "http") {
+            const response = await axios.get(service.url);
+
+            if (response.status === 200 && service.available === false) {
+              await web.chat.postMessage({
+                channel: channel,
+                text: `${service.name} is now up.`,
+              });
+              service.available = true;
+            }
+          } else if (service.type === "websocket") {
+            await new Promise((resolve, reject) => {
+              const ws = new WebSocket(service.url);
+
+              ws.on("open", async () => {
+                if (service.available === false) {
+                  await web.chat.postMessage({
+                    channel: channel,
+                    text: `${service.name} is now up.`,
+                  });
+                }
+                service.available = true;
+
+                ws.close();
+                resolve(true);
+              });
+
+              ws.on("error", (error) => {
+                reject(
+                  new Error(`WebSocket connection error: ${error.message}`),
+                );
+              });
+            });
           }
         } catch (error) {
-          console.error(`${service.name} is down`, error);
+          if (service.available === true) {
+            await web.chat.postMessage({
+              channel: channel,
+              text: `${service.name} is down. Error: ${error}`,
+            });
 
-          await web.chat.postMessage({
-            channel: channel,
-            text: `${service.name} is down. Error: ${error}`,
-          });
+            service.available = false;
+          }
         }
-      }
-    } catch (err) {
-      console.error("Failed to check system health.");
-      console.error((err as Error).message);
-    }
+      }),
+    );
   }, // onTick
   null, // onComplete
   false, // start
