@@ -25,19 +25,7 @@ export const useScrollNodeIntoView = () => {
     );
 
     if (foundElem && treeRef.current) {
-      const treeRootWithOverflow = treeRef.current.firstChild.firstChild;
-      // const top = foundElem.getBoundingClientRect().top - treeRootWithOverflow.offsetTop
-      // console.log('foundElem.offsetHeight', foundElem.getBoundingClientRect().top , {
-      //   top
-      // })
-      // treeRootWithOverflow.scrollTo({
-      //   top,
-      //   behavior: "smooth",
-      // });
-      setTimeout(
-        () => foundElem.scrollIntoView({ behavior: "smooth", block: "center" }),
-        500,
-      );
+      foundElem.scrollIntoView({ behavior: "smooth", block: "center" });
     }
   };
   return scrollIntoView;
