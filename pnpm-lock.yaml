@@ -1136,9 +1136,6 @@ importers:
       prettier:
         specifier: ^3.2.5
         version: 3.3.2
-      prettyjson:
-        specifier: 'catalog:'
-        version: 1.2.5
     devDependencies:
       '@codemod-com/api-types':
         specifier: workspace:*
@@ -1221,6 +1218,9 @@ importers:
       open:
         specifier: 'catalog:'
         version: 8.4.2
+      prettyjson:
+        specifier: 'catalog:'
+        version: 1.2.5
       semver:
         specifier: ^7.6.2
         version: 7.6.2

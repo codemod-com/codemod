@@ -5,6 +5,7 @@ const localProdBuildEnvs = {
   "process.env.NODE_ENV": '"production"',
   "process.env.BACKEND_URL": '"https://backend.codemod.com"',
   "process.env.AUTH_BACKEND_URL": '"https://backend.codemod.com/auth"',
+  "process.env.AI_BACKEND_URL": '"https://backend.codemod.com/auth"',
   "process.env.CODEMOD_HOME_PAGE_URL": '"https://codemod.com"',
   "process.env.CODEMOD_STUDIO_URL": '"https://codemod.com/studio"',
   "process.env.IGNORE_TELEMETRY": "true",
@@ -17,6 +18,7 @@ const publishEnvs = {
 
 const localEnvs = {
   "process.env.NODE_ENV": '"development"',
+  "process.env.AI_BACKEND_URL": '"http://localhost:8084"',
   "process.env.BACKEND_URL": '"http://localhost:8081"',
   "process.env.AUTH_BACKEND_URL": '"http://localhost:8080"',
   "process.env.CODEMOD_HOME_PAGE_URL": '"http://localhost:3000"',
