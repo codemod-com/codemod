@@ -13,17 +13,9 @@ export const useScrollNodeIntoView = () => {
     }
     // delay to make the animation smoother
     await delay(200);
-    const foundElem = document.getElementById(`${node.id}`);
-
-    console.log(
-      node.id,
-      {
-        foundElem,
-      },
-      treeRef,
-      treeRef.current,
+    const foundElem = document.getElementById(
+      `${node.id}-${node.start}-${node.end}`,
     );
-
     if (foundElem && treeRef.current) {
       foundElem.scrollIntoView({ behavior: "smooth", block: "center" });
     }

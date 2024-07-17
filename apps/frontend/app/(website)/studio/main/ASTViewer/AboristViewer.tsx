@@ -100,7 +100,7 @@ export const ASTViewer: React.FC<Props> = ({ type }) => {
                 handleNodeClick(node.data);
               }}
               className="inline-block"
-              id={`${node.data.id}`}
+              id={`${node.data.id}-${node.data.start}-${node.data.end}`}
             >
               {node.data.label}
             </span>
