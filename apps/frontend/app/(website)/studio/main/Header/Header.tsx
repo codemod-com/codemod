@@ -1,7 +1,7 @@
 import useFeatureFlags from "@/hooks/useFeatureFlags";
 import { CODEMOD_RUN_FEATURE_FLAG } from "@/utils/strings";
 import { GHRunButton } from "@features/GHRun";
-import { DownloadZip } from "../DownloadZip";
+import { RunOptions } from "../RunOptions";
 import { TopBar } from "./TopBar";
 import { HeaderButtons } from "./headerButtons";
 
@@ -16,7 +16,7 @@ export const Header = () => {
         <div className="flex gap-2 items-center">
           {ffs.includes(CODEMOD_RUN_FEATURE_FLAG) && <GHRunButton />}
           <HeaderButtons />
-          <DownloadZip />
+          <RunOptions />
         </div>
       </div>
     </>

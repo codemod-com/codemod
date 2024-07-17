@@ -4,5 +4,7 @@
   "private": true,
   "license": "MIT",
   "files": ["base.json", "codemod.json", "lib.json", "extension.json"],
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

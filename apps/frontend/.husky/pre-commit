@@ -1,1 +1,1 @@
-biome check --apply ./
+biome check --write ./

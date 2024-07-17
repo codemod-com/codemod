@@ -1,12 +1,12 @@
 import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
+  GetCodemodResponse,
   GetScopedTokenResponse,
   GetUserDataResponse,
   VerifyTokenResponse,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
-import type FormData from "form-data";
 
 export const getCLIAccessToken = async (
   accessToken: string,
@@ -91,6 +91,25 @@ export const revokeCLIToken = async (accessToken: string): Promise<void> => {
   });
 };
 
+export const getCodemod = async (
+  name: string,
+  accessToken?: string,
+): Promise<GetCodemodResponse> => {
+  const url = new URL(`${process.env.BACKEND_URL}/codemods/${name}`);
+
+  const headers: RawAxiosRequestHeaders = {};
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const res = await Axios.get<GetCodemodResponse>(url.toString(), {
+    headers,
+    timeout: 10000,
+  });
+
+  return res.data;
+};
+
 export const getCodemodDownloadURI = async (
   name: string,
   accessToken?: string,
@@ -115,9 +134,11 @@ export const getCodemodDownloadURI = async (
 
 export const getCodemodList = async (options?: {
   accessToken?: string;
-  search?: string | null;
+  search: string | null;
+  mine: boolean;
+  all: boolean;
 }): Promise<CodemodListResponse> => {
-  const { accessToken, search } = options ?? {};
+  const { accessToken, search, mine, all } = options ?? {};
 
   const headers: RawAxiosRequestHeaders = {};
   if (accessToken) {
@@ -127,6 +148,14 @@ export const getCodemodList = async (options?: {
   const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);
   if (search) {
     url.searchParams.set("search", search);
+  }
+
+  if (mine) {
+    url.searchParams.set("mine", "true");
+  }
+
+  if (all) {
+    url.searchParams.set("all", "true");
   }
 
   const res = await Axios.get<CodemodListResponse>(url.toString(), {

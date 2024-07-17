@@ -1,9 +1,9 @@
 import { useAuth } from "@auth/useAuth";
-import { GH_REPO_LIST } from "@shared/endpoints";
+import type { GithubRepository } from "@codemod-com/api-types";
+import { GH_REPO_LIST } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useModal } from "@studio/hooks/useModal";
-import { useUserSession } from "@studio/store/zustand/userSession";
-import type { GithubRepository } from "be-types";
+import { useUserSession } from "@studio/store/utils/userSession";
 import { pipe } from "ramda";
 import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 

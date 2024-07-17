@@ -4,11 +4,13 @@ import {
   type ValiError,
   array,
   coerce,
+  literal,
   number,
   object,
   optional,
   parse,
   string,
+  union,
 } from "valibot";
 
 export const environmentSchema = object({
@@ -49,10 +51,16 @@ export const environmentSchema = object({
   SLACK_TOKEN: string(),
   SLACK_CHANNEL: string(),
   BACKEND_API_URL: optional(string()),
-  AUTH_SERVICE_URL: optional(string()),
+  AUTH_SERVICE_URL: string(),
   MODGPT_SERVICE_URL: optional(string()),
   CODEMOD_AI_SERVICE_URL: optional(string()),
   RUN_SERVICE_URL: optional(string()),
+  NODE_ENV: union([
+    literal("development"),
+    literal("production"),
+    literal("test"),
+  ]),
+  FRONTEND_URL: string(),
 });
 
 export type Environment = Output<typeof environmentSchema>;

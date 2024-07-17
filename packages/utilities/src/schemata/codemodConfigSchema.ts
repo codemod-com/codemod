@@ -242,7 +242,6 @@ const configJsonBaseSchema = v.object({
           v.string("Tags has to be an array of strings."),
           `"tags" has to be an array of strings.`,
         ),
-        [],
       ),
       git: v.optional(v.string("Git link has to be a string.")),
     }),

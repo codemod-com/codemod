@@ -1,11 +1,11 @@
 {
   "name": "@codemod-com/codemod",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "author": "Codemod, Inc.",
   "license": "Apache License, Version 2.0",
   "description": "A monorepo for all the interconnected tools of codemod.com",
   "private": true,
-  "packageManager": "pnpm@9.4.0",
+  "packageManager": "pnpm@9.5.0",
   "prisma": {
     "schema": "packages/database/prisma/schema.prisma",
     "seed": "tsx packages/database/src/seed.ts"
@@ -39,8 +39,8 @@
     "clean": "turbo run clean",
     "link": "turbo run link",
     "lint": "biome check .",
-    "lint:apply": "biome check --apply --diagnostic-level=error .",
-    "lint:linter": "biome lint --apply --diagnostic-level=error .",
+    "lint:write": "biome check --write --diagnostic-level=error .",
+    "lint:linter": "biome lint --write --diagnostic-level=error .",
     "lint:formatter": "biome format --write --diagnostic-level=error .",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
@@ -56,32 +56,46 @@
     "db:push": "turbo run db:push",
     "db:reset": "turbo run db:reset",
     "db:seed": "turbo run db:seed",
-    "db:studio": "turbo run db:studio"
+    "db:studio": "turbo run db:studio",
+    "semantic-release": "semantic-release",
+    "commit": "git-cz"
   },
   "devDependencies": {
+    "@biomejs/biome": "^1.6.4",
     "@codemod-com/tsconfig": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/node": "^20.5.1",
     "@vitest/coverage-v8": "^1.0.1",
+    "commitizen": "^4.3.0",
     "concurrently": "^8.2.0",
+    "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.1.0",
+    "semantic-release": "^24.0.0",
     "tsx": "^4.2.0",
     "turbo": "^1.10.14",
     "typescript": "^5.4.5",
-    "vitest": "^1.4.0",
-    "@biomejs/biome": "^1.6.4"
+    "vite-tsconfig-paths": "^4.2.0",
+    "vitest": "^1.4.0"
   },
   "lint-staged": {
     "*": [
-      "biome check --apply --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
+      "biome check --write --no-errors-on-unmatched --files-ignore-unknown=true --diagnostic-level=error"
     ]
   },
   "pnpm": {
+    "peerDependencyRules": {
+      "ignoreMissing": ["@babel/core"]
+    },
     "overrides": {
       "postcss": "8.4.35",
       "whatwg-url": "^14.0.0"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
     }
   }
 }

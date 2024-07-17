@@ -5,12 +5,12 @@ import {
   AFTER_SNIPPET_DEFAULT_CODE,
   BEFORE_SNIPPET_DEFAULT_CODE,
   buildDefaultCodemodSource,
-} from "@studio/store/getInitialState";
-import { useModStore } from "@studio/store/zustand/mod";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
+} from "@studio/store/initialState";
+import { useModStore } from "@studio/store/mod";
+import { useSnippetsStore } from "../../store/snippets";
 
 const InsertExampleButton = () => {
-  const { engine, setInput, setOutput } = useSnippetStore();
+  const { engine, getSelectedEditors } = useSnippetsStore();
   const { setContent } = useModStore();
   return (
     <Tooltip
@@ -18,8 +18,8 @@ const InsertExampleButton = () => {
         <Button
           className="flex items-center justify-center px-0"
           onClick={() => {
-            setInput(BEFORE_SNIPPET_DEFAULT_CODE);
-            setOutput(AFTER_SNIPPET_DEFAULT_CODE);
+            getSelectedEditors().setBeforeSnippet(BEFORE_SNIPPET_DEFAULT_CODE);
+            getSelectedEditors().setAfterSnippet(AFTER_SNIPPET_DEFAULT_CODE);
             setContent(buildDefaultCodemodSource(engine));
           }}
           size="xs"

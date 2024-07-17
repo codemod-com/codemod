@@ -1,7 +1,7 @@
 {
   "name": "@codemod-com/filemod",
   "author": "Codemod, Inc.",
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "The filemod by Codemod.com",
   "type": "module",
   "main": "./dist/index.js",
@@ -25,9 +25,9 @@
   "devDependencies": {
     "@types/node": "20.8.5",
     "memfs": "^4.6.0",
-    "glob": "^10.4.1",
+    "glob": "catalog:",
     "ts-node": "10.9.1",
     "vitest": "^1.0.1",
-    "@vitest/coverage-v8": "^1.0.1"
+    "@vitest/coverage-v8": "catalog:"
   }
 }

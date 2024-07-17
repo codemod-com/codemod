@@ -3,12 +3,21 @@ import { doubleQuotify } from "@codemod-com/utilities";
 import columnify from "columnify";
 import terminalLink from "terminal-link";
 import { getCodemodList } from "../apis.js";
+import { getCurrentUserOrLogin } from "../utils.js";
 
 export const handleListNamesCommand = async (options: {
   printer: PrinterBlueprint;
   search: string | null;
+  mine: boolean;
+  all: boolean;
 }) => {
-  const { printer, search } = options;
+  const { printer, search, mine, all } = options;
+
+  if (search && search.length < 2) {
+    throw new Error(
+      "Search term must be at least 2 characters long. Aborting...",
+    );
+  }
 
   let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
   if (search && !printer.__jsonOutput) {
@@ -17,7 +26,12 @@ export const handleListNamesCommand = async (options: {
     );
   }
 
-  const configObjects = await getCodemodList({ search });
+  await getCurrentUserOrLogin({
+    message: "Authentication is required to view your own codemods. Proceed?",
+    printer,
+  });
+
+  const configObjects = await getCodemodList({ search, mine, all });
   spinner?.stop();
 
   if (printer.__jsonOutput) {
@@ -66,18 +80,29 @@ export const handleListNamesCommand = async (options: {
     },
   );
 
-  if (search) {
-    if (prettified.length === 0) {
-      printer.printConsoleMessage(
-        "info",
-        chalk.bold.red("No results matched your search."),
-      );
-      return;
-    }
+  if (prettified.length === 0) {
+    printer.printConsoleMessage(
+      "info",
+      chalk.bold.red("No results matched your query."),
+    );
+    return;
+  }
 
+  if (search) {
     printer.printConsoleMessage(
       "info",
       chalk.bold.cyan("Here are the search results:\n"),
+    );
+  } else if (mine) {
+    const msg = "Here are all of your codemods";
+    printer.printConsoleMessage(
+      "info",
+      chalk.bold.cyan(all ? `${msg}:\n` : `${msg} (except hidden ones):\n`),
+    );
+  } else if (all) {
+    printer.printConsoleMessage(
+      "info",
+      chalk.bold.cyan("Here are all the codemods available to you:\n"),
     );
   }
 

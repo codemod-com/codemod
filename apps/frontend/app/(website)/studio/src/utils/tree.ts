@@ -21,8 +21,8 @@ export const buildRanges = (
     return [];
   }
 
-  return rangeCommand.ranges
-    .map((range) => {
+  return rangeCommand?.ranges
+    ?.map((range) => {
       if (range.start === range.end) {
         return null;
       }

@@ -28,19 +28,9 @@ After running this command, if any git diff exists, the Codemod Engine will use 
 codemod learn
 ```
 
-<video
-	autoPlay
-	controls
-	muted
-	playsInline
-	loop
-	className="w-full aspect-video"
-	src="/images/deploying-codemods/cli/codemod-learn.mp4"
-></video>
-
 ### `codemod build`
 
-Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/codemod-registry/introduction#supported-codemod-engines), you can use the CLI to build the main executable file.
+Can be used to build a JavaScript codemod package. If you are using any of the [supported JavaScript codemod engines](/guides/building-codemods/package-requirements#supported-codemod-engines), you can use the CLI to build the main executable file.
 
 ```bash
 codemod build
@@ -58,6 +48,26 @@ Aliases: `list` and `ls`
 codemod search [optional-search-query]
 ```
 
+This command has special flags available to it that can be combined together to perform more advanced searches.
+
+<Tabs>
+  <Tab title="Your codemods">
+    ```bash
+    codemod search [optional-search-query] --mine
+    ```
+  </Tab>
+  <Tab title="All the codemods (including hidden)">
+    ```bash
+    codemod search [optional-search-query] --all
+    ```
+  </Tab>
+  <Tab title="Your codemods (including hidden)">
+    ```bash
+    codemod search [optional-search-query] --mine --all
+    ```
+  </Tab>
+</Tabs>
+
 ### `codemod init`
 
 Can be used to scaffold a new codemod package.
@@ -70,7 +80,7 @@ codemod init
 
 Can be used to publish a codemod to Codemod Registry.
 
-Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/codemod-registry/introduction#required-codemod-package-structure).
+Publishing codemods requires [logging in](#other-commands) to Codemod platform and having a codemod that is [compatible with Codemod Registry](/guides/building-codemods/package-requirements).
 
 To do so, use the `publish` command inside the codemod package directory:
 
@@ -148,7 +158,7 @@ Codemod CLI allows you to run codemods:
     codemod -s [path]
     ```
 
-    or you can run a transform file ([using a supported codemod engine](/codemod-registry/introduction#supported-codemod-engines)) by using:
+    or you can run a transform file ([using a supported codemod engine](/guides/building-codemods/package-requirements#supported-codemod-engines)) by using:
     ```bash
     codemod -s [path] --engine [codemod-engine]
     ```

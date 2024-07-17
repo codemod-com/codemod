@@ -35,8 +35,7 @@
       "@utils/*": ["./utils/*"],
       "@context/*": ["./app/context/*"],
       "@auth/*": ["./app/auth/*"],
-      "be-types": ["../backend/types"],
-      "@shared/*": ["../shared/*"]
+      "@mocks/*": ["./mocks/*"]
     },
     "plugins": [{ "name": "next" }]
   },

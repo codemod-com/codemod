@@ -1,12 +1,15 @@
+import type {
+  CodemodRunRequest,
+  GHBranch,
+  GithubRepository,
+} from "@codemod-com/api-types";
 import {
   DropdownSelector,
   useBranchLogic,
   useHandleCodemodRun,
 } from "@features/GHRun";
-import type { CodemodRunRequest } from "@shared/types";
 import Modal from "@studio/components/Modal";
 import { Button } from "@studio/components/ui/button";
-import type { GHBranch, GithubRepository } from "be-types";
 import { isNil } from "ramda";
 import { useState } from "react";
 
@@ -79,7 +82,6 @@ export const RepositoryModal = ({
   return isRepositoryModalShown ? (
     <Modal onClose={hideRepositoryModal} centered transparent={false}>
       <h2 className="text-center p-2">Run Codemod on Github branch</h2>
-
       <DropdownSelector
         isLoading={areReposLoading}
         loadingMessage="Fetching repos"

@@ -5,7 +5,7 @@ import { authUrl } from "@studio/config";
 import {
   type PendingAction,
   useUserSession,
-} from "@studio/store/zustand/userSession";
+} from "@studio/store/utils/userSession";
 import { useRouter } from "next/navigation";
 
 export const useAuth = () => {

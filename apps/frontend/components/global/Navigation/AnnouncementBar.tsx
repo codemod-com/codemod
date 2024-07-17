@@ -2,7 +2,7 @@ import Icon from "@/components/shared/Icon";
 import { RichText } from "@/components/shared/RichText";
 import type { NavigationPayload } from "@/types";
 import { cx } from "cva";
-import React, { useState } from "react";
+import { useState } from "react";
 
 type AnnouncementBarProps = {
   data: NavigationPayload["announcementBar"];

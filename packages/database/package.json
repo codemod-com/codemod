@@ -8,7 +8,7 @@
   "types": "./dist/index.d.ts",
   "files": ["dist/**"],
   "scripts": {
-    "build": "tsup",
+    "build": "pnpm run db:generate && tsup",
     "db:migrate:create": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
@@ -19,12 +19,14 @@
     "db:reset": "prisma migrate reset"
   },
   "dependencies": {
-    "@prisma/client": "^5.14.0",
-    "tsup": "^8.1.0"
+    "@prisma/client": "catalog:",
+    "prisma-json-types-generator": "^3.0.4",
+    "tsup": "catalog:"
   },
   "devDependencies": {
-    "@faker-js/faker": "^8.4.1",
-    "prisma": "^5.14.0",
+    "@codemod-com/utilities": "workspace:*",
+    "@faker-js/faker": "catalog:",
+    "prisma": "catalog:",
     "tsx": "^4.11.0"
   }
 }

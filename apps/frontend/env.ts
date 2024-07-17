@@ -25,6 +25,8 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_API_URL: z.string(),
     NEXT_PUBLIC_AUTH_API_URL: z.string(),
+    NEXT_PUBLIC_AI_API_URL: z.string(),
+    NEXT_PUBLIC_WS_URL: z.string(),
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_SANITY_PROJECT_ID: z.string(),
     NEXT_PUBLIC_SANITY_DATASET: z.string(),
@@ -44,6 +46,8 @@ export const env = createEnv({
     DUBCO_API_TOKEN: process.env.DUBCO_API_TOKEN,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_AUTH_API_URL: process.env.NEXT_PUBLIC_AUTH_API_URL,
+    NEXT_PUBLIC_AI_API_URL: process.env.NEXT_PUBLIC_AI_API_URL,
+    NEXT_PUBLIC_WS_URL: process.env.NEXT_PUBLIC_WS_URL,
     NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY,
     SANITY_API_TOKEN: process.env.SANITY_API_TOKEN,

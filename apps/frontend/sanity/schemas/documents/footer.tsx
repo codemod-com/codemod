@@ -1,7 +1,7 @@
-import Icon, { TechLogo } from "@/components/shared/Icon";
+import { TechLogo } from "@/components/shared/Icon";
 import { ThListIcon } from "@sanity/icons";
 import { defineType } from "sanity";
-import { icon, logo } from "../objects/icon";
+import { logo } from "../objects/icon";
 
 const SUBMENUS = [
   { title: "Product", value: "product" },

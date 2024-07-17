@@ -1,6 +1,18 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import {
+  type ApiResponse,
+  CODEMOD_CONFIG_INVALID,
+  CODEMOD_NAME_TAKEN,
+  CODEMOD_VERSION_EXISTS,
+  INTERNAL_SERVER_ERROR,
+  NO_CONFIG_FILE_FOUND,
+  NO_MAIN_FILE_FOUND,
+  type PublishResponse,
+  UNAUTHORIZED,
+} from "@codemod-com/api-types";
+import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import {
   type CodemodConfig,
@@ -13,13 +25,10 @@ import {
 import axios from "axios";
 import type { RouteHandler } from "fastify";
 import * as semver from "semver";
-import type { UserDataPopulatedRequest } from "./plugins/authPlugin";
 import { buildRevalidateHelper } from "./revalidate";
 import { environment } from "./util";
 
-export type PublishHandlerResponse =
-  | { success: true }
-  | { error: string; success: false };
+export type PublishHandlerResponse = ApiResponse<PublishResponse>;
 
 export const publishHandler: RouteHandler<{
   Reply: PublishHandlerResponse;
@@ -94,8 +103,8 @@ export const publishHandler: RouteHandler<{
 
     if (!isNeitherNullNorUndefined(codemodRcBuffer) || !codemodRc) {
       return reply.code(400).send({
-        error: "No .codemodrc.json file was provided",
-        success: false,
+        error: NO_CONFIG_FILE_FOUND,
+        errorText: "No .codemodrc.json file was provided",
       });
     }
 
@@ -105,48 +114,74 @@ export const publishHandler: RouteHandler<{
         !isNeitherNullNorUndefined(mainFileName))
     ) {
       return reply.code(400).send({
-        error: "No main file was provided",
-        success: false,
+        error: NO_MAIN_FILE_FOUND,
+        errorText: "No main file was provided",
       });
     }
 
-    const { name, version } = codemodRc;
+    let { name, version } = codemodRc;
+
+    const isPublishedFromStudio =
+      request.headers.origin?.startsWith(environment.FRONTEND_URL) ?? false;
+    name = isPublishedFromStudio
+      ? `${name}-${randomBytes(4).toString("hex")}`
+      : name;
 
     let namespace: string | null = null;
-    if (name.startsWith("@") && name.includes("/")) {
-      namespace = name.split("/").at(0)?.slice(1)!;
-
-      const allowedNamespaces = [
-        username,
-        ...organizations.map((org) => org.organization.slug),
-        environment.VERIFIED_PUBLISHERS.includes(username)
-          ? "codemod-com"
-          : null,
-      ].filter(isNeitherNullNorUndefined);
-
-      if (!allowedNamespaces.includes(namespace)) {
-        return reply.code(403).send({
-          error: `You are not allowed to publish under namespace "${namespace}"`,
-          success: false,
-        });
-      }
+    try {
+      const formData = await request.formData();
+      namespace = formData.get("namespace")?.toString() ?? null;
+    } catch (err) {
+      //
     }
+
+    let isPrivate = false;
+
+    if (!namespace) {
+      if (name.startsWith("@") && name.includes("/")) {
+        namespace = name.split("/").at(0)?.slice(1)!;
+
+        const allowedNamespaces = [
+          username,
+          ...organizations.map((org) => org.organization.slug),
+          environment.VERIFIED_PUBLISHERS.includes(username)
+            ? "codemod-com"
+            : null,
+        ].filter(isNeitherNullNorUndefined);
+
+        if (!allowedNamespaces.includes(namespace)) {
+          return reply.code(403).send({
+            error: UNAUTHORIZED,
+            errorText: `You are not allowed to publish under namespace "${namespace}"`,
+          });
+        }
+
+        isPrivate = true;
+      }
+
+      namespace = username;
+    }
+
+    isPrivate = codemodRc.private ?? isPrivate;
+    const isVerified =
+      namespace === "codemod-com" ||
+      environment.VERIFIED_PUBLISHERS.includes(username);
+    const author = isVerified ? "Codemod" : namespace;
 
     // private flag in codemodrc as primary source of truth,
     // fallback is to check if publishing under a namespace. if yes - set to private by default
-    const isPrivate = codemodRc.private ?? !!namespace;
 
     if (!isNeitherNullNorUndefined(name)) {
       return reply.code(400).send({
-        error: "Codemod name was not provided in codemodrc",
-        success: false,
+        error: CODEMOD_CONFIG_INVALID,
+        errorText: "Codemod name was not provided in codemodrc",
       });
     }
 
     if (!isNeitherNullNorUndefined(version)) {
       return reply.code(400).send({
-        error: "Codemod version was not provided in codemodrc",
-        success: false,
+        error: CODEMOD_CONFIG_INVALID,
+        errorText: "Codemod version was not provided in codemodrc",
       });
     }
 
@@ -185,8 +220,8 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion !== null && !semver.gt(version, latestVersion.version)) {
       return reply.code(400).send({
-        error: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,
-        success: false,
+        error: CODEMOD_VERSION_EXISTS,
+        errorText: `Codemod ${name} version ${version} is lower than the latest published or the same as the latest published version: ${latestVersion.version}`,
       });
     }
 
@@ -220,20 +255,6 @@ export const publishHandler: RouteHandler<{
       arguments: codemodRc.arguments,
     };
 
-    let isVerified = false;
-    let author = namespace;
-    if (author === null) {
-      if (
-        namespace === "codemod-com" ||
-        environment.VERIFIED_PUBLISHERS.includes(username)
-      ) {
-        isVerified = true;
-        author = "Codemod";
-      } else {
-        author = username;
-      }
-    }
-
     // Check if a codemod with the name already exists from other author
     const existingCodemod = await prisma.codemod.findUnique({
       where: {
@@ -246,8 +267,8 @@ export const publishHandler: RouteHandler<{
 
     if (existingCodemod !== null) {
       return reply.code(400).send({
-        error: `Codemod name \`${name}\` is already taken.`,
-        success: false,
+        error: CODEMOD_NAME_TAKEN,
+        errorText: `Codemod name \`${name}\` is already taken.`,
       });
     }
 
@@ -265,6 +286,7 @@ export const publishHandler: RouteHandler<{
           engine: codemodRc.engine,
           applicability: codemodRc.applicability,
           verified: isVerified,
+          hidden: isPublishedFromStudio,
           private: isPrivate,
           author,
           arguments: codemodRc.arguments,
@@ -289,11 +311,15 @@ export const publishHandler: RouteHandler<{
     } catch (err) {
       console.error("Failed writing codemod to the database:", err);
       return reply.code(500).send({
-        error: `Failed writing codemod to the database: ${
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed writing codemod to the database: ${
           (err as Error).message
         }`,
-        success: false,
       });
+    }
+
+    if (environment.NODE_ENV === "development") {
+      return reply.code(200).send({ name, version: codemodRc.version });
     }
 
     try {
@@ -343,8 +369,8 @@ export const publishHandler: RouteHandler<{
       }
 
       return reply.code(500).send({
-        error: `Failed publishing to S3: ${(err as Error).message}`,
-        success: false,
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed publishing to S3: ${(err as Error).message}`,
       });
     }
 
@@ -354,7 +380,7 @@ export const publishHandler: RouteHandler<{
           "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
           {
             codemod: {
-              name,
+              name: isPublishedFromStudio ? `${name} (studio publish)` : name,
               from: codemodRc.applicability?.from?.map((tuple) =>
                 tuple.join(" "),
               ),
@@ -379,12 +405,12 @@ export const publishHandler: RouteHandler<{
     const revalidate = buildRevalidateHelper(environment);
     await revalidate(name);
 
-    return reply.code(200).send({ success: true });
+    return reply.code(200).send({ name, version });
   } catch (err) {
     console.error(err);
     return reply.code(500).send({
-      error: `Failed calling publish endpoint: ${(err as Error).message}`,
-      success: false,
+      error: INTERNAL_SERVER_ERROR,
+      errorText: `Failed calling publish endpoint: ${(err as Error).message}`,
     });
   }
 };

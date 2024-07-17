@@ -29,7 +29,7 @@ export const TopBar = () => {
         <IconButton
           Icon={SlackLogo}
           text="Slack"
-          href="https://codemod-community.slack.com/"
+          href="https://go.codemod.com/community"
           hint="Community Slack"
         />
         <FirstLoginExperience />

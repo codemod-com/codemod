@@ -1,6 +1,8 @@
 import type * as INodeFs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join, relative } from "node:path";
+import { join as joinPosix } from "node:path/posix";
+
 import type { Filemod } from "@codemod-com/filemod";
 import { boxen, chalk, colorLongString } from "@codemod-com/printer";
 import {
@@ -67,7 +69,8 @@ export const buildPatterns = async (
     }
 
     if (formattedPattern.endsWith("/")) {
-      return join(formattedPattern, "**/*.*");
+      // patterns should always be posix style, even for Win
+      return joinPosix(formattedPattern, "**/*.*");
     }
 
     return formattedPattern;
@@ -554,7 +557,13 @@ export const runCodemod = async (
     const transpiledSource = codemod.indexPath.endsWith(".ts")
       ? transpile(codemodSource.toString())
       : codemodSource.toString();
-    await runWorkflowCodemod(transpiledSource, safeArgumentRecord, console.log);
+    await runWorkflowCodemod(
+      transpiledSource,
+      safeArgumentRecord,
+      (kind, message) => {
+        onPrinterMessage({ kind: "console", message, consoleKind: kind });
+      },
+    );
 
     // @TODO pass modified paths?
     await onSuccess?.({ codemod, commands: [] });

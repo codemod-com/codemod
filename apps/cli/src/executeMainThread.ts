@@ -85,11 +85,6 @@ const initializeDependencies = async (argv: {
       : new NullSender();
 
   const exit = async () => {
-    // appInsights telemetry client uses batches to send telemetry.
-    // this means that it waits for some timeout (default = 15000) to collect multiple telemetry events (envelopes) and then sends them in single batch
-    // see Channel2.prototype.send
-    // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
-    await telemetryService.dispose();
     process.exit(0);
   };
 
@@ -116,6 +111,10 @@ const initializeDependencies = async (argv: {
     if (!omitExit) {
       exit();
     }
+
+    // telemetry client uses batches to send telemetry.
+    // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
+    await telemetryService.dispose();
   };
 
   return {
@@ -137,7 +136,10 @@ export const executeMainThread = async () => {
 
   argvObject.wrap(argvObject.terminalWidth());
 
-  if (slicedArgv.includes("--version") || slicedArgv.includes("-v")) {
+  if (
+    (slicedArgv.includes("--version") || slicedArgv.includes("-v")) &&
+    slicedArgv.length === 1
+  ) {
     return console.log(version);
   }
 
@@ -188,23 +190,32 @@ export const executeMainThread = async () => {
     .command(
       ["list", "ls", "search"],
       "lists all the codemods & recipes in the public registry. can be used to search by name and tags",
-      (y) => y,
+      (y) =>
+        y
+          .option("mine", {
+            type: "boolean",
+            default: false,
+            description: "list only the codemods created by the logged in user",
+          })
+          .option("all", {
+            type: "boolean",
+            default: false,
+            description:
+              "include all of the codemods in the list (including hidden)",
+          }),
       async (args) => {
         const searchTerm = args._.length > 1 ? String(args._.at(-1)) : null;
-
-        if (searchTerm) {
-          if (searchTerm.length < 2) {
-            throw new Error(
-              "Search term must be at least 2 characters long. Aborting...",
-            );
-          }
-        }
 
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
 
         return executeCliCommand(() =>
-          handleListNamesCommand({ printer, search: searchTerm }),
+          handleListNamesCommand({
+            printer,
+            search: searchTerm,
+            all: args.all,
+            mine: args.mine,
+          }),
         );
       },
     )

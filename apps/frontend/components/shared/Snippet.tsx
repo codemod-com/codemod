@@ -1,7 +1,7 @@
 "use client";
 
 import { cx } from "cva";
-import React, { useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import Icon from "./Icon";
 

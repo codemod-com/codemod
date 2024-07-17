@@ -14,8 +14,8 @@ import {
   type TabsWithContents,
   useTabsData,
 } from "@studio/main/PaneLayout/tabsData";
-import { useSnippetStore } from "@studio/store/zustand/snippets";
-import { TabNames, useViewStore } from "@studio/store/zustand/view";
+import { useSnippetsStore } from "@studio/store/snippets";
+import { TabNames, useViewStore } from "@studio/store/view";
 import { useCallback, useEffect, useRef } from "react";
 
 const reduceTabs = (acc: TabsWithContents, { value, name }: TabHeader) => [
@@ -35,8 +35,7 @@ export const AssistantTab = ({
   afterPanel: PanelData;
 }) => {
   const { activeTab } = useViewStore();
-  const { engine } = useSnippetStore();
-
+  const { engine } = useSnippetsStore();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const savedScrollPositionRef = useRef<number>(0);
   const { isSignedIn } = useAuth();

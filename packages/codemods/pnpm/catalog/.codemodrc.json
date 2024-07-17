@@ -1,11 +1,12 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "name": "catalog",
-  "version": "1.0.0",
+  "name": "pnpm/catalog",
+  "version": "1.0.1",
   "engine": "workflow",
   "private": false,
   "arguments": [],
   "meta": {
-    "tags": []
+    "tags": ["pnpm", "9.5", "catalog"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/pnpm/catalog"
   }
 }

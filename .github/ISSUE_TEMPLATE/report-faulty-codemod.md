@@ -1,6 +1,6 @@
 ---
-name: Report faulty codemod
-about: Report codemod incorrect output
+name: Faulty codemod
+about: Report issues with an existing codemod.
 title: "[codemod][FP/FN] <codemod-name>"
 labels: codemod-issue
 assignees: ''

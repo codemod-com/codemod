@@ -1,38 +1,27 @@
-import { apiClient } from "@/utils/apis/client";
+import { aiApiClient } from "@/utils/apis/client";
 import type { AxiosError } from "axios";
-import { SEND_MESSAGE } from "../constants";
+import { SEND_CHAT } from "../constants";
 import { Either } from "../utils/Either";
 
-type SendMessageResponse = Readonly<{
-  text: string;
-  parentMessageId: string;
-  conversationId: string;
-}>;
+type SendMessageResponse = string;
 
 type SendMessageRequest = Readonly<{
   message: string;
-  parentMessageId?: string;
-  conversationId?: string;
   token: string;
 }>;
 
-const sendMessage = async ({
+const sendChat = async ({
   message,
-  parentMessageId,
   token,
 }: SendMessageRequest): Promise<Either<Error, SendMessageResponse>> => {
   try {
-    const res = await apiClient.post<SendMessageResponse>(
-      SEND_MESSAGE,
+    const res = await aiApiClient.post<SendMessageResponse>(
+      SEND_CHAT,
       {
-        message,
-        parentMessageId,
+        messages: [{ content: message, role: "user" }],
+        engine: "gpt-4",
       },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${token}` } },
     );
 
     return Either.right(res.data);
@@ -43,4 +32,4 @@ const sendMessage = async ({
 };
 
 export type { SendMessageRequest, SendMessageResponse };
-export default sendMessage;
+export default sendChat;

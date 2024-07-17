@@ -5,7 +5,6 @@ import { SanityImage } from "@/components/shared/SanityImage";
 import Section from "@/components/shared/Section";
 import type { TestiomonialsProps } from "@/types";
 import { cx } from "cva";
-import React from "react";
 
 export default function SectionExample(props: TestiomonialsProps) {
   function generateBorderExtensions(

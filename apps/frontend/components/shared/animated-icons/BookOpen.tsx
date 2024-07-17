@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 const BookOpen = ({ className = "", play = false }) => {
   useEffect(() => {

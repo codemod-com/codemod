@@ -1,3 +1,5 @@
+import detectIndent from "detect-indent";
+import { detectNewline } from "detect-newline";
 import type { PLazy } from "../PLazy.js";
 import { getFileContext } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
@@ -15,9 +17,16 @@ export function updateLogic<T>(
       const { callback } = self.getArguments();
       const file = getFileContext();
       const beforeContents = await file.contents();
+      const indent = detectIndent(beforeContents).indent || "  ";
+      const newline = detectNewline(beforeContents) || "\n";
+      const possibleNewline = beforeContents.slice(-newline.length);
+      const newlineToInsert =
+        newline.localeCompare(possibleNewline) === 0 ? newline : "";
       const afterContents = await callback(JSON.parse(beforeContents));
-      file.setContents(JSON.stringify(afterContents, null, 2));
-      await file.save();
+      file.setContents(
+        JSON.stringify(afterContents, null, indent).concat(newlineToInsert),
+      );
+      await file.save({ skipFormat: true });
       await next?.();
     })
     .return((self) => self.wrappedHelpers())

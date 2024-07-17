@@ -1,6 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
-import React from "react";
-
 import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import FooterLogo from "@/components/shared/FooterLogo";
 import { TechLogo } from "@/components/shared/Icon";

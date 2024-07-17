@@ -51,9 +51,9 @@ export enum ResizablePanelsIndices {
   LEFT = 12,
   RIGHT = 13,
   AST_TAB = 14,
+  TOP = 15,
+  BOTTOM = 16,
 }
-
-export type PanelContentRenderer = (engine: KnownEngines) => React.ReactNode;
 
 export type PanelData = Pick<
   PanelComponentProps,
@@ -63,7 +63,6 @@ export type PanelData = Pick<
   boundIndex?: ResizablePanelsIndices;
   snippedIndex: ResizablePanelsIndices;
   type: ContentViewerVariant;
-  content: PanelContentRenderer;
   relatedAST: ResizablePanelsIndices;
   defaultSize?: number;
   snippetData: SnippetData;

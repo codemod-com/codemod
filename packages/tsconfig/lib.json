@@ -3,8 +3,7 @@
     "module": "esnext",
     "moduleResolution": "node",
     "types": ["node"],
-    "target": "es2015",
-    "declaration": true,
+    "target": "es2022",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -24,6 +23,9 @@
     "noPropertyAccessFromIndexSignature": false,
     "skipLibCheck": true,
     "isolatedModules": true,
-    "sourceMap": true
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "resolveJsonModule": true
   }
 }

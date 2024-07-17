@@ -2,7 +2,6 @@
 
 import { Label } from "@studio/components/ui/label";
 import New5PaneSetup from "./5PaneSetup";
-import { useInputs } from "./useInputs";
 
 export const MainPage = () => {
   const isMobile =
@@ -10,8 +9,6 @@ export const MainPage = () => {
     /iPhone|iPad|iPod|Android|webOS|BlackBerry|Windows Phone/i.test(
       navigator.userAgent,
     );
-
-  useInputs();
 
   if (isMobile) {
     return (

@@ -1,9 +1,9 @@
 import { createHash } from "node:crypto";
 import { mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
-import type { CodemodDownloadLinkResponse } from "@codemod-com/utilities";
 import {
   type CodemodConfig,
   doubleQuotify,
@@ -38,7 +38,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
   public async download(
     name: string,
-    disableSpinner?: boolean,
+    disableLogs?: boolean,
   ): Promise<Codemod & { bundleType: "package"; source: "registry" }> {
     await mkdir(this.__configurationDirectoryPath, { recursive: true });
 
@@ -53,7 +53,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
 
     let spinner: ReturnType<typeof this.__printer.withLoaderMessage> | null =
       null;
-    if (!disableSpinner) {
+    if (!disableLogs) {
       spinner = this.__printer.withLoaderMessage(
         chalk.cyan("Fetching", `${printableName}...`),
       );
@@ -67,11 +67,9 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       linkResponse = await getCodemodDownloadURI(name, userData?.token);
     } catch (err) {
       spinner?.fail();
-      throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data?.error ??
-          "Error getting download link for codemod",
-      );
+      throw err;
     }
+
     const localCodemodPath = join(directoryPath, "codemod.tar.gz");
 
     let downloadResult: Awaited<
@@ -121,15 +119,17 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       this._fileDownloadService.cacheEnabled &&
       semver.gt(linkResponse.version, config.version)
     ) {
-      this.__printer.printConsoleMessage(
-        "info",
-        chalk.yellow(
-          "Newer version of",
-          chalk.cyan(name),
-          "codemod is available.",
-          "Temporarily disabling cache to download the latest version...",
-        ),
-      );
+      if (!disableLogs) {
+        this.__printer.printConsoleMessage(
+          "info",
+          chalk.yellow(
+            "Newer version of",
+            chalk.cyan(name),
+            "codemod is available.",
+            "Temporarily disabling cache to download the latest version...",
+          ),
+        );
+      }
 
       return new CodemodDownloader(
         this.__printer,
@@ -141,7 +141,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
           this._fileDownloadService._printer,
         ),
         this._tarService,
-      ).download(name, disableSpinner);
+      ).download(name, disableLogs);
     }
 
     if (config.engine === "ast-grep") {

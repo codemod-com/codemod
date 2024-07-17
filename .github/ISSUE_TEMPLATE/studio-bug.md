@@ -1,7 +1,7 @@
 ---
-name: Codemod Studio Issue
-about: Report any issues and bugs in Codemod Studio
-title: "studio: example-bug"
+name: Codemod Studio
+about: Report any issues, feedback, or feature requests for Codemod Studio.
+title: "[studio]"
 labels: studio
 assignees: ''
 

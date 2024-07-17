@@ -1,6 +1,6 @@
 import { cn } from "@/utils";
+import { type LLMEngine, llmEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
-import { type LLMEngine, llmEngines } from "@shared/consts";
 import {
   Select,
   SelectContent,
@@ -8,7 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
-import { useCFSStore } from "@studio/store/zustand/CFS";
+import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 
 const legacyEngines = [
   "gpt-4",

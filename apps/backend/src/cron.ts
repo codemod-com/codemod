@@ -161,9 +161,9 @@ const systemHealthCheckCron = new CronJob(
         }
       }),
     );
-  },
-  null,
-  false,
+  }, // onTick
+  null, // onComplete
+  false, // start
 );
 
 export const startCronJobs = () => {

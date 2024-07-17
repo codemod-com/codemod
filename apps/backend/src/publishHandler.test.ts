@@ -1,4 +1,11 @@
 import { createHash } from "node:crypto";
+import {
+  CODEMOD_NAME_TAKEN,
+  CODEMOD_VERSION_EXISTS,
+  INTERNAL_SERVER_ERROR,
+  NO_MAIN_FILE_FOUND,
+  UNAUTHORIZED,
+} from "@codemod-com/api-types";
 import type { CodemodConfigInput } from "@codemod-com/utilities";
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
@@ -73,26 +80,6 @@ vi.mock("@aws-sdk/client-s3", async () => {
     ...actual,
     S3Client: mocks.S3Client,
     PutObjectCommand: mocks.PutObjectCommand,
-  };
-});
-
-vi.mock("./schemata/env.js", async () => {
-  const actual = await vi.importActual("./schemata/env.js");
-
-  return {
-    ...actual,
-    parseEnvironment: vi.fn().mockImplementation(() => {
-      return {
-        PORT: "8081",
-        DATABASE_URI: "sqlite://:memory:",
-        VERIFIED_PUBLISHERS: [],
-        CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
-        CLERK_SECRET_KEY: "CLERK_SECRET_KEY",
-        CLERK_JWT_KEY: "CLERK_JWT_KEY",
-        TASK_MANAGER_QUEUE_NAME: "TASK_MANAGER_QUEUE_NAME",
-        CODEMOD_COM_API_URL: "https://codemod.com/api",
-      };
-    }),
   };
 });
 
@@ -241,7 +228,10 @@ describe("/publish route", async () => {
       },
     );
 
-    expect(response.body).toEqual({ success: true });
+    expect(response.body).toEqual({
+      name: codemodRcContents.name,
+      version: codemodRcContents.version,
+    });
   });
 
   it("should publish piranha codemods", async () => {
@@ -309,7 +299,10 @@ describe("/publish route", async () => {
       requestTimeout: 5000,
     });
 
-    expect(response.body).toEqual({ success: true });
+    expect(response.body).toEqual({
+      name: codemodRcContents.name,
+      version: codemodRcContents.version,
+    });
   });
 
   it("should not allow further execution if required files were not provided", async () => {
@@ -337,8 +330,8 @@ describe("/publish route", async () => {
       .expect(expectedCode);
 
     expect(response.body).toEqual({
-      error: "No main file was provided",
-      success: false,
+      error: NO_MAIN_FILE_FOUND,
+      errorText: "No main file was provided",
     });
   });
 
@@ -382,8 +375,8 @@ describe("/publish route", async () => {
     expect(mocks.PutObjectCommand.mock.instances.length).toEqual(0);
 
     expect(response.body).toEqual({
-      error: `Failed writing codemod to the database: ${errorMsg}`,
-      success: false,
+      error: INTERNAL_SERVER_ERROR,
+      errorText: `Failed writing codemod to the database: ${errorMsg}`,
     });
   });
 
@@ -420,8 +413,8 @@ describe("/publish route", async () => {
     expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
 
     expect(response.body).toEqual({
-      error: `Codemod ${codemodRcContents.name} version ${codemodRcContents.version} is lower than the latest published or the same as the latest published version: 1.0.0`,
-      success: false,
+      error: CODEMOD_VERSION_EXISTS,
+      errorText: `Codemod ${codemodRcContents.name} version ${codemodRcContents.version} is lower than the latest published or the same as the latest published version: 1.0.0`,
     });
   });
 
@@ -459,8 +452,8 @@ describe("/publish route", async () => {
     expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
 
     expect(response.body).toEqual({
-      error: `Codemod name \`${codemodRcContents.name}\` is already taken.`,
-      success: false,
+      error: CODEMOD_NAME_TAKEN,
+      errorText: `Codemod name \`${codemodRcContents.name}\` is already taken.`,
     });
   });
 
@@ -529,8 +522,8 @@ describe("/publish route", async () => {
       });
 
       expect(response.body).toEqual({
-        error: `Failed publishing to S3: ${errorMsg}`,
-        success: false,
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed publishing to S3: ${errorMsg}`,
       });
     });
 
@@ -596,8 +589,8 @@ describe("/publish route", async () => {
       });
 
       expect(response.body).toEqual({
-        error: `Failed publishing to S3: ${errorMsg}`,
-        success: false,
+        error: INTERNAL_SERVER_ERROR,
+        errorText: `Failed publishing to S3: ${errorMsg}`,
       });
     });
   });
@@ -663,7 +656,8 @@ describe("/publish route", async () => {
       expect(clientInstance.send).toHaveBeenCalledOnce();
 
       expect(response.body).toEqual({
-        success: true,
+        name: codemodRcContents.name,
+        version: codemodRcContents.version,
       });
     });
 
@@ -718,8 +712,8 @@ describe("/publish route", async () => {
       expect(mocks.prisma.codemod.upsert).toHaveBeenCalledTimes(0);
 
       expect(response.body).toEqual({
-        error: `You are not allowed to publish under namespace "org"`,
-        success: false,
+        error: UNAUTHORIZED,
+        errorText: `You are not allowed to publish under namespace "org"`,
       });
     });
   });

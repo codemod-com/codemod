@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import { homedir } from "node:os";
 import { basename, dirname, extname, join } from "node:path";
+import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
 import {
   type PrinterBlueprint,
   boxen,
@@ -153,6 +154,17 @@ export const transformCodemodToRunnable = async (options: {
   return codemodToRun;
 };
 
+const printCodemodVersion = (codemod: Codemod, printer: PrinterBlueprint) => {
+  if (codemod.bundleType === "standalone") {
+    return printer.printConsoleMessage(
+      "log",
+      chalk.cyan("Standalone codemods do not support versioning."),
+    );
+  }
+
+  return printer.printConsoleMessage("log", chalk.cyan(`v${codemod.version}`));
+};
+
 export const handleRunCliCommand = async (options: {
   printer: PrinterBlueprint;
   args: GlobalArgvOptions & RunArgvOptions;
@@ -169,7 +181,8 @@ export const handleRunCliCommand = async (options: {
     !runSettings.dryRun &&
     !args["disable-tree-version-check"] &&
     !args.readme &&
-    !args.config
+    !args.config &&
+    !args.version
   ) {
     await checkFileTreeVersioning(flowSettings.target);
   }
@@ -205,6 +218,10 @@ export const handleRunCliCommand = async (options: {
       tarService,
     );
 
+    if (args.version) {
+      return printCodemodVersion(codemod, printer);
+    }
+
     codemodDefinition = {
       kind: codemodSettings.kind,
       codemod: {
@@ -223,13 +240,17 @@ export const handleRunCliCommand = async (options: {
     try {
       codemod = await codemodDownloader.download(
         codemodSettings.name,
-        args.readme || args.config,
+        args.readme || args.config || args.version,
       );
+
+      if (args.version) {
+        return printCodemodVersion(codemod, printer);
+      }
     } catch (error) {
       if (error instanceof AxiosError) {
         if (
           error.response?.status === 400 &&
-          error.response.data.error === "Codemod not found"
+          error.response.data.error === CODEMOD_NOT_FOUND
         ) {
           printer.printConsoleMessage(
             "error",
@@ -582,11 +603,11 @@ export const handleRunCliCommand = async (options: {
     printer.printConsoleMessage(
       "info",
       chalk.cyan(
-        "\nFind the logs of the run at",
+        "\nLogs can be found at:",
         chalk.bold(logsPath),
-        "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+        "\nFor feedback or reporting issues, run",
         chalk.bold(doubleQuotify("codemod feedback")),
-        "and include the logs in the issue body.",
+        "and include the logs.",
       ),
     );
 

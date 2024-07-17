@@ -1,3 +1,4 @@
+import detectIndent from "detect-indent";
 import * as YAML from "yaml";
 import type { PLazy } from "../PLazy.js";
 import { getFileContext } from "../contexts.js";
@@ -16,9 +17,10 @@ export function updateLogic<T>(
       const { callback } = self.getArguments();
       const file = getFileContext();
       const beforeContents = await file.contents();
+      const indent = detectIndent(beforeContents).amount || 2;
       const afterContents = await callback(YAML.parse(beforeContents));
-      file.setContents(YAML.stringify(afterContents));
-      await file.save();
+      file.setContents(YAML.stringify(afterContents, { indent }));
+      await file.save({ skipFormat: true });
       await next?.();
     })
     .return((self) => self.wrappedHelpers())
