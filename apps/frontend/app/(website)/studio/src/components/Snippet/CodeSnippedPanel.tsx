@@ -1,6 +1,6 @@
 import { cn } from "@/utils";
+import { BoundResizePanel } from "@studio/components/ResizePanel/BoundResizePanel";
 import {
-  BoundResizePanel,
   type PanelData,
   type PanelsRefs,
   SnippetHeader,

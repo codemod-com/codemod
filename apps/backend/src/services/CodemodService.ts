@@ -1,3 +1,4 @@
+import type { CodemodListResponse } from "@codemod-com/api-types";
 import {
   type Codemod,
   type CodemodVersion,
@@ -6,10 +7,8 @@ import {
   type Tag,
   prisma,
 } from "@codemod-com/database";
-
 import {
   type AllEngines,
-  type CodemodListResponse,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 

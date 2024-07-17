@@ -3,13 +3,14 @@
   "version": "0.0.21",
   "type": "module",
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js"
   },
   "keywords": [],
   "author": "Codemod inc.",
   "license": "ISC",
   "dependencies": {
+    "@codemod-com/auth": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/multipart": "catalog:",
     "@fastify/rate-limit": "catalog:",

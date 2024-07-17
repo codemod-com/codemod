@@ -1,10 +1,11 @@
+import {
+  type UserDataPopulatedRequest,
+  getAuthPlugin,
+} from "@codemod-com/auth";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
-import authPlugin, {
-  type UserDataPopulatedRequest,
-} from "./plugins/authPlugin.js";
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,
@@ -93,8 +94,10 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     timeWindow: 60 * 1000, // 1 minute
   });
 
-  await fastify.register(fastifyMultipart);
+  const authPlugin = await getAuthPlugin(environment.AUTH_SERVICE_URL);
   await fastify.register(authPlugin);
+
+  await fastify.register(fastifyMultipart);
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);

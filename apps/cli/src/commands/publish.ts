@@ -1,14 +1,13 @@
 import * as fs from "node:fs";
 import { basename, dirname, join } from "node:path";
+import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
-  CODEMOD_VERSION_EXISTS,
   type CodemodConfig,
   buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
   execPromise,
-  isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";

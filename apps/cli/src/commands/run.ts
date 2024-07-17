@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import { homedir } from "node:os";
 import { basename, dirname, extname, join } from "node:path";
+import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
 import {
   type PrinterBlueprint,
   boxen,
@@ -22,7 +23,6 @@ import {
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
-  CODEMOD_NOT_FOUND,
   TarService,
   doubleQuotify,
   execPromise,

@@ -1,3 +1,5 @@
+import baseTsconfig from "@codemod-com/tsconfig/base.json";
+import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
 import * as changeCase from "change-case";
 import jsBeautify from "js-beautify";
 import {
@@ -380,18 +382,14 @@ const codemodRc = ({
 const tsconfigJson = () => {
   return beautify(`
     {
-      "compilerOptions": {
-        "outDir": "./dist",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "isolatedModules": true,
-        "module": "NodeNext",
-        "skipLibCheck": true,
-        "strict": true,
-        "target": "ES6",
-        "allowJs": true, 
-        "noUncheckedIndexedAccess": true
-      },
+      "compilerOptions": ${JSON.stringify(
+        {
+          ...baseTsconfig.compilerOptions,
+          ...codemodTsconfig.compilerOptions,
+        },
+        null,
+        2,
+      )},
       "include": [
         "./src/**/*.ts",
         "./src/**/*.js",

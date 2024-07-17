@@ -30,6 +30,7 @@
   "main": "./dist/index.cjs",
   "bin": "./dist/index.cjs",
   "devDependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/runner": "workspace:*",

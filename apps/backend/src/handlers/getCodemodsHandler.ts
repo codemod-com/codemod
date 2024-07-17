@@ -1,7 +1,7 @@
+import type { ApiResponse } from "@codemod-com/api-types";
+import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import type { Codemod } from "@codemod-com/database";
-import type { ApiResponse } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
-import type { UserDataPopulatedRequest } from "~/plugins/authPlugin.js";
 import { parseGetCodemodsQuery } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
 

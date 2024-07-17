@@ -4,6 +4,10 @@ generator client {
   output     = "../generated/client"
 }
 
+generator json {
+  provider = "prisma-json-types-generator"
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URI")
@@ -15,7 +19,9 @@ model Codemod {
   shortDescription String?          @db.Text
   tags             String[]         @default([])
   engine           String?          @db.VarChar(255)
+  /// [Applicability]
   applicability    Json?
+  /// [Argument]
   arguments        Json?
   name             String           @unique @db.VarChar(255)
   featured         Boolean          @default(false)
@@ -38,7 +44,9 @@ model CodemodVersion {
   version                  String   @db.VarChar(255)
   shortDescription         String?  @db.Text
   engine                   String   @db.VarChar(255)
+  /// [Applicability]
   applicability            Json?
+  /// [Argument]
   arguments                Json?
   vsCodeLink               String   @db.VarChar(255)
   codemodStudioExampleLink String?  @db.VarChar(255)

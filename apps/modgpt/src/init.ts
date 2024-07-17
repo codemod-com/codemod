@@ -1,17 +1,12 @@
+import { getAuthPlugin } from "@codemod-com/auth";
 import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
 import { environment } from "./dev-utils/configs";
 import { corsOptions } from "./dev-utils/cors";
-import authPlugin from "./plugins/authPlugin";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
-  const { PORT: port } = environment;
-  if (Number.isNaN(port)) {
-    throw new Error(`Invalid port ${port}`);
-  }
-
   const fastify = Fastify({
     logger: true,
   });
@@ -44,6 +39,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     handleProcessExit(0);
   });
 
+  const authPlugin = await getAuthPlugin(environment.AUTH_SERVICE_URL);
   await fastify.register(authPlugin);
 
   await fastify.register(cors, corsOptions);
@@ -59,7 +55,7 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     await fastify.register(plugin);
   }
 
-  await fastify.listen({ port, host: "0.0.0.0" });
+  await fastify.listen({ port: environment.PORT, host: "0.0.0.0" });
 
   return fastify;
 };

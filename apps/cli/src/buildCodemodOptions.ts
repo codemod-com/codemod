@@ -9,11 +9,11 @@ import {
   parse as pathParse,
   resolve,
 } from "node:path";
+import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
   type AllEngines,
-  CODEMOD_NOT_FOUND,
   type CodemodConfig,
   type FileSystem,
   type TarService,

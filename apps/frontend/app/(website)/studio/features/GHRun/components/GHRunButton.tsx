@@ -1,4 +1,5 @@
 import { useUser } from "@clerk/nextjs";
+import type { GHBranch, GithubRepository } from "@codemod-com/api-types";
 import {
   ProgressBar,
   getButtonPropsByStatus,
@@ -9,7 +10,6 @@ import { Check as CheckIcon } from "@phosphor-icons/react/dist/csr/Check";
 import { Button } from "@studio/components/ui/button";
 import { useEnsureUserSigned } from "@studio/hooks/useEnsureUserSigned";
 import { useLocalStorage } from "@studio/hooks/useLocalStorage";
-import type { GHBranch, GithubRepository } from "be-types";
 import { useRouter } from "next/navigation";
 import { type MouseEvent, memo, useState } from "react";
 import { useModal } from "../../../src/hooks/useModal";
