@@ -22,6 +22,7 @@
     "@types/pg": "catalog:",
     "@types/semver": "7.5.8",
     "@types/supertest": "catalog:",
+    "@types/ws": "^8.5.11",
     "dotenv-cli": "catalog:",
     "esbuild": "^0.19.12",
     "esbuild-plugin-copy": "catalog:",
