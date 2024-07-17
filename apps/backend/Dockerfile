@@ -20,6 +20,7 @@ RUN pnpm install
 
 COPY ./apps/backend/tsconfig.json /app/apps/backend/
 COPY ./apps/backend/esbuild.config.js /app/apps/backend/
+COPY ./apps/backend/reset.d.ts /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
 RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/api-types --filter @codemod-com/auth --filter @codemod-com/backend
