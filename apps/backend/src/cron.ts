@@ -67,85 +67,103 @@ const syncDatabaseWithPosthogDataCron = new CronJob(
   false, // start
 );
 
-const systemHealthCheckCron = new CronJob(
-  "*/10 * * * *",
-  async () => {
-    const token = environment.SLACK_TOKEN;
-    const channel = environment.SLACK_CHANNEL;
+const services: Array<{
+  name: string;
+  url: string;
+  type: "http" | "websocket";
+  available: boolean;
+}> = [
+  {
+    name: "Backend API",
+    url: process.env.BACKEND_API_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "Auth Service",
+    url: process.env.AUTH_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "ModGPT Service",
+    url: process.env.MODGPT_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+  {
+    name: "Codemod AI Service",
+    url: process.env.CODEMOD_AI_SERVICE_URL ?? "",
+    type: "websocket",
+    available: true,
+  },
+  {
+    name: "Run Service",
+    url: process.env.RUN_SERVICE_URL ?? "",
+    type: "http",
+    available: true,
+  },
+];
 
+const systemHealthCheckCron = new CronJob(
+  "*/10 * * * * *",
+  async () => {
+    const token = process.env.SLACK_TOKEN ?? "";
+    const channel = process.env.SLACK_CHANNEL ?? "";
     const web = new WebClient(token);
 
-    const services: Array<{
-      name: string;
-      url: string;
-      type: "http" | "websocket";
-    }> = [
-      {
-        name: "Backend API",
-        url: environment.BACKEND_API_URL ?? "",
-        type: "http",
-      },
-      {
-        name: "Auth Service",
-        url: environment.AUTH_SERVICE_URL ?? "",
-        type: "http",
-      },
-      {
-        name: "ModGPT Service",
-        url: environment.MODGPT_SERVICE_URL ?? "",
-        type: "http",
-      },
-      {
-        name: "Codemod AI Service",
-        url: environment.CODEMOD_AI_SERVICE_URL ?? "",
-        type: "websocket",
-      },
-      {
-        name: "Run Service",
-        url: environment.RUN_SERVICE_URL ?? "",
-        type: "http",
-      },
-    ];
+    await Promise.all(
+      services.map(async (service) => {
+        try {
+          if (service.type === "http") {
+            const response = await axios.get(service.url);
 
-    for (const service of services) {
-      try {
-        if (service.type === "http") {
-          const { status } = await axios.get(service.url);
-          if (status !== 200) {
-            throw new Error("Service did not respond with OK");
+            if (response.status === 200 && service.available === false) {
+              await web.chat.postMessage({
+                channel: channel,
+                text: `${service.name} is now up.`,
+              });
+              service.available = true;
+            }
+          } else if (service.type === "websocket") {
+            await new Promise((resolve, reject) => {
+              const ws = new WebSocket(service.url);
+
+              ws.on("open", async () => {
+                if (service.available === false) {
+                  await web.chat.postMessage({
+                    channel: channel,
+                    text: `${service.name} is now up.`,
+                  });
+                }
+                service.available = true;
+
+                ws.close();
+                resolve(true);
+              });
+
+              ws.on("error", (error) => {
+                reject(
+                  new Error(`WebSocket connection error: ${error.message}`),
+                );
+              });
+            });
           }
-        } else if (service.type === "websocket") {
-          await new Promise((resolve, reject) => {
-            const ws = new WebSocket(service.url);
-
-            ws.on("open", () => {
-              ws.close();
-              resolve(true);
+        } catch (error) {
+          if (service.available === true) {
+            await web.chat.postMessage({
+              channel: channel,
+              text: `${service.name} is down. Error: ${error}`,
             });
 
-            ws.on("error", (error) => {
-              reject(new Error(`WebSocket connection error: ${error.message}`));
-            });
-
-            ws.on("close", (code) => {
-              if (code !== 1000) {
-                reject(new Error(`WebSocket closed with code: ${code}`));
-              }
-            });
-          });
+            service.available = false;
+          }
         }
-      } catch (error) {
-        console.error(`${service.name} is down`, error);
-
-        await web.chat.postMessage({
-          channel: channel,
-          text: `${service.name} is down. Error: ${error}`,
-        });
-      }
-    }
-  }, // onTick
-  null, // onComplete
-  false, // start
+      }),
+    );
+  },
+  null,
+  false,
 );
 
 export const startCronJobs = () => {
