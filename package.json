@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/codemod",
-  "version": "1.0.0",
+  "version": "0.0.0-development",
   "author": "Codemod, Inc.",
   "license": "Apache License, Version 2.0",
   "description": "A monorepo for all the interconnected tools of codemod.com",
@@ -56,7 +56,9 @@
     "db:push": "turbo run db:push",
     "db:reset": "turbo run db:reset",
     "db:seed": "turbo run db:seed",
-    "db:studio": "turbo run db:studio"
+    "db:studio": "turbo run db:studio",
+    "semantic-release": "semantic-release",
+    "commit": "git-cz"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.4",
@@ -65,9 +67,12 @@
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/node": "^20.5.1",
     "@vitest/coverage-v8": "^1.0.1",
+    "commitizen": "^4.3.0",
     "concurrently": "^8.2.0",
+    "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.3",
     "lint-staged": "^15.1.0",
+    "semantic-release": "^24.0.0",
     "tsx": "^4.2.0",
     "turbo": "^1.10.14",
     "typescript": "^5.4.5",
@@ -86,6 +91,11 @@
     "overrides": {
       "postcss": "8.4.35",
       "whatwg-url": "^14.0.0"
+    }
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
     }
   }
 }
