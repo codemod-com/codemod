@@ -1,24 +1,35 @@
 import {
-  array,
   literal,
   object,
   optional,
   parse,
   string,
+  tuple,
   union,
 } from "valibot";
 
-export const roles = ["system", "user", "assistant", "function"] as const;
+export const roles = ["system", "user", "assistant"] as const;
+
+export const rolesWithName = ["function"] as const;
+
+export const allRoles = [...roles, ...rolesWithName] as const;
+
+const chatMessageSchema = union([
+  object({
+    content: string(),
+    role: union(rolesWithName.map((r) => literal(r))),
+    name: string(),
+  }),
+  object({
+    content: string(),
+    role: union(roles.map((r) => literal(r))),
+    name: string(),
+  }),
+]);
 
 export const sendChatBodySchema = object({
-  messages: array(
-    object({
-      content: string(),
-      role: union(roles.map((role) => literal(role))),
-      name: optional(string()),
-    }),
-  ),
-  engine: string(),
+  messages: tuple([chatMessageSchema], chatMessageSchema),
+  engine: optional(string()),
 });
 
 export const parseSendChatBody = (input: unknown) =>

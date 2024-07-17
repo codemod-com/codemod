@@ -5,7 +5,7 @@
       "~/*": ["src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["reset.d.ts", "./src", "./test"],
   "exclude": ["node_modules", "**/*.spec.ts"],
   "extends": "@codemod-com/tsconfig/backend.json"
 }

@@ -194,7 +194,7 @@ catalog:
     node-fetch: ^3.3.2
     null-loader: ^4.0.1
     open: ^8.4.2
-    openai: 4.23.0
+    openai: ^4.52.7
     openai-edge: 1.2.2
     ora: ^8.0.1
     os-browserify: ^0.3.0

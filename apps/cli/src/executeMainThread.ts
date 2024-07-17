@@ -233,6 +233,11 @@ export const executeMainThread = async () => {
             alias: "s",
             type: "string",
             description: "path to the codemod to improve on top of",
+          })
+          .option("engine", {
+            type: "string",
+            description: "the engine to use with the standalone codemod",
+            hidden: true,
           }),
       async (args) => {
         const { executeCliCommand, printer } =
@@ -243,6 +248,7 @@ export const executeMainThread = async () => {
             printer,
             target: args.target ?? null,
             source: args.source ?? null,
+            engine: args.engine ?? null,
           }),
         );
       },

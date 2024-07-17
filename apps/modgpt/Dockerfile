@@ -24,6 +24,7 @@ RUN pnpm install
 
 # Copy the remaining application files
 COPY apps/modgpt/tsconfig.json apps/modgpt/
+COPY apps/modgpt/reset.d.ts apps/modgpt/
 COPY apps/modgpt/esbuild.config.js apps/modgpt/
 COPY apps/modgpt/src apps/modgpt/src/
 

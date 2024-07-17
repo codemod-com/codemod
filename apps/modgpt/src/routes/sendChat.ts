@@ -1,7 +1,11 @@
-import type { IncomingMessage, ServerResponse } from "node:http";
+import {
+  type ApiResponse,
+  BAD_REQUEST,
+  INTERNAL_SERVER_ERROR,
+} from "@codemod-com/api-types";
+import type { MultipartFile } from "@fastify/multipart";
 import { OpenAIStream } from "ai";
-import { ChatGPTAPI, type ChatMessage } from "chatgpt";
-import * as openAiEdge from "openai-edge";
+import OpenAI, { toFile } from "openai";
 import { environment } from "../dev-utils/configs";
 import { corsDisableHeaders } from "../dev-utils/cors";
 import type { Instance } from "../fastifyInstance";
@@ -12,90 +16,111 @@ import { ReplicateService } from "../services/replicateService";
 const { OPEN_AI_API_KEY, CLAUDE_API_KEY, REPLICATE_API_KEY, NODE_ENV } =
   environment;
 
-const OpenAIConfiguration = openAiEdge.Configuration;
-
-const COMPLETION_PARAMS = {
-  top_p: 0.1,
-  temperature: 0.2,
-  model: "gpt-4",
-};
-
-const chatGptApi = new ChatGPTAPI({
-  apiKey: OPEN_AI_API_KEY,
-  completionParams: COMPLETION_PARAMS,
-});
 const claudeService = new ClaudeService(CLAUDE_API_KEY, 1024);
 const replicateService = new ReplicateService(REPLICATE_API_KEY);
-const openAiEdgeApi = new openAiEdge.OpenAIApi(
-  new OpenAIConfiguration({ apiKey: OPEN_AI_API_KEY }),
-);
+const openai = new OpenAI({
+  apiKey: OPEN_AI_API_KEY,
+});
 
 export const getSendChatPath = (instance: Instance) =>
-  instance.post(
+  instance.post<{
+    Reply: ApiResponse<
+      Awaited<ReturnType<typeof openai.chat.completions.create>> | string
+    >;
+  }>(
     "/sendChat",
     { preHandler: instance.authenticate },
     async (request, reply) => {
       const { messages, engine } = parseSendChatBody(request.body);
-      if (!messages[0]) {
-        return reply.code(400).send();
+
+      if (messages.find((msg) => msg.role === "function" && !msg.name)) {
+        return reply.status(400).send({
+          errorText: "Function messages must have a name",
+          error: BAD_REQUEST,
+        });
       }
 
-      let completion: string | ChatMessage | null = null;
+      let completion:
+        | Awaited<ReturnType<typeof openai.chat.completions.create>>
+        | string
+        | null = null;
+
       try {
-        if (engine === "claude-2.0" || engine === "claude-instant-1.2") {
-          completion = await claudeService.complete(
-            engine,
-            messages[0].content,
-          );
-        } else if (engine === "replit-code-v1-3b") {
-          completion = await replicateService.complete(messages[0].content);
-        } else if (engine === "gpt-4-with-chroma") {
-          const prompt = messages
-            .map(({ content, role }) => `${role}: ${content}`)
-            .join("\n");
-          completion = await chatGptApi.sendMessage(prompt);
-        } else if (openAiEdgeApi) {
-          const response = await openAiEdgeApi.createChatCompletion({
-            ...COMPLETION_PARAMS,
-            model: engine,
-            messages: messages.map((msg) => ({
-              role: msg.role,
-              content: msg.content,
-            })),
-            stream: true,
+        switch (engine) {
+          case "claude-2.0":
+          case "claude-instant-1.2":
+            completion = await claudeService.complete(
+              engine,
+              messages[0].content,
+            );
+            break;
+          case "replit-code-v1-3b":
+            completion = await replicateService.complete(messages[0].content);
+            break;
+          case "gpt-4-with-chroma":
+            completion = await openai.chat.completions.create({
+              messages,
+              model: engine ?? "gpt-4",
+            });
+            break;
+        }
+
+        if (completion) {
+          return reply.type("text/plain; charset=utf-8").send(completion);
+        }
+
+        const files: MultipartFile[] = [];
+        for await (const multipartFile of request.files({
+          // 15 MB
+          limits: { fileSize: 1024 * 1024 * 15 },
+        })) {
+          files.push(multipartFile);
+        }
+
+        if (files.length > 1) {
+          return reply.status(400).send({
+            errorText: "Only one file is allowed",
+            error: BAD_REQUEST,
           });
-          const headers = corsDisableHeaders;
-
-          const stream = OpenAIStream(response);
-          reply.raw.writeHead(200, headers);
-          reply.hijack();
-          const reader = stream.getReader();
-          await pushStreamToReply(reader, reply.raw);
-        } else {
-          throw new Error(
-            "You need to provide the OPEN_AI_API_KEY to use this endpoint",
-          );
         }
 
-        if (!reply.sent && completion) {
-          reply.type("text/plain; charset=utf-8").send(completion);
+        if (files[0]) {
+          await openai.files.create({
+            file: await toFile(files[0].toBuffer(), "codemod.zip"),
+            purpose: "fine-tune",
+          });
         }
+
+        const response = await openai.chat.completions.create({
+          top_p: 0.1,
+          temperature: 0.2,
+          model: engine ?? "gpt-4",
+          messages,
+          stream: true,
+        });
+
+        const headers = corsDisableHeaders;
+        const stream = OpenAIStream(response);
+        reply.raw.writeHead(200, headers);
+        reply.hijack();
+
+        const reader = stream.getReader();
+        while (true) {
+          const { done, value } = await reader.read();
+
+          if (done) {
+            break;
+          }
+          reply.raw.write(value);
+        }
+
+        return reply.raw.end() as any;
       } catch (error) {
         console.error(error);
-        reply.send(error);
+        reply.send({
+          errorText: (error as Error).message,
+          error: INTERNAL_SERVER_ERROR,
+        });
       }
     },
   );
-
-async function pushStreamToReply(
-  reader: ReadableStreamDefaultReader,
-  response: ServerResponse<IncomingMessage>,
-) {
-  const { done, value } = await reader.read();
-  if (done) {
-    response.end();
-    return;
-  }
-  response.write(value);
-  await pushStreamToReply(reader, response);
-}

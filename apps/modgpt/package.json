@@ -10,6 +10,7 @@
   "author": "Codemod inc.",
   "license": "ISC",
   "dependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/auth": "workspace:*",
     "@fastify/cors": "catalog:",
     "@fastify/multipart": "catalog:",
@@ -19,6 +20,7 @@
     "chatgpt": "catalog:",
     "dotenv": "catalog:",
     "fastify": "catalog:",
+    "openai": "catalog:",
     "openai-edge": "catalog:",
     "replicate": "catalog:",
     "ts-node": "^10.9.2",

@@ -206,11 +206,12 @@ const generateCodemodContext = `### Context
 
 const improveCodemodContext = `### Context
 - You will be provided with BEFORE and AFTER code snippet pairs and an existing codemod that might or might not satisfy them.
+- An existing codemod is located in a zip archive sent to you.
 - Use the provided jscodeshift codemod and see whether it would turn each BEFORE snippet into corresponding AFTER snippet.
 - Identify common patterns and improve the codemod to handle all cases.
 - Use only jscodeshift and TypeScript.
 - If comments in AFTER snippets describe the transformation, do not preserve them.
-- Only include the generated codemod in your response, no extra explanations.
+- Only include the download link for the archive with updated code in your response, no extra explanations or text.
 - Comment your code following best practices.
 - Do not import 'namedTypes' or 'builders' from jscodeshift.
 - Always narrow node types using typeguards before accessing their properties.
@@ -380,20 +381,22 @@ const isVariableDeclarator = root.find(j.VariableDeclarator).at(0).isOfType('Var
 \`\`\`
 `;
 
-export function getCodemodPrompt(
-  type: "generate",
-  testCases: { before: string; after: string }[],
-): string;
-export function getCodemodPrompt(
-  type: "improve",
-  testCases: { before: string; after: string }[],
-  existingCodemodSource: string,
-): string;
-export function getCodemodPrompt(
-  type: "improve" | "generate",
-  testCases: { before: string; after: string }[],
-  existingCodemodSource?: string,
-) {
+export function getCodemodPrompt(options: {
+  type: "generate";
+  testCases: { before: string; after: string }[];
+}): string;
+export function getCodemodPrompt(options: {
+  type: "improve";
+  testCases: { before: string; after: string }[];
+  existingCodemodSource: string;
+}): string;
+export function getCodemodPrompt(options: {
+  type: "improve" | "generate";
+  testCases: { before: string; after: string }[];
+  existingCodemodSource?: string;
+}) {
+  const { type, testCases, existingCodemodSource } = options;
+
   return `${type === "generate" ? generateCodemodContext : improveCodemodContext}
 
 ${

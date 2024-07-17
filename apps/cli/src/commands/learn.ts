@@ -1,11 +1,18 @@
+import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, extname, resolve, sep } from "node:path";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+import { parseCodemodSettings, transpile } from "@codemod-com/runner";
+import {
+  type KnownEngines,
+  TarService,
+  doubleQuotify,
+} from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import open from "open";
-import { createCodeDiff } from "../apis.js";
+import { createCodeDiff, sendAIRequest } from "../apis.js";
+import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import {
   findModifiedFiles,
   getFileFromCommit,
@@ -13,6 +20,7 @@ import {
   getLatestCommitHash,
   isFileInGitDirectory,
 } from "../gitCommands.js";
+import { getCodemodPrompt, getCurrentUserOrLogin } from "../utils.js";
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>
@@ -63,8 +71,9 @@ export const handleLearnCliCommand = async (options: {
   printer: PrinterBlueprint;
   target: string | null;
   source: string | null;
+  engine: string | null;
 }) => {
-  const { printer, target, source } = options;
+  const { printer, target, source, engine } = options;
 
   if (target !== null && !isFileInGitDirectory(target)) {
     printer.printOperationMessage({
@@ -252,34 +261,84 @@ export const handleLearnCliCommand = async (options: {
   );
 
   if (source !== null) {
-    // Improve existing codemod
-    await Promise.all(
-      Object.entries(diffs).map(async ([path, fileDiffs]) =>
-        fileDiffs.map(({ before, after }, i) => {
-          const spinner = printer.withLoaderMessage(
-            `Processing diff #${i + 1}`,
-          );
+    const userData = await getCurrentUserOrLogin({
+      message: "Please login to continue.",
+      printer,
+    });
 
-          try {
-            // 1. send request to AI service
-            // 2. update the codemod in the source by adding the test fixture and updating the source code
-            spinner.succeed();
-          } catch (err) {
-            spinner.fail();
-            const error = err as AxiosError<{ message: string }> | Error;
-            printer.printConsoleMessage(
-              "error",
-              `Failed to process diff for file: ${path} - ${
-                error instanceof AxiosError
-                  ? error.response?.data.message
-                  : error.message
-              }`,
-            );
-            return;
-          }
-        }),
-      ),
+    const codemodSettings = parseCodemodSettings({ source, engine });
+    if (codemodSettings.kind !== "runSourced") {
+      return printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected codemod settings parsing result.",
+      });
+    }
+
+    const tarService = new TarService(fs);
+
+    // Improve existing codemod
+    const codemod = await buildSourcedCodemodOptions(
+      fs,
+      printer,
+      codemodSettings,
+      { download: () => void 0 as any },
+      tarService,
     );
+
+    if (codemod.engine !== "jscodeshift") {
+      return printer.printOperationMessage({
+        kind: "error",
+        message: "Recipe codemods are not supported for improving.",
+      });
+    }
+
+    let existingCodemodSource: string;
+    try {
+      const codemodSource = await readFile(codemod.indexPath, {
+        encoding: "utf8",
+      });
+
+      existingCodemodSource = codemod.indexPath.endsWith(".ts")
+        ? transpile(codemodSource.toString())
+        : codemodSource.toString();
+    } catch (err) {
+      return printer.printOperationMessage({
+        kind: "error",
+        message: "Unexpected error occurred while reading the codemod source.",
+      });
+    }
+
+    const prompt = getCodemodPrompt({
+      type: "improve",
+      testCases: Object.values(diffs).flat(),
+      existingCodemodSource,
+    });
+
+    const chatSpinner = printer.withLoaderMessage("Improving your codemod...");
+
+    try {
+      // 1. send request to AI service
+      const response = await sendAIRequest({
+        accessToken: userData.token,
+        prompt,
+      });
+
+      console.log(response);
+      // 2. update the codemod in the source by adding the test fixture and updating the source code
+      chatSpinner.succeed();
+    } catch (err) {
+      chatSpinner.fail();
+      const error = err as AxiosError<{ message: string }> | Error;
+
+      return printer.printConsoleMessage(
+        "error",
+        `Failed to send an API request to the AI service:\n ${
+          error instanceof AxiosError
+            ? error.response?.data.errorText
+            : error.message
+        }`,
+      );
+    }
 
     return;
   }
