@@ -63,6 +63,7 @@
     "semver": "7.6.0",
     "tar": "^6.2.0",
     "valibot": "catalog:",
+    "ws": "^8.18.0",
     "zod": "catalog:"
   },
   "type": "module",
