@@ -6,6 +6,7 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
+import type { LLMEngine } from "@codemod-com/utilities";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 
 export const getCLIAccessToken = async (
@@ -204,6 +205,22 @@ export const createCodeDiff = async (
   const res = await Axios.post<CreateCodeDiffResponse>(
     `${process.env.BACKEND_URL}/diffs`,
     { diffs, source: "cli" },
+  );
+
+  return res.data;
+};
+
+export const sendAIRequest = async (options: {
+  accessToken: string;
+  prompt: string;
+  engine?: LLMEngine;
+}): Promise<string> => {
+  const { accessToken, prompt, engine = "gpt-4" } = options;
+
+  const res = await Axios.post<string>(
+    `${process.env.AI_BACKEND_URL}/sendChat`,
+    { messages: [prompt], engine },
+    { headers: { Authorization: `Bearer ${accessToken}` } },
   );
 
   return res.data;
