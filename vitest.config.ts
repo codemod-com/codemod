@@ -25,9 +25,6 @@ export default defineConfig({
       SLACK_CHANNEL: "my-channel",
       FRONTEND_URL: "http://localhost:3000",
     },
-    deps: {
-      inline: ["@codemod-com/auth"],
-    },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
     testTimeout: 15_000,
