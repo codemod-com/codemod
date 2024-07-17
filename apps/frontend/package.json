@@ -137,6 +137,7 @@
     "ts-morph": "^19.0.0",
     "tslib": "catalog:",
     "universal-base64url": "catalog:",
+    "use-resize-observer": "^9.1.0",
     "valibot": "catalog:",
     "vaul": "catalog:",
     "web-vitals": "catalog:",

@@ -4,7 +4,6 @@ import Layout from "@studio/main/Layout";
 import type { PanelComponentProps } from "@studio/main/PageBottomPane";
 import { debounce } from "@studio/utils/debounce";
 import { isNil } from "@studio/utils/isNil";
-import React from "react";
 
 export const BoundResizePanel = ({
   defaultSize = 50,
