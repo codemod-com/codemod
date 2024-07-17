@@ -226,7 +226,9 @@ h6[class*="heading"] a {
 .introjs-tooltiptext p {
   padding: 8px 0;
   text-align: justify;
-}.tabs {
+}
+
+.tabs {
    z-index: 9999;
    background: rgba(206, 208, 210, 0.12);
    font-size: 14px;
