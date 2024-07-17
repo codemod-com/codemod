@@ -6,6 +6,7 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
 import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
 import { TabNames, useViewStore } from "@studio/store/view";
+import { prettify } from "@studio/utils/prettify";
 
 export const useCodeDiff = () => {
   const { getSelectedEditors, selectedPairIndex } = useSnippetsStore();
@@ -55,7 +56,7 @@ export const useCodeDiff = () => {
     // onBlur: onSnippetBlur,
     highlights: outputRanges,
     onSelectionChange,
-    value: outputSnippet ?? "",
+    value: prettify(outputSnippet) ?? "",
   };
 
   return {
