@@ -1,9 +1,6 @@
 import type { TreeNode } from "@studio/components/Tree";
-import type React from "react";
-import { useState } from "react";
 
 export const useScrollNodeIntoView = () => {
-  const [selectedElem, setSelectedElem] = useState();
   const scrollIntoView = async (
     node: TreeNode | null,
     treeRef: React.RefObject<HTMLDivElement | null>,
@@ -13,9 +10,7 @@ export const useScrollNodeIntoView = () => {
     }
     // delay to make the animation smoother
     await delay(200);
-    const foundElem = document.getElementById(
-      node.id
-    );
+    const foundElem = document.getElementById(node.id);
     if (foundElem && treeRef.current) {
       foundElem.scrollIntoView({ behavior: "smooth", block: "center" });
     }
