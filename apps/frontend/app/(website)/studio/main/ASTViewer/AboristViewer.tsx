@@ -124,7 +124,6 @@ export const ASTViewer: React.FC<Props> = ({ type }) => {
 
   const handleNodeClick = useCallback(
     (node: NodeApi<TreeNode> = rootNode) => {
-      console.log({ node });
       const data = node.data || rootNode;
       scrollNodeIntoView(data, ASTTreeRef);
       setFirstNode(data);
