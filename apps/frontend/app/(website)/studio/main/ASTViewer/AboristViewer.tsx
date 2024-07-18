@@ -14,7 +14,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { type NodeApi, Tree } from "react-arborist";
 import useResizeObserver from "use-resize-observer";
 
-// Define types
 type TreeNode = {
   id: string;
   actualNode: Node;
@@ -26,12 +25,10 @@ type TreeNode = {
 
 type EditorType = "before" | "after" | "output";
 
-// Component Props
 interface Props {
   type: EditorType;
 }
 
-// Utility function to remove empty children from a TreeNode
 const removeEmptyChildren = (node: TreeNode): TreeNode => {
   const transformedChildren =
     node.children
@@ -43,8 +40,6 @@ const removeEmptyChildren = (node: TreeNode): TreeNode => {
     children: transformedChildren.length > 0 ? transformedChildren : undefined,
   };
 };
-
-// Function to transform tree data based on node types
 
 const parseNodeData =
   (node: TreeNode, identifier: string) => (param, index) => ({
