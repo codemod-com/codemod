@@ -5,6 +5,7 @@ import semverDiff from "semver-diff";
 
 type Options = {
   repos: string[];
+  onlyProd: boolean;
 };
 
 type PackageData = {
@@ -21,6 +22,15 @@ type PackageData = {
     }
   >;
   "dist-tags": Record<string, string>;
+};
+
+type PackageJson = {
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+};
+
+type PnpmWorkspace = {
+  catalog?: Record<string, string>;
 };
 
 // Inspired by https://github.com/dylang/npm-check/blob/master/lib/in/create-package-summary.js
@@ -73,26 +83,15 @@ const getPackageData = async (packageName: string) => {
 };
 
 const createPackageSummary = async (
-  cwdPackageJson: any,
   packageName: string,
-  catalog?: Record<string, string>,
+  packageJsonVersion: string,
 ) => {
-  const packageIsInstalled = false;
-  let packageJsonVersion =
-    cwdPackageJson.dependencies[packageName] ??
-    cwdPackageJson.devDependencies[packageName];
+  const packageRegistryData = await getPackageData(packageName);
 
-  if (packageJsonVersion === "catalog:") {
-    packageJsonVersion = catalog?.[packageName];
-  }
-
-  if (packageJsonVersion && !semver.validRange(packageJsonVersion)) {
-    return null;
-  }
-
-  const fromRegistry = await getPackageData(packageName);
-
-  if (!fromRegistry) {
+  if (!packageRegistryData) {
+    console.warn(
+      `Unable to get package registry data for ${packageName}. Skipping`,
+    );
     return null;
   }
 
@@ -101,13 +100,13 @@ const createPackageSummary = async (
 
   const latest =
     installedVersion &&
-    fromRegistry.latest &&
-    fromRegistry.next &&
-    semver.gt(installedVersion, fromRegistry.latest)
-      ? fromRegistry.next
-      : fromRegistry.latest;
+    packageRegistryData.latest &&
+    packageRegistryData.next &&
+    semver.gt(installedVersion, packageRegistryData.latest)
+      ? packageRegistryData.next
+      : packageRegistryData.latest;
 
-  const versions = fromRegistry.versions || [];
+  const versions = packageRegistryData.versions || [];
 
   const versionWanted = semver.maxSatisfying(versions, packageJsonVersion);
   const versionToUse = installedVersion || versionWanted;
@@ -122,8 +121,8 @@ const createPackageSummary = async (
   return {
     // info
     moduleName: packageName,
-    homepage: fromRegistry.homepage,
-    regError: fromRegistry.error,
+    homepage: packageRegistryData.homepage,
+    regError: packageRegistryData.error,
 
     // versions
     latest: latest,
@@ -146,17 +145,38 @@ const createPackageSummary = async (
   };
 };
 
+const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
+
+const getPackagesToCheck = (packageJson: PackageJson, options: Options) => {
+  const depsToCheck = Object.keys(packageJson.dependencies ?? {});
+
+  if (!options.onlyProd) {
+    depsToCheck.push(...Object.keys(packageJson.devDependencies ?? {}));
+  }
+
+  return depsToCheck;
+};
+
+const getPackageVersion = (
+  packageJson: PackageJson,
+  packageName: string,
+  workspace?: PnpmWorkspace | null,
+) =>
+  workspace?.catalog?.[packageName] ??
+  packageJson?.dependencies?.[packageName] ??
+  packageJson?.devDependencies?.[packageName] ??
+  null;
+
 export async function workflow({ git }: Api, options: Options) {
   const report: Record<string, unknown> = {};
-  const pnpmCatalog: Record<string, string> = {};
+
+  let pnpmWorkspace: PnpmWorkspace | null = null;
 
   await git.clone(options.repos, async ({ files }) => {
-    await files("**/pnpm-workspace.yaml")
+    await files(PNPM_WORKSPACE_PATH)
       .yaml()
       .map<any, any>(async ({ getContents }) => {
-        const content = await getContents();
-
-        Object.assign(pnpmCatalog, content.catalog ?? {});
+        pnpmWorkspace = await getContents();
       });
 
     await files(`**/apps/**/package.json`)
@@ -164,20 +184,28 @@ export async function workflow({ git }: Api, options: Options) {
       .map<any, any>(async ({ getContents }) => {
         const packageJson = await getContents();
 
-        const depsToCheck = [
-          ...Object.keys(packageJson["dependencies"]),
-          ...Object.keys(packageJson["devDependencies"]),
-        ];
+        const packagesToCheck = getPackagesToCheck(packageJson, options);
 
-        const analysis = depsToCheck.map((dep) =>
-          createPackageSummary(packageJson, dep, pnpmCatalog),
-        );
+        const packageAnalysis = packagesToCheck.map((packageName) => {
+          const packageVersion = getPackageVersion(
+            packageJson,
+            packageName,
+            pnpmWorkspace,
+          );
 
-        report[packageJson.name] = await Promise.all(analysis);
+          if (packageVersion === null || !semver.validRange(packageVersion)) {
+            console.warn(
+              `Unable to get version for ${packageName} in ${packageJson.name} package. Skipping analysis.`,
+            );
+            return;
+          }
+
+          return createPackageSummary(packageName, packageVersion);
+        });
+
+        report[packageJson.name] = await Promise.all(packageAnalysis);
       });
   });
-
-  console.log(JSON.stringify(report, null, 2), "???");
 }
 
 workflow(api, {
