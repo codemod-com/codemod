@@ -4,12 +4,10 @@
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@types/jscodeshift": "^0.11.10",
-    "@vitest/coverage-v8": "catalog:",
     "jscodeshift": "^0.15.1",
     "memfs": "^4.6.0",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
-    "valibot": "catalog:",
     "vitest": "^1.0.1"
   },
   "main": "./dist/index.cjs",
