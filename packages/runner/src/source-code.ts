@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import nodePath from "node:path";
 // Fixes The inferred type of 'getTransformer' cannot be named without a reference to
 // '.pnpm/@babel+types@7.24.0/node_modules/@babel/types'.
@@ -5,11 +6,11 @@ import nodePath from "node:path";
 // This should be fixed in future version of TypeScript:
 // https://github.com/microsoft/TypeScript/issues/42873#issuecomment-2066874644
 // TODO: update TypeScript
-import type {} from "@babel/types";
+// import type {} from "@babel/types";
 import type { Filemod } from "@codemod-com/filemod";
 import * as tsmorph from "ts-morph";
 import ts from "typescript";
-import type { Dependencies } from "./runRepomod.js";
+import type { Dependencies } from "./engines/filemod.js";
 
 export const transpile = (source: string): string => {
   const { outputText } = ts.transpileModule(source, {
@@ -22,7 +23,7 @@ export const transpile = (source: string): string => {
   return outputText;
 };
 
-export const getTransformer: any = (source: string) => {
+export const getTransformer = (source: string) => {
   type Exports =
     | {
         __esModule?: true;
@@ -60,4 +61,14 @@ export const getTransformer: any = (source: string) => {
           : module.exports.filemod !== undefined
             ? module.exports.filemod
             : null;
+};
+
+export const getCodemodSourceCode = async (path: string) => {
+  const codemodSource = await readFile(path, {
+    encoding: "utf8",
+  });
+
+  return path.endsWith(".ts")
+    ? transpile(codemodSource.toString())
+    : codemodSource.toString();
 };

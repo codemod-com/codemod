@@ -13,7 +13,7 @@ import {
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 import { getCurrentUserData } from "../utils.js";
-import { handleBuildCliCommand } from "./build.js";
+// import { handleBuildCliCommand } from "./build.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",
@@ -235,18 +235,18 @@ export const handleInitCliCommand = async (options: {
     return codemodBaseDir;
   }
 
-  const isJsCodemod =
-    answers?.engine === "jscodeshift" ||
-    answers?.engine === "ts-morph" ||
-    answers?.engine === "filemod" ||
-    answers === null;
-  if (isJsCodemod) {
-    await handleBuildCliCommand({
-      printer,
-      source: codemodBaseDir,
-      silent: true,
-    });
-  }
+  // const isJsCodemod =
+  //   answers?.engine === "jscodeshift" ||
+  //   answers?.engine === "ts-morph" ||
+  //   answers?.engine === "filemod" ||
+  //   answers === null;
+  // if (isJsCodemod) {
+  //   await handleBuildCliCommand({
+  //     printer,
+  //     source: codemodBaseDir,
+  //     silent: true,
+  //   });
+  // }
 
   const howToRunText = chalk(
     `Run ${chalk.bold(doubleQuotify(`codemod --source ${codemodBaseDir}`))}`,

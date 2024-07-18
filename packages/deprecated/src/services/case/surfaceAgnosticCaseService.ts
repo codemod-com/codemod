@@ -7,8 +7,8 @@ import {
   type FormattedFileCommand,
   buildNewDataPathForCreateFileCommand,
   buildNewDataPathForUpdateFileCommand,
-} from "../fileCommands.js";
-import type { FlowSettings } from "../schemata/flowSettingsSchema.js";
+} from "../../../runner/src/fileCommands.js";
+import type { FlowSettings } from "../../../runner/src/schemata/flowSettingsSchema.js";
 import type { RunSettings } from "../schemata/runArgvSettingsSchema.js";
 
 export const buildSurfaceAgnosticJob = (

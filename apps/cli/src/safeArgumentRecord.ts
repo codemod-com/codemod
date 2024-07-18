@@ -1,7 +1,7 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import type { Codemod } from "@codemod-com/runner";
 import {
   type ArgumentRecord,
+  type Codemod,
   doubleQuotify,
   safeParseArgument,
 } from "@codemod-com/utilities";
@@ -9,13 +9,13 @@ import inquirer from "inquirer";
 
 export const buildSafeArgumentRecord = async (
   codemod: Codemod,
-  rawArgumentRecord: Record<string, unknown>,
+  argvRecord: Record<string, unknown>,
   printer: PrinterBlueprint,
 ): Promise<ArgumentRecord> => {
-  if (codemod.bundleType === "standalone") {
+  if (codemod.type === "standalone") {
     // no checks performed for local codemods
     // b/c no source of truth for the arguments
-    return Object.entries(rawArgumentRecord).reduce<ArgumentRecord>(
+    return Object.entries(codemod.config.arguments).reduce<ArgumentRecord>(
       (acc, [key, value]) => {
         const maybeArgument = safeParseArgument(value);
 
@@ -31,15 +31,16 @@ export const buildSafeArgumentRecord = async (
 
   const safeArgumentRecord: ArgumentRecord = {};
 
-  let invalid: ((typeof codemod.arguments)[number] & { err: string })[] = [];
+  let invalid: ((typeof codemod.config.arguments)[number] & { err: string })[] =
+    [];
   const defaulted: string[] = [];
 
   const validateArg = (
-    descriptor: (typeof codemod.arguments)[number],
+    descriptor: (typeof codemod.config.arguments)[number],
     value: unknown,
   ) => {
     const validator = (
-      descriptor: (typeof codemod.arguments)[number],
+      descriptor: (typeof codemod.config.arguments)[number],
       arg: unknown,
       skipInvalidFlagging = false,
     ) => {
@@ -157,8 +158,8 @@ export const buildSafeArgumentRecord = async (
     return validator(descriptor, value);
   };
 
-  codemod.arguments.forEach((descriptor) =>
-    validateArg(descriptor, rawArgumentRecord[descriptor.name]),
+  codemod.config.arguments.forEach((descriptor) =>
+    validateArg(descriptor, argvRecord[descriptor.name]),
   );
 
   if (invalid.length > 0) {
@@ -212,7 +213,9 @@ export const buildSafeArgumentRecord = async (
     invalid = [];
 
     for (const [name, value] of Object.entries(answers)) {
-      const descriptor = codemod.arguments.find((arg) => arg.name === name);
+      const descriptor = codemod.config.arguments.find(
+        (arg) => arg.name === name,
+      );
 
       if (!descriptor) {
         continue;

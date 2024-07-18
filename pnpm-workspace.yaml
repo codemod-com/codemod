@@ -133,7 +133,6 @@ catalog:
     colors-cli: ^1.0.33
     columnify: ^1.6.0
     constants-browserify: ^1.0.0
-    cosmiconfig: ^8.3.6
     cron: ^3.1.6
     cspell-cli: ^6.17.1
     csstype: ^3.1.1

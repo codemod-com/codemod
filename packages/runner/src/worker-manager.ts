@@ -1,4 +1,4 @@
-import { dirname, join, resolve } from "node:path";
+import { dirname, join, relative, resolve } from "node:path";
 import { Worker } from "node:worker_threads";
 import {
   type MainThreadMessage,
@@ -6,11 +6,16 @@ import {
   type WorkerThreadMessage,
   decodeWorkerThreadMessage,
 } from "@codemod-com/printer";
-import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
-import type { FormattedFileCommand } from "./fileCommands.js";
+import type {
+  CodemodConfig,
+  FileCommand,
+  FileSystem,
+  KnownEnginesCodemod,
+} from "@codemod-com/utilities";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
+import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
 
-export class WorkerThreadManager {
+export class WorkerManager {
   private __idleWorkerIds: number[] = [];
   private __workers: Worker[] = [];
   private __workerTimestamps: number[] = [];
@@ -18,26 +23,31 @@ export class WorkerThreadManager {
   private __totalFileCount = 0;
   private __processedFileNumber = 0;
   private __noMorePaths = false;
+  private __workerCount = 4;
 
   public constructor(
-    private readonly __workerCount: number,
-    private readonly __getData: (path: string) => Promise<string>,
-    private readonly __onPrinterMessage: (
-      message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
-    ) => void,
-    private readonly __onCommand: (
-      command: FormattedFileCommand,
-    ) => Promise<void>,
-    private readonly __pathGenerator: AsyncGenerator<string, void, void>,
-    codemodPath: string,
-    codemodEngine: "ts-morph" | "jscodeshift" | "ast-grep",
-    codemodSource: string,
-    enablePrettier: boolean,
-    safeArgumentRecord: ArgumentRecord,
-    engineOptions: EngineOptions | null,
-    private readonly onCodemodError: CodemodExecutionErrorCallback,
+    private readonly _options: {
+      fileSystem: FileSystem;
+      onPrinterMessage: (
+        message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
+      ) => void;
+      flowSettings: FlowSettings;
+      onCommand: (command: FileCommand) => Promise<void>;
+      pathGenerator: AsyncGenerator<string, void, void>;
+      codemod: KnownEnginesCodemod & {
+        config: CodemodConfig & {
+          engine: "jscodeshift" | "ts-morph" | "ast-grep";
+        };
+      };
+      codemodSource: string;
+      onError?: CodemodExecutionErrorCallback;
+    },
   ) {
-    for (let i = 0; i < __workerCount; ++i) {
+    const { codemod, codemodSource, flowSettings } = _options;
+
+    this.__workerCount = flowSettings.threads;
+
+    for (let i = 0; i < this.__workerCount; ++i) {
       this.__idleWorkerIds.push(i);
       this.__workerTimestamps.push(Date.now());
 
@@ -51,12 +61,10 @@ export class WorkerThreadManager {
 
       worker.postMessage({
         kind: "initialization",
-        codemodPath,
-        codemodEngine,
         codemodSource,
-        enablePrettier,
-        safeArgumentRecord,
-        engineOptions,
+        ...codemod,
+        ...codemod.config,
+        ...flowSettings,
       } satisfies MainThreadMessage);
 
       this.__workers.push(worker);
@@ -72,7 +80,7 @@ export class WorkerThreadManager {
   }
 
   private async __pullNewPath() {
-    const iteratorResult = await this.__pathGenerator.next();
+    const iteratorResult = await this._options.pathGenerator.next();
 
     if (iteratorResult.done) {
       this.__noMorePaths = true;
@@ -108,7 +116,9 @@ export class WorkerThreadManager {
       return;
     }
 
-    const data = await this.__getData(filePath);
+    const data = (await this._options.fileSystem.promises.readFile(filePath, {
+      encoding: "utf8",
+    })) as string;
 
     this.__workers[id]?.postMessage({
       kind: "runCodemod",
@@ -126,7 +136,7 @@ export class WorkerThreadManager {
       worker.postMessage({ kind: "exit" } satisfies MainThreadMessage);
     }
 
-    this.__onPrinterMessage({
+    this._options.onPrinterMessage({
       kind: "finish",
     });
   }
@@ -145,29 +155,32 @@ export class WorkerThreadManager {
       const workerThreadMessage = decodeWorkerThreadMessage(m);
 
       if (workerThreadMessage.kind === "console") {
-        this.__onPrinterMessage(workerThreadMessage);
+        this._options.onPrinterMessage(workerThreadMessage);
         return;
       }
 
       if (workerThreadMessage.kind === "commands") {
-        const commands = workerThreadMessage.commands as FormattedFileCommand[];
+        const commands = workerThreadMessage.commands as FileCommand[];
 
         for (const command of commands) {
-          await this.__onCommand(command);
+          await this._options.onCommand(command);
         }
       } else if (workerThreadMessage.kind === "error") {
-        this.onCodemodError({
+        this._options.onError?.({
           message: workerThreadMessage.message,
           filePath: workerThreadMessage.path ?? "",
         });
       }
 
-      this.__onPrinterMessage({
+      this._options.onPrinterMessage({
         kind: "progress",
         processedFileNumber: ++this.__processedFileNumber,
         totalFileNumber: this.__totalFileCount,
         processedFileName: workerThreadMessage.path
-          ? resolve(workerThreadMessage.path)
+          ? relative(
+              this._options.flowSettings.target,
+              resolve(workerThreadMessage.path),
+            )
           : null,
       });
 

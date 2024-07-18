@@ -1,7 +1,7 @@
 import { constants, access } from "node:fs/promises";
 import { join } from "node:path";
-import { execPromise } from "@codemod-com/utilities";
-import type { FileCommand } from "./fileCommands.js";
+
+import { type FileCommand, execPromise } from "@codemod-com/utilities";
 
 const javaScriptPatterns = ["**/*.js", "**/*.jsx", "**/*.cjs", "**/*.mjs"];
 const typeScriptPatterns = ["**/*.ts", "**/*.cts", "**/*.mts"];

@@ -1,4 +1,5 @@
 import { parentPort } from "node:worker_threads";
+
 import {
   type ConsoleKind,
   type MainThreadMessage,
@@ -6,12 +7,11 @@ import {
   decodeMainThreadMessage,
 } from "@codemod-com/printer";
 import {
-  type FileCommand,
-  buildFormattedFileCommands,
   runAstGrepCodemod,
   runJscodeshiftCodemod,
   runTsMorphCodemod,
 } from "@codemod-com/runner";
+import type { FileCommand } from "@codemod-com/utilities";
 
 class PathAwareError extends Error {
   constructor(
@@ -58,46 +58,45 @@ const messageHandler = async (m: unknown) => {
     }
 
     try {
-      let fileCommands: readonly FileCommand[] = [];
-      switch (initializationMessage.codemodEngine) {
+      let commands: readonly FileCommand[] = [];
+      switch (initializationMessage.engine) {
         case "jscodeshift":
-          fileCommands = runJscodeshiftCodemod(
+          commands = runJscodeshiftCodemod(
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.enablePrettier,
+            initializationMessage.format,
             initializationMessage.safeArgumentRecord,
-            initializationMessage.engineOptions,
+            // @TODO
+            initializationMessage.engineOptions as any,
             consoleCallback,
           );
           break;
         case "ts-morph":
-          fileCommands = runTsMorphCodemod(
+          commands = runTsMorphCodemod(
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.enablePrettier,
+            initializationMessage.format,
             initializationMessage.safeArgumentRecord,
             consoleCallback,
           );
           break;
         case "ast-grep":
-          fileCommands = await runAstGrepCodemod(
-            initializationMessage.codemodPath,
+          commands = await runAstGrepCodemod(
+            initializationMessage.path,
             message.path,
             message.data,
-            initializationMessage.enablePrettier,
+            initializationMessage.format,
           );
           break;
         case "workflow":
           throw new Error("Workflow engine is not supported in worker threads");
         default:
           throw new Error(
-            `Unknown codemod engine: ${initializationMessage.codemodEngine}`,
+            `Unknown codemod engine: ${initializationMessage.engine}`,
           );
       }
-
-      const commands = await buildFormattedFileCommands(fileCommands);
 
       parentPort?.postMessage({
         kind: "commands",

@@ -97,23 +97,6 @@ export const argumentsSchema = v.array(
 export type Arguments = Output<typeof argumentsSchema>;
 export type ArgumentsInput = Input<typeof argumentsSchema>;
 
-export const PIRANHA_LANGUAGES = [
-  "java",
-  "kt",
-  "go",
-  "py",
-  "swift",
-  "ts",
-  "tsx",
-  "scala",
-] as const;
-
-export const piranhaLanguageSchema = v.union(
-  PIRANHA_LANGUAGES.map((language) => v.literal(language)),
-);
-
-export type PiranhaLanguage = Output<typeof piranhaLanguageSchema>;
-
 // Source: https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
 
 const versionUnion = v.union(
@@ -166,12 +149,14 @@ export const knownEnginesSchema = v.union(
 );
 export type KnownEngines = Output<typeof knownEnginesSchema>;
 
-const allEngines = [...knownEngines, v.literal("recipe"), v.literal("piranha")];
+const allEngines = [...knownEngines, v.literal("recipe")];
 export const allEnginesSchema = v.union(
   allEngines,
   "Specified engine is not supported.",
 );
 export type AllEngines = Output<typeof allEnginesSchema>;
+
+export const isEngine = (engine: unknown) => v.is(allEnginesSchema, engine);
 
 const configJsonBaseSchema = v.object({
   $schema: v.optional(v.string()),
@@ -246,38 +231,36 @@ const configJsonBaseSchema = v.object({
       git: v.optional(v.string("Git link has to be a string.")),
     }),
   ),
-  build: v.optional(
-    v.object(
-      {
-        input: v.optional(v.string("Build input path has to be a string.")),
-        output: v.optional(v.string("Build output path has to be a string.")),
-      },
-      `Invalid build definition. "build" has to be an object.`,
-    ),
-  ),
+  entry: v.optional(v.string("Codemod entry point path has to be a string.")),
+  // build: v.optional(
+  //   v.object(
+  //     {
+  //       input: v.optional(v.string("Build input path has to be a string.")),
+  //       output: v.optional(v.string("Build output path has to be a string.")),
+  //     },
+  //     `Invalid build definition. "build" has to be an object.`,
+  //   ),
+  // ),
 });
 
+export const knownEnginesCodemodConfigSchema = v.merge([
+  configJsonBaseSchema,
+  v.object({
+    engine: knownEnginesSchema,
+  }),
+]);
+
+export const recipeCodemodConfigSchema = v.merge([
+  configJsonBaseSchema,
+  v.object({
+    engine: v.literal("recipe"),
+    names: v.array(v.string()),
+  }),
+]);
+
 export const codemodConfigSchema = v.union([
-  v.merge([
-    configJsonBaseSchema,
-    v.object({
-      engine: knownEnginesSchema,
-    }),
-  ]),
-  v.merge([
-    configJsonBaseSchema,
-    v.object({
-      engine: v.literal("recipe"),
-      names: v.array(v.string()),
-    }),
-  ]),
-  v.merge([
-    configJsonBaseSchema,
-    v.object({
-      engine: v.literal("piranha"),
-      language: piranhaLanguageSchema,
-    }),
-  ]),
+  knownEnginesCodemodConfigSchema,
+  recipeCodemodConfigSchema,
 ]);
 
 export const parseCodemodConfig = (config: unknown) => {
@@ -293,6 +276,9 @@ export const parseCodemodConfig = (config: unknown) => {
     );
   }
 };
+
+export const safeParseCodemodConfig = (config: unknown) =>
+  v.safeParse(codemodConfigSchema, config);
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
 export type CodemodConfigInput = Input<typeof codemodConfigSchema>;

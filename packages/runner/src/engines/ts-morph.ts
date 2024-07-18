@@ -1,13 +1,14 @@
 import { extname } from "node:path";
 import vm from "node:vm";
-import type { ConsoleKind } from "@codemod-com/printer";
-import type { ArgumentRecord } from "@codemod-com/utilities";
 import tsmorph from "ts-morph";
 import { nullish, parse, string } from "valibot";
-import { getAdapterByExtname } from "./adapters/index.js";
-import { buildVmConsole } from "./buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
-import type { FileCommand } from "./fileCommands.js";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+import type { ArgumentRecord, FileCommand } from "@codemod-com/utilities";
+
+import { getAdapterByExtname } from "~/adapters/index.js";
+import { CONSOLE_OVERRIDE } from "~/constants.js";
+import { buildVmConsole } from "./common.js";
 
 const transform = (
   codemodSource: string,

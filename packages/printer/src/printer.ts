@@ -19,7 +19,7 @@ export type PrinterBlueprint = Readonly<{
 export class Printer implements PrinterBlueprint {
   private progressBar: cliProgress.SingleBar | null = null;
 
-  public constructor(public readonly __jsonOutput: boolean) {}
+  public constructor(public readonly __jsonOutput = false) {}
 
   public printMessage(
     message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
@@ -99,9 +99,6 @@ export class Printer implements PrinterBlueprint {
       file: message.processedFileName
         ? chalk.bold(message.processedFileName)
         : "N/A",
-      codemod: message.codemodName
-        ? chalk.bold(message.codemodName)
-        : "Local codemod",
     });
 
     if (this.progressBar.getTotal() !== message.totalFileNumber) {

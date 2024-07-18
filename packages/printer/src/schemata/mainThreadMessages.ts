@@ -16,15 +16,15 @@ import {
 const mainThreadMessageSchema = union([
   object({
     kind: literal("initialization"),
-    codemodPath: string(),
+    path: string(),
     codemodSource: string(),
-    codemodEngine: union([
+    engine: union([
       literal("jscodeshift"),
       literal("ts-morph"),
       literal("ast-grep"),
       literal("workflow"),
     ]),
-    enablePrettier: boolean(),
+    format: boolean(),
     safeArgumentRecord: argumentRecordSchema,
     engineOptions: nullable(engineOptionsSchema),
   }),

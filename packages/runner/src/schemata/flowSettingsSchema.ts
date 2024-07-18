@@ -32,6 +32,7 @@ export const DEFAULT_VERSION_CONTROL_DIRECTORIES = [
 ];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
 export const DEFAULT_ENABLE_PRETTIER = false;
+export const DEFAULT_ENABLE_LOGGING = false;
 export const DEFAULT_CACHE = true;
 export const DEFAULT_INSTALL = true;
 export const DEFAULT_USE_JSON = false;
@@ -45,6 +46,7 @@ export const flowSettingsSchema = object({
   exclude: optional(array(string()), []),
   target: optional(string()),
   files: optional(array(string())),
+  dry: optional(boolean(), DEFAULT_DRY_RUN),
   format: optional(boolean(), DEFAULT_ENABLE_PRETTIER),
   cache: optional(boolean(), DEFAULT_CACHE),
   install: optional(boolean(), DEFAULT_INSTALL),

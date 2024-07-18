@@ -1,7 +1,7 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.35",
+  "version": "0.12.0",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -50,7 +50,6 @@
     "@vitest/coverage-v8": "catalog:",
     "axios": "catalog:",
     "columnify": "catalog:",
-    "cosmiconfig": "catalog:",
     "diff": "catalog:",
     "exponential-backoff": "catalog:",
     "form-data": "catalog:",

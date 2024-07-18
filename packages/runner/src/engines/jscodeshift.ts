@@ -1,13 +1,18 @@
 import { extname } from "node:path";
 import vm from "node:vm";
-import type { ConsoleKind } from "@codemod-com/printer";
-import type { ArgumentRecord, EngineOptions } from "@codemod-com/utilities";
 import jscodeshift, { type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
-import { getAdapterByExtname } from "./adapters/index.js";
-import { buildVmConsole } from "./buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
-import type { FileCommand } from "./fileCommands.js";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+import type {
+  ArgumentRecord,
+  EngineOptions,
+  FileCommand,
+} from "@codemod-com/utilities";
+
+import { getAdapterByExtname } from "~/adapters/index.js";
+import { CONSOLE_OVERRIDE } from "~/constants.js";
+import { buildVmConsole } from "./common.js";
 
 export const buildApi = (parser: string): API => ({
   j: jscodeshift.withParser(parser),
@@ -75,7 +80,7 @@ export const runJscodeshiftCodemod = (
   oldData: string,
   formatWithPrettier: boolean,
   safeArgumentRecord: ArgumentRecord,
-  engineOptions: Extract<EngineOptions, { engine: "jscodeshift" }> | null,
+  engineOptions: EngineOptions & { engine: "jscodeshift" },
   consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
   const commands: FileCommand[] = [];

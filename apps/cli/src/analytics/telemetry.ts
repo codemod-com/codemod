@@ -4,14 +4,16 @@ export type TelemetryEvent =
       fileCount: number;
       executionId: string;
       codemodName: string;
-      recipeName?: string;
+      cliVersion: string;
     }>
   | Readonly<{
       kind: "failedToExecuteCommand";
       commandName: string;
+      cliVersion: string;
     }>
   | Readonly<{
       kind: "codemodPublished";
       codemodName: string;
       version: string;
+      cliVersion: string;
     }>;

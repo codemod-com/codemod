@@ -1,4 +1,5 @@
 import { format } from "node:util";
+
 import { type ConsoleKind, parseConsoleKind } from "@codemod-com/printer";
 
 export const buildVmConsole =

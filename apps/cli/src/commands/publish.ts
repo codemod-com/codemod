@@ -1,7 +1,14 @@
 import * as fs from "node:fs";
 import { basename, dirname, join } from "node:path";
+
+import { AxiosError } from "axios";
+import inquirer from "inquirer";
+import * as semver from "semver";
+import { url, safeParse, string } from "valibot";
+
 import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
   buildCodemodSlug,
@@ -10,21 +17,20 @@ import {
   execPromise,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
-import { glob } from "glob";
-import inquirer from "inquirer";
-import * as semver from "semver";
-import { url, safeParse, string } from "valibot";
-import { getCodemod, publish } from "../apis.js";
-import { getCurrentUserOrLogin, rebuildCodemodFallback } from "../utils.js";
+
+import { version as cliVersion } from "~/../package.json";
+import type { TelemetryEvent } from "~/analytics/telemetry.js";
+import { getCodemod, publish } from "~/apis.js";
+import { extractMainScriptPath } from "~/codemod-files.js";
+import { getCurrentUserOrLogin } from "~/utils.js";
 import { handleInitCliCommand } from "./init.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: PrinterBlueprint;
   source: string;
+  telemetry: TelemetrySender<TelemetryEvent>;
 }) => {
-  const { printer } = options;
-  let { source } = options;
+  let { source, printer, telemetry } = options;
 
   const { token, allowedNamespaces, organizations } =
     await getCurrentUserOrLogin({
@@ -167,7 +173,7 @@ export const handlePublishCliCommand = async (options: {
       const descriptionMdBuf = await fs.promises.readFile(
         join(source, "README.md"),
       );
-      formData.append("description.md", new Blob([descriptionMdBuf]));
+      formData.append("README.md", new Blob([descriptionMdBuf]));
     } catch {
       printer.printConsoleMessage(
         "info",
@@ -234,65 +240,13 @@ export const handlePublishCliCommand = async (options: {
   }
 
   if (codemodRc.engine !== "recipe") {
-    let globSearchPattern: string;
-    let actualMainFileName: string;
-    let errorOnMissing: string;
-
-    switch (codemodRc.engine) {
-      case "ast-grep":
-        globSearchPattern = "**/rule.yaml";
-        actualMainFileName = "rule.yaml";
-        errorOnMissing = `Please create the main "rule.yaml" file first.`;
-        break;
-      case "piranha":
-        globSearchPattern = "**/rules.toml";
-        actualMainFileName = "rules.toml";
-        errorOnMissing = `Please create the main "rules.toml" file first.`;
-        break;
-      default:
-        globSearchPattern = "dist/index.cjs";
-        actualMainFileName = "index.cjs";
-        if (codemodRc.build?.input) {
-          const inputFiles = await glob(codemodRc.build.input, {
-            absolute: true,
-            cwd: source,
-            nodir: true,
-          });
-          const entryPoint = inputFiles.at(0);
-          if (entryPoint === undefined) {
-            errorOnMissing = `Please create the main file under ${chalk.bold(
-              codemodRc.build.input,
-            )} first.`;
-            break;
-          }
-        }
-
-        if (codemodRc.build?.output) {
-          errorOnMissing = `Please make sure the output path in your .codemodrc.json under ${chalk.bold(
-            codemodRc.build.output,
-          )} flag is correct.`;
-          break;
-        }
-
-        errorOnMissing =
-          "Please make sure your codemod can be built correctly.";
+    const { path: mainFilePath, error: errorText } =
+      await extractMainScriptPath({ codemodRc, source });
+    if (mainFilePath === null) {
+      throw new Error(errorText);
     }
 
-    const spinner = printer.withLoaderMessage(
-      chalk.cyan("Rebuilding the codemod before publishing..."),
-    );
-
-    const mainFilePath = await rebuildCodemodFallback({
-      globPattern: codemodRc.build?.output ?? globSearchPattern,
-      source,
-      errorText: `Could not find the main file of the codemod. ${errorOnMissing}`,
-      onSuccess: () => spinner.succeed(),
-      onFail: () => spinner.fail(),
-    });
-
     const mainFileBuf = await fs.promises.readFile(mainFilePath);
-
-    formData.append(actualMainFileName, new Blob([mainFileBuf]));
   }
 
   if (!codemodRc.meta?.git) {
@@ -429,6 +383,13 @@ export const handlePublishCliCommand = async (options: {
     printer.printOperationMessage({ kind: "error", message: errorMessage });
     return;
   }
+
+  telemetry.sendEvent({
+    kind: "codemodPublished",
+    codemodName: codemodRc.name,
+    version: codemodRc.version,
+    cliVersion,
+  });
 
   printer.printConsoleMessage(
     "info",

@@ -156,9 +156,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: "index.cjs",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -180,7 +180,7 @@ describe("/publish route", async () => {
         data: indexCjsBuf,
       },
       {
-        name: "description.md",
+        name: "README.md",
         data: readmeBuf,
       },
     ]);
@@ -250,9 +250,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: "rules.toml",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -274,7 +274,7 @@ describe("/publish route", async () => {
         data: indexCjsBuf,
       },
       {
-        name: "description.md",
+        name: "README.md",
         data: readmeBuf,
       },
     ]);
@@ -317,9 +317,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: ".codemodrc.json",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -356,9 +356,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: "index.cjs",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -398,9 +398,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: "index.cjs",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -437,9 +437,9 @@ describe("/publish route", async () => {
         contentType: "multipart/form-data",
         filename: "index.cjs",
       })
-      .attach("description.md", readmeBuf, {
+      .attach("README.md", readmeBuf, {
         contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "README.md",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -490,9 +490,9 @@ describe("/publish route", async () => {
           contentType: "multipart/form-data",
           filename: "index.cjs",
         })
-        .attach("description.md", readmeBuf, {
+        .attach("README.md", readmeBuf, {
           contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "README.md",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -554,9 +554,9 @@ describe("/publish route", async () => {
           contentType: "multipart/form-data",
           filename: "index.cjs",
         })
-        .attach("description.md", readmeBuf, {
+        .attach("README.md", readmeBuf, {
           contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "README.md",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -640,9 +640,9 @@ describe("/publish route", async () => {
           contentType: "multipart/form-data",
           filename: "index.cjs",
         })
-        .attach("description.md", readmeBuf, {
+        .attach("README.md", readmeBuf, {
           contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "README.md",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -697,9 +697,9 @@ describe("/publish route", async () => {
           contentType: "multipart/form-data",
           filename: "index.cjs",
         })
-        .attach("description.md", readmeBuf, {
+        .attach("README.md", readmeBuf, {
           contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "README.md",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {

@@ -1,16 +1,5 @@
 import { createHash } from "node:crypto";
 import { basename, dirname, join } from "node:path";
-import {
-  type CallbackService,
-  type Filemod,
-  type PathAPI,
-  type PathHashDigest,
-  type UnifiedEntry,
-  UnifiedFileSystem,
-  buildApi,
-  executeFilemod,
-} from "@codemod-com/filemod";
-import type { ArgumentRecord, FileSystem } from "@codemod-com/utilities";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
 import jscodeshift from "jscodeshift";
 import { fromMarkdown } from "mdast-util-from-markdown";
@@ -21,11 +10,25 @@ import tsmorph from "ts-morph";
 import { unified } from "unified";
 import { filter } from "unist-util-filter";
 import { visit } from "unist-util-visit";
-import type { FileCommand } from "./fileCommands.js";
+
+import {
+  type CallbackService,
+  type Filemod,
+  type PathAPI,
+  type PathHashDigest,
+  type UnifiedEntry,
+  UnifiedFileSystem,
+  buildApi,
+  executeFilemod,
+} from "@codemod-com/filemod";
+import type { PrinterBlueprint } from "@codemod-com/printer";
 import type {
-  CodemodExecutionErrorCallback,
-  PrinterMessageCallback,
-} from "./schemata/callbacks.js";
+  ArgumentRecord,
+  FileCommand,
+  FileSystem,
+} from "@codemod-com/utilities";
+
+import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
 
 const parseMdx = (data: string) =>
   fromMarkdown(data, {
@@ -51,15 +54,25 @@ export type Dependencies = Readonly<{
   fetch: typeof fetch;
 }>;
 
-export const runRepomod = async (
-  fileSystem: FileSystem,
-  filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string },
-  target: string,
-  formatWithPrettier: boolean,
-  safeArgumentRecord: ArgumentRecord,
-  onPrinterMessage: PrinterMessageCallback,
-  onCodemodError: CodemodExecutionErrorCallback,
-): Promise<readonly FileCommand[]> => {
+export const runRepomod = async (options: {
+  fileSystem: FileSystem;
+  filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string };
+  target: string;
+  format: boolean;
+  safeArgumentRecord: ArgumentRecord;
+  printer: PrinterBlueprint;
+  onError?: CodemodExecutionErrorCallback;
+}): Promise<readonly FileCommand[]> => {
+  const {
+    fileSystem,
+    filemod,
+    target,
+    format,
+    safeArgumentRecord,
+    printer,
+    onError,
+  } = options;
+
   const buildPathHashDigest = (path: string) =>
     createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
 
@@ -177,16 +190,15 @@ export const runRepomod = async (
       processedPathHashDigests.add(hashDigest);
       totalPathHashDigests.add(hashDigest);
 
-      onPrinterMessage({
+      printer.printMessage({
         kind: "progress",
-        codemodName: filemod.name,
         processedFileNumber: processedPathHashDigests.size,
         totalFileNumber: totalPathHashDigests.size,
         processedFileName: command.path,
       });
     },
     onError: (path, message) => {
-      onCodemodError({ codemodName: filemod.name, filePath: path, message });
+      onError?.({ codemodName: filemod.name, filePath: path, message });
     },
   };
 
@@ -209,14 +221,14 @@ export const runRepomod = async (
             oldPath: externalFileCommand.path,
             oldData: "", // TODO get the old data from the filemod
             newData: externalFileCommand.data,
-            formatWithPrettier, // TODO have a list of extensions that prettier supports
+            formatWithPrettier: format, // TODO have a list of extensions that prettier supports
           };
         } catch (error) {
           return {
             kind: "createFile",
             newPath: externalFileCommand.path,
             newData: externalFileCommand.data,
-            formatWithPrettier,
+            formatWithPrettier: format,
           };
         }
       }

@@ -10,20 +10,20 @@ import semver from "semver";
 import yargs from "yargs";
 import { hideBin } from "yargs/helpers";
 import { version } from "../package.json";
-import { getUserDistinctId } from "./analytics/distinctId";
-import type { TelemetryEvent } from "./analytics/telemetry";
+import { getUserDistinctId } from "./analytics/distinctId.js";
+import type { TelemetryEvent } from "./analytics/telemetry.js";
 import { buildGlobalOptions, buildRunOptions } from "./buildOptions.js";
-import { handleBuildCliCommand } from "./commands/build";
-import { handleFeedbackCommand } from "./commands/feedback";
-import { handleInitCliCommand } from "./commands/init";
-import { handleLearnCliCommand } from "./commands/learn";
-import { handleListNamesCommand } from "./commands/list";
-import { handleLoginCliCommand } from "./commands/login";
-import { handleLogoutCliCommand } from "./commands/logout";
-import { handlePublishCliCommand } from "./commands/publish";
-import { handleRunCliCommand } from "./commands/run";
-import { handleUnpublishCliCommand } from "./commands/unpublish";
-import { handleWhoAmICommand } from "./commands/whoami";
+// import { handleBuildCliCommand } from "./commands/build";
+import { handleFeedbackCommand } from "./commands/feedback.js";
+import { handleInitCliCommand } from "./commands/init.js";
+import { handleLearnCliCommand } from "./commands/learn.js";
+import { handleListNamesCommand } from "./commands/list.js";
+import { handleLoginCliCommand } from "./commands/login.js";
+import { handleLogoutCliCommand } from "./commands/logout.js";
+import { handlePublishCliCommand } from "./commands/publish.js";
+import { handleRunCliCommand } from "./commands/run.js";
+import { handleUnpublishCliCommand } from "./commands/unpublish.js";
+import { handleWhoAmICommand } from "./commands/whoami.js";
 
 const checkLatestVersion = async () => {
   try {
@@ -125,7 +125,7 @@ const initializeDependencies = async (argv: {
   };
 };
 
-export const executeMainThread = async () => {
+export const main = async () => {
   await checkLatestVersion();
 
   const slicedArgv = hideBin(process.argv);
@@ -152,27 +152,6 @@ export const executeMainThread = async () => {
       (y) => buildRunOptions(y),
       async (args) => {
         const { printer, telemetryService, executeCliCommand, exit } =
-          await initializeDependencies(args);
-
-        return executeCliCommand(
-          () =>
-            handleRunCliCommand({
-              printer,
-              args,
-              telemetry: telemetryService,
-              onExit: exit,
-            }),
-          true,
-        );
-      },
-    )
-    // TODO: improve and remove the need for this command
-    .command(
-      "runOnPreCommit [files...]",
-      "run pre-commit codemods against staged files passed positionally",
-      (y) => buildRunOptions(y),
-      async (args) => {
-        const { executeCliCommand, printer, telemetryService, exit } =
           await initializeDependencies(args);
 
         return executeCliCommand(
@@ -273,27 +252,27 @@ export const executeMainThread = async () => {
         return executeCliCommand(() => handleWhoAmICommand({ printer }));
       },
     )
-    .command(
-      "build",
-      "build the JavaScript engine codemod",
-      (y) =>
-        y.option("source", {
-          alias: "s",
-          type: "string",
-          description: "path to the codemod to be built",
-        }),
-      async (args) => {
-        const { executeCliCommand, printer } =
-          await initializeDependencies(args);
+    // .command(
+    //   "build",
+    //   "build the JavaScript engine codemod",
+    //   (y) =>
+    //     y.option("source", {
+    //       alias: "s",
+    //       type: "string",
+    //       description: "path to the codemod to be built",
+    //     }),
+    //   async (args) => {
+    //     const { executeCliCommand, printer } =
+    //       await initializeDependencies(args);
 
-        return executeCliCommand(() =>
-          handleBuildCliCommand({
-            printer,
-            source: args.source ?? process.cwd(),
-          }),
-        );
-      },
-    )
+    //     return executeCliCommand(() =>
+    //       handleBuildCliCommand({
+    //         printer,
+    //         source: args.source ?? process.cwd(),
+    //       }),
+    //     );
+    //   },
+    // )
     .command(
       "publish",
       "publish the codemod to Codemod Registry",
@@ -307,18 +286,11 @@ export const executeMainThread = async () => {
           await initializeDependencies(args);
 
         return executeCliCommand(async () => {
-          const codemodConfig = await handlePublishCliCommand({
+          await handlePublishCliCommand({
             printer,
             source: args.source ?? process.cwd(),
+            telemetry: telemetryService,
           });
-
-          if (codemodConfig !== undefined) {
-            telemetryService.sendEvent({
-              kind: "codemodPublished",
-              codemodName: codemodConfig.name,
-              version: codemodConfig.version,
-            });
-          }
         });
       },
     )

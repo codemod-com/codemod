@@ -1,0 +1,376 @@
+import { createHash } from "node:crypto";
+import * as fs from "node:fs/promises";
+import { mkdir, readFile } from "node:fs/promises";
+import { join, parse as pathParse } from "node:path";
+import type { AxiosError } from "axios";
+import inquirer from "inquirer";
+import semver from "semver";
+
+import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
+import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import {
+  type Codemod,
+  type CodemodConfig,
+  type KnownEnginesCodemodValidationInput,
+  type RecipeCodemodValidationInput,
+  type TarService,
+  doubleQuotify,
+  isEngine,
+  isRecipeCodemod,
+  parseCodemod,
+  parseCodemodConfig,
+  parseEngineOptions,
+  parseKnownEnginesCodemod,
+  parseRecipeCodemod,
+  safeParseCodemod,
+  safeParseKnownEnginesCodemod,
+  safeParseRecipeCodemod,
+} from "@codemod-com/utilities";
+
+import type { Stats } from "node:fs";
+import { flatten } from "valibot";
+import { getCodemodDownloadURI } from "~/apis.js";
+import type {
+  FileDownloadService,
+  FileDownloadServiceBlueprint,
+} from "~/fileDownloadService.js";
+import {
+  codemodDirectoryPath,
+  getCurrentUserData,
+  oraCheckmark,
+  unpackZipCodemod,
+} from "~/utils.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "./buildOptions";
+import { buildSafeArgumentRecord } from "./safeArgumentRecord";
+
+export const populateCodemodArgs = async (options: {
+  codemod: Codemod;
+  printer: PrinterBlueprint;
+  argv: GlobalArgvOptions & RunArgvOptions;
+}): Promise<Codemod> => {
+  const { codemod, printer, argv } = options;
+
+  const safeArgumentRecord = await buildSafeArgumentRecord(
+    codemod,
+    argv,
+    printer,
+  );
+
+  const engineOptions = parseEngineOptions({
+    ...argv,
+    engine: codemod.config.engine,
+  });
+
+  if (isRecipeCodemod(codemod)) {
+    return {
+      ...codemod,
+      codemods: await Promise.all(
+        codemod.codemods.map(async (subCodemod) => {
+          const codemod = populateCodemodArgs({
+            ...options,
+            codemod: subCodemod,
+          });
+
+          const parsedCodemod = safeParseKnownEnginesCodemod(codemod);
+
+          if (!parsedCodemod.success) {
+            if (safeParseRecipeCodemod(codemod).success) {
+              throw new Error("Nested recipe codemods are not supported.");
+            }
+
+            throw new Error("Nested codemod is of incorrect structure.");
+          }
+
+          return parsedCodemod.output;
+        }),
+      ),
+      safeArgumentRecord,
+      engineOptions,
+    };
+  }
+
+  // codemodToRun.hashDigest = createHash("ripemd160")
+  //   .update(codemod.config.name)
+  //   .digest();
+
+  return {
+    ...codemod,
+    safeArgumentRecord,
+    engineOptions,
+  };
+};
+
+export const fetchCodemod = async (options: {
+  nameOrPath: string;
+  argv: GlobalArgvOptions & RunArgvOptions;
+  printer: PrinterBlueprint;
+  fileDownloadService: FileDownloadService;
+  tarService: TarService;
+  disableLogs?: boolean;
+}): Promise<Codemod> => {
+  const {
+    nameOrPath,
+    printer,
+    fileDownloadService,
+    tarService,
+    disableLogs = false,
+    argv,
+  } = options;
+  // const codemodSettings = parse(runSettingsSchema, input);
+
+  if (!nameOrPath) {
+    throw new Error("Codemod to run was not specified!");
+  }
+
+  let sourceStat: Stats | null = null;
+  try {
+    sourceStat = await fs.lstat(nameOrPath);
+  } catch (err) {
+    //
+  }
+
+  // Local codemod
+  if (sourceStat !== null) {
+    const isDirectorySource = sourceStat.isDirectory();
+
+    if (!isDirectorySource) {
+      // Codemod in .zip archive
+      const { name, ext } = pathParse(nameOrPath);
+      if (ext === ".zip") {
+        const resultPath = await unpackZipCodemod({
+          source: nameOrPath,
+          target: join(
+            codemodDirectoryPath,
+            "temp",
+            createHash("ripemd160").update(name).digest("base64url"),
+          ),
+        });
+
+        if (resultPath === null) {
+          throw new Error(`Could not find .codemodrc.json in the zip file.`);
+        }
+
+        return fetchCodemod({
+          ...options,
+          nameOrPath: resultPath,
+        });
+      }
+
+      // Standalone codemod
+      if (!isEngine(argv.engine)) {
+        throw new Error(
+          "Engine must be specified for standalone codemods. Use --engine flag.",
+        );
+      }
+
+      const config = parseCodemodConfig({
+        name: "Standalone codemod",
+        version: "1.0.0",
+        engine: argv.engine,
+      });
+
+      if (config.engine === "recipe") {
+        throw new Error(
+          "Recipe engine is not supported for standalone codemods.",
+        );
+      }
+
+      return parseKnownEnginesCodemod({
+        type: "standalone",
+        source: "local",
+        path: nameOrPath,
+        config,
+      } satisfies KnownEnginesCodemodValidationInput);
+    }
+
+    // Codemod package
+    let codemodConfig: CodemodConfig;
+    try {
+      const codemodRcContent = await readFile(
+        join(nameOrPath, ".codemodrc.json"),
+        { encoding: "utf-8" },
+      );
+      codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
+    } catch (err) {
+      throw new Error(
+        `Codemod directory is of incorrect structure at ${nameOrPath}`,
+      );
+    }
+
+    const {
+      output: codemod,
+      success: isValidCodemod,
+      issues,
+    } = safeParseCodemod({
+      type: "package",
+      source: "local",
+      path: nameOrPath,
+      config: codemodConfig,
+    });
+
+    if (!isValidCodemod) {
+      throw new Error(`Codemod is of incorrect structure: ${flatten(issues)}`);
+    }
+
+    if (isRecipeCodemod(codemod)) {
+      const codemods = await Promise.all(
+        codemod.config.names.map(async (subCodemodName) =>
+          fetchCodemod({ ...options, nameOrPath: subCodemodName }),
+        ),
+      );
+
+      return parseRecipeCodemod({ ...codemod, codemods });
+    }
+
+    return parseCodemod(codemod satisfies Codemod);
+  }
+
+  // make the codemod directory
+  const hashDigest = createHash("ripemd160")
+    .update(nameOrPath)
+    .digest("base64url");
+
+  const path = join(codemodDirectoryPath, hashDigest);
+  await mkdir(path, { recursive: true });
+
+  const printableName = chalk.cyan.bold(doubleQuotify(nameOrPath));
+
+  let spinner: ReturnType<typeof printer.withLoaderMessage> | null = null;
+  if (!disableLogs) {
+    spinner = printer.withLoaderMessage(
+      chalk.cyan("Fetching", `${printableName}...`),
+    );
+  }
+
+  // download codemod
+  const userData = await getCurrentUserData();
+
+  let linkResponse: CodemodDownloadLinkResponse;
+  try {
+    linkResponse = await getCodemodDownloadURI(nameOrPath, userData?.token);
+  } catch (err) {
+    spinner?.fail();
+    throw err;
+  }
+
+  const localCodemodPath = join(path, "codemod.tar.gz");
+
+  let downloadResult: Awaited<
+    ReturnType<FileDownloadServiceBlueprint["download"]>
+  >;
+
+  try {
+    downloadResult = await fileDownloadService.download(
+      linkResponse.link,
+      localCodemodPath,
+    );
+  } catch (err) {
+    spinner?.fail();
+    throw new Error(
+      (err as AxiosError<{ error: string }>).response?.data?.error ??
+        "Error downloading codemod from the registry",
+    );
+  }
+
+  const { data, cacheUsed } = downloadResult;
+
+  try {
+    await tarService.unpack(path, data);
+  } catch (err) {
+    spinner?.fail();
+    throw new Error((err as Error).message ?? "Error unpacking codemod");
+  }
+
+  spinner?.stopAndPersist({
+    symbol: oraCheckmark,
+    text: chalk.cyan(
+      cacheUsed
+        ? `Successfully fetched ${printableName} from local cache.`
+        : `Successfully downloaded ${printableName} from the registry.`,
+    ),
+  });
+
+  let config: CodemodConfig;
+  try {
+    const configBuf = await readFile(join(path, ".codemodrc.json"));
+    config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
+  } catch (err) {
+    throw new Error(`Error parsing config for codemod ${name}: ${err}`);
+  }
+
+  if (
+    fileDownloadService.cacheEnabled &&
+    semver.gt(linkResponse.version, config.version)
+  ) {
+    if (!disableLogs) {
+      printer.printConsoleMessage(
+        "info",
+        chalk.yellow(
+          "Newer version of",
+          chalk.cyan(name),
+          "codemod is available.",
+          "Temporarily disabling cache to download the latest version...",
+        ),
+      );
+    }
+
+    return fetchCodemod({
+      ...options,
+      argv: { ...argv, cache: false },
+      disableLogs: true,
+    });
+  }
+
+  if (config.engine === "recipe") {
+    const { names } = await inquirer.prompt<{ names: string[] }>({
+      name: "names",
+      type: "checkbox",
+      message:
+        "Select the codemods you would like to run. Codemods will be executed in order.",
+      choices: config.names,
+      default: config.names,
+    });
+
+    config.names = names;
+
+    const codemods = await Promise.all(
+      config.names.map(async (name) => {
+        const codemod = populateCodemodArgs({
+          codemod: await fetchCodemod({
+            ...options,
+            nameOrPath: name,
+          }),
+          printer,
+          argv,
+        });
+
+        const subCodemod = safeParseKnownEnginesCodemod(codemod);
+
+        if (!subCodemod.success) {
+          if (safeParseRecipeCodemod(codemod).success) {
+            throw new Error("Nested recipe codemods are not supported.");
+          }
+
+          throw new Error("Nested codemod is of incorrect structure.");
+        }
+
+        return subCodemod.output;
+      }),
+    );
+
+    return parseCodemod({
+      type: "package",
+      source: "remote",
+      config,
+      path,
+      codemods,
+    } satisfies RecipeCodemodValidationInput);
+  }
+
+  return parseCodemod({
+    type: "package",
+    source: "remote",
+    config,
+    path,
+  } satisfies KnownEnginesCodemodValidationInput);
+};

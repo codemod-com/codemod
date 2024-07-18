@@ -1,7 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
 import { join } from "node:path";
-import { getConfigurationDirectoryPath, getCurrentUserData } from "../utils";
+import { getCurrentUserData } from "../utils";
 
 /**
  * We need to assign unique identifier for users that are not signed in for correct telemetry tracking
@@ -33,7 +34,7 @@ const generateDistinctId = async (configurationDirectoryPath: string) => {
 };
 
 const getUserDistinctId = async (): Promise<string> => {
-  const configurationDirectoryPath = getConfigurationDirectoryPath();
+  const configDir = join(homedir(), ".codemod");
 
   const userData = await getCurrentUserData();
 
@@ -41,13 +42,13 @@ const getUserDistinctId = async (): Promise<string> => {
     return userData.user.id;
   }
 
-  const distinctId = await getDistinctId(configurationDirectoryPath);
+  const distinctId = await getDistinctId(configDir);
 
   if (distinctId !== null) {
     return distinctId;
   }
 
-  return await generateDistinctId(configurationDirectoryPath);
+  return await generateDistinctId(configDir);
 };
 
-export { getDistinctId, generateDistinctId, getUserDistinctId };
+export { generateDistinctId, getDistinctId, getUserDistinctId };

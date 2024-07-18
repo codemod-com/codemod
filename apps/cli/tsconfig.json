@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "allowJs": true,
     "checkJs": false,
     "target": "ES2015",
-    "noEmit": true
+    "noEmit": true,
+    "paths": {
+      "~/*": ["src/*"]
+    }
   },
   "include": ["env.d.ts", "src/**/*", "test/**/*"],
   "exclude": ["dist/**/*", "node_modules/**/*"],

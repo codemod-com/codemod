@@ -18,44 +18,27 @@ const codemodEngineSchema = union([
   literal("workflow"),
 ]);
 
-export const codemodSettingsSchema = object({
+export const runSettingsSchema = object({
   _: array(string()),
   source: optional(string()),
   engine: optional(codemodEngineSchema),
 });
 
-export type CodemodSettings =
+export type RunSettings =
   | Readonly<{
-      kind: "runOnPreCommit";
-    }>
-  | Readonly<{
-      kind: "runNamed";
+      kind: "named";
       name: string;
     }>
   | Readonly<{
-      kind: "runSourced";
+      kind: "local";
       source: string;
       engine: Output<typeof codemodEngineSchema> | null;
     }>;
 
-export const parseCodemodSettings = (input: unknown): CodemodSettings => {
-  const codemodSettings = parse(codemodSettingsSchema, input);
+export const parseRunSettings = (input: unknown): RunSettings => {
+  const codemodSettings = parse(runSettingsSchema, input);
 
-  if (codemodSettings._.includes("runOnPreCommit")) {
-    return {
-      kind: "runOnPreCommit",
-    };
-  }
-
-  const nameOrPath = codemodSettings._.at(0);
-
-  if (codemodSettings.source) {
-    return {
-      kind: "runSourced",
-      source: codemodSettings.source,
-      engine: codemodSettings.engine ?? null,
-    };
-  }
+  const nameOrPath = codemodSettings._.at(0) ?? codemodSettings.source;
 
   if (!nameOrPath) {
     throw new Error("Codemod to run was not specified!");
@@ -64,14 +47,14 @@ export const parseCodemodSettings = (input: unknown): CodemodSettings => {
   // existsSync used here to not make this function async (for now)
   if (existsSync(nameOrPath)) {
     return {
-      kind: "runSourced",
+      kind: "local",
       source: nameOrPath,
       engine: codemodSettings.engine ?? null,
     };
   }
 
   return {
-    kind: "runNamed",
+    kind: "named",
     name: nameOrPath,
   };
 };

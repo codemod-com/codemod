@@ -96,7 +96,7 @@ export const publishHandler: RouteHandler<{
         mainFileBuffer = buffer;
       }
 
-      if (multipartFile.fieldname === "description.md") {
+      if (multipartFile.fieldname === "README.md") {
         descriptionMdBuffer = buffer;
       }
     }
@@ -201,7 +201,7 @@ export const publishHandler: RouteHandler<{
 
     if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
       buffers.push({
-        name: "description.md",
+        name: "README.md",
         data: descriptionMdBuffer,
       });
     }
