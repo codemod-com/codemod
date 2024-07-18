@@ -295,7 +295,9 @@ export const fetchCodemod = async (options: {
     const configBuf = await readFile(join(path, ".codemodrc.json"));
     config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
   } catch (err) {
-    throw new Error(`Error parsing config for codemod ${name}: ${err}`);
+    throw new Error(
+      `Error parsing config for codemod ${printableName}: ${err}`,
+    );
   }
 
   if (
@@ -307,7 +309,7 @@ export const fetchCodemod = async (options: {
         "info",
         chalk.yellow(
           "Newer version of",
-          chalk.cyan(name),
+          chalk.cyan(printableName),
           "codemod is available.",
           "Temporarily disabling cache to download the latest version...",
         ),
