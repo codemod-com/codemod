@@ -63,6 +63,8 @@ export class Runner {
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
 
+    console.log("Running codemod", codemod);
+
     try {
       await this.executeCodemod({
         fileSystem: this._options.fs,

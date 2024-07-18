@@ -10,8 +10,8 @@ import type {
   FileCommand,
 } from "@codemod-com/utilities";
 
-import { getAdapterByExtname } from "~/adapters/index.js";
-import { CONSOLE_OVERRIDE } from "~/constants.js";
+import { getAdapterByExtname } from "#adapters/index.js";
+import { CONSOLE_OVERRIDE } from "#constants.js";
 import { buildVmConsole } from "./common.js";
 
 export const buildApi = (parser: string): API => ({

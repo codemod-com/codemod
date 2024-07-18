@@ -4,6 +4,13 @@
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "./dist"
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+
+    "incremental": false
   }
 }

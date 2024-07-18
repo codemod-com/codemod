@@ -2,7 +2,7 @@ import { randomBytes } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { getCurrentUserData } from "../utils";
+import { getCurrentUserData } from "../utils.js";
 
 /**
  * We need to assign unique identifier for users that are not signed in for correct telemetry tracking

@@ -1,11 +1,11 @@
 import * as v from "valibot";
-import { argumentRecordSchema } from "./argumentRecordSchema";
+import { argumentRecordSchema } from "./argumentRecordSchema.js";
 import {
   knownEnginesCodemodConfigSchema,
   recipeCodemodConfigSchema,
-} from "./codemodConfigSchema";
-import { engineOptionsSchema } from "./engineOptionsSchema";
-import type { FileCommand } from "./file-commands";
+} from "./codemodConfigSchema.js";
+import { engineOptionsSchema } from "./engineOptionsSchema.js";
+import type { FileCommand } from "./file-commands.js";
 
 export const codemodSchemaBase = v.object({
   path: v.string(),

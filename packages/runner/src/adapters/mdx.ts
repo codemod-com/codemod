@@ -1,9 +1,9 @@
 import { fromMarkdown } from "mdast-util-from-markdown";
-import type { Root } from "mdast-util-from-markdown/lib";
 import { mdxFromMarkdown, mdxToMarkdown } from "mdast-util-mdx";
 import { toMarkdown } from "mdast-util-to-markdown";
 import { mdxjs } from "micromark-extension-mdxjs";
-import type { Node } from "unist-util-filter/lib";
+import type { Root } from "node_modules/mdast-util-from-markdown/lib/index.js";
+import type { Node } from "node_modules/unist-util-filter/lib/index.js";
 import { CONTINUE, SKIP, visit } from "unist-util-visit";
 
 type TransformFunction = (

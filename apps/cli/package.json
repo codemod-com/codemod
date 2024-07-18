@@ -2,6 +2,9 @@
   "name": "codemod",
   "author": "Codemod, Inc.",
   "version": "0.12.0",
+  "imports": {
+    "#*": "./src/*"
+  },
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -90,8 +93,8 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
-    "esbuild": "^0.23.0",
     "blessed": "catalog:",
+    "esbuild": "^0.23.0",
     "keytar": "catalog:",
     "@octokit/rest": "catalog:"
   }

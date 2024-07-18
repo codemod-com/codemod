@@ -4,8 +4,8 @@ import { type fs, vol } from "memfs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { randomBytes } from "node:crypto";
-import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions";
-import { handleRunCliCommand } from "../commands/run";
+import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions.js";
+import { handleRunCliCommand } from "../commands/run.js";
 
 const mockedArgs = {
   _: ["recipe1"],

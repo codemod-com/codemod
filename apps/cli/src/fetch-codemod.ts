@@ -1,10 +1,13 @@
 import { createHash } from "node:crypto";
+import type { Stats } from "node:fs";
 import * as fs from "node:fs/promises";
 import { mkdir, readFile } from "node:fs/promises";
 import { join, parse as pathParse } from "node:path";
+
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
 import semver from "semver";
+import { flatten } from "valibot";
 
 import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
@@ -27,21 +30,19 @@ import {
   safeParseRecipeCodemod,
 } from "@codemod-com/utilities";
 
-import type { Stats } from "node:fs";
-import { flatten } from "valibot";
-import { getCodemodDownloadURI } from "~/apis.js";
+import { getCodemodDownloadURI } from "#apis.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "#buildOptions.js";
 import type {
   FileDownloadService,
   FileDownloadServiceBlueprint,
-} from "~/fileDownloadService.js";
+} from "#fileDownloadService.js";
+import { buildSafeArgumentRecord } from "#safeArgumentRecord.js";
 import {
   codemodDirectoryPath,
   getCurrentUserData,
   oraCheckmark,
   unpackZipCodemod,
-} from "~/utils.js";
-import type { GlobalArgvOptions, RunArgvOptions } from "./buildOptions";
-import { buildSafeArgumentRecord } from "./safeArgumentRecord";
+} from "#utils.js";
 
 export const populateCodemodArgs = async (options: {
   codemod: Codemod;

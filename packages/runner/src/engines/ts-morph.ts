@@ -6,8 +6,8 @@ import { nullish, parse, string } from "valibot";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord, FileCommand } from "@codemod-com/utilities";
 
-import { getAdapterByExtname } from "~/adapters/index.js";
-import { CONSOLE_OVERRIDE } from "~/constants.js";
+import { getAdapterByExtname } from "#adapters/index.js";
+import { CONSOLE_OVERRIDE } from "#constants.js";
 import { buildVmConsole } from "./common.js";
 
 const transform = (

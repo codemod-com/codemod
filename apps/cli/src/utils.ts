@@ -11,9 +11,9 @@ import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 import { basename, dirname, join } from "node:path";
-import { version } from "~/../package.json";
-import { getUserData } from "~/apis";
-import { handleLoginCliCommand } from "~/commands/login";
+import { version } from "#/../package.json";
+import { getUserData } from "#apis.js";
+import { handleLoginCliCommand } from "#commands/login.js";
 
 export const codemodDirectoryPath = join(homedir(), ".codemod");
 

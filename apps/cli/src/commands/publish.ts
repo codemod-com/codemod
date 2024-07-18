@@ -18,12 +18,12 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
-import { version as cliVersion } from "~/../package.json";
-import type { TelemetryEvent } from "~/analytics/telemetry.js";
-import { getCodemod, publish } from "~/apis.js";
-import { extractMainScriptPath } from "~/codemod-files.js";
-import { getCurrentUserOrLogin } from "~/utils.js";
-import { handleInitCliCommand } from "./init.js";
+import { version as cliVersion } from "#/../package.json";
+import type { TelemetryEvent } from "#analytics/telemetry.js";
+import { getCodemod, publish } from "#apis.js";
+import { extractMainScriptPath } from "#codemod-files.js";
+import { handleInitCliCommand } from "#commands/init.js";
+import { getCurrentUserOrLogin } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: PrinterBlueprint;

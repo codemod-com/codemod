@@ -1,3 +1,4 @@
+// @ts-ignore
 import colors from "colors-cli";
 import { flattenDeep, identity, mapValues } from "lodash-es";
 import { getRepositoriesContext, parentContextLegacy } from "./contexts.js";

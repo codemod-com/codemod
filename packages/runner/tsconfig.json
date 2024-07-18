@@ -4,9 +4,7 @@
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
     "baseUrl": ".",
-    "outDir": "./dist",
-    "paths": {
-      "~/*": ["./src/*"]
-    }
+    "rootDir": "./src",
+    "outDir": "./dist"
   }
 }

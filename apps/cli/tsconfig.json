@@ -1,13 +1,10 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "rootDir": "./src",
     "allowJs": true,
     "checkJs": false,
-    "target": "ES2015",
-    "noEmit": true,
-    "paths": {
-      "~/*": ["src/*"]
-    }
+    "noEmit": true
   },
   "include": ["env.d.ts", "src/**/*", "test/**/*"],
   "exclude": ["dist/**/*", "node_modules/**/*"],

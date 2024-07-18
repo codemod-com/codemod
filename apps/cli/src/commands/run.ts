@@ -23,15 +23,15 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
-import { version as cliVersion } from "~/../package.json";
-import type { TelemetryEvent } from "~/analytics/telemetry.js";
-import type { GlobalArgvOptions, RunArgvOptions } from "~/buildOptions.js";
-import { getDiff, getDiffScreen } from "~/dryrun-diff";
-import { fetchCodemod } from "~/fetch-codemod";
-import { FileDownloadService } from "~/fileDownloadService.js";
-import { handleInstallDependencies } from "~/handleInstallDependencies.js";
-import type { NamedFileCommand } from "~/types/commands";
-import { writeLogs } from "~/utils";
+import { version as cliVersion } from "#/../package.json";
+import type { TelemetryEvent } from "#analytics/telemetry.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "#buildOptions.js";
+import { getDiff, getDiffScreen } from "#dryrun-diff.js";
+import { fetchCodemod } from "#fetch-codemod.js";
+import { FileDownloadService } from "#fileDownloadService.js";
+import { handleInstallDependencies } from "#handleInstallDependencies.js";
+import type { NamedFileCommand } from "#types/commands.js";
+import { writeLogs } from "#utils.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
