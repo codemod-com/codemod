@@ -1,7 +1,5 @@
 This codemod removes deprecated **PropTypes** from React Native components (e.g., **Image**, **Text**, **TextInput**), reducing app size and memory overhead, and preparing the codebase for modern type-checking solutions.
 
-## Example
-
 ### Before
 
 ```ts
