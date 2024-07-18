@@ -5,7 +5,7 @@
 	"license": "Apache License, Version 2.0",
 	"description": "A monorepo for all the interconnected tools of codemod.com",
 	"private": true,
-	"packageManager": "pnpm@8.15.7+sha256.50783dd0fa303852de2dd1557cd4b9f07cb5b018154a6e76d0f40635d6cee019",
+	"packageManager": "pnpm@9.5.0",
 	"engines": {
 		"node": ">=20.x",
 		"pnpm": ">=8.7.x"
@@ -48,12 +48,12 @@
 		"@codemod-com/utilities": "workspace:*",
 		"@total-typescript/ts-reset": "^0.4.2",
 		"@types/node": "^20.5.1",
-		"@vitest/coverage-v8": "^1.0.1",
-		"concurrently": "^8.2.0",
-		"husky": "^8.0.3",
-		"lint-staged": "^15.1.0",
+		"@vitest/coverage-v8": "catalog:",
+		"concurrently": "catalog:",
+		"husky": "catalog:",
+		"lint-staged": "catalog:",
 		"tsx": "^4.2.0",
-		"turbo": "^1.10.14",
+		"turbo": "catalog:",
 		"typescript": "^5.2.0",
 		"vitest": "^1.4.0",
 		"@biomejs/biome": "^1.6.4"
