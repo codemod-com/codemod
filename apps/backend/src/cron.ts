@@ -106,7 +106,7 @@ const services: Array<{
 ];
 
 const systemHealthCheckCron = new CronJob(
-  "*/10 * * * * *",
+  "*/15 * * * *",
   async () => {
     const token = process.env.SLACK_TOKEN ?? "";
     const channel = process.env.SLACK_CHANNEL ?? "";
