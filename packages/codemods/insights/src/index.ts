@@ -1,12 +1,12 @@
-import { type Api, api } from "@codemod.com/workflow";
+import type { Api } from "@codemod.com/workflow";
 
 import semver from "semver";
 import semverDiff from "semver-diff";
 import { memoize } from "./cache-utils";
 import {
-  getHomePage,
-  getLatestStableRelease,
+  type NormalizedRegistryData,
   getPackageRegistryData,
+  normalizePackageRegistryData,
 } from "./registry-utils";
 
 type Options = {
@@ -27,41 +27,24 @@ type PnpmWorkspace = {
 
 const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
 
-const createPackageSummary = async (
+const buildInsight = (
   packageName: string,
   packageJsonVersion: string,
+  packageData: NormalizedRegistryData,
 ) => {
-  const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
-
-  if (!packageRegistryData) {
-    console.warn(
-      `Unable to get package registry data for ${packageName}. Skipping`,
-    );
-    return null;
-  }
-
-  const latestStableRelease = getLatestStableRelease(packageRegistryData);
-  const nextVersion = packageRegistryData["dist-tags"]?.next;
-  const sortedVersions = Object.keys(packageRegistryData.versions).sort(
-    semver.compare,
-  );
-
-  const homepage = getHomePage(packageRegistryData);
+  const { latest: latestStableRelease, next, homepage, versions } = packageData;
 
   const installedVersion = undefined;
 
   const latest =
     installedVersion &&
     latestStableRelease &&
-    nextVersion &&
+    next &&
     semver.gt(installedVersion, latestStableRelease)
-      ? nextVersion
+      ? next
       : latestStableRelease;
 
-  const versionWanted = semver.maxSatisfying(
-    sortedVersions,
-    packageJsonVersion,
-  );
+  const versionWanted = semver.maxSatisfying(versions, packageJsonVersion);
 
   const versionToUse = installedVersion ?? versionWanted;
   const bump =
@@ -93,6 +76,26 @@ const createPackageSummary = async (
       bump !== "major",
     bump: bump,
   };
+};
+
+const createPackageSummary = async (
+  packageName: string,
+  packageJsonVersion: string,
+) => {
+  const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
+
+  if (!packageRegistryData) {
+    console.warn(
+      `Unable to get package registry data for ${packageName}. Skipping`,
+    );
+    return null;
+  }
+
+  return buildInsight(
+    packageName,
+    packageJsonVersion,
+    normalizePackageRegistryData(packageRegistryData),
+  );
 };
 
 const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
@@ -153,11 +156,11 @@ export async function workflow({ git }: Api, options: Options) {
           return createPackageSummary(packageName, packageVersion);
         });
 
-        report[packageJson.name] = await Promise.all(packageAnalysis);
+        const awaitedPackageAnalysis = await Promise.all(packageAnalysis);
+
+        report[packageJson.name] = awaitedPackageAnalysis;
       });
   });
-}
 
-workflow(api, {
-  repos: ["git@github.com:codemod-com/codemod.git"],
-});
+  return report;
+}
