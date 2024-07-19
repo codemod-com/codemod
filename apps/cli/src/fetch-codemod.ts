@@ -10,7 +10,7 @@ import semver from "semver";
 import { flatten } from "valibot";
 
 import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type Codemod,
   type CodemodConfig,
@@ -46,7 +46,7 @@ import {
 
 export const populateCodemodArgs = async (options: {
   codemod: Codemod;
-  printer: PrinterBlueprint;
+  printer: Printer;
   argv: GlobalArgvOptions & RunArgvOptions;
 }): Promise<Codemod> => {
   const { codemod, printer, argv } = options;
@@ -104,7 +104,7 @@ export const populateCodemodArgs = async (options: {
 export const fetchCodemod = async (options: {
   nameOrPath: string;
   argv: GlobalArgvOptions & RunArgvOptions;
-  printer: PrinterBlueprint;
+  printer: Printer;
   fileDownloadService: FileDownloadService;
   tarService: TarService;
   disableLogs?: boolean;

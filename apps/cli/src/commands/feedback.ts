@@ -1,8 +1,8 @@
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import open from "open";
 
 export const handleFeedbackCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
 }) => {
   const { printer } = options;
   const feedbackUrl = "https://go.codemod.com/feedback";

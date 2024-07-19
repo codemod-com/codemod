@@ -1,6 +1,6 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
 import open from "open";
 import { Project } from "ts-morph";
@@ -100,7 +100,7 @@ const createCodemodStudioURL = ({
 };
 
 export const handleLearnCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   target: string | null;
 }) => {
   const { printer, target } = options;

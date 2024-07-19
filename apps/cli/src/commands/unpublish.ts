@@ -1,4 +1,4 @@
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   doubleQuotify,
   extractLibNameAndVersion,
@@ -9,7 +9,7 @@ import { unpublish } from "../apis.js";
 import { getCurrentUserOrLogin } from "../utils.js";
 
 export const handleUnpublishCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   name: string;
   force?: boolean;
 }) => {

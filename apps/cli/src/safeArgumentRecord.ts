@@ -1,4 +1,4 @@
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
   type Codemod,
@@ -10,7 +10,7 @@ import inquirer from "inquirer";
 export const buildSafeArgumentRecord = async (
   codemod: Codemod,
   argvRecord: Record<string, unknown>,
-  printer: PrinterBlueprint,
+  printer: Printer,
 ): Promise<ArgumentRecord> => {
   if (codemod.type === "standalone") {
     // no checks performed for local codemods

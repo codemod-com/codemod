@@ -1,4 +1,4 @@
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
 import open from "open";
 import {
@@ -12,7 +12,7 @@ import { credentialsStorage, getCurrentUserData } from "../utils.js";
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
 const routeUserToStudioForLogin = (
-  printer: PrinterBlueprint,
+  printer: Printer,
   sessionId: string,
   iv: string,
 ) => {
@@ -29,7 +29,7 @@ const routeUserToStudioForLogin = (
   }
 };
 export const handleLoginCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
 }) => {
   const { printer } = options;
 

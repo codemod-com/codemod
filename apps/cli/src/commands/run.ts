@@ -8,11 +8,7 @@ import inquirer from "inquirer";
 import prettyjson from "prettyjson";
 
 import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
-import {
-  type PrinterBlueprint,
-  chalk,
-  colorLongString,
-} from "@codemod-com/printer";
+import { type Printer, chalk, colorLongString } from "@codemod-com/printer";
 import { Runner, parseFlowSettings } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
@@ -90,7 +86,7 @@ const checkFileTreeVersioning = async (target: string) => {
 };
 
 export const handleRunCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   args: GlobalArgvOptions & RunArgvOptions;
   telemetry: TelemetrySender<TelemetryEvent>;
   onExit: () => void;
@@ -306,6 +302,7 @@ export const handleRunCliCommand = async (options: {
   }
 
   if (allExecutedCommands.length === 0) {
+    await printer.progressBar?.stop();
     return printer.printConsoleMessage(
       "info",
       chalk.yellow("No changes were made during the codemod run."),

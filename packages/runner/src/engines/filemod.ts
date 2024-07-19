@@ -21,7 +21,7 @@ import {
   buildApi,
   executeFilemod,
 } from "@codemod-com/filemod";
-import type { PrinterBlueprint } from "@codemod-com/printer";
+import type { Printer } from "@codemod-com/printer";
 import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
 
 import { defaultParser } from "#parsers/jscodeshift.js";
@@ -58,7 +58,7 @@ export const runFilemod = async (options: {
   target: string;
   format: boolean;
   codemod: Codemod;
-  printer: PrinterBlueprint;
+  printer: Printer;
   onError?: CodemodExecutionErrorCallback;
 }): Promise<readonly FileCommand[]> => {
   const {

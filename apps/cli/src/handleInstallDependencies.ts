@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type CodemodConfig,
   doubleQuotify,
@@ -25,7 +25,7 @@ type InstallationChoice = "root" | "affected" | "none";
 
 export const handleInstallDependencies = async (options: {
   codemodName: string;
-  printer: PrinterBlueprint;
+  printer: Printer;
   target: string;
   deps: NonNullable<CodemodConfig["deps"]>;
   affectedFiles: string[];

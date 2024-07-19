@@ -7,7 +7,7 @@ import * as semver from "semver";
 import { url, safeParse, string } from "valibot";
 
 import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
@@ -26,7 +26,7 @@ import { handleInitCliCommand } from "#commands/init.js";
 import { getCurrentUserOrLogin } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   source: string;
   telemetry: TelemetrySender<TelemetryEvent>;
 }) => {

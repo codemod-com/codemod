@@ -1,4 +1,4 @@
-import type { PrinterBlueprint } from "@codemod-com/printer";
+import type { Printer } from "@codemod-com/printer";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import { type fs, vol } from "memfs";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -33,7 +33,7 @@ const mockedPrinter = {
   printOperationMessage: vi.fn(),
   printConsoleMessage: vi.fn(),
   withLoaderMessage: vi.fn(),
-} as unknown as PrinterBlueprint;
+} as unknown as Printer;
 
 const mocks = vi.hoisted(() => {
   return {

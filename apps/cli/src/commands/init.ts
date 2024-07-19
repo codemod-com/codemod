@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type KnownEngines,
   type ProjectDownloadInput,
@@ -28,7 +28,7 @@ type License = "MIT" | "Apache 2.0";
 const LICENSE_CHOICES: License[] = ["MIT", "Apache 2.0"];
 
 export const handleInitCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   target: string;
   noPrompt?: boolean;
   // assumed to be relative to target

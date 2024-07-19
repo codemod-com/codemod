@@ -7,13 +7,7 @@ import { glob, globStream } from "glob";
 import * as yaml from "js-yaml";
 
 import type { Filemod } from "@codemod-com/filemod";
-import {
-  Printer,
-  type PrinterBlueprint,
-  boxen,
-  chalk,
-  colorLongString,
-} from "@codemod-com/printer";
+import { Printer, boxen, chalk, colorLongString } from "@codemod-com/printer";
 import {
   type Codemod,
   type CodemodConfig,
@@ -366,7 +360,7 @@ export class Runner {
   }
 
   private async printRunSummary(
-    printer: PrinterBlueprint,
+    printer: Printer,
     codemod: Codemod,
     flowSettings: FlowSettings,
     patterns: Awaited<ReturnType<typeof this.buildPatterns>>,
@@ -467,8 +461,8 @@ export class Runner {
     onCommand: (command: FileCommand) => Promise<void>;
     onSuccess?: (runResult: RunResult) => Promise<void> | void;
     onError?: CodemodExecutionErrorCallback;
-    printer: PrinterBlueprint;
-  }): Promise<void> {
+    printer: Printer;
+  }) {
     const {
       fileSystem,
       codemod,

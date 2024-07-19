@@ -1,11 +1,11 @@
-import type { PrinterBlueprint } from "@codemod-com/printer";
+import type { Printer } from "@codemod-com/printer";
 import type { FileSystem } from "@codemod-com/utilities";
 import axios, { isAxiosError, type AxiosResponse } from "axios";
 
 export type FileDownloadServiceBlueprint = Readonly<{
   cacheEnabled: boolean;
   readonly _ifs: FileSystem;
-  readonly _printer: PrinterBlueprint;
+  readonly _printer: Printer;
 
   download(
     url: string,
@@ -17,7 +17,7 @@ export class FileDownloadService implements FileDownloadServiceBlueprint {
   public constructor(
     public cacheEnabled: boolean,
     public readonly _ifs: FileSystem,
-    public readonly _printer: PrinterBlueprint,
+    public readonly _printer: Printer,
   ) {}
 
   public async download(

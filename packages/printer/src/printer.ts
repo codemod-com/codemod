@@ -5,19 +5,8 @@ import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
 import type { OperationMessage, ProgressMessage } from "./schemata/messages.js";
 import type { WorkerThreadMessage } from "./schemata/workerThreadMessages.js";
 
-export type PrinterBlueprint = Readonly<{
-  __jsonOutput: boolean;
-  printMessage(
-    message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
-  ): void;
-  printOperationMessage(message: OperationMessage): void;
-  printConsoleMessage(kind: ConsoleKind, message: string): void;
-
-  withLoaderMessage(text: string): Ora;
-}>;
-
-export class Printer implements PrinterBlueprint {
-  private progressBar: cliProgress.SingleBar | null = null;
+export class Printer {
+  public progressBar: cliProgress.SingleBar | null = null;
 
   public constructor(public readonly __jsonOutput = false) {}
 

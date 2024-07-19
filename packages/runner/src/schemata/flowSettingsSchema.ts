@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type Output,
   array,
@@ -60,7 +60,7 @@ export type FlowSettings = Omit<Output<typeof flowSettingsSchema>, "target"> & {
 
 export const parseFlowSettings = (
   input: unknown,
-  printer: PrinterBlueprint,
+  printer: Printer,
 ): FlowSettings => {
   const flowSettings = parse(flowSettingsSchema, input);
 

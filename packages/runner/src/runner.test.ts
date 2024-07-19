@@ -3,7 +3,7 @@
 // import { Volume, createFsFromVolume } from "memfs";
 // import { describe, it } from "vitest";
 // import type { CodemodDownloaderBlueprint } from "../src/downloadCodemod.js";
-// import type { PrinterBlueprint } from "../src/printer.js";
+// import type { Printer } from "../src/printer.js";
 // import type { RepositoryConfiguration } from "../src/repositoryConfiguration.js";
 // import { Runner } from "../src/runner.js";
 // import type { CodemodSettings } from "../src/schemata/codemodSettingsSchema.js";
@@ -60,7 +60,7 @@
 //   return "transformed";
 // } `;
 
-// const printer: PrinterBlueprint = {
+// const printer: Printer = {
 // 	__jsonOutput: false,
 // 	printMessage: () => {},
 // 	printOperationMessage: () => {},

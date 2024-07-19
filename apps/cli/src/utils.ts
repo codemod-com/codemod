@@ -7,7 +7,7 @@ import keytar from "keytar";
 import unzipper from "unzipper";
 
 import type { GetUserDataResponse } from "@codemod-com/api-types";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
+import { type Printer, chalk } from "@codemod-com/printer";
 import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 import { basename, dirname, join } from "node:path";
@@ -42,7 +42,7 @@ export const getCurrentUserData = async (): Promise<UserData | null> => {
 
 export const getCurrentUserOrLogin = async (options: {
   message: string;
-  printer: PrinterBlueprint;
+  printer: Printer;
   onEmptyAfterLoginText?: string;
 }) => {
   const { message, printer } = options;
