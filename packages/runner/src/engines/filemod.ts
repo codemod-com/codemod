@@ -202,8 +202,6 @@ export const runRepomod = async (options: {
     },
   };
 
-  console.log("before filemod");
-
   const externalFileCommands = await executeFilemod(
     api,
     filemod,
@@ -211,8 +209,6 @@ export const runRepomod = async (options: {
     safeArgumentRecord,
     callbackService,
   );
-
-  console.log("after filemod");
 
   return Promise.all(
     externalFileCommands.map(async (externalFileCommand) => {
