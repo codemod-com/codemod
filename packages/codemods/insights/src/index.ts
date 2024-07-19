@@ -1,27 +1,17 @@
 import { type Api, api } from "@codemod.com/workflow";
-import gitUrl from "giturl";
+
 import semver from "semver";
 import semverDiff from "semver-diff";
+import { memoize } from "./cache-utils";
+import {
+  getHomePage,
+  getLatestStableRelease,
+  getPackageRegistryData,
+} from "./registry-utils";
 
 type Options = {
   repos: string[];
   onlyProd: boolean;
-};
-
-type PackageData = {
-  versions: Record<
-    string,
-    {
-      homepage?: string;
-      bugs?: {
-        url?: string;
-      };
-      repository?: {
-        url?: string;
-      };
-    }
-  >;
-  "dist-tags": Record<string, string>;
 };
 
 type PackageJson = {
@@ -35,58 +25,13 @@ type PnpmWorkspace = {
 
 // Inspired by https://github.com/dylang/npm-check/blob/master/lib/in/create-package-summary.js
 
-// @TODO will be used for change log parser
-const getHomePage = (packageData: PackageData): string | null => {
-  const latest = packageData["dist-tags"].latest;
-
-  if (!latest) {
-    return null;
-  }
-
-  const packageDataForLatest = packageData.versions[latest];
-  const maybeUrl =
-    packageDataForLatest?.bugs?.url ??
-    packageDataForLatest?.repository?.url ??
-    null;
-  const maybeHomepage = packageDataForLatest?.homepage ?? null;
-
-  return maybeUrl ? gitUrl.parse(maybeUrl) : maybeHomepage;
-};
-
-const getPackageData = async (packageName: string) => {
-  const data = await fetch(`https://registry.npmjs.org/${packageName}`, {
-    headers: { Accept: "application/json" },
-  });
-
-  if (data.status !== 200) {
-    return null;
-  }
-
-  const rawData = (await data.json()) as PackageData;
-
-  const sortedVersions = Object.keys(rawData.versions).sort(semver.compare);
-
-  const latest = rawData["dist-tags"].latest;
-  const next = rawData["dist-tags"].next;
-
-  const latestStableRelease =
-    latest && semver.satisfies(latest, "*")
-      ? latest
-      : semver.maxSatisfying(sortedVersions, "*");
-
-  return {
-    latest: latestStableRelease,
-    next: next,
-    versions: sortedVersions,
-    homepage: getHomePage(rawData),
-  };
-};
+const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
 
 const createPackageSummary = async (
   packageName: string,
   packageJsonVersion: string,
 ) => {
-  const packageRegistryData = await getPackageData(packageName);
+  const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
 
   if (!packageRegistryData) {
     console.warn(
@@ -95,22 +40,30 @@ const createPackageSummary = async (
     return null;
   }
 
-  // @TODO read from lock file?
+  const latestStableRelease = getLatestStableRelease(packageRegistryData);
+  const nextVersion = packageRegistryData["dist-tags"]?.next;
+  const sortedVersions = Object.keys(packageRegistryData.versions).sort(
+    semver.compare,
+  );
+
+  const homepage = getHomePage(packageRegistryData);
+
   const installedVersion = undefined;
 
   const latest =
     installedVersion &&
-    packageRegistryData.latest &&
-    packageRegistryData.next &&
-    semver.gt(installedVersion, packageRegistryData.latest)
-      ? packageRegistryData.next
-      : packageRegistryData.latest;
+    latestStableRelease &&
+    nextVersion &&
+    semver.gt(installedVersion, latestStableRelease)
+      ? nextVersion
+      : latestStableRelease;
 
-  const versions = packageRegistryData.versions || [];
+  const versionWanted = semver.maxSatisfying(
+    sortedVersions,
+    packageJsonVersion,
+  );
 
-  const versionWanted = semver.maxSatisfying(versions, packageJsonVersion);
-  const versionToUse = installedVersion || versionWanted;
-
+  const versionToUse = installedVersion ?? versionWanted;
   const bump =
     versionToUse &&
     latest &&
@@ -121,14 +74,11 @@ const createPackageSummary = async (
   return {
     // info
     moduleName: packageName,
-    homepage: packageRegistryData.homepage,
-    regError: packageRegistryData.error,
+    homepage,
 
     // versions
     latest: latest,
     installed: versionToUse,
-    isInstalled: packageIsInstalled,
-    notInstalled: !packageIsInstalled,
     packageWanted: versionWanted,
     packageJson: packageJsonVersion,
     mismatch:
