@@ -53,7 +53,9 @@ export const removeEmptyChildren = (node: TreeNode): TreeNode => {
 export const transformNode = (content: string, type: EditorType) => {
   const parsed = parseSnippet(content);
   const rootNode = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
-  if (!rootNode) return null;
+  if (!rootNode) {
+    return null;
+  }
   const transformedRootNode =
     transformTreeData(mapBabelASTToRenderableTree(rootNode as Node)) ?? null;
   const withComments = removeEmptyChildren(transformedRootNode);
