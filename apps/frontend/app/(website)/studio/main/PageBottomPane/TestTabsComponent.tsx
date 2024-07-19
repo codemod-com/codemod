@@ -108,7 +108,7 @@ export const TestTabsComponent = () => {
           </div>
         ))}
         {!getHasReachedTabsLimit() && (
-          <button className="add-tab-button" onClick={addPair}>
+          <button className="add-tab-button" onClick={() => addPair()}>
             +
           </button>
         )}
