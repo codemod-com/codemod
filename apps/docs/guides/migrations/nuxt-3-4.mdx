@@ -1,0 +1,70 @@
+---
+title: "Nuxt 3 to 4 Migration"
+'og:image': ''
+---
+
+Nuxt 4 introduces several new features and improvements, including performance and API consistency improvements.
+
+Codemod supports a mostly automated Nuxt 4 upgrade experience. This page provides tips and resources you may need for a successful migration.
+
+## Getting started
+
+<CardGroup cols={2}>
+<Card
+    title="Nuxt 4 Upgrade Guide"
+    icon={
+    <>
+      <svg width="32" height="23" viewBox="0 0 32 23" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.8504 21.5981H29.2598C29.6239 21.5981 29.9724 21.4727 30.2877 21.2959C30.603 21.119 30.9281 20.897 31.11 20.5906C31.292 20.2843 31.4185 19.9368 31.4184 19.5832C31.4182 19.2295 31.2923 18.882 31.11 18.5759L23.4009 5.57986C23.219 5.27357 22.9966 5.05145 22.6814 4.87461C22.3662 4.69783 21.9148 4.57237 21.5508 4.57237C21.1868 4.57237 20.8381 4.69783 20.5229 4.87461C20.2076 5.05145 19.9853 5.27357 19.8033 5.57986L17.8504 8.90441L13.9444 2.45654C13.7623 2.15032 13.5403 1.82763 13.2249 1.65085C12.9096 1.474 12.5612 1.44934 12.1971 1.44934C11.833 1.44934 11.4845 1.474 11.1692 1.65085C10.8539 1.82763 10.529 2.15032 10.3469 2.45654L0.78761 18.5759C0.605363 18.882 0.582192 19.2295 0.582032 19.5832C0.581872 19.9368 0.605639 20.2843 0.78761 20.5906C0.969581 20.8969 1.29461 21.119 1.60991 21.2959C1.92522 21.4727 2.27369 21.5981 2.63779 21.5981H9.83294C12.6839 21.5981 14.759 20.3446 16.2058 17.9713L19.7006 12.0274L21.5508 8.90441L27.2041 18.3743H19.7006L17.8504 21.5981ZM9.73018 18.3743H4.69352L12.1971 5.68058L16.0002 12.0274L13.481 16.3317C12.5203 17.8716 11.4249 18.3743 9.73018 18.3743Z" fill="#00DC82"/>
+        </svg>
+    </>
+    }
+    href="https://nuxt.com/docs/getting-started/upgrade#upgrading-nuxt"
+>
+</Card>
+<Card
+    title="Nuxt 4 Upgrade Recipe"
+    icon="cauldron"
+    href="https://codemod.com/registry/nuxt-4-migration-recipe"
+>
+    
+</Card>
+</CardGroup>
+
+## Migration Steps
+<Steps>
+    <Step title="Opt in to Nuxt 4">
+    1. Upgrade to the latest version of Nuxt:
+        ```bash
+        npx nuxi upgrade
+        ````
+    2. Set `compatibilityVersion` to match Nuxt 4 behavior:
+        ```ts nuxt.config.ts
+        export default defineNuxtConfig({
+        future: {
+            compatibilityVersion: 4,
+        },
+        })
+        ```
+
+    For more info, please refer to [opting in to Nuxt 4](https://nuxt.com/docs/getting-started/upgrade#opting-in-to-nuxt-4s).
+    
+    </Step>
+    <Step title="Run migration codemods">
+        ```bash
+        npx codemod@latest nuxt/4/migration-recipe
+        ``` 
+
+        The recipe includes the following codemods:
+
+
+
+        - [nuxt/4/absolute-watch-paths](https://codemod.com/registry/nuxt-4-absolute-watch-path)
+        - [nuxt/4/default-data-error-value](https://codemod.com/registry/nuxt-4-default-data-error-value)
+        - [nuxt/4/deprecated-dedupe-value](https://codemod.com/registry/nuxt-4-deprecated-dedupe-value)
+        - [nuxt/4/file-structure](https://codemod.com/registry/nuxt-4-file-structure)
+        - [nuxt/4/shallow-data-reactivity](https://codemod.com/registry/nuxt-4-shallow-function-reactivity)
+
+        For a list of all available codemods, see [Codemod Registry](https://go.codemod.com/registry-nuxt).
+    </Step>
+</Steps>
