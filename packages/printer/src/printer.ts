@@ -6,7 +6,7 @@ import type { OperationMessage, ProgressMessage } from "./schemata/messages.js";
 import type { WorkerThreadMessage } from "./schemata/workerThreadMessages.js";
 
 export class Printer {
-  public progressBar: cliProgress.SingleBar | null = null;
+  protected progressBar: cliProgress.SingleBar | null = null;
 
   public constructor(public readonly __jsonOutput = false) {}
 
@@ -49,7 +49,7 @@ export class Printer {
     }
 
     if (message.kind === "finish") {
-      this.finishExecutionProgress();
+      this.terminateExecutionProgress();
     }
   }
 
@@ -95,7 +95,7 @@ export class Printer {
     }
   }
 
-  public finishExecutionProgress() {
+  public terminateExecutionProgress() {
     if (this.progressBar) {
       this.progressBar.stop();
       this.progressBar = null;

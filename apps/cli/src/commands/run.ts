@@ -302,11 +302,13 @@ export const handleRunCliCommand = async (options: {
   }
 
   if (allExecutedCommands.length === 0) {
-    await printer.progressBar?.stop();
-    return printer.printConsoleMessage(
+    printer.terminateExecutionProgress();
+    printer.printConsoleMessage(
       "info",
-      chalk.yellow("No changes were made during the codemod run."),
+      chalk.yellow("\nNo changes were made during the codemod run."),
     );
+
+    return onExit();
   }
 
   if (flowSettings.dry && allExecutedCommands.length > 0) {
@@ -335,4 +337,6 @@ export const handleRunCliCommand = async (options: {
       });
     }
   }
+
+  return onExit();
 };
