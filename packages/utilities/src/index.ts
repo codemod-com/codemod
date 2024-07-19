@@ -3,6 +3,7 @@ export * from "./package-boilerplate.js";
 export * from "./registry.js";
 
 export * from "./functions/buildCodemodSlug.js";
+export * from "./functions/codemods.js";
 export * from "./functions/crypto.js";
 export * from "./functions/debounce.js";
 export * from "./functions/formatting.js";

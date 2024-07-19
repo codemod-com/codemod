@@ -21,6 +21,7 @@ import {
   type FileSystem,
   type KnownEnginesCodemod,
   type RunResult,
+  extractMainScriptPath,
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
   isNeitherNullNorUndefined,
@@ -62,8 +63,6 @@ export class Runner {
 
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
-
-    console.log("Running codemod", codemod);
 
     try {
       await this.executeCodemod({
@@ -217,8 +216,17 @@ export class Runner {
       }
 
       try {
+        const { path: astGrepRulePath, error: errorText } =
+          await extractMainScriptPath({
+            codemodRc: codemod.config,
+            source: codemod.path,
+          });
+        if (astGrepRulePath === null) {
+          throw new Error(errorText);
+        }
+
         const configs = yaml.loadAll(
-          await readFile(codemod.path, { encoding: "utf8" }),
+          await readFile(astGrepRulePath, { encoding: "utf8" }),
         ) as { language?: string }[];
 
         configs.forEach((config, i) => {
@@ -486,10 +494,7 @@ export class Runner {
       }
 
       // run onSuccess for recipe itself
-      return await onSuccess?.({
-        codemod,
-        commands: [],
-      });
+      return await onSuccess?.({ codemod, commands: [] });
     }
 
     const codemodSource = await getCodemodSourceCode(codemod.path);

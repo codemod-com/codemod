@@ -1,5 +1,6 @@
-import { type CodemodConfig, doubleQuotify } from "@codemod-com/utilities";
 import { glob } from "glob";
+import type { CodemodConfig } from "#schemata/codemodConfigSchema.js";
+import { doubleQuotify } from "./formatting.js";
 
 export const extractMainScriptPath = async (options: {
   codemodRc: CodemodConfig;
