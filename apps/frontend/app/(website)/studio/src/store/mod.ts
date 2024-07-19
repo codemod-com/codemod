@@ -3,6 +3,7 @@ import type { KnownEngines } from "@codemod-com/utilities";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
+import { prettify } from "@studio/utils/prettify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
