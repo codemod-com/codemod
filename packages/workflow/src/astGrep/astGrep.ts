@@ -3,7 +3,6 @@ import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as util from "node:util";
 import { Lang, type NapiConfig, parse } from "@ast-grep/napi";
-import { invariant } from "ts-invariant";
 import * as YAML from "yaml";
 import type { PLazy } from "../PLazy.js";
 import { ai } from "../ai/ai.js";
@@ -22,6 +21,8 @@ const fileExtensionToLang: Record<string, Lang> = {
   html: Lang.Html,
   js: Lang.JavaScript,
   jsx: Lang.JavaScript,
+  mjs: Lang.JavaScript,
+  cjs: Lang.JavaScript,
   ts: Lang.TypeScript,
   tsx: Lang.Tsx,
   sh: Lang.Bash,
@@ -259,9 +260,13 @@ export function astGrepLogic<
           fileContext.file,
         );
       } else {
-        invariant(fileContext.extension, "File extension is not defined");
+        if (!fileContext.extension) {
+          return;
+        }
         const lang = fileExtensionToLang[fileContext.extension];
-        invariant(lang, `Unsupported file extension: ${fileContext.extension}`);
+        if (!lang) {
+          return;
+        }
         const nodes = parse(lang, await fileContext.contents())
           .root()
           .findAll(napiConfig as NapiConfig)
