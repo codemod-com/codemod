@@ -271,19 +271,6 @@ export const handleSourceFile = (
 }
 `;
 
-export const buildDefaultCodemodSource = (engine: KnownEngines) => {
-  if (engine === "jscodeshift") {
-    return prettify(
-      STARTER_SNIPPET.replace(
-        "{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
-        DEFAULT_FIND_REPLACE_EXPRESSION,
-      ).replace("{%COMMENT%}", ""),
-    );
-  }
-
-  return TSMORPH_STARTER_SNIPPET;
-};
-
 export const SEARCH_PARAMS_KEYS = Object.freeze({
   ENGINE: "engine" as const,
   DIFF_ID: "diffId" as const,
@@ -295,22 +282,3 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
   SESSION_ID: "sessionId" as const,
   IV: "iv" as const,
 });
-
-type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
-
-type InitialState = Readonly<{
-  legacyLS?: boolean;
-  engine: KnownEngines;
-  codemodSource: string;
-  codemodName: string | null;
-  command: "learn" | AccessTokenCommands | null;
-  editors: EditorsSnippets[];
-}>;
-
-export const INITIAL_STATE: InitialState = {
-  engine: "jscodeshift",
-  editors: [getSingleTestCase()],
-  codemodSource: isServer ? "" : buildDefaultCodemodSource("jscodeshift"),
-  codemodName: null,
-  command: null,
-};

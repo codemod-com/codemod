@@ -42,10 +42,6 @@ const Main = () => {
     engine,
     setEngine,
     getSelectedEditors,
-    editors,
-    removePair,
-    setSelectedPairIndex,
-    addPair,
   } = useSnippetsStore();
   const { isDark } = useTheme();
 

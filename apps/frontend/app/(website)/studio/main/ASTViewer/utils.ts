@@ -1,48 +1,61 @@
-export function extractComments(node: Node): {
-  cleanedStructure: Node;
-  comments: Node[];
-} {
-  const comments: Node[] = [];
-  const seenComments = new Set<string>();
+import type { Node } from "@babel/types";
+import { EditorType, useSnippetsStore } from "@studio/store/snippets";
+import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+import { extractComments } from "@studio/main/ASTViewer/extractComments";
+import { transformTreeData } from "@studio/main/ASTViewer/transformTreeData";
+import { parseSnippet } from "@studio/utils/babelParser";
+import { isFile } from "@babel/types";
 
-  function traverse(node: Node, parent: Node | null = null) {
-    if (typeof node !== "object" || node === null) {
-      return node;
-    }
+export type TreeNode = {
+  id: string;
+  actualNode: Node;
+  label: string;
+  children?: TreeNode[];
+  start: number;
+  end: number;
+  relation?: string;
+};
 
-    if (node.label === "CommentLine" || node.label === "CommentBlock") {
-      const commentKey = `${node.start}-${node.end}`;
-      if (!seenComments.has(commentKey)) {
-        seenComments.add(commentKey);
-        comments.push({
-          ...node,
-          parentId: parent?.id,
-          parentStart: parent?.start,
-          parentEnd: parent?.end,
-        });
-      }
-      return undefined;
-    }
+export const getPosition = (node: TreeNode) => `${node.start}-${node.end}`;
 
-    return Object.entries(node).reduce((acc, [key, value]) => {
-      if (key === "comments" || key === "internalComments") return acc;
-      if (Array.isArray(value)) {
-        const mapped = value
-          .map((item) => traverse(item, node))
-          .filter((item) => item !== undefined);
-        if (mapped.length > 0) return { ...acc, [key]: mapped };
-      }
-      if (typeof value === "object" && value !== null) {
-        const traversed = traverse(value, node);
-        return traversed ? { ...acc, [key]: traversed } : acc;
-      }
-      return { ...acc, [key]: value };
-    }, {});
+export function addCounterToNodeIds(root: TreeNode, type: EditorType): TreeNode {
+  let counter = 0;
+
+  function traverse(node: TreeNode): TreeNode {
+    const newNode: TreeNode = {
+      ...node,
+      id: `${node.id}_${counter++}_${type}`,
+      children: node.children?.map(traverse)
+    };
+
+    return newNode;
   }
 
-  const cleanedStructure = traverse(node);
-  return { cleanedStructure, comments } as {
-    cleanedStructure: Node;
-    comments: Node[];
+  return traverse(root);
+}
+
+export const removeEmptyChildren = (node: TreeNode): TreeNode => {
+  const transformedChildren =
+    node.children
+      ?.map(removeEmptyChildren)
+      .filter((child) => child.children?.length || !child.children) || [];
+
+  return {
+    ...node,
+    children: transformedChildren.length > 0 ? transformedChildren : undefined,
   };
+};
+
+export const transformNode = (content: string, type: EditorType) => {
+  const parsed = parseSnippet(content);
+  const rootNode = isFile(parsed)
+    ? mapBabelASTToRenderableTree(parsed)
+    : null;
+  if(!rootNode) return null
+  const transformedRootNode =
+    transformTreeData(mapBabelASTToRenderableTree(rootNode)) ?? null;
+  const withComments = removeEmptyChildren(transformedRootNode);
+  const withUniqueIds = addCounterToNodeIds(withComments, type);
+  const { cleanedStructure } = extractComments(withUniqueIds);
+  return cleanedStructure
 }
