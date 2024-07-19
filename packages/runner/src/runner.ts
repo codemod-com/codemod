@@ -57,11 +57,10 @@ export class Runner {
 
   public async run(options: {
     codemod: Codemod;
-    format?: boolean;
     onSuccess?: (runResult: RunResult) => Promise<void> | void;
     onFailure?: (error: Error) => Promise<void> | void;
   }) {
-    const { codemod, format, onSuccess, onFailure } = options;
+    const { codemod, onSuccess, onFailure } = options;
 
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
@@ -72,7 +71,12 @@ export class Runner {
       codemod,
       flowSettings: this._options.flowSettings,
       onCommand: async (command) => {
-        const shouldFormat = format && "newData" in command;
+        if (this._options.flowSettings.dry) {
+          return;
+        }
+
+        const shouldFormat =
+          this._options.flowSettings.format && "newData" in command;
 
         if (shouldFormat) {
           command.newData = await formatText(
