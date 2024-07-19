@@ -1,7 +1,7 @@
 import gitUrl from "giturl";
 import semver from "semver";
 
-type RawPackageRegistryData = {
+export type RawPackageRegistryData = {
   versions: Record<
     string,
     {
@@ -15,6 +15,13 @@ type RawPackageRegistryData = {
     }
   >;
   "dist-tags": Record<string, string>;
+};
+
+export type NormalizedRegistryData = {
+  versions: string[];
+  next: string | null;
+  latest: string | null;
+  homepage: string | null;
 };
 
 export const getHomePage = (
@@ -74,9 +81,21 @@ export const getPackageRegistryData = async (
   }
 };
 
-// return {
-//     latest: getLatestStableRelease(rawData),
-//     next: rawData["dist-tags"].next,
-//     versions: Object.keys(rawData.versions).sort(semver.compare),
-//     homepage: getHomePage(rawData),
-//   };
+export const normalizePackageRegistryData = (
+  packageRegistryData: RawPackageRegistryData,
+): NormalizedRegistryData => {
+  const latestStableRelease = getLatestStableRelease(packageRegistryData);
+  const nextVersion = packageRegistryData["dist-tags"]?.next ?? null;
+  const sortedVersions = Object.keys(packageRegistryData.versions).sort(
+    semver.compare,
+  );
+
+  const homepage = getHomePage(packageRegistryData);
+
+  return {
+    latest: latestStableRelease,
+    next: nextVersion,
+    versions: sortedVersions,
+    homepage,
+  };
+};
