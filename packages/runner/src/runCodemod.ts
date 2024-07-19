@@ -145,7 +145,15 @@ export const buildPatterns = async (
         .filter((line) => line.length > 0 && !line.startsWith("#"))
         .map(formatFunc);
 
-      allExcluded.push(...new Set(gitIgnored));
+      allExcluded.push(
+        ...new Set(gitIgnored),
+        // git ignores everything that starts with pattern, for glob we need to specify all files
+        ...new Set(
+          gitIgnored
+            .filter((match) => !match.endsWith("/"))
+            .map((match) => `${match}/**/*.*`),
+        ),
+      );
     } catch (err) {
       //
     }
