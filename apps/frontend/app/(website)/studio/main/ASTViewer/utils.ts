@@ -42,7 +42,7 @@ export const removeEmptyChildren = (node: TreeNode): TreeNode => {
   const transformedChildren =
     node.children
       ?.map(removeEmptyChildren)
-      .filter((child) => child.children?.length || !child.children) || [];
+      .filter((child) => child.children?.length || !child.children) ?? [];
 
   return {
     ...node,

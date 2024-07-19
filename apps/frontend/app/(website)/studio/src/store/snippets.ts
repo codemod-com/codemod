@@ -101,16 +101,9 @@ type SnippetsSetters = {
   ) => SnippetSetters[x];
 };
 
-const getEditorsFromLS = () => {
-  if (isServer) return;
-  const editors = localStorage.getItem("editors");
-  if (!editors) return;
-  return;
-};
 export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   tabsLimit: 12,
   getHasReachedTabsLimit: () => get().editors.length >= get().tabsLimit,
-  // editors: localStorage.getItem('editors') ? JSON.parse(localStorage.getItem('editors')) : [getSingleTestCase()],
   addPair: (name?: string) => {
     set({
       editors: [
@@ -184,8 +177,8 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   },
   selectedPairIndex: 0,
   getAllNames: () => get().editors.map(({ name }) => name),
-  getAllSnippets: () => {
-    return mapObjIndexed(
+  getAllSnippets: () =>
+    mapObjIndexed(
       map(({ content }: SnippetValues) => content),
       reduce(
         (acc, { before, after, output }) => ({
@@ -200,8 +193,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         } as AllEditors,
         get().editors,
       ),
-    );
-  },
+    ),
   setSelectedPairIndex: (i: number) => {
     set({ selectedPairIndex: i });
   },
@@ -224,35 +216,26 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
         get().setSelection(index, editorType),
     };
   },
-  setInitialState: (state) => {
-    set(state);
-  },
-  setEngine: (engine) => {
-    localStorage.setItem("engine", engine);
+  setInitialState: set,
+  setEngine: (engine) =>
     set({
-      engine,
-    });
-  },
-  setContent: (editorsPairIndex, type) => {
-    return (content) => {
-      const obj = get();
-      obj.editors[editorsPairIndex][type].content = content;
-      obj.editors[editorsPairIndex][type].rootNode = transformNode(
-        content,
-        type,
+      engine: isServer ? "jscodeshift" : localStorage.setItem("engine", engine),
+    }),
+  setContent: (editorsPairIndex, type) => (content) => {
+    const obj = get();
+    obj.editors[editorsPairIndex][type].content = content;
+    obj.editors[editorsPairIndex][type].rootNode = transformNode(content, type);
+    set({ currentContent: content, currentType: type, ...obj });
+    try {
+      localStorage.setItem(
+        "editors",
+        JSON.stringify(obj.editors.map(toEditorSnippets)),
       );
-      set({ currentContent: content, currentType: type, ...obj });
-      try {
-        localStorage.setItem(
-          "editors",
-          JSON.stringify(obj.editors.map(toEditorSnippets)),
-        );
-      } catch (error) {
-        console.error("error on JSON.stringify(obj.editors) ", { error });
-      }
-    };
+    } catch (error) {
+      console.error("error on JSON.stringify(obj.editors) ", { error });
+    }
   },
-  setEditors: (editorsContents: EditorsSnippets[]) => {
+  setEditors: (editorsContents: EditorsSnippets[]) =>
     editorsContents.forEach((eC, i) => {
       get().addPair(eC.name);
       Object.entries(omit(["name"], eC)).forEach(
@@ -261,8 +244,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
           get().setSelection(i, propName)({ kind: "PASS_THROUGH", ranges: [] });
         },
       );
-    });
-  },
+    }),
   setSelection: (editorsPairIndex, type) => (command) => {
     const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
     if (rootNode) {
@@ -278,7 +260,6 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
 
 if (isServer) {
   useSnippetsStore?.getState?.().setEditors([getSingleTestCase()]);
-
   useSnippetsStore?.getState?.().setEngine("jscodeshift");
 } else {
   useSnippetsStore
