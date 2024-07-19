@@ -19,7 +19,7 @@ export const getSnippetInitialState = (
 ): SnippetValues => {
   const content = defaultContent ?? "";
   const contentParsed = parseSnippet(content);
-  const rootNode = transformNode(contentParsed);
+  const rootNode = content ? transformNode(contentParsed) : contentParsed;
 
   const tokens: SnippetValues["tokens"] = isFile(contentParsed)
     ? Array.isArray(contentParsed.tokens)
