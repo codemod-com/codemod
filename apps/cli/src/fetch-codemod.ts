@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import type { Stats } from "node:fs";
 import * as fs from "node:fs/promises";
 import { mkdir, readFile } from "node:fs/promises";
-import { join, parse as pathParse } from "node:path";
+import { join, parse as pathParse, resolve } from "node:path";
 
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
@@ -179,7 +179,7 @@ export const fetchCodemod = async (options: {
       return parseKnownEnginesCodemod({
         type: "standalone",
         source: "local",
-        path: nameOrPath,
+        path: resolve(nameOrPath),
         config,
       } satisfies KnownEnginesCodemodValidationInput);
     }
@@ -205,7 +205,7 @@ export const fetchCodemod = async (options: {
     } = safeParseCodemod({
       type: "package",
       source: "local",
-      path: nameOrPath,
+      path: resolve(nameOrPath),
       config: codemodConfig,
     });
 

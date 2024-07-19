@@ -22,13 +22,10 @@ import {
   executeFilemod,
 } from "@codemod-com/filemod";
 import type { PrinterBlueprint } from "@codemod-com/printer";
-import type {
-  ArgumentRecord,
-  FileCommand,
-  FileSystem,
-} from "@codemod-com/utilities";
+import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
 
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
+import { defaultParser } from "./jscodeshift.js";
 
 const parseMdx = (data: string) =>
   fromMarkdown(data, {
@@ -54,12 +51,12 @@ export type Dependencies = Readonly<{
   fetch: typeof fetch;
 }>;
 
-export const runRepomod = async (options: {
+export const runFilemod = async (options: {
   fileSystem: FileSystem;
   filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string };
   target: string;
   format: boolean;
-  safeArgumentRecord: ArgumentRecord;
+  codemod: Codemod;
   printer: PrinterBlueprint;
   onError?: CodemodExecutionErrorCallback;
 }): Promise<readonly FileCommand[]> => {
@@ -68,7 +65,7 @@ export const runRepomod = async (options: {
     filemod,
     target,
     format,
-    safeArgumentRecord,
+    codemod: { safeArgumentRecord, engineOptions },
     printer,
     onError,
   } = options;
@@ -153,7 +150,10 @@ export const runRepomod = async (options: {
   const api = buildApi<Dependencies>(
     unifiedFileSystem,
     () => ({
-      jscodeshift,
+      jscodeshift: jscodeshift.withParser(
+        engineOptions?.parser ?? defaultParser,
+      ),
+      j: jscodeshift.withParser(engineOptions?.parser ?? defaultParser),
       unified,
       hastToBabelAst,
       tsmorph,

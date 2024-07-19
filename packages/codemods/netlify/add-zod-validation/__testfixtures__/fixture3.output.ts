@@ -1,4 +1,4 @@
-import { z } from 'zod;
+import { z } from 'zod';
   const querySchema = z.object({
    search: z.string(),
    page: z.string(), 

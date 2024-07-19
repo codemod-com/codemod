@@ -28,10 +28,10 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 
-import { getCodemodSourceCode, getTransformer } from "#source-code.js";
+import { getCodemodExecutable, getTransformer } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
-import { runRepomod } from "./engines/filemod.js";
+import { runFilemod } from "./engines/filemod.js";
 import { runWorkflowCodemod } from "./engines/workflow.js";
 import type {
   CodemodExecutionError,
@@ -72,6 +72,8 @@ export class Runner {
       onCommand: async (command) =>
         this.modifyFileSystemUponCommand(this._options.fs, command),
       onError: (error) => {
+        executionErrors.push(error);
+        console.error(error);
         throw error;
       },
       onSuccess,
@@ -499,7 +501,7 @@ export class Runner {
       return await onSuccess?.({ codemod, commands: [] });
     }
 
-    const codemodSource = await getCodemodSourceCode(codemod);
+    const codemodSource = await getCodemodExecutable(codemod);
 
     if (codemod.config.engine === "workflow") {
       this.printRunSummary(printer, codemod, flowSettings, {
@@ -523,8 +525,7 @@ export class Runner {
     }
 
     if (codemod.config.engine === "filemod") {
-      const sourceCode = await getCodemodSourceCode(codemod);
-      const transformer = getTransformer(sourceCode);
+      const transformer = getTransformer(codemodSource);
 
       if (transformer === null) {
         throw new Error(
@@ -550,7 +551,7 @@ export class Runner {
 
       this.printRunSummary(printer, codemod, flowSettings, patterns);
 
-      const commands = await runRepomod({
+      const commands = await runFilemod({
         fileSystem,
         filemod: {
           ...transformer,
@@ -558,7 +559,7 @@ export class Runner {
           excludePatterns: [],
           name: codemod.config.name,
         },
-        safeArgumentRecord: codemod.safeArgumentRecord,
+        codemod,
         printer,
         onError,
         ...flowSettings,

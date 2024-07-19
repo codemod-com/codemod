@@ -100,11 +100,10 @@ const initializeDependencies = async (argv: {
         return;
       }
 
-      console.log(error);
-      // printer.printOperationMessage({
-      //   kind: "error",
-      //   message: error.message,
-      // });
+      printer.printOperationMessage({
+        kind: "error",
+        message: error.message,
+      });
 
       exit();
     }

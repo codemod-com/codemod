@@ -64,8 +64,7 @@ export const repomod: Filemod<Dependencies, Options> = {
     return [{ kind: "upsertFile", path, options, state }];
   },
   handleData: async (api, path, data, options, state) => {
-    const { jscodeshift } = api.getDependencies();
-    const j = jscodeshift.withParser("tsx");
+    const { j } = api.getDependencies();
     const root = j(data);
 
     root.find(j.CallExpression).forEach((path) => {

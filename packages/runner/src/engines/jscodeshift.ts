@@ -1,6 +1,7 @@
 import { extname } from "node:path";
 import vm from "node:vm";
-import jscodeshift, { type API } from "jscodeshift";
+import babylon, { type ParserOptions } from "@babel/parser";
+import jscodeshift, { type Parser, type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
 
 import type { ConsoleKind } from "@codemod-com/printer";
@@ -13,6 +14,53 @@ import type {
 import { getAdapterByExtname } from "#adapters/index.js";
 import { CONSOLE_OVERRIDE } from "#constants.js";
 import { buildVmConsole } from "./common.js";
+
+export const defaultOptions: ParserOptions = {
+  sourceType: "module",
+  allowImportExportEverywhere: true,
+  allowReturnOutsideFunction: true,
+  startLine: 1,
+  tokens: true,
+  plugins: [
+    "asyncGenerators",
+    "bigInt",
+    "classPrivateMethods",
+    "classPrivateProperties",
+    "classProperties",
+    "doExpressions",
+    "dynamicImport",
+    "exportDefaultFrom",
+    "exportNamespaceFrom",
+    "functionBind",
+    "functionSent",
+    "importMeta",
+    "nullishCoalescingOperator",
+    "numericSeparator",
+    "objectRestSpread",
+    "optionalCatchBinding",
+    "optionalChaining",
+    ["pipelineOperator", { proposal: "minimal" }],
+    "throwExpressions",
+    "typescript",
+    "estree",
+    "jsx",
+    "asyncGenerators",
+    "classProperties",
+    "doExpressions",
+    "functionBind",
+    "functionSent",
+    "objectRestSpread",
+    "importAttributes",
+    "dynamicImport",
+    "nullishCoalescingOperator",
+    "optionalChaining",
+    ["decorators", { decoratorsBeforeExport: false }],
+  ],
+};
+
+export const defaultParser: Parser = {
+  parse: (source: string) => babylon.parse(source, defaultOptions),
+};
 
 export const buildApi = (parser: string): API => ({
   j: jscodeshift.withParser(parser),
@@ -96,7 +144,7 @@ export const runJscodeshiftCodemod = (
     });
   };
 
-  const api = buildApi(engineOptions?.parser ?? "tsx");
+  const api = buildApi(engineOptions?.parser ?? defaultParser);
 
   const transformFn = adapter !== null ? adapter(transform) : transform;
 
