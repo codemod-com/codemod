@@ -56,7 +56,7 @@ export const ASTViewer = ({ type }: { type: EditorType }) => {
       >
         <Text
           className="cursor-pointer whitespace-nowrap"
-          color={isSelected ? "text-cyan-500" : undefined}
+          color={isSelected ? "mtk6" : undefined}
         >
           {!node.isLeaf ? (
             <strong
