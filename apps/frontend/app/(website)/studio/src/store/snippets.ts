@@ -217,10 +217,12 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     };
   },
   setInitialState: set,
-  setEngine: (engine) =>
+  setEngine: (engine) => {
+    if (!isServer) localStorage.setItem("engine", engine);
     set({
-      engine: isServer ? "jscodeshift" : localStorage.setItem("engine", engine),
-    }),
+      engine,
+    });
+  },
   setContent: (editorsPairIndex, type) => (content) => {
     const obj = get();
     obj.editors[editorsPairIndex][type].content = content;
