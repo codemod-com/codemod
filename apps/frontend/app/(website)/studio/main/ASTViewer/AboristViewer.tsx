@@ -26,7 +26,7 @@ export const ASTViewer = ({ type }: { type: EditorType }) => {
       // scrollNodeIntoView(data, ASTTreeRef);
       setFirstNode(data);
       setRangesOnTarget({
-        target: `${type.toUpperCase()}_INPUT`,
+        target: `${type.toUpperCase()}_I NPUT`,
         ranges: [data],
       });
       const setRange = getSelectedEditors().setSelection(type);
