@@ -276,13 +276,17 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   },
 }));
 
-useSnippetsStore
-  ?.getState?.()
-  .setEditors(
-    localStorage.getItem("editors")
-      ? JSON.parse(localStorage.getItem("editors"))
-      : [getSingleTestCase()],
-  );
-useSnippetsStore
-  ?.getState?.()
-  .setEngine((localStorage.getItem("engine") as KnownEngines) || "jscodeshift");
+if (!isServer) {
+  useSnippetsStore
+    ?.getState?.()
+    .setEditors(
+      localStorage.getItem("editors")
+        ? JSON.parse(localStorage.getItem("editors"))
+        : [getSingleTestCase()],
+    );
+  useSnippetsStore
+    ?.getState?.()
+    .setEngine(
+      (localStorage.getItem("engine") as KnownEngines) || "jscodeshift",
+    );
+}
