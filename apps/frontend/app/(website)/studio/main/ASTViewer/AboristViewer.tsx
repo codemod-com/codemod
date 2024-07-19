@@ -1,31 +1,14 @@
 import { cn } from "@/utils";
 import Text from "@studio/components/Text";
-import { useScrollNodeIntoView } from "@studio/main/ASTViewer/useScrollNodeIntoView";
-import {
-  EditorType,
-  useSnippetsStore,
-} from "@studio/store/snippets";
+import { useSelectFirstTreeNodeForSnippet } from "@studio/main/ASTViewer/useSelectFirstTreeNodeForSnippet";
+import type { TreeNode } from "@studio/main/ASTViewer/utils";
+import { type EditorType, useSnippetsStore } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
-import type React from "react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { type NodeApi, Tree } from "react-arborist";
 import useResizeObserver from "use-resize-observer";
-import { TreeNode } from "@studio/main/ASTViewer/utils";
-import { useSelectFirstTreeNodeForSnippet } from "@studio/main/ASTViewer/useSelectFirstTreeNodeForSnippet";
 
-
-
-type Node = {
-  id?: string;
-  actualNode?: any;
-  label?: string;
-  start?: number;
-  end?: number;
-  children?: Node[];
-  [key: string]: any;
-};
-
-export const ASTViewer = ({ type }: {type: EditorType}) => {
+export const ASTViewer = ({ type }: { type: EditorType }) => {
   const ASTTreeRef = useRef<HTMLDivElement | null>(null);
   const { width = 0, height = 0 } = useResizeObserver({ ref: ASTTreeRef });
   const getFirstTreeNode = useSelectFirstTreeNodeForSnippet();
@@ -36,12 +19,11 @@ export const ASTViewer = ({ type }: {type: EditorType}) => {
   } = getSelectedEditors();
 
   const setRangesOnTarget = useRangesOnTarget();
-  const scrollNodeIntoView = useScrollNodeIntoView();
 
   const handleNodeClick = useCallback(
     (node: NodeApi<TreeNode> = rootNode) => {
       const data = node.data ?? rootNode;
-      scrollNodeIntoView(data, ASTTreeRef);
+      // scrollNodeIntoView(data, ASTTreeRef);
       setFirstNode(data);
       setRangesOnTarget({
         target: `${type.toUpperCase()}_INPUT`,
@@ -53,57 +35,49 @@ export const ASTViewer = ({ type }: {type: EditorType}) => {
         ranges: [data],
       });
     },
-    [rootNode, scrollNodeIntoView, setRangesOnTarget, type, getSelectedEditors],
+    [rootNode, setRangesOnTarget, type, getSelectedEditors],
   );
 
-  console.log({ranges})
   useEffect(() => {
-    console.log('useEffect')
     const firstTreeNode = getFirstTreeNode(type);
-    if (firstTreeNode) {
-      scrollNodeIntoView(firstTreeNode, ASTTreeRef);
-      setFirstNode(firstTreeNode);
-    }
-  }, [ranges, scrollNodeIntoView, getFirstTreeNode, type]);
+    setFirstNode(firstTreeNode);
+  }, [ranges, getFirstTreeNode, type]);
 
   const NodeComponent = ({ node, style, dragHandle }) => {
     const isSelected = firstNode?.id === node.data.id;
     return (
-      <div style={style} ref={dragHandle}
-           onClick={ (e) => {
-             e.stopPropagation();
-             handleNodeClick(node);
-           } }
+      <div
+        style={style}
+        ref={dragHandle}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleNodeClick(node);
+        }}
       >
-
         <Text
           className="cursor-pointer whitespace-nowrap"
-          color={ isSelected ? "text-cyan-500" : undefined }
+          color={isSelected ? "text-cyan-500" : undefined}
         >
-          { !node.isLeaf ? (
+          {!node.isLeaf ? (
             <strong
-              onClick={ (e) => {
+              onClick={(e) => {
                 node.toggle();
                 e.stopPropagation();
-              }
-            }
-              className={ cn(node.isOpen ? "text-red-600" : "text-green-500") }
+              }}
+              className={cn(node.isOpen ? "text-red-600" : "text-green-500")}
             >
-              { node.isOpen ? "- " : "+ " }
+              {node.isOpen ? "- " : "+ "}
             </strong>
           ) : (
             <span>&nbsp;&nbsp;</span>
-          ) }
-          <span
-            className="inline-block"
-            id={ node.data.id }
-          >
-            { node.data.relation && (
+          )}
+          <span className="inline-block" id={node.data.id}>
+            {node.data.relation && (
               <span className="text-purple-500 mr-1">
-                { node.data.relation }:{ " " }
+                {node.data.relation}:{" "}
               </span>
-            ) }
-            { node.data.label }
+            )}
+            {node.data.label}
           </span>
         </Text>
       </div>
@@ -120,14 +94,13 @@ export const ASTViewer = ({ type }: {type: EditorType}) => {
     );
   }
 
-
-
   return (
     <div
       className="flex h-full flex-col w-full overflow-hidden p-2"
       ref={ASTTreeRef}
     >
       <Tree
+        selection={firstNode?.id.toString()}
         data={rootNode?.children ?? []}
         openByDefault={true}
         width={width}

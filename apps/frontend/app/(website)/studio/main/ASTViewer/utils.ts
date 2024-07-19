@@ -1,10 +1,10 @@
 import type { Node } from "@babel/types";
-import { EditorType, useSnippetsStore } from "@studio/store/snippets";
-import mapBabelASTToRenderableTree from "@studio/utils/mappers";
+import { isFile } from "@babel/types";
 import { extractComments } from "@studio/main/ASTViewer/extractComments";
 import { transformTreeData } from "@studio/main/ASTViewer/transformTreeData";
+import type { EditorType } from "@studio/store/snippets";
 import { parseSnippet } from "@studio/utils/babelParser";
-import { isFile } from "@babel/types";
+import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 
 export type TreeNode = {
   id: string;
@@ -16,16 +16,20 @@ export type TreeNode = {
   relation?: string;
 };
 
-export const getPosition = (node: TreeNode) => `${node.start}-${node.end}`;
+export const getPosition = (node: { start: number; end: number }) =>
+  `${node.start}-${node.end}`;
 
-export function addCounterToNodeIds(root: TreeNode, type: EditorType): TreeNode {
+export function addCounterToNodeIds(
+  root: TreeNode,
+  type: EditorType,
+): TreeNode {
   let counter = 0;
 
   function traverse(node: TreeNode): TreeNode {
     const newNode: TreeNode = {
       ...node,
       id: `${node.id}_${counter++}_${type}`,
-      children: node.children?.map(traverse)
+      children: node.children?.map(traverse),
     };
 
     return newNode;
@@ -48,14 +52,12 @@ export const removeEmptyChildren = (node: TreeNode): TreeNode => {
 
 export const transformNode = (content: string, type: EditorType) => {
   const parsed = parseSnippet(content);
-  const rootNode = isFile(parsed)
-    ? mapBabelASTToRenderableTree(parsed)
-    : null;
-  if(!rootNode) return null
+  const rootNode = isFile(parsed) ? mapBabelASTToRenderableTree(parsed) : null;
+  if (!rootNode) return null;
   const transformedRootNode =
-    transformTreeData(mapBabelASTToRenderableTree(rootNode)) ?? null;
+    transformTreeData(mapBabelASTToRenderableTree(rootNode as Node)) ?? null;
   const withComments = removeEmptyChildren(transformedRootNode);
   const withUniqueIds = addCounterToNodeIds(withComments, type);
   const { cleanedStructure } = extractComments(withUniqueIds);
-  return cleanedStructure
-}
+  return cleanedStructure;
+};

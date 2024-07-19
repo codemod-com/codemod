@@ -1,11 +1,13 @@
-export function extractComments(node: Node): {
-  cleanedStructure: Node;
-  comments: Node[];
+import type { TreeNode } from "@studio/main/ASTViewer/utils";
+
+export function extractComments(node: TreeNode): {
+  cleanedStructure: TreeNode;
+  comments: TreeNode[];
 } {
-  const comments: Node[] = [];
+  const comments: TreeNode[] = [];
   const seenComments = new Set<string>();
 
-  function traverse(node: Node, parent: Node | null = null) {
+  function traverse(node: TreeNode, parent: TreeNode | null = null) {
     if (typeof node !== "object" || node === null) {
       return node;
     }
