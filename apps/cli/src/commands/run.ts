@@ -312,7 +312,7 @@ export const handleRunCliCommand = async (options: {
     );
   }
 
-  if (flowSettings.dry) {
+  if (flowSettings.dry && allExecutedCommands.length > 0) {
     const screen = getDiffScreen(allExecutedCommands.map(getDiff));
 
     screen.key(["escape", "q", "C-c"], () => {

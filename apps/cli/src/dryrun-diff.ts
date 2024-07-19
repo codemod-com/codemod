@@ -65,6 +65,10 @@ export const getDiff = (command: NamedFileCommand): DiffResult => {
 };
 
 export const getDiffScreen = (diffs: DiffResult[]): blessed.Widgets.Screen => {
+  if (diffs.length === 0) {
+    throw new Error("No diffs to display");
+  }
+
   const screen = blessed.screen({
     smartCSR: true,
     title: "Diff Viewer",

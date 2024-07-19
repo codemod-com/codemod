@@ -577,8 +577,6 @@ export class Runner {
         ...flowSettings,
       });
 
-      console.log(commands);
-
       // const commands = await buildFormattedFileCommands(fileCommands);
 
       for (const command of commands) {
