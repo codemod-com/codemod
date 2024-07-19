@@ -11,8 +11,8 @@ const isParseError = (err: unknown): err is ParseError =>
   Object.hasOwn(err, "code") &&
   Object.hasOwn(err, "reasonCode");
 
-const parseSnippet = (snippet: string) => {
-  if (!snippet || snippet.trim() === "") {
+const parseSnippet = (snippet?: string) => {
+  if (!snippet || snippet.trim?.() === "") {
     return null;
   }
   try {

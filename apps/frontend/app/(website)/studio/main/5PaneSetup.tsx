@@ -38,15 +38,7 @@ const Main = () => {
   const { beforePanel, afterPanel, outputPanel, codeDiff, onlyAfterHidden } =
     useSnippetsPanels({ panelRefs });
 
-  const {
-    engine,
-    setEngine,
-    getSelectedEditors,
-    editors,
-    removePair,
-    setSelectedPairIndex,
-    addPair,
-  } = useSnippetsStore();
+  const { engine, setEngine, getSelectedEditors } = useSnippetsStore();
   const { isDark } = useTheme();
 
   const onEngineChange = (value: (typeof enginesConfig)[number]["value"]) => {

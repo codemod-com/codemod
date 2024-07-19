@@ -1,13 +1,19 @@
 import { isFile } from "@babel/types";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
+import { prettify } from "@studio/utils/prettify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
-import { INITIAL_STATE } from "./initialState";
+import {
+  DEFAULT_FIND_REPLACE_EXPRESSION,
+  STARTER_SNIPPET,
+  TSMORPH_STARTER_SNIPPET,
+} from "./initialState";
 
 type ModStateValues = {
   name: string;
@@ -27,11 +33,26 @@ type ModStateSetters = {
   setCurrentCommand: (command: ModState["command"]) => void;
 };
 
+export const buildDefaultCodemodSource = (engine: KnownEngines) => {
+  if (engine === "jscodeshift") {
+    return prettify(
+      STARTER_SNIPPET.replace(
+        "{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
+        DEFAULT_FIND_REPLACE_EXPRESSION,
+      ).replace("{%COMMENT%}", ""),
+    );
+  }
+
+  return TSMORPH_STARTER_SNIPPET;
+};
+
 export type ModState = ModStateSetters & ModStateValues;
 const getInitialState = (): ModStateValues => {
   const savedState = isServer ? null : localStorage.getItem("mod-store");
-  const hasSavedState = savedState && JSON.parse(savedState).content;
-  const parsed = parseSnippet(hasSavedState || INITIAL_STATE.codemodSource);
+  const initialState = savedState
+    ? JSON.parse(savedState).content
+    : buildDefaultCodemodSource("jscodeshift");
+  const parsed = parseSnippet(initialState);
 
   const parsedContent = isFile(parsed)
     ? mapBabelASTToRenderableTree(parsed)
@@ -39,12 +60,12 @@ const getInitialState = (): ModStateValues => {
 
   return {
     name: "",
-    content: INITIAL_STATE.codemodSource,
+    content: initialState,
     hasRuntimeErrors: false,
     parsedContent,
     ranges: [],
     rangesUpdatedAt: Date.now(),
-    command: INITIAL_STATE.command,
+    command: null,
   };
 };
 

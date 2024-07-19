@@ -1,11 +1,11 @@
 import { isFile } from "@babel/types";
+import { transformNode } from "@studio/main/ASTViewer/utils";
 import {
   AFTER_SNIPPET_DEFAULT_CODE,
   BEFORE_SNIPPET_DEFAULT_CODE,
 } from "@studio/store/initialState";
 import type { SnippetValues } from "@studio/store/snippets";
 import { parseSnippet } from "@studio/utils/babelParser";
-import mapBabelASTToRenderableTree from "@studio/utils/mappers";
 
 export const toInitialStates = ({ before, after, name }) => ({
   name,
@@ -19,9 +19,7 @@ export const getSnippetInitialState = (
 ): SnippetValues => {
   const content = defaultContent ?? "";
   const contentParsed = parseSnippet(content);
-  const rootNode = isFile(contentParsed)
-    ? mapBabelASTToRenderableTree(contentParsed)
-    : null;
+  const rootNode = content ? transformNode(contentParsed) : contentParsed;
 
   const tokens: SnippetValues["tokens"] = isFile(contentParsed)
     ? Array.isArray(contentParsed.tokens)

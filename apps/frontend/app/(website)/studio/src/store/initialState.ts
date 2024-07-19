@@ -1,10 +1,3 @@
-import type { ACCESS_TOKEN_COMMANDS } from "@/constants";
-import type { KnownEngines } from "@codemod-com/utilities";
-import { isServer } from "@studio/config";
-import type { EditorsSnippets } from "@studio/store/snippets";
-import { getSingleTestCase } from "@studio/store/utils/getSnippetInitialState";
-import { prettify } from "@studio/utils/prettify";
-
 export const BEFORE_SNIPPET_DEFAULT_CODE = `const [a, b] = await Promise.all([
     Promise.resolve('a'),
     isFlagEnabled('featureFlag'),
@@ -271,19 +264,6 @@ export const handleSourceFile = (
 }
 `;
 
-export const buildDefaultCodemodSource = (engine: KnownEngines) => {
-  if (engine === "jscodeshift") {
-    return prettify(
-      STARTER_SNIPPET.replace(
-        "{%DEFAULT_FIND_REPLACE_EXPRESSION%}",
-        DEFAULT_FIND_REPLACE_EXPRESSION,
-      ).replace("{%COMMENT%}", ""),
-    );
-  }
-
-  return TSMORPH_STARTER_SNIPPET;
-};
-
 export const SEARCH_PARAMS_KEYS = Object.freeze({
   ENGINE: "engine" as const,
   DIFF_ID: "diffId" as const,
@@ -295,22 +275,3 @@ export const SEARCH_PARAMS_KEYS = Object.freeze({
   SESSION_ID: "sessionId" as const,
   IV: "iv" as const,
 });
-
-type AccessTokenCommands = (typeof ACCESS_TOKEN_COMMANDS)[number];
-
-type InitialState = Readonly<{
-  legacyLS?: boolean;
-  engine: KnownEngines;
-  codemodSource: string;
-  codemodName: string | null;
-  command: "learn" | AccessTokenCommands | null;
-  editors: EditorsSnippets[];
-}>;
-
-export const INITIAL_STATE: InitialState = {
-  engine: "jscodeshift",
-  editors: [getSingleTestCase()],
-  codemodSource: isServer ? "" : buildDefaultCodemodSource("jscodeshift"),
-  codemodName: null,
-  command: null,
-};
