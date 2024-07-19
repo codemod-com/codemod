@@ -4,9 +4,8 @@ import { ExampleIcon } from "@studio/icons/Example";
 import {
   AFTER_SNIPPET_DEFAULT_CODE,
   BEFORE_SNIPPET_DEFAULT_CODE,
-  buildDefaultCodemodSource,
 } from "@studio/store/initialState";
-import { useModStore } from "@studio/store/mod";
+import { buildDefaultCodemodSource, useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "../../store/snippets";
 
 const InsertExampleButton = () => {
