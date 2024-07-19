@@ -28,6 +28,7 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 
+import { getCodemodSourceCode, getTransformer } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
 import { runRepomod } from "./engines/filemod.js";
@@ -41,7 +42,6 @@ import {
   DEFAULT_VERSION_CONTROL_DIRECTORIES,
   type FlowSettings,
 } from "./schemata/flowSettingsSchema.js";
-import { getCodemodSourceCode, getTransformer } from "./source-code.js";
 import { WorkerManager } from "./worker-manager.js";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
@@ -64,24 +64,26 @@ export class Runner {
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
 
-    try {
-      await this.executeCodemod({
-        fileSystem: this._options.fs,
-        codemod,
-        flowSettings: this._options.flowSettings,
-        onCommand: async (command) =>
-          this.modifyFileSystemUponCommand(this._options.fs, command),
-        onError: (error) => executionErrors.push(error),
-        onSuccess,
-        printer,
-      });
-    } catch (error) {
-      if (!(error instanceof Error)) {
-        return;
-      }
+    // try {
+    await this.executeCodemod({
+      fileSystem: this._options.fs,
+      codemod,
+      flowSettings: this._options.flowSettings,
+      onCommand: async (command) =>
+        this.modifyFileSystemUponCommand(this._options.fs, command),
+      onError: (error) => {
+        throw error;
+      },
+      onSuccess,
+      printer,
+    });
+    // } catch (error) {
+    //   if (!(error instanceof Error)) {
+    //     return;
+    //   }
 
-      await onFailure?.(error);
-    }
+    //   await onFailure?.(error);
+    // }
 
     return executionErrors;
   }
@@ -497,7 +499,7 @@ export class Runner {
       return await onSuccess?.({ codemod, commands: [] });
     }
 
-    const codemodSource = await getCodemodSourceCode(codemod.path);
+    const codemodSource = await getCodemodSourceCode(codemod);
 
     if (codemod.config.engine === "workflow") {
       this.printRunSummary(printer, codemod, flowSettings, {
