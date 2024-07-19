@@ -24,8 +24,8 @@ import {
 import type { PrinterBlueprint } from "@codemod-com/printer";
 import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
 
+import { defaultParser } from "#parsers/jscodeshift.js";
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
-import { defaultParser } from "./jscodeshift.js";
 
 const parseMdx = (data: string) =>
   fromMarkdown(data, {
@@ -215,6 +215,10 @@ export const runFilemod = async (options: {
       if (externalFileCommand.kind === "upsertFile") {
         try {
           await fileSystem.promises.stat(externalFileCommand.path);
+
+          // @TODO get the old data from the filemod
+          // if (isTheSameData(externalFileCommand.data)) {
+          // }
 
           return {
             kind: "updateFile",
