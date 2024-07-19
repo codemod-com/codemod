@@ -1,4 +1,5 @@
 import { isFile } from "@babel/types";
+import type { KnownEngines } from "@codemod-com/utilities";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
@@ -11,9 +12,8 @@ import { type RangeCommand, buildRanges } from "../utils/tree";
 import {
   DEFAULT_FIND_REPLACE_EXPRESSION,
   STARTER_SNIPPET,
-  TSMORPH_STARTER_SNIPPET
+  TSMORPH_STARTER_SNIPPET,
 } from "./initialState";
-import type { KnownEngines } from "@codemod-com/utilities";
 
 type ModStateValues = {
   name: string;
@@ -49,7 +49,9 @@ export const buildDefaultCodemodSource = (engine: KnownEngines) => {
 export type ModState = ModStateSetters & ModStateValues;
 const getInitialState = (): ModStateValues => {
   const savedState = isServer ? null : localStorage.getItem("mod-store");
-  const initialState = savedState ? JSON.parse(savedState).content : buildDefaultCodemodSource("jscodeshift");
+  const initialState = savedState
+    ? JSON.parse(savedState).content
+    : buildDefaultCodemodSource("jscodeshift");
   const parsed = parseSnippet(initialState);
 
   const parsedContent = isFile(parsed)
@@ -77,7 +79,7 @@ export const useModStore = create<ModState>(
         const parsedContent = isFile(parsed)
           ? mapBabelASTToRenderableTree(parsed)
           : null;
-        set({ content: prettify(content), parsedContent });
+        set({ content, parsedContent });
       },
       setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
       setCodemodSelection: (command) => {

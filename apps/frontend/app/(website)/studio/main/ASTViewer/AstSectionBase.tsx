@@ -18,7 +18,7 @@ const AstSectionBase = ({
   return panels.filter(isVisible).map((panel, i, { length }) => (
     <React.Fragment key={panel.relatedAST}>
       <BoundResizePanel
-        className="h-full"
+        className="h-full bg-[rgba(229,229,229,0.2)]"
         panelRefs={panelRefs}
         key={panel.relatedAST}
         defaultSize={100 / panels.length}

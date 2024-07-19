@@ -56,7 +56,8 @@ export const ASTViewer = ({ type }: { type: EditorType }) => {
       >
         <Text
           className="cursor-pointer whitespace-nowrap"
-          color={isSelected ? "mtk6" : undefined}
+          fontWeight={isSelected ? "bold" : "normal"}
+          color={isSelected ? "text-[rgb(49 44 171)]" : "text-[#2AA198]"}
         >
           {!node.isLeaf ? (
             <strong
@@ -73,7 +74,7 @@ export const ASTViewer = ({ type }: { type: EditorType }) => {
           )}
           <span className="inline-block" id={node.data.id}>
             {node.data.relation && (
-              <span className="text-purple-500 mr-1">
+              <span style={{ color: "#B58900" }} className="mr-1">
                 {node.data.relation}:{" "}
               </span>
             )}
