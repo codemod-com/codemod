@@ -12,6 +12,7 @@ import {
   getFileContext,
 } from "../contexts.js";
 import { FunctionExecutor, fnWrapper } from "../engineHelpers.js";
+import { clc } from "../helpers.js";
 import { filter } from "./filter.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
@@ -265,6 +266,9 @@ export function astGrepLogic<
         }
         const lang = fileExtensionToLang[fileContext.extension];
         if (!lang) {
+          console.warn(
+            `${clc.yellow("WARN")} Unsupported file extension: ${fileContext.extension}`,
+          );
           return;
         }
         const nodes = parse(lang, await fileContext.contents())
