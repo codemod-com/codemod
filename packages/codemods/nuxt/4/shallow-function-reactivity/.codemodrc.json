@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "name": "nuxt/4/shallow-function-reactivity",
   "engine": "jscodeshift",
@@ -10,7 +10,7 @@
   },
   "meta": {
     "tags": ["nuxt", "4", "migration"],
-    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/shallow-data-reactivity"
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/shallow-function-reactivity"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

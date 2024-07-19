@@ -1,8 +1,15 @@
 {
-  "extends": "@codemod-com/tsconfig/codemod.json",
   "compilerOptions": {
-    "baseUrl": ".",
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "module": "NodeNext",
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES6",
+    "allowJs": true,
+    "noUncheckedIndexedAccess": true
   },
   "include": [
     "./src/**/*.ts",
