@@ -1,34 +1,32 @@
-export type CreateFileCommand = Readonly<{
+export type CreateFileCommand = {
   kind: "createFile";
   newPath: string;
   newData: string;
-  formatWithPrettier: boolean;
-}>;
+};
 
-export type UpdateFileCommand = Readonly<{
+export type UpdateFileCommand = {
   kind: "updateFile";
   oldPath: string;
   oldData: string;
   newData: string;
-  formatWithPrettier: boolean;
-}>;
+};
 
-export type DeleteFileCommand = Readonly<{
+export type DeleteFileCommand = {
   kind: "deleteFile";
   oldPath: string;
-}>;
+};
 
-export type MoveFileCommand = Readonly<{
+export type MoveFileCommand = {
   kind: "moveFile";
   oldPath: string;
   newPath: string;
-}>;
+};
 
-export type CopyFileCommand = Readonly<{
+export type CopyFileCommand = {
   kind: "copyFile";
   oldPath: string;
   newPath: string;
-}>;
+};
 
 export type FileCommand =
   | CreateFileCommand

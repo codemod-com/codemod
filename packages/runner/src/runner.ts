@@ -22,6 +22,7 @@ import {
   type KnownEnginesCodemod,
   type RunResult,
   extractMainScriptPath,
+  formatText,
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
   isNeitherNullNorUndefined,
@@ -56,10 +57,11 @@ export class Runner {
 
   public async run(options: {
     codemod: Codemod;
+    format?: boolean;
     onSuccess?: (runResult: RunResult) => Promise<void> | void;
     onFailure?: (error: Error) => Promise<void> | void;
   }) {
-    const { codemod, onSuccess, onFailure } = options;
+    const { codemod, format, onSuccess, onFailure } = options;
 
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
@@ -69,13 +71,19 @@ export class Runner {
       fileSystem: this._options.fs,
       codemod,
       flowSettings: this._options.flowSettings,
-      onCommand: async (command) =>
-        this.modifyFileSystemUponCommand(this._options.fs, command),
-      onError: (error) => {
-        executionErrors.push(error);
-        console.error(error);
-        throw error;
+      onCommand: async (command) => {
+        const shouldFormat = format && "newData" in command;
+
+        if (shouldFormat) {
+          command.newData = await formatText(
+            "oldPath" in command ? command.oldPath : command.newPath,
+            command.newData,
+          );
+        }
+
+        return this.modifyFileSystemUponCommand(this._options.fs, command);
       },
+      onError: (error) => executionErrors.push(error),
       onSuccess,
       printer,
     });

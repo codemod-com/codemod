@@ -56,13 +56,8 @@ const getConfig = async (path: string): Promise<Options> => {
 export const formatText = async (
   path: string,
   oldData: string,
-  formatWithPrettier: boolean,
 ): Promise<string> => {
   const newData = oldData.replace(/\/\*\* \*\*\//gm, "");
-
-  if (!formatWithPrettier) {
-    return newData;
-  }
 
   try {
     const { format } = await import("prettier");

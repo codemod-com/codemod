@@ -65,7 +65,6 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.format,
             initializationMessage.safeArgumentRecord,
             // @TODO
             initializationMessage.engineOptions as any,
@@ -77,7 +76,6 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.codemodSource,
             message.path,
             message.data,
-            initializationMessage.format,
             initializationMessage.safeArgumentRecord,
             consoleCallback,
           );
@@ -87,7 +85,6 @@ const messageHandler = async (m: unknown) => {
             initializationMessage.path,
             message.path,
             message.data,
-            initializationMessage.format,
           );
           break;
         case "workflow":

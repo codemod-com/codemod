@@ -225,6 +225,7 @@ export const handleRunCliCommand = async (options: {
 
   const executionErrors = await runner.run({
     codemod,
+    format: args.format,
     onSuccess: async ({ codemod, commands }) => {
       const modifiedFilePaths = [
         ...new Set(

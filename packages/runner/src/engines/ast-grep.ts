@@ -86,7 +86,6 @@ export const runAstGrepCodemod = async (
   rulesPath: string,
   oldPath: string,
   oldData: string,
-  formatWithPrettier: boolean,
 ): Promise<readonly FileCommand[]> => {
   let astGrepExecutablePath: string;
 
@@ -173,7 +172,6 @@ export const runAstGrepCodemod = async (
     oldPath,
     oldData,
     newData,
-    formatWithPrettier,
   });
 
   return commands;
