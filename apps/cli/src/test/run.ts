@@ -116,7 +116,6 @@ vi.mock("../../../../packages/runner/dist/workerThreadManager.js", () => {
         oldPath: `./target/src/file_${randomBytes(8).toString("hex")}.tsx`,
         oldData: "",
         newData: "updated",
-        formatWithPrettier: false,
       });
 
       onMessage({

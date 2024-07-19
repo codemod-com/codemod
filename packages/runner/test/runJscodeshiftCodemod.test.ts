@@ -85,7 +85,6 @@ describe("runJscodeshiftCodemod", () => {
       oldPath: "/index.ts",
       oldData,
       newData,
-      formatWithPrettier: true,
     });
 
     deepStrictEqual(messages, [["log", "/index.ts"]]);

@@ -17,6 +17,8 @@ export type PathHashDigest = string & {
   __PathHashDigest: "__PathHashDigest";
 };
 
+export type ChangesPair = { oldData: string; newData: string };
+
 export interface GlobArguments {
   readonly includePatterns: ReadonlyArray<string>;
   readonly excludePatterns: ReadonlyArray<string>;
@@ -29,7 +31,7 @@ export class UnifiedFileSystem {
     PathHashDigest
   >(new Set());
   private __entries = new Map<PathHashDigest, UnifiedEntry>();
-  private __changes = new Map<PathHashDigest, string | null>();
+  private __changes = new Map<PathHashDigest, ChangesPair | null>();
 
   public constructor(
     private __buildPathHashDigest: (path: string) => PathHashDigest,
@@ -161,7 +163,7 @@ export class UnifiedFileSystem {
       throw new Error("This file has already been deleted");
     }
 
-    return upsertedData;
+    return upsertedData.newData ?? upsertedData.oldData;
   }
 
   public isDirectory(directoryPath: string): boolean {
@@ -240,10 +242,10 @@ export class UnifiedFileSystem {
 
     this.__changes.set(oldPathHashDigest, null);
 
-    this.upsertData(newFilePath, oldFileContent);
+    await this.upsertData(newFilePath, oldFileContent);
   }
 
-  public upsertData(filePath: string, data: string): void {
+  public async upsertData(filePath: string, data: string): Promise<void> {
     const pathHashDigest = this.__buildPathHashDigest(filePath);
 
     const unifiedFile: UnifiedFile = {
@@ -251,9 +253,11 @@ export class UnifiedFileSystem {
       path: filePath,
     };
 
+    const oldData = await this.__readFile(filePath);
+
     this.__entries.set(pathHashDigest, unifiedFile);
 
-    this.__changes.set(pathHashDigest, data);
+    this.__changes.set(pathHashDigest, { oldData, newData: data });
   }
 
   public buildExternalFileCommands(): readonly ExternalFileCommand[] {
@@ -273,7 +277,7 @@ export class UnifiedFileSystem {
         commands.push({
           kind: "upsertFile",
           path: entry.path,
-          data,
+          ...data,
         });
       }
     });

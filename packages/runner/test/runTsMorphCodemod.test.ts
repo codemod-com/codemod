@@ -44,7 +44,6 @@ describe("runTsMorphCodemod", () => {
       oldPath: "index.ts",
       oldData: "",
       newData: "class Test {\n}\n",
-      formatWithPrettier: true,
     });
 
     deepStrictEqual(messages, [["log", "/index.ts"]]);

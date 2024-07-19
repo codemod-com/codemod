@@ -1,5 +1,5 @@
 {
-  "include": ["./src/**/*"],
+  "include": ["reset.d.ts", "./src"],
   "exclude": ["node_modules"],
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {

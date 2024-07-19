@@ -1,7 +1,8 @@
 export interface ExternalUpsertFileCommand {
   kind: "upsertFile";
   path: string;
-  data: string;
+  oldData: string;
+  newData: string;
 }
 
 export interface ExternalDeleteFileCommand {

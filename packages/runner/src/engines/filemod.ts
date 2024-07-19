@@ -25,6 +25,7 @@ import type { PrinterBlueprint } from "@codemod-com/printer";
 import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
 
 import { defaultParser } from "#parsers/jscodeshift.js";
+import { isTheSameData } from "#utils.js";
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
 
 const parseMdx = (data: string) =>
@@ -210,29 +211,32 @@ export const runFilemod = async (options: {
     callbackService,
   );
 
-  return Promise.all(
+  const commands: (FileCommand | null)[] = await Promise.all(
     externalFileCommands.map(async (externalFileCommand) => {
       if (externalFileCommand.kind === "upsertFile") {
         try {
           await fileSystem.promises.stat(externalFileCommand.path);
 
-          // @TODO get the old data from the filemod
-          // if (isTheSameData(externalFileCommand.data)) {
-          // }
+          if (
+            isTheSameData(
+              externalFileCommand.oldData,
+              externalFileCommand.newData,
+            )
+          ) {
+            return null;
+          }
 
           return {
             kind: "updateFile",
             oldPath: externalFileCommand.path,
-            oldData: "", // TODO get the old data from the filemod
-            newData: externalFileCommand.data,
-            formatWithPrettier: format, // TODO have a list of extensions that prettier supports
+            oldData: externalFileCommand.oldData,
+            newData: externalFileCommand.newData,
           };
         } catch (error) {
           return {
             kind: "createFile",
             newPath: externalFileCommand.path,
-            newData: externalFileCommand.data,
-            formatWithPrettier: format,
+            newData: externalFileCommand.newData,
           };
         }
       }
@@ -243,4 +247,6 @@ export const runFilemod = async (options: {
       };
     }),
   );
+
+  return commands.filter(Boolean);
 };

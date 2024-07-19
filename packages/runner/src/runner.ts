@@ -65,39 +65,39 @@ export class Runner {
     const executionErrors: CodemodExecutionError[] = [];
     const printer = new Printer();
 
-    // try {
-    await this.executeCodemod({
-      fileSystem: this._options.fs,
-      codemod,
-      flowSettings: this._options.flowSettings,
-      onCommand: async (command) => {
-        if (this._options.flowSettings.dry) {
-          return;
-        }
+    try {
+      await this.executeCodemod({
+        fileSystem: this._options.fs,
+        codemod,
+        flowSettings: this._options.flowSettings,
+        onCommand: async (command) => {
+          if (this._options.flowSettings.dry) {
+            return;
+          }
 
-        const shouldFormat =
-          this._options.flowSettings.format && "newData" in command;
+          const shouldFormat =
+            this._options.flowSettings.format && "newData" in command;
 
-        if (shouldFormat) {
-          command.newData = await formatText(
-            "oldPath" in command ? command.oldPath : command.newPath,
-            command.newData,
-          );
-        }
+          if (shouldFormat) {
+            command.newData = await formatText(
+              "oldPath" in command ? command.oldPath : command.newPath,
+              command.newData,
+            );
+          }
 
-        return this.modifyFileSystemUponCommand(this._options.fs, command);
-      },
-      onError: (error) => executionErrors.push(error),
-      onSuccess,
-      printer,
-    });
-    // } catch (error) {
-    //   if (!(error instanceof Error)) {
-    //     return;
-    //   }
+          return this.modifyFileSystemUponCommand(this._options.fs, command);
+        },
+        onError: (error) => executionErrors.push(error),
+        onSuccess,
+        printer,
+      });
+    } catch (error) {
+      if (!(error instanceof Error)) {
+        return;
+      }
 
-    //   await onFailure?.(error);
-    // }
+      await onFailure?.(error);
+    }
 
     return executionErrors;
   }
@@ -576,6 +576,8 @@ export class Runner {
         onError,
         ...flowSettings,
       });
+
+      console.log(commands);
 
       // const commands = await buildFormattedFileCommands(fileCommands);
 
