@@ -32,10 +32,7 @@ import {
 
 import { getCodemodDownloadURI } from "#apis.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#buildOptions.js";
-import type {
-  FileDownloadService,
-  FileDownloadServiceBlueprint,
-} from "#fileDownloadService.js";
+import type { FileDownloadService } from "#fileDownloadService.js";
 import { buildSafeArgumentRecord } from "#safeArgumentRecord.js";
 import {
   codemodDirectoryPath,
@@ -254,17 +251,14 @@ export const fetchCodemod = async (options: {
     throw err;
   }
 
-  const localCodemodPath = join(path, "codemod.tar.gz");
-
-  let downloadResult: Awaited<
-    ReturnType<FileDownloadServiceBlueprint["download"]>
-  >;
+  let downloadResult: Awaited<ReturnType<FileDownloadService["download"]>>;
 
   try {
-    downloadResult = await fileDownloadService.download(
-      linkResponse.link,
-      localCodemodPath,
-    );
+    downloadResult = await fileDownloadService.download({
+      url: linkResponse.link,
+      path: path,
+      cachePingPath: join(path, ".codemodrc.json"),
+    });
   } catch (err) {
     spinner?.fail();
     throw new Error(
@@ -336,30 +330,43 @@ export const fetchCodemod = async (options: {
 
     config.names = names;
 
+    const subCodemodsSpinner = printer.withLoaderMessage(
+      chalk.cyan(`Fetching ${names.length} recipe codemods...`),
+    );
+
     const codemods = await Promise.all(
       config.names.map(async (name) => {
-        const codemod = populateCodemodArgs({
-          codemod: await fetchCodemod({
-            ...options,
-            nameOrPath: name,
-          }),
+        const subCodemod = await fetchCodemod({
+          ...options,
+          disableLogs: true,
+          nameOrPath: name,
+        });
+
+        const populatedCodemod = await populateCodemodArgs({
+          codemod: subCodemod,
           printer,
           argv,
         });
 
-        const subCodemod = safeParseKnownEnginesCodemod(codemod);
+        const validatedCodemod = safeParseKnownEnginesCodemod(populatedCodemod);
 
-        if (!subCodemod.success) {
-          if (safeParseRecipeCodemod(codemod).success) {
+        if (!validatedCodemod.success) {
+          subCodemodsSpinner.fail();
+          if (safeParseRecipeCodemod(populatedCodemod).success) {
             throw new Error("Nested recipe codemods are not supported.");
           }
 
           throw new Error("Nested codemod is of incorrect structure.");
         }
 
-        return subCodemod.output;
+        return validatedCodemod.output;
       }),
     );
+
+    subCodemodsSpinner.stopAndPersist({
+      symbol: oraCheckmark,
+      text: chalk.cyan("Successfully fetched recipe codemods."),
+    });
 
     return parseCodemod({
       type: "package",

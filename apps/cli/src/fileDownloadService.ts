@@ -2,31 +2,23 @@ import type { Printer } from "@codemod-com/printer";
 import type { FileSystem } from "@codemod-com/utilities";
 import axios, { isAxiosError, type AxiosResponse } from "axios";
 
-export type FileDownloadServiceBlueprint = Readonly<{
-  cacheEnabled: boolean;
-  readonly _ifs: FileSystem;
-  readonly _printer: Printer;
-
-  download(
-    url: string,
-    path: string,
-  ): Promise<{ data: Buffer; cacheUsed: boolean }>;
-}>;
-
-export class FileDownloadService implements FileDownloadServiceBlueprint {
+export class FileDownloadService {
   public constructor(
     public cacheEnabled: boolean,
     public readonly _ifs: FileSystem,
     public readonly _printer: Printer,
   ) {}
 
-  public async download(
-    url: string,
-    path: string,
-  ): Promise<{ data: Buffer; cacheUsed: boolean }> {
+  public async download(options: {
+    url: string;
+    path: string;
+    cachePingPath?: string;
+  }): Promise<{ data: Buffer; cacheUsed: boolean }> {
+    const { url, path, cachePingPath = path } = options;
+
     if (this.cacheEnabled) {
       const localCodemodLastModified =
-        await this.__getLocalFileLastModified(path);
+        await this.__getLocalFileLastModified(cachePingPath);
       const remoteCodemodLastModified =
         await this.__getRemoteFileLastModified(url);
 
