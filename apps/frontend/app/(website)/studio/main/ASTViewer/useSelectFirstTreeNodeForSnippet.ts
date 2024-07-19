@@ -1,4 +1,4 @@
-import { EditorType, useSnippetsStore } from "@studio/store/snippets";
+import { type EditorType, useSnippetsStore } from "@studio/store/snippets";
 
 export const useSelectFirstTreeNodeForSnippet = () => {
   const { getSelectedEditors } = useSnippetsStore();
