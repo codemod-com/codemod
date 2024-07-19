@@ -2,7 +2,6 @@ import { isFile } from "@babel/types";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
-import { prettify } from "@studio/utils/prettify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
@@ -59,7 +58,7 @@ export const useModStore = create<ModState>(
         const parsedContent = isFile(parsed)
           ? mapBabelASTToRenderableTree(parsed)
           : null;
-        set({ content: prettify(content), parsedContent });
+        set({ content, parsedContent });
       },
       setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
       setCodemodSelection: (command) => {
