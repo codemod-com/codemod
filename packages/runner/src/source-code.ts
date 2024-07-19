@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
-import { pathToFileURL } from "node:url";
+import nodePath from "node:path";
 
+import * as tsmorph from "ts-morph";
 import ts from "typescript";
 
 import type { Filemod } from "@codemod-com/filemod";
@@ -16,13 +17,13 @@ export const transpile = (source: string): string => {
     },
   });
 
+  console.log("outputText", outputText);
+
   return outputText;
 };
 
-export const getTransformer = async (entryPath: string) => {
-  const entryURL = pathToFileURL(entryPath).href;
-
-  type Module =
+export const getTransformer = (source: string) => {
+  type Exports =
     | {
         __esModule?: true;
         default?: unknown;
@@ -32,18 +33,32 @@ export const getTransformer = async (entryPath: string) => {
       }
     | (() => void);
 
-  const entryModule = (await import(entryURL)) as Module;
+  const module = { exports: {} as Exports };
+  const _require = (name: string) => {
+    if (name === "ts-morph") {
+      return tsmorph;
+    }
 
-  return typeof entryModule === "function"
-    ? entryModule
-    : entryModule.__esModule && typeof entryModule.default === "function"
-      ? entryModule.default
-      : typeof entryModule.handleSourceFile === "function"
-        ? entryModule.handleSourceFile
-        : entryModule.repomod !== undefined
-          ? entryModule.repomod
-          : entryModule.filemod !== undefined
-            ? entryModule.filemod
+    if (name === "node:path") {
+      return nodePath;
+    }
+  };
+
+  const keys = ["module", "exports", "require"];
+  const values = [module, module.exports, _require];
+
+  new Function(...keys, source).apply(null, values);
+
+  return typeof module.exports === "function"
+    ? module.exports
+    : module.exports.__esModule && typeof module.exports.default === "function"
+      ? module.exports.default
+      : typeof module.exports.handleSourceFile === "function"
+        ? module.exports.handleSourceFile
+        : module.exports.repomod !== undefined
+          ? module.exports.repomod
+          : module.exports.filemod !== undefined
+            ? module.exports.filemod
             : null;
 };
 
@@ -61,7 +76,7 @@ export const getCodemodSourceCode = async (codemod: Codemod) => {
     encoding: "utf8",
   });
 
-  return codemod.path.endsWith(".ts")
+  return indexPath.endsWith(".ts")
     ? transpile(codemodSource.toString())
     : codemodSource.toString();
 };

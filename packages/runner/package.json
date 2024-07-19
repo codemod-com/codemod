@@ -31,7 +31,6 @@
     "@types/jscodeshift": "^0.11.11",
     "@types/node": "20.8.5",
     "@vitest/coverage-v8": "catalog:",
-    "ts-node": "^10.9.2",
     "vitest": "^1.0.1"
   },
   "dependencies": {

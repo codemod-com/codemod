@@ -523,14 +523,8 @@ export class Runner {
     }
 
     if (codemod.config.engine === "filemod") {
-      const { path: indexPath, error } = await extractMainScriptPath({
-        codemodRc: codemod.config,
-        source: codemod.path,
-      });
-      if (indexPath === null) {
-        throw new Error(error);
-      }
-      const transformer = getTransformer(indexPath);
+      const sourceCode = await getCodemodSourceCode(codemod);
+      const transformer = getTransformer(sourceCode);
 
       if (transformer === null) {
         throw new Error(

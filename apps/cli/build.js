@@ -32,9 +32,9 @@ build({
   minify: true,
   platform: "node",
   target: "node18",
-  format: "esm",
+  format: "cjs",
   legalComments: "inline",
-  outfile: "./dist/index.mjs",
+  outfile: "./dist/index.cjs",
   define: argv.includes("--local")
     ? localEnvs
     : argv.includes("--publish")
