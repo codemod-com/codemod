@@ -4,6 +4,7 @@ import type { KnownEngines } from "@codemod-com/utilities";
 import { useTheme } from "@context/useTheme";
 import { getCodeDiff } from "@studio/api/getCodeDiff";
 import Panel from "@studio/components/Panel";
+import { BoundResizePanel } from "@studio/components/ResizePanel/BoundResizePanel";
 import ResizeHandle from "@studio/components/ResizePanel/ResizeHandler";
 import InsertExampleButton from "@studio/components/button/InsertExampleButton";
 import {
@@ -13,11 +14,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@studio/components/ui/select";
+import { VisibilityIcon } from "@studio/icons";
 import { TestTabsComponent } from "@studio/main/PageBottomPane/TestTabsComponent";
 import { AssistantTab } from "@studio/main/PaneLayout";
 import { LoginWarningModal } from "@studio/main/PaneLayout/LoginWarningModal";
 import { enginesConfig } from "@studio/main/PaneLayout/enginesConfig";
-import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useRef } from "react";
 import { PanelGroup } from "react-resizable-panels";
@@ -25,11 +27,9 @@ import Codemod from "./Codemod";
 import { Header } from "./Header/Header";
 import Layout from "./Layout";
 import {
-  BoundResizePanel,
   CodeSnippets,
   type PanelsRefs,
   ResizablePanelsIndices,
-  ShowPanelTile,
 } from "./PageBottomPane";
 import { useSnippetsPanels } from "./PageBottomPane/hooks";
 
@@ -133,7 +133,6 @@ const Main = () => {
   const beforeAfterBottomPanels = (
     <>
       <CodeSnippets
-        key="before-and-after-panels"
         className="before-and-after-panels"
         codeDiff={codeDiff}
         onlyAfterHidden={onlyAfterHidden}
@@ -141,16 +140,18 @@ const Main = () => {
         panels={[beforePanel, afterPanel]}
       >
         {onlyAfterHidden && (
-          <ShowPanelTile
-            header="After"
-            panel={afterPanel}
+          <div
+            className="hidden_panel_indicator"
             onClick={() => {
               afterPanel.visibilityOptions?.show();
               panelRefs.current[ResizablePanelsIndices.AFTER_SNIPPET]?.resize(
                 50,
               );
             }}
-          />
+          >
+            <VisibilityIcon visibilityOptions={afterPanel.visibilityOptions} />
+            <span className="hidden_panel_indicator_text">After</span>
+          </div>
         )}
       </CodeSnippets>
     </>

@@ -8,7 +8,6 @@ import {
   APPLY_TO_JOB_ENDPOINT,
   useFormSubmission,
 } from "@/hooks/useFormSubmission";
-import React from "react";
 
 export default function ApplyToJobForm({
   jobTitle,

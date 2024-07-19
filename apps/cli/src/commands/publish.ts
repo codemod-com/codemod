@@ -1,25 +1,23 @@
 import * as fs from "node:fs";
 import { basename, dirname, join } from "node:path";
+import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import {
-  CODEMOD_VERSION_EXISTS,
   type CodemodConfig,
   buildCodemodSlug,
   codemodNameRegex,
   doubleQuotify,
   execPromise,
-  isApiError,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
-import { url, custom, safeParse, string } from "valibot";
+import { url, safeParse, string } from "valibot";
 import { getCodemod, publish } from "../apis.js";
-import { getCurrentUserData, rebuildCodemodFallback } from "../utils.js";
+import { getCurrentUserOrLogin, rebuildCodemodFallback } from "../utils.js";
 import { handleInitCliCommand } from "./init.js";
-import { handleLoginCliCommand } from "./login.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: PrinterBlueprint;
@@ -28,28 +26,11 @@ export const handlePublishCliCommand = async (options: {
   const { printer } = options;
   let { source } = options;
 
-  let userData = await getCurrentUserData();
-
-  if (userData === null) {
-    const { login } = await inquirer.prompt<{ login: boolean }>({
-      type: "confirm",
-      name: "login",
+  const { token, allowedNamespaces, organizations } =
+    await getCurrentUserOrLogin({
       message: "Authentication is required to publish codemods. Proceed?",
+      printer,
     });
-
-    if (!login) {
-      return;
-    }
-
-    await handleLoginCliCommand({ printer });
-    userData = await getCurrentUserData();
-
-    if (userData === null) {
-      throw new Error("Unexpected authentication error occurred.");
-    }
-  }
-
-  const { token, allowedNamespaces, organizations } = userData;
 
   let isSingleFile = false;
   let codemodRcBuf: Buffer;

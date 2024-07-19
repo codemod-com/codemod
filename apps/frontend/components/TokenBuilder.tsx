@@ -10,12 +10,8 @@ import {
 } from "@/constants";
 import { useAuth, useUser } from "@clerk/nextjs";
 import { populateLoginIntent } from "@studio/api/populateLoginIntent";
-import {
-  Dialog,
-  DialogContent,
-  DialogTrigger,
-} from "@studio/components/ui/dialog";
-import { SEARCH_PARAMS_KEYS } from "@studio/store/getInitialState";
+import { Dialog, DialogContent } from "@studio/components/ui/dialog";
+import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 
 export const TokenBuilder = () => {
   const { getToken } = useAuth();

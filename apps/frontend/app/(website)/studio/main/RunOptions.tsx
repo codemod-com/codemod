@@ -24,12 +24,12 @@ import {
 } from "@studio/components/ui/tabs";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
-import initSwc, { transform } from "@swc/wasm-web";
 import { ChevronDownIcon, ChevronUpIcon, PlayIcon } from "lucide-react";
 import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import * as semver from "semver";
 import { publishCodemod } from "../src/api/publishCodemod";
+import { transpileTs } from "../src/utils/transpileTs";
 import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
@@ -75,7 +75,9 @@ export const RunOptions = () => {
 
     const files = getCodemodProjectFiles({
       name: humanCodemodName,
-      codemodBody: modStore.content,
+      // TODO: temporary fix, most likely we need to upgrade monaco editor or babel or whatever is responsible
+      // for taking the code from the web-editor and converting it to string
+      codemodBody: modStore.content.replace(/\n *as\n *const/g, " as const"),
       cases: allSnippets.before.reduce(
         (acc, before, i) => {
           const after = allSnippets.after[i];
@@ -120,20 +122,11 @@ export const RunOptions = () => {
       }
     }
 
-    await initSwc();
-    const { code: compiled } = await transform(files["src/index.ts"], {
-      minify: true,
-      module: { type: "commonjs" },
-      jsc: {
-        target: "es5",
-        loose: false,
-        parser: { syntax: "typescript", tsx: true },
-      },
-    });
+    const { transpiled, source } = await transpileTs(files["src/index.ts"]);
 
     const publishResult = await publishCodemod({
       files: {
-        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
         codemodRc: files[".codemodrc.json"],
       },
       mainFileName: "index.cjs",
@@ -155,8 +148,8 @@ export const RunOptions = () => {
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="max-w-2xl bg-white">
           <p>
-            We have published your codemod to the Codemod Registry. You can now
-            run it via CLI using the command below.
+            Your codemod is now available to be run via Codemod CLI. To do so
+            use the command below.
           </p>
 
           <Tabs defaultValue="npm">
@@ -234,11 +227,16 @@ function InstructionsContent({
 }: { pm: "pnpm" | "npm"; codemodName: string | null }) {
   const npxDialect = useMemo(() => {
     if (pm === "pnpm") {
-      return "pnpm dlx";
+      return "pnpx" as const;
     }
 
-    return "npx";
+    return "npx" as const;
   }, [pm]);
+
+  const cliCommand = useMemo(
+    () => (npxDialect === "pnpx" ? "codemod" : "codemod@latest"),
+    [npxDialect],
+  );
 
   if (!codemodName) {
     return null;
@@ -246,7 +244,9 @@ function InstructionsContent({
 
   return (
     <div className="space-y-1">
-      <CopyTerminalCommands text={`${npxDialect} codemod ${codemodName}`} />
+      <CopyTerminalCommands
+        text={`${npxDialect} ${cliCommand} login && ${npxDialect} ${cliCommand} ${codemodName}`}
+      />
     </div>
   );
 }

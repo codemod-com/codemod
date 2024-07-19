@@ -1,12 +1,8 @@
 import { randomBytes } from "node:crypto";
+import type { CodemodListResponse } from "@codemod-com/api-types";
+import { getAuthPlugin } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
-import {
-  type CodemodListResponse,
-  type CodemodRunResponse,
-  type User,
-  decryptWithIv,
-  encryptWithIv,
-} from "@codemod-com/utilities";
+import { decryptWithIv, encryptWithIv } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
@@ -19,16 +15,16 @@ import {
   getCodemodDownloadLink,
 } from "./handlers/getCodemodDownloadLink.js";
 import { getCodemodHandler } from "./handlers/getCodemodHandler.js";
-import { getCodemodsHandler } from "./handlers/getCodemodsHandler.js";
+import {
+  type GetCodemodsResponse,
+  getCodemodsHandler,
+} from "./handlers/getCodemodsHandler.js";
 import { getCodemodsListHandler } from "./handlers/getCodemodsListHandler.js";
-import authPlugin from "./plugins/authPlugin.js";
 import {
   type PublishHandlerResponse,
   publishHandler,
 } from "./publishHandler.js";
 import {
-  parseCodemodRunBody,
-  parseCodemodStatusParams,
   parseCreateIssueBody,
   parseCreateIssueParams,
   parseDiffCreationBody,
@@ -39,7 +35,6 @@ import {
   parseIv,
 } from "./schemata/schema.js";
 import { GithubProvider } from "./services/GithubProvider.js";
-import { queue, redis } from "./services/Redis.js";
 import { sourceControl } from "./services/SourceControl.js";
 import {
   type UnPublishHandlerResponse,
@@ -140,8 +135,10 @@ export const initApp = async (toRegister: FastifyPluginCallback[]) => {
     timeWindow: 60 * 1000, // 1 minute
   });
 
-  await fastify.register(fastifyMultipart);
+  const authPlugin = await getAuthPlugin(environment.AUTH_SERVICE_URL);
   await fastify.register(authPlugin);
+
+  await fastify.register(fastifyMultipart);
 
   for (const plugin of toRegister) {
     await fastify.register(plugin);
@@ -173,7 +170,11 @@ const routes: FastifyPluginCallback = (instance, _opts, done) => {
 
   instance.get("/codemods/:criteria", getCodemodHandler);
 
-  instance.get("/codemods", getCodemodsHandler);
+  instance.get<{ Reply: GetCodemodsResponse }>(
+    "/codemods",
+    { preHandler: [instance.getUserData] },
+    getCodemodsHandler,
+  );
 
   instance.get<{ Reply: GetCodemodDownloadLinkResponse }>(
     "/codemods/downloadLink",

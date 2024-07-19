@@ -1,5 +1,3 @@
-import { useModGPT } from "@features/modGPT/useAiService/useModGpt";
-import { useEffect } from "react";
 import sendChat from "./sendMessage";
 
 export const generateCodemodHumanNamePrompt = (codemod: string) => `

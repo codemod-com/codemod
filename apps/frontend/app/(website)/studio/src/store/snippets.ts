@@ -2,12 +2,11 @@ import { isFile } from "@babel/types";
 import type { KnownEngines } from "@codemod-com/utilities";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
-import { INITIAL_STATE } from "@studio/store/getInitialState";
+import { INITIAL_STATE } from "@studio/store/initialState";
 import { getSnippetInitialState } from "@studio/store/utils/getSnippetInitialState";
 import type { TreeNode } from "@studio/types/tree";
 import { parseSnippet } from "@studio/utils/babelParser";
 import mapBabelASTToRenderableTree from "@studio/utils/mappers";
-import { prettify } from "@studio/utils/prettify";
 import { type RangeCommand, buildRanges } from "@studio/utils/tree";
 import { map, mapObjIndexed, reduce, remove } from "ramda";
 import { create } from "zustand";
@@ -41,10 +40,13 @@ type SnippetSettersMap = {
   [K in EditorType as `set${Capitalize<K>}Selection`]: SnippetSetters["setSelection"];
 };
 type SnippetsConfig = {
+  getHasReachedTabsLimit: () => boolean;
+  tabsLimit: number;
   currentContent: string;
   currentType: EditorType;
   addPair: () => void;
   clearAll: () => void;
+  setInitialState: (state: Partial<SnippetsState>) => void;
   removePair: (index: number) => void;
   selectedPairIndex: number;
   engine: KnownEngines;
@@ -109,6 +111,8 @@ const getEditorsFromLS = () => {
 export const useSnippetsStore = create<SnippetsState>(
   persist(
     (set, get) => ({
+      tabsLimit: 12,
+      getHasReachedTabsLimit: () => get().editors.length >= get().tabsLimit,
       editors: INITIAL_STATE.editors,
       addPair: () => {
         set({
@@ -116,13 +120,13 @@ export const useSnippetsStore = create<SnippetsState>(
             ...get().editors,
             {
               name: `Test ${
-                get()
+                (get()
                   .getAllNames()
-                  .filter((name) => name.startsWith("Test "))
+                  .filter((name) => name.toLowerCase().startsWith("test "))
                   .map((name) => name.split(" ")[1])
                   .map(Number)
                   .filter(Boolean)
-                  .at(-1) + 1
+                  .at(-1) || 0) + 1
               }`,
               before: getSnippetInitialState(),
               after: getSnippetInitialState(),
@@ -221,6 +225,9 @@ export const useSnippetsStore = create<SnippetsState>(
             get().setSelection(index, editorType),
         };
       },
+      setInitialState: (state) => {
+        set(state);
+      },
       setEngine: (engine) =>
         set({
           engine,
@@ -260,12 +267,6 @@ export const useSnippetsStore = create<SnippetsState>(
     }),
     {
       name: "snippets-storage",
-      merge: (persistedState, currentState) => ({
-        ...currentState,
-        ...persistedState,
-        engine: persistedState.engine || INITIAL_STATE.engine,
-        editors: persistedState.editors || INITIAL_STATE.editors,
-      }),
     },
   ),
 );

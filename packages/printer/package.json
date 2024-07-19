@@ -23,6 +23,7 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@codemod-com/api-types": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@types/cli-progress": "catalog:",

@@ -9,17 +9,17 @@ const steps = [
   {
     element: "before-and-after-panels",
     description:
-      "<p>This is your input, in the form of before/after test fixtures and comments describing the transformation logic.</p>",
+      "<p>This is your input, in the form of before/after test fixtures and comments describing the transformation logic. You can add more test pairs by clicking the plus (+) symbol on top of this panel.</p>",
   },
   {
     element: "assistant",
     description:
-      '<p>Assistant section includes AI, and for advanced users: AST and debugger. AI requires login. Start by clicking the "Generate codemod with AI" button.</p>',
+      '<p>Assistant section includes AI, and for advanced users: AST and debugger. AI requires login. Start by clicking the "Autogenerate with AI" button.</p>',
   },
   {
     element: "actions",
     description:
-      "<p>The actions area includes tools and options to create and fix codemods. These actions operate independently from the prompt</p><p>When you click 'Build a codemod', the AI helper will use the before/after code snippets to generate a codemod.</p>",
+      "<p>The actions area includes tools and options to create and fix codemods. These actions operate independently from the prompt</p><p>When you click 'Autogenerate with AI', the AI helper will use the before/after code snippets to generate a codemod.</p>",
   },
   {
     element: "prompt-builders",

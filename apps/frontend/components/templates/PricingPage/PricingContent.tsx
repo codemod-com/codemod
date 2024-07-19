@@ -5,7 +5,6 @@ import { RichText } from "@/components/shared/RichText";
 import Section from "@/components/shared/Section";
 import type { Plan } from "@/types";
 import { vercelStegaSplit } from "@vercel/stega";
-import React from "react";
 import type { PricingPageProps } from "./Page";
 
 export default function PricingSection({ data }: PricingPageProps) {

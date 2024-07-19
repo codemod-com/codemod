@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import * as openAiEdge from "openai-edge";
-import { environment, isDevelopment } from "../dev-utils/configs";
+import { environment } from "../dev-utils/configs";
 import { corsDisableHeaders } from "../dev-utils/cors";
 import type { Instance } from "../fastifyInstance";
 import { parseSendChatBody } from "../schemata/schema";

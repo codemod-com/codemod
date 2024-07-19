@@ -5,7 +5,7 @@ import {
   useInitialMss,
   useSaveMssgsToLocalStorage,
 } from "@chatbot/useAiService/utils";
-import type { LLMEngine } from "@shared/consts";
+import type { LLMEngine } from "@codemod-com/utilities";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 

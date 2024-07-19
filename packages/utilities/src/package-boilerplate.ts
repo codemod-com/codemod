@@ -1,3 +1,5 @@
+import baseTsconfig from "@codemod-com/tsconfig/base.json";
+import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
 import * as changeCase from "change-case";
 import jsBeautify from "js-beautify";
 import {
@@ -380,18 +382,14 @@ const codemodRc = ({
 const tsconfigJson = () => {
   return beautify(`
     {
-      "compilerOptions": {
-        "outDir": "./dist",
-        "esModuleInterop": true,
-        "forceConsistentCasingInFileNames": true,
-        "isolatedModules": true,
-        "module": "NodeNext",
-        "skipLibCheck": true,
-        "strict": true,
-        "target": "ES6",
-        "allowJs": true, 
-        "noUncheckedIndexedAccess": true
-      },
+      "compilerOptions": ${JSON.stringify(
+        {
+          ...baseTsconfig.compilerOptions,
+          ...codemodTsconfig.compilerOptions,
+        },
+        null,
+        2,
+      )},
       "include": [
         "./src/**/*.ts",
         "./src/**/*.js",
@@ -503,9 +501,10 @@ const testBody = ({
         });
 
         describe('${name}', () => {
-          ${cases?.map((_, i) => {
-            return beautify(
-              `it('test #${i + 1}', async () => {
+          ${cases
+            ?.map((_, i) => {
+              return beautify(
+                `it('test #${i + 1}', async () => {
                 const INPUT = await readFile(join(__dirname, '..', '__testfixtures__/fixture${
                   i + 1
                 }.input.${vanillaJs ? "js" : "ts"}'), 'utf-8');
@@ -519,6 +518,7 @@ const testBody = ({
                     source: INPUT,
                   },
                   buildApi('tsx'),
+                  {}
                 );
 
                 assert.deepEqual(
@@ -527,9 +527,10 @@ const testBody = ({
                 );
               });
             `,
-              { indent_level: 4 },
-            );
-          })}
+                { indent_level: 4 },
+              );
+            })
+            .join("\n\n")}
         });
     `);
   }

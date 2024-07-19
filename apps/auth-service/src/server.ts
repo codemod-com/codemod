@@ -2,11 +2,11 @@ import "dotenv/config";
 
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
-import {
-  type GetScopedTokenResponse,
-  type RevokeScopedTokenResponse,
-  isNeitherNullNorUndefined,
-} from "@codemod-com/utilities";
+import type {
+  GetScopedTokenResponse,
+  RevokeScopedTokenResponse,
+} from "@codemod-com/api-types";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";

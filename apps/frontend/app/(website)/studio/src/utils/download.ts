@@ -3,33 +3,27 @@ import {
   getCodemodProjectFiles,
   isTypeScriptProjectFiles,
 } from "@codemod-com/utilities";
-import initSwc, { transform } from "@swc/wasm-web";
 import JSZip from "jszip";
+import { transpileTs } from "./transpileTs";
 
 export const downloadProject = async (input: ProjectDownloadInput) => {
   const zip = new JSZip();
 
   const files = getCodemodProjectFiles(input);
   for (const [name, content] of Object.entries(files)) {
-    zip.file(name, content);
+    if (name !== "src/index.ts") {
+      zip.file(name, content);
+    }
   }
 
   // Pre-built file
   if (isTypeScriptProjectFiles(files)) {
-    await initSwc();
-    const { code: compiled } = await transform(files["src/index.ts"], {
-      minify: true,
-      module: { type: "commonjs" },
-      jsc: {
-        target: "es5",
-        loose: false,
-        parser: { syntax: "typescript", tsx: true },
-      },
-    });
+    const { transpiled, source } = await transpileTs(files["src/index.ts"]);
     zip.file(
       "dist/index.cjs",
-      `/*! @license\n${files.LICENSE}\n*/\n${compiled}`,
+      `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
     );
+    zip.file("src/index.ts", source);
   }
   const blob = await zip.generateAsync({ type: "blob" });
 

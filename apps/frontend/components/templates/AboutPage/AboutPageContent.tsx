@@ -9,7 +9,6 @@ import type { LogoDarkLight, PageHeroProps } from "@/types/object.types";
 import type { SanityImageObject } from "@sanity/image-url/lib/types/types";
 import { vercelStegaSplit } from "@vercel/stega";
 import { cx } from "cva";
-import React from "react";
 import type { AboutPageProps } from "./Page";
 
 export default function AboutPageSections({ data }: AboutPageProps) {

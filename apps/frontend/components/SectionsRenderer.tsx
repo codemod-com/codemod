@@ -1,4 +1,4 @@
-import type { SectionInRenderer, SectionsBody } from "@/types";
+import type { SectionInRenderer } from "@/types";
 import type { AutomationResponse } from "@/types/object.types";
 import { getDeepLinkId } from "@/utils/ids";
 

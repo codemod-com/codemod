@@ -1,5 +1,4 @@
 import { capitalize } from "@/utils/strings";
-import React from "react";
 
 type Props = {
   title: string;

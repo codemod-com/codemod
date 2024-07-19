@@ -11,6 +11,7 @@ export default defineConfig({
     env: {
       NODE_ENV: "test",
       PORT: "8081",
+      AUTH_SERVICE_URL: "http://localhost:8081",
       DATABASE_URI: "sqlite://:memory:",
       VERIFIED_PUBLISHERS: "",
       CLERK_PUBLISH_KEY: "CLERK_PUBLISH_KEY",
@@ -22,6 +23,7 @@ export default defineConfig({
       SIGNATURE_PRIVATE_KEY: "topsecret",
       SLACK_TOKEN: "xoxb-123123123",
       SLACK_CHANNEL: "my-channel",
+      FRONTEND_URL: "http://localhost:3000",
     },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,

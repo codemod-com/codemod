@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import * as os from "node:os";
 import { homedir } from "node:os";
 import { basename, dirname, extname, join } from "node:path";
+import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
 import {
   type PrinterBlueprint,
   boxen,
@@ -22,7 +23,6 @@ import {
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
-  CODEMOD_NOT_FOUND,
   TarService,
   doubleQuotify,
   execPromise,
@@ -603,11 +603,11 @@ export const handleRunCliCommand = async (options: {
     printer.printConsoleMessage(
       "info",
       chalk.cyan(
-        "\nFind the logs of the run at",
+        "\nLogs can be found at:",
         chalk.bold(logsPath),
-        "\nIn case you want to leave any feedback or report a faulty codemod, please run",
+        "\nFor feedback or reporting issues, run",
         chalk.bold(doubleQuotify("codemod feedback")),
-        "and include the logs in the issue body.",
+        "and include the logs.",
       ),
     );
 

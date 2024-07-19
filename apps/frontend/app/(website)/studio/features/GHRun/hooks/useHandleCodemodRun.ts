@@ -1,8 +1,11 @@
-import type { CodemodRunRequest } from "@shared/types";
+import type {
+  CodemodRunRequest,
+  GHBranch,
+  GithubRepository,
+} from "@codemod-com/api-types";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { transpileTs } from "@studio/utils/transpileTs";
-import type { GHBranch, GithubRepository } from "be-types";
 
 type Props = {
   onCodemodRun: (request: CodemodRunRequest) => Promise<void>;
@@ -32,7 +35,7 @@ export const useHandleCodemodRun = ({
     const request = {
       codemodEngine: engine,
       repoUrl: selectedRepository.html_url,
-      codemodSource: await transpileTs(content),
+      codemodSource: (await transpileTs(content)).transpiled,
       branch: selectedBranch.name,
     };
 

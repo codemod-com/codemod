@@ -5,7 +5,7 @@ import type {
   GetScopedTokenResponse,
   GetUserDataResponse,
   VerifyTokenResponse,
-} from "@codemod-com/utilities";
+} from "@codemod-com/api-types";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 
 export const getCLIAccessToken = async (
@@ -134,9 +134,11 @@ export const getCodemodDownloadURI = async (
 
 export const getCodemodList = async (options?: {
   accessToken?: string;
-  search?: string | null;
+  search: string | null;
+  mine: boolean;
+  all: boolean;
 }): Promise<CodemodListResponse> => {
-  const { accessToken, search } = options ?? {};
+  const { accessToken, search, mine, all } = options ?? {};
 
   const headers: RawAxiosRequestHeaders = {};
   if (accessToken) {
@@ -146,6 +148,14 @@ export const getCodemodList = async (options?: {
   const url = new URL(`${process.env.BACKEND_URL}/codemods/list`);
   if (search) {
     url.searchParams.set("search", search);
+  }
+
+  if (mine) {
+    url.searchParams.set("mine", "true");
+  }
+
+  if (all) {
+    url.searchParams.set("all", "true");
   }
 
   const res = await Axios.get<CodemodListResponse>(url.toString(), {

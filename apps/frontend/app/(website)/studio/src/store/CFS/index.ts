@@ -1,6 +1,6 @@
 import type { PromptPreset } from "@chatbot/prompts";
 import { autoGenerateCodemodPrompt } from "@chatbot/prompts";
-import type { LLMEngine } from "@shared/consts";
+import type { LLMEngine } from "@codemod-com/utilities";
 import type { SendMessageResponse } from "@studio/api/sendMessage";
 import { create } from "zustand";
 
@@ -26,7 +26,7 @@ const AIAssistantInitialState = {
   codemodHasRuntimeErrors: false,
   selectedPreset: null,
   open: false,
-  engine: "gpt-4o",
+  engine: "gpt-4o" as const,
 };
 
 export type CFSStateValues = {

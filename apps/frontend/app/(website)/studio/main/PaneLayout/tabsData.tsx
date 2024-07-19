@@ -2,18 +2,14 @@ import { Chat } from "@chatbot/Chat";
 import { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import LiveIcon from "@studio/icons/LiveIcon";
+import { AstSection } from "@studio/main/ASTViewer/AstSectionBase";
 import Table from "@studio/main/Log/Table";
-import {
-  AstSection,
-  type PanelData,
-  type PanelsRefs,
-} from "@studio/main/PageBottomPane";
+import type { PanelData, PanelsRefs } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
 import { useModStore } from "@studio/store/mod";
 import { TabNames } from "@studio/store/view";
 import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 import type { ReactNode } from "react";
-import * as React from "react";
 import { PanelGroup } from "react-resizable-panels";
 
 export type TabsWithContents = { tabs: ReactNode[]; contents: ReactNode[] };
@@ -59,11 +55,14 @@ export const useTabsData = ({
       name: "AST",
       content: (
         <PanelGroup direction="horizontal">
-          <AstSection
-            panels={[beforePanel, afterPanel]}
-            engine={engine}
-            panelRefs={panelRefs}
-          />
+          {engine === "jscodeshift" ? (
+            <AstSection
+              panels={[beforePanel, afterPanel]}
+              panelRefs={panelRefs}
+            />
+          ) : (
+            "The AST View is not yet supported for tsmorph"
+          )}
         </PanelGroup>
       ),
     },

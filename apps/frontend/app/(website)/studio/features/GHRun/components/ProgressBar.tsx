@@ -1,4 +1,4 @@
-import type { GetExecutionStatusResponse } from "@shared/types";
+import type { GetExecutionStatusResponse } from "@codemod-com/api-types";
 import Text from "@studio/components/Text";
 import { Progress } from "@studio/components/ui/progress";
 import { capitalize } from "@utils/strings";

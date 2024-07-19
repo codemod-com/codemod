@@ -1,5 +1,5 @@
 import PageCta from "@/components/templates/ModularPage/PageCta";
-import { type BlogArticlePayload, Job } from "@/types";
+import type { BlogArticlePayload } from "@/types";
 import BlogArticlePageContent from "./BlogArticlePageContent";
 
 export interface BlogArticlePageProps {

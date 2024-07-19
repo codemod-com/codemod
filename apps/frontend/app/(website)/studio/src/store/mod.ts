@@ -2,14 +2,16 @@ import { isFile } from "@babel/types";
 import { isServer } from "@studio/config";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import type { TreeNode } from "@studio/types/tree";
+import { prettify } from "@studio/utils/prettify";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { parseSnippet } from "../utils/babelParser";
 import mapBabelASTToRenderableTree from "../utils/mappers";
 import { type RangeCommand, buildRanges } from "../utils/tree";
-import { INITIAL_STATE } from "./getInitialState";
+import { INITIAL_STATE } from "./initialState";
 
 type ModStateValues = {
+  name: string;
   content: string | null;
   hasRuntimeErrors: boolean;
   parsedContent: TreeNode | null;
@@ -37,6 +39,7 @@ const getInitialState = (): ModStateValues => {
     : null;
 
   return {
+    name: "",
     content: INITIAL_STATE.codemodSource,
     hasRuntimeErrors: false,
     parsedContent,
@@ -49,13 +52,14 @@ const getInitialState = (): ModStateValues => {
 export const useModStore = create<ModState>(
   persist(
     (set, get) => ({
+      ...getInitialState(),
       setState: (newState) => set((state) => ({ ...state, ...newState })),
       setContent: (content) => {
         const parsed = parseSnippet(content);
         const parsedContent = isFile(parsed)
           ? mapBabelASTToRenderableTree(parsed)
           : null;
-        set({ content, parsedContent });
+        set({ content: prettify(content), parsedContent });
       },
       setHasRuntimeErrors: (hasError) => set({ hasRuntimeErrors: hasError }),
       setCodemodSelection: (command) => {
@@ -67,11 +71,6 @@ export const useModStore = create<ModState>(
     }),
     {
       name: "mod-store",
-      merge: (persistedState, currentState) => ({
-        ...currentState,
-        ...persistedState,
-        ...(!persistedState && getInitialState()),
-      }),
     },
   ),
 );

@@ -1,6 +1,6 @@
 import { apiClient } from "@/utils/apis/client";
 import { useAuth } from "@clerk/nextjs";
-import { mockedEndpoints } from "@shared/mocks";
+import { endpoints } from "@mocks/handlers/gh-run";
 import { isServer } from "@studio/config";
 import type { AxiosResponse } from "axios";
 
@@ -15,9 +15,9 @@ const mockified = (
 ) => {
   const path = typeof endpoint === "function" ? endpoint("") : endpoint;
   // @ts-ignore
-  if (mockedEndpoints[path]?.[verb]) {
+  if (endpoints[path]?.[verb]) {
     // @ts-ignore
-    const response = mockedEndpoints[path][verb](...rest);
+    const response = endpoints[path][verb](...rest);
     return new Promise((r) => setTimeout(() => r(response), 1000));
   }
   // @ts-ignore

@@ -2,7 +2,7 @@ import { cn } from "@/utils";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useSnippetsStore } from "@studio/store/snippets";
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const TestTabsComponent = () => {
   const {
@@ -13,6 +13,7 @@ export const TestTabsComponent = () => {
     setSelectedPairIndex,
     editors,
     renameEditor,
+    getHasReachedTabsLimit,
   } = useSnippetsStore();
 
   const [editingIndex, setEditingIndex] = useState(null);
@@ -61,7 +62,7 @@ export const TestTabsComponent = () => {
 
   return (
     <Tabs.Root defaultValue="0" className="tabs">
-      <Tabs.List className="tabs-list" ref={tabsRef}>
+      <Tabs.List className="tabs-list overflow-x-auto" ref={tabsRef}>
         {editors.map((editor, i) => (
           <div
             key={editor.name}
@@ -106,9 +107,11 @@ export const TestTabsComponent = () => {
             </DropdownMenu.Root>
           </div>
         ))}
-        <button className="add-tab-button" onClick={addPair}>
-          +
-        </button>
+        {!getHasReachedTabsLimit() && (
+          <button className="add-tab-button" onClick={addPair}>
+            +
+          </button>
+        )}
       </Tabs.List>
     </Tabs.Root>
   );

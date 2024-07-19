@@ -229,11 +229,10 @@ h6[class*="heading"] a {
 }
 
 .tabs {
-  z-index: 9999;
-  background: rgba(206, 208, 210, 0.12);
-  font-size: 14px;
-  height: 33px
-}
+   z-index: 9999;
+   background: rgba(206, 208, 210, 0.12);
+   font-size: 14px;
+ }
 
 .tabs input {
   width: 80px;
@@ -242,20 +241,59 @@ h6[class*="heading"] a {
 .tabs-list {
   display: flex;
   align-items: center;
-  height: 33px
+  min-height: 33px;
+  padding-bottom: 3px; /* Space for the scrollbar */
+  overflow-x: auto;
+  overflow-y: hidden;
+}
+
+/* Increase height when content overflows */
+.tabs-list::after {
+  content: '';
+  display: block;
+  height: 3px; /* Height of the scrollbar */
+  min-width: 1px; /* Ensures it's always present */
+}
+
+.tabs-list::-webkit-scrollbar {
+  height: 3px;
+}
+
+.tabs-list::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+
+.tabs-list::-webkit-scrollbar-track {
+  background-color: rgba(0, 0, 0, 0.1);
 }
 
 .tab-item {
   display: flex;
   align-items: center;
   height: 30px;
-  padding-bottom: 3px;
 }
 
 .tab-item > * {
   padding: 10px 20px;
 }
 
+/* Adjust the height of .tabs when scrollbar is present */
+.tabs:has(.tabs-list::-webkit-scrollbar-thumb) {
+  height: 36px; /* Increased height to accommodate scrollbar */
+}
+
+/* For Firefox and other browsers */
+@supports not selector(::-webkit-scrollbar) {
+  .tabs {
+    height: 36px; /* Set a fixed height that accommodates the scrollbar */
+  }
+
+  .tabs-list {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.2) rgba(0, 0, 0, 0.1);
+  }
+}
 .tab-trigger{
   cursor: pointer;
   background: none;

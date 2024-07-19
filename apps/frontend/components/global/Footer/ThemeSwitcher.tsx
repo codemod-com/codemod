@@ -4,7 +4,6 @@ import Icon from "@/components/shared/Icon";
 import { useTheme } from "@/hooks/useTheme";
 import { cx } from "cva";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
 
 export default function ThemeSwitcher() {
   const { toggleTheme, theme } = useTheme();
