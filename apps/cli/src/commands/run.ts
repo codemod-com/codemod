@@ -22,12 +22,7 @@ import {
   parseRunSettings,
 } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
-import {
-  TarService,
-  doubleQuotify,
-  execPromise,
-  parseCodemodConfig,
-} from "@codemod-com/utilities";
+import { TarService, doubleQuotify, execPromise } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import blessed from "blessed";
 import * as diff from "diff";
@@ -38,6 +33,7 @@ import type { TelemetryEvent } from "../analytics/telemetry.js";
 import { buildSourcedCodemodOptions } from "../buildCodemodOptions.js";
 import { buildCodemodEngineOptions } from "../buildEngineOptions.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions.js";
+import { getCodemodConfig } from "../codemodConfig";
 import { CodemodDownloader } from "../downloadCodemod.js";
 import { buildPrinterMessageUponCommand } from "../fileCommands.js";
 import { FileDownloadService } from "../fileDownloadService.js";
@@ -347,24 +343,23 @@ export const handleRunCliCommand = async (options: {
       }
 
       if (args.config) {
-        let configContents: string;
-
         try {
-          configContents = await readFile(
-            join(codemodDefinition.codemod.directoryPath, ".codemodrc.json"),
-            { encoding: "utf8" },
+          const codemodConfig = await getCodemodConfig(
+            codemodDefinition.codemod.directoryPath,
           );
 
           printer.printConsoleMessage(
             "log",
-            prettyjson.render(JSON.parse(configContents), {
+            prettyjson.render(codemodConfig, {
               inlineArrays: true,
             }),
           );
         } catch (err) {
           printer.printConsoleMessage(
             "error",
-            chalk.red("Could not find the configuration file for the codemod."),
+            chalk.red(
+              "Could not validate the configuration file for the codemod.",
+            ),
           );
         }
       }
@@ -404,16 +399,12 @@ export const handleRunCliCommand = async (options: {
           codemodName = codemod.name;
         }
 
-        const rcFileString = await readFile(
-          join(codemod.directoryPath, ".codemodrc.json"),
-          { encoding: "utf8" },
-        );
-        const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
+        const codemodConfig = await getCodemodConfig(codemod.directoryPath);
 
-        if (rcFile.deps) {
+        if (codemodConfig.deps) {
           depsToInstall[codemodName] = {
             affectedFiles: modifiedFilePaths,
-            deps: rcFile.deps,
+            deps: codemodConfig.deps,
           };
         }
       }
