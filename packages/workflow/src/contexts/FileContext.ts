@@ -4,6 +4,8 @@ import MagicString from "magic-string";
 import { clc } from "../helpers.js";
 import { Context } from "./Context.js";
 
+const formatByDefault = process.argv.includes("--format");
+
 export type FileContextData = { file: string };
 
 export class FileContext extends Context<FileContextData> {
@@ -48,7 +50,7 @@ export class FileContext extends Context<FileContextData> {
     magicString.update(start, end, replacement);
   }
 
-  async save({ skipFormat }: { skipFormat?: boolean } = {}) {
+  async save({ format }: { format?: boolean } = {}) {
     let contents: string | undefined;
     if (this._magicString?.hasChanged()) {
       contents = this._magicString.toString();
@@ -58,7 +60,9 @@ export class FileContext extends Context<FileContextData> {
     if (typeof contents === "string") {
       await fs.writeFile(
         this.file,
-        skipFormat ? contents : await formatText(this.file, contents, true),
+        format ?? formatByDefault
+          ? await formatText(this.file, contents, true)
+          : contents,
       );
       console.log(`${clc.blueBright("FILE")} ${this.file}`);
     }

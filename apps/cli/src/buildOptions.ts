@@ -87,11 +87,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
     .option("format", {
       type: "boolean",
       default: DEFAULT_ENABLE_PRETTIER,
-      hidden: true,
-    })
-    .option("no-format", {
-      type: "boolean",
-      description: "Disable formatting output with Prettier",
     })
     .option("threads", {
       alias: "n",
