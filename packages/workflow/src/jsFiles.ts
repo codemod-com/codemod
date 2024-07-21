@@ -145,6 +145,7 @@ export function jsFilesLogic(
         );
       }
     })
+    .return((self) => self.wrappedHelpers())
     .run() as any;
 }
 

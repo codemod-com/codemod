@@ -1,5 +1,6 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import * as pathPosix from "node:path/posix";
 import * as glob from "glob";
 import type { PLazy } from "../PLazy.js";
 import {
@@ -48,8 +49,8 @@ const getRenamedPath = async (
   for (const ext of ALL_JS_EXTENSIONS) {
     const maybeFilePath = `${oldPath}.${ext}`;
     if (maybeFilePath in renames) {
-      return path.format({
-        ...path.parse(renames[maybeFilePath] as string),
+      return pathPosix.format({
+        ...pathPosix.parse(renames[maybeFilePath] as string),
         base: undefined,
         ext: undefined,
       });
@@ -59,10 +60,10 @@ const getRenamedPath = async (
   try {
     if ((await fs.stat(oldPath)).isDirectory()) {
       for (const ext of ALL_JS_EXTENSIONS) {
-        const maybeFilePath = `${path.join(oldPath, "index")}.${ext}`;
+        const maybeFilePath = `${pathPosix.join(oldPath, "index")}.${ext}`;
         if (maybeFilePath in renames) {
-          return path.format({
-            ...path.parse(renames[maybeFilePath] as string),
+          return pathPosix.format({
+            ...pathPosix.parse(renames[maybeFilePath] as string),
             base: undefined,
             ext: undefined,
             name: undefined,
@@ -88,33 +89,33 @@ const renameImport = async (
       newAbsoluteSelfPath,
       renames,
     );
-    const oldAbsoluteImportPath = path.resolve(
-      path.dirname(oldAbsoluteSelfPath ?? newAbsoluteSelfPath),
+    const oldAbsoluteImportPath = pathPosix.resolve(
+      pathPosix.dirname(oldAbsoluteSelfPath ?? newAbsoluteSelfPath),
       importPath,
     );
     const newAbsoluteImportPath =
       (await getRenamedPath(oldAbsoluteImportPath, renames)) ??
       oldAbsoluteImportPath;
-    let relativePath = path.join(
-      path.relative(
-        path.dirname(newAbsoluteSelfPath),
-        path.dirname(newAbsoluteImportPath),
+    let relativePath = pathPosix.join(
+      pathPosix.relative(
+        pathPosix.dirname(newAbsoluteSelfPath),
+        pathPosix.dirname(newAbsoluteImportPath),
       ),
-      path.basename(newAbsoluteImportPath),
+      pathPosix.basename(newAbsoluteImportPath),
     );
     if (!relativePath.startsWith(".")) {
       relativePath = `./${relativePath}`;
     }
 
-    let extension: string | undefined = path.extname(relativePath);
+    let extension: string | undefined = pathPosix.extname(relativePath);
     if (extension === ".ts") {
       extension = ".js";
     } else if (extension === ".tsx" || extension === ".jsx") {
       extension = undefined;
     }
 
-    relativePath = path.format({
-      ...path.parse(relativePath),
+    relativePath = pathPosix.format({
+      ...pathPosix.parse(relativePath),
       base: undefined,
       ext: extension,
     });
@@ -192,7 +193,7 @@ export function moveLogic(target: string): PLazy<Helpers> & Helpers {
           await files("**/*.{js,jsx,ts,tsx,cjs,mjs}").jsFam(
             async ({ astGrep }) => {
               const file = getFileContext().file;
-              const imports = await astGrep({
+              await astGrep({
                 rule: {
                   any: [
                     {

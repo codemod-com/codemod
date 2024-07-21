@@ -64,6 +64,9 @@ export class FileContext extends Context<FileContextData> {
           ? await formatText(this.file, contents, true)
           : contents,
       );
+      this._contents = undefined;
+      this._magicString = undefined;
+      this._contentsChanged = false;
       console.log(`${clc.blueBright("FILE")} ${this.file}`);
     }
   }
