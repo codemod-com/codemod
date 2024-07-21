@@ -20,7 +20,7 @@ export function updateLogic<T>(
       const indent = detectIndent(beforeContents).amount || 2;
       const afterContents = await callback(YAML.parse(beforeContents));
       file.setContents(YAML.stringify(afterContents, { indent }));
-      await file.save({ skipFormat: true });
+      await file.save();
       await next?.();
     })
     .return((self) => self.wrappedHelpers())

@@ -31,7 +31,7 @@ export const DEFAULT_VERSION_CONTROL_DIRECTORIES = [
   ".view/",
 ];
 export const DEFAULT_INPUT_DIRECTORY_PATH = process.cwd();
-export const DEFAULT_ENABLE_PRETTIER = true;
+export const DEFAULT_ENABLE_PRETTIER = false;
 export const DEFAULT_CACHE = true;
 export const DEFAULT_INSTALL = true;
 export const DEFAULT_USE_JSON = false;

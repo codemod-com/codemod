@@ -26,7 +26,7 @@ export function updateLogic<T>(
       file.setContents(
         JSON.stringify(afterContents, null, indent).concat(newlineToInsert),
       );
-      await file.save({ skipFormat: true });
+      await file.save();
       await next?.();
     })
     .return((self) => self.wrappedHelpers())
