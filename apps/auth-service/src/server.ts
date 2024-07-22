@@ -2,14 +2,16 @@ import "dotenv/config";
 
 import { createClerkClient } from "@clerk/backend";
 import { clerkPlugin, getAuth } from "@clerk/fastify";
+import cors, { type FastifyCorsOptions } from "@fastify/cors";
+import fastifyRateLimit from "@fastify/rate-limit";
+import Fastify, { type FastifyPluginCallback } from "fastify";
+
 import type {
   GetScopedTokenResponse,
   RevokeScopedTokenResponse,
 } from "@codemod-com/api-types";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import cors, { type FastifyCorsOptions } from "@fastify/cors";
-import fastifyRateLimit from "@fastify/rate-limit";
-import Fastify, { type FastifyPluginCallback } from "fastify";
+
 import { createLoginIntent } from "./handlers/intents/create.js";
 import { getLoginIntent } from "./handlers/intents/get.js";
 import { populateLoginIntent } from "./handlers/intents/populate.js";

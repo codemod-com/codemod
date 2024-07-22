@@ -1,4 +1,3 @@
-import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import {
   type Output,
   type ValiError,
@@ -9,6 +8,8 @@ import {
   parse,
   string,
 } from "valibot";
+
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 export const environmentSchema = object({
   PORT: coerce(number(), (input) => Number(input)),
