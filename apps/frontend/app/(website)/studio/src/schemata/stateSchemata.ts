@@ -1,10 +1,11 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
-import { type Output, array, object, parse, string } from "valibot";
+import { type Output, array, object, optional, parse, string } from "valibot";
 
 export const editorsSnippetsSchema = object({
   name: string(),
   before: string(),
   after: string(),
+  output: optional(string()),
 });
 export const editorsArraySchemata = array(editorsSnippetsSchema);
 const stateSchema = object({
