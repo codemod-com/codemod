@@ -29,65 +29,62 @@ function transform(
           attr.name.name === "render",
       );
 
-      if (
-        renderAttr &&
-        j.JSXExpressionContainer.check(renderAttr.value) &&
-        j.ArrowFunctionExpression.check(renderAttr.value.expression)
-      ) {
-        const renderBody = renderAttr.value.expression.body;
-
-        if (j.JSXElement.check(renderBody)) {
-          renderBody.openingElement.attributes.forEach((attr) => {
-            if (
-              j.JSXAttribute.check(attr) &&
-              j.JSXIdentifier.check(attr.name) &&
-              attr.name.name === "component"
-            ) {
+      if (renderAttr) {
+        j(renderAttr)
+          .find(j.JSXElement)
+          .forEach((el) => {
+            el.value.openingElement.attributes?.forEach((attr) => {
               if (
-                j.JSXExpressionContainer.check(attr.value) &&
-                j.CallExpression.check(attr.value.expression)
+                j.JSXAttribute.check(attr) &&
+                j.JSXIdentifier.check(attr.name) &&
+                attr.name.name === "component"
               ) {
-                const callExpr = attr.value.expression;
-                if (j.Identifier.check(callExpr.callee)) {
-                  const componentArg = callExpr.arguments[0];
-                  if (j.Identifier.check(componentArg)) {
-                    const componentName = componentArg.name;
-                    const newComponentName = `${capitalize(callExpr.callee.name)}${componentName}`;
+                if (
+                  j.JSXExpressionContainer.check(attr.value) &&
+                  j.CallExpression.check(attr.value.expression)
+                ) {
+                  const callExpr = attr.value.expression;
+                  if (j.Identifier.check(callExpr.callee)) {
+                    const componentArg = callExpr.arguments[0];
+                    if (j.Identifier.check(componentArg)) {
+                      const componentName = componentArg.name;
+                      const newComponentName = `${capitalize(callExpr.callee.name)}${componentName}`;
 
-                    const existingConst = root
-                      .find(j.VariableDeclaration)
-                      .filter((path) =>
-                        path.value.declarations.some(
-                          (decl) =>
-                            j.Identifier.check(decl.id) &&
-                            decl.id.name === newComponentName,
-                        ),
+                      const existingConst = root
+                        .find(j.VariableDeclaration)
+                        .filter((path) =>
+                          path.value.declarations.some(
+                            (decl) =>
+                              j.Identifier.check(decl.id) &&
+                              decl.id.name === newComponentName,
+                          ),
+                        );
+
+                      if (existingConst.size() === 0) {
+                        // Insert the new constant declaration at the top of the file
+                        const newConst = j.variableDeclaration("const", [
+                          j.variableDeclarator(
+                            j.identifier(newComponentName),
+                            j.callExpression(
+                              j.identifier(callExpr.callee.name),
+                              [j.identifier(componentName)],
+                            ),
+                          ),
+                        ]);
+                        root.get().node.program.body.unshift(newConst);
+                      }
+
+                      // Replace the component prop with the new constant
+                      attr.value = j.jsxExpressionContainer(
+                        j.identifier(newComponentName),
                       );
-
-                    if (existingConst.size() === 0) {
-                      // Insert the new constant declaration at the top of the file
-                      const newConst = j.variableDeclaration("const", [
-                        j.variableDeclarator(
-                          j.identifier(newComponentName),
-                          j.callExpression(j.identifier(callExpr.callee.name), [
-                            j.identifier(componentName),
-                          ]),
-                        ),
-                      ]);
-                      root.get().node.program.body.unshift(newConst);
+                      dirtyFlag = true;
                     }
-
-                    // Replace the component prop with the new constant
-                    attr.value = j.jsxExpressionContainer(
-                      j.identifier(newComponentName),
-                    );
-                    dirtyFlag = true;
                   }
                 }
               }
-            }
+            });
           });
-        }
       }
     });
 
