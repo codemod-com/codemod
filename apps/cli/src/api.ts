@@ -1,4 +1,4 @@
-import Axios, { type RawAxiosRequestHeaders } from "axios";
+import Axios, { AxiosError, type RawAxiosRequestHeaders } from "axios";
 
 import type {
   CodemodDownloadLinkResponse,
@@ -8,6 +8,14 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
+
+export const extractCLIApiError = (err: unknown): string => {
+  if (!(err instanceof Error)) {
+    return "An unknown error occurred.";
+  }
+
+  return err instanceof AxiosError ? err.response?.data : err.message;
+};
 
 export const getCLIAccessToken = async (
   accessToken: string,

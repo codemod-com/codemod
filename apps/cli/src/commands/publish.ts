@@ -1,12 +1,12 @@
+import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { join } from "node:path";
 
-import { AxiosError } from "axios";
+import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
 import { url, safeParse, string } from "valibot";
 
-import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
 import { type Printer, chalk } from "@codemod-com/printer";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
@@ -19,10 +19,8 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
-import { spawn } from "node:child_process";
-import { glob } from "glob";
 import { version as cliVersion } from "#/../package.json";
-import { getCodemod, publish } from "#api.js";
+import { extractCLIApiError, getCodemod, publish } from "#api.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import { codemodDirectoryPath, getCurrentUserOrLogin } from "#utils.js";
@@ -131,19 +129,23 @@ export const handlePublishCliCommand = async (options: {
     }
   };
 
-  let codemodIsPublished = false;
-  try {
-    await getCodemod(buildCodemodSlug(codemodRc.name), token);
-    codemodIsPublished = true;
-  } catch (err) {
-    //
-  }
+  let bumpedVersion = false;
+  const existingCodemod = await getCodemod(
+    buildCodemodSlug(codemodRc.name),
+    token,
+  ).catch(() => null);
 
-  if (
-    !codemodIsPublished &&
-    allowedNamespaces.length > 1 &&
-    !codemodRc.name.startsWith("@")
-  ) {
+  if (existingCodemod !== null) {
+    if (
+      existingCodemod.versions.find(
+        ({ version }) => version === codemodRc.version,
+      )
+    ) {
+      codemodRc.version = semver.inc(codemodRc.version, "patch") ?? "0.0.1";
+      await updateCodemodRC(codemodRc);
+      bumpedVersion = true;
+    }
+  } else if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
     const { namespace } = await inquirer.prompt<{ namespace: string }>({
       type: "list",
       name: "namespace",
@@ -275,50 +277,13 @@ export const handlePublishCliCommand = async (options: {
     ),
   );
 
-  let bumpedVersion = false;
-  // Using outer trycatch to catch error from inner catch block too.
   try {
-    try {
-      await publish(token, formData);
-      publishSpinner.succeed();
-    } catch (firstError) {
-      // Rethrow if no further logic
-      if (
-        !(firstError instanceof AxiosError) ||
-        !firstError.response?.data ||
-        !isApiError(firstError.response.data) ||
-        firstError.response.data.error !== CODEMOD_VERSION_EXISTS
-      ) {
-        throw firstError;
-      }
-
-      // If error is of specific type (determined above), we first try to upgrade the version
-      // and resubmit the request again
-
-      // Kinda hacky, but works for now. Didn't want to change the error format too much.
-      const existingVersion = /latest published version: (\d+\.\d+\.\d+)/.exec(
-        firstError.response.data.errorText,
-      )?.[1];
-
-      if (!existingVersion) {
-        throw firstError;
-      }
-
-      codemodRc.version = semver.inc(existingVersion, "patch") ?? "0.0.1";
-
-      await updateCodemodRC(codemodRc);
-
-      // In case if this fails, outer catch will be triggered
-      await publish(token, formData);
-      bumpedVersion = true;
-    }
+    await publish(token, formData);
+    publishSpinner.succeed();
   } catch (error) {
     publishSpinner.fail();
 
-    const message =
-      error instanceof AxiosError
-        ? error.response?.data.errorText
-        : String(error);
+    const message = extractCLIApiError(error);
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;
