@@ -60,7 +60,7 @@ export class FileContext extends Context<FileContextData> {
     if (typeof contents === "string") {
       await fs.writeFile(
         this.file,
-        skipFormat ? contents : await formatText(this.file, contents),
+        format ? await formatText(this.file, contents) : contents,
       );
       this._contents = undefined;
       this._magicString = undefined;
