@@ -4,7 +4,7 @@ export const useSelectFirstTreeNodeForSnippet = () => {
   const { getSelectedEditors } = useSnippetsStore();
 
   return (type: EditorType) => {
-    const firstRange = getSelectedEditors()[type].ranges[0];
+    const firstRange = getSelectedEditors()[type]?.ranges?.[0];
     return firstRange && "id" in firstRange ? firstRange : null;
   };
 };
