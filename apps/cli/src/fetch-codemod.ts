@@ -18,7 +18,6 @@ import {
   type RecipeCodemodValidationInput,
   type TarService,
   doubleQuotify,
-  isEngine,
   isRecipeCodemod,
   parseCodemod,
   parseCodemodConfig,
@@ -31,6 +30,7 @@ import {
 } from "@codemod-com/utilities";
 
 import { getCodemodDownloadURI } from "#api.js";
+import { handleInitCliCommand } from "#commands/init.js";
 import type { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { buildSafeArgumentRecord } from "#safe-arguments.js";
@@ -110,7 +110,6 @@ export const fetchCodemod = async (options: {
     disableLogs = false,
     argv,
   } = options;
-  // const codemodSettings = parse(runSettingsSchema, input);
 
   if (!nameOrPath) {
     throw new Error("Codemod to run was not specified!");
@@ -151,16 +150,30 @@ export const fetchCodemod = async (options: {
       }
 
       // Standalone codemod
-      if (!isEngine(argv.engine)) {
+      const codemodPackagePath = await handleInitCliCommand({
+        printer,
+        target: nameOrPath,
+        writeDirectory: join(codemodDirectoryPath, "temp"),
+        useDefaultName: true,
+        noLogs: true,
+      });
+
+      let codemodRcJSON: Record<string, unknown>;
+      try {
+        codemodRcJSON = JSON.parse(
+          await readFile(join(codemodPackagePath, ".codemodrc.json"), {
+            encoding: "utf-8",
+          }),
+        );
+      } catch (err) {
         throw new Error(
-          "Engine must be specified for standalone codemods. Use --engine flag.",
+          "Unexpected error during package initialization for standalone run",
         );
       }
 
       const config = parseCodemodConfig({
+        ...codemodRcJSON,
         name: "Standalone codemod",
-        version: "1.0.0",
-        engine: argv.engine,
       });
 
       if (config.engine === "recipe") {

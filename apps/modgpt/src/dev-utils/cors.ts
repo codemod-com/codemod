@@ -1,6 +1,6 @@
 import type { FastifyCorsOptions } from "@fastify/cors";
 import type { FastifyInstance } from "fastify";
-import { isDevelopment } from "./configs";
+import { isDevelopment } from "./configs.js";
 
 const ALLOWED_ORIGINS = [
   /^https?:\/\/.*-codemod\.vercel\.app$/,

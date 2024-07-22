@@ -62,7 +62,7 @@ export type TypeScriptProjectFiles = BaseProjectFiles &
     [key: FixtureInputFileTypeScript]: string;
     [key: FixtureOutputFileTypeScript]: string;
   };
-export type AstGrepProjectFiles = {
+export type AstGrepProjectFiles = BaseProjectFiles & {
   "src/rule.yaml": string;
 };
 

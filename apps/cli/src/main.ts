@@ -96,16 +96,13 @@ const initializeDependencies = async (argv: {
       await executableCallback();
     } catch (error) {
       if (!(error instanceof Error)) {
-        exit();
-        return;
+        return exit();
       }
 
       printer.printOperationMessage({
         kind: "error",
         message: error.message,
       });
-
-      exit();
     }
 
     if (!omitExit) {

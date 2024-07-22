@@ -1,5 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
+
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
 import type { RouteHandler } from "fastify";
@@ -11,6 +12,7 @@ import {
   CODEMOD_NAME_TAKEN,
   CODEMOD_VERSION_EXISTS,
   INTERNAL_SERVER_ERROR,
+  NO_CODEMOD_TO_PUBLISH,
   NO_CONFIG_FILE_FOUND,
   NO_MAIN_FILE_FOUND,
   type PublishResponse,
@@ -22,11 +24,13 @@ import {
   type CodemodConfig,
   TarService,
   buildCodemodSlug,
-  codemodNameRegex,
+  getEntryPath,
   isNeitherNullNorUndefined,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { buildRevalidateHelper } from "./revalidate.js";
 import { environment } from "./util.js";
 
@@ -50,75 +54,64 @@ export const publishHandler: RouteHandler<{
       throw new Error("The username of the current user does not exist");
     }
 
-    let codemodRcBuffer: Buffer | null = null;
-    let codemodRc: CodemodConfig | null = null;
-    let mainFileBuffer: Buffer | null = null;
-    let mainFileName: string | null = null;
-    let descriptionMdBuffer: Buffer | null = null;
+    let codemodArchiveBuffer: Buffer | null = null;
 
     for await (const multipartFile of request.files({
       limits: { fileSize: 1024 * 1024 * 100 },
     })) {
       const buffer = await multipartFile.toBuffer();
 
-      if (multipartFile.fieldname === ".codemodrc.json") {
-        codemodRcBuffer = buffer;
-
-        const codemodRcData = JSON.parse(codemodRcBuffer.toString("utf8"));
-
-        codemodRc = parseCodemodConfig(codemodRcData);
-
-        if (codemodRc.engine === "recipe") {
-          if (codemodRc.names.length < 2) {
-            throw new Error(
-              `The "names" field in .codemodrc.json must contain at least two names for a recipe codemod.`,
-            );
-          }
-
-          for (const name of codemodRc.names) {
-            if (!codemodNameRegex.test(name)) {
-              throw new Error(
-                `Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-              );
-            }
-          }
-        } else if (!codemodNameRegex.test(codemodRc.name)) {
-          throw new Error(
-            `The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-          );
-        }
-      }
-
-      if (
-        ["index.cjs", "rules.toml", "rule.yaml"].includes(
-          multipartFile.fieldname,
-        )
-      ) {
-        mainFileName = multipartFile.fieldname;
-        mainFileBuffer = buffer;
-      }
-
-      if (multipartFile.fieldname === "README.md") {
-        descriptionMdBuffer = buffer;
+      if (multipartFile.fieldname === "codemod.tar.gz") {
+        codemodArchiveBuffer = buffer;
       }
     }
 
-    if (!isNeitherNullNorUndefined(codemodRcBuffer) || !codemodRc) {
+    if (codemodArchiveBuffer === null) {
+      return reply.code(400).send({
+        error: NO_CODEMOD_TO_PUBLISH,
+        errorText: "No codemod archive was provided",
+      });
+    }
+
+    const tarService = new TarService(fs);
+    const unpackedPath = join(homedir(), ".codemod", "temp");
+    await tarService.unpack(unpackedPath, codemodArchiveBuffer);
+
+    let codemodRcContents: string;
+    try {
+      codemodRcContents = await fs.promises.readFile(
+        join(unpackedPath, ".codemodrc.json"),
+        { encoding: "utf-8" },
+      );
+    } catch (err) {
       return reply.code(400).send({
         error: NO_CONFIG_FILE_FOUND,
         errorText: "No .codemodrc.json file was provided",
       });
     }
 
-    if (
-      codemodRc.engine !== "recipe" &&
-      (!isNeitherNullNorUndefined(mainFileBuffer) ||
-        !isNeitherNullNorUndefined(mainFileName))
-    ) {
+    let codemodRc: CodemodConfig;
+    try {
+      codemodRc = parseCodemodConfig(JSON.parse(codemodRcContents));
+    } catch (err) {
       return reply.code(400).send({
-        error: NO_MAIN_FILE_FOUND,
-        errorText: "No main file was provided",
+        error: CODEMOD_CONFIG_INVALID,
+        errorText: "Codemod config is invalid",
       });
+    }
+
+    if (codemodRc.engine !== "recipe") {
+      const { path } = await getEntryPath({
+        codemodRc,
+        source: unpackedPath,
+      });
+
+      if (path === null) {
+        return reply.code(400).send({
+          error: NO_MAIN_FILE_FOUND,
+          errorText: "No main file was provided",
+        });
+      }
     }
 
     let { name, version } = codemodRc;
@@ -187,27 +180,6 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    const buffers = [
-      {
-        name: ".codemodrc.json",
-        data: codemodRcBuffer,
-      },
-    ];
-
-    if (mainFileBuffer && mainFileName) {
-      buffers.push({
-        name: mainFileName,
-        data: mainFileBuffer,
-      });
-    }
-
-    if (isNeitherNullNorUndefined(descriptionMdBuffer)) {
-      buffers.push({
-        name: "README.md",
-        data: descriptionMdBuffer,
-      });
-    }
-
     const latestVersion = await prisma.codemodVersion.findFirst({
       where: {
         codemod: {
@@ -227,13 +199,8 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    const tarService = new TarService(fs);
-    const archive = await tarService.pack(buffers);
-
     const hashDigest = createHash("ripemd160").update(name).digest("base64url");
-
     const REQUEST_TIMEOUT = 5000;
-
     const bucket =
       isPrivate && namespace ? "codemod-private" : "codemod-public";
 
@@ -244,13 +211,23 @@ export const publishHandler: RouteHandler<{
     uploadKeyParts.unshift("codemod-registry");
     const uploadKey = uploadKeyParts.join("/");
 
+    let readmeContents: string | null = null;
+    try {
+      readmeContents = await fs.promises.readFile(
+        join(unpackedPath, "README.md"),
+        { encoding: "utf-8" },
+      );
+    } catch (err) {
+      //
+    }
+
     const codemodVersionEntry = {
       version,
       s3Bucket: bucket,
       s3UploadKey: uploadKey,
       engine: codemodRc.engine,
       sourceRepo: codemodRc.meta?.git,
-      shortDescription: descriptionMdBuffer?.toString("utf-8"),
+      shortDescription: readmeContents,
       vsCodeLink: `vscode://codemod.codemod-vscode-extension/showCodemod?chd=${hashDigest}`,
       applicability: codemodRc.applicability,
       tags: codemodRc.meta?.tags,
@@ -283,7 +260,7 @@ export const publishHandler: RouteHandler<{
         create: {
           slug: buildCodemodSlug(name),
           name,
-          shortDescription: descriptionMdBuffer?.toString("utf-8"),
+          shortDescription: readmeContents,
           tags: codemodRc.meta?.tags,
           engine: codemodRc.engine,
           applicability: codemodRc.applicability,
@@ -297,7 +274,7 @@ export const publishHandler: RouteHandler<{
           },
         },
         update: {
-          shortDescription: descriptionMdBuffer?.toString("utf-8"),
+          shortDescription: readmeContents,
           tags: codemodRc.meta?.tags,
           engine: codemodRc.engine,
           applicability: codemodRc.applicability,
@@ -337,7 +314,7 @@ export const publishHandler: RouteHandler<{
         new PutObjectCommand({
           Bucket: bucket,
           Key: uploadKey,
-          Body: archive,
+          Body: codemodArchiveBuffer,
         }),
         {
           requestTimeout: REQUEST_TIMEOUT,

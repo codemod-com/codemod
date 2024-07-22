@@ -1,5 +1,5 @@
 import * as fs from "node:fs";
-import { basename, dirname, join } from "node:path";
+import { join } from "node:path";
 
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
@@ -11,19 +11,21 @@ import { type Printer, chalk } from "@codemod-com/printer";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
+  TarService,
   buildCodemodSlug,
-  codemodNameRegex,
   doubleQuotify,
   execPromise,
   getEntryPath,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
+import { spawn } from "node:child_process";
+import { glob } from "glob";
 import { version as cliVersion } from "#/../package.json";
 import { getCodemod, publish } from "#api.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { getCurrentUserOrLogin } from "#utils.js";
+import { codemodDirectoryPath, getCurrentUserOrLogin } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
@@ -38,59 +40,26 @@ export const handlePublishCliCommand = async (options: {
       printer,
     });
 
-  let isSingleFile = false;
-  let codemodRcBuf: Buffer;
+  const tarService = new TarService(fs);
+  const formData = new FormData();
+  const excludedPaths = [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "**/.DS_Store",
+    "**/.gitignore",
+  ];
 
-  const codemodRcPath = join(source, ".codemodrc.json");
-  try {
-    codemodRcBuf = await fs.promises.readFile(codemodRcPath);
-  } catch (err) {
-    const { init } = await inquirer.prompt<{
-      init: boolean;
-    }>({
-      type: "confirm",
-      name: "init",
-      message:
-        "Could not find the .codemodrc.json file in the codemod directory. Would you like to initialize the codemod configuration now?",
-    });
+  const isSourceAFile = await fs.promises
+    .lstat(source)
+    .then((pathStat) => pathStat.isFile());
 
-    if (!init) {
-      throw new Error(
-        "To publish your codemod, please configure it first by running `codemod init` in the codemod directory.",
-      );
-    }
-
-    // Attempting to find index file to change the questions slightly
-    let mainFilePath: string | undefined;
-
-    const isSourceAFile = await fs.promises
-      .lstat(source)
-      .then((pathStat) => pathStat.isFile());
-
-    if (isSourceAFile) {
-      isSingleFile = true;
-      mainFilePath = basename(source);
-      source = dirname(source);
-    } else {
-      const { mainPath } = await inquirer.prompt<{
-        mainPath: string;
-      }>({
-        type: "input",
-        name: "mainPath",
-        message:
-          "If there is a main codemod file, please provide the relative path leading to it, e.g. `src/index.ts`.",
-        default: "empty",
-      });
-
-      if (mainPath !== "empty") {
-        mainFilePath = mainPath;
-      }
-    }
-
-    const resultPath = await handleInitCliCommand({
+  if (isSourceAFile) {
+    source = await handleInitCliCommand({
       printer,
       target: source,
-      mainFilePath: mainFilePath ?? "index.ts",
+      writeDirectory: join(codemodDirectoryPath, "temp"),
+      noLogs: true,
     });
 
     const { choice } = await inquirer.prompt<{ choice: string }>({
@@ -99,55 +68,57 @@ export const handlePublishCliCommand = async (options: {
       message:
         "Would you like to adjust the README description file before publishing?",
       choices: [
-        "Yes, I want to refine the README.md file and configuration before publishing",
-        "No, I want to publish without a description and configuration adjustments",
+        "Yes, refine the README.md file",
+        "No, publish without a description",
       ],
-      default: 0,
+      default: "No, publish without a description",
     });
 
     if (choice.startsWith("Yes")) {
-      // Good hint by Copilot, we can actually later open a buffer for user on the fly so that he does not leave the process if that's desired
-      // const editor = process.env.EDITOR ?? "vim";
-      // await execPromise(`${editor} ${join(resultPath, "README.md")}`);
+      const editor = process.env.EDITOR || process.env.VISUAL || "nano";
 
-      // Currently though, we just abort
-      printer.printConsoleMessage(
-        "info",
-        chalk.cyan(
-          "\nSelected to adjust the README.md file and configuration before publishing. Aborting...",
-        ),
-      );
-      return;
-    }
+      await new Promise<void>((resolve, reject) => {
+        const editorProcess = spawn(editor, [join(source, "README.md")], {
+          stdio: "inherit", // Inherit the stdio to allow the editor to interact with the terminal
+        });
 
-    if (!mainFilePath) {
-      printer.printConsoleMessage(
-        "info",
-        "Codemod initialization has been completed, however no main file was provided. Consider adjusting the main file for the codemod to become meaningful first.",
-      );
-      return;
-    }
+        editorProcess.on("error", (err) => {
+          reject(
+            new Error(`Failed to start editor '${editor}': ${err.message}`),
+          );
+        });
 
-    if (!resultPath) {
-      throw new Error(
-        "Unexpected error, codemod package initialization has been canceled.",
-      );
-    }
-
-    source = resultPath;
-
-    try {
-      codemodRcBuf = await fs.promises.readFile(
-        join(resultPath, ".codemodrc.json"),
-      );
-    } catch (err) {
-      throw new Error(
-        "Unexpected error, codemodrc file could not be found after codemod package initialization has been completed.",
-      );
+        editorProcess.on("exit", (code) => {
+          if (code !== 0) {
+            reject(new Error(`Editor process exited with code ${code}`));
+          } else {
+            resolve();
+          }
+        });
+      });
+    } else {
+      excludedPaths.push("**/README.md");
     }
   }
 
-  const formData = new FormData();
+  const codemodRcPath = join(source, ".codemodrc.json");
+
+  let codemodRcContents: string;
+  try {
+    codemodRcContents = await fs.promises.readFile(
+      join(source, ".codemodrc.json"),
+      { encoding: "utf-8" },
+    );
+  } catch (err) {
+    throw new Error(`Could not locate the .codemodrc.json file at ${source}.`);
+  }
+
+  let codemodRc: CodemodConfig;
+  try {
+    codemodRc = parseCodemodConfig(JSON.parse(codemodRcContents));
+  } catch (err) {
+    throw new Error(`Failed to parse the .codemodrc.json file at ${source}.`);
+  }
 
   const updateCodemodRC = async (newRc: CodemodConfig) => {
     try {
@@ -158,59 +129,7 @@ export const handlePublishCliCommand = async (options: {
     } catch (err) {
       //
     }
-
-    formData.delete(".codemodrc.json");
-
-    formData.append(
-      ".codemodrc.json",
-      new Blob([Buffer.from(JSON.stringify(newRc))]),
-    );
   };
-
-  // for single file codemods we dont want to upload boilerplate README
-  if (!isSingleFile) {
-    try {
-      const descriptionMdBuf = await fs.promises.readFile(
-        join(source, "README.md"),
-      );
-      formData.append("README.md", new Blob([descriptionMdBuf]));
-    } catch {
-      printer.printConsoleMessage(
-        "info",
-        chalk.cyan(
-          "Could not locate README file at",
-          `${chalk.bold(join(source, "README.md"))}.`,
-          "Skipping README upload...",
-        ),
-      );
-    }
-  }
-
-  formData.append(".codemodrc.json", new Blob([codemodRcBuf]));
-  const codemodRcData = codemodRcBuf.toString("utf-8");
-  const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
-
-  if (codemodRc.engine === "recipe") {
-    if (codemodRc.names.length < 2) {
-      throw new Error(
-        `The "names" field in .codemodrc.json must contain at least two names for a recipe codemod.`,
-      );
-    }
-
-    for (const name of codemodRc.names) {
-      if (!codemodNameRegex.test(name)) {
-        throw new Error(
-          `Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-        );
-      }
-    }
-  }
-
-  if (!codemodNameRegex.test(codemodRc.name)) {
-    throw new Error(
-      `The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-    );
-  }
 
   let codemodIsPublished = false;
   try {
@@ -247,8 +166,6 @@ export const handlePublishCliCommand = async (options: {
     if (mainFilePath === null) {
       throw new Error(errorText);
     }
-
-    const mainFileBuf = await fs.promises.readFile(mainFilePath);
   }
 
   if (!codemodRc.meta?.git) {
@@ -327,6 +244,28 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
+  const codemodFilePaths = await glob("**/*", {
+    cwd: source,
+    ignore: excludedPaths,
+    absolute: true,
+    dot: true,
+    nodir: true,
+  });
+
+  const codemodZip = await tarService.pack(
+    await Promise.all(
+      codemodFilePaths.map(async (path) => ({
+        name: path.replace(new RegExp(`.*${source}/`), ""),
+        data: await fs.promises.readFile(path),
+      })),
+    ),
+  );
+
+  formData.append(
+    "codemod.tar.gz",
+    new Blob([codemodZip], { type: "application/gzip" }),
+  );
+
   const publishSpinner = printer.withLoaderMessage(
     chalk.cyan(
       "Publishing the codemod using name from",
@@ -375,6 +314,7 @@ export const handlePublishCliCommand = async (options: {
     }
   } catch (error) {
     publishSpinner.fail();
+
     const message =
       error instanceof AxiosError
         ? error.response?.data.errorText
@@ -382,8 +322,15 @@ export const handlePublishCliCommand = async (options: {
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;
-    printer.printOperationMessage({ kind: "error", message: errorMessage });
-    return;
+
+    return printer.printOperationMessage({
+      kind: "error",
+      message: errorMessage,
+    });
+  } finally {
+    if (source.includes("temp")) {
+      await fs.promises.rm(source, { recursive: true, force: true });
+    }
   }
 
   telemetry.sendEvent({

@@ -1,4 +1,4 @@
-import type { Instance } from "../fastifyInstance";
+import type { Instance } from "../fastifyInstance.js";
 
 export const getVersionPath = (instance: Instance) =>
   instance.get("/version", async (_, reply) => {

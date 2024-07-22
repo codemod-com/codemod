@@ -1,8 +1,8 @@
 import type { FastifyPluginCallback } from "fastify";
-import { corsDisableHeaders } from "../dev-utils/cors";
-import { getRootPath } from "./root";
-import { getSendChatPath } from "./sendChat";
-import { getVersionPath } from "./version";
+import { corsDisableHeaders } from "../dev-utils/cors.js";
+import { getRootPath } from "./root.js";
+import { getSendChatPath } from "./sendChat.js";
+import { getVersionPath } from "./version.js";
 
 export const publicRoutes: FastifyPluginCallback = (instance, _opts, done) => {
   [getRootPath, getVersionPath].forEach((f) => f(instance));
