@@ -8,6 +8,7 @@ import * as semver from "semver";
 import { url, safeParse, string } from "valibot";
 
 import { type Printer, chalk } from "@codemod-com/printer";
+import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
@@ -254,14 +255,33 @@ export const handlePublishCliCommand = async (options: {
     nodir: true,
   });
 
-  const codemodZip = await tarService.pack(
-    await Promise.all(
-      codemodFilePaths.map(async (path) => ({
-        name: path.replace(new RegExp(`.*${source}/`), ""),
-        data: await fs.promises.readFile(path),
-      })),
-    ),
+  const codemodFileBuffers = await Promise.all(
+    codemodFilePaths.map(async (path) => ({
+      name: path.replace(new RegExp(`.*${source}/`), ""),
+      data: await fs.promises.readFile(path),
+    })),
   );
+
+  const builtExecutable = await getCodemodExecutable({
+    config: codemodRc,
+    path: source,
+  }).catch(() => null);
+
+  if (builtExecutable === null) {
+    throw new Error(
+      chalk(
+        "Failed to build the codemod executable.",
+        "Please ensure that the node_modules are installed and the codemod is correctly configured.",
+      ),
+    );
+  }
+
+  codemodFileBuffers.push({
+    name: BUILT_SOURCE_PATH,
+    data: Buffer.from(builtExecutable),
+  });
+
+  const codemodZip = await tarService.pack(codemodFileBuffers);
 
   formData.append(
     "codemod.tar.gz",

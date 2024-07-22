@@ -1,15 +1,8 @@
 import { createHash } from "node:crypto";
-import type { Stats } from "node:fs";
 import * as fs from "node:fs/promises";
 import { mkdir, readFile } from "node:fs/promises";
 import { join, parse as pathParse, resolve } from "node:path";
 
-import type { AxiosError } from "axios";
-import inquirer from "inquirer";
-import semver from "semver";
-import { flatten } from "valibot";
-
-import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type Codemod,
@@ -28,6 +21,10 @@ import {
   safeParseKnownEnginesCodemod,
   safeParseRecipeCodemod,
 } from "@codemod-com/utilities";
+import type { AxiosError } from "axios";
+import inquirer from "inquirer";
+import semver from "semver";
+import { flatten } from "valibot";
 
 import { getCodemodDownloadURI } from "#api.js";
 import { handleInitCliCommand } from "#commands/init.js";
@@ -115,12 +112,7 @@ export const fetchCodemod = async (options: {
     throw new Error("Codemod to run was not specified!");
   }
 
-  let sourceStat: Stats | null = null;
-  try {
-    sourceStat = await fs.lstat(nameOrPath);
-  } catch (err) {
-    //
-  }
+  const sourceStat = await fs.lstat(nameOrPath).catch(() => null);
 
   // Local codemod
   if (sourceStat !== null) {
@@ -191,12 +183,15 @@ export const fetchCodemod = async (options: {
     }
 
     // Codemod package
+    const codemodRcContent = await readFile(
+      join(nameOrPath, ".codemodrc.json"),
+      { encoding: "utf-8" },
+    ).catch(() => {
+      throw new Error(`Could not read .codemodrc.json file at ${nameOrPath}.`);
+    });
+
     let codemodConfig: CodemodConfig;
     try {
-      const codemodRcContent = await readFile(
-        join(nameOrPath, ".codemodrc.json"),
-        { encoding: "utf-8" },
-      );
       codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
     } catch (err) {
       throw new Error(
@@ -252,37 +247,40 @@ export const fetchCodemod = async (options: {
   // download codemod
   const userData = await getCurrentUserData();
 
-  let linkResponse: CodemodDownloadLinkResponse;
-  try {
-    linkResponse = await getCodemodDownloadURI(nameOrPath, userData?.token);
-  } catch (err) {
+  const linkResponse = await getCodemodDownloadURI(
+    nameOrPath,
+    userData?.token,
+  ).catch((err) => {
     spinner?.fail();
     throw err;
-  }
+  });
 
-  let downloadResult: Awaited<ReturnType<FileDownloadService["download"]>>;
+  const downloadPath = join(path, "codemod.tar.gz");
+  const configPath = join(path, ".codemodrc.json");
 
-  try {
-    downloadResult = await fileDownloadService.download({
+  const { data, cacheUsed } = await fileDownloadService
+    .download({
       url: linkResponse.link,
-      path: path,
-      cachePingPath: join(path, ".codemodrc.json"),
+      path: downloadPath,
+      cachePingPath: configPath,
+    })
+    .catch((err) => {
+      spinner?.fail();
+      throw new Error(
+        (err as AxiosError<{ error: string }>).response?.data?.error ??
+          "Error downloading codemod from the registry",
+      );
     });
-  } catch (err) {
-    spinner?.fail();
-    throw new Error(
-      (err as AxiosError<{ error: string }>).response?.data?.error ??
-        "Error downloading codemod from the registry",
-    );
-  }
 
-  const { data, cacheUsed } = downloadResult;
-
-  try {
-    await tarService.unpack(path, data);
-  } catch (err) {
-    spinner?.fail();
-    throw new Error((err as Error).message ?? "Error unpacking codemod");
+  // If cache was used, the codemod is already unpacked
+  if (!cacheUsed) {
+    try {
+      await tarService.unpack(path, data);
+      await fs.unlink(downloadPath);
+    } catch (err) {
+      spinner?.fail();
+      throw new Error((err as Error).message ?? "Error unpacking codemod");
+    }
   }
 
   spinner?.stopAndPersist({
@@ -294,13 +292,19 @@ export const fetchCodemod = async (options: {
     ),
   });
 
+  // TODO: move to re-usable function
+  const codemodRcContent = await readFile(configPath, {
+    encoding: "utf-8",
+  }).catch(() => {
+    throw new Error(`Could not read .codemodrc.json file at ${nameOrPath}.`);
+  });
+
   let config: CodemodConfig;
   try {
-    const configBuf = await readFile(join(path, ".codemodrc.json"));
-    config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
+    config = parseCodemodConfig(JSON.parse(codemodRcContent));
   } catch (err) {
     throw new Error(
-      `Error parsing config for codemod ${printableName}: ${err}`,
+      `Codemod directory is of incorrect structure at ${nameOrPath}`,
     );
   }
 

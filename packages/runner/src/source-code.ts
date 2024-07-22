@@ -1,4 +1,4 @@
-import nodePath, { join } from "node:path";
+import nodePath, { join, resolve } from "node:path";
 
 import esbuild from "esbuild";
 import tsmorph from "ts-morph";
@@ -49,12 +49,22 @@ export const getTransformer = (source: string) => {
             : null;
 };
 
-export const getCodemodExecutable = async (codemod: Codemod) => {
+export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
+
+export const getCodemodExecutable = async (
+  codemod: Pick<Codemod, "config" | "path">,
+) => {
+  const outputFilePath = join(resolve(codemod.path), BUILT_SOURCE_PATH);
+  try {
+    return await readFile(outputFilePath, { encoding: "utf8" });
+  } catch {
+    // continue
+  }
+
   const { path: entryPoint, error } = await getEntryPath({
     codemodRc: codemod.config,
     source: codemod.path,
   });
-
   if (entryPoint === null) {
     throw new Error(error);
   }
@@ -71,8 +81,6 @@ export const getCodemodExecutable = async (codemod: Codemod) => {
 
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
-  const outputFilePath = join(codemod.path, "./dist/index.cjs");
-
   const buildOptions: Parameters<typeof esbuild.build>[0] = {
     entryPoints: [entryPoint],
     bundle: true,
@@ -84,16 +92,18 @@ export const getCodemodExecutable = async (codemod: Codemod) => {
     legalComments: "inline",
     outfile: outputFilePath,
     write: false, // to the in-memory file system
+    logLevel: "error",
   };
 
   const { outputFiles } = await esbuild.build(buildOptions);
 
-  const contents =
-    outputFiles?.find((file) => file.path === outputFilePath)?.contents ?? null;
+  const sourceCode =
+    outputFiles?.find((file) => file.path.endsWith(outputFilePath))?.text ??
+    null;
 
-  if (contents === null) {
+  if (sourceCode === null) {
     throw new Error(`Could not find ${outputFilePath} in output files`);
   }
 
-  return contents.toString();
+  return sourceCode;
 };
