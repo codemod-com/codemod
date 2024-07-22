@@ -120,6 +120,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://fujino.dev"><img src="https://avatars.githubusercontent.com/u/7889778?v=4?s=100" width="100px;" alt="Shinya Fujino"/><br /><sub><b>Shinya Fujino</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=morinokami" title="Documentation">📖</a> <a href="https://github.com/codemod-com/codemod/commits?author=morinokami" title="Code">💻</a> <a href="https://github.com/codemod-com/codemod/issues?q=author%3Amorinokami" title="Bug reports">🐛</a></td>
       <td align="center" valign="top" width="14.28%"><a href="http://coderaiser.github.io"><img src="https://avatars.githubusercontent.com/u/1573141?v=4?s=100" width="100px;" alt="coderaiser"/><br /><sub><b>coderaiser</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/commits?author=coderaiser" title="Code">💻</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://zachwolf.com"><img src="https://avatars.githubusercontent.com/u/606237?v=4?s=100" width="100px;" alt="Zach Wolf"/><br /><sub><b>Zach Wolf</b></sub></a><br /><a href="https://github.com/codemod-com/codemod/issues?q=author%3Azachwolf" title="Bug reports">🐛</a></td>
     </tr>
   </tbody>
 </table>
