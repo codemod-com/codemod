@@ -110,6 +110,10 @@ const services: Array<{
 const systemHealthCheckCron = new CronJob(
   "*/15 * * * *",
   async () => {
+    if (environment.NODE_ENV === "development") {
+      return;
+    }
+
     const token = process.env.SLACK_TOKEN ?? "";
     const channel = process.env.SLACK_CHANNEL ?? "";
     const web = new WebClient(token);
