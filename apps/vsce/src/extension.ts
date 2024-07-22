@@ -1,12 +1,3 @@
-import { createHash } from "node:crypto";
-import { homedir } from "node:os";
-import { join } from "node:path";
-import {
-  PIRANHA_LANGUAGES,
-  piranhaLanguageSchema,
-} from "@codemod-com/utilities";
-
-import { parse } from "valibot";
 import * as vscode from "vscode";
 
 import { createClearStateCommand } from "./commands/clearStateCommand";
@@ -205,62 +196,6 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "codemod.executeAsPiranhaRule",
-      async (configurationUri: vscode.Uri) => {
-        const fileStat = await vscode.workspace.fs.stat(configurationUri);
-        const configurationUriIsDirectory = Boolean(
-          fileStat.type & vscode.FileType.Directory,
-        );
-
-        if (!configurationUriIsDirectory) {
-          throw new Error(
-            "To execute a configuration URI as a Piranha rule, it has to be a directory",
-          );
-        }
-
-        const targetUri = vscode.workspace.workspaceFolders?.[0]?.uri ?? null;
-
-        if (targetUri == null) {
-          throw new Error("No workspace has been opened.");
-        }
-
-        const { storageUri } = context;
-
-        if (!storageUri) {
-          throw new Error("No storage URI, aborting the command.");
-        }
-
-        const quickPick =
-          (await vscode.window.showQuickPick(PIRANHA_LANGUAGES, {
-            title: "Select the language to run Piranha against",
-          })) ?? null;
-
-        if (quickPick == null) {
-          throw new Error("You must specify the language");
-        }
-
-        const language = parse(piranhaLanguageSchema, quickPick);
-
-        messageBus.publish({
-          kind: MessageKind.executeCodemodSet,
-          command: {
-            kind: "executePiranhaRule",
-            configurationUri,
-            language,
-            name: configurationUri.fsPath,
-          },
-          happenedAt: String(Date.now()),
-          caseHashDigest: buildCaseHash(),
-          storageUri,
-          targetUri,
-          targetUriIsDirectory: configurationUriIsDirectory,
-        });
-      },
-    ),
-  );
-
-  context.subscriptions.push(
-    vscode.commands.registerCommand(
       "codemod.executeCodemod",
       async (targetUri: vscode.Uri, codemodHash: CodemodHash) => {
         try {
@@ -290,31 +225,12 @@ export async function activate(context: vscode.ExtensionContext) {
             store.getState(),
             codemodHash as unknown as CodemodNodeHashDigest,
           );
-          const command: Command =
-            // @ts-ignore TODO: Remove this logic in the next PR
-            codemod.kind === "piranhaRule"
-              ? {
-                  kind: "executePiranhaRule",
-                  configurationUri: vscode.Uri.file(
-                    join(
-                      homedir(),
-                      ".codemod",
-                      createHash("ripemd160")
-                        .update(codemod.name)
-                        .digest("base64url"),
-                    ),
-                  ),
-                  // @ts-ignore TODO: Remove this logic in the next PR
-                  language: codemod.language,
-                  name: codemod.name,
-                  arguments: args,
-                }
-              : {
-                  kind: "executeCodemod",
-                  codemodHash,
-                  name: codemod.name,
-                  arguments: args,
-                };
+          const command: Command = {
+            kind: "executeCodemod",
+            codemodHash,
+            name: codemod.name,
+            arguments: args,
+          };
 
           store.dispatch(
             actions.setFocusedCodemodHashDigest(

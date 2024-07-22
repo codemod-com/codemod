@@ -26,14 +26,14 @@ export const buildArguments = (
         ])
       : [];
 
-  if (command.kind === "executePiranhaRule") {
-    args.push("-i", buildCrossplatformArg(message.targetUri.fsPath));
-    args.push("-c", buildCrossplatformArg(command.configurationUri.fsPath));
-    args.push("-o", buildCrossplatformArg(storageUri.fsPath));
-    args.push("-l", command.language);
-    args.push(...codemodArguments);
-    return args;
-  }
+  // if (command.kind === "executePiranhaRule") {
+  //   args.push("-i", buildCrossplatformArg(message.targetUri.fsPath));
+  //   args.push("-c", buildCrossplatformArg(command.configurationUri.fsPath));
+  //   args.push("-o", buildCrossplatformArg(storageUri.fsPath));
+  //   args.push("-l", command.language);
+  //   args.push(...codemodArguments);
+  //   return args;
+  // }
 
   if (command.kind === "executeCodemod") {
     args.push(buildCrossplatformArg(command.name));
