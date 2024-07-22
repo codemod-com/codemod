@@ -260,7 +260,6 @@ catalog:
     ts-loader: ^9.4.2
     ts-node-dev: ^2.0.0
     tslib: 2.4.1
-    tsup: ^8.1.0
     umd-compat-loader: ^2.1.2
     unified: ^10.1.2
     unist-util-filter: ^5.0.1

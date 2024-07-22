@@ -1,3 +1,5 @@
+import Fuse from "fuse.js";
+
 import type { CodemodListResponse } from "@codemod-com/api-types";
 import {
   type Codemod,
@@ -11,8 +13,6 @@ import {
   type AllEngines,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-
-import Fuse from "fuse.js";
 
 import { CodemodNotFoundError } from "../types/errors.js";
 

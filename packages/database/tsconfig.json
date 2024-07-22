@@ -1,16 +1,16 @@
 {
-  "include": ["./src/**/*", "tsup.config.ts"],
+  "include": ["./src/**/*"],
   "exclude": ["node_modules"],
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "./src",
-    "outDir": "./dist",
+    "outDir": "./dist"
 
-    "module": "ESNext",
-    "target": "ESNext",
-    "moduleResolution": "Node",
+    // "module": "ESNext",
+    // "target": "ESNext",
+    // "moduleResolution": "Node",
 
-    "incremental": false
+    // "incremental": false
   }
 }

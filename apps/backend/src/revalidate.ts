@@ -1,5 +1,6 @@
 import { buildCodemodSlug } from "@codemod-com/utilities";
-import type { Environment } from "./schemata/env";
+
+import type { Environment } from "./schemata/env.js";
 
 export const buildRevalidateHelper =
   (environment: Environment) => async (name: string) => {

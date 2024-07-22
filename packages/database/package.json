@@ -8,7 +8,7 @@
   "types": "./dist/index.d.ts",
   "files": ["dist/**"],
   "scripts": {
-    "build": "pnpm run db:generate && tsup",
+    "build": "pnpm run db:generate && tsc",
     "db:migrate:create": "prisma migrate dev",
     "db:migrate:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
@@ -20,8 +20,7 @@
   },
   "dependencies": {
     "@prisma/client": "catalog:",
-    "prisma-json-types-generator": "^3.0.4",
-    "tsup": "catalog:"
+    "prisma-json-types-generator": "^3.0.4"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",

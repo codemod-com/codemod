@@ -69,16 +69,6 @@ export const getCodemodExecutable = async (codemod: Codemod) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  let licenseBuffer: string;
-
-  try {
-    licenseBuffer = (await readFile(join(codemod.path, "LICENSE"), "utf8"))
-      .replace(/\/\*/gm, "\\/*")
-      .replace(/\*\//gm, "*\\/");
-  } catch {
-    licenseBuffer = "";
-  }
-
   const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
 
   const outputFilePath = join(codemod.path, "./dist/index.cjs");
@@ -105,12 +95,5 @@ export const getCodemodExecutable = async (codemod: Codemod) => {
     throw new Error(`Could not find ${outputFilePath} in output files`);
   }
 
-  const buffer = Buffer.concat([
-    Buffer.from("/*! @license\n"),
-    Buffer.from(licenseBuffer),
-    Buffer.from("*/\n"),
-    contents,
-  ]);
-
-  return buffer.toString();
+  return contents.toString();
 };
