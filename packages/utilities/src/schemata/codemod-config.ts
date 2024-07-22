@@ -233,15 +233,6 @@ const configJsonBaseSchema = v.object({
     }),
   ),
   entry: v.optional(v.string("Codemod entry point path has to be a string.")),
-  // build: v.optional(
-  //   v.object(
-  //     {
-  //       input: v.optional(v.string("Build input path has to be a string.")),
-  //       output: v.optional(v.string("Build output path has to be a string.")),
-  //     },
-  //     `Invalid build definition. "build" has to be an object.`,
-  //   ),
-  // ),
 });
 
 export const knownEnginesCodemodConfigSchema = v.merge([
