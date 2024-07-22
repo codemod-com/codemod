@@ -1,9 +1,9 @@
 import chalk from "chalk";
 import cliProgress from "cli-progress";
 import ora, { type Ora } from "ora";
-import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { ConsoleKind } from "./schemata/console-kind.js";
 import type { OperationMessage, ProgressMessage } from "./schemata/messages.js";
-import type { WorkerThreadMessage } from "./schemata/workerThreadMessages.js";
+import type { WorkerThreadMessage } from "./schemata/worker-thread.js";
 
 export class Printer {
   protected progressBar: cliProgress.SingleBar | null = null;

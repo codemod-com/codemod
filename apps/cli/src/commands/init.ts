@@ -1,6 +1,10 @@
 import { existsSync } from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, extname, join, resolve } from "node:path";
+
+import inquirer from "inquirer";
+import terminalLink from "terminal-link";
+
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type KnownEngines,
@@ -10,10 +14,8 @@ import {
   execPromise,
   getCodemodProjectFiles,
 } from "@codemod-com/utilities";
-import inquirer from "inquirer";
-import terminalLink from "terminal-link";
-import { getCurrentUserData } from "../utils.js";
-// import { handleBuildCliCommand } from "./build.js";
+
+import { getCurrentUserData } from "#utils.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",
@@ -234,19 +236,6 @@ export const handleInitCliCommand = async (options: {
   if (mainFilePath) {
     return codemodBaseDir;
   }
-
-  // const isJsCodemod =
-  //   answers?.engine === "jscodeshift" ||
-  //   answers?.engine === "ts-morph" ||
-  //   answers?.engine === "filemod" ||
-  //   answers === null;
-  // if (isJsCodemod) {
-  //   await handleBuildCliCommand({
-  //     printer,
-  //     source: codemodBaseDir,
-  //     silent: true,
-  //   });
-  // }
 
   const howToRunText = chalk(
     `Run ${chalk.bold(doubleQuotify(`codemod --source ${codemodBaseDir}`))}`,

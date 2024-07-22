@@ -1,3 +1,5 @@
+import Axios, { type RawAxiosRequestHeaders } from "axios";
+
 import type {
   CodemodDownloadLinkResponse,
   CodemodListResponse,
@@ -6,8 +8,6 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
-import { Octokit } from "@octokit/rest";
-import Axios, { type RawAxiosRequestHeaders } from "axios";
 
 export const getCLIAccessToken = async (
   accessToken: string,

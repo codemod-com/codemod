@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { isMainThread } from "node:worker_threads";
-import { writeLogs } from "./utils.js";
+
+import { writeLogs } from "#utils.js";
 
 if (isMainThread) {
   import("./main.js")

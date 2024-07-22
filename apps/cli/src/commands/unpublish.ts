@@ -1,12 +1,14 @@
+import { AxiosError } from "axios";
+
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   doubleQuotify,
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import { AxiosError } from "axios";
-import { unpublish } from "../apis.js";
-import { getCurrentUserOrLogin } from "../utils.js";
+
+import { unpublish } from "#api.js";
+import { getCurrentUserOrLogin } from "#utils.js";
 
 export const handleUnpublishCliCommand = async (options: {
   printer: Printer;

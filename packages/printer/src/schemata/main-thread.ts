@@ -1,8 +1,4 @@
 import {
-  argumentRecordSchema,
-  engineOptionsSchema,
-} from "@codemod-com/utilities";
-import {
   type Output,
   boolean,
   literal,
@@ -12,6 +8,11 @@ import {
   string,
   union,
 } from "valibot";
+
+import {
+  argumentRecordSchema,
+  engineOptionsSchema,
+} from "@codemod-com/utilities";
 
 const mainThreadMessageSchema = union([
   object({

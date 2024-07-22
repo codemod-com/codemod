@@ -1,6 +1,5 @@
 export * from "./schemata/callbacks.js";
-export * from "./schemata/runSettingsSchema.js";
-export * from "./schemata/flowSettingsSchema.js";
+export * from "./schemata/flow-settings.js";
 
 export * from "./source-code.js";
 export * from "./runner.js";

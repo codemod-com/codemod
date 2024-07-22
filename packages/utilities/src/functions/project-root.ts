@@ -1,5 +1,6 @@
 import { constants, access } from "node:fs/promises";
 import { dirname, join } from "node:path";
+
 import { execPromise } from "./node.js";
 
 export type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
@@ -86,6 +87,7 @@ export async function getProjectRootPathAndPackageManager(
           constants.R_OK | constants.W_OK,
         );
 
+        // biome-ignore lint: assertion is correct here
         detectedPackageManager = lockFilesToPmMap[lockFile]!;
         if (rootPath === null) {
           rootPath = currentDir;

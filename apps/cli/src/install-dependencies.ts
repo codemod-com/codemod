@@ -1,6 +1,10 @@
 import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join, relative, resolve } from "node:path";
+
+import { glob } from "glob";
+import inquirer from "inquirer";
+
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type CodemodConfig,
@@ -9,8 +13,6 @@ import {
   extractLibNameAndVersion,
   getProjectRootPathAndPackageManager,
 } from "@codemod-com/utilities";
-import { glob } from "glob";
-import inquirer from "inquirer";
 
 type PackageManager = "yarn" | "npm" | "pnpm" | "bun";
 

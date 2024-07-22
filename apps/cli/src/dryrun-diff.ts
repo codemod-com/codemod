@@ -1,8 +1,11 @@
 import { basename } from "node:path";
-import { boxen, chalk } from "@codemod-com/printer";
+
 import blessed from "blessed";
 import * as diff from "diff";
-import type { NamedFileCommand } from "./types/commands.js";
+
+import { boxen, chalk } from "@codemod-com/printer";
+
+import type { NamedFileCommand } from "#types/commands.js";
 
 interface DiffResult {
   filename: string;
@@ -48,12 +51,7 @@ export const getDiff = (command: NamedFileCommand): DiffResult => {
   const formattedDiff = diffResult
     .map((part) => {
       const color = part.added ? "green" : part.removed ? "red" : "grey";
-
       return chalk[color](part.value);
-      // return part.value
-      //   .split("\n")
-      //   .map((line) => chalk[color](line))
-      //   .join("\n");
     })
     .join("");
 

@@ -1,11 +1,13 @@
-import type { Printer } from "@codemod-com/printer";
-import type { TelemetrySender } from "@codemod-com/telemetry";
+import { randomBytes } from "node:crypto";
+
 import { type fs, vol } from "memfs";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { randomBytes } from "node:crypto";
-import type { GlobalArgvOptions, RunArgvOptions } from "../buildOptions.js";
-import { handleRunCliCommand } from "../commands/run.js";
+import type { Printer } from "@codemod-com/printer";
+import type { TelemetrySender } from "@codemod-com/telemetry";
+
+import { handleRunCliCommand } from "#commands/run.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 
 const mockedArgs = {
   _: ["recipe1"],
@@ -90,7 +92,7 @@ vi.mock("../downloadCodemod.ts", async () => {
   };
 });
 
-vi.mock("../fileDownloadService.ts");
+vi.mock("../file-download.ts");
 vi.mock("node:fs/promises", async () => {
   const memfs: { fs: typeof fs } = await vi.importActual("memfs");
 

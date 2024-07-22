@@ -8,7 +8,8 @@ import {
   union,
   unknown,
 } from "valibot";
-import { consoleKindSchema } from "./consoleKindSchema.js";
+
+import { consoleKindSchema } from "./console-kind.js";
 
 const workerThreadMessageSchema = union([
   object({

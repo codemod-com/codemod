@@ -1,6 +1,6 @@
 import { extname } from "node:path";
 import vm from "node:vm";
-import jscodeshift, { type API } from "jscodeshift";
+import jscodeshift, { type Parser, type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
 
 import type { ConsoleKind } from "@codemod-com/printer";
@@ -16,7 +16,7 @@ import { defaultParser } from "#parsers/jscodeshift.js";
 import { isTheSameData } from "#utils.js";
 import { buildVmConsole } from "./common.js";
 
-export const buildApi = (parser: string): API => ({
+export const buildApi = (parser: string | Parser): API => ({
   j: jscodeshift.withParser(parser),
   jscodeshift: jscodeshift.withParser(parser),
   stats: () => {},
@@ -81,7 +81,7 @@ export const runJscodeshiftCodemod = (
   oldPath: string,
   oldData: string,
   safeArgumentRecord: ArgumentRecord,
-  engineOptions: EngineOptions & { engine: "jscodeshift" },
+  engineOptions: (EngineOptions & { engine: "jscodeshift" }) | null,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
 ): readonly FileCommand[] => {
   const commands: FileCommand[] = [];

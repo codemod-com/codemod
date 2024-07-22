@@ -20,12 +20,12 @@ import {
 } from "@codemod-com/utilities";
 
 import { version as cliVersion } from "#/../package.json";
-import type { TelemetryEvent } from "#analytics/telemetry.js";
-import type { GlobalArgvOptions, RunArgvOptions } from "#buildOptions.js";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod } from "#fetch-codemod.js";
-import { FileDownloadService } from "#fileDownloadService.js";
-import { handleInstallDependencies } from "#handleInstallDependencies.js";
+import { FileDownloadService } from "#file-download.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
+import { handleInstallDependencies } from "#install-dependencies.js";
+import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { writeLogs } from "#utils.js";
 
@@ -93,7 +93,6 @@ export const handleRunCliCommand = async (options: {
 }) => {
   const { printer, args, telemetry, onExit } = options;
 
-  // const runSettings = parseRunSettings(args);
   const flowSettings = parseFlowSettings(args, printer);
 
   if (

@@ -1,6 +1,12 @@
 import { createHash } from "node:crypto";
 import type * as INodeFs from "node:fs";
 import { basename, dirname, join } from "node:path";
+
+import { glob } from "glob";
+import type { API } from "jscodeshift";
+import jscodeshift from "jscodeshift";
+import type { IFs } from "memfs";
+
 import {
   type GlobArguments,
   type PathAPI,
@@ -8,10 +14,6 @@ import {
   type UnifiedEntry,
   UnifiedFileSystem,
 } from "@codemod-com/filemod";
-import { glob } from "glob";
-import type { API } from "jscodeshift";
-import jscodeshift from "jscodeshift";
-import type { IFs } from "memfs";
 
 export const buildApi = (parser: string | undefined): API => ({
   j: parser ? jscodeshift.withParser(parser) : jscodeshift,

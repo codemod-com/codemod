@@ -1,10 +1,12 @@
-import { prisma } from "@codemod-com/database";
 import { WebClient } from "@slack/web-api";
 import axios from "axios";
 import { CronJob } from "cron";
 import WebSocket from "ws";
-import { PostHogService } from "./services/PostHogService";
-import { environment } from "./util";
+
+import { prisma } from "@codemod-com/database";
+
+import { PostHogService } from "./services/PostHogService.js";
+import { environment } from "./util.js";
 
 // TODO: Move crons into independent CronService
 

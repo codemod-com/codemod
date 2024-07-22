@@ -15,14 +15,14 @@ import {
   codemodNameRegex,
   doubleQuotify,
   execPromise,
-  extractMainScriptPath,
+  getEntryPath,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 
 import { version as cliVersion } from "#/../package.json";
-import type { TelemetryEvent } from "#analytics/telemetry.js";
-import { getCodemod, publish } from "#apis.js";
+import { getCodemod, publish } from "#api.js";
 import { handleInitCliCommand } from "#commands/init.js";
+import type { TelemetryEvent } from "#telemetry.js";
 import { getCurrentUserOrLogin } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
@@ -240,8 +240,10 @@ export const handlePublishCliCommand = async (options: {
   }
 
   if (codemodRc.engine !== "recipe") {
-    const { path: mainFilePath, error: errorText } =
-      await extractMainScriptPath({ codemodRc, source });
+    const { path: mainFilePath, error: errorText } = await getEntryPath({
+      codemodRc,
+      source,
+    });
     if (mainFilePath === null) {
       throw new Error(errorText);
     }

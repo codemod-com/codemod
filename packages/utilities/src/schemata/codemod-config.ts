@@ -1,8 +1,9 @@
 import semver from "semver";
 import { type Input, type Issues, type Output, ValiError } from "valibot";
 import * as v from "valibot";
-import { isNeitherNullNorUndefined } from "../functions/validationMethods.js";
-import { argumentSchema } from "./argumentRecordSchema.js";
+
+import { isNeitherNullNorUndefined } from "../functions/validation.js";
+import { argumentSchema } from "./argument-record.js";
 
 const getFirstValibotIssue = (issues: Issues) => {
   let reasonableError: string | undefined;

@@ -1,25 +1,13 @@
-// import { readFile } from "node:fs/promises";
 import nodePath, { join } from "node:path";
 
 import esbuild from "esbuild";
-// import ts from "typescript";
+import tsmorph from "ts-morph";
 
 import type { Filemod } from "@codemod-com/filemod";
-import { type Codemod, extractMainScriptPath } from "@codemod-com/utilities";
+import { type Codemod, getEntryPath } from "@codemod-com/utilities";
 
 import { readFile } from "node:fs/promises";
 import type { Dependencies } from "#engines/filemod.js";
-
-// export const transpile = (source: string): string => {
-//   const { outputText } = ts.transpileModule(source, {
-//     compilerOptions: {
-//       target: ts.ScriptTarget.ES5,
-//       module: ts.ModuleKind.CommonJS,
-//     },
-//   });
-
-//   return outputText;
-// };
 
 export const getTransformer = (source: string) => {
   type Exports =
@@ -34,13 +22,9 @@ export const getTransformer = (source: string) => {
 
   const module = { exports: {} as Exports };
   const _require = (name: string) => {
-    // if (name === "ts-morph") {
-    //   return tsmorph;
-    // }
-
-    // if (name === "jscodeshift") {
-    //   return jscodeshift;
-    // }
+    if (name === "ts-morph") {
+      return tsmorph;
+    }
 
     if (name === "node:path") {
       return nodePath;
@@ -66,7 +50,7 @@ export const getTransformer = (source: string) => {
 };
 
 export const getCodemodExecutable = async (codemod: Codemod) => {
-  const { path: entryPoint, error } = await extractMainScriptPath({
+  const { path: entryPoint, error } = await getEntryPath({
     codemodRc: codemod.config,
     source: codemod.path,
   });
@@ -81,80 +65,52 @@ export const getCodemodExecutable = async (codemod: Codemod) => {
     entryPoint.endsWith(".cjs") ||
     entryPoint.endsWith(".mjs");
 
-  if (requiresBuild) {
-    let licenseBuffer: string;
-
-    try {
-      licenseBuffer = (await readFile(join(codemod.path, "LICENSE"), "utf8"))
-        .replace(/\/\*/gm, "\\/*")
-        .replace(/\*\//gm, "*\\/");
-    } catch {
-      licenseBuffer = "";
-    }
-
-    const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
-
-    const outputFilePath = join(codemod.path, "./dist/index.cjs");
-
-    const buildOptions: Parameters<typeof esbuild.build>[0] = {
-      entryPoints: [entryPoint],
-      bundle: true,
-      external: EXTERNAL_DEPENDENCIES,
-      platform: "node",
-      minify: true,
-      minifyWhitespace: true,
-      format: "cjs",
-      legalComments: "inline",
-      outfile: outputFilePath,
-      write: false, // to the in-memory file system
-    };
-
-    const { outputFiles } = await esbuild.build(buildOptions);
-
-    const contents =
-      outputFiles?.find((file) => file.path === outputFilePath)?.contents ??
-      null;
-
-    if (contents === null) {
-      throw new Error(`Could not find ${outputFilePath} in output files`);
-    }
-
-    const buffer = Buffer.concat([
-      Buffer.from("/*! @license\n"),
-      Buffer.from(licenseBuffer),
-      Buffer.from("*/\n"),
-      contents,
-    ]);
-
-    return buffer.toString();
+  if (!requiresBuild) {
+    return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  return "";
+  let licenseBuffer: string;
 
-  // const codemodSource = await readFile(indexPath, {
-  //   encoding: "utf8",
-  // });
+  try {
+    licenseBuffer = (await readFile(join(codemod.path, "LICENSE"), "utf8"))
+      .replace(/\/\*/gm, "\\/*")
+      .replace(/\*\//gm, "*\\/");
+  } catch {
+    licenseBuffer = "";
+  }
 
-  // return indexPath.endsWith(".ts")
-  //   ? transpile(codemodSource.toString())
-  //   : codemodSource.toString();
+  const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
+
+  const outputFilePath = join(codemod.path, "./dist/index.cjs");
+
+  const buildOptions: Parameters<typeof esbuild.build>[0] = {
+    entryPoints: [entryPoint],
+    bundle: true,
+    external: EXTERNAL_DEPENDENCIES,
+    platform: "node",
+    minify: true,
+    minifyWhitespace: true,
+    format: "cjs",
+    legalComments: "inline",
+    outfile: outputFilePath,
+    write: false, // to the in-memory file system
+  };
+
+  const { outputFiles } = await esbuild.build(buildOptions);
+
+  const contents =
+    outputFiles?.find((file) => file.path === outputFilePath)?.contents ?? null;
+
+  if (contents === null) {
+    throw new Error(`Could not find ${outputFilePath} in output files`);
+  }
+
+  const buffer = Buffer.concat([
+    Buffer.from("/*! @license\n"),
+    Buffer.from(licenseBuffer),
+    Buffer.from("*/\n"),
+    contents,
+  ]);
+
+  return buffer.toString();
 };
-
-// export const getCodemodSourceCode = async (codemod: Codemod) => {
-//   const { path: indexPath, error } = await extractMainScriptPath({
-//     codemodRc: codemod.config,
-//     source: codemod.path,
-//   });
-
-//   if (indexPath === null) {
-//     throw new Error(error);
-//   }
-
-//   const codemodSource = await readFile(indexPath, {
-//     encoding: "utf8",
-//   });
-
-//   return indexPath.endsWith(".ts")
-//     ? transpile(codemodSource.toString())
-//     : codemodSource.toString();
-// };

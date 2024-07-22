@@ -1,17 +1,20 @@
 import { execSync } from "node:child_process";
 import { dirname, extname } from "node:path";
-import { type Printer, chalk } from "@codemod-com/printer";
-import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+
 import open from "open";
 import { Project } from "ts-morph";
-import { createCodeDiff } from "../apis.js";
+
+import { type Printer, chalk } from "@codemod-com/printer";
+import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+
+import { createCodeDiff } from "#api.js";
 import {
   findLastlyModifiedFile,
   findModifiedFiles,
   getGitDiffForFile,
   getLatestCommitHash,
   isFileInGitDirectory,
-} from "../gitCommands.js";
+} from "#git.js";
 
 // remove all special characters and whitespaces
 const removeSpecialCharacters = (str: string) =>

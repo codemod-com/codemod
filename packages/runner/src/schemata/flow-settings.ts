@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { type Printer, chalk } from "@codemod-com/printer";
+
 import {
   type Output,
   array,
@@ -11,6 +11,8 @@ import {
   parse,
   string,
 } from "valibot";
+
+import { type Printer, chalk } from "@codemod-com/printer";
 
 export const DEFAULT_EXCLUDE_PATTERNS = [
   "*.d.ts",

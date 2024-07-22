@@ -1,9 +1,11 @@
-import { type Printer, chalk } from "@codemod-com/printer";
-import { doubleQuotify } from "@codemod-com/utilities";
 import columnify from "columnify";
 import terminalLink from "terminal-link";
-import { getCodemodList } from "../apis.js";
-import { getCurrentUserOrLogin } from "../utils.js";
+
+import { type Printer, chalk } from "@codemod-com/printer";
+import { doubleQuotify } from "@codemod-com/utilities";
+
+import { getCodemodList } from "#api.js";
+import { getCurrentUserOrLogin } from "#utils.js";
 
 export const handleListNamesCommand = async (options: {
   printer: Printer;

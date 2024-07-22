@@ -1,6 +1,7 @@
+import axios, { isAxiosError, type AxiosResponse } from "axios";
+
 import type { Printer } from "@codemod-com/printer";
 import type { FileSystem } from "@codemod-com/utilities";
-import axios, { isAxiosError, type AxiosResponse } from "axios";
 
 export class FileDownloadService {
   public constructor(

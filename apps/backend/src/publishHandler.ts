@@ -1,6 +1,10 @@
 import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import axios from "axios";
+import type { RouteHandler } from "fastify";
+import * as semver from "semver";
+
 import {
   type ApiResponse,
   CODEMOD_CONFIG_INVALID,
@@ -22,11 +26,9 @@ import {
   isNeitherNullNorUndefined,
   parseCodemodConfig,
 } from "@codemod-com/utilities";
-import axios from "axios";
-import type { RouteHandler } from "fastify";
-import * as semver from "semver";
-import { buildRevalidateHelper } from "./revalidate";
-import { environment } from "./util";
+
+import { buildRevalidateHelper } from "./revalidate.js";
+import { environment } from "./util.js";
 
 export type PublishHandlerResponse = ApiResponse<PublishResponse>;
 

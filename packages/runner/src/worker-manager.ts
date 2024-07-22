@@ -13,7 +13,7 @@ import type {
   KnownEnginesCodemod,
 } from "@codemod-com/utilities";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
-import type { FlowSettings } from "./schemata/flowSettingsSchema.js";
+import type { FlowSettings } from "./schemata/flow-settings.js";
 
 export class WorkerManager {
   private __idleWorkerIds: number[] = [];

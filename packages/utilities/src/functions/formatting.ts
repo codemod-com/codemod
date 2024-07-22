@@ -1,4 +1,5 @@
 import { extname } from "node:path";
+
 import type { Options } from "prettier";
 
 const parserMappers = new Map<string, Options["parser"]>([
@@ -94,3 +95,9 @@ export const removeLineBreaksAtStartAndEnd = (str: string) =>
   str
     .replace(/^\n+/, "") // remove all occurrences of `\n` at the start
     .replace(/\n+$/, ""); // remove all occurrences of `\n` at the end
+
+export const buildCodemodSlug = (name: string) =>
+  name
+    .replaceAll("@", "")
+    .split(/[\/ ,.-]/)
+    .join("-");

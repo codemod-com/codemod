@@ -2,7 +2,28 @@ import { randomBytes } from "node:crypto";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import { getCurrentUserData } from "../utils.js";
+
+import { getCurrentUserData } from "#utils.js";
+
+export type TelemetryEvent =
+  | Readonly<{
+      kind: "codemodExecuted";
+      fileCount: number;
+      executionId: string;
+      codemodName: string;
+      cliVersion: string;
+    }>
+  | Readonly<{
+      kind: "failedToExecuteCommand";
+      commandName: string;
+      cliVersion: string;
+    }>
+  | Readonly<{
+      kind: "codemodPublished";
+      codemodName: string;
+      version: string;
+      cliVersion: string;
+    }>;
 
 /**
  * We need to assign unique identifier for users that are not signed in for correct telemetry tracking

@@ -30,10 +30,10 @@ import {
   safeParseRecipeCodemod,
 } from "@codemod-com/utilities";
 
-import { getCodemodDownloadURI } from "#apis.js";
-import type { GlobalArgvOptions, RunArgvOptions } from "#buildOptions.js";
-import type { FileDownloadService } from "#fileDownloadService.js";
-import { buildSafeArgumentRecord } from "#safeArgumentRecord.js";
+import { getCodemodDownloadURI } from "#api.js";
+import type { FileDownloadService } from "#file-download.js";
+import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
+import { buildSafeArgumentRecord } from "#safe-arguments.js";
 import {
   codemodDirectoryPath,
   getCurrentUserData,
@@ -86,10 +86,6 @@ export const populateCodemodArgs = async (options: {
       engineOptions,
     };
   }
-
-  // codemodToRun.hashDigest = createHash("ripemd160")
-  //   .update(codemod.config.name)
-  //   .digest();
 
   return {
     ...codemod,

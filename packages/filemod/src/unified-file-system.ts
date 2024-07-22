@@ -1,5 +1,5 @@
-import type { ExternalFileCommand } from "./externalFileCommands.js";
-import { LeftRightHashSetManager } from "./leftRightHashSetManager.js";
+import { LeftRightHashSetManager } from "./left-right-hashset-manager.js";
+import type { ExternalFileCommand } from "./types/external-commands.js";
 
 export interface UnifiedFile {
   readonly kind: "file";

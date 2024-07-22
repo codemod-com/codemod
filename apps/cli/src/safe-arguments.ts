@@ -1,3 +1,5 @@
+import inquirer from "inquirer";
+
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type ArgumentRecord,
@@ -5,7 +7,6 @@ import {
   doubleQuotify,
   safeParseArgument,
 } from "@codemod-com/utilities";
-import inquirer from "inquirer";
 
 export const buildSafeArgumentRecord = async (
   codemod: Codemod,
@@ -141,6 +142,7 @@ export const buildSafeArgumentRecord = async (
 
     if (Array.isArray(descriptor.kind)) {
       for (const kind of descriptor.kind) {
+        // biome-ignore lint: weird type error that does not seem to be fixable, expected type here is different from the actual argument type
         const valid = validator({ ...descriptor, kind } as any, value, true);
 
         if (valid) {

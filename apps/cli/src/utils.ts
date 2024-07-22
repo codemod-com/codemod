@@ -12,7 +12,7 @@ import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 import { basename, dirname, join } from "node:path";
 import { version } from "#/../package.json";
-import { getUserData } from "#apis.js";
+import { getUserData } from "#api.js";
 import { handleLoginCliCommand } from "#commands/login.js";
 
 export const codemodDirectoryPath = join(homedir(), ".codemod");

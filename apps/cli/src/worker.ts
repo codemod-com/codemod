@@ -66,8 +66,7 @@ const messageHandler = async (m: unknown) => {
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
-            // @TODO
-            initializationMessage.engineOptions as any,
+            initializationMessage.engineOptions,
             consoleCallback,
           );
           break;

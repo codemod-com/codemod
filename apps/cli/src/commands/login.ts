@@ -1,13 +1,14 @@
-import { type Printer, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
 import open from "open";
+
+import { type Printer, chalk } from "@codemod-com/printer";
+
 import {
   confirmUserLoggedIn,
   generateUserLoginIntent,
   getCLIAccessToken,
-} from "../apis.js";
-import { CredentialsStorageType } from "../credentialsStorage.js";
-import { credentialsStorage, getCurrentUserData } from "../utils.js";
+} from "#api.js";
+import { getCurrentUserData } from "#utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 

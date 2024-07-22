@@ -1,5 +1,6 @@
-import { type Printer, chalk } from "@codemod-com/printer";
 import open from "open";
+
+import { type Printer, chalk } from "@codemod-com/printer";
 
 export const handleFeedbackCommand = async (options: {
   printer: Printer;

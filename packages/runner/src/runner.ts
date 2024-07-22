@@ -15,8 +15,8 @@ import {
   type FileSystem,
   type KnownEnginesCodemod,
   type RunResult,
-  extractMainScriptPath,
   formatText,
+  getEntryPath,
   getProjectRootPathAndPackageManager,
   isGeneratorEmpty,
   isNeitherNullNorUndefined,
@@ -36,7 +36,7 @@ import {
   DEFAULT_EXCLUDE_PATTERNS,
   DEFAULT_VERSION_CONTROL_DIRECTORIES,
   type FlowSettings,
-} from "./schemata/flowSettingsSchema.js";
+} from "./schemata/flow-settings.js";
 import { WorkerManager } from "./worker-manager.js";
 
 const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
@@ -140,45 +140,6 @@ export class Runner {
     ];
     const allExcluded = userExcluded.concat(defaultExcluded);
 
-    // Approach below traverses for all .gitignores, but it takes too long and will hang the execution in large projects.
-    // Instead we just use the utils function to get the root gitignore if it exists. Otherwise, just ignore
-
-    // const gitIgnorePaths = await glob("**/.gitignore", {
-    //   cwd: flowSettings.target,
-    //   ignore: formattedExclude,
-    //   absolute: true,
-    // });
-
-    // let gitIgnored: string[] = [];
-    // if (gitIgnorePaths.length > 0) {
-    //   for (const gitIgnorePath of gitIgnorePaths) {
-    //     const gitIgnoreContents = await readFile(gitIgnorePath, "utf-8");
-    //     gitIgnored = gitIgnored.concat(
-    //       await Promise.all(
-    //         gitIgnoreContents
-    //           .split("\n")
-    //           .map((line) => line.trim())
-    //           .filter((line) => line.length > 0 && !line.startsWith("#"))
-    //           .map(async (line) => {
-    //             const path = join(dirname(gitIgnorePath), line);
-
-    //             try {
-    //               const stat = await lstat(path);
-
-    //               if (stat.isDirectory()) {
-    //                 return `${path}/**/*.*`;
-    //               }
-    //             } catch (err) {
-    //               //
-    //             }
-
-    //             return path;
-    //           }),
-    //       ),
-    //     );
-    //   }
-    // }
-
     const { rootPath } = await getProjectRootPathAndPackageManager(
       flowSettings.target,
       true,
@@ -226,11 +187,10 @@ export class Runner {
       }
 
       try {
-        const { path: astGrepRulePath, error: errorText } =
-          await extractMainScriptPath({
-            codemodRc: codemod.config,
-            source: codemod.path,
-          });
+        const { path: astGrepRulePath, error: errorText } = await getEntryPath({
+          codemodRc: codemod.config,
+          source: codemod.path,
+        });
         if (astGrepRulePath === null) {
           throw new Error(errorText);
         }

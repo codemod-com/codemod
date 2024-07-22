@@ -1,3 +1,8 @@
+import Axios from "axios";
+import semver from "semver";
+import yargs from "yargs";
+import { hideBin } from "yargs/helpers";
+
 import { Printer, boxen, chalk } from "@codemod-com/printer";
 import {
   NullSender,
@@ -5,25 +10,20 @@ import {
   type TelemetrySender,
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
-import Axios from "axios";
-import semver from "semver";
-import yargs from "yargs";
-import { hideBin } from "yargs/helpers";
-import { version } from "../package.json";
-import { getUserDistinctId } from "./analytics/distinctId.js";
-import type { TelemetryEvent } from "./analytics/telemetry.js";
-import { buildGlobalOptions, buildRunOptions } from "./buildOptions.js";
-// import { handleBuildCliCommand } from "./commands/build";
-import { handleFeedbackCommand } from "./commands/feedback.js";
-import { handleInitCliCommand } from "./commands/init.js";
-import { handleLearnCliCommand } from "./commands/learn.js";
-import { handleListNamesCommand } from "./commands/list.js";
-import { handleLoginCliCommand } from "./commands/login.js";
-import { handleLogoutCliCommand } from "./commands/logout.js";
-import { handlePublishCliCommand } from "./commands/publish.js";
-import { handleRunCliCommand } from "./commands/run.js";
-import { handleUnpublishCliCommand } from "./commands/unpublish.js";
-import { handleWhoAmICommand } from "./commands/whoami.js";
+
+import { version } from "#/../package.json";
+import { handleFeedbackCommand } from "#commands/feedback.js";
+import { handleInitCliCommand } from "#commands/init.js";
+import { handleLearnCliCommand } from "#commands/learn.js";
+import { handleListNamesCommand } from "#commands/list.js";
+import { handleLoginCliCommand } from "#commands/login.js";
+import { handleLogoutCliCommand } from "#commands/logout.js";
+import { handlePublishCliCommand } from "#commands/publish.js";
+import { handleRunCliCommand } from "#commands/run.js";
+import { handleUnpublishCliCommand } from "#commands/unpublish.js";
+import { handleWhoAmICommand } from "#commands/whoami.js";
+import { buildGlobalOptions, buildRunOptions } from "#flags.js";
+import { type TelemetryEvent, getUserDistinctId } from "#telemetry.js";
 
 const checkLatestVersion = async () => {
   try {

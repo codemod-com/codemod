@@ -9,8 +9,8 @@ import type {
   GlobArguments,
   PathHashDigest,
   UnifiedEntry,
-} from "./unifiedFileSystem.js";
-import { UnifiedFileSystem } from "./unifiedFileSystem.js";
+} from "./unified-file-system.js";
+import { UnifiedFileSystem } from "./unified-file-system.js";
 
 const buildHashDigest = (data: string) =>
   createHash("ripemd160").update(data).digest("base64url");
