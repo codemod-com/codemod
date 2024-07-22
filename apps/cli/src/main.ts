@@ -249,27 +249,6 @@ export const main = async () => {
         return executeCliCommand(() => handleWhoAmICommand({ printer }));
       },
     )
-    // .command(
-    //   "build",
-    //   "build the JavaScript engine codemod",
-    //   (y) =>
-    //     y.option("source", {
-    //       alias: "s",
-    //       type: "string",
-    //       description: "path to the codemod to be built",
-    //     }),
-    //   async (args) => {
-    //     const { executeCliCommand, printer } =
-    //       await initializeDependencies(args);
-
-    //     return executeCliCommand(() =>
-    //       handleBuildCliCommand({
-    //         printer,
-    //         source: args.source ?? process.cwd(),
-    //       }),
-    //     );
-    //   },
-    // )
     .command(
       "publish",
       "publish the codemod to Codemod Registry",
