@@ -24,6 +24,8 @@ export default defineConfig({
       SLACK_TOKEN: "xoxb-123123123",
       SLACK_CHANNEL: "my-channel",
       FRONTEND_URL: "http://localhost:3000",
+      AWS_PUBLIC_BUCKET_NAME: "codemod-test",
+      AWS_PRIVATE_BUCKET_NAME: "codemod-test",
     },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,

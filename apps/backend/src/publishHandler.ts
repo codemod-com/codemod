@@ -229,7 +229,9 @@ export const publishHandler: RouteHandler<{
     const hashDigest = createHash("ripemd160").update(name).digest("base64url");
     const REQUEST_TIMEOUT = 5000;
     const bucket =
-      isPrivate && namespace ? "codemod-private" : "codemod-public";
+      isPrivate && namespace
+        ? environment.AWS_PRIVATE_BUCKET_NAME
+        : environment.AWS_PUBLIC_BUCKET_NAME;
 
     const uploadKeyParts = [hashDigest, version, "codemod.tar.gz"];
     if (isPrivate && namespace) {
@@ -324,10 +326,6 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    if (environment.NODE_ENV === "development") {
-      return reply.code(200).send({ name, version: codemodRc.version });
-    }
-
     try {
       const client = new S3Client({
         credentials: {
@@ -378,6 +376,10 @@ export const publishHandler: RouteHandler<{
         error: INTERNAL_SERVER_ERROR,
         errorText: `Failed publishing to S3: ${(err as Error).message}`,
       });
+    }
+
+    if (environment.NODE_ENV === "development") {
+      return reply.code(200).send({ name, version: codemodRc.version });
     }
 
     if (latestVersion === null) {
