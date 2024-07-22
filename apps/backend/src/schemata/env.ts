@@ -47,7 +47,6 @@ export const environmentSchema = object({
   TASK_MANAGER_QUEUE_NAME: optional(string()),
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
-  CODEMOD_COM_API_URL: string(),
   SLACK_TOKEN: string(),
   SLACK_CHANNEL: string(),
   BACKEND_API_URL: optional(string()),

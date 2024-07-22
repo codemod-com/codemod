@@ -6,14 +6,12 @@ export const buildRevalidateHelper =
   (environment: Environment) => async (name: string) => {
     const slug = buildCodemodSlug(name);
 
-    const revalidateURL = new URL(
-      `${environment.CODEMOD_COM_API_URL}/revalidate`,
-    );
+    const revalidateURL = new URL(`${environment.FRONTEND_URL}/api/revalidate`);
 
     revalidateURL.searchParams.set("path", `registry/${slug}`);
 
     const revalidateTagURL = new URL(
-      `${environment.CODEMOD_COM_API_URL}/revalidate-tag`,
+      `${environment.FRONTEND_URL}/api/revalidate-tag`,
     );
 
     revalidateTagURL.searchParams.set("tag", `codemod-${slug}`);
