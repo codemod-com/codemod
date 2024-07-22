@@ -1,5 +1,5 @@
 {
-  "name": "react-router-4-move-hoc-to-global-scope",
+  "name": "react-router/4/move-hoc-to-global-scope",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.9.0",
