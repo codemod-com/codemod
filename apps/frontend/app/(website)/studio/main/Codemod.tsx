@@ -14,7 +14,7 @@ const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
 
 const Codemod = () => {
   const editor = useRef<monaco.editor.IStandaloneCodeEditor>(null);
-  const { content = "", ranges, setContent } = useModStore();
+  const { content = "", ranges = [], setContent } = useModStore();
   const activeEvent = useSelectActiveEvent();
   const setRangeThunk = useRangesOnTarget();
 

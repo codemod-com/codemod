@@ -22,8 +22,8 @@ export const useCodeDiff = () => {
   const {
     outputSnippet,
     afterSnippet,
-    after: { ranges: afterInputRanges },
-    output: { ranges: outputRanges },
+    after: { ranges: afterInputRanges = [] },
+    output: { ranges: outputRanges = [] },
   } = getSelectedEditors();
 
   const snippetBeforeHasOnlyWhitespaces = !/\S/.test(afterSnippet);

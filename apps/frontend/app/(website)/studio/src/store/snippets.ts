@@ -271,7 +271,6 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
     const rootNode = get().editors[editorsPairIndex]?.[type]?.rootNode;
     if (rootNode) {
       const ranges = buildRanges(rootNode, command);
-
       const obj = get();
       obj.editors[editorsPairIndex][type].ranges = ranges;
       obj.editors[editorsPairIndex][type].rangeUpdatedAt = Date.now();
