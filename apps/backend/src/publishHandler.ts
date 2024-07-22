@@ -24,6 +24,7 @@ import {
   type CodemodConfig,
   TarService,
   buildCodemodSlug,
+  codemodNameRegex,
   getEntryPath,
   isNeitherNullNorUndefined,
   parseCodemodConfig,
@@ -51,7 +52,10 @@ export const publishHandler: RouteHandler<{
     } = request.user!;
 
     if (username === null) {
-      throw new Error("The username of the current user does not exist");
+      return reply.status(400).send({
+        errorText: "The username of the current user does not exist",
+        error: UNAUTHORIZED,
+      });
     }
 
     let codemodArchiveBuffer: Buffer | null = null;
@@ -100,7 +104,23 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    if (codemodRc.engine !== "recipe") {
+    if (codemodRc.engine === "recipe") {
+      if (codemodRc.names.length < 2) {
+        return reply.status(400).send({
+          errorText: `The "names" field in .codemodrc.json must contain at least two names for a recipe codemod.`,
+          error: CODEMOD_CONFIG_INVALID,
+        });
+      }
+
+      for (const name of codemodRc.names) {
+        if (!codemodNameRegex.test(name)) {
+          return reply.status(400).send({
+            errorText: `Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+            error: CODEMOD_CONFIG_INVALID,
+          });
+        }
+      }
+    } else {
       const { path } = await getEntryPath({
         codemodRc,
         source: unpackedPath,
@@ -110,6 +130,13 @@ export const publishHandler: RouteHandler<{
         return reply.code(400).send({
           error: NO_MAIN_FILE_FOUND,
           errorText: "No main file was provided",
+        });
+      }
+
+      if (!codemodNameRegex.test(codemodRc.name)) {
+        return reply.status(400).send({
+          errorText: `The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
+          error: CODEMOD_CONFIG_INVALID,
         });
       }
     }
