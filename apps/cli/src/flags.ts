@@ -81,11 +81,6 @@ export const buildRunOptions = <T>(y: Argv<T>) => {
       type: "string",
       description: "Source path of the local codemod to run",
     })
-    .option("engine", {
-      type: "string",
-      description:
-        "The engine to use with the local codemod that has no .codemodrc.json.",
-    })
     .option("logs", {
       type: "boolean",
       default: DEFAULT_ENABLE_LOGGING,
