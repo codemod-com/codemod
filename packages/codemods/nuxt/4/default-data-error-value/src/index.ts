@@ -9,7 +9,7 @@ export default function transform(
   const root = j(file.source);
 
   const hooksToUpdate = ["useAsyncData", "useFetch"];
-
+  let isDirty = false;
   // Helper function to update BinaryExpression nodes
   function updateBinaryExpression(node) {
     if (
@@ -98,6 +98,7 @@ export default function transform(
               j.identifier("undefined"),
             );
             path.replace(newNode);
+            isDirty = true;
           });
 
         // Update ternary operators with prop.value === null
@@ -128,21 +129,25 @@ export default function transform(
               path.node.consequent.test = updateBinaryExpression(
                 path.node.consequent.test,
               );
+              isDirty = true;
             } else {
               path.node.consequent = updateBinaryExpression(
                 path.node.consequent,
               );
+              isDirty = true;
             }
             if (path.node.alternate.type === "ConditionalExpression") {
               path.node.alternate.test = updateBinaryExpression(
                 path.node.alternate.test,
               );
+              isDirty = true;
             } else {
               path.node.alternate = updateBinaryExpression(path.node.alternate);
+              isDirty = true;
             }
           });
       }
     });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }

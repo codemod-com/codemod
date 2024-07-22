@@ -15,6 +15,7 @@ export const vue3SFCAdapter =
     const { descriptor } = parse(oldData);
 
     const { script, scriptSetup } = descriptor;
+    let isModified = false;
 
     [script, scriptSetup].forEach((script) => {
       if (script === null) {
@@ -35,7 +36,8 @@ export const vue3SFCAdapter =
       }
 
       script.content = newScriptContent;
+      isModified = true;
     });
 
-    return stringify(descriptor);
+    return isModified ? stringify(descriptor) : undefined;
   };
