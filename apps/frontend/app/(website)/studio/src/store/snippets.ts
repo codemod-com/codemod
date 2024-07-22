@@ -245,9 +245,6 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
   },
   setContent: (editorsPairIndex, type) => (content, name) => {
     const obj = get();
-    console.log({
-      content,
-    });
     obj.editors[editorsPairIndex] ??= getNewEditors(name);
     obj.editors[editorsPairIndex][type].content = content;
     obj.editors[editorsPairIndex][type].rootNode = transformNode(content, type);
