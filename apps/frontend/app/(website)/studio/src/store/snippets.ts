@@ -281,7 +281,7 @@ export const useSnippetsStore = create<SnippetsState>((set, get) => ({
 
 if (isServer) {
   useSnippetsStore?.getState?.().setInitialState({
-    editorsContents: [getSingleTestCase()],
+    editors: [getSingleTestCase()],
     engine: "jscodeshift",
   });
 } else {
