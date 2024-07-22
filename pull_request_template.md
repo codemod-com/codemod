@@ -1,17 +1,41 @@
-**Please check if the PR fulfills these requirements**:
+<!--
+THANK YOU for contributing to Codemod! Let's speed up migration velocity for all, one PR at a time! :)
 
-- [ ] The commit message follows [our code of conduct](/CODE_OF_CONDUCT.md) and [contributing guidelines](https://github.com/codemod-com/codemod-registry/blob/main/CONTRIBUTING.md)
-- [ ] Tests for the changes have been added (for bug fixes/features)
-- [ ] Docs have been added / updated (for bug fixes / features)
+Before opening this PR, please:
+1. Read and accept the contributing guidelines here: https://github.com/codemod-com/codemod-registry/blob/main/CONTRIBUTING.md
+2. Ensure that the PR title follows conventional commits: https://www.conventionalcommits.org
 
-**Please include the following information in your pull request**:
+Here are some examples:
 
-- **What kind of change does this PR introduce?** (Bug fix, feature, docs update, ...)
+feat(studio): add new codemod engine
+feat(cli)!: revamp the design (BREAKING CHANGE)
+fix(cli): fix a bug for the formatter
+chore(backend): upgrade node
+docs: improve codemod publish docs
+refactor(registry www): modularize filters
+test(vsce): add tests for VS Code extension
+-->
 
-- **What is the current behavior?** (You can also link to an open issue here)
+#### 📚 Description
+<!-- 
+A summary of the change. Include relevant motivation and context.
+For visual changes, add a snapshot or a Loom screencast to speed up reviews.
+-->
 
-- **What is the new behavior (if this is a feature change)?**
+#### 🔗 Linked Issue
+<!-- 
+For trivial changes, this can be removed. For non-trivial changes, link to an issue that includes the impact, priority, effort, and more context and discussions. Mention its number here. For example:
+- Fixes #XXXX (GitHub issue number for community contributions)
+or
+- Fixes CDMD-XXXX (Linear issue number for Codemod team contributions)
+-->
 
-- **Does this PR introduce a breaking change?** (What changes might users need to make in their application due to this PR?)
+#### 🧪 Test Plan
+<!-- 
+Describe the tests you ran to verify your changes. Provide instructions so we can reproduce them.
+-->
 
-- **Any other information (if needed)**:
+#### 📄 Documentation to Update
+<!--
+Please identify the existing or missing docs for your feature and update or create them if needed.
+-->
