@@ -1,19 +1,23 @@
 import { createHash } from "node:crypto";
 import * as fs from "node:fs/promises";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { join, parse as pathParse, resolve } from "node:path";
+
+import type { AxiosError } from "axios";
+import inquirer from "inquirer";
+import semver from "semver";
+import { flatten } from "valibot";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import {
   type Codemod,
-  type CodemodConfig,
   type KnownEnginesCodemodValidationInput,
   type RecipeCodemodValidationInput,
   type TarService,
   doubleQuotify,
+  getCodemodRc,
   isRecipeCodemod,
   parseCodemod,
-  parseCodemodConfig,
   parseEngineOptions,
   parseKnownEnginesCodemod,
   parseRecipeCodemod,
@@ -21,10 +25,6 @@ import {
   safeParseKnownEnginesCodemod,
   safeParseRecipeCodemod,
 } from "@codemod-com/utilities";
-import type { AxiosError } from "axios";
-import inquirer from "inquirer";
-import semver from "semver";
-import { flatten } from "valibot";
 
 import { getCodemodDownloadURI } from "#api.js";
 import { handleInitCliCommand } from "#commands/init.js";
@@ -150,23 +150,11 @@ export const fetchCodemod = async (options: {
         noLogs: true,
       });
 
-      let codemodRcJSON: Record<string, unknown>;
-      try {
-        codemodRcJSON = JSON.parse(
-          await readFile(join(codemodPackagePath, ".codemodrc.json"), {
-            encoding: "utf-8",
-          }),
-        );
-      } catch (err) {
-        throw new Error(
-          "Unexpected error during package initialization for standalone run",
-        );
-      }
-
-      const config = parseCodemodConfig({
-        ...codemodRcJSON,
-        name: "Standalone codemod",
+      const { config } = await getCodemodRc({
+        source: codemodPackagePath,
+        throwOnNotFound: true,
       });
+      config.name = "Standalone codemod";
 
       if (config.engine === "recipe") {
         throw new Error(
@@ -183,21 +171,10 @@ export const fetchCodemod = async (options: {
     }
 
     // Codemod package
-    const codemodRcContent = await readFile(
-      join(nameOrPath, ".codemodrc.json"),
-      { encoding: "utf-8" },
-    ).catch(() => {
-      throw new Error(`Could not read .codemodrc.json file at ${nameOrPath}.`);
+    const { config } = await getCodemodRc({
+      source: nameOrPath,
+      throwOnNotFound: true,
     });
-
-    let codemodConfig: CodemodConfig;
-    try {
-      codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
-    } catch (err) {
-      throw new Error(
-        `Codemod directory is of incorrect structure at ${nameOrPath}`,
-      );
-    }
 
     const {
       output: codemod,
@@ -207,7 +184,7 @@ export const fetchCodemod = async (options: {
       type: "package",
       source: "local",
       path: resolve(nameOrPath),
-      config: codemodConfig,
+      config,
     });
 
     if (!isValidCodemod) {
@@ -256,13 +233,12 @@ export const fetchCodemod = async (options: {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-  const configPath = join(path, ".codemodrc.json");
 
   const { data, cacheUsed } = await fileDownloadService
     .download({
       url: linkResponse.link,
       path: downloadPath,
-      cachePingPath: configPath,
+      cachePingPath: join(path, ".codemodrc.json"),
     })
     .catch((err) => {
       spinner?.fail();
@@ -292,21 +268,10 @@ export const fetchCodemod = async (options: {
     ),
   });
 
-  // TODO: move to re-usable function
-  const codemodRcContent = await readFile(configPath, {
-    encoding: "utf-8",
-  }).catch(() => {
-    throw new Error(`Could not read .codemodrc.json file at ${nameOrPath}.`);
+  const { config } = await getCodemodRc({
+    source: path,
+    throwOnNotFound: true,
   });
-
-  let config: CodemodConfig;
-  try {
-    config = parseCodemodConfig(JSON.parse(codemodRcContent));
-  } catch (err) {
-    throw new Error(
-      `Codemod directory is of incorrect structure at ${nameOrPath}`,
-    );
-  }
 
   if (
     fileDownloadService.cacheEnabled &&

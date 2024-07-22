@@ -188,12 +188,9 @@ export class Runner {
 
       try {
         const { path: astGrepRulePath, error: errorText } = await getEntryPath({
-          codemodRc: codemod.config,
           source: codemod.path,
+          throwOnNotFound: true,
         });
-        if (astGrepRulePath === null) {
-          throw new Error(errorText);
-        }
 
         const configs = yaml.loadAll(
           await readFile(astGrepRulePath, { encoding: "utf8" }),

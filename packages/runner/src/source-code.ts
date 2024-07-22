@@ -61,13 +61,10 @@ export const getCodemodExecutable = async (
     // continue
   }
 
-  const { path: entryPoint, error } = await getEntryPath({
-    codemodRc: codemod.config,
+  const { path: entryPoint } = await getEntryPath({
     source: codemod.path,
+    throwOnNotFound: true,
   });
-  if (entryPoint === null) {
-    throw new Error(error);
-  }
 
   const requiresBuild =
     entryPoint.endsWith(".ts") ||

@@ -162,13 +162,10 @@ export const handlePublishCliCommand = async (options: {
   }
 
   if (codemodRc.engine !== "recipe") {
-    const { path: mainFilePath, error: errorText } = await getEntryPath({
-      codemodRc,
+    await getEntryPath({
       source,
+      throwOnNotFound: true,
     });
-    if (mainFilePath === null) {
-      throw new Error(errorText);
-    }
   }
 
   if (!codemodRc.meta?.git) {

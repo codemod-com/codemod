@@ -122,8 +122,8 @@ export const publishHandler: RouteHandler<{
       }
     } else {
       const { path } = await getEntryPath({
-        codemodRc,
         source: unpackedPath,
+        throwOnNotFound: false,
       });
 
       if (path === null) {
