@@ -3,7 +3,7 @@
   "devDependencies": {
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@loancrate/prisma-schema-parser": "^2.0.0",
+    "@loancrate/prisma-schema-parser": "catalog:",
     "@types/jscodeshift": "^0.11.10",
     "@vitest/coverage-v8": "catalog:",
     "jscodeshift": "^0.15.1",
