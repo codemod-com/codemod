@@ -27,6 +27,11 @@ export default defineConfig({
       AWS_PUBLIC_BUCKET_NAME: "codemod-test",
       AWS_PRIVATE_BUCKET_NAME: "codemod-test",
     },
+    poolOptions: {
+      vmThreads: {
+        memoryLimit: 4096,
+      },
+    },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
     testTimeout: 15_000,
