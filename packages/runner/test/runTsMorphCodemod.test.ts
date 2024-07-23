@@ -1,10 +1,18 @@
 import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runTsMorphCodemod } from "../src/runTsMorphCodemod.js";
+import { randomBytes } from "node:crypto";
+import { mkdir, rmdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
-const codemodSource = transpile(`
+import { afterAll, describe, it } from "vitest";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+
+import type { CodemodConfig } from "@codemod-com/utilities";
+import { runTsMorphCodemod } from "../src/engines/ts-morph.js";
+import { getCodemodExecutable } from "../src/source-code.js";
+
+const codemodSource = `
 import { SourceFile, EmitHint } from 'ts-morph';
 
 export const handleSourceFile = (
@@ -18,9 +26,27 @@ export const handleSourceFile = (
 
     return sourceFile.print({ emitHint: EmitHint.SourceFile });
 };
-`);
+`;
 
-describe("runTsMorphCodemod", () => {
+const testTempDir = join(homedir(), ".codemod", "test-temp");
+
+describe("runTsMorphCodemod", async () => {
+  const codemodName = randomBytes(4).toString("hex");
+  const directoryPath = join(testTempDir, codemodName);
+  const distPath = join(directoryPath, "cdmd_dist");
+
+  await mkdir(distPath, { recursive: true });
+  await writeFile(join(distPath, `${codemodName}.ts`), codemodSource);
+
+  const compiledSource = await getCodemodExecutable({
+    config: {} as CodemodConfig,
+    path: directoryPath,
+  });
+
+  afterAll(async () => {
+    await rmdir(directoryPath);
+  });
+
   it("should return transformed output", () => {
     const messages: [ConsoleKind, string][] = [];
 
@@ -28,7 +54,6 @@ describe("runTsMorphCodemod", () => {
       codemodSource,
       "index.ts",
       "",
-      true,
       {},
       (consoleKind, message) => {
         messages.push([consoleKind, message]);

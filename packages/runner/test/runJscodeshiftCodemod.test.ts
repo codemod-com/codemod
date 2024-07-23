@@ -1,10 +1,18 @@
 import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runJscodeshiftCodemod } from "../src/runJscodeshiftCodemod.js";
+import { randomBytes } from "node:crypto";
+import { mkdir, rmdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
-const codemodSource = transpile(`
+import { afterAll, describe, it } from "vitest";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+
+import type { CodemodConfig } from "@codemod-com/utilities";
+import { runJscodeshiftCodemod } from "../src/engines/jscodeshift.js";
+import { getCodemodExecutable } from "../src/source-code.js";
+
+const codemodSource = `
 import type { FileInfo, API, Options } from 'jscodeshift';
 
 // this is the entry point for a JSCodeshift codemod
@@ -54,19 +62,36 @@ export default function transform(
 
     return root.toSource();
 }
-`);
+`;
 
-describe("runJscodeshiftCodemod", () => {
+const testTempDir = join(homedir(), ".codemod", "test-temp");
+
+describe("runJscodeshiftCodemod", async () => {
+  const codemodName = randomBytes(4).toString("hex");
+  const directoryPath = join(testTempDir, codemodName);
+  const distPath = join(directoryPath, "cdmd_dist");
+
+  await mkdir(distPath, { recursive: true });
+  await writeFile(join(distPath, `${codemodName}.ts`), codemodSource);
+
+  const compiledSource = await getCodemodExecutable({
+    config: {} as CodemodConfig,
+    path: directoryPath,
+  });
+
+  afterAll(async () => {
+    await rmdir(directoryPath);
+  });
+
   it("should return transformed output", () => {
     const messages: [ConsoleKind, string][] = [];
 
     const oldData = "function mapStateToProps(state) {}";
 
     const fileCommands = runJscodeshiftCodemod(
-      codemodSource,
+      compiledSource,
       "/index.ts",
       oldData,
-      true,
       {},
       null,
       (consoleKind, message) => {
