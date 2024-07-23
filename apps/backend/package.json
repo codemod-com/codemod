@@ -38,6 +38,7 @@
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
+    "@codemod-com/runner": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",

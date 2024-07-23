@@ -20,6 +20,7 @@ import {
 } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
+import { getCodemodExecutable } from "@codemod-com/runner";
 import {
   type CodemodConfig,
   TarService,
@@ -127,6 +128,18 @@ export const publishHandler: RouteHandler<{
       });
 
       if (path === null) {
+        return reply.code(400).send({
+          error: NO_MAIN_FILE_FOUND,
+          errorText: "No main file was provided",
+        });
+      }
+
+      const built = await getCodemodExecutable({
+        path,
+        config: codemodRc,
+      }).catch(() => null);
+
+      if (built === null) {
         return reply.code(400).send({
           error: NO_MAIN_FILE_FOUND,
           errorText: "No main file was provided",

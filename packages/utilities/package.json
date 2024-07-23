@@ -40,7 +40,6 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
-    "@clerk/backend": "catalog:",
     "@codemod-com/filemod": "workspace:*",
     "bl": "catalog:",
     "change-case": "catalog:",

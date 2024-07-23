@@ -11,11 +11,7 @@
     "README.md",
     "tsconfig.json"
   ],
-  "scripts": {
-    "build": "tsc",
-    "test": "vitest run",
-    "coverage": "vitest run --coverage"
-  },
+  "scripts": {},
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {},

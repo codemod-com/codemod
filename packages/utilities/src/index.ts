@@ -12,7 +12,6 @@ export * from "./functions/project-root.js";
 export * from "./functions/validation.js";
 
 export * from "./schemata/argument-record.js";
-export * from "./schemata/clerk.js";
 export * from "./schemata/codemod.js";
 export * from "./schemata/codemod-config.js";
 export * from "./schemata/github-run.js";

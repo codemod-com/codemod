@@ -28,6 +28,7 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
+    "@clerk/backend": "catalog:",
     "@codemod-com/database": "workspace:*",
     "@codemod-com/filemod": "workspace:*"
   }
