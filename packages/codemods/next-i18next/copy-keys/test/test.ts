@@ -60,7 +60,7 @@ describe("next-i18n copy keys", () => {
     );
 
     deepStrictEqual(
-      upsertEnDataCommand.data.replace(/\W/gm, ""),
+      upsertEnDataCommand.newData.replace(/\W/gm, ""),
       `{"copyKey": "copyKeyEnglish"}`.replace(/\W/gm, ""),
     );
     deepStrictEqual(upsertDeDataCommand?.kind, "upsertFile");
@@ -71,7 +71,7 @@ describe("next-i18n copy keys", () => {
     );
 
     deepStrictEqual(
-      upsertDeDataCommand.data.replace(/\W/gm, ""),
+      upsertDeDataCommand.newData.replace(/\W/gm, ""),
       `{"copyKey": "copyKeyGerman"}`.replace(/\W/gm, ""),
     );
   });
@@ -124,7 +124,7 @@ describe("next-i18n copy keys", () => {
     );
 
     deepStrictEqual(
-      upsertEnDataCommand.data.replace(/\W/gm, ""),
+      upsertEnDataCommand.newData.replace(/\W/gm, ""),
       `{"otherKey": "otherKeyEnglish","copyKey": "copyKeyEnglish"}`.replace(
         /\W/gm,
         "",
@@ -138,7 +138,7 @@ describe("next-i18n copy keys", () => {
     );
 
     deepStrictEqual(
-      upsertDeDataCommand.data.replace(/\W/gm, ""),
+      upsertDeDataCommand.newData.replace(/\W/gm, ""),
       `{"otherKey": "otherKeyGerman","copyKey": "copyKeyGerman",}`.replace(
         /\W/gm,
         "",

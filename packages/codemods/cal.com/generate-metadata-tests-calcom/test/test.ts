@@ -33,7 +33,8 @@ const removeWhitespaces = (
 
   return {
     ...command,
-    data: command.data.replace(/\s/, ""),
+    oldData: command.oldData.replace(/\s/, ""),
+    newData: command.newData.replace(/\s/, ""),
   };
 };
 
@@ -43,12 +44,13 @@ describe("generate-metadata-tests", () => {
       "/opt/project/pages/a/index.tsx": "",
     });
 
-    const data = buildData("a").replace(/\s/, "");
+    const newData = buildData("a").replace(/\s/, "");
 
     deepStrictEqual(removeWhitespaces(command!), {
       kind: "upsertFile",
       path: "/opt/tests/a.e2e.ts",
-      data,
+      oldData: "",
+      newData,
     });
   });
 
@@ -57,12 +59,13 @@ describe("generate-metadata-tests", () => {
       "/opt/project/pages/a/[b].tsx": "",
     });
 
-    const data = buildData("a/[b]").replace(/\s/, "");
+    const newData = buildData("a/[b]").replace(/\s/, "");
 
     deepStrictEqual(removeWhitespaces(command!), {
       kind: "upsertFile",
       path: "/opt/tests/a/[b].e2e.ts",
-      data,
+      oldData: "",
+      newData,
     });
   });
 
@@ -71,12 +74,13 @@ describe("generate-metadata-tests", () => {
       "/opt/project/pages/a/[b]/c.tsx": "",
     });
 
-    const data = buildData("a/[b]/c").replace(/\s/, "");
+    const newData = buildData("a/[b]/c").replace(/\s/, "");
 
     deepStrictEqual(removeWhitespaces(command!), {
       kind: "upsertFile",
       path: "/opt/tests/a/[b]/c.e2e.ts",
-      data,
+      oldData: "",
+      newData,
     });
   });
 });

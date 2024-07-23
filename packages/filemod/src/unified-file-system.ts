@@ -210,7 +210,7 @@ export class UnifiedFileSystem {
     return paths;
   }
 
-  public deleteFile(filePath: string): void {
+  public async deleteFile(filePath: string): Promise<void> {
     const pathHashDigest = this.__buildPathHashDigest(filePath);
 
     const unifiedFile: UnifiedFile = {
@@ -242,10 +242,10 @@ export class UnifiedFileSystem {
 
     this.__changes.set(oldPathHashDigest, null);
 
-    this.upsertData(newFilePath, oldFileContent);
+    await this.upsertData(newFilePath, oldFileContent);
   }
 
-  public upsertData(filePath: string, data: string): void {
+  public async upsertData(filePath: string, data: string): Promise<void> {
     const pathHashDigest = this.__buildPathHashDigest(filePath);
 
     const unifiedFile: UnifiedFile = {
@@ -253,9 +253,29 @@ export class UnifiedFileSystem {
       path: filePath,
     };
 
-    this.__entries.set(pathHashDigest, unifiedFile);
+    this.__changes.set(pathHashDigest, {
+      oldData: (await this.__getExistingFileContent(filePath)) ?? "",
+      newData: data,
+    });
 
-    this.__changes.set(pathHashDigest, { oldData: data, newData: data });
+    this.__entries.set(pathHashDigest, unifiedFile);
+  }
+
+  private async __getExistingFileContent(
+    filePath: string,
+  ): Promise<string | null> {
+    const pathHashDigest = this.__buildPathHashDigest(filePath);
+
+    const changes = this.__changes.get(pathHashDigest);
+
+    if (changes === undefined) {
+      const unifiedEntry = this.__entries.get(pathHashDigest);
+      return unifiedEntry?.kind === "file"
+        ? await this.__readFile(unifiedEntry.path)
+        : null;
+    }
+
+    return changes?.newData ?? changes?.oldData ?? null;
   }
 
   public buildExternalFileCommands(): readonly ExternalFileCommand[] {

@@ -141,7 +141,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
           command.kind === "upsertFile" &&
           command.path ===
             "/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/embed/page.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
             import type { Params } from "next/dist/shared/lib/router/utils/route-matcher";
             import { getData } from "../page";
@@ -167,7 +167,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
           command.kind === "upsertFile" &&
           command.path ===
             "/opt/project/app/future/(shared-page-wrapper)/(no-layout)/a/page.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 import Page from "@pages/a/index";
                 import { _generateMetadata } from "app/_utils";
@@ -184,7 +184,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/pages/a/index.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 'use client';
                 TODO content
@@ -199,7 +199,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
           command.kind === "upsertFile" &&
           command.path ===
             "/opt/project/app/future/(shared-page-wrapper)/(layout)/a/b/page.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 import Page from "@pages/a/b";
                 import { _generateMetadata } from "app/_utils";
@@ -216,7 +216,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/pages/a/b.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 'use client';
                 import { getLayout } from './getLayout';
@@ -265,7 +265,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
           command.kind === "upsertFile" &&
           command.path ===
             "/opt/project/app/future/(individual-page-wrapper)/a/[b]/c/page.tsx" &&
-          command.data.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
+          command.newData.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
         );
       }),
     );
@@ -275,7 +275,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/pages/a/[b]/c.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 'use client';
                 export const getServerSideProps = (ctx) => {
@@ -324,7 +324,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
           command.kind === "upsertFile" &&
           command.path ===
             "/opt/project/app/future/(individual-page-wrapper)/a/d/page.tsx" &&
-          command.data.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
+          command.newData.replace(/\W/gm, "") === expected.replace(/\W/gm, "")
         );
       }),
     );
@@ -334,7 +334,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/pages/a/d.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 'use client';
                 export const getStaticProps = (ctx) => {
@@ -379,7 +379,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
     );
 
     deepStrictEqual(
-      upsertPageCommand?.data.replace(/(?!\.)\s/gm, ""),
+      upsertPageCommand?.newData.replace(/(?!\.)\s/gm, ""),
       `import OldPage from "@pages/a/index";
 			import {_generateMetadata} from "app/_utils";
 			import type {Params} from "next/dist/shared/lib/router/utils/route-matcher";
@@ -430,7 +430,7 @@ describe("cal.com app-directory-boilerplate-calcom", () => {
     deepStrictEqual(upsertLegacyPage?.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      upsertLegacyPage?.data.replace(/(?!\.)\s/gm, ""),
+      upsertLegacyPage?.newData.replace(/(?!\.)\s/gm, ""),
       `'use client'
 			import C from 'C';
 

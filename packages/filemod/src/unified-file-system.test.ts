@@ -137,7 +137,7 @@ describe("unifiedFileSystem", () => {
     deepStrictEqual(await unifiedFileSystem.readDirectory("/opt/a/"), []);
     deepStrictEqual(unifiedFileSystem.buildExternalFileCommands(), [
       { kind: "deleteFile", path: "/opt/a/a.json" },
-      { kind: "upsertFile", path: "/opt/b/a.json", data: "" },
+      { kind: "upsertFile", path: "/opt/b/a.json", oldData: "", newData: "" },
     ]);
   });
 });

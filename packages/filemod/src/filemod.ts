@@ -219,7 +219,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "deleteFile") {
-    api.unifiedFileSystem.deleteFile(command.path);
+    await api.unifiedFileSystem.deleteFile(command.path);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,
@@ -228,7 +228,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "upsertData") {
-    api.unifiedFileSystem.upsertData(command.path, command.data);
+    await api.unifiedFileSystem.upsertData(command.path, command.data);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,
@@ -237,7 +237,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "moveFile") {
-    api.unifiedFileSystem.moveFile(command.oldPath, command.newPath);
+    await api.unifiedFileSystem.moveFile(command.oldPath, command.newPath);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,

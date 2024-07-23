@@ -74,32 +74,39 @@ describe("next 13 remove-next-export", () => {
       {
         kind: "upsertFile",
         path: "/opt/project/package.json",
-        data: '{"scripts":{"a":"b"}}',
+        oldData: PACKAGE_JSON,
+        newData: '{"scripts":{"a":"b"}}',
       },
       {
         kind: "upsertFile",
         path: "/opt/project/pages/script_c.sh",
-        data: "\n",
+        oldData: SCRIPT_SH_C,
+        newData: "\n",
       },
       {
         kind: "upsertFile",
         path: "/opt/project/pages/script_b.sh",
-        data: "\nnpm run next build\n",
+        oldData: SCRIPT_SH_B,
+        newData: "\nnpm run next build\n",
       },
       {
         kind: "upsertFile",
         path: "/opt/project/pages/script_a.sh",
-        data: "\nnode_modules/.bin/next build\n",
+        oldData: SCRIPT_SH_A,
+        newData: "\nnode_modules/.bin/next build\n",
       },
       {
-        data: "\nmodule.exports = {\n\tdistDir: 'out',\n    output: \"export\"\n}",
         kind: "upsertFile",
         path: "/opt/project/pages/next.config.js",
+        oldData: NEXT_CONFIG_JSON,
+        newData:
+          "\nmodule.exports = {\n\tdistDir: 'out',\n    output: \"export\"\n}",
       },
       {
         kind: "upsertFile",
         path: "/opt/project/pages/README.md",
-        data: "\n# Header\n",
+        oldData: README_MD,
+        newData: "\n# Header\n",
       },
     ]);
   });
