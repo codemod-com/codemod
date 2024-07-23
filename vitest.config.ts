@@ -1,8 +1,6 @@
-import tsconfigPaths from "vite-tsconfig-paths";
 import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   test: {
     setupFiles: [
       `${__dirname}/apps/auth-service/node_modules/dotenv/config`,
@@ -28,11 +26,6 @@ export default defineConfig({
       AWS_PRIVATE_BUCKET_NAME: "codemod-test",
     },
     exclude: [...configDefaults.exclude, "./packages/deprecated/**"],
-    poolOptions: {
-      vmThreads: {
-        memoryLimit: 4096,
-      },
-    },
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
     testTimeout: 15_000,

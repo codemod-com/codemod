@@ -7,8 +7,8 @@ import { join } from "node:path";
 import { afterAll, describe, it } from "vitest";
 
 import type { ConsoleKind } from "@codemod-com/printer";
-
 import type { CodemodConfig } from "@codemod-com/utilities";
+
 import { runTsMorphCodemod } from "../src/engines/ts-morph.js";
 import { getCodemodExecutable } from "../src/source-code.js";
 
@@ -51,7 +51,7 @@ describe("runTsMorphCodemod", async () => {
     const messages: [ConsoleKind, string][] = [];
 
     const fileCommands = runTsMorphCodemod(
-      codemodSource,
+      compiledSource,
       "index.ts",
       "",
       {},

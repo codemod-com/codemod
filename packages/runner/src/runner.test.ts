@@ -1,3 +1,4 @@
+export type {};
 // import { equal } from "node:assert";
 // import { randomBytes } from "node:crypto";
 // import { Volume, createFsFromVolume } from "memfs";

@@ -134,10 +134,7 @@ export const publishHandler: RouteHandler<{
         throwOnNotFound: false,
       });
 
-      const built = await getCodemodExecutable({
-        path: unpackPath,
-        config: codemodRc,
-      }).catch(() => null);
+      const built = await getCodemodExecutable(unpackPath).catch(() => null);
 
       if (path === null || built === null) {
         return reply.code(400).send({

@@ -259,10 +259,7 @@ export const handlePublishCliCommand = async (options: {
     })),
   );
 
-  const builtExecutable = await getCodemodExecutable({
-    config: codemodRc,
-    path: source,
-  }).catch(() => null);
+  const builtExecutable = await getCodemodExecutable(source).catch(() => null);
 
   if (builtExecutable === null) {
     throw new Error(

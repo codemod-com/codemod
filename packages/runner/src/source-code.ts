@@ -4,7 +4,7 @@ import esbuild from "esbuild";
 import tsmorph from "ts-morph";
 
 import type { Filemod } from "@codemod-com/filemod";
-import { type Codemod, getEntryPath } from "@codemod-com/utilities";
+import { getEntryPath } from "@codemod-com/utilities";
 
 import { readFile } from "node:fs/promises";
 import type { Dependencies } from "#engines/filemod.js";
@@ -51,10 +51,8 @@ export const getTransformer = (source: string) => {
 
 export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
 
-export const getCodemodExecutable = async (
-  codemod: Pick<Codemod, "config" | "path">,
-) => {
-  const outputFilePath = join(resolve(codemod.path), BUILT_SOURCE_PATH);
+export const getCodemodExecutable = async (source: string) => {
+  const outputFilePath = join(resolve(source), BUILT_SOURCE_PATH);
   try {
     return await readFile(outputFilePath, { encoding: "utf8" });
   } catch {
@@ -62,7 +60,7 @@ export const getCodemodExecutable = async (
   }
 
   const { path: entryPoint } = await getEntryPath({
-    source: codemod.path,
+    source,
     throwOnNotFound: true,
   });
 

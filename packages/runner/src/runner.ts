@@ -464,7 +464,7 @@ export class Runner {
       return await onSuccess?.({ codemod, commands: [] });
     }
 
-    const codemodSource = await getCodemodExecutable(codemod);
+    const codemodSource = await getCodemodExecutable(codemod.path);
 
     if (codemod.config.engine === "workflow") {
       this.printRunSummary(printer, codemod, flowSettings, {
