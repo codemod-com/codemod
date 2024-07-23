@@ -1,4 +1,4 @@
-import type { RSU } from "./types/options.js";
+import type { RSU } from "./options.js";
 import type { UnifiedFileSystem } from "./unified-file-system.js";
 
 export interface PathAPI {

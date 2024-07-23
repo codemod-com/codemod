@@ -17,13 +17,13 @@ export type PathHashDigest = string & {
   __PathHashDigest: "__PathHashDigest";
 };
 
-export type ChangesPair = { oldData: string; newData: string };
-
 export interface GlobArguments {
   readonly includePatterns: ReadonlyArray<string>;
   readonly excludePatterns: ReadonlyArray<string>;
   readonly currentWorkingDirectory: string;
 }
+
+export type ChangesPair = { oldData: string; newData: string };
 
 export class UnifiedFileSystem {
   private __directoryFiles = new LeftRightHashSetManager<
@@ -242,10 +242,10 @@ export class UnifiedFileSystem {
 
     this.__changes.set(oldPathHashDigest, null);
 
-    await this.upsertData(newFilePath, oldFileContent);
+    this.upsertData(newFilePath, oldFileContent);
   }
 
-  public async upsertData(filePath: string, data: string): Promise<void> {
+  public upsertData(filePath: string, data: string): void {
     const pathHashDigest = this.__buildPathHashDigest(filePath);
 
     const unifiedFile: UnifiedFile = {
@@ -253,11 +253,9 @@ export class UnifiedFileSystem {
       path: filePath,
     };
 
-    const oldData = await this.__readFile(filePath);
-
     this.__entries.set(pathHashDigest, unifiedFile);
 
-    this.__changes.set(pathHashDigest, { oldData, newData: data });
+    this.__changes.set(pathHashDigest, { oldData: data, newData: data });
   }
 
   public buildExternalFileCommands(): readonly ExternalFileCommand[] {
@@ -277,7 +275,8 @@ export class UnifiedFileSystem {
         commands.push({
           kind: "upsertFile",
           path: entry.path,
-          ...data,
+          oldData: data.oldData,
+          newData: data.newData,
         });
       }
     });
