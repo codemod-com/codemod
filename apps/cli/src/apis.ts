@@ -6,6 +6,7 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
+import { Octokit } from "@octokit/rest";
 import Axios, { type RawAxiosRequestHeaders } from "axios";
 
 export const getCLIAccessToken = async (
@@ -108,6 +109,41 @@ export const getCodemod = async (
   });
 
   return res.data;
+};
+
+export const getGithubAPIKey = async (
+  accessToken: string,
+): Promise<string | undefined> => {
+  const res = await Axios.get<{ token?: string }>(
+    `${process.env.AUTH_BACKEND_URL}/oAuthToken`,
+    {
+      headers: { Authorization: `Bearer ${accessToken}` },
+      timeout: 10000,
+    },
+  );
+
+  return res.data.token;
+};
+
+export const getGithubAvailableScope = async (
+  accessToken: string,
+): Promise<string[]> => {
+  const octokit = new Octokit({
+    auth: accessToken,
+    log: {
+      debug() {},
+      error() {},
+      info() {},
+      warn() {},
+    },
+  });
+
+  const response = await octokit.request("GET /");
+  if (response.status < 200 || response.status >= 300) {
+    return [];
+  }
+
+  return response.headers?.["x-oauth-scopes"]?.split(", ") ?? [];
 };
 
 export const getCodemodDownloadURI = async (

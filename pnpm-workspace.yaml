@@ -25,6 +25,7 @@ catalog:
     "@fastify/multipart": ^8.1.0
     "@fastify/rate-limit": 9.0.1
     "@hookform/resolvers": ^3.3.2
+    "@octokit/rest": "^20.0.2"
     "@phosphor-icons/react": ^2.0.10
     "@portabletext/react": ^3.0.11
     "@portabletext/types": ^2.0.8
@@ -73,6 +74,7 @@ catalog:
     "@types/cli-progress": ^3.11.5
     "@types/columnify": ^1.5.4
     "@types/diff": ^5.0.3
+    "@types/git-url-parse": ^9.0.3
     "@types/glob": ^8.0.0
     "@types/inquirer": ^9.0.7
     "@types/jest": ^27.5.2
@@ -158,6 +160,7 @@ catalog:
     fuse.js: ^7.0.0
     fuzzysort: ^2.0.4
     get-youtube-id: ^1.0.1
+    git-url-parse: ^14.0.0
     glob: ^10.4.1
     husky: ^9.0.11
     inquirer: ^9.2.16

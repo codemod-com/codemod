@@ -1,4 +1,3 @@
-import * as os from "node:os";
 import { homedir } from "node:os";
 import { join } from "node:path";
 import type { GetUserDataResponse } from "@codemod-com/api-types";
@@ -6,60 +5,34 @@ import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import { glob } from "glob";
 import inquirer from "inquirer";
-import keytar from "keytar";
 import { getUserData } from "./apis";
 import { handleLoginCliCommand } from "./commands/login";
+import {
+  CredentialsStorage,
+  CredentialsStorageType,
+} from "./credentialsStorage";
 
 type UserData = GetUserDataResponse & {
-  account: string;
   token: string;
 };
 
-export const getUserCredentials = async (): Promise<{
-  account: string;
-  password: string;
-} | null> => {
-  try {
-    return (await keytar.findCredentials("codemod.com"))[0] ?? null;
-  } catch (err) {
-    if (os.platform() === "linux") {
-      throw new Error(
-        chalk(
-          `Codemod CLI uses "keytar" to store your credentials securely.`,
-          `\nPlease make sure you have "libsecret" installed on your system.`,
-          "\nDepending on your distribution, you will need to run the following command",
-          "\nDebian/Ubuntu:",
-          chalk.bold("sudo apt-get install libsecret-1-dev"),
-          "\nFedora:",
-          chalk.bold("sudo dnf install libsecret"),
-          "\nArch Linux:",
-          chalk.bold("sudo pacman -S libsecret"),
-          `\n\n${String(err)}`,
-        ),
-      );
-    }
-
-    throw err;
-  }
-};
+export const credentialsStorage = new CredentialsStorage();
 
 export const getCurrentUserData = async (): Promise<UserData | null> => {
-  const userCredentials = await getUserCredentials();
+  const token = await credentialsStorage.get(CredentialsStorageType.ACCOUNT);
 
-  if (!isNeitherNullNorUndefined(userCredentials)) {
+  if (!isNeitherNullNorUndefined(token)) {
     return null;
   }
-
-  const { account, password: token } = userCredentials;
 
   const responseData = await getUserData(token);
 
   if (responseData === null) {
-    await keytar.deletePassword("codemod.com", account);
+    await credentialsStorage.delete(CredentialsStorageType.ACCOUNT);
     return null;
   }
 
-  return { ...responseData, token, account: userCredentials.account };
+  return { ...responseData, token };
 };
 
 export const getCurrentUserOrLogin = async (options: {

@@ -7,7 +7,7 @@ import { logger } from "../helpers.js";
 /**
  * Get the default branch from a remote repository
  */
-const getDefaultBranchFromRemote = async (repository: string) => {
+export const getDefaultBranchFromRemote = async (repository: string) => {
   const stdout = await simpleGit().listRemote(["--symref", repository, "HEAD"]);
   return stdout.match(/refs\/heads\/(\S+)/m)?.[1];
 };
@@ -31,6 +31,44 @@ const ensureBranchHash = async ({
   const localHash = await simpleGit(cwd).revparse("HEAD");
   if (localHash !== hash) {
     await simpleGit(cwd).pull("origin", branch);
+  }
+};
+
+export const syncForkRepository = async (
+  key: string,
+  {
+    branch,
+    upstream,
+    fork,
+  }: { branch?: string; upstream: string; fork: string },
+) => {
+  const cwd = cwdContext.getStore();
+  invariant(cwd, "No cwd found");
+  const git = simpleGit(cwd.cwd);
+  const remoteDefaultBranch = await getDefaultBranchFromRemote(upstream);
+  invariant(
+    remoteDefaultBranch,
+    `No remote default branch found in ${upstream}`,
+  );
+  const remoteDefaultBranchHashes = await Promise.all([
+    getBranchHashFromRemote(upstream, remoteDefaultBranch),
+    getBranchHashFromRemote(fork, remoteDefaultBranch),
+  ]);
+  if (remoteDefaultBranchHashes[0] !== remoteDefaultBranchHashes[1]) {
+    const log = logger("Syncing forked repository");
+    try {
+      await git.addRemote("upstream", upstream);
+      await git.fetch("upstream", remoteDefaultBranch);
+      await git.checkout(branch || remoteDefaultBranch);
+      await git.mergeFromTo(
+        `upstream/${remoteDefaultBranch}`,
+        branch || remoteDefaultBranch,
+      );
+      await git.push("origin", branch || remoteDefaultBranch);
+      log.success();
+    } catch (error: any) {
+      log.fail(error.toString());
+    }
   }
 };
 
@@ -88,7 +126,7 @@ export const cloneRepository = async (
       (branchName) => branchName !== remoteDefaultBranch,
     );
     if (localBranches.length) {
-      await git.deleteLocalBranches(localBranches);
+      await git.deleteLocalBranches(localBranches, true);
     }
     return;
   }

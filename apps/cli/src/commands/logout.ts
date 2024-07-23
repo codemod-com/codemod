@@ -1,7 +1,7 @@
 import type { PrinterBlueprint } from "@codemod-com/printer";
-import keytar from "keytar";
 import { revokeCLIToken } from "../apis.js";
-import { getCurrentUserData } from "../utils.js";
+import { CredentialsStorageType } from "../credentialsStorage.js";
+import { credentialsStorage, getCurrentUserData } from "../utils.js";
 
 export const handleLogoutCliCommand = async (options: {
   printer: PrinterBlueprint;
@@ -21,7 +21,7 @@ export const handleLogoutCliCommand = async (options: {
     //
   }
 
-  await keytar.deletePassword("codemod.com", userData.account);
+  await credentialsStorage.delete(CredentialsStorageType.ACCOUNT);
 
   printer.printConsoleMessage("info", "You have been successfully logged out.");
 };

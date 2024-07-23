@@ -44,6 +44,7 @@ import { FileDownloadService } from "../fileDownloadService.js";
 import { handleInstallDependencies } from "../handleInstallDependencies.js";
 import { loadRepositoryConfiguration } from "../repositoryConfiguration.js";
 import { buildSafeArgumentRecord } from "../safeArgumentRecord.js";
+import { AuthService } from "../services/authService.js";
 import { getConfigurationDirectoryPath } from "../utils.js";
 
 const checkFileTreeVersioning = async (target: string) => {
@@ -377,7 +378,14 @@ export const handleRunCliCommand = async (options: {
     codemodDefinition.kind === "runOnPreCommit"
       ? codemodDefinition.codemods
       : [codemodDefinition.codemod];
-  const runner = new Runner(codemodsToRun, fs, runSettings, flowSettings);
+  const authService = new AuthService(printer);
+  const runner = new Runner(
+    codemodsToRun,
+    fs,
+    runSettings,
+    flowSettings,
+    authService,
+  );
 
   const depsToInstall: Record<
     string,

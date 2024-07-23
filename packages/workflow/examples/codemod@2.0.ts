@@ -1,4 +1,4 @@
-import type { Api } from "@codemod.com/workflow";
+import type { Api } from "../src/index.js";
 
 export async function workflow({ files }: Api) {
   await files(`**/*.input.ts`).jsFam().astGrep("$SCHEMA($$$REST, [$$$ACTIONS])")
