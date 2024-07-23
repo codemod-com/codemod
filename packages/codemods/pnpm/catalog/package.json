@@ -5,7 +5,7 @@
     "@types/node": "20.9.0",
     "typescript": "^5.2.2",
     "vitest": "^1.0.1",
-    "@codemod.com/workflow": "workspace:*",
+    "@codemod.com/workflow": "catalog:",
     "semver": "^7.6.2",
     "@types/semver": "^7.5.8"
   },

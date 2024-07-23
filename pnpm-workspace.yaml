@@ -11,20 +11,24 @@ catalog:
     "@aws-sdk/s3-request-presigner": ^3.549.0
     "@babel/plugin-syntax-flow": ^7.14.5
     "@babel/plugin-transform-react-jsx": ^7.14.9
-    "@babel/preset-typescript": ^7.24.1
+    "@babel/preset-react": ^7.24.7
+    "@babel/preset-typescript": ^7.24.7
+    "@babel/standalone": ^7.24.9
     "@babel/traverse": 7.24.1
-    "@biomejs/biome": 1.5.3
+    "@biomejs/biome": ^1.6.4
     "@clerk/backend": ^1.2.1
     "@clerk/clerk-react": 4.30.3
     "@clerk/fastify": ^1.0.12
     "@clerk/nextjs": 5.0.9
     "@clerk/themes": 1.7.10
+    "@codemod.com/workflow": 0.0.16
     "@faker-js/faker": ^8.4.1
     "@fastify/busboy": ^2.1.1
     "@fastify/cors": 8.5.0
     "@fastify/multipart": ^8.1.0
     "@fastify/rate-limit": 9.0.1
     "@hookform/resolvers": ^3.3.2
+    "@loancrate/prisma-schema-parser": ^2.0.0
     "@phosphor-icons/react": ^2.0.10
     "@portabletext/react": ^3.0.11
     "@portabletext/types": ^2.0.8
@@ -44,6 +48,7 @@ catalog:
     "@radix-ui/react-toast": ^1.1.5
     "@radix-ui/react-tooltip": ^1.0.6
     "@reduxjs/toolkit": ^1.9.5
+    "@sanity/client": ^6.21.0
     "@sanity/code-input": ^4.1.3
     "@sanity/orderable-document-list": ^1.2.1
     "@sanity/preview-url-secret": ^1.6.3
@@ -53,6 +58,7 @@ catalog:
     "@sindresorhus/slugify": ^2.2.1
     "@slack/web-api": ^7.2.0
     "@svgr/hast-util-to-babel-ast": ^7.0.0
+    "@swc/wasm-web": ^1.6.7
     "@t3-oss/env-nextjs": ^0.7.1
     "@tailwindcss/typography": 0.5.10
     "@testing-library/dom": ^9.0.0
@@ -66,7 +72,8 @@ catalog:
     "@tiptap/pm": ^2.1.8
     "@tiptap/react": ^2.1.8
     "@tiptap/starter-kit": ^2.1.8
-    "@total-typescript/ts-reset": ^0.5.1
+    "@total-typescript/ts-reset": ^0.4.2
+    "@types/babel__standalone": ^7.1.7
     "@types/babel__traverse": ^7.20.1
     "@types/blessed": ^0.1.25
     "@types/chai": ^4.3.4
@@ -99,6 +106,7 @@ catalog:
     "@types/unzipper": ^0.10.9
     "@types/vscode": ^1.74.0
     "@types/vscode-webview": ^1.57.1
+    "@types/ws": ^8.5.11
     "@types/yargs": ^17.0.13
     "@vercel/analytics": ^1.2.2
     "@vercel/stega": ^0.1.0
@@ -130,6 +138,8 @@ catalog:
     clsx: ^2.0.0
     colors-cli: ^1.0.33
     columnify: ^1.6.0
+    commitizen: ^4.3.0
+    concurrently: ^8.2.0
     constants-browserify: ^1.0.0
     cosmiconfig: ^8.3.6
     cron: ^3.1.6
@@ -137,12 +147,14 @@ catalog:
     csstype: ^3.1.1
     csv-parser: ^3.0.0
     cva: npm:class-variance-authority@^0.7.0
+    cz-conventional-changelog: ^3.3.0
     detect-indent: ^7.0.1
     detect-newline: ^4.0.1
     diff: ^5.1.0
     dotenv: ^16.4.5
     dotenv-cli: ^7.4.1
     esbuild-plugin-copy: ^2.1.1
+    esbuild-wasm: ^0.23.0
     eslint: 8.56.0
     eslint-config-next: 14.1.0
     eslint-config-prettier: ^9.1.0
@@ -159,7 +171,7 @@ catalog:
     fuzzysort: ^2.0.4
     get-youtube-id: ^1.0.1
     glob: ^10.4.1
-    husky: ^9.0.11
+    husky: ^8.0.3
     inquirer: ^9.2.16
     intro.js: ^7.2.0
     intro.js-react: ^1.0.0
@@ -174,6 +186,7 @@ catalog:
     katex: ^0.16.10
     keytar: ^7.9.0
     langchain: 0.0.209
+    lint-staged: ^15.1.0
     lodash-es: ^4.17.21
     lottie-react: ^2.4.0
     lowlight: ^3.0.0
@@ -211,10 +224,12 @@ catalog:
     prettyjson: ^1.2.5
     prism-react-renderer: ^2.3.1
     prisma: ^5.14.0
+    prisma-json-types-generator: ^3.0.4
     prop-types: ^15.8.1
     ramda: ^0.29.1
     raw-loader: ^4.0.2
     rc-progress: ^3.4.1
+    react-arborist: ^3.4.0
     react-chartjs-2: ^5.2.0
     react-hook-form: ^7.48.2
     react-hot-toast: ^2.4.0
@@ -238,6 +253,7 @@ catalog:
     sanity-plugin-documents-pane: ^2.2.1
     sanity-plugin-media: ^2.2.5
     sanity-plugin-mux-input: ^2.2.4
+    semantic-release: ^24.0.0
     server-only: 0.0.1
     simple-git: ^3.24.0
     sinon: ^15.0.1
@@ -259,12 +275,14 @@ catalog:
     ts-node-dev: ^2.0.0
     tslib: 2.4.1
     tsup: ^8.1.0
+    turbo: ^1.10.14
     umd-compat-loader: ^2.1.2
     unified: ^10.1.2
     unist-util-filter: ^5.0.1
     unist-util-visit: ^5.0.0
     universal-base64url: ^1.1.0
     unzipper: ^0.11.6
+    use-resize-observer: ^9.1.0
     valibot: ^0.24.1
     vaul: ^0.9.0
     vite: ^4.5.3
@@ -276,6 +294,7 @@ catalog:
     webpack: 5.91.0
     webpack-cli: 5.1.4
     wrap-ansi: ^9.0.0
+    ws: ^8.18.0
     yaml: ^2.4.5
     yargs: ^17.6.2
     zod: 3.22.3
