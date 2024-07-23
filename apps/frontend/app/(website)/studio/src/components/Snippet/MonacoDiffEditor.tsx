@@ -1,5 +1,6 @@
 import { useTheme } from "@context/useTheme";
 import { DiffEditor, type DiffEditorProps } from "@monaco-editor/react";
+import { defaultOptions } from "@studio/components/Snippet/consts";
 import type { monaco } from "@studio/customMonaco";
 import type { VisibilityOptions } from "@studio/types/options";
 import { useRef, useState } from "react";
@@ -13,19 +14,6 @@ type CustomProps = {
   leftPaneVisibilityOptions?: VisibilityOptions;
   renderSideBySide: boolean;
 };
-
-const defaultOptions = {
-  wordWrap: "on",
-  wrappingIndent: "indent",
-  minimap: {
-    enabled: false,
-  },
-  renderOverviewRuler: false,
-  diffOverviewRuler: false,
-  fixedOverflowWidgets: true,
-  // removes scroll after last line
-  scrollBeyondLastLine: false,
-} as const;
 
 const MonacoDiffEditor = ({
   originalEditorProps,
@@ -50,6 +38,13 @@ const MonacoDiffEditor = ({
       }}
       language="typescript"
       theme={isDark ? "vs-dark" : "vs"}
+      style={{
+        ".monaco-editor .monaco-editor-overlaymessage": {
+          maxWidth: "400px",
+          whiteSpace: "normal",
+          wordWrap: "break-word",
+        },
+      }}
       options={{
         ...(options ?? {}),
         ...defaultOptions,
