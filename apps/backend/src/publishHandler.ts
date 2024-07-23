@@ -20,7 +20,8 @@ import {
 } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
-import { getCodemodExecutable } from "@codemod-com/runner";
+// Direct import because tree-shaking helps this to not throw.
+import { getCodemodExecutable } from "@codemod-com/runner/dist/source-code.js";
 import {
   type CodemodConfig,
   TarService,
@@ -41,6 +42,13 @@ export type PublishHandlerResponse = ApiResponse<PublishResponse>;
 export const publishHandler: RouteHandler<{
   Reply: PublishHandlerResponse;
 }> = async (request: UserDataPopulatedRequest, reply) => {
+  const unpackPath = join(
+    homedir(),
+    ".codemod",
+    "temp",
+    randomBytes(4).toString("hex"),
+  );
+
   try {
     const organizations = request.organizations!;
 
@@ -79,13 +87,12 @@ export const publishHandler: RouteHandler<{
     }
 
     const tarService = new TarService(fs);
-    const unpackedPath = join(homedir(), ".codemod", "temp");
-    await tarService.unpack(unpackedPath, codemodArchiveBuffer);
+    await tarService.unpack(unpackPath, codemodArchiveBuffer);
 
     let codemodRcContents: string;
     try {
       codemodRcContents = await fs.promises.readFile(
-        join(unpackedPath, ".codemodrc.json"),
+        join(unpackPath, ".codemodrc.json"),
         { encoding: "utf-8" },
       );
     } catch (err) {
@@ -123,23 +130,16 @@ export const publishHandler: RouteHandler<{
       }
     } else {
       const { path } = await getEntryPath({
-        source: unpackedPath,
+        source: unpackPath,
         throwOnNotFound: false,
       });
 
-      if (path === null) {
-        return reply.code(400).send({
-          error: NO_MAIN_FILE_FOUND,
-          errorText: "No main file was provided",
-        });
-      }
-
       const built = await getCodemodExecutable({
-        path,
+        path: unpackPath,
         config: codemodRc,
       }).catch(() => null);
 
-      if (built === null) {
+      if (path === null || built === null) {
         return reply.code(400).send({
           error: NO_MAIN_FILE_FOUND,
           errorText: "No main file was provided",
@@ -256,7 +256,7 @@ export const publishHandler: RouteHandler<{
     let readmeContents: string | null = null;
     try {
       readmeContents = await fs.promises.readFile(
-        join(unpackedPath, "README.md"),
+        join(unpackPath, "README.md"),
         { encoding: "utf-8" },
       );
     } catch (err) {
@@ -432,6 +432,11 @@ export const publishHandler: RouteHandler<{
     return reply.code(500).send({
       error: INTERNAL_SERVER_ERROR,
       errorText: `Failed calling publish endpoint: ${(err as Error).message}`,
+    });
+  } finally {
+    await fs.promises.rm(unpackPath, {
+      recursive: true,
+      force: true,
     });
   }
 };

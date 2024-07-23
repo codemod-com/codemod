@@ -11,11 +11,10 @@ import {
   NO_MAIN_FILE_FOUND,
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
+import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
 import { type CodemodConfigInput, TarService } from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
-
-const TAR_SERVICE_PACK_RETURN = "archive";
 
 const GET_USER_RETURN = {
   user: {
@@ -34,11 +33,6 @@ const MOCK_TIMESTAMP = "timestamp";
 const mocks = vi.hoisted(() => {
   const S3Client = vi.fn();
   S3Client.prototype.send = vi.fn();
-
-  const TarService = vi.fn();
-  TarService.prototype.pack = vi
-    .fn()
-    .mockImplementation(() => TAR_SERVICE_PACK_RETURN);
 
   const PutObjectCommand = vi.fn();
 
@@ -62,7 +56,6 @@ const mocks = vi.hoisted(() => {
       post: vi.fn().mockImplementation(() => ({})),
     },
     S3Client,
-    TarService,
     PutObjectCommand,
   };
 });
@@ -72,12 +65,6 @@ vi.mock("@codemod-com/database", async () => {
 
   return { ...actual, prisma: mocks.prisma };
 });
-
-// vi.mock("@codemod-com/runner", async () => {
-//   const actual = await vi.importActual("@codemod-com/runner");
-
-//   return actual;
-// });
 
 vi.mock("axios", async () => {
   return { default: mocks.axios };
@@ -102,15 +89,6 @@ vi.mock("./services/tokenService.js", async () => {
     .mockImplementation(() => "userId");
 
   return { ...actual, TokenService };
-});
-
-vi.mock("@codemod-com/utilities", async () => {
-  const actual = await vi.importActual("@codemod-com/utilities");
-
-  return {
-    ...actual,
-    TarService: mocks.TarService,
-  };
 });
 
 vi.stubGlobal("fetch", vi.fn());
@@ -190,10 +168,6 @@ describe("/publish route", async () => {
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
 
-    const tarServiceInstance = mocks.TarService.mock.instances[0];
-    expect(tarServiceInstance.unpack).toHaveBeenCalledOnce();
-    expect(tarServiceInstance.unpack).toHaveBeenCalledWith(codemodArchiveBuf);
-
     const hashDigest = createHash("ripemd160")
       .update(codemodRcContents.name)
       .digest("base64url");
@@ -203,9 +177,9 @@ describe("/publish route", async () => {
 
     expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
     expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-      Bucket: "codemod-public",
+      Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-      Body: TAR_SERVICE_PACK_RETURN,
+      Body: codemodArchiveBuf,
     });
 
     expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -248,7 +222,9 @@ describe("/publish route", async () => {
     const expectedCode = 400;
 
     const archiveWithoutMainFile = await tarService.pack(
-      fileArray.filter((f) => f.name !== "/src/index.ts"),
+      fileArray.filter(
+        (f) => f.name !== "/src/index.ts" && f.name !== BUILT_SOURCE_PATH,
+      ),
     );
 
     const response = await supertest(fastify.server)
@@ -520,7 +496,7 @@ describe("/publish route", async () => {
       };
 
       const updatedArchive = await tarService.pack([
-        ...fileArray,
+        ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",
           data: Buffer.from(JSON.stringify(codemodRcContents), "utf8"),
@@ -572,7 +548,7 @@ describe("/publish route", async () => {
       };
 
       const updatedArchive = await tarService.pack([
-        ...fileArray,
+        ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",
           data: Buffer.from(JSON.stringify(codemodRcContents), "utf8"),

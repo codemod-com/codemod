@@ -6151,7 +6151,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -6267,7 +6267,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -30969,7 +30969,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
