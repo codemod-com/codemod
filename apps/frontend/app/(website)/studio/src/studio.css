@@ -303,3 +303,7 @@
     @apply bg-background text-foreground;
 }
 
+.monaco-hover {
+    max-width: 500px !important;
+    z-index: 500;
+}

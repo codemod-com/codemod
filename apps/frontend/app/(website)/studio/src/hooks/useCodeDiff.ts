@@ -1,5 +1,5 @@
 import { useCodemodOutputUpdate } from "@/app/(website)/studio/features/codemod-apply/useCodemodOutputUpdate";
-import { useSnippet } from "@studio/main/SnippetUI";
+import { useSnippet } from "@studio/components/Snippet/SnippetUI";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";

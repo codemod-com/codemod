@@ -1,11 +1,12 @@
+import { defaultOptions } from "@studio/components/Snippet/consts";
+import type { SnippetType } from "@studio/main/PageBottomPane";
 import type { OffsetRange } from "@studio/schemata/offsetRangeSchemata";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useRangesOnTarget } from "@studio/store/utils/useRangesOnTarget";
 import { prettify } from "@studio/utils/prettify";
 import dynamic from "next/dynamic";
-import type { SnippetType } from "./PageBottomPane";
 
-const CodeSnippet = dynamic(() => import("@studio/components/Snippet"), {
+const CodeSnippet = dynamic(() => import("@studio/components/Snippet/index"), {
   loading: () => <p>Loading...</p>,
   ssr: false,
 });
@@ -59,6 +60,7 @@ const SnippetUI = ({ type }: Props) => {
     <div className="h-full overflow-hidden">
       <div className="h-full grow">
         <CodeSnippet
+          options={defaultOptions}
           highlights={ranges}
           language="typescript"
           onBlur={onSnippetBlur}
