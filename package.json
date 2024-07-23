@@ -42,6 +42,7 @@
     "lint:write": "biome check --write --diagnostic-level=error .",
     "lint:linter": "biome lint --write --diagnostic-level=error .",
     "lint:formatter": "biome format --write --diagnostic-level=error .",
+    "test:silent": "pnpm run test:unit --silent && pnpm run test:backend --silent",
     "test": "pnpm run test:unit && pnpm run test:backend",
     "test:unit": "vitest run --exclude \"(apps/backend/**/*.*|packages/codemods/next/13/app-directory-boilerplate/test/test.win.ts)\"",
     "test:backend": "pnpm --filter @codemod-com/backend test",

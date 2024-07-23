@@ -27,6 +27,7 @@ export default defineConfig({
       AWS_PUBLIC_BUCKET_NAME: "codemod-test",
       AWS_PRIVATE_BUCKET_NAME: "codemod-test",
     },
+    exclude: [...configDefaults.exclude, "./packages/deprecated/**"],
     poolOptions: {
       vmThreads: {
         memoryLimit: 4096,

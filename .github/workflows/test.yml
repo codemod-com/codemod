@@ -15,8 +15,6 @@ jobs:
     strategy:
       matrix:
         include:
-          - os: macos-latest
-            db_required: false
           - os: ubuntu-latest
             db_required: true
           - os: windows-latest
@@ -59,10 +57,8 @@ jobs:
         run: |
           if [[ ${{ matrix.os }} == "windows-latest" ]]; then
             pnpm test:win
-          elif [[ ${{ matrix.os }} == "macos-latest" ]]; then
-            pnpm test --filter=!@codemod-com/backend
           else
-            pnpm build --filter @codemod-com/auth && pnpm build --filter @codemod-com/database && pnpm test
+            pnpm build --filter @codemod-com/backend && pnpm test
           fi
         shell: bash
         env:
