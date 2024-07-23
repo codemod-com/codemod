@@ -7,8 +7,8 @@ import { join } from "node:path";
 import { afterAll, describe, it } from "vitest";
 
 import type { ConsoleKind } from "@codemod-com/printer";
-import type { CodemodConfig } from "@codemod-com/utilities";
 
+import type { CodemodConfigInput } from "@codemod-com/utilities";
 import { runTsMorphCodemod } from "../src/engines/ts-morph.js";
 import { getCodemodExecutable } from "../src/source-code.js";
 
@@ -31,20 +31,25 @@ export const handleSourceFile = (
 const testTempDir = join(homedir(), ".codemod", "test-temp");
 
 describe("runTsMorphCodemod", async () => {
-  const codemodName = randomBytes(4).toString("hex");
+  const codemodName = randomBytes(8).toString("hex");
   const directoryPath = join(testTempDir, codemodName);
-  const distPath = join(directoryPath, "cdmd_dist");
+  const srcPath = join(directoryPath, "src");
 
-  await mkdir(distPath, { recursive: true });
-  await writeFile(join(distPath, `${codemodName}.ts`), codemodSource);
+  await mkdir(srcPath, { recursive: true });
+  await writeFile(join(srcPath, "index.ts"), codemodSource);
+  await writeFile(
+    join(directoryPath, ".codemodrc.json"),
+    JSON.stringify({
+      name: "test",
+      engine: "ts-morph",
+      version: "0.0.0",
+    } satisfies CodemodConfigInput),
+  );
 
-  const compiledSource = await getCodemodExecutable({
-    config: {} as CodemodConfig,
-    path: directoryPath,
-  });
+  const compiledSource = await getCodemodExecutable(directoryPath);
 
   afterAll(async () => {
-    await rmdir(directoryPath);
+    await rmdir(directoryPath, { recursive: true });
   });
 
   it("should return transformed output", () => {
