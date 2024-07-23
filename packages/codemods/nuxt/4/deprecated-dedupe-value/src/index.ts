@@ -1,10 +1,4 @@
-import {
-  type API,
-  type FileInfo,
-  type ObjectExpression,
-  ObjectProperty,
-  type Options,
-} from "jscodeshift";
+import type { API, FileInfo, ObjectExpression, Options } from "jscodeshift";
 
 export default function transform(
   file: FileInfo,
@@ -13,6 +7,7 @@ export default function transform(
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
+  let isDirty = false;
 
   root
     .find(j.AwaitExpression, {
@@ -60,6 +55,7 @@ export default function transform(
                 prop.value = j.stringLiteral(
                   (prop.value as any).value ? "cancel" : "defer",
                 );
+                isDirty = true;
               }
             }
           });
@@ -67,5 +63,5 @@ export default function transform(
       }
     });
 
-  return root.toSource(options);
+  return isDirty ? root.toSource(options) : undefined;
 }

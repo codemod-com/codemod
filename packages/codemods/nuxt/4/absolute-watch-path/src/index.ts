@@ -13,6 +13,8 @@ export default function transform(
   const j = api.jscodeshift;
   const root = j(file.source);
 
+  let isDirty = false;
+
   // Add the necessary import statements
   const importStatement = j.importDeclaration(
     [
@@ -50,15 +52,18 @@ export default function transform(
             path.node.specifiers!.push(
               j.importSpecifier(j.identifier("relative")),
             );
+            isDirty = true;
           }
           if (!hasResolve) {
             path.node.specifiers!.push(
               j.importSpecifier(j.identifier("resolve")),
             );
+            isDirty = true;
           }
         });
       } else {
         root.get().node.program.body.unshift(importStatement);
+        isDirty = true;
       }
     }
   };
@@ -117,15 +122,17 @@ export default function transform(
 
           if (j.BlockStatement.check(arrowFunction.body)) {
             arrowFunction.body.body.unshift(relativeResolveStatement);
+            isDirty = true;
           } else {
             arrowFunction.body = j.blockStatement([
               relativeResolveStatement,
               j.returnStatement(arrowFunction.body),
             ]);
+            isDirty = true;
           }
         }
       }
     });
 
-  return root.toSource(options);
+  return isDirty ? root.toSource(options) : undefined;
 }

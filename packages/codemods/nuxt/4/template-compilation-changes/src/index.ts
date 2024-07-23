@@ -7,6 +7,7 @@ export default function transform(
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
+  let isDirty = false;
 
   // Add the necessary import statements
   const importStatements = [
@@ -108,6 +109,8 @@ export default function transform(
             ),
           );
 
+          isDirty = true;
+
           // Add the import statements if they are not already present
           const existingImportDeclarations = root.find(j.ImportDeclaration);
           importStatements.forEach((importStatement) => {
@@ -118,11 +121,12 @@ export default function transform(
 
             if (!isAlreadyImported) {
               root.get().node.program.body.unshift(importStatement);
+              isDirty = true;
             }
           });
         }
       }
     });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }

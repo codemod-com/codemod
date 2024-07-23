@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "name": "nuxt/4/deprecated-dedupe-value",
   "engine": "jscodeshift",
@@ -12,5 +12,5 @@
     "tags": ["nuxt", "4", "migration"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/nuxt/4/deprecated-dedupe-value"
   },
-  "include": ["**/*.js", "**/*.ts", "**/*.vue"]
+  "include": ["**/*.js", "**/*.jsx", "**/*.ts", "**/*.tsx", "**/*.vue"]
 }

@@ -7,6 +7,7 @@ export default function transform(
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
+  let isDirty = false;
 
   // Helper function to preserve comments
   function replaceWithComments(path, newNode) {
@@ -47,6 +48,7 @@ export default function transform(
 
           // Replace the node with the new node, preserving comments
           replaceWithComments(path, path.node);
+          isDirty = true;
         }
       });
   });
@@ -83,8 +85,9 @@ export default function transform(
 
         // Replace the node with the new node, preserving comments
         replaceWithComments(path, path.node);
+        isDirty = true;
       }
     });
 
-  return root.toSource();
+  return isDirty ? root.toSource() : undefined;
 }
