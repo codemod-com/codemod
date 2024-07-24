@@ -57,7 +57,11 @@ export const syncForkRepository = async (
   if (remoteDefaultBranchHashes[0] !== remoteDefaultBranchHashes[1]) {
     const log = logger("Syncing forked repository");
     try {
-      await git.addRemote("upstream", upstream);
+      if (
+        !(await git.getRemotes()).some((remote) => remote.name === "upstream")
+      ) {
+        await git.addRemote("upstream", upstream);
+      }
       await git.fetch("upstream", remoteDefaultBranch);
       await git.checkout(branch || remoteDefaultBranch);
       await git.mergeFromTo(
