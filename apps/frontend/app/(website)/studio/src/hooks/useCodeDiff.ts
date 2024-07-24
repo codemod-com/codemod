@@ -20,6 +20,7 @@ export const useCodeDiff = () => {
   const { setActiveTab } = useViewStore();
 
   const {
+    beforeSnippet,
     outputSnippet,
     afterSnippet,
     after: { ranges: afterInputRanges = [] },
