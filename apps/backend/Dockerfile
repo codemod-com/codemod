@@ -25,6 +25,10 @@ COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/reset.d.ts /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
+COPY ./node_modules/@prisma /app/node_modules/@prisma/
+COPY ./node_modules/prisma-json-types-generator /app/node_modules/prisma-json-types-generator/
+COPY ./node_modules/prisma /app/node_modules/prisma/
+
 RUN pnpm build --filter @codemod-com/backend
 
 FROM node:20-alpine3.16
@@ -37,6 +41,10 @@ COPY --from=builder /app/apps/backend/package.json /app
 COPY --from=builder /app/apps/backend/build /app/build
 COPY --from=builder /app/packages /app/packages
 
+COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma/
+COPY --from=builder /app/node_modules/prisma-json-types-generator /app/node_modules/prisma-json-types-generator/
+COPY --from=builder /app/node_modules/prisma /app/node_modules/prisma/
+
 EXPOSE 8081
 
-CMD cd packages/database && pnpx prisma migrate deploy && pnpx prisma generate && cd - && node build/index.js
+CMD cd packages/database && pnpm db:migrate:deploy && pnpm db:generate && cd - && node build/index.js
