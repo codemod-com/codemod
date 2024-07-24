@@ -2,7 +2,6 @@ import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
-
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 
@@ -15,7 +14,6 @@ import {
   execPromise,
   getCodemodProjectFiles,
 } from "@codemod-com/utilities";
-
 import { getCurrentUserData } from "#auth-utils.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [

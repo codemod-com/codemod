@@ -23,7 +23,6 @@ import {
 } from "@codemod-com/filemod";
 import type { Printer } from "@codemod-com/printer";
 import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
-
 import { defaultParser } from "#parsers/jscodeshift.js";
 import { isTheSameData } from "#utils.js";
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";

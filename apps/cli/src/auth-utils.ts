@@ -1,11 +1,10 @@
 import { backOff } from "exponential-backoff";
+import inquirer from "inquirer";
 import open from "open";
 
 import type { GetUserDataResponse } from "@codemod-com/api-types";
 import { type Printer, chalk } from "@codemod-com/printer";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-
-import inquirer from "inquirer";
 import { getGithubAPIKey, getGithubAvailableScope, getUserData } from "#api.js";
 import {
   CredentialsStorageType,

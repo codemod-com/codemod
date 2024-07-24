@@ -1,3 +1,4 @@
+import { Octokit } from "@octokit/rest";
 import Axios, { AxiosError, type RawAxiosRequestHeaders } from "axios";
 
 import type {
@@ -8,7 +9,6 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
-import { Octokit } from "@octokit/rest";
 
 export const extractCLIApiError = (err: unknown): string => {
   if (!(err instanceof Error)) {

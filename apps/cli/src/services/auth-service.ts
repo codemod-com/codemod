@@ -1,6 +1,5 @@
 import type { Printer } from "@codemod-com/printer";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
-
 import { getGithubAPIKey, getGithubAvailableScope } from "#api.js";
 import {
   getCurrentUserOrLogin,

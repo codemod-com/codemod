@@ -6,7 +6,6 @@ import unzipper from "unzipper";
 import { chalk } from "@codemod-com/printer";
 import { doubleQuotify } from "@codemod-com/utilities";
 import { execPromise } from "@codemod-com/utilities";
-
 import { version } from "#/../package.json";
 
 export const codemodDirectoryPath = join(os.homedir(), ".codemod");

@@ -3,7 +3,6 @@ import terminalLink from "terminal-link";
 
 import { type Printer, chalk } from "@codemod-com/printer";
 import { doubleQuotify } from "@codemod-com/utilities";
-
 import { getCodemodList } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 

@@ -1,5 +1,4 @@
 import { type Printer, chalk } from "@codemod-com/printer";
-
 import { getCurrentUserData, getOrgsNames } from "#auth-utils.js";
 
 export const handleWhoAmICommand = async (options: {

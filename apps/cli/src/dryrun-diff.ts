@@ -1,10 +1,8 @@
 import { basename } from "node:path";
-
 import blessed from "blessed";
 import * as diff from "diff";
 
 import { boxen, chalk } from "@codemod-com/printer";
-
 import type { NamedFileCommand } from "#types/commands.js";
 
 interface DiffResult {

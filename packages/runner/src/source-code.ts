@@ -1,12 +1,10 @@
+import { readFile } from "node:fs/promises";
 import nodePath, { join, resolve } from "node:path";
-
 import esbuild from "esbuild";
 import tsmorph from "ts-morph";
 
 import type { Filemod } from "@codemod-com/filemod";
 import { getEntryPath } from "@codemod-com/utilities";
-
-import { readFile } from "node:fs/promises";
 import type { Dependencies } from "#engines/filemod.js";
 
 export const getTransformer = (source: string) => {

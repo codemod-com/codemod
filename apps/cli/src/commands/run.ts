@@ -2,7 +2,6 @@ import { randomBytes } from "node:crypto";
 import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
-
 import { AxiosError } from "axios";
 import inquirer from "inquirer";
 import prettyjson from "prettyjson";
@@ -18,7 +17,6 @@ import {
   execPromise,
   getCodemodRc,
 } from "@codemod-com/utilities";
-
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod } from "#fetch-codemod.js";

@@ -2,7 +2,6 @@ import { backOff } from "exponential-backoff";
 import open from "open";
 
 import { type Printer, chalk } from "@codemod-com/printer";
-
 import {
   confirmUserLoggedIn,
   generateUserLoginIntent,

@@ -1,7 +1,6 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { join } from "node:path";
-
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
@@ -19,7 +18,6 @@ import {
   getCodemodRc,
   getEntryPath,
 } from "@codemod-com/utilities";
-
 import { version as cliVersion } from "#/../package.json";
 import { extractCLIApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";

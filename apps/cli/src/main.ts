@@ -10,7 +10,6 @@ import {
   type TelemetrySender,
 } from "@codemod-com/telemetry";
 import { doubleQuotify, execPromise } from "@codemod-com/utilities";
-
 import { version } from "#/../package.json";
 import { handleFeedbackCommand } from "#commands/feedback.js";
 import { handleInitCliCommand } from "#commands/init.js";

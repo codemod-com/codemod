@@ -9,7 +9,6 @@ import type {
   EngineOptions,
   FileCommand,
 } from "@codemod-com/utilities";
-
 import { getAdapterByExtname } from "#adapters/index.js";
 import { CONSOLE_OVERRIDE } from "#constants.js";
 import { defaultParser } from "#parsers/jscodeshift.js";

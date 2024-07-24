@@ -1,5 +1,6 @@
 import { dirname, join, relative, resolve } from "node:path";
 import { Worker } from "node:worker_threads";
+
 import {
   type MainThreadMessage,
   type OperationMessage,
