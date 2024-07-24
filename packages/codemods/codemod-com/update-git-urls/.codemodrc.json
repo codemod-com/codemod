@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "codemod-com/update-git-urls",
+  "private": false,
+  "engine": "filemod",
+  "applicability": {},
+  "meta": {
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/codemod-com/update-git-urls",
+    "tags": ["migration", "prisma"]
+  }
+}
