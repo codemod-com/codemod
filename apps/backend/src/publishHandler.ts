@@ -380,7 +380,7 @@ export const publishHandler: RouteHandler<{
       return reply.code(200).send({ name, version: codemodRc.version });
     }
 
-    if (latestVersion === null) {
+    if (latestVersion === null && !isVerified) {
       try {
         await axios.post(
           "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
