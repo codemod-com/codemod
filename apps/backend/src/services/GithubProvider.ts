@@ -1,3 +1,6 @@
+import axios, { type AxiosResponse } from "axios";
+import gh from "parse-github-url";
+
 import type {
   Assignee,
   CreatePRParams,
@@ -9,8 +12,7 @@ import type {
   NewIssueParams,
   PullRequest,
 } from "@codemod-com/api-types";
-import axios, { type AxiosResponse } from "axios";
-import gh from "parse-github-url";
+
 import type { SourceControlProvider } from "./SourceControl.js";
 
 type Repository = {

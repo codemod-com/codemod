@@ -113,18 +113,10 @@ The `.codemodrc.json` configuration file includes several metafields that can be
   </Expandable>
 </ResponseField>
 
-<ResponseField name="build" type="object">
-  Specifies custom paths for the build input and output files.
+<ResponseField name="entry" type="string">
+  Can be used to specify custom entrypoint path of the codemod.
 
-  <Expandable title="Build child fields">
-    <ResponseField name="input" type="string">
-      Specifies the path to the input file.
-    </ResponseField>
-
-    <ResponseField name="output" type="string">
-      Specifies the path to the output file.
-    </ResponseField>
-  </Expandable>
+  <Note>By default, the entrypoint path is determined by the engine. JavaScript engines use `src/index.{js,ts}` path and ast-grep uses `**/rule.yaml` patterns.</Note>
 </ResponseField>
 
 ## Codemod package structure

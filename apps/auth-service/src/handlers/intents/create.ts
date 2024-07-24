@@ -1,8 +1,11 @@
 import { randomBytes } from "node:crypto";
+
+import type { RouteHandler } from "fastify";
+
 import { prisma } from "@codemod-com/database";
 import { encryptWithIv } from "@codemod-com/utilities";
-import type { RouteHandler } from "fastify";
-import { environment } from "../../util";
+
+import { environment } from "../../util.js";
 
 export type CreateLoginIntentReply = { id: string; iv: string };
 

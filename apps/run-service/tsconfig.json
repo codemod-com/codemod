@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "~/*": ["src/*"]
-    }
+    "baseUrl": "."
   },
   "include": ["reset.d.ts", "./src", "./test"],
   "exclude": ["./dist", "./node_modules"],

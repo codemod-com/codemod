@@ -1,4 +1,9 @@
 import { createHash } from "node:crypto";
+import * as fs from "node:fs";
+
+import supertest from "supertest";
+import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
+
 import {
   CODEMOD_NAME_TAKEN,
   CODEMOD_VERSION_EXISTS,
@@ -6,12 +11,10 @@ import {
   NO_MAIN_FILE_FOUND,
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
-import type { CodemodConfigInput } from "@codemod-com/utilities";
-import supertest from "supertest";
-import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
-import { runServer } from "./server.js";
+import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
+import { type CodemodConfigInput, TarService } from "@codemod-com/utilities";
 
-const TAR_SERVICE_PACK_RETURN = "archive";
+import { runServer } from "./server.js";
 
 const GET_USER_RETURN = {
   user: {
@@ -30,11 +33,6 @@ const MOCK_TIMESTAMP = "timestamp";
 const mocks = vi.hoisted(() => {
   const S3Client = vi.fn();
   S3Client.prototype.send = vi.fn();
-
-  const TarService = vi.fn();
-  TarService.prototype.pack = vi
-    .fn()
-    .mockImplementation(() => TAR_SERVICE_PACK_RETURN);
 
   const PutObjectCommand = vi.fn();
 
@@ -58,7 +56,6 @@ const mocks = vi.hoisted(() => {
       post: vi.fn().mockImplementation(() => ({})),
     },
     S3Client,
-    TarService,
     PutObjectCommand,
   };
 });
@@ -94,15 +91,6 @@ vi.mock("./services/tokenService.js", async () => {
   return { ...actual, TokenService };
 });
 
-vi.mock("@codemod-com/utilities", async () => {
-  const actual = await vi.importActual("@codemod-com/utilities");
-
-  return {
-    ...actual,
-    TarService: mocks.TarService,
-  };
-});
-
 vi.stubGlobal("fetch", vi.fn());
 
 describe("/publish route", async () => {
@@ -132,8 +120,28 @@ describe("/publish route", async () => {
   };
 
   const codemodRcBuf = Buffer.from(JSON.stringify(codemodRcContents), "utf8");
-  const indexCjsBuf = Buffer.from("Code...", "utf8");
+  const entryFileBuf = Buffer.from("Code...", "utf8");
+  const builtFileBuf = Buffer.from("Code...", "utf8");
   const readmeBuf = Buffer.from("README", "utf8");
+  const packageJsonBuf = Buffer.from(
+    JSON.stringify({
+      name: "mycodemod",
+      version: "1.0.0",
+      main: "index.cjs",
+    }),
+    "utf8",
+  );
+
+  const fileArray: { name: string; data: Buffer }[] = [
+    { name: ".codemodrc.json", data: codemodRcBuf },
+    { name: "package.json", data: packageJsonBuf },
+    { name: "/src/index.ts", data: entryFileBuf },
+    { name: "/cdmd_dist/index.cjs", data: builtFileBuf },
+    { name: "README.md", data: readmeBuf },
+  ];
+
+  const tarService = new TarService(fs);
+  const codemodArchiveBuf = await tarService.pack(fileArray);
 
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
@@ -148,17 +156,9 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
+      .attach("codemod.tar.gz", codemodArchiveBuf, {
         contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("index.cjs", indexCjsBuf, {
-        contentType: "multipart/form-data",
-        filename: "index.cjs",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "codemod.tar.gz",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -167,24 +167,6 @@ describe("/publish route", async () => {
       })
       .expect("Content-Type", "application/json; charset=utf-8")
       .expect(expectedCode);
-
-    const tarServiceInstance = mocks.TarService.mock.instances[0];
-    expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
-    expect(tarServiceInstance.pack).toHaveBeenCalledWith([
-      {
-        name: ".codemodrc.json",
-        data: codemodRcBuf,
-      },
-      {
-        name: "index.cjs",
-        data: indexCjsBuf,
-      },
-      {
-        name: "description.md",
-        data: readmeBuf,
-      },
-    ]);
-    expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
 
     const hashDigest = createHash("ripemd160")
       .update(codemodRcContents.name)
@@ -195,9 +177,9 @@ describe("/publish route", async () => {
 
     expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
     expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-      Bucket: "codemod-public",
+      Bucket: process.env.AWS_PUBLIC_BUCKET_NAME,
       Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-      Body: TAR_SERVICE_PACK_RETURN,
+      Body: codemodArchiveBuf,
     });
 
     expect(clientInstance.send).toHaveBeenCalledOnce();
@@ -234,92 +216,23 @@ describe("/publish route", async () => {
     });
   });
 
-  it("should publish piranha codemods", async () => {
-    mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
-
-    const expectedCode = 200;
-
-    const response = await supertest(fastify.server)
-      .post("/publish")
-      .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
-        contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("rules.toml", indexCjsBuf, {
-        contentType: "multipart/form-data",
-        filename: "rules.toml",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
-      })
-      .expect((res) => {
-        if (res.status !== expectedCode) {
-          console.log(JSON.stringify(res.body, null, 2));
-        }
-      })
-      .expect("Content-Type", "application/json; charset=utf-8")
-      .expect(expectedCode);
-
-    const tarServiceInstance = mocks.TarService.mock.instances[0];
-    expect(tarServiceInstance.pack).toHaveBeenCalledOnce();
-    expect(tarServiceInstance.pack).toHaveBeenCalledWith([
-      {
-        name: ".codemodrc.json",
-        data: codemodRcBuf,
-      },
-      {
-        name: "rules.toml",
-        data: indexCjsBuf,
-      },
-      {
-        name: "description.md",
-        data: readmeBuf,
-      },
-    ]);
-    expect(tarServiceInstance.pack).toReturnWith(TAR_SERVICE_PACK_RETURN);
-
-    const hashDigest = createHash("ripemd160")
-      .update(codemodRcContents.name)
-      .digest("base64url");
-
-    const clientInstance = mocks.S3Client.mock.instances[0];
-    const putObjectCommandInstance = mocks.PutObjectCommand.mock.instances[0];
-
-    expect(putObjectCommandInstance.constructor).toHaveBeenCalledOnce();
-    expect(putObjectCommandInstance.constructor).toHaveBeenCalledWith({
-      Bucket: "codemod-public",
-      Key: `codemod-registry/${hashDigest}/${codemodRcContents.version}/codemod.tar.gz`,
-      Body: TAR_SERVICE_PACK_RETURN,
-    });
-
-    expect(clientInstance.send).toHaveBeenCalledOnce();
-    expect(clientInstance.send).toHaveBeenCalledWith(putObjectCommandInstance, {
-      requestTimeout: 5000,
-    });
-
-    expect(response.body).toEqual({
-      name: codemodRcContents.name,
-      version: codemodRcContents.version,
-    });
-  });
-
   it("should not allow further execution if required files were not provided", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
 
     const expectedCode = 400;
 
+    const archiveWithoutMainFile = await tarService.pack(
+      fileArray.filter(
+        (f) => f.name !== "/src/index.ts" && f.name !== BUILT_SOURCE_PATH,
+      ),
+    );
+
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
+      .attach("codemod.tar.gz", archiveWithoutMainFile, {
         contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "codemod.tar.gz",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -348,17 +261,9 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
+      .attach("codemod.tar.gz", codemodArchiveBuf, {
         contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("index.cjs", indexCjsBuf, {
-        contentType: "multipart/form-data",
-        filename: "index.cjs",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "codemod.tar.gz",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -390,17 +295,9 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
+      .attach("codemod.tar.gz", codemodArchiveBuf, {
         contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("index.cjs", indexCjsBuf, {
-        contentType: "multipart/form-data",
-        filename: "index.cjs",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "codemod.tar.gz",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -429,17 +326,9 @@ describe("/publish route", async () => {
     const response = await supertest(fastify.server)
       .post("/publish")
       .set("Authorization", "auth-header")
-      .attach(".codemodrc.json", codemodRcBuf, {
+      .attach("codemod.tar.gz", codemodArchiveBuf, {
         contentType: "multipart/form-data",
-        filename: ".codemodrc.json",
-      })
-      .attach("index.cjs", indexCjsBuf, {
-        contentType: "multipart/form-data",
-        filename: "index.cjs",
-      })
-      .attach("description.md", readmeBuf, {
-        contentType: "multipart/form-data",
-        filename: "description.md",
+        filename: "codemod.tar.gz",
       })
       .expect((res) => {
         if (res.status !== expectedCode) {
@@ -482,17 +371,9 @@ describe("/publish route", async () => {
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach(".codemodrc.json", codemodRcBuf, {
+        .attach("codemod.tar.gz", codemodArchiveBuf, {
           contentType: "multipart/form-data",
-          filename: ".codemodrc.json",
-        })
-        .attach("index.cjs", indexCjsBuf, {
-          contentType: "multipart/form-data",
-          filename: "index.cjs",
-        })
-        .attach("description.md", readmeBuf, {
-          contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "codemod.tar.gz",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -546,17 +427,9 @@ describe("/publish route", async () => {
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach(".codemodrc.json", codemodRcBuf, {
+        .attach("codemod.tar.gz", codemodArchiveBuf, {
           contentType: "multipart/form-data",
-          filename: ".codemodrc.json",
-        })
-        .attach("index.cjs", indexCjsBuf, {
-          contentType: "multipart/form-data",
-          filename: "index.cjs",
-        })
-        .attach("description.md", readmeBuf, {
-          contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "codemod.tar.gz",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -622,27 +495,22 @@ describe("/publish route", async () => {
         },
       };
 
-      const codemodRcBuf = Buffer.from(
-        JSON.stringify(codemodRcContents),
-        "utf8",
-      );
+      const updatedArchive = await tarService.pack([
+        ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
+        {
+          name: ".codemodrc.json",
+          data: Buffer.from(JSON.stringify(codemodRcContents), "utf8"),
+        },
+      ]);
 
       const expectedCode = 200;
 
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach(".codemodrc.json", codemodRcBuf, {
+        .attach("codemod.tar.gz", updatedArchive, {
           contentType: "multipart/form-data",
-          filename: ".codemodrc.json",
-        })
-        .attach("index.cjs", indexCjsBuf, {
-          contentType: "multipart/form-data",
-          filename: "index.cjs",
-        })
-        .attach("description.md", readmeBuf, {
-          contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "codemod.tar.gz",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {
@@ -679,27 +547,22 @@ describe("/publish route", async () => {
         },
       };
 
-      const codemodRcBuf = Buffer.from(
-        JSON.stringify(codemodRcContents),
-        "utf8",
-      );
+      const updatedArchive = await tarService.pack([
+        ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
+        {
+          name: ".codemodrc.json",
+          data: Buffer.from(JSON.stringify(codemodRcContents), "utf8"),
+        },
+      ]);
 
       const expectedCode = 403;
 
       const response = await supertest(fastify.server)
         .post("/publish")
         .set("Authorization", "auth-header")
-        .attach(".codemodrc.json", codemodRcBuf, {
+        .attach("codemod.tar.gz", updatedArchive, {
           contentType: "multipart/form-data",
-          filename: ".codemodrc.json",
-        })
-        .attach("index.cjs", indexCjsBuf, {
-          contentType: "multipart/form-data",
-          filename: "index.cjs",
-        })
-        .attach("description.md", readmeBuf, {
-          contentType: "multipart/form-data",
-          filename: "description.md",
+          filename: "codemod.tar.gz",
         })
         .expect((res) => {
           if (res.status !== expectedCode) {

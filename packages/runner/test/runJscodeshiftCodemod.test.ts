@@ -1,10 +1,18 @@
 import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runJscodeshiftCodemod } from "../src/runJscodeshiftCodemod.js";
+import { randomBytes } from "node:crypto";
+import { mkdir, rmdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
-const codemodSource = transpile(`
+import { afterAll, describe, it } from "vitest";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+
+import type { CodemodConfigInput } from "@codemod-com/utilities";
+import { runJscodeshiftCodemod } from "../src/engines/jscodeshift.js";
+import { getCodemodExecutable } from "../src/source-code.js";
+
+const codemodSource = `
 import type { FileInfo, API, Options } from 'jscodeshift';
 
 // this is the entry point for a JSCodeshift codemod
@@ -54,19 +62,41 @@ export default function transform(
 
     return root.toSource();
 }
-`);
+`;
 
-describe("runJscodeshiftCodemod", () => {
+const testTempDir = join(homedir(), ".codemod", "test-temp");
+
+describe("runJscodeshiftCodemod", async () => {
+  const codemodName = randomBytes(8).toString("hex");
+  const directoryPath = join(testTempDir, codemodName);
+  const srcPath = join(directoryPath, "src");
+
+  await mkdir(srcPath, { recursive: true });
+  await writeFile(join(srcPath, "index.ts"), codemodSource);
+  await writeFile(
+    join(directoryPath, ".codemodrc.json"),
+    JSON.stringify({
+      name: "test",
+      engine: "jscodeshift",
+      version: "0.0.0",
+    } satisfies CodemodConfigInput),
+  );
+
+  const compiledSource = await getCodemodExecutable(directoryPath);
+
+  afterAll(async () => {
+    await rmdir(directoryPath, { recursive: true });
+  });
+
   it("should return transformed output", () => {
     const messages: [ConsoleKind, string][] = [];
 
     const oldData = "function mapStateToProps(state) {}";
 
     const fileCommands = runJscodeshiftCodemod(
-      codemodSource,
+      compiledSource,
       "/index.ts",
       oldData,
-      true,
       {},
       null,
       (consoleKind, message) => {
@@ -85,7 +115,6 @@ describe("runJscodeshiftCodemod", () => {
       oldPath: "/index.ts",
       oldData,
       newData,
-      formatWithPrettier: true,
     });
 
     deepStrictEqual(messages, [["log", "/index.ts"]]);

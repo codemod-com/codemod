@@ -125,7 +125,7 @@ describe("mocha config-files", () => {
         (command) =>
           command.kind === "upsertFile" &&
           command.path === packageJsonPath &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
               {
                 "name": "package-name",
@@ -156,7 +156,7 @@ describe("mocha config-files", () => {
         (command) =>
           command.kind === "upsertFile" &&
           command.path === tsconfigPath &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
               {
                 "compilerOptions": {},
@@ -184,7 +184,7 @@ describe("mocha config-files", () => {
         (command) =>
           command.kind === "upsertFile" &&
           command.path === gitIgnorePath &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
             build
             dist

@@ -1,9 +1,8 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
-    "paths": {
-      "~/*": ["src/*"]
-    }
+    "rootDir": "./src",
+    "esModuleInterop": true
   },
   "include": ["reset.d.ts", "./src", "./test"],
   "exclude": ["./dist", "./node_modules"],

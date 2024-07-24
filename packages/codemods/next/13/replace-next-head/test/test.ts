@@ -129,7 +129,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.mdx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -187,7 +187,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -239,7 +239,7 @@ Checkout my React component:
     deepStrictEqual(command?.kind, "upsertFile");
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -292,7 +292,7 @@ Checkout my React component:
     deepStrictEqual(command?.kind, "upsertFile");
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -345,7 +345,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -398,7 +398,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -446,7 +446,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -497,7 +497,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -546,7 +546,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -616,7 +616,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -681,7 +681,7 @@ Checkout my React component:
     deepStrictEqual(command?.kind, "upsertFile");
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -755,7 +755,7 @@ Checkout my React component:
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -847,7 +847,7 @@ export async function generateMetadata(
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -911,7 +911,7 @@ export async function generateMetadata(
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -977,7 +977,7 @@ export async function generateMetadata(
     deepStrictEqual(command?.kind, "upsertFile");
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -1036,7 +1036,7 @@ export async function generateMetadata(
     deepStrictEqual(command.path, "/opt/project/pages/a/index.tsx");
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -1087,7 +1087,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1138,7 +1138,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1190,7 +1190,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1236,7 +1236,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1294,7 +1294,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1346,7 +1346,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1398,7 +1398,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1442,7 +1442,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1483,7 +1483,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1525,7 +1525,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1565,7 +1565,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1650,7 +1650,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1761,7 +1761,7 @@ export async function generateMetadata(
 
     // @TODO replace \W with \s in all tests
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1814,7 +1814,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -1936,7 +1936,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -2005,7 +2005,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -2063,7 +2063,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -2109,7 +2109,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });
@@ -2221,7 +2221,7 @@ export async function generateMetadata(
 		`;
 
     deepStrictEqual(
-      command.data.replace(/\s/gm, ""),
+      command.newData.replace(/\s/gm, ""),
       NEW_DATA.replace(/\s/gm, ""),
     );
   });

@@ -14,13 +14,10 @@ const transform = async (json: DirectoryJSON) => {
   const unifiedFileSystem = buildUnifiedFileSystem(fs);
   const pathApi = buildPathAPI("/");
 
-  const api = buildApi<{ jscodeshift: typeof jscodeshift }>(
-    unifiedFileSystem,
-    () => ({
-      jscodeshift,
-    }),
-    pathApi,
-  );
+  const api = buildApi<{
+    jscodeshift: typeof jscodeshift;
+    j: typeof jscodeshift;
+  }>(unifiedFileSystem, () => ({ jscodeshift, j: jscodeshift }), pathApi);
 
   return executeFilemod(api, repomod, "/", {}, {});
 };
@@ -36,17 +33,19 @@ const removeWhitespaces = (
 
   return {
     ...command,
-    data: command.data.replace(/\s/gm, ""),
+    oldData: command.oldData.replace(/\s/gm, ""),
+    newData: command.newData.replace(/\s/gm, ""),
   };
 };
 
 describe("ab-test", () => {
   it("should build correct files", async () => {
+    const oldContent = `
+      const middleware = async () => {};
+      export default middleware;
+    `;
     const [middlewareTsCommand, abTestMiddlewareTsCommand] = await transform({
-      "/opt/project/middleware.ts": `
-				const middleware = async () => {};
-				export default middleware;
-				`,
+      "/opt/project/middleware.ts": oldContent,
     });
 
     deepStrictEqual(
@@ -54,7 +53,8 @@ describe("ab-test", () => {
       removeWhitespaces({
         kind: "upsertFile",
         path: "/opt/project/middleware.ts",
-        data: `
+        oldData: oldContent,
+        newData: `
 			import { abTestMiddlewareFactory } from "abTestMiddlewareFactory";
 			const middleware = async () => {};
 			export default abTestMiddlewareFactory(middleware);
@@ -62,7 +62,7 @@ describe("ab-test", () => {
       }),
     );
 
-    deepStrictEqual(abTestMiddlewareTsCommand.kind, "upsertFile");
+    deepStrictEqual(abTestMiddlewareTsCommand?.kind, "upsertFile");
     deepStrictEqual(
       abTestMiddlewareTsCommand.path,
       "/opt/project/abTestMiddlewareFactory.ts",

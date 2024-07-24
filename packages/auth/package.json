@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@codemod-com/database": "workspace:*",
-    "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/api-types": "workspace:*",
     "axios": "catalog:",
     "fastify": "catalog:",
     "fastify-plugin": "catalog:"

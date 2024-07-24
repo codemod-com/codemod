@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "./src",
+    "outDir": "./dist",
+
     "allowJs": true,
     "checkJs": false,
     "declaration": true,
     "emitDeclarationOnly": true,
-    "isolatedModules": false,
-    "target": "ES2015",
-    "outDir": "./dist"
+    "isolatedModules": false
   },
   "include": ["src/**/*"],
   "exclude": ["dist/**/*", "node_modules/**/*"],

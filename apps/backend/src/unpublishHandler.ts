@@ -1,14 +1,16 @@
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import type { RouteHandler } from "fastify";
+
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import {
   extractLibNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { RouteHandler } from "fastify";
-import { buildRevalidateHelper } from "./revalidate";
-import { parseUnpublishBody } from "./schemata/schema";
-import { environment } from "./util";
+
+import { buildRevalidateHelper } from "./revalidate.js";
+import { parseUnpublishBody } from "./schemata/schema.js";
+import { environment } from "./util.js";
 
 export type UnPublishHandlerResponse =
   | { success: true }

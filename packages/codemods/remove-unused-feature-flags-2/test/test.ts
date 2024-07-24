@@ -38,6 +38,12 @@ const transform = async (json: DirectoryJSON) => {
   );
 };
 
+const componentContent = `
+  export async function Component() {
+    const a = await featureFlagObject();
+  }
+`;
+
 const directoryJSON: DirectoryJSON = {
   "/opt/project/featureFlags.ts": `
 		const marker = 'marker';
@@ -46,11 +52,7 @@ const directoryJSON: DirectoryJSON = {
 			key: 'featureFlagA',
 		});
 	`,
-  "/opt/project/component.ts": `
-		export async function Component() {
-			const a = await featureFlagObject();
-		}
-	`,
+  "/opt/project/component.ts": componentContent,
 };
 
 describe("remove unused feature flags 2", () => {
@@ -62,7 +64,12 @@ describe("remove unused feature flags 2", () => {
     deepStrictEqual(externalFileCommands[0], {
       kind: "upsertFile",
       path: "/opt/project/component.ts",
-      data: "\n\t\texport async function Component() {\n\t\t\tconst a = true;\n\t\t}\n\t",
+      oldData: componentContent,
+      newData: `
+  export async function Component() {
+    const a = true;
+  }
+`,
     });
   });
 });

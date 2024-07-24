@@ -1,11 +1,13 @@
-import {
-  type UserDataPopulatedRequest,
-  getAuthPlugin,
-} from "@codemod-com/auth";
 import cors, { type FastifyCorsOptions } from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
+
+import {
+  type UserDataPopulatedRequest,
+  getAuthPlugin,
+} from "@codemod-com/auth";
+
 import {
   parseCodemodRunBody,
   parseCodemodStatusParams,

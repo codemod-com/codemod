@@ -1,6 +1,9 @@
 {
   "name": "@codemod-com/utilities",
   "author": "Codemod, Inc.",
+  "imports": {
+    "#*": "./src/*"
+  },
   "version": "1.1.6",
   "description": "The utilities used across Codemod.com packages",
   "type": "module",
@@ -37,7 +40,6 @@
     "vitest": "^1.0.1"
   },
   "dependencies": {
-    "@clerk/backend": "catalog:",
     "@codemod-com/filemod": "workspace:*",
     "bl": "catalog:",
     "change-case": "catalog:",

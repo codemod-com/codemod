@@ -1,10 +1,18 @@
 import { deepStrictEqual } from "node:assert";
-import type { ConsoleKind } from "@codemod-com/printer";
-import { describe, it } from "vitest";
-import { transpile } from "../src/getTransformer.js";
-import { runTsMorphCodemod } from "../src/runTsMorphCodemod.js";
+import { randomBytes } from "node:crypto";
+import { mkdir, rmdir, writeFile } from "node:fs/promises";
+import { homedir } from "node:os";
+import { join } from "node:path";
 
-const codemodSource = transpile(`
+import { afterAll, describe, it } from "vitest";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+
+import type { CodemodConfigInput } from "@codemod-com/utilities";
+import { runTsMorphCodemod } from "../src/engines/ts-morph.js";
+import { getCodemodExecutable } from "../src/source-code.js";
+
+const codemodSource = `
 import { SourceFile, EmitHint } from 'ts-morph';
 
 export const handleSourceFile = (
@@ -18,17 +26,39 @@ export const handleSourceFile = (
 
     return sourceFile.print({ emitHint: EmitHint.SourceFile });
 };
-`);
+`;
 
-describe("runTsMorphCodemod", () => {
+const testTempDir = join(homedir(), ".codemod", "test-temp");
+
+describe("runTsMorphCodemod", async () => {
+  const codemodName = randomBytes(8).toString("hex");
+  const directoryPath = join(testTempDir, codemodName);
+  const srcPath = join(directoryPath, "src");
+
+  await mkdir(srcPath, { recursive: true });
+  await writeFile(join(srcPath, "index.ts"), codemodSource);
+  await writeFile(
+    join(directoryPath, ".codemodrc.json"),
+    JSON.stringify({
+      name: "test",
+      engine: "ts-morph",
+      version: "0.0.0",
+    } satisfies CodemodConfigInput),
+  );
+
+  const compiledSource = await getCodemodExecutable(directoryPath);
+
+  afterAll(async () => {
+    await rmdir(directoryPath, { recursive: true });
+  });
+
   it("should return transformed output", () => {
     const messages: [ConsoleKind, string][] = [];
 
     const fileCommands = runTsMorphCodemod(
-      codemodSource,
+      compiledSource,
       "index.ts",
       "",
-      true,
       {},
       (consoleKind, message) => {
         messages.push([consoleKind, message]);
@@ -44,7 +74,6 @@ describe("runTsMorphCodemod", () => {
       oldPath: "index.ts",
       oldData: "",
       newData: "class Test {\n}\n",
-      formatWithPrettier: true,
     });
 
     deepStrictEqual(messages, [["log", "/index.ts"]]);

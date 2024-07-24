@@ -1,5 +1,5 @@
 import { apiClient } from "@/utils/apis/client";
-import type { ApiError, PublishResponse } from "@codemod-com/utilities";
+import type { ApiError, PublishResponse } from "@codemod-com/api-types";
 import type { AxiosError } from "axios";
 import { Either } from "../utils/Either";
 

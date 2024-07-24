@@ -1,7 +1,7 @@
 function mapStateToProps(state: State, ownProps) {
     const { search } = ownProps.location;
     const query = buildQuery(search);
-    import { z } from 'zod;
+    import { z } from 'zod';
     const querySchema = z.object({
         ticket: z.string(),
         response_type: z.string(),

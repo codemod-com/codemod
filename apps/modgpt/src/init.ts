@@ -3,8 +3,8 @@ import cors from "@fastify/cors";
 import fastifyMultipart from "@fastify/multipart";
 import fastifyRateLimit from "@fastify/rate-limit";
 import Fastify, { type FastifyPluginCallback } from "fastify";
-import { environment } from "./dev-utils/configs";
-import { corsOptions } from "./dev-utils/cors";
+import { environment } from "./dev-utils/configs.js";
+import { corsOptions } from "./dev-utils/cors.js";
 
 export const initApp = async (toRegister: FastifyPluginCallback[]) => {
   const fastify = Fastify({

@@ -45,29 +45,35 @@ const removeWhitespaces = (
 
   return {
     ...command,
-    data: command.data.replace(/\s/gm, ""),
+    oldData: command.oldData.replace(/\s/gm, ""),
+    newData: command.newData.replace(/\s/gm, ""),
   };
 };
+
+const turboContent = JSON.stringify({
+  globalEnv: ["OTHER_ENVVAR"],
+});
+
+const abTestMiddlewareContent = `
+  import { type X } from 'y';
+  const other = true;
+`;
+const middlewareContent = `
+  export const config = {
+    matcher: [
+      "otherPath", 
+    ]
+  }
+`;
 
 describe("generate-url-patterns", () => {
   it("should build correct files", async () => {
     const [turboJsonCommand, middlewareTsCommand, abTestMiddlewareTsCommand] =
       await transform(
         {
-          "/opt/project/turbo.json": JSON.stringify({
-            globalEnv: ["OTHER_ENVVAR"],
-          }),
-          "/opt/project/abTestMiddleware.ts": `
-					import { type X } from 'y';
-					const other = true;
-				`,
-          "/opt/project/middleware.ts": `
-					export const config = {
-						matcher: [
-							"otherPath", 
-						]
-					}
-				`,
+          "/opt/project/turbo.json": turboContent,
+          "/opt/project/abTestMiddleware.ts": abTestMiddlewareContent,
+          "/opt/project/middleware.ts": middlewareContent,
           "/opt/project/app/future/noSegment/page.tsx": "",
           "/opt/project/app/future/dynamicSegment/[a]/page.tsx": "",
           "/opt/project/app/future/dynamicSegment/[b]/[c]/page.tsx": "",
@@ -82,7 +88,7 @@ describe("generate-url-patterns", () => {
         },
       );
 
-    const data = JSON.stringify({
+    const newData = JSON.stringify({
       globalEnv: [
         "APP_ROUTER_CATCHALLDYNAMICSEGMENTS_D_ENABLED",
         "APP_ROUTER_DYNAMICSEGMENT_A_ENABLED",
@@ -96,7 +102,8 @@ describe("generate-url-patterns", () => {
     deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
       kind: "upsertFile",
       path: "/opt/project/turbo.json",
-      data,
+      oldData: turboContent,
+      newData,
     });
 
     deepStrictEqual(
@@ -104,7 +111,8 @@ describe("generate-url-patterns", () => {
       removeWhitespaces({
         kind: "upsertFile",
         path: "/opt/project/abTestMiddleware.ts",
-        data: `import { type X } from 'y';
+        oldData: abTestMiddlewareContent,
+        newData: `import { type X } from 'y';
 				const other = true;
 
 				const ROUTES: [URLPattern, boolean][] = [
@@ -137,7 +145,8 @@ describe("generate-url-patterns", () => {
       removeWhitespaces({
         kind: "upsertFile",
         path: "/opt/project/middleware.ts",
-        data: `
+        oldData: middlewareContent,
+        newData: `
 				export const config = {
 					matcher: [
 						"otherPath", 
@@ -165,13 +174,8 @@ describe("generate-url-patterns", () => {
   it("should support generateAsPageGroup option", async () => {
     const [turboJsonCommand, abTestMiddlewareTsCommand] = await transform(
       {
-        "/opt/project/turbo.json": JSON.stringify({
-          globalEnv: ["OTHER_ENVVAR"],
-        }),
-        "/opt/project/abTestMiddleware.ts": `
-					import { type X } from 'y';
-					const other = true;
-				`,
+        "/opt/project/turbo.json": turboContent,
+        "/opt/project/abTestMiddleware.ts": abTestMiddlewareContent,
         "/opt/project/app/future/top-level/page.tsx": "",
         "/opt/project/app/future/top-level/a/page.tsx": "",
         "/opt/project/app/future/top-level/b/page.tsx": "",
@@ -185,14 +189,15 @@ describe("generate-url-patterns", () => {
       },
     );
 
-    const data = JSON.stringify({
+    const newData = JSON.stringify({
       globalEnv: ["APP_ROUTER_TOP_LEVEL_ENABLED", "OTHER_ENVVAR"],
     });
 
     deepStrictEqual(removeWhitespaces(turboJsonCommand!), {
       kind: "upsertFile",
       path: "/opt/project/turbo.json",
-      data,
+      oldData: turboContent,
+      newData,
     });
 
     deepStrictEqual(
@@ -200,7 +205,8 @@ describe("generate-url-patterns", () => {
       removeWhitespaces({
         kind: "upsertFile",
         path: "/opt/project/abTestMiddleware.ts",
-        data: `import { type X } from 'y';
+        oldData: abTestMiddlewareContent,
+        newData: `import { type X } from 'y';
 				const other = true;
 
 				const ROUTES: [URLPattern, boolean][] = [

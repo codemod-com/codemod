@@ -2,12 +2,12 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { OpenAIStream } from "ai";
 import { ChatGPTAPI, type ChatMessage } from "chatgpt";
 import * as openAiEdge from "openai-edge";
-import { environment } from "../dev-utils/configs";
-import { corsDisableHeaders } from "../dev-utils/cors";
-import type { Instance } from "../fastifyInstance";
-import { parseSendChatBody } from "../schemata/schema";
-import { ClaudeService } from "../services/claudeService";
-import { ReplicateService } from "../services/replicateService";
+import { environment } from "../dev-utils/configs.js";
+import { corsDisableHeaders } from "../dev-utils/cors.js";
+import type { Instance } from "../fastifyInstance.js";
+import { parseSendChatBody } from "../schemata/schema.js";
+import { ClaudeService } from "../services/claudeService.js";
+import { ReplicateService } from "../services/replicateService.js";
 
 const { OPEN_AI_API_KEY, CLAUDE_API_KEY, REPLICATE_API_KEY, NODE_ENV } =
   environment;

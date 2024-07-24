@@ -158,7 +158,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path.endsWith("project\\app\\components.tsx") &&
-          command.data
+          command.newData
             .replace(/\/\/ This file has been sourced from.*\n/g, "")
             .replace(/\W/gm, "") ===
             `
@@ -177,7 +177,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path.endsWith("project\\app\\[a]\\c\\page.tsx") &&
-          command.data
+          command.newData
             .replace(/\/\/ This file has been sourced from.*\n/g, "")
             .replace(/\W/gm, "") ===
             `
@@ -198,7 +198,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path.endsWith("project\\app\\[a]\\[b]\\components.tsx") &&
-          command.data
+          command.newData
             .replace(/\/\/ This file has been sourced from.*\n/g, "")
             .replace(/\W/gm, "") ===
             `

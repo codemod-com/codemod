@@ -1,104 +1,48 @@
-import { homedir } from "node:os";
-import { join } from "node:path";
-import type { GetUserDataResponse } from "@codemod-com/api-types";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import { glob } from "glob";
-import inquirer from "inquirer";
-import { getUserData } from "./apis";
-import { handleLoginCliCommand } from "./commands/login";
-import {
-  CredentialsStorage,
-  CredentialsStorageType,
-} from "./credentialsStorage";
+import * as fs from "node:fs";
+import * as os from "node:os";
+import { basename, dirname, join } from "node:path";
+import unzipper from "unzipper";
 
-type UserData = GetUserDataResponse & {
-  token: string;
-};
+import { chalk } from "@codemod-com/printer";
+import { doubleQuotify } from "@codemod-com/utilities";
+import { execPromise } from "@codemod-com/utilities";
+import { version } from "#/../package.json";
 
-export const credentialsStorage = new CredentialsStorage();
+export const codemodDirectoryPath = join(os.homedir(), ".codemod");
 
-export const getCurrentUserData = async (): Promise<UserData | null> => {
-  const token = await credentialsStorage.get(CredentialsStorageType.ACCOUNT);
-
-  if (!isNeitherNullNorUndefined(token)) {
-    return null;
-  }
-
-  const responseData = await getUserData(token);
-
-  if (responseData === null) {
-    await credentialsStorage.delete(CredentialsStorageType.ACCOUNT);
-    return null;
-  }
-
-  return { ...responseData, token };
-};
-
-export const getCurrentUserOrLogin = async (options: {
-  message: string;
-  printer: PrinterBlueprint;
-  onEmptyAfterLoginText?: string;
+export const unpackZipCodemod = async (options: {
+  source: string;
+  target: string;
 }) => {
-  const { message, printer } = options;
+  const { source, target } = options;
 
-  let userData = await getCurrentUserData();
+  let resultPath: string | null = null;
 
-  if (userData !== null) {
-    return userData;
+  const zip = fs
+    .createReadStream(source)
+    .pipe(unzipper.Parse({ forceStream: true }));
+
+  for await (const entry of zip) {
+    const writablePath = join(target, entry.path);
+
+    if (entry.type === "Directory") {
+      await fs.promises.mkdir(writablePath, { recursive: true });
+      entry.autodrain(); // Skip processing the content of directory entries
+    } else {
+      if (basename(entry.path) === ".codemodrc.json") {
+        resultPath = dirname(writablePath);
+      }
+      await fs.promises.mkdir(dirname(writablePath), { recursive: true });
+      entry.pipe(fs.createWriteStream(writablePath));
+    }
   }
 
-  const { login } = await inquirer.prompt<{ login: boolean }>({
-    type: "confirm",
-    name: "login",
-    message,
-  });
-
-  if (!login) {
-    throw new Error(
-      "Refused to login for a command that requires authentication. Aborting...",
-    );
+  if (resultPath === null) {
+    await fs.promises.rm(target, { recursive: true });
+    return null;
   }
 
-  await handleLoginCliCommand({ printer });
-  userData = await getCurrentUserData();
-
-  if (userData === null) {
-    throw new Error(
-      options.onEmptyAfterLoginText ??
-        "Unexpected empty user data after authentication. Aborting...",
-    );
-  }
-
-  return userData;
-};
-
-export const getOrgsNames = (
-  userData: UserData,
-  type: "slug" | "name" | "slug-and-name" = "slug",
-): string[] => {
-  let mapFunc: (org: UserData["organizations"][number]) => string | null;
-  switch (type) {
-    case "slug":
-      mapFunc = (org) => org.organization.slug;
-      break;
-    case "name":
-      mapFunc = (org) => org.organization.name;
-      break;
-    case "slug-and-name":
-      mapFunc = (org) => {
-        if (org.organization.name === org.organization.slug) {
-          return org.organization.name;
-        }
-
-        return `${org.organization.name} (${org.organization.slug})`;
-      };
-      break;
-    default:
-      throw new Error("Invalid type");
-  }
-
-  return userData.organizations.map(mapFunc).filter(isNeitherNullNorUndefined);
+  return resultPath;
 };
 
 export const initGlobalNodeModules = async (): Promise<void> => {
@@ -115,51 +59,41 @@ export const initGlobalNodeModules = async (): Promise<void> => {
   require("node:module").Module._initPaths();
 };
 
-export const getConfigurationDirectoryPath = (argvUnderScore?: unknown) =>
-  join(
-    String(argvUnderScore) === "runOnPreCommit" ? process.cwd() : homedir(),
-    ".codemod",
+export const writeLogs = async (options: {
+  prefix: string;
+  content: string;
+  fatal?: boolean;
+}): Promise<string> => {
+  const { prefix, content, fatal } = options;
+
+  const logsPath = join(codemodDirectoryPath, "logs");
+  const logFilePath = join(
+    logsPath,
+    `${fatal ? "FATAL-" : ""}${new Date().toISOString()}-error.log`,
   );
 
-export const rebuildCodemodFallback = async (options: {
-  globPattern: string | string[];
-  source: string;
-  errorText: string;
-  onSuccess?: () => void;
-  onFail?: () => void;
-}): Promise<string> => {
-  const { globPattern, source, errorText, onSuccess, onFail } = options;
+  const logsContent = `- CLI version: ${version}
+- Node version: ${process.versions.node}
+- OS: ${os.type()} ${os.release()} ${os.arch()}
 
-  const locateMainFile = async () => {
-    const mainFiles = await glob(globPattern, {
-      absolute: true,
-      ignore: ["**/node_modules/**"],
-      cwd: source,
-      nodir: true,
-    });
-
-    return mainFiles.at(0);
-  };
-
-  let mainFilePath = await locateMainFile();
+${content}
+`;
 
   try {
-    // Try to build the codemod anyways, and if after build there is still no main file
-    // or the process throws - throw an error
-    await execPromise("codemod build", { cwd: source });
+    await fs.promises.mkdir(logsPath, { recursive: true });
+    await fs.promises.writeFile(logFilePath, logsContent);
 
-    mainFilePath = await locateMainFile();
-    // Likely meaning that the "codemod build" command succeeded, but the file was still not found in output
-    if (mainFilePath === undefined) {
-      throw new Error();
-    }
-    onSuccess?.();
-  } catch (error) {
-    onFail?.();
-    throw new Error(errorText);
+    return chalk.cyan(
+      prefix ? `\n${prefix}` : "",
+      `\nLogs can be found at:`,
+      chalk.bold(logFilePath),
+      "\nFor feedback or reporting issues, run",
+      chalk.bold(doubleQuotify("codemod feedback")),
+      "and include the logs.",
+    );
+  } catch (err) {
+    return `Failed to write error log file at ${logFilePath}. Please verify that codemod CLI has the necessary permissions to write to this location.`;
   }
-
-  return mainFilePath;
 };
 
 export const oraCheckmark = chalk.green("✔");

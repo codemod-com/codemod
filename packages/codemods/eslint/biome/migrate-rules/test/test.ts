@@ -155,7 +155,7 @@ describe("eslint and prettier to biome migration", async () => {
     ok(packageJsonCommand);
     ok(packageJsonCommand.kind === "upsertFile");
     deepEqual(
-      packageJsonCommand.data.replace(/\W/gm, ""),
+      packageJsonCommand.newData.replace(/\W/gm, ""),
       `
         {
           "name": "package-name",
@@ -191,7 +191,7 @@ describe("eslint and prettier to biome migration", async () => {
         (command) =>
           command.kind === "upsertFile" &&
           command.path === biomeJsonPath &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
               {
                 "linter": {

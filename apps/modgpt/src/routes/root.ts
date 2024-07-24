@@ -1,4 +1,4 @@
-import type { Instance } from "../fastifyInstance";
+import type { Instance } from "../fastifyInstance.js";
 
 export const getRootPath = (instance: Instance) =>
   instance.get("/", async (_, reply) => {

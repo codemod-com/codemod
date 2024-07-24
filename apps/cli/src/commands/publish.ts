@@ -1,30 +1,36 @@
+import { spawn } from "node:child_process";
 import * as fs from "node:fs";
-import { basename, dirname, join } from "node:path";
-import { CODEMOD_VERSION_EXISTS, isApiError } from "@codemod-com/api-types";
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import {
-  type CodemodConfig,
-  buildCodemodSlug,
-  codemodNameRegex,
-  doubleQuotify,
-  execPromise,
-  parseCodemodConfig,
-} from "@codemod-com/utilities";
-import { AxiosError } from "axios";
+import { join } from "node:path";
 import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
 import { url, safeParse, string } from "valibot";
-import { getCodemod, publish } from "../apis.js";
-import { getCurrentUserOrLogin, rebuildCodemodFallback } from "../utils.js";
-import { handleInitCliCommand } from "./init.js";
+
+import { type Printer, chalk } from "@codemod-com/printer";
+import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
+import type { TelemetrySender } from "@codemod-com/telemetry";
+import {
+  type CodemodConfig,
+  TarService,
+  buildCodemodSlug,
+  doubleQuotify,
+  execPromise,
+  getCodemodRc,
+  getEntryPath,
+} from "@codemod-com/utilities";
+import { version as cliVersion } from "#/../package.json";
+import { extractCLIApiError, getCodemod, publish } from "#api.js";
+import { getCurrentUserOrLogin } from "#auth-utils.js";
+import { handleInitCliCommand } from "#commands/init.js";
+import type { TelemetryEvent } from "#telemetry.js";
+import { codemodDirectoryPath } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
   source: string;
+  telemetry: TelemetrySender<TelemetryEvent>;
 }) => {
-  const { printer } = options;
-  let { source } = options;
+  let { source, printer, telemetry } = options;
 
   const { token, allowedNamespaces, organizations } =
     await getCurrentUserOrLogin({
@@ -32,59 +38,26 @@ export const handlePublishCliCommand = async (options: {
       printer,
     });
 
-  let isSingleFile = false;
-  let codemodRcBuf: Buffer;
+  const tarService = new TarService(fs);
+  const formData = new FormData();
+  const excludedPaths = [
+    "node_modules/**",
+    ".git/**",
+    "dist/**",
+    "**/.DS_Store",
+    "**/.gitignore",
+  ];
 
-  const codemodRcPath = join(source, ".codemodrc.json");
-  try {
-    codemodRcBuf = await fs.promises.readFile(codemodRcPath);
-  } catch (err) {
-    const { init } = await inquirer.prompt<{
-      init: boolean;
-    }>({
-      type: "confirm",
-      name: "init",
-      message:
-        "Could not find the .codemodrc.json file in the codemod directory. Would you like to initialize the codemod configuration now?",
-    });
+  const isSourceAFile = await fs.promises
+    .lstat(source)
+    .then((pathStat) => pathStat.isFile());
 
-    if (!init) {
-      throw new Error(
-        "To publish your codemod, please configure it first by running `codemod init` in the codemod directory.",
-      );
-    }
-
-    // Attempting to find index file to change the questions slightly
-    let mainFilePath: string | undefined;
-
-    const isSourceAFile = await fs.promises
-      .lstat(source)
-      .then((pathStat) => pathStat.isFile());
-
-    if (isSourceAFile) {
-      isSingleFile = true;
-      mainFilePath = basename(source);
-      source = dirname(source);
-    } else {
-      const { mainPath } = await inquirer.prompt<{
-        mainPath: string;
-      }>({
-        type: "input",
-        name: "mainPath",
-        message:
-          "If there is a main codemod file, please provide the relative path leading to it, e.g. `src/index.ts`.",
-        default: "empty",
-      });
-
-      if (mainPath !== "empty") {
-        mainFilePath = mainPath;
-      }
-    }
-
-    const resultPath = await handleInitCliCommand({
+  if (isSourceAFile) {
+    source = await handleInitCliCommand({
       printer,
       target: source,
-      mainFilePath: mainFilePath ?? "index.ts",
+      writeDirectory: join(codemodDirectoryPath, "temp"),
+      noLogs: true,
     });
 
     const { choice } = await inquirer.prompt<{ choice: string }>({
@@ -93,132 +66,72 @@ export const handlePublishCliCommand = async (options: {
       message:
         "Would you like to adjust the README description file before publishing?",
       choices: [
-        "Yes, I want to refine the README.md file and configuration before publishing",
-        "No, I want to publish without a description and configuration adjustments",
+        "Yes, refine the README.md file",
+        "No, publish without a description",
       ],
-      default: 0,
+      default: "No, publish without a description",
     });
 
     if (choice.startsWith("Yes")) {
-      // Good hint by Copilot, we can actually later open a buffer for user on the fly so that he does not leave the process if that's desired
-      // const editor = process.env.EDITOR ?? "vim";
-      // await execPromise(`${editor} ${join(resultPath, "README.md")}`);
+      const editor = process.env.EDITOR || process.env.VISUAL || "nano";
 
-      // Currently though, we just abort
-      printer.printConsoleMessage(
-        "info",
-        chalk.cyan(
-          "\nSelected to adjust the README.md file and configuration before publishing. Aborting...",
-        ),
-      );
-      return;
-    }
+      await new Promise<void>((resolve, reject) => {
+        const editorProcess = spawn(editor, [join(source, "README.md")], {
+          stdio: "inherit", // Inherit the stdio to allow the editor to interact with the terminal
+        });
 
-    if (!mainFilePath) {
-      printer.printConsoleMessage(
-        "info",
-        "Codemod initialization has been completed, however no main file was provided. Consider adjusting the main file for the codemod to become meaningful first.",
-      );
-      return;
-    }
+        editorProcess.on("error", (err) => {
+          reject(
+            new Error(`Failed to start editor '${editor}': ${err.message}`),
+          );
+        });
 
-    if (!resultPath) {
-      throw new Error(
-        "Unexpected error, codemod package initialization has been canceled.",
-      );
-    }
-
-    source = resultPath;
-
-    try {
-      codemodRcBuf = await fs.promises.readFile(
-        join(resultPath, ".codemodrc.json"),
-      );
-    } catch (err) {
-      throw new Error(
-        "Unexpected error, codemodrc file could not be found after codemod package initialization has been completed.",
-      );
+        editorProcess.on("exit", (code) => {
+          if (code !== 0) {
+            reject(new Error(`Editor process exited with code ${code}`));
+          } else {
+            resolve();
+          }
+        });
+      });
+    } else {
+      excludedPaths.push("**/README.md");
     }
   }
 
-  const formData = new FormData();
+  const { config: codemodRc } = await getCodemodRc({
+    source,
+    throwOnNotFound: true,
+  });
 
   const updateCodemodRC = async (newRc: CodemodConfig) => {
     try {
       await fs.promises.writeFile(
-        codemodRcPath,
+        join(source, ".codemodrc.json"),
         JSON.stringify(newRc, null, 2),
       );
     } catch (err) {
       //
     }
-
-    formData.delete(".codemodrc.json");
-
-    formData.append(
-      ".codemodrc.json",
-      new Blob([Buffer.from(JSON.stringify(newRc))]),
-    );
   };
 
-  // for single file codemods we dont want to upload boilerplate README
-  if (!isSingleFile) {
-    try {
-      const descriptionMdBuf = await fs.promises.readFile(
-        join(source, "README.md"),
-      );
-      formData.append("description.md", new Blob([descriptionMdBuf]));
-    } catch {
-      printer.printConsoleMessage(
-        "info",
-        chalk.cyan(
-          "Could not locate README file at",
-          `${chalk.bold(join(source, "README.md"))}.`,
-          "Skipping README upload...",
-        ),
-      );
+  let bumpedVersion = false;
+  const existingCodemod = await getCodemod(
+    buildCodemodSlug(codemodRc.name),
+    token,
+  ).catch(() => null);
+
+  if (existingCodemod !== null) {
+    if (
+      existingCodemod.versions.find(
+        ({ version }) => version === codemodRc.version,
+      )
+    ) {
+      codemodRc.version = semver.inc(codemodRc.version, "patch") ?? "0.0.1";
+      await updateCodemodRC(codemodRc);
+      bumpedVersion = true;
     }
-  }
-
-  formData.append(".codemodrc.json", new Blob([codemodRcBuf]));
-  const codemodRcData = codemodRcBuf.toString("utf-8");
-  const codemodRc = parseCodemodConfig(JSON.parse(codemodRcData));
-
-  if (codemodRc.engine === "recipe") {
-    if (codemodRc.names.length < 2) {
-      throw new Error(
-        `The "names" field in .codemodrc.json must contain at least two names for a recipe codemod.`,
-      );
-    }
-
-    for (const name of codemodRc.names) {
-      if (!codemodNameRegex.test(name)) {
-        throw new Error(
-          `Each entry in the "names" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-        );
-      }
-    }
-  }
-
-  if (!codemodNameRegex.test(codemodRc.name)) {
-    throw new Error(
-      `The "name" field in .codemodrc.json must only contain allowed characters (a-z, A-Z, 0-9, _, /, @ or -)`,
-    );
-  }
-
-  let codemodIsPublished = false;
-  try {
-    await getCodemod(buildCodemodSlug(codemodRc.name), token);
-    codemodIsPublished = true;
-  } catch (err) {
-    //
-  }
-
-  if (
-    !codemodIsPublished &&
-    allowedNamespaces.length > 1 &&
-    !codemodRc.name.startsWith("@")
-  ) {
+  } else if (allowedNamespaces.length > 1 && !codemodRc.name.startsWith("@")) {
     const { namespace } = await inquirer.prompt<{ namespace: string }>({
       type: "list",
       name: "namespace",
@@ -234,65 +147,10 @@ export const handlePublishCliCommand = async (options: {
   }
 
   if (codemodRc.engine !== "recipe") {
-    let globSearchPattern: string;
-    let actualMainFileName: string;
-    let errorOnMissing: string;
-
-    switch (codemodRc.engine) {
-      case "ast-grep":
-        globSearchPattern = "**/rule.yaml";
-        actualMainFileName = "rule.yaml";
-        errorOnMissing = `Please create the main "rule.yaml" file first.`;
-        break;
-      case "piranha":
-        globSearchPattern = "**/rules.toml";
-        actualMainFileName = "rules.toml";
-        errorOnMissing = `Please create the main "rules.toml" file first.`;
-        break;
-      default:
-        globSearchPattern = "dist/index.cjs";
-        actualMainFileName = "index.cjs";
-        if (codemodRc.build?.input) {
-          const inputFiles = await glob(codemodRc.build.input, {
-            absolute: true,
-            cwd: source,
-            nodir: true,
-          });
-          const entryPoint = inputFiles.at(0);
-          if (entryPoint === undefined) {
-            errorOnMissing = `Please create the main file under ${chalk.bold(
-              codemodRc.build.input,
-            )} first.`;
-            break;
-          }
-        }
-
-        if (codemodRc.build?.output) {
-          errorOnMissing = `Please make sure the output path in your .codemodrc.json under ${chalk.bold(
-            codemodRc.build.output,
-          )} flag is correct.`;
-          break;
-        }
-
-        errorOnMissing =
-          "Please make sure your codemod can be built correctly.";
-    }
-
-    const spinner = printer.withLoaderMessage(
-      chalk.cyan("Rebuilding the codemod before publishing..."),
-    );
-
-    const mainFilePath = await rebuildCodemodFallback({
-      globPattern: codemodRc.build?.output ?? globSearchPattern,
+    await getEntryPath({
       source,
-      errorText: `Could not find the main file of the codemod. ${errorOnMissing}`,
-      onSuccess: () => spinner.succeed(),
-      onFail: () => spinner.fail(),
+      throwOnNotFound: true,
     });
-
-    const mainFileBuf = await fs.promises.readFile(mainFilePath);
-
-    formData.append(actualMainFileName, new Blob([mainFileBuf]));
   }
 
   if (!codemodRc.meta?.git) {
@@ -371,6 +229,44 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
+  const codemodFilePaths = await glob("**/*", {
+    cwd: source,
+    ignore: excludedPaths,
+    absolute: true,
+    dot: true,
+    nodir: true,
+  });
+
+  const codemodFileBuffers = await Promise.all(
+    codemodFilePaths.map(async (path) => ({
+      name: path.replace(new RegExp(`.*${source}/`), ""),
+      data: await fs.promises.readFile(path),
+    })),
+  );
+
+  const builtExecutable = await getCodemodExecutable(source).catch(() => null);
+
+  if (builtExecutable === null) {
+    throw new Error(
+      chalk(
+        "Failed to build the codemod executable.",
+        "Please ensure that the node_modules are installed and the codemod is correctly configured.",
+      ),
+    );
+  }
+
+  codemodFileBuffers.push({
+    name: BUILT_SOURCE_PATH,
+    data: Buffer.from(builtExecutable),
+  });
+
+  const codemodZip = await tarService.pack(codemodFileBuffers);
+
+  formData.append(
+    "codemod.tar.gz",
+    new Blob([codemodZip], { type: "application/gzip" }),
+  );
+
   const publishSpinner = printer.withLoaderMessage(
     chalk.cyan(
       "Publishing the codemod using name from",
@@ -380,55 +276,33 @@ export const handlePublishCliCommand = async (options: {
     ),
   );
 
-  let bumpedVersion = false;
-  // Using outer trycatch to catch error from inner catch block too.
   try {
-    try {
-      await publish(token, formData);
-      publishSpinner.succeed();
-    } catch (firstError) {
-      // Rethrow if no further logic
-      if (
-        !(firstError instanceof AxiosError) ||
-        !firstError.response?.data ||
-        !isApiError(firstError.response.data) ||
-        firstError.response.data.error !== CODEMOD_VERSION_EXISTS
-      ) {
-        throw firstError;
-      }
-
-      // If error is of specific type (determined above), we first try to upgrade the version
-      // and resubmit the request again
-
-      // Kinda hacky, but works for now. Didn't want to change the error format too much.
-      const existingVersion = /latest published version: (\d+\.\d+\.\d+)/.exec(
-        firstError.response.data.errorText,
-      )?.[1];
-
-      if (!existingVersion) {
-        throw firstError;
-      }
-
-      codemodRc.version = semver.inc(existingVersion, "patch") ?? "0.0.1";
-
-      await updateCodemodRC(codemodRc);
-
-      // In case if this fails, outer catch will be triggered
-      await publish(token, formData);
-      bumpedVersion = true;
-    }
+    await publish(token, formData);
+    publishSpinner.succeed();
   } catch (error) {
     publishSpinner.fail();
-    const message =
-      error instanceof AxiosError
-        ? error.response?.data.errorText
-        : String(error);
+
+    const message = extractCLIApiError(error);
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;
-    printer.printOperationMessage({ kind: "error", message: errorMessage });
-    return;
+
+    return printer.printOperationMessage({
+      kind: "error",
+      message: errorMessage,
+    });
+  } finally {
+    if (source.includes("temp")) {
+      await fs.promises.rm(source, { recursive: true, force: true });
+    }
   }
+
+  telemetry.sendEvent({
+    kind: "codemodPublished",
+    codemodName: codemodRc.name,
+    version: codemodRc.version,
+    cliVersion,
+  });
 
   printer.printConsoleMessage(
     "info",

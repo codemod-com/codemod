@@ -1,5 +1,6 @@
-import { buildCodemodSlug } from "@codemod-com/utilities";
 import axios, { isAxiosError } from "axios";
+
+import { buildCodemodSlug } from "@codemod-com/utilities";
 
 export class PostHogCodemodNotFoundError extends Error {}
 

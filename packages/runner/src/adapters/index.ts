@@ -1,5 +1,5 @@
-import { mdxAdapter } from "./mdx";
-import { vue3SFCAdapter } from "./vue3SFC";
+import { mdxAdapter } from "./mdx.js";
+import { vue3SFCAdapter } from "./vue3SFC.js";
 
 export const ADAPTERS_BY_EXTNAME_MAP: Record<string, any> = {
   ".mdx": mdxAdapter,

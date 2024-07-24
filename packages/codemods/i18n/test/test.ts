@@ -74,7 +74,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -113,7 +113,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -158,7 +158,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -197,7 +197,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -236,7 +236,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -283,7 +283,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -326,7 +326,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -361,7 +361,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -401,7 +401,7 @@ describe("i18n remove unused translations", () => {
     );
 
     deepStrictEqual(
-      upsertDataCommand.data.replace(/\W/gm, ""),
+      upsertDataCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });

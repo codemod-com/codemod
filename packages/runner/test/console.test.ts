@@ -1,9 +1,12 @@
 import { deepStrictEqual } from "node:assert";
 import vm from "node:vm";
-import type { ConsoleKind } from "@codemod-com/printer";
+
 import { describe, it } from "vitest";
-import { buildVmConsole } from "../src/buildVmConsole.js";
-import { CONSOLE_OVERRIDE } from "../src/consoleOverride.js";
+
+import type { ConsoleKind } from "@codemod-com/printer";
+
+import { CONSOLE_OVERRIDE } from "../src/constants.js";
+import { buildVmConsole } from "../src/engines/common.js";
 
 describe("console", () => {
   it("should pick the console statements from the VM", async () => {
