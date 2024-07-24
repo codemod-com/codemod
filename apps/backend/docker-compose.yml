@@ -11,21 +11,48 @@ services:
       ENCRYPTION_KEY: ${ENCRYPTION_KEY}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_PUBLIC_BUCKET_NAME: ${AWS_PUBLIC_BUCKET_NAME}
+      AWS_PRIVATE_BUCKET_NAME: ${AWS_PRIVATE_BUCKET_NAME}
       CLERK_SECRET_KEY: ${CLERK_SECRET_KEY}
       CLERK_JWT_KEY: ${CLERK_JWT_KEY}
       CLERK_PUBLISH_KEY: ${CLERK_PUBLISH_KEY}
-      DATABASE_URI: ${DATABASE_URI}
+      DATABASE_URI: "postgresql://postgres:postgres@database:5432/codemod?schema=public"
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       TASK_MANAGER_QUEUE_NAME: ${TASK_MANAGER_QUEUE_NAME}
-      CODEMOD_COM_API_URL: ${CODEMOD_COM_API_URL}
       SLACK_TOKEN: ${SLACK_TOKEN}
       SLACK_CHANNEL: ${SLACK_CHANNEL}
       AUTH_SERVICE_URL: ${AUTH_SERVICE_URL}
       NODE_ENV: ${NODE_ENV}
       FRONTEND_URL: ${FRONTEND_URL}
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - '8081:8081'
+    networks:
+      - codemod-network
+
+  database:
+    image: 'postgres:16'
+    environment:
+      POSTGRES_USER: 'postgres'
+      POSTGRES_PASSWORD: 'postgres'
+      POSTGRES_DB: 'codemod'
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $$POSTGRES_DB -U $$POSTGRES_USER"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - '5432:5432'
+    networks:
+      - codemod-network
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
     networks:
       - codemod-network
 

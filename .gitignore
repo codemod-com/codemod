@@ -36,3 +36,5 @@ generated/
 
 # CLI package
 apps/cli/package/
+
+.prisma

@@ -1,50 +1,60 @@
-FROM node:20-alpine3.16 as builder
+FROM node:20-alpine3.16 as base
 
+ENV PNPM_HOME="/pnpm"
+ENV PATH="$PNPM_HOME:$PATH"
+
+RUN npm install -g pnpm@latest
+RUN pnpm -g add turbo@^1
+
+
+
+FROM base AS builder
 WORKDIR /app
 
-RUN npm install -g pnpm
+RUN apk update
+RUN apk add --no-cache libc6-compat
 
-COPY ./package.json ./turbo.json ./pnpm-workspace.yaml ./pnpm-lock.yaml /app/
-COPY ./apps/backend/package.json /app/apps/backend/
+COPY package.json turbo.json pnpm-workspace.yaml pnpm-lock.yaml /app/
+COPY apps/backend /app/apps/backend/
 
-COPY ./packages/tsconfig /app/packages/tsconfig/
-COPY ./packages/utilities /app/packages/utilities/
-COPY ./packages/filemod /app/packages/filemod/
-COPY ./packages/telemetry /app/packages/telemetry/
-COPY ./packages/database /app/packages/database/
-COPY ./packages/runner /app/packages/runner/
-COPY ./packages/printer /app/packages/printer/
-COPY ./packages/workflow /app/packages/workflow/
-COPY ./packages/api-types /app/packages/api-types/
-COPY ./packages/auth /app/packages/auth/
+COPY packages/tsconfig /app/packages/tsconfig/
+COPY packages/utilities /app/packages/utilities/
+COPY packages/filemod /app/packages/filemod/
+COPY packages/telemetry /app/packages/telemetry/
+COPY packages/database /app/packages/database/
+COPY packages/runner /app/packages/runner/
+COPY packages/printer /app/packages/printer/
+COPY packages/workflow /app/packages/workflow/
+COPY packages/api-types /app/packages/api-types/
+COPY packages/auth /app/packages/auth/
+ 
+# Generate a partial monorepo with a pruned lockfile for a target workspace.
+# Assuming "web" is the name entered in the project's package.json: { name: "web" }
+RUN turbo prune @codemod-com/backend --docker
+ 
+ 
 
+FROM base AS installer
+WORKDIR /app
+
+RUN apk update
+RUN apk add --no-cache libc6-compat
+ 
+# First install the dependencies (as they change less often)
+COPY --from=builder /app/out/json/ .
 RUN pnpm install
-
-COPY ./apps/backend/tsconfig.json /app/apps/backend/
-COPY ./apps/backend/esbuild.config.js /app/apps/backend/
-COPY ./apps/backend/reset.d.ts /app/apps/backend/
-COPY ./apps/backend/src /app/apps/backend/src/
-
-COPY ./node_modules/@prisma /app/node_modules/@prisma/
-COPY ./node_modules/prisma-json-types-generator /app/node_modules/prisma-json-types-generator/
-COPY ./node_modules/prisma /app/node_modules/prisma/
-
+ 
+# Build the project
+COPY --from=builder /app/out/full/ .
 RUN pnpm build --filter @codemod-com/backend
 
-FROM node:20-alpine3.16
 
-RUN npm install -g pnpm
+
+FROM base AS runner
+# Copy stuff for prisma to work
+COPY --from=installer /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/ ./node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.1/node_modules/.prisma/
 
 WORKDIR /app
-
-COPY --from=builder /app/apps/backend/package.json /app
-COPY --from=builder /app/apps/backend/build /app/build
-COPY --from=builder /app/packages /app/packages
-
-COPY --from=builder /app/node_modules/@prisma /app/node_modules/@prisma/
-COPY --from=builder /app/node_modules/prisma-json-types-generator /app/node_modules/prisma-json-types-generator/
-COPY --from=builder /app/node_modules/prisma /app/node_modules/prisma/
-
-EXPOSE 8081
-
-CMD cd packages/database && pnpm db:migrate:deploy && pnpm db:generate && cd - && node build/index.js
+COPY --from=installer /app/apps/backend ./apps/backend
+ 
+CMD node apps/backend/build/index.js
