@@ -112,7 +112,6 @@
     "formatWithErrors": true,
     "indentStyle": "space",
     "ignore": [
-      "./packages",
       "*.d.ts",
       "input.js",
       "output.js",
