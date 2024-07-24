@@ -1,19 +1,16 @@
 import { createHash } from "node:crypto";
-import { mkdir, readFile } from "node:fs/promises";
+import { mkdir } from "node:fs/promises";
 import { join } from "node:path";
 import type { CodemodDownloadLinkResponse } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod } from "@codemod-com/runner";
-import {
-  type CodemodConfig,
-  doubleQuotify,
-  parseCodemodConfig,
-} from "@codemod-com/utilities";
 import type { TarService } from "@codemod-com/utilities";
+import { doubleQuotify } from "@codemod-com/utilities";
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
 import semver from "semver";
 import { getCodemodDownloadURI } from "./apis.js";
+import { getCodemodConfig } from "./codemodConfig.js";
 import {
   FileDownloadService,
   type FileDownloadServiceBlueprint,
@@ -107,13 +104,7 @@ export class CodemodDownloader implements CodemodDownloaderBlueprint {
       ),
     });
 
-    let config: CodemodConfig;
-    try {
-      const configBuf = await readFile(join(directoryPath, ".codemodrc.json"));
-      config = parseCodemodConfig(JSON.parse(configBuf.toString("utf8")));
-    } catch (err) {
-      throw new Error(`Error parsing config for codemod ${name}: ${err}`);
-    }
+    const config = await getCodemodConfig(directoryPath);
 
     if (
       this._fileDownloadService.cacheEnabled &&

@@ -1,12 +1,10 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import type { PrinterBlueprint } from "@codemod-com/printer";
-import {
-  isNeitherNullNorUndefined,
-  parseCodemodConfig,
-} from "@codemod-com/utilities";
+import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import esbuild from "esbuild";
 import { glob } from "glob";
+import { getCodemodConfig } from "../codemodConfig";
 
 // list of packages that should be bundled to the codemod (e.g codemod internal utils)
 const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
@@ -19,32 +17,22 @@ export const handleBuildCliCommand = async (options: {
   const { printer, source, silent } = options;
   const absoluteSource = resolve(source);
 
-  let codemodRcContent: string;
-  try {
-    codemodRcContent = await readFile(
-      resolve(join(absoluteSource, ".codemodrc.json")),
-      "utf-8",
-    );
-  } catch (error) {
-    throw new Error(
-      `Could not find the .codemodrc.json file in the codemod directory: ${absoluteSource}.`,
-    );
-  }
-
-  const codemodRc = parseCodemodConfig(JSON.parse(codemodRcContent));
+  const codemodConfig = await getCodemodConfig(absoluteSource);
 
   const entryPointGlob = await glob(
-    codemodRc.build?.input ? codemodRc.build.input : "./src/index.{ts,js}",
+    codemodConfig.build?.input
+      ? codemodConfig.build.input
+      : "./src/index.{ts,js}",
     { absolute: true, cwd: absoluteSource, nodir: true },
   );
 
   const entryPoint = entryPointGlob.at(0);
   if (!isNeitherNullNorUndefined(entryPoint)) {
-    if (codemodRc.build?.input) {
+    if (codemodConfig.build?.input) {
       throw new Error(
         `Could not find entry point file in ${join(
           absoluteSource,
-          codemodRc.build.input,
+          codemodConfig.build.input,
         )}.\nPlease make sure custom build input path in .codemodrc.json under "build.input" flag is correct and file has the correct permissions.`,
       );
     }
@@ -64,7 +52,7 @@ export const handleBuildCliCommand = async (options: {
 
   const outputFilePath = join(
     absoluteSource,
-    codemodRc.build?.output ?? "./dist/index.cjs",
+    codemodConfig.build?.output ?? "./dist/index.cjs",
   );
 
   let licenseBuffer: string;

@@ -1,6 +1,5 @@
 import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
-import { readFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import {
   basename,
@@ -13,43 +12,18 @@ import { CODEMOD_NOT_FOUND } from "@codemod-com/api-types";
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import type { Codemod, CodemodSettings } from "@codemod-com/runner";
 import {
-  type AllEngines,
   type CodemodConfig,
   type FileSystem,
   type TarService,
-  allEnginesSchema,
   doubleQuotify,
-  parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { AxiosError } from "axios";
 import unzipper from "unzipper";
-import { object, parse } from "valibot";
+import { getCodemodConfig } from "./codemodConfig.js";
 import type { CodemodDownloaderBlueprint } from "./downloadCodemod.js";
 import { rebuildCodemodFallback } from "./utils.js";
 
-const extractEngine = async (
-  fs: FileSystem,
-  filePath: string,
-): Promise<AllEngines | null> => {
-  try {
-    const data = await fs.promises.readFile(filePath, {
-      encoding: "utf-8",
-    });
-
-    const schema = object({
-      engine: allEnginesSchema,
-    });
-
-    const { engine } = parse(schema, JSON.parse(data.toString()));
-
-    return engine;
-  } catch {
-    return null;
-  }
-};
-
 const extractMainScriptPath = async (
-  printer: PrinterBlueprint,
   codemodRc: CodemodConfig,
   source: string,
 ) => {
@@ -148,24 +122,9 @@ export const buildSourcedCodemodOptions = async (
     };
   }
 
-  let codemodRcContent: string;
-  try {
-    codemodRcContent = await readFile(
-      join(codemodOptions.source, ".codemodrc.json"),
-      { encoding: "utf-8" },
-    );
-  } catch (err) {
-    throw new Error(
-      `Codemod directory is of incorrect structure at ${codemodOptions.source}`,
-    );
-  }
+  const codemodConfig = await getCodemodConfig(codemodOptions.source);
 
-  const codemodConfig = parseCodemodConfig(JSON.parse(codemodRcContent));
-
-  const engine = await extractEngine(
-    fs,
-    join(codemodOptions.source, ".codemodrc.json"),
-  );
+  const engine = codemodConfig.engine;
 
   if (engine === "piranha" || engine === null) {
     throw new Error(
@@ -174,9 +133,7 @@ export const buildSourcedCodemodOptions = async (
   }
 
   if (engine === "recipe") {
-    const subCodemodsNames = (
-      codemodConfig as CodemodConfig & { engine: "recipe" }
-    ).names;
+    const subCodemodsNames = codemodConfig.names;
 
     const spinner = printer.withLoaderMessage(
       chalk.cyan(`Downloading recipe (${subCodemodsNames.length} codemods)`),
@@ -233,7 +190,6 @@ export const buildSourcedCodemodOptions = async (
   }
 
   const mainScriptPath = await extractMainScriptPath(
-    printer,
     codemodConfig,
     codemodOptions.source,
   );
