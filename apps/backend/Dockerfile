@@ -18,7 +18,6 @@ COPY ./packages/workflow /app/packages/workflow/
 COPY ./packages/api-types /app/packages/api-types/
 COPY ./packages/auth /app/packages/auth/
 
-
 RUN pnpm install
 
 COPY ./apps/backend/tsconfig.json /app/apps/backend/
@@ -26,7 +25,7 @@ COPY ./apps/backend/esbuild.config.js /app/apps/backend/
 COPY ./apps/backend/reset.d.ts /app/apps/backend/
 COPY ./apps/backend/src /app/apps/backend/src/
 
-RUN pnpm build --filter @codemod-com/filemod --filter @codemod-com/utilities --filter @codemod-com/database --filter @codemod-com/api-types --filter @codemod-com/auth --filter @codemod-com/backend
+RUN pnpm build --filter @codemod-com/backend
 
 FROM node:20-alpine3.16
 
@@ -40,4 +39,4 @@ COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8081
 
-CMD cd packages/database && pnpm db:migrate:deploy && pnpm db:generate && cd - && node build/index.js
+CMD cd packages/database && pnpx prisma migrate deploy && pnpx prisma generate && cd - && node build/index.js
