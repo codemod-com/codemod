@@ -1,6 +1,7 @@
 "use client";
 
 import AuthProvider from "@/app/context/AuthProvider";
+import { GithubPermissions } from "@/components/GithubPermissions";
 import { TokenBuilder } from "@/components/TokenBuilder";
 import Button from "@/components/shared/Button";
 import { TechLogo } from "@/components/shared/Icon";
@@ -145,6 +146,7 @@ export function DesktopNavigationRight(props: {
         <AuthProvider>
           <AuthButtons variant="www" redirectUrl={pathname} />
           <TokenBuilder />
+          <GithubPermissions />
         </AuthProvider>
       )}
     </div>

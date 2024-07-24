@@ -13,6 +13,7 @@ import {
   isGeneratorEmpty,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
+import type { AuthServiceInterface } from "@codemod.com/workflow";
 import { glob } from "glob";
 import * as yaml from "js-yaml";
 import { Volume, createFsFromVolume } from "memfs";
@@ -390,6 +391,7 @@ export const runCodemod = async (
   engineOptions: EngineOptions | null,
   onCodemodError: CodemodExecutionErrorCallback,
   onSuccess?: (runResult: RunResult) => Promise<void> | void,
+  authService?: AuthServiceInterface,
 ): Promise<void> => {
   if (codemod.engine === "piranha") {
     throw new Error("Piranha not supported");
@@ -571,6 +573,7 @@ export const runCodemod = async (
       (kind, message) => {
         onPrinterMessage({ kind: "console", message, consoleKind: kind });
       },
+      authService,
     );
 
     // @TODO pass modified paths?

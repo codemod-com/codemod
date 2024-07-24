@@ -65,6 +65,7 @@ export const repositoryContext = registerContext(
   new AsyncLocalStorage<{
     repository: string;
     branch: string;
+    forkedFrom?: string;
   }>(),
 );
 export const repositoriesContext = registerContext(

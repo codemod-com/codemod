@@ -1,13 +1,13 @@
 import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
 import { backOff } from "exponential-backoff";
-import keytar from "keytar";
 import open from "open";
 import {
   confirmUserLoggedIn,
   generateUserLoginIntent,
   getCLIAccessToken,
 } from "../apis.js";
-import { getCurrentUserData } from "../utils.js";
+import { CredentialsStorageType } from "../credentialsStorage.js";
+import { credentialsStorage, getCurrentUserData } from "../utils.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 
@@ -60,7 +60,7 @@ export const handleLoginCliCommand = async (options: {
 
     const { token: cliToken } = await getCLIAccessToken(token);
 
-    await keytar.setPassword("codemod.com", "user-account", cliToken);
+    await credentialsStorage.set(CredentialsStorageType.ACCOUNT, cliToken);
 
     spinner.succeed();
     printer.printConsoleMessage(

@@ -1,4 +1,5 @@
 import type { FileSystem } from "@codemod-com/utilities";
+import type { AuthServiceInterface } from "@codemod.com/workflow";
 import type { CodemodToRun, RunResult } from "./codemod.js";
 import {
   type FormattedFileCommand,
@@ -19,6 +20,7 @@ export class Runner {
     protected readonly _fs: FileSystem,
     protected readonly _runSettings: RunSettings,
     protected readonly _flowSettings: FlowSettings,
+    protected readonly _authService: AuthServiceInterface,
   ) {}
 
   public async run(
@@ -66,6 +68,7 @@ export class Runner {
           codemod.engineOptions,
           (error) => executionErrors.push(error),
           onSuccess,
+          this._authService,
         );
 
         if (surfaceAgnosticCaseService) {

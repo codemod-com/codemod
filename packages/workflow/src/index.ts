@@ -20,6 +20,10 @@ import { exec } from "./exec.js";
 
 import { question } from "./question.js";
 
+import { github } from "./github/github.js";
+
+import { AuthServiceInterface, setAuthService } from "./authService.js";
+
 export {
   git,
   astGrep,
@@ -31,6 +35,9 @@ export {
   files,
   exec,
   question,
+  github,
+  setAuthService,
+  AuthServiceInterface,
 };
 
 export const api = {
@@ -44,6 +51,8 @@ export const api = {
   files,
   exec,
   question,
+  github,
+  setAuthService,
 };
 
 export type Api = typeof api;

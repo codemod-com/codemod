@@ -1,7 +1,7 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.34",
+  "version": "0.11.35",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -36,6 +36,7 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
+    "@codemod.com/workflow": "workspace:*",
     "@types/blessed": "catalog:",
     "@types/cli-progress": "catalog:",
     "@types/columnify": "catalog:",
@@ -58,6 +59,7 @@
     "memfs": "^4.6.0",
     "open": "catalog:",
     "prettier": "^3.2.5",
+    "prettyjson": "catalog:",
     "semver": "^7.6.2",
     "terminal-link": "catalog:",
     "ts-morph": "18.0.0",
@@ -92,7 +94,6 @@
     "esbuild": "^0.23.0",
     "blessed": "catalog:",
     "keytar": "catalog:",
-    "prettier": "^3.2.5",
-    "prettyjson": "catalog:"
+    "@octokit/rest": "catalog:"
   }
 }

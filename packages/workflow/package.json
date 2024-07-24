@@ -2,7 +2,7 @@
   "name": "@codemod.com/workflow",
   "author": "Codemod, Inc.",
   "type": "module",
-  "version": "0.0.23",
+  "version": "0.0.24",
   "description": "Workflow Engine for Codemod",
   "main": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -32,11 +32,15 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
+    "@octokit/rest": "catalog:",
     "@sindresorhus/slugify": "catalog:",
     "@types/jscodeshift": "^0.11.6",
     "colors-cli": "catalog:",
+    "detect-indent": "catalog:",
+    "detect-newline": "catalog:",
     "filenamify": "catalog:",
     "glob": "catalog:",
+    "git-url-parse": "catalog:",
     "jscodeshift": "^0.15.0",
     "lodash-es": "catalog:",
     "magic-string": "catalog:",
@@ -46,15 +50,18 @@
     "tree-kill": "catalog:",
     "ts-invariant": "catalog:",
     "yaml": "catalog:",
-    "inquirer": "catalog:",
-    "detect-indent": "catalog:",
-    "detect-newline": "catalog:"
+    "inquirer": "catalog:"
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
     "@types/lodash-es": "catalog:",
     "esbuild": "^0.17.14",
     "typescript": "^5.2.2",
-    "@types/inquirer": "catalog:"
+    "@types/inquirer": "catalog:",
+    "simple-git": "^3.24.0",
+    "tree-kill": "^1.2.2",
+    "ts-invariant": "^0.10.3",
+    "yaml": "^2.4.5",
+    "@types/git-url-parse": "^9.0.3"
   }
 }

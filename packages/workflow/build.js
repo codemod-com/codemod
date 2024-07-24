@@ -28,5 +28,7 @@ build({
     "inquirer",
     "detect-indent",
     "detect-newline",
+    "@octokit/rest",
+    "git-url-parse",
   ],
 });

@@ -5,7 +5,7 @@ import { logger } from "../helpers.js";
 import { spawn } from "../spawn.js";
 
 export function pushLogic(
-  { force }: { force: boolean } = { force: false },
+  { force }: { force: boolean } = { force: true },
 ): PLazy<Helpers> & Helpers {
   return new FunctionExecutor("push")
     .arguments(() => ({ force }))

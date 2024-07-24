@@ -44,6 +44,7 @@ build({
     "esbuild",
     "@ast-grep/napi",
     "@ast-grep/cli",
+    "@octokit/rest",
     "keytar",
     "prettier",
     "blessed",

@@ -3,6 +3,7 @@ import astGrep from "@ast-grep/napi";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type { ArgumentRecord } from "@codemod-com/utilities";
 import * as workflow from "@codemod.com/workflow";
+import type { AuthServiceInterface } from "@codemod.com/workflow";
 import { buildVmConsole } from "./buildVmConsole.js";
 import { CONSOLE_OVERRIDE } from "./consoleOverride.js";
 
@@ -10,6 +11,7 @@ const transform = async (
   codemodSource: string,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
+  authService?: AuthServiceInterface,
 ) => {
   const codeToExecute = `
 		${CONSOLE_OVERRIDE}
@@ -30,7 +32,9 @@ const transform = async (
 			? __module__.exports.workflow
 			: null;
 
-		const { api } = require('@codemod.com/workflow');
+		const { api, setAuthService } = require('@codemod.com/workflow');
+
+    setAuthService(__CODEMODCOM__authService__);
 
 		promise = workflow(api);
 	`;
@@ -45,6 +49,7 @@ const transform = async (
     __CODEMODCOM__argumentRecord: safeArgumentRecord,
     __CODEMODCOM__console__: buildVmConsole(consoleCallback),
     __CODEMOD_SOURCE__: codemodSource,
+    __CODEMODCOM__authService__: authService,
     require: (name: string) => {
       if (name === "@ast-grep/napi") {
         return astGrep;
@@ -73,6 +78,12 @@ export const runWorkflowCodemod = async (
   codemodSource: string,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
+  authService?: AuthServiceInterface,
 ) => {
-  await transform(codemodSource, safeArgumentRecord, consoleCallback);
+  await transform(
+    codemodSource,
+    safeArgumentRecord,
+    consoleCallback,
+    authService,
+  );
 };
