@@ -6,11 +6,5 @@
     "baseUrl": ".",
     "rootDir": "./src",
     "outDir": "./dist"
-
-    // "module": "ESNext",
-    // "target": "ESNext",
-    // "moduleResolution": "Node",
-
-    // "incremental": false
   }
 }

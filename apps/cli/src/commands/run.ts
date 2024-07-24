@@ -227,16 +227,12 @@ export const handleRunCliCommand = async (options: {
       ];
 
       let codemodName: string;
-      switch (true) {
-        case codemod.type === "standalone":
-          codemodName = "from-source-file";
-          break;
-        case codemod.type === "package" && codemod.source === "local":
-          codemodName = "from-source-compatible-package";
-          break;
-        default:
-          codemodName = codemod.config.name;
-          break;
+      if (codemod.type === "standalone") {
+        codemodName = "from-source-file";
+      } else if (codemod.type === "package" && codemod.source === "local") {
+        codemodName = "from-source-compatible-package";
+      } else {
+        codemodName = codemod.config.name;
       }
 
       if (codemod.type === "package") {
