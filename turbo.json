@@ -11,6 +11,9 @@
     "clean": {
       "cache": false
     },
+    "@codemod-com/database#build": {
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["build/**", "dist/**"]

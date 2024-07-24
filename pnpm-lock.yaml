@@ -2419,6 +2419,63 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
+  packages/codemods/codemod-com/migrate-codemod-registry:
+    devDependencies:
+      '@codemod-com/filemod':
+        specifier: workspace:*
+        version: link:../../../filemod
+      '@codemod-com/utilities':
+        specifier: workspace:*
+        version: link:../../../utilities
+      '@types/jscodeshift':
+        specifier: ^0.11.10
+        version: 0.11.11
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      memfs:
+        specifier: ^4.6.0
+        version: 4.9.3
+      ts-morph:
+        specifier: ^19.0.0
+        version: 19.0.0
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
+  packages/codemods/codemod-com/update-git-urls:
+    devDependencies:
+      '@codemod-com/filemod':
+        specifier: workspace:*
+        version: link:../../../filemod
+      '@vitest/coverage-v8':
+        specifier: 'catalog:'
+        version: 1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
+      jscodeshift:
+        specifier: ^0.15.1
+        version: 0.15.2(@babel/preset-env@7.24.7)
+      memfs:
+        specifier: ^4.6.0
+        version: 4.9.3
+      ts-node:
+        specifier: ^10.9.1
+        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.3)
+      typescript:
+        specifier: ^5.2.2
+        version: 5.5.3
+      vitest:
+        specifier: ^1.0.1
+        version: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+
   packages/codemods/devcycle/launchdarkly-to-devcycle:
     devDependencies:
       '@types/jscodeshift':
@@ -3324,39 +3381,6 @@ importers:
       jscodeshift:
         specifier: ^0.15.1
         version: 0.15.2(@babel/preset-env@7.24.7)
-      ts-node:
-        specifier: ^10.9.1
-        version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
-      typescript:
-        specifier: ^5.2.2
-        version: 5.5.2
-      vitest:
-        specifier: ^1.0.1
-        version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
-
-  packages/codemods/intuita/migrate-codemod-registry:
-    devDependencies:
-      '@codemod-com/filemod':
-        specifier: workspace:*
-        version: link:../../../filemod
-      '@codemod-com/utilities':
-        specifier: workspace:*
-        version: link:../../../utilities
-      '@types/jscodeshift':
-        specifier: ^0.11.10
-        version: 0.11.11
-      '@vitest/coverage-v8':
-        specifier: 'catalog:'
-        version: 1.6.0(vitest@1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))
-      jscodeshift:
-        specifier: ^0.15.1
-        version: 0.15.2(@babel/preset-env@7.24.7)
-      memfs:
-        specifier: ^4.6.0
-        version: 4.9.3
-      ts-morph:
-        specifier: ^19.0.0
-        version: 19.0.0
       ts-node:
         specifier: ^10.9.1
         version: 10.9.2(@types/node@20.14.8)(typescript@5.5.2)
@@ -5564,8 +5588,6 @@ importers:
         specifier: ^1.0.1
         version: 1.6.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
 
-  packages/codemods/react/19/improvements-recipe: {}
-
   packages/codemods/react/19/migration-recipe: {}
 
   packages/codemods/react/19/remove-context-provider:
@@ -6101,9 +6123,6 @@ importers:
       '@prisma/client':
         specifier: 'catalog:'
         version: 5.15.1(prisma@5.15.1)
-      prisma:
-        specifier: 'catalog:'
-        version: 5.15.1
       prisma-json-types-generator:
         specifier: ^3.0.4
         version: 3.0.4(prisma@5.15.1)(typescript@5.5.3)
@@ -6114,6 +6133,9 @@ importers:
       '@faker-js/faker':
         specifier: 'catalog:'
         version: 8.4.1
+      prisma:
+        specifier: 'catalog:'
+        version: 5.15.1
       tsx:
         specifier: ^4.11.0
         version: 4.15.7
@@ -6148,7 +6170,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -6264,7 +6286,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
+        version: 0.16.1(@babel/preset-env@7.24.7)
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -26772,6 +26794,25 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@vitest/coverage-v8@1.6.0(vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1))':
+    dependencies:
+      '@ampproject/remapping': 2.3.0
+      '@bcoe/v8-coverage': 0.2.3
+      debug: 4.3.5(supports-color@5.5.0)
+      istanbul-lib-coverage: 3.2.2
+      istanbul-lib-report: 3.0.1
+      istanbul-lib-source-maps: 5.0.4
+      istanbul-reports: 3.1.7
+      magic-string: 0.30.10
+      magicast: 0.3.4
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 2.1.0
+      test-exclude: 6.0.0
+      vitest: 1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1)
+    transitivePeerDependencies:
+      - supports-color
+
   '@vitest/coverage-v8@1.6.0(vitest@1.6.0(@types/node@18.11.9)(jsdom@23.2.0)(terser@5.31.1))':
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -30966,7 +31007,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7
@@ -35876,7 +35917,6 @@ snapshots:
       typescript: 5.5.3
       v8-compile-cache-lib: 3.0.1
       yn: 3.1.1
-    optional: true
 
   ts-toolbelt@9.6.0: {}
 
@@ -36380,6 +36420,23 @@ snapshots:
       - supports-color
       - terser
 
+  vite-node@1.1.0(@types/node@20.14.8)(terser@5.31.1):
+    dependencies:
+      cac: 6.7.14
+      debug: 4.3.5(supports-color@5.5.0)
+      pathe: 1.1.2
+      picocolors: 1.0.1
+      vite: 5.3.1(@types/node@20.14.8)(terser@5.31.1)
+    transitivePeerDependencies:
+      - '@types/node'
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
   vite-node@1.6.0(@types/node@18.11.9)(terser@5.31.1):
     dependencies:
       cac: 6.7.14
@@ -36547,6 +36604,16 @@ snapshots:
       fsevents: 2.3.3
       terser: 5.31.1
 
+  vite@5.3.1(@types/node@20.14.8)(terser@5.31.1):
+    dependencies:
+      esbuild: 0.21.5
+      postcss: 8.4.35
+      rollup: 4.18.0
+    optionalDependencies:
+      '@types/node': 20.14.8
+      fsevents: 2.3.3
+      terser: 5.31.1
+
   vite@5.3.4(@types/node@18.11.9)(terser@5.31.1):
     dependencies:
       esbuild: 0.21.5
@@ -36622,6 +36689,41 @@ snapshots:
       why-is-node-running: 2.2.2
     optionalDependencies:
       '@types/node': 20.10.5
+      jsdom: 23.2.0
+    transitivePeerDependencies:
+      - less
+      - lightningcss
+      - sass
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+
+  vitest@1.1.0(@types/node@20.14.8)(jsdom@23.2.0)(terser@5.31.1):
+    dependencies:
+      '@vitest/expect': 1.1.0
+      '@vitest/runner': 1.1.0
+      '@vitest/snapshot': 1.1.0
+      '@vitest/spy': 1.1.0
+      '@vitest/utils': 1.1.0
+      acorn-walk: 8.3.3
+      cac: 6.7.14
+      chai: 4.4.1
+      debug: 4.3.5(supports-color@5.5.0)
+      execa: 8.0.1
+      local-pkg: 0.5.0
+      magic-string: 0.30.10
+      pathe: 1.1.2
+      picocolors: 1.0.1
+      std-env: 3.7.0
+      strip-literal: 1.3.0
+      tinybench: 2.8.0
+      tinypool: 0.8.4
+      vite: 5.3.1(@types/node@20.14.8)(terser@5.31.1)
+      vite-node: 1.1.0(@types/node@20.14.8)(terser@5.31.1)
+      why-is-node-running: 2.2.2
+    optionalDependencies:
+      '@types/node': 20.14.8
       jsdom: 23.2.0
     transitivePeerDependencies:
       - less
