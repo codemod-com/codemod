@@ -91,7 +91,7 @@ describe("next 13 remove-get-static-props", () => {
     deepStrictEqual(upsertFileCommand.path, "/opt/project/pages/a.tsx");
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
+      upsertFileCommand.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });

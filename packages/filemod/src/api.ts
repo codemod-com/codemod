@@ -1,5 +1,5 @@
 import type { RSU } from "./options.js";
-import type { UnifiedFileSystem } from "./unifiedFileSystem.js";
+import type { UnifiedFileSystem } from "./unified-file-system.js";
 
 export interface PathAPI {
   readonly getDirname: (path: string) => string;

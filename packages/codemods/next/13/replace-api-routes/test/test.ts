@@ -60,7 +60,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -95,7 +95,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -156,7 +156,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -210,7 +210,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -305,7 +305,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });
@@ -357,7 +357,7 @@ describe("next 13 replace-API-routes", () => {
     );
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\W/gm, ""),
+      upsertFileCommand.newData.replace(/\W/gm, ""),
       expectedResult.replace(/\W/gm, ""),
     );
   });

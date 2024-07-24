@@ -1,6 +1,6 @@
 {
   "name": "@codemod-com/backend",
-  "version": "0.0.137",
+  "version": "0.0.138",
   "scripts": {
     "build": "tsc && node esbuild.config.js",
     "start": "node build/index.js",
@@ -38,6 +38,7 @@
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@codemod-com/auth": "workspace:*",
     "@codemod-com/database": "workspace:*",
+    "@codemod-com/runner": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@fastify/busboy": "catalog:",
     "@fastify/cors": "catalog:",

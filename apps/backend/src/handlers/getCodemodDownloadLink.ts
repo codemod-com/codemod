@@ -6,9 +6,9 @@ import type {
 } from "@codemod-com/api-types";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import type { FastifyReply, RouteHandler } from "fastify";
-import { processHandlerError } from "~/types/errors.js";
 import { parseGetCodemodLatestVersionQuery } from "../schemata/schema.js";
 import { codemodService } from "../services/CodemodService.js";
+import { processHandlerError } from "../types/errors.js";
 import { environment } from "../util.js";
 
 export type GetCodemodDownloadLinkResponse =

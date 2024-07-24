@@ -100,7 +100,7 @@ export const abTestMiddlewareFactory =
   };
 `;
 
-type Dependencies = { jscodeshift: JSCodeshift };
+type Dependencies = { jscodeshift: JSCodeshift; j: JSCodeshift };
 type State = Record<string, string>;
 
 const handleFile: HandleFile<Dependencies, State> = async (
@@ -130,8 +130,7 @@ const handleFile: HandleFile<Dependencies, State> = async (
 const handleData: HandleData<Dependencies, State> = async (api, path, data) => {
   const parsedPath = parse(path);
   if (parsedPath.name === "middleware") {
-    const { jscodeshift } = api.getDependencies();
-    const j = jscodeshift.withParser("tsx");
+    const { j } = api.getDependencies();
     const root = j(data);
 
     root.find(j.ExportDefaultDeclaration).forEach((path) => {

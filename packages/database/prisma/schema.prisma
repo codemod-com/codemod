@@ -1,7 +1,6 @@
 generator client {
   provider   = "prisma-client-js"
   engineType = "binary"
-  output     = "../generated/client"
 }
 
 generator json {

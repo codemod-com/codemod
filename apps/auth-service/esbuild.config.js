@@ -1,5 +1,4 @@
 import esbuild from "esbuild";
-import { copy } from "esbuild-plugin-copy";
 
 esbuild
   .build({
@@ -19,18 +18,5 @@ esbuild
       `,
     },
     format: "esm",
-    plugins: [
-      copy({
-        assets: [
-          {
-            from: [
-              "./node_modules/@codemod-com/database/generated/client/schema.prisma",
-            ],
-            to: ["./packages/database/generated/client/schema.prisma"],
-          },
-        ],
-        verbose: true,
-      }),
-    ],
   })
   .catch(() => process.exit(1));

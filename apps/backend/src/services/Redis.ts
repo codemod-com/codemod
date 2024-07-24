@@ -1,7 +1,7 @@
 import { Queue } from "bullmq";
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
-import { environment } from "../util";
+import { environment } from "../util.js";
 
 export const redis = environment.REDIS_HOST
   ? new Redis({

@@ -1,6 +1,9 @@
 {
   "name": "@codemod-com/runner",
   "author": "Codemod, Inc.",
+  "imports": {
+    "#*": "./src/*"
+  },
   "version": "1.0.6",
   "description": "The codemod runner used in Codemod.com ecosystem",
   "type": "module",
@@ -23,6 +26,7 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@babel/plugin-syntax-import-attributes": "^7.24.7",
     "@types/babel__traverse": "catalog:",
     "@types/js-yaml": "catalog:",
     "@types/jscodeshift": "^0.11.11",
@@ -45,9 +49,10 @@
     "@codemod.com/workflow": "workspace:*",
     "@svgr/hast-util-to-babel-ast": "catalog:",
     "@vue/compiler-sfc": "catalog:",
+    "esbuild": "^0.23.0",
     "glob": "catalog:",
     "js-yaml": "catalog:",
-    "jscodeshift": "^0.15.2",
+    "jscodeshift": "^0.16.1",
     "mdast-util-from-markdown": "catalog:",
     "mdast-util-mdx": "catalog:",
     "mdast-util-to-markdown": "catalog:",

@@ -1,10 +1,14 @@
-import type { PrinterBlueprint } from "@codemod-com/printer";
-import { revokeCLIToken } from "../apis.js";
-import { CredentialsStorageType } from "../credentialsStorage.js";
-import { credentialsStorage, getCurrentUserData } from "../utils.js";
+import type { Printer } from "@codemod-com/printer";
+
+import { revokeCLIToken } from "#api.js";
+import { getCurrentUserData } from "#auth-utils.js";
+import {
+  CredentialsStorageType,
+  credentialsStorage,
+} from "#credentials-storage.js";
 
 export const handleLogoutCliCommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
 }) => {
   const { printer } = options;
 

@@ -64,8 +64,7 @@ export const repomod: Filemod<Dependencies, Options> = {
     return [{ kind: "upsertFile", path, options, state }];
   },
   handleData: async (api, path, data, options, state) => {
-    const { jscodeshift } = api.getDependencies();
-    const j = jscodeshift.withParser("tsx");
+    const { j } = api.getDependencies();
     const root = j(data);
 
     root.find(j.CallExpression).forEach((path) => {
@@ -98,7 +97,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 
       callArgument.properties.forEach((prop) => {
         if (
-          !j.ObjectProperty.check(prop) ||
+          !j.Property.check(prop) ||
           !j.Identifier.check(prop.key) ||
           !j.ObjectExpression.check(prop.value)
         ) {
@@ -111,7 +110,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 
         prop.value.properties.forEach((fieldProp) => {
           if (
-            !j.ObjectProperty.check(fieldProp) ||
+            !j.Property.check(fieldProp) ||
             !j.Identifier.check(fieldProp.key)
           ) {
             return;
@@ -140,7 +139,7 @@ export const repomod: Filemod<Dependencies, Options> = {
 
             fieldProp.value.properties.forEach((filterProp) => {
               if (
-                !j.ObjectProperty.check(filterProp) ||
+                !j.Property.check(filterProp) ||
                 !j.Identifier.check(filterProp.key)
               ) {
                 return;
@@ -178,7 +177,7 @@ export const repomod: Filemod<Dependencies, Options> = {
             const longNotationFilterProp = fieldProp.value.properties.find(
               (filterProp) => {
                 if (
-                  !j.ObjectProperty.check(filterProp) ||
+                  !j.Property.check(filterProp) ||
                   !j.Identifier.check(filterProp.key)
                 ) {
                   return;
@@ -191,7 +190,7 @@ export const repomod: Filemod<Dependencies, Options> = {
             // If it's a long notation, covers fixture #1, case #1
             if (
               isNeitherNullNorUndefined(longNotationFilterProp) &&
-              j.ObjectProperty.check(longNotationFilterProp) &&
+              j.Property.check(longNotationFilterProp) &&
               j.ObjectExpression.check(longNotationFilterProp.value)
             ) {
               longNotationFilterProp.value = j.arrayExpression([

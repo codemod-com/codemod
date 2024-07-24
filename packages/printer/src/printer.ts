@@ -1,25 +1,14 @@
 import chalk from "chalk";
 import cliProgress from "cli-progress";
 import ora, { type Ora } from "ora";
-import type { ConsoleKind } from "./schemata/consoleKindSchema.js";
+import type { ConsoleKind } from "./schemata/console-kind.js";
 import type { OperationMessage, ProgressMessage } from "./schemata/messages.js";
-import type { WorkerThreadMessage } from "./schemata/workerThreadMessages.js";
+import type { WorkerThreadMessage } from "./schemata/worker-thread.js";
 
-export type PrinterBlueprint = Readonly<{
-  __jsonOutput: boolean;
-  printMessage(
-    message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
-  ): void;
-  printOperationMessage(message: OperationMessage): void;
-  printConsoleMessage(kind: ConsoleKind, message: string): void;
+export class Printer {
+  protected progressBar: cliProgress.SingleBar | null = null;
 
-  withLoaderMessage(text: string): Ora;
-}>;
-
-export class Printer implements PrinterBlueprint {
-  private progressBar: cliProgress.SingleBar | null = null;
-
-  public constructor(public readonly __jsonOutput: boolean) {}
+  public constructor(public readonly __jsonOutput = false) {}
 
   public printMessage(
     message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
@@ -60,7 +49,7 @@ export class Printer implements PrinterBlueprint {
     }
 
     if (message.kind === "finish") {
-      this.finishExecutionProgress();
+      this.terminateExecutionProgress();
     }
   }
 
@@ -99,9 +88,6 @@ export class Printer implements PrinterBlueprint {
       file: message.processedFileName
         ? chalk.bold(message.processedFileName)
         : "N/A",
-      codemod: message.codemodName
-        ? chalk.bold(message.codemodName)
-        : "Local codemod",
     });
 
     if (this.progressBar.getTotal() !== message.totalFileNumber) {
@@ -109,7 +95,7 @@ export class Printer implements PrinterBlueprint {
     }
   }
 
-  public finishExecutionProgress() {
+  public terminateExecutionProgress() {
     if (this.progressBar) {
       this.progressBar.stop();
       this.progressBar = null;

@@ -1,8 +1,10 @@
 import { dirname, join } from "node:path";
 import zlib from "node:zlib";
+
 import bl from "bl";
 import * as tar from "tar";
 import * as tarStream from "tar-stream";
+
 import type { FileSystem } from "../schemata/types.js";
 
 export class TarService {
@@ -11,7 +13,7 @@ export class TarService {
   public async unpack(
     rootDirectoryPath: string,
     buffer: Buffer,
-  ): Promise<void> {
+  ): Promise<string> {
     const bufferMap = new Map<string, ReadonlyArray<Buffer>>();
 
     await new Promise<void>((resolve, reject) => {
@@ -84,6 +86,8 @@ export class TarService {
 
       await this._fs.promises.writeFile(absolutePath, buffers.join(""));
     }
+
+    return rootDirectoryPath;
   }
 
   public async pack(buffers: { name: string; data: Buffer }[]) {

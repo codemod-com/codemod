@@ -1,14 +1,15 @@
-export {
-  Prisma,
-  PrismaClient,
-} from "../generated/client";
+import type { CodemodConfig } from "@codemod-com/utilities";
+import { PrismaClient } from "@prisma/client";
 
-export type {
-  CodeDiff,
-  Codemod,
-  CodemodVersion,
-  Tag,
-  UserLoginIntent,
-} from "../generated/client";
+declare global {
+  var prisma: PrismaClient | undefined;
+  namespace PrismaJson {
+    type Argument = CodemodConfig["arguments"];
+    type Applicability = CodemodConfig["applicability"];
+  }
+}
 
-export * from "./client";
+export const prisma = global.prisma || new PrismaClient();
+if (process.env.NODE_ENV !== "production") global.prisma = prisma;
+
+export * from "@prisma/client";

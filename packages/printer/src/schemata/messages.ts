@@ -12,9 +12,8 @@ export type FinishMessage = Readonly<{
 
 export type ProgressMessage = Readonly<{
   kind: "progress";
-  codemodName?: string;
-  processedFileNumber: number;
   processedFileName: string | null;
+  processedFileNumber: number;
   totalFileNumber: number;
 }>;
 

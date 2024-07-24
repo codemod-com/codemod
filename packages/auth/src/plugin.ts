@@ -1,4 +1,4 @@
-import type { OrganizationMembership, User } from "@codemod-com/utilities";
+import type { OrganizationMembership, User } from "@codemod-com/api-types";
 import axios from "axios";
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import fp from "fastify-plugin";

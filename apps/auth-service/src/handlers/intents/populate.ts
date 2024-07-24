@@ -1,13 +1,15 @@
 import { getAuth } from "@clerk/fastify";
+import type { RouteHandler } from "fastify";
+import { object, optional, parse, string } from "valibot";
+
 import { prisma } from "@codemod-com/database";
 import {
   decryptWithIv,
   encryptWithIv,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
-import type { RouteHandler } from "fastify";
-import { object, optional, parse, string } from "valibot";
-import { environment } from "../../util";
+
+import { environment } from "../../util.js";
 
 export type PopulateLoginIntentReply =
   | { success: true }

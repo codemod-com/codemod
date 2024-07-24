@@ -1,8 +1,8 @@
-import { type PrinterBlueprint, chalk } from "@codemod-com/printer";
-import { getCurrentUserData, getOrgsNames } from "../utils.js";
+import { type Printer, chalk } from "@codemod-com/printer";
+import { getCurrentUserData, getOrgsNames } from "#auth-utils.js";
 
 export const handleWhoAmICommand = async (options: {
-  printer: PrinterBlueprint;
+  printer: Printer;
 }) => {
   const { printer } = options;
 

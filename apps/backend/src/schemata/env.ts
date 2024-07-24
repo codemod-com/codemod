@@ -19,6 +19,8 @@ export const environmentSchema = object({
   SIGNATURE_PRIVATE_KEY: string(),
   AWS_ACCESS_KEY_ID: optional(string()),
   AWS_SECRET_ACCESS_KEY: optional(string()),
+  AWS_PUBLIC_BUCKET_NAME: string(),
+  AWS_PRIVATE_BUCKET_NAME: string(),
   DATABASE_URI: string(),
   VERIFIED_PUBLISHERS: coerce(array(string()), (input) => {
     if (!isNeitherNullNorUndefined(input)) {
@@ -47,7 +49,6 @@ export const environmentSchema = object({
   TASK_MANAGER_QUEUE_NAME: optional(string()),
   POSTHOG_API_KEY: optional(string()),
   POSTHOG_PROJECT_ID: optional(string()),
-  CODEMOD_COM_API_URL: string(),
   SLACK_TOKEN: string(),
   SLACK_CHANNEL: string(),
   BACKEND_API_URL: optional(string()),

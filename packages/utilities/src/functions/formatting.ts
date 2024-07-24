@@ -1,4 +1,5 @@
 import { extname } from "node:path";
+
 import type { Options } from "prettier";
 
 const parserMappers = new Map<string, Options["parser"]>([
@@ -56,13 +57,8 @@ const getConfig = async (path: string): Promise<Options> => {
 export const formatText = async (
   path: string,
   oldData: string,
-  formatWithPrettier: boolean,
 ): Promise<string> => {
   const newData = oldData.replace(/\/\*\* \*\*\//gm, "");
-
-  if (!formatWithPrettier) {
-    return newData;
-  }
 
   try {
     const { format } = await import("prettier");
@@ -99,3 +95,9 @@ export const removeLineBreaksAtStartAndEnd = (str: string) =>
   str
     .replace(/^\n+/, "") // remove all occurrences of `\n` at the start
     .replace(/\n+$/, ""); // remove all occurrences of `\n` at the end
+
+export const buildCodemodSlug = (name: string) =>
+  name
+    .replaceAll("@", "")
+    .split(/[\/ ,.-]/)
+    .join("-");

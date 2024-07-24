@@ -1,13 +1,13 @@
 import type { API, DataAPI, DirectoryAPI, FileAPI } from "./api.js";
-import type { ExternalFileCommand } from "./externalFileCommands.js";
+import type { Options, RSU, State } from "./options.js";
+import type { ExternalFileCommand } from "./types/external-commands.js";
 import type {
   Command,
   DataCommand,
   DirectoryCommand,
   FileCommand,
   FinishCommand,
-} from "./internalCommands.js";
-import type { Options, RSU, State } from "./options.js";
+} from "./types/internal-commands.js";
 
 type DistributedOmit<T, K> = T extends NonNullable<unknown>
   ? Pick<T, Exclude<keyof T, K>>
@@ -219,7 +219,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "deleteFile") {
-    api.unifiedFileSystem.deleteFile(command.path);
+    await api.unifiedFileSystem.deleteFile(command.path);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,
@@ -228,7 +228,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "upsertData") {
-    api.unifiedFileSystem.upsertData(command.path, command.data);
+    await api.unifiedFileSystem.upsertData(command.path, command.data);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,
@@ -237,7 +237,7 @@ const handleCommand = async <D extends RSU, S extends State>(
   }
 
   if (command.kind === "moveFile") {
-    api.unifiedFileSystem.moveFile(command.oldPath, command.newPath);
+    await api.unifiedFileSystem.moveFile(command.oldPath, command.newPath);
 
     callbackService.onCommandExecuted?.({
       kind: command.kind,

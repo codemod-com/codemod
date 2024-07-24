@@ -17,11 +17,10 @@ const transform = async (json: DirectoryJSON) => {
   const unifiedFileSystem = buildUnifiedFileSystem(fs);
   const pathApi = buildPathAPI("/");
 
-  const api = buildApi<{ jscodeshift: typeof jscodeshift }>(
-    unifiedFileSystem,
-    () => ({ jscodeshift }),
-    pathApi,
-  );
+  const api = buildApi<{
+    jscodeshift: typeof jscodeshift;
+    j: typeof jscodeshift;
+  }>(unifiedFileSystem, () => ({ jscodeshift, j: jscodeshift }), pathApi);
 
   return executeFilemod(api, repomod, "/", {}, {}, null);
 };
@@ -123,7 +122,7 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture1.output.ts"),
       "utf-8",
     );
-    deepEqual(example1Command.data, example1Fixture);
+    deepEqual(example1Command.newData, example1Fixture);
   });
 
   it("should correctly modify example in fixture #2", async () => {
@@ -143,7 +142,7 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture2.output.ts"),
       "utf-8",
     );
-    deepEqual(example2Command.data, example2Fixture);
+    deepEqual(example2Command.newData, example2Fixture);
   });
 
   it("should correctly modify example in fixture #3", async () => {
@@ -163,7 +162,7 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture3.output.ts"),
       "utf-8",
     );
-    deepEqual(example3Command.data, example3Fixture);
+    deepEqual(example3Command.newData, example3Fixture);
   });
 
   it("should correctly modify example in fixture #4", async () => {
@@ -183,7 +182,7 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture4.output.ts"),
       "utf-8",
     );
-    deepEqual(example4Command.data, example4Fixture);
+    deepEqual(example4Command.newData, example4Fixture);
   });
 
   it("should correctly modify example in fixture #5", async () => {
@@ -203,7 +202,7 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture5.output.ts"),
       "utf-8",
     );
-    deepEqual(example5Command.data, example5Fixture);
+    deepEqual(example5Command.newData, example5Fixture);
   });
 
   it("should correctly modify example in fixture #6", async () => {
@@ -223,6 +222,6 @@ describe("prisma json protocol tests", async () => {
       join(__dirname, "..", "__testfixtures__", "fixture6.output.ts"),
       "utf-8",
     );
-    deepEqual(example6Command.data, example6Fixture);
+    deepEqual(example6Command.newData, example6Fixture);
   });
 });

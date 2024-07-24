@@ -133,7 +133,6 @@ catalog:
     colors-cli: ^1.0.33
     columnify: ^1.6.0
     constants-browserify: ^1.0.0
-    cosmiconfig: ^8.3.6
     cron: ^3.1.6
     cspell-cli: ^6.17.1
     csstype: ^3.1.1
@@ -261,7 +260,6 @@ catalog:
     ts-loader: ^9.4.2
     ts-node-dev: ^2.0.0
     tslib: 2.4.1
-    tsup: ^8.1.0
     umd-compat-loader: ^2.1.2
     unified: ^10.1.2
     unist-util-filter: ^5.0.1

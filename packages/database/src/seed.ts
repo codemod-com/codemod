@@ -1,5 +1,5 @@
 import { faker } from "@faker-js/faker";
-import { PrismaClient } from "../generated/client";
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -26,7 +26,7 @@ const frameworks = [
 
 const engines = ["jscodeshift", "ts-morph", "ast-grep"];
 
-const getRandomElementOfArray = (array: any[]) =>
+const getRandomElementOfArray = <T>(array: T[]) =>
   faker.helpers.arrayElement(array);
 const getRandomName = () => faker.person.fullName();
 const getRandomNumber = (min: number, max: number) =>
@@ -89,15 +89,35 @@ async function seedDatabaseWithCodemods(): Promise<void> {
           name: [frameworkName, frameworkVersion, codemodName].join("/"),
           tags: [frameworkName, useCaseCategory, getRandomWord()],
           shortDescription: getRandomWords(10, 50),
-          applicability: [
-            [
-              frameworkName,
-              getRandomElementOfArray([">=", "<=", "<", ">"]),
-              frameworkVersion,
+          applicability: {
+            from: [
+              [
+                frameworkName,
+                getRandomElementOfArray([">=", "<=", "<", ">"]),
+                frameworkVersion,
+              ],
             ],
-          ],
+            to: [
+              [
+                frameworkName,
+                getRandomElementOfArray([">=", "<=", "<", ">"]),
+                frameworkVersion,
+              ],
+            ],
+          },
           engine: getRandomEngine(),
-          arguments: [getRandomWord(), getRandomWord(), getRandomWord()],
+          arguments: [
+            {
+              kind: getRandomElementOfArray(["string", "number", "boolean"]),
+              name: getRandomWord(),
+              required: getRandomElementOfArray([true, false]),
+            },
+            {
+              kind: getRandomElementOfArray(["string", "number", "boolean"]),
+              name: getRandomWord(),
+              required: getRandomElementOfArray([true, false]),
+            },
+          ],
           labels: [getRandomWord(), getRandomWord(), getRandomWord()],
           author: getRandomName(),
           amountOfUses: getRandomNumber(1, 5000),
@@ -117,15 +137,35 @@ async function seedDatabaseWithCodemods(): Promise<void> {
             codemodId: codemod.id,
             tags: [frameworkName, useCaseCategory, getRandomWord()],
             shortDescription: getRandomWords(10, 50),
-            applicability: [
-              [
-                frameworkName,
-                getRandomElementOfArray([">=", "<=", "<", ">"]),
-                frameworkVersion,
+            applicability: {
+              from: [
+                [
+                  frameworkName,
+                  getRandomElementOfArray([">=", "<=", "<", ">"]),
+                  frameworkVersion,
+                ],
               ],
-            ],
+              to: [
+                [
+                  frameworkName,
+                  getRandomElementOfArray([">=", "<=", "<", ">"]),
+                  frameworkVersion,
+                ],
+              ],
+            },
             engine: getRandomEngine(),
-            arguments: [getRandomWord(), getRandomWord(), getRandomWord()],
+            arguments: [
+              {
+                kind: getRandomElementOfArray(["string", "number", "boolean"]),
+                name: getRandomWord(),
+                required: getRandomElementOfArray([true, false]),
+              },
+              {
+                kind: getRandomElementOfArray(["string", "number", "boolean"]),
+                name: getRandomWord(),
+                required: getRandomElementOfArray([true, false]),
+              },
+            ],
             version: getRandomSemver(),
             vsCodeLink: getRandomUrl(),
             codemodStudioExampleLink: getRandomUrl(),

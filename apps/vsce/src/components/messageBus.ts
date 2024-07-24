@@ -1,4 +1,4 @@
-import type { PiranhaLanguage } from "@codemod-com/utilities";
+// import type { PiranhaLanguage } from "@codemod-com/utilities";
 import { type Disposable, EventEmitter, type Uri } from "vscode";
 import type { Case, CaseHash } from "../cases/types";
 import type { ExecutionError } from "../errors/types";
@@ -65,14 +65,14 @@ export type Command =
       codemodUri: Uri;
       codemodHash: CodemodHash | null;
       name: string;
-    }>
-  | Readonly<{
-      kind: "executePiranhaRule";
-      name: string;
-      configurationUri: Uri;
-      language: PiranhaLanguage;
-      arguments?: ReadonlyArray<CodemodArgumentWithValue>;
     }>;
+// | Readonly<{
+//     kind: "executePiranhaRule";
+//     name: string;
+//     configurationUri: Uri;
+//     language: PiranhaLanguage;
+//     arguments?: ReadonlyArray<CodemodArgumentWithValue>;
+//   }>;
 
 export type Message =
   | Readonly<{

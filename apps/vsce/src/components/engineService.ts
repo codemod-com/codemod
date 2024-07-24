@@ -20,11 +20,7 @@ import type { Store } from "../data";
 import { actions } from "../data/slice";
 import { type ExecutionError, executionErrorCodec } from "../errors/types";
 import type { CodemodHash } from "../packageJsonAnalyzer/types";
-import {
-  buildCrossplatformArg,
-  isNeitherNullNorUndefined,
-  streamToString,
-} from "../utilities";
+import { isNeitherNullNorUndefined, streamToString } from "../utilities";
 import { buildArguments } from "./buildArguments";
 import { type Message, type MessageBus, MessageKind } from "./messageBus";
 
@@ -111,7 +107,6 @@ export class EngineService {
 
   #execution: Execution | null = null;
   __fetchCodemodsIntervalId: NodeJS.Timer | null = null;
-  private __codemodEngineRustExecutableUri: Uri | null = null;
   private __executionMessageQueue: ExecuteCodemodMessage[] = [];
 
   public constructor(
@@ -124,10 +119,6 @@ export class EngineService {
     this.#configurationContainer = configurationContainer;
     this.#messageBus = messageBus;
     this.#fileSystem = fileSystem;
-
-    messageBus.subscribe(MessageKind.engineBootstrapped, (message) =>
-      this.#onEnginesBootstrappedMessage(message),
-    );
 
     messageBus.subscribe(MessageKind.executeCodemodSet, (message) => {
       this.#onExecuteCodemodSetMessage(message);
@@ -189,21 +180,6 @@ export class EngineService {
     );
 
     checkCodemodEngineNode();
-  }
-
-  async #onEnginesBootstrappedMessage(
-    message: Message & { kind: MessageKind.engineBootstrapped },
-  ) {
-    this.__codemodEngineRustExecutableUri =
-      message.codemodEngineRustExecutableUri;
-  }
-
-  private __getCodemodEngineRustExecutableCommand() {
-    if (this.__codemodEngineRustExecutableUri === null) {
-      throw new Error("The engines are not bootstrapped.");
-    }
-
-    return buildCrossplatformArg(this.__codemodEngineRustExecutableUri.fsPath);
   }
 
   private async __checkIfCodemodExists(childProcess: ChildProcess) {
@@ -332,11 +308,7 @@ export class EngineService {
       storageUri,
     );
 
-    const executableCommand =
-      message.command.kind === "executePiranhaRule"
-        ? this.__getCodemodEngineRustExecutableCommand()
-        : CODEMOD_ENGINE_NODE_COMMAND;
-    const childProcess = spawn(executableCommand, args, {
+    const childProcess = spawn(CODEMOD_ENGINE_NODE_COMMAND, args, {
       stdio: "pipe",
       shell: true,
     });

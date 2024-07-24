@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "rootDir": "./src",
     "allowJs": true,
     "checkJs": false,
-    "target": "ES2015",
     "noEmit": true
   },
   "include": ["env.d.ts", "src/**/*", "test/**/*"],

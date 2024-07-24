@@ -1,8 +1,10 @@
-import { prisma } from "@codemod-com/database";
-import { decryptWithIv } from "@codemod-com/utilities";
 import type { RouteHandler } from "fastify";
 import { object, parse, string } from "valibot";
-import { environment } from "../../util";
+
+import { prisma } from "@codemod-com/database";
+import { decryptWithIv } from "@codemod-com/utilities";
+
+import { environment } from "../../util.js";
 
 export type GetLoginIntentReply = { token: string };
 

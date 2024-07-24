@@ -1,7 +1,10 @@
 {
   "name": "codemod",
   "author": "Codemod, Inc.",
-  "version": "0.11.36",
+  "imports": {
+    "#*": "./src/*"
+  },
+  "version": "0.12.0",
   "description": "A codemod engine for Node.js libraries (jscodeshift, ts-morph, etc.)",
   "type": "module",
   "exports": null,
@@ -50,7 +53,6 @@
     "@vitest/coverage-v8": "catalog:",
     "axios": "catalog:",
     "columnify": "catalog:",
-    "cosmiconfig": "catalog:",
     "diff": "catalog:",
     "exponential-backoff": "catalog:",
     "form-data": "catalog:",
@@ -91,8 +93,8 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
-    "esbuild": "^0.23.0",
     "blessed": "catalog:",
+    "esbuild": "^0.23.0",
     "keytar": "catalog:",
     "@octokit/rest": "catalog:"
   }

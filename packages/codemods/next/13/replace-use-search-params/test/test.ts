@@ -82,7 +82,7 @@ describe("next 13 replace-replace-use-search-params", () => {
     deepStrictEqual(upsertFileCommand.path, "/opt/project/components/a.tsx");
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
+      upsertFileCommand.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -122,7 +122,7 @@ describe("next 13 replace-replace-use-search-params", () => {
     deepStrictEqual(upsertFileCommand.path, "/opt/project/components/a.tsx");
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
+      upsertFileCommand.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -159,7 +159,7 @@ describe("next 13 replace-replace-use-search-params", () => {
     deepStrictEqual(upsertFileCommand.path, "/opt/project/components/a.tsx");
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
+      upsertFileCommand.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });
@@ -198,7 +198,7 @@ describe("next 13 replace-replace-use-search-params", () => {
     deepStrictEqual(upsertFileCommand.path, "/opt/project/components/a.tsx");
 
     deepStrictEqual(
-      upsertFileCommand.data.replace(/\s/gm, ""),
+      upsertFileCommand.newData.replace(/\s/gm, ""),
       expectedResult.replace(/\s/gm, ""),
     );
   });

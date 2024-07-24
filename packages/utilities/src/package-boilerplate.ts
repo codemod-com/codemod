@@ -1,12 +1,14 @@
-import baseTsconfig from "@codemod-com/tsconfig/base.json";
-import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
 import * as changeCase from "change-case";
 import jsBeautify from "js-beautify";
+
+import baseTsconfig from "@codemod-com/tsconfig/base.json";
+import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
+
 import {
   type CodemodConfig,
   type KnownEngines,
   parseCodemodConfig,
-} from "./schemata/codemodConfigSchema.js";
+} from "./schemata/codemod-config.js";
 
 const { js } = jsBeautify;
 export interface ProjectDownloadInput {
@@ -60,7 +62,7 @@ export type TypeScriptProjectFiles = BaseProjectFiles &
     [key: FixtureInputFileTypeScript]: string;
     [key: FixtureOutputFileTypeScript]: string;
   };
-export type AstGrepProjectFiles = {
+export type AstGrepProjectFiles = BaseProjectFiles & {
   "src/rule.yaml": string;
 };
 

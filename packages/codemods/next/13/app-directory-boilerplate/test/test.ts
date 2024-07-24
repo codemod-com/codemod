@@ -158,7 +158,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/components.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
             'use client';
             // This file has been sourced from: /opt/project/pages/index.jsx
@@ -176,7 +176,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/[a]/c/page.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 // This file has been sourced from: /opt/project/pages/[a]/c.tsx
                 import Components from "./components";
@@ -196,7 +196,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/[a]/[b]/components.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 'use client';
                 // This file has been sourced from: /opt/project/pages/[a]/[b].tsx
@@ -228,7 +228,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/page.tsx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
             // This file has been sourced from: /opt/project/pages/index.jsx
             import Components from "./components";
@@ -317,7 +317,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/[a]/c/page.mdx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 // This file has been sourced from: /opt/project/pages/[a]/c.mdx
                 import Components from "./components";
@@ -338,7 +338,7 @@ describe("next 13 app-directory-boilerplate", () => {
         return (
           command.kind === "upsertFile" &&
           command.path === "/opt/project/app/[a]/[b]/page.mdx" &&
-          command.data.replace(/\W/gm, "") ===
+          command.newData.replace(/\W/gm, "") ===
             `
                 // This file has been sourced from: /opt/project/pages/[a]/[b].mdx
                 import Components from "./components";
@@ -378,7 +378,7 @@ describe("next 13 app-directory-boilerplate", () => {
     deepStrictEqual(upsertFileCommand?.path, "/opt/project/app/page.tsx");
 
     deepStrictEqual(
-      upsertFileCommand?.data.replace(/\W/gm, ""),
+      upsertFileCommand?.newData.replace(/\W/gm, ""),
       `
 				// This file has been sourced from: /opt/project/pages/index.jsx
 				import Components from "./components";
@@ -414,7 +414,7 @@ describe("next 13 app-directory-boilerplate", () => {
     deepStrictEqual(upsertFileCommand?.path, "/opt/project/app/page.tsx");
 
     deepStrictEqual(
-      upsertFileCommand?.data.replace(/\W/gm, ""),
+      upsertFileCommand?.newData.replace(/\W/gm, ""),
       `// This file has been sourced from: /opt/project/pages/index.jsx
 			import Components from "./components";
 			export default async function Page(props: any) {
@@ -505,12 +505,12 @@ describe("next 13 app-directory-boilerplate", () => {
 		`;
 
     deepStrictEqual(
-      upsertLayoutCommand?.data.replace(/\W/gm, ""),
+      upsertLayoutCommand?.newData.replace(/\W/gm, ""),
       layout.replace(/\W/gm, ""),
     );
 
     deepStrictEqual(
-      upsertLayoutClientComponentCommand?.data.replace(/\W/gm, ""),
+      upsertLayoutClientComponentCommand?.newData.replace(/\W/gm, ""),
       layoutClientComponent.replace(/\W/gm, ""),
     );
   });
@@ -604,12 +604,12 @@ describe("next 13 app-directory-boilerplate", () => {
 		`;
 
     deepStrictEqual(
-      upsertLayoutCommand?.data.replace(/\W/gm, ""),
+      upsertLayoutCommand?.newData.replace(/\W/gm, ""),
       layout.replace(/\W/gm, ""),
     );
 
     deepStrictEqual(
-      upsertLayoutClientComponentCommand?.data.replace(/\W/gm, ""),
+      upsertLayoutClientComponentCommand?.newData.replace(/\W/gm, ""),
       layoutClientComponent.replace(/\W/gm, ""),
     );
   });
@@ -637,7 +637,7 @@ describe("next 13 app-directory-boilerplate", () => {
     deepStrictEqual(upsertPageCommand?.path, "/opt/project/app/page.tsx");
 
     deepStrictEqual(
-      upsertPageCommand?.data.replace(/\W/gm, ""),
+      upsertPageCommand?.newData.replace(/\W/gm, ""),
       `// This file has been sourced from: /opt/project/pages/index.tsx
 			import Components from "./components";
 			export default async function Page(props: any) {
@@ -667,7 +667,7 @@ describe("next 13 app-directory-boilerplate", () => {
     deepStrictEqual(upsertPageCommand?.path, "/opt/project/app/a/b/c/page.tsx");
 
     deepStrictEqual(
-      upsertPageCommand?.data.replace(/(?!\.)\s/gm, ""),
+      upsertPageCommand?.newData.replace(/(?!\.)\s/gm, ""),
       `// This file has been sourced from: /opt/project/pages/a/b/c.tsx
 			import Components from "./components";
 			
@@ -703,7 +703,7 @@ describe("next 13 app-directory-boilerplate", () => {
     deepStrictEqual(command?.kind, "upsertFile");
 
     deepStrictEqual(
-      command?.data.replace(/(?!\.)\s/gm, ""),
+      command?.newData.replace(/(?!\.)\s/gm, ""),
       `
 			// This file has been sourced from: /opt/project/pages/index.tsx
 			import Components from "./components";

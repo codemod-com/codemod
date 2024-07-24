@@ -1,8 +1,6 @@
-import tsconfigPaths from "vite-tsconfig-paths";
 import { configDefaults, defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [tsconfigPaths()],
   test: {
     setupFiles: [
       `${__dirname}/apps/auth-service/node_modules/dotenv/config`,
@@ -24,7 +22,10 @@ export default defineConfig({
       SLACK_TOKEN: "xoxb-123123123",
       SLACK_CHANNEL: "my-channel",
       FRONTEND_URL: "http://localhost:3000",
+      AWS_PUBLIC_BUCKET_NAME: "codemod-test",
+      AWS_PRIVATE_BUCKET_NAME: "codemod-test",
     },
+    exclude: [...configDefaults.exclude, "./packages/deprecated/**"],
     include: [...configDefaults.include, "**/test/*.ts"],
     passWithNoTests: true,
     testTimeout: 15_000,
