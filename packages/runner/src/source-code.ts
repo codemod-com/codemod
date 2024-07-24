@@ -4,7 +4,7 @@ import esbuild from "esbuild";
 import tsmorph from "ts-morph";
 
 import type { Filemod } from "@codemod-com/filemod";
-import { getEntryPath } from "@codemod-com/utilities";
+import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
 import type { Dependencies } from "#engines/filemod.js";
 
 export const getTransformer = (source: string) => {
@@ -62,13 +62,7 @@ export const getCodemodExecutable = async (source: string) => {
     throwOnNotFound: true,
   });
 
-  const requiresBuild =
-    entryPoint.endsWith(".ts") ||
-    entryPoint.endsWith(".js") ||
-    entryPoint.endsWith(".cjs") ||
-    entryPoint.endsWith(".mjs");
-
-  if (!requiresBuild) {
+  if (!isJavaScriptName(entryPoint)) {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 

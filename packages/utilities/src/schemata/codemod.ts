@@ -9,12 +9,11 @@ import { engineOptionsSchema } from "./engine-options.js";
 import type { FileCommand } from "./file-commands.js";
 
 export const codemodSchemaBase = v.object({
+  $schema: v.optional(v.string()),
   path: v.string(),
   source: v.union([v.literal("local"), v.literal("remote")]),
   type: v.union([v.literal("standalone"), v.literal("package")]),
   safeArgumentRecord: v.optional(argumentRecordSchema, {}),
-  cleanup: v.optional(v.boolean(), false),
-  // hashDigest: optional(buffer()),
   engineOptions: v.optional(v.nullable(engineOptionsSchema), null),
 });
 

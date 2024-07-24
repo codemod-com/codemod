@@ -3,16 +3,19 @@ import jsBeautify from "js-beautify";
 
 import baseTsconfig from "@codemod-com/tsconfig/base.json";
 import codemodTsconfig from "@codemod-com/tsconfig/codemod.json";
-
+import { isNeitherNullNorUndefined } from "./functions/validation.js";
 import {
-  type CodemodConfig,
+  type CodemodConfigInput,
   type KnownEngines,
+  type KnownEnginesCodemodConfigValidationInput,
+  type RecipeCodemodConfigValidationInput,
   parseCodemodConfig,
 } from "./schemata/codemod-config.js";
 
 const { js } = jsBeautify;
 export interface ProjectDownloadInput {
   codemodBody?: string;
+  codemodRcBody?: CodemodConfigInput;
   name: string;
   engine: KnownEngines | "tsmorph" | "recipe";
 
@@ -352,33 +355,46 @@ const codemodRc = ({
   tags,
   version,
   gitUrl,
+  codemodRcBody,
 }: ProjectDownloadInput) => {
   const finalName = changeCase.kebabCase(name);
 
-  const configContent = {
-    $schema:
-      "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-    version: version ?? "1.0.0",
-    private: false,
-    name: finalName,
-    engine: engine === "tsmorph" ? "ts-morph" : engine,
-    meta: {
-      ...(tags && tags.length > 0 && { tags }),
-    },
-  } as CodemodConfig;
+  let codemodConfig: CodemodConfigInput;
 
-  if (engine === "recipe") {
-    (configContent as CodemodConfig & { engine: "recipe" }).names = [];
+  if (isNeitherNullNorUndefined(codemodRcBody)) {
+    codemodConfig = parseCodemodConfig(codemodRcBody);
+  } else if (engine === "recipe") {
+    codemodConfig = parseCodemodConfig({
+      $schema:
+        "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+      version: version ?? "1.0.0",
+      private: false,
+      name: finalName,
+      names: [],
+      engine,
+      meta: {
+        ...(tags && tags.length > 0 && { tags }),
+      },
+    } satisfies RecipeCodemodConfigValidationInput);
+  } else {
+    codemodConfig = parseCodemodConfig({
+      $schema:
+        "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+      version: version ?? "1.0.0",
+      private: false,
+      name: finalName,
+      engine: engine === "tsmorph" ? "ts-morph" : engine,
+      meta: {
+        ...(tags && tags.length > 0 && { tags }),
+      },
+    } satisfies KnownEnginesCodemodConfigValidationInput);
   }
-
-  const config = parseCodemodConfig(configContent);
 
   if (gitUrl) {
-    // biome-ignore lint: config.meta is defined
-    config.meta!.git = gitUrl;
+    codemodConfig.meta = { ...codemodConfig.meta, git: gitUrl };
   }
 
-  return beautify(JSON.stringify(config, null, 2));
+  return beautify(JSON.stringify(codemodConfig, null, 2));
 };
 
 const tsconfigJson = () => {

@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import fs from "node:fs";
 import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
-import { dirname, join } from "node:path";
+import { basename, dirname, join } from "node:path";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
 
@@ -13,6 +13,8 @@ import {
   doubleQuotify,
   execPromise,
   getCodemodProjectFiles,
+  isJavaScriptName,
+  parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { getCurrentUserData } from "#auth-utils.js";
 
@@ -35,7 +37,6 @@ export const handleInitCliCommand = async (options: {
 }) => {
   const {
     printer,
-    noPrompt = false,
     useDefaultName = false,
     writeDirectory = null,
     noLogs = false,
@@ -59,6 +60,20 @@ export const handleInitCliCommand = async (options: {
     username: userData?.user.username ?? null,
   } as const;
 
+  let engineChoices: string[];
+  if (isJavaScriptName(basename(target))) {
+    engineChoices = ["jscodeshift", "ts-morph", "filemod", "workflow"];
+  } else if (basename(target) === ".codemodrc.json") {
+    engineChoices = ["recipe"];
+  } else if (
+    basename(target).endsWith(".yaml") ||
+    basename(target).endsWith(".yml")
+  ) {
+    engineChoices = ["ast-grep"];
+  } else {
+    engineChoices = CODEMOD_ENGINE_CHOICES;
+  }
+
   const userAnswers = await inquirer.prompt<{
     name: string;
     engine: KnownEngines;
@@ -74,8 +89,8 @@ export const handleInitCliCommand = async (options: {
       type: "list",
       name: "engine",
       message: `Select a codemod engine ${isTargetAFile ? "your codemod is built with" : "you want to build your codemod with"}:`,
-      pageSize: CODEMOD_ENGINE_CHOICES.length,
-      choices: CODEMOD_ENGINE_CHOICES,
+      pageSize: engineChoices.length,
+      choices: engineChoices,
     },
   ]);
 
@@ -85,6 +100,22 @@ export const handleInitCliCommand = async (options: {
   };
 
   if (isTargetAFile) {
+    if (downloadInput.engine === "recipe") {
+      try {
+        downloadInput.codemodRcBody = parseCodemodConfig(
+          await readFile(target, "utf-8"),
+        );
+      } catch (err) {
+        throw new Error(
+          chalk(
+            "Failed to parse",
+            `${chalk.bold(".codemodrc.json")}:`,
+            `${(err as Error).message}.`,
+            "Aborting...",
+          ),
+        );
+      }
+    }
     // Can be read because we handle this error at the start
     downloadInput.codemodBody = await readFile(target, "utf-8");
   }

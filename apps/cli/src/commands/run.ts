@@ -151,7 +151,7 @@ export const handleRunCliCommand = async (options: {
 
   if (
     (args.readme || args.config || args.version) &&
-    codemod.config.version.length === 0
+    codemod.type === "standalone"
   ) {
     return printer.printConsoleMessage(
       "error",
@@ -226,15 +226,20 @@ export const handleRunCliCommand = async (options: {
         ),
       ];
 
-      let codemodName = "Standalone codemod (from user machine)";
+      let codemodName: string;
+      switch (true) {
+        case codemod.type === "standalone":
+          codemodName = "from-source-file";
+          break;
+        case codemod.type === "package" && codemod.source === "local":
+          codemodName = "from-source-compatible-package";
+          break;
+        default:
+          codemodName = codemod.config.name;
+          break;
+      }
 
       if (codemod.type === "package") {
-        if (codemod.source === "local") {
-          codemodName = `${codemod.config.name} (from user machine)`;
-        } else {
-          codemodName = codemod.config.name;
-        }
-
         const { config: codemodConfig } = await getCodemodRc({
           source: codemod.path,
           throwOnNotFound: false,
@@ -258,7 +263,8 @@ export const handleRunCliCommand = async (options: {
         cliVersion: cliVersion,
       });
 
-      if (codemod.cleanup) {
+      // For standalone codemods we create a temp folder with a codemod-compatible package
+      if (codemod.type === "standalone") {
         await fs.promises.rm(codemod.path, { recursive: true });
       }
     },
