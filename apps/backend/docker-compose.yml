@@ -1,9 +1,9 @@
 version: '3.9'
 services:
-  modgpt-backend:
+  backend:
     build:
       context: ../..
-      dockerfile: apps/modgpt/Dockerfile
+      dockerfile: apps/backend/Dockerfile
     environment:
       PORT: ${PORT}
       PEPPER: ${PEPPER}
@@ -25,7 +25,7 @@ services:
       NODE_ENV: ${NODE_ENV}
       FRONTEND_URL: ${FRONTEND_URL}
     ports:
-      - '8082:8082'
+      - '8081:8081'
     networks:
       - codemod-network
 
