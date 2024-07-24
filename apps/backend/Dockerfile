@@ -40,4 +40,4 @@ COPY --from=builder /app/packages /app/packages
 
 EXPOSE 8081
 
-CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
+CMD cd packages/database && pnpm db:migrate:deploy && pnpm db:generate && cd - && node build/index.js
