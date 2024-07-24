@@ -27,10 +27,12 @@ export const handleListNamesCommand = async (options: {
     );
   }
 
-  await getCurrentUserOrLogin({
-    message: "Authentication is required to view your own codemods. Proceed?",
-    printer,
-  });
+  if (mine) {
+    await getCurrentUserOrLogin({
+      message: "Authentication is required to view your own codemods. Proceed?",
+      printer,
+    });
+  }
 
   const configObjects = await getCodemodList({ search, mine, all });
   spinner?.stop();
