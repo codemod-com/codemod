@@ -8,7 +8,8 @@
     "from": [["immutable", ">=", "0.0.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/immutable/0/replace-set-in"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

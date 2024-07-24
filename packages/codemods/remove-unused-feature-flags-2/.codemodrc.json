@@ -25,6 +25,7 @@
     }
   ],
   "meta": {
-    "tags": ["cleanup"]
+    "tags": ["cleanup"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/remove-unused-feature-flags-2"
   }
 }

@@ -6,7 +6,8 @@
   "description": "This codemod removes public modifier in interface declarations as it is implicit.",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/typescript/remove-public-modifier"
   },
   "applicability": {
     "from": [["typescript", ">=", "1.4.0"]]

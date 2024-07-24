@@ -5,7 +5,8 @@
   "name": "msw/2/print-handler",
   "engine": "ts-morph",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/msw/2/print-handler"
   },
   "applicability": {
     "from": [["msw", ">=", "1.0.0"]]

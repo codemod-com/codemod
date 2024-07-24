@@ -8,7 +8,8 @@
     "from": [["@redwoodjs/core", "<", "4.0.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/redwoodjs/core/4/router-use-auth"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

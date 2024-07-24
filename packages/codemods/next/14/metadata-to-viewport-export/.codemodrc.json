@@ -9,7 +9,8 @@
     "from": [["next", ">=", "13.4.0"], ["next", "<", "14.0.0"]]
   },
   "meta": {
-    "tags": ["next.js", "migration"]
+    "tags": ["next.js", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/next/14/metadata-to-viewport-export"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

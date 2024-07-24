@@ -8,7 +8,8 @@
     "from": [["react-router", "<", "6.0.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react-router/6/remove-compat-router"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

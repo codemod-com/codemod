@@ -5,7 +5,8 @@
   "name": "netlify/0.8.1/disableBuildEventHandlers",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/netlify-sdk/0.8.1/disableBuildEventHandlers"
   },
   "applicability": {
     "from": [["@netlify/sdk", ">=", "0.8.1"]]

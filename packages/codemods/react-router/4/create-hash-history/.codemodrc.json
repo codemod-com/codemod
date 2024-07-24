@@ -8,7 +8,8 @@
     "from": [["react-router", "<", "4.0.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react-router/4/create-hash-history"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

@@ -8,7 +8,8 @@
     "from": [["history", "<", "4.0.0"], ["history", ">=", "3.0.0"]]
   },
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/history/4/use-back"
   },
   "include": ["**/*.js", "**/*.ts"]
 }

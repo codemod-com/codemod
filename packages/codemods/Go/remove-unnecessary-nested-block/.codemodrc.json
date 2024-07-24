@@ -6,6 +6,7 @@
   "engine": "piranha",
   "language": "go",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/Go/remove-unnecessary-nested-block"
   }
 }

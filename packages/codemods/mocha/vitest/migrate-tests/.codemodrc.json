@@ -5,7 +5,8 @@
   "name": "mocha/vitest/migrate-test",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/mocha/vitest/migrate-tests"
   },
   "applicability": {
     "from": [["mocha", ">=", "9.0.0"]]

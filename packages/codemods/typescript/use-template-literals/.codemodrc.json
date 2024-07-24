@@ -6,7 +6,8 @@
   "description": "This codemod replaces string concatenations with template literals.",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/typescript/use-template-literals"
   },
   "applicability": {
     "from": [["typescript", ">=", "1.4.0"]]

@@ -5,7 +5,8 @@
   "name": "mui/5/core-styles-import",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/mui/5/core-styles-import"
   },
   "applicability": {
     "from": [["@material-ui/core", ">=", "4.0.0"]]
