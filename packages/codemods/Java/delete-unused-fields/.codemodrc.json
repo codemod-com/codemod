@@ -6,6 +6,7 @@
   "engine": "piranha",
   "language": "java",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/Java/delete-unused-fields"
   }
 }

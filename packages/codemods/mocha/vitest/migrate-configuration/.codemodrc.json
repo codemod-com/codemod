@@ -5,7 +5,8 @@
   "private": false,
   "engine": "filemod",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/mocha/vitest/migrate-configuration"
   },
   "applicability": {
     "from": [["mocha", ">=", "9.0.0"]]

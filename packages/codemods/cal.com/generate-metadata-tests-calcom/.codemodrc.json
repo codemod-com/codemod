@@ -15,6 +15,7 @@
     }
   ],
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/cal.com/generate-metadata-tests-calcom"
   }
 }

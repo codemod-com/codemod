@@ -6,7 +6,8 @@
   "engine": "filemod",
   "arguments": [],
   "meta": {
-    "tags": ["next.js", "migration"]
+    "tags": ["next.js", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/next/13/ab-test"
   },
   "applicability": {
     "from": [["next", "<", "13.0.0"]]

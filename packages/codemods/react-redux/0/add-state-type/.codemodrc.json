@@ -6,7 +6,8 @@
   "engine": "jscodeshift",
   "dependency": "react-redux",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react-redux/0/add-state-type"
   },
   "applicability": {
     "from": [["react-redux", ">=", "0.0.0"]]

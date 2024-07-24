@@ -5,7 +5,8 @@
   "name": "msw/2/imports",
   "engine": "ts-morph",
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/msw/2/imports"
   },
   "applicability": {
     "from": [["msw", ">=", "1.0.0"]]

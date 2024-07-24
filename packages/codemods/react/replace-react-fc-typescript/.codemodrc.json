@@ -6,7 +6,8 @@
   "description": "Codemod to replace React.FC when using React with Typescript.",
   "engine": "jscodeshift",
   "meta": {
-    "tags": ["react", "migration"]
+    "tags": ["react", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/react/replace-react-fc-typescript"
   },
   "applicability": {
     "from": [["react", ">=", "15.0.0"]]

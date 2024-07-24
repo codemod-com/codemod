@@ -28,6 +28,7 @@
     }
   ],
   "meta": {
-    "tags": ["migration"]
+    "tags": ["migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/next-i18next/copy-keys"
   }
 }
