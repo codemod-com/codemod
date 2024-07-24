@@ -12,6 +12,7 @@
       "cache": false
     },
     "@codemod-com/database#build": {
+      "dependsOn": ["^build"],
       "cache": false
     },
     "build": {

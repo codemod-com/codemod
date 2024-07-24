@@ -116,7 +116,9 @@ export const publishHandler: RouteHandler<{
           });
         }
       }
-    } else {
+    }
+
+    if (codemodRc.engine !== "recipe") {
       const { path } = await getEntryPath({
         source: unpackPath,
         throwOnNotFound: false,

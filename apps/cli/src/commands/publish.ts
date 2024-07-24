@@ -19,7 +19,7 @@ import {
   getEntryPath,
 } from "@codemod-com/utilities";
 import { version as cliVersion } from "#/../package.json";
-import { extractCLIApiError, getCodemod, publish } from "#api.js";
+import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
@@ -244,21 +244,25 @@ export const handlePublishCliCommand = async (options: {
     })),
   );
 
-  const builtExecutable = await getCodemodExecutable(source).catch(() => null);
-
-  if (builtExecutable === null) {
-    throw new Error(
-      chalk(
-        "Failed to build the codemod executable.",
-        "Please ensure that the node_modules are installed and the codemod is correctly configured.",
-      ),
+  if (codemodRc.engine !== "recipe") {
+    const builtExecutable = await getCodemodExecutable(source).catch(
+      () => null,
     );
-  }
 
-  codemodFileBuffers.push({
-    name: BUILT_SOURCE_PATH,
-    data: Buffer.from(builtExecutable),
-  });
+    if (builtExecutable === null) {
+      throw new Error(
+        chalk(
+          "Failed to build the codemod executable.",
+          "Please ensure that the node_modules are installed and the codemod is correctly configured.",
+        ),
+      );
+    }
+
+    codemodFileBuffers.push({
+      name: BUILT_SOURCE_PATH,
+      data: Buffer.from(builtExecutable),
+    });
+  }
 
   const codemodZip = await tarService.pack(codemodFileBuffers);
 
@@ -282,7 +286,7 @@ export const handlePublishCliCommand = async (options: {
   } catch (error) {
     publishSpinner.fail();
 
-    const message = extractCLIApiError(error);
+    const message = extractPrintableApiError(error);
     const errorMessage = `${chalk.bold(
       `Could not publish the "${codemodRc.name}" codemod`,
     )}:\n${message}`;
@@ -292,7 +296,7 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes("temp")) {
+    if (source.includes(join(codemodDirectoryPath, "temp"))) {
       await fs.promises.rm(source, { recursive: true, force: true });
     }
   }

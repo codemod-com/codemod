@@ -3,6 +3,9 @@ import { readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { promisify } from "node:util";
 
+// This script requires commenting out questions about namespaces, git url and tags because
+// we not ask them unconditionally.
+
 const execPromise = promisify(exec);
 
 // Function to recursively walk through directory tree
@@ -21,6 +24,8 @@ const walkDirectory = async (dir: string, accumulator: string[]) => {
   }
 };
 
+const oraCheckmark = "✔";
+
 // Main function to execute the script
 (async () => {
   const args = process.argv.slice(2);
@@ -37,24 +42,27 @@ const walkDirectory = async (dir: string, accumulator: string[]) => {
   for (let i = 0; i < accumulator.length; i++) {
     const dir = accumulator[i].replace(/(\s+)/g, "\\$1");
 
+    console.log(`Publishing ${dir}`);
+
     const { stderr, stdout } = await execPromise(
-      `codemod publish --source ${dir}`,
+      `apps/cli/dist/index.cjs publish --source ${dir}`,
     );
 
     const output = stdout.trim();
-    if (output.length) {
-      console.log(output);
-    }
-
     const errors = stderr.trim();
-    if (!errors.length) {
-      console.log(`Successfully published ${dir}`);
-      console.log(`Published ${i + 1} of ${accumulator.length} directories`);
-      console.log("=====================================");
-      continue;
+
+    if (
+      !output.includes("Codemod was successfully published to the registry")
+    ) {
+      console.error(`Failed to publish ${dir}`);
+      console.error(errors);
+      break;
     }
 
-    console.error(`Failed to publish ${dir}`);
-    console.error(errors);
+    console.log("OUTPUT:", output);
+    console.log("ERRORS: ", errors);
+    console.log(`\nSuccessfully published ${dir}?`);
+    console.log(`Published ${i + 1} of ${accumulator.length} directories`);
+    console.log("=====================================\n");
   }
 })();

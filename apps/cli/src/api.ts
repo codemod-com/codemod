@@ -10,12 +10,12 @@ import type {
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
 
-export const extractCLIApiError = (err: unknown): string => {
+export const extractPrintableApiError = (err: unknown): string => {
   if (!(err instanceof Error)) {
     return "An unknown error occurred.";
   }
 
-  return err instanceof AxiosError ? err.response?.data : err.message;
+  return err instanceof AxiosError ? err.response?.data.errorText : err.message;
 };
 
 export const getCLIAccessToken = async (
