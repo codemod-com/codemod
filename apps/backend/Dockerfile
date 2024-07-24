@@ -12,6 +12,7 @@ COPY ./packages/utilities /app/packages/utilities/
 COPY ./packages/filemod /app/packages/filemod/
 COPY ./packages/telemetry /app/packages/telemetry/
 COPY ./packages/database /app/packages/database/
+COPY ./packages/runner /app/packages/runner/
 COPY ./packages/api-types /app/packages/api-types/
 COPY ./packages/auth /app/packages/auth/
 
