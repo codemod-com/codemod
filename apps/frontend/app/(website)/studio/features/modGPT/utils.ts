@@ -1,9 +1,4 @@
-import {
-  autoGenerateCodemodPrompt,
-  fixCodemodBlockNoDebugInfoPrompt,
-} from "@chatbot/prompts";
 import type { Aliases } from "@studio/store/CFS/alias";
-import { useCodemodExecutionError } from "@studio/store/log";
 import toast from "react-hot-toast";
 
 const errorResponses = {
@@ -41,23 +36,3 @@ export const getOrderedAliasList = (aliases: Aliases) =>
     .filter(([, alias]) => alias !== null)
     .sort(([, a], [, b]) => (b?.updatedAt ?? 0) - (a?.updatedAt ?? 0))
     .map(([key, value]) => [key, value?.value ?? ""]);
-
-export const usePrompts = (aliases: Aliases) => {
-  const codemodExecutionError = useCodemodExecutionError();
-  const prompts = [["Autogenerate with AI", autoGenerateCodemodPrompt]];
-
-  const codemodHighlightedValue = aliases.$HIGHLIGHTED_IN_CODEMOD?.value ?? "";
-
-  if (codemodHighlightedValue !== "") {
-    prompts.unshift([
-      "Regenerate specified code block",
-      fixCodemodBlockNoDebugInfoPrompt,
-    ]);
-  }
-
-  if (codemodExecutionError) {
-    prompts.unshift(["Fix codemod error", codemodExecutionError]);
-  }
-
-  return prompts;
-};

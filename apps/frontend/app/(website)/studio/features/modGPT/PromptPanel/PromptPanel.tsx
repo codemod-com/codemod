@@ -1,11 +1,10 @@
 import { AliasButtons } from "@chatbot/PromptPanel/AliasButtons";
 import { ControlButtons } from "@chatbot/PromptPanel/ControlButtons";
-import { PromptButtons } from "@chatbot/PromptPanel/PromptButtons";
 import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
 import { insertValue } from "@chatbot/PromptPanel/utils";
 import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { useModGptSubmit } from "@chatbot/useAiService/useModGpt/useModGptSubmit";
-import { getOrderedAliasList, usePrompts } from "@chatbot/utils";
+import { getOrderedAliasList } from "@chatbot/utils";
 import { useAuth } from "@clerk/nextjs";
 import { useGetAliases } from "@studio/store/CFS/alias";
 import type { UseChatHelpers } from "ai/react";
@@ -39,7 +38,6 @@ export function PromptPanel(props: PromptPanelProps) {
   const [expandedHelper, setExpandedHelper] = useState(true);
   const { isSignedIn } = useAuth();
   const aliases = useGetAliases();
-  const promptsList = usePrompts(aliases);
   const aliasList = getOrderedAliasList(aliases);
 
   const handleInsertValue = (value: string) => {
@@ -62,12 +60,12 @@ export function PromptPanel(props: PromptPanelProps) {
       />
       {expandedHelper && (
         <>
-          <PromptButtons promptsList={promptsList} handleSubmit={handleSubmit}>
+          <div className="mb-1 flex w-full gap-1 overflow-x-auto px-1 items-center justify-content-center actions">
             <WebSocketButton
               handleButtonClick={startIterativeCodemodGeneration}
               isLoading={isLoading}
             />
-          </PromptButtons>
+          </div>
           <AliasButtons
             aliasList={aliasList}
             handleInsertValue={handleInsertValue}
