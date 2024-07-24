@@ -27,10 +27,10 @@ import { codemodDirectoryPath } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
-  source: string;
+  target: string;
   telemetry: TelemetrySender<TelemetryEvent>;
 }) => {
-  let { source, printer, telemetry } = options;
+  let { target, printer, telemetry } = options;
 
   const { token, allowedNamespaces, organizations } =
     await getCurrentUserOrLogin({
@@ -49,13 +49,13 @@ export const handlePublishCliCommand = async (options: {
   ];
 
   const isSourceAFile = await fs.promises
-    .lstat(source)
+    .lstat(target)
     .then((pathStat) => pathStat.isFile());
 
   if (isSourceAFile) {
-    source = await handleInitCliCommand({
+    target = await handleInitCliCommand({
       printer,
-      target: source,
+      target: target,
       writeDirectory: join(codemodDirectoryPath, "temp"),
       noLogs: true,
     });
@@ -76,7 +76,7 @@ export const handlePublishCliCommand = async (options: {
       const editor = process.env.EDITOR || process.env.VISUAL || "nano";
 
       await new Promise<void>((resolve, reject) => {
-        const editorProcess = spawn(editor, [join(source, "README.md")], {
+        const editorProcess = spawn(editor, [join(target, "README.md")], {
           stdio: "inherit", // Inherit the stdio to allow the editor to interact with the terminal
         });
 
@@ -100,14 +100,14 @@ export const handlePublishCliCommand = async (options: {
   }
 
   const { config: codemodRc } = await getCodemodRc({
-    source,
+    source: target,
     throwOnNotFound: true,
   });
 
   const updateCodemodRC = async (newRc: CodemodConfig) => {
     try {
       await fs.promises.writeFile(
-        join(source, ".codemodrc.json"),
+        join(target, ".codemodrc.json"),
         JSON.stringify(newRc, null, 2),
       );
     } catch (err) {
@@ -148,7 +148,7 @@ export const handlePublishCliCommand = async (options: {
 
   if (codemodRc.engine !== "recipe") {
     await getEntryPath({
-      source,
+      source: target,
       throwOnNotFound: true,
     });
   }
@@ -184,10 +184,10 @@ export const handlePublishCliCommand = async (options: {
 
     if (gitUrl) {
       try {
-        await execPromise("git init", { cwd: source });
+        await execPromise("git init", { cwd: target });
 
         await execPromise(`git remote add origin ${gitUrl}`, {
-          cwd: source,
+          cwd: target,
         });
 
         codemodRc.meta = { tags: [], ...codemodRc.meta, git: gitUrl };
@@ -230,7 +230,7 @@ export const handlePublishCliCommand = async (options: {
   }
 
   const codemodFilePaths = await glob("**/*", {
-    cwd: source,
+    cwd: target,
     ignore: excludedPaths,
     absolute: true,
     dot: true,
@@ -239,12 +239,12 @@ export const handlePublishCliCommand = async (options: {
 
   const codemodFileBuffers = await Promise.all(
     codemodFilePaths.map(async (path) => ({
-      name: path.replace(new RegExp(`.*${source}/`), ""),
+      name: path.replace(new RegExp(`.*${target}/`), ""),
       data: await fs.promises.readFile(path),
     })),
   );
 
-  const builtExecutable = await getCodemodExecutable(source).catch(() => null);
+  const builtExecutable = await getCodemodExecutable(target).catch(() => null);
 
   if (builtExecutable === null) {
     throw new Error(
@@ -292,8 +292,8 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes("temp")) {
-      await fs.promises.rm(source, { recursive: true, force: true });
+    if (target.includes("temp")) {
+      await fs.promises.rm(target, { recursive: true, force: true });
     }
   }
 

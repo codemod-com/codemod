@@ -252,8 +252,9 @@ export const main = async () => {
       "publish",
       "publish the codemod to Codemod Registry",
       (y) =>
-        y.option("source", {
+        y.option("target", {
           type: "string",
+          alias: "t",
           description: "path to the codemod to be published",
         }),
       async (args) => {
@@ -263,7 +264,7 @@ export const main = async () => {
         return executeCliCommand(async () => {
           await handlePublishCliCommand({
             printer,
-            source: args.source ?? process.cwd(),
+            target: args.target ?? process.cwd(),
             telemetry: telemetryService,
           });
         });
