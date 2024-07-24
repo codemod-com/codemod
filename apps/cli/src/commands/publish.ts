@@ -16,15 +16,16 @@ import {
   buildCodemodSlug,
   doubleQuotify,
   execPromise,
+  getCodemodRc,
   getEntryPath,
-  parseCodemodConfig,
 } from "@codemod-com/utilities";
 
 import { version as cliVersion } from "#/../package.json";
 import { extractCLIApiError, getCodemod, publish } from "#api.js";
+import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { codemodDirectoryPath, getCurrentUserOrLogin } from "#utils.js";
+import { codemodDirectoryPath } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
@@ -100,29 +101,15 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
-  const codemodRcPath = join(source, ".codemodrc.json");
-
-  let codemodRcContents: string;
-  try {
-    codemodRcContents = await fs.promises.readFile(
-      join(source, ".codemodrc.json"),
-      { encoding: "utf-8" },
-    );
-  } catch (err) {
-    throw new Error(`Could not locate the .codemodrc.json file at ${source}.`);
-  }
-
-  let codemodRc: CodemodConfig;
-  try {
-    codemodRc = parseCodemodConfig(JSON.parse(codemodRcContents));
-  } catch (err) {
-    throw new Error(`Failed to parse the .codemodrc.json file at ${source}.`);
-  }
+  const { config: codemodRc } = await getCodemodRc({
+    source,
+    throwOnNotFound: true,
+  });
 
   const updateCodemodRC = async (newRc: CodemodConfig) => {
     try {
       await fs.promises.writeFile(
-        codemodRcPath,
+        join(source, ".codemodrc.json"),
         JSON.stringify(newRc, null, 2),
       );
     } catch (err) {

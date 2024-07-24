@@ -8,6 +8,7 @@ import type {
   GetUserDataResponse,
   VerifyTokenResponse,
 } from "@codemod-com/api-types";
+import { Octokit } from "@octokit/rest";
 
 export const extractCLIApiError = (err: unknown): string => {
   if (!(err instanceof Error)) {

@@ -16,7 +16,7 @@ import {
   TarService,
   doubleQuotify,
   execPromise,
-  parseCodemodConfig,
+  getCodemodRc,
 } from "@codemod-com/utilities";
 
 import { version as cliVersion } from "#/../package.json";
@@ -25,6 +25,7 @@ import { fetchCodemod } from "#fetch-codemod.js";
 import { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
+import { AuthService } from "#services/auth-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
 import { writeLogs } from "#utils.js";
@@ -187,18 +188,14 @@ export const handleRunCliCommand = async (options: {
 
   if (args.config) {
     try {
-      const configContents = await readFile(
-        join(codemod.path, ".codemodrc.json"),
-        {
-          encoding: "utf8",
-        },
-      );
+      const { config: codemodConfig } = await getCodemodRc({
+        source: codemod.path,
+        throwOnNotFound: false,
+      });
 
       return printer.printConsoleMessage(
         "log",
-        prettyjson.render(JSON.parse(configContents), {
-          inlineArrays: true,
-        }),
+        prettyjson.render(codemodConfig, { inlineArrays: true }),
       );
     } catch (err) {
       return printer.printConsoleMessage(
@@ -208,7 +205,11 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
-  const runner = new Runner({ fs, flowSettings });
+  const runner = new Runner({
+    fs,
+    flowSettings,
+    authService: new AuthService(printer),
+  });
 
   const depsToInstall: Record<
     string,
@@ -236,13 +237,12 @@ export const handleRunCliCommand = async (options: {
           codemodName = codemod.config.name;
         }
 
-        const rcFileString = await readFile(
-          join(codemod.path, ".codemodrc.json"),
-          { encoding: "utf8" },
-        );
-        const rcFile = parseCodemodConfig(JSON.parse(rcFileString));
+        const { config: codemodConfig } = await getCodemodRc({
+          source: codemod.path,
+          throwOnNotFound: false,
+        });
 
-        if (codemodConfig.deps) {
+        if (codemodConfig?.deps) {
           depsToInstall[codemodName] = {
             affectedFiles: modifiedFilePaths,
             deps: codemodConfig.deps,

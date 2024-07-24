@@ -8,7 +8,11 @@ import {
   generateUserLoginIntent,
   getCLIAccessToken,
 } from "#api.js";
-import { getCurrentUserData } from "#utils.js";
+import { getCurrentUserData } from "#auth-utils.js";
+import {
+  CredentialsStorageType,
+  credentialsStorage,
+} from "#credentials-storage.js";
 
 const ACCESS_TOKEN_REQUESTED_BY_CLI_KEY = "accessTokenRequestedByCLI";
 

@@ -12,7 +12,7 @@ const transform = async (
   codemodSource: string,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
-  authService?: AuthServiceInterface,
+  authService?: workflow.AuthServiceInterface,
 ) => {
   const codeToExecute = `
 		${CONSOLE_OVERRIDE}
@@ -79,7 +79,7 @@ export const runWorkflowCodemod = async (
   codemodSource: string,
   safeArgumentRecord: ArgumentRecord,
   consoleCallback: (kind: ConsoleKind, message: string) => void,
-  authService?: AuthServiceInterface,
+  authService?: workflow.AuthServiceInterface,
 ) => {
   await transform(
     codemodSource,

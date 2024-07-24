@@ -27,13 +27,13 @@ import {
 } from "@codemod-com/utilities";
 
 import { getCodemodDownloadURI } from "#api.js";
+import { getCurrentUserData } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { buildSafeArgumentRecord } from "#safe-arguments.js";
 import {
   codemodDirectoryPath,
-  getCurrentUserData,
   oraCheckmark,
   unpackZipCodemod,
 } from "#utils.js";

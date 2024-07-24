@@ -23,13 +23,12 @@ import { prisma } from "@codemod-com/database";
 // Direct import because tree-shaking helps this to not throw.
 import { getCodemodExecutable } from "@codemod-com/runner/dist/source-code.js";
 import {
-  type CodemodConfig,
   TarService,
   buildCodemodSlug,
   codemodNameRegex,
+  getCodemodRc,
   getEntryPath,
   isNeitherNullNorUndefined,
-  parseCodemodConfig,
 } from "@codemod-com/utilities";
 
 import { homedir } from "node:os";
@@ -89,26 +88,15 @@ export const publishHandler: RouteHandler<{
     const tarService = new TarService(fs);
     await tarService.unpack(unpackPath, codemodArchiveBuffer);
 
-    let codemodRcContents: string;
-    try {
-      codemodRcContents = await fs.promises.readFile(
-        join(unpackPath, ".codemodrc.json"),
-        { encoding: "utf-8" },
-      );
-    } catch (err) {
+    const { config: codemodRc } = await getCodemodRc({
+      source: unpackPath,
+      throwOnNotFound: false,
+    });
+
+    if (codemodRc === null) {
       return reply.code(400).send({
         error: NO_CONFIG_FILE_FOUND,
         errorText: "No .codemodrc.json file was provided",
-      });
-    }
-
-    let codemodRc: CodemodConfig;
-    try {
-      codemodRc = parseCodemodConfig(JSON.parse(codemodRcContents));
-    } catch (err) {
-      return reply.code(400).send({
-        error: CODEMOD_CONFIG_INVALID,
-        errorText: "Codemod config is invalid",
       });
     }
 

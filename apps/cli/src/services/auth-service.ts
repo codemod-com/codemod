@@ -1,14 +1,20 @@
-import type { PrinterBlueprint } from "@codemod-com/printer";
+import type { Printer } from "@codemod-com/printer";
 import type { AuthServiceInterface } from "@codemod.com/workflow";
-import { getGithubAPIKey, getGithubAvailableScope } from "../apis.js";
-import { requestGithubPermissions } from "../authUtils.js";
-import { CredentialsStorageType } from "../credentialsStorage.js";
-import { credentialsStorage, getCurrentUserOrLogin } from "../utils.js";
+
+import { getGithubAPIKey, getGithubAvailableScope } from "#api.js";
+import {
+  getCurrentUserOrLogin,
+  requestGithubPermissions,
+} from "#auth-utils.js";
+import {
+  CredentialsStorageType,
+  credentialsStorage,
+} from "#credentials-storage.js";
 
 export class AuthService implements AuthServiceInterface {
   private githubApiKey: string | undefined;
 
-  constructor(private _printer: PrinterBlueprint) {}
+  constructor(private _printer: Printer) {}
 
   async getGithubAPIKey(): Promise<string | undefined> {
     if (this.githubApiKey) {

@@ -8,7 +8,7 @@ import {
 } from "@codemod-com/utilities";
 
 import { unpublish } from "#api.js";
-import { getCurrentUserOrLogin } from "#utils.js";
+import { getCurrentUserOrLogin } from "#auth-utils.js";
 
 export const handleUnpublishCliCommand = async (options: {
   printer: Printer;

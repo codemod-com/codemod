@@ -1,110 +1,15 @@
 import * as fs from "node:fs";
 import * as os from "node:os";
-import { homedir } from "node:os";
-import { doubleQuotify } from "@codemod-com/utilities";
-import inquirer from "inquirer";
-import keytar from "keytar";
+import { basename, dirname, join } from "node:path";
 import unzipper from "unzipper";
 
-import type { GetUserDataResponse } from "@codemod-com/api-types";
-import { type Printer, chalk } from "@codemod-com/printer";
-import { execPromise, isNeitherNullNorUndefined } from "@codemod-com/utilities";
+import { chalk } from "@codemod-com/printer";
+import { doubleQuotify } from "@codemod-com/utilities";
+import { execPromise } from "@codemod-com/utilities";
 
-import { basename, dirname, join } from "node:path";
 import { version } from "#/../package.json";
-import { getUserData } from "#api.js";
-import { handleLoginCliCommand } from "#commands/login.js";
 
-export const codemodDirectoryPath = join(homedir(), ".codemod");
-
-type UserData = GetUserDataResponse & {
-  token: string;
-};
-
-export const credentialsStorage = new CredentialsStorage();
-
-export const getCurrentUserData = async (): Promise<UserData | null> => {
-  const token = await credentialsStorage.get(CredentialsStorageType.ACCOUNT);
-
-  if (!isNeitherNullNorUndefined(token)) {
-    return null;
-  }
-
-  const responseData = await getUserData(token);
-
-  if (responseData === null) {
-    await credentialsStorage.delete(CredentialsStorageType.ACCOUNT);
-    return null;
-  }
-
-  return { ...responseData, token };
-};
-
-export const getCurrentUserOrLogin = async (options: {
-  message: string;
-  printer: Printer;
-  onEmptyAfterLoginText?: string;
-}) => {
-  const { message, printer } = options;
-
-  let userData = await getCurrentUserData();
-
-  if (userData !== null) {
-    return userData;
-  }
-
-  const { login } = await inquirer.prompt<{ login: boolean }>({
-    type: "confirm",
-    name: "login",
-    message,
-  });
-
-  if (!login) {
-    throw new Error(
-      "Refused to login for a command that requires authentication. Aborting...",
-    );
-  }
-
-  await handleLoginCliCommand({ printer });
-  userData = await getCurrentUserData();
-
-  if (userData === null) {
-    throw new Error(
-      options.onEmptyAfterLoginText ??
-        "Unexpected empty user data after authentication. Aborting...",
-    );
-  }
-
-  return userData;
-};
-
-export const getOrgsNames = (
-  userData: UserData,
-  type: "slug" | "name" | "slug-and-name" = "slug",
-): string[] => {
-  let mapFunc: (org: UserData["organizations"][number]) => string | null;
-  switch (type) {
-    case "slug":
-      mapFunc = (org) => org.organization.slug;
-      break;
-    case "name":
-      mapFunc = (org) => org.organization.name;
-      break;
-    case "slug-and-name":
-      mapFunc = (org) => {
-        if (org.organization.name === org.organization.slug) {
-          return org.organization.name;
-        }
-
-        return `${org.organization.name} (${org.organization.slug})`;
-      };
-      break;
-    default:
-      throw new Error("Invalid type");
-  }
-
-  return userData.organizations.map(mapFunc).filter(isNeitherNullNorUndefined);
-};
+export const codemodDirectoryPath = join(os.homedir(), ".codemod");
 
 export const unpackZipCodemod = async (options: {
   source: string;

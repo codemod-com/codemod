@@ -1,9 +1,11 @@
-import keytar from "keytar";
-
 import type { Printer } from "@codemod-com/printer";
 
 import { revokeCLIToken } from "#api.js";
-import { getCurrentUserData } from "#utils.js";
+import { getCurrentUserData } from "#auth-utils.js";
+import {
+  CredentialsStorageType,
+  credentialsStorage,
+} from "#credentials-storage.js";
 
 export const handleLogoutCliCommand = async (options: {
   printer: Printer;

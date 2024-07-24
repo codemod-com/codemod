@@ -3,7 +3,7 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { homedir } from "node:os";
 import { join } from "node:path";
 
-import { getCurrentUserData } from "#utils.js";
+import { getCurrentUserData } from "#auth-utils.js";
 
 export type TelemetryEvent =
   | Readonly<{

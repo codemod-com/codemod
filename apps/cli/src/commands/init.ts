@@ -16,7 +16,7 @@ import {
   getCodemodProjectFiles,
 } from "@codemod-com/utilities";
 
-import { getCurrentUserData } from "#utils.js";
+import { getCurrentUserData } from "#auth-utils.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",

@@ -23,6 +23,7 @@ import {
   isRecipeCodemod,
 } from "@codemod-com/utilities";
 
+import type { AuthServiceInterface } from "@codemod.com/workflow";
 import { getCodemodExecutable, getTransformer } from "#source-code.js";
 import { astGrepLanguageToPatterns } from "./engines/ast-grep.js";
 import type { Dependencies } from "./engines/filemod.js";
@@ -46,6 +47,7 @@ export class Runner {
     protected readonly _options: {
       readonly fs: FileSystem;
       readonly flowSettings: FlowSettings;
+      readonly authService: AuthServiceInterface;
     },
   ) {}
 
@@ -481,6 +483,7 @@ export class Runner {
         (kind, message) => {
           printer.printMessage({ kind: "console", message, consoleKind: kind });
         },
+        this._options.authService,
       );
 
       // @TODO pass modified paths?

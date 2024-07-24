@@ -5,7 +5,7 @@ import { type Printer, chalk } from "@codemod-com/printer";
 import { doubleQuotify } from "@codemod-com/utilities";
 
 import { getCodemodList } from "#api.js";
-import { getCurrentUserOrLogin } from "#utils.js";
+import { getCurrentUserOrLogin } from "#auth-utils.js";
 
 export const handleListNamesCommand = async (options: {
   printer: Printer;

@@ -1,6 +1,7 @@
 import * as os from "node:os";
-import { chalk } from "@codemod-com/printer";
 import keytar from "keytar";
+
+import { chalk } from "@codemod-com/printer";
 
 export enum CredentialsStorageType {
   ACCOUNT = "user-account",
@@ -65,3 +66,5 @@ export class CredentialsStorage {
     delete this._credentials[type];
   }
 }
+
+export const credentialsStorage = new CredentialsStorage();
