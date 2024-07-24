@@ -36,7 +36,7 @@
     "@codemod-com/runner": "workspace:*",
     "@codemod-com/telemetry": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
-    "@codemod.com/workflow": "workspace:*",
+    "@codemod.com/workflow": "catalog:",
     "@types/blessed": "catalog:",
     "@types/cli-progress": "catalog:",
     "@types/columnify": "catalog:",
