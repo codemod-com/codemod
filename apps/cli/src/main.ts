@@ -94,6 +94,8 @@ const initializeDependencies = async (argv: {
     try {
       await executableCallback();
     } catch (error) {
+      await telemetryService.dispose();
+
       if (!(error instanceof Error)) {
         return exit();
       }
@@ -104,13 +106,13 @@ const initializeDependencies = async (argv: {
       });
     }
 
-    if (!omitExit) {
-      exit();
-    }
-
     // telemetry client uses batches to send telemetry.
     // we need to flush all buffered events before exiting the process, otherwise all scheduled events will be lost
     await telemetryService.dispose();
+
+    if (!omitExit) {
+      exit();
+    }
   };
 
   return {
