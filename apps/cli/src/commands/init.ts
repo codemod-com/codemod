@@ -17,6 +17,7 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { getCurrentUserData } from "#auth-utils.js";
+import { isFile, oraCheckmark } from "#utils.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",
@@ -30,26 +31,21 @@ const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
 export const handleInitCliCommand = async (options: {
   printer: Printer;
   target: string;
-  noPrompt?: boolean;
+  source?: string;
   noLogs?: boolean;
-  writeDirectory?: string | null;
   useDefaultName?: boolean;
 }) => {
   const {
     printer,
-    useDefaultName = false,
-    writeDirectory = null,
-    noLogs = false,
     target,
+    source,
+    useDefaultName = false,
+    noLogs = false,
   } = options;
 
-  if (!fs.existsSync(target)) {
-    throw new Error(`Target path ${target} does not exist.`);
+  if (source && !fs.existsSync(source)) {
+    throw new Error(`Source path ${source} does not exist.`);
   }
-
-  const isTargetAFile = await fs.promises
-    .lstat(target)
-    .then((pathStat) => pathStat.isFile());
 
   const userData = await getCurrentUserData();
 
@@ -61,18 +57,22 @@ export const handleInitCliCommand = async (options: {
   } as const;
 
   let engineChoices: string[];
-  if (isJavaScriptName(basename(target))) {
+  if (!source) {
+    engineChoices = CODEMOD_ENGINE_CHOICES;
+  } else if (isJavaScriptName(basename(source))) {
     engineChoices = ["jscodeshift", "ts-morph", "filemod", "workflow"];
-  } else if (basename(target) === ".codemodrc.json") {
+  } else if (basename(source) === ".codemodrc.json") {
     engineChoices = ["recipe"];
   } else if (
-    basename(target).endsWith(".yaml") ||
-    basename(target).endsWith(".yml")
+    basename(source).endsWith(".yaml") ||
+    basename(source).endsWith(".yml")
   ) {
     engineChoices = ["ast-grep"];
   } else {
     engineChoices = CODEMOD_ENGINE_CHOICES;
   }
+
+  const isSourceAFile = source ? await isFile(source) : false;
 
   const userAnswers = await inquirer.prompt<{
     name: string;
@@ -88,7 +88,7 @@ export const handleInitCliCommand = async (options: {
     {
       type: "list",
       name: "engine",
-      message: `Select a codemod engine ${isTargetAFile ? "your codemod is built with" : "you want to build your codemod with"}:`,
+      message: `Select a codemod engine ${isSourceAFile ? "your codemod is built with" : "you want to build your codemod with"}:`,
       pageSize: engineChoices.length,
       choices: engineChoices,
     },
@@ -99,11 +99,11 @@ export const handleInitCliCommand = async (options: {
     ...userAnswers,
   };
 
-  if (isTargetAFile) {
+  if (source && isSourceAFile) {
     if (downloadInput.engine === "recipe") {
       try {
         downloadInput.codemodRcBody = parseCodemodConfig(
-          await readFile(target, "utf-8"),
+          await readFile(source, "utf-8"),
         );
       } catch (err) {
         throw new Error(
@@ -117,15 +117,12 @@ export const handleInitCliCommand = async (options: {
       }
     }
     // Can be read because we handle this error at the start
-    downloadInput.codemodBody = await readFile(target, "utf-8");
+    downloadInput.codemodBody = await readFile(source, "utf-8");
   }
 
   const files = getCodemodProjectFiles(downloadInput);
 
-  const codemodBaseDir = join(
-    writeDirectory ?? process.cwd(),
-    downloadInput.name,
-  );
+  const codemodBaseDir = join(target ?? process.cwd(), downloadInput.name);
 
   const created: string[] = [];
   for (const [path, content] of Object.entries(files)) {
@@ -166,6 +163,10 @@ export const handleInitCliCommand = async (options: {
     chalk.cyan("Codemod package created at", `${chalk.bold(codemodBaseDir)}.`),
   );
 
+  const installSpinner = printer.withLoaderMessage(
+    chalk.cyan("Installing npm dependencies..."),
+  );
+
   // Install packages
   try {
     await execPromise("pnpm i", { cwd: codemodBaseDir });
@@ -173,11 +174,19 @@ export const handleInitCliCommand = async (options: {
     try {
       await execPromise("npm i", { cwd: codemodBaseDir });
     } catch (err) {
+      installSpinner.fail();
       printer.printConsoleMessage(
         "error",
         `Failed to install npm dependencies:\n${(err as Error).message}.`,
       );
     }
+  }
+
+  if (installSpinner.isSpinning) {
+    installSpinner.stopAndPersist({
+      symbol: oraCheckmark,
+      text: chalk.green("Dependencies installed."),
+    });
   }
 
   const howToRunText = chalk(

@@ -310,18 +310,12 @@ export const main = async () => {
       "init",
       "initialize a codemod package",
       (y) =>
-        y
-          .option("target", {
-            alias: "t",
-            type: "string",
-            description: "Path to init codemod in",
-            default: process.cwd(),
-          })
-          .option("no-prompt", {
-            alias: "y",
-            type: "boolean",
-            description: "skip all prompts and use default values",
-          }),
+        y.option("target", {
+          alias: "t",
+          type: "string",
+          description: "Path to init codemod in",
+          default: process.cwd(),
+        }),
       async (args) => {
         const { executeCliCommand, printer } =
           await initializeDependencies(args);
@@ -329,8 +323,7 @@ export const main = async () => {
         return executeCliCommand(() =>
           handleInitCliCommand({
             printer,
-            noPrompt: args.noPrompt,
-            target: args.target,
+            target: args.target ?? process.cwd(),
           }),
         );
       },

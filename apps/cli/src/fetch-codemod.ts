@@ -142,8 +142,8 @@ export const fetchCodemod = async (options: {
       // Standalone codemod
       const codemodPackagePath = await handleInitCliCommand({
         printer,
-        target: nameOrPath,
-        writeDirectory: join(codemodDirectoryPath, "temp"),
+        source: nameOrPath,
+        target: join(codemodDirectoryPath, "temp"),
         useDefaultName: true,
         noLogs: true,
       });

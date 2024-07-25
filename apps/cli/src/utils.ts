@@ -10,6 +10,12 @@ import { version } from "#/../package.json";
 
 export const codemodDirectoryPath = join(os.homedir(), ".codemod");
 
+export const isFile = async (path: string) =>
+  fs.promises
+    .lstat(path)
+    .then((pathStat) => pathStat.isFile())
+    .catch(() => false);
+
 export const unpackZipCodemod = async (options: {
   source: string;
   target: string;
