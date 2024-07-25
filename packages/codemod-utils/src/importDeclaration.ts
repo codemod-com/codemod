@@ -39,6 +39,7 @@ export const getDefaultImport = (
     j.ImportDefaultSpecifier.check(s),
   ) ?? null;
 
+// TODO should we return Path or Node?
 /**
  * Retrieves the namespace import specifier from an import declaration.
  * @param j - The JSCodeshift API.
@@ -204,24 +205,20 @@ const isIdentifierUsed = (
 export const removeUnusedSpecifiers = (
   j: JSCodeshift,
   root: Collection,
-  source: string,
+  importDeclaration: ASTPath<ImportDeclaration>,
 ): void => {
-  root
-    .find(j.ImportDeclaration, { source: { value: source } })
-    .forEach((path) => {
-      const usedSpecifiers =
-        path.value.specifiers?.filter((specifier) => {
-          const name = specifier.local?.name;
-          return name && isIdentifierUsed(j, root, name);
-        }) ?? [];
+  const usedSpecifiers =
+    importDeclaration.value.specifiers?.filter((specifier) => {
+      const name = specifier.local?.name;
+      return name && isIdentifierUsed(j, root, name);
+    }) ?? [];
 
-      if (usedSpecifiers.length === 0) {
-        j(path).remove();
-        return;
-      }
+  if (usedSpecifiers.length === 0) {
+    j(importDeclaration).remove();
+    return;
+  }
 
-      path.value.specifiers = usedSpecifiers;
-    });
+  importDeclaration.value.specifiers = usedSpecifiers;
 };
 
 /**

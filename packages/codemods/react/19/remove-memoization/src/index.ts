@@ -37,7 +37,11 @@ export default function transform(
     });
 
   if (isDirty) {
-    removeUnusedSpecifiers(j, root, "react");
+    const importDeclaration = getImportDeclaration(j, root, "react");
+
+    if (importDeclaration) {
+      removeUnusedSpecifiers(j, root, importDeclaration);
+    }
   }
 
   return isDirty ? root.toSource() : undefined;
