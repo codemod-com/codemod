@@ -144,14 +144,15 @@ export const fetchCodemod = async (options: {
       // Standalone codemod
       // For standalone codemods, before creating a compatible package, we attempt to
       // build the binary because it might have other dependencies in the folder
+      const tempFolderPath = join(codemodDirectoryPath, "temp");
+      await mkdir(tempFolderPath, { recursive: true });
+
       let codemodPath = nameOrPath;
       if (isJavaScriptName(nameOrPath)) {
         codemodPath = join(
-          codemodDirectoryPath,
-          "temp",
+          tempFolderPath,
           `${randomBytes(8).toString("hex")}.cjs`,
         );
-        await mkdir(join(codemodDirectoryPath, "temp"), { recursive: true });
 
         try {
           const executable = await bundleJS({ entry: nameOrPath });
@@ -166,7 +167,7 @@ export const fetchCodemod = async (options: {
       const codemodPackagePath = await handleInitCliCommand({
         printer,
         source: codemodPath,
-        target: join(codemodDirectoryPath, "temp"),
+        target: tempFolderPath,
         useDefaultName: true,
         noLogs: true,
       });
