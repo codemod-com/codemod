@@ -1,4 +1,4 @@
-import { createHash } from "node:crypto";
+import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs/promises";
 import { mkdir } from "node:fs/promises";
 import { join, parse as pathParse, resolve } from "node:path";
@@ -8,6 +8,7 @@ import semver from "semver";
 import { flatten } from "valibot";
 
 import { type Printer, chalk } from "@codemod-com/printer";
+import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
   type KnownEnginesCodemodValidationInput,
@@ -15,6 +16,7 @@ import {
   type TarService,
   doubleQuotify,
   getCodemodRc,
+  isJavaScriptName,
   isRecipeCodemod,
   parseCodemod,
   parseEngineOptions,
@@ -140,9 +142,30 @@ export const fetchCodemod = async (options: {
       }
 
       // Standalone codemod
+      // For standalone codemods, before creating a compatible package, we attempt to
+      // build the binary because it might have other dependencies in the folder
+      let codemodPath = nameOrPath;
+      if (isJavaScriptName(nameOrPath)) {
+        codemodPath = join(
+          codemodDirectoryPath,
+          "temp",
+          `${randomBytes(8).toString("hex")}.cjs`,
+        );
+        await mkdir(join(codemodDirectoryPath, "temp"), { recursive: true });
+
+        try {
+          const executable = await bundleJS({ entry: nameOrPath });
+          await fs.writeFile(codemodPath, executable);
+        } catch (err) {
+          throw new Error(
+            `Error bundling codemod: ${(err as Error).message ?? "Unknown error"}`,
+          );
+        }
+      }
+
       const codemodPackagePath = await handleInitCliCommand({
         printer,
-        source: nameOrPath,
+        source: codemodPath,
         target: join(codemodDirectoryPath, "temp"),
         useDefaultName: true,
         noLogs: true,
