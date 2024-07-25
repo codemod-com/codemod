@@ -67,8 +67,7 @@ export const insertStatementAfterImports = (
 ) => {
   const programBody = root.find(j.Program).paths()[0]?.value.body ?? [];
 
-  // @ts-expect-error findLastIndex
-  const lastImportDeclarationIndex = findLastIndex(programBody, (node) =>
+  const lastImportDeclarationIndex = programBody.findLastIndex((node) =>
     j.ImportDeclaration.check(node),
   );
 

@@ -94,7 +94,9 @@ export const getFunctionComponents = (j: JSCodeshift, root: Collection) => {
     ...root.find(j.ArrowFunctionExpression).paths(),
   ];
 
-  return functionLikePaths.filter((path) => isReactFunctionComponent(j, path));
+  return j(
+    functionLikePaths.filter((path) => isReactFunctionComponent(j, path)),
+  );
 };
 
 /**

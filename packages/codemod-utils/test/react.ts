@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import jscodeshift, { type FileInfo, type API } from "jscodeshift";
 
 import { describe, it } from "vitest";
-import { getClassComponents } from "../src/index.js";
+import { getClassComponents, getFunctionComponents } from "../src/index.js";
 
 const buildApi = (parser: string | undefined): API => ({
   j: parser ? jscodeshift.withParser(parser) : jscodeshift,
@@ -54,6 +54,26 @@ describe("react utils", async () => {
         ["A", "B", "F"],
       );
       assert.ok(components?.paths().length === 3);
+    });
+  });
+
+  describe("getFunctionComponents", async () => {
+    it("Should support named import aliases", async () => {
+      const INPUT = `
+                const A = () => {
+                return <></>
+                }
+            `;
+
+      const fileInfo: FileInfo = {
+        path: "index.js",
+        source: INPUT,
+      };
+
+      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+
+      const components = getFunctionComponents(j, root);
+      assert.ok(components?.paths().length === 1);
     });
   });
 });
