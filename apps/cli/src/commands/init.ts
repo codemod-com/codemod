@@ -1,6 +1,12 @@
 import { randomBytes } from "node:crypto";
-import fs from "node:fs";
-import { mkdir, readFile, unlink, writeFile } from "node:fs/promises";
+import {
+  constants,
+  access,
+  mkdir,
+  readFile,
+  unlink,
+  writeFile,
+} from "node:fs/promises";
 import { basename, dirname, join } from "node:path";
 import inquirer from "inquirer";
 import terminalLink from "terminal-link";
@@ -43,8 +49,10 @@ export const handleInitCliCommand = async (options: {
     noLogs = false,
   } = options;
 
-  if (source && !fs.existsSync(source)) {
-    throw new Error(`Source path ${source} does not exist.`);
+  if (source) {
+    await access(source).catch(() => {
+      throw new Error(`Source path ${source} does not exist.`);
+    });
   }
 
   const userData = await getCurrentUserData();
@@ -123,6 +131,9 @@ export const handleInitCliCommand = async (options: {
   const files = getCodemodProjectFiles(downloadInput);
 
   const codemodBaseDir = join(target ?? process.cwd(), downloadInput.name);
+  await access(codemodBaseDir, constants.F_OK).catch(() =>
+    mkdir(codemodBaseDir, { recursive: true }),
+  );
 
   const created: string[] = [];
   for (const [path, content] of Object.entries(files)) {
@@ -130,10 +141,10 @@ export const handleInitCliCommand = async (options: {
 
     try {
       await mkdir(dirname(filePath), { recursive: true });
-      if (!fs.existsSync(filePath)) {
+      await access(filePath, constants.F_OK).catch(async () => {
         await writeFile(filePath, content);
         created.push(path);
-      }
+      });
     } catch (err) {
       for (const createdPath of created) {
         try {
