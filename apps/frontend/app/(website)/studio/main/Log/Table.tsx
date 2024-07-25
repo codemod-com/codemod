@@ -1,14 +1,5 @@
-import { cn } from "@/utils";
-import {
-  Table as ShadCNTable,
-  TableRow as ShadCNTableRow,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-} from "@studio/components/ui/table";
-import { buildTableRow, useRanges } from "@studio/main/Log/utils";
-import type { Event } from "@studio/schemata/eventSchemata";
+import { TableBlock } from "@studio/main/Log/TableBlock";
+import { useRanges } from "@studio/main/Log/utils";
 import { useLogStore } from "@studio/store/log";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
@@ -37,13 +28,8 @@ const Table = () => {
   const { getSelectedEditors } = useSnippetsStore();
   const { setAfterSelection, setOutputSelection, setBeforeSelection } =
     getSelectedEditors();
-  const {
-    activeEventHashDigest,
-    executionErrors,
-    consoleLogs,
-    events,
-    restEvents,
-  } = useLogStore();
+  const { activeEventHashDigest, executionErrors, consoleLogs, restEvents } =
+    useLogStore();
 
   const buildOnMouseOver = useCallback(
     (hashDigest: string): MouseEventHandler<HTMLTableRowElement> =>
@@ -120,58 +106,6 @@ const Table = () => {
     ],
   );
 
-  const TableBlock = ({
-    title,
-    events,
-  }: {
-    title: string;
-    noItemFoundText: string;
-    events: readonly Event[];
-  }) => {
-    const rows = events
-      .map((event, index) => buildTableRow(event, activeEventHashDigest, index))
-      .filter((e) => e.details.length > 0);
-    const body = (
-      <TableBody>
-        {rows.map(({ className, name, details, index, hashDigest }) => (
-          <ShadCNTableRow
-            className={cn(className, "border", "cursor-pointer")}
-            key={hashDigest}
-            onMouseOver={buildOnMouseOver(hashDigest)}
-            onClick={buildOnClick(hashDigest)}
-          >
-            <TableCell className="font-medium">{index}</TableCell>
-            <TableCell>
-              {details.map((detail) => (
-                <p key={detail}>{detail}</p>
-              ))}
-            </TableCell>
-          </ShadCNTableRow>
-        ))}
-      </TableBody>
-    );
-    return (
-      <div className="flex flex-col ">
-        <div className="bold p-3 w-full font-bold">{title}</div>
-        <div className="align-center flex justify-center ">
-          <ShadCNTable
-            className="w-full table-fixed text-left text-sm font-light text-black dark:text-white "
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-          >
-            <TableHeader>
-              <ShadCNTableRow>
-                <TableHead className="w-[5rem]">Nº</TableHead>
-                <TableHead>Output</TableHead>
-              </ShadCNTableRow>
-            </TableHeader>
-            {body}
-          </ShadCNTable>
-        </div>
-      </div>
-    );
-  };
-
   const tableComponents = [
     {
       noItemFoundText: "No errors",
@@ -193,46 +127,20 @@ const Table = () => {
     },
   ];
 
-  const renderTableBlocksWithResizeHandles = () => {
-    const tableComponentsWithProps = tableComponents.map(
-      (tableData, index) => ({
-        key: `table-${index}`,
-        hasEvents:
-          Array.isArray(tableData.events) && tableData.events.length > 0,
-        tableData,
-        isLastItem: index === tableComponents.length - 1,
-      }),
-    );
-
-    const components = tableComponentsWithProps.reduce(
-      (acc, component, index) => {
-        if (index === 0 && component.hasEvents)
-          return [
-            <TableBlock key={`table-${index}`} {...component.tableData} />,
-          ];
-
-        const newComponent = component.hasEvents ? (
-          <TableBlock key={`table-${index}`} {...component.tableData} />
-        ) : (
-          <div key={`no-events-${index}`} className="p-3 text-gray-400">
-            {component.tableData.noItemFoundText}
-          </div>
-        );
-
-        return [...acc, newComponent];
-      },
-      [],
-    );
-
-    return components;
-  };
-
   return (
-    <>
-      <div className="flex flex-col ">
-        {renderTableBlocksWithResizeHandles()}
-      </div>
-    </>
+    <div className="flex flex-col">
+      {tableComponents.map((tableData, index) => (
+        <TableBlock
+          key={`table-${index}`}
+          {...tableData}
+          activeEventHashDigest={activeEventHashDigest}
+          buildOnMouseOver={buildOnMouseOver}
+          buildOnClick={buildOnClick}
+          onMouseEnter={onMouseEnter}
+          onMouseLeave={onMouseLeave}
+        />
+      ))}
+    </div>
   );
 };
 
