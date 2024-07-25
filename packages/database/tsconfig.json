@@ -5,12 +5,9 @@
   "compilerOptions": {
     "baseUrl": ".",
     "rootDir": "./src",
-    "outDir": "./dist"
+    "outDir": "./dist",
 
-    // "module": "ESNext",
-    // "target": "ESNext",
-    // "moduleResolution": "Node",
-
-    // "incremental": false
+    "typeRoots": ["./node_modules/@types"],
+    "types": []
   }
 }

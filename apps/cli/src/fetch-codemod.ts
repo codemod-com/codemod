@@ -152,18 +152,20 @@ export const fetchCodemod = async (options: {
         source: codemodPackagePath,
         throwOnNotFound: true,
       });
-      config.name = "Standalone codemod";
 
       if (config.engine === "recipe") {
-        throw new Error(
-          "Recipe engine is not supported for standalone codemods.",
-        );
+        return parseRecipeCodemod({
+          type: "standalone",
+          source: "local",
+          path: codemodPackagePath,
+          config,
+        } satisfies RecipeCodemodValidationInput);
       }
 
       return parseKnownEnginesCodemod({
         type: "standalone",
         source: "local",
-        path: resolve(nameOrPath),
+        path: codemodPackagePath,
         config,
       } satisfies KnownEnginesCodemodValidationInput);
     }

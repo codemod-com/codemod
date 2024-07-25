@@ -4,7 +4,11 @@ import open from "open";
 import { Project } from "ts-morph";
 
 import { type Printer, chalk } from "@codemod-com/printer";
-import { type KnownEngines, doubleQuotify } from "@codemod-com/utilities";
+import {
+  type KnownEngines,
+  doubleQuotify,
+  isJavaScriptName,
+} from "@codemod-com/utilities";
 import { createCodeDiff } from "#api.js";
 import {
   findLastlyModifiedFile,
@@ -18,9 +22,6 @@ import {
 const removeSpecialCharacters = (str: string) =>
   str.replace(/[{}()[\]:;,/?'"<>|=`!]/g, "").replace(/\s/g, "");
 
-const isJSorTS = (name: string) =>
-  name.startsWith(".ts") || name.startsWith(".js");
-
 const getFileExtension = (filePath: string) => {
   return extname(filePath).toLowerCase();
 };
@@ -30,7 +31,7 @@ const getOldSourceFile = (
   filePath: string,
   fileExtension: string,
 ) => {
-  if (!isJSorTS(fileExtension)) {
+  if (!isJavaScriptName(fileExtension)) {
     return null;
   }
 
@@ -53,7 +54,7 @@ const getOldSourceFile = (
 };
 
 const getSourceFile = (filePath: string, fileExtension: string) => {
-  if (!isJSorTS(fileExtension)) {
+  if (!isJavaScriptName(fileExtension)) {
     return null;
   }
 
@@ -129,7 +130,7 @@ export const handleLearnCliCommand = async (options: {
 
   const fileExtension = getFileExtension(path);
 
-  if (!isJSorTS(fileExtension)) {
+  if (!isJavaScriptName(fileExtension)) {
     printer.printOperationMessage({
       kind: "error",
       message:

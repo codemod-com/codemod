@@ -274,3 +274,15 @@ export const safeParseCodemodConfig = (config: unknown) =>
 
 export type CodemodConfig = Output<typeof codemodConfigSchema>;
 export type CodemodConfigInput = Input<typeof codemodConfigSchema>;
+
+export type RecipeCodemodConfig = Output<typeof recipeCodemodConfigSchema>;
+export type RecipeCodemodConfigValidationInput = Input<
+  typeof recipeCodemodConfigSchema
+>;
+
+export type KnownEnginesCodemodConfig = Output<
+  typeof knownEnginesCodemodConfigSchema
+>;
+export type KnownEnginesCodemodConfigValidationInput = Input<
+  typeof knownEnginesCodemodConfigSchema
+>;

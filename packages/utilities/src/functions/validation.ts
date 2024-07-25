@@ -9,3 +9,11 @@ export const assertsNeitherNullOrUndefined = <T>(
     throw new Error("The value cannot be null or undefined");
   }
 };
+
+export const isJavaScriptName = (name: string) =>
+  name.endsWith(".ts") ||
+  name.endsWith(".js") ||
+  name.endsWith(".mjs") ||
+  name.endsWith(".cjs") ||
+  name.endsWith(".mts") ||
+  name.endsWith(".cts");
