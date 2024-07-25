@@ -235,16 +235,12 @@ export const fetchCodemod = async (options: {
   const downloadPath = join(path, "codemod.tar.gz");
 
   const { data, cacheUsed } = await fileDownloadService
-    .download({
-      url: linkResponse.link,
-      path: downloadPath,
-      cachePingPath: join(path, ".codemodrc.json"),
-    })
+    .download({ url: linkResponse.link, path: downloadPath })
     .catch((err) => {
       spinner?.fail();
       throw new Error(
         (err as AxiosError<{ error: string }>).response?.data?.error ??
-          "Error downloading codemod from the registry",
+          (err as Error).message,
       );
     });
 
@@ -252,7 +248,6 @@ export const fetchCodemod = async (options: {
   if (!cacheUsed) {
     try {
       await tarService.unpack(path, data);
-      await fs.unlink(downloadPath);
     } catch (err) {
       spinner?.fail();
       throw new Error((err as Error).message ?? "Error unpacking codemod");

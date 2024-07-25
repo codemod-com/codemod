@@ -13,13 +13,12 @@ export class FileDownloadService {
   public async download(options: {
     url: string;
     path: string;
-    cachePingPath?: string;
   }): Promise<{ data: Buffer; cacheUsed: boolean }> {
-    const { url, path, cachePingPath = path } = options;
+    const { url, path } = options;
 
     if (this.cacheEnabled) {
       const localCodemodLastModified =
-        await this.__getLocalFileLastModified(cachePingPath);
+        await this.__getLocalFileLastModified(path);
       const remoteCodemodLastModified =
         await this.__getRemoteFileLastModified(url);
 
