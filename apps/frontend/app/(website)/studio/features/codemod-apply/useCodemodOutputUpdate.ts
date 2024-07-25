@@ -27,7 +27,6 @@ export const useCodemodOutputUpdate = () => {
 
   useEffect(() => {
     postMessage(engine, content ?? "", beforeSnippet);
-    console.log("content", content);
     if (snippetBeforeHasOnlyWhitespaces || codemodSourceHasOnlyWhitespaces) {
       setOutputSnippet("");
       setHasRuntimeErrors(false);

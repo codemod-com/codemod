@@ -2,60 +2,48 @@ import type { Event } from "@studio/schemata/eventSchemata";
 import { useModStore } from "@studio/store/mod";
 import { useSnippetsStore } from "@studio/store/snippets";
 
+const eventKindToRowName: Record<string, string> = {
+  collectionFind: "Found Collection",
+  collectionPaths: "Found Paths",
+  collectionRemove: "Removed Collection",
+  collectionReplace: "Replaced Collection",
+  collectionToSource: "Built Source from Collection",
+  path: "Replaced Path(s)",
+  pathReplace: "Replaced Path(s)",
+  jscodeshiftApplyString: "Created Root Collection",
+  printedMessage: "Printed Message",
+  codemodExecutionError: "Codemod Execution Error",
+};
+
 export const getTableRowName = (event: Event): string => {
-  switch (event.kind) {
-    case "collectionFind":
-      return "Found Collection";
-    case "collectionPaths":
-      return "Found Paths";
-    case "collectionRemove":
-      return "Removed Collection";
-    case "collectionReplace":
-      return "Replaced Collection";
-    case "collectionToSource":
-      return "Built Source from Collection";
-    case "path": {
-      if (event.mode === "lookup") {
-        return "Accessed Path(s)";
-      }
-      return "Replaced Path(s)";
-    }
-    case "pathReplace":
-      return "Replaced Path(s)";
-    case "jscodeshiftApplyString":
-      return "Created Root Collection";
-    case "printedMessage":
-      return "Printed Message";
-    case "codemodExecutionError":
-      return "Codemod Execution Error";
-    default:
-      return "Unknown Event";
+  if (event.kind === "path" && event.mode === "lookup") {
+    return "Accessed Path(s)";
   }
+  return eventKindToRowName[event.kind] || "Unknown Event";
 };
 
-export const getTableRowDetails = (event: Event) => {
-  const res: string[] = [];
-
-  if ("nodeType" in event) {
-    res.push(`Node Type: ${event.nodeType}`);
-  }
-
-  if ("snippetBeforeRanges" in event) {
-    res.push(`Node Count: ${event.snippetBeforeRanges.length}`);
-  }
-
-  if ("message" in event) {
-    res.push(`Message: ${event.message}`);
-  }
-
-  return res;
+const detailGetters: Record<string, (event: Event) => string> = {
+  nodeType: (event) => (event.nodeType ? `Node Type: ${event.nodeType}` : ""),
+  snippetBeforeRanges: (event) =>
+    event.snippetBeforeRanges
+      ? `Node Count: ${event.snippetBeforeRanges.length}`
+      : "",
+  message: (event) => (event.message ? `Message: ${event.message}` : ""),
+  mode: (event) => (event.mode ? `Mode: ${event.mode}` : ""),
+  stack: (event) => (event.stack ? `Stack: ${event.stack}` : ""),
+  codes: (event) => (event.codes ? `Codes: ${event.codes.length}` : ""),
 };
+
+export const getTableRowDetails = (event: Event): string[] =>
+  Object.entries(detailGetters)
+    .map(([key, getter]) => getter(event))
+    .filter(Boolean);
 
 export const buildTableRow = (
   event: Event,
   eventHashDigest: string | null,
   index: number,
-): TableRow => ({
+) => ({
   index,
   hashDigest: event.hashDigest,
   className: event.hashDigest === eventHashDigest ? "highlight" : "",
