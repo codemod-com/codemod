@@ -23,7 +23,7 @@ import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { codemodDirectoryPath } from "#utils.js";
+import { codemodDirectoryPath, isFile } from "#utils.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;
@@ -48,15 +48,11 @@ export const handlePublishCliCommand = async (options: {
     "**/.gitignore",
   ];
 
-  const isSourceAFile = await fs.promises
-    .lstat(source)
-    .then((pathStat) => pathStat.isFile());
-
-  if (isSourceAFile) {
+  if (await isFile(source)) {
     source = await handleInitCliCommand({
       printer,
-      target: source,
-      writeDirectory: join(codemodDirectoryPath, "temp"),
+      source,
+      target: join(codemodDirectoryPath, "temp"),
       noLogs: true,
     });
 
