@@ -34,10 +34,6 @@ export const useWebWorker = () => {
     [],
   );
 
-  const [retry, setRetry] = useState<() => ReturnType<typeof postMessage>>();
-
-  const [count, setCount] = useState(3);
-
   useEffect(() => {
     const worker = new Worker(new URL("./webworker.ts", import.meta.url), {
       type: "module",
@@ -53,7 +49,6 @@ export const useWebWorker = () => {
 
     worker.onmessage = (messageEvent) => {
       const data = messageEvent.data;
-      setCount(3);
       setState({
         kind: "RIGHT",
         ...data,
@@ -71,10 +66,6 @@ export const useWebWorker = () => {
           ? ee.error
           : new Error("Unknown worker error");
 
-      if (count) {
-        retry?.();
-      }
-      setCount((c) => c - 1);
       setState({
         kind: "LEFT",
         error,
@@ -88,5 +79,5 @@ export const useWebWorker = () => {
     };
   }, []);
 
-  return [state, postMessage, setRetry] as const;
+  return [state, postMessage] as const;
 };
