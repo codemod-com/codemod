@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import nodePath, { join, resolve } from "node:path";
+import nodePath, { dirname, join, resolve } from "node:path";
 import esbuild from "esbuild";
 import tsmorph from "ts-morph";
 
@@ -49,6 +49,39 @@ export const getTransformer = (source: string) => {
 
 export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
 
+export const bundleJS = async (options: {
+  entry: string;
+  output?: string;
+}) => {
+  const { entry, output = join(dirname(entry), BUILT_SOURCE_PATH) } = options;
+  const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
+
+  const buildOptions: Parameters<typeof esbuild.build>[0] = {
+    entryPoints: [entry],
+    bundle: true,
+    external: EXTERNAL_DEPENDENCIES,
+    platform: "node",
+    minify: true,
+    minifyWhitespace: true,
+    format: "cjs",
+    legalComments: "inline",
+    outfile: output,
+    write: false, // to the in-memory file system
+    logLevel: "error",
+  };
+
+  const { outputFiles } = await esbuild.build(buildOptions);
+
+  const sourceCode =
+    outputFiles?.find((file) => file.path.endsWith(output))?.text ?? null;
+
+  if (sourceCode === null) {
+    throw new Error(`Could not find ${output} in output files`);
+  }
+
+  return sourceCode;
+};
+
 export const getCodemodExecutable = async (source: string) => {
   const outputFilePath = join(resolve(source), BUILT_SOURCE_PATH);
   try {
@@ -66,31 +99,5 @@ export const getCodemodExecutable = async (source: string) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  const EXTERNAL_DEPENDENCIES = ["jscodeshift", "ts-morph", "@ast-grep/napi"];
-
-  const buildOptions: Parameters<typeof esbuild.build>[0] = {
-    entryPoints: [entryPoint],
-    bundle: true,
-    external: EXTERNAL_DEPENDENCIES,
-    platform: "node",
-    minify: true,
-    minifyWhitespace: true,
-    format: "cjs",
-    legalComments: "inline",
-    outfile: outputFilePath,
-    write: false, // to the in-memory file system
-    logLevel: "error",
-  };
-
-  const { outputFiles } = await esbuild.build(buildOptions);
-
-  const sourceCode =
-    outputFiles?.find((file) => file.path.endsWith(outputFilePath))?.text ??
-    null;
-
-  if (sourceCode === null) {
-    throw new Error(`Could not find ${outputFilePath} in output files`);
-  }
-
-  return sourceCode;
+  return bundleJS({ entry: entryPoint, output: outputFilePath });
 };
