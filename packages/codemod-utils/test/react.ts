@@ -50,7 +50,7 @@ describe("react utils", async () => {
       const components = getClassComponents(j, root);
 
       assert.deepEqual(
-        components?.paths().map((p) => p.value.id.name),
+        components?.paths().map((p) => p.value.id?.name),
         ["A", "B", "F"],
       );
       assert.ok(components?.paths().length === 3);
