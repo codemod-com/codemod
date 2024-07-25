@@ -10,6 +10,37 @@ import {
 import { buildTableRow } from "@studio/main/Log/utils";
 import type { Event } from "@studio/schemata/eventSchemata";
 import type { MouseEventHandler } from "react";
+import { useState } from "react";
+
+const MAX_CELL_LENGTH = 300;
+
+const TruncatedCell: React.FC<{ content: string; key?: string }> = ({
+  content,
+  key,
+}) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  if (content.length <= MAX_CELL_LENGTH) {
+    return <p>{content}</p>;
+  }
+
+  const toggleExpand = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsExpanded(!isExpanded);
+  };
+
+  return (
+    <div key={key}>
+      <p>{isExpanded ? content : `${content.slice(0, MAX_CELL_LENGTH)}...`}</p>
+      <button
+        onClick={toggleExpand}
+        className="text-blue-500 hover:underline mt-1 text-sm"
+      >
+        {isExpanded ? "(show less)" : "(show more)"}
+      </button>
+    </div>
+  );
+};
 
 interface TableBlockProps {
   title: string;
@@ -67,8 +98,11 @@ export const TableBlock: React.FC<TableBlockProps> = ({
               >
                 <TableCell className="font-medium">{index}</TableCell>
                 <TableCell>
-                  {details.map((detail) => (
-                    <p key={detail}>{detail}</p>
+                  {details.map((detail, detailIndex) => (
+                    <TruncatedCell
+                      key={`${hashDigest}-${detailIndex}`}
+                      content={detail}
+                    />
                   ))}
                 </TableCell>
               </ShadCNTableRow>
