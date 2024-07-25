@@ -197,7 +197,8 @@ const Table = () => {
     const tableComponentsWithProps = tableComponents.map(
       (tableData, index) => ({
         key: `table-${index}`,
-        hasEvents: tableData.events.length > 0,
+        hasEvents:
+          Array.isArray(tableData.events) && tableData.events.length > 0,
         tableData,
         isLastItem: index === tableComponents.length - 1,
       }),
