@@ -6,14 +6,6 @@ import { useSnippetsStore } from "@studio/store/snippets";
 import { useSetActiveEventThunk } from "@studio/store/utils/useSetActiveEventThunk";
 import { type MouseEventHandler, memo, useCallback, useState } from "react";
 
-type TableRow = Readonly<{
-  index: number;
-  hashDigest: string;
-  className: string;
-  name: string;
-  details: ReadonlyArray<string>;
-}>;
-
 type Ranges = ReturnType<typeof useRanges>;
 
 const Table = () => {
@@ -22,7 +14,6 @@ const Table = () => {
   );
   const ranges = useRanges();
   const [oldRanges, setOldRanges] = useState<Ranges | null>(null);
-
   const setActiveThunk = useSetActiveEventThunk();
   const { setCodemodSelection } = useModStore();
   const { getSelectedEditors } = useSnippetsStore();

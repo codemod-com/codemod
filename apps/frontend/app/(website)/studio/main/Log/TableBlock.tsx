@@ -27,7 +27,7 @@ interface TableBlockProps {
 export const TableBlock: React.FC<TableBlockProps> = ({
   title,
   noItemFoundText,
-  events,
+  events = [],
   activeEventHashDigest,
   buildOnMouseOver,
   buildOnClick,

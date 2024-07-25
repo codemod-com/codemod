@@ -14,6 +14,7 @@ type LogState = {
 };
 
 export const specialEvents = ["codemodExecutionError", "printedMessage"];
+export const eventsToSkip = ["collectionFind"];
 export const useLogStore = create<LogState>((set, get) => ({
   events: [],
   executionErrors: [],
@@ -25,7 +26,10 @@ export const useLogStore = create<LogState>((set, get) => ({
       (e) => e.kind === "codemodExecutionError",
     );
     const consoleLogs = events.filter((e) => e.kind === "printedMessage");
-    const restEvents = events.filter((e) => !specialEvents.includes(e.kind));
+    const restEvents = events.filter(
+      (e) => !specialEvents.concat(eventsToSkip).includes(e.kind),
+    );
+    console.log({ restEvents });
     const executionErrorExists = !!executionErrors.length;
     set((state) => ({
       events,
