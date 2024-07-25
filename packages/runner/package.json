@@ -47,6 +47,7 @@
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "@codemod.com/workflow": "workspace:*",
+    "underscore": "^1.13.1",
     "@svgr/hast-util-to-babel-ast": "catalog:",
     "@vue/compiler-sfc": "catalog:",
     "esbuild": "^0.23.0",

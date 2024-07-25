@@ -1133,6 +1133,9 @@ importers:
       '@ast-grep/napi':
         specifier: 'catalog:'
         version: 0.24.1
+      '@napi-rs/keyring':
+        specifier: 1.1.6
+        version: 1.1.6
       '@octokit/rest':
         specifier: 'catalog:'
         version: 20.1.1
@@ -6190,7 +6193,7 @@ importers:
         version: 0.11.11
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7)
+        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
     devDependencies:
       '@types/node':
         specifier: 20.10.3
@@ -6306,7 +6309,7 @@ importers:
         version: 4.1.0
       jscodeshift:
         specifier: ^0.16.1
-        version: 0.16.1(@babel/preset-env@7.24.7)
+        version: 0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7))
       mdast-util-from-markdown:
         specifier: 'catalog:'
         version: 2.0.1
@@ -6328,6 +6331,9 @@ importers:
       ts-morph:
         specifier: ^22.0.0
         version: 22.0.0
+      underscore:
+        specifier: ^1.13.1
+        version: 1.13.6
       unified:
         specifier: 'catalog:'
         version: 10.1.2
@@ -9599,6 +9605,82 @@ packages:
 
   '@mux/upchunk@3.4.0':
     resolution: {integrity: sha512-ZaX4u6xRhmgB4UAmw0lvO0LB1LddbRgSILkjRDnk1F4QDtkCOuY9nOh550TNI7uKYcf6HZQax7QXst6EkpjiyQ==}
+
+  '@napi-rs/keyring-darwin-arm64@1.1.6':
+    resolution: {integrity: sha512-8N+qvM+O6OSU59BTgDP/PvqYhoqfOcD2HGy1NgRFo1B0DRmkTp4U/DGZrV4Pk/nOP6Uf0PLqznfx3a/M8O5sjQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@napi-rs/keyring-darwin-x64@1.1.6':
+    resolution: {integrity: sha512-r3Jgc5/ubfaao6Lmk/USA13IwU/GEVLP8NDfg5gYXjPVllU6bWnAaEDHVg7q4vl51kViwj9ELo6XTmOeJFut6A==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@napi-rs/keyring-freebsd-x64@1.1.6':
+    resolution: {integrity: sha512-ayG396jZAt7j820gsEyW/LJKn+rf9KtgSPq1NKpvu84Y5GXopoFLyjMIP7wYZ1RLBL6SGKy27/f8S4f6YZ4DuA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [freebsd]
+
+  '@napi-rs/keyring-linux-arm-gnueabihf@1.1.6':
+    resolution: {integrity: sha512-8nXavgxcaUTUxyFHR+PEQF7eC8rITlYZNUmlf5amTb36y5bkNKrc3QLvCxjtbFSR/+KYzMi3vydoqNmFpF616w==}
+    engines: {node: '>= 10'}
+    cpu: [arm]
+    os: [linux]
+
+  '@napi-rs/keyring-linux-arm64-gnu@1.1.6':
+    resolution: {integrity: sha512-qsI2NTAxGD3mBhZvdyYGL+N0n1D/NAjV0zCpTsFKKSzdpIrQJ0nM5Y0HxlLi6TsHm61dMyXHkdHb0ut8AzTcGA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/keyring-linux-arm64-musl@1.1.6':
+    resolution: {integrity: sha512-SB/2A4LtL+SrS2aZXl3rWBtyCVB2aG2zAU56kOGFDGwRZM2tqaITuQoM1QLOAMwu0eksN/Xedy95Yn2rkRH0nQ==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@napi-rs/keyring-linux-riscv64-gnu@1.1.6':
+    resolution: {integrity: sha512-BcjXf33T2CoVgS87SvZ62Y6xxkbenNIeldy0r8O5nz6zFgN+wYB0scz5ulvowEYBQnhi4fmbxfneeqM/0HUOeA==}
+    engines: {node: '>= 10'}
+    cpu: [riscv64]
+    os: [linux]
+
+  '@napi-rs/keyring-linux-x64-gnu@1.1.6':
+    resolution: {integrity: sha512-eK0OxCBI6Wl8rFHYynrtEID6pxOwhPfnpIIpul7UPeqCCMJSyZpFN4lFP3oZ4vqX/6FnWjwMrR7IGbPgivdMjA==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/keyring-linux-x64-musl@1.1.6':
+    resolution: {integrity: sha512-Qb3NP98KFq4jXmk9PUQlcYrHjbzsBTtG+OOxX4YxUNKTGuUaIOGP79lB0w7jhns2oHdq8DwkW2ugzlmGSUaRSw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@napi-rs/keyring-win32-arm64-msvc@1.1.6':
+    resolution: {integrity: sha512-e794gO2CLD0P7JN2DVPT5CC60k3WmNWTWU5BVoQM8Hj0NYebx7j6LyxMIpdb2cztOHHiv7iltEHekgutf0TMlA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@napi-rs/keyring-win32-ia32-msvc@1.1.6':
+    resolution: {integrity: sha512-SUPafl6vKRMQBKZoSwIeBFZ+c7AGEKUy6mpAD9fVHDKHOBWP3VpHKda4YIlgGtQd3SxH0bjfqJ078Z5SYsDYZQ==}
+    engines: {node: '>= 10'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@napi-rs/keyring-win32-x64-msvc@1.1.6':
+    resolution: {integrity: sha512-FkNhM1x5ijFzGSrRcshRxUxQSrrjxl4wCmvRcXnimWreOHyzNotT+/1EZtSfM/k8yhdK0HEkkVIMQl0UqfioRw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@napi-rs/keyring@1.1.6':
+    resolution: {integrity: sha512-e6xoYELSMyaxcXv4MmEHhf0oOGsMnfWMmeu84CD91ICMgMH1I1vrLSMFpiPEQz03xD+pNQgAkQ7DwwBDozCuvw==}
+    engines: {node: '>= 10'}
 
   '@next/env@14.2.4':
     resolution: {integrity: sha512-3EtkY5VDkuV2+lNmKlbkibIJxcO4oIHEhBWne6PaAp+76J9KoSsGvNikp6ivzAT8dhhBMYrm6op2pS1ApG0Hzg==}
@@ -23769,6 +23851,57 @@ snapshots:
       event-target-shim: 6.0.2
       xhr: 2.6.0
 
+  '@napi-rs/keyring-darwin-arm64@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-darwin-x64@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-freebsd-x64@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-arm-gnueabihf@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-arm64-gnu@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-arm64-musl@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-riscv64-gnu@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-x64-gnu@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-linux-x64-musl@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-win32-arm64-msvc@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-win32-ia32-msvc@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring-win32-x64-msvc@1.1.6':
+    optional: true
+
+  '@napi-rs/keyring@1.1.6':
+    optionalDependencies:
+      '@napi-rs/keyring-darwin-arm64': 1.1.6
+      '@napi-rs/keyring-darwin-x64': 1.1.6
+      '@napi-rs/keyring-freebsd-x64': 1.1.6
+      '@napi-rs/keyring-linux-arm-gnueabihf': 1.1.6
+      '@napi-rs/keyring-linux-arm64-gnu': 1.1.6
+      '@napi-rs/keyring-linux-arm64-musl': 1.1.6
+      '@napi-rs/keyring-linux-riscv64-gnu': 1.1.6
+      '@napi-rs/keyring-linux-x64-gnu': 1.1.6
+      '@napi-rs/keyring-linux-x64-musl': 1.1.6
+      '@napi-rs/keyring-win32-arm64-msvc': 1.1.6
+      '@napi-rs/keyring-win32-ia32-msvc': 1.1.6
+      '@napi-rs/keyring-win32-x64-msvc': 1.1.6
+
   '@next/env@14.2.4': {}
 
   '@next/eslint-plugin-next@14.1.0':
@@ -31027,7 +31160,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  jscodeshift@0.16.1(@babel/preset-env@7.24.7):
+  jscodeshift@0.16.1(@babel/preset-env@7.24.7(@babel/core@7.24.7)):
     dependencies:
       '@babel/core': 7.24.7
       '@babel/parser': 7.24.7

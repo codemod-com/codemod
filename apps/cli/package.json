@@ -93,9 +93,9 @@
   "dependencies": {
     "@ast-grep/cli": "catalog:",
     "@ast-grep/napi": "catalog:",
+    "@napi-rs/keyring": "1.1.6",
+    "@octokit/rest": "catalog:",
     "blessed": "catalog:",
-    "esbuild": "^0.23.0",
-    "keytar": "catalog:",
-    "@octokit/rest": "catalog:"
+    "esbuild": "^0.23.0"
   }
 }
