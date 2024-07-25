@@ -1,6 +1,6 @@
 import {
   getImportDeclaration,
-  isLibraryMethod,
+  isCallExpressionLibraryMethod,
 } from "@codemod-com/codemod-utils";
 import type { Collection, JSCodeshift } from "jscodeshift";
 
@@ -9,9 +9,12 @@ export const findPatterns = (j: JSCodeshift, root: Collection) => {
 
   return importDeclaration
     ? root.find(j.CallExpression).filter((callExpression) => {
-        return isLibraryMethod(j, callExpression, importDeclaration, [
-          "createFactory",
-        ]);
+        return isCallExpressionLibraryMethod(
+          j,
+          callExpression,
+          importDeclaration,
+          ["createFactory"],
+        );
       })
     : null;
 };

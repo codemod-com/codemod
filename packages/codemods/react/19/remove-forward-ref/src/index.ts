@@ -14,7 +14,7 @@ import {
   getImportDeclaration,
   removeNamedImports,
 } from "@codemod-com/codemod-utils";
-import { isLibraryMethod } from "@codemod-com/codemod-utils/src/callExpression.js";
+import { isCallExpressionLibraryMethod } from "@codemod-com/codemod-utils/src/callExpression.js";
 
 // Props & { ref: React.RefObject<Ref>}
 const buildPropsAndRefIntersectionTypeAnnotation = (
@@ -123,9 +123,12 @@ export default function transform(file: FileInfo, api: API) {
   root
     .find(j.CallExpression)
     .filter((callExpression) => {
-      return isLibraryMethod(j, callExpression, importDeclaration, [
-        "forwardRef",
-      ]);
+      return isCallExpressionLibraryMethod(
+        j,
+        callExpression,
+        importDeclaration,
+        ["forwardRef"],
+      );
     })
     .replaceWith((callExpressionPath) => {
       const originalCallExpression = callExpressionPath.value;

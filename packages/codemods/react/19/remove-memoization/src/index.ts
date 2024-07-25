@@ -1,6 +1,6 @@
 import {
   getImportDeclaration,
-  isLibraryMethod,
+  isCallExpressionLibraryMethod,
   removeUnusedSpecifiers,
 } from "@codemod-com/codemod-utils";
 import type { API, FileInfo } from "jscodeshift";
@@ -23,7 +23,7 @@ export default function transform(
   root
     .find(j.CallExpression)
     .filter((callExpression) => {
-      return isLibraryMethod(
+      return isCallExpressionLibraryMethod(
         j,
         callExpression,
         importDeclaration,

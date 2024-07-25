@@ -294,11 +294,19 @@ export const importDeclarationHasLocalName = (
   );
 };
 
-export const getNamedImportImportedName = (
+/**
+ * Retrieves the local name of a named import from an ImportDeclaration.
+ *
+ * @param j - The JSCodeshift API object used for AST manipulation.
+ * @param name - The local name of the named import to look for.
+ * @param importDeclaration - The ImportDeclaration AST node to search within.
+ * @returns The local name of the named import if found, otherwise undefined.
+ */
+export const getNamedImportLocalName = (
   j: JSCodeshift,
   name: string,
   importDeclaration: ASTPath<ImportDeclaration>,
-) => {
+): string | undefined => {
   const { importSpecifierLocalNames } = getImportDeclarationNames(
     j,
     importDeclaration,
