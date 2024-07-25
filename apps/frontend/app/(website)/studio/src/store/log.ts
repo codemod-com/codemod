@@ -29,7 +29,6 @@ export const useLogStore = create<LogState>((set, get) => ({
     const restEvents = events.filter(
       (e) => !specialEvents.concat(eventsToSkip).includes(e.kind),
     );
-    console.log({ restEvents });
     const executionErrorExists = !!executionErrors.length;
     set((state) => ({
       events,
