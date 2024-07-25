@@ -8,6 +8,12 @@ import { type FunctionLike, getFunctionName } from "./function.js";
 import { getImportDeclaration } from "./global.js";
 import { getImportDeclarationNames } from "./importDeclaration.js";
 
+/**
+ * Checks if a string is capitalized.
+ *
+ * @param str - The string to check.
+ * @returns A boolean indicating whether the string is capitalized.
+ */
 const isCapitalized = (str: string): boolean => {
   if (str.length === 0) {
     return false;
@@ -17,6 +23,13 @@ const isCapitalized = (str: string): boolean => {
   return firstChar === firstChar.toUpperCase();
 };
 
+/**
+ * Retrieves all React class components from the root Collection.
+ *
+ * @param j - The JSCodeshift API object used for AST manipulation.
+ * @param root - The root Collection representing the AST of the source code.
+ * @returns A Collection of ClassDeclaration nodes representing React class components, or null if no React import is found.
+ */
 export const getClassComponents = (
   j: JSCodeshift,
   root: Collection<any>,
@@ -67,6 +80,13 @@ export const getClassComponents = (
   });
 };
 
+/**
+ * Retrieves all function components from the root Collection.
+ *
+ * @param j - The JSCodeshift API object used for AST manipulation.
+ * @param root - The root Collection representing the AST of the source code.
+ * @returns An array of ASTPath nodes representing function components.
+ */
 export const getFunctionComponents = (j: JSCodeshift, root: Collection) => {
   const functionLikePaths: ASTPath<FunctionLike>[] = [
     ...root.find(j.FunctionDeclaration).paths(),
@@ -77,6 +97,13 @@ export const getFunctionComponents = (j: JSCodeshift, root: Collection) => {
   return functionLikePaths.filter((path) => isReactFunctionComponent(j, path));
 };
 
+/**
+ * Checks if a given FunctionLike node is a React function component.
+ *
+ * @param j - The JSCodeshift API object used for AST manipulation.
+ * @param maybeComponent - The ASTPath of the FunctionLike node to check.
+ * @returns A boolean indicating whether the node is a React function component.
+ */
 export const isReactFunctionComponent = (
   j: JSCodeshift,
   maybeComponent: ASTPath<FunctionLike>,
