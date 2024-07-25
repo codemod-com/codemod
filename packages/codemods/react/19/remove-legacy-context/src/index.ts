@@ -1,8 +1,9 @@
 // BUILT WITH https://codemod.studio
 
 import type { API, FileInfo, JSCodeshift } from "jscodeshift";
-import { findPatterns, getClassMethod } from "./analyze.js";
+import { findPatterns } from "./analyze.js";
 
+import { getClassMethod } from "@codemod-com/codemod-utils";
 //  const FooContext = React.createContext();
 const buildContextVariableDeclaration = (j: JSCodeshift) =>
   j.variableDeclaration("const", [

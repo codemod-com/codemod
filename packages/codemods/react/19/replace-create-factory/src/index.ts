@@ -1,4 +1,4 @@
-import { removeUnusedSpecifiers } from "@codemod-com/jscodeshift-utils";
+import { removeUnusedSpecifiers } from "@codemod-com/codemod-utils";
 import type { API, FileInfo, JSCodeshift } from "jscodeshift";
 import { findPatterns } from "./analyze.js";
 
