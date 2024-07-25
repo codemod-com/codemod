@@ -4,32 +4,6 @@
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
     "baseUrl": ".",
-<<<<<<< HEAD:packages/jscodeshift-utils/tsconfig.json
     "outDir": "./dist"
-=======
-    "target": "ES2022",
-    "declaration": true,
-    "outDir": "./dist",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "strictFunctionTypes": true,
-    "strictBindCallApply": true,
-    "strictPropertyInitialization": true,
-    "noImplicitThis": true,
-    "useUnknownInCatchVariables": true,
-    "alwaysStrict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedIndexedAccess": true,
-    "noImplicitOverride": true,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "sourceMap": true
->>>>>>> 31a5f016 (feat: add codemod-utils):packages/codemod-utils/tsconfig.json
   }
 }

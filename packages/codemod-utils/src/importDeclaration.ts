@@ -12,7 +12,7 @@ import type {
  * Retrieves a named import specifier from an import declaration.
  * @param j - The JSCodeshift API.
  * @param importDeclaration - The import declaration to search.
- * @param name - The name of the import to retrieve.
+ * @param name - The imported name of the named import to retrieve.
  * @returns The import specifier if found, otherwise null.
  */
 export const getNamedImport = (
