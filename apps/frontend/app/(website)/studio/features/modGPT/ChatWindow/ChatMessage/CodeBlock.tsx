@@ -58,7 +58,7 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           <Button
             variant="ghost"
             size="icon"
-            title="Copy content"
+            title="Copy to clipboard"
             className={buttonClass}
             onClick={handleCopyToClipboard}
           >
@@ -68,6 +68,7 @@ const CodeBlock: FC<Props> = ({ language, value }) => {
           <Button
             variant="ghost"
             size="icon"
+            title="Copy to Codemod panel"
             className={buttonClass}
             onClick={handleCopyToCodemodPanel}
           >
