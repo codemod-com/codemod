@@ -23,7 +23,8 @@ import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
 import type { TelemetryEvent } from "#telemetry.js";
-import { codemodDirectoryPath, isFile } from "#utils.js";
+import { codemodDirectoryPath } from "#utils/constants.js";
+import { isFile } from "#utils/general.js";
 
 export const handlePublishCliCommand = async (options: {
   printer: Printer;

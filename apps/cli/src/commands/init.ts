@@ -23,7 +23,8 @@ import {
   parseCodemodConfig,
 } from "@codemod-com/utilities";
 import { getCurrentUserData } from "#auth-utils.js";
-import { isFile, oraCheckmark } from "#utils.js";
+import { oraCheckmark } from "#utils/constants.js";
+import { isFile } from "#utils/general.js";
 
 const CODEMOD_ENGINE_CHOICES: (KnownEngines | "recipe")[] = [
   "jscodeshift",

@@ -20,13 +20,12 @@ import {
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod } from "#fetch-codemod.js";
-import { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
 import { AuthService } from "#services/auth-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
-import { writeLogs } from "#utils.js";
+import { writeLogs } from "#utils/logs.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -104,8 +103,6 @@ export const handleRunCliCommand = async (options: {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
-  const fileDownloadService = new FileDownloadService(args.cache, fs, printer);
-
   const tarService = new TarService(fs);
 
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
@@ -119,7 +116,6 @@ export const handleRunCliCommand = async (options: {
       nameOrPath,
       printer,
       argv: args,
-      fileDownloadService,
       tarService,
     });
   } catch (error) {
@@ -146,7 +142,7 @@ export const handleRunCliCommand = async (options: {
       }
     }
 
-    throw new Error(`Error while downloading codemod ${nameOrPath}: ${error}`);
+    throw new Error(`Error while fetching codemod ${nameOrPath}: ${error}`);
   }
 
   if (
@@ -282,11 +278,11 @@ export const handleRunCliCommand = async (options: {
     },
   });
 
-  let printLogsNotice: (() => void) | null = null;
+  let finishRun = () => onExit();
 
   if (args.logs && executionErrors?.length) {
     const notice = await writeLogs({
-      prefix: "Codemod execution encountered errors.",
+      prefix: chalk.red("Codemod execution encountered errors."),
       content: executionErrors
         .map(
           (e) =>
@@ -297,7 +293,11 @@ export const handleRunCliCommand = async (options: {
         .join("\n\n"),
     });
 
-    printLogsNotice = () => printer.printConsoleMessage("info", notice);
+    finishRun = () => {
+      printer.terminateExecutionProgress();
+      printer.printConsoleMessage("info", notice);
+      return onExit();
+    };
   }
 
   if (allExecutedCommands.length === 0) {
@@ -307,7 +307,7 @@ export const handleRunCliCommand = async (options: {
       chalk.yellow("\nNo changes were made during the codemod run."),
     );
 
-    return onExit();
+    return finishRun();
   }
 
   if (flowSettings.dry && allExecutedCommands.length > 0) {
@@ -315,14 +315,12 @@ export const handleRunCliCommand = async (options: {
 
     screen.key(["escape", "q", "C-c"], () => {
       screen?.destroy();
-      printLogsNotice?.();
-      return onExit();
+      return finishRun();
     });
 
     return screen.render();
   }
 
-  printLogsNotice?.();
   if (flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
       depsToInstall,
@@ -337,5 +335,5 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
-  return onExit();
+  return finishRun();
 };
