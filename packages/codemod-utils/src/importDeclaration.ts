@@ -39,7 +39,6 @@ export const getDefaultImport = (
     j.ImportDefaultSpecifier.check(s),
   ) ?? null;
 
-// TODO should we return Path or Node?
 /**
  * Retrieves the namespace import specifier from an import declaration.
  * @param j - The JSCodeshift API.
@@ -59,18 +58,25 @@ export const getNamespaceImport = (
  * @param j - The JSCodeshift API.
  * @param newName - The new name for the default import.
  * @param importDeclaration - The import declaration to modify.
+ * @returns True if the import declaration was modified, otherwise false.
  */
 export const renameDefaultImport = (
   j: JSCodeshift,
   newName: string,
   importDeclaration: ASTPath<ImportDeclaration>,
-): void => {
-  importDeclaration.value.specifiers =
-    importDeclaration.value.specifiers?.map((s) =>
-      j.ImportDefaultSpecifier.check(s)
-        ? j.importDefaultSpecifier(j.identifier(newName))
-        : s,
-    ) ?? [];
+): boolean => {
+  let isRenamed = false;
+
+  const importDefaultSpecifier = importDeclaration.value.specifiers?.find((s) =>
+    j.ImportDefaultSpecifier.check(s),
+  );
+
+  if (j.Identifier.check(importDefaultSpecifier?.name)) {
+    importDefaultSpecifier.name.name = newName;
+    isRenamed = true;
+  }
+
+  return isRenamed;
 };
 
 /**
@@ -85,7 +91,7 @@ export const addNamedImports = (
   names: string[],
   importDeclaration: ASTPath<ImportDeclaration>,
 ): boolean => {
-  let isDirty = false;
+  let isAdded = false;
 
   const importSpecifiers = names.map((name) =>
     j.importSpecifier(j.identifier(name), j.identifier(name)),
@@ -100,11 +106,11 @@ export const addNamedImports = (
 
     if (!specifierExists) {
       importDeclaration.value.specifiers?.push(importSpecifier);
-      isDirty = true;
+      isAdded = true;
     }
   });
 
-  return isDirty;
+  return isAdded;
 };
 
 /**
@@ -119,7 +125,7 @@ export const removeNamedImports = (
   names: string[],
   importDeclaration: ASTPath<ImportDeclaration>,
 ): boolean => {
-  let isDirty = false;
+  let isRemoved = false;
 
   const newSpecifiers =
     importDeclaration.value?.specifiers?.filter((specifier) =>
@@ -130,17 +136,17 @@ export const removeNamedImports = (
 
   if (newSpecifiers.length === 0) {
     j(importDeclaration).remove();
-    isDirty = true;
-    return isDirty;
+    isRemoved = true;
+    return isRemoved;
   }
 
   if (importDeclaration.value.specifiers?.length !== newSpecifiers.length) {
-    isDirty = true;
+    isRemoved = true;
   }
 
   importDeclaration.value.specifiers = newSpecifiers;
 
-  return isDirty;
+  return isRemoved;
 };
 
 /**
@@ -158,6 +164,7 @@ export const removeDefaultImport = (
     importDeclaration.value.specifiers?.filter(
       (s) => !j.ImportDefaultSpecifier.check(s),
     ) ?? [];
+
   return importDeclaration.value.specifiers.length !== initialLength;
 };
 
@@ -200,25 +207,41 @@ const isIdentifierUsed = (
  * Removes unused import specifiers from an import declaration.
  * @param j - The JSCodeshift API.
  * @param root - The root collection to search.
- * @param source - The source of the import declaration to check.
+ * @param importDeclaration - The import declaration to modify.
  */
 export const removeUnusedSpecifiers = (
   j: JSCodeshift,
   root: Collection,
   importDeclaration: ASTPath<ImportDeclaration>,
-): void => {
+): boolean => {
+  let isRemoved = false;
+
   const usedSpecifiers =
     importDeclaration.value.specifiers?.filter((specifier) => {
       const name = specifier.local?.name;
       return name && isIdentifierUsed(j, root, name);
     }) ?? [];
 
+  // remove ImportDeclaration if no specifiers left after unused specifiers removal
   if (usedSpecifiers.length === 0) {
     j(importDeclaration).remove();
-    return;
+    isRemoved = true;
+    return isRemoved;
+  }
+
+  if (importDeclaration.value.specifiers?.length !== usedSpecifiers.length) {
+    isRemoved = true;
   }
 
   importDeclaration.value.specifiers = usedSpecifiers;
+
+  return isRemoved;
+};
+
+type ImportDeclarationNames = {
+  importDefaultSpecifierName: string | null;
+  importNamespaceSpecifierName: string | null;
+  importSpecifierLocalNames: Map<string, string>;
 };
 
 /**
@@ -232,7 +255,7 @@ export const removeUnusedSpecifiers = (
 export const getImportDeclarationNames = (
   j: JSCodeshift,
   importDeclaration: ASTPath<ImportDeclaration>,
-) => {
+): ImportDeclarationNames => {
   const importSpecifierLocalNames = new Map<string, string>();
 
   let importDefaultSpecifierName: string | null = null;
@@ -303,11 +326,11 @@ export const getNamedImportLocalName = (
   j: JSCodeshift,
   name: string,
   importDeclaration: ASTPath<ImportDeclaration>,
-): string | undefined => {
+): string | null => {
   const { importSpecifierLocalNames } = getImportDeclarationNames(
     j,
     importDeclaration,
   );
 
-  return importSpecifierLocalNames.get(name);
+  return importSpecifierLocalNames.get(name) ?? null;
 };
