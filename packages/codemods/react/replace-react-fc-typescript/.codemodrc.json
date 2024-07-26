@@ -1,6 +1,6 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "private": false,
   "name": "react/replace-react-fc-typescript",
   "description": "Codemod to replace React.FC when using React with Typescript.",
@@ -12,5 +12,5 @@
   "applicability": {
     "from": [["react", ">=", "15.0.0"]]
   },
-  "include": ["**/*.js", "**/*.ts"]
+  "include": ["**/*.js", "**/*.ts", "**/*.jsx", "**/*.tsx"]
 }
