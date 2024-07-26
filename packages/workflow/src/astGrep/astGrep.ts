@@ -2,7 +2,7 @@ import * as childProcess from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 import * as util from "node:util";
-import { Lang, type NapiConfig, parse } from "@ast-grep/napi";
+import { Lang, type NapiConfig, SgNode, parse } from "@ast-grep/napi";
 import * as YAML from "yaml";
 import type { PLazy } from "../PLazy.js";
 import { ai } from "../ai/ai.js";
@@ -16,6 +16,8 @@ import { clc } from "../helpers.js";
 import { filter } from "./filter.js";
 import { map } from "./map.js";
 import { replace } from "./replace.js";
+
+export { SgNode };
 
 const fileExtensionToLang: Record<string, Lang> = {
   css: Lang.Css,
@@ -47,6 +49,13 @@ const fileExtensionToLang: Record<string, Lang> = {
   rs: Lang.Rust,
   scala: Lang.Scala,
   swift: Lang.Swift,
+  // TODO: remove after will be supported in ast-grep
+  // @ts-ignore
+  sql: Lang.Sql,
+  // @ts-ignore
+  psql: Lang.Sql,
+  // @ts-ignore
+  mysql: Lang.Sql,
 };
 
 type AstGrepPattern =
