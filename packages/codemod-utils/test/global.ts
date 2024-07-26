@@ -1,34 +1,14 @@
 import assert from "node:assert/strict";
-import jscodeshift, { type FileInfo, type API } from "jscodeshift";
-
+import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
+
 import {
   addImportDeclaration,
+  buildApi,
+  buildRootCollection,
   getImportDeclaration,
   insertStatementAfterImports,
-} from "../src/index.js";
-
-const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
-
-const buildRootCollection = (file: FileInfo, api: API) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-
-  return { j, root };
-};
+} from "#index.js";
 
 describe("global utils", async () => {
   describe("getImportDeclaration", async () => {
@@ -42,7 +22,7 @@ describe("global utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       const declaration = getImportDeclaration(j, root, "react");
 
@@ -64,7 +44,7 @@ describe("global utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       addImportDeclaration(j, root, "react");
 
@@ -98,7 +78,7 @@ describe("global utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       insertStatementAfterImports(j, root, [
         j.variableDeclaration("const", [

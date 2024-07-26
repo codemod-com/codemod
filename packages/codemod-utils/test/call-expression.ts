@@ -1,36 +1,15 @@
 import assert from "node:assert/strict";
-import jscodeshift, { type FileInfo, type API } from "jscodeshift";
-
+import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 
 import {
+  buildApi,
+  buildRootCollection,
   getCallExpressionsByImport,
   getCalleeName,
   getImportDeclaration,
   isCallExpressionLibraryMethod,
-} from "../src/index.js";
-
-const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
-
-const buildRootCollection = (file: FileInfo, api: API) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-
-  return { j, root };
-};
+} from "#index.js";
 
 describe("call expression utils", async () => {
   describe("getCalleeName", async () => {
@@ -45,7 +24,7 @@ describe("call expression utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       const [ce1, ce2] = root.find(j.CallExpression).paths() ?? [];
 
@@ -70,7 +49,7 @@ describe("call expression utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "react");
       const res = getCallExpressionsByImport(j, root, importDeclaration!);
 
@@ -102,7 +81,7 @@ describe("call expression utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "react");
       const res = root
         .find(j.CallExpression)

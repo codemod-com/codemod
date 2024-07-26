@@ -1,1 +1,1 @@
-# Jscodeshift codemod utils
+# Codemod utils

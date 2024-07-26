@@ -5,6 +5,7 @@
     "module": "NodeNext",
     "target": "ESNext",
     "moduleResolution": "NodeNext",
+    "lib": ["ESNext", "DOM"],
     "skipLibCheck": true,
     "esModuleInterop": true,
 

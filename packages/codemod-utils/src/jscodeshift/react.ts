@@ -6,7 +6,7 @@ import type {
 } from "jscodeshift";
 import { type FunctionLike, getFunctionName } from "./function.js";
 import { getImportDeclaration } from "./global.js";
-import { getImportDeclarationNames } from "./importDeclaration.js";
+import { getImportDeclarationNames } from "./import-declaration.js";
 
 /**
  * Checks if a string is capitalized.

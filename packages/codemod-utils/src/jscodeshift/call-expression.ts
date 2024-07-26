@@ -7,10 +7,11 @@ import type {
   JSCodeshift,
   MemberExpression,
 } from "jscodeshift";
+
 import {
   getNamedImportLocalName,
   importDeclarationHasLocalName,
-} from "./importDeclaration.js";
+} from "./import-declaration.js";
 
 const getMemberExpressionRootObject = (
   j: JSCodeshift,

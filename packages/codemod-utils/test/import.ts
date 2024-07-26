@@ -1,10 +1,11 @@
 import assert from "node:assert/strict";
-import jscodeshift, { type FileInfo, type API } from "jscodeshift";
-
+import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 
 import {
   addNamedImports,
+  buildApi,
+  buildRootCollection,
   getDefaultImport,
   getImportDeclaration,
   getImportDeclarationNames,
@@ -16,29 +17,7 @@ import {
   removeNamespaceImport,
   removeUnusedSpecifiers,
   renameDefaultImport,
-} from "../src/index.js";
-
-const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
-
-const buildRootCollection = (file: FileInfo, api: API) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-
-  return { j, root };
-};
+} from "#index.js";
 
 describe("Import utils", async () => {
   describe("getNamedImport", () => {
@@ -50,7 +29,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       // imported without alias - ok
       const node1 = getNamedImport(j, importDeclaration!, "a");
@@ -77,7 +56,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const node1 = getDefaultImport(j, importDeclaration!);
       assert.ok(node1?.type === "ImportDefaultSpecifier");
@@ -93,7 +72,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const node1 = getNamespaceImport(j, importDeclaration!);
       assert.ok(node1?.type === "ImportNamespaceSpecifier");
@@ -110,7 +89,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       renameDefaultImport(j, "B", importDeclaration!);
       const actualOutput = root.toSource();
@@ -132,7 +111,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       addNamedImports(j, ["a", "b"], importDeclaration!);
 
@@ -163,7 +142,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const importDeclaration1 = getImportDeclaration(j, root, "import-name1");
       const importDeclaration2 = getImportDeclaration(j, root, "import-name2");
@@ -195,7 +174,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       renameDefaultImport(j, "B", importDeclaration!);
 
@@ -223,7 +202,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       removeNamespaceImport(j, importDeclaration!);
 
@@ -253,7 +232,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       removeUnusedSpecifiers(j, root, importDeclaration!);
 
@@ -277,7 +256,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const names = getImportDeclarationNames(j, importDeclaration!);
 
@@ -305,7 +284,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const hasAliasb = importDeclarationHasLocalName(
         j,
@@ -330,7 +309,7 @@ describe("Import utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
       const importDeclaration = getImportDeclaration(j, root, "import-name");
       const local = getNamedImportLocalName(j, "b", importDeclaration!);
 

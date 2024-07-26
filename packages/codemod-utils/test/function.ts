@@ -1,31 +1,13 @@
 import assert from "node:assert/strict";
-import jscodeshift, { type FileInfo, type API } from "jscodeshift";
-
+import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 
-import { getFunctionName, isFunctionExportedByDefault } from "../src/index.js";
-
-const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
-
-const buildRootCollection = (file: FileInfo, api: API) => {
-  const j = api.jscodeshift;
-  const root = j(file.source);
-
-  return { j, root };
-};
+import {
+  buildApi,
+  buildRootCollection,
+  getFunctionName,
+  isFunctionExportedByDefault,
+} from "#index.js";
 
 describe("function utils", async () => {
   describe("isFunctionExportedByDefault", async () => {
@@ -40,7 +22,7 @@ describe("function utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       const [fn1, fn2] = root.find(j.FunctionDeclaration).paths() ?? [];
 
@@ -63,7 +45,7 @@ describe("function utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       const [fn1, fn2] = root.find(j.ArrowFunctionExpression).paths() ?? [];
 
@@ -87,7 +69,7 @@ describe("function utils", async () => {
         source: INPUT,
       };
 
-      const { j, root } = buildRootCollection(fileInfo, buildApi("tsx"));
+      const { j, root } = buildRootCollection(fileInfo, buildApi());
 
       const [fn1] = root.find(j.FunctionDeclaration).paths() ?? [];
       const [fn2] = root.find(j.ArrowFunctionExpression).paths() ?? [];
