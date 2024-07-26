@@ -1,0 +1,15 @@
+{
+  "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
+  "name": "nextAuth/v4/useSession-array-to-object-destructuring",
+  "version": "1.0.0",
+  "engine": "jscodeshift",
+  "private": false,
+  "arguments": [],
+  "meta": {
+    "tags": ["nextAuth"],
+    "git": "https://github.com/codemod-com/codemod"
+  },
+  "applicability": {
+    "from": [["nextAuth", "<", "v4"]]
+  }
+}
