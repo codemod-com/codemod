@@ -11,8 +11,7 @@ RUN pnpm -g add turbo@^1
 FROM base AS builder
 WORKDIR /app
 
-RUN apk update
-RUN apk add --no-cache libc6-compat
+RUN apt-get update && apt-get install -y --no-install-recommends libc6
 
 COPY package.json turbo.json pnpm-workspace.yaml pnpm-lock.yaml /app/
 COPY apps/cli /app/apps/cli/
@@ -31,31 +30,28 @@ COPY packages/auth /app/packages/auth/
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
 # Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune codemod --docker
- 
- 
+
+
 
 FROM base AS installer
 WORKDIR /app
 
-RUN apk update
-RUN apk add --no-cache libc6-compat
+# Update the package list and install necessary packages
+RUN apt-get update && apt-get install -y --no-install-recommends libc6
  
 # First install the dependencies
 COPY --from=builder /app/out/json/ .
+RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+
 COPY --from=builder /app/out/full/ .
-RUN pnpm install
- 
-# Build the project
-# COPY --from=builder /app/out/full/ .
 RUN pnpm build --filter codemod
 
+RUN pnpm deploy --filter=codemod --prod /prod/cli
 
 
-# FROM base AS runner
-# COPY --from=installer /app/node_modules/.pnpm/@ast-grep+napi-linux-arm64-musl@0.24.1/ ./node_modules/.pnpm/@ast-grep+napi-linux-arm64-musl@0.24.1/
-# COPY --from=installer /app/apps/cli/node_modules/ ./apps/cli/node_modules/
 
-# WORKDIR /app
-# COPY --from=installer /app/apps/cli ./apps/cli
- 
-CMD node apps/cli/dist/index.cjs
+FROM base AS runner
+
+COPY --from=installer /prod/cli /prod/cli
+WORKDIR /prod/cli
+CMD node dist/index.cjs whoami
