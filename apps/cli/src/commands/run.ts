@@ -282,11 +282,11 @@ export const handleRunCliCommand = async (options: {
     },
   });
 
-  let printLogsNotice: (() => void) | null = null;
+  let finishRun = () => onExit();
 
   if (args.logs && executionErrors?.length) {
     const notice = await writeLogs({
-      prefix: "Codemod execution encountered errors.",
+      prefix: chalk.red("Codemod execution encountered errors."),
       content: executionErrors
         .map(
           (e) =>
@@ -297,7 +297,11 @@ export const handleRunCliCommand = async (options: {
         .join("\n\n"),
     });
 
-    printLogsNotice = () => printer.printConsoleMessage("info", notice);
+    finishRun = () => {
+      printer.terminateExecutionProgress();
+      printer.printConsoleMessage("info", notice);
+      return onExit();
+    };
   }
 
   if (allExecutedCommands.length === 0) {
@@ -307,7 +311,7 @@ export const handleRunCliCommand = async (options: {
       chalk.yellow("\nNo changes were made during the codemod run."),
     );
 
-    return onExit();
+    return finishRun();
   }
 
   if (flowSettings.dry && allExecutedCommands.length > 0) {
@@ -315,14 +319,12 @@ export const handleRunCliCommand = async (options: {
 
     screen.key(["escape", "q", "C-c"], () => {
       screen?.destroy();
-      printLogsNotice?.();
-      return onExit();
+      return finishRun();
     });
 
     return screen.render();
   }
 
-  printLogsNotice?.();
   if (flowSettings.install) {
     for (const [codemodName, { deps, affectedFiles }] of Object.entries(
       depsToInstall,
@@ -337,5 +339,5 @@ export const handleRunCliCommand = async (options: {
     }
   }
 
-  return onExit();
+  return finishRun();
 };
