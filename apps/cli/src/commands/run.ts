@@ -20,13 +20,12 @@ import {
 import { version as cliVersion } from "#/../package.json";
 import { getDiff, getDiffScreen } from "#dryrun-diff.js";
 import { fetchCodemod } from "#fetch-codemod.js";
-import { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { handleInstallDependencies } from "#install-dependencies.js";
 import { AuthService } from "#services/auth-service.js";
 import type { TelemetryEvent } from "#telemetry.js";
 import type { NamedFileCommand } from "#types/commands.js";
-import { writeLogs } from "#utils.js";
+import { writeLogs } from "#utils/logs.js";
 
 const checkFileTreeVersioning = async (target: string) => {
   let force = true;
@@ -104,8 +103,6 @@ export const handleRunCliCommand = async (options: {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
-  const fileDownloadService = new FileDownloadService(args.cache, fs, printer);
-
   const tarService = new TarService(fs);
 
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
@@ -119,7 +116,6 @@ export const handleRunCliCommand = async (options: {
       nameOrPath,
       printer,
       argv: args,
-      fileDownloadService,
       tarService,
     });
   } catch (error) {
@@ -146,7 +142,7 @@ export const handleRunCliCommand = async (options: {
       }
     }
 
-    throw new Error(`Error while downloading codemod ${nameOrPath}: ${error}`);
+    throw new Error(`Error while fetching codemod ${nameOrPath}: ${error}`);
   }
 
   if (

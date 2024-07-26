@@ -1,6 +1,5 @@
 import { createHash, randomBytes } from "node:crypto";
-import * as fs from "node:fs/promises";
-import { mkdir } from "node:fs/promises";
+import { lstat, mkdir, writeFile } from "node:fs/promises";
 import { join, parse as pathParse, resolve } from "node:path";
 import type { AxiosError } from "axios";
 import inquirer from "inquirer";
@@ -29,14 +28,11 @@ import {
 import { getCodemodDownloadURI } from "#api.js";
 import { getCurrentUserData } from "#auth-utils.js";
 import { handleInitCliCommand } from "#commands/init.js";
-import type { FileDownloadService } from "#file-download.js";
 import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { buildSafeArgumentRecord } from "#safe-arguments.js";
-import {
-  codemodDirectoryPath,
-  oraCheckmark,
-  unpackZipCodemod,
-} from "#utils.js";
+import { codemodDirectoryPath, oraCheckmark } from "#utils/constants.js";
+import { downloadFile } from "#utils/download.js";
+import { unpackZipCodemod } from "#utils/unpack-zip.js";
 
 export const populateCodemodArgs = async (options: {
   codemod: Codemod;
@@ -95,14 +91,12 @@ export const fetchCodemod = async (options: {
   nameOrPath: string;
   argv: GlobalArgvOptions & RunArgvOptions;
   printer: Printer;
-  fileDownloadService: FileDownloadService;
   tarService: TarService;
   disableLogs?: boolean;
 }): Promise<Codemod> => {
   const {
     nameOrPath,
     printer,
-    fileDownloadService,
     tarService,
     disableLogs = false,
     argv,
@@ -112,7 +106,7 @@ export const fetchCodemod = async (options: {
     throw new Error("Codemod to run was not specified!");
   }
 
-  const sourceStat = await fs.lstat(nameOrPath).catch(() => null);
+  const sourceStat = await lstat(nameOrPath).catch(() => null);
 
   // Local codemod
   if (sourceStat !== null) {
@@ -156,7 +150,7 @@ export const fetchCodemod = async (options: {
 
         try {
           const executable = await bundleJS({ entry: nameOrPath });
-          await fs.writeFile(codemodPath, executable);
+          await writeFile(codemodPath, executable);
         } catch (err) {
           throw new Error(
             `Error bundling codemod: ${(err as Error).message ?? "Unknown error"}`,
@@ -257,16 +251,17 @@ export const fetchCodemod = async (options: {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-
-  const { data, cacheUsed } = await fileDownloadService
-    .download({ url: linkResponse.link, path: downloadPath })
-    .catch((err) => {
-      spinner?.fail();
-      throw new Error(
-        (err as AxiosError<{ error: string }>).response?.data?.error ??
-          (err as Error).message,
-      );
-    });
+  const { data, cacheUsed } = await downloadFile({
+    url: linkResponse.link,
+    path: downloadPath,
+    cache: argv.cache,
+  }).catch((err) => {
+    spinner?.fail();
+    throw new Error(
+      (err as AxiosError<{ error: string }>).response?.data?.error ??
+        (err as Error).message,
+    );
+  });
 
   // If cache was used, the codemod is already unpacked
   if (!cacheUsed) {
@@ -292,10 +287,7 @@ export const fetchCodemod = async (options: {
     throwOnNotFound: true,
   });
 
-  if (
-    fileDownloadService.cacheEnabled &&
-    semver.gt(linkResponse.version, config.version)
-  ) {
+  if (cacheUsed && semver.gt(linkResponse.version, config.version)) {
     if (!disableLogs) {
       printer.printConsoleMessage(
         "info",
