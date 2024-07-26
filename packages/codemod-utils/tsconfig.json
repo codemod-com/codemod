@@ -1,5 +1,5 @@
 {
-  "include": ["./src", "test", "./global.d.ts"],
+  "include": ["./src", "./global.d.ts"],
   "exclude": ["./dist", "./build", "./node_modules"],
   "extends": "@codemod-com/tsconfig/lib.json",
   "compilerOptions": {
