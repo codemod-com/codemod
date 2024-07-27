@@ -1,4 +1,4 @@
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import nodePath, { dirname, join, resolve } from "node:path";
 import esbuild from "esbuild";
 import tsmorph from "ts-morph";
@@ -82,7 +82,7 @@ export const bundleJS = async (options: {
   return sourceCode;
 };
 
-export const getCodemodExecutable = async (source: string) => {
+export const getCodemodExecutable = async (source: string, write?: boolean) => {
   const outputFilePath = join(resolve(source), BUILT_SOURCE_PATH);
   try {
     return await readFile(outputFilePath, { encoding: "utf8" });
@@ -99,5 +99,15 @@ export const getCodemodExecutable = async (source: string) => {
     return readFile(entryPoint, { encoding: "utf8" });
   }
 
-  return bundleJS({ entry: entryPoint, output: outputFilePath });
+  const bundledCode = await bundleJS({
+    entry: entryPoint,
+    output: outputFilePath,
+  });
+
+  if (write) {
+    await mkdir(dirname(outputFilePath), { recursive: true });
+    await writeFile(outputFilePath, bundledCode);
+  }
+
+  return bundledCode;
 };

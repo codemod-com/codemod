@@ -1,6 +1,7 @@
 import { createHash, randomBytes } from "node:crypto";
 import * as fs from "node:fs";
-
+import { homedir } from "node:os";
+import { join } from "node:path";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import axios from "axios";
 import type { RouteHandler } from "fastify";
@@ -23,16 +24,16 @@ import { prisma } from "@codemod-com/database";
 // Direct import because tree-shaking helps this to not throw.
 import { getCodemodExecutable } from "@codemod-com/runner/dist/source-code.js";
 import {
-  TarService,
   buildCodemodSlug,
   codemodNameRegex,
   getCodemodRc,
   getEntryPath,
   isNeitherNullNorUndefined,
+  tar,
+  untar,
+  unzip,
 } from "@codemod-com/utilities";
 
-import { homedir } from "node:os";
-import { join } from "node:path";
 import { buildRevalidateHelper } from "./revalidate.js";
 import { environment } from "./util.js";
 
@@ -45,8 +46,9 @@ export const publishHandler: RouteHandler<{
     homedir(),
     ".codemod",
     "temp",
-    randomBytes(4).toString("hex"),
+    randomBytes(8).toString("hex"),
   );
+  await fs.promises.mkdir(unpackPath, { recursive: true });
 
   try {
     const organizations = request.organizations!;
@@ -66,7 +68,8 @@ export const publishHandler: RouteHandler<{
       });
     }
 
-    let codemodArchiveBuffer: Buffer | null = null;
+    let codemodTarArchiveBuffer: Buffer | null = null;
+    let codemodZipArchiveBuffer: Buffer | null = null;
 
     for await (const multipartFile of request.files({
       limits: { fileSize: 1024 * 1024 * 100 },
@@ -74,19 +77,39 @@ export const publishHandler: RouteHandler<{
       const buffer = await multipartFile.toBuffer();
 
       if (multipartFile.fieldname === "codemod.tar.gz") {
-        codemodArchiveBuffer = buffer;
+        codemodTarArchiveBuffer = buffer;
+      }
+
+      if (multipartFile.fieldname === "codemod.zip") {
+        codemodZipArchiveBuffer = buffer;
       }
     }
 
-    if (codemodArchiveBuffer === null) {
+    let codemodArchiveBuffer: Buffer;
+    if (codemodTarArchiveBuffer !== null) {
+      codemodArchiveBuffer = codemodTarArchiveBuffer;
+      const tarPath = join(unpackPath, "codemod.tar.gz");
+      await fs.promises.writeFile(tarPath, codemodTarArchiveBuffer);
+
+      await untar(tarPath, unpackPath);
+    } else if (codemodZipArchiveBuffer !== null) {
+      const zipPath = join(unpackPath, "codemod.zip");
+      await fs.promises.writeFile(zipPath, codemodZipArchiveBuffer);
+
+      await unzip(zipPath, unpackPath);
+
+      // For further uploading to S3
+      await fs.promises.rm(zipPath);
+
+      const tarPath = join(unpackPath, "codemod.tar.gz");
+      await tar(unpackPath, tarPath);
+      codemodArchiveBuffer = await fs.promises.readFile(tarPath);
+    } else {
       return reply.code(400).send({
         error: NO_CODEMOD_TO_PUBLISH,
         errorText: "No codemod archive was provided",
       });
     }
-
-    const tarService = new TarService(fs);
-    await tarService.unpack(unpackPath, codemodArchiveBuffer);
 
     const { config: codemodRc } = await getCodemodRc({
       source: unpackPath,

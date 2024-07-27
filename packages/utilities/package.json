@@ -27,10 +27,12 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/adm-zip": "catalog:",
     "@types/js-beautify": "catalog:",
     "@types/jscodeshift": "^0.11.11",
     "@types/ms": "catalog:",
     "@types/node": "20.10.3",
+    "@types/pako": "catalog:",
     "@types/semver": "^7.5.8",
     "@types/tar": "catalog:",
     "@types/tar-stream": "catalog:",
@@ -41,16 +43,17 @@
   },
   "dependencies": {
     "@codemod-com/filemod": "workspace:*",
-    "bl": "catalog:",
+    "adm-zip": "catalog:",
     "change-case": "catalog:",
     "glob": "catalog:",
     "js-beautify": "catalog:",
     "jscodeshift": "^0.15.1",
     "ms": "catalog:",
+    "pako": "catalog:",
+    "prettier": "^3.2.5",
     "semver": "^7.6.2",
     "tar": "^6.1.15",
     "tar-stream": "catalog:",
-    "valibot": "catalog:",
-    "prettier": "^3.2.5"
+    "valibot": "catalog:"
   }
 }

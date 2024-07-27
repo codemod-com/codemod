@@ -27,14 +27,16 @@ export const handleListNamesCommand = async (options: {
     );
   }
 
+  let token: string | undefined = undefined;
   if (mine) {
-    await getCurrentUserOrLogin({
+    const userData = await getCurrentUserOrLogin({
       message: "Authentication is required to view your own codemods. Proceed?",
       printer,
     });
+    token = userData.token;
   }
 
-  const configObjects = await getCodemodList({ search, mine, all });
+  const configObjects = await getCodemodList({ token, search, mine, all });
   spinner?.stop();
 
   if (printer.__jsonOutput) {
@@ -84,11 +86,10 @@ export const handleListNamesCommand = async (options: {
   );
 
   if (prettified.length === 0) {
-    printer.printConsoleMessage(
+    return printer.printConsoleMessage(
       "info",
       chalk.bold.red("No results matched your query."),
     );
-    return;
   }
 
   if (search) {

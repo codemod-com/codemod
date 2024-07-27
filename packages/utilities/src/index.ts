@@ -2,6 +2,7 @@ export * from "./constants.js";
 export * from "./package-boilerplate.js";
 export * from "./registry.js";
 
+export * from "./functions/archive.js";
 export * from "./functions/codemods.js";
 export * from "./functions/crypto.js";
 export * from "./functions/debounce.js";
@@ -17,6 +18,3 @@ export * from "./schemata/codemod.js";
 export * from "./schemata/engine-options.js";
 export * from "./schemata/file-commands.js";
 export * from "./schemata/github-run.js";
-export * from "./schemata/types.js";
-
-export * from "./services/tar.js";

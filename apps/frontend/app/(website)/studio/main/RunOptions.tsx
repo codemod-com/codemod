@@ -29,7 +29,6 @@ import { useMemo, useState } from "react";
 import toast from "react-hot-toast";
 import * as semver from "semver";
 import { publishCodemod } from "../src/api/publishCodemod";
-import { transpileTs } from "../src/utils/transpileTs";
 import { DownloadZip } from "./DownloadZip";
 import { CopyTerminalCommands } from "./TerminalCommands";
 
@@ -122,16 +121,7 @@ export const RunOptions = () => {
       }
     }
 
-    const { transpiled, source } = await transpileTs(files["src/index.ts"]);
-
-    const publishResult = await publishCodemod({
-      files: {
-        mainFile: `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
-        codemodRc: files[".codemodrc.json"],
-      },
-      mainFileName: "index.cjs",
-      token,
-    });
+    const publishResult = await publishCodemod({ files, token });
 
     setIsPublishing(false);
 

@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import * as fs from "node:fs";
 import { basename, dirname, join } from "node:path";
 import hastToBabelAst from "@svgr/hast-util-to-babel-ast";
 import jscodeshift from "jscodeshift";
@@ -22,7 +23,7 @@ import {
   executeFilemod,
 } from "@codemod-com/filemod";
 import type { Printer } from "@codemod-com/printer";
-import type { Codemod, FileCommand, FileSystem } from "@codemod-com/utilities";
+import type { Codemod, FileCommand } from "@codemod-com/utilities";
 import { defaultParser } from "#parsers/jscodeshift.js";
 import { isTheSameData } from "#utils.js";
 import type { CodemodExecutionErrorCallback } from "../schemata/callbacks.js";
@@ -52,7 +53,6 @@ export type Dependencies = Readonly<{
 }>;
 
 export const runFilemod = async (options: {
-  fileSystem: FileSystem;
   filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string };
   target: string;
   format: boolean;
@@ -61,7 +61,6 @@ export const runFilemod = async (options: {
   onError?: CodemodExecutionErrorCallback;
 }): Promise<readonly FileCommand[]> => {
   const {
-    fileSystem,
     filemod,
     target,
     format,
@@ -74,7 +73,7 @@ export const runFilemod = async (options: {
     createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;
 
   const getUnifiedEntry = async (path: string): Promise<UnifiedEntry> => {
-    const stat = await fileSystem.promises.stat(path);
+    const stat = await fs.promises.stat(path);
 
     if (stat.isDirectory()) {
       return {
@@ -96,7 +95,7 @@ export const runFilemod = async (options: {
   const readDirectory = async (
     path: string,
   ): Promise<ReadonlyArray<UnifiedEntry>> => {
-    const entries = await fileSystem.promises.readdir(path, {
+    const entries = await fs.promises.readdir(path, {
       // @ts-ignore
       withFileTypes: true,
     });
@@ -125,7 +124,7 @@ export const runFilemod = async (options: {
   };
 
   const readFile = async (path: string): Promise<string> => {
-    const data = await fileSystem.promises.readFile(path, {
+    const data = await fs.promises.readFile(path, {
       encoding: "utf8",
     });
 
@@ -214,7 +213,7 @@ export const runFilemod = async (options: {
     externalFileCommands.map(async (externalFileCommand) => {
       if (externalFileCommand.kind === "upsertFile") {
         try {
-          await fileSystem.promises.stat(externalFileCommand.path);
+          await fs.promises.stat(externalFileCommand.path);
 
           if (
             isTheSameData(

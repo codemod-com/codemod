@@ -14,15 +14,11 @@ export const getCodemodsListHandler: RouteHandler<{
 }> = async (request: UserDataPopulatedRequest) => {
   const query = parseListCodemodsQuery(request.query);
 
-  if (!request.user?.id) {
-    return codemodService.getCodemodsList({
-      userId: null,
-      whitelisted: [],
-      ...query,
-    });
+  if (!request.user) {
+    return codemodService.getCodemodsList(query);
   }
 
-  const userId = request.user?.id;
+  const { id: userId, username } = request.user;
   const distinctId = userId ?? randomBytes(16).toString("hex");
 
   const clientIdentifier = request.headers["x-client-identifier"]
@@ -37,7 +33,7 @@ export const getCodemodsListHandler: RouteHandler<{
   }
 
   return codemodService.getCodemodsList({
-    userId,
+    username,
     whitelisted: request.allowedNamespaces ?? [],
     ...query,
   });

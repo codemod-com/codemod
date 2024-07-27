@@ -1,23 +1,22 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { join } from "node:path";
-import { glob } from "glob";
-import inquirer from "inquirer";
-import * as semver from "semver";
-import { url, safeParse, string } from "valibot";
-
 import { type Printer, chalk } from "@codemod-com/printer";
 import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
-  TarService,
   buildCodemodSlug,
   doubleQuotify,
   execPromise,
   getCodemodRc,
   getEntryPath,
+  tarInMemory,
 } from "@codemod-com/utilities";
+import { glob } from "glob";
+import inquirer from "inquirer";
+import * as semver from "semver";
+import { url, safeParse, string } from "valibot";
 import { version as cliVersion } from "#/../package.json";
 import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
@@ -39,7 +38,7 @@ export const handlePublishCliCommand = async (options: {
       printer,
     });
 
-  const tarService = new TarService(fs);
+  const tempDirectory = join(codemodDirectoryPath, "temp");
   const formData = new FormData();
   const excludedPaths = [
     "node_modules/**",
@@ -53,7 +52,7 @@ export const handlePublishCliCommand = async (options: {
     source = await handleInitCliCommand({
       printer,
       source,
-      target: join(codemodDirectoryPath, "temp"),
+      target: tempDirectory,
       noLogs: true,
     });
 
@@ -261,11 +260,15 @@ export const handlePublishCliCommand = async (options: {
     });
   }
 
-  const codemodZip = await tarService.pack(codemodFileBuffers);
+  const archiveBuf = await tarInMemory(codemodFileBuffers);
+
+  if (archiveBuf === null) {
+    throw new Error("Failed to read the tar archive of the codemod.");
+  }
 
   formData.append(
     "codemod.tar.gz",
-    new Blob([codemodZip], { type: "application/gzip" }),
+    new Blob([archiveBuf], { type: "application/gzip" }),
   );
 
   const publishSpinner = printer.withLoaderMessage(
@@ -293,7 +296,7 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes(join(codemodDirectoryPath, "temp"))) {
+    if (source.includes(tempDirectory)) {
       await fs.promises.rm(source, { recursive: true, force: true });
     }
   }
