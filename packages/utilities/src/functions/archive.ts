@@ -1,3 +1,4 @@
+import AdmZip from "adm-zip";
 import pako from "pako";
 import * as tar from "tar";
 import * as tarStream from "tar-stream";
@@ -18,7 +19,7 @@ const _checkSourceAndCreateTarget = async (source: string, target: string) => {
 };
 
 const tarWrite = async (source: string, target: string, ignore?: string[]) => {
-  await _checkSourceAndCreateTarget(source, target);
+  await _checkSourceAndCreateTarget(source, dirname(target));
 
   return tar.c(
     {
@@ -94,15 +95,10 @@ const tarExtractInMemory = async (
 
 const tarWriteInMemory = async (
   files: { name: string; data: Buffer }[],
-  ignore?: string[],
 ): Promise<Buffer> => {
   const pack = tarStream.pack();
 
   for (const { name, data } of Object.values(files)) {
-    if (ignore?.includes(name)) {
-      continue;
-    }
-
     pack.entry({ name }, data);
   }
 
@@ -122,9 +118,22 @@ const tarWriteInMemory = async (
   return compressedBuffer;
 };
 
+const zipWriteInMemory = async (
+  files: { name: string; data: Buffer }[],
+): Promise<Buffer> => {
+  const zip = new AdmZip();
+
+  for (const { name, data } of Object.values(files)) {
+    zip.addFile(name, data);
+  }
+
+  return zip.toBuffer();
+};
+
 export {
   tarWrite as tar,
   tarExtract as untar,
+  zipWriteInMemory as zipInMemory,
   zipExtract as unzip,
   tarWriteInMemory as tarInMemory,
   tarExtractInMemory as untarInMemory,

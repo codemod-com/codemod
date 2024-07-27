@@ -15,7 +15,7 @@ export const publishCodemod = async (options: {
   const codemodZip = await buildCodemodArchive(files);
 
   formData.append(
-    "codemod.tar.gz",
+    "codemod.zip",
     new Blob([codemodZip], { type: "application/gzip" }),
   );
 

@@ -91,7 +91,7 @@ export const publishHandler: RouteHandler<{
       const tarPath = join(unpackPath, "codemod.tar.gz");
       await fs.promises.writeFile(tarPath, codemodTarArchiveBuffer);
 
-      await untar(unpackPath, unpackPath);
+      await untar(tarPath, unpackPath);
     } else if (codemodZipArchiveBuffer !== null) {
       const zipPath = join(unpackPath, "codemod.zip");
       await fs.promises.writeFile(zipPath, codemodZipArchiveBuffer);

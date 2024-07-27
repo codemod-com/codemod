@@ -27,6 +27,7 @@
   "keywords": [],
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/adm-zip": "catalog:",
     "@types/js-beautify": "catalog:",
     "@types/jscodeshift": "^0.11.11",
     "@types/ms": "catalog:",
@@ -42,6 +43,7 @@
   },
   "dependencies": {
     "@codemod-com/filemod": "workspace:*",
+    "adm-zip": "catalog:",
     "change-case": "catalog:",
     "glob": "catalog:",
     "js-beautify": "catalog:",

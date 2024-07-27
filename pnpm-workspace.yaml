@@ -68,6 +68,7 @@ catalog:
     "@tiptap/react": ^2.1.8
     "@tiptap/starter-kit": ^2.1.8
     "@total-typescript/ts-reset": ^0.5.1
+    "@types/adm-zip": ^0.5.5
     "@types/babel__traverse": ^7.20.1
     "@types/blessed": ^0.1.25
     "@types/chai": ^4.3.4
@@ -110,6 +111,7 @@ catalog:
     "@vscode/vsce": ^2.22.0
     "@vscode/webview-ui-toolkit": ^1.2.2
     "@vue/compiler-sfc": ^3.4.21
+    adm-zip: ^0.5.14
     applicationinsights: ^2.9.1
     assert: ^2.0.0
     ast-node-builder: ^4.2.1
