@@ -11,7 +11,7 @@ import {
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
 import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
-import type { CodemodConfigInput } from "@codemod-com/utilities";
+import { type CodemodConfigInput, tarInMemory } from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
 
@@ -139,7 +139,7 @@ describe("/publish route", async () => {
     { name: "README.md", data: readmeBuf },
   ];
 
-  const codemodArchiveBuf = await tarinm(fileArray);
+  const codemodArchiveBuf = await tarInMemory(fileArray);
 
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);
@@ -219,7 +219,7 @@ describe("/publish route", async () => {
 
     const expectedCode = 400;
 
-    const archiveWithoutMainFile = await tarService.pack(
+    const archiveWithoutMainFile = await tarInMemory(
       fileArray.filter(
         (f) => f.name !== "/src/index.ts" && f.name !== BUILT_SOURCE_PATH,
       ),
@@ -493,7 +493,7 @@ describe("/publish route", async () => {
         },
       };
 
-      const updatedArchive = await tarService.pack([
+      const updatedArchive = await tarInMemory([
         ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",
@@ -545,7 +545,7 @@ describe("/publish route", async () => {
         },
       };
 
-      const updatedArchive = await tarService.pack([
+      const updatedArchive = await tarInMemory([
         ...fileArray.filter((f) => f.name !== ".codemodrc.json"),
         {
           name: ".codemodrc.json",
