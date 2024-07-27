@@ -52,45 +52,39 @@ const tarExtractInMemory = async (
   buffer: Buffer,
   outputDir: string,
 ): Promise<void> => {
-  try {
-    // Decompress the buffer using pako
-    const decompressedBuffer = Buffer.from(pako.ungzip(buffer));
+  // Decompress the buffer using pako
+  const decompressedBuffer = Buffer.from(pako.ungzip(buffer));
 
-    const extractStream = tarStream.extract();
-    extractStream.on("entry", async (header, stream, next) => {
-      const filePath = join(outputDir, header.name);
+  const extractStream = tarStream.extract();
+  extractStream.on("entry", async (header, stream, next) => {
+    const filePath = join(outputDir, header.name);
 
-      // Ensure the directory exists
-      await mkdir(dirname(filePath), { recursive: true });
+    // Ensure the directory exists
+    await mkdir(dirname(filePath), { recursive: true });
 
-      // Write the file content
-      const chunks: Buffer[] = [];
-      stream.on("data", (chunk) => chunks.push(chunk));
-      stream.on("end", async () => {
-        await writeFile(filePath, Buffer.concat(chunks));
-        next();
-      });
+    // Write the file content
+    const chunks: Buffer[] = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("end", async () => {
+      await writeFile(filePath, Buffer.concat(chunks));
+      next();
     });
+  });
 
-    // Pipe the decompressed buffer into the tar extract stream
-    const bufferStream = new Readable({
-      read() {
-        this.push(decompressedBuffer);
-        this.push(null);
-      },
-    });
+  // Pipe the decompressed buffer into the tar extract stream
+  const bufferStream = new Readable({
+    read() {
+      this.push(decompressedBuffer);
+      this.push(null);
+    },
+  });
 
-    bufferStream.pipe(extractStream);
+  bufferStream.pipe(extractStream);
 
-    await new Promise<void>((resolve, reject) => {
-      extractStream.on("finish", resolve);
-      extractStream.on("error", reject);
-    });
-
-    console.log(`Extracted buffer to ${outputDir}`);
-  } catch (err) {
-    console.error("Error during extraction:", err);
-  }
+  return new Promise<void>((resolve, reject) => {
+    extractStream.on("finish", resolve);
+    extractStream.on("error", reject);
+  });
 };
 
 const tarWriteInMemory = async (

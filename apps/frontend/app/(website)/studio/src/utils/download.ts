@@ -11,7 +11,6 @@ export const buildCodemodArchive = async (files: CodemodProjectOutput) => {
   const zip = new JSZip();
 
   for (const [name, content] of Object.entries(files)) {
-    console.log(name, content);
     if (name !== "src/index.ts") {
       zip.file(name, content);
     }
