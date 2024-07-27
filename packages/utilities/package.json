@@ -36,6 +36,7 @@
     "@types/semver": "^7.5.8",
     "@types/tar": "catalog:",
     "@types/tar-stream": "catalog:",
+    "@types/unzipper": "catalog:",
     "@vitest/coverage-v8": "catalog:",
     "memfs": "^4.8.2",
     "ts-node": "10.9.1",
@@ -54,6 +55,7 @@
     "semver": "^7.6.2",
     "tar": "^6.1.15",
     "tar-stream": "catalog:",
+    "unzipper": "catalog:",
     "valibot": "catalog:"
   }
 }
