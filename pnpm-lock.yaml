@@ -516,6 +516,9 @@ catalogs:
     katex:
       specifier: ^0.16.10
       version: 0.16.10
+    keytar:
+      specifier: ^7.9.0
+      version: 7.9.0
     langchain:
       specifier: 0.0.209
       version: 0.0.209
@@ -1130,9 +1133,6 @@ importers:
       '@ast-grep/napi':
         specifier: 'catalog:'
         version: 0.25.4
-      '@napi-rs/keyring':
-        specifier: 1.1.6
-        version: 1.1.6
       '@octokit/rest':
         specifier: 'catalog:'
         version: 20.1.1
@@ -1142,6 +1142,9 @@ importers:
       esbuild:
         specifier: ^0.23.0
         version: 0.23.0
+      keytar:
+        specifier: 'catalog:'
+        version: 7.9.0
     devDependencies:
       '@codemod-com/api-types':
         specifier: workspace:*
@@ -9717,82 +9720,6 @@ packages:
 
   '@mux/upchunk@3.4.0':
     resolution: {integrity: sha512-ZaX4u6xRhmgB4UAmw0lvO0LB1LddbRgSILkjRDnk1F4QDtkCOuY9nOh550TNI7uKYcf6HZQax7QXst6EkpjiyQ==}
-
-  '@napi-rs/keyring-darwin-arm64@1.1.6':
-    resolution: {integrity: sha512-8N+qvM+O6OSU59BTgDP/PvqYhoqfOcD2HGy1NgRFo1B0DRmkTp4U/DGZrV4Pk/nOP6Uf0PLqznfx3a/M8O5sjQ==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [darwin]
-
-  '@napi-rs/keyring-darwin-x64@1.1.6':
-    resolution: {integrity: sha512-r3Jgc5/ubfaao6Lmk/USA13IwU/GEVLP8NDfg5gYXjPVllU6bWnAaEDHVg7q4vl51kViwj9ELo6XTmOeJFut6A==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [darwin]
-
-  '@napi-rs/keyring-freebsd-x64@1.1.6':
-    resolution: {integrity: sha512-ayG396jZAt7j820gsEyW/LJKn+rf9KtgSPq1NKpvu84Y5GXopoFLyjMIP7wYZ1RLBL6SGKy27/f8S4f6YZ4DuA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [freebsd]
-
-  '@napi-rs/keyring-linux-arm-gnueabihf@1.1.6':
-    resolution: {integrity: sha512-8nXavgxcaUTUxyFHR+PEQF7eC8rITlYZNUmlf5amTb36y5bkNKrc3QLvCxjtbFSR/+KYzMi3vydoqNmFpF616w==}
-    engines: {node: '>= 10'}
-    cpu: [arm]
-    os: [linux]
-
-  '@napi-rs/keyring-linux-arm64-gnu@1.1.6':
-    resolution: {integrity: sha512-qsI2NTAxGD3mBhZvdyYGL+N0n1D/NAjV0zCpTsFKKSzdpIrQJ0nM5Y0HxlLi6TsHm61dMyXHkdHb0ut8AzTcGA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-
-  '@napi-rs/keyring-linux-arm64-musl@1.1.6':
-    resolution: {integrity: sha512-SB/2A4LtL+SrS2aZXl3rWBtyCVB2aG2zAU56kOGFDGwRZM2tqaITuQoM1QLOAMwu0eksN/Xedy95Yn2rkRH0nQ==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [linux]
-
-  '@napi-rs/keyring-linux-riscv64-gnu@1.1.6':
-    resolution: {integrity: sha512-BcjXf33T2CoVgS87SvZ62Y6xxkbenNIeldy0r8O5nz6zFgN+wYB0scz5ulvowEYBQnhi4fmbxfneeqM/0HUOeA==}
-    engines: {node: '>= 10'}
-    cpu: [riscv64]
-    os: [linux]
-
-  '@napi-rs/keyring-linux-x64-gnu@1.1.6':
-    resolution: {integrity: sha512-eK0OxCBI6Wl8rFHYynrtEID6pxOwhPfnpIIpul7UPeqCCMJSyZpFN4lFP3oZ4vqX/6FnWjwMrR7IGbPgivdMjA==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-
-  '@napi-rs/keyring-linux-x64-musl@1.1.6':
-    resolution: {integrity: sha512-Qb3NP98KFq4jXmk9PUQlcYrHjbzsBTtG+OOxX4YxUNKTGuUaIOGP79lB0w7jhns2oHdq8DwkW2ugzlmGSUaRSw==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [linux]
-
-  '@napi-rs/keyring-win32-arm64-msvc@1.1.6':
-    resolution: {integrity: sha512-e794gO2CLD0P7JN2DVPT5CC60k3WmNWTWU5BVoQM8Hj0NYebx7j6LyxMIpdb2cztOHHiv7iltEHekgutf0TMlA==}
-    engines: {node: '>= 10'}
-    cpu: [arm64]
-    os: [win32]
-
-  '@napi-rs/keyring-win32-ia32-msvc@1.1.6':
-    resolution: {integrity: sha512-SUPafl6vKRMQBKZoSwIeBFZ+c7AGEKUy6mpAD9fVHDKHOBWP3VpHKda4YIlgGtQd3SxH0bjfqJ078Z5SYsDYZQ==}
-    engines: {node: '>= 10'}
-    cpu: [ia32]
-    os: [win32]
-
-  '@napi-rs/keyring-win32-x64-msvc@1.1.6':
-    resolution: {integrity: sha512-FkNhM1x5ijFzGSrRcshRxUxQSrrjxl4wCmvRcXnimWreOHyzNotT+/1EZtSfM/k8yhdK0HEkkVIMQl0UqfioRw==}
-    engines: {node: '>= 10'}
-    cpu: [x64]
-    os: [win32]
-
-  '@napi-rs/keyring@1.1.6':
-    resolution: {integrity: sha512-e6xoYELSMyaxcXv4MmEHhf0oOGsMnfWMmeu84CD91ICMgMH1I1vrLSMFpiPEQz03xD+pNQgAkQ7DwwBDozCuvw==}
-    engines: {node: '>= 10'}
 
   '@next/env@14.2.4':
     resolution: {integrity: sha512-3EtkY5VDkuV2+lNmKlbkibIJxcO4oIHEhBWne6PaAp+76J9KoSsGvNikp6ivzAT8dhhBMYrm6op2pS1ApG0Hzg==}
@@ -24035,57 +23962,6 @@ snapshots:
       event-target-shim: 6.0.2
       xhr: 2.6.0
 
-  '@napi-rs/keyring-darwin-arm64@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-darwin-x64@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-freebsd-x64@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-arm-gnueabihf@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-arm64-gnu@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-arm64-musl@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-riscv64-gnu@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-x64-gnu@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-linux-x64-musl@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-win32-arm64-msvc@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-win32-ia32-msvc@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring-win32-x64-msvc@1.1.6':
-    optional: true
-
-  '@napi-rs/keyring@1.1.6':
-    optionalDependencies:
-      '@napi-rs/keyring-darwin-arm64': 1.1.6
-      '@napi-rs/keyring-darwin-x64': 1.1.6
-      '@napi-rs/keyring-freebsd-x64': 1.1.6
-      '@napi-rs/keyring-linux-arm-gnueabihf': 1.1.6
-      '@napi-rs/keyring-linux-arm64-gnu': 1.1.6
-      '@napi-rs/keyring-linux-arm64-musl': 1.1.6
-      '@napi-rs/keyring-linux-riscv64-gnu': 1.1.6
-      '@napi-rs/keyring-linux-x64-gnu': 1.1.6
-      '@napi-rs/keyring-linux-x64-musl': 1.1.6
-      '@napi-rs/keyring-win32-arm64-msvc': 1.1.6
-      '@napi-rs/keyring-win32-ia32-msvc': 1.1.6
-      '@napi-rs/keyring-win32-x64-msvc': 1.1.6
-
   '@next/env@14.2.4': {}
 
   '@next/eslint-plugin-next@14.1.0':
@@ -28984,7 +28860,6 @@ snapshots:
   decompress-response@6.0.0:
     dependencies:
       mimic-response: 3.1.0
-    optional: true
 
   decompress-response@7.0.0:
     dependencies:
@@ -29685,7 +29560,7 @@ snapshots:
       eslint: 8.56.0
       eslint-import-resolver-node: 0.3.9
       eslint-import-resolver-typescript: 3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
       eslint-plugin-jsx-a11y: 6.9.0(eslint@8.56.0)
       eslint-plugin-react: 7.34.3(eslint@8.56.0)
       eslint-plugin-react-hooks: 4.6.2(eslint@8.56.0)
@@ -29713,7 +29588,7 @@ snapshots:
       enhanced-resolve: 5.17.0
       eslint: 8.56.0
       eslint-module-utils: 2.8.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
-      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0)
+      eslint-plugin-import: 2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0)
       fast-glob: 3.3.2
       get-tsconfig: 4.7.5
       is-core-module: 2.14.0
@@ -29735,7 +29610,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1)(eslint@8.56.0):
+  eslint-plugin-import@2.29.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-typescript@3.6.1(@typescript-eslint/parser@6.21.0(eslint@8.56.0)(typescript@5.5.3))(eslint-import-resolver-node@0.3.9)(eslint-plugin-import@2.29.1(eslint@8.56.0))(eslint@8.56.0))(eslint@8.56.0):
     dependencies:
       array-includes: 3.1.8
       array.prototype.findlastindex: 1.2.5
@@ -29987,8 +29862,7 @@ snapshots:
 
   exif-component@1.0.1: {}
 
-  expand-template@2.0.3:
-    optional: true
+  expand-template@2.0.3: {}
 
   expand-tilde@2.0.2:
     dependencies:
@@ -30475,8 +30349,7 @@ snapshots:
     dependencies:
       git-up: 7.0.0
 
-  github-from-package@0.0.0:
-    optional: true
+  github-from-package@0.0.0: {}
 
   glob-parent@5.1.2:
     dependencies:
@@ -31536,7 +31409,6 @@ snapshots:
     dependencies:
       node-addon-api: 4.3.0
       prebuild-install: 7.1.2
-    optional: true
 
   keyv@4.5.4:
     dependencies:
@@ -32912,8 +32784,7 @@ snapshots:
 
   nanoid@5.0.7: {}
 
-  napi-build-utils@1.0.2:
-    optional: true
+  napi-build-utils@1.0.2: {}
 
   natural-compare@1.4.0: {}
 
@@ -33003,12 +32874,10 @@ snapshots:
   node-abi@3.65.0:
     dependencies:
       semver: 7.6.2
-    optional: true
 
   node-abort-controller@3.1.1: {}
 
-  node-addon-api@4.3.0:
-    optional: true
+  node-addon-api@4.3.0: {}
 
   node-dir@0.1.17:
     dependencies:
@@ -33775,7 +33644,6 @@ snapshots:
       simple-get: 4.0.1
       tar-fs: 2.1.1
       tunnel-agent: 0.6.0
-    optional: true
 
   prelude-ls@1.2.1: {}
 
@@ -35268,15 +35136,13 @@ snapshots:
 
   silver-fleece@1.1.0: {}
 
-  simple-concat@1.0.1:
-    optional: true
+  simple-concat@1.0.1: {}
 
   simple-get@4.0.1:
     dependencies:
       decompress-response: 6.0.0
       once: 1.4.0
       simple-concat: 1.0.1
-    optional: true
 
   simple-git@3.25.0:
     dependencies:

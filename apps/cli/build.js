@@ -45,7 +45,7 @@ build({
     "@ast-grep/napi",
     "@ast-grep/cli",
     "@octokit/rest",
-    "@napi-rs/keyring",
+    "keytar",
     "prettier",
     "blessed",
     // Workaround for @vue/compiler-sfc dynamic require
