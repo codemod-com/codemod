@@ -1,4 +1,4 @@
-import type * as INodeFs from "node:fs";
+import * as fs from "node:fs";
 import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { join as joinPosix } from "node:path/posix";
@@ -11,7 +11,6 @@ import {
   type Codemod,
   type CodemodConfig,
   type FileCommand,
-  type FileSystem,
   type KnownEnginesCodemod,
   type RunResult,
   formatText,
@@ -43,7 +42,6 @@ const TERMINATE_IDLE_THREADS_TIMEOUT = 30 * 1000;
 export class Runner {
   public constructor(
     protected readonly _options: {
-      readonly fs: FileSystem;
       readonly flowSettings: FlowSettings;
       readonly authService: AuthServiceInterface;
     },
@@ -61,7 +59,6 @@ export class Runner {
 
     try {
       await this.executeCodemod({
-        fileSystem: this._options.fs,
         codemod,
         flowSettings: this._options.flowSettings,
         onCommand: async (command) => {
@@ -79,7 +76,7 @@ export class Runner {
             );
           }
 
-          return this.modifyFileSystemUponCommand(this._options.fs, command);
+          return this.modifyFileSystemUponCommand(command);
         },
         onError: (error) => executionErrors.push(error),
         onSuccess,
@@ -275,7 +272,6 @@ export class Runner {
   }
 
   private async buildPathsGlob(
-    fileSystem: FileSystem,
     flowSettings: FlowSettings,
     patterns: {
       include: string[];
@@ -285,7 +281,6 @@ export class Runner {
     return glob(patterns.include, {
       absolute: true,
       cwd: flowSettings.target,
-      fs: fileSystem as typeof INodeFs,
       ignore: patterns.exclude,
       nodir: true,
       dot: true,
@@ -293,7 +288,6 @@ export class Runner {
   }
 
   private async *buildPathGlobGenerator(
-    fileSystem: FileSystem,
     flowSettings: FlowSettings,
     patterns: {
       include: string[];
@@ -303,7 +297,6 @@ export class Runner {
     const stream = globStream(patterns.include, {
       absolute: true,
       cwd: flowSettings.target,
-      fs: fileSystem as typeof INodeFs,
       ignore: patterns.exclude,
       nodir: true,
       dot: true,
@@ -412,7 +405,6 @@ export class Runner {
   }
 
   private async executeCodemod(options: {
-    fileSystem: FileSystem;
     codemod: Codemod;
     flowSettings: FlowSettings;
     onCommand: (command: FileCommand) => Promise<void>;
@@ -420,15 +412,8 @@ export class Runner {
     onError?: CodemodExecutionErrorCallback;
     printer: Printer;
   }) {
-    const {
-      fileSystem,
-      codemod,
-      flowSettings,
-      onCommand,
-      onError,
-      onSuccess,
-      printer,
-    } = options;
+    const { codemod, flowSettings, onCommand, onError, onSuccess, printer } =
+      options;
 
     const pathsAreEmpty = () =>
       printer.printMessage({
@@ -503,11 +488,7 @@ export class Runner {
         transformer as Filemod<Dependencies, Record<string, unknown>>,
       );
 
-      const globPaths = await this.buildPathsGlob(
-        fileSystem,
-        flowSettings,
-        patterns,
-      );
+      const globPaths = await this.buildPathsGlob(flowSettings, patterns);
 
       if (globPaths.length === 0) {
         return pathsAreEmpty();
@@ -516,7 +497,6 @@ export class Runner {
       this.printRunSummary(printer, codemod, flowSettings, patterns);
 
       const commands = await runFilemod({
-        fileSystem,
         filemod: {
           ...transformer,
           includePatterns: globPaths,
@@ -542,7 +522,7 @@ export class Runner {
     const patterns = await this.buildPatterns(flowSettings, codemod, null);
 
     const pathGeneratorInitializer = () =>
-      this.buildPathGlobGenerator(fileSystem, flowSettings, patterns);
+      this.buildPathGlobGenerator(flowSettings, patterns);
     if (await isGeneratorEmpty(pathGeneratorInitializer)) {
       return pathsAreEmpty();
     }
@@ -555,7 +535,6 @@ export class Runner {
       let timeout: NodeJS.Timeout | null = null;
 
       const workerThreadManager = new WorkerManager({
-        fileSystem,
         flowSettings,
         onPrinterMessage: (message) => {
           printer.printMessage(message);
@@ -595,37 +574,36 @@ export class Runner {
   }
 
   private async modifyFileSystemUponCommand(
-    fileSystem: FileSystem,
     command: FileCommand,
   ): Promise<void> {
     if (command.kind === "createFile") {
       const directoryPath = dirname(command.newPath);
 
-      await fileSystem.promises.mkdir(directoryPath, { recursive: true });
+      await fs.promises.mkdir(directoryPath, { recursive: true });
 
-      return fileSystem.promises.writeFile(command.newPath, command.newData);
+      return fs.promises.writeFile(command.newPath, command.newData);
     }
 
     if (command.kind === "deleteFile") {
-      return fileSystem.promises.unlink(command.oldPath);
+      return fs.promises.unlink(command.oldPath);
     }
 
     if (command.kind === "moveFile") {
-      await fileSystem.promises.copyFile(command.oldPath, command.newPath);
+      await fs.promises.copyFile(command.oldPath, command.newPath);
 
-      return fileSystem.promises.unlink(command.oldPath);
+      return fs.promises.unlink(command.oldPath);
     }
 
     if (command.kind === "updateFile") {
-      return fileSystem.promises.writeFile(command.oldPath, command.newData);
+      return fs.promises.writeFile(command.oldPath, command.newData);
     }
 
     if (command.kind === "copyFile") {
       const directoryPath = dirname(command.newPath);
 
-      await fileSystem.promises.mkdir(directoryPath, { recursive: true });
+      await fs.promises.mkdir(directoryPath, { recursive: true });
 
-      return fileSystem.promises.copyFile(command.oldPath, command.newPath);
+      return fs.promises.copyFile(command.oldPath, command.newPath);
     }
   }
 }

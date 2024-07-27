@@ -12,7 +12,6 @@ import {
   type Codemod,
   type KnownEnginesCodemodValidationInput,
   type RecipeCodemodValidationInput,
-  type TarService,
   doubleQuotify,
   getCodemodRc,
   isJavaScriptName,
@@ -24,6 +23,8 @@ import {
   safeParseCodemod,
   safeParseKnownEnginesCodemod,
   safeParseRecipeCodemod,
+  untar,
+  unzip,
 } from "@codemod-com/utilities";
 import { getCodemodDownloadURI } from "#api.js";
 import { getCurrentUserData } from "#auth-utils.js";
@@ -32,7 +33,6 @@ import type { GlobalArgvOptions, RunArgvOptions } from "#flags.js";
 import { buildSafeArgumentRecord } from "#safe-arguments.js";
 import { codemodDirectoryPath, oraCheckmark } from "#utils/constants.js";
 import { downloadFile } from "#utils/download.js";
-import { unpackZipCodemod } from "#utils/unpack-zip.js";
 
 export const populateCodemodArgs = async (options: {
   codemod: Codemod;
@@ -91,16 +91,9 @@ export const fetchCodemod = async (options: {
   nameOrPath: string;
   argv: GlobalArgvOptions & RunArgvOptions;
   printer: Printer;
-  tarService: TarService;
   disableLogs?: boolean;
 }): Promise<Codemod> => {
-  const {
-    nameOrPath,
-    printer,
-    tarService,
-    disableLogs = false,
-    argv,
-  } = options;
+  const { nameOrPath, printer, disableLogs = false, argv } = options;
 
   if (!nameOrPath) {
     throw new Error("Codemod to run was not specified!");
@@ -116,22 +109,16 @@ export const fetchCodemod = async (options: {
       // Codemod in .zip archive
       const { name, ext } = pathParse(nameOrPath);
       if (ext === ".zip") {
-        const resultPath = await unpackZipCodemod({
-          source: nameOrPath,
-          target: join(
-            codemodDirectoryPath,
-            "temp",
-            createHash("ripemd160").update(name).digest("base64url"),
-          ),
-        });
-
-        if (resultPath === null) {
-          throw new Error(`Could not find .codemodrc.json in the zip file.`);
-        }
+        const unzipPath = join(
+          codemodDirectoryPath,
+          "temp",
+          createHash("ripemd160").update(name).digest("base64url"),
+        );
+        await unzip(nameOrPath, unzipPath);
 
         return fetchCodemod({
           ...options,
-          nameOrPath: resultPath,
+          nameOrPath: unzipPath,
         });
       }
 
@@ -251,7 +238,7 @@ export const fetchCodemod = async (options: {
   });
 
   const downloadPath = join(path, "codemod.tar.gz");
-  const { data, cacheUsed } = await downloadFile({
+  const { cacheUsed } = await downloadFile({
     url: linkResponse.link,
     path: downloadPath,
     cache: argv.cache,
@@ -266,7 +253,7 @@ export const fetchCodemod = async (options: {
   // If cache was used, the codemod is already unpacked
   if (!cacheUsed) {
     try {
-      await tarService.unpack(path, data);
+      await untar(downloadPath, path);
     } catch (err) {
       spinner?.fail();
       throw new Error((err as Error).message ?? "Error unpacking codemod");

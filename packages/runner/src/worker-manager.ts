@@ -1,3 +1,4 @@
+import * as fs from "node:fs";
 import { dirname, join, relative, resolve } from "node:path";
 import { Worker } from "node:worker_threads";
 
@@ -10,7 +11,6 @@ import {
 import type {
   CodemodConfig,
   FileCommand,
-  FileSystem,
   KnownEnginesCodemod,
 } from "@codemod-com/utilities";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
@@ -28,7 +28,6 @@ export class WorkerManager {
 
   public constructor(
     private readonly _options: {
-      fileSystem: FileSystem;
       onPrinterMessage: (
         message: OperationMessage | (WorkerThreadMessage & { kind: "console" }),
       ) => void;
@@ -117,7 +116,7 @@ export class WorkerManager {
       return;
     }
 
-    const data = (await this._options.fileSystem.promises.readFile(filePath, {
+    const data = (await fs.promises.readFile(filePath, {
       encoding: "utf8",
     })) as string;
 

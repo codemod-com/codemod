@@ -1,22 +1,22 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { join } from "node:path";
-import { glob } from "glob";
 import inquirer from "inquirer";
 import * as semver from "semver";
 import { url, safeParse, string } from "valibot";
 
+import { readFile } from "node:fs/promises";
 import { type Printer, chalk } from "@codemod-com/printer";
-import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
+import { getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type CodemodConfig,
-  TarService,
   buildCodemodSlug,
   doubleQuotify,
   execPromise,
   getCodemodRc,
   getEntryPath,
+  tar,
 } from "@codemod-com/utilities";
 import { version as cliVersion } from "#/../package.json";
 import { extractPrintableApiError, getCodemod, publish } from "#api.js";
@@ -39,7 +39,7 @@ export const handlePublishCliCommand = async (options: {
       printer,
     });
 
-  const tarService = new TarService(fs);
+  const tempDirectory = join(codemodDirectoryPath, "temp");
   const formData = new FormData();
   const excludedPaths = [
     "node_modules/**",
@@ -53,7 +53,7 @@ export const handlePublishCliCommand = async (options: {
     source = await handleInitCliCommand({
       printer,
       source,
-      target: join(codemodDirectoryPath, "temp"),
+      target: tempDirectory,
       noLogs: true,
     });
 
@@ -226,23 +226,8 @@ export const handlePublishCliCommand = async (options: {
     }
   }
 
-  const codemodFilePaths = await glob("**/*", {
-    cwd: source,
-    ignore: excludedPaths,
-    absolute: true,
-    dot: true,
-    nodir: true,
-  });
-
-  const codemodFileBuffers = await Promise.all(
-    codemodFilePaths.map(async (path) => ({
-      name: path.replace(new RegExp(`.*${source}/`), ""),
-      data: await fs.promises.readFile(path),
-    })),
-  );
-
   if (codemodRc.engine !== "recipe") {
-    const builtExecutable = await getCodemodExecutable(source).catch(
+    const builtExecutable = await getCodemodExecutable(source, true).catch(
       () => null,
     );
 
@@ -254,18 +239,19 @@ export const handlePublishCliCommand = async (options: {
         ),
       );
     }
-
-    codemodFileBuffers.push({
-      name: BUILT_SOURCE_PATH,
-      data: Buffer.from(builtExecutable),
-    });
   }
 
-  const codemodZip = await tarService.pack(codemodFileBuffers);
+  const tarTarget = join(source, "codemod.tar.gz");
+  await tar(source, tarTarget, excludedPaths);
+  const archiveBuf = await readFile(tarTarget).catch(() => null);
+
+  if (archiveBuf === null) {
+    throw new Error("Failed to read the tar archive of the codemod.");
+  }
 
   formData.append(
     "codemod.tar.gz",
-    new Blob([codemodZip], { type: "application/gzip" }),
+    new Blob([archiveBuf], { type: "application/gzip" }),
   );
 
   const publishSpinner = printer.withLoaderMessage(
@@ -293,9 +279,11 @@ export const handlePublishCliCommand = async (options: {
       message: errorMessage,
     });
   } finally {
-    if (source.includes(join(codemodDirectoryPath, "temp"))) {
+    if (source.includes(tempDirectory)) {
       await fs.promises.rm(source, { recursive: true, force: true });
     }
+
+    await fs.promises.rm(tarTarget, { force: true });
   }
 
   telemetry.sendEvent({

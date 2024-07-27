@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import * as fs from "node:fs";
 
 import supertest from "supertest";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
@@ -12,7 +11,7 @@ import {
   UNAUTHORIZED,
 } from "@codemod-com/api-types";
 import { BUILT_SOURCE_PATH } from "@codemod-com/runner/dist/source-code.js";
-import { type CodemodConfigInput, TarService } from "@codemod-com/utilities";
+import type { CodemodConfigInput } from "@codemod-com/utilities";
 
 import { runServer } from "./server.js";
 
@@ -140,8 +139,7 @@ describe("/publish route", async () => {
     { name: "README.md", data: readmeBuf },
   ];
 
-  const tarService = new TarService(fs);
-  const codemodArchiveBuf = await tarService.pack(fileArray);
+  const codemodArchiveBuf = await tarinm(fileArray);
 
   it("should go through the happy path with expected result and calling expected stubs", async () => {
     mocks.prisma.codemodVersion.findFirst.mockImplementation(() => null);

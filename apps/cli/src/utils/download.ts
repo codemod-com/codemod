@@ -5,7 +5,7 @@ export const downloadFile = async (options: {
   url: string;
   path: string;
   cache?: boolean;
-}): Promise<{ data: Buffer; cacheUsed: boolean }> => {
+}): Promise<{ data: Buffer; path: string; cacheUsed: boolean }> => {
   const { url, path, cache = true } = options;
 
   if (cache) {
@@ -29,6 +29,7 @@ export const downloadFile = async (options: {
 
       return {
         data: Buffer.from(tDataOut),
+        path,
         cacheUsed: true,
       };
     }
@@ -42,5 +43,5 @@ export const downloadFile = async (options: {
 
   await writeFile(path, buffer);
 
-  return { data: buffer, cacheUsed: false };
+  return { data: buffer, path, cacheUsed: false };
 };

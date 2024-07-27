@@ -12,7 +12,6 @@ import { Runner, parseFlowSettings } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
 import {
   type Codemod,
-  TarService,
   doubleQuotify,
   execPromise,
   getCodemodRc,
@@ -103,8 +102,6 @@ export const handleRunCliCommand = async (options: {
     await checkFileTreeVersioning(flowSettings.target);
   }
 
-  const tarService = new TarService(fs);
-
   const nameOrPath = args._.at(0)?.toString() ?? args.source ?? null;
   if (nameOrPath === null) {
     throw new Error("Codemod to run was not specified!");
@@ -112,12 +109,7 @@ export const handleRunCliCommand = async (options: {
 
   let codemod: Codemod;
   try {
-    codemod = await fetchCodemod({
-      nameOrPath,
-      printer,
-      argv: args,
-      tarService,
-    });
+    codemod = await fetchCodemod({ nameOrPath, printer, argv: args });
   } catch (error) {
     if (error instanceof AxiosError) {
       if (
@@ -200,7 +192,6 @@ export const handleRunCliCommand = async (options: {
   }
 
   const runner = new Runner({
-    fs,
     flowSettings,
     authService: new AuthService(printer),
   });

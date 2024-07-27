@@ -117,7 +117,6 @@ catalog:
     autoprefixer: 10.4.17
     axios: ^1.6.8
     axios-retry: ^4.0.0
-    bl: ^6.0.11
     blessed: ^0.1.81
     boxen: ^7.1.1
     bullmq: ^5.7.5
@@ -252,6 +251,7 @@ catalog:
     tailwind-merge: ^1.10.0
     tailwindcss: 3.4.1
     tailwindcss-animate: ^1.0.7
+    tar: ^6.1.15
     tar-stream: ^3.1.7
     terminal-link: ^3.0.0
     tippy.js: ^6.3.7

@@ -1,4 +1,5 @@
 import {
+  type CodemodProjectOutput,
   type ProjectDownloadInput,
   getCodemodProjectFiles,
   isTypeScriptProjectFiles,
@@ -6,11 +7,11 @@ import {
 import JSZip from "jszip";
 import { transpileTs } from "./transpileTs";
 
-export const downloadProject = async (input: ProjectDownloadInput) => {
+export const buildCodemodArchive = async (files: CodemodProjectOutput) => {
   const zip = new JSZip();
 
-  const files = getCodemodProjectFiles(input);
   for (const [name, content] of Object.entries(files)) {
+    console.log(name, content);
     if (name !== "src/index.ts") {
       zip.file(name, content);
     }
@@ -19,17 +20,24 @@ export const downloadProject = async (input: ProjectDownloadInput) => {
   // Pre-built file
   if (isTypeScriptProjectFiles(files)) {
     const { transpiled, source } = await transpileTs(files["src/index.ts"]);
+
     zip.file(
-      "dist/index.cjs",
+      "cdmd_dist/index.cjs",
       `/*! @license\n${files.LICENSE}\n*/\n${transpiled}`,
     );
     zip.file("src/index.ts", source);
   }
-  const blob = await zip.generateAsync({ type: "blob" });
+
+  return zip.generateAsync({ type: "blob" });
+};
+
+export const downloadProject = async (input: ProjectDownloadInput) => {
+  const files = getCodemodProjectFiles(input);
+  const archive = await buildCodemodArchive(files);
 
   // download hack
   const link = document.createElement("a");
-  link.href = window.URL.createObjectURL(blob);
+  link.href = window.URL.createObjectURL(archive);
   link.download = `${input.name}.zip`;
   link.click();
   window.URL.revokeObjectURL(link.href);
