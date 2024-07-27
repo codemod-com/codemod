@@ -48,7 +48,7 @@ export type Dependencies = Readonly<{
   stringifyMdx: typeof stringifyMdx;
   filterMdxAst: typeof filter;
   visitMdxAst: typeof visit;
-  unifiedfs: UnifiedFileSystem;
+  unifiedFileSystem: UnifiedFileSystem;
   fetch: typeof fetch;
 }>;
 
@@ -131,7 +131,7 @@ export const runFilemod = async (options: {
     return data.toString();
   };
 
-  const unifiedfs = new UnifiedFileSystem(
+  const unifiedFileSystem = new UnifiedFileSystem(
     buildPathHashDigest,
     getUnifiedEntry,
     async () => filemod.includePatterns as string[],
@@ -147,7 +147,7 @@ export const runFilemod = async (options: {
   };
 
   const api = buildApi<Dependencies>(
-    unifiedfs,
+    unifiedFileSystem,
     () => ({
       jscodeshift: jscodeshift.withParser(
         engineOptions?.parser ?? defaultParser,
@@ -161,7 +161,7 @@ export const runFilemod = async (options: {
       fetch,
       visitMdxAst: visit,
       filterMdxAst: filter,
-      unifiedfs,
+      unifiedFileSystem,
     }),
     pathAPI,
   );
