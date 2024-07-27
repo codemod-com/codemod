@@ -362,13 +362,14 @@ class CodemodService {
   }
 
   public async getCodemodsList(options: {
-    userId: string | null;
-    whitelisted?: string[];
     search?: string;
     mine?: boolean;
     all?: boolean;
+
+    whitelisted?: string[];
+    username?: string | null;
   }): Promise<CodemodListResponse> {
-    const { userId, search, whitelisted, mine, all } = options;
+    const { username, search, whitelisted, mine, all } = options;
 
     const whereClause: Prisma.CodemodWhereInput = {
       OR: [{ private: false }, { author: { in: whitelisted } }],
@@ -379,10 +380,10 @@ class CodemodService {
     }
 
     if (mine) {
-      if (!userId) {
+      if (!username) {
         throw new Error("User ID is required to filter user's codemods");
       }
-      whereClause.author = userId;
+      whereClause.author = username;
     }
 
     const dbCodemods = await this.prisma.codemod.findMany({

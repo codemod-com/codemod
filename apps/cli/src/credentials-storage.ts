@@ -43,7 +43,7 @@ export class CredentialsStorage {
   private _credentials: { [key in CredentialsStorageType]?: string } = {};
 
   async set(type: CredentialsStorageType, value: string) {
-    await getKeytar().then((keytar) =>
+    await getKeytar().then(({ default: keytar }) =>
       keytar.setPassword(SERVICE, type, value),
     );
     this._credentials[type] = value;
@@ -51,7 +51,9 @@ export class CredentialsStorage {
 
   async get(type: CredentialsStorageType) {
     const credentials = (
-      await getKeytar().then((keytar) => keytar.findCredentials(SERVICE))
+      await getKeytar().then(({ default: keytar }) =>
+        keytar.findCredentials(SERVICE),
+      )
     ).find(({ account }) => account === type);
 
     if (credentials) {
@@ -63,7 +65,9 @@ export class CredentialsStorage {
   }
 
   async delete(type: CredentialsStorageType) {
-    await getKeytar().then((keytar) => keytar.deletePassword(SERVICE, type));
+    await getKeytar().then(({ default: keytar }) =>
+      keytar.deletePassword(SERVICE, type),
+    );
     delete this._credentials[type];
   }
 }
