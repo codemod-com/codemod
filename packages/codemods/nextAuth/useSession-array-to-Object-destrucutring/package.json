@@ -12,11 +12,7 @@
     "test": "vitest run",
     "test:watch": "vitest watch"
   },
-  "files": [
-    "README.md",
-    ".codemodrc.json",
-    "/dist/index.cjs"
-  ],
+  "files": ["README.md", ".codemodrc.json", "/dist/index.cjs"],
   "type": "module",
   "author": "manishjha-04"
 }

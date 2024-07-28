@@ -1,4 +1,4 @@
-import type { API, FileInfo, Options } from 'jscodeshift';
+import type { API, FileInfo, Options } from "jscodeshift";
 
 function transform(
   file: FileInfo,
@@ -32,36 +32,33 @@ function transform(
               declarator.init &&
               j.CallExpression.check(declarator.init) &&
               j.Identifier.check(declarator.init.callee) &&
-              declarator.init.callee.name === 'useSession'
+              declarator.init.callee.name === "useSession"
             ) {
               // Replace the array destructuring with object destructuring
               declarator.id = j.objectPattern([
                 j.property(
-                  'init',
-                  j.identifier('data'),
+                  "init",
+                  j.identifier("data"),
                   j.identifier(sessionVar),
                 ),
                 j.property(
-                  'init',
-                  j.identifier('status'),
-                  j.identifier('status'),
+                  "init",
+                  j.identifier("status"),
+                  j.identifier("status"),
                 ),
               ]);
 
               // Add a new variable declaration for loading
-              const loadingDeclaration = j.variableDeclaration(
-                'const',
-                [
-                  j.variableDeclarator(
-                    j.identifier(loadingVar),
-                    j.binaryExpression(
-                      '===',
-                      j.identifier('status'),
-                      j.literal('loading'),
-                    ),
+              const loadingDeclaration = j.variableDeclaration("const", [
+                j.variableDeclarator(
+                  j.identifier(loadingVar),
+                  j.binaryExpression(
+                    "===",
+                    j.identifier("status"),
+                    j.literal("loading"),
                   ),
-                ],
-              );
+                ),
+              ]);
 
               // Insert the new loading declaration after the current declaration
               j(path).insertAfter(loadingDeclaration);
@@ -71,7 +68,7 @@ function transform(
                 if (
                   j.Property.check(property) &&
                   j.Identifier.check(property.key) &&
-                  property.key.name === 'status'
+                  property.key.name === "status"
                 ) {
                   property.shorthand = true;
                 }
