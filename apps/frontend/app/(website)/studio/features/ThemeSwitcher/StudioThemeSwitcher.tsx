@@ -6,7 +6,12 @@ import { useEffect, useState } from "react";
 
 export const StudioThemeSwitcher = () => {
   const globalTheme = useTheme();
-  const [isLight, setIsLight] = useState(globalTheme.theme === "light");
+  const [isLight, setIsLight] = useState<boolean>();
+
+  useEffect(() => {
+    setIsLight(globalTheme.theme === "light");
+  }, [globalTheme.theme]);
+
   useEffect(() => {
     setMode(isLight);
   }, [isLight]);
