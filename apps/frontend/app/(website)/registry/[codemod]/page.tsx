@@ -12,7 +12,7 @@ import { notFound } from "next/navigation";
 
 export const dynamicParams = true;
 
-const ONE_WEEK = 60 * 60 * 24 * 7;
+const ONE_HOUR = 60 * 60;
 
 export async function generateStaticParams() {
   // we dont want to generate all pages in the deployment preview, because it consumes a lot of ISR cache writes
@@ -37,7 +37,7 @@ export async function generateMetadata(
   const initialAutomationData = await loadCodemod(codemod, {
     next: {
       tags: [`codemod-${codemod}`],
-      revalidate: ONE_WEEK,
+      revalidate: ONE_HOUR,
     },
   });
 
@@ -60,7 +60,7 @@ export default async function CodemodRoute({ params }) {
   const initialAutomationData = await loadCodemod(params.codemod, {
     next: {
       tags: [`codemod-${params.codemod}`],
-      revalidate: ONE_WEEK,
+      revalidate: ONE_HOUR,
     },
   });
 
@@ -70,7 +70,7 @@ export default async function CodemodRoute({ params }) {
 
   const automationPageData = await loadAutomationPage(
     initialAutomationData.tags,
-    ONE_WEEK,
+    ONE_HOUR,
   );
 
   const pageData = transformAutomation({
