@@ -15,6 +15,7 @@ export type RawPackageRegistryData = {
     }
   >;
   "dist-tags": Record<string, string>;
+  time: Record<string, string>;
 };
 
 export type NormalizedRegistryData = {
@@ -22,6 +23,7 @@ export type NormalizedRegistryData = {
   next: string | null;
   latest: string | null;
   homepage: string | null;
+  time: Record<string, string>;
 };
 
 export const getHomePage = (
@@ -97,5 +99,6 @@ export const normalizePackageRegistryData = (
     next: nextVersion,
     versions: sortedVersions,
     homepage,
+    time: packageRegistryData.time,
   };
 };

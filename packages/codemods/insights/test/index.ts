@@ -1,5 +1,5 @@
 import { workflow } from "src";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 // mocked data for test-package package
 const mockedNormalizedPackageRegistryData = {
@@ -80,16 +80,16 @@ const mockedNormalizedPackageRegistryData = {
   homepage: "https://github.com/test-package",
 };
 
-vi.mock("../src/registry-utils.ts", async (requireOriginal) => {
-  const actual = await requireOriginal();
+// vi.mock("../src/registry-utils.ts", async (requireOriginal) => {
+//   const actual = await requireOriginal();
 
-  return {
-    ...actual,
-    normalizePackageRegistryData: vi.fn(
-      () => mockedNormalizedPackageRegistryData,
-    ),
-  };
-});
+//   return {
+//     ...actual,
+//     normalizePackageRegistryData: vi.fn(
+//       () => mockedNormalizedPackageRegistryData,
+//     ),
+//   };
+// });
 
 const buildAPI = (filesContent: Record<string, any>) => {
   const files = (pattern: string) => ({
@@ -122,9 +122,29 @@ const buildAPI = (filesContent: Record<string, any>) => {
 describe("Insights workflow", async () => {
   it("Should correctly generate insight for package with minor version update", async () => {
     const minorVersion = {
-      name: "the-package",
+      name: "insights",
+      license: "MIT",
+      devDependencies: {
+        "@codemod.com/workflow": "workspace:*",
+        "@types/node": "20.9.0",
+        typescript: "^5.2.2",
+        vitest: "^1.0.1",
+      },
+      scripts: {
+        test: "vitest run",
+      },
+      files: ["README.md", ".codemodrc.json", "/dist/index.cjs"],
       dependencies: {
-        "test-package": "^0.10.10",
+        "@ast-grep/napi": "^0.25.1",
+        "@types/semver": "^7.5.8",
+        "@types/semver-diff": "^3.0.0",
+        "date-fns": "^3.6.0",
+        depcheck: "^1.4.7",
+        "git-url-parse": "^14.1.0",
+        giturl: "^2.0.0",
+        "npm-check": "^6.0.1",
+        semver: "^7.6.3",
+        "semver-diff": "^4.0.0",
       },
     };
 
