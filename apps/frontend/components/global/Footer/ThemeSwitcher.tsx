@@ -1,23 +1,21 @@
 "use client";
 
 import Icon from "@/components/shared/Icon";
-import { useTheme } from "@/hooks/useTheme";
 import { cx } from "cva";
 import { motion } from "framer-motion";
 
-export default function ThemeSwitcher() {
-  const { toggleTheme, theme } = useTheme();
-
+export default function ThemeSwitcher({
+  toggleTheme,
+  isLight,
+}: { toggleTheme: VoidFunction; isLight: boolean }) {
   const darkVariants = {
     initial: { x: "-200%", y: "60%" },
-    animate:
-      theme === "dark" ? { x: "-50%", y: "0%" } : { x: "-200%", y: "60%" },
+    animate: !isLight ? { x: "-50%", y: "0%" } : { x: "-200%", y: "60%" },
   };
 
   const lightVariants = {
     initial: { x: "200%", y: "60%" },
-    animate:
-      theme === "light" ? { x: "-50%", y: "0%" } : { x: "200%", y: "60%" },
+    animate: isLight ? { x: "-50%", y: "0%" } : { x: "200%", y: "60%" },
   };
   return (
     <button
