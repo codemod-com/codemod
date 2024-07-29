@@ -12,10 +12,12 @@ export function setMode(isLight: boolean) {
 
   if (!isLight) {
     addCSS(darkModeCSS);
+    const darkModeStyle = document.getElementById("dark-mode-style");
+    if (darkModeStyle) return;
     const styleElement = document.head.lastElementChild;
     styleElement.id = "dark-mode-style";
   } else {
     const darkModeStyle = document.getElementById("dark-mode-style");
-    darkModeStyle.parentNode.removeChild(darkModeStyle);
+    darkModeStyle?.parentNode.removeChild(darkModeStyle);
   }
 }
