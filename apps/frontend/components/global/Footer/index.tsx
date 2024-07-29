@@ -2,6 +2,7 @@ import NavigationLink from "@/components/global/Navigation/NavigationLink";
 import FooterLogo from "@/components/shared/FooterLogo";
 import { TechLogo } from "@/components/shared/Icon";
 import { RichText } from "@/components/shared/RichText";
+import { useTheme } from "@/hooks/useTheme";
 import type { FooterPayload, SanityLinkType } from "@/types";
 import { capitalize } from "@/utils/strings";
 import AnimatedLogo from "./AnimatedLogo";
@@ -17,6 +18,7 @@ type Submenu = {
 };
 
 export default function Footer({ data }: FooterProps) {
+  const { toggleTheme, theme } = useTheme();
   return (
     <div className="w-full bg-gradient-to-br from-[#d6ff62] from-[32%] to-[#EEFDC2] to-[87%]">
       <footer className="relative mx-auto min-h-[749px] max-w-[1312px] px-m pt-l text-primary-light lg:min-h-[545px] lg:px-2xl lg:pt-2xl">
@@ -46,7 +48,10 @@ export default function Footer({ data }: FooterProps) {
               ))}
 
               <div className="mt-auto lg:mt-0">
-                <ThemeSwitcher />
+                <ThemeSwitcher
+                  toggleTheme={toggleTheme}
+                  isLight={theme === "light"}
+                />
               </div>
             </div>
           </div>

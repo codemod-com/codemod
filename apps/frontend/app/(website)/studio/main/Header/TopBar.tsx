@@ -1,5 +1,6 @@
 import AuthButtons from "@auth/AuthButtons";
 import { FirstLoginExperience } from "@features/FirstLoginExperience";
+import { StudioThemeSwitcher } from "@features/ThemeSwitcher";
 import { Chat, SlackLogo } from "@phosphor-icons/react";
 import { IconButton } from "@studio/components/button/IconButton";
 import { Button } from "@studio/components/ui/button";
@@ -20,6 +21,7 @@ export const TopBar = () => {
         </a>
       </Button>
       <div className="flex">
+        <StudioThemeSwitcher />
         <IconButton
           Icon={Chat}
           text="Feedback"
