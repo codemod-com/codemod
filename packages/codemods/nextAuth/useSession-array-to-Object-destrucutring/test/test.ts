@@ -41,8 +41,8 @@ describe("nextjs/use-session-array-to-object-destructuring", () => {
     );
 
     assert.deepEqual(
-      actualOutput?.replace(/W/gm, ""),
-      OUTPUT.replace(/W/gm, ""),
+      actualOutput?.replace(/\s/gm, ""),
+      OUTPUT.replace(/\s/gm, ""),
     );
   });
 });
