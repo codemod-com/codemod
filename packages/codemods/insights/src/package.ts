@@ -36,6 +36,7 @@ export const getPackagesData = (packageJson: Record<string, string>, options: Op
 
     const isValidVersionRange = ({ packageVersionRange }: PackageData) => packageVersionRange !== null && semver.validRange(packageVersionRange);
 
+
     return getPackages(packageJson, options)
         .map(getPackageCatalogVersionRange)
         .filter(isValidVersionRange)

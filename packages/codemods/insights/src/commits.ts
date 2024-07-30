@@ -40,7 +40,7 @@ export const getCommitsWithInterval = async (commits: CommitData[], intervalDura
 
         commitsWithInterval.push({
             commit: closestCommit.commit,
-            timestamp: closestCommit.date.toISOString(),
+            date: closestCommit.date,
         });
 
         nextTargetDate = addMilliseconds(

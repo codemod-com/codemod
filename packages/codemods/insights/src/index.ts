@@ -77,12 +77,16 @@ const getAnalyzePackageJson =
     }: { getContents(): Promise<Record<string, string>> }) => {
       const packageJson = await getContents();
 
+
+
       const packagesResults = await Promise.all(
         getPackagesData(packageJson, { ...options, ...(pnpmWorkspace && { pnpmWorkspace }) })
           .map(({ packageName, packageVersionRange }) => analyzePackage(packageName, packageVersionRange))
-          .filter(Boolean));
+      );
 
-      return getGlobalResults(packagesResults);
+      console.log(getPackagesData(packageJson, { ...options, ...(pnpmWorkspace && { pnpmWorkspace }) }), packagesResults, 'HERE???');
+
+      return getGlobalResults(packagesResults.filter(Boolean));
     };
 
 
@@ -101,7 +105,7 @@ export async function workflow({ git }: Api, options: Options) {
   await git.clone(options.repos, async ({ files, exec }) => {
     const commits = await getCommitsToCheck(exec);
 
-    runForEachCommit(commits, exec, async ({ date }) => {
+    await runForEachCommit(commits, exec, async ({ date }) => {
       // workspace 
       const [workspace] = await files(PNPM_WORKSPACE_PATH)
         .yaml()
