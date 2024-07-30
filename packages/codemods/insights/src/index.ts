@@ -1,21 +1,13 @@
 import type { Api } from "@codemod.com/workflow";
-
-import { exec } from "child_process";
-import {
-  addMilliseconds,
-  differenceInDays,
-  differenceInMilliseconds,
-  parseISO,
-} from "date-fns";
-import { daysInYear } from "date-fns/constants";
+import { addMilliseconds, differenceInMilliseconds } from "date-fns";
 import semver from "semver";
-import semverDiff from "semver-diff";
 import { memoize } from "./cache-utils";
 import {
-  type NormalizedRegistryData,
   getPackageRegistryData,
   normalizePackageRegistryData,
 } from "./registry-utils";
+
+import libyearAnalysis from "./libyearAnalysis.js";
 
 type Options = {
   repos: string[];
@@ -31,98 +23,11 @@ type PnpmWorkspace = {
   catalog?: Record<string, string>;
 };
 
-// Inspired by https://github.com/dylang/npm-check/blob/master/lib/in/create-package-summary.js
-
 const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
 
-const buildInsight = (
+const analyzePackage = async (
   packageName: string,
-  packageJsonVersion: string,
-  packageData: NormalizedRegistryData,
-) => {
-  const { latest: latestStableRelease, next, homepage, versions } = packageData;
-
-  const installedVersion = undefined;
-
-  const latest =
-    installedVersion &&
-    latestStableRelease &&
-    next &&
-    semver.gt(installedVersion, latestStableRelease)
-      ? next
-      : latestStableRelease;
-
-  const versionWanted = semver.maxSatisfying(versions, packageJsonVersion);
-
-  const versionToUse = installedVersion ?? versionWanted;
-  const bump =
-    versionToUse &&
-    latest &&
-    semver.valid(latest) &&
-    semver.valid(versionToUse) &&
-    semverDiff(versionToUse, latest);
-
-  return {
-    // info
-    moduleName: packageName,
-    homepage,
-
-    // versions
-    latest: latest,
-    installed: versionToUse,
-    packageWanted: versionWanted,
-    packageJson: packageJsonVersion,
-    mismatch:
-      semver.validRange(packageJsonVersion) &&
-      semver.valid(versionToUse) &&
-      !semver.satisfies(versionToUse, packageJsonVersion),
-    semverValid: semver.valid(versionToUse),
-    easyUpgrade:
-      semver.validRange(packageJsonVersion) &&
-      semver.valid(versionToUse) &&
-      semver.satisfies(latest, packageJsonVersion) &&
-      bump !== "major",
-    bump: bump,
-  };
-};
-
-const buildLibyear = (
-  packageName: string,
-  packageJsonVersion: string,
-  packageData: NormalizedRegistryData,
-) => {
-  const { latest: latestStableRelease, next, time, versions } = packageData;
-
-  const currentVersion = semver.minSatisfying(versions, packageJsonVersion);
-
-  const latest =
-    currentVersion &&
-    latestStableRelease &&
-    next &&
-    semver.gt(currentVersion, latestStableRelease)
-      ? next
-      : latestStableRelease;
-
-  const currentVersionTime = currentVersion ? time[currentVersion] : null;
-  const latestVersionTime = latest ? time[latest] : null;
-
-  const drift =
-    currentVersionTime && latestVersionTime
-      ? differenceInDays(
-          parseISO(latestVersionTime),
-          parseISO(currentVersionTime),
-        ) / daysInYear
-      : null;
-
-  return {
-    packageName,
-    drift,
-  };
-};
-
-const createPackageSummary = async (
-  packageName: string,
-  packageJsonVersion: string,
+  packageVersionRange: string,
 ) => {
   const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
 
@@ -133,9 +38,9 @@ const createPackageSummary = async (
     return null;
   }
 
-  return buildLibyear(
+  return libyearAnalysis(
     packageName,
-    packageJsonVersion,
+    packageVersionRange,
     normalizePackageRegistryData(packageRegistryData),
   );
 };
@@ -172,19 +77,7 @@ const getAllCommits = async (exec: any) => {
   });
 };
 
-const execShellCommand = (cmd: string) => {
-  return new Promise((resolve, reject) => {
-    exec(cmd, (error, stdout, stderr) => {
-      if (error) {
-        console.warn(error);
-        reject(error);
-      }
-      resolve(stdout ? stdout : stderr);
-    });
-  });
-};
-
-const getEvenlyDistributedCommits = async (allCommits: any[], N: number) => {
+const getNSamples = async (allCommits: any[], N: number) => {
   if (allCommits.length === 0) return [];
 
   const totalCommits = allCommits.length;
@@ -195,6 +88,7 @@ const getEvenlyDistributedCommits = async (allCommits: any[], N: number) => {
     lastCommitDate,
     firstCommitDate,
   );
+
   const intervalDuration = totalDuration / (N - 1);
 
   const selectedCommits: any[] = [];
@@ -222,81 +116,100 @@ const getEvenlyDistributedCommits = async (allCommits: any[], N: number) => {
     );
   }
 
-  selectedCommits.push(allCommits[0]);
-  selectedCommits.push(allCommits[allCommits.length - 1]);
-
   return selectedCommits;
 };
 
-export async function workflow({ git }: Api, options: Options) {
-  const report = [];
+const getCommitsToCheck = async (exec: any) => {
+  const commits = await getAllCommits(exec);
+  return await getNSamples(commits, 10);
+};
 
-  let pnpmWorkspace: PnpmWorkspace | null = null;
+/**
+ * Generates analysis for given package.json
+ */
+const getAnalyzePackageJson =
+  (options: Options, pnpmWorkspace?: PnpmWorkspace | null) =>
+  async ({
+    getContents,
+  }: { getContents(): Promise<Record<string, string>> }) => {
+    const packageJson = await getContents();
+
+    const packagesAnalysis = await Promise.all(
+      getPackagesToCheck(packageJson, options)
+        .map((packageName) => ({
+          packageName,
+          packageVersion: getPackageVersion(
+            packageJson,
+            packageName,
+            pnpmWorkspace,
+          ),
+        }))
+        .filter(
+          (packageWithVersion) =>
+            packageWithVersion.packageVersion !== null &&
+            semver.validRange(packageWithVersion.packageVersion),
+        )
+        .map(({ packageName, packageVersion }) =>
+          analyzePackage(packageName, packageVersion),
+        ),
+    );
+
+    return packagesAnalysis.filter(Boolean).reduce(
+      (acc, pkg) => {
+        if (pkg?.drift) {
+          acc.drift += pkg.drift;
+        }
+
+        return acc;
+      },
+      {
+        drift: 0,
+        package: packageJson.name,
+      },
+    );
+  };
+
+const getAnalyzeWorkspace =
+  (options: Options) =>
+  async ({ getContents }) => {
+    const pnpmWorkspace = await getContents();
+    // @TODO
+
+    return pnpmWorkspace;
+  };
+
+export async function workflow({ git }: Api, options: Options) {
+  const analysis = [];
 
   await git.clone(options.repos, async ({ files, exec }) => {
-    const commits = await getAllCommits(execShellCommand);
+    const commits = await getCommitsToCheck(exec);
 
-    const distributedCommits = await getEvenlyDistributedCommits(commits, 10);
+    for (const { commit, date } of commits) {
+      await exec(`git checkout ${commit}`);
 
-    console.log(distributedCommits);
-
-    for (const { commit, date } of distributedCommits) {
-      await execShellCommand(`git checkout ${commit}`);
-
-      await files(PNPM_WORKSPACE_PATH)
+      const [workspace] = await files(PNPM_WORKSPACE_PATH)
         .yaml()
-        .map<any, any>(async ({ getContents }) => {
-          pnpmWorkspace = await getContents();
-        });
+        .map<any, any>(getAnalyzeWorkspace(options));
 
-      await files(`**/apps/**/package.json`)
+      const packagesAnalysis = await files(`**/apps/**/package.json`)
         .json()
-        .map<any, any>(async ({ getContents }) => {
-          const packageJson = await getContents();
+        .map<any, any>(getAnalyzePackageJson(options, workspace));
 
-          const packagesToCheck = getPackagesToCheck(packageJson, options);
+      const commitAnalysis = packagesAnalysis.map(
+        ({ drift, package: packageName }) => ({
+          timestamp: date,
+          value: drift,
+          // app/package within monorepo
+          package: packageName,
+          kind: "real_drift",
+        }),
+      );
 
-          const packageAnalysis = packagesToCheck.map((packageName) => {
-            const packageVersion = getPackageVersion(
-              packageJson,
-              packageName,
-              pnpmWorkspace,
-            );
-
-            if (packageVersion === null || !semver.validRange(packageVersion)) {
-              console.warn(
-                `Unable to get version for ${packageName} in ${packageJson.name} package. Skipping analysis.`,
-              );
-              return;
-            }
-
-            return createPackageSummary(packageName, packageVersion);
-          });
-
-          const awaitedPackageAnalysis = await Promise.all(packageAnalysis);
-
-          const sumDrift = awaitedPackageAnalysis
-            .filter(Boolean)
-            .reduce((acc, item) => {
-              if (item?.drift) {
-                acc += item.drift;
-              }
-
-              return acc;
-            }, 0);
-
-          report.push({
-            timestamp: date,
-            drift: sumDrift,
-            kind: "real_drift",
-          });
-        });
+      analysis.push(...commitAnalysis);
     }
   });
 
-  console.log(report, "???");
+  console.log(analysis);
 
-  return report;
+  return analysis;
 }
-
-// workflow(api, { repos: ['git@github.com:DmytroHryshyn/feature-flag-example.git'] })

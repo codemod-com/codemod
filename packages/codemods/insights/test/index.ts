@@ -91,21 +91,115 @@ const mockedNormalizedPackageRegistryData = {
 //   };
 // });
 
-const buildAPI = (filesContent: Record<string, any>) => {
-  const files = (pattern: string) => ({
+let mockIndex = -1;
+
+const mockedPackageJSONs = [
+  {
+    name: "test-package",
+    // zero drift
+    dependencies: {},
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+      history: "^4.7.0",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+      history: "^4.7.0",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+      history: "^4.7.0",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+      history: "^4.7.0",
+    },
+  },
+  {
+    name: "test-package",
+    dependencies: {
+      "react-redux": "^4.4.5",
+      "react-router": "^2.4.2",
+      history: "^5.0.2",
+    },
+  },
+];
+
+const exec = (cmd: string) => {
+  if (cmd.startsWith("git log")) {
+    return `615e3d74054811a05a95fbb6b3f45f1911f63830 2024-07-29 18:23:45 +0300
+5d021e35cabf87c93473351c8b78adc7c84ed09f 2024-07-29 18:23:05 +0300
+38a2041e0f0393ec55fde309b4733f021958fa40 2024-07-29 18:23:05 +0300
+f443cff51c4a527c6e167efac52c9fc1db5933c7 2024-07-29 18:23:05 +0300
+31a512898394feabb26b0555e1207f6e7e23d8ce 2024-07-29 18:23:05 +0300
+c07044c8b5e2adcf596d634833084c4b41d520f2 2024-07-29 18:22:59 +0300
+36b628e755fa5874c102e9be06f4a0072edb9284 2024-07-29 17:45:49 +0300
+6688e289bdf4933e0a5072c6931652299087f0fa 2024-07-29 12:27:26 +0300
+69966f0b0bef10c0442b1b6e95a3a62852e11f6a 2024-07-27 18:23:57 +0200
+91137009f998469a397e2489a86a03e440c0d88b 2024-07-27 18:09:18 +0200`;
+  }
+
+  if (cmd.startsWith("git checkout")) {
+    mockIndex++;
+  }
+};
+
+const buildAPI = () => {
+  const files = () => ({
     yaml: () => ({
-      map: (cb: (...args: any[]) => Promise<any>) => {
-        cb({ getContents: async () => ({}) });
+      map: async (cb: (...args: any[]) => Promise<any>) => {
+        return [await cb({ getContents: async () => ({}) })];
       },
     }),
     json: () => ({
       map: async (cb: (...args: any[]) => Promise<any>) => {
-        const promises = filesContent[pattern]?.map(
-          async (content: any) =>
-            await cb({ getContents: async () => content }),
-        );
-
-        await Promise.all(promises);
+        return [
+          await cb({
+            getContents: async () => mockedPackageJSONs[mockIndex] ?? {},
+          }),
+        ];
       },
     }),
   });
@@ -113,7 +207,7 @@ const buildAPI = (filesContent: Record<string, any>) => {
   return {
     git: {
       clone: async (_: any, cb: (...args: any[]) => Promise<any>) => {
-        await cb({ files });
+        await cb({ files, exec });
       },
     },
   };
@@ -121,38 +215,7 @@ const buildAPI = (filesContent: Record<string, any>) => {
 
 describe("Insights workflow", async () => {
   it("Should correctly generate insight for package with minor version update", async () => {
-    const minorVersion = {
-      name: "insights",
-      license: "MIT",
-      devDependencies: {
-        "@codemod.com/workflow": "workspace:*",
-        "@types/node": "20.9.0",
-        typescript: "^5.2.2",
-        vitest: "^1.0.1",
-      },
-      scripts: {
-        test: "vitest run",
-      },
-      files: ["README.md", ".codemodrc.json", "/dist/index.cjs"],
-      dependencies: {
-        "@ast-grep/napi": "^0.25.1",
-        "@types/semver": "^7.5.8",
-        "@types/semver-diff": "^3.0.0",
-        "date-fns": "^3.6.0",
-        depcheck: "^1.4.7",
-        "git-url-parse": "^14.1.0",
-        giturl: "^2.0.0",
-        "npm-check": "^6.0.1",
-        semver: "^7.6.3",
-        "semver-diff": "^4.0.0",
-      },
-    };
-
-    const files = {
-      "**/apps/**/package.json": [minorVersion],
-    };
-
-    const api = buildAPI(files);
+    const api = buildAPI();
     const result = await workflow(api, { repos: [] });
 
     expect(result).toStrictEqual({
