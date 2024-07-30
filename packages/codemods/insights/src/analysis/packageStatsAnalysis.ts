@@ -32,6 +32,7 @@ export const runAnalysis = async (
         semver.valid(versionToUse) &&
         semverDiff(versionToUse, latest);
 
+    // @TODO normalize result
     return {
         // info
         moduleName: packageName,

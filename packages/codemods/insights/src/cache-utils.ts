@@ -1,9 +1,11 @@
 export const memoize = (
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   fn: (...args: any[]) => Promise<any>,
   maxCacheSize = 100,
 ) => {
   const cache = new Map();
 
+  // biome-ignore lint/suspicious/noExplicitAny: <explanation>
   return async (...args: any[]): Promise<any> => {
     if (!cache.has(fn)) {
       const functionCache = new Map();
