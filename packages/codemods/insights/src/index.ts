@@ -1,15 +1,14 @@
 import type { Api } from "@codemod.com/workflow";
 
-import semver from "semver";
 import { memoize } from "./cache-utils.js";
 import {
   getPackageRegistryData,
   normalizePackageRegistryData,
 } from "./registry-utils.js";
 
-import { getPackages } from './package.js';
-import { getAllCommits, getCommitsWithInterval } from './commits.js';
-import { runAnalysis } from "./libyearAnalysis.js";
+import { getPackagesData } from './package.js';
+import { getAllCommits, getCommitsWithInterval, runForEachCommit } from './commits.js';
+import { runAnalysis, type Result } from "./analysis/libyearAnalysis.js";
 
 // default pnpm workspace file path
 const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
@@ -19,11 +18,13 @@ const COMMITS_COUNT = 10;
 type Options = {
   repos: string[];
   onlyProd: boolean;
+  label: string;
 };
 
 type PnpmWorkspace = {
   catalog?: Record<string, string>;
 };
+
 
 const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
 
@@ -47,6 +48,25 @@ const getCommitsToCheck = async (exec: (...args: any[]) => Promise<string>) => {
   return await getCommitsWithInterval(commits, intervalDuration);
 };
 
+const getGlobalResults = (packagesResults: Result[]) => {
+  const globalResult = packagesResults.at(0);
+
+  for (const result of packagesResults) {
+    for (const { name, value } of (result ?? [])) {
+
+      const foundMetric = globalResult?.find(metric => metric.name === name);
+
+      if (!foundMetric) {
+        continue;
+      }
+
+      foundMetric.value += Number(value);
+    }
+  }
+
+  return globalResult;
+}
+
 /**
  * Generates analysis for given package.json
  */
@@ -57,30 +77,14 @@ const getAnalyzePackageJson =
     }: { getContents(): Promise<Record<string, string>> }) => {
       const packageJson = await getContents();
 
-      const getPackageCatalogVersionRange = (packageData: { packageName: string, packageVersionRange: string | null }) => packageData.packageVersionRange === 'catalog:' ? ({ ...packageData, packageVersionRange: pnpmWorkspace?.catalog?.[packageData.packageName] }) : packageData;
-      const isValidVersionRange = ({ packageVersionRange }: { packageName: string, packageVersionRange?: string | null }) => packageVersionRange !== null && semver.validRange(packageVersionRange);
+      const packagesResults = await Promise.all(
+        getPackagesData(packageJson, { ...options, ...(pnpmWorkspace && { pnpmWorkspace }) })
+          .map(({ packageName, packageVersionRange }) => analyzePackage(packageName, packageVersionRange))
+          .filter(Boolean));
 
-      const packagesAnalysis = await Promise.all(
-        getPackages(packageJson, options)
-          .map(getPackageCatalogVersionRange)
-          .filter(isValidVersionRange)
-          .map(({ packageName, packageVersionRange }) => analyzePackage(packageName, packageVersionRange)));
-
-
-      return packagesAnalysis.filter(Boolean).reduce(
-        (acc, pkg) => {
-          if (pkg?.drift) {
-            acc.drift += pkg.drift;
-          }
-
-          return acc;
-        },
-        {
-          drift: 0,
-          package: packageJson.name,
-        },
-      );
+      return getGlobalResults(packagesResults);
     };
+
 
 const getAnalyzeWorkspace =
   (options: Options) =>
@@ -97,32 +101,30 @@ export async function workflow({ git }: Api, options: Options) {
   await git.clone(options.repos, async ({ files, exec }) => {
     const commits = await getCommitsToCheck(exec);
 
-    for (const { commit, date } of commits) {
-      await exec(`git checkout ${commit}`);
-
+    runForEachCommit(commits, exec, async ({ date }) => {
+      // workspace 
       const [workspace] = await files(PNPM_WORKSPACE_PATH)
         .yaml()
         .map<any, any>(getAnalyzeWorkspace(options));
 
+      // libyear
       const packagesAnalysis = await files(`**/apps/**/package.json`)
         .json()
         .map<any, any>(getAnalyzePackageJson(options, workspace));
 
+
       const commitAnalysis = packagesAnalysis.map(
-        ({ drift, package: packageName }) => ({
+        (data) => ({
+          ...data,
           timestamp: date,
-          value: drift,
-          // app/package within monorepo
-          package: packageName,
-          kind: "real_drift",
+          label: options.label,
         }),
       );
 
       analysis.push(...commitAnalysis);
-    }
-  });
+    });
 
-  console.log(JSON.stringify(analysis));
+  });
 
   return analysis;
 }

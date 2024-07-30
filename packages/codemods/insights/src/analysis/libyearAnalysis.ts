@@ -1,7 +1,13 @@
 import { differenceInDays, parseISO } from "date-fns";
 import { daysInYear } from "date-fns/constants";
 import semver from "semver";
-import type { NormalizedRegistryData } from "./registry-utils";
+import type { NormalizedRegistryData } from "../registry-utils.js";
+
+export type Result = ReadonlyArray<{
+  name: string;
+  value: number;
+  target: string;
+}>;
 
 const getDesiredVersion = (
   currentVersion: string | null,
@@ -30,7 +36,7 @@ export const runAnalysis = (
   packageName: string,
   packageVersionRange: string,
   packageRegistryData: NormalizedRegistryData,
-) => {
+): Result => {
   const { time, versions } = packageRegistryData;
 
   const currentVersion = semver.minSatisfying(versions, packageVersionRange);
@@ -39,11 +45,11 @@ export const runAnalysis = (
   const currentVersionTime = currentVersion ? time[currentVersion] : null;
   const desiredVersionTime = desiredVersion ? time[desiredVersion] : null;
 
-  return {
-    packageName,
-    // only drift for now
-    drift: getDrift(currentVersionTime, desiredVersionTime),
-  };
+  return [{
+    target: packageName,
+    name: 'drift',
+    value: Number(getDrift(currentVersionTime, desiredVersionTime)),
+  }];
 };
 
 

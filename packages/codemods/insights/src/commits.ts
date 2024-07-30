@@ -54,6 +54,13 @@ export const getCommitsWithInterval = async (commits: CommitData[], intervalDura
     return commitsWithInterval;
 };
 
-export const commitForEach = async (commits) => {
+export const runForEachCommit = async (commits: CommitData[], exec: (...args: any[]) => Promise<string>, callback: (commit: CommitData) => Promise<any>) => {
+    for (const commit of commits) {
+        await exec(`git checkout ${commit.commit}`);
 
+        await callback(commit);
+    }
+
+
+    await exec(`git checkout HEAD`);
 }

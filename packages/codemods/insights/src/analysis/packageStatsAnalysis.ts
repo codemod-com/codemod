@@ -1,6 +1,6 @@
 import semver from 'semver';
 import semverDiff from "semver-diff";
-import type { NormalizedRegistryData } from './registry-utils';
+import type { NormalizedRegistryData } from '../registry-utils';
 
 export const runAnalysis = async (
     packageName: string,
