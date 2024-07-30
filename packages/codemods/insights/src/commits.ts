@@ -15,22 +15,22 @@ export const getAllCommits = async (exec: (...args: any[]) => Promise<string>): 
     });
 };
 
-export const getCommitsWithInterval = async (allCommits: CommitData[], intervalDuration: number) => {
-    if (allCommits.length === 0) return [];
+export const getCommitsWithInterval = async (commits: CommitData[], intervalDuration: number) => {
+    if (commits.length === 0) return [];
 
-    const totalCommits = allCommits.length;
-    const firstCommitDate = allCommits[totalCommits - 1].date.getTime();
-    const lastCommitDate = allCommits[0].date.getTime();
+    const totalCommits = commits.length;
+    const firstCommitDate = commits[totalCommits - 1].date.getTime();
+    const lastCommitDate = commits[0].date.getTime();
 
     const commitsWithInterval: CommitData[] = [];
     let nextTargetDate = firstCommitDate;
 
     let i = 0;
     while (lastCommitDate && nextTargetDate < lastCommitDate) {
-        let closestCommit = allCommits[0];
+        let closestCommit = commits[0];
         let minTimeDiff = Math.abs(nextTargetDate - closestCommit.date.getTime());
 
-        for (const commit of allCommits) {
+        for (const commit of commits) {
             const timeDiff = Math.abs(nextTargetDate - commit.date.getTime());
             if (timeDiff < minTimeDiff) {
                 minTimeDiff = timeDiff;
@@ -54,3 +54,6 @@ export const getCommitsWithInterval = async (allCommits: CommitData[], intervalD
     return commitsWithInterval;
 };
 
+export const commitForEach = async (commits) => {
+
+}

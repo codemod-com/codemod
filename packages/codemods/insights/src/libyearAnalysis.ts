@@ -8,9 +8,9 @@ const getDesiredVersion = (
   { latest: latestStableRelease, next }: NormalizedRegistryData,
 ) =>
   currentVersion &&
-  latestStableRelease &&
-  next &&
-  semver.gt(currentVersion, latestStableRelease)
+    latestStableRelease &&
+    next &&
+    semver.gt(currentVersion, latestStableRelease)
     ? next
     : latestStableRelease;
 
@@ -20,13 +20,13 @@ const getDrift = (
 ) =>
   currentVersionTime && desiredVersionTime
     ? differenceInDays(
-        parseISO(desiredVersionTime),
-        parseISO(currentVersionTime),
-      ) / daysInYear
+      parseISO(desiredVersionTime),
+      parseISO(currentVersionTime),
+    ) / daysInYear
     : null;
 
 // Inspired by https://github.com/dylang/npm-check/ https://github.com/jdanil/libyear
-const libyearAnalysis = (
+export const runAnalysis = (
   packageName: string,
   packageVersionRange: string,
   packageRegistryData: NormalizedRegistryData,
@@ -41,8 +41,9 @@ const libyearAnalysis = (
 
   return {
     packageName,
+    // only drift for now
     drift: getDrift(currentVersionTime, desiredVersionTime),
   };
 };
 
-export default libyearAnalysis;
+

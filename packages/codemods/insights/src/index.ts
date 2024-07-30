@@ -9,13 +9,17 @@ import {
 
 import { getPackages } from './package.js';
 import { getAllCommits, getCommitsWithInterval } from './commits.js';
-import libyearAnalysis from "./libyearAnalysis.js";
+import { runAnalysis } from "./libyearAnalysis.js";
+
+// default pnpm workspace file path
+const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
+// count of commits to process in the analysis
+const COMMITS_COUNT = 10;
 
 type Options = {
   repos: string[];
   onlyProd: boolean;
 };
-
 
 type PnpmWorkspace = {
   catalog?: Record<string, string>;
@@ -27,28 +31,17 @@ const analyzePackage = async (
   packageName: string,
   packageVersionRange: string,
 ) => {
+
   const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
 
-  if (!packageRegistryData) {
-    console.warn(
-      `Unable to get package registry data for ${packageName}. Skipping`,
-    );
-    return null;
-  }
-
-  return libyearAnalysis(
+  return packageRegistryData ? runAnalysis(
     packageName,
     packageVersionRange,
     normalizePackageRegistryData(packageRegistryData),
-  );
+  ) : null;
 };
 
-const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
-
-// count of commits to process in the analysis
-const COMMITS_COUNT = 10;
-
-const getCommitsToCheck = async (exec: any) => {
+const getCommitsToCheck = async (exec: (...args: any[]) => Promise<string>) => {
   const commits = await getAllCommits(exec);
   const intervalDuration = (commits.at(0)?.date.getTime() - commits.at(-1)?.date.getTime()) / COMMITS_COUNT;
   return await getCommitsWithInterval(commits, intervalDuration);
@@ -64,7 +57,7 @@ const getAnalyzePackageJson =
     }: { getContents(): Promise<Record<string, string>> }) => {
       const packageJson = await getContents();
 
-      const getPackageCatalogVersionRange = (packageData: { packageName: string, packageVersionRange: string }) => packageData.packageVersionRange === 'catalog:' ? ({ ...packageData, packageVersionRange: pnpmWorkspace?.catalog?.[packageData.packageName] }) : packageData;
+      const getPackageCatalogVersionRange = (packageData: { packageName: string, packageVersionRange: string | null }) => packageData.packageVersionRange === 'catalog:' ? ({ ...packageData, packageVersionRange: pnpmWorkspace?.catalog?.[packageData.packageName] }) : packageData;
       const isValidVersionRange = ({ packageVersionRange }: { packageName: string, packageVersionRange?: string | null }) => packageVersionRange !== null && semver.validRange(packageVersionRange);
 
       const packagesAnalysis = await Promise.all(
@@ -129,7 +122,7 @@ export async function workflow({ git }: Api, options: Options) {
     }
   });
 
-  console.log(analysis);
+  console.log(JSON.stringify(analysis));
 
   return analysis;
 }
