@@ -22,5 +22,6 @@
     "npm-check": "^6.0.1",
     "semver": "^7.6.3",
     "semver-diff": "^4.0.0"
-  }
+  },
+  "type": "module"
 }

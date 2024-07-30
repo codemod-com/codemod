@@ -1,13 +1,14 @@
 import type { Api } from "@codemod.com/workflow";
-import { addMilliseconds, differenceInMilliseconds } from "date-fns";
+
 import semver from "semver";
-import { memoize } from "./cache-utils";
+import { memoize } from "./cache-utils.js";
 import {
   getPackageRegistryData,
   normalizePackageRegistryData,
-} from "./registry-utils";
+} from "./registry-utils.js";
 
-import { getPackages } from './packagejson.js';
+import { getPackages } from './package.js';
+import { getAllCommits, getCommitsWithInterval } from './commits.js';
 import libyearAnalysis from "./libyearAnalysis.js";
 
 type Options = {
@@ -44,62 +45,13 @@ const analyzePackage = async (
 
 const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
 
-
-const getAllCommits = async (exec: any) => {
-  const command = `git log --pretty=format:"%H %ci"`;
-  const result = await exec(command);
-
-  return result.split("\n").map((line) => {
-    const [commit, ...dateParts] = line.split(" ");
-    return { commit, date: new Date(dateParts.join(" ")) };
-  });
-};
-
-const getNSamples = async (allCommits: any[], N: number) => {
-  if (allCommits.length === 0) return [];
-
-  const totalCommits = allCommits.length;
-  const firstCommitDate = allCommits[totalCommits - 1].date;
-  const lastCommitDate = allCommits[0].date;
-
-  const totalDuration = differenceInMilliseconds(
-    lastCommitDate,
-    firstCommitDate,
-  );
-
-  const intervalDuration = totalDuration / (N - 1);
-
-  const selectedCommits: any[] = [];
-  let nextTargetDate = firstCommitDate;
-
-  for (let i = 0; i < N; i++) {
-    let closestCommit = allCommits[0];
-    let minTimeDiff = Math.abs(nextTargetDate - closestCommit.date);
-
-    for (const commit of allCommits) {
-      const timeDiff = Math.abs(nextTargetDate - commit.date);
-      if (timeDiff < minTimeDiff) {
-        minTimeDiff = timeDiff;
-        closestCommit = commit;
-      }
-    }
-
-    selectedCommits.push({
-      commit: closestCommit.commit,
-      timestamp: closestCommit.date.toISOString(),
-    });
-    nextTargetDate = addMilliseconds(
-      firstCommitDate,
-      intervalDuration * (i + 1),
-    );
-  }
-
-  return selectedCommits;
-};
+// count of commits to process in the analysis
+const COMMITS_COUNT = 10;
 
 const getCommitsToCheck = async (exec: any) => {
   const commits = await getAllCommits(exec);
-  return await getNSamples(commits, 10);
+  const intervalDuration = (commits.at(0)?.date.getTime() - commits.at(-1)?.date.getTime()) / COMMITS_COUNT;
+  return await getCommitsWithInterval(commits, intervalDuration);
 };
 
 /**
