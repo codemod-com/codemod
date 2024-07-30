@@ -29,7 +29,7 @@ export function addCounterToNodeIds(
     const newNode: TreeNode = {
       ...node,
       id: `${node.id}_${counter++}_${type}`,
-      children: node.children?.map(traverse),
+      children: node.children?.map?.(traverse),
     };
 
     return newNode;
@@ -41,14 +41,21 @@ export function addCounterToNodeIds(
 export const removeEmptyChildren = (node: TreeNode): TreeNode => {
   const transformedChildren =
     node.children
-      ?.map(removeEmptyChildren)
-      .filter((child) => child.children?.length || !child.children) ?? [];
+      ?.map?.(removeEmptyChildren)
+      ?.filter((child) => child.children?.length || !child.children) ?? [];
 
   return {
     ...node,
     children: transformedChildren.length > 0 ? transformedChildren : undefined,
   };
 };
+
+export const ensureChildrenArray = (rootNode: TreeNode) => ({
+  ...rootNode,
+  children: Array.isArray(rootNode.children)
+    ? rootNode.children.map(ensureChildrenArray)
+    : [],
+});
 
 export const transformNode = (content: string, type: EditorType) => {
   const parsed = parseSnippet(content);
@@ -61,5 +68,5 @@ export const transformNode = (content: string, type: EditorType) => {
   const withComments = removeEmptyChildren(transformedRootNode);
   const withUniqueIds = addCounterToNodeIds(withComments, type);
   const { cleanedStructure } = extractComments(withUniqueIds);
-  return cleanedStructure;
+  return ensureChildrenArray(cleanedStructure);
 };
