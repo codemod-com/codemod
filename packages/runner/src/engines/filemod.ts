@@ -53,9 +53,10 @@ export type Dependencies = Readonly<{
 }>;
 
 export const runFilemod = async (options: {
-  filemod: Filemod<Dependencies, Record<string, unknown>> & { name?: string };
+  filemod: Filemod<Record<string, unknown>, Record<string, unknown>> & {
+    name?: string;
+  };
   target: string;
-  format: boolean;
   codemod: Codemod;
   printer: Printer;
   onError?: CodemodExecutionErrorCallback;
@@ -63,7 +64,6 @@ export const runFilemod = async (options: {
   const {
     filemod,
     target,
-    format,
     codemod: { safeArgumentRecord, engineOptions },
     printer,
     onError,

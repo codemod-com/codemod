@@ -463,9 +463,6 @@ export class Runner {
       await runWorkflowCodemod(
         codemodSource,
         codemod.safeArgumentRecord,
-        (kind, message) => {
-          printer.printMessage({ kind: "console", message, consoleKind: kind });
-        },
         this._options.authService,
       );
 
@@ -508,8 +505,6 @@ export class Runner {
         onError,
         ...flowSettings,
       });
-
-      // const commands = await buildFormattedFileCommands(fileCommands);
 
       for (const command of commands) {
         await onCommand(command);

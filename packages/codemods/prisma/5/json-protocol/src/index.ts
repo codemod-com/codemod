@@ -1,7 +1,9 @@
 import { basename } from "node:path";
+import type { Identifier } from "jscodeshift";
+
 import type { Filemod } from "@codemod-com/filemod";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import type { Identifier } from "jscodeshift";
+import { getSchema } from "@mrleebo/prisma-ast";
 import { prismaMethodNames, scalarTypes } from "./constants.js";
 import type { Dependencies, Options } from "./types.js";
 
@@ -24,34 +26,32 @@ export const repomod: Filemod<Dependencies, Options> = {
       throw new Error("Could not find read from schema.prisma file.");
     }
 
-    const pairs: Options["pairs"] = {};
-    let currentModelName: string | null = null;
+    const schema = getSchema(prismaSchema);
 
-    for (const line of prismaSchema.split("\n").map((line) => line.trim())) {
-      if (line.startsWith("model")) {
-        const schemaModelName = line.split(" ").at(1);
-        currentModelName =
-          `${schemaModelName?.at(0)?.toLowerCase()}${schemaModelName?.slice(1) ?? ""}` ??
-          null;
-      }
+    const pairs = schema.list.reduce(
+      (acc, node) => {
+        if (node.type === "model") {
+          const modelName = `${node.name.at(0)?.toLowerCase()}${node.name.slice(1)}`;
 
-      if (currentModelName === null) {
-        continue;
-      }
-
-      const match = line.match(/(\w+) +(Json|\w+\[\])/);
-      if (match !== null) {
-        const [_, name, type] = match;
-        if (!name || !type) {
-          continue;
+          acc[modelName] = node.properties
+            .filter((prop) => prop.type === "field")
+            .filter(
+              (prop) =>
+                typeof prop.fieldType === "string" &&
+                (prop.fieldType === "Json" || prop.array === true),
+            )
+            .map((prop) => ({
+              name: prop.name,
+              type: prop.array
+                ? `${prop.fieldType}[]`
+                : (prop.fieldType as string),
+            }));
         }
 
-        pairs[currentModelName] = [
-          ...(pairs[currentModelName] ?? []),
-          { name, type },
-        ];
-      }
-    }
+        return acc;
+      },
+      {} as Options["pairs"],
+    );
 
     return { pairs };
   },

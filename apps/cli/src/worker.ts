@@ -1,7 +1,6 @@
 import { parentPort } from "node:worker_threads";
 
 import {
-  type ConsoleKind,
   type MainThreadMessage,
   type WorkerThreadMessage,
   decodeMainThreadMessage,
@@ -21,14 +20,6 @@ class PathAwareError extends Error {
     super(message);
   }
 }
-
-const consoleCallback = (consoleKind: ConsoleKind, message: string): void => {
-  parentPort?.postMessage({
-    kind: "console",
-    consoleKind,
-    message,
-  } satisfies WorkerThreadMessage);
-};
 
 let initializationMessage:
   | (MainThreadMessage & { kind: "initialization" })
@@ -67,7 +58,6 @@ const messageHandler = async (m: unknown) => {
             message.data,
             initializationMessage.safeArgumentRecord,
             initializationMessage.engineOptions,
-            consoleCallback,
           );
           break;
         case "ts-morph":
@@ -76,7 +66,6 @@ const messageHandler = async (m: unknown) => {
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
-            consoleCallback,
           );
           break;
         case "ast-grep":
