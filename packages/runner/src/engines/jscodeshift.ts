@@ -40,26 +40,21 @@ export const runJscodeshiftCodemod = (
   const adapter = getAdapterByExtname(extname(path));
   const transform = adapter !== null ? adapter(transformer) : transformer;
 
-  try {
-    const newData = transform({ source: data, path: path }, api, {
-      ...safeArgumentRecord,
-      createFile,
-    });
+  const newData = transform({ source: data, path: path }, api, {
+    ...safeArgumentRecord,
+    createFile,
+  });
 
-    if (typeof newData !== "string" || isTheSameData(data, newData)) {
-      return commands;
-    }
-
-    commands.push({
-      kind: "updateFile",
-      oldPath: path,
-      oldData: data,
-      newData,
-    });
-
+  if (typeof newData !== "string" || isTheSameData(data, newData)) {
     return commands;
-  } catch (err) {
-    console.log(err);
-    throw new Error(`Error while transforming ${path}: ${String(err)}`);
   }
+
+  commands.push({
+    kind: "updateFile",
+    oldPath: path,
+    oldData: data,
+    newData,
+  });
+
+  return commands;
 };
