@@ -1,11 +1,15 @@
 {
   "$schema": "https://codemod-utils.s3.us-west-1.amazonaws.com/configuration_schema.json",
   "name": "insights",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "engine": "workflow",
-  "private": true,
+  "private": false,
+  "arguments": [],
   "meta": {
-    "tags": ["insights", "workflow"],
+    "tags": [
+      "insights",
+      "workflow"
+    ],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/insights"
   }
 }
