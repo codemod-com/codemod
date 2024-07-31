@@ -3,7 +3,7 @@ import type { NapiConfig, SgNode } from "@ast-grep/napi";
 
 import { invariant } from "ts-invariant";
 import type { FileContext } from "./contexts/FileContext.js";
-import type { GitContext } from "./contexts/GitContext.js";
+import { GitContext } from "./contexts/GitContext.js";
 import { noContextFn } from "./helpers.js";
 
 const registeredContexts = new Map<string, AsyncLocalStorage<any>>();
@@ -107,8 +107,13 @@ export const getFileContext = () => {
 
 export const getGitContext = () => {
   const git = gitContext.getStore();
-  invariant(git, "No git context found");
-  return git;
+  if (git) {
+    return git;
+  }
+
+  const newGit = new GitContext({ repository: "", id: "" });
+
+  return newGit;
 };
 
 export const getRepositoryContext = () => {
