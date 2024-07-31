@@ -115,6 +115,8 @@ describe("eslint and prettier to biome migration", async () => {
 
     const externalFileCommands = await transform(api);
 
+    console.log(externalFileCommands);
+
     deepEqual(externalFileCommands.length, 6);
 
     ok(

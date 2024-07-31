@@ -1,6 +1,6 @@
 import type { DataAPI } from "@codemod-com/filemod";
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
-import type { Input } from "valibot";
+import type { InferInput } from "valibot";
 import type {
   Configuration as BiomeConfig,
   Rules as BiomeLinterRules,
@@ -95,7 +95,7 @@ export function eslintToBiomeRuleValue(value: string): RuleValue {
 }
 
 export function getPackageManager(
-  packageJson: Input<typeof packageJsonSchema>,
+  packageJson: InferInput<typeof packageJsonSchema>,
 ) {
   const isYarn = (
     packageJson.packageManager ?? JSON.stringify(packageJson.scripts)
@@ -122,8 +122,8 @@ export function getPackageManager(
 }
 
 export function clearDependenciesAndAddNotes(
-  packageJson: Input<typeof packageJsonSchema>,
-): Input<typeof packageJsonSchema> {
+  packageJson: InferInput<typeof packageJsonSchema>,
+): InferInput<typeof packageJsonSchema> {
   const newObj = deepCopy(packageJson);
 
   if (newObj.eslintConfig) {
