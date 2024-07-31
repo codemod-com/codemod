@@ -53,6 +53,6 @@ export const runAnalysis = async (
             semver.valid(versionToUse) &&
             semver.satisfies(latest ?? '', packageVersionRange) &&
             bump !== "major",
-        bump: bump,
+        bump,
     };
 };

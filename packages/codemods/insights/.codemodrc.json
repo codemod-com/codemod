@@ -3,7 +3,7 @@
   "name": "insights",
   "version": "1.0.0",
   "engine": "workflow",
-  "private": false,
+  "private": true,
   "meta": {
     "tags": ["insights", "workflow"],
     "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/insights"

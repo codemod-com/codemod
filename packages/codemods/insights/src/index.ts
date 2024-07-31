@@ -16,7 +16,7 @@ const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
 const COMMITS_COUNT = 10;
 
 type Options = {
-  repos: string[];
+  repo: string;
   onlyProd: boolean;
   label: string;
 };
@@ -102,7 +102,7 @@ const getAnalyzeWorkspace =
 export async function workflow({ git }: Api, options: Options) {
   const analysis = [];
 
-  await git.clone(options.repos, async ({ files, exec }) => {
+  await git.clone(options.repo, async ({ files, exec }) => {
     const commits = await getCommitsToCheck(exec);
 
     await runForEachCommit(commits, exec, async ({ date }) => {
