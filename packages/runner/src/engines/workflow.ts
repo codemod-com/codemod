@@ -1,20 +1,15 @@
 import type { ArgumentRecord } from "@codemod-com/utilities";
-import type * as workflow from "@codemod.com/workflow";
+import type { AuthServiceInterface } from "@codemod.com/workflow";
 import { api, setAuthService } from "@codemod.com/workflow";
-import { getTransformer } from "#source-code.js";
+import type { TransformFunction } from "#source-code.js";
 
 export const runWorkflowCodemod = async (
-  codemodSource: string,
+  workflow: TransformFunction,
   _safeArgumentRecord: ArgumentRecord,
-  authService?: workflow.AuthServiceInterface,
+  authService?: AuthServiceInterface,
 ) => {
   if (authService !== undefined) {
     setAuthService(authService);
-  }
-
-  const workflow = getTransformer(codemodSource);
-  if (typeof workflow !== "function" || workflow === null) {
-    throw new Error("Invalid workflow source");
   }
 
   await workflow(api);

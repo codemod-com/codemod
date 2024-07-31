@@ -52,8 +52,14 @@ const messageHandler = async (m: unknown) => {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
         case "jscodeshift":
+          if (initializationMessage.transformer === null) {
+            throw new Error(
+              "Codemod transformer could not be located in the source file",
+            );
+          }
+
           commands = runJscodeshiftCodemod(
-            initializationMessage.codemodSource,
+            initializationMessage.transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
@@ -61,8 +67,14 @@ const messageHandler = async (m: unknown) => {
           );
           break;
         case "ts-morph":
+          if (initializationMessage.transformer === null) {
+            throw new Error(
+              "Codemod transformer could not be located in the source file",
+            );
+          }
+
           commands = runTsMorphCodemod(
-            initializationMessage.codemodSource,
+            initializationMessage.transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,

@@ -13,6 +13,7 @@ import type {
   FileCommand,
   KnownEnginesCodemod,
 } from "@codemod-com/utilities";
+import type { TransformFunction } from "#source-code.js";
 import type { CodemodExecutionErrorCallback } from "./schemata/callbacks.js";
 import type { FlowSettings } from "./schemata/flow-settings.js";
 
@@ -39,11 +40,11 @@ export class WorkerManager {
           engine: "jscodeshift" | "ts-morph" | "ast-grep";
         };
       };
-      codemodSource: string;
+      transformer: TransformFunction | null;
       onError?: CodemodExecutionErrorCallback;
     },
   ) {
-    const { codemod, codemodSource, flowSettings } = _options;
+    const { codemod, transformer, flowSettings } = _options;
 
     this.__workerCount = flowSettings.threads;
 
@@ -61,7 +62,7 @@ export class WorkerManager {
 
       worker.postMessage({
         kind: "initialization",
-        codemodSource,
+        transformer,
         ...codemod,
         ...codemod.config,
         ...flowSettings,

@@ -8,7 +8,7 @@ import type {
   FileCommand,
 } from "@codemod-com/utilities";
 import { getAdapterByExtname } from "#adapters/index.js";
-import { getTransformer } from "#source-code.js";
+import type { TransformFunction } from "#source-code.js";
 import { isTheSameData } from "#utils.js";
 
 export const buildApi = (parser: string | Parser): API => ({
@@ -19,7 +19,7 @@ export const buildApi = (parser: string | Parser): API => ({
 });
 
 export const runJscodeshiftCodemod = (
-  codemodSource: string,
+  transformer: TransformFunction,
   path: string,
   data: string,
   safeArgumentRecord: ArgumentRecord,
@@ -37,13 +37,8 @@ export const runJscodeshiftCodemod = (
 
   const api = buildApi(engineOptions?.parser ?? defaultJSCodeshiftParser);
 
-  const transformFn = getTransformer(codemodSource);
-  if (typeof transformFn !== "function" || transformFn === null) {
-    throw new Error("Invalid codemod source");
-  }
-
   const adapter = getAdapterByExtname(extname(path));
-  const transform = adapter !== null ? adapter(transformFn) : transformFn;
+  const transform = adapter !== null ? adapter(transformer) : transformer;
 
   try {
     const newData = transform({ source: data, path: path }, api, {

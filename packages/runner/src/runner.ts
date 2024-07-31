@@ -450,8 +450,15 @@ export class Runner {
     }
 
     const codemodSource = await getCodemodExecutable(codemod.path);
+    const transformer = getTransformer(codemodSource);
 
     if (codemod.config.engine === "workflow") {
+      if (transformer === null) {
+        throw new Error(
+          `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
+        );
+      }
+
       this.printRunSummary(printer, codemod, flowSettings, {
         include: ["**/*.*"],
         exclude: [],
@@ -461,7 +468,7 @@ export class Runner {
       });
 
       await runWorkflowCodemod(
-        codemodSource,
+        transformer,
         codemod.safeArgumentRecord,
         this._options.authService,
       );
@@ -471,8 +478,6 @@ export class Runner {
     }
 
     if (codemod.config.engine === "filemod") {
-      const transformer = getTransformer(codemodSource);
-
       if (transformer === null) {
         throw new Error(
           `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
@@ -560,7 +565,7 @@ export class Runner {
             engine: "jscodeshift" | "ts-morph" | "ast-grep";
           };
         },
-        codemodSource,
+        transformer,
         onError,
       });
     });

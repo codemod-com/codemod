@@ -10,16 +10,13 @@ import { type Printer, chalk } from "@codemod-com/printer";
 import { bundleJS } from "@codemod-com/runner";
 import {
   type Codemod,
-  type KnownEnginesCodemodValidationInput,
-  type RecipeCodemodValidationInput,
+  type CodemodValidationInput,
   doubleQuotify,
   getCodemodRc,
   isJavaScriptName,
   isRecipeCodemod,
   parseCodemod,
   parseEngineOptions,
-  parseKnownEnginesCodemod,
-  parseRecipeCodemod,
   safeParseCodemod,
   safeParseKnownEnginesCodemod,
   safeParseRecipeCodemod,
@@ -159,20 +156,20 @@ export const fetchCodemod = async (options: {
       });
 
       if (config.engine === "recipe") {
-        return parseRecipeCodemod({
+        return parseCodemod({
           type: "standalone",
           source: "local",
           path: codemodPackagePath,
           config,
-        } satisfies RecipeCodemodValidationInput);
+        } satisfies CodemodValidationInput);
       }
 
-      return parseKnownEnginesCodemod({
+      return parseCodemod({
         type: "standalone",
         source: "local",
         path: codemodPackagePath,
         config,
-      } satisfies KnownEnginesCodemodValidationInput);
+      } satisfies CodemodValidationInput);
     }
 
     // Codemod package
@@ -203,7 +200,7 @@ export const fetchCodemod = async (options: {
         ),
       );
 
-      return parseRecipeCodemod({ ...codemod, codemods });
+      return parseCodemod({ ...codemod, codemods });
     }
 
     return parseCodemod(codemod satisfies Codemod);
@@ -350,7 +347,7 @@ export const fetchCodemod = async (options: {
       config,
       path,
       codemods,
-    } satisfies RecipeCodemodValidationInput);
+    } satisfies CodemodValidationInput);
   }
 
   return parseCodemod({
@@ -358,5 +355,5 @@ export const fetchCodemod = async (options: {
     source: "remote",
     config,
     path,
-  } satisfies KnownEnginesCodemodValidationInput);
+  } satisfies CodemodValidationInput);
 };

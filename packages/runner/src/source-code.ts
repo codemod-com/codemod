@@ -4,7 +4,9 @@ import esbuild from "esbuild";
 
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
 
-type TransformFunction = (...args: unknown[]) => unknown | Promise<unknown>;
+export type TransformFunction = (
+  ...args: unknown[]
+) => unknown | Promise<unknown>;
 
 export const getTransformer = (source: string) => {
   type Exports =
