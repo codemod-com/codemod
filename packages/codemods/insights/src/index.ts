@@ -1,151 +1,182 @@
 import type { Api } from "@codemod.com/workflow";
-// import { type Api, api } from "@codemod.com/workflow";
 
-// import { memoize } from "./cache-utils.js";
-// import {
-//   getPackageRegistryData,
-//   normalizePackageRegistryData,
-// } from "./registry-utils.js";
+import { memoize } from "./cache-utils.js";
+import {
+  getPackageRegistryData,
+  normalizePackageRegistryData,
+} from "./registry-utils.js";
 
-// import { getPackagesData } from './package.js';
-// import { getAllCommits, getCommitsWithInterval, runForEachCommit } from './commits.js';
-// import { runAnalysis, type Result } from "./analysis/libyearAnalysis.js";
+import { type Result, runAnalysis } from "./analysis/libyearAnalysis.js";
+import {
+  type CommitData,
+  getCommitsWithInterval,
+  runForEachCommit,
+} from "./commits.js";
+import { getPackagesData } from "./package.js";
 
-// // default pnpm workspace file path
-// const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
-// // count of commits to process in the analysis
-// const COMMITS_COUNT = 10;
+// default pnpm workspace file path
+const PNPM_WORKSPACE_PATH = "./pnpm-workspace.yaml";
+// count of commits to process in the analysis
+const COMMITS_COUNT = 10;
 
-// type Options = {
-//   repo: string;
-//   onlyProd: boolean;
-//   label: string;
-// };
+type Options = {
+  repo: string;
+  onlyProd: boolean;
+  label: string;
+};
 
-// type PnpmWorkspace = {
-//   catalog?: Record<string, string>;
-// };
+type PnpmWorkspace = {
+  catalog?: Record<string, string>;
+};
 
+const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
 
-// const memoizedGetPackageRegistryData = memoize(getPackageRegistryData);
+const analyzePackage = async (
+  packageName: string,
+  packageVersionRange: string,
+) => {
+  const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
 
-// const analyzePackage = async (
-//   packageName: string,
-//   packageVersionRange: string,
-// ) => {
+  return packageRegistryData
+    ? runAnalysis(
+        packageName,
+        packageVersionRange,
+        normalizePackageRegistryData(packageRegistryData),
+      )
+    : null;
+};
 
-//   const packageRegistryData = await memoizedGetPackageRegistryData(packageName);
+const getCommitsIntervalDuration = (commits: CommitData[]): number | null => {
+  const lastCommitTime = commits.at(0)?.date.getTime();
+  const firstCommitTime = commits.at(-1)?.date.getTime();
 
-//   return packageRegistryData ? runAnalysis(
-//     packageName,
-//     packageVersionRange,
-//     normalizePackageRegistryData(packageRegistryData),
-//   ) : null;
-// };
+  if (!lastCommitTime || !firstCommitTime) {
+    return null;
+  }
 
-// const getCommitsToCheck = async (exec: (...args: any[]) => Promise<string>) => {
-//   const commits = await getAllCommits(exec);
-//   const intervalDuration = (commits.at(0)?.date.getTime() - commits.at(-1)?.date.getTime()) / COMMITS_COUNT;
-//   return await getCommitsWithInterval(commits, intervalDuration);
-// };
+  return (lastCommitTime - firstCommitTime) / COMMITS_COUNT;
+};
 
-// const getGlobalResults = (packagesResults: Result[]) => {
-//   const globalResult = packagesResults.at(0);
+const getCommitsWithDistance = (commits: CommitData[], distance: number) => {
+  const selectedCommits: CommitData[] = [];
 
-//   for (const result of packagesResults) {
-//     for (const { name, value } of (result ?? [])) {
+  for (let i = 0; i < commits.length; i += distance) {
+    const commit = commits[i];
 
-//       const foundMetric = globalResult?.find(metric => metric.name === name);
+    if (commit) {
+      selectedCommits.push();
+    }
+  }
 
-//       if (!foundMetric) {
-//         continue;
-//       }
+  return selectedCommits;
+};
 
-//       foundMetric.value += Number(value);
-//     }
-//   }
+// get COMMIT_COUNT of codemods evenly distributed in time
+const getCommitsToCheck = (commits: CommitData[]) => {
+  const intervalDuration = getCommitsIntervalDuration(commits);
+  return intervalDuration
+    ? getCommitsWithInterval(commits, intervalDuration)
+    : getCommitsWithDistance(
+        commits,
+        Math.floor(commits.length / COMMITS_COUNT),
+      );
+};
 
-//   return globalResult;
-// }
+const getGlobalResults = (packagesResults: Result[], name: string) => {
+  return packagesResults.reduce(
+    (acc, item) => {
+      Object.keys(item).forEach((key) => {
+        if (typeof item[key] === "number") {
+          if (!acc[key]) {
+            acc[key] = 0;
+          }
 
-// /**
-//  * Generates analysis for given package.json
-//  */
-// const getAnalyzePackageJson =
-//   (options: Options, pnpmWorkspace?: PnpmWorkspace | null) =>
-//     async ({
-//       getContents,
-//     }: { getContents(): Promise<Record<string, string>> }) => {
-//       const packageJson = await getContents();
+          acc[key] += item[key];
+        }
+      });
 
+      return acc;
+    },
+    { name },
+  );
+};
 
+/**
+ * Generates analysis for given package.json
+ */
+const getAnalyzePackageJson =
+  (options: Options, pnpmWorkspace?: PnpmWorkspace | null) =>
+  async ({
+    getContents,
+  }: { getContents(): Promise<Record<string, string>> }) => {
+    const packageJson = await getContents();
 
-//       const packagesResults = await Promise.all(
-//         getPackagesData(packageJson, { ...options, ...(pnpmWorkspace && { pnpmWorkspace }) })
-//           .map(({ packageName, packageVersionRange }) => analyzePackage(packageName, packageVersionRange))
-//       );
+    const packagesResults = await Promise.all(
+      getPackagesData(packageJson, {
+        ...options,
+        ...(pnpmWorkspace && { pnpmWorkspace }),
+      }).map(({ packageName, packageVersionRange }) =>
+        analyzePackage(packageName, packageVersionRange),
+      ),
+    );
 
-//       console.log(getPackagesData(packageJson, { ...options, ...(pnpmWorkspace && { pnpmWorkspace }) }), packagesResults, 'HERE???');
+    return getGlobalResults(
+      packagesResults.filter((packageResult): packageResult is Result =>
+        Boolean(packageResult),
+      ),
+      packageJson.name ?? "Unnamed",
+    );
+  };
 
-//       return getGlobalResults(packagesResults.filter(Boolean));
-//     };
+const getAnalyzeWorkspace =
+  (options: Options) =>
+  async ({
+    getContents,
+  }: { getContents(): Promise<Record<string, string>> }) => {
+    const pnpmWorkspace = await getContents();
+    // @TODO
 
+    return pnpmWorkspace;
+  };
 
-// const getAnalyzeWorkspace =
-//   (options: Options) =>
-//     async ({ getContents }) => {
-//       const pnpmWorkspace = await getContents();
-//       // @TODO
+const options = {
+  repo: "https://github.com/DmytroHryshyn/feature-flag-example.git",
+  onlyProd: false,
+  label: "real_drift",
+};
 
-//       return pnpmWorkspace;
-//     };
+export async function workflow({ git, contexts }: Api) {
+  const analysis: Result[] = [];
 
-// const options = {
-//   repo: 'https://github.com/DmytroHryshyn/feature-flag-example.git',
-//   onlyProd: false,
-//   label: 'real_drift'
-// }
+  await git.clone(options.repo, async ({ files, exec }) => {
+    const { all: allCommits } = await contexts.getGitContext().simpleGit.log();
+    const commits = await getCommitsToCheck(
+      allCommits.map(({ hash, date }) => ({
+        commit: hash,
+        date: new Date(date),
+      })),
+    );
 
-// export async function workflow({ git, contexts }: Api) {
-//   const test = await contexts.gitContext.simpleGit.log();
-//   console.log(test, '??')
-//   const analysis = [];
+    await runForEachCommit(commits, exec, async ({ date }) => {
+      // workspace
+      const [workspace] = await files(PNPM_WORKSPACE_PATH)
+        .yaml()
+        .map<any, any>(getAnalyzeWorkspace(options));
 
-//   await git.clone(options.repo, async ({ files, exec, }) => {
-//     // const c = await contexts.gitContext.simpleGit.log();
+      // libyear
+      const packagesAnalysis = await files(`**/package.json`)
+        .json()
+        .map<any, Result>(getAnalyzePackageJson(options, workspace));
 
+      const commitAnalysis = packagesAnalysis.map((data) => ({
+        ...data,
+        timestamp: date,
+        label: options.label,
+      }));
 
-//     const commits = [];
+      analysis.push(...commitAnalysis);
+    });
+  });
 
-//     await runForEachCommit(commits, exec, async ({ date }) => {
-//       // workspace 
-//       const [workspace] = await files(PNPM_WORKSPACE_PATH)
-//         .yaml()
-//         .map<any, any>(getAnalyzeWorkspace(options));
-
-//       // libyear
-//       const packagesAnalysis = await files(`**/apps/**/package.json`)
-//         .json()
-//         .map<any, any>(getAnalyzePackageJson(options, workspace));
-
-
-//       const commitAnalysis = packagesAnalysis.map(
-//         (data) => ({
-//           ...data,
-//           timestamp: date,
-//           label: options.label,
-//         }),
-//       );
-
-//       analysis.push(...commitAnalysis);
-//     });
-
-//   });
-
-//   return analysis;
-// }
-
-export async function workflow({ git, contexts, }: Api) {
-  const result = await contexts.gitContext.simpleGit.log();
-  console.log(result)
+  return analysis;
 }
