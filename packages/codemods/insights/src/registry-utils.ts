@@ -2,6 +2,7 @@ import gitUrl from "giturl";
 import semver from "semver";
 
 export type RawPackageRegistryData = {
+  name: string;
   versions: Record<
     string,
     {
@@ -19,6 +20,7 @@ export type RawPackageRegistryData = {
 };
 
 export type NormalizedRegistryData = {
+  name: string;
   versions: string[];
   next: string | null;
   latest: string | null;
@@ -95,6 +97,7 @@ export const normalizePackageRegistryData = (
   const homepage = getHomePage(packageRegistryData);
 
   return {
+    name: packageRegistryData.name,
     latest: latestStableRelease,
     next: nextVersion,
     versions: sortedVersions,

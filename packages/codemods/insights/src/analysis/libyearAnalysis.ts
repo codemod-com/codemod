@@ -16,6 +16,31 @@ const getDesiredVersion = (
     ? next
     : latestStableRelease;
 
+const getLatestStableVersionBeforeDate = (
+  packageRegistryData: NormalizedRegistryData,
+  date: Date,
+) => {
+  const { time } = packageRegistryData;
+
+  const latestVersionBeforeDate = Object.entries(time)
+    .filter(
+      ([, versionDate]) => new Date(versionDate).getTime() < date.getTime(),
+    )
+    .map(([version]) => version)
+    .reduce((latest, current) => {
+      return semver.valid(latest) &&
+        !semver.prerelease(latest) &&
+        semver.valid(current) &&
+        semver.gt(latest, current)
+        ? latest
+        : current;
+    }, "0.0.0");
+
+  // console.log(packageRegistryData.name, date, latestVersionBeforeDate, "??");
+
+  return latestVersionBeforeDate;
+};
+
 const getDrift = (
   currentVersionTime: string | null | undefined,
   desiredVersionTime: string | null | undefined,
@@ -32,16 +57,21 @@ export const runAnalysis = (
   packageName: string,
   packageVersionRange: string,
   packageRegistryData: NormalizedRegistryData,
+  date: Date,
 ): Result => {
   const { time, versions } = packageRegistryData;
 
   const currentVersion = semver.minSatisfying(versions, packageVersionRange);
-  const desiredVersion = getDesiredVersion(currentVersion, packageRegistryData);
+  const desiredVersion = getLatestStableVersionBeforeDate(
+    packageRegistryData,
+    date,
+  );
 
   const currentVersionTime = currentVersion ? time[currentVersion] : null;
   const desiredVersionTime = desiredVersion ? time[desiredVersion] : null;
 
   return {
     drift: Number(getDrift(currentVersionTime, desiredVersionTime)),
+    name: packageName,
   };
 };

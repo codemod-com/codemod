@@ -58,6 +58,7 @@ const transform = async (
         return workflow;
       }
     },
+    fetch,
     promise: undefined,
   });
 

@@ -1,4 +1,3 @@
-import type { exec as execFn } from "@codemod.com/workflow";
 import { addMilliseconds } from "date-fns";
 
 export type CommitData = {
@@ -49,17 +48,4 @@ export const getCommitsWithInterval = (
   }
 
   return commitsWithInterval;
-};
-
-export const runForEachCommit = async (
-  commits: CommitData[],
-  exec: typeof execFn,
-  callback: (commit: CommitData) => Promise<any>,
-) => {
-  for (const commit of commits) {
-    await exec(`git checkout ${commit.commit}`);
-    await callback(commit);
-  }
-
-  await exec("git checkout HEAD");
 };
