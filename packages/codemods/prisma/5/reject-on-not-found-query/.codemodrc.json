@@ -5,5 +5,11 @@
   "engine": "jscodeshift",
   "private": false,
   "arguments": [],
-  "meta": {}
+  "meta": {
+    "tags": ["prisma", "migration"],
+    "git": "https://github.com/codemod-com/codemod/tree/main/packages/codemods/prisma/5/reject-on-not-found-query"
+  },
+  "applicability": {
+    "from": [["prisma", "<=", "5"]]
+  }
 }

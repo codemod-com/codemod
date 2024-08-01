@@ -1,6 +1,4 @@
-Short description
-
-Detailed description
+Removes `rejectOnNotFound` deprecated param from prisma query. 
 
 ## Example
 
