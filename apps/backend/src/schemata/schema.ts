@@ -34,6 +34,7 @@ const clientIdentifierSchema = union([
 
 export const queryParamBooleanSchema = pipe(
   custom((input) => input === "true" || input === "false"),
+  transform((input) => input === "true"),
   boolean(),
 );
 
