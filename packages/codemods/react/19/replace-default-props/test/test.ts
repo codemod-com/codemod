@@ -22,7 +22,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -54,7 +54,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -78,7 +78,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -102,7 +102,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -126,7 +126,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -158,7 +158,7 @@ describe("react/19/replace-default-props", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

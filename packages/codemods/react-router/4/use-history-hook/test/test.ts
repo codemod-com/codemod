@@ -26,7 +26,7 @@ describe("react-router v4 use-history-hook", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -60,7 +60,7 @@ describe("react-router v4 use-history-hook", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

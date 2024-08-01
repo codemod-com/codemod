@@ -25,7 +25,7 @@ describe("prisma reject on not found query", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

@@ -22,7 +22,7 @@ describe("launchdarkly-to-devcycle", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -46,7 +46,7 @@ describe("launchdarkly-to-devcycle", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

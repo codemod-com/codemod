@@ -21,7 +21,7 @@ describe("react-native v074 remove callback from PushNotificationIOS.removeEvent
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -48,7 +48,7 @@ describe("react-native v074 remove callback from PushNotificationIOS.removeEvent
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

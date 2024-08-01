@@ -43,7 +43,7 @@ describe("react-router v4 remove-with-props", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

@@ -24,7 +24,7 @@ describe("netlify 0.8.5 createEnvironmentVariable", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

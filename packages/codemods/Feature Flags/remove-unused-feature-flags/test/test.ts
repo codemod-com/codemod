@@ -17,7 +17,7 @@ describe("remove-unused-feature-flags", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
 
     assert.deepEqual(actualOutput, undefined);
   });
@@ -47,7 +47,7 @@ describe("remove-unused-feature-flags", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),

@@ -22,7 +22,7 @@ describe("mui/5/core-styles-import", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

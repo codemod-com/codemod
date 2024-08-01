@@ -22,7 +22,7 @@ describe("codemod", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

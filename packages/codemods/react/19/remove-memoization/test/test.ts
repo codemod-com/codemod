@@ -32,7 +32,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -66,7 +66,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -98,7 +98,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -160,7 +160,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -196,7 +196,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -230,7 +230,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -264,7 +264,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -326,7 +326,7 @@ describe("react/19/remove-memoization-hooks", () => {
         source: input,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),

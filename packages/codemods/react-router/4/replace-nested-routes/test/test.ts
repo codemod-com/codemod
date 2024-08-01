@@ -46,7 +46,7 @@ describe("react-router v4 replace-nested-routes", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

@@ -22,7 +22,7 @@ describe("react/19/replace-create-factory", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -46,7 +46,7 @@ describe("react/19/replace-create-factory", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

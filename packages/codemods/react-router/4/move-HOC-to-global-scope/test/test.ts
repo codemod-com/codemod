@@ -22,7 +22,7 @@ describe("react-router/4/move-HOC-to-global-scope", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
       {},
     );
 

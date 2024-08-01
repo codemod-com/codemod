@@ -24,7 +24,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -49,7 +49,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -74,7 +74,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -95,7 +95,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -117,7 +117,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -142,7 +142,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("js"), {
+      const actualOutput = transform(fileInfo, buildApi(), {
         quote: "single",
       });
 
@@ -168,7 +168,7 @@ describe("react/19/replace-act-import: TestUtils.act -> React.act", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

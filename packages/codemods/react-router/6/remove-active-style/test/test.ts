@@ -24,7 +24,7 @@ describe("react-router v6 remove-active-style", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

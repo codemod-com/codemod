@@ -48,7 +48,7 @@ describe("next 13 move-css-in-js-styles", () => {
 
     const spy = sinon.spy(options);
 
-    const actualOutput = transform(fileInfo, buildApi("js"), options);
+    const actualOutput = transform(fileInfo, buildApi(), options);
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

@@ -41,7 +41,7 @@ describe("react-router v4 add-exact-prop", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

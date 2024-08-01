@@ -39,7 +39,7 @@ describe("react-router v4 wrap-with-imports", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

@@ -26,7 +26,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -54,7 +54,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -82,7 +82,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -110,7 +110,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -139,7 +139,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -168,7 +168,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -196,7 +196,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -224,7 +224,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
@@ -254,7 +254,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),
@@ -283,7 +283,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),
@@ -314,7 +314,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),
@@ -345,7 +345,7 @@ describe("react/remove-forward-ref", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
     assert.deepEqual(
       actualOutput?.replace(/\s/gm, ""),
       OUTPUT.replace(/\s/gm, ""),

@@ -52,7 +52,7 @@ describe("ember 5 app-controller-router-props", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

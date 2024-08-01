@@ -23,7 +23,7 @@ describe("next 13 comment-deletable-files", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(actualOutput, undefined);
   });
@@ -58,7 +58,7 @@ describe("next 13 comment-deletable-files", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

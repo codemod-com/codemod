@@ -30,7 +30,7 @@ describe("react-router v4 browser-router", () => {
       source: trimLicense(input),
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

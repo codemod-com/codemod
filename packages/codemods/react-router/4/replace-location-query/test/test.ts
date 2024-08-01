@@ -20,7 +20,7 @@ describe("react-router 4 replace-location-query", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -45,7 +45,7 @@ describe("react-router 4 replace-location-query", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -76,7 +76,7 @@ describe("react-router 4 replace-location-query", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -111,7 +111,7 @@ describe("react-router 4 replace-location-query", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -133,7 +133,7 @@ describe("react-router 4 replace-location-query", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -162,7 +162,7 @@ describe("react-router 4 replace-location-query", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       actualOutput?.replace(/\W/gm, ""), OUTPUT.replace(/\W/gm, "");
     });
@@ -197,7 +197,7 @@ describe("react-router 4 replace-location-query", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -229,7 +229,7 @@ describe("react-router 4 replace-location-query", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),

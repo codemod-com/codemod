@@ -22,7 +22,7 @@ describe("nextjs/use-session-array-to-object-destructuring", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
       {},
     );
 

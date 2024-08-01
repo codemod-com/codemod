@@ -34,7 +34,7 @@ describe("react-router v4 create-hash-history", () => {
       source: trimLicense(input),
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

@@ -51,7 +51,7 @@ export default function transform(
       path.node.arguments[0].properties =
         path.node.arguments[0].properties.filter((property) => {
           if (
-            j.Property.check(property) &&
+            j.ObjectProperty.check(property) &&
             j.Identifier.check(property.value)
           ) {
             variablesToRemove.push(property.value.name);

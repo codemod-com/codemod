@@ -65,7 +65,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -97,7 +97,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -225,7 +225,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -349,7 +349,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -473,7 +473,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -573,7 +573,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -689,7 +689,7 @@ describe("ember 5 es5-getter-ember-codemod", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

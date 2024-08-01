@@ -22,7 +22,7 @@ describe("remove-legacy-context", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

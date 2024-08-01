@@ -27,7 +27,7 @@ describe("history v4 replace-state-object", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
@@ -57,7 +57,7 @@ describe("history v4 replace-state-object", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

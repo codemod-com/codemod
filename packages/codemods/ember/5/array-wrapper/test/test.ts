@@ -21,7 +21,7 @@ describe("ember 5 array-wrapper", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

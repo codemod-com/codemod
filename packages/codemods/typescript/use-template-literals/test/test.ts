@@ -21,7 +21,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -46,7 +46,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -73,7 +73,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -98,7 +98,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -123,7 +123,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -150,7 +150,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -175,7 +175,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -200,7 +200,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),
@@ -227,7 +227,7 @@ describe("use-template-literals", () => {
         source: INPUT,
       };
 
-      const actualOutput = transform(fileInfo, buildApi("tsx"));
+      const actualOutput = transform(fileInfo, buildApi());
 
       assert.deepEqual(
         actualOutput?.replace(/\W/gm, ""),

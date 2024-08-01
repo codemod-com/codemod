@@ -19,7 +19,7 @@ describe("immutable-4 isiterable-to-iscollection", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

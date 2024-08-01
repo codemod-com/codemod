@@ -23,7 +23,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -48,7 +48,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -73,7 +73,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -94,7 +94,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -116,7 +116,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 
@@ -141,7 +141,7 @@ describe("react/19/replace-use-form-state: useFormState() -> useActionState()", 
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       quote: "single",
     });
 

@@ -25,7 +25,7 @@ describe("prisma reject on not found client", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -50,7 +50,7 @@ describe("prisma reject on not found client", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -75,7 +75,7 @@ describe("prisma reject on not found client", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

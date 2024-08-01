@@ -31,7 +31,7 @@ describe("history v4 use-block", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/[\s_;()]/gm, ""),
@@ -67,7 +67,7 @@ describe("history v4 use-block", () => {
       source: input,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/[\s_;()]/gm, ""),

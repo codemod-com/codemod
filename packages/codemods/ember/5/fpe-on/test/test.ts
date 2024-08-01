@@ -42,7 +42,7 @@ describe("ember 5 fpe-on", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("js"));
+    const actualOutput = transform(fileInfo, buildApi());
 
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),

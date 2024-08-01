@@ -22,7 +22,7 @@ describe("react/19/replace-reactdom-render", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -46,7 +46,7 @@ describe("react/19/replace-reactdom-render", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -70,7 +70,7 @@ describe("react/19/replace-reactdom-render", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -94,7 +94,7 @@ describe("react/19/replace-reactdom-render", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -118,7 +118,7 @@ describe("react/19/replace-reactdom-render", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(

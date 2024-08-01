@@ -39,7 +39,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -58,7 +58,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -77,7 +77,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -96,7 +96,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -115,7 +115,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "unconverted",
     });
     assert.deepEqual(
@@ -136,7 +136,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -155,7 +155,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -174,7 +174,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -193,7 +193,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -212,7 +212,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -231,7 +231,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -250,7 +250,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -269,7 +269,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -288,7 +288,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -307,7 +307,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -326,7 +326,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -345,7 +345,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -361,7 +361,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(actualOutput, undefined);
   });
 
@@ -377,7 +377,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -396,7 +396,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),
@@ -415,7 +415,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "all",
     });
     assert.deepEqual(
@@ -436,7 +436,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "unconverted",
     });
     assert.deepEqual(
@@ -457,7 +457,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "unconverted",
     });
     assert.deepEqual(
@@ -478,7 +478,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "unconverted",
     });
     assert.deepEqual(
@@ -499,7 +499,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       "preserve-prop-types": "unconverted",
     });
     assert.deepEqual(
@@ -520,7 +520,7 @@ describe("ratchet", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {});
+    const actualOutput = transform(fileInfo, buildApi(), {});
     assert.deepEqual(
       actualOutput?.replace(/\W/gm, ""),
       OUTPUT.replace(/\W/gm, ""),

@@ -30,7 +30,7 @@ describe("react/19/replace-string-ref", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -62,7 +62,7 @@ describe("react/19/replace-string-ref", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -94,7 +94,7 @@ describe("react/19/replace-string-ref", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(
@@ -114,7 +114,7 @@ describe("react/19/replace-string-ref", () => {
         path: "index.js",
         source: INPUT,
       },
-      buildApi("tsx"),
+      buildApi(),
     );
 
     assert.deepEqual(actualOutput, undefined);

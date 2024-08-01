@@ -65,7 +65,7 @@ describe("new-image-experimental", () => {
       source: INPUT,
     };
 
-    const actualOutput = transform(fileInfo, buildApi("tsx"), {
+    const actualOutput = transform(fileInfo, buildApi(), {
       dryRun: true,
     });
 
