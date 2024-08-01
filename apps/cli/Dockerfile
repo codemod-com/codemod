@@ -24,6 +24,7 @@ COPY packages/database /app/packages/database/
 COPY packages/runner /app/packages/runner/
 COPY packages/printer /app/packages/printer/
 COPY packages/workflow /app/packages/workflow/
+COPY packages/codemod-utils /app/packages/codemod-utils/
 COPY packages/api-types /app/packages/api-types/
 COPY packages/auth /app/packages/auth/
  
