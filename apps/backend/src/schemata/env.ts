@@ -14,10 +14,7 @@ import {
 } from "valibot";
 
 export const environmentSchema = object({
-  PORT: pipe(
-    string(),
-    transform((input) => Number(input)),
-  ),
+  PORT: pipe(string(), transform(Number)),
   ENCRYPTION_KEY: string(),
   SIGNATURE_PRIVATE_KEY: string(),
   AWS_ACCESS_KEY_ID: optional(string()),

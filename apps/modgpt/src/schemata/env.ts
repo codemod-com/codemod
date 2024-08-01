@@ -11,10 +11,7 @@ import {
 dotenv.config();
 export const environmentSchema = object({
   NODE_ENV: string(),
-  PORT: pipe(
-    string(),
-    transform((input) => Number(input)),
-  ),
+  PORT: pipe(string(), transform(Number)),
   OPEN_AI_API_KEY: string(),
   CLAUDE_API_KEY: string(),
   REPLICATE_API_KEY: string(),

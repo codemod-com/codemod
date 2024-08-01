@@ -12,10 +12,7 @@ import {
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 
 export const environmentSchema = object({
-  PORT: pipe(
-    string(),
-    transform((input) => Number(input)),
-  ),
+  PORT: pipe(string(), transform(Number)),
   ENCRYPTION_KEY: string(),
   CLERK_PUBLISH_KEY: string(),
   CLERK_SECRET_KEY: string(),

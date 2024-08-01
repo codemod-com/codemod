@@ -9,10 +9,7 @@ import {
 } from "valibot";
 
 export const environmentSchema = object({
-  PORT: pipe(
-    string(),
-    transform((input) => Number(input)),
-  ),
+  PORT: pipe(string(), transform(Number)),
   REDIS_HOST: optional(string()),
   REDIS_PORT: optional(string()),
   TASK_MANAGER_QUEUE_NAME: optional(string()),
