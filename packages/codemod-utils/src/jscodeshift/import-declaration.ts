@@ -71,8 +71,8 @@ export const renameDefaultImport = (
     j.ImportDefaultSpecifier.check(s),
   );
 
-  if (j.Identifier.check(importDefaultSpecifier?.name)) {
-    importDefaultSpecifier.name.name = newName;
+  if (j.Identifier.check(importDefaultSpecifier?.local)) {
+    importDefaultSpecifier.local.name = newName;
     isRenamed = true;
   }
 
