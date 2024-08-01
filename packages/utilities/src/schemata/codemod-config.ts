@@ -5,7 +5,7 @@ import * as v from "valibot";
 import { argumentSchema } from "./argument-record.js";
 
 export const extractLibNameAndVersion = (val: string) => {
-  const parts = val.split("@");
+  const parts = val.split("@").filter(Boolean);
   let version: string | null = null;
   let libName: string;
   if (parts.length > 1) {
