@@ -26,6 +26,7 @@ COPY packages/runner /app/packages/runner/
 COPY packages/printer /app/packages/printer/
 COPY packages/workflow /app/packages/workflow/
 COPY packages/api-types /app/packages/api-types/
+COPY packages/codemod-utils /app/packages/codemod-utils/
 COPY packages/auth /app/packages/auth/
  
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
