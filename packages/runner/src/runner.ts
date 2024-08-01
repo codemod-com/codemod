@@ -184,7 +184,7 @@ export class Runner {
       }
 
       try {
-        const { path: astGrepRulePath, error: errorText } = await getEntryPath({
+        const { path: astGrepRulePath } = await getEntryPath({
           source: codemod.path,
           throwOnNotFound: true,
         });
@@ -529,6 +529,13 @@ export class Runner {
     const pathGenerator = pathGeneratorInitializer();
 
     this.printRunSummary(printer, codemod, flowSettings, patterns);
+
+    if (codemod.config.engine === "ast-grep") {
+      codemod.path = await getEntryPath({
+        source: codemod.path,
+        throwOnNotFound: true,
+      }).then(({ path }) => path);
+    }
 
     const commands: FileCommand[] = [];
     await new Promise<void>((resolve) => {
