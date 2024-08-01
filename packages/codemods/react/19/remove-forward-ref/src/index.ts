@@ -14,7 +14,7 @@ import {
   getImportDeclaration,
   removeNamedImports,
 } from "@codemod-com/codemod-utils";
-import { isCallExpressionLibraryMethod } from "@codemod-com/codemod-utils/src/callExpression.js";
+import { isCallExpressionLibraryMethod } from "@codemod-com/codemod-utils";
 
 // Props & { ref: React.RefObject<Ref>}
 const buildPropsAndRefIntersectionTypeAnnotation = (
