@@ -1,35 +1,28 @@
-import {
-  type Output,
-  literal,
-  object,
-  optional,
-  parse,
-  string,
-  union,
-  unknown,
-} from "valibot";
+import * as v from "valibot";
 
 import { consoleKindSchema } from "./console-kind.js";
 
-const workerThreadMessageSchema = union([
-  object({
-    kind: literal("commands"),
-    commands: unknown(),
-    path: optional(string()),
+const workerThreadMessageSchema = v.union([
+  v.object({
+    kind: v.literal("commands"),
+    commands: v.unknown(),
+    path: v.optional(v.string()),
   }),
-  object({
-    kind: literal("error"),
-    message: string(),
-    path: optional(string()),
+  v.object({
+    kind: v.literal("error"),
+    message: v.string(),
+    path: v.optional(v.string()),
   }),
-  object({
-    kind: literal("console"),
+  v.object({
+    kind: v.literal("console"),
     consoleKind: consoleKindSchema,
-    message: string(),
+    message: v.string(),
   }),
 ]);
 
-export type WorkerThreadMessage = Output<typeof workerThreadMessageSchema>;
+export type WorkerThreadMessage = v.InferOutput<
+  typeof workerThreadMessageSchema
+>;
 
 export const decodeWorkerThreadMessage = (input: unknown) =>
-  parse(workerThreadMessageSchema, input);
+  v.parse(workerThreadMessageSchema, input);

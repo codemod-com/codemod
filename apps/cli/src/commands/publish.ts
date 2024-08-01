@@ -1,6 +1,11 @@
 import { spawn } from "node:child_process";
 import * as fs from "node:fs";
 import { join } from "node:path";
+import { glob } from "glob";
+import inquirer from "inquirer";
+import * as semver from "semver";
+import * as v from "valibot";
+
 import { type Printer, chalk } from "@codemod-com/printer";
 import { BUILT_SOURCE_PATH, getCodemodExecutable } from "@codemod-com/runner";
 import type { TelemetrySender } from "@codemod-com/telemetry";
@@ -13,10 +18,6 @@ import {
   getEntryPath,
   tarInMemory,
 } from "@codemod-com/utilities";
-import { glob } from "glob";
-import inquirer from "inquirer";
-import * as semver from "semver";
-import { url, safeParse, string } from "valibot";
 import { version as cliVersion } from "#/../package.json";
 import { extractPrintableApiError, getCodemod, publish } from "#api.js";
 import { getCurrentUserOrLogin } from "#auth-utils.js";
@@ -159,7 +160,7 @@ export const handlePublishCliCommand = async (options: {
       message:
         "Enter the URL of the git repository where this codemod is located.",
       validate: (input) => {
-        const stringParsingResult = safeParse(string(), input);
+        const stringParsingResult = v.safeParse(v.string(), input);
         if (stringParsingResult.success === false) {
           return stringParsingResult.issues[0].message;
         }
@@ -169,7 +170,10 @@ export const handlePublishCliCommand = async (options: {
           return true;
         }
 
-        const urlParsingResult = safeParse(string([url()]), stringInput);
+        const urlParsingResult = v.safeParse(
+          v.pipe(v.string(), v.url()),
+          stringInput,
+        );
         if (urlParsingResult.success === false) {
           return urlParsingResult.issues[0].message;
         }

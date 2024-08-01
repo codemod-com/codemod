@@ -17,18 +17,18 @@ export const codemodSchemaBase = v.object({
   engineOptions: v.optional(v.nullable(engineOptionsSchema), null),
 });
 
-export const knownEnginesCodemodSchema = v.merge([
-  codemodSchemaBase,
-  v.object({ config: knownEnginesCodemodConfigSchema }),
-]);
+export const knownEnginesCodemodSchema = v.object({
+  ...codemodSchemaBase.entries,
+  ...v.object({ config: knownEnginesCodemodConfigSchema }).entries,
+});
 
-export const recipeCodemodSchema = v.merge([
-  codemodSchemaBase,
-  v.object({
+export const recipeCodemodSchema = v.object({
+  ...codemodSchemaBase.entries,
+  ...v.object({
     config: recipeCodemodConfigSchema,
     codemods: v.optional(v.array(knownEnginesCodemodSchema), []),
-  }),
-]);
+  }).entries,
+});
 
 export const codemodSchema = v.union([
   knownEnginesCodemodSchema,
@@ -55,13 +55,17 @@ export const safeParseCodemod = (codemod: unknown) =>
   v.safeParse(codemodSchema, codemod);
 export const isCodemod = (codemod: unknown) => v.is(codemodSchema, codemod);
 
-export type Codemod = v.Output<typeof codemodSchema>;
-export type RecipeCodemod = v.Output<typeof recipeCodemodSchema>;
-export type KnownEnginesCodemod = v.Output<typeof knownEnginesCodemodSchema>;
+export type Codemod = v.InferOutput<typeof codemodSchema>;
+export type RecipeCodemod = v.InferOutput<typeof recipeCodemodSchema>;
+export type KnownEnginesCodemod = v.InferOutput<
+  typeof knownEnginesCodemodSchema
+>;
 
-export type CodemodValidationInput = v.Input<typeof codemodSchema>;
-export type RecipeCodemodValidationInput = v.Input<typeof recipeCodemodSchema>;
-export type KnownEnginesCodemodValidationInput = v.Input<
+export type CodemodValidationInput = v.InferInput<typeof codemodSchema>;
+export type RecipeCodemodValidationInput = v.InferInput<
+  typeof recipeCodemodSchema
+>;
+export type KnownEnginesCodemodValidationInput = v.InferInput<
   typeof knownEnginesCodemodSchema
 >;
 

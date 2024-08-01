@@ -6,11 +6,9 @@ import { join } from "node:path";
 
 import { afterAll, describe, it } from "vitest";
 
-import type { ConsoleKind } from "@codemod-com/printer";
-
 import type { CodemodConfigInput } from "@codemod-com/utilities";
 import { runTsMorphCodemod } from "../src/engines/ts-morph.js";
-import { getCodemodExecutable } from "../src/source-code.js";
+import { getCodemodExecutable, getTransformer } from "../src/source-code.js";
 
 const codemodSource = `
 import { SourceFile, EmitHint } from 'ts-morph';
@@ -47,23 +45,14 @@ describe("runTsMorphCodemod", async () => {
   );
 
   const compiledSource = await getCodemodExecutable(directoryPath);
+  const transformer = getTransformer(compiledSource);
 
   afterAll(async () => {
     await rmdir(directoryPath, { recursive: true });
   });
 
   it("should return transformed output", () => {
-    const messages: [ConsoleKind, string][] = [];
-
-    const fileCommands = runTsMorphCodemod(
-      compiledSource,
-      "index.ts",
-      "",
-      {},
-      (consoleKind, message) => {
-        messages.push([consoleKind, message]);
-      },
-    );
+    const fileCommands = runTsMorphCodemod(transformer!, "index.ts", "", {});
 
     deepStrictEqual(fileCommands.length, 1);
 
@@ -75,7 +64,5 @@ describe("runTsMorphCodemod", async () => {
       oldData: "",
       newData: "class Test {\n}\n",
     });
-
-    deepStrictEqual(messages, [["log", "/index.ts"]]);
   });
 });

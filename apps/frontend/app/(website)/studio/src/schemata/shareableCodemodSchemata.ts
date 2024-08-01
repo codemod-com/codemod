@@ -1,6 +1,6 @@
 import { knownEnginesSchema } from "@codemod-com/utilities";
 import {
-  type Output,
+  type InferOutput,
   literal,
   number,
   object,
@@ -26,4 +26,4 @@ export const shareableCodemodSchemata = object({
 export const parseShareableCodemod = (input: unknown) =>
   parse(shareableCodemodSchemata, input);
 
-export type ShareableCodemod = Output<typeof shareableCodemodSchemata>;
+export type ShareableCodemod = InferOutput<typeof shareableCodemodSchemata>;

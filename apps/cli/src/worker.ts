@@ -1,7 +1,6 @@
 import { parentPort } from "node:worker_threads";
 
 import {
-  type ConsoleKind,
   type MainThreadMessage,
   type WorkerThreadMessage,
   decodeMainThreadMessage,
@@ -21,14 +20,6 @@ class PathAwareError extends Error {
     super(message);
   }
 }
-
-const consoleCallback = (consoleKind: ConsoleKind, message: string): void => {
-  parentPort?.postMessage({
-    kind: "console",
-    consoleKind,
-    message,
-  } satisfies WorkerThreadMessage);
-};
 
 let initializationMessage:
   | (MainThreadMessage & { kind: "initialization" })
@@ -61,22 +52,32 @@ const messageHandler = async (m: unknown) => {
       let commands: readonly FileCommand[] = [];
       switch (initializationMessage.engine) {
         case "jscodeshift":
+          if (initializationMessage.transformer === null) {
+            throw new Error(
+              "Codemod transformer could not be located in the source file",
+            );
+          }
+
           commands = runJscodeshiftCodemod(
-            initializationMessage.codemodSource,
+            initializationMessage.transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
             initializationMessage.engineOptions,
-            consoleCallback,
           );
           break;
         case "ts-morph":
+          if (initializationMessage.transformer === null) {
+            throw new Error(
+              "Codemod transformer could not be located in the source file",
+            );
+          }
+
           commands = runTsMorphCodemod(
-            initializationMessage.codemodSource,
+            initializationMessage.transformer,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
-            consoleCallback,
           );
           break;
         case "ast-grep":

@@ -1,20 +1,20 @@
 import { isNeitherNullNorUndefined } from "@codemod-com/utilities";
 import {
-  type Output,
-  type ValiError,
+  type InferOutput,
   array,
-  coerce,
   literal,
-  number,
   object,
   optional,
   parse,
+  pipe,
   string,
+  transform,
   union,
+  unknown,
 } from "valibot";
 
 export const environmentSchema = object({
-  PORT: coerce(number(), (input) => Number(input)),
+  PORT: pipe(string(), transform(Number)),
   ENCRYPTION_KEY: string(),
   SIGNATURE_PRIVATE_KEY: string(),
   AWS_ACCESS_KEY_ID: optional(string()),
@@ -22,21 +22,24 @@ export const environmentSchema = object({
   AWS_PUBLIC_BUCKET_NAME: string(),
   AWS_PRIVATE_BUCKET_NAME: string(),
   DATABASE_URI: string(),
-  VERIFIED_PUBLISHERS: coerce(array(string()), (input) => {
-    if (!isNeitherNullNorUndefined(input)) {
+  VERIFIED_PUBLISHERS: pipe(
+    unknown(),
+    transform((input) => {
+      if (!isNeitherNullNorUndefined(input)) {
+        return [];
+      }
+
+      if (Array.isArray(input)) {
+        return parse(array(string()), input);
+      }
+
+      if (typeof input === "string") {
+        return input.split(",").map((p) => p.trim());
+      }
+
       return [];
-    }
-
-    if (Array.isArray(input)) {
-      return input;
-    }
-
-    if (typeof input === "string") {
-      return input.split(",").map((p) => p.trim());
-    }
-
-    return [];
-  }),
+    }),
+  ),
   OPEN_AI_API_KEY: optional(string()),
   CHROMA_BACKEND_URL: optional(string()),
   CLAUDE_API_KEY: optional(string()),
@@ -64,16 +67,7 @@ export const environmentSchema = object({
   FRONTEND_URL: string(),
 });
 
-export type Environment = Output<typeof environmentSchema>;
+export type Environment = InferOutput<typeof environmentSchema>;
 
-export const parseEnvironment = (input: unknown) => {
-  try {
-    return parse(environmentSchema, input);
-  } catch (err) {
-    throw new Error(
-      `Invalid environment: ${(err as ValiError).issues
-        .map((i) => i.path?.map((p) => p.key).join("."))
-        .join(", ")}`,
-    );
-  }
-};
+export const parseEnvironment = (input: unknown) =>
+  parse(environmentSchema, input);

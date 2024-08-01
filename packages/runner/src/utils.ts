@@ -2,6 +2,10 @@ import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
 import jscodeshift from "jscodeshift";
 
 export const isTheSameData = (oldData: string, newData: string) => {
+  if (oldData === newData) {
+    return true;
+  }
+
   try {
     // sometimes codemods produce newData even though they are literally no changes
     // by removing parentheses around return statements, we will likely find the pointless results

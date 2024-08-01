@@ -1,6 +1,6 @@
 import type { Message } from "ai";
 import {
-  type Output,
+  type InferOutput,
   array,
   literal,
   number,
@@ -25,7 +25,7 @@ const frozenMessageSchema = object({
   functionCall: optional(string()),
 });
 
-type FrozenMessage = Output<typeof frozenMessageSchema>;
+type FrozenMessage = InferOutput<typeof frozenMessageSchema>;
 
 export const parseFrozenMessages = (input: unknown) =>
   parse(array(frozenMessageSchema), input);
@@ -34,10 +34,7 @@ export const freezeMessage = (message: Message): FrozenMessage => ({
   id: message.id,
   createdAt: message.createdAt?.getTime(),
   content: message.content,
-  role:
-    message.role === "data" || message.role === "tool"
-      ? "system"
-      : message.role,
+  role: message.role === "data" ? "system" : message.role,
   name: message.name,
   functionCall:
     typeof message.function_call === "string"

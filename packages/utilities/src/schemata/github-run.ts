@@ -1,14 +1,14 @@
-import { literal, object, optional, string, union } from "valibot";
+import * as v from "valibot";
 
-export const codemodRunBodySchema = object({
-  codemodSource: string(),
-  codemodEngine: union([literal("jscodeshift"), literal("ts-morph")]),
-  repoUrl: string(),
-  branch: optional(string()),
+export const codemodRunBodySchema = v.object({
+  codemodSource: v.string(),
+  codemodEngine: v.union([v.literal("jscodeshift"), v.literal("ts-morph")]),
+  repoUrl: v.string(),
+  branch: v.optional(v.string()),
 });
 
 export type CodemodRunResponse = { success: boolean; codemodRunId: string };
 
-export const validateCodemodStatusParamsSchema = object({
-  jobId: string(),
+export const validateCodemodStatusParamsSchema = v.object({
+  jobId: v.string(),
 });

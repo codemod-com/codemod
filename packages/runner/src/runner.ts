@@ -184,7 +184,7 @@ export class Runner {
       }
 
       try {
-        const { path: astGrepRulePath, error: errorText } = await getEntryPath({
+        const { path: astGrepRulePath } = await getEntryPath({
           source: codemod.path,
           throwOnNotFound: true,
         });
@@ -450,8 +450,15 @@ export class Runner {
     }
 
     const codemodSource = await getCodemodExecutable(codemod.path);
+    const transformer = getTransformer(codemodSource);
 
     if (codemod.config.engine === "workflow") {
+      if (transformer === null) {
+        throw new Error(
+          `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
+        );
+      }
+
       this.printRunSummary(printer, codemod, flowSettings, {
         include: ["**/*.*"],
         exclude: [],
@@ -461,11 +468,8 @@ export class Runner {
       });
 
       await runWorkflowCodemod(
-        codemodSource,
+        transformer,
         codemod.safeArgumentRecord,
-        (kind, message) => {
-          printer.printMessage({ kind: "console", message, consoleKind: kind });
-        },
         this._options.authService,
       );
 
@@ -474,8 +478,6 @@ export class Runner {
     }
 
     if (codemod.config.engine === "filemod") {
-      const transformer = getTransformer(codemodSource);
-
       if (transformer === null) {
         throw new Error(
           `The transformer cannot be null: ${codemod.path} ${codemod.config.engine}`,
@@ -509,8 +511,6 @@ export class Runner {
         ...flowSettings,
       });
 
-      // const commands = await buildFormattedFileCommands(fileCommands);
-
       for (const command of commands) {
         await onCommand(command);
       }
@@ -529,6 +529,13 @@ export class Runner {
     const pathGenerator = pathGeneratorInitializer();
 
     this.printRunSummary(printer, codemod, flowSettings, patterns);
+
+    if (codemod.config.engine === "ast-grep") {
+      codemod.path = await getEntryPath({
+        source: codemod.path,
+        throwOnNotFound: true,
+      }).then(({ path }) => path);
+    }
 
     const commands: FileCommand[] = [];
     await new Promise<void>((resolve) => {
@@ -565,7 +572,7 @@ export class Runner {
             engine: "jscodeshift" | "ts-morph" | "ast-grep";
           };
         },
-        codemodSource,
+        transformer,
         onError,
       });
     });

@@ -1,50 +1,48 @@
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import nodePath, { dirname, join, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import esbuild from "esbuild";
-import tsmorph from "ts-morph";
 
-import type { Filemod } from "@codemod-com/filemod";
 import { getEntryPath, isJavaScriptName } from "@codemod-com/utilities";
-import type { Dependencies } from "#engines/filemod.js";
+
+export type TransformFunction = (
+  ...args: unknown[]
+) => unknown | Promise<unknown>;
 
 export const getTransformer = (source: string) => {
   type Exports =
     | {
         __esModule?: true;
-        default?: unknown;
-        handleSourceFile?: unknown;
-        repomod?: Filemod<Dependencies, Record<string, unknown>>;
-        filemod?: Filemod<Dependencies, Record<string, unknown>>;
+        default?: TransformFunction;
+        handleSourceFile?: TransformFunction;
+        transform?: TransformFunction;
+        workflow?: TransformFunction;
+        repomod?: TransformFunction;
+        filemod?: TransformFunction;
       }
     | (() => void);
 
-  const module = { exports: {} as Exports };
-  const _require = (name: string) => {
-    if (name === "ts-morph") {
-      return tsmorph;
-    }
+  try {
+    const module = { exports: {} as Exports };
 
-    if (name === "node:path") {
-      return nodePath;
-    }
-  };
+    const keys = ["module", "exports", "require"];
+    const values = [module, module.exports, require];
 
-  const keys = ["module", "exports", "require"];
-  const values = [module, module.exports, _require];
+    new Function(...keys, source).apply(null, values);
 
-  new Function(...keys, source).apply(null, values);
-
-  return typeof module.exports === "function"
-    ? module.exports
-    : module.exports.__esModule && typeof module.exports.default === "function"
-      ? module.exports.default
-      : typeof module.exports.handleSourceFile === "function"
-        ? module.exports.handleSourceFile
-        : module.exports.repomod !== undefined
-          ? module.exports.repomod
-          : module.exports.filemod !== undefined
-            ? module.exports.filemod
-            : null;
+    return typeof module.exports === "function"
+      ? module.exports
+      : module.exports.__esModule
+        ? module.exports.default ??
+          module.exports.transform ??
+          module.exports.handleSourceFile ??
+          module.exports.repomod ??
+          module.exports.filemod ??
+          module.exports.workflow ??
+          null
+        : null;
+  } catch {
+    return null;
+  }
 };
 
 export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";

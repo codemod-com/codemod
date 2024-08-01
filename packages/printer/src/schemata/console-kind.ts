@@ -1,15 +1,15 @@
-import { type Output, literal, parse, union } from "valibot";
+import * as v from "valibot";
 
-export const consoleKindSchema = union([
-  literal("debug"),
-  literal("error"),
-  literal("log"),
-  literal("info"),
-  literal("trace"),
-  literal("warn"),
+export const consoleKindSchema = v.union([
+  v.literal("debug"),
+  v.literal("error"),
+  v.literal("log"),
+  v.literal("info"),
+  v.literal("trace"),
+  v.literal("warn"),
 ]);
 
 export const parseConsoleKind = (input: unknown) =>
-  parse(consoleKindSchema, input);
+  v.parse(consoleKindSchema, input);
 
-export type ConsoleKind = Output<typeof consoleKindSchema>;
+export type ConsoleKind = v.InferOutput<typeof consoleKindSchema>;
