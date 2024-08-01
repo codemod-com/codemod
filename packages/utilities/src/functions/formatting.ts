@@ -101,3 +101,21 @@ export const buildCodemodSlug = (name: string) =>
     .replaceAll("@", "")
     .split(/[\/ ,.-]/)
     .join("-");
+
+export const extractNameAndVersion = (val: string) => {
+  const lastAtSymbolIndex = val.lastIndexOf("@");
+  const sliceUpToLastAtSymbol = val.substring(0, lastAtSymbolIndex);
+
+  // Starts with a @
+  if (sliceUpToLastAtSymbol.length === 0) {
+    return {
+      name: val,
+      version: null,
+    };
+  }
+
+  return {
+    name: sliceUpToLastAtSymbol,
+    version: val.substring(lastAtSymbolIndex + 1),
+  };
+};

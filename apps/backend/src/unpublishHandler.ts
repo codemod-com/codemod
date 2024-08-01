@@ -4,7 +4,7 @@ import type { RouteHandler } from "fastify";
 import type { UserDataPopulatedRequest } from "@codemod-com/auth";
 import { prisma } from "@codemod-com/database";
 import {
-  extractLibNameAndVersion,
+  extractNameAndVersion,
   isNeitherNullNorUndefined,
 } from "@codemod-com/utilities";
 
@@ -28,7 +28,7 @@ export const unpublishHandler: RouteHandler<{
     }
 
     const { name } = parseUnpublishBody(request.body);
-    const { libName: codemodName, version } = extractLibNameAndVersion(name);
+    const { name: codemodName, version } = extractNameAndVersion(name);
 
     const codemod = await prisma.codemod.findFirst({
       where: { name: codemodName },
