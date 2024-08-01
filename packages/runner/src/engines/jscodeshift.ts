@@ -3,6 +3,7 @@ import vm from "node:vm";
 import jscodeshift, { type Parser, type API } from "jscodeshift";
 import { nullish, parse, string } from "valibot";
 
+import { defaultJSCodeshiftParser } from "@codemod-com/codemod-utils";
 import type { ConsoleKind } from "@codemod-com/printer";
 import type {
   ArgumentRecord,
@@ -11,7 +12,6 @@ import type {
 } from "@codemod-com/utilities";
 import { getAdapterByExtname } from "#adapters/index.js";
 import { CONSOLE_OVERRIDE } from "#constants.js";
-import { defaultParser } from "#parsers/jscodeshift.js";
 import { isTheSameData } from "#utils.js";
 import { buildVmConsole } from "./common.js";
 
@@ -95,7 +95,7 @@ export const runJscodeshiftCodemod = (
     });
   };
 
-  const api = buildApi(engineOptions?.parser ?? defaultParser);
+  const api = buildApi(engineOptions?.parser ?? defaultJSCodeshiftParser);
 
   const transformFn = adapter !== null ? adapter(transform) : transform;
 

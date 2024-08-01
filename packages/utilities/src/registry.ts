@@ -15,6 +15,7 @@ import {
   UnifiedFileSystem,
 } from "@codemod-com/filemod";
 
+// @TODO: remove in favor of re-using one from codemod-utils package
 export const buildApi = (parser: string | undefined): API => ({
   j: parser ? jscodeshift.withParser(parser) : jscodeshift,
   jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,

@@ -1,1 +1,0 @@
-import { other } from 'import-name';

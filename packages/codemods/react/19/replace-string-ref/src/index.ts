@@ -1,6 +1,6 @@
-import type { API, FileInfo, JSCodeshift, Options } from "jscodeshift";
+import type { API, FileInfo, JSCodeshift } from "jscodeshift";
 
-const REACT_CLASS_COMPONENT_SUPERCLASS_NAMES = ["PureComponent", "Component"];
+import { getClassComponents } from "@codemod-com/codemod-utils";
 
 const buildCallbackRef = (j: JSCodeshift, refName: string) =>
   j.jsxAttribute(
@@ -27,88 +27,31 @@ const buildCallbackRef = (j: JSCodeshift, refName: string) =>
 export default function transform(
   file: FileInfo,
   api: API,
-  options?: Options,
 ): string | undefined {
   const j = api.jscodeshift;
   const root = j(file.source);
 
   let isDirty = false;
 
-  const reactComponentNamedImportLocalNamesSet = new Set();
-  let reactDefaultImportName: string | null = null;
-
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: "react" },
-    })
-    .forEach((path) => {
-      path.value.specifiers?.forEach((specifier) => {
-        // named import
-        if (
-          j.ImportSpecifier.check(specifier) &&
-          REACT_CLASS_COMPONENT_SUPERCLASS_NAMES.includes(
-            specifier.imported.name,
-          )
-        ) {
-          reactComponentNamedImportLocalNamesSet.add(specifier.local?.name);
+  getClassComponents(j, root)?.forEach((path) => {
+    j(path)
+      .find(j.JSXAttribute, {
+        name: {
+          type: "JSXIdentifier",
+          name: "ref",
+        },
+      })
+      .forEach((path) => {
+        const attributeValue = path.value.value;
+        if (!j.StringLiteral.check(attributeValue)) {
+          return;
         }
 
-        // default and wildcard import
-        if (
-          j.ImportDefaultSpecifier.check(specifier) ||
-          j.ImportNamespaceSpecifier.check(specifier)
-        ) {
-          reactDefaultImportName = specifier.local?.name ?? null;
-        }
+        isDirty = true;
+
+        path.replace(buildCallbackRef(j, attributeValue.value));
       });
-    });
-
-  const reactComponentNamedImportLocalNames = [
-    ...reactComponentNamedImportLocalNamesSet,
-  ];
-
-  const classComponentCollection = root
-    .find(j.ClassDeclaration)
-    .filter((path) => {
-      const superClass = path.value.superClass;
-
-      if (j.Identifier.check(superClass)) {
-        return [...reactComponentNamedImportLocalNames].includes(
-          superClass.name,
-        );
-      }
-
-      if (
-        j.MemberExpression.check(superClass) &&
-        j.Identifier.check(superClass.object) &&
-        superClass.object.name === reactDefaultImportName &&
-        j.Identifier.check(superClass.property)
-      ) {
-        return REACT_CLASS_COMPONENT_SUPERCLASS_NAMES.includes(
-          superClass.property.name,
-        );
-      }
-
-      return false;
-    });
-
-  classComponentCollection
-    .find(j.JSXAttribute, {
-      name: {
-        type: "JSXIdentifier",
-        name: "ref",
-      },
-    })
-    .forEach((path) => {
-      const attributeValue = path.value.value;
-      if (!j.StringLiteral.check(attributeValue)) {
-        return;
-      }
-
-      isDirty = true;
-
-      path.replace(buildCallbackRef(j, attributeValue.value));
-    });
+  });
 
   return isDirty ? root.toSource() : undefined;
 }

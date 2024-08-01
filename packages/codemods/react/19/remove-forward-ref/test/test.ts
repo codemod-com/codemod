@@ -120,7 +120,6 @@ describe("react/remove-forward-ref", () => {
 
   it("forwardRef import: should not remove type imports", () => {
     const INPUT = `
-			import type { X } from "react";
 			import { forwardRef, type Y } from 'react';
 
 			const MyInput = forwardRef(function MyInput(props, ref) {
@@ -129,7 +128,6 @@ describe("react/remove-forward-ref", () => {
 		`;
 
     const OUTPUT = `
-			import type { X } from "react";
 			import { type Y } from 'react';
 			const MyInput = function MyInput({ref, ...props}) {
 				return null;

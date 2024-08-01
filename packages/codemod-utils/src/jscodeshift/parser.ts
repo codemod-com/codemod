@@ -1,7 +1,7 @@
 import babylon, { type ParserOptions } from "@babel/parser";
 import type { Parser } from "jscodeshift";
 
-export const defaultOptions: ParserOptions = {
+export const defaultJSCodeshiftOptions: ParserOptions = {
   sourceType: "module",
   allowImportExportEverywhere: true,
   allowReturnOutsideFunction: true,
@@ -44,6 +44,6 @@ export const defaultOptions: ParserOptions = {
   ],
 };
 
-export const defaultParser: Parser = {
-  parse: (source: string) => babylon.parse(source, defaultOptions),
+export const defaultJSCodeshiftParser: Parser = {
+  parse: (source: string) => babylon.parse(source, defaultJSCodeshiftOptions),
 };

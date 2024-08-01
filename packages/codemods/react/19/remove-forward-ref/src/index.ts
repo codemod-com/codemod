@@ -10,6 +10,12 @@ import type {
   TSTypeReference,
 } from "jscodeshift";
 
+import {
+  getImportDeclaration,
+  removeNamedImports,
+} from "@codemod-com/codemod-utils";
+import { isCallExpressionLibraryMethod } from "@codemod-com/codemod-utils";
+
 // Props & { ref: React.RefObject<Ref>}
 const buildPropsAndRefIntersectionTypeAnnotation = (
   j: JSCodeshift,
@@ -108,56 +114,21 @@ export default function transform(file: FileInfo, api: API) {
 
   let isDirty = false;
 
-  let reactForwardRefImportLocalName: string | null = null;
-  let reactDefaultImportName: string | null = null;
+  const importDeclaration = getImportDeclaration(j, root, "react");
 
-  root
-    .find(j.ImportDeclaration, {
-      source: { value: "react" },
-    })
-    .forEach((path) => {
-      path.value.specifiers?.forEach((specifier) => {
-        // named import
-        if (
-          j.ImportSpecifier.check(specifier) &&
-          specifier.imported.name === "forwardRef"
-        ) {
-          reactForwardRefImportLocalName = specifier.local?.name ?? null;
-        }
-
-        // default and wildcard import
-        if (
-          j.ImportDefaultSpecifier.check(specifier) ||
-          j.ImportNamespaceSpecifier.check(specifier)
-        ) {
-          reactDefaultImportName = specifier.local?.name ?? null;
-        }
-      });
-    });
+  if (!importDeclaration) {
+    return undefined;
+  }
 
   root
     .find(j.CallExpression)
-    .filter((path) => {
-      const { callee } = path.value;
-
-      if (
-        j.Identifier.check(callee) &&
-        callee.name === reactForwardRefImportLocalName
-      ) {
-        return true;
-      }
-
-      if (
-        j.MemberExpression.check(callee) &&
-        j.Identifier.check(callee.object) &&
-        callee.object.name === reactDefaultImportName &&
-        j.Identifier.check(callee.property) &&
-        callee.property.name === "forwardRef"
-      ) {
-        return true;
-      }
-
-      return false;
+    .filter((callExpression) => {
+      return isCallExpressionLibraryMethod(
+        j,
+        callExpression,
+        importDeclaration,
+        ["forwardRef"],
+      );
     })
     .replaceWith((callExpressionPath) => {
       const originalCallExpression = callExpressionPath.value;
@@ -267,32 +238,11 @@ export default function transform(file: FileInfo, api: API) {
    * handle import
    */
   if (isDirty) {
-    root
-      .find(j.ImportDeclaration, {
-        source: {
-          value: "react",
-        },
-      })
-      .forEach((importDeclarationPath) => {
-        const { specifiers, importKind } = importDeclarationPath.node;
+    const importDeclaration = getImportDeclaration(j, root, "react");
 
-        if (importKind !== "value") {
-          return;
-        }
-
-        const specifiersWithoutForwardRef =
-          specifiers?.filter(
-            (s) =>
-              !j.ImportSpecifier.check(s) || s.imported.name !== "forwardRef",
-          ) ?? [];
-
-        if (specifiersWithoutForwardRef.length === 0) {
-          j(importDeclarationPath).remove();
-          return;
-        }
-
-        importDeclarationPath.node.specifiers = specifiersWithoutForwardRef;
-      });
+    if (importDeclaration !== null) {
+      removeNamedImports(j, ["forwardRef"], importDeclaration);
+    }
   }
 
   return isDirty ? root.toSource() : undefined;

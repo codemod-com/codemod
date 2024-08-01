@@ -3,6 +3,7 @@
   "author": "codemod",
   "dependencies": {},
   "devDependencies": {
+    "@codemod-com/codemod-utils": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
     "typescript": "^5.2.2",
     "ts-node": "^10.9.1",
