@@ -41,11 +41,12 @@ function transform(
                   j.identifier("data"),
                   j.identifier(sessionVar),
                 ),
-                j.property(
-                  "init",
-                  j.identifier("status"),
-                  j.identifier("status"),
-                ),
+                j.property.from({
+                  key: j.identifier("status"),
+                  value: j.identifier("status"),
+                  kind: "init",
+                  shorthand: true,
+                }),
               ]);
 
               // Add a new variable declaration for loading
@@ -66,7 +67,7 @@ function transform(
               // Ensure the status property is not renamed
               declarator.id.properties.forEach((property) => {
                 if (
-                  j.Property.check(property) &&
+                  j.ObjectProperty.check(property) &&
                   j.Identifier.check(property.key) &&
                   property.key.name === "status"
                 ) {

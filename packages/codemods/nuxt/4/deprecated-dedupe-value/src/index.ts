@@ -49,7 +49,7 @@ export default function transform(
             ) {
               if (
                 j.BooleanLiteral.check(prop.value) ||
-                (j.Literal.check(prop.value) &&
+                (j.StringLiteral.check(prop.value) &&
                   typeof prop.value.value === "boolean")
               ) {
                 prop.value = j.stringLiteral(

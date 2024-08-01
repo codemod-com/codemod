@@ -410,7 +410,7 @@ const addGetDataFunctionInline: ModFunction<File, "write"> = (
       if (j.ObjectExpression.check(argument)) {
         argument.properties.forEach((property) => {
           if (
-            (!j.Property.check(property) &&
+            (!j.ObjectProperty.check(property) &&
               !j.ObjectProperty.check(property)) ||
             !j.ObjectExpression.check(property.value) ||
             !j.Identifier.check(property.key)
