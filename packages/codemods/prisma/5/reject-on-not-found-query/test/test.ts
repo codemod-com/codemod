@@ -1,5 +1,3 @@
-import jscodeshift, { type API } from "jscodeshift";
-
 import assert from "node:assert";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -8,20 +6,7 @@ import { describe, it } from "vitest";
 
 import transform from "../src/index.js";
 
-const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
+import { buildApi } from "@codemod-com/codemod-utils";
 
 describe("prisma reject on not found query", () => {
   it("should remove rejectOnNotFound property and update functions name", async () => {

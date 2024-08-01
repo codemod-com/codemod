@@ -5,6 +5,7 @@
   },
   "devDependencies": {
     "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/codemod-utils": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "@types/jscodeshift": "^0.11.10",
     "jscodeshift": "^0.15.1",

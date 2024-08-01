@@ -3,8 +3,6 @@ import type * as INodeFs from "node:fs";
 import { basename, dirname, join } from "node:path";
 
 import { glob } from "glob";
-import type { API } from "jscodeshift";
-import jscodeshift from "jscodeshift";
 import type { IFs } from "memfs";
 
 import {
@@ -14,22 +12,6 @@ import {
   type UnifiedEntry,
   UnifiedFileSystem,
 } from "@codemod-com/filemod";
-
-// @TODO: remove in favor of re-using one from codemod-utils package
-export const buildApi = (parser: string | undefined): API => ({
-  j: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  jscodeshift: parser ? jscodeshift.withParser(parser) : jscodeshift,
-  stats: () => {
-    console.error(
-      "The stats function was called, which is not supported on purpose",
-    );
-  },
-  report: () => {
-    console.error(
-      "The report function was called, which is not supported on purpose",
-    );
-  },
-});
 
 export const buildPathHashDigest = (path: string) =>
   createHash("ripemd160").update(path).digest("base64url") as PathHashDigest;

@@ -4,6 +4,7 @@
     "@biomejs/biome": "catalog:",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/utilities": "workspace:*",
+    "@codemod-com/codemod-utils": "workspace:*",
     "@vitest/coverage-v8": "catalog:",
     "json-schema-to-typescript": "catalog:",
     "memfs": "^4.6.0",

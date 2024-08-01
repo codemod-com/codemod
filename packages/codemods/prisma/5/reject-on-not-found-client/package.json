@@ -1,5 +1,5 @@
 {
-  "name": "prisma-replace-find-first-with-find-first-or-throw",
+  "name": "prisma/5/reject-on-not-found-client",
   "license": "MIT",
   "devDependencies": {
     "@types/node": "20.9.0",

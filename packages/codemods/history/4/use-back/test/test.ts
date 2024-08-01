@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
-import { buildApi, trimLicense } from "@codemod-com/utilities";
+import { buildApi } from "@codemod-com/codemod-utils";
+import { trimLicense } from "@codemod-com/utilities";
 import type { FileInfo } from "jscodeshift";
 import { describe, it } from "vitest";
 import transform from "../src/index.js";
