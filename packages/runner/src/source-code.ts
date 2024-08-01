@@ -21,24 +21,28 @@ export const getTransformer = (source: string) => {
       }
     | (() => void);
 
-  const module = { exports: {} as Exports };
+  try {
+    const module = { exports: {} as Exports };
 
-  const keys = ["module", "exports", "require"];
-  const values = [module, module.exports, require];
+    const keys = ["module", "exports", "require"];
+    const values = [module, module.exports, require];
 
-  new Function(...keys, source).apply(null, values);
+    new Function(...keys, source).apply(null, values);
 
-  return typeof module.exports === "function"
-    ? module.exports
-    : module.exports.__esModule
-      ? module.exports.default ??
-        module.exports.transform ??
-        module.exports.handleSourceFile ??
-        module.exports.repomod ??
-        module.exports.filemod ??
-        module.exports.workflow ??
-        null
-      : null;
+    return typeof module.exports === "function"
+      ? module.exports
+      : module.exports.__esModule
+        ? module.exports.default ??
+          module.exports.transform ??
+          module.exports.handleSourceFile ??
+          module.exports.repomod ??
+          module.exports.filemod ??
+          module.exports.workflow ??
+          null
+        : null;
+  } catch {
+    return null;
+  }
 };
 
 export const BUILT_SOURCE_PATH = "cdmd_dist/index.cjs";
