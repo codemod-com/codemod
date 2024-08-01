@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 type MessageToSend = {
-  config: { llm_engine: LLMEngine };
+  config: { llm_engine: LLMEngine; generate_test?: boolean };
   previous_context: LLMMessage[];
   before: string | string[];
   after: string | string[];
@@ -24,7 +24,7 @@ export const useCodemodAI = ({
 }) => {
   const [ws, setWs] = useState<WebSocket | null>(null);
   const [wsMessage, setWsMessage] = useState<MessageFromWs>();
-  const { getAllSnippets } = useSnippetsStore();
+  const { getAllSnippets, addPair } = useSnippetsStore();
   const [isWsConnected, setIsWsConnected] = useState(false);
   const [serviceBusy, setServiceBusy] = useState(false);
   const { getToken } = useAuth();
@@ -74,6 +74,13 @@ export const useCodemodAI = ({
         id: Date.now().toString(),
       });
       setServiceBusy(false);
+    } else if (data.before) {
+      setWsMessage({
+        content: `Test case created and added to a new test tab`,
+        role: "assistant",
+        id: Date.now().toString(),
+      });
+      addPair(undefined, data);
     } else {
       setWsMessage({
         content: data.message,
@@ -84,7 +91,7 @@ export const useCodemodAI = ({
   };
 
   const handleWebsocketConnection = async () => {
-    const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL);
+    const websocket = new WebSocket(env.NEXT_PUBLIC_WS_URL as string);
     setIsWsConnected(true);
     setWs(websocket);
     websocket.onopen = onConnect;
@@ -108,14 +115,29 @@ export const useCodemodAI = ({
 
   const beforeSnippets = getAllSnippets().before;
   const afterSnippets = getAllSnippets().after;
+
+  const isEnvPrepared =
+    ws && beforeSnippets.length && afterSnippets.length && isWsConnected;
+  const autogenerateTestCases = async () => {
+    if (isEnvPrepared) {
+      const _token = await getToken();
+      setToken(_token);
+      setWsMessage({
+        content: `Generate test cases`,
+        role: "user",
+        id: Date.now().toString(),
+      });
+      const messageToSend: MessageToSend = {
+        config: { llm_engine: engine, generate_test: true },
+        previous_context: [],
+        before: beforeSnippets,
+        after: afterSnippets,
+      };
+      emitMessage(messageToSend);
+    }
+  };
   const startIterativeCodemodGeneration = async () => {
-    if (
-      ws &&
-      beforeSnippets.length &&
-      afterSnippets.length &&
-      isWsConnected &&
-      !serviceBusy
-    ) {
+    if (isEnvPrepared) {
       const _token = await getToken();
       setToken(_token);
       setWsMessage({
@@ -142,5 +164,6 @@ export const useCodemodAI = ({
     startIterativeCodemodGeneration,
     wsMessage,
     serviceBusy,
+    autogenerateTestCases,
   };
 };
