@@ -9,7 +9,7 @@ import {
   type CodemodConfig,
   doubleQuotify,
   execPromise,
-  extractLibNameAndVersion,
+  extractNameAndVersion,
   getProjectRootPathAndPackageManager,
 } from "@codemod-com/utilities";
 
@@ -86,10 +86,10 @@ export const handleInstallDependencies = async (options: {
     const toInstall: string[] = [];
     const toDelete: string[] = [];
     for (const dep of deps) {
-      const { libName } = extractLibNameAndVersion(dep);
+      const { name } = extractNameAndVersion(dep);
 
-      if (libName?.startsWith("-")) {
-        toDelete.push(libName.slice(1));
+      if (name?.startsWith("-")) {
+        toDelete.push(name.slice(1));
       } else {
         toInstall.push(dep);
       }

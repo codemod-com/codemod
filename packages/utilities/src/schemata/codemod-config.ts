@@ -2,21 +2,8 @@ import semver from "semver";
 import type { InferInput, InferOutput } from "valibot";
 import * as v from "valibot";
 
+import { extractNameAndVersion } from "../functions/formatting.js";
 import { argumentSchema } from "./argument-record.js";
-
-export const extractLibNameAndVersion = (val: string) => {
-  const parts = val.split("@").filter(Boolean);
-  let version: string | null = null;
-  let libName: string;
-  if (parts.length > 1) {
-    version = parts.pop() ?? null;
-    libName = parts.join("@");
-  } else {
-    libName = val;
-  }
-
-  return { libName, version };
-};
 
 export const codemodNameRegex = /[a-zA-Z0-9_/@-]+/;
 
@@ -177,9 +164,9 @@ const configJsonBaseSchema = v.object({
           return false;
         }
 
-        const { libName, version } = extractLibNameAndVersion(val);
+        const { name, version } = extractNameAndVersion(val);
         // e.g. -jest
-        if (libName?.startsWith("-")) {
+        if (name?.startsWith("-")) {
           return true;
         }
 
