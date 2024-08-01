@@ -1,6 +1,29 @@
 // types.ts
 
-export type DataPointKind = 'real_drift' | 'estimated_drift' | 'anomaly_score' | 'performance_metric';
+export type DataPointKind =
+  | "real_drift"
+  | "estimated_drift"
+  | "anomaly_score"
+  | "performance_metric";
+
+export type MigrationHeroData = {
+  user: {
+    imageUrl: string;
+    name: string;
+  };
+  codemodsCreated: number;
+  prsReviewed: number;
+  averageReviewTime: string;
+  timeToFirstReview: string;
+  linesOfCodeDeleted: number;
+  linesOfCodeAdded: number;
+};
+
+export interface MetricCardProps {
+  data: number;
+  change: number;
+  timePeriod: string;
+}
 
 export type DataPoint = {
   kind: DataPointKind;
@@ -11,11 +34,8 @@ export type DataPoint = {
 
 export type CardTileProps = {
   title: string;
-  value: string | number;
-  change: {
-    value: number;
-    isPositive: boolean;
-  };
+  value: string;
+  change: number;
   subtitle?: string;
 };
 
@@ -27,27 +47,27 @@ export type ChartTileProps = {
 export type TableTileProps<T> = {
   title: string;
   data: T[];
-  columns: {
-    key: keyof T;
-    title: string;
-  }[];
 };
 
-export type Reviewer = string | {
-  imageUrl: string;
-  name: string;
-};
+export type Reviewer =
+  | string
+  | {
+      imageUrl: string;
+      name: string;
+    };
 
-export type MigrationPrTable = {
-  task: string;
-  pr: string;
-  status: string;
-  reviewer: Reviewer;
-  filesChanged: number;
-  timeSaving: string;
-};
-
-
+export interface MigrationHeroData {
+  user: {
+    imageUrl: string;
+    name: string;
+  };
+  codemodsCreated: number;
+  prsReviewed: number;
+  averageReviewTime: string;
+  timeToFirstReview: string;
+  linesOfCodeDeleted: number;
+  linesOfCodeAdded: number;
+}
 
 export interface DataSet {
   key: string;
@@ -62,19 +82,31 @@ export interface ColorConfig {
 }
 
 export interface DynamicLineChartProps {
-  title: string;
+  colorConfig: ColorConfig[];
   dataSets: DataSet[];
 }
 
-interface ChartColorSet {
+export type ChartType = "depreciatedAPI" | "prsMerged";
+
+export type TransformerType<T> = {
+  [K in keyof T]: (value: T[K]) => JSX.Element;
+};
+
+export type MigrationPrTable = {
+  task: string;
+  pr: string;
+  status: "In Review" | "Merged";
+  reviewer: {
+    imageUrl: string;
+    name: string;
+  };
+  filesChanged: number;
+  timeSaving: string;
+};
+
+export type MigrationPrTableProps = {
   title: string;
-  colorSets: [ColorConfig, ColorConfig];  // Tuple of exactly two ColorConfig objects
-}
+  data: MigrationPrTable[];
+};
 
-export type ChartType = 'depreciatedAPI' | 'prsMerged';
-
-
-export interface ChartColorSet {
-  title: string;
-  colorSets: [ColorConfig, ColorConfig];  // Tuple of exactly two ColorConfig objects
-}
+export type ColumnDefinition = string | { title: string; description: string };
