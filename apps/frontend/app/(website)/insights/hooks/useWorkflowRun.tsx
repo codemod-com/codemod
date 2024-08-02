@@ -1,4 +1,4 @@
-import { buildCreateWorkflowRunUrl } from "@shared/endpoints";
+import { buildCreateWorkflowRunUrl } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useState } from "react";
 
