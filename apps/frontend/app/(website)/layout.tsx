@@ -9,6 +9,7 @@ import { loadGlobalData } from "@/data/sanity";
 import { GLOBAL_QUERY } from "@/data/sanity/queries";
 import { getOgImages } from "@/data/sanity/resolveSanityRouteMetadata";
 import { mergeDeepRight } from "ramda";
+import AuthProvider from "../context/AuthProvider";
 import { metadata } from "./studio/studioMetadata";
 
 const LiveVisualEditing = dynamic(
@@ -71,7 +72,9 @@ export default async function Layout({
             {children}
           </GlobalLayoutPreview>
         ) : (
-          <GlobalLayout data={globalData.data}>{children}</GlobalLayout>
+          <AuthProvider>
+            <GlobalLayout data={globalData.data}>{children}</GlobalLayout>/
+          </AuthProvider>
         ))}
       {draftMode().isEnabled && <LiveVisualEditing />}
     </>
