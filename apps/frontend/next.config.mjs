@@ -2,6 +2,8 @@ import MonacoEditorPlugin from "monaco-editor-webpack-plugin";
 
 /** @type {import('next').NextConfig} */
 const config = {
+  reactStrictMode: true,
+  transpilePackages: ['recharts'],
   webpack: (config, { isServer, webpack }) => {
     if (!isServer) {
       config.plugins.push(
