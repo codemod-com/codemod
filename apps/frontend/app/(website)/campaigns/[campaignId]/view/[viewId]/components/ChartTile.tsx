@@ -1,5 +1,5 @@
 "use client";
-import type { ColorConfig } from "@/app/(website)/insights-dashboard/types";
+import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import dynamic from "next/dynamic";
 import type React from "react";
 import { useCallback, useState } from "react";

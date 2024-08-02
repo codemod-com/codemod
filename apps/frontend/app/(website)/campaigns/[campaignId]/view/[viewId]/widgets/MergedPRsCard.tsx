@@ -1,5 +1,5 @@
-import { CardTile } from "@/app/(website)/insights-dashboard/components/CardTile";
-import type { MetricCardProps } from "@/app/(website)/insights-dashboard/types";
+import { CardTile } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/CardTile";
+import type { MetricCardProps } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 
 export const MergedPRsCard: React.FC<MetricCardProps> = ({
   data,
