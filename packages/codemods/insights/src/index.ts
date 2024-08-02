@@ -1,4 +1,4 @@
-import type { Api } from "@codemod.com/workflow";
+import { type Api, api } from "@codemod.com/workflow";
 
 import { memoize } from "./cache-utils.js";
 import {
@@ -6,6 +6,7 @@ import {
   normalizePackageRegistryData,
 } from "./registry-utils.js";
 
+import { writeFileSync } from "node:fs";
 import { type Result, runAnalysis } from "./analysis/libyearAnalysis.js";
 import { type CommitData, getCommitsWithInterval } from "./commits.js";
 import { getPackagesData } from "./package.js";
@@ -196,6 +197,8 @@ export async function workflow({ git, contexts }: Api) {
     },
   );
 
-  console.log(analysis, "???");
+  writeFileSync("./workflow.json", JSON.stringify(analysis, null, 2));
   return analysis;
 }
+
+workflow(api);
