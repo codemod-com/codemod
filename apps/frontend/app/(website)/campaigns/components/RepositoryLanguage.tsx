@@ -1,5 +1,3 @@
-import React from "react";
-
 const languageColorMap = {
   ABAP: "#E8274B",
   ActionScript: "#882B0F",

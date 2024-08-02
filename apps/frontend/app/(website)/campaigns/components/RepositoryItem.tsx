@@ -1,6 +1,5 @@
 import type { GithubRepository } from "be-types";
 import { cx } from "cva";
-import React from "react";
 import RepositoryLanguage from "./RepositoryLanguage";
 
 type Props = {
