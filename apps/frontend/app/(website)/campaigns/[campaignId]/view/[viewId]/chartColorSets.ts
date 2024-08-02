@@ -1,7 +1,7 @@
 import type {
   ChartType,
   ColorConfig,
-} from "@/app/(website)/insights-dashboard/types";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 
 export const chartColorSets: Record<ChartType, ColorConfig[]> = {
   depreciatedAPI: [

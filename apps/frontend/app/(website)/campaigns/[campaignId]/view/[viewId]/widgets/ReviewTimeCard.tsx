@@ -1,6 +1,6 @@
-import { CardTile } from "@/app/(website)/insights-dashboard/components/CardTile";
-import type { MetricCardProps } from "@/app/(website)/insights-dashboard/types";
-import { formatDuration } from "@/app/(website)/insights-dashboard/utils";
+import { CardTile } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/CardTile";
+import type { MetricCardProps } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
+import { formatDuration } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/utils";
 
 export const ReviewTimeCard: React.FC<MetricCardProps> = ({
   data,

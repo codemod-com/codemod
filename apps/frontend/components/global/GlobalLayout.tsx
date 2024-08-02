@@ -19,6 +19,7 @@ export default function GlobalLayout({
   const hideMenu = useHideMenu();
   const pathname = usePathname();
 
+  console.log(pathname, "???");
   return (
     <div
       className={cn(
@@ -26,7 +27,9 @@ export default function GlobalLayout({
         className,
       )}
     >
-      {!hideMenu && data && <Navigation data={data.navigation} />}
+      {(!hideMenu || pathname.startsWith("/campaigns")) && data && (
+        <Navigation data={data.navigation} />
+      )}
       {/* @TODO refactor this logic */}
       <main
         className={cn(

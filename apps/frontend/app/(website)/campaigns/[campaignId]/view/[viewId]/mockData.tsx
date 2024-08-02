@@ -3,7 +3,7 @@ import type {
   MigrationPrTable,
   MigrationPrTableProps,
   TableTileProps,
-} from "@/app/(website)/insights-dashboard/types";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 
 const currentDate = new Date();
 export type CardTileData = {

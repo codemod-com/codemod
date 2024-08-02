@@ -5,16 +5,16 @@ import {
   heroData,
   migrationPrData,
   prsMergedData,
-} from "@/app/(website)/insights-dashboard/mockData";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/mockData";
 import {
   HeroTable,
   MergedPRsCard,
   PrTable,
   ReviewTimeCard,
   TimeSavedCard,
-} from "@/app/(website)/insights-dashboard/widgets";
-import { DepreciatedAPIChart } from "@/app/(website)/insights-dashboard/widgets/DepreciatedAPIChart";
-import { PrsMergedChart } from "@/app/(website)/insights-dashboard/widgets/PrsMergedChart";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets";
+import { DepreciatedAPIChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/DepreciatedAPIChart";
+import { PrsMergedChart } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/widgets/PrsMergedChart";
 
 const MigrationDashboardCards: React.FC = () => {
   return (
@@ -47,7 +47,7 @@ const MigrationDashboardCards: React.FC = () => {
 const DashboardPage: React.FC = () => {
   return (
     <div className="w-full">
-      <div className="px-m pb-[80px] pt-[calc(var(--header-height))] lg:px-[64px]">
+      <div className="px-m pb-[80px] lg:px-[64px]">
         <div className="bg-gray-50 min-h-screen">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-8">
