@@ -2,6 +2,7 @@
 import { Table } from "@radix-ui/themes";
 
 import Link from "next/link";
+import { useParams } from "next/navigation";
 import { memo } from "react";
 
 type Dashboard = {
@@ -21,6 +22,8 @@ const mockDashboards: Dashboard[] = [
 ];
 
 const DashboardTable = ({ dashboards }: { dashboards: Dashboard[] }) => {
+  const { campaignId } = useParams();
+
   return (
     <Table.Root>
       <Table.Header>
@@ -39,7 +42,9 @@ const DashboardTable = ({ dashboards }: { dashboards: Dashboard[] }) => {
             <Table.Cell>{dashboard.createdAt}</Table.Cell>
             <Table.Cell>{dashboard.owner}</Table.Cell>
             <Table.Cell>
-              <Link href={`/dashboards/${dashboard.id}`}>Open</Link>
+              <Link href={`/campaigns/${campaignId}/view/${dashboard.id}`}>
+                Open
+              </Link>
             </Table.Cell>
           </Table.Row>
         ))}

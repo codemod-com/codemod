@@ -1,9 +1,9 @@
-import { TableTile } from "@/app/(website)/insights-dashboard/components/TableTile";
+import { TableTile } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/TableTile";
 import type {
   ColumnDefinition,
   MigrationPrTable,
   TransformerType,
-} from "@/app/(website)/insights-dashboard/types";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 import {
   ArrowClockwise,
   Check,

@@ -1,8 +1,8 @@
 import {
   ChartTile,
   type ChartTileProps,
-} from "@/app/(website)/insights-dashboard/components/ChartTile";
-import type { ColorConfig } from "@/app/(website)/insights-dashboard/types";
+} from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/components/ChartTile";
+import type { ColorConfig } from "@/app/(website)/campaigns/[campaignId]/view/[viewId]/types";
 
 export const prsMergedChartColorSets: ColorConfig[] = [
   {
