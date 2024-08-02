@@ -3,7 +3,7 @@
  */
 
 import { useAuth } from "@clerk/nextjs";
-import { buildGetWorkflowRunUrl } from "@shared/endpoints";
+import { buildGetWorkflowRunUrl } from "@mocks/endpoints/gh-run";
 import { useEffect, useState } from "react";
 import { useAPI } from "../../studio/src/hooks/useAPI";
 

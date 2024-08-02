@@ -1,4 +1,4 @@
-import { GH_REPO_LIST } from "@shared/endpoints";
+import { GH_REPO_LIST } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import type { GithubRepository } from "be-types";
 import { useQuery } from "react-query";

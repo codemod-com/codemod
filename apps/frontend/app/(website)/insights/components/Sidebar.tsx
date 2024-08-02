@@ -1,4 +1,5 @@
 import ThemeSwitcher from "@/components/global/Footer/ThemeSwitcher";
+import { useTheme } from "@/hooks/useTheme";
 import {
   AreaChartIcon,
   BookOpen,
@@ -44,6 +45,7 @@ const useSidebarNav = () => {
 
 const Sidebar = () => {
   const { topNavLinks } = useSidebarNav();
+  const { toggleTheme, theme } = useTheme();
   const pathname = usePathname();
 
   return (
@@ -67,7 +69,7 @@ const Sidebar = () => {
           <BookOpen size={16} />
           <span>Docs</span>
         </NavLink>
-        <ThemeSwitcher />
+        <ThemeSwitcher toggleTheme={toggleTheme} isLight={theme === "light"} />
       </div>
     </div>
   );
