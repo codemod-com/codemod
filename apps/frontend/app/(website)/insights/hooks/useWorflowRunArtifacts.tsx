@@ -1,4 +1,4 @@
-import { getWorkflowRunArtifactsUrl } from "@shared/endpoints";
+import { getWorkflowRunArtifactsUrl } from "@mocks/endpoints/gh-run";
 import { useAPI } from "@studio/hooks/useAPI";
 import { useQuery } from "react-query";
 
