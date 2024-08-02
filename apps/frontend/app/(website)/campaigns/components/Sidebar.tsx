@@ -26,8 +26,8 @@ const useSidebarNav = () => {
           Icon: TextSearch,
         },
         {
-          label: "Insights",
-          href: "/insights",
+          label: "Campaigns",
+          href: "/campaigns",
           Icon: AreaChartIcon,
         },
         {

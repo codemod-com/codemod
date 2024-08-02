@@ -31,7 +31,7 @@ export default function GlobalLayout({
       <main
         className={cn(
           "w-full",
-          !hideMenu && pathname !== "/insights" && "max-w-[1312px]",
+          !hideMenu && pathname !== "/campaigns" && "max-w-[1312px]",
         )}
       >
         {children}
