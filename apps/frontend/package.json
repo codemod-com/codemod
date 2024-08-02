@@ -16,7 +16,11 @@
     "prepare": "husky"
   },
   "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
     "development": [
       "last 1 chrome version",
       "last 1 firefox version",
@@ -68,7 +72,6 @@
     "@sanity/vision": "catalog:",
     "@swc/wasm-web": "^1.6.7",
     "@t3-oss/env-nextjs": "catalog:",
-    "@tailwindcss/typography": "catalog:",
     "@tinloof/sanity-studio": "catalog:",
     "@tinloof/sanity-web": "catalog:",
     "@types/jscodeshift": "^0.11.6",
@@ -127,6 +130,7 @@
     "react-use": "catalog:",
     "reactjs-popup": "catalog:",
     "recast": "catalog:",
+    "recharts": "^2.12.7",
     "rehype-sanitize": "catalog:",
     "remark-gfm": "catalog:",
     "remark-math": "catalog:",
@@ -156,6 +160,7 @@
   "devDependencies": {
     "@babel/core": "^7.24.7",
     "@babel/preset-env": "^7.1.6",
+    "@tailwindcss/typography": "catalog:",
     "@testing-library/dom": "catalog:",
     "@testing-library/jest-dom": "catalog:",
     "@testing-library/react": "catalog:",
