@@ -4,18 +4,18 @@ import Icon from "@/components/shared/Icon";
 import { useViewStore } from "@/store/view";
 import { Separator } from "@studio/components/ui/separator";
 import { AlignJustify, Folder, Settings } from "lucide-react";
-import InsightsCounter from "./InsightsCounter";
+import CampaignsCounter from "./CampaignsCounter";
 import SearchBox from "./SearchBox";
 
 type Props = {
   onOpenRepoSelector(): void;
   selectedRepoName: string;
-  insightsCount: number;
+  campaignCount: number;
 };
 
 const SecondaryHeader = ({
   selectedRepoName,
-  insightsCount,
+  campaignCount,
   onOpenRepoSelector,
 }: Props) => {
   const { toggleSidebar, setInsightsSearchTerm } = useViewStore();
@@ -65,7 +65,7 @@ const SecondaryHeader = ({
         orientation="vertical"
         className="bg-border-light dark:bg-border-dark mx-[8px]"
       />
-      <InsightsCounter insightsCount={insightsCount} />
+      <CampaignsCounter campaignCount={campaignCount} />
     </div>
   );
 };
