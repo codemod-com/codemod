@@ -167,6 +167,7 @@ export async function workflow({ git, contexts }: Api) {
       const { all: allCommits } = await contexts
         .getGitContext()
         .simpleGit.log();
+
       const commits = await getCommitsToCheck(
         allCommits.map(({ hash, date }) => ({
           commit: hash,
