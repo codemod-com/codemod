@@ -35,7 +35,7 @@ const SecondaryHeader = ({
         <Icon name="filter" className="!w-[16px] !h-[16px]" />
       </Button>
       <SearchBox
-        placeholder="Search for insights"
+        placeholder="Search for campaigns"
         onSearch={setInsightsSearchTerm}
       />
       <Separator
