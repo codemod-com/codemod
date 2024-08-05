@@ -1,5 +1,6 @@
 {
   "name": "@codemod/nuxt-4-template-compilation-changes",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.2.2",

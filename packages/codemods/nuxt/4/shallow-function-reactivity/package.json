@@ -1,5 +1,6 @@
 {
   "name": "@codemod/nuxt-4-shallow-data-reactivity",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.2.2",

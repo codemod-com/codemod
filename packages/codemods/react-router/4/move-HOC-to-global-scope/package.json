@@ -8,6 +8,7 @@
     "jscodeshift": "^0.15.1",
     "@types/jscodeshift": "^0.11.10"
   },
+  "private": true,
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest watch"

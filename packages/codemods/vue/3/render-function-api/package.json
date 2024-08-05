@@ -9,6 +9,7 @@
     "typescript": "^5.2.2",
     "vitest": "^1.0.1"
   },
+  "private": true,
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest watch"

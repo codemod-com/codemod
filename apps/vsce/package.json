@@ -14,6 +14,7 @@
     "vscode": "^1.74.0",
     "node": "^20.0.0"
   },
+  "private": true,
   "categories": ["Programming Languages", "Formatters", "Linters"],
   "keywords": [
     "codemod",
