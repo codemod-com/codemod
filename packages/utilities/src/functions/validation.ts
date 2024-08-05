@@ -13,8 +13,6 @@ export const assertsNeitherNullOrUndefined = <T>(
 export const isJavaScriptName = (name: string) =>
   name.endsWith(".ts") ||
   name.endsWith(".js") ||
-  name.endsWith(".tsx") ||
-  name.endsWith(".jsx") ||
   name.endsWith(".mjs") ||
   name.endsWith(".cjs") ||
   name.endsWith(".mts") ||
