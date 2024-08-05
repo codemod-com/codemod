@@ -180,8 +180,8 @@ export const handleLearnCliCommand = async (options: {
     return;
   }
 
-  const oldSourceFile = getOldSourceFile(latestCommitHash, path, fileExtension);
-  const sourceFile = getSourceFile(dirtyPath, fileExtension);
+  const oldSourceFile = getOldSourceFile(latestCommitHash, path);
+  const sourceFile = getSourceFile(dirtyPath);
 
   if (oldSourceFile === null || sourceFile === null) {
     printer.printOperationMessage({
