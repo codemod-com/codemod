@@ -1,4 +1,6 @@
+import { LEARN_KEY } from "@/constants";
 import type { KnownEngines } from "@codemod-com/utilities";
+import { getCodeDiff } from "@studio/api/getCodeDiff";
 import { parseShareableCodemod } from "@studio/schemata/shareableCodemodSchemata";
 import { SEARCH_PARAMS_KEYS } from "@studio/store/initialState";
 import { useModStore } from "@studio/store/mod";
@@ -120,11 +122,45 @@ const getState = () => {
     };
   }
 };
+
+const useCodemodLearn = () => {};
 export const useSharedState = () => {
-  const { setInitialState } = useSnippetsStore();
+  const { setInitialState, getSelectedEditors, setEngine } = useSnippetsStore();
   const { setContent } = useModStore();
+  const searchParams = new URLSearchParams(window.location.search);
+  const command = searchParams.get(SEARCH_PARAMS_KEYS.COMMAND);
+
   useEffect(() => {
     const initialState = getState();
+    const snippetStore = getSelectedEditors();
+    if (command === LEARN_KEY) {
+      (async () => {
+        try {
+          const engine = (searchParams.get(SEARCH_PARAMS_KEYS.ENGINE) ??
+            "jscodeshift") as KnownEngines;
+          const diffId = searchParams.get(SEARCH_PARAMS_KEYS.DIFF_ID);
+          const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
+
+          if (!engine || !diffId || !iv) {
+            return;
+          }
+
+          const snippets = await getCodeDiff({ diffId, iv });
+
+          if (!snippets) {
+            return;
+          }
+
+          snippetStore.setBeforeSnippet(snippets.before);
+          snippetStore.setAfterSnippet(snippets.after);
+          searchParams.delete(SEARCH_PARAMS_KEYS.COMMAND);
+          setEngine(engine);
+        } catch (err) {
+          console.error(err);
+        }
+      })();
+      return;
+    }
     if (initialState) {
       setInitialState(initialState);
       setContent(initialState.codemodSource);
