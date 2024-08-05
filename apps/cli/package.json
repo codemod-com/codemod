@@ -70,8 +70,9 @@
   },
   "scripts": {
     "build": "tsc && node ./build.js",
-    "build:publish": "pnpm build -- --publish",
     "build:local": "pnpm build -- --local",
+    "build:prod": "pnpm build -- --prod",
+    "build:publish": "pnpm build -- --publish",
     "package": "pkg --compress GZip .",
     "test": "TEST=1 vitest run",
     "coverage": "TEST=1 vitest run --coverage",
