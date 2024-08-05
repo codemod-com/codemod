@@ -62,7 +62,7 @@ export class WorkerManager {
 
       worker.postMessage({
         kind: "initialization",
-        transformer,
+        transformer: transformer?.toString() ?? null,
         ...codemod,
         ...codemod.config,
         ...flowSettings,
