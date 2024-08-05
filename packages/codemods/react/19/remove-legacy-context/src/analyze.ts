@@ -4,7 +4,7 @@ import {
   getClassComponents,
   getClassMethod,
   getClassProperty,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 
 export const findPatterns = (j: JSCodeshift, root: Collection) =>
   getClassComponents(j, root)

@@ -19,6 +19,7 @@
     "README.md",
     "tsconfig.json"
   ],
+  "private": true,
   "scripts": {
     "build": "tsc",
     "test": "vitest run",

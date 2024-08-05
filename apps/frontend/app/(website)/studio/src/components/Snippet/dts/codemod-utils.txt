@@ -2,7 +2,7 @@
 // Dependencies for this module:
 //   ../../jscodeshift
 
-declare module '@codemod-com/codemod-utils' {
+declare module '@codemod.com/codemod-utils' {
     import type { ASTPath, ClassDeclaration, ClassMethod, ClassProperty, Collection, ImportDeclaration, ImportDefaultSpecifier, ImportNamespaceSpecifier, ImportSpecifier, FunctionDeclaration, FunctionExpression, ArrowFunctionExpression, JSCodeshift } from "jscodeshift";
 
     /**
