@@ -400,27 +400,24 @@ export const publishHandler: RouteHandler<{
 
     if (latestVersion === null && !isVerified) {
       try {
-        await axios.post(
-          "https://hooks.zapier.com/hooks/catch/18983913/2ybuovt/",
-          {
-            codemod: {
-              name: isPublishedFromStudio ? `${name} (studio publish)` : name,
-              from: codemodRc.applicability?.from?.map((tuple) =>
-                tuple.join(" "),
-              ),
-              to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
-              engine: codemodRc.engine,
-              publishedAt: createdAtTimestamp,
-            },
-            author: {
-              username,
-              name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
-              email:
-                emailAddresses.find((e) => e.id === primaryEmailAddressId)
-                  ?.emailAddress ?? null,
-            },
+        await axios.post(environment.ZAPIER_PUBLISH_HOOK, {
+          codemod: {
+            name: isPublishedFromStudio ? `${name} (studio publish)` : name,
+            from: codemodRc.applicability?.from?.map((tuple) =>
+              tuple.join(" "),
+            ),
+            to: codemodRc.applicability?.to?.map((tuple) => tuple.join(" ")),
+            engine: codemodRc.engine,
+            publishedAt: createdAtTimestamp,
           },
-        );
+          author: {
+            username,
+            name: `${firstName ?? ""} ${lastName ?? ""}`.trim() || null,
+            email:
+              emailAddresses.find((e) => e.id === primaryEmailAddressId)
+                ?.emailAddress ?? null,
+          },
+        });
       } catch (err) {
         console.error("Failed calling Zapier hook:", err);
       }
