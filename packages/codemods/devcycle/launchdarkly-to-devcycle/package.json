@@ -1,6 +1,7 @@
 {
   "name": "launchdarkly-to-devcycle",
   "author": "dmytrohryshyn",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "@types/node": "20.9.0",

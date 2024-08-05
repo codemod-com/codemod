@@ -9,6 +9,7 @@
     "typescript": "^5.2.2",
     "vitest": "^1.0.1"
   },
+  "private": true,
   "main": "./dist/index.cjs",
   "scripts": {
     "test": "vitest run",

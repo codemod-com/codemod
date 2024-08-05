@@ -1,8 +1,10 @@
 {
+  "name": "@codemod/deprecated",
   "author": "Codemod, Inc.",
   "version": "0.0.1",
   "description": "Deprecated code that is not used in Codemod.com products anymore, but could be reused later",
   "sideEffects": false,
+  "private": true,
   "files": [
     "./dist",
     "!**/*.test.js",

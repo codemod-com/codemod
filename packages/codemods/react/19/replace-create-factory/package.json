@@ -1,6 +1,7 @@
 {
   "name": "react-19-replace-create-factory",
   "license": "MIT",
+  "private": true,
   "devDependencies": {
     "@codemod.com/codemod-utils": "workspace:*",
     "@types/node": "20.9.0",

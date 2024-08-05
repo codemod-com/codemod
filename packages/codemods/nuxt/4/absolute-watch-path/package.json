@@ -1,5 +1,6 @@
 {
   "name": "@codemod/nuxt-4-absolute-watch-path",
+  "private": true,
   "dependencies": {},
   "devDependencies": {
     "typescript": "^5.2.2",

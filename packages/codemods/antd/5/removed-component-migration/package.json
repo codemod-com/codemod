@@ -9,6 +9,7 @@
     "jscodeshift": "^0.15.1",
     "@types/jscodeshift": "^0.11.10"
   },
+  "private": true,
   "main": "./dist/index.cjs",
   "scripts": {},
   "files": ["./README.md", "./.codemodrc.json", "./dist/index.cjs"],
