@@ -8,6 +8,7 @@ import {
   type KnownEngines,
   doubleQuotify,
   isJavaScriptName,
+  isJsxName,
 } from "@codemod-com/utilities";
 import { createCodeDiff } from "#api.js";
 import {
@@ -130,11 +131,14 @@ export const handleLearnCliCommand = async (options: {
 
   const fileExtension = getFileExtension(path);
 
-  if (!isJavaScriptName(fileExtension)) {
+  const isValidFile =
+    isJavaScriptName(fileExtension) || isJsxName(fileExtension);
+
+  if (!isValidFile) {
     printer.printOperationMessage({
       kind: "error",
       message:
-        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .jsx, .ts, .tsx).\n" +
+        "At this moment, we are supporting only Jscodeshift engine, so the file must be either a JavaScript or TypeScript file (.js, .ts, .mjs, .cjs, .mts, .cts, .jsx, .tsx).\n" +
         "Soon, we will support other engines and hence other extensions including .md, .mdx and more!",
     });
     return;
