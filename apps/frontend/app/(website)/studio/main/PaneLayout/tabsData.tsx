@@ -1,14 +1,12 @@
 import { Chat } from "@chatbot/Chat";
-import { useAiService } from "@chatbot/useAiService/useAiService";
+import type { useAiService } from "@chatbot/useAiService/useAiService";
 import type { KnownEngines } from "@codemod-com/utilities";
 import LiveIcon from "@studio/icons/LiveIcon";
 import { AstSection } from "@studio/main/ASTViewer/AstSectionBase";
 import Table from "@studio/main/Log/Table";
 import type { PanelData, PanelsRefs } from "@studio/main/PageBottomPane";
 import { SignInRequired } from "@studio/main/PaneLayout/SignInRequired";
-import { useModStore } from "@studio/store/mod";
 import { TabNames } from "@studio/store/view";
-import { useCFSStore } from "app/(website)/studio/src/store/CFS";
 import type { ReactNode } from "react";
 import { PanelGroup } from "react-resizable-panels";
 
@@ -22,23 +20,15 @@ export const useTabsData = ({
   isSignedIn = false,
   engine,
   panelRefs,
+  aiAssistantData,
 }: {
   isSignedIn?: boolean;
   engine: KnownEngines;
   panelRefs: PanelsRefs;
   beforePanel: PanelData;
   afterPanel: PanelData;
+  aiAssistantData: ReturnType<typeof useAiService>;
 }) => {
-  const { setContent } = useModStore();
-  const {
-    AIAssistant: { engine: llmEngine },
-  } = useCFSStore();
-
-  const aiAssistantData = useAiService({
-    setCodemod: setContent,
-    engine: llmEngine,
-  });
-
   const tabs = [
     {
       value: TabNames.MODGPT,
