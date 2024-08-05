@@ -101,6 +101,11 @@ export const useCodemodAI = ({
   const isEnvPrepared =
     ws && beforeSnippets.length && afterSnippets.length && isWsConnected;
 
+  console.log({
+    isEnvPrepared,
+    ws,
+    isWsConnected,
+  });
   const autogenerateTestCases = async () => {
     if (isEnvPrepared) {
       setWsMessage({

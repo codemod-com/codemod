@@ -1,6 +1,5 @@
 import { AliasButtons } from "@chatbot/PromptPanel/AliasButtons";
 import { ControlButtons } from "@chatbot/PromptPanel/ControlButtons";
-import { GenerateTestCasesButton } from "@chatbot/PromptPanel/GenerateTestCasesButton";
 import { WebSocketButton } from "@chatbot/PromptPanel/WebSocketButton";
 import { insertValue } from "@chatbot/PromptPanel/utils";
 import type { useAiService } from "@chatbot/useAiService/useAiService";
@@ -33,7 +32,6 @@ export function PromptPanel(props: PromptPanelProps) {
     setInput,
     messages,
     startIterativeCodemodGeneration,
-    autogenerateTestCases,
     resetMessages,
   } = props;
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
@@ -66,9 +64,6 @@ export function PromptPanel(props: PromptPanelProps) {
             <WebSocketButton
               handleButtonClick={startIterativeCodemodGeneration}
               isLoading={isLoading}
-            />
-            <GenerateTestCasesButton
-              handleButtonClick={autogenerateTestCases}
             />
           </div>
           <AliasButtons
