@@ -27,15 +27,7 @@ const getFileExtension = (filePath: string) => {
   return extname(filePath).toLowerCase();
 };
 
-const getOldSourceFile = (
-  commitHash: string,
-  filePath: string,
-  fileExtension: string,
-) => {
-  if (!isJavaScriptName(fileExtension)) {
-    return null;
-  }
-
+const getOldSourceFile = (commitHash: string, filePath: string) => {
   try {
     const commitWithFileName = doubleQuotify(`${commitHash}:${filePath}`);
     const output = execSync(`git show ${commitWithFileName}`).toString();
@@ -54,11 +46,7 @@ const getOldSourceFile = (
   }
 };
 
-const getSourceFile = (filePath: string, fileExtension: string) => {
-  if (!isJavaScriptName(fileExtension)) {
-    return null;
-  }
-
+const getSourceFile = (filePath: string) => {
   const project = new Project({
     compilerOptions: {
       allowJs: true,
