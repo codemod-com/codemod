@@ -6,6 +6,7 @@ import {
   decodeMainThreadMessage,
 } from "@codemod-com/printer";
 import {
+  type TransformFunction,
   runAstGrepCodemod,
   runJscodeshiftCodemod,
   runTsMorphCodemod,
@@ -59,7 +60,9 @@ const messageHandler = async (m: unknown) => {
           }
 
           commands = runJscodeshiftCodemod(
-            initializationMessage.transformer,
+            new Function(
+              `return ${initializationMessage.transformer}`,
+            )() as TransformFunction,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
@@ -74,7 +77,9 @@ const messageHandler = async (m: unknown) => {
           }
 
           commands = runTsMorphCodemod(
-            initializationMessage.transformer,
+            new Function(
+              `return ${initializationMessage.transformer}`,
+            )() as TransformFunction,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
