@@ -37,8 +37,7 @@ const autoGenerateCodemodPrompt = `### Context
 - Do not import 'namedTypes' or 'builders' from jscodeshift.
 - Always narrow node types using typeguards before accessing their properties.
 
-Here are two examples of using typeguards to check whether the import source is a string literal:
-\`\`\`typescript
+Here are two examples of using typeguards to check whether the import source is a string \`\`\`typescript
 if (j.Literal.check(node.source)) { // CORRECT
   // rest of the code
 }
@@ -49,8 +48,7 @@ if (j.Literal.check(node.source) && typeof node.source.value === 'string') { // 
 \`\`\`
 
 
-- Never check the node type without using typeguards. The following example is INCORRECT:
-\`\`\`typescript
+- Never check the node type without using typeguards. The following example is \`\`\`typescript
 if (node.source.type === 'Literal') { // INCORRECT
   // rest of the code
 }
@@ -179,37 +177,37 @@ export default transform;
 \`\`\`
 
 ## Additional API about jscodeshift
-### closestScope: Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
+### Finds the closest enclosing scope of a node. Useful for determining the scope context of variables and functions.
 \`\`\`typescript
 const closestScopes = j.find(j.Identifier).closestScope();
 \`\`\`
 
-### some: checks if at least one element in the collection passes the test implemented by the provided function.
+### checks if at least one element in the collection passes the test implemented by the provided function.
 \`\`\`typescript
 const hasVariableA = root.find(j.VariableDeclarator).some(path => path.node.id.name === 'a');
 \`\`\`
 
-### map: Maps each node in the collection to a new value.
+### Maps each node in the collection to a new value.
 \`\`\`typescript
 const variableNames = j.find(j.VariableDeclaration).map(path => path.node.declarations.map(decl => decl.id.name));
 \`\`\`
 
-### paths: Returns the paths of the found nodes.
+### Returns the paths of the found nodes.
 \`\`\`typescript
 const paths = j.find(j.VariableDeclaration).paths();
 \`\`\`
 
-### get: Gets the first node in the collection.
+### Gets the first node in the collection.
 \`\`\`typescript
 const firstVariableDeclaration = j.find(j.VariableDeclaration).get();
 \`\`\`
 
-### at: Navigates to a specific path in the AST.
+### Navigates to a specific path in the AST.
 \`\`\`typescript
 const secondVariableDeclaration = j.find(j.VariableDeclaration).at(1);
 \`\`\`
 
-### isOfType: checks if the node in the collection is of a specific type.
+### checks if the node in the collection is of a specific type.
 \`\`\`typescript
 const isVariableDeclarator = root.find(j.VariableDeclarator).at(0).isOfType('VariableDeclarator');
 \`\`\`

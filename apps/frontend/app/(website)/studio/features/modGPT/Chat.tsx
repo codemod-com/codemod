@@ -20,6 +20,7 @@ const ChatBase = ({
     startIterativeCodemodGeneration,
     resetMessages,
     modGptSubmit,
+    autogenerateTestCases,
   },
   className,
   isSignedIn,
@@ -33,6 +34,7 @@ const ChatBase = ({
         className={className}
       />
       <PromptPanel
+        autogenerateTestCases={autogenerateTestCases}
         handleSubmit={modGptSubmit}
         resetMessages={resetMessages}
         isLoading={isLoading}

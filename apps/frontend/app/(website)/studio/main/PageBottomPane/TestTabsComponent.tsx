@@ -1,10 +1,18 @@
 import { cn } from "@/utils";
+import { GenerateTestCasesButton } from "@chatbot/PromptPanel/GenerateTestCasesButton";
+import type { useAiService } from "@chatbot/useAiService";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Tabs from "@radix-ui/react-tabs";
 import { useSnippetsStore } from "@studio/store/snippets";
 import { useEffect, useRef, useState } from "react";
 
-export const TestTabsComponent = () => {
+export const TestTabsComponent = ({
+  autogenerateTestCases,
+}: {
+  autogenerateTestCases: ReturnType<
+    typeof useAiService
+  >["autogenerateTestCases"];
+}) => {
   const {
     getSelectedEditors,
     addPair,
@@ -108,9 +116,14 @@ export const TestTabsComponent = () => {
           </div>
         ))}
         {!getHasReachedTabsLimit() && (
-          <button className="add-tab-button" onClick={() => addPair()}>
-            +
-          </button>
+          <>
+            <button className="add-tab-button" onClick={() => addPair()}>
+              +
+            </button>
+            <GenerateTestCasesButton
+              handleButtonClick={autogenerateTestCases}
+            />
+          </>
         )}
       </Tabs.List>
     </Tabs.Root>
