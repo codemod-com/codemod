@@ -58,6 +58,7 @@ export const environmentSchema = object({
     literal("test"),
   ]),
   FRONTEND_URL: string(),
+  ZAPIER_PUBLISH_HOOK: string(),
 });
 
 export type Environment = InferOutput<typeof environmentSchema>;

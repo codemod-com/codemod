@@ -24,6 +24,7 @@ export default defineConfig({
       FRONTEND_URL: "http://localhost:3000",
       AWS_PUBLIC_BUCKET_NAME: "codemod-test",
       AWS_PRIVATE_BUCKET_NAME: "codemod-test",
+      ZAPIER_PUBLISH_HOOK: "https://hooks.zapier.com/hooks/catch/123123/123123",
     },
     exclude: [...configDefaults.exclude, "./packages/deprecated/**"],
     include: [...configDefaults.include, "**/test/*.ts"],
