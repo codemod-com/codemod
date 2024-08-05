@@ -572,7 +572,7 @@ export class Runner {
             engine: "jscodeshift" | "ts-morph" | "ast-grep";
           };
         },
-        transformer,
+        stringifiedTransformer: transformer?.toString() ?? null,
         onError,
       });
     });

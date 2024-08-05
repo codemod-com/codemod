@@ -61,8 +61,8 @@ const messageHandler = async (m: unknown) => {
 
           commands = runJscodeshiftCodemod(
             new Function(
-              initializationMessage.transformer,
-            ) as TransformFunction,
+              `return ${initializationMessage.transformer}`,
+            )() as TransformFunction,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
@@ -78,8 +78,8 @@ const messageHandler = async (m: unknown) => {
 
           commands = runTsMorphCodemod(
             new Function(
-              initializationMessage.transformer,
-            ) as TransformFunction,
+              `return ${initializationMessage.transformer}`,
+            )() as TransformFunction,
             message.path,
             message.data,
             initializationMessage.safeArgumentRecord,
