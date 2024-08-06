@@ -47,7 +47,7 @@ const getState = async () => {
   const iv = searchParams.get(SEARCH_PARAMS_KEYS.IV);
   const isLearn = command === LEARN_KEY;
 
-  if (command === LEARN_KEY) {
+  if (isLearn) {
     if (!engine || !diffId || !iv) {
       return;
     }
@@ -61,7 +61,7 @@ const getState = async () => {
     const editors = [toInitialStates({ ...snippets, name: "Learn" })];
     return {
       engine,
-      editors: editors.map(toInitialStates),
+      editors,
       codemodSource: null,
       codemodName,
       command: LEARN_KEY,
