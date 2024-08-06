@@ -10,6 +10,7 @@ const CODEMOD_STUDIO_URL = "https://codemod.com/studio";
 const OLD_STUDIO_HOSTNAME = "codemod.studio";
 
 import { type NextRequest, NextResponse } from "next/server";
+import { env } from "./env";
 
 // @TODO: Handle redirects from Sanity
 export async function middleware(request: NextRequest) {
@@ -32,10 +33,7 @@ export async function middleware(request: NextRequest) {
     const res = NextResponse.next();
 
     res.headers.append("Access-Control-Allow-Credentials", "true");
-    res.headers.append(
-      "Access-Control-Allow-Origin",
-      "https://backend.codemod.com",
-    );
+    res.headers.append("Access-Control-Allow-Origin", env.NEXT_PUBLIC_API_URL);
     res.headers.append(
       "Access-Control-Allow-Methods",
       "GET,DELETE,PATCH,POST,PUT",
@@ -60,7 +58,7 @@ export async function middleware(request: NextRequest) {
         default-src 'self';
         script-src 'self' 'unsafe-eval' 'unsafe-inline' https://summary-walrus-25.clerk.accounts.dev https://clerk.codemod.com https://vercel.live https://cdn.jsdelivr.net https://www.googletagmanager.com;
 		    frame-src https://challenges.cloudflare.com/ https://vercel.live;
-        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io https://backend.codemod.com https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live wss://backend.codemod.com wss://*.api.sanity.io;
+        connect-src *.google-analytics.com https://clerk.codemod.com https://api.short.io ${env.NEXT_PUBLIC_API_URL} https://codemod.com https://vitals.vercel-insights.com https://summary-walrus-25.clerk.accounts.dev https://*.vercel.app https://vercel.live ${env.NEXT_PUBLIC_WS_URL} wss://*.api.sanity.io;
         style-src 'self' 'unsafe-inline' https://vercel.live;
         img-src 'self' blob: data: https://*.google-analytics.com https://*.googletagmanager.com https://img.clerk.com https://cdn.sanity.io https://image.mux.com https://vercel.com;
         font-src 'self';
