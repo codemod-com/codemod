@@ -11,7 +11,7 @@ import type {
 import {
   getFunctionComponents,
   getFunctionName,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 
 const getComponentStaticPropValue = (
   j: JSCodeshift,

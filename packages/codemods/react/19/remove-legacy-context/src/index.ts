@@ -3,7 +3,7 @@
 import type { API, FileInfo, JSCodeshift } from "jscodeshift";
 import { findPatterns } from "./analyze.js";
 
-import { getClassMethod } from "@codemod-com/codemod-utils";
+import { getClassMethod } from "@codemod.com/codemod-utils";
 //  const FooContext = React.createContext();
 const buildContextVariableDeclaration = (j: JSCodeshift) =>
   j.variableDeclaration("const", [

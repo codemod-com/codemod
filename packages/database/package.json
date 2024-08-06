@@ -7,6 +7,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": ["dist/**"],
+  "private": true,
   "scripts": {
     "build": "pnpm run db:generate && tsc",
     "db:migrate:create": "prisma migrate dev",

@@ -2,7 +2,7 @@ import {
   getImportDeclaration,
   isCallExpressionLibraryMethod,
   removeUnusedSpecifiers,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 import type { API, FileInfo } from "jscodeshift";
 export default function transform(
   file: FileInfo,

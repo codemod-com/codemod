@@ -1,7 +1,7 @@
 import {
   getImportDeclaration,
   removeUnusedSpecifiers,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 import type { API, FileInfo, JSCodeshift } from "jscodeshift";
 import { findPatterns } from "./analyze.js";
 

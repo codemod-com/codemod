@@ -12,7 +12,7 @@ import {
   addNamedImports,
   getImportDeclaration,
   getImportDeclarationNames,
-} from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
 
 const getMatcher =
   (

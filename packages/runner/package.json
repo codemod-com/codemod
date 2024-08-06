@@ -43,7 +43,7 @@
     "@babel/preset-typescript": "catalog:",
     "@babel/traverse": "catalog:",
     "@babel/types": "^7.24.0",
-    "@codemod-com/codemod-utils": "workspace:*",
+    "@codemod.com/codemod-utils": "workspace:*",
     "@codemod-com/filemod": "workspace:*",
     "@codemod-com/printer": "workspace:*",
     "@codemod-com/utilities": "workspace:*",

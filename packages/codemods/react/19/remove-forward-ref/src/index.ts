@@ -13,8 +13,8 @@ import type {
 import {
   getImportDeclaration,
   removeNamedImports,
-} from "@codemod-com/codemod-utils";
-import { isCallExpressionLibraryMethod } from "@codemod-com/codemod-utils";
+} from "@codemod.com/codemod-utils";
+import { isCallExpressionLibraryMethod } from "@codemod.com/codemod-utils";
 
 // Props & { ref: React.RefObject<Ref>}
 const buildPropsAndRefIntersectionTypeAnnotation = (
