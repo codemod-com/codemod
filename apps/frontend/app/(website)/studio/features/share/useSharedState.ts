@@ -62,7 +62,7 @@ const getState = async () => {
     return {
       engine,
       editors,
-      codemodSource: null,
+      codemodSource: "",
       codemodName,
       command: LEARN_KEY,
     };
