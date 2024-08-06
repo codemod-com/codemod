@@ -1,5 +1,5 @@
 import { getRedirect } from "@/data/sanity/redirects";
-// @TODO @codemod-com/utilities imports node runtime libs, cannot be used in midddleware
+// @TODO @codemod-com/utilities imports node runtime libs, cannot be used in middleware
 // @TODO modular import @codemod-com/utilities/constants
 // import {
 //   CODEMOD_STUDIO_URL,
