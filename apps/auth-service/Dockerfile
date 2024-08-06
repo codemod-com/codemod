@@ -55,5 +55,6 @@ COPY --from=installer /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.
 
 WORKDIR /app
 COPY --from=installer /app/apps/auth-service ./apps/auth-service
+COPY --from=installer /app/packages/database ./packages/database
 
 CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
