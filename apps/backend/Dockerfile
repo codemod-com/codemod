@@ -29,8 +29,6 @@ COPY packages/api-types /app/packages/api-types/
 COPY packages/codemod-utils /app/packages/codemod-utils/
 COPY packages/auth /app/packages/auth/
 
-# Generate a partial monorepo with a pruned lockfile for a target workspace.
-# Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune @codemod-com/backend --docker
 
 
@@ -57,5 +55,6 @@ COPY --from=installer /app/node_modules/.pnpm/@prisma+client@5.15.1_prisma@5.15.
 
 WORKDIR /app
 COPY --from=installer /app/apps/backend ./apps/backend
+COPY --from=installer /app/packages/database ./packages/database
 
 CMD cd packages/database && pnpm dlx prisma@latest migrate deploy && cd - && node build/index.js
